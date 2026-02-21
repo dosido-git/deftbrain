@@ -1,4 +1,9 @@
 import React, { useState } from 'react';
+import {
+  Loader2, AlertCircle, Copy, Check, ChevronDown, ChevronUp, RefreshCw, Printer, Share2,
+  Search, Globe, Eye, Ear, MessageSquare, Shield, Clock, Heart, Zap, AlertTriangle,
+  CheckCircle, XCircle, MinusCircle, Plus, X, ArrowRight, Trophy, BarChart3, Hash
+} from 'lucide-react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { getToolById } from '../data/tools';
@@ -9,7 +14,7 @@ const NameAudit = () => {
   const isDark = theme === 'dark';
   const toolData = getToolById('NameAudit');
 
-  // --- Theme ---
+  // â”€â”€â”€ Theme â”€â”€â”€
   const c = {
     card: isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt: isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
@@ -31,7 +36,7 @@ const NameAudit = () => {
     cyan: isDark ? 'bg-cyan-900/20 border-cyan-700 text-cyan-200' : 'bg-cyan-50 border-cyan-200 text-cyan-800',
   };
 
-  // --- State ---
+  // â”€â”€â”€ State â”€â”€â”€
   const [mode, setMode] = useState('analyze'); // 'analyze' | 'compare'
   const [name, setName] = useState('');
   const [context, setContext] = useState('');
@@ -47,23 +52,22 @@ const NameAudit = () => {
   const [compareResults, setCompareResults] = useState(null);
   const [compareLoading, setCompareLoading] = useState(false);
 
-  // --- Options ---
+  // â”€â”€â”€ Options â”€â”€â”€
   const contexts = [
-    { value: 'Business', icon: '🏢' },
-    { value: 'Product', icon: '📦' },
-    { value: 'App', icon: '📱' },
-    { value: 'Band / Music Project', icon: '🎸' },
-    { value: 'Pet', icon: '🐾' },
-    { value: 'Baby', icon: '👶' },
-    { value: 'Character (D&D/Fiction)', icon: '⚔️' },
-    { value: 'Creative Project', icon: '🎨' },
-    { value: 'Event', icon: '🎪' },
-    { value: 'Domain Name', icon: '🌐' },
-    { value: 'Username / Handle', icon: '📱' },
-    { value: 'Other', icon: '✨' },
+    { value: 'Business', icon: 'ðŸ¢' },
+    { value: 'Product', icon: 'ðŸ“¦' },
+    { value: 'App', icon: 'ðŸ“±' },
+    { value: 'Band / Music Project', icon: 'ðŸŽ¸' },
+    { value: 'Pet', icon: 'ðŸ¾' },
+    { value: 'Baby', icon: 'ðŸ‘¶' },
+    { value: 'Character (D&D/Fiction)', icon: 'âš”ï¸' },
+    { value: 'Creative Project', icon: 'ðŸŽ¨' },
+    { value: 'Event', icon: 'ðŸŽª' },
+    { value: 'Username / Handle', icon: 'ðŸ“±' },
+    { value: 'Other', icon: 'âœ¨' },
   ];
 
-  // --- Handlers ---
+  // â”€â”€â”€ Handlers â”€â”€â”€
   const toggleSection = (key) => setExpandedSections(prev => ({ ...prev, [key]: !prev[key] }));
 
   const copyToClipboard = async (text, field) => {
@@ -75,8 +79,8 @@ const NameAudit = () => {
     <button onClick={() => copyToClipboard(content, field)} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
       copiedField === field ? (isDark ? 'bg-green-900/40 text-green-300' : 'bg-green-100 text-green-700') : c.btnSecondary
     }`}>
-      {copiedField === field ? '✓' : '📋'}
-      {copiedField === field ? ' Copied' : ` ${label}`}
+      {copiedField === field ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+      {copiedField === field ? 'Copied' : label}
     </button>
   );
 
@@ -129,7 +133,8 @@ const NameAudit = () => {
 
   const PassFail = ({ pass, notes }) => (
     <div className="flex items-start gap-2">
-      <span className="flex-shrink-0 mt-0.5">{pass ? '✅' : '❌'}</span>
+      {pass ? <CheckCircle className={`w-4 h-4 flex-shrink-0 mt-0.5 ${isDark ? 'text-green-400' : 'text-green-500'}`} />
+        : <XCircle className={`w-4 h-4 flex-shrink-0 mt-0.5 ${isDark ? 'text-red-400' : 'text-red-500'}`} />}
       <span className={`text-sm ${c.textSecondary}`}>{notes}</span>
     </div>
   );
@@ -142,256 +147,66 @@ const NameAudit = () => {
   };
 
   const langSeverityIcon = (sev) => {
-    if (sev === 'positive') return '✅';
-    if (sev === 'problem') return '❌';
-    if (sev === 'caution') return '⚠️';
-    return '➖';
+    if (sev === 'positive') return <CheckCircle className="w-3.5 h-3.5" />;
+    if (sev === 'problem') return <XCircle className="w-3.5 h-3.5" />;
+    if (sev === 'caution') return <AlertTriangle className="w-3.5 h-3.5" />;
+    return <MinusCircle className="w-3.5 h-3.5" />;
   };
 
   const buildFullText = () => {
     if (!results) return '';
-    const L = []; // lines accumulator
-    const hr = '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━';
-    const sec = (title) => { L.push('', hr, `  ${title}`, hr); };
-
-    L.push(`NAMEAUDIT ANALYSIS: "${results.name_analyzed}"`);
-    L.push(`Grade: ${results.overall_grade}`, '');
-    L.push(results.overall_summary, '');
-
-    if (results.strengths?.length > 0) { L.push('STRENGTHS'); results.strengths.forEach(s => L.push(`  ✓ ${s}`)); L.push(''); }
-    if (results.weaknesses?.length > 0) { L.push('WEAKNESSES'); results.weaknesses.forEach(w => L.push(`  ✗ ${w}`)); L.push(''); }
-    if (results.deal_breakers?.length > 0) { L.push('🚨 DEAL BREAKERS'); results.deal_breakers.forEach(d => L.push(`  ${d}`)); L.push(''); }
-
-    // First Impression
-    if (results.first_impression) {
-      sec('👁️ FIRST IMPRESSION');
-      L.push(results.first_impression.gut_reaction);
-      if (results.first_impression.associations?.length > 0) L.push(`Associations: ${results.first_impression.associations.join(', ')}`);
-      if (results.first_impression.personality_projected) L.push(`Personality: ${results.first_impression.personality_projected}`);
-    }
-
-    // Phonetic Profile
-    if (results.phonetic_profile) {
-      sec('👂 PHONETIC PROFILE');
-      ['syllables', 'mouth_feel', 'accent_notes', 'sound_psychology', 'rhythm'].forEach(key => {
-        if (results.phonetic_profile[key]) L.push(`${key.replace(/_/g, ' ').toUpperCase()}: ${results.phonetic_profile[key]}`);
-      });
-    }
-
-    // Memorability Tests
-    if (results.memorability) {
-      sec('⚡ MEMORABILITY TESTS');
-      [
-        { key: 'day_after_test', label: 'Day-After Test' },
-        { key: 'tell_a_friend_test', label: 'Tell-A-Friend Test' },
-        { key: 'phone_test', label: 'Phone Test' },
-        { key: 'drunk_test', label: 'Drunk Test' },
-        { key: 'shout_test', label: 'Shout Test' },
-      ].forEach(({ key, label }) => {
-        if (results.memorability[key]) L.push(`${results.memorability[key].pass ? '✓' : '✗'} ${label}: ${results.memorability[key].notes}`);
-      });
-    }
-
-    // Radio Test
-    if (results.radio_test) {
-      sec('📻 RADIO TEST (Spell From Hearing)');
-      L.push(`${results.radio_test.pass ? '✓ PASS' : '✗ FAIL'}: ${results.radio_test.notes}`);
-      if (results.radio_test.likely_misspellings?.length > 0) L.push(`Likely misspellings: ${results.radio_test.likely_misspellings.join(', ')}`);
-    }
-
-    // Visual Analysis
-    if (results.visual_analysis) {
-      sec('🔤 VISUAL ANALYSIS');
-      ['lowercase', 'uppercase', 'title_case'].forEach(key => {
-        if (results.visual_analysis[key]) L.push(`${key.replace(/_/g, ' ')}: ${results.visual_analysis[key]}`);
-      });
-      ['url_appearance', 'logo_potential', 'visual_issues'].forEach(key => {
-        if (results.visual_analysis[key]) L.push(`${key.replace(/_/g, ' ').toUpperCase()}: ${results.visual_analysis[key]}`);
-      });
-    }
-
-    // Global Language Scan
-    if (results.global_language_scan?.length > 0) {
-      sec(`🌍 GLOBAL LANGUAGE SCAN (${results.global_language_scan.length} languages)`);
-      results.global_language_scan.forEach(lang => {
-        const icon = lang.severity === 'positive' ? '✓' : lang.severity === 'problem' ? '✗' : lang.severity === 'caution' ? '⚠' : '–';
-        L.push(`${icon} ${lang.language}: ${lang.finding}`);
-      });
-    }
-
-    // Abbreviation Audit
-    if (results.abbreviation_audit) {
-      sec('#️⃣ ABBREVIATION & NICKNAME AUDIT');
-      ['natural_shortening', 'initials', 'hashtag', 'issues'].forEach(key => {
-        if (results.abbreviation_audit[key]) L.push(`${key.replace(/_/g, ' ').toUpperCase()}: ${results.abbreviation_audit[key]}`);
-      });
-    }
-
-    // TLD Analysis (domain names only)
-    if (results.tld_analysis) {
-      sec('🔗 TLD ANALYSIS');
-      ['tld_choice', 'trust_signal', 'confusion_risk', 'competing_com', 'alternative_tlds'].forEach(key => {
-        if (results.tld_analysis[key]) L.push(`${key.replace(/_/g, ' ').toUpperCase()}: ${results.tld_analysis[key]}`);
-      });
-    }
-
-    // Domain-Specific Tests (domain names only)
-    if (results.domain_specific) {
-      sec('⌨️ DOMAIN-SPECIFIC TESTS');
-      if (results.domain_specific.browser_bar_test) {
-        L.push(`BROWSER BAR: ${results.domain_specific.browser_bar_test.appearance}`);
-        L.push(results.domain_specific.browser_bar_test.assessment);
-      }
-      if (results.domain_specific.typosquat_risk) L.push(`TYPOSQUATTING RISK: ${results.domain_specific.typosquat_risk}`);
-      if (results.domain_specific.verbal_sharing) L.push(`VERBAL SHARING: ${results.domain_specific.verbal_sharing}`);
-      if (results.domain_specific.email_test) L.push(`EMAIL TEST: ${results.domain_specific.email_test}`);
-    }
-
-    // Competitive Landscape
-    if (results.competitive_landscape) {
-      sec('🛡️ COMPETITIVE LANDSCAPE');
-      if (results.competitive_landscape.similar_names?.length > 0) {
-        L.push('SIMILAR EXISTING NAMES:');
-        results.competitive_landscape.similar_names.forEach(n => L.push(`  • ${n}`));
-      }
-      if (results.competitive_landscape.differentiation) L.push(`DIFFERENTIATION: ${results.competitive_landscape.differentiation}`);
-    }
-
-    // SEO & Searchability
-    if (results.searchability) {
-      sec('🔍 SEO & SEARCHABILITY');
-      ['uniqueness', 'google_competition', 'seo_assessment'].forEach(key => {
-        if (results.searchability[key]) L.push(`${key.replace(/_/g, ' ').toUpperCase()}: ${results.searchability[key]}`);
-      });
-    }
-
-    // Longevity
-    if (results.longevity) {
-      sec('⏳ LONGEVITY CHECK');
-      ['trend_dependency', 'aging_risk', 'verdict'].forEach(key => {
-        if (results.longevity[key]) L.push(`${key.replace(/_/g, ' ').toUpperCase()}: ${results.longevity[key]}`);
-      });
-    }
-
-    // Emotional Resonance
-    if (results.emotional_resonance) {
-      sec('💗 EMOTIONAL RESONANCE');
-      if (results.emotional_resonance.personality_match) L.push(results.emotional_resonance.personality_match);
-      if (results.emotional_resonance.sensory_associations) L.push(`SENSORY ASSOCIATIONS: ${results.emotional_resonance.sensory_associations}`);
-      if (results.emotional_resonance.if_it_were_a_person) L.push(`IF THIS NAME WERE A PERSON: ${results.emotional_resonance.if_it_were_a_person}`);
-    }
-
-    // Live Availability
-    if (results.live_availability) {
-      sec('🌐 LIVE AVAILABILITY');
-      if (results.live_availability.domains) {
-        L.push('DOMAINS:');
-        Object.entries(results.live_availability.domains).forEach(([domain, status]) => {
-          const icon = status === 'likely_available' ? '✓' : status === 'taken' ? '✗' : '?';
-          L.push(`  ${icon} ${domain}`);
-        });
-      }
-      if (results.live_availability.social) {
-        L.push(`SOCIAL HANDLE: ${results.live_availability.social.handle}`);
-        Object.entries(results.live_availability.social.platforms).forEach(([platform, status]) => {
-          const icon = status === 'likely_available' ? '✓' : status === 'likely_taken' ? '✗' : '?';
-          L.push(`  ${icon} ${platform}`);
-        });
-      }
-    }
-
-    // Suggestions
-    if (results.suggestions) {
-      sec('➡️ NEXT STEPS');
-      if (results.suggestions.to_strengthen) L.push(`TO STRENGTHEN: ${results.suggestions.to_strengthen}`);
-      if (results.suggestions.alternatives_direction) L.push(`IF RECONSIDERING: ${results.suggestions.alternatives_direction}`);
-    }
-
-    L.push('', hr, 'Generated by NameAudit • deftbrain.com');
-    return L.join('\n');
+    const lines = [`NAMEAUDIT ANALYSIS: "${results.name_analyzed}"`, `Grade: ${results.overall_grade}`, '', results.overall_summary, ''];
+    if (results.strengths?.length > 0) { lines.push('STRENGTHS'); results.strengths.forEach(s => lines.push(`âœ“ ${s}`)); lines.push(''); }
+    if (results.weaknesses?.length > 0) { lines.push('WEAKNESSES'); results.weaknesses.forEach(w => lines.push(`âœ— ${w}`)); lines.push(''); }
+    if (results.deal_breakers?.length > 0) { lines.push('DEAL BREAKERS'); results.deal_breakers.forEach(d => lines.push(`ðŸš¨ ${d}`)); lines.push(''); }
+    lines.push('â”€â”€â”€', 'Generated by DeftBrain · deftbrain.com');
+    return lines.join('\n');
   };
 
   const handlePrint = () => {
     const content = buildFullText();
     const pw = window.open('', '_blank');
     if (!pw) return;
-    pw.document.write(`<!DOCTYPE html><html><head><title>NameAudit — ${name}</title><style>body{font-family:Georgia,serif;max-width:700px;margin:40px auto;padding:0 20px;color:#1a1a1a;line-height:1.7;font-size:13px;}pre{white-space:pre-wrap;word-wrap:break-word;font-family:inherit;margin:0;}@media print{body{margin:20px;}}</style></head><body><pre>${content.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</pre></body></html>`);
+    pw.document.write(`<!DOCTYPE html><html><head><title>NameAudit â€” ${name}</title><style>body{font-family:Georgia,serif;max-width:700px;margin:40px auto;padding:0 20px;color:#1a1a1a;line-height:1.6;font-size:14px;}pre{white-space:pre-wrap;word-wrap:break-word;font-family:inherit;margin:0;}@media print{body{margin:20px;}}</style></head><body><pre>${content.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</pre></body></html>`);
     pw.document.close(); pw.focus(); setTimeout(() => pw.print(), 250);
   };
 
-  const buildCompareText = () => {
-    if (!compareResults) return '';
-    const L = [];
-    const hr = '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━';
-    const names = compareNames.filter(n => n.trim());
-
-    L.push(`NAMEAUDIT COMPARISON: ${names.join(' vs ')}`);
-    L.push(hr, '');
-
-    // Winner
-    if (compareResults.winner) {
-      L.push(`🏆 WINNER: ${compareResults.winner.name} (${compareResults.winner.margin.replace(/_/g, ' ')})`);
-      L.push(compareResults.winner.why);
-      L.push('');
+  const handleShare = async () => {
+    const text = buildFullText();
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: `NameAudit: "${name}"`, text, url: window.location.href });
+      } catch (err) { if (err.name !== 'AbortError') console.error('Share failed:', err); }
+    } else {
+      copyToClipboard(text, 'share-fallback');
     }
-
-    // Candidates
-    compareResults.candidates?.forEach((cand) => {
-      const isWinner = cand.name === compareResults.winner?.name;
-      L.push(hr);
-      L.push(`${isWinner ? '🏆 ' : ''}${cand.name} — ${cand.grade}`);
-      L.push(hr);
-      L.push(cand.one_liner);
-      L.push('');
-      L.push(`BEST QUALITY: ${cand.best_quality}`);
-      L.push(`BIGGEST RISK: ${cand.biggest_risk}`);
-      L.push('');
-      L.push(`Memorability: ${cand.memorability}  |  Radio: ${cand.radio_test}  |  Global: ${cand.global_safety}${cand.tld_risk ? '  |  TLD Risk: ' + cand.tld_risk : ''}`);
-      L.push(`Personality: ${cand.personality}`);
-      L.push('');
-    });
-
-    // Comparison insight
-    if (compareResults.comparison_insight) {
-      L.push(hr);
-      L.push(`INSIGHT: ${compareResults.comparison_insight}`);
-    }
-
-    L.push('', hr, 'Generated by NameAudit • DeftBrain.com');
-    return L.join('\n');
   };
 
-  const handleComparePrint = () => {
-    const content = buildCompareText();
-    const pw = window.open('', '_blank');
-    if (!pw) return;
-    pw.document.write(`<!DOCTYPE html><html><head><title>NameAudit — ${compareNames.filter(n => n.trim()).join(' vs ')}</title><style>body{font-family:Georgia,serif;max-width:700px;margin:40px auto;padding:0 20px;color:#1a1a1a;line-height:1.7;font-size:13px;}pre{white-space:pre-wrap;word-wrap:break-word;font-family:inherit;margin:0;}@media print{body{margin:20px;}}</style></head><body><pre>${content.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</pre></body></html>`);
-    pw.document.close(); pw.focus(); setTimeout(() => pw.print(), 250);
-  };
-  const Section = ({ id, title, emoji, children, defaultOpen = false }) => {
+  // Collapsible section helper
+  const Section = ({ id, title, icon: Icon, iconColor, children, defaultOpen = false }) => {
     const isOpen = expandedSections[id] !== undefined ? expandedSections[id] : defaultOpen;
     return (
       <div className={`${c.card} rounded-xl shadow-lg p-6`}>
         <button onClick={() => toggleSection(id)} className={`w-full flex items-center justify-between ${c.text}`}>
           <h3 className="font-bold flex items-center gap-2">
-            <span>{emoji}</span> {title}
+            <Icon className={`w-5 h-5 ${iconColor}`} /> {title}
           </h3>
-          <span className="text-lg">{isOpen ? '▲' : '▼'}</span>
+          {isOpen ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
         </button>
         {isOpen && <div className="mt-4">{children}</div>}
       </div>
     );
   };
 
-  // --- RENDER ---
+  // â”€â”€â”€ RENDER â”€â”€â”€
   return (
     <div>
       <div className="mb-5">
-        <h2 className={`text-2xl font-bold ${c.text}`}>{toolData?.title || 'NameAudit'} {toolData?.icon || '🔍'}</h2>
+        <h2 className={`text-2xl font-bold ${c.text}`}>{toolData?.title || 'NameAudit'} {toolData?.icon || 'ðŸ”'}</h2>
         <p className={`text-sm ${c.textMuted}`}>{toolData?.tagline || 'Stress-test any name before you commit'}</p>
       </div>
 
-      {/* =============== INPUT VIEW =============== */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• INPUT VIEW â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       {!results && !compareResults && (
         <div className="space-y-5">
 
@@ -399,11 +214,11 @@ const NameAudit = () => {
           <div className="flex gap-2">
             <button onClick={() => setMode('analyze')}
               className={`flex items-center gap-1.5 px-4 py-2 rounded-lg border text-sm font-semibold transition-all ${c.chip(mode === 'analyze')}`}>
-              🔍 Analyze a Name
+              <Search className="w-4 h-4" /> Analyze a Name
             </button>
             <button onClick={() => setMode('compare')}
               className={`flex items-center gap-1.5 px-4 py-2 rounded-lg border text-sm font-semibold transition-all ${c.chip(mode === 'compare')}`}>
-              📊 Compare Names
+              <BarChart3 className="w-4 h-4" /> Compare Names
             </button>
           </div>
 
@@ -412,7 +227,8 @@ const NameAudit = () => {
             <div className={`${c.card} rounded-xl shadow-lg p-6`}>
               <label className={`block font-semibold ${c.text} mb-2`}>The name <span className="text-red-500">*</span></label>
               <input type="text" value={name} onChange={(e) => setName(e.target.value)}
-                placeholder={context === 'Domain Name' ? "e.g., deft.now, presto.me, savvy.app" : "Enter the name you want analyzed"}
+                onKeyDown={(e) => { if (e.key === 'Enter' && name.trim() && context) handleAnalyze(); }}
+                placeholder="Enter the name you want analyzed"
                 className={`w-full p-4 border rounded-xl outline-none text-lg font-semibold focus:ring-2 focus:ring-cyan-300 ${c.input}`} />
             </div>
           )}
@@ -426,18 +242,19 @@ const NameAudit = () => {
                   <input type="text" value={n} onChange={(e) => {
                     const updated = [...compareNames]; updated[idx] = e.target.value; setCompareNames(updated);
                   }}
-                    placeholder={context === 'Domain Name' ? `Domain ${idx + 1} (e.g., deft.now)` : `Name ${idx + 1}`}
+                    placeholder={`Name ${idx + 1}`}
+                    onKeyDown={(e) => { if (e.key === 'Enter' && compareNames.filter(n => n.trim()).length >= 2 && context) handleCompare(); }}
                     className={`flex-1 p-3 border rounded-lg outline-none text-sm font-semibold focus:ring-2 focus:ring-cyan-300 ${c.input}`} />
                   {compareNames.length > 2 && (
                     <button onClick={() => setCompareNames(compareNames.filter((_, i) => i !== idx))}
-                      className={`p-2 rounded-lg ${c.btnSecondary}`}>✕</button>
+                      className={`p-2 rounded-lg ${c.btnSecondary}`}><X className="w-4 h-4" /></button>
                   )}
                 </div>
               ))}
               {compareNames.length < 4 && (
                 <button onClick={() => setCompareNames([...compareNames, ''])}
                   className={`flex items-center gap-1 text-sm ${c.textMuted} hover:${c.text}`}>
-                  + Add another
+                  <Plus className="w-4 h-4" /> Add another
                 </button>
               )}
             </div>
@@ -458,7 +275,7 @@ const NameAudit = () => {
 
           {/* Optional */}
           <div className={`${c.card} rounded-xl shadow-lg p-6 space-y-4`}>
-            <p className={`text-xs font-bold uppercase tracking-wide ${c.textMuted}`}>Optional — improves analysis accuracy</p>
+            <p className={`text-xs font-bold uppercase tracking-wide ${c.textMuted}`}>Optional â€” improves analysis accuracy</p>
             <div>
               <label className={`block text-sm font-semibold ${c.text} mb-1`}>Industry / Context</label>
               <input type="text" value={industry} onChange={(e) => setIndustry(e.target.value)}
@@ -481,13 +298,13 @@ const NameAudit = () => {
             className={`w-full py-4 px-6 rounded-xl font-semibold text-lg transition-all flex items-center justify-center gap-2 shadow-lg ${
               (loading || compareLoading) ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : c.btnPrimary
             }`}>
-            {(loading || compareLoading) ? (<><span className="inline-block w-5 h-5 animate-spin">⏳</span> {mode === 'analyze' ? 'Analyzing...' : 'Comparing...'}</>)
-              : (<>🔍 {mode === 'analyze' ? 'Analyze This Name' : 'Compare These Names'}</>)}
+            {(loading || compareLoading) ? (<><Loader2 className="w-5 h-5 animate-spin" /> {mode === 'analyze' ? 'Analyzing...' : 'Comparing...'}</>)
+              : (<><Search className="w-5 h-5" /> {mode === 'analyze' ? 'Analyze This Name' : 'Compare These Names'}</>)}
           </button>
 
           {error && (
             <div className={`p-4 rounded-xl flex items-start gap-3 ${c.danger} border`}>
-              <span className="flex-shrink-0 mt-0.5">⚠️</span><p className="text-sm">{error}</p>
+              <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" /><p className="text-sm">{error}</p>
             </div>
           )}
 
@@ -498,18 +315,18 @@ const NameAudit = () => {
         </div>
       )}
 
-      {/* =============== COMPARE RESULTS =============== */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• COMPARE RESULTS â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       {compareResults && (
         <div className="space-y-5">
           <div className={`${c.card} rounded-xl shadow-lg p-4 flex items-center justify-between flex-wrap gap-3`}>
             <span className={`text-sm font-semibold ${c.text}`}>Comparison: {compareNames.filter(n => n.trim()).join(' vs ')}</span>
             <div className="flex items-center gap-2">
-              <CopyBtn content={buildCompareText()} field="full-compare" label="Copy All" />
-              <button onClick={handleComparePrint} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
-                🖨️ Print
+              <CopyBtn content={`NAMEAUDIT COMPARISON: ${compareNames.filter(n => n.trim()).join(' vs ')}\nWinner: ${compareResults.winner?.name} (${compareResults.winner?.margin?.replace(/_/g, ' ')})\n${compareResults.winner?.why}\n\nInsight: ${compareResults.comparison_insight || ''}\n———\nGenerated by DeftBrain · deftbrain.com`} field="compare-all" label="Copy" />
+              <button onClick={handleShare} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
+                <Share2 className="w-3.5 h-3.5" /> Share
               </button>
               <button onClick={reset} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-50 text-cyan-700'}`}>
-                🔄 New Analysis
+                <RefreshCw className="w-3.5 h-3.5" /> New Analysis
               </button>
             </div>
           </div>
@@ -518,7 +335,7 @@ const NameAudit = () => {
           {compareResults.winner && (
             <div className={`${c.card} rounded-xl shadow-lg p-6 border-l-4 ${isDark ? 'border-amber-500' : 'border-amber-400'}`}>
               <div className="flex items-center gap-3 mb-3">
-                <span className="text-xl">🏆</span>
+                <Trophy className={`w-6 h-6 ${isDark ? 'text-amber-400' : 'text-amber-500'}`} />
                 <h3 className={`text-xl font-bold ${c.text}`}>{compareResults.winner.name}</h3>
                 <span className={`px-2 py-0.5 text-xs font-bold rounded-full ${c.warning} border`}>{compareResults.winner.margin.replace(/_/g, ' ')}</span>
               </div>
@@ -548,9 +365,6 @@ const NameAudit = () => {
                       <span className={`px-2 py-0.5 rounded text-xs border ${c.chip(false)}`}>Memorability: {cand.memorability}</span>
                       <span className={`px-2 py-0.5 rounded text-xs border ${cand.radio_test === 'pass' ? c.success : cand.radio_test === 'fail' ? c.danger : c.warning}`}>Radio: {cand.radio_test}</span>
                       <span className={`px-2 py-0.5 rounded text-xs border ${cand.global_safety === 'clean' ? c.success : cand.global_safety === 'problem' ? c.danger : c.warning}`}>Global: {cand.global_safety}</span>
-                      {cand.tld_risk && (
-                        <span className={`px-2 py-0.5 rounded text-xs border ${cand.tld_risk === 'low' ? c.success : cand.tld_risk === 'high' ? c.danger : c.warning}`}>TLD Risk: {cand.tld_risk}</span>
-                      )}
                     </div>
                     <p className={`text-xs ${c.textMuted} italic`}>Personality: {cand.personality}</p>
                   </div>
@@ -567,7 +381,7 @@ const NameAudit = () => {
         </div>
       )}
 
-      {/* =============== ANALYSIS RESULTS =============== */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• ANALYSIS RESULTS â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       {results && (
         <div className="space-y-5">
 
@@ -577,10 +391,13 @@ const NameAudit = () => {
             <div className="flex items-center gap-2">
               <CopyBtn content={buildFullText()} field="full-analysis" label="Copy All" />
               <button onClick={handlePrint} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
-                🖨️ Print
+                <Printer className="w-3.5 h-3.5" /> Print
+              </button>
+              <button onClick={handleShare} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
+                <Share2 className="w-3.5 h-3.5" /> Share
               </button>
               <button onClick={reset} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-50 text-cyan-700'}`}>
-                🔄 New Analysis
+                <RefreshCw className="w-3.5 h-3.5" /> New Analysis
               </button>
             </div>
           </div>
@@ -605,27 +422,27 @@ const NameAudit = () => {
             {results.strengths?.length > 0 && (
               <div className={`p-5 rounded-xl ${c.success} border`}>
                 <p className="text-xs font-bold mb-2">STRENGTHS</p>
-                {results.strengths.map((s, i) => <p key={i} className="text-sm mb-1">✓ {s}</p>)}
+                {results.strengths.map((s, i) => <p key={i} className="text-sm mb-1">âœ“ {s}</p>)}
               </div>
             )}
             {results.weaknesses?.length > 0 && (
               <div className={`p-5 rounded-xl ${c.warning} border`}>
                 <p className="text-xs font-bold mb-2">WEAKNESSES</p>
-                {results.weaknesses.map((w, i) => <p key={i} className="text-sm mb-1">⚠ {w}</p>)}
+                {results.weaknesses.map((w, i) => <p key={i} className="text-sm mb-1">âš  {w}</p>)}
               </div>
             )}
           </div>
 
           {results.deal_breakers?.length > 0 && (
             <div className={`p-5 rounded-xl ${c.danger} border`}>
-              <p className="text-xs font-bold mb-2">🚨 DEAL BREAKERS</p>
+              <p className="text-xs font-bold mb-2">ðŸš¨ DEAL BREAKERS</p>
               {results.deal_breakers.map((d, i) => <p key={i} className="text-sm mb-1 font-medium">{d}</p>)}
             </div>
           )}
 
           {/* First Impression */}
           {results.first_impression && (
-            <Section id="impression" title="First Impression" emoji="👁️" defaultOpen>
+            <Section id="impression" title="First Impression" icon={Eye} iconColor={isDark ? 'text-violet-400' : 'text-violet-600'} defaultOpen>
               <div className="space-y-3">
                 <p className={`text-sm ${c.textSecondary}`}>{results.first_impression.gut_reaction}</p>
                 <div className="flex flex-wrap gap-1.5">
@@ -640,7 +457,7 @@ const NameAudit = () => {
 
           {/* Phonetic Profile */}
           {results.phonetic_profile && (
-            <Section id="phonetic" title="Phonetic Profile" emoji="👂">
+            <Section id="phonetic" title="Phonetic Profile" icon={Ear} iconColor={isDark ? 'text-cyan-400' : 'text-cyan-600'}>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {['syllables', 'mouth_feel', 'accent_notes', 'sound_psychology', 'rhythm'].map(key => (
                   results.phonetic_profile[key] && (
@@ -656,13 +473,13 @@ const NameAudit = () => {
 
           {/* Memorability */}
           {results.memorability && (
-            <Section id="memorability" title="Memorability Tests" emoji="⚡">
+            <Section id="memorability" title="Memorability Tests" icon={Zap} iconColor={isDark ? 'text-amber-400' : 'text-amber-600'}>
               <div className="space-y-3">
                 {[
                   { key: 'day_after_test', label: 'Day-After Test' },
                   { key: 'tell_a_friend_test', label: 'Tell-A-Friend Test' },
                   { key: 'phone_test', label: 'Phone Test' },
-                  { key: 'drunk_test', label: 'Drunk Test 🍺' },
+                  { key: 'drunk_test', label: 'Drunk Test ðŸº' },
                   { key: 'shout_test', label: 'Shout Test' },
                 ].map(({ key, label }) => results.memorability[key] && (
                   <div key={key} className="flex items-start gap-3">
@@ -676,7 +493,7 @@ const NameAudit = () => {
 
           {/* Radio Test */}
           {results.radio_test && (
-            <Section id="radio" title="Radio Test (Spell From Hearing)" emoji="📻">
+            <Section id="radio" title="Radio Test (Spell From Hearing)" icon={MessageSquare} iconColor={isDark ? 'text-pink-400' : 'text-pink-600'}>
               <div className="space-y-3">
                 <PassFail pass={results.radio_test.pass} notes={results.radio_test.notes} />
                 {results.radio_test.likely_misspellings?.length > 0 && (
@@ -695,7 +512,7 @@ const NameAudit = () => {
 
           {/* Visual Analysis */}
           {results.visual_analysis && (
-            <Section id="visual" title="Visual Analysis" emoji="🔤">
+            <Section id="visual" title="Visual Analysis" icon={Eye} iconColor={isDark ? 'text-purple-400' : 'text-purple-600'}>
               <div className="space-y-3">
                 <div className="flex flex-wrap gap-3 mb-3">
                   {[
@@ -722,58 +539,8 @@ const NameAudit = () => {
           )}
 
           {/* Global Language Scan */}
-
-          {/* TLD Analysis — only for domain names */}
-          {results.tld_analysis && (
-            <Section id="tld" title="TLD Analysis" emoji="🔗">
-              <div className="space-y-3">
-                {['tld_choice', 'trust_signal', 'confusion_risk', 'competing_com', 'alternative_tlds'].map(key => (
-                  results.tld_analysis[key] && (
-                    <div key={key} className={`p-3 rounded-lg ${key === 'confusion_risk' ? c.warning : key === 'competing_com' ? c.danger : c.cardAlt} ${(key === 'confusion_risk' || key === 'competing_com') ? 'border' : ''}`}>
-                      <p className={`text-xs font-bold ${c.textMuted} mb-1`}>{key.replace(/_/g, ' ').toUpperCase()}</p>
-                      <p className={`text-sm ${c.textSecondary}`}>{results.tld_analysis[key]}</p>
-                    </div>
-                  )
-                ))}
-              </div>
-            </Section>
-          )}
-
-          {/* Domain-Specific Tests — only for domain names */}
-          {results.domain_specific && (
-            <Section id="domainTests" title="Domain-Specific Tests" emoji="⌨️">
-              <div className="space-y-3">
-                {results.domain_specific.browser_bar_test && (
-                  <div className={`p-3 rounded-lg ${c.cardAlt}`}>
-                    <p className={`text-xs font-bold ${c.textMuted} mb-1`}>BROWSER BAR TEST</p>
-                    <p className={`text-sm font-mono ${c.text} mb-1`}>{results.domain_specific.browser_bar_test.appearance}</p>
-                    <p className={`text-sm ${c.textSecondary}`}>{results.domain_specific.browser_bar_test.assessment}</p>
-                  </div>
-                )}
-                {results.domain_specific.typosquat_risk && (
-                  <div className={`p-3 rounded-lg ${c.warning} border`}>
-                    <p className="text-xs font-bold mb-1">TYPOSQUATTING RISK</p>
-                    <p className="text-sm">{results.domain_specific.typosquat_risk}</p>
-                  </div>
-                )}
-                {results.domain_specific.verbal_sharing && (
-                  <div className={`p-3 rounded-lg ${c.cardAlt}`}>
-                    <p className={`text-xs font-bold ${c.textMuted} mb-1`}>VERBAL SHARING</p>
-                    <p className={`text-sm ${c.textSecondary}`}>{results.domain_specific.verbal_sharing}</p>
-                  </div>
-                )}
-                {results.domain_specific.email_test && (
-                  <div className={`p-3 rounded-lg ${c.cardAlt}`}>
-                    <p className={`text-xs font-bold ${c.textMuted} mb-1`}>EMAIL ADDRESS TEST</p>
-                    <p className={`text-sm ${c.textSecondary}`}>{results.domain_specific.email_test}</p>
-                  </div>
-                )}
-              </div>
-            </Section>
-          )}
-
           {results.global_language_scan?.length > 0 && (
-            <Section id="language" title={`Global Language Scan (${results.global_language_scan.length} languages)`} emoji="🌍">
+            <Section id="language" title={`Global Language Scan (${results.global_language_scan.length} languages)`} icon={Globe} iconColor={isDark ? 'text-green-400' : 'text-green-600'}>
               <div className="flex flex-wrap gap-2">
                 {results.global_language_scan.map((lang, idx) => (
                   <div key={idx} className={`px-3 py-2 rounded-lg border text-sm flex items-center gap-1.5 ${langSeverityStyle(lang.severity)}`}>
@@ -788,7 +555,7 @@ const NameAudit = () => {
 
           {/* Abbreviation Audit */}
           {results.abbreviation_audit && (
-            <Section id="abbreviation" title="Abbreviation & Nickname Audit" emoji="#️⃣">
+            <Section id="abbreviation" title="Abbreviation & Nickname Audit" icon={Hash} iconColor={isDark ? 'text-orange-400' : 'text-orange-600'}>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {['natural_shortening', 'initials', 'hashtag', 'issues'].map(key => (
                   results.abbreviation_audit[key] && (
@@ -804,12 +571,12 @@ const NameAudit = () => {
 
           {/* Competitive Landscape */}
           {results.competitive_landscape && (
-            <Section id="competitive" title="Competitive Landscape" emoji="🛡️">
+            <Section id="competitive" title="Competitive Landscape" icon={Shield} iconColor={isDark ? 'text-red-400' : 'text-red-600'}>
               <div className="space-y-3">
                 {results.competitive_landscape.similar_names?.length > 0 && (
                   <div className={`p-3 rounded-lg ${c.warning} border`}>
                     <p className="text-xs font-bold mb-1">SIMILAR EXISTING NAMES</p>
-                    {results.competitive_landscape.similar_names.map((n, i) => <p key={i} className="text-sm mb-0.5">• {n}</p>)}
+                    {results.competitive_landscape.similar_names.map((n, i) => <p key={i} className="text-sm mb-0.5">â€¢ {n}</p>)}
                   </div>
                 )}
                 <div className={`p-3 rounded-lg ${c.cardAlt}`}>
@@ -822,7 +589,7 @@ const NameAudit = () => {
 
           {/* SEO / Searchability */}
           {results.searchability && (
-            <Section id="seo" title="SEO & Searchability" emoji="🔍">
+            <Section id="seo" title="SEO & Searchability" icon={Search} iconColor={isDark ? 'text-blue-400' : 'text-blue-600'}>
               <div className="space-y-3">
                 {['uniqueness', 'google_competition', 'seo_assessment'].map(key => (
                   results.searchability[key] && (
@@ -838,7 +605,7 @@ const NameAudit = () => {
 
           {/* Longevity */}
           {results.longevity && (
-            <Section id="longevity" title="Longevity Check" emoji="⏳">
+            <Section id="longevity" title="Longevity Check" icon={Clock} iconColor={isDark ? 'text-teal-400' : 'text-teal-600'}>
               <div className="space-y-3">
                 {['trend_dependency', 'aging_risk', 'verdict'].map(key => (
                   results.longevity[key] && (
@@ -854,7 +621,7 @@ const NameAudit = () => {
 
           {/* Emotional Resonance */}
           {results.emotional_resonance && (
-            <Section id="emotion" title="Emotional Resonance" emoji="💗">
+            <Section id="emotion" title="Emotional Resonance" icon={Heart} iconColor={isDark ? 'text-pink-400' : 'text-pink-600'}>
               <div className="space-y-3">
                 {results.emotional_resonance.personality_match && (
                   <p className={`text-sm ${c.textSecondary}`}>{results.emotional_resonance.personality_match}</p>
@@ -877,7 +644,7 @@ const NameAudit = () => {
 
           {/* Live Availability */}
           {results.live_availability && (
-            <Section id="availability" title="Live Availability" emoji="🌐">
+            <Section id="availability" title="Live Availability" icon={Globe} iconColor={isDark ? 'text-emerald-400' : 'text-emerald-600'}>
               <div className="space-y-3">
                 {results.live_availability.domains && (
                   <div>
@@ -889,7 +656,7 @@ const NameAudit = () => {
                           : status === 'taken' ? (isDark ? 'bg-red-900/20 border-red-800 text-red-400' : 'bg-red-50 border-red-200 text-red-500')
                           : (isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-400' : 'bg-gray-100 border-gray-200 text-gray-400')
                         }`}>
-                          {domain} {status === 'likely_available' ? '✓' : status === 'taken' ? '✗' : '?'}
+                          {domain} {status === 'likely_available' ? 'âœ“' : status === 'taken' ? 'âœ—' : '?'}
                         </span>
                       ))}
                     </div>
@@ -905,7 +672,7 @@ const NameAudit = () => {
                           : status === 'likely_taken' ? (isDark ? 'bg-red-900/20 border-red-800 text-red-400' : 'bg-red-50 border-red-200 text-red-500')
                           : (isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-400' : 'bg-gray-100 border-gray-200 text-gray-400')
                         }`}>
-                          {platform} {status === 'likely_available' ? '✓' : status === 'likely_taken' ? '✗' : '?'}
+                          {platform} {status === 'likely_available' ? 'âœ“' : status === 'likely_taken' ? 'âœ—' : '?'}
                         </span>
                       ))}
                     </div>
@@ -919,7 +686,7 @@ const NameAudit = () => {
           {results.suggestions && (
             <div className={`${c.card} rounded-xl shadow-lg p-6`}>
               <h3 className={`font-bold ${c.text} mb-3 flex items-center gap-2`}>
-                ➡️ Next Steps
+                <ArrowRight className={`w-5 h-5 ${isDark ? 'text-cyan-400' : 'text-cyan-600'}`} /> Next Steps
               </h3>
               {results.suggestions.to_strengthen && (
                 <div className={`p-3 rounded-lg ${c.success} border mb-3`}>
@@ -944,7 +711,7 @@ const NameAudit = () => {
           {/* Disclaimer */}
           <div className={`p-4 rounded-xl text-center ${isDark ? 'bg-zinc-800/50' : 'bg-gray-50'}`}>
             <p className={`text-xs ${c.textMuted}`}>
-              🔍 Domain and social availability checks are approximations. Language analysis is AI-generated — verify critical findings with native speakers. Trademark analysis is informational, not legal advice.
+              ðŸ” Domain and social availability checks are approximations. Language analysis is AI-generated â€” verify critical findings with native speakers. Trademark analysis is informational, not legal advice.
             </p>
           </div>
         </div>

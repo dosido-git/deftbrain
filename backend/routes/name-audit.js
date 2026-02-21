@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const dns = require('dns').promises;
-const { anthropic, cleanJsonResponse } = require('../lib/claude');
+const { anthropic, safeParseJSON, callClaudeWithRetry, withLanguage } = require('../lib/claude');
 
 // ═══════════════════════════════════════════════════
 // HELPER: Check domain availability via DNS
@@ -60,310 +60,8 @@ async function checkSocials(name) {
 }
 
 // ═══════════════════════════════════════════════════
-// HELPER: Web search for competitive landscape
+// ROUTE 1: FULL NAME ANALYSIS
 // ═══════════════════════════════════════════════════
-async function searchExisting(name) {
-  try {
-    const response = await fetch(`https://www.google.com/search?q=%22${encodeURIComponent(name)}%22+brand+OR+company+OR+product`, {
-      method: 'GET',
-      headers: { 'User-Agent': 'Mozilla/5.0' },
-      signal: AbortSignal.timeout(5000),
-    });
-    if (response.ok) {
-      const html = await response.text();
-      // Simple check: does the name appear in significant contexts?
-      const count = (html.match(new RegExp(name, 'gi')) || []).length;
-      return { mentions: count, searched: true };
-    }
-    return { mentions: 0, searched: false };
-  } catch {
-    return { mentions: 0, searched: false };
-  }
-}
-
-// ═══════════════════════════════════════════════════
-// HELPER: Domain checks for Domain Name mode
-// ═══════════════════════════════════════════════════
-async function checkDomainsForDomainMode(fullDomain) {
-  // Parse: "deft.now" → namepart="deft", tld=".now"
-  const lastDot = fullDomain.lastIndexOf('.');
-  if (lastDot <= 0) return checkDomains(fullDomain); // fallback if no dot
-  const namePart = fullDomain.substring(0, lastDot).toLowerCase().replace(/[^a-z0-9]/g, '');
-  const userTld = fullDomain.substring(lastDot).toLowerCase();
-  
-  // Check: the exact domain, plus the name part with common TLDs (for competing risk analysis)
-  const competingTlds = ['.com', '.co', '.io', '.app', '.net', '.org', '.me', '.now', '.tips', '.guide'];
-  const tldsToCheck = [...new Set([userTld, ...competingTlds])];
-  const results = {};
-
-  await Promise.all(tldsToCheck.map(async (tld) => {
-    const domain = namePart + tld;
-    try {
-      await dns.resolve(domain);
-      results[domain] = 'taken';
-    } catch (err) {
-      if (err.code === 'ENOTFOUND' || err.code === 'ENODATA') {
-        results[domain] = 'likely_available';
-      } else {
-        results[domain] = 'unknown';
-      }
-    }
-  }));
-
-  return results;
-}
-
-// ═══════════════════════════════════════════════════
-// HELPER: Build domain-specific analysis prompt
-// ═══════════════════════════════════════════════════
-function buildDomainPrompt(name, industry, targetAudience) {
-  // Parse domain parts for the prompt
-  const lastDot = name.lastIndexOf('.');
-  const namePart = lastDot > 0 ? name.substring(0, lastDot) : name;
-  const tld = lastDot > 0 ? name.substring(lastDot + 1) : '';
-
-  return `You are a world-class domain name consultant who combines linguistics, brand psychology, UX, web marketing strategy, and cultural anthropology. A client is considering a DOMAIN NAME and needs a thorough, honest evaluation.
-
-═══════════════════════════════════════════════
-THE DOMAIN TO ANALYZE
-═══════════════════════════════════════════════
-
-FULL DOMAIN: "${name}"
-NAME PART (before the dot): "${namePart}"
-TLD (after the dot): ".${tld}"
-INDUSTRY / CONTEXT: ${industry || 'Not specified'}
-TARGET AUDIENCE: ${targetAudience || 'Not specified'}
-
-═══════════════════════════════════════════════
-DOMAIN-SPECIFIC ANALYSIS FRAMEWORK
-═══════════════════════════════════════════════
-
-CRITICAL FRAMING: This is a DOMAIN NAME, not just a brand name. The dot is structural — it separates the name part from the top-level domain. Analyze accordingly. When someone says "deft.now" aloud, they say "deft dot now." When they type it, they type it in a browser bar. Every test must account for this.
-
-1. FIRST IMPRESSION
-What does someone think when they see "${name}" as a web address? Does it look professional, clever, confusing? Does the TLD complement or undermine the name part? Does the combination read as a phrase, a command, a statement, or just a random pairing?
-
-2. PHONETIC PROFILE
-- How does "${namePart} dot ${tld}" sound spoken aloud?
-- Is the "dot" transition smooth or awkward between those specific sounds?
-- Syllable count of the FULL spoken form (including "dot")
-- How does it sound in different accents? Do non-native English speakers handle both parts easily?
-- Does the name part alone carry the brand, or is the TLD essential to the meaning?
-
-3. MEMORABILITY TESTS (DOMAIN-SPECIFIC VERSIONS)
-- Day-After Test: If someone saw this URL once on a slide, would they remember the full domain tomorrow — including the correct TLD?
-- Tell-A-Friend Test: "You should check out ${name}" — would the friend type it correctly? Or would they try .com instead?
-- Phone Test: Can you say "go to ${name}" on a phone call without confusion? Do you have to say "that's dot-${tld}, not dot-com"?
-- Drunk Test: After 3 drinks, could someone type this into a browser and land on the right site?
-- Shout Test: Could someone shout "check out ${name}!" at a conference and have people find it?
-
-4. RADIO TEST (DOMAIN-CRITICAL)
-If someone HEARD "go to ${namePart} dot ${tld}" on a podcast or radio ad, what would they type? This is the single most important test for a domain name. Consider:
-- Would they spell the name part correctly?
-- Would they type the correct TLD or default to .com?
-- What are the likely wrong URLs they'd end up at?
-- How many times would you need to repeat/spell it?
-
-5. VISUAL ANALYSIS (BROWSER BAR FOCUS)
-- How does "${name}" look in a browser address bar?
-- How does it look as a link in an email or text message?
-- Does the name part run into the dot confusingly? (e.g., "sell.it" vs "se.ll.it" confusion)
-- Any letter combinations that could be misread at small sizes?
-- How would it look on a business card?
-- Logo/wordmark potential — does the dot add visual interest or clutter?
-
-6. TLD ANALYSIS (DOMAIN-SPECIFIC SECTION)
-- Is .${tld} a well-known, trusted TLD? Or niche/novel?
-- What trust signal does .${tld} send? (e.g., .com = established, .app = tech-forward, .now = urgency, .me = personal)
-- TLD confusion risk: Will people instinctively type .com instead?
-- Does the TLD add meaning to the name part? (e.g., "fix.now" reads as a sentence — the TLD IS part of the name)
-- Who owns ${namePart}.com? Is it a competitor, a parked page, or available?
-- What other TLDs would work with "${namePart}" and how do they compare?
-
-7. GLOBAL LANGUAGE SCAN
-Check the NAME PART ("${namePart}") against these languages and report ANY meanings, associations, or sounds-like matches:
-- Spanish, Portuguese, French, Italian, German, Dutch
-- Mandarin Chinese, Japanese, Korean
-- Arabic, Hindi, Urdu
-- Russian, Polish
-- Turkish, Swahili, Thai, Vietnamese
-Also consider: Does the FULL domain "${name}" resemble any word or phrase in another language? Does ".${tld}" have meaning in other languages?
-
-8. ABBREVIATION & NICKNAME AUDIT
-- What will people call this site conversationally? ("Check out ${namePart}" or "go to ${name}"?)
-- How does it hashtag? #${namePart.replace(/[^a-zA-Z0-9]/g, '')} — clean?
-- What do people type in text messages when sharing the URL?
-- If the company behind this domain gets big, what's the shorthand?
-
-9. COMPETITIVE LANDSCAPE
-- Are there existing sites with similar domains?
-- How crowded is the TLD .${tld} namespace?
-- Would someone searching for this site accidentally end up at a competitor?
-
-10. SEO / SEARCHABILITY
-- Does "${namePart}" as a search term face strong competition from dictionary words or established brands?
-- Will people search for the brand name or type the domain directly?
-- Does .${tld} have any SEO implications (Google treats all TLDs roughly equally, but user behavior differs)?
-
-11. DOMAIN-SPECIFIC TESTS
-- Browser bar test: When someone types "${name}" in a browser, is there any autocomplete interference or confusion?
-- Typosquatting risk: What are the most likely typos? (adjacent keys, doubled letters, wrong TLD)
-- Verbal sharing: Rate how easy it is to share this domain in conversation on a scale of effortless/easy/moderate/difficult/painful
-- Email test: How does "hello@${name}" look and sound? Professional, quirky, confusing?
-
-12. LONGEVITY CHECK
-- Is the .${tld} TLD likely to remain active and supported in 10 years?
-- Is the name part tied to trends that will date it?
-- Could this domain still be the company's primary address in 2035?
-
-13. EMOTIONAL RESONANCE
-- What personality does the FULL domain project?
-- Does the TLD choice send a signal about the company? (innovative? scrappy? established?)
-- If this website were a physical store, what would it look like?
-
-14. OVERALL VERDICT
-- Strengths (things this domain does well)
-- Weaknesses (things that concern you)
-- Deal-breakers (if any)
-- Final recommendation: STRONG / GOOD / FAIR / WEAK / RECONSIDER
-- Brief, honest summary — lead with the most important thing
-
-═══════════════════════════════════════════════
-OUTPUT FORMAT — Return ONLY valid JSON
-═══════════════════════════════════════════════
-
-{
-  "name_analyzed": "${name}",
-
-  "overall_grade": "STRONG | GOOD | FAIR | WEAK | RECONSIDER",
-
-  "overall_summary": "A 2-3 sentence honest verdict about this domain. Lead with the most important thing.",
-
-  "first_impression": {
-    "gut_reaction": "What someone thinks seeing this URL for the first time",
-    "associations": ["3-5 immediate associations"],
-    "personality_projected": "What personality this domain projects"
-  },
-
-  "phonetic_profile": {
-    "syllables": "Full spoken form syllable count (e.g., 'deft-dot-now — 3 syllables')",
-    "mouth_feel": "How '${namePart} dot ${tld}' physically feels to say",
-    "accent_notes": "How it sounds across accents — any issues?",
-    "sound_psychology": "What the specific sounds convey",
-    "rhythm": "Musical quality of the full spoken domain"
-  },
-
-  "memorability": {
-    "day_after_test": { "pass": true, "notes": "Would they remember the FULL domain including TLD?" },
-    "tell_a_friend_test": { "pass": true, "notes": "Would the friend type the correct TLD?" },
-    "phone_test": { "pass": true, "notes": "Can you say 'go to ${name}' without confusion?" },
-    "drunk_test": { "pass": true, "notes": "Could they type the full domain correctly?" },
-    "shout_test": { "pass": true, "notes": "Could someone shout this URL at a conference?" }
-  },
-
-  "radio_test": {
-    "pass": true,
-    "likely_misspellings": ["Wrong URLs people would type after hearing it aloud"],
-    "notes": "Assessment — would they get the name AND the TLD right?"
-  },
-
-  "visual_analysis": {
-    "lowercase": "How it looks: ${name}",
-    "uppercase": "How it looks: ${name.toUpperCase()}",
-    "title_case": "How it looks in title case",
-    "url_appearance": "How it reads in a browser address bar",
-    "logo_potential": "Assessment of the domain as a wordmark (with or without the dot)",
-    "visual_issues": "Any problematic letter combinations or dot-adjacency issues, or 'None'"
-  },
-
-  "tld_analysis": {
-    "tld_choice": "Assessment of .${tld} as a TLD — is it well-known? Trusted? Novel?",
-    "trust_signal": "What trust/credibility signal does .${tld} send to users?",
-    "confusion_risk": "How likely are people to type .com instead of .${tld}?",
-    "competing_com": "Who owns ${namePart}.com? Is this a risk?",
-    "alternative_tlds": "What other TLDs would work with '${namePart}' and how do they compare?"
-  },
-
-  "domain_specific": {
-    "browser_bar_test": {
-      "appearance": "${name}",
-      "assessment": "How it looks and behaves in a real browser address bar"
-    },
-    "typosquat_risk": "Most likely typos and their consequences",
-    "verbal_sharing": "Rate: effortless/easy/moderate/difficult/painful — with explanation",
-    "email_test": "How 'hello@${name}' looks and sounds"
-  },
-
-  "global_language_scan": [
-    {
-      "language": "Language name",
-      "finding": "What the name part or full domain means/sounds like",
-      "severity": "positive | neutral | caution | problem"
-    }
-  ],
-
-  "abbreviation_audit": {
-    "natural_shortening": "What people will call this site conversationally",
-    "initials": "What the initials spell (if applicable)",
-    "hashtag": "How the name hashtags",
-    "issues": "Any problems found, or 'Clean'"
-  },
-
-  "competitive_landscape": {
-    "similar_names": ["Existing sites or brands with similar domains"],
-    "crowdedness": "How crowded this naming space is",
-    "differentiation": "How well this domain stands apart"
-  },
-
-  "searchability": {
-    "uniqueness": "Is the name part a unique term or does it fight dictionary words?",
-    "google_competition": "What dominates search results for the name part",
-    "seo_assessment": "Overall SEO outlook for this domain"
-  },
-
-  "longevity": {
-    "trend_dependency": "Is this tied to a passing trend?",
-    "aging_risk": "Will the TLD or name feel dated?",
-    "verdict": "Assessment of 10-year staying power"
-  },
-
-  "emotional_resonance": {
-    "personality_match": "Does this domain's personality match the intended use?",
-    "sensory_associations": "Colors, textures, environments it evokes",
-    "if_it_were_a_person": "Describe this domain as a human personality"
-  },
-
-  "strengths": ["Specific things this domain does well"],
-
-  "weaknesses": ["Specific concerns or issues"],
-
-  "deal_breakers": ["Serious problems that should give pause, or empty array if none"],
-
-  "suggestions": {
-    "to_strengthen": "If keeping this domain, what could mitigate the weaknesses",
-    "alternatives_direction": "If reconsidering, what direction to explore"
-  }
-}
-
-═══════════════════════════════════════════════
-CRITICAL RULES
-═══════════════════════════════════════════════
-
-1. THIS IS A DOMAIN, NOT JUST A NAME: Every assessment must consider the dot, the TLD, and how people interact with URLs. The Radio Test and Phone Test are 10x more important for domains than for brand names.
-
-2. TLD HONESTY: If .${tld} is obscure and people will default to .com, say so clearly. The TLD choice can make or break a domain — don't downplay confusion risk.
-
-3. THE .COM QUESTION: Always address who owns ${namePart}.com and what the risk is. This is often the #1 concern for domain buyers.
-
-4. HONESTY OVER KINDNESS: The client needs truth. If this domain has problems, say so clearly. But be constructive.
-
-5. SPECIFICITY: Back every claim with concrete reasoning about how people actually interact with URLs, browser bars, search engines, and verbal recommendations.
-
-6. LANGUAGE CHECKS: Be thorough on the name part. A domain is global by definition.
-
-7. Return ONLY the JSON object. No markdown, no preamble.`;
-}
-
 router.post('/nameaudit', async (req, res) => {
   try {
     const {
@@ -371,6 +69,7 @@ router.post('/nameaudit', async (req, res) => {
       context,
       industry,
       targetAudience,
+      userLanguage,
     } = req.body;
 
     if (!name || !name.trim()) {
@@ -381,15 +80,17 @@ router.post('/nameaudit', async (req, res) => {
     }
 
     // Run live checks in parallel with AI analysis
-    const isDomainMode = context === 'Domain Name';
-    const showDomainChecks = isDomainMode || ['Business', 'Product', 'Band / Music Project', 'Creative Project', 'App', 'Event'].includes(context);
+    const showDomainChecks = ['Business', 'Product', 'Band / Music Project', 'Creative Project', 'App', 'Event'].includes(context);
+
+    // Current date for time-sensitive assessments
+    const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
     const [aiAnalysis, domainResults, socialResults] = await Promise.all([
-      // AI Analysis
+      // AI Analysis (with retry)
       (async () => {
-        const prompt = isDomainMode
-          ? buildDomainPrompt(name, industry, targetAudience)
-          : `You are a world-class naming consultant who combines linguistics, brand psychology, cultural anthropology, and marketing strategy. A client is asking you to evaluate a name they're considering. Give them the most thorough, honest analysis possible.
+        const prompt = `You are a world-class naming consultant who combines linguistics, brand psychology, cultural anthropology, and marketing strategy. A client is asking you to evaluate a name they're considering. Give them the most thorough, honest analysis possible.
+
+TODAY'S DATE: ${today}
 
 ═══════════════════════════════════════════════
 THE NAME TO ANALYZE
@@ -463,7 +164,7 @@ Flag anything problematic, funny, or actually beneficial (positive meaning in an
 10. LONGEVITY CHECK
 - Is this name tied to a current trend that will feel dated in 5 years?
 - Does it reference technology, slang, or cultural moments that will age?
-- Would this name still feel right in 2035?
+- Would this name still feel right in ${new Date().getFullYear() + 10}?
 
 11. EMOTIONAL RESONANCE
 - What personality does this name project? (authoritative, playful, premium, scrappy, etc.)
@@ -595,22 +296,21 @@ CRITICAL RULES
 
         console.log(`[NameAudit] Analyzing: "${name}" for ${context}`);
 
-        const message = await anthropic.messages.create({
+        const aiResult = await callClaudeWithRetry({
           model: 'claude-sonnet-4-20250514',
           max_tokens: 6000,
+          system: withLanguage('You are a world-class naming consultant. Return ONLY valid JSON.', userLanguage),
           messages: [{ role: 'user', content: prompt }],
-        });
+        }, { parseJSON: true });
 
-        const textContent = message.content.find(item => item.type === 'text')?.text || '';
-        const cleaned = cleanJsonResponse(textContent);
-        return JSON.parse(cleaned);
+        return aiResult;
       })(),
 
-      // Domain checks (parallel) — use domain-specific checker in domain mode
-      showDomainChecks ? (isDomainMode ? checkDomainsForDomainMode(name) : checkDomains(name)) : null,
+      // Domain checks (parallel)
+      showDomainChecks ? checkDomains(name) : null,
 
-      // Social checks (parallel) — for domain mode, use the name part before the dot
-      showDomainChecks ? checkSocials(isDomainMode && name.includes('.') ? name.substring(0, name.lastIndexOf('.')) : name) : null,
+      // Social checks (parallel)
+      showDomainChecks ? checkSocials(name) : null,
     ]);
 
     // Merge live availability data into the AI analysis
@@ -636,7 +336,7 @@ CRITICAL RULES
 // ═══════════════════════════════════════════════════
 router.post('/nameaudit/compare', async (req, res) => {
   try {
-    const { names, context, industry } = req.body;
+    const { names, context, industry, userLanguage } = req.body;
 
     if (!names || names.length < 2) {
       return res.status(400).json({ error: 'At least 2 names required for comparison' });
@@ -645,16 +345,11 @@ router.post('/nameaudit/compare', async (req, res) => {
       return res.status(400).json({ error: 'Maximum 4 names for comparison' });
     }
 
-    const isDomainMode = context === 'Domain Name';
-    const domainPreamble = isDomainMode
-      ? `\n\nCRITICAL: These are DOMAIN NAMES, not just brand names. The dot separates the name part from the TLD. Evaluate each as a URL people will type in browsers, share verbally, and see on business cards. The Radio Test (can someone hear it on a podcast and type the correct URL, including TLD?) is the single most important differentiator. Also assess TLD trust, .com competition risk, and typosquatting vulnerability for each.\n`
-      : '';
-
-    const prompt = `You are a world-class naming consultant. A client is torn between ${names.length} ${isDomainMode ? 'domain name' : 'name'} candidates and needs a clear comparison.
+    const prompt = `You are a world-class naming consultant. A client is torn between ${names.length} name candidates and needs a clear comparison.
 
 NAMES TO COMPARE: ${names.map((n, i) => `${i + 1}. "${n}"`).join(', ')}
 WHAT IT'S FOR: ${context || 'Not specified'}
-INDUSTRY: ${industry || 'Not specified'}${domainPreamble}
+INDUSTRY: ${industry || 'Not specified'}
 
 For each name, give a quick assessment across the key dimensions. Then declare a winner with clear reasoning.
 
@@ -671,7 +366,6 @@ Return ONLY this JSON:
       "memorability": "high | medium | low",
       "radio_test": "pass | partial | fail",
       "global_safety": "clean | caution | problem",
-      "tld_risk": "low | medium | high (only if comparing domain names, otherwise omit)",
       "personality": "2-3 word personality summary"
     }
   ],
@@ -689,15 +383,12 @@ Be honest and decisive. The client needs clarity, not diplomacy. Return ONLY JSO
 
     console.log(`[NameAudit/Compare] Comparing: ${names.join(' vs ')}`);
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 3000,
+      system: withLanguage('You are a world-class naming consultant. Return ONLY valid JSON.', userLanguage),
       messages: [{ role: 'user', content: prompt }],
-    });
-
-    const textContent = message.content.find(item => item.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(textContent);
-    const parsed = JSON.parse(cleaned);
+    }, { parseJSON: true });
 
     console.log(`[NameAudit/Compare] Winner: ${parsed.winner?.name} (${parsed.winner?.margin})`);
     res.json(parsed);
