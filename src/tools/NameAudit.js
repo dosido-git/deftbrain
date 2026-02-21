@@ -675,7 +675,7 @@ const NameAudit = () => {
             </Section>
           )}
 
-          {/* Emotional Resonance */
+          {/* Emotional Resonance */}
           {results.emotional_resonance && (
             <Section id="emotion" title="Emotional Resonance" icon={Heart} iconColor={isDark ? 'text-pink-400' : 'text-pink-600'}>
               <div className="space-y-3">
