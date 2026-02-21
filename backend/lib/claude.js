@@ -1,5 +1,7 @@
 // backend/lib/claude.js
 // Shared Anthropic client and utility functions for all route handlers
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 
 const Anthropic = require('@anthropic-ai/sdk');
 
