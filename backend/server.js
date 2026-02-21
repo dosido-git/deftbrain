@@ -17,6 +17,16 @@ app.use(cors(
     ? { origin: ['https://deftbrain.com', 'https://www.deftbrain.com'] }
     : {}
 ));
+// ── Force HTTPS in production ──
+if (process.env.NODE_ENV === 'production') {
+  app.use((req, res, next) => {
+    if (req.headers['x-forwarded-proto'] !== 'https') {
+      return res.redirect(301, `https://${req.hostname}${req.url}`);
+    }
+    next();
+  });
+}
+
 app.use(express.json({ limit: '50mb' }));
 
 // ── HTTPS redirect (production) ──
