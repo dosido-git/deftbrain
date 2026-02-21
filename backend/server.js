@@ -9,10 +9,36 @@ const { rateLimit, DEFAULT_LIMITS, DIVERSION_LIMITS } = require('./lib/rateLimit
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 
 // ── Middleware ──
-app.use(cors());
+app.use(cors(
+  IS_PRODUCTION
+    ? { origin: ['https://deftbrain.com', 'https://www.deftbrain.com'] }
+    : {}
+));
 app.use(express.json({ limit: '50mb' }));
+
+// ── HTTPS redirect (production) ──
+if (IS_PRODUCTION) {
+  app.use((req, res, next) => {
+    if (req.headers['x-forwarded-proto'] !== 'https') {
+      return res.redirect(301, `https://${req.hostname}${req.url}`);
+    }
+    next();
+  });
+}
+
+// ── Security headers (production) ──
+if (IS_PRODUCTION) {
+  app.use((req, res, next) => {
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-Frame-Options', 'DENY');
+    res.setHeader('X-XSS-Protection', '1; mode=block');
+    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+    next();
+  });
+}
 
 // ── Rate limiting ──
 // Apply default rate limit to all API POST routes (the ones that call Claude)
@@ -25,9 +51,7 @@ app.use('/api', (req, res, next) => {
 // ── Startup diagnostics ──
 console.log('📁 Current directory:', __dirname);
 console.log('🔑 API Key loaded:', process.env.ANTHROPIC_API_KEY ? 'YES ✓' : 'NO ✗');
-if (process.env.ANTHROPIC_API_KEY) {
-  console.log('🔑 API Key starts with:', process.env.ANTHROPIC_API_KEY.substring(0, 20) + '...');
-}
+console.log('🌍 Environment:', IS_PRODUCTION ? 'PRODUCTION' : 'DEVELOPMENT');
 
 // ── Quick health-check / test endpoint ──
 app.get('/api/test', async (req, res) => {
@@ -52,13 +76,11 @@ app.get('/api/endpoints', (req, res) => {
   const routeList = [];
   app._router.stack.forEach(middleware => {
     if (middleware.route) {
-      // Direct routes on app
       routeList.push({
         method: Object.keys(middleware.route.methods)[0].toUpperCase(),
         path: middleware.route.path,
       });
     } else if (middleware.name === 'router' && middleware.handle.stack) {
-      // Mounted routers
       middleware.handle.stack.forEach(handler => {
         if (handler.route) {
           routeList.push({
@@ -71,6 +93,14 @@ app.get('/api/endpoints', (req, res) => {
   });
   res.json({ endpoints: routeList, count: routeList.length });
 });
+
+// ── Serve React build (production) ──
+if (IS_PRODUCTION) {
+  app.use(express.static(path.join(__dirname, '..', 'build')));
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'build', 'index.html'));
+  });
+}
 
 // ── Global error handler ──
 app.use((err, req, res, next) => {

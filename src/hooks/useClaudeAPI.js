@@ -1,8 +1,6 @@
 import { useState, useMemo } from 'react';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3001';
-
-console.log('Backend URL:', BACKEND_URL); // Add this temporarily to debug
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || '';
 
 // Detect user's preferred language from browser
 function detectLanguage() {
