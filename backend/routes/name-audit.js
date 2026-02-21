@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const dns = require('dns').promises;
-const { anthropic, safeParseJSON, callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { anthropic, cleanJsonResponse, callClaudeWithRetry, withLanguage } = require('../lib/claude');
 
 // ═══════════════════════════════════════════════════
 // HELPER: Check domain availability via DNS
@@ -80,16 +80,17 @@ router.post('/nameaudit', async (req, res) => {
     }
 
     // Run live checks in parallel with AI analysis
-    const showDomainChecks = ['Business', 'Product', 'Band / Music Project', 'Creative Project', 'App', 'Event'].includes(context);
-
-    // Current date for time-sensitive assessments
-    const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    const showDomainChecks = ['Business', 'Product', 'Band / Music Project', 'Creative Project', 'App', 'Event', 'Domain Name'].includes(context);
 
     const [aiAnalysis, domainResults, socialResults] = await Promise.all([
-      // AI Analysis (with retry)
+      // AI Analysis
       (async () => {
-        const prompt = `You are a world-class naming consultant who combines linguistics, brand psychology, cultural anthropology, and marketing strategy. A client is asking you to evaluate a name they're considering. Give them the most thorough, honest analysis possible.
+        const today = new Date().toISOString().split('T')[0];
+        const currentYear = new Date().getFullYear();
+        const langDirective = withLanguage(userLanguage);
 
+        const prompt = `You are a world-class naming consultant who combines linguistics, brand psychology, cultural anthropology, and marketing strategy. A client is asking you to evaluate a name they're considering. Give them the most thorough, honest analysis possible.
+${langDirective ? `\n${langDirective}` : ''}
 TODAY'S DATE: ${today}
 
 ═══════════════════════════════════════════════
@@ -164,7 +165,7 @@ Flag anything problematic, funny, or actually beneficial (positive meaning in an
 10. LONGEVITY CHECK
 - Is this name tied to a current trend that will feel dated in 5 years?
 - Does it reference technology, slang, or cultural moments that will age?
-- Would this name still feel right in ${new Date().getFullYear() + 10}?
+- Would this name still feel right in ${currentYear + 10}?
 
 11. EMOTIONAL RESONANCE
 - What personality does this name project? (authoritative, playful, premium, scrappy, etc.)
@@ -172,7 +173,20 @@ Flag anything problematic, funny, or actually beneficial (positive meaning in an
 - What colors, textures, or environments does this name evoke?
 - If this name were a person, how would you describe them?
 
-12. OVERALL VERDICT
+${showDomainChecks ? `12. TLD ANALYSIS (Domain Names)
+- TLD choice assessment — how does the chosen TLD affect perception?
+- Trust signal — what level of credibility does this TLD convey?
+- Confusion risk — will users default to a different TLD?
+- Competing .com — is the .com likely taken? How does that affect this domain?
+- Alternative TLDs — what other TLDs would work well with this name?
+
+13. DOMAIN-SPECIFIC TESTS
+- Browser bar test — how does the full URL look in a browser address bar?
+- Typosquatting risk — is this domain vulnerable to typosquatters?
+- Verbal sharing — how easy is it to tell someone this URL in conversation?
+- Email test — how does an email address at this domain look? (e.g., hello@name.com)` : ''}
+
+${showDomainChecks ? '14' : '12'}. OVERALL VERDICT
 - Clear list of strengths (things this name does well)
 - Clear list of weaknesses (things that concern you)
 - Deal-breakers (if any — problems serious enough to reconsider)
@@ -266,6 +280,21 @@ OUTPUT FORMAT — Return ONLY valid JSON
     "if_it_were_a_person": "Describe this name as a human personality"
   },
 
+  ${showDomainChecks ? `"tld_analysis": {
+    "tld_choice": "Assessment of the chosen TLD",
+    "trust_signal": "What credibility level this TLD conveys",
+    "confusion_risk": "Will users default to a different TLD?",
+    "competing_com": "Is the .com taken? How does that affect things?",
+    "alternative_tlds": "What other TLDs would work well"
+  },
+
+  "domain_specific_tests": {
+    "browser_bar": "How the full URL looks in a browser",
+    "typosquatting_risk": "Vulnerability to typosquatters",
+    "verbal_sharing": "How easy to share verbally",
+    "email_test": "How an email address looks at this domain"
+  },` : ''}
+
   "strengths": ["Specific things this name does well"],
 
   "weaknesses": ["Specific concerns or issues"],
@@ -296,14 +325,11 @@ CRITICAL RULES
 
         console.log(`[NameAudit] Analyzing: "${name}" for ${context}`);
 
-        const aiResult = await callClaudeWithRetry({
+        return await callClaudeWithRetry({
           model: 'claude-sonnet-4-20250514',
           max_tokens: 6000,
-          system: withLanguage('You are a world-class naming consultant. Return ONLY valid JSON.', userLanguage),
           messages: [{ role: 'user', content: prompt }],
-        }, { parseJSON: true });
-
-        return aiResult;
+        }, { label: 'NameAudit' });
       })(),
 
       // Domain checks (parallel)
@@ -386,9 +412,8 @@ Be honest and decisive. The client needs clarity, not diplomacy. Return ONLY JSO
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 3000,
-      system: withLanguage('You are a world-class naming consultant. Return ONLY valid JSON.', userLanguage),
       messages: [{ role: 'user', content: prompt }],
-    }, { parseJSON: true });
+    }, { label: 'NameAudit/Compare' });
 
     console.log(`[NameAudit/Compare] Winner: ${parsed.winner?.name} (${parsed.winner?.margin})`);
     res.json(parsed);
