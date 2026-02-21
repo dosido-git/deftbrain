@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Skull, Ghost, Plus, Trash2, Zap } from 'lucide-react';
-import { supabase } from '../supabaseClient';
+//import { supabase } from '../supabaseClient';
 
 const GradeGraveyard = ({ college }) => {
   const [deaths, setDeaths] = useState([]);
@@ -13,7 +13,7 @@ const GradeGraveyard = ({ college }) => {
     const fetchLocalGraveyard = async () => {
       if (!college) return; 
       
-      const { data } = await supabase
+{/*      const { data } = await supabase
         .from('grade_graveyard')
         .select('*')
         .eq('college', college.toLowerCase().trim()) 
@@ -22,7 +22,7 @@ const GradeGraveyard = ({ college }) => {
       if (data) setDeaths(data);
     };
     fetchLocalGraveyard();
-  }, [college]);
+  }, [college]);*/}
 
   // --- THE CALCULATION ENGINE ---
   const getHighMortalityCourse = () => {
@@ -77,7 +77,7 @@ const Headstone = ({ courseCode, professor, casualtyCount, causeOfDeath, difficu
   const buryGrade = async () => {
     if (!course || !cause || !college) return;
 
-    const { error } = await supabase
+ {/*   const { error } = await supabase
       .from('grade_graveyard')
       .insert([{ 
         course_code: course.toUpperCase(), 
@@ -93,7 +93,7 @@ const Headstone = ({ courseCode, professor, casualtyCount, causeOfDeath, difficu
   };
 
   return (
-    <div className="bg-slate-950 text-slate-200 p-6 rounded-[2.5rem] shadow-2xl space-y-8 min-h-[500px]">
+    <div className="bg-slate-950 text-slate-200 p-6 rounded-[2.5rem] shadow-2xl space-y-8 min-h-[500px]"> */}
       {/* HEADER */}
       <div className="text-center space-y-2">
         <div className="inline-block p-4 bg-slate-900 rounded-full border border-slate-800 animate-pulse">

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Search, Zap, Loader2, Globe } from 'lucide-react';
-import { supabase } from '../supabaseClient';
+//import { supabase } from '../supabaseClient';
 import { ICON_MAP } from '../constants/icons'; // Import the new icon map
 
 export default function ProfVibe({ college, setCollege }) {
@@ -17,7 +17,7 @@ export default function ProfVibe({ college, setCollege }) {
     return `${profSearch}-${college}-${dept}`.toLowerCase().trim().replace(/\s+/g, '-');
   };
 
-  useEffect(() => {
+ {/* useEffect(() => {
     const fetchVibes = async () => {
       if (!college || !profSearch) return;      
       
@@ -30,7 +30,7 @@ export default function ProfVibe({ college, setCollege }) {
 
       if (!error && data) setVibes(data);
       setLoading(false);
-    };
+    }; */}
 
     const debounce = setTimeout(fetchVibes, 500);
     return () => clearTimeout(debounce);
@@ -48,7 +48,7 @@ export default function ProfVibe({ college, setCollege }) {
     const text = newVibe.toLowerCase();
     const score = text.match(/(chill|easy|great|goat|clear)/) ? 1 : text.match(/(hard|tough|avoid|mean)/) ? -1 : 0;
 
-    const { error } = await supabase
+{/*    const { error } = await supabase
       .from('prof_vibes')
       .insert([{ 
         prof_id: getProfSlug(), 
@@ -60,7 +60,7 @@ export default function ProfVibe({ college, setCollege }) {
       setNewVibe("");
       setVibes([{ vibe_text: newVibe, sentiment: score }, ...vibes]);
     }
-  };
+  }; */}
 
   // AI AURA LOGIC using Twemoji shortcodes
   const avgSentiment = vibes.length > 0 
