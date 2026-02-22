@@ -1,6 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { anthropic, cleanJsonResponse, callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { rateLimit, CREATIVE_LIMITS } = require('../lib/rateLimiter');
+
+// Apply creative-tier rate limit
+router.use(rateLimit(CREATIVE_LIMITS, 'gratitude-debt-clearer:'));
 
 router.post('/gratitude-debt-clearer', async (req, res) => {
   try {
@@ -182,16 +186,10 @@ Generate 2-3 message versions with different approaches. Return ONLY valid JSON.
     }
 
     // Call Claude API
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+    const parsed = await callClaudeWithRetry(prompt, {
+      label: 'GratitudeDebtClearer',
       max_tokens: 2500,
-      messages: [{ role: 'user', content: prompt }]
     });
-
-    // Extract and parse response
-    const textContent = message.content.find(item => item.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(textContent);
-    const parsed = JSON.parse(cleaned);
 
     // Send response
     res.json(parsed);

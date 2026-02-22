@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Heart, Mail, Gift, Loader2, Copy, Send, RefreshCw, Plus, Minus, AlertCircle } from 'lucide-react';
+import { Heart, Mail, Gift, Loader2, Copy, Send, RefreshCw, Plus, Minus, AlertCircle, Sparkles, CheckCircle, ExternalLink } from 'lucide-react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 
@@ -67,20 +67,26 @@ const GratitudeDebtClearer = () => {
     cardAlt: isDark ? 'bg-zinc-700 border-zinc-600' : 'bg-emerald-50 border-emerald-200',
     
     input: isDark
-      ? 'bg-zinc-900 border-zinc-700 text-zinc-50 placeholder:text-zinc-500 focus:border-emerald-500 focus:ring-emerald-500/20'
-      : 'bg-white border-emerald-300 text-emerald-900 placeholder:text-emerald-400 focus:border-emerald-600 focus:ring-emerald-100',
+      ? 'bg-zinc-900 border-zinc-600 text-zinc-50 placeholder:text-zinc-500 focus:border-emerald-500 focus:ring-emerald-500/20'
+      : 'bg-white border-slate-300 text-emerald-900 placeholder:text-slate-500 focus:border-emerald-500 focus:ring-emerald-200',
+    select: isDark
+      ? 'bg-zinc-900 border-zinc-600 text-zinc-50'
+      : 'bg-white border-slate-300 text-emerald-900',
     
     text: isDark ? 'text-zinc-50' : 'text-emerald-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-emerald-700',
     textMuted: isDark ? 'text-zinc-400' : 'text-emerald-600',
-    label: isDark ? 'text-zinc-200' : 'text-emerald-800',
+    label: isDark ? 'text-zinc-300' : 'text-slate-700',
     
     btnPrimary: isDark
       ? 'bg-emerald-600 hover:bg-emerald-500 text-white'
       : 'bg-emerald-600 hover:bg-emerald-700 text-white',
     btnSecondary: isDark
       ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100'
-      : 'bg-slate-100 hover:bg-slate-200 text-slate-800',
+      : 'bg-slate-100 hover:bg-slate-200 text-slate-700',
+    btnDisabled: isDark
+      ? 'bg-zinc-700 text-zinc-500'
+      : 'bg-slate-300 text-slate-400',
     
     success: isDark
       ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200'
@@ -91,6 +97,38 @@ const GratitudeDebtClearer = () => {
     error: isDark
       ? 'bg-red-900/20 border-red-700 text-red-200'
       : 'bg-red-50 border-red-200 text-red-800',
+    info: isDark
+      ? 'bg-blue-900/20 border-blue-700 text-blue-200'
+      : 'bg-blue-50 border-blue-200 text-blue-800',
+    purple: isDark
+      ? 'bg-purple-900/20 border-purple-700 text-purple-200'
+      : 'bg-purple-50 border-purple-200 text-purple-900',
+    
+    // Result-specific
+    messageCard: isDark
+      ? 'bg-zinc-800 border-zinc-600 hover:border-emerald-600'
+      : 'bg-white border-slate-200 hover:border-emerald-300',
+    messageBody: isDark
+      ? 'bg-zinc-900 border-zinc-700'
+      : 'bg-slate-50 border-slate-200',
+    toneChip: (active) => active
+      ? (isDark ? 'border-emerald-500 bg-emerald-900/30 text-emerald-200' : 'border-emerald-500 bg-emerald-50 text-emerald-900')
+      : (isDark ? 'border-zinc-600 hover:border-emerald-600 bg-zinc-800 text-zinc-300' : 'border-slate-200 hover:border-emerald-300 bg-white text-slate-700'),
+    toneBadge: isDark
+      ? 'bg-emerald-900/40 text-emerald-300'
+      : 'bg-emerald-100 text-emerald-700',
+    giftSection: isDark
+      ? 'bg-amber-900/15 border-l-4 border-amber-600 rounded-r-lg'
+      : 'bg-amber-50 border-l-4 border-amber-400 rounded-r-lg',
+    giftInput: isDark
+      ? 'bg-zinc-900 border-zinc-600 text-zinc-50 placeholder:text-zinc-500'
+      : 'bg-white border-amber-300 text-emerald-900 placeholder:text-slate-500',
+    handwritingCheck: isDark
+      ? 'bg-blue-900/15 border-blue-700 hover:bg-blue-900/25'
+      : 'bg-blue-50 border-blue-200 hover:bg-blue-100',
+    link: isDark
+      ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
+      : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2',
   };
   // Helper function to detect cultural context from browser locale
   const detectCulturalContext = () => {
@@ -159,7 +197,6 @@ const GratitudeDebtClearer = () => {
   useEffect(() => {
     const detectedContext = detectCulturalContext();
     setCulturalContext(detectedContext);
-    console.log('Detected cultural context:', detectedContext, 'from locale:', navigator.language);
   }, []);
 
   const contextOptions = [
@@ -228,13 +265,6 @@ const GratitudeDebtClearer = () => {
     setError('');
     setResults(null);
 
- console.log('Sending to API:', {
-    recipientName,
-    gratitudePoints,
-    needHandwritingTemplate,  // ← Should log true when checked
-    // ... other fields
-  });
-  
     try {
       const data = await callToolEndpoint('gratitude-debt-clearer', {
         recipientName: recipientName.trim(),
@@ -339,6 +369,28 @@ const GratitudeDebtClearer = () => {
         </div>
       </div>
 
+      {/* Empty-state hook — show sample before submission */}
+      {!results && (
+        <div className={`rounded-xl p-4 border ${isDark ? 'border-emerald-800/40 bg-emerald-900/10' : 'border-emerald-200 bg-gradient-to-r from-emerald-50/80 to-white'}`}>
+          <div className="flex items-start gap-3">
+            <div className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center ${isDark ? 'bg-emerald-900/40' : 'bg-emerald-100'}`}>
+              <Sparkles className={`w-4 h-4 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`} />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className={`text-sm font-semibold ${c.text} mb-1`}>What you'll get</p>
+              <div className={`rounded-lg p-3 border mb-2 ${c.messageBody}`}>
+                <p className={`text-sm ${c.text} leading-relaxed italic`}>
+                  "Sarah, I've been meaning to tell you — that afternoon you spent helping me prep for the interview genuinely changed how I walked into the room. I felt prepared in a way I wouldn't have on my own, and I got the offer."
+                </p>
+              </div>
+              <p className={`text-xs ${c.textMuted}`}>
+                2-3 message versions · tone-matched to your relationship · cultural etiquette guidance · per-message "Too mushy?" and "More specific?" adjustments
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Input Form */}
       <div className={`${c.card} border rounded-xl shadow-lg p-6`}>
           {/* Recipient Name */}
@@ -355,7 +407,7 @@ const GratitudeDebtClearer = () => {
               value={recipientName}
               onChange={(e) => setRecipientName(e.target.value)}
               placeholder="e.g., Sarah, Dr. Martinez, the whole team"
-              className={`w-full p-4 border-2 border-slate-200 rounded-lg focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none ${c.text} placeholder:text-slate-500`}
+              className={`w-full p-4 border-2 rounded-lg focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none ${c.input}`}
               aria-required="true"
             />
           </div>
@@ -373,18 +425,18 @@ const GratitudeDebtClearer = () => {
               value={gratitudePoints}
               onChange={(e) => setGratitudePoints(e.target.value)}
               placeholder="List the things you're thankful for (bullet points or free-form):&#10;• Helped me move apartments&#10;• Listened when I was stressed&#10;• Recommended me for the job&#10;• Made me feel welcome"
-              className={`w-full h-40 p-4 border-2 border-slate-200 rounded-lg focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none resize-none ${c.text} placeholder:text-slate-500`}
+              className={`w-full h-40 p-4 border-2 rounded-lg focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none resize-none ${c.input}`}
               aria-required="true"
             />
-            <p className="text-sm text-slate-500 mt-2">
+            <p className={`text-sm ${c.textMuted} mt-2`}>
               💡 Be specific! The more details you give, the more personal your message will be.
             </p>
           </div>
 
           {/* Gift Specificity Enhancement - Show for gift-related contexts */}
           {(context === 'Gift received' || context === 'Wedding gift' || context === 'Baby shower gift') && (
-            <div className="mb-6 p-4 bg-amber-50 border-l-4 border-amber-400 rounded-r-lg">
-              <h3 className="text-sm font-semibold text-amber-900 mb-3 flex items-center gap-2">
+            <div className={`mb-6 p-4 ${c.giftSection}`}>
+              <h3 className={`text-sm font-semibold ${isDark ? 'text-amber-200' : 'text-amber-900'} mb-3 flex items-center gap-2`}>
                 <Gift className="w-4 h-4" />
                 Make It Extra Personal (Optional)
               </h3>
@@ -393,7 +445,7 @@ const GratitudeDebtClearer = () => {
                 <div>
                   <label 
                     htmlFor="gift-details"
-                    className="block text-sm font-medium text-amber-900 mb-2"
+                    className={`block text-sm font-medium ${isDark ? 'text-amber-200' : 'text-amber-900'} mb-2`}
                   >
                     Specific details about the gift
                   </label>
@@ -403,14 +455,14 @@ const GratitudeDebtClearer = () => {
                     value={specificGiftDetails}
                     onChange={(e) => setSpecificGiftDetails(e.target.value)}
                     placeholder="e.g., 'the blue scarf', 'the cookbook with Italian recipes', 'the personalized mug'"
-                    className={`w-full p-3 border border-amber-300 rounded-lg focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-none ${c.text} placeholder:text-slate-500 bg-white`}
+                    className={`w-full p-3 border rounded-lg focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-none ${c.giftInput}`}
                   />
                 </div>
                 
                 <div>
                   <label 
                     htmlFor="how-use"
-                    className="block text-sm font-medium text-amber-900 mb-2"
+                    className={`block text-sm font-medium ${isDark ? 'text-amber-200' : 'text-amber-900'} mb-2`}
                   >
                     How you'll use it or what it means to you
                   </label>
@@ -420,12 +472,12 @@ const GratitudeDebtClearer = () => {
                     value={howYoullUseIt}
                     onChange={(e) => setHowYoullUseIt(e.target.value)}
                     placeholder="e.g., 'I'll wear it to work', 'reminds me of our trip', 'perfect for my morning coffee'"
-                    className={`w-full p-3 border border-amber-300 rounded-lg focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-none ${c.text} placeholder:text-slate-500 bg-white`}
+                    className={`w-full p-3 border rounded-lg focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-none ${c.giftInput}`}
                   />
                 </div>
               </div>
               
-              <p className="text-xs text-amber-700 mt-2">
+              <p className={`text-xs ${isDark ? 'text-amber-300' : 'text-amber-700'} mt-2`}>
                 ✨ These details will make your thank-you feel much more thoughtful and genuine
               </p>
             </div>
@@ -436,7 +488,7 @@ const GratitudeDebtClearer = () => {
             <div>
               <label 
                 htmlFor="context"
-                className="block text-sm font-medium text-slate-700 mb-2"
+                className={`block text-sm font-medium ${c.label} mb-2`}
               >
                 Context / Occasion
               </label>
@@ -444,7 +496,7 @@ const GratitudeDebtClearer = () => {
                 id="context"
                 value={context}
                 onChange={(e) => setContext(e.target.value)}
-                className={`w-full p-3 border border-slate-300 rounded-lg focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none ${c.text} bg-white`}
+                className={`w-full p-3 border rounded-lg focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none ${c.select}`}
               >
                 {contextOptions.map(opt => (
                   <option key={opt} value={opt}>{opt}</option>
@@ -455,7 +507,7 @@ const GratitudeDebtClearer = () => {
             <div>
               <label 
                 htmlFor="relationship"
-                className="block text-sm font-medium text-slate-700 mb-2"
+                className={`block text-sm font-medium ${c.label} mb-2`}
               >
                 Your Relationship
               </label>
@@ -463,7 +515,7 @@ const GratitudeDebtClearer = () => {
                 id="relationship"
                 value={relationship}
                 onChange={(e) => setRelationship(e.target.value)}
-                className={`w-full p-3 border border-slate-300 rounded-lg focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none ${c.text} bg-white`}
+                className={`w-full p-3 border rounded-lg focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none ${c.select}`}
               >
                 {relationshipOptions.map(opt => (
                   <option key={opt} value={opt}>{opt}</option>
@@ -474,7 +526,7 @@ const GratitudeDebtClearer = () => {
 
           {/* Tone Selection */}
           <div className="mb-6">
-            <label className="block text-sm font-medium text-slate-700 mb-3">
+            <label className={`block text-sm font-medium ${c.label} mb-3`}>
               Tone Preference
             </label>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -482,11 +534,7 @@ const GratitudeDebtClearer = () => {
                 <button
                   key={option.id}
                   onClick={() => setTone(option.label)}
-                  className={`p-3 rounded-lg border-2 transition-all text-center ${
-                    tone === option.label
-                      ? 'border-emerald-500 bg-emerald-50 text-emerald-900'
-                      : 'border-slate-200 hover:border-emerald-300 bg-white text-slate-700'
-                  }`}
+                  className={`p-3 rounded-lg border-2 transition-all text-center ${c.toneChip(tone === option.label)}`}
                   aria-pressed={tone === option.label}
                 >
                   <div className="text-2xl mb-1">{option.icon}</div>
@@ -500,7 +548,7 @@ const GratitudeDebtClearer = () => {
           <div className="mb-6">
             <label 
               htmlFor="cultural-context"
-              className="block text-sm font-medium text-slate-700 mb-2"
+              className={`block text-sm font-medium ${c.label} mb-2`}
             >
               Cultural Context (helps with formality and etiquette)
             </label>
@@ -508,13 +556,13 @@ const GratitudeDebtClearer = () => {
               id="cultural-context"
               value={culturalContext}
               onChange={(e) => setCulturalContext(e.target.value)}
-              className={`w-full p-3 border border-slate-300 rounded-lg focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none ${c.text} bg-white`}
+              className={`w-full p-3 border rounded-lg focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none ${c.select}`}
             >
               {culturalContextOptions.map(opt => (
                 <option key={opt} value={opt}>{opt}</option>
               ))}
             </select>
-            <p className="text-xs text-slate-500 mt-1">
+            <p className={`text-xs ${c.textMuted} mt-1`}>
               ✨ Auto-detected from your browser settings. Different cultures have different gratitude etiquette — this helps tailor the formality and timing.
             </p>
           </div>
@@ -523,7 +571,7 @@ const GratitudeDebtClearer = () => {
           <div className="mb-6">
             <label 
               htmlFor="delivery-method"
-              className="block text-sm font-medium text-slate-700 mb-2"
+              className={`block text-sm font-medium ${c.label} mb-2`}
             >
               How will you send this?
             </label>
@@ -531,7 +579,7 @@ const GratitudeDebtClearer = () => {
               id="delivery-method"
               value={deliveryMethod}
               onChange={(e) => setDeliveryMethod(e.target.value)}
-              className={`w-full p-3 border border-slate-300 rounded-lg focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none ${c.text} bg-white`}
+              className={`w-full p-3 border rounded-lg focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none ${c.select}`}
             >
               {deliveryMethodOptions.map(opt => (
                 <option key={opt} value={opt}>{opt}</option>
@@ -541,16 +589,16 @@ const GratitudeDebtClearer = () => {
 
           {/* Handwriting Template Option */}
           <div className="mb-6">
-            <label className="flex items-center gap-3 p-4 bg-blue-50 border border-blue-200 rounded-lg cursor-pointer hover:bg-blue-100 transition-colors">
+            <label className={`flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition-colors ${c.handwritingCheck}`}>
               <input
                 type="checkbox"
                 checked={needHandwritingTemplate}
                 onChange={(e) => setNeedHandwritingTemplate(e.target.checked)}
-                className="w-5 h-5 rounded border-slate-300 text-emerald-600 focus:ring-2 focus:ring-emerald-500"
+                className="w-5 h-5 rounded border-zinc-400 text-emerald-600 focus:ring-2 focus:ring-emerald-500"
               />
               <div className="flex-1">
-                <div className="font-medium text-blue-900">Generate handwritten card template</div>
-                <div className="text-sm text-blue-700">
+                <div className={`font-medium ${isDark ? 'text-blue-200' : 'text-blue-900'}`}>Generate handwritten card template</div>
+                <div className={`text-sm ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>
                   Get layout guidance, font suggestions, and formatting for physical cards
                 </div>
               </div>
@@ -561,9 +609,9 @@ const GratitudeDebtClearer = () => {
           <div className="mb-6">
             <label 
               htmlFor="length-slider"
-              className="block text-sm font-medium text-slate-700 mb-3"
+              className={`block text-sm font-medium ${c.label} mb-3`}
             >
-              Message Length: <span className="text-emerald-600 font-semibold">
+              Message Length: <span className={`font-semibold ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>
                 {length <= 3 ? 'Concise' : length <= 7 ? 'Moderate' : 'Detailed'}
               </span>
             </label>
@@ -580,7 +628,7 @@ const GratitudeDebtClearer = () => {
               aria-valuenow={length}
               aria-label="Message length slider"
             />
-            <div className="flex justify-between text-xs text-slate-500 mt-1">
+            <div className={`flex justify-between text-xs ${c.textMuted} mt-1`}>
               <span>Short & sweet</span>
               <span>Detailed & thorough</span>
             </div>
@@ -591,7 +639,9 @@ const GratitudeDebtClearer = () => {
             <button
               onClick={handleGenerate}
               disabled={loading || !recipientName.trim() || !gratitudePoints.trim()}
-              className="flex-1 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 text-white font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2"
+              className={`flex-1 font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2 ${
+                loading || !recipientName.trim() || !gratitudePoints.trim() ? c.btnDisabled + ' cursor-not-allowed' : c.btnPrimary
+              }`}
               aria-label="Generate thank you messages"
             >
               {loading ? (
@@ -610,7 +660,9 @@ const GratitudeDebtClearer = () => {
             {results && (
               <button
                 onClick={handleReset}
-                className="px-6 py-3 border-2 border-slate-300 hover:border-slate-400 text-slate-700 font-semibold rounded-lg transition-colors"
+                className={`px-6 py-3 border-2 font-semibold rounded-lg transition-colors ${
+                  isDark ? 'border-zinc-600 hover:border-zinc-500 text-zinc-200' : 'border-slate-300 hover:border-slate-400 text-slate-700'
+                }`}
                 aria-label="Reset form"
               >
                 Reset
@@ -621,13 +673,20 @@ const GratitudeDebtClearer = () => {
           {/* Error Display */}
           {error && (
             <div 
-              className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3"
+              className={`mt-4 p-4 border rounded-lg flex items-start gap-3 ${c.error}`}
               role="alert"
             >
-              <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-              <p className="text-red-800 text-sm">{error}</p>
+              <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+              <p className="text-sm">{error}</p>
             </div>
           )}
+
+          {/* Pre-result cross-ref */}
+          <p className={`text-xs text-center ${c.textMuted} mt-4`}>
+            Need to apologize alongside your thanks?{' '}
+            <a href="/ApologyCalibrator" className={c.link}>Apology Calibrator</a>{' '}
+            helps you get the tone exactly right.
+          </p>
         </div>
 
         {/* Results Section */}
@@ -635,14 +694,14 @@ const GratitudeDebtClearer = () => {
           <div className="space-y-6">
             {/* Awkwardness Acknowledgment */}
             {results.if_you_feel_awkward && (
-              <div className="bg-purple-50 border-2 border-purple-200 rounded-xl p-5">
+              <div className={`border-2 rounded-xl p-5 ${c.purple}`}>
                 <div className="flex items-start gap-3">
-                  <Gift className="w-5 h-5 text-purple-600 flex-shrink-0 mt-1" />
+                  <Gift className="w-5 h-5 flex-shrink-0 mt-1" />
                   <div>
-                    <p className="text-purple-900 font-medium mb-1">
+                    <p className="font-medium mb-1">
                       {results.if_you_feel_awkward.permission}
                     </p>
-                    <p className="text-purple-800 text-sm">
+                    <p className={`text-sm ${isDark ? 'text-purple-300' : 'text-purple-800'}`}>
                       {results.if_you_feel_awkward.reframe}
                     </p>
                   </div>
@@ -660,7 +719,7 @@ const GratitudeDebtClearer = () => {
                 {results.thank_you_messages?.map((message, index) => (
                   <div 
                     key={index} 
-                    className="bg-white rounded-xl shadow-lg p-6 border-2 border-slate-200 hover:border-emerald-300 transition-colors"
+                    className={`rounded-xl shadow-lg p-6 border-2 transition-colors ${c.messageCard}`}
                   >
                     {/* Message Header */}
                     <div className="flex items-start justify-between mb-3">
@@ -668,8 +727,8 @@ const GratitudeDebtClearer = () => {
                         <h3 className={`text-lg font-bold ${c.text} mb-1`}>
                           {message.version}
                         </h3>
-                        <div className="flex items-center gap-3 text-sm text-slate-700">
-                          <span className="inline-block px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full font-medium">
+                        <div className={`flex items-center gap-3 text-sm ${c.textSecondary}`}>
+                          <span className={`inline-block px-3 py-1 rounded-full font-medium ${c.toneBadge}`}>
                             {message.tone}
                           </span>
                           <span>{message.length} words</span>
@@ -678,17 +737,17 @@ const GratitudeDebtClearer = () => {
                     </div>
 
                     {/* Why This Works */}
-                    <div className="bg-blue-50 border-l-4 border-blue-400 rounded-r-lg p-3 mb-4">
-                      <p className="text-sm text-blue-900">
+                    <div className={`border-l-4 rounded-r-lg p-3 mb-4 ${c.info}`}>
+                      <p className="text-sm">
                         <strong>Why this works:</strong> {message.why_this_works}
                       </p>
-                      <p className="text-sm text-blue-800 mt-1">
+                      <p className={`text-sm mt-1 ${isDark ? 'text-blue-300' : 'text-blue-800'}`}>
                         <strong>Best for:</strong> {message.best_for}
                       </p>
                     </div>
 
                     {/* Message Text */}
-                    <div className="bg-slate-50 rounded-lg p-4 border border-slate-200 mb-4">
+                    <div className={`rounded-lg p-4 border mb-4 ${c.messageBody}`}>
                       <p className={`${c.text} text-base leading-relaxed whitespace-pre-wrap`}>
                         {message.message_text}
                       </p>
@@ -698,57 +757,44 @@ const GratitudeDebtClearer = () => {
                     <div className="flex flex-wrap gap-2">
                       <button
                         onClick={() => copyToClipboard(message.message_text, index)}
-                        className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors text-sm font-medium"
+                        className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors text-sm font-medium ${
+                          copiedIndex === index
+                            ? (isDark ? 'bg-emerald-900/40 text-emerald-300' : 'bg-emerald-100 text-emerald-700')
+                            : c.btnPrimary
+                        }`}
                         aria-label={`Copy ${message.version} to clipboard`}
                       >
-                        {copiedIndex === index ? (
-                          <>
-                            <Copy className="w-4 h-4" />
-                            Copied!
-                          </>
-                        ) : (
-                          <>
-                            <Copy className="w-4 h-4" />
-                            Copy Message
-                          </>
-                        )}
+                        <Copy className="w-4 h-4" />
+                        {copiedIndex === index ? 'Copied!' : 'Copy Message'}
                       </button>
 
                       <button
                         onClick={() => handleAdjust(message, index, 'less-mushy')}
                         disabled={adjustingIndex === index}
-                        className="flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 disabled:bg-slate-50 text-slate-700 rounded-lg transition-colors text-sm font-medium"
+                        className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors text-sm font-medium ${
+                          adjustingIndex === index ? c.btnDisabled + ' cursor-not-allowed' : c.btnSecondary
+                        }`}
                         aria-label="Make this message less intense"
                       >
                         {adjustingIndex === index ? (
-                          <>
-                            <Loader2 className="w-4 h-4 animate-spin" />
-                            Adjusting...
-                          </>
+                          <><Loader2 className="w-4 h-4 animate-spin" /> Adjusting...</>
                         ) : (
-                          <>
-                            <Minus className="w-4 h-4" />
-                            Too mushy?
-                          </>
+                          <><Minus className="w-4 h-4" /> Too mushy?</>
                         )}
                       </button>
 
                       <button
                         onClick={() => handleAdjust(message, index, 'more-specific')}
                         disabled={adjustingIndex === index}
-                        className="flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 disabled:bg-slate-50 text-slate-700 rounded-lg transition-colors text-sm font-medium"
+                        className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors text-sm font-medium ${
+                          adjustingIndex === index ? c.btnDisabled + ' cursor-not-allowed' : c.btnSecondary
+                        }`}
                         aria-label="Make this message more specific"
                       >
                         {adjustingIndex === index ? (
-                          <>
-                            <Loader2 className="w-4 h-4 animate-spin" />
-                            Adjusting...
-                          </>
+                          <><Loader2 className="w-4 h-4 animate-spin" /> Adjusting...</>
                         ) : (
-                          <>
-                            <Plus className="w-4 h-4" />
-                            More specific?
-                          </>
+                          <><Plus className="w-4 h-4" /> More specific?</>
                         )}
                       </button>
                     </div>
@@ -759,14 +805,14 @@ const GratitudeDebtClearer = () => {
 
             {/* Delivery Suggestions */}
             {results.delivery_suggestions && (
-              <div className="bg-emerald-50 border-2 border-emerald-200 rounded-xl p-5">
+              <div className={`border-2 rounded-xl p-5 ${c.success}`}>
                 <div className="flex items-start gap-3 mb-3">
-                  <Send className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-1" />
-                  <h3 className="text-lg font-bold text-emerald-900">
+                  <Send className="w-5 h-5 flex-shrink-0 mt-1" />
+                  <h3 className="text-lg font-bold">
                     Delivery Suggestions
                   </h3>
                 </div>
-                <div className="space-y-2 text-emerald-800 ml-8">
+                <div className={`space-y-2 ml-8 ${isDark ? 'text-emerald-200' : 'text-emerald-800'}`}>
                   <p>
                     <strong>Method:</strong> {results.delivery_suggestions.method}
                   </p>
@@ -774,7 +820,7 @@ const GratitudeDebtClearer = () => {
                     <strong>Timing:</strong> {results.delivery_suggestions.timing}
                   </p>
                   {results.delivery_suggestions.timing_cultural_note && (
-                    <p className="bg-emerald-100 p-2 rounded">
+                    <p className={`p-2 rounded ${isDark ? 'bg-emerald-900/30' : 'bg-emerald-100'}`}>
                       <strong>Cultural Note:</strong> {results.delivery_suggestions.timing_cultural_note}
                     </p>
                   )}
@@ -789,44 +835,60 @@ const GratitudeDebtClearer = () => {
 
             {/* Personalization Tips */}
             {results.personalization_tips && results.personalization_tips.length > 0 && (
-              <div className="bg-amber-50 border-2 border-amber-200 rounded-xl p-5">
+              <div className={`border-2 rounded-xl p-5 ${c.warning}`}>
                 <div className="flex items-start gap-3 mb-3">
-                  <Mail className="w-5 h-5 text-amber-600 flex-shrink-0 mt-1" />
-                  <h3 className="text-lg font-bold text-amber-900">
+                  <Mail className="w-5 h-5 flex-shrink-0 mt-1" />
+                  <h3 className="text-lg font-bold">
                     Make It Even More Personal
                   </h3>
                 </div>
-                <ul className="space-y-2 text-amber-800 ml-8 list-disc">
+                <ul className={`space-y-2 ml-8 list-disc ${isDark ? 'text-amber-200' : 'text-amber-800'}`}>
                   {results.personalization_tips.map((tip, index) => (
                     <li key={index}>{tip}</li>
                   ))}
                 </ul>
               </div>
             )}
+
+            {/* Conditional cross-ref — context-aware */}
+            {context === 'Post-interview' && (
+              <p className={`text-xs text-center ${c.textMuted} mt-2`}>
+                Sending a follow-up can feel awkward —{' '}
+                <a href="/DifficultTalkRehearser" className={c.link}>Difficult Talk Rehearser</a>{' '}
+                can help you prepare if the conversation continues.
+              </p>
+            )}
+            {(context === 'Condolence support' || context === 'Emotional support') && (
+              <p className={`text-xs text-center ${c.textMuted} mt-2`}>
+                If you're navigating a sensitive relationship,{' '}
+                <a href="/VelvetHammer" className={c.link}>Velvet Hammer</a>{' '}
+                helps you say hard things with warmth.
+              </p>
+            )}
           </div>
         )}
 
         {/* Handwriting Template */}
         {results && results.handwriting_template && (
-          <div className="bg-emerald-50 border-2 border-emerald-200 rounded-xl p-6">
+          <div className={`border-2 rounded-xl p-6 ${c.success}`}>
             <div className="flex items-start gap-3 mb-4">
-              <Mail className="w-6 h-6 text-emerald-600 flex-shrink-0 mt-1" />
+              <Mail className="w-6 h-6 flex-shrink-0 mt-1" />
               <div>
-                <h3 className="text-lg font-bold text-emerald-900 mb-1">
+                <h3 className="text-lg font-bold mb-1">
                   Handwritten Card Template
                 </h3>
-                <p className="text-sm text-emerald-700">
+                <p className={`text-sm ${c.textSecondary}`}>
                   Follow this layout for a beautiful handwritten thank-you note
                 </p>
               </div>
               
             </div>
 
-            <div className="bg-white rounded-lg p-6 border-2 border-emerald-300 shadow-inner">
+            <div className={`rounded-lg p-6 border-2 shadow-inner ${isDark ? 'bg-zinc-900 border-emerald-800' : 'bg-white border-emerald-300'}`}>
               {/* Card Layout Visual Guide */}
               <div className="space-y-4">
-                <div className="border-b border-slate-200 pb-3">
-                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">
+                <div className={`border-b pb-3 ${isDark ? 'border-zinc-700' : 'border-slate-200'}`}>
+                  <p className={`text-xs font-semibold uppercase tracking-wide mb-1 ${c.textMuted}`}>
                     Opening (top right or center)
                   </p>
                   <p className={`${c.text} font-serif text-lg`}>
@@ -834,8 +896,8 @@ const GratitudeDebtClearer = () => {
                   </p>
                 </div>
 
-                <div className="border-b border-slate-200 pb-3">
-                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">
+                <div className={`border-b pb-3 ${isDark ? 'border-zinc-700' : 'border-slate-200'}`}>
+                  <p className={`text-xs font-semibold uppercase tracking-wide mb-1 ${c.textMuted}`}>
                     Main Message (body)
                   </p>
                   <p className={`${c.text} leading-relaxed whitespace-pre-wrap`}>
@@ -844,7 +906,7 @@ const GratitudeDebtClearer = () => {
                 </div>
 
                 <div>
-                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">
+                  <p className={`text-xs font-semibold uppercase tracking-wide mb-1 ${c.textMuted}`}>
                     Closing (bottom right)
                   </p>
                   <p className={`${c.text} font-serif`}>
@@ -856,24 +918,24 @@ const GratitudeDebtClearer = () => {
 
             {/* Font & Style Suggestions */}
             <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="bg-white rounded-lg p-4 border border-emerald-200">
-                <h4 className="font-semibold text-emerald-900 mb-2 text-sm">Font Suggestions</h4>
-                <ul className="space-y-1 text-sm text-emerald-800">
+              <div className={`rounded-lg p-4 border ${isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-emerald-200'}`}>
+                <h4 className={`font-semibold ${c.text} mb-2 text-sm`}>Font Suggestions</h4>
+                <ul className={`space-y-1 text-sm ${c.textSecondary}`}>
                   {results.handwriting_template.font_suggestions?.map((font, idx) => (
                     <li key={idx} className="flex items-center gap-2">
-                      <span className="text-emerald-400">•</span>
+                      <span className={isDark ? 'text-emerald-500' : 'text-emerald-400'}>•</span>
                       {font}
                     </li>
                   ))}
                 </ul>
               </div>
 
-              <div className="bg-white rounded-lg p-4 border border-emerald-200">
-                <h4 className="font-semibold text-emerald-900 mb-2 text-sm">Card Tips</h4>
-                <ul className="space-y-1 text-sm text-emerald-800">
+              <div className={`rounded-lg p-4 border ${isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-emerald-200'}`}>
+                <h4 className={`font-semibold ${c.text} mb-2 text-sm`}>Card Tips</h4>
+                <ul className={`space-y-1 text-sm ${c.textSecondary}`}>
                   {results.handwriting_template.writing_tips?.map((tip, idx) => (
                     <li key={idx} className="flex items-center gap-2">
-                      <span className="text-emerald-400">•</span>
+                      <span className={isDark ? 'text-emerald-500' : 'text-emerald-400'}>•</span>
                       {tip}
                     </li>
                   ))}
@@ -882,13 +944,22 @@ const GratitudeDebtClearer = () => {
             </div>
 
             {results.handwriting_template.length_guidance && (
-              <div className="mt-4 p-3 bg-emerald-100 rounded-lg">
-                <p className="text-sm text-emerald-900">
+              <div className={`mt-4 p-3 rounded-lg ${isDark ? 'bg-emerald-900/30' : 'bg-emerald-100'}`}>
+                <p className={`text-sm ${c.text}`}>
                   <strong>Length:</strong> {results.handwriting_template.length_guidance}
                 </p>
               </div>
             )}
           </div>
+        )}
+
+        {/* Post-result cross-ref */}
+        {results && (
+          <p className={`text-xs text-center ${c.textMuted}`}>
+            Message feeling close but not quite right?{' '}
+            <a href="/ApologyCalibrator" className={c.link}>Apology Calibrator</a>{' '}
+            fine-tunes tone when gratitude mixes with "sorry it took so long."
+          </p>
         )}
       </div>
     </div>

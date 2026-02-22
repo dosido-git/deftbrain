@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { tools } from './data/tools';
 import { ThemeProvider } from './hooks/useTheme';
+import { PremiumProvider } from './hooks/usePremium';
 
 // Components
 import ToolRenderer from './components/ToolRenderer';
@@ -18,21 +19,23 @@ export default function App() {
 
   return (
     <ThemeProvider>
-      <BrowserRouter>
-        <div className="min-h-screen bg-white font-sans flex flex-col">
-          <Routes>
-            <Route path="/" element={
-              <DashBoard
-                allTools={tools}
-                searchTerm={searchTerm}
-                setSearchTerm={setSearchTerm}
-              />
-            } />
+      <PremiumProvider>
+        <BrowserRouter>
+          <div className="min-h-screen bg-white font-sans flex flex-col">
+            <Routes>
+              <Route path="/" element={
+                <DashBoard
+                  allTools={tools}
+                  searchTerm={searchTerm}
+                  setSearchTerm={setSearchTerm}
+                />
+              } />
 
-            <Route path="/:toolId" element={<ToolRenderer college={college} />} />
-          </Routes>
-        </div>
-      </BrowserRouter>
+              <Route path="/:toolId" element={<ToolRenderer college={college} />} />
+            </Routes>
+          </div>
+        </BrowserRouter>
+      </PremiumProvider>
     </ThemeProvider>
   );
 }

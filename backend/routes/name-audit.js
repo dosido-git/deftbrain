@@ -186,7 +186,12 @@ ${showDomainChecks ? `12. TLD ANALYSIS (Domain Names)
 - Verbal sharing — how easy is it to tell someone this URL in conversation?
 - Email test — how does an email address at this domain look? (e.g., hello@name.com)` : ''}
 
-${showDomainChecks ? '14' : '12'}. OVERALL VERDICT
+${showDomainChecks ? '14' : '12'}. SCORING
+Rate the name 0-100 overall, and give a sub-score (0-10) for each dimension:
+- first_impression, phonetics, memorability, radio_test, visual, global_safety, abbreviations, competitive, seo, longevity, emotional_resonance
+The overall score should reflect the weighted importance of each dimension for the specific context (e.g., radio_test matters more for a business than a pet name). Be honest — a mediocre name should score 40-55, not 70.
+
+${showDomainChecks ? '15' : '13'}. OVERALL VERDICT
 - Clear list of strengths (things this name does well)
 - Clear list of weaknesses (things that concern you)
 - Deal-breakers (if any — problems serious enough to reconsider)
@@ -201,6 +206,22 @@ OUTPUT FORMAT — Return ONLY valid JSON
   "name_analyzed": "${name}",
 
   "overall_grade": "STRONG | GOOD | FAIR | WEAK | RECONSIDER",
+
+  "overall_score": 74,
+
+  "section_scores": {
+    "first_impression": 8,
+    "phonetics": 7,
+    "memorability": 6,
+    "radio_test": 9,
+    "visual": 7,
+    "global_safety": 5,
+    "abbreviations": 8,
+    "competitive": 6,
+    "seo": 7,
+    "longevity": 8,
+    "emotional_resonance": 7
+  },
 
   "overall_summary": "A 2-3 sentence honest verdict. Lead with the most important thing.",
 
@@ -377,7 +398,7 @@ NAMES TO COMPARE: ${names.map((n, i) => `${i + 1}. "${n}"`).join(', ')}
 WHAT IT'S FOR: ${context || 'Not specified'}
 INDUSTRY: ${industry || 'Not specified'}
 
-For each name, give a quick assessment across the key dimensions. Then declare a winner with clear reasoning.
+For each name, give a quick assessment across the key dimensions, including a score from 0-100. Be honest — a mediocre name should score 40-55, not 70. Then declare a winner with clear reasoning.
 
 Return ONLY this JSON:
 
@@ -385,6 +406,7 @@ Return ONLY this JSON:
   "candidates": [
     {
       "name": "The name",
+      "score": 74,
       "grade": "STRONG | GOOD | FAIR | WEAK",
       "one_liner": "One sentence assessment",
       "best_quality": "Its single biggest strength",

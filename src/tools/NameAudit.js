@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Loader2, AlertCircle, Copy, Check, ChevronDown, ChevronUp, RefreshCw, Printer, Share2,
   Search, Globe, Eye, Ear, MessageSquare, Shield, Clock, Heart, Zap, AlertTriangle,
-  CheckCircle, XCircle, MinusCircle, Plus, X, ArrowRight, Trophy, BarChart3, Hash
+  CheckCircle, XCircle, MinusCircle, Plus, X, ArrowRight, Trophy, BarChart3, Hash, FileText, Sparkles
 } from 'lucide-react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
+import { usePremium, PremiumGate, PremiumBadge } from '../hooks/usePremium';
+import { BookmarkButton } from '../hooks/useBookmarks';
 import { getToolById } from '../data/tools';
 
 const NameAudit = () => {
@@ -13,8 +15,12 @@ const NameAudit = () => {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
   const toolData = getToolById('NameAudit');
+  const { isUnlocked } = usePremium();
 
   // ─── Theme ───
+  const linkStyle = isDark
+    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
+    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
   const c = {
     card: isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt: isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
@@ -154,12 +160,109 @@ const NameAudit = () => {
     return <MinusCircle className="w-3.5 h-3.5" />;
   };
 
+  // ─── Score Components ───
+  const scoreColor = (score, max = 100) => {
+    const pct = (score / max) * 100;
+    if (pct >= 80) return isDark ? 'text-green-400' : 'text-green-600';
+    if (pct >= 60) return isDark ? 'text-amber-400' : 'text-amber-600';
+    if (pct >= 40) return isDark ? 'text-orange-400' : 'text-orange-600';
+    return isDark ? 'text-red-400' : 'text-red-600';
+  };
+
+  const scoreBg = (score, max = 100) => {
+    const pct = (score / max) * 100;
+    if (pct >= 80) return isDark ? 'bg-green-500' : 'bg-green-500';
+    if (pct >= 60) return isDark ? 'bg-amber-500' : 'bg-amber-500';
+    if (pct >= 40) return isDark ? 'bg-orange-500' : 'bg-orange-500';
+    return isDark ? 'bg-red-500' : 'bg-red-500';
+  };
+
+  const AnimatedScore = ({ score, size = 'lg' }) => {
+    const [display, setDisplay] = useState(0);
+    const frameRef = useRef(null);
+
+    useEffect(() => {
+      if (score == null) return;
+      let start = null;
+      const duration = 1200;
+      const animate = (ts) => {
+        if (!start) start = ts;
+        const progress = Math.min((ts - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+        setDisplay(Math.round(eased * score));
+        if (progress < 1) frameRef.current = requestAnimationFrame(animate);
+      };
+      frameRef.current = requestAnimationFrame(animate);
+      return () => { if (frameRef.current) cancelAnimationFrame(frameRef.current); };
+    }, [score]);
+
+    if (score == null) return null;
+
+    const isLarge = size === 'lg';
+    const radius = isLarge ? 54 : 20;
+    const stroke = isLarge ? 8 : 4;
+    const circumference = 2 * Math.PI * radius;
+    const offset = circumference - (display / 100) * circumference;
+    const dim = isLarge ? 128 : 48;
+
+    return (
+      <div className={`relative inline-flex items-center justify-center ${isLarge ? 'w-32 h-32' : 'w-12 h-12'}`}>
+        <svg width={dim} height={dim} className="-rotate-90">
+          <circle cx={dim / 2} cy={dim / 2} r={radius} fill="none"
+            stroke={isDark ? '#3f3f46' : '#e5e7eb'} strokeWidth={stroke} />
+          <circle cx={dim / 2} cy={dim / 2} r={radius} fill="none"
+            className={scoreBg(score)} strokeWidth={stroke}
+            strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={offset}
+            style={{ transition: 'stroke-dashoffset 0.1s ease-out' }} />
+        </svg>
+        <span className={`absolute font-bold ${scoreColor(score)} ${isLarge ? 'text-3xl' : 'text-xs'}`}>
+          {display}
+        </span>
+      </div>
+    );
+  };
+
+  const ScoreBar = ({ score, max = 10 }) => {
+    if (score == null) return null;
+    const pct = (score / max) * 100;
+    return (
+      <div className="flex items-center gap-2 ml-auto">
+        <div className={`w-16 h-1.5 rounded-full ${isDark ? 'bg-zinc-700' : 'bg-gray-200'} overflow-hidden`}>
+          <div className={`h-full rounded-full transition-all duration-700 ${scoreBg(score, max)}`}
+            style={{ width: `${pct}%` }} />
+        </div>
+        <span className={`text-xs font-bold ${scoreColor(score, max)} w-6 text-right`}>{score}/{max}</span>
+      </div>
+    );
+  };
+
+  // Map section IDs to section_scores keys
+  const sectionScoreKey = {
+    impression: 'first_impression',
+    phonetic: 'phonetics',
+    memorability: 'memorability',
+    radio: 'radio_test',
+    visual: 'visual',
+    language: 'global_safety',
+    abbreviation: 'abbreviations',
+    competitive: 'competitive',
+    seo: 'seo',
+    longevity: 'longevity',
+    emotion: 'emotional_resonance',
+  };
+
   const buildFullText = () => {
     if (!results) return '';
-    const lines = [`NAMEAUDIT ANALYSIS: "${results.name_analyzed}"`, `Grade: ${results.overall_grade}`, '', results.overall_summary, ''];
+    const lines = [`NAMEAUDIT ANALYSIS: "${results.name_analyzed}"`, `Grade: ${results.overall_grade}${results.overall_score != null ? ` · Score: ${results.overall_score}/100` : ''}`, '', results.overall_summary, ''];
     if (results.strengths?.length > 0) { lines.push('STRENGTHS'); results.strengths.forEach(s => lines.push(`  \u2713 ${s}`)); lines.push(''); }
     if (results.weaknesses?.length > 0) { lines.push('WEAKNESSES'); results.weaknesses.forEach(w => lines.push(`  \u2717 ${w}`)); lines.push(''); }
     if (results.deal_breakers?.length > 0) { lines.push('DEAL BREAKERS'); results.deal_breakers.forEach(d => lines.push(`  ${d}`)); lines.push(''); }
+    if (results.section_scores) {
+      lines.push('SECTION SCORES');
+      const labels = { first_impression: 'First Impression', phonetics: 'Phonetics', memorability: 'Memorability', radio_test: 'Radio Test', visual: 'Visual', global_safety: 'Global Safety', abbreviations: 'Abbreviations', competitive: 'Competitive', seo: 'SEO', longevity: 'Longevity', emotional_resonance: 'Emotional Resonance' };
+      Object.entries(results.section_scores).forEach(([k, v]) => { lines.push(`  ${labels[k] || k}: ${v}/10`); });
+      lines.push('');
+    }
     if (results.tld_analysis) {
       lines.push('TLD ANALYSIS');
       ['tld_choice', 'trust_signal', 'confusion_risk', 'competing_com', 'alternative_tlds'].forEach(k => {
@@ -208,8 +311,48 @@ const NameAudit = () => {
     } else { copyToClipboard(text, 'share-fallback'); }
   };
 
+  const buildCompareText = () => {
+    if (!compareResults) return '';
+    const lines = ['NAMEAUDIT COMPARISON', ''];
+    if (compareResults.winner) {
+      lines.push(`WINNER: ${compareResults.winner.name} (${compareResults.winner.margin.replace(/_/g, ' ')})`);
+      lines.push(compareResults.winner.why, '');
+    }
+    compareResults.candidates?.forEach(cand => {
+      lines.push(`── ${cand.name} ──`);
+      if (cand.score != null) lines.push(`Score: ${cand.score}/100`);
+      lines.push(`Grade: ${cand.grade}`);
+      lines.push(cand.one_liner);
+      lines.push(`Best: ${cand.best_quality}`);
+      lines.push(`Risk: ${cand.biggest_risk}`);
+      lines.push(`Memorability: ${cand.memorability} · Radio: ${cand.radio_test} · Global: ${cand.global_safety}`);
+      lines.push('');
+    });
+    if (compareResults.comparison_insight) {
+      lines.push('KEY INSIGHT', compareResults.comparison_insight, '');
+    }
+    lines.push('\u2500\u2500\u2500', 'Generated by DeftBrain \u00b7 deftbrain.com');
+    return lines.join('\n');
+  };
+
+  const handlePrintCompare = () => {
+    const content = buildCompareText();
+    const pw = window.open('', '_blank');
+    if (!pw) return;
+    pw.document.write(`<!DOCTYPE html><html><head><title>NameAudit — Comparison</title><style>body{font-family:Georgia,serif;max-width:700px;margin:40px auto;padding:0 20px;color:#1a1a1a;line-height:1.6;font-size:14px;}pre{white-space:pre-wrap;word-wrap:break-word;font-family:inherit;margin:0;}@media print{body{margin:20px;}}</style></head><body><pre>${content.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</pre></body></html>`);
+    pw.document.close(); pw.focus(); setTimeout(() => pw.print(), 250);
+  };
+
+  const handleShareCompare = async () => {
+    const text = buildCompareText();
+    if (navigator.share) {
+      try { await navigator.share({ title: 'NameAudit Comparison', text, url: window.location.href }); }
+      catch (err) { if (err.name !== 'AbortError') console.error('Share failed:', err); }
+    } else { copyToClipboard(text, 'share-compare-fallback'); }
+  };
+
   // Collapsible section helper
-  const Section = ({ id, title, icon: Icon, iconColor, children, defaultOpen = false }) => {
+  const Section = ({ id, title, icon: Icon, iconColor, children, defaultOpen = false, score }) => {
     const isOpen = expandedSections[id] !== undefined ? expandedSections[id] : defaultOpen;
     return (
       <div className={`${c.card} rounded-xl shadow-lg p-6`}>
@@ -217,7 +360,10 @@ const NameAudit = () => {
           <h3 className="font-bold flex items-center gap-2">
             <Icon className={`w-5 h-5 ${iconColor}`} /> {title}
           </h3>
-          {isOpen ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+          <div className="flex items-center gap-3">
+            {score != null && <ScoreBar score={score} />}
+            {isOpen ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+          </div>
         </button>
         {isOpen && <div className="mt-4">{children}</div>}
       </div>
@@ -227,9 +373,12 @@ const NameAudit = () => {
   // ─── RENDER ───
   return (
     <div>
-      <div className="mb-5">
-        <h2 className={`text-2xl font-bold ${c.text}`}>{toolData?.title || 'NameAudit'} {toolData?.icon || '🔍'}</h2>
-        <p className={`text-sm ${c.textMuted}`}>{toolData?.tagline || 'Stress-test any name before you commit'}</p>
+      <div className="mb-5 flex items-start justify-between">
+        <div>
+          <h2 className={`text-2xl font-bold ${c.text}`}>{toolData?.title || 'NameAudit'} {toolData?.icon || '🔍'}</h2>
+          <p className={`text-sm ${c.textMuted}`}>{toolData?.tagline || 'Stress-test any name before you commit'}</p>
+        </div>
+        <BookmarkButton toolId="NameAudit" isDark={isDark} />
       </div>
 
       {/* ═══ INPUT VIEW ═══ */}
@@ -278,10 +427,18 @@ const NameAudit = () => {
                 </div>
               ))}
               {compareNames.length < 4 && (
-                <button onClick={() => setCompareNames([...compareNames, ''])}
-                  className={`flex items-center gap-1 text-sm ${c.textMuted} hover:${c.text}`}>
-                  <Plus className="w-4 h-4" /> Add another
-                </button>
+                isUnlocked('nameAudit.compare3plus') || compareNames.length < 2 ? (
+                  <button onClick={() => setCompareNames([...compareNames, ''])}
+                    className={`flex items-center gap-1 text-sm ${c.textMuted} hover:${c.text}`}>
+                    <Plus className="w-4 h-4" /> Add another <PremiumBadge feature="nameAudit.compare3plus" />
+                  </button>
+                ) : (
+                  <PremiumGate feature="nameAudit.compare3plus" label="Compare 3-4 Names">
+                    <button className={`flex items-center gap-1 text-sm ${c.textMuted}`}>
+                      <Plus className="w-4 h-4" /> Add another
+                    </button>
+                  </PremiumGate>
+                )
               )}
             </div>
           )}
@@ -336,9 +493,11 @@ const NameAudit = () => {
             </div>
           )}
 
-          {/* NameStorm mention */}
+          {/* NameStorm cross-ref */}
           <p className={`text-xs text-center ${c.textMuted}`}>
-            Need name ideas first? Try <strong>NameStorm</strong> to generate names, then bring your favorites here.
+            Need name ideas first? Try{' '}
+            <a href="/NameStorm" className={linkStyle}>NameStorm</a>{' '}
+            to generate names, then bring your favorites here.
           </p>
         </div>
       )}
@@ -348,9 +507,19 @@ const NameAudit = () => {
         <div className="space-y-5">
           <div className={`${c.card} rounded-xl shadow-lg p-4 flex items-center justify-between flex-wrap gap-3`}>
             <span className={`text-sm font-semibold ${c.text}`}>Comparison: {compareNames.filter(n => n.trim()).join(' vs ')}</span>
-            <button onClick={reset} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-50 text-cyan-700'}`}>
-              <RefreshCw className="w-3.5 h-3.5" /> New Analysis
-            </button>
+            <div className="flex items-center gap-2 flex-wrap">
+              <CopyBtn content={buildCompareText()} field="compare-analysis" label="Copy All" />
+              <button onClick={handlePrintCompare} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
+                <Printer className="w-3.5 h-3.5" /> Print
+              </button>
+              <button onClick={handleShareCompare} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
+                <Share2 className="w-3.5 h-3.5" /> Share
+              </button>
+              <BookmarkButton toolId="NameAudit" isDark={isDark} size="sm" />
+              <button onClick={reset} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-50 text-cyan-700'}`}>
+                <RefreshCw className="w-3.5 h-3.5" /> New Analysis
+              </button>
+            </div>
           </div>
 
           {/* Winner */}
@@ -372,9 +541,16 @@ const NameAudit = () => {
               const isWinner = cand.name === compareResults.winner?.name;
               return (
                 <div key={idx} className={`${c.card} rounded-xl shadow-lg p-5 border-2 ${isWinner ? (isDark ? 'border-amber-600' : 'border-amber-400') : c.border}`}>
-                  <div className="flex items-center justify-between mb-3">
-                    <h4 className={`text-lg font-bold ${c.text}`}>{cand.name}</h4>
-                    <span className={`px-2.5 py-1 rounded-full text-xs font-bold border ${gradeColors[cand.grade] || c.warning}`}>{cand.grade}</span>
+                  <div className="flex items-start gap-3 mb-3">
+                    {cand.score != null && (
+                      <div className="flex-shrink-0">
+                        <AnimatedScore score={cand.score} size="sm" />
+                      </div>
+                    )}
+                    <div className="flex-1 flex items-center justify-between">
+                      <h4 className={`text-lg font-bold ${c.text}`}>{cand.name}</h4>
+                      <span className={`px-2.5 py-1 rounded-full text-xs font-bold border ${gradeColors[cand.grade] || c.warning}`}>{cand.grade}</span>
+                    </div>
                   </div>
                   <p className={`text-sm ${c.textSecondary} mb-3`}>{cand.one_liner}</p>
                   <div className="space-y-2">
@@ -411,7 +587,7 @@ const NameAudit = () => {
           {/* Controls */}
           <div className={`${c.card} rounded-xl shadow-lg p-4 flex items-center justify-between flex-wrap gap-3`}>
             <span className={`text-sm font-semibold ${c.text}`}>Analysis: "{results.name_analyzed}"</span>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <CopyBtn content={buildFullText()} field="full-analysis" label="Copy All" />
               <button onClick={handlePrint} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
                 <Printer className="w-3.5 h-3.5" /> Print
@@ -419,6 +595,11 @@ const NameAudit = () => {
               <button onClick={handleShare} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
                 <Share2 className="w-3.5 h-3.5" /> Share
               </button>
+              <PremiumGate feature="nameAudit.pdfExport" inline>
+                <button className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
+                  <FileText className="w-3.5 h-3.5" /> PDF <PremiumBadge feature="nameAudit.pdfExport" />
+                </button>
+              </PremiumGate>
               <button onClick={reset} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-50 text-cyan-700'}`}>
                 <RefreshCw className="w-3.5 h-3.5" /> New Analysis
               </button>
@@ -431,13 +612,22 @@ const NameAudit = () => {
             : results.overall_grade === 'FAIR' ? (isDark ? 'border-amber-500' : 'border-amber-400')
             : (isDark ? 'border-red-500' : 'border-red-400')
           }`}>
-            <div className="flex items-center gap-3 mb-3">
-              <span className={`px-3 py-1.5 rounded-full text-sm font-bold border ${gradeColors[results.overall_grade] || c.warning}`}>
-                {results.overall_grade}
-              </span>
-              <h3 className={`text-lg font-bold ${c.text}`}>"{results.name_analyzed}"</h3>
+            <div className="flex items-start gap-5">
+              {results.overall_score != null && (
+                <div className="flex-shrink-0">
+                  <AnimatedScore score={results.overall_score} size="lg" />
+                </div>
+              )}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-3 mb-3">
+                  <span className={`px-3 py-1.5 rounded-full text-sm font-bold border ${gradeColors[results.overall_grade] || c.warning}`}>
+                    {results.overall_grade}
+                  </span>
+                  <h3 className={`text-lg font-bold ${c.text}`}>"{results.name_analyzed}"</h3>
+                </div>
+                <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{results.overall_summary}</p>
+              </div>
             </div>
-            <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{results.overall_summary}</p>
           </div>
 
           {/* Strengths + Weaknesses + Deal Breakers */}
@@ -465,7 +655,7 @@ const NameAudit = () => {
 
           {/* First Impression */}
           {results.first_impression && (
-            <Section id="impression" title="First Impression" icon={Eye} iconColor={isDark ? 'text-violet-400' : 'text-violet-600'} defaultOpen>
+            <Section id="impression" title="First Impression" icon={Eye} iconColor={isDark ? 'text-violet-400' : 'text-violet-600'} defaultOpen score={results.section_scores?.first_impression}>
               <div className="space-y-3">
                 <p className={`text-sm ${c.textSecondary}`}>{results.first_impression.gut_reaction}</p>
                 <div className="flex flex-wrap gap-1.5">
@@ -480,7 +670,7 @@ const NameAudit = () => {
 
           {/* Phonetic Profile */}
           {results.phonetic_profile && (
-            <Section id="phonetic" title="Phonetic Profile" icon={Ear} iconColor={isDark ? 'text-cyan-400' : 'text-cyan-600'}>
+            <Section id="phonetic" title="Phonetic Profile" icon={Ear} iconColor={isDark ? 'text-cyan-400' : 'text-cyan-600'} score={results.section_scores?.phonetics}>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {['syllables', 'mouth_feel', 'accent_notes', 'sound_psychology', 'rhythm'].map(key => (
                   results.phonetic_profile[key] && (
@@ -496,7 +686,7 @@ const NameAudit = () => {
 
           {/* Memorability */}
           {results.memorability && (
-            <Section id="memorability" title="Memorability Tests" icon={Zap} iconColor={isDark ? 'text-amber-400' : 'text-amber-600'}>
+            <Section id="memorability" title="Memorability Tests" icon={Zap} iconColor={isDark ? 'text-amber-400' : 'text-amber-600'} score={results.section_scores?.memorability}>
               <div className="space-y-3">
                 {[
                   { key: 'day_after_test', label: 'Day-After Test' },
@@ -516,7 +706,7 @@ const NameAudit = () => {
 
           {/* Radio Test */}
           {results.radio_test && (
-            <Section id="radio" title="Radio Test (Spell From Hearing)" icon={MessageSquare} iconColor={isDark ? 'text-pink-400' : 'text-pink-600'}>
+            <Section id="radio" title="Radio Test (Spell From Hearing)" icon={MessageSquare} iconColor={isDark ? 'text-pink-400' : 'text-pink-600'} score={results.section_scores?.radio_test}>
               <div className="space-y-3">
                 <PassFail pass={results.radio_test.pass} notes={results.radio_test.notes} />
                 {results.radio_test.likely_misspellings?.length > 0 && (
@@ -535,7 +725,7 @@ const NameAudit = () => {
 
           {/* Visual Analysis */}
           {results.visual_analysis && (
-            <Section id="visual" title="Visual Analysis" icon={Eye} iconColor={isDark ? 'text-purple-400' : 'text-purple-600'}>
+            <Section id="visual" title="Visual Analysis" icon={Eye} iconColor={isDark ? 'text-purple-400' : 'text-purple-600'} score={results.section_scores?.visual}>
               <div className="space-y-3">
                 <div className="flex flex-wrap gap-3 mb-3">
                   {[
@@ -563,7 +753,7 @@ const NameAudit = () => {
 
           {/* Global Language Scan */}
           {results.global_language_scan?.length > 0 && (
-            <Section id="language" title={`Global Language Scan (${results.global_language_scan.length} languages)`} icon={Globe} iconColor={isDark ? 'text-green-400' : 'text-green-600'}>
+            <Section id="language" title={`Global Language Scan (${results.global_language_scan.length} languages)`} icon={Globe} iconColor={isDark ? 'text-green-400' : 'text-green-600'} score={results.section_scores?.global_safety}>
               <div className="flex flex-wrap gap-2">
                 {results.global_language_scan.map((lang, idx) => (
                   <div key={idx} className={`px-3 py-2 rounded-lg border text-sm flex items-center gap-1.5 ${langSeverityStyle(lang.severity)}`}>
@@ -578,7 +768,7 @@ const NameAudit = () => {
 
           {/* Abbreviation Audit */}
           {results.abbreviation_audit && (
-            <Section id="abbreviation" title="Abbreviation & Nickname Audit" icon={Hash} iconColor={isDark ? 'text-orange-400' : 'text-orange-600'}>
+            <Section id="abbreviation" title="Abbreviation & Nickname Audit" icon={Hash} iconColor={isDark ? 'text-orange-400' : 'text-orange-600'} score={results.section_scores?.abbreviations}>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {['natural_shortening', 'initials', 'hashtag', 'issues'].map(key => (
                   results.abbreviation_audit[key] && (
@@ -594,7 +784,7 @@ const NameAudit = () => {
 
           {/* Competitive Landscape */}
           {results.competitive_landscape && (
-            <Section id="competitive" title="Competitive Landscape" icon={Shield} iconColor={isDark ? 'text-red-400' : 'text-red-600'}>
+            <Section id="competitive" title="Competitive Landscape" icon={Shield} iconColor={isDark ? 'text-red-400' : 'text-red-600'} score={results.section_scores?.competitive}>
               <div className="space-y-3">
                 {results.competitive_landscape.similar_names?.length > 0 && (
                   <div className={`p-3 rounded-lg ${c.warning} border`}>
@@ -612,7 +802,7 @@ const NameAudit = () => {
 
           {/* SEO / Searchability */}
           {results.searchability && (
-            <Section id="seo" title="SEO & Searchability" icon={Search} iconColor={isDark ? 'text-blue-400' : 'text-blue-600'}>
+            <Section id="seo" title="SEO & Searchability" icon={Search} iconColor={isDark ? 'text-blue-400' : 'text-blue-600'} score={results.section_scores?.seo}>
               <div className="space-y-3">
                 {['uniqueness', 'google_competition', 'seo_assessment'].map(key => (
                   results.searchability[key] && (
@@ -628,7 +818,7 @@ const NameAudit = () => {
 
           {/* Longevity */}
           {results.longevity && (
-            <Section id="longevity" title="Longevity Check" icon={Clock} iconColor={isDark ? 'text-teal-400' : 'text-teal-600'}>
+            <Section id="longevity" title="Longevity Check" icon={Clock} iconColor={isDark ? 'text-teal-400' : 'text-teal-600'} score={results.section_scores?.longevity}>
               <div className="space-y-3">
                 {['trend_dependency', 'aging_risk', 'verdict'].map(key => (
                   results.longevity[key] && (
@@ -677,7 +867,7 @@ const NameAudit = () => {
 
           {/* Emotional Resonance */}
           {results.emotional_resonance && (
-            <Section id="emotion" title="Emotional Resonance" icon={Heart} iconColor={isDark ? 'text-pink-400' : 'text-pink-600'}>
+            <Section id="emotion" title="Emotional Resonance" icon={Heart} iconColor={isDark ? 'text-pink-400' : 'text-pink-600'} score={results.section_scores?.emotional_resonance}>
               <div className="space-y-3">
                 {results.emotional_resonance.personality_match && (
                   <p className={`text-sm ${c.textSecondary}`}>{results.emotional_resonance.personality_match}</p>
@@ -751,18 +941,41 @@ const NameAudit = () => {
                 </div>
               )}
               {results.suggestions.alternatives_direction && (
-                <div className={`p-3 rounded-lg ${c.info} border`}>
+                <div className={`p-3 rounded-lg ${c.info} border mb-3`}>
                   <p className="text-xs font-bold mb-1">IF RECONSIDERING</p>
                   <p className="text-sm">{results.suggestions.alternatives_direction}</p>
                 </div>
               )}
+              {/* Fix This Name — premium */}
+              <PremiumGate feature="nameAudit.fixThisName" label="Fix This Name">
+                <button
+                  className={`w-full mt-2 py-3 px-4 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all ${
+                    isDark ? 'bg-violet-900/30 border border-violet-700 text-violet-200 hover:bg-violet-900/50'
+                      : 'bg-violet-50 border border-violet-200 text-violet-700 hover:bg-violet-100'
+                  }`}
+                >
+                  <Sparkles className="w-4 h-4" />
+                  Fix This Name — Generate improved variations
+                  <PremiumBadge feature="nameAudit.fixThisName" />
+                </button>
+              </PremiumGate>
             </div>
           )}
 
-          {/* Cross-tool mention */}
-          <p className={`text-xs text-center ${c.textMuted}`}>
-            Want alternatives? Use <strong>NameStorm</strong> to generate names, then bring your favorites back here.
-          </p>
+          {/* Cross-tool: conditional based on grade */}
+          {(results.overall_grade === 'WEAK' || results.overall_grade === 'RECONSIDER') ? (
+            <p className={`text-xs text-center ${c.textMuted}`}>
+              This name scored low — try{' '}
+              <a href="/NameStorm" className={linkStyle}>NameStorm</a>{' '}
+              to generate stronger alternatives.
+            </p>
+          ) : (
+            <p className={`text-xs text-center ${c.textMuted}`}>
+              Want alternatives? Use{' '}
+              <a href="/NameStorm" className={linkStyle}>NameStorm</a>{' '}
+              to generate names, then bring your favorites back here.
+            </p>
+          )}
 
           {/* Disclaimer */}
           <div className={`p-4 rounded-xl text-center ${isDark ? 'bg-zinc-800/50' : 'bg-gray-50'}`}>
