@@ -79,74 +79,66 @@ LANGUAGE: Respond entirely in ${langName}. All advice, descriptions, explanation
 }
 
 /**
- * Safely parse a JSON response from Claude, handling markdown fences
- * and minor formatting issues. Returns the parsed object or throws.
+ * Call Claude with retry logic and safe JSON parsing.
+ * 
+ * Supports TWO calling conventions:
+ * 
+ * 1. Simple (prompt string):
+ *    callClaudeWithRetry('Analyze this...', { label: 'MyTool', max_tokens: 2500 })
+ * 
+ * 2. Full request object:
+ *    callClaudeWithRetry({
+ *      model: 'claude-sonnet-4-20250514',
+ *      max_tokens: 6000,
+ *      system: 'You are...',
+ *      messages: [{ role: 'user', content: prompt }],
+ *    }, { label: 'MyTool' })
+ * 
+ * @param {string|object} promptOrRequest - Either a prompt string or a full API request object
+ * @param {object} options - { label, max_tokens (for simple mode), maxRetries }
+ * @returns {object} - Parsed JSON response
  */
-function safeParseJSON(text) {
-  const cleaned = cleanJsonResponse(text);
-  try {
-    return JSON.parse(cleaned);
-  } catch (e) {
-    // Try fixing common issues: trailing commas, unescaped newlines
-    let patched = cleaned
-      .replace(/,\s*([}\]])/g, '$1')           // trailing commas
-      .replace(/[\x00-\x1F\x7F]/g, (ch) =>     // control chars inside strings
-        ch === '\n' ? '\\n' : ch === '\t' ? '\\t' : ''
-      );
-    return JSON.parse(patched);
-  }
-}
+async function callClaudeWithRetry(promptOrRequest, options = {}) {
+  const { label = 'tool', maxRetries = 2 } = options;
+  let lastError;
 
-/**
- * Call Claude with automatic retry (up to 2 retries) and safe JSON parsing.
- *
- * Usage:
- *   const parsed = await callClaudeWithRetry(prompt, {
- *     label: 'ToolName',       // for logging
- *     max_tokens: 2500,
- *     model: 'claude-sonnet-4-20250514',  // optional, defaults to sonnet
- *     system: 'optional system prompt',
- *   });
- *
- * @param {string} prompt - The user-turn prompt (must be a non-empty string)
- * @param {object} options - { label, max_tokens, model, system }
- * @returns {object} Parsed JSON from Claude's response
- */
-async function callClaudeWithRetry(prompt, options = {}) {
-  const {
-    label = 'unknown',
-    max_tokens = 2000,
-    model = 'claude-sonnet-4-20250514',
-    system,
-  } = options;
+  // Detect calling convention: string = simple, object with messages = full request
+  const isFullRequest = typeof promptOrRequest === 'object' && promptOrRequest.messages;
 
-  const maxAttempts = 3;
-
-  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-    try {
-      const requestBody = {
-        model,
-        max_tokens,
-        messages: [{ role: 'user', content: prompt }],
+  const requestParams = isFullRequest
+    ? {
+        // Full request mode: use what was passed, apply defaults for missing fields
+        model: promptOrRequest.model || 'claude-sonnet-4-20250514',
+        max_tokens: promptOrRequest.max_tokens || options.max_tokens || 2500,
+        system: promptOrRequest.system || 'You are a JSON API. You MUST respond with ONLY a valid JSON object. No preamble, no explanation, no markdown fences, no text before or after the JSON. Your entire response must be parseable by JSON.parse().',
+        messages: promptOrRequest.messages,
+      }
+    : {
+        // Simple string mode: wrap in messages array
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: options.max_tokens || 2500,
+        system: 'You are a JSON API. You MUST respond with ONLY a valid JSON object. No preamble, no explanation, no markdown fences, no text before or after the JSON. Your entire response must be parseable by JSON.parse().',
+        messages: [{ role: 'user', content: promptOrRequest }],
       };
 
-      if (system) {
-        requestBody.system = system;
-      }
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      const message = await anthropic.messages.create(requestParams);
 
-      const response = await anthropic.messages.create(requestBody);
-      const text = response.content[0].text;
-      const parsed = safeParseJSON(text);
+      const textContent = message.content.find(item => item.type === 'text')?.text || '';
+      const cleaned = cleanJsonResponse(textContent);
+      const parsed = JSON.parse(cleaned);
       return parsed;
-    } catch (error) {
-      console.error(`[${label}] Attempt ${attempt}/${maxAttempts} failed:`, error.message);
-      if (attempt === maxAttempts) {
-        throw error;
+    } catch (err) {
+      lastError = err;
+      console.error(`[${label}] Attempt ${attempt + 1} failed:`, err.message);
+      if (attempt < maxRetries) {
+        await new Promise(r => setTimeout(r, 500 * (attempt + 1)));
       }
-      // Brief back-off before retry
-      await new Promise(r => setTimeout(r, 1000 * attempt));
     }
   }
+
+  throw new Error(`[${label}] All ${maxRetries + 1} attempts failed. Last error: ${lastError?.message}`);
 }
 
-module.exports = { anthropic, cleanJsonResponse, withLanguage, callClaudeWithRetry, safeParseJSON };
+module.exports = { anthropic, cleanJsonResponse, callClaudeWithRetry, withLanguage };
