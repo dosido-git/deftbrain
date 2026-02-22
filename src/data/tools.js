@@ -45,112 +45,39 @@ template:
 export const tools = [
 
   {
-    id: "TheFinalWord",
-    title: "The Final Word",
-    category: "Social",
-    icon: "⚖️",
-    description: "The argument-settler your friend group needs. Ask any factual question and get a bold verdict card with confidence rating. Settle disputes by entering both sides — it scores each person's accuracy and declares a winner. Fact-check viral claims with clear TRUE/FALSE/IT'S COMPLICATED rulings. Or fire up Trivia Night mode for rapid-fire rounds with scoring and streaks. Includes voice input for hands-free use mid-argument.",
-    tagline: "Arguments settled. Facts checked. No appeals.",
-
-    guide: {
-      overview: "The Final Word is a real-time fact-resolver designed for the middle of an argument. Instead of everyone pulling out phones and Googling different things, one person asks The Final Word and gets an authoritative verdict card that settles it. Four modes: Quick Answer for straightforward questions, Settle It for two-sided disputes with accuracy scoring, Fact Check for true/false claims, and Trivia Night for competitive quick-fire rounds with streak tracking.",
-      howToUse: [
-        "Choose your mode: Quick Answer, Settle It, Fact Check, or Trivia Night",
-        "Type your question or tap the microphone to speak it",
-        "For disputes, enter both sides — optionally name each person",
-        "Read the verdict card with answer, confidence level, and supporting facts",
-        "Hit 'Actually...' if you think the answer is wrong — it will review your challenge",
-        "Share the verdict card to prove you were right (or gracefully accept defeat)"
-      ],
-      example: {
-        scenario: "You and a friend are arguing about whether the Great Wall of China is visible from space.",
-        action: "Open Settle It mode. Enter 'You can see the Great Wall from space' and 'No you can't, that's a myth.' Hit Deliver the Verdict.",
-        result: "The Final Word scores the myth-caller at 95% accuracy — the Great Wall is NOT visible to the naked eye from low Earth orbit, despite this being one of the most persistent myths in popular culture. Settlement suggestion: 'Loser buys the next round.'"
-      },
-      tips: [
-        "Voice mode works great mid-conversation — tap the mic, ask your question, get your answer",
-        "Settle It mode is most fun when you name the participants — the verdict card calls out the winner by name",
-        "Trivia Night keeps track of streaks — see how many you can get in a row",
-        "The 'Actually...' button lets you challenge any verdict if you think you know better — it's reviewed fairly"
-      ]
-    }
-  },  {
-    id: "NameStorm",
-    title: "NameStorm",
-    category: "Creative",
-    icon: "🌪️",
-    description: "AI-powered name generation with two modes: Generate creates 16-25 names across 15 style categories with linguistic problem flagging, and Blend takes your seed words, expands them into synonym clouds, then systematically creates portmanteaus using 8 blending strategies. Both modes include Domain Name generation with TLD pairing, primary audience language targeting for 11 languages, live domain and social handle checks, and 'More Like This' variations.",
-    tagline: "Name anything. Know it works before you commit.",
-
-    guide: {
-      overview: "Naming things is hard because you need creativity, cultural awareness, and practical validation all at once. NameStorm has two modes. Generate mode creates 16-25 names across the style categories most relevant to what you're naming, with pronunciation guides, Name DNA, problem flags, and AI-curated Top 5 picks. Blend mode takes 2-4 seed words, expands each into 8-12 synonyms and related words, then systematically creates portmanteaus using strategies like Overlap Blends, Prefix Swaps, Syllable Mashups, and Sound Bridges. Both modes support Domain Name generation (where the TLD is part of the creative act), primary audience language targeting (generate names that resonate with Spanish, Mandarin, Japanese, Korean, or 7 other language audiences first), live domain and social handle availability checks, and a More Like This button for variations.",
-      howToUse: [
-        "Choose your mode: Generate (surprise me with names) or Blend (combine my ingredients)",
-        "GENERATE: Select what needs a name, choose vibe chips, and optionally set constraints and industry context",
-        "GENERATE > DOMAIN NAME: Select Domain Name category to generate complete domains with deliberately chosen TLDs, verbal shareability analysis, and email appearance previews",
-        "BLEND: Enter 2-4 seed words or concepts. The AI expands each into a cloud of synonyms before blending across the entire pool",
-        "BLEND > DOMAINS: Toggle 'Pair blends with domain TLDs' to get complete domains from your blended words",
-        "Set primary audience language to any of 11 languages to generate names that resonate with speakers of that language first",
-        "Review Top Picks for the AI's curated best choices, and Say It Out Loud for phonetic traps",
-        "Star favorites, check domain availability, and use More Like This on names you almost love",
-        "Take your top candidates to NameAudit for deep 12-dimension analysis and head-to-head comparison"
-      ],
-      example: {
-        scenario: "You're building a consumer AI tool that helps non-technical people be more productive. You want a domain name that feels sophisticated but approachable. You also want to explore portmanteaus from your core concepts.",
-        action: "First, use Generate mode with Domain Name category, vibes 'Sophisticated + Warm + Friendly', industry 'Consumer AI tools.' You get domains like deft.now, keen.me, claro.app. Then switch to Blend mode, enter seeds 'clever', 'toolkit', 'assist', toggle domain pairing on. The AI expands 'clever' into {deft, savvy, sharp, keen, nimble...}, 'toolkit' into {kit, gear, craft, forge, hub...}, 'assist' into {aid, guide, help, boost, lift...}, then blends across all three clouds.",
-        result: "Generate mode surfaces 20 domains across 5 style categories with TLD rationale, email appearance, and verbal form for each. Blend mode produces 20+ portmanteaus like 'Deftkit', 'Savvicraft', 'Keenforge', 'Aidcraft' -- each showing the blend recipe, pronunciation, and Name DNA. You star your favorites from both modes, check domain availability, and take the top 4 to NameAudit Compare for the final decision."
-      },
-      tips: [
-        "Blend mode's real power is the synonym expansion -- entering 'clever + toolkit' actually blends across 20+ words you didn't think of",
-        "In Domain Name mode, the TLD is part of the creative act: 'fix.now' reads as a command, 'savvy.app' signals tech. Don't just think of TLDs as suffixes",
-        "Set primary audience language before generating -- naming a business for Spanish speakers produces fundamentally different (and better) results than English names with Spanish flavor",
-        "The More Like This button is the most powerful feature -- when you see a name you 70% love, use it to find the one you 100% love",
-        "Domain checks use DNS lookups -- 'likely available' means no DNS record found, but always confirm with a registrar (like Porkbun) before purchasing",
-        "Problem flags check major world languages -- a clean flag means no issues found, but consider checking with native speakers for important names",
-        "Use Generate mode for open-ended exploration and Blend mode when you already know the concepts you want combined",
-        "Take your top candidates to NameAudit (especially Domain Name mode) for the deep dive before committing"
-      ]
-    }
-  },
-    {
     id: "NameAudit",
     title: "NameAudit",
     category: "Creative",
     icon: "🔍",
-    description: "The deepest name analysis you can get without hiring a naming agency. Stress-tests any name across 12 dimensions: phonetics, memorability (including the drunk test), global language scan for unintended meanings, visual analysis, radio test, SEO, competitive landscape, longevity, and emotional resonance. A dedicated Domain Name mode adds TLD analysis, browser bar test, typosquatting risk, verbal sharing rating, and email address test. Includes live domain and social handle availability checks. Also has a head-to-head Compare mode for choosing between finalists.",
+    description: "The deepest name analysis you can get without hiring a naming agency. Stress-tests any name across 12 dimensions: phonetics, memorability (including the drunk test), global language scan for unintended meanings, visual analysis, radio test, SEO, competitive landscape, longevity, and emotional resonance. Includes live domain and social handle availability checks. Also has a head-to-head Compare mode for choosing between finalists.",
     tagline: "Stress-test any name before you commit",
 
     guide: {
-      overview: "NameAudit is the other half of the naming problem. NameStorm gives you ideas; NameAudit tells you if they're any good. Enter a name you're considering and get a 12-dimension analysis: first impression, phonetic profile (mouth feel, sound psychology, accent compatibility), five memorability tests (day-after, tell-a-friend, phone, drunk, and shout), radio test (can someone spell it from hearing it?), visual analysis (how it looks in different cases, as a URL, as a logo), global language scan across 15+ languages, abbreviation audit, competitive landscape, SEO outlook, longevity check, and emotional resonance. For business and product names, live domain and social handle availability checks run automatically. Choose the Domain Name mode to analyze full domains like 'deft.now' or 'savvy.app' — the prompt is engineered specifically for URLs, with TLD trust analysis, .com competition risk, browser bar appearance, typosquatting vulnerability, verbal sharing difficulty, and email address viability. Use Compare mode to pit 2-4 finalists against each other for a clear winner — it works for both regular names and domain names.",
+      overview: "NameAudit is the other half of the naming problem. NameStorm gives you ideas; NameAudit tells you if they're any good. Enter a name you're considering and get a 12-dimension analysis: first impression, phonetic profile (mouth feel, sound psychology, accent compatibility), five memorability tests (day-after, tell-a-friend, phone, drunk, and shout), radio test (can someone spell it from hearing it?), visual analysis (how it looks in different cases, as a URL, as a logo), global language scan across 15+ languages, abbreviation audit, competitive landscape, SEO outlook, longevity check, and emotional resonance. For business and product names, live domain and social handle availability checks run automatically. Use Compare mode to pit 2-4 finalists against each other for a clear winner.",
       howToUse: [
         "Choose Analyze (single name) or Compare (2-4 names head to head)",
-        "Enter the name and select what it's for — Business, Product, Domain Name, Pet, Baby, etc.",
-        "For domain names, enter the full domain including TLD (e.g., deft.now, savvy.app, miao.me)",
+        "Enter the name and select what it's for — Business, Product, Pet, Baby, etc.",
         "Optionally add industry context and target audience for sharper analysis",
         "Review the overall grade and verdict — STRONG, GOOD, FAIR, WEAK, or RECONSIDER",
         "Check Strengths vs. Weaknesses at a glance, and watch for any Deal Breakers",
         "Expand each analysis section for deep detail — phonetics, memorability tests, language scan, etc.",
-        "For domain names, check the TLD Analysis and Domain-Specific Tests sections for URL-focused insights",
         "For business names, scroll to Live Availability to see domain and social handle status",
         "Use the suggestions section for guidance on strengthening the name or pivoting direction"
       ],
       example: {
-        scenario: "You've narrowed your domain shortlist to 'deft.now' for a consumer AI tools site. Before committing, you want to know if the domain works as a URL — will people type the right TLD? Who owns deft.com? How does it sound on a podcast?",
-        action: "Enter 'deft.now' in Analyze mode, select Domain Name, industry: 'Consumer AI tools,' target audience: 'Mainstream non-technical users.'",
-        result: "NameAudit runs the full domain analysis. TLD Analysis flags that .now is novel and users may default to .com. The Radio Test highlights that 'deft dot now' requires clarifying the TLD. The Browser Bar Test shows it reads cleanly. The Email Test rates hello@deft.now as professional but unusual. Domain checks reveal whether deft.com is taken and by whom. The Verbal Sharing rating and Typosquatting risk give you concrete data for the decision."
+        scenario: "You're about to register a domain and file a trademark for your new sustainable fashion brand called 'Verdana.' Before spending money, you want to know if it's a good name.",
+        action: "Enter 'Verdana' in Analyze mode, select Business, industry: 'Sustainable fashion,' target audience: 'Environmentally conscious millennials.'",
+        result: "NameAudit grades it RECONSIDER with a deal breaker: Verdana is an existing Microsoft typeface — you'd face trademark issues and impossible SEO competition. The language scan notes it derives from verdant (positive). The phonetic profile is strong — warm open vowels, 3-syllable rhythm. Memorability tests pass. But the competitive landscape and trademark flags are disqualifying. Suggestions direct you toward similar-sounding alternatives that don't conflict."
       },
       tips: [
         "NameAudit and NameStorm are designed to work together — generate candidates with NameStorm, then bring your top 3 here to analyze and compare",
-        "Use Domain Name mode for actual URLs — it evaluates TLD trust, .com competition, and how people will type, share, and mistype the address",
         "The global language scan checks 15+ languages — if you're going international, this section alone could save you from an expensive mistake",
-        "Pay special attention to the Radio Test — for domain names this is the #1 test: can someone hear it on a podcast and type the correct URL including TLD?",
-        "Compare mode gives a definitive winner — use it when you're stuck between domain finalists to see TLD risk ratings side by side",
+        "Pay special attention to the Radio Test for any name that will spread by word of mouth — if people can't spell it from hearing it, they can't find you",
+        "Compare mode gives a definitive winner — use it when you're stuck between finalists instead of going back and forth in your head",
         "Domain and social checks use DNS lookups and profile page checks — 'likely available' is a strong signal but always confirm through official registrars before purchasing"
       ]
     }
-
   },
-
   {
     id: "NameStorm",
     title: "NameStorm",
@@ -3051,47 +2978,42 @@ export const tools = [
   title: "Crisis Prioritizer",
   category: "Productivity",
   icon: "🚨",
-  description: "When everything feels urgent, this tool separates real urgency from anxiety urgency. Consequence-based analysis ranks tasks by what actually breaks if you don't do them. Includes an anxiety audit that explicitly names what your panic is inflating, energy-matched planning based on your actual capacity, and guilt-free deferral permissions. Three modes: Right Now (today's triage), This Week (day-by-day plan with energy pacing), and Next Few Weeks (sustained crisis management with delegate/delete/rest scheduling).",
+  description: "Ranks tasks by actual importance when everything feels urgent. Separates anxiety-driven urgency from real urgency. Consequence-based analysis shows what legitimately needs attention today vs guilt-free deferrals. 'Only 2 of 12 tasks are actually urgent.'",
   tagline: "Separate real urgency from anxiety urgency",
-
+  
   guide: {
-    overview: "Anxiety makes everything feel equally urgent when only 1-2 things actually are. This tool objectively analyzes deadlines, consequences, and your current state to build a realistic plan. It meets you where you are — panicking, frozen, exhausted, overwhelmed — and gives you a plan sized to your actual energy and time. Three timeframes: 'Right Now' for today's triage, 'This Week' for a day-by-day plan with energy pacing, and 'Next Few Weeks' for sustained crisis management with delegation, deletion, and built-in rest.",
-
+    overview: "Anxiety makes everything feel urgent when only 1-2 things actually are. This tool objectively analyzes deadlines, consequences, and anxiety vs reality to show what needs attention today and what can wait without real consequence.",
+    
     howToUse: [
-      "Choose your timeframe: Right Now (today), This Week (day-by-day), or Next Few Weeks (longer crisis)",
-      "Pick your emotional state and energy level — this shapes the plan you'll get",
-      "Set how much time you have (hours today, or hours/day for weekly modes)",
-      "List everything weighing on you — tap the ℹ️ button to add deadlines and who's waiting",
-      "Review the Anxiety Audit to see which tasks are genuinely urgent vs anxiety-inflated",
-      "Focus on the Must-Dos checklist — check them off as you go",
-      "Read the guilt-free deferrals for explicit permission to let things wait",
-      "For weekly/multi-week modes: follow the day-by-day or week-by-week plan with built-in rest"
+      "List all tasks that feel urgent right now",
+      "Get objective priority ranking with actual urgency levels",
+      "See today's actual must-dos vs can absolutely wait",
+      "Read guilt-free deferral permissions",
+      "Focus only on the 1-3 legitimately urgent tasks"
     ],
-
+    
     example: {
-      scenario: "You're overwhelmed, running on fumes, with 2 hours available. 8 tasks all feel urgent: client proposal due today, reply to mom's text, clean apartment, schedule dentist, buy groceries, respond to 3 emails, pay electric bill, update resume.",
-      action: "Select 'Right Now', pick 'Overwhelmed' + 'Running on fumes' + '~2 hours', enter all 8 tasks. Add deadline 'today 5pm' to the client proposal via the ℹ️ button.",
-      result: "Reality check: Only 1 of 8 is actually critical. The anxiety audit shows mom's text, cleaning, and the resume are pure anxiety — zero consequences if they wait. Must-dos: Client proposal (2hrs). Energy plan: 'Do the proposal. That's it. Everything else is tomorrow. You have permission.' Guilt-free deferrals: 'Your apartment doesn't need to be clean today. Nobody is coming over. Mom will understand a text tomorrow. The electric bill isn't due for 2 weeks.'"
+      scenario: "You have 12 tasks and all feel equally urgent: client proposal due today, prescription pickup, mom's text, cleaning apartment, organizing files, non-urgent emails, and 6 others. Everything feels like a crisis.",
+      action: "Input all 12 tasks.",
+      result: "Analysis: Out of 12 tasks, only 2 are actually urgent. #1 CRITICAL: Client proposal (due 5pm today, consequence: lose $20k contract). #2 CRITICAL: Prescription pickup (pharmacy closes 6pm, consequence: out of medication). #3 LOW: Mom's text (she texted 2 days ago, consequence: she might worry but no crisis). #4 OPTIONAL: Clean apartment (consequence: none, can wait until weekend). Reality check: Anxiety is making everything feel critical, but 10 of these can wait without real consequences. Today's actual must-dos: Proposal (2 hours) + Prescription (20 min). Permission to defer: Mom will understand if you text tomorrow. Cleaning does not need to happen today. Emails can wait 24-48 hours."
     },
-
+    
     tips: [
-      "The ℹ️ button lets you add deadlines and who's waiting — the more context, the sharper the analysis",
       "Trust the consequence analysis over your anxiety's assessment",
-      "Actually defer the 'can wait' items — don't just deprioritize then do them anyway",
-      "If everything ranks as critical, you're overcommitted and need to renegotiate, not work harder",
-      "Use 'This Week' when you have a pile-up, 'Next Few Weeks' for sustained difficult periods like moves, job transitions, or caregiving",
-      "The breather pause before results is intentional — take that breath, it actually helps",
-      "Copy All or Print your plan so you can reference it without reopening the tool"
+      "Actually defer the 'can wait' items - don't just deprioritize then do them anyway",
+      "Guilt-free deferral permissions are based on real consequences, not 'should's",
+      "If everything ranks as critical, you're overcommitted and need to renegotiate obligations",
+      "Use this when you feel overwhelmed by 'everything', not for calm planning"
     ],
-
+    
     pitfalls: [
-      "Don't add artificial urgency ('but I WANT it done today') — that's not the same as urgent",
+      "Don't add artificial urgency ('but I WANT it done today') - that's not the same as urgent",
       "If someone else's poor planning created urgency for you, that's a boundary issue to address",
-      "Repeatedly ignoring 'can wait' tasks forever means they should be deleted, not deferred",
-      "The multi-week mode works best when you brain-dump EVERYTHING — don't pre-filter"
+      "Repeatedly ignoring 'can wait' tasks forever means they should be deleted, not deferred"
     ]
   }
 },
+
 {
   id: "TaskSwitchingMinimizer",
   title: "Task Switching Minimizer",
@@ -3196,7 +3118,7 @@ export const tools = [
     example: {
       scenario: "You need to write a report for 50 minutes but can't start because working alone feels impossible. You know you'd work fine if someone were just... there.",
       action: "Task: 'Writing report', Duration: 50 minutes, Check-ins: Every 15 minutes.",
-      result: "Session starts: '0 min: Starting now. I'm here with you.' 15 min: 'Still working? Great. Keep going.' 30 min: 'Halfway there. You're doing it.' 45 min: 'Almost done. Last push.' 50 min: 'Done! You did the thing. ðŸŽ‰' The gentle presence and periodic check-ins create just enough accountability to maintain focus without pressure."
+      result: "Session starts: '0 min: Starting now. I'm here with you.' 15 min: 'Still working? Great. Keep going.' 30 min: 'Halfway there. You're doing it.' 45 min: 'Almost done. Last push.' 50 min: 'Done! You did the thing. 🎉' The gentle presence and periodic check-ins create just enough accountability to maintain focus without pressure."
     },
     
     tips: [

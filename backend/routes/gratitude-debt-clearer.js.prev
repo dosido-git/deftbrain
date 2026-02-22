@@ -1,51 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { anthropic, cleanJsonResponse, callClaudeWithRetry, withLanguage } = require('../lib/claude');
 const { rateLimit, CREATIVE_LIMITS } = require('../lib/rateLimiter');
 
 // Apply creative-tier rate limit
 router.use(rateLimit(CREATIVE_LIMITS, 'gratitude-debt-clearer:'));
 
-// ── Quick Thanks endpoint ──
-router.post('/gratitude-debt-clearer/quick', async (req, res) => {
-  try {
-    const { recipientName, situation } = req.body;
-
-    if (!recipientName || !situation) {
-      return res.status(400).json({ error: 'Name and situation are required' });
-    }
-
-    const prompt = `You are a quick-gratitude specialist. Generate a short, sincere thank-you message (1-2 sentences max) that sounds natural and human — like a real text message or quick note.
-
-RECIPIENT: ${recipientName}
-SITUATION: ${situation}
-
-OUTPUT (JSON only):
-{
-  "message": "the short thank-you message",
-  "emoji_suggestion": "one relevant emoji"
-}
-
-Return ONLY valid JSON. Keep it brief, warm, and authentic — NOT a greeting card. Think real human texting.`;
-
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 300,
-      messages: [{ role: 'user', content: prompt }]
-    });
-
-    const textContent = message.content.find(item => item.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(textContent);
-    const parsed = JSON.parse(cleaned);
-    res.json(parsed);
-
-  } catch (error) {
-    console.error('Quick Thanks error:', error);
-    res.status(500).json({ error: error.message || 'Failed to generate quick thanks' });
-  }
-});
-
-// ── Main generation endpoint ──
 router.post('/gratitude-debt-clearer', async (req, res) => {
   try {
     const { 
@@ -61,7 +21,8 @@ router.post('/gratitude-debt-clearer', async (req, res) => {
       deliveryMethod,
       needHandwritingTemplate,
       adjustmentPrompt,
-      originalMessage
+      originalMessage,
+      userLanguage
     } = req.body;
 
     // Validation
@@ -168,7 +129,7 @@ ${specificGiftDetails ? `- Reference the specific gift details: "${specificGiftD
 ${howYoullUseIt ? `- Mention how they'll use it: "${howYoullUseIt}"` : ''}
 - Match the tone to the relationship (professional vs personal)
 - Follow ${culturalContext} gratitude etiquette and formality levels
-- Avoid cliches and over-the-top language unless culturally appropriate
+- Avoid clichés and over-the-top language unless culturally appropriate
 - Sound like a real human, not a hallmark card
 - Each version should have a distinct approach
 - Include the recipient's name naturally in at least one version
@@ -225,16 +186,18 @@ OUTPUT (JSON only):
 Generate 2-3 message versions with different approaches. Return ONLY valid JSON.`;
     }
 
-    // Call Claude API using standard pattern (fixes 400 error from callClaudeWithRetry)
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 2500,
-      messages: [{ role: 'user', content: prompt }]
-    });
+    // Build system prompt with language support
+    const systemPrompt = withLanguage(
+      'You are a gratitude expression specialist. Return ONLY valid JSON matching the requested schema. No markdown, no preamble.',
+      userLanguage
+    );
 
-    const textContent = message.content.find(item => item.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(textContent);
-    const parsed = JSON.parse(cleaned);
+    // Call Claude API with retry and safe parsing
+    const parsed = await callClaudeWithRetry(prompt, {
+      label: 'GratitudeDebtClearer',
+      max_tokens: 2500,
+      system: systemPrompt,
+    });
 
     // Send response
     res.json(parsed);

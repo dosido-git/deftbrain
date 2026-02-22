@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { ChevronLeft, BookOpen, Lightbulb, PlayCircle, Sun, Moon, Bookmark } from 'lucide-react';
+import React, { useEffect } from 'react';
+import { ChevronLeft, BookOpen, Lightbulb, PlayCircle, Sun, Moon } from 'lucide-react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { getToolById, tools } from '../data/tools';
 import { useTheme } from '../hooks/useTheme';
@@ -70,27 +70,6 @@ const ToolPageWrapper = ({ children, tool, toolId }) => {
 
   // Theme-aware classes
   const isDark = theme === 'dark';
-
-  // Bookmark state
-  const toolSlug = detectedTool?.id || '';
-  const [isBookmarked, setIsBookmarked] = useState(() => {
-    try {
-      const saved = JSON.parse(localStorage.getItem('deftbrain-bookmarks') || '[]');
-      return saved.includes(toolSlug);
-    } catch { return false; }
-  });
-
-  const toggleBookmark = () => {
-    setIsBookmarked(prev => {
-      const next = !prev;
-      try {
-        const saved = JSON.parse(localStorage.getItem('deftbrain-bookmarks') || '[]');
-        const updated = next ? [...new Set([...saved, toolSlug])] : saved.filter(id => id !== toolSlug);
-        localStorage.setItem('deftbrain-bookmarks', JSON.stringify(updated));
-      } catch { /* ignore */ }
-      return next;
-    });
-  };
   
   const colors = {
     // Backgrounds
@@ -172,22 +151,8 @@ const ToolPageWrapper = ({ children, tool, toolId }) => {
             </p>
           </header>
 
-          {/* Bookmark + Theme Toggle (above card, right-aligned) */}
-          <div className="flex justify-end mb-2 gap-2">
-            {toolSlug && (
-              <button
-                onClick={toggleBookmark}
-                className={`p-2 rounded-lg transition-all ${
-                  isBookmarked
-                    ? (isDark ? 'bg-amber-900/40 text-amber-400' : 'bg-amber-100 text-amber-600')
-                    : `${colors.toggleBg} ${colors.toggleText}`
-                }`}
-                aria-label={isBookmarked ? 'Remove bookmark' : 'Bookmark this tool'}
-                title={isBookmarked ? 'Remove bookmark' : 'Bookmark this tool'}
-              >
-                <Bookmark className={`w-4 h-4 ${isBookmarked ? 'fill-current' : ''}`} />
-              </button>
-            )}
+          {/* ── Theme Toggle (above card, right-aligned) ── */}
+          <div className="flex justify-end mb-2">
             <button
               onClick={toggleTheme}
               className={`p-2 rounded-lg transition-all ${colors.toggleBg} ${colors.toggleText}`}

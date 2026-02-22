@@ -378,7 +378,6 @@ const NameAudit = () => {
           <h2 className={`text-2xl font-bold ${c.text}`}>{toolData?.title || 'NameAudit'} {toolData?.icon || '🔍'}</h2>
           <p className={`text-sm ${c.textMuted}`}>{toolData?.tagline || 'Stress-test any name before you commit'}</p>
         </div>
-        <BookmarkButton toolId="NameAudit" isDark={isDark} />
       </div>
 
       {/* ═══ INPUT VIEW ═══ */}

@@ -1,7 +1,5 @@
 // backend/lib/claude.js
 // Shared Anthropic client and utility functions for all route handlers
-const path = require('path');
-require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 
 const Anthropic = require('@anthropic-ai/sdk');
 
@@ -23,107 +21,6 @@ function cleanJsonResponse(text) {
     cleaned = cleaned.substring(0, lastBrace + 1);
   }
   return cleaned;
-}
-
-/**
- * Robust JSON parser that handles common LLM output quirks:
- * - Trailing commas before } or ]
- * - Truncated output (attempts to close open braces/brackets)
- * - Control characters inside strings
- * - Falls back to cleanJsonResponse first
- */
-function safeParseJSON(text) {
-  const cleaned = cleanJsonResponse(text);
-
-  // First try: direct parse (fast path)
-  try {
-    return JSON.parse(cleaned);
-  } catch (e) {
-    // Continue to repair attempts
-    console.warn('[safeParseJSON] Direct parse failed, attempting repairs...');
-  }
-
-  let repaired = cleaned;
-
-  // Fix trailing commas: ,} or ,]
-  repaired = repaired.replace(/,\s*([}\]])/g, '$1');
-
-  // Remove control characters inside strings (except \n, \t, \r which are valid)
-  repaired = repaired.replace(/[\x00-\x08\x0b\x0c\x0e-\x1f]/g, '');
-
-  // Second try: after comma/control char fixes
-  try {
-    return JSON.parse(repaired);
-  } catch (e) {
-    console.warn('[safeParseJSON] Repaired parse failed, attempting brace closure...');
-  }
-
-  // Attempt to close truncated JSON by counting open braces/brackets
-  let openBraces = 0;
-  let openBrackets = 0;
-  let inString = false;
-  let escape = false;
-
-  for (let i = 0; i < repaired.length; i++) {
-    const ch = repaired[i];
-    if (escape) { escape = false; continue; }
-    if (ch === '\\' && inString) { escape = true; continue; }
-    if (ch === '"') { inString = !inString; continue; }
-    if (inString) continue;
-    if (ch === '{') openBraces++;
-    if (ch === '}') openBraces--;
-    if (ch === '[') openBrackets++;
-    if (ch === ']') openBrackets--;
-  }
-
-  // Remove any trailing partial key/value (incomplete string after last comma)
-  repaired = repaired.replace(/,\s*"[^"]*"?\s*:?\s*"?[^"]*$/, '');
-  // Re-fix trailing commas after the trim
-  repaired = repaired.replace(/,\s*([}\]])/g, '$1');
-
-  // Close any open brackets/braces
-  for (let i = 0; i < openBrackets; i++) repaired += ']';
-  for (let i = 0; i < openBraces; i++) repaired += '}';
-
-  // Third try
-  try {
-    return JSON.parse(repaired);
-  } catch (e) {
-    console.error('[safeParseJSON] All repair attempts failed. Cleaned text starts with:', cleaned.substring(0, 200));
-    throw new Error('Failed to parse AI response as JSON after repair attempts');
-  }
-}
-
-/**
- * Call Claude with automatic retry on failure.
- * Retries once with a brief delay if the first attempt fails or returns unparseable JSON.
- *
- * @param {object} params - Parameters for anthropic.messages.create
- * @param {object} options - { maxRetries: number, delayMs: number, label: string }
- * @returns {object} Parsed JSON response
- */
-async function callClaudeWithRetry(params, options = {}) {
-  const { maxRetries = 1, delayMs = 1000, label = 'Claude' } = options;
-
-  for (let attempt = 0; attempt <= maxRetries; attempt++) {
-    try {
-      const message = await anthropic.messages.create(params);
-      const textContent = message.content.find(item => item.type === 'text')?.text || '';
-
-      if (!textContent.trim()) {
-        throw new Error('Empty response from Claude');
-      }
-
-      return safeParseJSON(textContent);
-    } catch (err) {
-      if (attempt < maxRetries) {
-        console.warn(`[${label}] Attempt ${attempt + 1} failed: ${err.message}. Retrying in ${delayMs}ms...`);
-        await new Promise(resolve => setTimeout(resolve, delayMs));
-      } else {
-        throw err;
-      }
-    }
-  }
 }
 
 /**
@@ -181,4 +78,75 @@ function withLanguage(systemPrompt, userLanguage) {
 LANGUAGE: Respond entirely in ${langName}. All advice, descriptions, explanations, scripts, and human-readable text must be in ${langName}. Keep JSON keys in English but write all JSON string values in ${langName}. If you include a ready-to-use message or script the user will copy, write it in ${langName}.`;
 }
 
-module.exports = { anthropic, cleanJsonResponse, safeParseJSON, callClaudeWithRetry, withLanguage };
+/**
+ * Safely parse a JSON response from Claude, handling markdown fences
+ * and minor formatting issues. Returns the parsed object or throws.
+ */
+function safeParseJSON(text) {
+  const cleaned = cleanJsonResponse(text);
+  try {
+    return JSON.parse(cleaned);
+  } catch (e) {
+    // Try fixing common issues: trailing commas, unescaped newlines
+    let patched = cleaned
+      .replace(/,\s*([}\]])/g, '$1')           // trailing commas
+      .replace(/[\x00-\x1F\x7F]/g, (ch) =>     // control chars inside strings
+        ch === '\n' ? '\\n' : ch === '\t' ? '\\t' : ''
+      );
+    return JSON.parse(patched);
+  }
+}
+
+/**
+ * Call Claude with automatic retry (up to 2 retries) and safe JSON parsing.
+ *
+ * Usage:
+ *   const parsed = await callClaudeWithRetry(prompt, {
+ *     label: 'ToolName',       // for logging
+ *     max_tokens: 2500,
+ *     model: 'claude-sonnet-4-20250514',  // optional, defaults to sonnet
+ *     system: 'optional system prompt',
+ *   });
+ *
+ * @param {string} prompt - The user-turn prompt (must be a non-empty string)
+ * @param {object} options - { label, max_tokens, model, system }
+ * @returns {object} Parsed JSON from Claude's response
+ */
+async function callClaudeWithRetry(prompt, options = {}) {
+  const {
+    label = 'unknown',
+    max_tokens = 2000,
+    model = 'claude-sonnet-4-20250514',
+    system,
+  } = options;
+
+  const maxAttempts = 3;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      const requestBody = {
+        model,
+        max_tokens,
+        messages: [{ role: 'user', content: prompt }],
+      };
+
+      if (system) {
+        requestBody.system = system;
+      }
+
+      const response = await anthropic.messages.create(requestBody);
+      const text = response.content[0].text;
+      const parsed = safeParseJSON(text);
+      return parsed;
+    } catch (error) {
+      console.error(`[${label}] Attempt ${attempt}/${maxAttempts} failed:`, error.message);
+      if (attempt === maxAttempts) {
+        throw error;
+      }
+      // Brief back-off before retry
+      await new Promise(r => setTimeout(r, 1000 * attempt));
+    }
+  }
+}
+
+module.exports = { anthropic, cleanJsonResponse, withLanguage, callClaudeWithRetry, safeParseJSON };
