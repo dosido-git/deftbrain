@@ -147,24 +147,21 @@ export const tools = [
     }
   },
   {
-    id: "DifficultTalkRehearser",
-    title: "Difficult Talk Rehearser",
+    id: "DifficultTalkCoach",
+    title: "Difficult Talk Coach",
     category: "Communication",
     icon: "🗣️",
-    description: "A conversation flight simulator for hard talks. Analyzes the emotional dynamics, maps the moments most likely to derail you, generates multiple scripted approaches with anticipated responses, then lets you practice the conversation live against an AI playing the other person — with real-time coaching after each exchange. Come back after the real conversation for a debrief.",
-    tagline: "Rehearse hard conversations before they happen",
+    description: "Practice scripts and strategies for challenging conversations. Get multiple strategic approaches with specific phrases, predicted responses, and counter-scripts. Includes emotional grounding techniques and preparation steps. Built for anyone who finds difficult conversations anxiety-inducing.",
+    tagline: "Practice hard conversations before they happen",
 
     guide: {
-      overview: "Most difficult conversations fail not because of what you planned to say, but because of how you react when they say something you didn't expect. This tool prepares you in three phases: Prepare (situation analysis, emotional landmine mapping, multiple scripted approaches with anticipated responses), Practice (interactive simulation where the AI plays the other person at your chosen resistance level, with coaching after each exchange), and Debrief (come back after the real conversation for constructive feedback comparing what you planned vs. what happened).",
+      overview: "The Difficult Talk Coach helps you prepare for hard conversations by generating multiple strategic approaches with exact scripts, predicted pushback, and counter-responses. Whether you need to set a boundary, request a change, address conflict, or give feedback, you'll get concrete phrases to use, body language tips, and emotional regulation strategies. Perfect for preparing conversations with partners, family, friends, bosses, coworkers, or employees.",
       howToUse: [
-        "Describe the conversation you need to have — the more specific you are, the better your strategy",
-        "Select who it's with, your goals, their expected resistance level, and your communication style",
-        "For a much stronger strategy: fill in what you're most afraid they'll say, their likely perspective, and any previous attempts",
-        "Review the Situation Reading to understand their mindset and likely defense mechanisms",
-        "Study the Emotional Landmines — these are the moments that will derail you if you're not ready",
-        "Choose a conversation approach, practice the opening out loud, and review the anticipated responses",
-        "Switch to the Practice tab to run the conversation live — the AI responds in character with real-time coaching",
-        "After the real conversation, use the Debrief tab to process what happened and identify growth areas"
+        "Describe the difficult conversation you need to have - be specific about what you need to discuss",
+        "Select your relationship to the person (Partner, Family, Friend, Boss, Coworker, Employee)",
+        "Choose your preferred communication style (Direct, Indirect, Collaborative, or Assertive)",
+        "Use the slider to indicate how much resistance you expect (from minimal pushback to major conflict)",
+        "Check all conversation goals that apply: set boundary, request change, address conflict, give feedback, or ask for something. Click 'Rehearse This Conversation' to get 3-4 strategic approaches with exact scripts, anticipated responses, emotional preparation techniques, and follow-up plans"
       ],
       example: {
         scenario: "You need to tell your boss that a coworker is taking credit for your work. You're afraid your boss will think you're being petty or a 'bad team player,' and the coworker has more seniority.",
@@ -172,14 +169,20 @@ export const tools = [
         result: "You get: a Situation Reading noting your boss likely prioritizes team stability over individual credit disputes. 4 emotional landmines including 'That's just how collaboration works' with strategic responses. 3 approaches from documentation-based (come with specific examples) to direct (name the pattern). Each includes 6-8 anticipated responses with emotional triggers flagged. Then you practice the conversation live — the AI-as-boss pushes back realistically while a coach helps you refine your delivery in real time."
       },
       tips: [
+        "Practice the opening line out loud 3-5 times before the actual conversation - hearing yourself say it reduces anxiety and helps you sound more natural",
+        "Choose the approach that feels most authentic to you, not the one you think you 'should' use - forced approaches come across as inauthentic",
+        "Use the grounding technique (deep breath: in for 4, hold for 4, out for 6) right before starting the conversation to activate your calm nervous system",
+        "Remember the exit strategy if you get overwhelmed - it's okay to pause and say 'I need a moment to collect my thoughts, can we continue in 5 minutes?'"
+      ],
+      tips: [
         "The 'biggest fear' field is the most important optional input — it directly shapes the emotional landmine analysis, which is the most valuable part of the strategy",
         "Practice mode calibrates to your resistance slider — start at 40% to build confidence, then crank it to 70-80% for stress testing",
         "The opening line is the hardest part — practice saying it out loud 3-5 times before the real conversation",
         "If you get overwhelmed in practice mode, that's useful information — it tells you which moments need more preparation",
         "The debrief is more useful if you do it within 24 hours while the conversation is still fresh"
-      ]
-    }
-  },
+    ]
+  }
+},
 {
   id: "ComplaintEscalationWriter",
   title: "Complaint Escalation Writer",
@@ -1211,37 +1214,6 @@ export const tools = [
         "Use reflection questions in your journal or with a therapist",
         "Remember: interpretations are suggestions for self-reflection, not definitive truths. YOU decide what resonates.",
         "Recurring dreams often indicate unresolved issues - they'll stop once the issue is addressed"
-      ]
-    }
-  },
-  // DifficultTalkRehearser-metadata.js
-   {
-    id: "DifficultTalkRehearser",
-    title: "Difficult Talk Rehearser",
-    category: "Communication",
-    icon: "🗣️",
-    description: "Practice scripts and strategies for challenging conversations. Get multiple strategic approaches with specific phrases, predicted responses, and counter-scripts. Includes emotional grounding techniques and preparation steps. Built for anyone who finds difficult conversations anxiety-inducing.",
-    tagline: "Practice hard conversations before they happen",
-
-    guide: {
-      overview: "The Difficult Talk Rehearser helps you prepare for hard conversations by generating multiple strategic approaches with exact scripts, predicted pushback, and counter-responses. Whether you need to set a boundary, request a change, address conflict, or give feedback, you'll get concrete phrases to use, body language tips, and emotional regulation strategies. Perfect for preparing conversations with partners, family, friends, bosses, coworkers, or employees.",
-      howToUse: [
-        "Describe the difficult conversation you need to have - be specific about what you need to discuss",
-        "Select your relationship to the person (Partner, Family, Friend, Boss, Coworker, Employee)",
-        "Choose your preferred communication style (Direct, Indirect, Collaborative, or Assertive)",
-        "Use the slider to indicate how much resistance you expect (from minimal pushback to major conflict)",
-        "Check all conversation goals that apply: set boundary, request change, address conflict, give feedback, or ask for something. Click 'Rehearse This Conversation' to get 3-4 strategic approaches with exact scripts, anticipated responses, emotional preparation techniques, and follow-up plans"
-      ],
-      example: {
-        scenario: "You need to tell your roommate that their late-night noise is affecting your sleep and work performance. You're worried they'll get defensive because they've been dismissive about it before.",
-        action: "Enter 'I need to ask my roommate to be quieter after 11pm because it's affecting my sleep and work', select 'Friend' relationship, choose 'Collaborative' style, set resistance slider to 60%, check 'Set a boundary' and 'Request a change' goals.",
-        result: "You receive 4 approaches: Direct & Clear ('I need to talk about the noise after 11pm'), Gradual Build ('I wanted to check in about our living situation'), Collaborative Problem-Solving ('Can we brainstorm solutions for the noise issue?'), and Boundary-Setting ('I need quiet after 11pm to function'). Each includes exact opening/closing phrases, anticipated pushback like 'You're being too sensitive' with counter-scripts, body language tips, grounding techniques, and a follow-up plan."
-      },
-      tips: [
-        "Practice the opening line out loud 3-5 times before the actual conversation - hearing yourself say it reduces anxiety and helps you sound more natural",
-        "Choose the approach that feels most authentic to you, not the one you think you 'should' use - forced approaches come across as inauthentic",
-        "Use the grounding technique (deep breath: in for 4, hold for 4, out for 6) right before starting the conversation to activate your calm nervous system",
-        "Remember the exit strategy if you get overwhelmed - it's okay to pause and say 'I need a moment to collect my thoughts, can we continue in 5 minutes?'"
       ]
     }
   },

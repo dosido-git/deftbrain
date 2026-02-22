@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { ChevronLeft, BookOpen, Lightbulb, PlayCircle, Sun, Moon, Bookmark } from 'lucide-react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { getToolById, tools } from '../data/tools';
 import { useTheme } from '../hooks/useTheme';
@@ -71,25 +70,13 @@ const ToolPageWrapper = ({ children, tool, toolId }) => {
   // Theme-aware classes
   const isDark = theme === 'dark';
 
-  // Bookmark state
-  const toolSlug = detectedTool?.id || '';
-  const [isBookmarked, setIsBookmarked] = useState(() => {
-    try {
-      const saved = JSON.parse(localStorage.getItem('deftbrain-bookmarks') || '[]');
-      return saved.includes(toolSlug);
-    } catch { return false; }
-  });
+  // Bookmark toast
+  const [showBookmarkToast, setShowBookmarkToast] = useState(false);
+  const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad|iPod/.test(navigator.userAgent);
 
-  const toggleBookmark = () => {
-    setIsBookmarked(prev => {
-      const next = !prev;
-      try {
-        const saved = JSON.parse(localStorage.getItem('deftbrain-bookmarks') || '[]');
-        const updated = next ? [...new Set([...saved, toolSlug])] : saved.filter(id => id !== toolSlug);
-        localStorage.setItem('deftbrain-bookmarks', JSON.stringify(updated));
-      } catch { /* ignore */ }
-      return next;
-    });
+  const handleBookmarkHint = () => {
+    setShowBookmarkToast(true);
+    setTimeout(() => setShowBookmarkToast(false), 3500);
   };
   
   const colors = {
@@ -133,7 +120,7 @@ const ToolPageWrapper = ({ children, tool, toolId }) => {
             onClick={() => navigate('/')}
             className={`flex items-center gap-1.5 ${colors.textMuted} ${colors.hoverAccent} transition-colors group self-end pb-2`}
           >
-            <ChevronLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
+            <span className="inline-block text-sm group-hover:-translate-x-1 transition-transform">←</span>
             <span className="text-xs font-semibold uppercase tracking-wide">Dashboard</span>
           </button>
           <div className="flex items-start gap-4">
@@ -143,7 +130,7 @@ const ToolPageWrapper = ({ children, tool, toolId }) => {
             <Link to="/" className="flex-shrink-0" title="Back to Dashboard">
               <img 
                 src="/logo-r-l-trsp.png" 
-                alt="aifu.now" 
+                alt="DeftBrain" 
                 className="h-32 w-auto block object-contain"
               />
             </Link>
@@ -172,21 +159,26 @@ const ToolPageWrapper = ({ children, tool, toolId }) => {
             </p>
           </header>
 
-          {/* Bookmark + Theme Toggle (above card, right-aligned) */}
-          <div className="flex justify-end mb-2 gap-2">
-            {toolSlug && (
-              <button
-                onClick={toggleBookmark}
-                className={`p-2 rounded-lg transition-all ${
-                  isBookmarked
-                    ? (isDark ? 'bg-amber-900/40 text-amber-400' : 'bg-amber-100 text-amber-600')
-                    : `${colors.toggleBg} ${colors.toggleText}`
-                }`}
-                aria-label={isBookmarked ? 'Remove bookmark' : 'Bookmark this tool'}
-                title={isBookmarked ? 'Remove bookmark' : 'Bookmark this tool'}
-              >
-                <Bookmark className={`w-4 h-4 ${isBookmarked ? 'fill-current' : ''}`} />
-              </button>
+          {/* Bookmark hint + Theme Toggle (above card, right-aligned) */}
+          <div className="flex justify-end mb-2 gap-2 relative">
+            <button
+              onClick={handleBookmarkHint}
+              className={`p-2 rounded-lg transition-all ${colors.toggleBg} ${colors.toggleText}`}
+              aria-label="Bookmark this tool"
+              title="Bookmark this tool"
+            >
+              <span className="text-base leading-none">🔖</span>
+            </button>
+            {showBookmarkToast && (
+              <div className={`absolute right-0 top-full mt-2 px-4 py-2.5 rounded-lg shadow-lg border text-sm font-medium whitespace-nowrap z-50 ${
+                isDark ? 'bg-zinc-800 border-zinc-600 text-zinc-100' : 'bg-white border-stone-200 text-stone-800'
+              }`}>
+                Press <kbd className={`px-1.5 py-0.5 rounded text-xs font-bold border ${
+                  isDark ? 'bg-zinc-700 border-zinc-500' : 'bg-stone-100 border-stone-300'
+                }`}>{isMac ? '⌘' : 'Ctrl'}</kbd> + <kbd className={`px-1.5 py-0.5 rounded text-xs font-bold border ${
+                  isDark ? 'bg-zinc-700 border-zinc-500' : 'bg-stone-100 border-stone-300'
+                }`}>D</kbd> to bookmark this tool
+              </div>
             )}
             <button
               onClick={toggleTheme}
@@ -194,7 +186,7 @@ const ToolPageWrapper = ({ children, tool, toolId }) => {
               aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}
               title={`Switch to ${isDark ? 'light' : 'dark'} mode`}
             >
-              {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+              {isDark ? <span className="text-base leading-none">☀️</span> : <span className="text-base leading-none">🌙</span>}
             </button>
           </div>
 
@@ -221,7 +213,7 @@ const ToolPageWrapper = ({ children, tool, toolId }) => {
             
             {/* Header */}
             <h3 className={`text-xs font-semibold ${colors.text} uppercase tracking-widest mb-6 flex items-center gap-2`}>
-              <BookOpen className={`h-4 w-4 ${colors.accent}`} />
+              <span className={`text-base ${colors.accent}`}>📖</span>
               How to Use This Tool
             </h3>
             
@@ -239,7 +231,7 @@ const ToolPageWrapper = ({ children, tool, toolId }) => {
             {guide.howToUse && guide.howToUse.length > 0 && (
               <div className="mb-6">
                 <h4 className={`text-xs font-bold ${colors.accent} uppercase mb-3 tracking-wide flex items-center gap-2`}>
-                  <PlayCircle className="h-3.5 w-3.5" />
+                  <span className="text-sm">▶️</span>
                   Step-by-Step
                 </h4>
                 <ol className="space-y-3">
@@ -314,7 +306,7 @@ const ToolPageWrapper = ({ children, tool, toolId }) => {
             {guide.tips && guide.tips.length > 0 && (
               <div className="mb-6">
                 <h4 className={`text-xs font-bold ${isDark ? 'text-yellow-400' : 'text-yellow-600'} uppercase mb-3 tracking-wide flex items-center gap-2`}>
-                  <Lightbulb className="h-3.5 w-3.5" />
+                  <span className="text-sm">💡</span>
                   Pro Tips
                 </h4>
                 <ul className="space-y-2">

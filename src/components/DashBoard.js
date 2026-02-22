@@ -1,10 +1,7 @@
 // src/components/DashBoard.jsx
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import {
-  Star, Clock, ArrowUpDown, ChevronDown, Search, X,
-} from 'lucide-react';
-
+import {X} from 'lucide-react';
 // ════════════════════════════════════════════════════════════
 // CATEGORY CONSOLIDATION
 // ════════════════════════════════════════════════════════════
@@ -318,7 +315,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
 
             {/* Favorites */}
             <SidebarItem
-              icon={<Star className={`w-4 h-4 ${favorites.length > 0 ? 'fill-amber-400 text-amber-400' : 'text-slate-300'}`} />}
+              emoji="⭐"
               label="Favorites"
               count={favorites.length}
               isActive={activeCategory === 'Favorites'}
@@ -344,7 +341,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
               <>
                 <div className="mt-12 mb-5 border-t-2 border-slate-200" />
                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-3 pt-4 mb-2 flex items-center gap-1.5">
-                  <Clock className="w-3 h-3" /> Recent
+                  <span className="text-xs">🕐</span> Recent
                 </p>
                 {sidebarRecents.map(tool => (
                   <Link
@@ -369,7 +366,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
           <div className="flex items-center justify-between mb-1">
             <div className="flex items-center gap-2">
               {activeCategory === 'All' && <span className="text-lg">🏠</span>}
-              {activeCategory === 'Favorites' && <Star className="w-5 h-5 fill-amber-400 text-amber-400" />}
+              {activeCategory === 'Favorites' && <span className="text-lg">⭐</span>}
               {activeMeta && <span className="text-lg">{activeMeta.emoji}</span>}
               <h2 className="text-base font-extrabold text-slate-800 tracking-tight">
                 {activeCategory === 'All' ? 'All Tools' : activeCategory}
@@ -387,7 +384,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
             <div className="flex items-end gap-2">
               {/* Search bar */}
               <div className="relative w-52">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-slate-400 pointer-events-none leading-none">🔍</span>
                 <input
                   ref={searchRef}
                   type="text"
@@ -414,7 +411,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
                 className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold text-slate-500 hover:text-slate-700 hover:bg-slate-50 transition-colors"
                 title={sortMode === 'alpha' ? 'Sorted A–Z. Click for most used.' : 'Sorted by most used. Click for A–Z.'}
               >
-                <ArrowUpDown className="w-3 h-3" />
+                <span className="text-xs">↕️</span>
                 {sortMode === 'alpha' ? 'A–Z' : 'Most Used'}
               </button>
             </div>
@@ -422,10 +419,10 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
           <p className="text-sm text-gray-500 font-medium mb-3">Welcome to DeftBrain.com, your Free Online AI Assistant. Select a tool...</p>
           {activeCategory === 'Favorites' && favorites.length === 0 && !isSearching && (
             <div className="text-center py-14">
-              <Star className="w-10 h-10 text-slate-200 mx-auto mb-3" />
+              <span className="text-4xl block text-center mx-auto mb-3" style={{filter:'grayscale(1)',opacity:0.25}}>⭐</span>
               <p className="text-sm font-bold text-slate-400">No favorites yet</p>
               <p className="text-xs text-slate-400 mt-1">
-                Hover over any tool and click the <Star className="w-3 h-3 inline text-amber-400 fill-amber-400 -mt-0.5" /> to pin it here
+                Hover over any tool and click the <span className="text-xs inline -mt-0.5">⭐</span> to pin it here
               </p>
             </div>
           )}
@@ -499,7 +496,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
             />
             <MobileNavOption
               label="Favorites"
-              icon={<Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />}
+              emoji="⭐"
               count={favorites.length}
               isActive={activeCategory === 'Favorites'}
               onClick={() => selectCategory('Favorites')}
@@ -523,7 +520,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
         >
           <div className="flex items-center gap-2">
             {activeCategory === 'All' && <span>🏠</span>}
-            {activeCategory === 'Favorites' && <Star className="w-4 h-4 fill-amber-400 text-amber-400" />}
+            {activeCategory === 'Favorites' && <span className="text-base">⭐</span>}
             {activeMeta && <span>{activeMeta.emoji}</span>}
             <span className="text-sm font-bold text-slate-700">
               {activeCategory === 'All' ? 'All Tools' : activeCategory}
@@ -532,7 +529,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
               {filteredTools.length}
             </span>
           </div>
-          <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${mobileNavOpen ? 'rotate-180' : ''}`} />
+          <span className={`text-base text-slate-400 transition-transform inline-block ${mobileNavOpen ? 'rotate-180' : ''}`}>▾</span>
         </button>
       </div>
     </div>
@@ -615,7 +612,7 @@ function ToolRow({ tool, isFavorite, onToggleFavorite, onNavigate, accentColor, 
           }`}
           title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
         >
-          <Star className={`w-3.5 h-3.5 ${isFavorite ? 'fill-amber-400' : ''}`} />
+          <span className="text-sm leading-none" style={isFavorite ? {} : {filter:'grayscale(1)',opacity:0.3}}>⭐</span>
         </button>
 
         {/* Arrow */}

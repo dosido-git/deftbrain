@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 
 // ═══════════════════════════════════════════════════
 // ROUTE 1: MAIN REHEARSAL — Strategy & Scripts
 // ═══════════════════════════════════════════════════
-router.post('/difficult-talk-rehearser', async (req, res) => {
+router.post('/difficult-talk-coach', async (req, res) => {
   try {
     const {
       topic,
@@ -16,6 +16,7 @@ router.post('/difficult-talk-rehearser', async (req, res) => {
       biggestFear,
       theirPerspective,
       previousAttempts,
+      userLanguage,
     } = req.body;
 
     if (!topic || !topic.trim()) {
@@ -190,23 +191,24 @@ CRITICAL RULES
 
 6. Return ONLY the JSON object. No markdown, no preamble.`;
 
-    console.log(`[DifficultTalkRehearser] Topic: "${topic.substring(0, 50)}...", Relationship: ${relationship}, Resistance: ${resistanceLevel}`);
+    console.log(`[DifficultTalkCoach] Topic: "${topic.substring(0, 50)}...", Relationship: ${relationship}, Resistance: ${resistanceLevel}`);
 
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+    const systemPrompt = withLanguage(
+      'You are an expert communication coach and conflict resolution specialist. Return ONLY valid JSON matching the exact schema requested. No markdown, no preamble.',
+      userLanguage
+    );
+
+    const parsed = await callClaudeWithRetry(prompt, {
+      label: 'DifficultTalkCoach',
       max_tokens: 7000,
-      messages: [{ role: 'user', content: prompt }],
+      system: systemPrompt,
     });
 
-    const textContent = message.content.find(item => item.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(textContent);
-    const parsed = JSON.parse(cleaned);
-
-    console.log(`[DifficultTalkRehearser] Approaches: ${parsed.conversation_approaches?.length}, Landmines: ${parsed.emotional_landmines?.length}`);
+    console.log(`[DifficultTalkCoach] Approaches: ${parsed.conversation_approaches?.length}, Landmines: ${parsed.emotional_landmines?.length}`);
     res.json(parsed);
 
   } catch (error) {
-    console.error('[DifficultTalkRehearser] Error:', error);
+    console.error('[DifficultTalkCoach] Error:', error);
     res.status(500).json({ error: 'Failed to generate conversation strategy', details: error.message });
   }
 });
@@ -223,6 +225,8 @@ router.post('/difficult-talk-simulate', async (req, res) => {
       theirPerspective,
       conversationHistory,
       userMessage,
+      chosenApproach,
+      emotionalLandmines,
     } = req.body;
 
     if (!userMessage || !userMessage.trim()) {
@@ -233,6 +237,21 @@ router.post('/difficult-talk-simulate', async (req, res) => {
       .map(msg => `${msg.role === 'user' ? 'YOU' : 'THEM'}: ${msg.content}`)
       .join('\n');
 
+    // Build strategy context so coaching can reference the prepared material
+    let strategyContext = '';
+    if (chosenApproach) {
+      strategyContext = `
+STRATEGY THE USER PREPARED:
+- Approach: "${chosenApproach.approach_name}"
+- Planned opening: "${chosenApproach.script?.opening || 'N/A'}"
+- Key phrases they were coached to use: ${(chosenApproach.script?.specific_phrases || []).slice(0, 3).map(p => `"${p}"`).join(', ')}
+- Things they were told NOT to say: ${(chosenApproach.what_NOT_to_say || []).slice(0, 3).join(', ')}`;
+    }
+    if (emotionalLandmines?.length > 0) {
+      strategyContext += `
+EMOTIONAL LANDMINES IDENTIFIED: ${emotionalLandmines.slice(0, 3).map(lm => `"${lm.they_might}" (trigger: ${lm.your_trigger})`).join('; ')}`;
+    }
+
     const prompt = `You are simulating a difficult conversation as a practice partner. You are playing the role of the OTHER PERSON in this conversation.
 
 CONTEXT:
@@ -240,6 +259,7 @@ CONTEXT:
 - Your relationship to the speaker: ${relationship} (you are the ${relationship})
 - Your resistance level: ${resistanceLevel || 50}/100 (how resistant you are to what they want)
 - Your perspective: ${theirPerspective || 'Not specified — infer a realistic perspective based on the topic'}
+${strategyContext}
 
 CONVERSATION SO FAR:
 ${historyText || '(This is the start of the conversation)'}
@@ -258,15 +278,15 @@ YOUR INSTRUCTIONS
 
 3. React to HOW they said it, not just what. If they used an accusation, react to feeling attacked. If they used an I-statement, be slightly more receptive. If they were vague, express confusion.
 
-4. After your in-character response, provide a brief coaching note.
+4. After your in-character response, provide a brief coaching note. If the user has a prepared strategy, reference it — e.g. "Good — you used your planned opening" or "You drifted from your prepared approach here — remember your key phrase about..."
 
 Return ONLY this JSON:
 
 {
   "their_response": "What the other person would realistically say in response. Stay in character. 1-3 sentences, natural dialogue — not a speech.",
   "their_emotional_state": "What the other person is feeling right now (1-3 words)",
-  "coaching_note": "Brief coaching feedback on what the user did well or could improve. Be specific about their phrasing. 1-2 sentences max.",
-  "suggestion": "If applicable: a better way they could have phrased what they just said. Null if what they said was effective.",
+  "coaching_note": "Brief coaching feedback on what the user did well or could improve. Reference their prepared strategy when relevant. 1-2 sentences max.",
+  "suggestion": "If applicable: a better way they could have phrased what they just said — ideally drawn from their prepared key phrases. Null if what they said was effective.",
   "conversation_health": "on_track | drifting | derailing — assessment of how the conversation is going"
 }
 
@@ -277,15 +297,10 @@ RULES:
 - The coaching note should be honest but constructive — don't sugarcoat but don't be harsh.
 - Return ONLY JSON.`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+    const parsed = await callClaudeWithRetry(prompt, {
+      label: 'DifficultTalkSimulate',
       max_tokens: 1000,
-      messages: [{ role: 'user', content: prompt }],
     });
-
-    const textContent = message.content.find(item => item.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(textContent);
-    const parsed = JSON.parse(cleaned);
 
     res.json(parsed);
 
@@ -369,15 +384,11 @@ Return ONLY this JSON:
 
 Return ONLY JSON. No markdown, no preamble.`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+    const parsed = await callClaudeWithRetry(prompt, {
+      label: 'DifficultTalkDebrief',
       max_tokens: 3000,
-      messages: [{ role: 'user', content: prompt }],
+      system: 'You are a compassionate communication coach. Return ONLY valid JSON matching the exact schema requested. No markdown, no preamble.',
     });
-
-    const textContent = message.content.find(item => item.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(textContent);
-    const parsed = JSON.parse(cleaned);
 
     res.json(parsed);
 
