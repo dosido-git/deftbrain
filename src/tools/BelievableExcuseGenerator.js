@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { MessageCircle, Shield, Loader2, Copy, RefreshCw, AlertTriangle, CheckCircle, Info, Heart, Calendar, Users, XCircle, BookOpen, TrendingUp, ExternalLink } from 'lucide-react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
+import { CopyBtn } from '../components/ActionButtons';
 
 const YourTool = () => {
   const { theme } = useTheme();
@@ -50,7 +50,6 @@ const BelievableExcuseGenerator = () => {
   const [results, setResults] = useState(null);
   const [selectedExcuse, setSelectedExcuse] = useState(0);
   const [error, setError] = useState('');
-  const [copiedItem, setCopiedItem] = useState(null);
   
   // Ethical flow state
   const [showEthicalCheck, setShowEthicalCheck] = useState(true);
@@ -238,16 +237,6 @@ const BelievableExcuseGenerator = () => {
     }
   };
 
-  const copyToClipboard = async (text, item) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopiedItem(item);
-      setTimeout(() => setCopiedItem(null), 2000);
-    } catch (err) {
-      setError('Failed to copy to clipboard');
-    }
-  };
-
   const handleReset = () => {
     setEventType('');
     setResults(null);
@@ -268,7 +257,7 @@ const BelievableExcuseGenerator = () => {
       {showEthicalCheck && (
         <div className={`${c.card} border-4 ${isDark ? 'border-red-700' : 'border-red-400'} rounded-xl shadow-lg p-8 transition-colors duration-200`}>
           <div className="flex items-start gap-4 mb-6">
-            <AlertTriangle className="w-12 h-12 text-red-500 flex-shrink-0" />
+            <span className="text-4xl flex-shrink-0">⚠️</span>
             <div>
               <h2 className={`text-2xl font-bold ${c.text} mb-2`}>Before You Continue: Read This Carefully</h2>
               <p className={`text-lg ${c.textSecondary} mb-4`}>
@@ -280,7 +269,7 @@ const BelievableExcuseGenerator = () => {
           {/* Prohibited Uses */}
           <div className={`${c.warningBox} border-l-4 rounded-r-lg p-5 mb-6`}>
             <h3 className="font-bold text-lg mb-3 flex items-center gap-2">
-              <Shield className="w-5 h-5" />
+              <span>🛡️</span>
               STRICTLY PROHIBITED USES
             </h3>
             <div className="space-y-2 text-sm">
@@ -314,7 +303,7 @@ const BelievableExcuseGenerator = () => {
           {/* Healthy Use Warning */}
           <div className={`${c.infoBox} border-l-4 rounded-r-lg p-5 mb-6`}>
             <h3 className="font-bold mb-3 flex items-center gap-2">
-              <Heart className="w-5 h-5" />
+              <span>❤️</span>
               Healthy Use Guidelines
             </h3>
             <div className="space-y-2 text-sm">
@@ -329,7 +318,7 @@ const BelievableExcuseGenerator = () => {
           {viewCount > 5 && (
             <div className={`${isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300'} border-l-4 rounded-r-lg p-5 mb-6`}>
               <h3 className="font-bold mb-2 flex items-center gap-2">
-                <TrendingUp className="w-5 h-5" />
+                <span>📈</span>
                 You've visited this tool {viewCount} times
               </h3>
               <p className="text-sm mb-3">
@@ -337,15 +326,15 @@ const BelievableExcuseGenerator = () => {
               </p>
               <div className="space-y-1 text-sm">
                 <a href="https://www.psychologytoday.com/us/therapists" target="_blank" rel="noopener noreferrer" className={`flex items-center gap-2 ${c.accent} hover:underline`}>
-                  <ExternalLink className="w-3 h-3" />
+                  <span className="text-xs">🔗</span>
                   Find a therapist (Psychology Today)
                 </a>
                 <a href="https://www.betterhelp.com" target="_blank" rel="noopener noreferrer" className={`flex items-center gap-2 ${c.accent} hover:underline`}>
-                  <ExternalLink className="w-3 h-3" />
+                  <span className="text-xs">🔗</span>
                   Online therapy (BetterHelp)
                 </a>
                 <a href="https://www.nedratawwab.com/book" target="_blank" rel="noopener noreferrer" className={`flex items-center gap-2 ${c.accent} hover:underline`}>
-                  <ExternalLink className="w-3 h-3" />
+                  <span className="text-xs">🔗</span>
                   "Set Boundaries, Find Peace" by Nedra Glover Tawwab
                 </a>
               </div>
@@ -394,7 +383,7 @@ const BelievableExcuseGenerator = () => {
         <div className={`${c.successBox} border-l-4 rounded-r-lg p-6 transition-colors duration-200`}>
           <div className="flex items-start justify-between mb-4">
             <div className="flex items-center gap-3">
-              <BookOpen className="w-6 h-6" />
+              <span className="text-xl">📖</span>
               <h3 className={`text-xl font-bold`}>Try Honest Boundary-Setting First</h3>
             </div>
             <button
@@ -418,12 +407,7 @@ const BelievableExcuseGenerator = () => {
                 {honestAlternatives.general.map((script, idx) => (
                   <div key={idx} className={`p-3 rounded-lg ${isDark ? 'bg-zinc-700' : 'bg-white'} flex items-center justify-between`}>
                     <p className="text-sm flex-1">"{script}"</p>
-                    <button
-                      onClick={() => copyToClipboard(script, `honest-${idx}`)}
-                      className={`ml-3 p-2 rounded ${c.btnSecondary}`}
-                    >
-                      {copiedItem === `honest-${idx}` ? <CheckCircle className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
-                    </button>
+                    <CopyBtn content={script} />
                   </div>
                 ))}
               </div>
@@ -436,12 +420,7 @@ const BelievableExcuseGenerator = () => {
                 {honestAlternatives.withBoundary.map((script, idx) => (
                   <div key={idx} className={`p-3 rounded-lg ${isDark ? 'bg-zinc-700' : 'bg-white'} flex items-center justify-between`}>
                     <p className="text-sm flex-1">"{script}"</p>
-                    <button
-                      onClick={() => copyToClipboard(script, `boundary-${idx}`)}
-                      className={`ml-3 p-2 rounded ${c.btnSecondary}`}
-                    >
-                      {copiedItem === `boundary-${idx}` ? <CheckCircle className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
-                    </button>
+                    <CopyBtn content={script} />
                   </div>
                 ))}
               </div>
@@ -454,12 +433,7 @@ const BelievableExcuseGenerator = () => {
                 {honestAlternatives.firm.map((script, idx) => (
                   <div key={idx} className={`p-3 rounded-lg ${isDark ? 'bg-zinc-700' : 'bg-white'} flex items-center justify-between`}>
                     <p className="text-sm flex-1">"{script}"</p>
-                    <button
-                      onClick={() => copyToClipboard(script, `firm-${idx}`)}
-                      className={`ml-3 p-2 rounded ${c.btnSecondary}`}
-                    >
-                      {copiedItem === `firm-${idx}` ? <CheckCircle className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
-                    </button>
+                    <CopyBtn content={script} />
                   </div>
                 ))}
               </div>
@@ -488,7 +462,7 @@ const BelievableExcuseGenerator = () => {
       {!showEthicalCheck && !showHonestAlternatives && recentDecline && (
         <div className={`${c.warningBox} border-l-4 rounded-r-lg p-5 transition-colors duration-200`}>
           <div className="flex items-start gap-3">
-            <AlertTriangle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+            <span className="flex-shrink-0 mt-0.5">⚠️</span>
             <div>
               <h3 className="font-bold mb-2">⚠️ Warning: Recent Decline Detected</h3>
               <p className="text-sm mb-2">
@@ -510,7 +484,7 @@ const BelievableExcuseGenerator = () => {
           {/* Header */}
           <div className="flex items-center gap-3 mb-6">
             <div className={`p-3 rounded-lg ${isDark ? 'bg-amber-900/30' : 'bg-amber-100'}`}>
-              <MessageCircle className={`w-6 h-6 ${isDark ? 'text-amber-400' : 'text-amber-600'}`} />
+              <span className="text-xl">💬</span>
             </div>
             <div>
               <h2 className={`text-xl font-bold ${c.text}`}>Generate Excuse (Use Sparingly)</h2>
@@ -647,12 +621,12 @@ const BelievableExcuseGenerator = () => {
               >
                 {loading ? (
                   <>
-                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <span className="animate-spin inline-block">⏳</span>
                     Generating...
                   </>
                 ) : (
                   <>
-                    <MessageCircle className="w-5 h-5" />
+                    <span>💬</span>
                     Generate Excuses
                   </>
                 )}
@@ -670,7 +644,7 @@ const BelievableExcuseGenerator = () => {
 
             {error && (
               <div className={`p-4 ${c.warningBox} border rounded-lg flex items-start gap-3`} role="alert">
-                <AlertTriangle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                <span className="flex-shrink-0 mt-0.5">⚠️</span>
                 <p className="text-sm">{error}</p>
               </div>
             )}
@@ -686,7 +660,7 @@ const BelievableExcuseGenerator = () => {
           {results.cultural_notes && (
             <div className={`${c.infoBox} border-l-4 rounded-r-lg p-4`}>
               <h4 className="font-semibold mb-2 flex items-center gap-2">
-                <Info className="w-4 h-4" />
+                <span>ℹ️</span>
                 Cultural Considerations
               </h4>
               <p className="text-sm">{results.cultural_notes}</p>
@@ -725,12 +699,7 @@ const BelievableExcuseGenerator = () => {
                     <div className={`text-xs font-semibold uppercase ${c.textMuted}`}>
                       {results.excuse_options[selectedExcuse].excuse_category}
                     </div>
-                    <button
-                      onClick={() => copyToClipboard(results.excuse_options[selectedExcuse].excuse_text, 'excuse')}
-                      className={`p-2 rounded ${c.btnSecondary}`}
-                    >
-                      {copiedItem === 'excuse' ? <CheckCircle className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
-                    </button>
+                    <CopyBtn content={results.excuse_options[selectedExcuse].excuse_text} />
                   </div>
                   
                   <p className={`text-lg ${c.text}`}>
@@ -744,7 +713,7 @@ const BelievableExcuseGenerator = () => {
                     disabled={loading}
                     className={`flex-1 ${c.btnSecondary} py-2 rounded-lg`}
                   >
-                    <RefreshCw className="w-4 h-4 inline mr-2" />
+                    <span className="inline mr-2">🔄</span>
                     More specific
                   </button>
                   <button
@@ -752,7 +721,7 @@ const BelievableExcuseGenerator = () => {
                     disabled={loading}
                     className={`flex-1 ${c.btnSecondary} py-2 rounded-lg`}
                   >
-                    <RefreshCw className="w-4 h-4 inline mr-2" />
+                    <span className="inline mr-2">🔄</span>
                     Simpler
                   </button>
                 </div>
@@ -783,7 +752,7 @@ const BelievableExcuseGenerator = () => {
             {results.timing_advice && (
               <div className={`${c.card} border rounded-xl p-4`}>
                 <h4 className={`text-sm font-semibold ${c.text} mb-2 flex items-center gap-2`}>
-                  <Calendar className="w-4 h-4" />
+                  <span>📅</span>
                   Timing
                 </h4>
                 <p className={`text-sm ${c.textSecondary}`}>{results.timing_advice}</p>
@@ -793,7 +762,7 @@ const BelievableExcuseGenerator = () => {
             {results.apology_calibration && (
               <div className={`${c.card} border rounded-xl p-4`}>
                 <h4 className={`text-sm font-semibold ${c.text} mb-2 flex items-center gap-2`}>
-                  <Heart className="w-4 h-4" />
+                  <span>❤️</span>
                   Apology Level
                 </h4>
                 <p className={`text-sm ${c.textSecondary}`}>{results.apology_calibration}</p>
@@ -803,7 +772,7 @@ const BelievableExcuseGenerator = () => {
             {results.relationship_preservation && (
               <div className={`${c.card} border rounded-xl p-4`}>
                 <h4 className={`text-sm font-semibold ${c.text} mb-2 flex items-center gap-2`}>
-                  <Users className="w-4 h-4" />
+                  <span>👥</span>
                   Preserve Relationship
                 </h4>
                 <p className={`text-sm ${c.textSecondary}`}>{results.relationship_preservation}</p>
@@ -813,7 +782,7 @@ const BelievableExcuseGenerator = () => {
             {results.reschedule_offer && (
               <div className={`${c.card} border rounded-xl p-4`}>
                 <h4 className={`text-sm font-semibold ${c.text} mb-2 flex items-center gap-2`}>
-                  <RefreshCw className="w-4 h-4" />
+                  <span>🔄</span>
                   Reschedule?
                 </h4>
                 <p className={`text-sm ${c.textSecondary}`}>{results.reschedule_offer}</p>
@@ -824,7 +793,7 @@ const BelievableExcuseGenerator = () => {
           {/* Final reminder */}
           <div className={`${c.successBox} border-l-4 rounded-r-lg p-4`}>
             <p className="text-sm flex items-start gap-2">
-              <Heart className="w-4 h-4 mt-0.5 flex-shrink-0" />
+              <span className="mt-0.5 flex-shrink-0">❤️</span>
               <span>
                 <strong>Remember:</strong> Use this excuse sparingly. Next time, try honest boundary-setting first. 
                 Your relationships will be healthier when built on trust, not excuses.

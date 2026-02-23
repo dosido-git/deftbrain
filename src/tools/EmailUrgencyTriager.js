@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Mail, Clock, AlertCircle, CheckCircle, Loader2, Trash2, Info, Calendar, Zap, Coffee, Archive, Copy, ChevronDown, ChevronUp, TrendingUp, Users, Globe, Target, Bell, MessageSquare } from 'lucide-react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
+import { CopyBtn } from '../components/ActionButtons';
 
 const EmailUrgencyTriager = () => {
   const { callToolEndpoint, loading } = useClaudeAPI();
@@ -17,7 +17,6 @@ const EmailUrgencyTriager = () => {
   const [results, setResults] = useState(null);
   const [error, setError] = useState('');
   const [expandedEmail, setExpandedEmail] = useState(null);
-  const [copiedItem, setCopiedItem] = useState(null);
 
   // Sender learning state
   const [senderHistory, setSenderHistory] = useState({});
@@ -162,16 +161,6 @@ const EmailUrgencyTriager = () => {
     }
   };
 
-  const copyToClipboard = async (text, item) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopiedItem(item);
-      setTimeout(() => setCopiedItem(null), 2000);
-    } catch (err) {
-      setError('Failed to copy to clipboard');
-    }
-  };
-
   const handleReset = () => {
     setEmailContent('');
     setResults(null);
@@ -194,12 +183,12 @@ const EmailUrgencyTriager = () => {
 
   const getCategoryIcon = (category) => {
     switch(category?.toLowerCase()) {
-      case 'fyi': return <Info className="w-3 h-3" />;
-      case 'action required': return <Target className="w-3 h-3" />;
-      case 'response expected': return <MessageSquare className="w-3 h-3" />;
-      case 'automated': return <Bell className="w-3 h-3" />;
-      case 'newsletter': return <Mail className="w-3 h-3" />;
-      default: return <Mail className="w-3 h-3" />;
+      case 'fyi': return <span className="text-xs">ℹ️</span>;
+      case 'action required': return <span className="text-xs">🎯</span>;
+      case 'response expected': return <span className="text-xs">💬</span>;
+      case 'automated': return <span className="text-xs">🔔</span>;
+      case 'newsletter': return <span className="text-xs">✉️</span>;
+      default: return <span className="text-xs">✉️</span>;
     }
   };
 
@@ -242,7 +231,7 @@ const EmailUrgencyTriager = () => {
       {/* Enhanced Info Banner */}
       <div className={`${c.infoBox} border-l-4 rounded-r-lg p-5 transition-colors duration-200`}>
         <div className="flex items-start gap-3">
-          <Info className={`w-5 h-5 flex-shrink-0 mt-0.5 ${isDark ? 'text-blue-300' : 'text-blue-600'}`} />
+          <span className="flex-shrink-0 mt-0.5">ℹ️</span>
           <div>
             <h3 className={`font-bold mb-1 ${c.text}`}>Smart Email Triage with AI Learning</h3>
             <p className={`text-sm ${c.textSecondary}`}>
@@ -260,11 +249,11 @@ const EmailUrgencyTriager = () => {
             onClick={() => setShowSenderInsights(!showSenderInsights)}
             className={`flex items-center gap-2 w-full ${c.text}`}
           >
-            <TrendingUp className="w-4 h-4" />
+            <span>📈</span>
             <span className="font-semibold">
               Sender Learning Active ({Object.keys(senderHistory).length} senders tracked)
             </span>
-            {showSenderInsights ? <ChevronUp className="w-4 h-4 ml-auto" /> : <ChevronDown className="w-4 h-4 ml-auto" />}
+            {showSenderInsights ? <span className="ml-auto">▲</span> : <span className="ml-auto">▼</span>}
           </button>
           
           {showSenderInsights && (
@@ -297,7 +286,7 @@ const EmailUrgencyTriager = () => {
         {/* Header */}
         <div className="flex items-center gap-3 mb-6">
           <div className={`p-3 rounded-lg ${isDark ? 'bg-emerald-900/30' : 'bg-emerald-100'}`}>
-            <Mail className={`w-6 h-6 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`} />
+            <span className="text-xl">✉️</span>
           </div>
           <div>
             <h2 className={`text-xl font-bold ${c.text}`}>Smart Email Urgency Analysis</h2>
@@ -325,7 +314,7 @@ const EmailUrgencyTriager = () => {
         {/* Timezone */}
         <div className="mb-6">
           <label htmlFor="timezone" className={`block text-sm font-medium ${c.label} mb-2 flex items-center gap-2`}>
-            <Globe className="w-4 h-4" />
+            <span>🌍</span>
             Your timezone
           </label>
           <input
@@ -384,12 +373,12 @@ Subject: Weekly Tips
           >
             {loading ? (
               <>
-                <Loader2 className="w-5 h-5 animate-spin" />
+                <span className="animate-spin inline-block">⏳</span>
                 Analyzing with AI...
               </>
             ) : (
               <>
-                <Zap className="w-5 h-5" />
+                <span>⚡</span>
                 Analyze Urgency
               </>
             )}
@@ -408,7 +397,7 @@ Subject: Weekly Tips
         {/* Error Display */}
         {error && (
           <div className={`mt-4 p-4 ${c.warningBox} border rounded-lg flex items-start gap-3 transition-colors duration-200`} role="alert">
-            <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+            <span className="flex-shrink-0 mt-0.5">⚠️</span>
             <p className="text-sm">{error}</p>
           </div>
         )}
@@ -426,7 +415,7 @@ Subject: Weekly Tips
                   <div className={`text-sm ${c.textMuted}`}>Total Emails</div>
                   <div className={`text-3xl font-bold ${c.text}`}>{results.summary?.total_emails || 0}</div>
                 </div>
-                <Mail className={`w-8 h-8 ${c.textMuted}`} />
+                <span className="text-2xl">✉️</span>
               </div>
             </div>
 
@@ -436,7 +425,7 @@ Subject: Weekly Tips
                   <div className="text-sm opacity-75">Reply Now</div>
                   <div className="text-3xl font-bold">{results.summary?.urgent_count || 0}</div>
                 </div>
-                <AlertCircle className="w-8 h-8 opacity-75" />
+                <span className="text-2xl opacity-75">🔴</span>
               </div>
             </div>
 
@@ -446,7 +435,7 @@ Subject: Weekly Tips
                   <div className="text-sm opacity-75">This Week</div>
                   <div className="text-3xl font-bold">{results.summary?.this_week_count || 0}</div>
                 </div>
-                <Clock className="w-8 h-8 opacity-75" />
+                <span className="text-2xl opacity-75">⏰</span>
               </div>
             </div>
 
@@ -456,7 +445,7 @@ Subject: Weekly Tips
                   <div className="text-sm opacity-75">Optional</div>
                   <div className="text-3xl font-bold">{results.summary?.optional_count || 0}</div>
                 </div>
-                <Coffee className="w-8 h-8 opacity-75" />
+                <span className="text-2xl opacity-75">☕</span>
               </div>
             </div>
           </div>
@@ -465,7 +454,7 @@ Subject: Weekly Tips
           {results.batch_insights && (
             <div className={`${c.purpleBox} border-l-4 rounded-r-lg p-5 transition-colors duration-200`}>
               <h3 className={`font-bold mb-2 flex items-center gap-2 ${c.text}`}>
-                <Zap className="w-5 h-5" />
+                <span>⚡</span>
                 Smart Batching Suggestions
               </h3>
               {results.batch_insights.similar_emails && results.batch_insights.similar_emails.length > 0 && (
@@ -491,7 +480,7 @@ Subject: Weekly Tips
           {results.anxiety_relief && (
             <div className={`${c.successBox} border-l-4 rounded-r-lg p-5 transition-colors duration-200`}>
               <h3 className={`font-bold mb-2 flex items-center gap-2 ${c.text}`}>
-                <CheckCircle className="w-5 h-5" />
+                <span>✅</span>
                 Permission to Breathe
               </h3>
               {results.anxiety_relief.permission_to_wait && (
@@ -519,7 +508,7 @@ Subject: Weekly Tips
             <div>
               <div className={`${c.urgent} border-2 rounded-t-xl p-4 transition-colors duration-200`}>
                 <div className="flex items-center gap-2">
-                  <AlertCircle className="w-5 h-5" />
+                  <span>⚠️</span>
                   <h3 className="font-bold text-lg">Reply Now</h3>
                 </div>
                 <p className="text-sm opacity-75 mt-1">Needs response today</p>
@@ -527,7 +516,7 @@ Subject: Weekly Tips
               <div className="space-y-3 mt-3">
                 {getEmailsByUrgency('now').length === 0 ? (
                   <div className={`${c.cardAlt} border rounded-lg p-4 text-center transition-colors duration-200`}>
-                    <CheckCircle className={`w-8 h-8 ${c.textMuted} mx-auto mb-2`} />
+                    <span className="text-2xl mx-auto mb-2">✅</span>
                     <p className={`text-sm ${c.textMuted}`}>Nothing urgent! 🎉</p>
                   </div>
                 ) : (
@@ -559,7 +548,7 @@ Subject: Weekly Tips
                               <div className="flex items-center gap-2 mt-2 text-xs">
                                 {email.thread_analysis.is_escalating && (
                                   <span className="text-red-500 font-semibold flex items-center gap-1">
-                                    <TrendingUp className="w-3 h-3" /> Escalating
+                                    <span className="text-xs">📈</span> Escalating
                                   </span>
                                 )}
                                 {email.thread_analysis.follow_up_count > 0 && (
@@ -577,13 +566,13 @@ Subject: Weekly Tips
                             onClick={() => toggleExpanded(idx + '-now')}
                             className={`p-1 rounded ${c.btnSecondary}`}
                           >
-                            {expandedEmail === idx + '-now' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                            {expandedEmail === idx + '-now' ? <span>▲</span> : <span>▼</span>}
                           </button>
                         </div>
                         
                         {email.deadline_detected && (
                           <div className="flex items-center gap-2 text-xs mb-2">
-                            <Calendar className="w-3 h-3" />
+                            <span className="text-xs">📅</span>
                             <span className="font-medium">Deadline: {email.deadline_detected}</span>
                           </div>
                         )}
@@ -637,7 +626,7 @@ Subject: Weekly Tips
             <div>
               <div className={`${c.thisWeek} border-2 rounded-t-xl p-4 transition-colors duration-200`}>
                 <div className="flex items-center gap-2">
-                  <Clock className="w-5 h-5" />
+                  <span>⏰</span>
                   <h3 className="font-bold text-lg">Reply This Week</h3>
                 </div>
                 <p className="text-sm opacity-75 mt-1">Can wait a few days</p>
@@ -645,7 +634,7 @@ Subject: Weekly Tips
               <div className="space-y-3 mt-3">
                 {getEmailsByUrgency('this_week').length === 0 ? (
                   <div className={`${c.cardAlt} border rounded-lg p-4 text-center transition-colors duration-200`}>
-                    <Clock className={`w-8 h-8 ${c.textMuted} mx-auto mb-2`} />
+                    <span className="text-2xl mx-auto mb-2">⏰</span>
                     <p className={`text-sm ${c.textMuted}`}>Nothing here</p>
                   </div>
                 ) : (
@@ -676,7 +665,7 @@ Subject: Weekly Tips
                             onClick={() => toggleExpanded(idx + '-week')}
                             className={`p-1 rounded ${c.btnSecondary}`}
                           >
-                            {expandedEmail === idx + '-week' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                            {expandedEmail === idx + '-week' ? <span>▲</span> : <span>▼</span>}
                           </button>
                         </div>
                         
@@ -707,7 +696,7 @@ Subject: Weekly Tips
             <div>
               <div className={`${c.optional} border-2 rounded-t-xl p-4 transition-colors duration-200`}>
                 <div className="flex items-center gap-2">
-                  <Coffee className="w-5 h-5" />
+                  <span>☕</span>
                   <h3 className="font-bold text-lg">Optional/Never</h3>
                 </div>
                 <p className="text-sm opacity-75 mt-1">No response needed</p>
@@ -715,7 +704,7 @@ Subject: Weekly Tips
               <div className="space-y-3 mt-3">
                 {getEmailsByUrgency('optional').length === 0 ? (
                   <div className={`${c.cardAlt} border rounded-lg p-4 text-center transition-colors duration-200`}>
-                    <Coffee className={`w-8 h-8 ${c.textMuted} mx-auto mb-2`} />
+                    <span className="text-2xl mx-auto mb-2">☕</span>
                     <p className={`text-sm ${c.textMuted}`}>Nothing here</p>
                   </div>
                 ) : (
@@ -736,7 +725,7 @@ Subject: Weekly Tips
                           onClick={() => toggleExpanded(idx + '-optional')}
                           className={`p-1 rounded ${c.btnSecondary}`}
                         >
-                          {expandedEmail === idx + '-optional' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                          {expandedEmail === idx + '-optional' ? <span>▲</span> : <span>▼</span>}
                         </button>
                       </div>
                       
@@ -747,7 +736,7 @@ Subject: Weekly Tips
                             <p className="text-xs">{email.reasoning}</p>
                           </div>
                           <div className="flex items-center gap-2">
-                            <Archive className="w-3 h-3" />
+                            <span className="text-xs">📥</span>
                             <span className="text-xs">Safe to archive or ignore</span>
                           </div>
                         </div>
@@ -763,7 +752,7 @@ Subject: Weekly Tips
           {results.response_templates && results.response_templates.length > 0 && (
             <div className={`${c.card} border rounded-xl p-6 transition-colors duration-200`}>
               <h3 className={`text-lg font-bold ${c.text} mb-4 flex items-center gap-2`}>
-                <Zap className="w-5 h-5" />
+                <span>⚡</span>
                 Quick Response Templates
               </h3>
               <div className="space-y-3">
@@ -773,17 +762,7 @@ Subject: Weekly Tips
                       <div className={`text-xs font-semibold uppercase ${c.textMuted}`}>
                         For: {template.for_urgency}
                       </div>
-                      <button
-                        onClick={() => copyToClipboard(template.template, `template-${idx}`)}
-                        className={`p-2 rounded ${c.btnSecondary}`}
-                        title="Copy template"
-                      >
-                        {copiedItem === `template-${idx}` ? (
-                          <CheckCircle className="w-4 h-4 text-emerald-500" />
-                        ) : (
-                          <Copy className="w-4 h-4" />
-                        )}
-                      </button>
+                      <CopyBtn content={template.template} />
                     </div>
                     <p className={`text-sm ${c.textSecondary}`}>{template.template}</p>
                   </div>

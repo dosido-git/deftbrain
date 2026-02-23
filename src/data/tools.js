@@ -257,46 +257,33 @@ export const tools = [
     ]
   }
 },
-  {
+   {
     id: "FocusSoundArchitect",
     title: "Focus Sound Architect",
-    category: "Neurodivergent Support",
-    icon: "🎧",
-    description: "AI designs a personalized focus soundscape from your task, environment, and sensory needs — then plays it right in your browser with a full layer mixer.",
-    tagline: "Custom soundscapes that actually play",
-    route: "focus-sound-architect",
-    component: "FocusSoundArchitect",
-
+    category: "productivity",
+    icon: " 🎧",
+    description: "Generate personalized soundscapes for concentration based on your task, environment, and sensory needs. Creates custom mixes of white/pink/brown noise, nature sounds, binaural beats, and ambient music. Get sound layering recipes with individual volume controls and specific personalized tips.",
+  tagline: "No tag yet.",
     guide: {
-      overview: "Tell the AI what you're working on, where you are, and what sounds you like. It designs a multi-layer soundscape tailored to your focus needs, then synthesizes it live in your browser using Web Audio — no downloads, no external files. Adjust each layer's volume in real time with the built-in mixer. Especially useful for users who need specific audio environments to concentrate.",
-
+      overview: "The Focus Sound Architect generates custom soundscape recipes calibrated to your neurotype, task, environment, and auditory sensitivities. Instead of generic focus music, you get a personalized mix of sound elements with scientific explanations for why each helps your specific situation. Built with neurodivergent brains in mind - honors sensory sensitivities, provides consistency when needed, variety when needed, and always explains WHY.",
       howToUse: [
-        "Pick your task type (deep work, creative, studying, relaxing, etc.)",
-        "Select your environment so it can calibrate masking intensity",
-        "Choose sound types you like — the AI picks the best combination and volumes",
-        "Optionally set your energy goal and note any sensory sensitivities",
-        "Hit Generate & Play — your soundscape starts automatically",
-        "Use the layer mixer to fine-tune each sound in real time"
+        "Select your current task (Deep work, Creative, Reading, Studying, Tedious tasks, Relaxing)",
+        "Choose your environment (Noisy office, Coffee shop, Quiet home, etc.) - helps calibrate masking level",
+        "Select sound preferences you like: White/Pink/Brown noise, Nature sounds (rain, ocean, forest), Ambient music, Binaural beats, ASMR triggers",
+        "Indicate sensory sensitivities: Sudden sounds startle you? Need variety? Prefer consistency? Sensitive to high frequencies? Need low bass?",
+        "Set energy goal with slider from Calm to Energized",
+        "Generate your custom soundscape recipe with 2-4 layered elements, volume recommendations, binaural beat frequencies, usage instructions, variations to try, neurodivergent-specific tips, and troubleshooting guidance"
       ],
-
       example: {
-        scenario: "You're studying in a noisy open-plan office, prefer brown noise and rain, are sensitive to high frequencies, and want a calm energy level.",
-        action: "Task: Studying, Environment: Open Plan, Sounds: Brown Noise + Rain, Sensitivity: High frequency sensitive, Energy: 25/100 (Calm).",
-        result: "AI generates 3 layers: deep brown noise foundation at 65% for speech masking, gentle rain at 40% for organic texture, and 6Hz theta binaural beats at 20% for relaxed focus. Each layer has its own volume slider. Adjustment guide tells you to lower rain if patter becomes distracting after 30 minutes."
+        scenario: "You need to do deep work in a noisy open-plan office. Sudden sounds startle you, and you prefer consistency. You like brown noise and want to feel calm.",
+        action: "Select: Task = Deep work, Environment = Noisy office + Open plan, Sounds = Brown noise, Sensitivities = Sudden sounds startle me + Prefer consistency, Energy = 25/100 (Calm)",
+        result: "You receive 'Deep Focus Shield' soundscape with: (1) Brown noise at 70% volume (low frequency masking without distraction), (2) Steady rain at 20% volume (gentle variety without surprises), (3) 14Hz binaural beats (beta waves for sustained concentration). Usage: Start 5 min before work at 40% system volume. Variations: 'Energy Boost' version with 40Hz beats if feeling sluggish. Neurodivergent tips: Use this soundscape as your 'focus trigger' - Pavlovian conditioning will help you drop into flow faster over time. Troubleshooting: If still too distracting, remove rain and use just brown noise at 60%."
       },
-
       tips: [
-        "Use headphones for binaural beats — they only work with separate left/right ear channels",
-        "Start with the AI's suggested volumes, then adjust after 5 minutes once your ears adapt",
-        "Lower energy goals pair well with brown noise and ocean; higher goals with pink noise and café",
-        "Hit Regenerate to get a different combination with the same preferences",
-        "The master volume controls overall loudness without changing the layer balance"
-      ],
-
-      pitfalls: [
-        "Selecting too many sound preferences — the AI works best with 2-4 types to choose from",
-        "Setting all layer volumes to 100 — subtlety makes better soundscapes",
-        "Forgetting to note sensitivities — if high-pitched sounds bother you, say so"
+        "Start soundscapes 5 minutes before you need to focus - gives your brain time to settle into the auditory environment",
+        "Use the SAME soundscape each time you do a specific task type - creates a Pavlovian 'focus trigger' that helps you drop into flow faster",
+        "If you have auditory processing differences, start with JUST one element (brown noise) and add complexity slowly only if needed",
+        "Binaural beats require headphones to work - the left and right ears need slightly different frequencies to create the brain wave entrainment effect"
       ]
     }
   },
@@ -339,36 +326,6 @@ export const tools = [
         "Setting unrealistically long sessions (start with 25-45 min, not 3 hours)",
         "Ignoring the break plan actions — they're short and your body needs them",
         "Using pause as a loophole to extend indefinitely"
-      ]
-    }
-  },
-   {
-    id: "FocusSoundArchitect",
-    title: "Focus Sound Architect",
-    category: "productivity",
-    icon: " 🎧",
-    description: "Generate personalized soundscapes for concentration based on your task, environment, and sensory needs. Creates custom mixes of white/pink/brown noise, nature sounds, binaural beats, and ambient music. Get sound layering recipes with individual volume controls and specific personalized tips.",
-  tagline: "No tag yet.",
-    guide: {
-      overview: "The Focus Sound Architect generates custom soundscape recipes calibrated to your neurotype, task, environment, and auditory sensitivities. Instead of generic focus music, you get a personalized mix of sound elements with scientific explanations for why each helps your specific situation. Built with neurodivergent brains in mind - honors sensory sensitivities, provides consistency when needed, variety when needed, and always explains WHY.",
-      howToUse: [
-        "Select your current task (Deep work, Creative, Reading, Studying, Tedious tasks, Relaxing)",
-        "Choose your environment (Noisy office, Coffee shop, Quiet home, etc.) - helps calibrate masking level",
-        "Select sound preferences you like: White/Pink/Brown noise, Nature sounds (rain, ocean, forest), Ambient music, Binaural beats, ASMR triggers",
-        "Indicate sensory sensitivities: Sudden sounds startle you? Need variety? Prefer consistency? Sensitive to high frequencies? Need low bass?",
-        "Set energy goal with slider from Calm to Energized",
-        "Generate your custom soundscape recipe with 2-4 layered elements, volume recommendations, binaural beat frequencies, usage instructions, variations to try, neurodivergent-specific tips, and troubleshooting guidance"
-      ],
-      example: {
-        scenario: "You need to do deep work in a noisy open-plan office. Sudden sounds startle you, and you prefer consistency. You like brown noise and want to feel calm.",
-        action: "Select: Task = Deep work, Environment = Noisy office + Open plan, Sounds = Brown noise, Sensitivities = Sudden sounds startle me + Prefer consistency, Energy = 25/100 (Calm)",
-        result: "You receive 'Deep Focus Shield' soundscape with: (1) Brown noise at 70% volume (low frequency masking without distraction), (2) Steady rain at 20% volume (gentle variety without surprises), (3) 14Hz binaural beats (beta waves for sustained concentration). Usage: Start 5 min before work at 40% system volume. Variations: 'Energy Boost' version with 40Hz beats if feeling sluggish. Neurodivergent tips: Use this soundscape as your 'focus trigger' - Pavlovian conditioning will help you drop into flow faster over time. Troubleshooting: If still too distracting, remove rain and use just brown noise at 60%."
-      },
-      tips: [
-        "Start soundscapes 5 minutes before you need to focus - gives your brain time to settle into the auditory environment",
-        "Use the SAME soundscape each time you do a specific task type - creates a Pavlovian 'focus trigger' that helps you drop into flow faster",
-        "If you have auditory processing differences, start with JUST one element (brown noise) and add complexity slowly only if needed",
-        "Binaural beats require headphones to work - the left and right ears need slightly different frequencies to create the brain wave entrainment effect"
       ]
     }
   },
@@ -632,10 +589,10 @@ export const tools = [
       "Some problems take weeks to show improvement - be patient with recovery timeline"
     ]
   }},
-// ConflictTextCoach-metadata.js
+// ConflictCoach-metadata.js
 {
-  id: "ConflictTextCoach",
-  title: "Conflict Text Coach",
+  id: "ConflictCoach",
+  title: "Conflict Coach",
   description: "Received a tense message? Don't respond reactively. Get de-escalating response suggestions, emotional analysis, and thoughtful strategies. Prevents regrettable texts.",
   tagline: "Stop, breathe, and craft the right response",
   category: "Communication",
@@ -643,7 +600,7 @@ export const tools = [
   gradient: "from-yellow-500 to-orange-600",
   featured: true,
   guide: {
-    overview: "The Conflict Text Coach helps you respond to tense, upsetting, or confrontational messages without escalating. Paste the message you received, and get emotional analysis, multiple response strategies (validate, set boundaries, disengage gracefully), and warnings about what NOT to say. Built for people who freeze during conflict, escalate when defensive, or struggle to read tone. Includes cooling-off timers and repair strategies.",
+    overview: "The Conflict Coach helps you respond to tense, upsetting, or confrontational messages without escalating. Paste the message you received, and get emotional analysis, multiple response strategies (validate, set boundaries, disengage gracefully), and warnings about what NOT to say. Built for people who freeze during conflict, escalate when defensive, or struggle to read tone. Includes cooling-off timers and repair strategies.",
     
     howToUse: [
       "Paste the tense/upsetting message you received",
@@ -2311,48 +2268,6 @@ export const tools = [
   
   tags: ["Money", "Bills", "Anxiety", "Debt"],
   difficulty: "easy",
-},
-
-{
-  id: "ComplaintEscalationWriter",
-  title: "Complaint Escalation Writer",
-  category: "Money",
-  icon: "📧",
-  description: "Writes professional, firm complaint letters that get results. Uses consumer protection frameworks, names names, includes leverage points (BBB, chargeback, regulatory complaints). Professional but firm tone - not angry, not begging. Includes who to send to and next steps if ignored.",
-  tagline: "Write complaints that actually get results",
-  
-  guide: {
-    overview: "Consumer complaints often fail because they're too emotional or lack leverage. This tool writes professional escalation letters that reference consumer protections, state clear outcomes with deadlines, and mention (without threatening) next steps like regulatory complaints or chargebacks. Gets results without burning bridges.",
-    
-    howToUse: [
-      "Specify company and issue in detail",
-      "Note previous attempts to resolve (if any)",
-      "State desired outcome (refund, fix, compensation)",
-      "Get complete escalation letter with subject line",
-      "Learn who to send to (executives, not customer service)",
-      "Receive timeline for follow-up and next steps if ignored"
-    ],
-    
-    example: {
-      scenario: "You bought a defective laptop from MegaTech. Returned it within 30 days per policy but they denied refund claiming 'user damage' when it arrived defective. You've called 3 times, been promised callbacks that never came. You paid $1,200 and want full refund.",
-      action: "Company: MegaTech, Issue: [detailed description], Previous attempts: 3 calls, no resolution, Desired: Full $1,200 refund.",
-      result: "Subject: Formal Complaint - Defective Laptop Return Denied - Account #[your account]. Letter: 'Dear MegaTech Executive Team, I purchased a laptop (Model X, Serial Y) on [date] for $1,200. The device was defective on arrival [specific defect]. I initiated return within your 30-day policy on [date]. Despite three calls to customer service (call logs attached), you've denied my refund claiming user damage. This is inaccurate - the device arrived defective. Per the Magnuson-Moss Warranty Act and [State] consumer protection laws, I'm entitled to refund or replacement for defective merchandise. I expect: 1. Full $1,200 refund by [date 14 days from now], 2. Prepaid return label, 3. Confirmation email within 48 hours. If not resolved by [deadline], I will: 1. File complaint with [State] Attorney General, 2. File BBB complaint, 3. Dispute charge with credit card company, 4. Post detailed review of this experience. I prefer to resolve this amicably. Please confirm receipt and resolution timeline. [Your name, contact info]' Send to: CEO, VP Customer Service (find on LinkedIn), Customer Service Director. Chargeback: If no response in 14 days, contact your credit card company - you have 60-120 days to dispute depending on issuer."
-    },
-    
-    tips: [
-      "The letter is firm but professional - emotional language undermines credibility",
-      "Mentioning regulatory complaints is NOT a threat if you actually plan to do it",
-      "Send to executives, not customer service - they have authority to override policies",
-      "Include ALL relevant details: dates, transaction IDs, names of people you spoke with",
-      "Keep a copy and note when you sent it for follow-up timeline"
-    ],
-    
-    pitfalls: [
-      "Don't make threats you won't follow through on - it weakens your position",
-      "Don't be rude or aggressive - you want them to WANT to resolve this",
-      "Don't skip the deadline - vague 'as soon as possible' has no teeth"
-    ]
-  }
 },
 
 {

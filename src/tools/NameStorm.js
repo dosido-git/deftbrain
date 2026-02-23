@@ -1,12 +1,8 @@
 import React, { useState } from 'react';
-import {
-  Loader2, AlertCircle, Copy, Check, ChevronDown, ChevronUp, RefreshCw, Printer,
-  Star, Zap, Globe, AlertTriangle, CheckCircle, Search, Sparkles, Volume2, Heart,
-  ExternalLink, Shield, Hash, X, Share2, Lock
-} from 'lucide-react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { getToolById } from '../data/tools';
+import { CopyBtn } from '../components/ActionButtons';
 
 const NameStorm = () => {
   const { callToolEndpoint, loading } = useClaudeAPI();
@@ -56,7 +52,6 @@ const NameStorm = () => {
   const [error, setError] = useState('');
   const [activeCategory, setActiveCategory] = useState(0);
   const [favorites, setFavorites] = useState([]);
-  const [copiedField, setCopiedField] = useState(null);
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
 
   // ─── Availability Check State ───
@@ -126,20 +121,6 @@ const NameStorm = () => {
     if (!preferredTLDs.includes(tld)) setPreferredTLDs(prev => [...prev, tld]);
     setTldInput('');
   };
-
-  const copyToClipboard = async (text, field) => {
-    try { await navigator.clipboard.writeText(text); setCopiedField(field); setTimeout(() => setCopiedField(null), 2000); }
-    catch (err) { console.error('Copy failed:', err); }
-  };
-
-  const CopyBtn = ({ content, field, label = 'Copy' }) => (
-    <button onClick={() => copyToClipboard(content, field)} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-      copiedField === field ? (isDark ? 'bg-green-900/40 text-green-300' : 'bg-green-100 text-green-700') : c.btnSecondary
-    }`}>
-      {copiedField === field ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-      {copiedField === field ? 'Copied' : label}
-    </button>
-  );
 
   const handleGenerate = async () => {
     if (isBlendMode) {
@@ -285,7 +266,7 @@ const NameStorm = () => {
     if (navigator.share) {
       try { await navigator.share({ title: 'NameStorm Results', text, url: window.location.href }); }
       catch (err) { if (err.name !== 'AbortError') console.error('Share failed:', err); }
-    } else { copyToClipboard(text, 'share-fallback'); }
+    } else { try { await navigator.clipboard.writeText(text); } catch(e) { console.error('Copy failed:', e); } }
   };
 
   // Problem severity colors
@@ -312,17 +293,14 @@ const NameStorm = () => {
               {nameObj.pronunciation && (
                 <span className={`text-xs font-mono ${c.textMuted}`}>/{nameObj.pronunciation}/</span>
               )}
-              {nameObj.clean && <CheckCircle className={`w-4 h-4 flex-shrink-0 ${isDark ? 'text-green-400' : 'text-green-500'}`} />}
+              {nameObj.clean && <span className="flex-shrink-0">✅</span>}
             </div>
           </div>
           <div className="flex items-center gap-1 flex-shrink-0">
-            <button onClick={() => copyToClipboard(nameObj.name, `name-${nameObj.name}`)}
-              className={`p-1.5 rounded-lg transition-all ${c.btnSecondary}`} title="Copy name">
-              {copiedField === `name-${nameObj.name}` ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-            </button>
+            <CopyBtn content={nameObj.name} />
             <button onClick={() => toggleFavorite(nameObj.name)}
               className="p-1.5 rounded-lg transition-all" title={isFav ? 'Remove from favorites' : 'Add to favorites'}>
-              <Star className={`w-4 h-4 ${isFav ? c.starActive + ' fill-current' : c.starInactive}`} />
+              <span className="text-lg">{isFav ? '⭐' : '☆'}</span>
             </button>
           </div>
         </div>
@@ -357,7 +335,7 @@ const NameStorm = () => {
           <div className="flex flex-wrap gap-1.5 mt-2">
             {nameObj.problems.map((prob, i) => (
               <span key={i} className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border ${severityStyle(prob.severity)}`}>
-                <AlertTriangle className="w-3 h-3" /> {prob.detail}
+                <span>⚠️</span> {prob.detail}
               </span>
             ))}
           </div>
@@ -373,14 +351,14 @@ const NameStorm = () => {
           {showDomainFeatures && (
             <button onClick={() => handleCheckAvailability(nameObj.name)} disabled={isChecking || !!avail}
               className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium transition-all ${avail ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-100 text-gray-400') : c.btnSecondary}`}>
-              {isChecking ? <Loader2 className="w-3 h-3 animate-spin" /> : <Globe className="w-3 h-3" />}
+              {isChecking ? <span className="animate-spin inline-block text-xs">⏳</span> : <span className="text-xs">🌐</span>}
               {avail ? 'Checked' : isChecking ? 'Checking...' : isDomainMode ? 'Check Domain' : 'Check Availability'}
               {!avail && !isChecking && <span className={`text-[9px] px-1 py-0.5 rounded font-bold ${isDark ? 'bg-amber-900/50 text-amber-300' : 'bg-amber-100 text-amber-700'}`}>PRO</span>}
             </button>
           )}
           <button onClick={() => handleMoreLike(nameObj, categoryName)} disabled={isLoadingMore || !!moreData}
             className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium transition-all ${moreData ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-100 text-gray-400') : c.btnSecondary}`}>
-            {isLoadingMore ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
+            {isLoadingMore ? <span className="animate-spin inline-block text-xs">⏳</span> : <span className="text-xs">✨</span>}
             {moreData ? 'See below' : isLoadingMore ? 'Generating...' : 'More Like This'}
             {!moreData && !isLoadingMore && <span className={`text-[9px] px-1 py-0.5 rounded font-bold ${isDark ? 'bg-amber-900/50 text-amber-300' : 'bg-amber-100 text-amber-700'}`}>PRO</span>}
           </button>
@@ -449,7 +427,7 @@ const NameStorm = () => {
                     <div className="flex items-center gap-2">
                       <span className={`font-bold text-sm ${c.text}`}>{v.name}</span>
                       {v.pronunciation && <span className={`text-xs font-mono ${c.textMuted}`}>/{v.pronunciation}/</span>}
-                      {v.clean && <CheckCircle className={`w-3 h-3 ${isDark ? 'text-green-400' : 'text-green-500'}`} />}
+                      {v.clean && <span>✅</span>}
                     </div>
                     <p className={`text-xs ${c.textSecondary} mt-0.5`}>{v.why_it_works}</p>
                     {v.tld_rationale && (
@@ -466,11 +444,9 @@ const NameStorm = () => {
                     )}
                   </div>
                   <div className="flex gap-1 flex-shrink-0">
-                    <button onClick={() => copyToClipboard(v.name, `more-${v.name}`)} className={`p-1 rounded ${c.btnSecondary}`}>
-                      {copiedField === `more-${v.name}` ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
-                    </button>
+                    <CopyBtn content={v.name} />
                     <button onClick={() => toggleFavorite(v.name)} className="p-1 rounded">
-                      <Star className={`w-3 h-3 ${favorites.includes(v.name) ? c.starActive + ' fill-current' : c.starInactive}`} />
+                      <span className="text-sm">{favorites.includes(v.name) ? '⭐' : '☆'}</span>
                     </button>
                   </div>
                 </div>
@@ -498,11 +474,11 @@ const NameStorm = () => {
           <div className="flex gap-2">
             <button onClick={() => { setMode('generate'); setCategory(''); }}
               className={`flex-1 py-3 px-4 rounded-xl border text-sm font-semibold transition-all flex items-center justify-center gap-2 ${c.tab(mode === 'generate')}`}>
-              <Zap className="w-4 h-4" /> Generate
+              <span>⚡</span> Generate
             </button>
             <button onClick={() => { setMode('blend'); setCategory(''); }}
               className={`flex-1 py-3 px-4 rounded-xl border text-sm font-semibold transition-all flex items-center justify-center gap-2 ${c.tab(mode === 'blend')}`}>
-              <Sparkles className="w-4 h-4" /> Blend <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${isDark ? 'bg-amber-900/50 text-amber-300 border border-amber-700' : 'bg-amber-100 text-amber-700 border border-amber-300'}`}>PRO</span>
+              <span>✨</span> Blend <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${isDark ? 'bg-amber-900/50 text-amber-300 border border-amber-700' : 'bg-amber-100 text-amber-700 border border-amber-300'}`}>PRO</span>
             </button>
           </div>
 
@@ -631,7 +607,7 @@ const NameStorm = () => {
                   <div className="flex flex-wrap gap-1.5 mt-2">
                     {preferredTLDs.filter(t => !tldOptions.includes(t)).map(tld => (
                       <span key={tld} className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg border text-xs font-mono font-medium ${c.chip(true)}`}>
-                        {tld} <button onClick={() => setPreferredTLDs(prev => prev.filter(t => t !== tld))}><X className="w-3 h-3" /></button>
+                        {tld} <button onClick={() => setPreferredTLDs(prev => prev.filter(t => t !== tld))}><span>✕</span></button>
                       </span>
                     ))}
                   </div>
@@ -670,13 +646,13 @@ const NameStorm = () => {
             className={`w-full py-4 px-6 rounded-xl font-semibold text-lg transition-all flex items-center justify-center gap-2 shadow-lg ${
               loading ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : c.btnPrimary
             }`}>
-            {loading ? (<><Loader2 className="w-5 h-5 animate-spin" /> {isBlendMode ? 'Blending names...' : isDomainMode ? 'Brainstorming domains...' : 'Brainstorming names...'}</>)
-              : (<><Zap className="w-5 h-5" /> {isBlendMode ? 'Blend Names' : isDomainMode ? 'Storm Domains' : 'Storm Names'}</>)}
+            {loading ? (<><span className="animate-spin inline-block">⏳</span> {isBlendMode ? 'Blending names...' : isDomainMode ? 'Brainstorming domains...' : 'Brainstorming names...'}</>)
+              : (<><span>⚡</span> {isBlendMode ? 'Blend Names' : isDomainMode ? 'Storm Domains' : 'Storm Names'}</>)}
           </button>
 
           {error && (
             <div className={`p-4 rounded-xl flex items-start gap-3 ${c.danger} border`}>
-              <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" /><p className="text-sm">{error}</p>
+              <span className="flex-shrink-0 mt-0.5">⚠️</span><p className="text-sm">{error}</p>
             </div>
           )}
 
@@ -699,20 +675,20 @@ const NameStorm = () => {
                   className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium border transition-all ${
                     showFavoritesOnly ? c.chip(true) : c.chip(false)
                   }`}>
-                  <Star className={`w-3 h-3 ${showFavoritesOnly ? 'fill-current' : ''}`} /> {favorites.length} Favorites
+                  <span className="text-sm">{showFavoritesOnly ? '⭐' : '☆'}</span> {favorites.length} Favorites
                 </button>
               )}
             </div>
             <div className="flex items-center gap-2">
               <CopyBtn content={buildFullText()} field="full-list" label="Copy All" />
               <button onClick={handlePrint} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
-                <Printer className="w-3.5 h-3.5" /> Print
+                <span>🖨️</span> Print
               </button>
               <button onClick={handleShare} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
-                <Share2 className="w-3.5 h-3.5" /> Share
+                <span>📤</span> Share
               </button>
               <button onClick={reset} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${isDark ? 'bg-amber-900/30 text-amber-300 hover:bg-amber-800/40' : 'bg-amber-50 text-amber-700 hover:bg-amber-100'}`}>
-                <RefreshCw className="w-3.5 h-3.5" /> New Storm
+                <span>🔄</span> New Storm
               </button>
             </div>
           </div>
@@ -726,7 +702,7 @@ const NameStorm = () => {
           {results.seed_expansion && !showFavoritesOnly && (
             <div className={`${c.card} rounded-xl shadow-lg p-5`}>
               <h3 className={`font-bold ${c.text} mb-3 flex items-center gap-2`}>
-                <Sparkles className={`w-5 h-5 ${isDark ? 'text-purple-400' : 'text-purple-500'}`} /> Seed Expansion
+                <span>✨</span> Seed Expansion
               </h3>
               <p className={`text-xs ${c.textMuted} mb-3`}>Your seeds were expanded into synonyms and related words before blending:</p>
               <div className="space-y-2">
@@ -745,7 +721,7 @@ const NameStorm = () => {
           {results.top_picks?.length > 0 && !showFavoritesOnly && (
             <div className={`${c.card} rounded-xl shadow-lg p-6 border-l-4 ${isDark ? 'border-amber-500' : 'border-amber-400'}`}>
               <h3 className={`font-bold ${c.text} mb-4 flex items-center gap-2`}>
-                <Zap className={`w-5 h-5 ${isDark ? 'text-amber-400' : 'text-amber-600'}`} /> Top Picks
+                <span>⚡</span> Top Picks
               </h3>
               <div className="space-y-3">
                 {results.top_picks.map((pick, idx) => {
@@ -760,7 +736,7 @@ const NameStorm = () => {
                           <span className={`font-bold ${c.text}`}>{pick.name}</span>
                           <span className={`text-xs px-2 py-0.5 rounded-full border ${c.chip(false)}`}>{pick.from_category}</span>
                           <button onClick={() => toggleFavorite(pick.name)} className="ml-auto">
-                            <Star className={`w-4 h-4 ${favorites.includes(pick.name) ? c.starActive + ' fill-current' : c.starInactive}`} />
+                            <span className="text-lg">{favorites.includes(pick.name) ? '⭐' : '☆'}</span>
                           </button>
                         </div>
                         <p className={`text-sm ${c.textSecondary} mt-1`}>{pick.why_top_pick}</p>
@@ -783,7 +759,7 @@ const NameStorm = () => {
           {results.say_it_out_loud?.length > 0 && !showFavoritesOnly && (
             <div className={`${c.card} rounded-xl shadow-lg p-5`}>
               <h3 className={`font-bold ${c.text} mb-3 flex items-center gap-2`}>
-                <Volume2 className={`w-5 h-5 ${isDark ? 'text-red-400' : 'text-red-500'}`} /> Say It Out Loud Test
+                <span>🔊</span> Say It Out Loud Test
               </h3>
               <p className={`text-xs ${c.textMuted} mb-3`}>These names look good on paper but have issues when spoken aloud:</p>
               {results.say_it_out_loud.map((item, idx) => (
@@ -799,7 +775,7 @@ const NameStorm = () => {
           {showFavoritesOnly && (
             <div className={`${c.card} rounded-xl shadow-lg p-6`}>
               <h3 className={`font-bold ${c.text} mb-4 flex items-center gap-2`}>
-                <Star className={`w-5 h-5 ${c.starActive} fill-current`} /> Your Favorites ({favorites.length})
+                <span>⭐</span> Your Favorites ({favorites.length})
               </h3>
               {favorites.length === 0 ? (
                 <p className={`text-sm ${c.textMuted}`}>Star some names to add them to your shortlist.</p>
@@ -819,10 +795,7 @@ const NameStorm = () => {
                   })}
                 </div>
               )}
-              <button onClick={() => { if (favorites.length > 0) copyToClipboard(favorites.join('\n'), 'fav-list'); }}
-                className={`mt-4 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
-                <Copy className="w-3.5 h-3.5" /> Copy Favorites List
-              </button>
+              <CopyBtn content={favorites.join('\n')} label="Copy Favorites List" />
             </div>
           )}
 
@@ -830,7 +803,7 @@ const NameStorm = () => {
           {!showFavoritesOnly && results.names_by_category?.length > 0 && (
             <div className={`${c.card} rounded-xl shadow-lg p-6`}>
               <h3 className={`font-bold ${c.text} mb-4 flex items-center gap-2`}>
-                <Hash className={`w-5 h-5 ${isDark ? 'text-amber-400' : 'text-amber-600'}`} /> {isBlendMode ? 'Blends by Strategy' : isDomainMode ? 'Domains by Style' : 'Names by Style'}
+                <span>#️⃣</span> {isBlendMode ? 'Blends by Strategy' : isDomainMode ? 'Domains by Style' : 'Names by Style'}
               </h3>
 
               {/* Category Tabs */}

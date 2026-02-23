@@ -73,7 +73,7 @@ const SEARCH_TAGS = {
   LeaseTrapDetector:        ['lease', 'rent', 'apartment', 'landlord', 'tenant', 'housing'],
   ComplaintEscalationWriter:['complaint', 'customer service', 'escalate', 'refund', 'manager'],
   VelvetHammer:             ['negotiate', 'persuade', 'firm', 'boundary', 'pushback', 'assertive'],
-  ConflictTextCoach:        ['text', 'argument', 'fight', 'respond', 'message', 'conflict'],
+  ConflictCoach:        ['text', 'argument', 'fight', 'respond', 'message', 'conflict'],
   ReplyUrgencyTriager:      ['email', 'reply', 'urgent', 'inbox', 'prioritize', 'respond'],
   NameAnxietyDestroyer:     ['name', 'forget', 'remember', 'embarrassed', 'social'],
   BelievableExcuseGenerator:['excuse', 'cancel', 'avoid', 'bail', 'decline', 'skip'],

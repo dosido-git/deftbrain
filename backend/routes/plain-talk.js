@@ -4,11 +4,18 @@ const { anthropic, cleanJsonResponse } = require('../lib/claude');
 
 router.post('/plaintalk', async (req, res) => {
   try {
-    const { text, textType, context, pdfBase64 } = req.body;
+    const { text, textType, context, pdfBase64, readingLevel } = req.body;
 
     if (!text && !pdfBase64) {
       return res.status(400).json({ error: 'Please provide text or upload a PDF' });
     }
+
+    const readingLevelInstructions = {
+      '5th': 'Target reading level: 5th grade. Use the simplest possible words. Maximum 10-12 words per sentence. Explain every concept as if to a child.',
+      '8th': 'Target reading level: 8th grade. Use clear everyday language. Maximum 15 words per sentence. Define any term a typical teenager might not know.',
+      'high_school': 'Target reading level: high school. Standard plain English. Maximum 20 words per sentence. Define specialized terms on first use.',
+      'professional': 'Target reading level: professional simplified. Keep nuance and precision but eliminate unnecessary jargon. Replace legalese with plain equivalents. OK to be more detailed.',
+    };
 
     // Build multi-modal content blocks
     const contentBlocks = [];
@@ -42,6 +49,7 @@ You adapt your analysis to whatever type of text you receive. You are not advers
 
 TEXT TYPE: ${textType || 'auto-detect'}
 ${context ? `USER'S QUESTION: ${context}` : ''}
+${readingLevel && readingLevelInstructions[readingLevel] ? `READING LEVEL: ${readingLevelInstructions[readingLevel]}` : ''}
 
 ${text ? `TEXT TO ANALYZE:\n"""\n${text}\n"""` : 'The text to analyze was provided as a PDF above. Analyze its full contents.'}
 

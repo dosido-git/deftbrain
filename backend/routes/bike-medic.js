@@ -1,10 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic } = require('../lib/claude');
+const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit, DEFAULT_LIMITS } = require('../middleware/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
 // BIKE MEDIC V2 — Backend Route
 // Three call types: freeform diagnosis, post-fix follow-up, symptom routing
+// Supports optional photo attachment for visual diagnosis
 // ════════════════════════════════════════════════════════════
 
 const MECHANIC_PERSONA = `You are an expert bicycle mechanic with 20+ years of shop experience across road, mountain, gravel, BMX, commuter, e-bike, and single-speed/fixie bikes. You've seen every failure mode, every weird noise, and every trail-side hack. You diagnose problems the way a great mechanic does: listen to the rider's description, ask yourself what the most likely cause is based on probability, and give clear, jargon-appropriate instructions.
@@ -18,11 +20,76 @@ IMPORTANT RULES:
 - For severity: "low" = cosmetic or minor annoyance, "moderate" = affects performance or comfort, "critical" = safety risk or bike is unrideable
 - Be honest about what's DIY-able vs shop-only. Don't set someone up for failure.`;
 
-router.post('/bike-medic', async (req, res) => {
-  console.log('Bike Medic V2 endpoint called');
+// Helper: build message content with optional photo
+function buildMessageContent(textPrompt, photo) {
+  if (!photo) return textPrompt;
+  // photo is a base64 data URL
+  const match = photo.match(/^data:(image\/\w+);base64,(.+)$/);
+  if (!match) return textPrompt;
+  return [
+    { type: 'image', source: { type: 'base64', media_type: match[1], data: match[2] } },
+    { type: 'text', text: textPrompt },
+  ];
+}
 
+router.post('/bike-medic', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
-    const { symptom, context, mode, bikeProfile } = req.body;
+    const { symptom, context, mode, bikeProfile, photo } = req.body;
+
+    // ── TYPE 4: Seasonal Maintenance Wizard ──
+    if (mode === 'seasonal') {
+      if (!bikeProfile) {
+        return res.status(400).json({ error: 'Bike profile required for seasonal check' });
+      }
+
+      const season = context?.season || 'spring';
+      const recentRides = context?.recentRides || [];
+      const ridesContext = recentRides.length > 0
+        ? `\nRECENT RIDES: ${recentRides.map(r => `${r.distance}mi (${r.conditions})`).join(', ')}`
+        : '';
+
+      const seasonalPrompt = withLanguage(`${MECHANIC_PERSONA}
+
+You are generating a SEASONAL MAINTENANCE CHECKLIST for a cyclist.
+
+CURRENT SEASON: ${season}
+BIKE: ${bikeProfile.name || bikeProfile.bikeType || 'unknown'} — type: ${bikeProfile.bikeType || '?'}, brakes: ${bikeProfile.brakeType || '?'}, shifting: ${bikeProfile.shiftType || '?'}, tires: ${bikeProfile.tireSetup || '?'}
+TOTAL MILEAGE: ~${bikeProfile.totalMiles || 0} miles${ridesContext}
+
+Generate a personalized seasonal maintenance checklist. Consider:
+- The season and likely weather conditions
+- The bike type and components
+- The rider's mileage (more miles = more wear)
+- Recent riding conditions (wet/muddy rides need more attention)
+- What specific tasks are most important for THIS bike RIGHT NOW
+
+Return ONLY valid JSON:
+{
+  "title": "Season + Year Maintenance Checklist",
+  "summary": "One-sentence overview of priorities for this season",
+  "tasks": [
+    {
+      "task": "Specific maintenance task",
+      "reason": "Why this matters right now for this bike",
+      "priority": "high | medium | low",
+      "fix_ref": "fix_id from our fix database or null if no matching guide"
+    }
+  ]
+}
+
+Available fix_ref IDs: fix_noise_chainlube, fix_chain_worn, fix_disc_pad_worn, fix_disc_squeal, fix_tubeless_refresh, fix_ghost_shift, fix_headset_loose, fix_headset_gritty, fix_bb_creak, fix_noise_creak, fix_true_wheel, fix_hub_play, fix_clipless, fix_rim_weak
+
+Generate 6-10 tasks, ordered by priority. Be specific to the bike and season.`, req);
+
+      const message = await anthropic.messages.create({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1500,
+        messages: [{ role: 'user', content: seasonalPrompt }]
+      });
+
+      const text = message.content.find(i => i.type === 'text')?.text || '';
+      return res.json(JSON.parse(cleanJsonResponse(text)));
+    }
 
     // ── TYPE 3: Symptom Routing ──
     if (mode === 'route') {
@@ -30,9 +97,7 @@ router.post('/bike-medic', async (req, res) => {
         return res.status(400).json({ error: 'Describe the problem in a few words' });
       }
 
-      console.log('Routing mode:', symptom.substring(0, 80));
-
-      const routePrompt = `${MECHANIC_PERSONA}
+      const routePrompt = withLanguage(`${MECHANIC_PERSONA}
 
 AVAILABLE PROBLEM CATEGORIES: flat (flat tire / puncture), chain (dropped chain / chain issues), brakes (brake problems), shifting (shifting / derailleur), headset (wobbly handlebars / steering), noise (strange noises), pedals (pedal/crank/bottom bracket), wheel (wheel problems / spokes / hub), tubeless (tubeless tire setup issues), suspension (fork/shock issues)
 
@@ -48,7 +113,7 @@ Return ONLY valid JSON:
   "reasoning": "One sentence explaining why this category fits",
   "alternative_categories": ["second_best", "third_best"],
   "suggested_first_question": "A good diagnostic question to ask the rider"
-}`;
+}`, req);
 
       const message = await anthropic.messages.create({
         model: 'claude-sonnet-4-20250514',
@@ -57,8 +122,7 @@ Return ONLY valid JSON:
       });
 
       const text = message.content.find(i => i.type === 'text')?.text || '';
-      const parsed = extractJSON(text);
-      return res.json(parsed);
+      return res.json(JSON.parse(cleanJsonResponse(text)));
     }
 
     // ── Validation for Types 1 & 2 ──
@@ -68,15 +132,15 @@ Return ONLY valid JSON:
       });
     }
 
-    console.log('Request:', { symptom: symptom?.substring(0, 100), hasContext: !!context, mode: mode || 'freeform' });
-
     let prompt;
+    const bikeContext = bikeProfile
+      ? `RIDER'S BIKE: ${bikeProfile.bikeType || 'unknown'} with ${bikeProfile.brakeType || 'unknown'} brakes, ${bikeProfile.shiftType || 'unknown'} shifting, ${bikeProfile.tireSetup || 'unknown'} tires`
+      : '';
+    const photoNote = photo ? '\n\nThe rider has also attached a photo of the problem. Examine the image carefully for visual clues about the issue — wear patterns, alignment, damage, contamination, etc.' : '';
 
     // ── TYPE 2: Post-Fix Follow-up ──
     if (context && context.fix_attempted) {
-      console.log('Post-fix follow-up for:', context.fix_attempted);
-
-      prompt = `${MECHANIC_PERSONA}
+      prompt = withLanguage(`${MECHANIC_PERSONA}
 
 SITUATION: The rider already attempted a standard fix and it DIDN'T WORK. They need you to think deeper — beyond the obvious causes.
 
@@ -86,7 +150,7 @@ TREE PATH TAKEN: ${context.tree_path ? context.tree_path.join(' > ') : 'unknown'
 ${context.steps_completed ? `STEPS THEY COMPLETED:\n${context.steps_completed.map((s, i) => `${i + 1}. ${s}`).join('\n')}` : ''}
 
 WHAT THE RIDER SAYS NOW: "${symptom.trim()}"
-${bikeProfile ? `RIDER'S BIKE: ${bikeProfile.bikeType || 'unknown'}, ${bikeProfile.brakeType || 'unknown'} brakes, ${bikeProfile.shiftType || 'unknown'} shifting, ${bikeProfile.tireSetup || 'unknown'} tires` : ''}
+${bikeContext}${photoNote}
 
 IMPORTANT: The obvious fix has been tried. Think about LESS COMMON causes:
 - Is there a related component that could be the real culprit?
@@ -95,7 +159,7 @@ IMPORTANT: The obvious fix has been tried. Think about LESS COMMON causes:
 - Does the bike need a different tool or technique than the standard approach?
 - Should they go to a shop for this?
 
-OUTPUT (JSON only):
+Return ONLY valid JSON:
 {
   "diagnosis": "What's actually wrong (different from what they already tried)",
   "severity": "low | moderate | critical",
@@ -112,20 +176,18 @@ OUTPUT (JSON only):
   "prevention": "How to prevent this in the future",
   "next_steps": ["Prioritized action 1", "Action 2", "Action 3"],
   "related_issues": ["Other things to check while they're at it"]
-}
-
-Return ONLY valid JSON.`;
+}`, req);
 
     } else {
       // ── TYPE 1: Freeform Diagnosis ──
-      prompt = `${MECHANIC_PERSONA}
+      prompt = withLanguage(`${MECHANIC_PERSONA}
 
 RIDER'S DESCRIPTION: "${symptom.trim()}"
-${bikeProfile ? `RIDER'S BIKE: ${bikeProfile.bikeType || 'unknown'} with ${bikeProfile.brakeType || 'unknown'} brakes, ${bikeProfile.shiftType || 'unknown'} shifting, ${bikeProfile.tireSetup || 'unknown'} tires` : ''}
+${bikeContext}${photoNote}
 
 Diagnose the most likely cause and provide a clear, step-by-step fix. Start with the most common/probable cause, not the most dramatic one.
 
-OUTPUT (JSON only):
+Return ONLY valid JSON:
 {
   "diagnosis": "Short, clear name for the problem",
   "severity": "low | moderate | critical",
@@ -144,27 +206,19 @@ OUTPUT (JSON only):
   "related_issues": ["Other things to check while you're at it"]
 }
 
-Return ONLY valid JSON. No markdown, no explanation outside the JSON.`;
+Return ONLY valid JSON. No markdown, no explanation outside the JSON.`, req);
     }
 
-    console.log('Calling Claude API...');
+    const messageContent = buildMessageContent(prompt, photo);
 
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 2000,
-      messages: [{ role: 'user', content: prompt }]
+      messages: [{ role: 'user', content: messageContent }]
     });
-
-    console.log('Claude API responded');
 
     const textContent = message.content.find(item => item.type === 'text')?.text || '';
-    const parsed = extractJSON(textContent);
-
-    console.log('Bike Medic response:', {
-      diagnosis: parsed.diagnosis,
-      severity: parsed.severity,
-      difficulty: parsed.difficulty
-    });
+    const parsed = JSON.parse(cleanJsonResponse(textContent));
 
     res.json(parsed);
 
@@ -175,27 +229,5 @@ Return ONLY valid JSON. No markdown, no explanation outside the JSON.`;
     });
   }
 });
-
-function extractJSON(text) {
-  let cleaned = text.trim();
-  cleaned = cleaned.replace(/```json\n?/g, '').replace(/```\n?/g, '');
-
-  const firstBrace = cleaned.indexOf('{');
-  const lastBrace = cleaned.lastIndexOf('}');
-
-  if (firstBrace === -1 || lastBrace === -1) {
-    throw new Error('No JSON object found in response');
-  }
-
-  cleaned = cleaned.substring(firstBrace, lastBrace + 1);
-
-  try {
-    return JSON.parse(cleaned);
-  } catch (parseError) {
-    console.error('JSON parse error:', parseError.message);
-    console.error('Problematic JSON (first 500 chars):', cleaned.substring(0, 500));
-    throw new Error('Failed to parse mechanic response: ' + parseError.message);
-  }
-}
 
 module.exports = router;

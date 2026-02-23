@@ -1,8 +1,8 @@
-import React, { useState, useCallback } from 'react';
-import { Target, Loader2, AlertCircle, Copy, Check, ChevronDown, ChevronUp, RefreshCw, Trash2, BookOpen } from 'lucide-react';
+import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
+import { CopyBtn, ShareBtn, PrintBtn } from '../components/ActionButtons';
 
 // ════════════════════════════════════════════════════════════
 // THEME
@@ -23,6 +23,7 @@ const useColors = () => {
     btnSec: d ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-stone-100 hover:bg-stone-200 text-gray-700',
     btnGhost: d ? 'text-zinc-400 hover:text-zinc-100' : 'text-gray-500 hover:text-gray-800',
     btnDis: d ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed' : 'bg-stone-200 text-stone-400 cursor-not-allowed',
+    btnDanger: d ? 'bg-red-900/30 hover:bg-red-900/50 text-red-300 border-red-700/50' : 'bg-red-50 hover:bg-red-100 text-red-700 border-red-200',
     pillActive: d ? 'border-amber-500 bg-amber-900/30 text-amber-300' : 'border-amber-500 bg-amber-50 text-amber-700',
     pillInactive: d ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-stone-200 text-gray-500 hover:border-stone-400',
     decisionBg: d ? 'bg-amber-900/25 border-amber-600' : 'bg-amber-50 border-amber-400',
@@ -33,12 +34,44 @@ const useColors = () => {
     warnBg: d ? 'bg-red-900/20 border-red-700/50' : 'bg-red-50 border-red-300',
     warnText: d ? 'text-red-300' : 'text-red-800',
     warnTitle: d ? 'text-red-200' : 'text-red-900',
-    altBg: d ? 'bg-zinc-700/50' : 'bg-stone-50',
     errBg: d ? 'bg-red-900/30 border-red-700' : 'bg-red-50 border-red-200',
     errText: d ? 'text-red-300' : 'text-red-700',
-    histBg: d ? 'bg-amber-900/15 border-amber-700/40' : 'bg-amber-50/50 border-amber-200',
     histCard: d ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-stone-200',
     histAccent: d ? 'text-amber-400' : 'text-amber-700',
+    welcomeBg: d ? 'bg-amber-900/20 border-amber-700/40' : 'bg-amber-50 border-amber-200',
+    welcomeText: d ? 'text-amber-200' : 'text-amber-900',
+    hintBg: d ? 'bg-zinc-700/60 border-zinc-600' : 'bg-stone-50 border-stone-200',
+    hintText: d ? 'text-zinc-300' : 'text-gray-600',
+    crossRefBg: d ? 'bg-zinc-800/80 border-zinc-700' : 'bg-stone-50 border-stone-200',
+    crossRefText: d ? 'text-zinc-400' : 'text-gray-500',
+    crossRefLink: d ? 'text-amber-400 hover:text-amber-300' : 'text-amber-700 hover:text-amber-800',
+    tabActive: d ? 'border-amber-500 text-amber-400' : 'border-amber-500 text-amber-700',
+    tabInactive: d ? 'border-transparent text-zinc-500 hover:text-zinc-300' : 'border-transparent text-stone-400 hover:text-stone-600',
+    prosWinner: d ? 'bg-emerald-900/30 border-emerald-600' : 'bg-emerald-50 border-emerald-400',
+    prosWinText: d ? 'text-emerald-300' : 'text-emerald-800',
+    prosLoser: d ? 'bg-zinc-700/40 border-zinc-600' : 'bg-stone-50 border-stone-200',
+    prosBar: d ? 'bg-amber-600' : 'bg-amber-500',
+    prosBarBg: d ? 'bg-zinc-700' : 'bg-stone-200',
+    quickBtn: d ? 'bg-zinc-700 hover:bg-zinc-600 border-zinc-600 text-zinc-200' : 'bg-white hover:bg-stone-50 border-stone-300 text-gray-700',
+    timerBg: d ? 'bg-red-900/30 border-red-600' : 'bg-red-50 border-red-300',
+    timerText: d ? 'text-red-300' : 'text-red-700',
+    groupPerson: d ? 'bg-zinc-700 border-zinc-600' : 'bg-stone-50 border-stone-200',
+    groupBar: d ? 'bg-violet-600' : 'bg-violet-500',
+    patternCard: d ? 'bg-zinc-700/50 border-zinc-600' : 'bg-stone-50 border-stone-200',
+    patternHighlight: d ? 'bg-amber-900/30 border-amber-700' : 'bg-amber-50 border-amber-300',
+    followUpBg: d ? 'bg-violet-900/20 border-violet-700/40' : 'bg-violet-50 border-violet-200',
+    followUpText: d ? 'text-violet-300' : 'text-violet-800',
+    dnaBg: d ? 'bg-gradient-to-br from-zinc-800 to-amber-900/20' : 'bg-gradient-to-br from-white to-amber-50',
+    dnaAccent: d ? 'text-amber-300' : 'text-amber-800',
+    devilFor: d ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-200',
+    devilAgainst: d ? 'bg-red-900/20 border-red-700' : 'bg-red-50 border-red-200',
+    chainBg: d ? 'bg-indigo-900/20 border-indigo-700' : 'bg-indigo-50 border-indigo-200',
+    chainText: d ? 'text-indigo-300' : 'text-indigo-800',
+    batchCard: d ? 'bg-zinc-700/60 border-zinc-600' : 'bg-stone-50 border-stone-200',
+    templateBtn: d ? 'bg-amber-900/20 border-amber-700 text-amber-300 hover:bg-amber-900/40' : 'bg-amber-50 border-amber-200 text-amber-700 hover:bg-amber-100',
+    achieveActive: d ? 'text-amber-300' : 'text-amber-700',
+    achieveLocked: d ? 'text-zinc-600' : 'text-stone-300',
+    streakFire: d ? 'text-orange-400' : 'text-orange-500',
   };
 };
 
@@ -50,27 +83,37 @@ const CAPACITY_OPTIONS = [
   { value: 'low', label: '😓 Low energy' },
   { value: 'medium', label: '🤔 Some bandwidth' },
 ];
-
 const QUICK_CONSTRAINTS = [
-  { value: 'low_effort', label: '🛋️ Low effort' },
-  { value: 'cheap', label: '💸 Cheap / free' },
-  { value: 'fast', label: '⚡ Quick' },
-  { value: 'no_cooking', label: '🚫🍳 No cooking' },
-  { value: 'comfort', label: '🧸 Comfort' },
-  { value: 'healthy', label: '🥗 Healthy' },
-  { value: 'solo', label: '👤 Solo-friendly' },
-  { value: 'no_leaving', label: '🏠 Don\'t leave house' },
-  { value: 'no_screens', label: '📵 No screens' },
-  { value: 'quiet', label: '🤫 Low stimulation' },
+  { value: 'low_effort', label: '🛋️ Low effort' }, { value: 'cheap', label: '💸 Cheap / free' },
+  { value: 'fast', label: '⚡ Quick' }, { value: 'no_cooking', label: '🚫🍳 No cooking' },
+  { value: 'comfort', label: '🧸 Comfort' }, { value: 'healthy', label: '🥗 Healthy' },
+  { value: 'solo', label: '👤 Solo-friendly' }, { value: 'no_leaving', label: "🏠 Don't leave house" },
+  { value: 'no_screens', label: '📵 No screens' }, { value: 'quiet', label: '🤫 Low stimulation' },
 ];
-
 const DECISION_CATEGORIES = [
-  { value: 'food', label: '🍕 What to eat' },
-  { value: 'task', label: '📋 What to do next' },
-  { value: 'purchase', label: '🛒 What to buy' },
-  { value: 'activity', label: '🎯 What to do tonight' },
+  { value: 'food', label: '🍕 What to eat' }, { value: 'task', label: '📋 What to do next' },
+  { value: 'purchase', label: '🛒 What to buy' }, { value: 'activity', label: '🎯 What to do tonight' },
   { value: 'other', label: '💬 Something else' },
 ];
+const QUICK_BUTTONS = [
+  { id: 'food', emoji: '🍕', label: 'Eat', cat: 'What to eat' },
+  { id: 'task', emoji: '📋', label: 'Do', cat: 'What to do next' },
+  { id: 'activity', emoji: '🎯', label: 'Tonight', cat: 'What to do tonight' },
+  { id: 'purchase', emoji: '🛒', label: 'Buy', cat: 'What to buy' },
+  { id: 'random', emoji: '🎰', label: 'Anything', cat: '' },
+];
+const TIMER_OPTIONS = [{ value: 30, label: '30s' }, { value: 60, label: '1m' }, { value: 90, label: '90s' }];
+const ACHIEVEMENTS = [
+  { id: 'decisive', label: 'The Decisive One', emoji: '⚡', desc: '10 first-try accepts', check: h => h.filter(x => !x.rejections).length >= 10 },
+  { id: 'explorer', label: 'The Explorer', emoji: '🧭', desc: '5 different categories', check: h => new Set(h.map(x => x.category).filter(Boolean)).size >= 5 },
+  { id: 'followthrough', label: 'Follow-Through King', emoji: '👑', desc: '10 follow-ups done', check: h => h.filter(x => x.followUp).length >= 10 },
+  { id: 'diplomat', label: 'Group Diplomat', emoji: '🤝', desc: '5 group decisions', check: h => h.filter(x => x.question?.startsWith('Group:')).length >= 5 },
+  { id: 'speed', label: 'Speed Demon', emoji: '💨', desc: '5 Quick Decides', check: h => h.filter(x => x.question?.startsWith('Quick:')).length >= 5 },
+  { id: 'rejector', label: 'Serial Rejector', emoji: '🙅', desc: 'Reject 8+ in one session', check: h => h.some(x => (x.rejections || 0) >= 8) },
+  { id: 'century', label: 'The Centurion', emoji: '💯', desc: '100 decisions made', check: h => h.length >= 100 },
+  { id: 'streak5', label: 'On Fire', emoji: '🔥', desc: '5 follow-throughs in a row', check: h => { let s=0,m=0; h.forEach(x => { if(x.followUp==='did_it'){s++;m=Math.max(m,s);}else if(x.followUp){s=0;} }); return m>=5; } },
+];
+const BRANDING = '\n\n— Generated by DeftBrain · deftbrain.com';
 
 // ════════════════════════════════════════════════════════════
 // MAIN COMPONENT
@@ -78,389 +121,756 @@ const DECISION_CATEGORIES = [
 const DecisionCoach = () => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const c = useColors();
+  const timerRef = useRef(null);
 
-  // ── History ──
+  // ── Persistent ──
   const [history, setHistory] = usePersistentState('decision-coach-history', []);
-  const [showHistory, setShowHistory] = useState(false);
-  const [expandedHistId, setExpandedHistId] = useState(null);
+  const [welcomeDismissed, setWelcomeDismissed] = usePersistentState('decision-coach-welcome', false);
+  const [savedPreferences, setSavedPreferences] = usePersistentState('decision-coach-prefs', '');
+  const [patternsResult, setPatternsResult] = usePersistentState('decision-coach-patterns', null);
+  const [learnedPreferences, setLearnedPreferences] = usePersistentState('decision-coach-learned', []);
+  const [templates, setTemplates] = usePersistentState('decision-coach-templates', []);
+  const [dnaResult, setDnaResult] = usePersistentState('decision-coach-dna', null);
 
-  // ── Inputs ──
+  // ── Session: Core ──
+  const [activeTab, setActiveTab] = useState('decide');
   const [category, setCategory] = useState('');
   const [decisionNeeded, setDecisionNeeded] = useState('');
   const [constraints, setConstraints] = useState([]);
   const [extraContext, setExtraContext] = useState('');
   const [capacity, setCapacity] = useState('overwhelmed');
-
-  // ── Results ──
   const [results, setResults] = useState(null);
   const [error, setError] = useState('');
-  const [copied, setCopied] = useState(false);
+  const [rejectedChoices, setRejectedChoices] = useState([]);
+  const [decideMode, setDecideMode] = useState('standard');
+  const [prosOptions, setProsOptions] = useState(['', '']);
+  const [prosContext, setProsContext] = useState('');
+  const [prosResult, setProsResult] = useState(null);
+  const [gutInstinct, setGutInstinct] = useState('');
+  const [devilsResult, setDevilsResult] = useState(null);
+  const [chainResult, setChainResult] = useState(null);
+  const [timerDuration, setTimerDuration] = useState(null);
+  const [timerRemaining, setTimerRemaining] = useState(null);
+  const [timerLocked, setTimerLocked] = useState(false);
+  const [groupDecision, setGroupDecision] = useState('');
+  const [groupPeople, setGroupPeople] = useState([{ name: '', constraints: '' }, { name: '', constraints: '' }]);
+  const [groupContext, setGroupContext] = useState('');
+  const [groupResult, setGroupResult] = useState(null);
+  const [expandedHistId, setExpandedHistId] = useState(null);
+  const [followUpId, setFollowUpId] = useState(null);
+  const [followUpOutcome, setFollowUpOutcome] = useState(null);
+  const [followUpActual, setFollowUpActual] = useState('');
+  const [followUpSatisfaction, setFollowUpSatisfaction] = useState(3);
+  const [followUpResult, setFollowUpResult] = useState(null);
+  const [patternsLoading, setPatternsLoading] = useState(false);
+  const [dnaLoading, setDnaLoading] = useState(false);
+  const [batchCategory, setBatchCategory] = useState('dinner');
+  const [batchCount, setBatchCount] = useState(5);
+  const [batchResult, setBatchResult] = useState(null);
+  const [showTemplateSave, setShowTemplateSave] = useState(false);
+  const [templateName, setTemplateName] = useState('');
+
+  // ── Computed ──
+  const followThroughStreak = useMemo(() => {
+    let s = 0; for (const h of history) { if (h.followUp === 'did_it') s++; else if (h.followUp) break; else continue; } return s;
+  }, [history]);
+  const firstTryRate = useMemo(() => history.length === 0 ? 0 : Math.round((history.filter(h => !h.rejections).length / history.length) * 100), [history]);
+  const earnedAchievements = useMemo(() => ACHIEVEMENTS.filter(a => a.check(history)), [history]);
+  const recentChoices = useMemo(() => history.slice(0, 5).map(h => h.choice).filter(Boolean), [history]);
+  const rejectionCount = rejectedChoices.length;
+
+  // ── Helpers ──
+  const toggleConstraint = useCallback((val) => setConstraints(prev => prev.includes(val) ? prev.filter(v => v !== val) : [...prev, val]), []);
+  const getLabelFor = (options, value) => { const opt = options.find(o => o.value === value); return opt ? opt.label.replace(/^[^\s]+\s/, '') : value; };
+  const prefString = () => [...constraints.map(v => getLabelFor(QUICK_CONSTRAINTS, v)), extraContext.trim()].filter(Boolean).join(', ');
+
+  useEffect(() => {
+    if (timerRemaining === null || timerRemaining <= 0) return;
+    timerRef.current = setTimeout(() => setTimerRemaining(prev => { if (prev <= 1) { setTimerLocked(true); return 0; } return prev - 1; }), 1000);
+    return () => clearTimeout(timerRef.current);
+  }, [timerRemaining]);
+  const startTimer = (s) => { setTimerDuration(s); setTimerRemaining(s); setTimerLocked(false); };
+  const cancelTimer = () => { setTimerDuration(null); setTimerRemaining(null); setTimerLocked(false); clearTimeout(timerRef.current); };
+
+  const saveTemplate = () => {
+    if (!templateName.trim()) return;
+    setTemplates(prev => [{ id: `tpl_${Date.now()}`, name: templateName.trim(), category, constraints: [...constraints], extraContext, capacity }, ...prev].slice(0, 20));
+    setShowTemplateSave(false); setTemplateName('');
+  };
+  const applyTemplate = (t) => { setCategory(t.category || ''); setConstraints(t.constraints || []); setExtraContext(t.extraContext || ''); setCapacity(t.capacity || 'overwhelmed'); setDecideMode('standard'); };
+  const deleteTemplate = (id) => setTemplates(prev => prev.filter(t => t.id !== id));
+
+  // ── Text builders ──
+  const buildDecisionText = useCallback(() => {
+    if (!results) return '';
+    const d = results.decision_made_for_you || {};
+    const lines = [`🎯 Decision: ${d.choice || ''}`, '', `Why: ${d.why || ''}`, ''];
+    if (Array.isArray(results.execution_instructions)) { lines.push('Steps:'); results.execution_instructions.forEach((s, i) => lines.push(`${i + 1}. ${s}`)); }
+    (d.alternatives_eliminated || []).forEach((a, i) => { if (i === 0) lines.push('', 'Ruled out:'); lines.push(`  ✕ ${a}`); });
+    if (results.no_second_guessing) lines.push('', results.no_second_guessing);
+    return lines.join('\n') + BRANDING;
+  }, [results]);
+
+  const buildProsText = useCallback(() => {
+    if (!prosResult) return '';
+    const lines = ['⚖️ Decision Comparison', ''];
+    (prosResult.comparison || []).forEach(o => { lines.push(`${o.option} — ${o.score}/100`); o.pros?.forEach(p => lines.push(`  ✅ ${p}`)); o.cons?.forEach(x => lines.push(`  ❌ ${x}`)); lines.push(''); });
+    if (prosResult.winner) lines.push(`🏆 Winner: ${prosResult.winner.choice}`, prosResult.winner.why || '');
+    return lines.join('\n') + BRANDING;
+  }, [prosResult]);
+
+  const buildGroupText = useCallback(() => {
+    if (!groupResult) return '';
+    const lines = [`👥 Group Decision: ${groupResult.group_decision?.choice || ''}`, '', groupResult.group_decision?.why || ''];
+    (groupResult.person_fit || []).forEach(p => { lines.push('', `${p.name}: ${p.happiness}%`); p.satisfied?.forEach(s => lines.push(`  ✅ ${s}`)); p.compromised?.forEach(x => lines.push(`  ⚠️ ${x}`)); });
+    return lines.join('\n') + BRANDING;
+  }, [groupResult]);
+
+  const buildPrintContent = useCallback(() => {
+    if (!results) return '';
+    const d = results.decision_made_for_you || {};
+    const steps = Array.isArray(results.execution_instructions) ? results.execution_instructions : [];
+    const alts = d.alternatives_eliminated || [];
+    return `<h2 style="color:#d97706;">🎯 ${d.choice || ''}</h2><p style="color:#555;">${d.why || ''}</p>${steps.length ? `<h3>📋 Steps</h3><ol>${steps.map(s => `<li>${s}</li>`).join('')}</ol>` : ''}${alts.length ? `<h3>🚫 Ruled out</h3><ul>${alts.map(a => `<li style="text-decoration:line-through;color:#888;">${a}</li>`).join('')}</ul>` : ''}${results.no_second_guessing ? `<div style="background:#fef3c7;padding:12px;border-radius:8px;margin-top:16px;"><strong>⚠️</strong> ${results.no_second_guessing}</div>` : ''}<div style="margin-top:24px;border-top:1px solid #ddd;padding-top:12px;color:#aaa;font-size:12px;">Generated by DeftBrain · deftbrain.com</div>`;
+  }, [results]);
+
+  // ── History ──
+  const saveToHistory = useCallback((res, question, rejections = 0) => {
+    const choice = res.decision_made_for_you?.choice || res.group_decision?.choice || res.primary?.choice || 'Decision';
+    setHistory(prev => [{ id: `dc_${Date.now()}`, date: new Date().toISOString(), question, choice, category, rejections, results: res }, ...prev].slice(0, 50));
+  }, [setHistory, category]);
+  const removeFromHistory = useCallback((id) => { setHistory(prev => prev.filter(h => h.id !== id)); if (expandedHistId === id) setExpandedHistId(null); }, [setHistory, expandedHistId]);
+  const loadFromHistory = useCallback((entry) => { setResults(entry.results); setRejectedChoices([]); setActiveTab('decide'); }, []);
 
   // ══════════════════════════════════════════
-  // HELPERS
+  // API HANDLERS
   // ══════════════════════════════════════════
-  const toggleConstraint = useCallback((val) => {
-    setConstraints(prev => prev.includes(val) ? prev.filter(c => c !== val) : [...prev, val]);
-  }, []);
+  const generate = useCallback(async (rejected = []) => {
+    if (!decisionNeeded.trim()) { setError('Describe the decision'); return; }
+    setError(''); setResults(null);
+    try {
+      const res = await callToolEndpoint('decision-coach', {
+        decisionNeeded: decisionNeeded.trim(), category: category ? getLabelFor(DECISION_CATEGORIES, category) : '',
+        preferences: prefString(), capacityLevel: capacity, recentDecisions: recentChoices, rejectedChoices: rejected, locale: navigator.language || 'en',
+      });
+      setResults(res); saveToHistory(res, decisionNeeded.trim(), rejected.length);
+    } catch (err) { setError(err.message || 'Failed.'); }
+  }, [decisionNeeded, category, constraints, extraContext, capacity, recentChoices, callToolEndpoint, saveToHistory]);
 
-  const getLabelFor = (options, value) => {
-    const opt = options.find(o => o.value === value);
-    return opt ? opt.label.replace(/^[^\s]+\s/, '') : value;
+  const handleNotThat = useCallback(() => {
+    if (!results || timerLocked) return;
+    const cur = results.decision_made_for_you?.choice || '';
+    const nr = [...rejectedChoices, cur].filter(Boolean);
+    setRejectedChoices(nr); setResults(null); generate(nr);
+  }, [results, rejectedChoices, generate, timerLocked]);
+
+  const decideAgain = useCallback(() => { setResults(null); setRejectedChoices([]); setProsResult(null); setDevilsResult(null); setChainResult(null); cancelTimer(); }, []);
+
+  const handleQuickDecide = async (cat) => {
+    setError(''); setResults(null); setDecideMode('standard'); setActiveTab('decide');
+    try {
+      const res = await callToolEndpoint('decision-coach/quick', { category: cat, savedPreferences: [savedPreferences, ...learnedPreferences].filter(Boolean).join('; '), recentDecisions: recentChoices, locale: navigator.language || 'en' });
+      setResults(res); setDecisionNeeded(`Quick: ${cat || 'anything'}`); saveToHistory(res, `Quick: ${cat || 'anything'}`);
+    } catch { setError('Quick decide failed.'); }
+  };
+
+  const handleProsCons = async () => {
+    const opts = prosOptions.filter(o => o.trim()); if (opts.length < 2) { setError('Need 2+ options'); return; }
+    setError(''); setProsResult(null);
+    try {
+      const res = await callToolEndpoint('decision-coach/pros-cons', { options: opts, context: prosContext.trim(), preferences: prefString(), capacityLevel: capacity, locale: navigator.language || 'en' });
+      setProsResult(res); saveToHistory({ decision_made_for_you: { choice: res.winner?.choice || opts[0], why: res.winner?.why }, execution_instructions: res.execution_instructions }, `Compare: ${opts.join(' vs ')}`);
+    } catch { setError('Comparison failed.'); }
+  };
+
+  const handleDevilsAdvocate = async () => {
+    if (!decisionNeeded.trim() || !gutInstinct.trim()) { setError('Enter both question and gut instinct'); return; }
+    setError(''); setDevilsResult(null);
+    try {
+      const res = await callToolEndpoint('decision-coach/devils-advocate', { decisionNeeded: decisionNeeded.trim(), gutInstinct: gutInstinct.trim(), preferences: prefString(), locale: navigator.language || 'en' });
+      setDevilsResult(res); saveToHistory({ decision_made_for_you: { choice: res.the_real_answer, why: res.verdict_explanation }, execution_instructions: res.execution_instructions }, `Gut check: ${decisionNeeded.trim()}`);
+    } catch { setError("Devil's advocate failed."); }
+  };
+
+  const handleChain = async () => {
+    if (!decisionNeeded.trim()) { setError('Describe the primary decision'); return; }
+    setError(''); setChainResult(null);
+    try {
+      const res = await callToolEndpoint('decision-coach/chain', { primaryDecision: decisionNeeded.trim(), preferences: prefString(), capacityLevel: capacity, locale: navigator.language || 'en' });
+      setChainResult(res); saveToHistory({ decision_made_for_you: { choice: res.primary?.choice, why: res.full_plan }, execution_instructions: res.execution_instructions }, `Chain: ${decisionNeeded.trim()}`);
+    } catch { setError('Chain failed.'); }
+  };
+
+  const handleGroupDecide = async () => {
+    if (!groupDecision.trim()) { setError('Describe group decision'); return; }
+    const vp = groupPeople.filter(p => p.name.trim()); if (vp.length < 2) { setError('Need 2+ people'); return; }
+    setError(''); setGroupResult(null);
+    try {
+      const res = await callToolEndpoint('decision-coach/group', { decisionNeeded: groupDecision.trim(), people: vp, extraContext: groupContext.trim(), locale: navigator.language || 'en' });
+      setGroupResult(res); saveToHistory({ decision_made_for_you: { choice: res.group_decision?.choice, why: res.group_decision?.why }, execution_instructions: res.execution_instructions }, `Group: ${groupDecision.trim()}`);
+    } catch { setError('Group decide failed.'); }
+  };
+
+  const handleBatch = async () => {
+    setError(''); setBatchResult(null);
+    try {
+      const res = await callToolEndpoint('decision-coach/batch', { category: batchCategory, count: batchCount, preferences: [savedPreferences, ...learnedPreferences].filter(Boolean).join('; '), recentDecisions: recentChoices, locale: navigator.language || 'en' });
+      setBatchResult(res);
+    } catch { setError('Batch failed.'); }
+  };
+
+  const handlePatterns = async () => {
+    if (history.length < 5) return; setPatternsLoading(true); setError('');
+    try {
+      const res = await callToolEndpoint('decision-coach/patterns', { history: history.slice(0, 30).map(h => ({ question: h.question, choice: h.choice, category: h.category, rejections: h.rejections || 0, followUp: h.followUp || null, date: h.date })), locale: navigator.language || 'en' });
+      setPatternsResult(res);
+    } catch { setError('Patterns failed.'); } finally { setPatternsLoading(false); }
+  };
+
+  const handleDNA = async () => {
+    if (history.length < 8) return; setDnaLoading(true); setError('');
+    try {
+      const res = await callToolEndpoint('decision-coach/dna', { history: history.slice(0, 40).map(h => ({ question: h.question, choice: h.choice, category: h.category, rejections: h.rejections || 0, followUp: h.followUp || null, date: h.date })), learnedPreferences, locale: navigator.language || 'en' });
+      setDnaResult(res);
+    } catch { setError('DNA failed.'); } finally { setDnaLoading(false); }
+  };
+
+  const handleFollowUp = async () => {
+    if (!followUpId || !followUpOutcome) return;
+    const entry = history.find(h => h.id === followUpId); if (!entry) return;
+    setFollowUpResult(null);
+    try {
+      const res = await callToolEndpoint('decision-coach/followup', { originalDecision: entry.choice, outcome: followUpOutcome, actualChoice: followUpActual.trim() || null, satisfaction: followUpOutcome === 'did_it' ? followUpSatisfaction : null, locale: navigator.language || 'en' });
+      setFollowUpResult(res);
+      setHistory(prev => prev.map(h => h.id === followUpId ? { ...h, followUp: followUpOutcome === 'changed' ? followUpActual.trim() : followUpOutcome } : h));
+      if (res.preference_learned) setLearnedPreferences(prev => [res.preference_learned, ...prev].slice(0, 10));
+    } catch { /* silent */ }
   };
 
   // ══════════════════════════════════════════
-  // HISTORY
-  // ══════════════════════════════════════════
-  const saveToHistory = useCallback((res, question) => {
-    const choice = res.decision_made_for_you?.choice || res.decision || 'Decision';
-    const entry = {
-      id: `dc_${Date.now()}`,
-      date: new Date().toISOString(),
-      question,
-      choice,
-      results: res,
-    };
-    setHistory(prev => [entry, ...prev].slice(0, 30));
-  }, [setHistory]);
-
-  const removeFromHistory = useCallback((id) => {
-    setHistory(prev => prev.filter(h => h.id !== id));
-    if (expandedHistId === id) setExpandedHistId(null);
-  }, [setHistory, expandedHistId]);
-
-  const loadFromHistory = useCallback((entry) => {
-    setResults(entry.results);
-    setShowHistory(false);
-    setCopied(false);
-  }, []);
-
-  // ══════════════════════════════════════════
-  // API
-  // ══════════════════════════════════════════
-  const generate = useCallback(async () => {
-    if (!decisionNeeded.trim()) {
-      setError('Describe the decision you need made');
-      return;
-    }
-    setError(''); setResults(null); setCopied(false);
-    try {
-      const constraintLabels = constraints.map(c => getLabelFor(QUICK_CONSTRAINTS, c));
-      const prefString = [
-        ...constraintLabels,
-        extraContext.trim()
-      ].filter(Boolean).join(', ');
-
-      // Send recent decisions so the AI avoids repeats
-      const recentChoices = history
-        .slice(0, 5)
-        .map(h => h.choice)
-        .filter(Boolean);
-
-      const res = await callToolEndpoint('decision-coach', {
-        decisionNeeded: decisionNeeded.trim(),
-        category: category ? getLabelFor(DECISION_CATEGORIES, category) : '',
-        preferences: prefString,
-        capacityLevel: capacity,
-        recentDecisions: recentChoices,
-      });
-      setResults(res);
-      saveToHistory(res, decisionNeeded.trim());
-    } catch (err) {
-      setError(err.message || 'Failed to decide. Try again.');
-    }
-  }, [decisionNeeded, category, constraints, extraContext, capacity, history, callToolEndpoint, saveToHistory]);
-
-  const decideAgain = useCallback(() => {
-    setResults(null);
-    setCopied(false);
-  }, []);
-
-  // ══════════════════════════════════════════
-  // COPY
-  // ══════════════════════════════════════════
-  const copyDecision = useCallback(() => {
-    if (!results) return;
-    const d = results.decision_made_for_you || {};
-    const lines = [
-      `🎯 Decision: ${d.choice || ''}`,
-      '',
-      `Why: ${d.why || ''}`,
-      '',
-    ];
-    const steps = results.execution_instructions;
-    if (steps) {
-      lines.push('Steps:');
-      if (Array.isArray(steps)) {
-        steps.forEach((s, i) => lines.push(`${i + 1}. ${s}`));
-      } else {
-        Object.entries(steps)
-          .filter(([k]) => k.startsWith('step_'))
-          .forEach(([k, v]) => lines.push(`${k.replace('step_', '')}. ${v}`));
-        if (steps.done) lines.push(`\n${steps.done}`);
-      }
-    }
-    navigator.clipboard.writeText(lines.join('\n'));
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  }, [results]);
-
-  // ══════════════════════════════════════════
-  // RENDER: Pills
+  // RENDER HELPERS
   // ══════════════════════════════════════════
   const renderPills = (options, value, setter, multi = false) => (
     <div className="flex flex-wrap gap-1.5">
       {options.map(opt => {
         const active = multi ? value.includes(opt.value) : value === opt.value;
-        return (
-          <button key={opt.value}
-            onClick={() => multi ? setter(opt.value) : setter(opt.value)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${active ? c.pillActive : c.pillInactive}`}>
-            {active && <Check className="w-3 h-3 inline mr-1" />}
-            {opt.label}
-          </button>
-        );
+        return (<button key={opt.value} onClick={() => setter(opt.value)} className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${active ? c.pillActive : c.pillInactive}`}>{active && <span className="mr-1">✅</span>}{opt.label}</button>);
       })}
     </div>
   );
 
+  const renderSteps = (steps) => {
+    if (!steps?.length) return null;
+    return (<div className={`p-5 rounded-2xl border ${c.card}`}><h3 className={`text-sm font-bold mb-3 ${c.text}`}>📋 Do this now</h3>{steps.map((s, i) => (<div key={i} className="flex items-start gap-3 mb-2"><span className={`w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-black ${c.stepNum}`}>{i + 1}</span><p className={`text-sm ${c.stepText} pt-0.5`}>{s}</p></div>))}</div>);
+  };
+
   // ══════════════════════════════════════════
-  // RENDER: Header
+  // RENDER: Welcome
   // ══════════════════════════════════════════
-  const renderHeader = () => (
-    <div className="flex items-center gap-3 mb-5">
-      <div>
-        <h2 className={`text-2xl font-bold ${c.text}`}>Decision Coach 🎯</h2>
-        <p className={`text-sm ${c.textMut}`}>Makes the decision for you when you're too stuck to choose</p>
+  const renderWelcome = () => {
+    if (welcomeDismissed) return null;
+    return (
+      <div className={`mb-5 p-5 rounded-2xl border ${c.welcomeBg} relative`}>
+        <button onClick={() => setWelcomeDismissed(true)} className={`absolute top-3 right-3 text-xs ${c.textMut} hover:opacity-70`}>✕</button>
+        <h3 className={`text-sm font-bold mb-3 ${c.welcomeText}`}>🎯 Welcome to Decision Coach</h3>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          {[['🧠','Decide','No options — just the answer'],['⚖️','Compare','Weigh options head-to-head'],['🎭','Gut check',"Trust your gut (or don't)"],['🔗','Chain','Solve cascading decisions'],['👥','Group','Compromise for everyone'],['🧬','DNA','Why you really get stuck']].map(([e,t,d]) => (
+            <div key={t} className="flex items-start gap-2"><span className="text-base">{e}</span><div><div className={`text-xs font-bold ${c.text}`}>{t}</div><div className={`text-xs ${c.textMut}`}>{d}</div></div></div>
+          ))}
+        </div>
       </div>
+    );
+  };
+
+  // ══════════════════════════════════════════
+  // RENDER: Quick Decide + Templates
+  // ══════════════════════════════════════════
+  const renderQuickDecide = () => (
+    <div className={`mb-5 p-4 rounded-2xl border ${c.card}`}>
+      <p className={`text-[10px] font-bold uppercase tracking-wider ${c.textMut} mb-2`}>🎰 Quick Decide — one tap</p>
+      <div className="grid grid-cols-5 gap-2 mb-2">
+        {QUICK_BUTTONS.map(b => (<button key={b.id} onClick={() => handleQuickDecide(b.cat)} disabled={loading} className={`p-3 rounded-xl border text-center transition-all disabled:opacity-40 ${c.quickBtn}`}><span className="text-xl block mb-1">{b.emoji}</span><span className={`text-[10px] font-bold ${c.text}`}>{b.label}</span></button>))}
+      </div>
+      {templates.length > 0 && (
+        <div><p className={`text-[10px] font-bold uppercase tracking-wider ${c.textMut} mb-1`}>📱 Templates</p>
+        <div className="flex flex-wrap gap-1.5">{templates.map(t => (
+          <div key={t.id} className="flex items-center gap-0.5"><button onClick={() => applyTemplate(t)} className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold border ${c.templateBtn}`}>{t.name}</button><button onClick={() => deleteTemplate(t.id)} className={`text-[10px] ${c.btnGhost} hover:text-red-500 px-1`}>✕</button></div>
+        ))}</div></div>
+      )}
     </div>
   );
 
   // ══════════════════════════════════════════
-  // RENDER: Input Form
+  // RENDER: Input Form (all 4 modes)
   // ══════════════════════════════════════════
   const renderInputForm = () => (
     <div className="space-y-4">
-      {/* Category */}
-      <div className={`p-5 rounded-2xl border ${c.border} ${c.card}`}>
-        <label className={`text-xs font-bold ${c.textSec} uppercase tracking-wide mb-1 block`}>🏷️ What kind of decision?</label>
-        <p className={`text-xs ${c.textMut} mb-2`}>Optional — helps focus the answer</p>
-        {renderPills(DECISION_CATEGORIES, category, setCategory)}
+      {/* Mode toggle */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+        {[{ id:'standard',l:'🧠 Decide',d:'No idea' },{ id:'proscons',l:'⚖️ Compare',d:'2-4 choices' },{ id:'devils',l:'🎭 Gut check',d:'I think I know' },{ id:'chain',l:'🔗 Chain',d:'One leads to another' }].map(m => (
+          <button key={m.id} onClick={() => { setDecideMode(m.id); setResults(null); setProsResult(null); setDevilsResult(null); setChainResult(null); }}
+            className={`p-3 rounded-xl border text-left transition-all ${decideMode === m.id ? c.pillActive : c.pillInactive}`}>
+            <p className={`text-xs font-bold ${c.text}`}>{m.l}</p><p className={`text-[10px] ${c.textMut}`}>{m.d}</p>
+          </button>
+        ))}
       </div>
 
-      {/* Decision needed */}
-      <div className={`p-5 rounded-2xl border ${c.border} ${c.card}`}>
-        <label className={`text-xs font-bold ${c.textSec} uppercase tracking-wide mb-2 block`}>❓ What do you need decided?</label>
-        <input type="text" value={decisionNeeded} onChange={e => setDecisionNeeded(e.target.value)}
-          placeholder="e.g., 'What to eat for dinner' or 'Which task to start with'"
-          className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
-      </div>
-
-      {/* Quick Constraints */}
-      <div className={`p-5 rounded-2xl border ${c.border} ${c.card}`}>
-        <label className={`text-xs font-bold ${c.textSec} uppercase tracking-wide mb-1 block`}>⚡ Quick constraints</label>
-        <p className={`text-xs ${c.textMut} mb-2`}>Tap all that apply — helps narrow it to one answer</p>
-        {renderPills(QUICK_CONSTRAINTS, constraints, toggleConstraint, true)}
-        <input type="text" value={extraContext} onChange={e => setExtraContext(e.target.value)}
-          placeholder="Anything else? e.g., 'vegetarian, under $15, no spicy food'"
-          className={`w-full mt-3 px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
-      </div>
-
-      {/* Capacity */}
-      <div className={`p-5 rounded-2xl border ${c.border} ${c.card}`}>
-        <label className={`text-xs font-bold ${c.textSec} uppercase tracking-wide mb-2 block`}>🔋 Current capacity</label>
-        {renderPills(CAPACITY_OPTIONS, capacity, setCapacity)}
-      </div>
-
-      {/* Generate */}
-      <button onClick={generate}
-        disabled={loading || !decisionNeeded.trim()}
-        className={`w-full py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all
-          ${loading || !decisionNeeded.trim() ? c.btnDis : c.btn}`}>
-        {loading ? (
-          <><Loader2 className="w-4 h-4 animate-spin" /> Deciding for you...</>
-        ) : (
-          <><Target className="w-4 h-4" /> Decide For Me</>
+      {/* Standard / Devils / Chain input */}
+      {['standard','devils','chain'].includes(decideMode) && (<>
+        {decideMode !== 'chain' && (<div className={`p-5 rounded-2xl border ${c.card}`}><label className={`text-xs font-bold ${c.textSec} uppercase tracking-wide mb-1 block`}>🏷️ Category</label>{renderPills(DECISION_CATEGORIES, category, setCategory)}</div>)}
+        <div className={`p-5 rounded-2xl border ${c.card}`}>
+          <label className={`text-xs font-bold ${c.textSec} uppercase tracking-wide mb-2 block`}>{decideMode === 'chain' ? '🔗 Primary decision' : '❓ What needs deciding?'}</label>
+          <input type="text" value={decisionNeeded} onChange={e => setDecisionNeeded(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); if (decideMode === 'devils') handleDevilsAdvocate(); else if (decideMode === 'chain') handleChain(); else generate([]); } }}
+            placeholder={decideMode === 'chain' ? "e.g., 'Should I cook or go out?'" : "e.g., 'What to eat for dinner'"} className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
+        </div>
+        {decideMode === 'devils' && (
+          <div className={`p-5 rounded-2xl border ${c.card}`}>
+            <label className={`text-xs font-bold ${c.textSec} uppercase tracking-wide mb-2 block`}>🎭 Your gut instinct</label>
+            <input type="text" value={gutInstinct} onChange={e => setGutInstinct(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') handleDevilsAdvocate(); }}
+              placeholder="e.g., 'I think sushi'" className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
+            <p className={`text-[10px] ${c.textMut} mt-1`}>I'll challenge it, then tell you if you're right.</p>
+          </div>
         )}
+      </>)}
+
+      {/* Pros & cons input */}
+      {decideMode === 'proscons' && (
+        <div className={`p-5 rounded-2xl border ${c.card}`}>
+          <label className={`text-xs font-bold ${c.textSec} uppercase tracking-wide mb-2 block`}>⚖️ Options (2-4)</label>
+          <div className="space-y-2">
+            {prosOptions.map((o, i) => (<div key={i} className="flex gap-2"><input type="text" value={o} onChange={e => { const n=[...prosOptions]; n[i]=e.target.value; setProsOptions(n); }} placeholder={`Option ${i+1}`} className={`flex-1 px-3 py-2 rounded-lg border text-sm ${c.input} outline-none`} />{prosOptions.length > 2 && <button onClick={() => setProsOptions(p => p.filter((_,j) => j!==i))} className={`px-2 text-xs ${c.btnGhost} hover:text-red-500`}>✕</button>}</div>))}
+            {prosOptions.length < 4 && <button onClick={() => setProsOptions(p => [...p, ''])} className={`text-xs font-semibold ${c.histAccent}`}>➕ Add option</button>}
+          </div>
+          <input type="text" value={prosContext} onChange={e => setProsContext(e.target.value)} placeholder="Context?" className={`w-full mt-3 px-3 py-2 rounded-lg border text-sm ${c.input} outline-none`} />
+        </div>
+      )}
+
+      {/* Constraints + Capacity */}
+      <div className={`p-5 rounded-2xl border ${c.card}`}>
+        <label className={`text-xs font-bold ${c.textSec} uppercase tracking-wide mb-1 block`}>⚡ Constraints</label>
+        {renderPills(QUICK_CONSTRAINTS, constraints, toggleConstraint, true)}
+        <input type="text" value={extraContext} onChange={e => setExtraContext(e.target.value)} placeholder="Anything else?" className={`w-full mt-3 px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
+      </div>
+      {decideMode !== 'devils' && (<div className={`p-5 rounded-2xl border ${c.card}`}><label className={`text-xs font-bold ${c.textSec} uppercase tracking-wide mb-2 block`}>🔋 Capacity</label>{renderPills(CAPACITY_OPTIONS, capacity, setCapacity)}</div>)}
+
+      {/* Timer (standard only) */}
+      {decideMode === 'standard' && (
+        <div className={`p-4 rounded-2xl border ${c.card}`}>
+          <div className="flex items-center gap-3">
+            <span>⏱️</span><div className="flex-1"><p className={`text-xs font-bold ${c.text}`}>Timer</p><p className={`text-[10px] ${c.textMut}`}>Lock before time runs out</p></div>
+            <div className="flex gap-1">{TIMER_OPTIONS.map(t => (<button key={t.value} onClick={() => setTimerDuration(timerDuration === t.value ? null : t.value)} className={`px-2 py-1 rounded text-[10px] font-bold border ${timerDuration === t.value ? c.pillActive : c.pillInactive}`}>{t.label}</button>))}</div>
+          </div>
+        </div>
+      )}
+
+      {/* Go button */}
+      <button onClick={() => { if (decideMode === 'proscons') handleProsCons(); else if (decideMode === 'devils') handleDevilsAdvocate(); else if (decideMode === 'chain') handleChain(); else { generate([]); if (timerDuration) startTimer(timerDuration); } }}
+        disabled={loading || (decideMode === 'standard' && !decisionNeeded.trim()) || (decideMode === 'proscons' && prosOptions.filter(o => o.trim()).length < 2) || (decideMode === 'devils' && (!decisionNeeded.trim() || !gutInstinct.trim())) || (decideMode === 'chain' && !decisionNeeded.trim())}
+        className={`w-full py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 ${loading ? c.btnDis : c.btn}`}>
+        {loading ? <><span className="animate-spin inline-block">⏳</span> Working...</> : decideMode === 'proscons' ? <><span>⚖️</span> Compare</> : decideMode === 'devils' ? <><span>🎭</span> Check My Gut</> : decideMode === 'chain' ? <><span>🔗</span> Solve Chain</> : <><span>🎯</span> Decide For Me</>}
       </button>
+
+      {/* Template save + prefs */}
+      <div className={`p-4 rounded-2xl border ${c.hintBg}`}>
+        <div className="flex items-center gap-2 mb-2">
+          <label className={`text-[10px] font-bold ${c.textSec} uppercase flex-1`}>💾 Saved preferences</label>
+          <button onClick={() => setShowTemplateSave(!showTemplateSave)} className={`text-[10px] font-semibold ${c.histAccent}`}>{showTemplateSave ? '▲' : '📱 Save template'}</button>
+        </div>
+        <input type="text" value={savedPreferences} onChange={e => setSavedPreferences(e.target.value)} placeholder="e.g., 'vegetarian, budget-conscious'" className={`w-full px-3 py-2 rounded-lg border text-xs ${c.input} outline-none`} />
+        {showTemplateSave && (<div className="flex gap-2 mt-2"><input type="text" value={templateName} onChange={e => setTemplateName(e.target.value)} placeholder="Template name" className={`flex-1 px-3 py-1.5 rounded-lg border text-xs ${c.input} outline-none`} onKeyDown={e => { if (e.key === 'Enter') saveTemplate(); }} /><button onClick={saveTemplate} disabled={!templateName.trim()} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btn} disabled:opacity-40`}>Save</button></div>)}
+        {learnedPreferences.length > 0 && (<div className="mt-2"><p className={`text-[10px] ${c.textMut} mb-1`}>🧠 Learned:</p><div className="flex flex-wrap gap-1">{learnedPreferences.slice(0, 5).map((l, i) => <span key={i} className={`text-[10px] px-2 py-0.5 rounded-full border ${c.pillInactive}`}>{l}</span>)}</div></div>)}
+      </div>
     </div>
   );
 
   // ══════════════════════════════════════════
-  // RENDER: Results
+  // RENDER: Timer + Spiral
+  // ══════════════════════════════════════════
+  const renderTimer = () => {
+    if (timerRemaining === null || !results) return null;
+    const pct = timerDuration ? ((timerRemaining / timerDuration) * 100) : 0;
+    const urg = timerRemaining <= 10;
+    return (
+      <div className={`mb-4 p-4 rounded-2xl border ${timerLocked ? c.prosWinner : urg ? c.timerBg : c.card}`}>
+        <div className="flex items-center gap-3 mb-2">
+          <span className={`text-lg ${urg && !timerLocked ? 'animate-pulse' : ''}`}>{timerLocked ? '🔒' : urg ? '🚨' : '⏱️'}</span>
+          <div className="flex-1"><p className={`text-xs font-bold ${timerLocked ? c.prosWinText : c.text}`}>{timerLocked ? 'LOCKED IN!' : `${timerRemaining}s`}</p>{!timerLocked && <p className={`text-[10px] ${urg ? c.timerText : c.textMut}`}>{urg ? 'Go with this one!' : 'Decide before time runs out'}</p>}</div>
+          {!timerLocked && <button onClick={cancelTimer} className={`text-[10px] ${c.btnGhost}`}>Cancel</button>}
+        </div>
+        {!timerLocked && <div className={`h-2 rounded-full ${c.prosBarBg}`}><div className={`h-full rounded-full transition-all duration-1000 ${urg ? 'bg-red-500' : c.prosBar}`} style={{ width: `${pct}%` }} /></div>}
+      </div>
+    );
+  };
+
+  const renderSpiral = () => {
+    if (rejectionCount < 3 || !results) return null;
+    return (
+      <div className={`mb-4 p-4 rounded-2xl border ${c.warnBg}`}>
+        <div className="flex items-start gap-3"><span className="text-lg">🌀</span><div>
+          <p className={`text-xs font-bold ${c.warnTitle}`}>Rejected {rejectionCount} suggestions</p>
+          <p className={`text-xs ${c.warnText} mt-1`}>{rejectionCount >= 5 ? "You probably know what you want. Try Devil's Advocate mode." : 'Good enough beats perfect.'}</p>
+          <div className="flex gap-2 mt-2">
+            <button onClick={() => setTimerLocked(true)} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btn}`}>🔒 Lock this in</button>
+            {rejectionCount >= 5 && <button onClick={() => { setDecideMode('devils'); setResults(null); }} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnSec}`}>🎭 Gut check</button>}
+          </div>
+        </div></div>
+      </div>
+    );
+  };
+
+  // ══════════════════════════════════════════
+  // RENDER: Standard Results
   // ══════════════════════════════════════════
   const renderResults = () => {
     if (!results) return null;
     const d = results.decision_made_for_you || {};
-    const steps = results.execution_instructions;
+    const steps = Array.isArray(results.execution_instructions) ? results.execution_instructions : [];
     const alts = d.alternatives_eliminated || [];
-
-    // Normalize steps to array
-    let stepList = [];
-    if (Array.isArray(steps)) {
-      stepList = steps;
-    } else if (steps && typeof steps === 'object') {
-      stepList = Object.entries(steps)
-        .filter(([k]) => k.startsWith('step_'))
-        .sort(([a], [b]) => a.localeCompare(b))
-        .map(([, v]) => v);
-    }
-    const doneMsg = !Array.isArray(steps) && steps?.done;
-
     return (
       <div className="space-y-4 mt-4">
-        {/* THE Decision */}
+        {renderTimer()}{renderSpiral()}
+        {rejectedChoices.length > 0 && <div className={`text-center text-xs font-semibold ${c.textMut}`}>🚫 Rejected {rejectedChoices.length}</div>}
         <div className={`p-6 rounded-2xl border-2 ${c.decisionBg}`}>
           <div className={`text-xs font-bold uppercase tracking-wide mb-3 ${c.decisionText}`}>Your Decision</div>
           <p className={`text-2xl font-bold ${c.decisionHighlight} mb-3`}>{d.choice}</p>
           {d.why && <p className={`text-sm ${c.decisionText}`}><strong>Why:</strong> {d.why}</p>}
         </div>
-
-        {/* Execution Steps */}
-        {stepList.length > 0 && (
-          <div className={`p-5 rounded-2xl border ${c.card}`}>
-            <h3 className={`text-sm font-bold mb-3 ${c.text}`}>📋 Do this now</h3>
-            <div className="space-y-2.5">
-              {stepList.map((step, i) => (
-                <div key={i} className="flex items-start gap-3">
-                  <span className={`w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-black ${c.stepNum}`}>{i + 1}</span>
-                  <p className={`text-sm ${c.stepText} pt-0.5`}>{step}</p>
-                </div>
-              ))}
-            </div>
-            {doneMsg && (
-              <p className={`mt-4 text-sm font-semibold ${c.d ? 'text-emerald-400' : 'text-emerald-700'}`}>{doneMsg}</p>
-            )}
-          </div>
-        )}
-
-        {/* Alternatives Eliminated */}
-        {alts.length > 0 && (
-          <div className={`p-5 rounded-2xl border ${c.card}`}>
-            <h3 className={`text-sm font-bold mb-2 ${c.text}`}>🚫 Ruled out for you</h3>
-            <div className="space-y-1.5">
-              {alts.map((alt, i) => (
-                <p key={i} className={`text-xs ${c.textSec} flex items-start gap-2`}>
-                  <span className="line-through opacity-60">{alt}</span>
-                </p>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* No Second-Guessing */}
-        {results.no_second_guessing && (
-          <div className={`p-5 rounded-2xl border ${c.warnBg}`}>
-            <h3 className={`text-sm font-bold mb-2 ${c.warnTitle}`}>⚠️ No Second-Guessing</h3>
-            <p className={`text-sm ${c.warnText}`}>{results.no_second_guessing}</p>
-          </div>
-        )}
-
-        {/* Actions */}
-        <div className="flex gap-2">
-          <button onClick={copyDecision}
-            className={`flex-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 ${c.btnSec}`}>
-            {copied ? <><Check className="w-3.5 h-3.5" /> Copied!</> : <><Copy className="w-3.5 h-3.5" /> Copy Decision</>}
-          </button>
-          <button onClick={decideAgain}
-            className={`flex-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 ${c.btn}`}>
-            <RefreshCw className="w-3.5 h-3.5" /> Decide Something Else
-          </button>
+        {renderSteps(steps)}
+        {alts.length > 0 && (<div className={`p-5 rounded-2xl border ${c.card}`}><h3 className={`text-sm font-bold mb-2 ${c.text}`}>🚫 Ruled out</h3>{alts.map((a, i) => <p key={i} className={`text-xs ${c.textSec}`}><span className="line-through opacity-60">{a}</span></p>)}</div>)}
+        {results.no_second_guessing && (<div className={`p-5 rounded-2xl border ${c.warnBg}`}><p className={`text-sm font-bold ${c.warnTitle} mb-1`}>⚠️ No Second-Guessing</p><p className={`text-sm ${c.warnText}`}>{results.no_second_guessing}</p></div>)}
+        <div className="flex flex-wrap gap-2">
+          {!timerLocked && <button onClick={handleNotThat} disabled={loading} className={`flex-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 border ${c.btnDanger}`}><span>🚫</span> Not That</button>}
+          <button onClick={decideAgain} className={`flex-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 ${c.btn}`}><span>🔄</span> New</button>
         </div>
+        <div className="flex gap-2"><CopyBtn content={buildDecisionText()} label="Copy" /><ShareBtn content={buildDecisionText()} title="Decision Coach" /><PrintBtn content={buildPrintContent()} title="Decision Coach" label="Print" /></div>
       </div>
     );
   };
 
   // ══════════════════════════════════════════
-  // RENDER: Error
+  // RENDER: Pros & Cons Result
   // ══════════════════════════════════════════
-  const renderError = () => error ? (
-    <div className={`mt-4 p-4 ${c.errBg} border rounded-xl flex items-start gap-3`}>
-      <AlertCircle className={`w-5 h-5 ${c.errText} flex-shrink-0 mt-0.5`} />
-      <p className={`text-sm ${c.errText}`}>{error}</p>
-    </div>
-  ) : null;
-
-  // ══════════════════════════════════════════
-  // RENDER: History
-  // ══════════════════════════════════════════
-  const renderHistory = () => {
-    if (history.length === 0) return null;
-
-    const formatDate = (iso) => {
-      try {
-        const dt = new Date(iso);
-        const now = new Date();
-        const diff = Math.floor((now - dt) / (1000 * 60 * 60 * 24));
-        if (diff === 0) return 'Today';
-        if (diff === 1) return 'Yesterday';
-        if (diff < 7) return `${diff} days ago`;
-        return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-      } catch { return ''; }
-    };
-
+  const renderProsResult = () => {
+    if (!prosResult) return null;
+    const cmp = prosResult.comparison || []; const w = prosResult.winner; const mx = Math.max(...cmp.map(o => o.score || 0), 1);
     return (
-      <div className={`mt-6 p-4 rounded-2xl border ${c.histBg}`}>
-        <button onClick={() => setShowHistory(!showHistory)}
-          className="w-full flex items-center gap-2 text-left">
-          <BookOpen className={`w-4 h-4 ${c.histAccent}`} />
-          <span className={`text-sm font-bold ${c.text} flex-1`}>Past Decisions</span>
-          <span className={`text-xs ${c.textMut}`}>{history.length}</span>
-          {showHistory ? <ChevronUp className={`w-4 h-4 ${c.textMut}`} /> : <ChevronDown className={`w-4 h-4 ${c.textMut}`} />}
-        </button>
+      <div className="space-y-4 mt-4">
+        {w && (<div className={`p-6 rounded-2xl border-2 ${c.prosWinner}`}><div className={`text-xs font-bold uppercase mb-2 ${c.prosWinText}`}>🏆 Winner</div><p className={`text-2xl font-bold ${c.prosWinText} mb-2`}>{w.choice}</p><p className={`text-sm ${c.prosWinText} opacity-80`}>{w.why}</p>{w.margin && <span className={`inline-block mt-2 text-[10px] font-bold px-2 py-0.5 rounded-full ${w.margin === 'landslide' ? 'bg-emerald-200 text-emerald-800' : w.margin === 'clear' ? 'bg-amber-200 text-amber-800' : 'bg-stone-200 text-stone-700'}`}>{w.margin === 'landslide' ? '🏆 Landslide' : w.margin === 'clear' ? '✓ Clear' : '⚖️ Close'}</span>}</div>)}
+        {cmp.map((o, i) => { const isW = o.option === w?.choice; return (
+          <div key={i} className={`p-4 rounded-2xl border ${isW ? c.prosWinner : c.prosLoser}`}>
+            <div className="flex items-center gap-3 mb-2"><span>{isW ? '🏆' : '💤'}</span><p className={`text-sm font-bold flex-1 ${c.text}`}>{o.option}</p><span className={`text-xs font-bold ${isW ? c.prosWinText : c.textMut}`}>{o.score}/100</span></div>
+            <div className={`h-2 rounded-full mb-3 ${c.prosBarBg}`}><div className={`h-full rounded-full ${isW ? 'bg-emerald-500' : c.prosBar}`} style={{ width: `${(o.score / mx) * 100}%` }} /></div>
+            <div className="grid grid-cols-2 gap-2"><div>{o.pros?.map((p, j) => <p key={j} className={`text-xs ${c.textSec} mb-0.5`}>✅ {p}</p>)}</div><div>{o.cons?.map((x, j) => <p key={j} className={`text-xs ${c.textMut} mb-0.5`}>❌ {x}</p>)}</div></div>
+          </div>);
+        })}
+        {prosResult.tie_breaker && <div className={`p-4 rounded-xl border ${c.hintBg}`}><p className={`text-xs font-bold ${c.text} mb-1`}>⚖️ Tie Breaker</p><p className={`text-xs ${c.hintText}`}>{prosResult.tie_breaker}</p></div>}
+        {prosResult.no_second_guessing && <div className={`p-4 rounded-xl border ${c.warnBg}`}><p className={`text-sm ${c.warnText}`}>{prosResult.no_second_guessing}</p></div>}
+        <button onClick={decideAgain} className={`w-full py-3 rounded-xl text-xs font-bold ${c.btn}`}>🔄 New</button>
+        <div className="flex gap-2"><CopyBtn content={buildProsText()} label="Copy" /><ShareBtn content={buildProsText()} title="Comparison" /></div>
+      </div>
+    );
+  };
 
-        {showHistory && (
-          <div className="mt-3 space-y-2">
-            {history.map(entry => {
-              const isExp = expandedHistId === entry.id;
-              return (
-                <div key={entry.id} className={`rounded-xl border ${c.histCard} overflow-hidden`}>
-                  <button onClick={() => setExpandedHistId(isExp ? null : entry.id)}
-                    className="w-full flex items-center gap-3 p-3 text-left">
-                    <div className="flex-1 min-w-0">
-                      <div className={`text-sm font-semibold ${c.text} truncate`}>{entry.question}</div>
-                      <div className={`text-xs ${c.textMut} mt-0.5`}>
-                        {formatDate(entry.date)} · {entry.choice}
+  // ══════════════════════════════════════════
+  // RENDER: Devil's Advocate Result
+  // ══════════════════════════════════════════
+  const renderDevilsResult = () => {
+    if (!devilsResult) return null;
+    const gutRight = devilsResult.verdict === 'trust_gut';
+    return (
+      <div className="space-y-4 mt-4">
+        <div className={`p-5 rounded-2xl border ${c.devilAgainst}`}><p className={`text-xs font-bold ${c.warnTitle} mb-2`}>🎭 Against "{gutInstinct}"</p>{devilsResult.case_against?.map((r, i) => <p key={i} className={`text-xs ${c.warnText} mb-1`}>❌ {r}</p>)}</div>
+        <div className={`p-5 rounded-2xl border ${c.devilFor}`}><p className={`text-xs font-bold ${c.prosWinText} mb-2`}>✅ For your gut</p>{devilsResult.case_for?.map((r, i) => <p key={i} className={`text-xs ${c.prosWinText} mb-1`}>✅ {r}</p>)}</div>
+        <div className={`p-6 rounded-2xl border-2 ${gutRight ? c.prosWinner : c.decisionBg}`}>
+          <div className={`text-xs font-bold uppercase mb-2 ${gutRight ? c.prosWinText : c.decisionText}`}>{gutRight ? '✅ Trust Your Gut' : '🔀 Override'}</div>
+          <p className={`text-2xl font-bold ${gutRight ? c.prosWinText : c.decisionHighlight} mb-3`}>{devilsResult.the_real_answer}</p>
+          <p className={`text-sm opacity-80 ${gutRight ? c.prosWinText : c.decisionText}`}>{devilsResult.verdict_explanation}</p>
+        </div>
+        {devilsResult.permission_slip && <div className={`p-5 rounded-2xl border ${c.welcomeBg}`}><p className={`text-sm font-bold ${c.welcomeText}`}>💌 {devilsResult.permission_slip}</p></div>}
+        {renderSteps(devilsResult.execution_instructions)}
+        <button onClick={decideAgain} className={`w-full py-3 rounded-xl text-xs font-bold ${c.btn}`}>🔄 New</button>
+      </div>
+    );
+  };
+
+  // ══════════════════════════════════════════
+  // RENDER: Chain Result
+  // ══════════════════════════════════════════
+  const renderChainResult = () => {
+    if (!chainResult) return null;
+    return (
+      <div className="space-y-4 mt-4">
+        <div className={`p-6 rounded-2xl border-2 ${c.decisionBg}`}><div className={`text-xs font-bold uppercase mb-2 ${c.decisionText}`}>🔗 Primary</div><p className={`text-2xl font-bold ${c.decisionHighlight} mb-2`}>{chainResult.primary?.choice}</p><p className={`text-sm ${c.decisionText}`}>{chainResult.primary?.why}</p></div>
+        {chainResult.downstream?.map((ds, i) => (
+          <div key={i} className={`p-4 rounded-xl border ${c.chainBg}`}><div className="flex items-start gap-3">
+            <div className={`w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-black ${c.d ? 'bg-indigo-800 text-indigo-200' : 'bg-indigo-100 text-indigo-700'}`}>↳</div>
+            <div className="flex-1"><p className={`text-xs font-bold ${c.chainText} mb-0.5`}>{ds.question}</p><p className={`text-sm font-bold ${c.text} mb-1`}>→ {ds.choice}</p><p className={`text-[10px] ${c.textMut}`}>{ds.depends_on}</p>{ds.step && <p className={`text-xs ${c.textSec} mt-1`}>📋 {ds.step}</p>}</div>
+          </div></div>
+        ))}
+        {chainResult.full_plan && <div className={`p-4 rounded-xl border ${c.hintBg}`}><p className={`text-xs font-bold ${c.text} mb-1`}>📝 Full Plan</p><p className={`text-xs ${c.hintText}`}>{chainResult.full_plan}</p></div>}
+        {renderSteps(chainResult.execution_instructions)}
+        {chainResult.no_second_guessing && <div className={`p-4 rounded-xl border ${c.warnBg}`}><p className={`text-sm ${c.warnText}`}>{chainResult.no_second_guessing}</p></div>}
+        <button onClick={decideAgain} className={`w-full py-3 rounded-xl text-xs font-bold ${c.btn}`}>🔄 New</button>
+        <CopyBtn content={`🔗 Decision Chain\nPrimary: ${chainResult.primary?.choice}\n${(chainResult.downstream||[]).map(d=>`  ↳ ${d.question} → ${d.choice}`).join('\n')}\n\n${chainResult.full_plan||''}${BRANDING}`} label="Copy" />
+      </div>
+    );
+  };
+
+  // ══════════════════════════════════════════
+  // RENDER: Batch Section
+  // ══════════════════════════════════════════
+  const renderBatch = () => (
+    <div className={`mb-5 p-5 rounded-2xl border ${c.card}`}>
+      <p className={`text-xs font-bold ${c.text} mb-1`}>🗓️ Batch — Pre-decide the week</p>
+      <p className={`text-[10px] ${c.textMut} mb-3`}>30 seconds now, zero paralysis later</p>
+      <div className="flex gap-2 mb-3">
+        <select value={batchCategory} onChange={e => setBatchCategory(e.target.value)} className={`flex-1 px-3 py-2 rounded-lg border text-sm ${c.input}`}>
+          <option value="dinner">🍕 Dinners</option><option value="exercise">🏃 Workouts</option><option value="evening activity">🎯 Evenings</option><option value="lunch">🥪 Lunches</option><option value="task to tackle first">📋 Tasks</option>
+        </select>
+        <select value={batchCount} onChange={e => setBatchCount(Number(e.target.value))} className={`px-3 py-2 rounded-lg border text-sm ${c.input}`}>{[3,5,7].map(n => <option key={n} value={n}>{n} days</option>)}</select>
+        <button onClick={handleBatch} disabled={loading} className={`px-4 py-2 rounded-lg text-xs font-bold ${c.btn} disabled:opacity-40`}>{loading ? <span className="animate-spin">⏳</span> : '🗓️ Go'}</button>
+      </div>
+      {batchResult?.decisions?.length > 0 && (
+        <div className="space-y-2">
+          {batchResult.decisions.map((d, i) => (
+            <div key={i} className={`p-3 rounded-xl border ${c.batchCard} flex items-center gap-3`}>
+              <span className={`w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-[10px] font-black ${c.stepNum}`}>{d.label || `D${d.day}`}</span>
+              <div className="flex-1 min-w-0"><p className={`text-sm font-bold ${c.text} truncate`}>{d.choice}</p><p className={`text-[10px] ${c.textMut}`}>{d.why}</p></div>
+            </div>
+          ))}
+          {batchResult.variety_note && <p className={`text-[10px] ${c.textMut} italic`}>{batchResult.variety_note}</p>}
+          <CopyBtn content={`🗓️ My ${batchCategory} plan\n\n${batchResult.decisions.map(d => `${d.label||'Day '+d.day}: ${d.choice}`).join('\n')}${BRANDING}`} label="Copy Plan" />
+        </div>
+      )}
+    </div>
+  );
+
+  // ══════════════════════════════════════════
+  // RENDER: Group Tab
+  // ══════════════════════════════════════════
+  const renderGroupTab = () => (
+    <div className="space-y-4">
+      <div className={`p-5 rounded-2xl border ${c.card}`}>
+        <label className={`text-xs font-bold ${c.textSec} uppercase tracking-wide mb-2 block`}>❓ Group decision</label>
+        <input type="text" value={groupDecision} onChange={e => setGroupDecision(e.target.value)} placeholder="e.g., 'Where to eat'" className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
+      </div>
+      <div className={`p-5 rounded-2xl border ${c.card}`}>
+        <label className={`text-xs font-bold ${c.textSec} uppercase tracking-wide mb-3 block`}>👥 People</label>
+        {groupPeople.map((p, i) => (
+          <div key={i} className={`p-3 rounded-xl border ${c.groupPerson} mb-2`}>
+            <div className="flex gap-2 mb-2"><input type="text" value={p.name} onChange={e => { const n=[...groupPeople]; n[i]={...n[i],name:e.target.value}; setGroupPeople(n); }} placeholder={`Person ${i+1}`} className={`flex-1 px-3 py-1.5 rounded-lg border text-sm ${c.input} outline-none`} />{groupPeople.length > 2 && <button onClick={() => setGroupPeople(prev => prev.filter((_,j)=>j!==i))} className={`px-2 text-xs ${c.btnGhost} hover:text-red-500`}>✕</button>}</div>
+            <input type="text" value={p.constraints} onChange={e => { const n=[...groupPeople]; n[i]={...n[i],constraints:e.target.value}; setGroupPeople(n); }} placeholder="Constraints" className={`w-full px-3 py-1.5 rounded-lg border text-xs ${c.input} outline-none`} />
+          </div>
+        ))}
+        {groupPeople.length < 6 && <button onClick={() => setGroupPeople(p => [...p, {name:'',constraints:''}])} className={`text-xs font-semibold ${c.histAccent}`}>➕ Add</button>}
+      </div>
+      <button onClick={handleGroupDecide} disabled={loading || !groupDecision.trim() || groupPeople.filter(p => p.name.trim()).length < 2} className={`w-full py-4 rounded-2xl text-sm font-bold ${loading ? c.btnDis : c.btn}`}>
+        {loading ? <><span className="animate-spin">⏳</span> Working...</> : <><span>👥</span> Decide for Group</>}
+      </button>
+      {groupResult && (
+        <div className="space-y-4 mt-4">
+          <div className={`p-6 rounded-2xl border-2 ${c.decisionBg}`}>
+            <div className={`text-xs font-bold uppercase mb-3 ${c.decisionText}`}>👥 Group Decision</div>
+            <p className={`text-2xl font-bold ${c.decisionHighlight} mb-2`}>{groupResult.group_decision?.choice}</p>
+            <p className={`text-sm ${c.decisionText}`}>{groupResult.group_decision?.why}</p>
+            {groupResult.overall_satisfaction && (<div className="mt-3 flex items-center gap-2"><span className={`text-xs ${c.textMut}`}>Satisfaction:</span><div className={`flex-1 h-2 rounded-full ${c.prosBarBg}`}><div className={`h-full rounded-full ${c.groupBar}`} style={{width:`${groupResult.overall_satisfaction}%`}} /></div><span className={`text-xs font-bold ${c.text}`}>{groupResult.overall_satisfaction}%</span></div>)}
+          </div>
+          {groupResult.person_fit?.map((p, i) => (
+            <div key={i} className={`p-4 rounded-xl border ${c.card}`}>
+              <div className="flex items-center gap-2 mb-2"><span>👤</span><p className={`text-sm font-bold flex-1 ${c.text}`}>{p.name}</p><span className={`text-xs font-bold ${p.happiness>=70 ? c.prosWinText : c.textMut}`}>{p.happiness}%</span></div>
+              <div className={`h-1.5 rounded-full mb-2 ${c.prosBarBg}`}><div className={`h-full rounded-full ${p.happiness>=70?'bg-emerald-500':p.happiness>=50?c.prosBar:'bg-red-400'}`} style={{width:`${p.happiness}%`}} /></div>
+              <div className="grid grid-cols-2 gap-1"><div>{p.satisfied?.map((s,j)=><p key={j} className={`text-[10px] ${c.textSec}`}>✅ {s}</p>)}</div><div>{p.compromised?.map((x,j)=><p key={j} className={`text-[10px] ${c.textMut}`}>⚠️ {x}</p>)}</div></div>
+            </div>
+          ))}
+          {groupResult.diplomatic_pitch && <div className={`p-4 rounded-xl border ${c.hintBg}`}><p className={`text-xs font-bold ${c.text} mb-1`}>🎤 How to pitch it</p><p className={`text-xs ${c.hintText}`}>{groupResult.diplomatic_pitch}</p></div>}
+          <div className="flex gap-2"><CopyBtn content={buildGroupText()} label="Copy" /><ShareBtn content={buildGroupText()} title="Group Decision" /></div>
+        </div>
+      )}
+    </div>
+  );
+
+  // ══════════════════════════════════════════
+  // RENDER: Insights Tab (DNA + Patterns + Achievements)
+  // ══════════════════════════════════════════
+  const renderInsightsTab = () => (
+    <div className="space-y-6">
+      {/* DNA */}
+      <div>
+        <h3 className={`text-sm font-bold ${c.text} mb-3`}>🧬 Decision DNA</h3>
+        {history.length < 8 ? (<div className={`p-6 rounded-2xl border ${c.card} text-center`}><p className="text-3xl mb-2">🧬</p><p className={`text-xs ${c.textMut}`}>Need 8+ decisions. You have {history.length}.</p></div>) : (<>
+          <button onClick={handleDNA} disabled={dnaLoading} className={`px-5 py-2 rounded-xl text-xs font-bold ${c.btn} disabled:opacity-40 mb-3`}>{dnaLoading ? <><span className="animate-spin">⏳</span> Analyzing...</> : dnaResult ? '🔄 Re-analyze' : '🧬 Build DNA'}</button>
+          {dnaResult && (<div className="space-y-3">
+            <div className={`p-5 rounded-2xl border ${c.dnaBg}`}>
+              <div className="flex items-center gap-3 mb-3"><span className="text-3xl">{dnaResult.archetype?.emoji || '🧬'}</span><div><p className={`text-lg font-bold ${c.text}`}>{dnaResult.archetype?.name}</p><p className={`text-xs ${c.textSec}`}>{dnaResult.archetype?.description}</p></div></div>
+              <div className="grid grid-cols-2 gap-3">
+                <div><p className={`text-[10px] font-bold ${c.prosWinText} mb-1`}>Strengths</p>{dnaResult.archetype?.strengths?.map((s,i)=><p key={i} className={`text-xs ${c.textSec}`}>✅ {s}</p>)}</div>
+                <div><p className={`text-[10px] font-bold ${c.warnTitle} mb-1`}>Blind Spots</p>{dnaResult.archetype?.blindspots?.map((b,i)=><p key={i} className={`text-xs ${c.textSec}`}>⚠️ {b}</p>)}</div>
+              </div>
+            </div>
+            {dnaResult.stated_vs_real && (<div className={`p-4 rounded-xl border ${c.patternHighlight}`}><p className={`text-[10px] font-bold ${c.textMut} mb-2`}>🎭 Say vs Do</p><p className={`text-xs ${c.textSec} mb-1`}><strong>Say:</strong> {dnaResult.stated_vs_real.stated}</p><p className={`text-xs ${c.textSec} mb-1`}><strong>Do:</strong> {dnaResult.stated_vs_real.real}</p><p className={`text-xs font-semibold ${c.dnaAccent} mt-1`}>{dnaResult.stated_vs_real.gap_insight}</p></div>)}
+            {dnaResult.domain_velocity?.length > 0 && (<div className={`p-4 rounded-xl border ${c.card}`}><p className={`text-[10px] font-bold ${c.textMut} mb-2`}>⚡ Speed by Domain</p>{dnaResult.domain_velocity.map((d,i)=>(<div key={i} className="flex items-center gap-2 mb-1.5"><span className={`text-xs font-bold w-14 ${c.text}`}>{d.domain}</span><div className={`flex-1 h-2 rounded-full ${c.prosBarBg}`}><div className={`h-full rounded-full ${d.avg_rejections<=1.5?'bg-emerald-500':d.avg_rejections<=3?c.prosBar:'bg-red-400'}`} style={{width:`${Math.min((d.avg_rejections/8)*100,100)}%`}} /></div><span className={`text-[10px] ${c.textMut} w-20 text-right`}>{d.verdict}</span></div>))}</div>)}
+            {dnaResult.growth && (<div className={`p-4 rounded-xl border ${dnaResult.growth.trajectory==='improving'?c.prosWinner:c.card}`}><p className={`text-[10px] font-bold ${c.textMut} mb-1`}>📈 Growth</p><div className="flex items-center gap-3"><span className={`text-sm font-bold ${c.textMut}`}>{dnaResult.growth.early_avg_rejections}</span><span>→</span><span className={`text-sm font-bold ${dnaResult.growth.trajectory==='improving'?c.prosWinText:c.text}`}>{dnaResult.growth.recent_avg_rejections}</span><span className={`text-xs ${dnaResult.growth.trajectory==='improving'?c.prosWinText:c.textMut}`}>{dnaResult.growth.trajectory==='improving'?'📈 More decisive!':dnaResult.growth.trajectory==='declining'?'📉':'➡️ Stable'}</span></div><p className={`text-xs ${c.textSec} mt-1`}>{dnaResult.growth.insight}</p></div>)}
+            {dnaResult.core_blocker && <div className={`p-4 rounded-xl border ${c.warnBg}`}><p className={`text-xs font-bold ${c.warnTitle} mb-1`}>🔒 Core Blocker</p><p className={`text-xs ${c.warnText}`}>{dnaResult.core_blocker}</p></div>}
+            {dnaResult.prescription && <div className={`p-4 rounded-xl border ${c.welcomeBg}`}><p className={`text-xs font-bold ${c.welcomeText} mb-1`}>💊 Prescription</p><p className={`text-xs ${c.welcomeText} opacity-80`}>{dnaResult.prescription}</p></div>}
+            <div className="flex gap-2"><CopyBtn content={`🧬 Decision DNA\n\n${dnaResult.archetype?.name}\n${dnaResult.archetype?.description}\n\n🔒 ${dnaResult.core_blocker}\n💊 ${dnaResult.prescription}${BRANDING}`} label="Copy DNA" />{dnaResult.share_snippet && <ShareBtn content={dnaResult.share_snippet+BRANDING} title="Decision DNA" />}</div>
+          </div>)}
+        </>)}
+      </div>
+
+      {/* Patterns */}
+      <div>
+        <h3 className={`text-sm font-bold ${c.text} mb-3`}>📊 Patterns</h3>
+        {history.length < 5 ? (<div className={`p-6 rounded-2xl border ${c.card} text-center`}><p className="text-3xl mb-2">📊</p><p className={`text-xs ${c.textMut}`}>Need 5+. You have {history.length}.</p></div>) : (<>
+          <button onClick={handlePatterns} disabled={patternsLoading} className={`px-5 py-2 rounded-xl text-xs font-bold ${c.btn} disabled:opacity-40 mb-3`}>{patternsLoading ? <><span className="animate-spin">⏳</span> Analyzing...</> : patternsResult ? '🔄 Re-analyze' : '📊 Analyze'}</button>
+          {patternsResult && (<div className="space-y-3">
+            <div className={`p-5 rounded-2xl border-2 ${c.decisionBg}`}><p className={`text-lg font-bold ${c.decisionHighlight}`}>{patternsResult.headline_insight}</p></div>
+            {patternsResult.stats && (<div className="grid grid-cols-2 sm:grid-cols-3 gap-2">{[['📊','Total',patternsResult.stats.total_decisions],['🏷️','Top',patternsResult.stats.most_common_category],['🚫','Avg rej.',patternsResult.stats.avg_rejections],['✅','1st try',patternsResult.stats.acceptance_rate_first_try],['🕐','Peak',patternsResult.stats.peak_time]].filter(([,,v])=>v!=null).map(([e,l,v])=>(<div key={l} className={`p-3 rounded-xl border ${c.patternCard}`}><span>{e}</span><p className={`text-xs ${c.textMut} mt-1`}>{l}</p><p className={`text-sm font-bold ${c.text}`}>{v}</p></div>))}</div>)}
+            {patternsResult.patterns?.map((p,i)=>(<div key={i} className={`p-4 rounded-xl border ${c.patternCard}`}><div className="flex items-start gap-2"><span>{p.emoji}</span><div><p className={`text-sm font-bold ${c.text}`}>{p.title}</p><p className={`text-xs ${c.textSec} mt-1`}>{p.description}</p></div></div></div>))}
+            {patternsResult.blind_spot && <div className={`p-4 rounded-xl border ${c.patternHighlight}`}><p className={`text-xs font-bold ${c.text} mb-1`}>🙈 Blind Spot</p><p className={`text-xs ${c.textSec}`}>{patternsResult.blind_spot}</p></div>}
+          </div>)}
+        </>)}
+      </div>
+
+      {/* Achievements */}
+      <div>
+        <h3 className={`text-sm font-bold ${c.text} mb-3`}>🏆 Achievements ({earnedAchievements.length}/{ACHIEVEMENTS.length})</h3>
+        <div className="grid grid-cols-2 gap-2">{ACHIEVEMENTS.map(a => { const earned = a.check(history); return (
+          <div key={a.id} className={`p-3 rounded-xl border ${earned ? c.patternHighlight : c.card}`}><div className="flex items-center gap-2"><span className={`text-lg ${earned ? '' : 'grayscale opacity-40'}`}>{a.emoji}</span><div><p className={`text-xs font-bold ${earned ? c.achieveActive : c.achieveLocked}`}>{a.label}</p><p className={`text-[10px] ${c.textMut}`}>{a.desc}</p></div></div></div>
+        ); })}</div>
+      </div>
+    </div>
+  );
+
+  // ══════════════════════════════════════════
+  // RENDER: History with Follow-Up
+  // ══════════════════════════════════════════
+  const formatDate = (iso) => { try { const d=new Date(iso),n=new Date(),df=Math.floor((n-d)/(864e5)); if(df===0)return'Today';if(df===1)return'Yesterday';if(df<7)return`${df}d ago`;return d.toLocaleDateString('en-US',{month:'short',day:'numeric'}); } catch{return'';} };
+
+  const renderHistoryTab = () => {
+    if (!history.length) return <div className={`p-8 rounded-2xl border ${c.card} text-center`}><p className="text-3xl mb-3">📜</p><p className={`text-sm ${c.textMut}`}>No decisions yet.</p></div>;
+    return (
+      <div className="space-y-2">
+        {history.map(entry => {
+          const isExp = expandedHistId === entry.id;
+          const isFU = followUpId === entry.id;
+          const hasFU = !!entry.followUp;
+          return (
+            <div key={entry.id} className={`rounded-xl border ${c.histCard} overflow-hidden`}>
+              <button onClick={() => setExpandedHistId(isExp ? null : entry.id)} className={`w-full flex items-center gap-3 p-3 text-left ${c.histCard}`}>
+                <div className="flex-1 min-w-0">
+                  <div className={`text-sm font-semibold ${c.text} truncate`}>{entry.question}</div>
+                  <div className={`text-xs ${c.textMut} mt-0.5 flex items-center gap-2 flex-wrap`}>
+                    <span>{formatDate(entry.date)}</span><span>·</span><span className="truncate max-w-[120px]">{entry.choice}</span>
+                    {entry.rejections > 0 && <span className="text-red-400">🚫×{entry.rejections}</span>}
+                    {hasFU && <span className="text-emerald-500">✓</span>}
+                  </div>
+                </div>
+                <span className={`text-xs ${c.textMut}`}>{isExp ? '▲' : '▼'}</span>
+              </button>
+              {isExp && (
+                <div className={`px-3 pb-3 border-t ${c.border}`}>
+                  <div className="flex gap-2 mt-2">
+                    <button onClick={() => loadFromHistory(entry)} className={`flex-1 py-2 rounded-lg text-xs font-bold ${c.btn}`}><span>🎯</span> View</button>
+                    {!hasFU && <button onClick={() => { setFollowUpId(entry.id); setFollowUpOutcome(null); setFollowUpResult(null); setFollowUpActual(''); }} className={`flex-1 py-2 rounded-lg text-xs font-bold ${c.btnSec}`}><span>🔄</span> Follow Up</button>}
+                    <button onClick={() => removeFromHistory(entry.id)} className={`px-3 py-2 rounded-lg text-xs ${c.btnSec} hover:text-red-500`}><span>🗑️</span></button>
+                  </div>
+                  {/* Follow-up form */}
+                  {isFU && !hasFU && (
+                    <div className={`mt-3 p-3 rounded-xl border ${c.followUpBg}`}>
+                      <p className={`text-xs font-bold ${c.followUpText} mb-2`}>🔄 What happened with "{entry.choice}"?</p>
+                      <div className="flex gap-1.5 mb-2">
+                        {[{id:'did_it',l:'✅ Did it'},{id:'didnt_do_it',l:"❌ Didn't"},{id:'changed',l:'🔀 Changed'}].map(o => (
+                          <button key={o.id} onClick={() => setFollowUpOutcome(o.id)} className={`flex-1 py-2 rounded-lg text-[10px] font-bold border ${followUpOutcome===o.id?c.pillActive:c.pillInactive}`}>{o.l}</button>
+                        ))}
                       </div>
-                    </div>
-                    {isExp ? <ChevronUp className={`w-4 h-4 ${c.textMut} flex-shrink-0`} /> : <ChevronDown className={`w-4 h-4 ${c.textMut} flex-shrink-0`} />}
-                  </button>
-                  {isExp && (
-                    <div className={`px-3 pb-3 border-t ${c.border} flex gap-2`}>
-                      <button onClick={() => loadFromHistory(entry)}
-                        className={`flex-1 mt-2 py-2 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 ${c.btn}`}>
-                        <Target className="w-3 h-3" /> View Decision
-                      </button>
-                      <button onClick={() => removeFromHistory(entry.id)}
-                        className={`mt-2 px-3 py-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 ${c.btnSec} hover:text-red-500`}>
-                        <Trash2 className="w-3 h-3" />
-                      </button>
+                      {followUpOutcome === 'did_it' && (
+                        <div className="mb-2"><p className={`text-[10px] ${c.textMut} mb-1`}>Satisfaction (1-5)</p><div className="flex gap-1">{[1,2,3,4,5].map(n => <button key={n} onClick={() => setFollowUpSatisfaction(n)} className={`w-8 h-8 rounded-full text-xs font-bold border ${followUpSatisfaction>=n?c.pillActive:c.pillInactive}`}>{n}</button>)}</div></div>
+                      )}
+                      {followUpOutcome === 'changed' && <input type="text" value={followUpActual} onChange={e => setFollowUpActual(e.target.value)} placeholder="What did you do instead?" className={`w-full mb-2 px-3 py-1.5 rounded-lg border text-xs ${c.input} outline-none`} />}
+                      {followUpOutcome && <button onClick={handleFollowUp} disabled={loading||(followUpOutcome==='changed'&&!followUpActual.trim())} className={`w-full py-2 rounded-lg text-xs font-bold ${c.btn} disabled:opacity-40`}>{loading?<span className="animate-spin">⏳</span>:'💬 Get Feedback'}</button>}
+                      {followUpResult && (
+                        <div className={`mt-2 p-3 rounded-lg border ${c.card}`}>
+                          <p className={`text-xs ${c.textSec} mb-2`}>{followUpResult.response}</p>
+                          {followUpResult.insight && <p className={`text-[10px] font-semibold ${c.histAccent}`}>💡 {followUpResult.insight}</p>}
+                          {followUpResult.preference_learned && <p className={`text-[10px] ${c.textMut} mt-1`}>🧠 {followUpResult.preference_learned}</p>}
+                          {followUpResult.encouragement && <p className={`text-[10px] ${c.prosWinText} mt-1`}>💪 {followUpResult.encouragement}</p>}
+                        </div>
+                      )}
                     </div>
                   )}
+                  {hasFU && <p className={`mt-2 text-[10px] ${c.prosWinText}`}>✓ {entry.followUp === 'did_it' ? 'Did it' : entry.followUp === 'didnt_do_it' ? "Didn't" : `Changed: ${entry.followUp}`}</p>}
                 </div>
-              );
-            })}
-            {history.length > 1 && (
-              <button onClick={() => { setHistory([]); setExpandedHistId(null); }}
-                className={`w-full mt-1 text-center text-xs font-semibold ${c.btnGhost} hover:text-red-500 py-1.5`}>
-                Clear all history
-              </button>
-            )}
-          </div>
-        )}
+              )}
+            </div>
+          );
+        })}
+        {history.length > 1 && <button onClick={() => { if (window.confirm('Clear all history?')) { setHistory([]); setPatternsResult(null); setDnaResult(null); } }} className={`w-full mt-1 text-center text-xs font-semibold ${c.btnGhost} hover:text-red-500 py-1.5`}>Clear all history</button>}
       </div>
     );
   };
 
   // ══════════════════════════════════════════
-  // MAIN RENDER
+  // TABS + MAIN RENDER
   // ══════════════════════════════════════════
+  const TABS = [
+    { id: 'decide', label: '🎯 Decide' },
+    { id: 'group', label: '👥 Group' },
+    { id: 'insights', label: '🧬 Insights' },
+    { id: 'history', label: `📜 History${history.length ? ` (${history.length})` : ''}` },
+  ];
+
   return (
     <div>
-      {renderHeader()}
-      {!results && renderInputForm()}
-      {renderResults()}
-      {renderError()}
-      {renderHistory()}
+      {/* Header + streak */}
+      <div className="mb-5">
+        <h2 className={`text-2xl font-bold ${c.text}`}>Decision Coach 🎯</h2>
+        <p className={`text-sm ${c.textMut}`}>Makes the decision for you when you're too stuck to choose</p>
+        {(followThroughStreak >= 2 || earnedAchievements.length > 0) && (
+          <div className="flex items-center gap-3 mt-1 flex-wrap">
+            {followThroughStreak >= 2 && <span className={`text-xs font-bold ${c.streakFire}`}>🔥 {followThroughStreak}-day streak</span>}
+            {firstTryRate > 0 && history.length >= 3 && <span className={`text-xs ${c.textMut}`}>⚡ {firstTryRate}% first-try</span>}
+            {earnedAchievements.length > 0 && <span className={`text-xs ${c.textMut}`}>🏆 {earnedAchievements.length}/{ACHIEVEMENTS.length}</span>}
+          </div>
+        )}
+      </div>
+
+      {/* Tabs */}
+      <div className="flex gap-1 mb-5 border-b overflow-x-auto" style={{ borderColor: c.d ? '#3f3f46' : '#e7e5e4' }}>
+        {TABS.map(tab => (
+          <button key={tab.id} onClick={() => setActiveTab(tab.id)}
+            className={`px-3 py-2.5 text-xs sm:text-sm font-semibold border-b-2 transition-colors whitespace-nowrap ${activeTab === tab.id ? c.tabActive : c.tabInactive}`}>
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {renderWelcome()}
+
+      {error && (<div className={`mb-4 p-4 ${c.errBg} border rounded-xl flex items-start gap-3`}><span>⚠️</span><p className={`text-sm ${c.errText}`}>{error}</p></div>)}
+
+      {activeTab === 'decide' && (<>
+        {renderQuickDecide()}
+        {renderBatch()}
+        {!results && !prosResult && !devilsResult && !chainResult && renderInputForm()}
+        {decideMode === 'standard' && renderResults()}
+        {decideMode === 'proscons' && renderProsResult()}
+        {decideMode === 'devils' && renderDevilsResult()}
+        {decideMode === 'chain' && renderChainResult()}
+      </>)}
+      {activeTab === 'group' && renderGroupTab()}
+      {activeTab === 'insights' && renderInsightsTab()}
+      {activeTab === 'history' && renderHistoryTab()}
+
+      {/* Cross-refs */}
+      <div className={`mt-6 p-4 rounded-2xl border ${c.crossRefBg}`}>
+        <p className={`text-xs ${c.crossRefText}`}>
+          💡 Thoughts tangled?{' '}<a href="/BrainDumpStructurer" target="_blank" rel="noopener noreferrer" className={`font-semibold underline ${c.crossRefLink}`}>Brain Dump Structurer</a>{' '}
+          organizes chaos. Overwhelmed?{' '}<a href="/CrisisPrioritizer" target="_blank" rel="noopener noreferrer" className={`font-semibold underline ${c.crossRefLink}`}>Crisis Prioritizer</a>{' '}
+          sorts what matters. Spiraling?{' '}<a href="/SpiralStopper" target="_blank" rel="noopener noreferrer" className={`font-semibold underline ${c.crossRefLink}`}>Spiral Stopper</a>{' '}
+          breaks the loop.
+        </p>
+      </div>
     </div>
   );
 };

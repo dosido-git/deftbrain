@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
-import { Upload, FileText, Loader2, AlertCircle, Check, BookOpen, AlertTriangle, Clock, Flag } from 'lucide-react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import { CopyBtn } from '../components/ActionButtons';
 
 const JargonAssassin = () => {
   const { callToolEndpoint, loading } = useClaudeAPI();
@@ -26,10 +26,10 @@ const JargonAssassin = () => {
   ];
 
   const sectionIcons = {
-    important: <Flag className="w-5 h-5 text-blue-600" />,
-    decision: <AlertTriangle className="w-5 h-5 text-orange-600" />,
-    red_flag: <AlertCircle className="w-5 h-5 text-red-600" />,
-    deadline: <Clock className="w-5 h-5 text-purple-600" />
+    important: <span className="text-lg">🚩</span>,
+    decision: <span className="text-lg">⚠️</span>,
+    red_flag: <span className="text-lg">🔴</span>,
+    deadline: <span className="text-lg">⏰</span>
   };
 
   const sectionColors = {
@@ -93,26 +93,18 @@ const JargonAssassin = () => {
     }
   };
 
-  const copyToClipboard = async (text) => {
-    try {
-      await navigator.clipboard.writeText(text);
-    } catch (err) {
-      console.error('Copy failed:', err);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 py-8 px-4">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-3 mb-3">
-            <BookOpen className="w-8 h-8 text-emerald-600" />
+            <span className="text-3xl">📖</span>
             <h1 className="text-4xl font-bold text-slate-900">Jargon Assassin</h1>
           </div>
           <p className="text-slate-600">Translate complex documents into plain English</p>
           <div className="mt-3 inline-flex items-center gap-2 text-sm text-slate-500 bg-white px-4 py-2 rounded-full shadow-sm">
-            <Check className="w-4 h-4" />
+            <span className="text-sm">✅</span>
             5th-grade reading level • All details preserved
           </div>
         </div>
@@ -159,12 +151,12 @@ const JargonAssassin = () => {
                   id="file-upload"
                 />
                 
-                <FileText className="w-12 h-12 text-slate-400 mx-auto mb-4" />
+                <div className="text-4xl mx-auto mb-4">📄</div>
                 
                 {fileName ? (
                   <div className="mb-3">
                     <div className="inline-flex items-center gap-2 bg-emerald-50 text-emerald-700 px-4 py-2 rounded-lg">
-                      <Check className="w-4 h-4" />
+                      <span className="text-sm">✅</span>
                       {fileName}
                     </div>
                   </div>
@@ -208,12 +200,12 @@ const JargonAssassin = () => {
               >
                 {loading ? (
                   <>
-                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <span className="animate-spin inline-block">⏳</span>
                     Translating to plain English...
                   </>
                 ) : (
                   <>
-                    <BookOpen className="w-5 h-5" />
+                    <span className="text-lg">📖</span>
                     Translate Document
                   </>
                 )}
@@ -231,7 +223,7 @@ const JargonAssassin = () => {
 
             {error && (
               <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
-                <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                <span className="text-lg flex-shrink-0 mt-0.5">⚠️</span>
                 <p className="text-red-800 text-sm">{error}</p>
               </div>
             )}
@@ -303,7 +295,7 @@ const JargonAssassin = () => {
             {/* Summary Box */}
             <div className="bg-gradient-to-r from-emerald-500 to-purple-500 rounded-xl shadow-lg p-6 text-white">
               <div className="flex items-start gap-3 mb-3">
-                <BookOpen className="w-6 h-6 flex-shrink-0 mt-1" />
+                <span className="text-xl flex-shrink-0 mt-1">📖</span>
                 <div className="flex-1">
                   <h2 className="text-xl font-bold mb-2">What This Document Is About</h2>
                   <p className="text-emerald-50 leading-relaxed">{results.summary}</p>
@@ -334,13 +326,7 @@ const JargonAssassin = () => {
                 <div className="bg-white rounded-xl shadow-lg p-6">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-lg font-bold text-slate-900">Plain English Translation</h3>
-                    <button
-                      onClick={() => copyToClipboard(results.translation)}
-                      className="flex items-center gap-2 px-3 py-1.5 bg-emerald-100 hover:bg-emerald-200 text-emerald-700 rounded-lg transition-colors text-sm font-medium"
-                    >
-                      <Check className="w-4 h-4" />
-                      Copy
-                    </button>
+                    <CopyBtn content={results.translation} label="Copy" />
                   </div>
                   <div className={`bg-emerald-50 rounded-lg p-4 border border-emerald-200 overflow-y-auto max-h-[600px] ${fontSizes[fontSize]}`}>
                     <p className="text-slate-800 leading-relaxed whitespace-pre-wrap">
@@ -356,13 +342,7 @@ const JargonAssassin = () => {
               <div className="bg-white rounded-xl shadow-lg p-6">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-bold text-slate-900">Plain English Translation</h3>
-                  <button
-                    onClick={() => copyToClipboard(results.translation)}
-                    className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors text-sm font-medium"
-                  >
-                    <Check className="w-4 h-4" />
-                    Copy Translation
-                  </button>
+                  <CopyBtn content={results.translation} label="Copy Translation" />
                 </div>
                 <div className={`bg-emerald-50 rounded-lg p-6 border border-emerald-200 ${fontSizes[fontSize]}`}>
                   <p className="text-slate-800 leading-relaxed whitespace-pre-wrap">
@@ -403,7 +383,7 @@ const JargonAssassin = () => {
             {results.glossary && results.glossary.length > 0 && (
               <div className="bg-white rounded-xl shadow-lg p-6">
                 <h3 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
-                  <BookOpen className="w-5 h-5 text-emerald-600" />
+                  <span className="text-lg">📖</span>
                   Key Terms Glossary
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -421,7 +401,7 @@ const JargonAssassin = () => {
             {results.checklist && results.checklist.length > 0 && (
               <div className="bg-amber-50 border-2 border-amber-200 rounded-xl shadow-lg p-6">
                 <h3 className="text-lg font-bold text-amber-900 mb-4 flex items-center gap-2">
-                  <AlertTriangle className="w-5 h-5" />
+                  <span className="text-lg">⚠️</span>
                   Before You Sign or Agree
                 </h3>
                 <ul className="space-y-2">

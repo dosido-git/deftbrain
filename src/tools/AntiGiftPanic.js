@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Gift, Loader2, AlertCircle, ExternalLink, ShoppingBag, Sparkles, Clock, Package, Heart, Copy, CheckCircle, RefreshCw, Filter, Calendar, Leaf, MessageCircle, Truck, DollarSign, Info } from 'lucide-react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
+import { CopyBtn } from '../components/ActionButtons';
 
 const AntiGiftPanic = () => {
   const { callToolEndpoint, loading } = useClaudeAPI();
@@ -20,7 +20,6 @@ const AntiGiftPanic = () => {
   // Results state
   const [results, setResults] = useState(null);
   const [error, setError] = useState('');
-  const [copiedItem, setCopiedItem] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [savedFavorites, setSavedFavorites] = useState([]);
   const [daysUntilOccasion, setDaysUntilOccasion] = useState(null);
@@ -149,16 +148,6 @@ const AntiGiftPanic = () => {
     }
   };
 
-  const copyToClipboard = async (text, item) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopiedItem(item);
-      setTimeout(() => setCopiedItem(null), 2000);
-    } catch (err) {
-      setError('Failed to copy to clipboard');
-    }
-  };
-
   const toggleFavorite = (gift) => {
     const isFavorite = savedFavorites.some(f => f.product_name === gift.product_name);
     if (isFavorite) {
@@ -229,7 +218,7 @@ return (
       <div className={`${c.card} border rounded-xl shadow-lg p-6 transition-colors duration-200`}>
         <div className="flex items-center gap-3 mb-4">
           <div className={`p-3 rounded-lg ${isDark ? 'bg-emerald-900/30' : 'bg-emerald-100'}`}>
-            <Gift className={`w-6 h-6 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`} />
+            <span className="text-2xl">🎁</span>
           </div>
           <div>
             <h2 className={`text-2xl font-bold ${c.text}`}>Anti-Gift Panic 🎁</h2>
@@ -301,7 +290,7 @@ return (
 
             <div>
               <label htmlFor="occasion-date" className={`block text-sm font-medium ${c.label} mb-2 flex items-center gap-2`}>
-                <Calendar className="w-4 h-4" />
+                <span>📅</span>
                 Occasion date (optional)
               </label>
               <input
@@ -336,7 +325,7 @@ return (
                 : c.successBox
             }`}>
               <div className="flex items-center gap-2">
-                <Truck className="w-5 h-5" />
+                <span>🚚</span>
                 <div>
                   <div className={`font-semibold ${getShippingUrgency().color}`}>
                     {daysUntilOccasion} days until {occasion}
@@ -392,7 +381,7 @@ return (
               />
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
-                  <Leaf className="w-4 h-4" />
+                  <span>🌿</span>
                   <span className={`font-semibold ${c.text}`}>Prioritize sustainable & ethical options</span>
                 </div>
                 <p className={`text-xs ${c.textSecondary}`}>
@@ -412,12 +401,12 @@ return (
             >
               {loading ? (
                 <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <span className="animate-spin inline-block">⏳</span>
                   Finding perfect gifts...
                 </>
               ) : (
                 <>
-                  <ShoppingBag className="w-5 h-5" />
+                  <span>🛍️</span>
                   Find Gifts
                 </>
               )}
@@ -436,7 +425,7 @@ return (
           {/* Error Display */}
           {error && (
             <div className={`p-4 ${c.warningBox} border rounded-lg flex items-start gap-3 transition-colors duration-200`} role="alert">
-              <AlertCircle className={`w-5 h-5 flex-shrink-0 mt-0.5 ${isDark ? 'text-red-400' : 'text-red-600'}`} />
+              <span className="flex-shrink-0 mt-0.5">⚠️</span>
               <p className="text-sm">{error}</p>
             </div>
           )}
@@ -451,7 +440,7 @@ return (
           {results.budget_optimization && (
             <div className={`${c.infoBox} border-l-4 rounded-r-lg p-4 transition-colors duration-200`}>
               <div className="flex items-start gap-3">
-                <DollarSign className={`w-5 h-5 flex-shrink-0 mt-0.5 ${isDark ? 'text-blue-300' : 'text-blue-600'}`} />
+                <span className="flex-shrink-0 mt-0.5">💰</span>
                 <div>
                   <h3 className={`font-semibold mb-1 ${c.text}`}>Budget Optimization</h3>
                   <p className={`text-sm ${c.textSecondary}`}>{results.budget_optimization}</p>
@@ -465,25 +454,10 @@ return (
             <div className={`${c.card} border rounded-xl p-6 transition-colors duration-200`}>
               <div className="flex items-center justify-between mb-3">
                 <h3 className={`text-lg font-bold ${c.text} flex items-center gap-2`}>
-                  <MessageCircle className="w-5 h-5" />
+                  <span>💬</span>
                   Suggested Gift Card Message
                 </h3>
-                <button
-                  onClick={() => copyToClipboard(results.gift_card_message, 'card-message')}
-                  className={`px-3 py-2 ${c.btnSecondary} rounded-lg text-sm flex items-center gap-2 transition-all`}
-                >
-                  {copiedItem === 'card-message' ? (
-                    <>
-                      <CheckCircle className="w-4 h-4" />
-                      Copied!
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="w-4 h-4" />
-                      Copy Message
-                    </>
-                  )}
-                </button>
+                <CopyBtn content={results.gift_card_message} label="Copy Message" />
               </div>
               <div className={`p-4 rounded-lg ${isDark ? 'bg-zinc-700' : 'bg-emerald-50'} border ${isDark ? 'border-zinc-600' : 'border-emerald-200'}`}>
                 <p className={`text-sm ${c.text} italic`}>"{results.gift_card_message}"</p>
@@ -499,7 +473,7 @@ return (
             {results.timing_advice && (
               <div className={`${c.successBox} border-l-4 rounded-r-lg p-4 transition-colors duration-200`}>
                 <div className="flex items-start gap-3">
-                  <Clock className={`w-5 h-5 flex-shrink-0 mt-0.5 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`} />
+                  <span className="flex-shrink-0 mt-0.5">⏰</span>
                   <div>
                     <h3 className={`font-semibold mb-1 ${c.text}`}>Timing Advice</h3>
                     <p className={`text-sm ${c.textSecondary}`}>{results.timing_advice}</p>
@@ -511,7 +485,7 @@ return (
             {results.gift_wrap_suggestion && (
               <div className={`${c.successBox} border-l-4 rounded-r-lg p-4 transition-colors duration-200`}>
                 <div className="flex items-start gap-3">
-                  <Package className={`w-5 h-5 flex-shrink-0 mt-0.5 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`} />
+                  <span className="flex-shrink-0 mt-0.5">📦</span>
                   <div>
                     <h3 className={`font-semibold mb-1 ${c.text}`}>Gift Wrap Style</h3>
                     <p className={`text-sm ${c.textSecondary}`}>{results.gift_wrap_suggestion}</p>
@@ -537,7 +511,7 @@ return (
           {considerSustainability && results.sustainability_note && (
             <div className={`${c.sustainBox} border-l-4 rounded-r-lg p-4 transition-colors duration-200`}>
               <div className="flex items-start gap-3">
-                <Leaf className={`w-5 h-5 flex-shrink-0 mt-0.5 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`} />
+                <span className="flex-shrink-0 mt-0.5">🌿</span>
                 <div>
                   <h3 className={`font-semibold mb-1 ${c.text}`}>Sustainable Choices</h3>
                   <p className={`text-sm ${c.textSecondary}`}>{results.sustainability_note}</p>
@@ -549,7 +523,7 @@ return (
           {/* Category Filter */}
           {getUniqueCategories().length > 2 && (
             <div className="flex items-center gap-2 flex-wrap">
-              <Filter className={`w-4 h-4 ${c.textMuted}`} />
+              <span className={c.textMuted}>⚙️</span>
               <span className={`text-sm font-medium ${c.label}`}>Filter:</span>
               {getUniqueCategories().map(category => (
                 <button
@@ -582,7 +556,7 @@ return (
                     )}
                     {gift.is_sustainable && (
                       <span className={`px-2 py-1 rounded text-xs font-semibold flex items-center gap-1 ${isDark ? 'bg-emerald-600 text-white' : 'bg-emerald-100 text-emerald-700'}`}>
-                        <Leaf className="w-3 h-3" />
+                        <span className="text-xs">🌿</span>
                         Eco-Friendly
                       </span>
                     )}
@@ -596,7 +570,7 @@ return (
                     }`}
                     title={isFavorite(gift) ? 'Remove from favorites' : 'Add to favorites'}
                   >
-                    <Heart className={`w-5 h-5 ${isFavorite(gift) ? 'fill-current' : ''}`} />
+                    <span className="text-lg">{isFavorite(gift) ? '❤️' : '🤍'}</span>
                   </button>
                 </div>
 
@@ -644,27 +618,11 @@ return (
                     rel="noopener noreferrer"
                     className={`w-full ${c.btnPrimary} py-2 px-4 rounded-lg font-medium flex items-center justify-center gap-2 transition-all`}
                   >
-                    <ExternalLink className="w-4 h-4" />
+                    <span>🔗</span>
                     Search Product
                   </a>
 
-                  <button
-                    onClick={() => copyToClipboard(gift.product_name, `link-${idx}`)}
-                    className={`w-full ${c.btnSecondary} py-2 px-3 rounded-lg text-sm flex items-center justify-center gap-2 transition-all`}
-                    title="Copy product name"
-                  >
-                    {copiedItem === `link-${idx}` ? (
-                      <>
-                        <CheckCircle className="w-4 h-4" />
-                        Copied!
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="w-4 h-4" />
-                        Copy
-                      </>
-                    )}
-                  </button>
+                  <CopyBtn content={gift.product_name} label="Copy" />
 
                   <button
                     onClick={() => handleRegenerateGift(idx)}
@@ -672,7 +630,7 @@ return (
                     className={`w-full ${c.btnSecondary} py-2 px-3 rounded-lg text-sm flex items-center justify-center gap-2 transition-all disabled:opacity-50`}
                     title="Get another suggestion"
                   >
-                    <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+                    <span className={loading ? 'animate-spin inline-block' : ''}>🔄</span>
                     Regenerate
                   </button>
                 </div>
@@ -691,7 +649,7 @@ return (
           {savedFavorites.length > 0 && (
             <div className={`${c.cardAlt} border rounded-xl p-6 transition-colors duration-200`}>
               <h3 className={`text-lg font-bold ${c.text} mb-4 flex items-center gap-2`}>
-                <Heart className="w-5 h-5 fill-current text-emerald-500" />
+                <span>❤️</span>
                 Saved Favorites ({savedFavorites.length})
               </h3>
               <div className="space-y-2">

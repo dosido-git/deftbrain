@@ -1,14 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import {
-  Loader2, AlertCircle, Copy, Check, ChevronDown, ChevronUp, RefreshCw, Printer, Share2,
-  Search, Globe, Eye, Ear, MessageSquare, Shield, Clock, Heart, Zap, AlertTriangle,
-  CheckCircle, XCircle, MinusCircle, Plus, X, ArrowRight, Trophy, BarChart3, Hash, FileText, Sparkles
-} from 'lucide-react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePremium, PremiumGate, PremiumBadge } from '../hooks/usePremium';
 import { BookmarkButton } from '../hooks/useBookmarks';
 import { getToolById } from '../data/tools';
+import { CopyBtn } from '../components/ActionButtons';
 
 const NameAudit = () => {
   const { callToolEndpoint, loading } = useClaudeAPI();
@@ -51,7 +47,6 @@ const NameAudit = () => {
   const [results, setResults] = useState(null);
   const [error, setError] = useState('');
   const [expandedSections, setExpandedSections] = useState({});
-  const [copiedField, setCopiedField] = useState(null);
 
   // Compare mode state
   const [compareNames, setCompareNames] = useState(['', '']);
@@ -76,20 +71,6 @@ const NameAudit = () => {
 
   // ─── Handlers ───
   const toggleSection = (key) => setExpandedSections(prev => ({ ...prev, [key]: !prev[key] }));
-
-  const copyToClipboard = async (text, field) => {
-    try { await navigator.clipboard.writeText(text); setCopiedField(field); setTimeout(() => setCopiedField(null), 2000); }
-    catch (err) { console.error('Copy failed:', err); }
-  };
-
-  const CopyBtn = ({ content, field, label = 'Copy' }) => (
-    <button onClick={() => copyToClipboard(content, field)} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-      copiedField === field ? (isDark ? 'bg-green-900/40 text-green-300' : 'bg-green-100 text-green-700') : c.btnSecondary
-    }`}>
-      {copiedField === field ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-      {copiedField === field ? 'Copied' : label}
-    </button>
-  );
 
   const handleAnalyze = async () => {
     if (!name.trim()) { setError('Please enter a name to analyze'); return; }
@@ -140,8 +121,7 @@ const NameAudit = () => {
 
   const PassFail = ({ pass, notes }) => (
     <div className="flex items-start gap-2">
-      {pass ? <CheckCircle className={`w-4 h-4 flex-shrink-0 mt-0.5 ${isDark ? 'text-green-400' : 'text-green-500'}`} />
-        : <XCircle className={`w-4 h-4 flex-shrink-0 mt-0.5 ${isDark ? 'text-red-400' : 'text-red-500'}`} />}
+      <span className="flex-shrink-0 mt-0.5">{pass ? '✅' : '❌'}</span>
       <span className={`text-sm ${c.textSecondary}`}>{notes}</span>
     </div>
   );
@@ -154,10 +134,10 @@ const NameAudit = () => {
   };
 
   const langSeverityIcon = (sev) => {
-    if (sev === 'positive') return <CheckCircle className="w-3.5 h-3.5" />;
-    if (sev === 'problem') return <XCircle className="w-3.5 h-3.5" />;
-    if (sev === 'caution') return <AlertTriangle className="w-3.5 h-3.5" />;
-    return <MinusCircle className="w-3.5 h-3.5" />;
+    if (sev === 'positive') return <span>✅</span>;
+    if (sev === 'problem') return <span>❌</span>;
+    if (sev === 'caution') return <span>⚠️</span>;
+    return <span>➖</span>;
   };
 
   // ─── Score Components ───
@@ -308,7 +288,7 @@ const NameAudit = () => {
     if (navigator.share) {
       try { await navigator.share({ title: 'NameAudit Results', text, url: window.location.href }); }
       catch (err) { if (err.name !== 'AbortError') console.error('Share failed:', err); }
-    } else { copyToClipboard(text, 'share-fallback'); }
+    } else { try { await navigator.clipboard.writeText(text); } catch(e) { console.error('Copy failed:', e); } }
   };
 
   const buildCompareText = () => {
@@ -348,21 +328,21 @@ const NameAudit = () => {
     if (navigator.share) {
       try { await navigator.share({ title: 'NameAudit Comparison', text, url: window.location.href }); }
       catch (err) { if (err.name !== 'AbortError') console.error('Share failed:', err); }
-    } else { copyToClipboard(text, 'share-compare-fallback'); }
+    } else { try { await navigator.clipboard.writeText(text); } catch(e) { console.error('Copy failed:', e); } }
   };
 
   // Collapsible section helper
-  const Section = ({ id, title, icon: Icon, iconColor, children, defaultOpen = false, score }) => {
+  const Section = ({ id, title, icon, children, defaultOpen = false, score }) => {
     const isOpen = expandedSections[id] !== undefined ? expandedSections[id] : defaultOpen;
     return (
       <div className={`${c.card} rounded-xl shadow-lg p-6`}>
         <button onClick={() => toggleSection(id)} className={`w-full flex items-center justify-between ${c.text}`}>
           <h3 className="font-bold flex items-center gap-2">
-            <Icon className={`w-5 h-5 ${iconColor}`} /> {title}
+            <span>{icon}</span> {title}
           </h3>
           <div className="flex items-center gap-3">
             {score != null && <ScoreBar score={score} />}
-            {isOpen ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+            {isOpen ? <span>▲</span> : <span>▼</span>}
           </div>
         </button>
         {isOpen && <div className="mt-4">{children}</div>}
@@ -388,11 +368,11 @@ const NameAudit = () => {
           <div className="flex gap-2">
             <button onClick={() => setMode('analyze')}
               className={`flex items-center gap-1.5 px-4 py-2 rounded-lg border text-sm font-semibold transition-all ${c.chip(mode === 'analyze')}`}>
-              <Search className="w-4 h-4" /> Analyze a Name
+              <span>🔍</span> Analyze a Name
             </button>
             <button onClick={() => setMode('compare')}
               className={`flex items-center gap-1.5 px-4 py-2 rounded-lg border text-sm font-semibold transition-all ${c.chip(mode === 'compare')}`}>
-              <BarChart3 className="w-4 h-4" /> Compare Names
+              <span>📊</span> Compare Names
             </button>
           </div>
 
@@ -421,7 +401,7 @@ const NameAudit = () => {
                     className={`flex-1 p-3 border rounded-lg outline-none text-sm font-semibold focus:ring-2 focus:ring-cyan-300 ${c.input}`} />
                   {compareNames.length > 2 && (
                     <button onClick={() => setCompareNames(compareNames.filter((_, i) => i !== idx))}
-                      className={`p-2 rounded-lg ${c.btnSecondary}`}><X className="w-4 h-4" /></button>
+                      className={`p-2 rounded-lg ${c.btnSecondary}`}><span>✕</span></button>
                   )}
                 </div>
               ))}
@@ -429,12 +409,12 @@ const NameAudit = () => {
                 isUnlocked('nameAudit.compare3plus') || compareNames.length < 2 ? (
                   <button onClick={() => setCompareNames([...compareNames, ''])}
                     className={`flex items-center gap-1 text-sm ${c.textMuted} hover:${c.text}`}>
-                    <Plus className="w-4 h-4" /> Add another <PremiumBadge feature="nameAudit.compare3plus" />
+                    <span>➕</span> Add another <PremiumBadge feature="nameAudit.compare3plus" />
                   </button>
                 ) : (
                   <PremiumGate feature="nameAudit.compare3plus" label="Compare 3-4 Names">
                     <button className={`flex items-center gap-1 text-sm ${c.textMuted}`}>
-                      <Plus className="w-4 h-4" /> Add another
+                      <span>➕</span> Add another
                     </button>
                   </PremiumGate>
                 )
@@ -482,13 +462,13 @@ const NameAudit = () => {
             className={`w-full py-4 px-6 rounded-xl font-semibold text-lg transition-all flex items-center justify-center gap-2 shadow-lg ${
               (loading || compareLoading) ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : c.btnPrimary
             }`}>
-            {(loading || compareLoading) ? (<><Loader2 className="w-5 h-5 animate-spin" /> {mode === 'analyze' ? 'Analyzing...' : 'Comparing...'}</>)
-              : (<><Search className="w-5 h-5" /> {mode === 'analyze' ? 'Analyze This Name' : 'Compare These Names'}</>)}
+            {(loading || compareLoading) ? (<><span className="animate-spin inline-block">⏳</span> {mode === 'analyze' ? 'Analyzing...' : 'Comparing...'}</>)
+              : (<><span>🔍</span> {mode === 'analyze' ? 'Analyze This Name' : 'Compare These Names'}</>)}
           </button>
 
           {error && (
             <div className={`p-4 rounded-xl flex items-start gap-3 ${c.danger} border`}>
-              <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" /><p className="text-sm">{error}</p>
+              <span className="flex-shrink-0 mt-0.5">⚠️</span><p className="text-sm">{error}</p>
             </div>
           )}
 
@@ -507,16 +487,16 @@ const NameAudit = () => {
           <div className={`${c.card} rounded-xl shadow-lg p-4 flex items-center justify-between flex-wrap gap-3`}>
             <span className={`text-sm font-semibold ${c.text}`}>Comparison: {compareNames.filter(n => n.trim()).join(' vs ')}</span>
             <div className="flex items-center gap-2 flex-wrap">
-              <CopyBtn content={buildCompareText()} field="compare-analysis" label="Copy All" />
+              <CopyBtn content={buildCompareText()} label="Copy All" />
               <button onClick={handlePrintCompare} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
-                <Printer className="w-3.5 h-3.5" /> Print
+                <span>🖨️</span> Print
               </button>
               <button onClick={handleShareCompare} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
-                <Share2 className="w-3.5 h-3.5" /> Share
+                <span>📤</span> Share
               </button>
               <BookmarkButton toolId="NameAudit" isDark={isDark} size="sm" />
               <button onClick={reset} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-50 text-cyan-700'}`}>
-                <RefreshCw className="w-3.5 h-3.5" /> New Analysis
+                <span>🔄</span> New Analysis
               </button>
             </div>
           </div>
@@ -525,7 +505,7 @@ const NameAudit = () => {
           {compareResults.winner && (
             <div className={`${c.card} rounded-xl shadow-lg p-6 border-l-4 ${isDark ? 'border-amber-500' : 'border-amber-400'}`}>
               <div className="flex items-center gap-3 mb-3">
-                <Trophy className={`w-6 h-6 ${isDark ? 'text-amber-400' : 'text-amber-500'}`} />
+                <span className="text-2xl">🏆</span>
                 <h3 className={`text-xl font-bold ${c.text}`}>{compareResults.winner.name}</h3>
                 <span className={`px-2 py-0.5 text-xs font-bold rounded-full ${c.warning} border`}>{compareResults.winner.margin.replace(/_/g, ' ')}</span>
               </div>
@@ -587,20 +567,20 @@ const NameAudit = () => {
           <div className={`${c.card} rounded-xl shadow-lg p-4 flex items-center justify-between flex-wrap gap-3`}>
             <span className={`text-sm font-semibold ${c.text}`}>Analysis: "{results.name_analyzed}"</span>
             <div className="flex items-center gap-2 flex-wrap">
-              <CopyBtn content={buildFullText()} field="full-analysis" label="Copy All" />
+              <CopyBtn content={buildFullText()} label="Copy All" />
               <button onClick={handlePrint} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
-                <Printer className="w-3.5 h-3.5" /> Print
+                <span>🖨️</span> Print
               </button>
               <button onClick={handleShare} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
-                <Share2 className="w-3.5 h-3.5" /> Share
+                <span>📤</span> Share
               </button>
               <PremiumGate feature="nameAudit.pdfExport" inline>
                 <button className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
-                  <FileText className="w-3.5 h-3.5" /> PDF <PremiumBadge feature="nameAudit.pdfExport" />
+                  <span>📄</span> PDF <PremiumBadge feature="nameAudit.pdfExport" />
                 </button>
               </PremiumGate>
               <button onClick={reset} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-50 text-cyan-700'}`}>
-                <RefreshCw className="w-3.5 h-3.5" /> New Analysis
+                <span>🔄</span> New Analysis
               </button>
             </div>
           </div>
@@ -654,7 +634,7 @@ const NameAudit = () => {
 
           {/* First Impression */}
           {results.first_impression && (
-            <Section id="impression" title="First Impression" icon={Eye} iconColor={isDark ? 'text-violet-400' : 'text-violet-600'} defaultOpen score={results.section_scores?.first_impression}>
+            <Section id="impression" title="First Impression" icon="👁️" defaultOpen score={results.section_scores?.first_impression}>
               <div className="space-y-3">
                 <p className={`text-sm ${c.textSecondary}`}>{results.first_impression.gut_reaction}</p>
                 <div className="flex flex-wrap gap-1.5">
@@ -669,7 +649,7 @@ const NameAudit = () => {
 
           {/* Phonetic Profile */}
           {results.phonetic_profile && (
-            <Section id="phonetic" title="Phonetic Profile" icon={Ear} iconColor={isDark ? 'text-cyan-400' : 'text-cyan-600'} score={results.section_scores?.phonetics}>
+            <Section id="phonetic" title="Phonetic Profile" icon="👂" score={results.section_scores?.phonetics}>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {['syllables', 'mouth_feel', 'accent_notes', 'sound_psychology', 'rhythm'].map(key => (
                   results.phonetic_profile[key] && (
@@ -685,7 +665,7 @@ const NameAudit = () => {
 
           {/* Memorability */}
           {results.memorability && (
-            <Section id="memorability" title="Memorability Tests" icon={Zap} iconColor={isDark ? 'text-amber-400' : 'text-amber-600'} score={results.section_scores?.memorability}>
+            <Section id="memorability" title="Memorability Tests" icon="⚡" score={results.section_scores?.memorability}>
               <div className="space-y-3">
                 {[
                   { key: 'day_after_test', label: 'Day-After Test' },
@@ -705,7 +685,7 @@ const NameAudit = () => {
 
           {/* Radio Test */}
           {results.radio_test && (
-            <Section id="radio" title="Radio Test (Spell From Hearing)" icon={MessageSquare} iconColor={isDark ? 'text-pink-400' : 'text-pink-600'} score={results.section_scores?.radio_test}>
+            <Section id="radio" title="Radio Test (Spell From Hearing)" icon="💬" score={results.section_scores?.radio_test}>
               <div className="space-y-3">
                 <PassFail pass={results.radio_test.pass} notes={results.radio_test.notes} />
                 {results.radio_test.likely_misspellings?.length > 0 && (
@@ -724,7 +704,7 @@ const NameAudit = () => {
 
           {/* Visual Analysis */}
           {results.visual_analysis && (
-            <Section id="visual" title="Visual Analysis" icon={Eye} iconColor={isDark ? 'text-purple-400' : 'text-purple-600'} score={results.section_scores?.visual}>
+            <Section id="visual" title="Visual Analysis" icon="👁️" score={results.section_scores?.visual}>
               <div className="space-y-3">
                 <div className="flex flex-wrap gap-3 mb-3">
                   {[
@@ -752,7 +732,7 @@ const NameAudit = () => {
 
           {/* Global Language Scan */}
           {results.global_language_scan?.length > 0 && (
-            <Section id="language" title={`Global Language Scan (${results.global_language_scan.length} languages)`} icon={Globe} iconColor={isDark ? 'text-green-400' : 'text-green-600'} score={results.section_scores?.global_safety}>
+            <Section id="language" title={`Global Language Scan (${results.global_language_scan.length} languages)`} icon="🌐" score={results.section_scores?.global_safety}>
               <div className="flex flex-wrap gap-2">
                 {results.global_language_scan.map((lang, idx) => (
                   <div key={idx} className={`px-3 py-2 rounded-lg border text-sm flex items-center gap-1.5 ${langSeverityStyle(lang.severity)}`}>
@@ -767,7 +747,7 @@ const NameAudit = () => {
 
           {/* Abbreviation Audit */}
           {results.abbreviation_audit && (
-            <Section id="abbreviation" title="Abbreviation & Nickname Audit" icon={Hash} iconColor={isDark ? 'text-orange-400' : 'text-orange-600'} score={results.section_scores?.abbreviations}>
+            <Section id="abbreviation" title="Abbreviation & Nickname Audit" icon="#️⃣" score={results.section_scores?.abbreviations}>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {['natural_shortening', 'initials', 'hashtag', 'issues'].map(key => (
                   results.abbreviation_audit[key] && (
@@ -783,7 +763,7 @@ const NameAudit = () => {
 
           {/* Competitive Landscape */}
           {results.competitive_landscape && (
-            <Section id="competitive" title="Competitive Landscape" icon={Shield} iconColor={isDark ? 'text-red-400' : 'text-red-600'} score={results.section_scores?.competitive}>
+            <Section id="competitive" title="Competitive Landscape" icon="🛡️" score={results.section_scores?.competitive}>
               <div className="space-y-3">
                 {results.competitive_landscape.similar_names?.length > 0 && (
                   <div className={`p-3 rounded-lg ${c.warning} border`}>
@@ -801,7 +781,7 @@ const NameAudit = () => {
 
           {/* SEO / Searchability */}
           {results.searchability && (
-            <Section id="seo" title="SEO & Searchability" icon={Search} iconColor={isDark ? 'text-blue-400' : 'text-blue-600'} score={results.section_scores?.seo}>
+            <Section id="seo" title="SEO & Searchability" icon="🔍" score={results.section_scores?.seo}>
               <div className="space-y-3">
                 {['uniqueness', 'google_competition', 'seo_assessment'].map(key => (
                   results.searchability[key] && (
@@ -817,7 +797,7 @@ const NameAudit = () => {
 
           {/* Longevity */}
           {results.longevity && (
-            <Section id="longevity" title="Longevity Check" icon={Clock} iconColor={isDark ? 'text-teal-400' : 'text-teal-600'} score={results.section_scores?.longevity}>
+            <Section id="longevity" title="Longevity Check" icon="⏰" score={results.section_scores?.longevity}>
               <div className="space-y-3">
                 {['trend_dependency', 'aging_risk', 'verdict'].map(key => (
                   results.longevity[key] && (
@@ -834,7 +814,7 @@ const NameAudit = () => {
 
           {/* TLD Analysis (domain names) */}
           {results.tld_analysis && (
-            <Section id="tld" title="TLD Analysis" icon={Globe} iconColor={isDark ? 'text-cyan-400' : 'text-cyan-600'}>
+            <Section id="tld" title="TLD Analysis" icon="🌐">
               <div className="space-y-3">
                 {['tld_choice', 'trust_signal', 'confusion_risk', 'competing_com', 'alternative_tlds'].map(key => (
                   results.tld_analysis[key] && (
@@ -850,7 +830,7 @@ const NameAudit = () => {
 
           {/* Domain-Specific Tests */}
           {results.domain_specific_tests && (
-            <Section id="domain-tests" title="Domain-Specific Tests" icon={Search} iconColor={isDark ? 'text-indigo-400' : 'text-indigo-600'}>
+            <Section id="domain-tests" title="Domain-Specific Tests" icon="🔍">
               <div className="space-y-3">
                 {['browser_bar', 'typosquatting_risk', 'verbal_sharing', 'email_test'].map(key => (
                   results.domain_specific_tests[key] && (
@@ -866,7 +846,7 @@ const NameAudit = () => {
 
           {/* Emotional Resonance */}
           {results.emotional_resonance && (
-            <Section id="emotion" title="Emotional Resonance" icon={Heart} iconColor={isDark ? 'text-pink-400' : 'text-pink-600'} score={results.section_scores?.emotional_resonance}>
+            <Section id="emotion" title="Emotional Resonance" icon="❤️" score={results.section_scores?.emotional_resonance}>
               <div className="space-y-3">
                 {results.emotional_resonance.personality_match && (
                   <p className={`text-sm ${c.textSecondary}`}>{results.emotional_resonance.personality_match}</p>
@@ -889,7 +869,7 @@ const NameAudit = () => {
 
           {/* Live Availability */}
           {results.live_availability && (
-            <Section id="availability" title="Live Availability" icon={Globe} iconColor={isDark ? 'text-emerald-400' : 'text-emerald-600'}>
+            <Section id="availability" title="Live Availability" icon="🌐">
               <div className="space-y-3">
                 {results.live_availability.domains && (
                   <div>
@@ -931,7 +911,7 @@ const NameAudit = () => {
           {results.suggestions && (
             <div className={`${c.card} rounded-xl shadow-lg p-6`}>
               <h3 className={`font-bold ${c.text} mb-3 flex items-center gap-2`}>
-                <ArrowRight className={`w-5 h-5 ${isDark ? 'text-cyan-400' : 'text-cyan-600'}`} /> Next Steps
+                <span>→</span> Next Steps
               </h3>
               {results.suggestions.to_strengthen && (
                 <div className={`p-3 rounded-lg ${c.success} border mb-3`}>
@@ -953,7 +933,7 @@ const NameAudit = () => {
                       : 'bg-violet-50 border border-violet-200 text-violet-700 hover:bg-violet-100'
                   }`}
                 >
-                  <Sparkles className="w-4 h-4" />
+                  <span>✨</span>
                   Fix This Name — Generate improved variations
                   <PremiumBadge feature="nameAudit.fixThisName" />
                 </button>

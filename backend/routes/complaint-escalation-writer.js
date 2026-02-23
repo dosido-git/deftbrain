@@ -4,7 +4,7 @@ const { anthropic, cleanJsonResponse } = require('../lib/claude');
 
 router.post('/complaint-escalation-writer', async (req, res) => {
   try {
-    const { company, issue, industry, previousAttempts, desiredOutcome, amountAtStake, hasDocumentation } = req.body;
+    const { company, issue, industry, previousAttempts, desiredOutcome, amountAtStake, hasDocumentation, tone } = req.body;
 
     if (!company || !company.trim()) {
       return res.status(400).json({ error: 'Company name is required' });
@@ -12,6 +12,12 @@ router.post('/complaint-escalation-writer', async (req, res) => {
     if (!issue || !issue.trim()) {
       return res.status(400).json({ error: 'Issue description is required' });
     }
+
+    const toneInstructions = {
+      firm: 'Firm but professional. Clear, business-like, references legal rights calmly. This is the standard approach.',
+      aggressive: 'Assertive and direct. Use stronger legal language, shorter deadlines (7 days instead of 14), more explicit consequences. Reference specific penalties and enforcement actions. Still professional — never rude — but unmistakably serious.',
+      empathetic: 'Empathetic and resolution-focused. Acknowledge that front-line staff are not at fault. Frame the complaint as seeking fair resolution, not punishment. Still reference legal rights but frame them as context, not threats.',
+    };
 
     const prompt = `You are an elite consumer advocacy strategist who has helped thousands of people get results from unresponsive companies. You combine legal knowledge, corporate psychology, and escalation expertise to build multi-stage campaigns that companies cannot ignore.
 
@@ -22,6 +28,8 @@ PREVIOUS ATTEMPTS: ${previousAttempts || 'None mentioned'}
 DESIRED OUTCOME: ${desiredOutcome || 'Not specified — recommend the most reasonable resolution'}
 AMOUNT AT STAKE: ${amountAtStake || 'Not specified'}
 HAS DOCUMENTATION: ${hasDocumentation || 'Not specified'}
+
+TONE: ${toneInstructions[tone] || toneInstructions.firm}
 
 ═══════════════════════════════════════════════
 ANALYSIS REQUIREMENTS
@@ -222,7 +230,7 @@ CRITICAL RULES
 
 2. READY-TO-USE: Every letter, complaint text, and social media post should be COMPLETE and ready to copy-paste-send. Don't write templates with [brackets] — fill in everything you can from the user's description. Use [YOUR NAME] and [YOUR ADDRESS] only for information you genuinely don't have.
 
-3. TONE CALIBRATION: Stage 1 is professional and firm. Stage 3 is more direct and urgent. Stage 4 is calm and factual. Never angry, never threatening, never ranting. The power comes from being informed and specific, not emotional.
+3. TONE CALIBRATION: Follow the TONE instruction above. Apply it consistently across all 5 stages. The selected tone affects word choice, deadline lengths, and how directly legal consequences are referenced — but ALL tones remain factual and professional. Never angry, never threatening, never ranting. The power comes from being informed and specific, not emotional.
 
 4. LEGAL HONESTY: Only cite laws and regulations you are confident apply. If you're unsure whether a specific statute applies, say "may apply depending on your state" rather than stating it definitively. Include a note that this is not legal advice.
 
@@ -232,7 +240,7 @@ CRITICAL RULES
 
 7. Return ONLY the JSON object. No preamble, no markdown, no explanation outside the JSON.`;
 
-    console.log(`[ComplaintEscalationWriter] Company: ${company}, Industry: ${industry || 'auto'}`);
+    console.log(`[ComplaintEscalationWriter] Company: ${company}, Industry: ${industry || 'auto'}, Tone: ${tone || 'firm'}`);
 
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',

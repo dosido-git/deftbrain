@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { getToolById } from '../data/tools';
+import { CopyBtn } from '../components/ActionButtons';
 
 const CrisisPrioritizer = () => {
   const { callToolEndpoint, loading } = useClaudeAPI();
@@ -44,7 +45,6 @@ const CrisisPrioritizer = () => {
   const [emotionalState, setEmotionalState] = useState('');
   const [results, setResults] = useState(null);
   const [error, setError] = useState('');
-  const [copiedField, setCopiedField] = useState(null);
   const [showBreather, setShowBreather] = useState(false);
   const [breatherDone, setBreatherDone] = useState(false);
   const [expandedSections, setExpandedSections] = useState({});
@@ -86,19 +86,6 @@ const CrisisPrioritizer = () => {
 
   // --- Handlers ---
   const toggleSection = (key) => setExpandedSections(prev => ({ ...prev, [key]: !prev[key] }));
-
-  const copyToClipboard = async (text, field) => {
-    try { await navigator.clipboard.writeText(text); setCopiedField(field); setTimeout(() => setCopiedField(null), 2000); }
-    catch (err) { console.error('Copy failed:', err); }
-  };
-
-  const CopyBtn = ({ content, field, label = 'Copy' }) => (
-    <button onClick={() => copyToClipboard(content, field)} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-      copiedField === field ? (isDark ? 'bg-green-900/40 text-green-300' : 'bg-green-100 text-green-700') : c.btnSecondary
-    }`}>
-      {copiedField === field ? '✓ Copied' : `📋 ${label}`}
-    </button>
-  );
 
   const addTask = () => setTasks([...tasks, { text: '', deadline: '', who: '' }]);
   const removeTask = (index) => setTasks(tasks.filter((_, i) => i !== index));
@@ -578,7 +565,7 @@ const CrisisPrioritizer = () => {
               {timeframe === 'right_now' ? 'Priority Analysis' : timeframe === 'this_week' ? 'Weekly Plan' : 'Multi-Week Plan'} — {filledTasks.length} tasks
             </span>
             <div className="flex items-center gap-2">
-              <CopyBtn content={buildFullText()} field="full-analysis" label="Copy All" />
+              <CopyBtn content={buildFullText()} label="Copy All" />
               <button onClick={handlePrint} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
                 🖨️ Print
               </button>

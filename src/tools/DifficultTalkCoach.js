@@ -3,6 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { getToolById } from '../data/tools';
+import { CopyBtn, ShareBtn, PrintBtn, ActionBar } from '../components/ActionButtons';
 
 const DifficultTalkCoach = () => {
   const { callToolEndpoint, loading } = useClaudeAPI();
@@ -55,7 +56,6 @@ const DifficultTalkCoach = () => {
   const [activeTab, setActiveTab] = useState('prepare');
   const [expandedSections, setExpandedSections] = useState({});
   const [expandedApproach, setExpandedApproach] = useState(0);
-  const [copiedField, setCopiedField] = useState(null);
 
   // ─── Simulation State ───
   const [simMessages, setSimMessages] = useState([]);
@@ -107,20 +107,6 @@ const DifficultTalkCoach = () => {
   // ─── Handlers ───
   const toggleGoal = (key) => setGoals(prev => prev.includes(key) ? prev.filter(g => g !== key) : [...prev, key]);
   const toggleSection = (key) => setExpandedSections(prev => ({ ...prev, [key]: !prev[key] }));
-
-  const copyToClipboard = async (text, field) => {
-    try { await navigator.clipboard.writeText(text); setCopiedField(field); setTimeout(() => setCopiedField(null), 2000); }
-    catch (err) { console.error('Copy failed:', err); }
-  };
-
-  const CopyBtn = ({ content, field, label = 'Copy' }) => (
-    <button onClick={() => copyToClipboard(content, field)} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-      copiedField === field ? (isDark ? 'bg-green-900/40 text-green-300' : 'bg-green-100 text-green-700') : c.btnSecondary
-    }`}>
-      {copiedField === field ? <span className="text-sm">✅</span> : <span className="text-sm">📋</span>}
-      {copiedField === field ? 'Copied' : label}
-    </button>
-  );
 
   const handleGenerate = async () => {
     if (!topic.trim()) { setError('Please describe the conversation'); return; }
@@ -263,16 +249,6 @@ const DifficultTalkCoach = () => {
     return lines.join('\n');
   };
 
-  const handlePrint = () => {
-    const content = buildFullText();
-    const pw = window.open('', '_blank');
-    if (!pw) return;
-    pw.document.write(`<!DOCTYPE html><html><head><title>Conversation Strategy — ${topic.substring(0, 40)}</title><style>body{font-family:Georgia,serif;max-width:700px;margin:40px auto;padding:0 20px;color:#1a1a1a;line-height:1.6;font-size:14px;}pre{white-space:pre-wrap;word-wrap:break-word;font-family:inherit;margin:0;}@media print{body{margin:20px;}}</style></head><body><pre>${content.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</pre></body></html>`);
-    pw.document.close();
-    pw.focus();
-    setTimeout(() => pw.print(), 250);
-  };
-
   const healthColors = {
     on_track: isDark ? 'text-green-400' : 'text-green-600',
     drifting: isDark ? 'text-amber-400' : 'text-amber-600',
@@ -282,6 +258,30 @@ const DifficultTalkCoach = () => {
   // ─── RENDER ───
   return (
     <div>
+      {/* Range slider thumb styling — needed because appearance:none removes the native thumb */}
+      <style>{`
+        input[type="range"]::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          appearance: none;
+          width: 18px;
+          height: 18px;
+          border-radius: 50%;
+          background: #7c3aed;
+          cursor: pointer;
+          border: 2px solid white;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+          margin-top: -4px;
+        }
+        input[type="range"]::-moz-range-thumb {
+          width: 18px;
+          height: 18px;
+          border-radius: 50%;
+          background: #7c3aed;
+          cursor: pointer;
+          border: 2px solid white;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+      `}</style>
       {/* Header */}
       <div className="mb-5">
         <h2 className={`text-2xl font-bold ${c.text}`}>{toolData?.title || 'Difficult Talk Coach'} {toolData?.icon || '🎭'}</h2>
@@ -337,7 +337,13 @@ const DifficultTalkCoach = () => {
                 How resistant will they be? <span className={`font-normal text-sm ${getResistanceInfo(resistanceLevel).color}`}>{getResistanceInfo(resistanceLevel).label} ({resistanceLevel}%)</span>
               </label>
               <input type="range" min="0" max="100" value={resistanceLevel} onChange={(e) => setResistanceLevel(parseInt(e.target.value))}
-                className="w-full h-2 rounded-lg appearance-none cursor-pointer accent-violet-600" />
+                className="w-full h-2 rounded-lg cursor-pointer"
+                style={{
+                  WebkitAppearance: 'none',
+                  appearance: 'none',
+                  background: `linear-gradient(to right, #7c3aed ${resistanceLevel}%, ${isDark ? '#3f3f46' : '#e2e8f0'} ${resistanceLevel}%)`,
+                  borderRadius: '8px',
+                }} />
               <div className={`flex justify-between text-xs ${c.textMuted} mt-1`}>
                 <span>Receptive</span><span>Hostile</span>
               </div>
@@ -403,10 +409,11 @@ const DifficultTalkCoach = () => {
           <div className={`${c.card} rounded-xl shadow-lg p-4 flex items-center justify-between flex-wrap gap-3`}>
             <span className={`text-sm font-semibold ${c.text}`}>Strategy: {topic.substring(0, 50)}{topic.length > 50 ? '…' : ''}</span>
             <div className="flex items-center gap-2">
-              <CopyBtn content={buildFullText()} field="full-strategy" label="Copy All" />
-              <button onClick={handlePrint} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
-                <span className="text-sm">🖨️</span> Print
-              </button>
+              <ActionBar
+                content={buildFullText()}
+                title={`Conversation Strategy — ${topic.substring(0, 40)}`}
+                copyLabel="Copy All"
+              />
               <button onClick={reset} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${isDark ? 'bg-violet-900/30 text-violet-300 hover:bg-violet-800/40' : 'bg-violet-50 text-violet-700 hover:bg-violet-100'}`}>
                 <span className="text-sm">🔄</span> New Conversation
               </button>
@@ -524,7 +531,7 @@ const DifficultTalkCoach = () => {
                       <div key={idx} className="space-y-4">
                         <div className="flex items-center justify-between">
                           <p className={`text-sm ${c.textSecondary}`}>{approach.when_to_use}</p>
-                          <CopyBtn content={`Opening: ${approach.script.opening}\n\nMain Points:\n${approach.script.main_points.map((p,i) => `${i+1}. ${p}`).join('\n')}\n\nKey Phrases:\n${approach.script.specific_phrases.map(p => `• ${p}`).join('\n')}\n\nClosing: ${approach.script.closing}`} field={`approach-${idx}`} label="Copy Script" />
+                          <CopyBtn content={`Opening: ${approach.script.opening}\n\nMain Points:\n${approach.script.main_points.map((p,i) => `${i+1}. ${p}`).join('\n')}\n\nKey Phrases:\n${approach.script.specific_phrases.map(p => `• ${p}`).join('\n')}\n\nClosing: ${approach.script.closing}`} label="Copy Script" />
                         </div>
 
                         {/* Opening */}
@@ -760,18 +767,13 @@ const DifficultTalkCoach = () => {
                     <span className="text-lg">📋</span> Quick Reference Card
                   </h3>
                   <div className="flex items-center gap-2">
-                    <CopyBtn content={buildQuickRefText()} field="quick-ref" label="Copy Card" />
-                    <button onClick={() => {
-                      const content = buildQuickRefText();
-                      const pw = window.open('', '_blank');
-                      if (!pw) return;
-                      pw.document.write(`<!DOCTYPE html><html><head><title>Quick Ref — ${topic.substring(0, 40)}</title><style>body{font-family:Georgia,serif;max-width:500px;margin:30px auto;padding:20px;color:#1a1a1a;line-height:1.6;font-size:13px;border:2px solid #ddd;border-radius:12px;}h2{font-size:16px;margin:0 0 12px;border-bottom:1px solid #eee;padding-bottom:8px;}h3{font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:#666;margin:14px 0 6px;}p,li{margin:4px 0;}ul{padding-left:18px;}pre{white-space:pre-wrap;font-family:inherit;}@media print{body{border:none;margin:10px;}}</style></head><body><pre>${content.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</pre></body></html>`);
-                      pw.document.close();
-                      pw.focus();
-                      setTimeout(() => pw.print(), 250);
-                    }} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
-                      <span className="text-sm">🖨️</span> Print Card
-                    </button>
+                    <ActionBar
+                      content={buildQuickRefText()}
+                      title={`Quick Ref — ${topic.substring(0, 40)}`}
+                      copyLabel="Copy Card"
+                      printLabel="Print Card"
+                      printVariant="card"
+                    />
                   </div>
                 </div>
 
