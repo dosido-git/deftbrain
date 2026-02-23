@@ -227,6 +227,8 @@ router.post('/difficult-talk-simulate', async (req, res) => {
       userMessage,
       chosenApproach,
       emotionalLandmines,
+      currentOpenness,
+      userLanguage,
     } = req.body;
 
     if (!userMessage || !userMessage.trim()) {
@@ -252,13 +254,14 @@ STRATEGY THE USER PREPARED:
 EMOTIONAL LANDMINES IDENTIFIED: ${emotionalLandmines.slice(0, 3).map(lm => `"${lm.they_might}" (trigger: ${lm.your_trigger})`).join('; ')}`;
     }
 
-    const prompt = `You are simulating a difficult conversation as a practice partner. You are playing the role of the OTHER PERSON in this conversation.
+    const prompt = withLanguage(`You are simulating a difficult conversation as a practice partner. You are playing the role of the OTHER PERSON in this conversation.
 
 CONTEXT:
 - Topic being discussed: ${topic}
 - Your relationship to the speaker: ${relationship} (you are the ${relationship})
 - Your resistance level: ${resistanceLevel || 50}/100 (how resistant you are to what they want)
 - Your perspective: ${theirPerspective || 'Not specified — infer a realistic perspective based on the topic'}
+- Your current openness level: ${currentOpenness ?? 50}/100 (how receptive you currently are based on how the conversation has gone so far)
 ${strategyContext}
 
 CONVERSATION SO FAR:
@@ -278,7 +281,9 @@ YOUR INSTRUCTIONS
 
 3. React to HOW they said it, not just what. If they used an accusation, react to feeling attacked. If they used an I-statement, be slightly more receptive. If they were vague, express confusion.
 
-4. After your in-character response, provide a brief coaching note. If the user has a prepared strategy, reference it — e.g. "Good — you used your planned opening" or "You drifted from your prepared approach here — remember your key phrase about..."
+4. OPENNESS EVOLUTION: Your openness level should SHIFT based on cumulative conversation quality. If the user has been consistently empathetic and strategic, increase openness. If they've been accusatory or dismissive, decrease it. Openness should move gradually (±5-15 per turn), not jump wildly. The current value is ${currentOpenness ?? 50}.
+
+5. After your in-character response, provide a brief coaching note. If the user has a prepared strategy, reference it — e.g. "Good — you used your planned opening" or "You drifted from your prepared approach here — remember your key phrase about..."
 
 Return ONLY this JSON:
 
@@ -287,7 +292,10 @@ Return ONLY this JSON:
   "their_emotional_state": "What the other person is feeling right now (1-3 words)",
   "coaching_note": "Brief coaching feedback on what the user did well or could improve. Reference their prepared strategy when relevant. 1-2 sentences max.",
   "suggestion": "If applicable: a better way they could have phrased what they just said — ideally drawn from their prepared key phrases. Null if what they said was effective.",
-  "conversation_health": "on_track | drifting | derailing — assessment of how the conversation is going"
+  "conversation_health": "on_track | drifting | derailing — assessment of how the conversation is going",
+  "openness_shift": "Number from -15 to +15 indicating how much more open (+) or closed (-) the other person became from this exchange. Positive means the user did well.",
+  "openness_reason": "One sentence explaining why openness shifted — e.g., 'Your I-statement made them feel heard' or 'The accusation triggered defensiveness'",
+  "technique_used": "Name of the communication technique the user employed (or failed to employ) — e.g., 'I-statement', 'active listening', 'boundary setting', 'deflection', 'accusation', 'validation', 'none detected'"
 }
 
 RULES:
@@ -295,7 +303,7 @@ RULES:
 - Be realistic, not theatrical. Real people don't monologue.
 - Keep responses to 1-3 sentences. Real conversation is short exchanges.
 - The coaching note should be honest but constructive — don't sugarcoat but don't be harsh.
-- Return ONLY JSON.`;
+- Return ONLY JSON.`, userLanguage);
 
     const parsed = await callClaudeWithRetry(prompt, {
       label: 'DifficultTalkSimulate',
@@ -320,23 +328,38 @@ router.post('/difficult-talk-debrief', async (req, res) => {
       relationship,
       howItWent,
       originalStrategy,
+      practiceTranscript,
+      userLanguage,
     } = req.body;
 
-    if (!howItWent || !howItWent.trim()) {
-      return res.status(400).json({ error: 'Description of how it went is required' });
+    if (!howItWent?.trim() && !practiceTranscript) {
+      return res.status(400).json({ error: 'Description of how it went or practice transcript is required' });
     }
 
     const strategyContext = originalStrategy
       ? `\nORIGINAL STRATEGY USED: The user prepared using the "${originalStrategy.approach_name || 'unknown'}" approach. Their planned opening was: "${originalStrategy.script?.opening || 'not recorded'}". Their goals were to achieve a realistic outcome.`
       : '';
 
-    const prompt = `You are a compassionate communication coach helping someone process a difficult conversation they just had.
+    // If practice transcript is provided, build it into the debrief
+    let practiceContext = '';
+    if (practiceTranscript?.length > 0) {
+      practiceContext = `\n\nPRACTICE SESSION TRANSCRIPT (the user rehearsed before the real conversation):\n${
+        practiceTranscript.map(msg => {
+          if (msg.role === 'user') return `USER SAID: "${msg.content}"`;
+          if (msg.role === 'them') return `THEM (simulated): "${msg.content}" [emotional state: ${msg.emotionalState || 'unknown'}, health: ${msg.health || 'unknown'}]${msg.coaching ? `\n  COACH NOTE: ${msg.coaching}` : ''}`;
+          return '';
+        }).filter(Boolean).join('\n')
+      }`;
+    }
+
+    const prompt = withLanguage(`You are a compassionate communication coach helping someone process a difficult conversation they just had.
 
 ORIGINAL TOPIC: ${originalTopic || 'Not specified'}
 RELATIONSHIP: ${relationship || 'Not specified'}
 ${strategyContext}
+${practiceContext}
 
-WHAT ACTUALLY HAPPENED: ${howItWent}
+${practiceTranscript ? 'THE USER IS DEBRIEFING THEIR PRACTICE SESSION (not a real conversation). Analyze their practice performance and give them constructive feedback to improve before the real conversation.' : `WHAT ACTUALLY HAPPENED: ${howItWent}`}
 
 ═══════════════════════════════════════════════
 ANALYSIS INSTRUCTIONS
@@ -382,7 +405,7 @@ Return ONLY this JSON:
   ]
 }
 
-Return ONLY JSON. No markdown, no preamble.`;
+Return ONLY JSON. No markdown, no preamble.`, userLanguage);
 
     const parsed = await callClaudeWithRetry(prompt, {
       label: 'DifficultTalkDebrief',
@@ -395,6 +418,146 @@ Return ONLY JSON. No markdown, no preamble.`;
   } catch (error) {
     console.error('[DifficultTalkDebrief] Error:', error);
     res.status(500).json({ error: 'Failed to generate debrief', details: error.message });
+  }
+});
+
+// ═══════════════════════════════════════════════════
+// ROUTE 4: PRACTICE SESSION SUMMARY — Readiness Score
+// ═══════════════════════════════════════════════════
+router.post('/difficult-talk-practice-summary', async (req, res) => {
+  try {
+    const {
+      topic,
+      relationship,
+      resistanceLevel,
+      chosenApproach,
+      emotionalLandmines,
+      transcript,
+      userLanguage,
+    } = req.body;
+
+    if (!transcript || transcript.length < 2) {
+      return res.status(400).json({ error: 'Need at least one exchange to summarize' });
+    }
+
+    const transcriptText = transcript.map(msg => {
+      if (msg.role === 'user') return `USER: "${msg.content}"`;
+      if (msg.role === 'them') return `THEM: "${msg.content}" [emotional: ${msg.emotionalState || '?'}, health: ${msg.health || '?'}, openness_shift: ${msg.openness_shift || 0}, technique: ${msg.technique_used || 'unknown'}]${msg.coaching ? `\n  COACH: ${msg.coaching}` : ''}${msg.suggestion ? `\n  SUGGESTED INSTEAD: "${msg.suggestion}"` : ''}`;
+      return '';
+    }).filter(Boolean).join('\n');
+
+    const approachContext = chosenApproach
+      ? `PREPARED APPROACH: "${chosenApproach.approach_name}"
+PLANNED OPENING: "${chosenApproach.script?.opening || 'N/A'}"
+KEY PHRASES TO USE: ${(chosenApproach.script?.specific_phrases || []).slice(0, 5).map(p => `"${p}"`).join(', ')}
+THINGS NOT TO SAY: ${(chosenApproach.what_NOT_to_say || []).slice(0, 4).join(', ')}`
+      : 'No prepared approach — user was freestyling.';
+
+    const landmineContext = emotionalLandmines?.length > 0
+      ? `EMOTIONAL LANDMINES TO WATCH FOR:\n${emotionalLandmines.map(lm => `- "${lm.they_might}" (trigger: ${lm.your_trigger}, strategic response: "${lm.strategic_response}")`).join('\n')}`
+      : '';
+
+    const prompt = withLanguage(`You are an expert communication coach scoring a practice session. Analyze this rehearsal transcript and provide a thorough assessment.
+
+CONTEXT:
+- Topic: ${topic}
+- Relationship: ${relationship}
+- Resistance level: ${resistanceLevel}/100
+${approachContext}
+${landmineContext}
+
+PRACTICE TRANSCRIPT:
+${transcriptText}
+
+═══════════════════════════════════════════════
+Analyze the full practice session and return ONLY valid JSON:
+
+{
+  "readiness_score": 7,
+  "readiness_label": "Ready with caveats | Not quite ready | Well prepared | Needs more practice",
+  "overall_assessment": "2-3 sentence honest assessment of how the practice went. Be encouraging but truthful.",
+
+  "strategy_adherence": {
+    "used_prepared_opening": true,
+    "key_phrases_used": ["Which prepared phrases the user actually used in the practice"],
+    "key_phrases_missed": ["Which prepared phrases would have helped but weren't used"],
+    "avoided_forbidden_phrases": true,
+    "forbidden_phrases_used": ["Any 'don't say' items they actually said"],
+    "adherence_note": "Brief assessment of how well they followed their strategy"
+  },
+
+  "strengths": [
+    {
+      "moment": "Specific quote or moment from the transcript",
+      "technique": "What communication technique they used",
+      "impact": "What effect it had on the conversation"
+    }
+  ],
+
+  "stumbles": [
+    {
+      "moment": "Specific quote or moment where they struggled",
+      "what_happened": "What they did and why it was suboptimal",
+      "better_approach": "What they could have said instead, ideally from their prepared phrases",
+      "severity": "minor | moderate | significant"
+    }
+  ],
+
+  "landmine_navigation": [
+    {
+      "landmine": "Which emotional landmine was triggered (if any)",
+      "navigated": true,
+      "how": "How they handled it — or how they fell into it"
+    }
+  ],
+
+  "conversation_arc": {
+    "opening": "strong | adequate | weak — how they opened",
+    "middle": "maintained | drifted | lost — whether they stayed on track",
+    "closing": "strong | adequate | weak | no_closing — how they wrapped up",
+    "health_trajectory": "improved | stable | declined — overall direction of conversation health across the session"
+  },
+
+  "techniques_demonstrated": ["List of communication techniques the user successfully used across the session"],
+  "techniques_to_practice": ["Specific techniques they should work on before the real conversation"],
+
+  "retry_suggestions": {
+    "same_difficulty": "What to focus on if practicing again at the same level",
+    "higher_difficulty": "What to prepare for at higher resistance",
+    "specific_moment": "The single exchange they should redo — quote it and explain the better approach"
+  },
+
+  "readiness_breakdown": {
+    "opening_readiness": 8,
+    "handling_pushback": 6,
+    "emotional_regulation": 7,
+    "staying_on_topic": 8,
+    "closing_and_next_steps": 5
+  }
+}
+
+SCORING GUIDE (readiness_score):
+- 1-3: Needs significant practice. Multiple derailing moments, didn't use strategy, lost emotional control.
+- 4-5: Getting there. Some good moments but inconsistent. Key skills need work.
+- 6-7: Reasonably ready. Solid foundation with a few areas to polish.
+- 8-9: Well prepared. Minor refinements only.
+- 10: Exceptional. Handled everything including unexpected challenges.
+
+Be honest — don't inflate scores. A score of 6-7 for a first practice is very good.
+Return ONLY JSON.`, userLanguage);
+
+    const parsed = await callClaudeWithRetry(prompt, {
+      label: 'DifficultTalkPracticeSummary',
+      max_tokens: 4000,
+      system: withLanguage('You are an expert communication coach. Return ONLY valid JSON. No markdown, no preamble.', userLanguage),
+    });
+
+    console.log(`[DifficultTalkPracticeSummary] Readiness: ${parsed.readiness_score}/10, Strengths: ${parsed.strengths?.length}, Stumbles: ${parsed.stumbles?.length}`);
+    res.json(parsed);
+
+  } catch (error) {
+    console.error('[DifficultTalkPracticeSummary] Error:', error);
+    res.status(500).json({ error: 'Failed to generate practice summary', details: error.message });
   }
 });
 

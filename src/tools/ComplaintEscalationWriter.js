@@ -27,6 +27,22 @@ const ComplaintEscalationWriter = () => {
   const [activeStage, setActiveStage] = useState(1);
   const [expandedSections, setExpandedSections] = useState({});
 
+  // Response analysis
+  const [responseText, setResponseText] = useState('');
+  const [responseAnalysis, setResponseAnalysis] = useState(null);
+  const [responseLoading, setResponseLoading] = useState(false);
+  const [showResponseInput, setShowResponseInput] = useState(null); // stage number or null
+
+  // Editable letters
+  const [editingLetter, setEditingLetter] = useState(null); // stage key or null
+  const [editedLetters, setEditedLetters] = useState({}); // { stage_key: edited_text }
+
+  // Campaign context threading
+  const [campaignHistory, setCampaignHistory] = usePersistentState('cew-campaign', {}); // { complaintId: [{ stage, sentDate, companyResponse, analysisResult, outcome }] }
+  const [regeneratedStages, setRegeneratedStages] = useState({}); // { stage_key: regenerated_data }
+  const [regenerating, setRegenerating] = useState(null); // stage number or null
+  const [showCallScript, setShowCallScript] = useState(false);
+
   // Persisted state
   const [complaintHistory, setComplaintHistory] = usePersistentState('cew-history', []);
   const [stageProgress, setStageProgress] = usePersistentState('cew-progress', {});
@@ -115,11 +131,49 @@ const ComplaintEscalationWriter = () => {
   const markStageSent = (stageNum) => {
     if (!activeComplaintId) return;
     setStageProgress(prev => ({ ...prev, [activeComplaintId]: { ...(prev[activeComplaintId] || {}), [stageNum]: { sent: new Date().toISOString(), outcome: 'pending' } } }));
+    // Log to campaign history
+    addCampaignEntry(stageNum, { sentDate: new Date().toISOString() });
   };
 
   const markStageOutcome = (stageNum, outcome) => {
     if (!activeComplaintId) return;
     setStageProgress(prev => ({ ...prev, [activeComplaintId]: { ...(prev[activeComplaintId] || {}), [stageNum]: { ...(prev[activeComplaintId]?.[stageNum] || {}), outcome } } }));
+    // Update campaign history
+    updateCampaignEntry(stageNum, { outcome });
+  };
+
+  // ── Campaign history ──
+  const addCampaignEntry = (stageNum, data) => {
+    if (!activeComplaintId) return;
+    setCampaignHistory(prev => {
+      const existing = prev[activeComplaintId] || [];
+      const entryIdx = existing.findIndex(e => e.stage === stageNum);
+      if (entryIdx >= 0) {
+        const updated = [...existing];
+        updated[entryIdx] = { ...updated[entryIdx], ...data };
+        return { ...prev, [activeComplaintId]: updated };
+      }
+      return { ...prev, [activeComplaintId]: [...existing, { stage: stageNum, ...data }] };
+    });
+  };
+
+  const updateCampaignEntry = (stageNum, data) => {
+    if (!activeComplaintId) return;
+    setCampaignHistory(prev => {
+      const existing = prev[activeComplaintId] || [];
+      const entryIdx = existing.findIndex(e => e.stage === stageNum);
+      if (entryIdx >= 0) {
+        const updated = [...existing];
+        updated[entryIdx] = { ...updated[entryIdx], ...data };
+        return { ...prev, [activeComplaintId]: updated };
+      }
+      return { ...prev, [activeComplaintId]: [...existing, { stage: stageNum, ...data }] };
+    });
+  };
+
+  const getCampaignEntries = () => {
+    if (!activeComplaintId) return [];
+    return campaignHistory[activeComplaintId] || [];
   };
 
   const getStageStatus = (stageNum) => {
@@ -169,6 +223,114 @@ const ComplaintEscalationWriter = () => {
     setCompany(''); setIndustry('auto'); setIssue(''); setPreviousAttempts(''); setDesiredOutcome('');
     setAmountAtStake(''); setHasDocumentation(''); setTone('firm'); setResults(null); setError('');
     setActiveStage(1); setExpandedSections({}); setActiveComplaintId(null);
+    setResponseText(''); setResponseAnalysis(null); setShowResponseInput(null);
+    setEditingLetter(null); setEditedLetters({}); setRegeneratedStages({});
+    setRegenerating(null); setShowCallScript(false);
+  };
+
+  // ── Response analysis ──
+  const handleAnalyzeResponse = async (stageNum) => {
+    if (!responseText.trim()) { setError('Paste the company\'s response first'); return; }
+    setResponseLoading(true); setError(''); setResponseAnalysis(null);
+    try {
+      const data = await callToolEndpoint('complaint-escalation-writer/analyze-response', {
+        company: company.trim(),
+        originalIssue: issue.trim(),
+        stage: stageNum,
+        companyResponse: responseText.trim(),
+        desiredOutcome: desiredOutcome.trim() || null,
+      });
+      setResponseAnalysis(data);
+      // Save response + analysis to campaign history
+      updateCampaignEntry(stageNum, {
+        companyResponse: responseText.trim(),
+        analysisResult: data,
+      });
+    } catch (err) {
+      setError(err.message || 'Failed to analyze response');
+    } finally {
+      setResponseLoading(false);
+    }
+  };
+
+  // ── Context-aware escalation ──
+  const handleContextEscalate = async (fromStage, toStage) => {
+    markStageOutcome(fromStage, 'failed');
+    setShowResponseInput(null);
+    setActiveStage(toStage);
+
+    // Check if we have campaign history worth regenerating with
+    const entries = getCampaignEntries();
+    const hasContext = entries.some(e => e.companyResponse || e.analysisResult);
+
+    if (hasContext && toStage >= 2 && toStage <= 5) {
+      setRegenerating(toStage);
+      try {
+        const stageKey = `stage_${toStage}_${toStage === 2 ? 'regulatory' : toStage === 3 ? 'executive' : toStage === 4 ? 'public' : 'financial_legal'}`;
+        const data = await callToolEndpoint('complaint-escalation-writer/regenerate-stage', {
+          company: company.trim(),
+          issue: issue.trim(),
+          industry: industry === 'auto' ? null : industry,
+          desiredOutcome: desiredOutcome.trim() || null,
+          amountAtStake: amountAtStake.trim() || null,
+          tone,
+          targetStage: toStage,
+          campaignHistory: entries,
+        });
+        setRegeneratedStages(prev => ({ ...prev, [stageKey]: data }));
+        // Clear edited letters for this stage since we have fresh context
+        setEditedLetters(prev => { const next = { ...prev }; delete next[stageKey]; return next; });
+      } catch (err) {
+        console.error('Stage regeneration failed, using original:', err);
+        // Silently fall back to original stage content
+      } finally {
+        setRegenerating(null);
+      }
+    }
+    setResponseAnalysis(null);
+    setResponseText('');
+  };
+
+  // ── Get stage data (regenerated or original) ──
+  const getStageData = (stageKey, original) => {
+    return regeneratedStages[stageKey] || original;
+  };
+
+  // ── Editable letters ──
+  const getLetterText = (stageKey, originalText) => {
+    return editedLetters[stageKey] ?? originalText;
+  };
+
+  const startEditingLetter = (stageKey, originalText) => {
+    if (!editedLetters[stageKey]) {
+      setEditedLetters(prev => ({ ...prev, [stageKey]: originalText }));
+    }
+    setEditingLetter(stageKey);
+  };
+
+  const cancelEditingLetter = (stageKey, originalText) => {
+    setEditedLetters(prev => ({ ...prev, [stageKey]: originalText }));
+    setEditingLetter(null);
+  };
+
+  // ── Deadline tracking ──
+  const getDeadlineInfo = (stageNum) => {
+    if (!activeComplaintId) return null;
+    const status = stageProgress[activeComplaintId]?.[stageNum];
+    if (!status?.sent) return null;
+    const sentDate = new Date(status.sent);
+    const deadlineDays = stageNum === 1 ? 14 : stageNum === 2 ? 21 : stageNum === 3 ? 10 : 7;
+    const deadline = new Date(sentDate);
+    deadline.setDate(deadline.getDate() + deadlineDays);
+    const now = new Date();
+    const daysRemaining = Math.ceil((deadline - now) / (1000 * 60 * 60 * 24));
+    return {
+      sentDate: sentDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+      deadlineDate: deadline.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+      daysRemaining,
+      isOverdue: daysRemaining < 0,
+      deadlineDays,
+    };
   };
 
   const buildFullText = () => {
@@ -177,13 +339,27 @@ const ComplaintEscalationWriter = () => {
     const sa = results.situation_assessment;
     if (sa) { lines.push(`Severity: ${sa.severity}`, `Legal Strength: ${sa.legal_strength}`, sa.key_insight, ''); }
     const s1 = results.escalation_stages?.stage_1_direct;
-    if (s1) { lines.push('═══ STAGE 1: DIRECT COMPLAINT ═══', `Subject: ${s1.subject_line}`, '', s1.letter_body, ''); }
+    if (s1) { lines.push('═══ STAGE 1: DIRECT COMPLAINT ═══', `Subject: ${s1.subject_line}`, '', getLetterText('stage_1_direct', s1.letter_body), ''); }
     const s2 = results.escalation_stages?.stage_2_regulatory;
-    if (s2) { lines.push('═══ STAGE 2: REGULATORY COMPLAINT ═══', `Agency: ${s2.agency}`, `URL: ${s2.agency_url}`, '', s2.complaint_text, ''); }
+    if (s2) { lines.push('═══ STAGE 2: REGULATORY COMPLAINT ═══', `Agency: ${s2.agency}`, `URL: ${s2.agency_url}`, '', getLetterText('stage_2_regulatory', s2.complaint_text), ''); }
     const s3 = results.escalation_stages?.stage_3_executive;
-    if (s3) { lines.push('═══ STAGE 3: EXECUTIVE ESCALATION ═══', `Subject: ${s3.subject_line}`, '', s3.letter_body, ''); }
+    if (s3) { lines.push('═══ STAGE 3: EXECUTIVE ESCALATION ═══', `Subject: ${s3.subject_line}`, '', getLetterText('stage_3_executive', s3.letter_body), ''); }
     const s4 = results.escalation_stages?.stage_4_public;
     if (s4) { lines.push('═══ STAGE 4: PUBLIC PRESSURE ═══', s4.social_media_post, '', s4.social_media_long, ''); }
+    if (results.evidence_checklist?.length > 0) {
+      lines.push('═══ EVIDENCE CHECKLIST ═══');
+      results.evidence_checklist.forEach((item, i) => {
+        lines.push(`${isEvidenceChecked(i) ? '✅' : '☐'} [${item.priority}] ${item.item} — ${item.how}`);
+      });
+      lines.push('');
+    }
+    if (results.timeline) {
+      lines.push('═══ TIMELINE ═══');
+      Object.entries(results.timeline).forEach(([key, value]) => {
+        lines.push(`${key.replace(/_/g, ' ')}: ${value}`);
+      });
+      lines.push('');
+    }
     lines.push('───', 'This is strategic guidance, not legal advice. Consult an attorney for legal questions.');
     lines.push('\n— Generated by DeftBrain · deftbrain.com');
     return lines.join('\n');
@@ -202,13 +378,15 @@ const ComplaintEscalationWriter = () => {
   // ── Stage action bar (reusable) ──
   const StageActionBar = ({ stageNum, sentLabel, nextStage }) => {
     const status = getStageStatus(stageNum);
+    const deadlineInfo = getDeadlineInfo(stageNum);
+
     if (!status) {
       return (
         <div className={`p-4 rounded-xl border ${c.border} ${c.cardAlt}`}>
           <div className="flex items-center justify-between">
             <div>
               <p className={`text-sm font-bold ${c.text}`}>Ready to send?</p>
-              <p className={`text-xs ${c.textMuted}`}>Mark as sent to track follow-up dates</p>
+              <p className={`text-xs ${c.textMuted}`}>Mark as sent to track deadlines and follow-up dates</p>
             </div>
             <button onClick={() => markStageSent(stageNum)} className={`px-4 py-2 rounded-lg text-sm font-bold ${c.btnPrimary}`}>✅ {sentLabel || 'Mark as Sent'}</button>
           </div>
@@ -217,21 +395,172 @@ const ComplaintEscalationWriter = () => {
     }
     if (status.outcome === 'pending') {
       return (
-        <div className={`p-4 rounded-xl border ${c.border} ${c.cardAlt}`}>
-          <div className="flex items-center justify-between mb-3">
-            <p className={`text-sm font-bold ${c.text}`}>{stageConfig[stageNum - 1]?.icon} Sent {new Date(status.sent).toLocaleDateString()}</p>
-            {stageNum <= 3 && <p className={`text-xs font-bold ${isDark ? 'text-amber-400' : 'text-amber-600'}`}>Follow up by {getFollowUpDate(stageNum === 1 ? 14 : stageNum === 2 ? 21 : 10)}</p>}
+        <div className="space-y-3">
+          {/* Deadline tracker */}
+          {deadlineInfo && (
+            <div className={`p-3 rounded-xl border ${
+              deadlineInfo.isOverdue
+                ? isDark ? 'border-red-700 bg-red-900/15' : 'border-red-200 bg-red-50'
+                : deadlineInfo.daysRemaining <= 3
+                  ? isDark ? 'border-amber-700 bg-amber-900/15' : 'border-amber-200 bg-amber-50'
+                  : isDark ? 'border-zinc-600 bg-zinc-700/30' : 'border-gray-200 bg-gray-50'
+            }`}>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span>{deadlineInfo.isOverdue ? '🚨' : deadlineInfo.daysRemaining <= 3 ? '⏰' : '📅'}</span>
+                  <div>
+                    <p className={`text-xs font-bold ${c.text}`}>
+                      Sent {deadlineInfo.sentDate} · Deadline: {deadlineInfo.deadlineDate}
+                    </p>
+                    <p className={`text-xs ${
+                      deadlineInfo.isOverdue ? (isDark ? 'text-red-400' : 'text-red-600')
+                        : deadlineInfo.daysRemaining <= 3 ? (isDark ? 'text-amber-400' : 'text-amber-600')
+                        : c.textMuted
+                    }`}>
+                      {deadlineInfo.isOverdue
+                        ? `${Math.abs(deadlineInfo.daysRemaining)} days overdue — time to escalate`
+                        : `${deadlineInfo.daysRemaining} day${deadlineInfo.daysRemaining !== 1 ? 's' : ''} remaining`}
+                    </p>
+                  </div>
+                </div>
+                {/* Progress bar */}
+                <div className={`w-24 h-1.5 rounded-full ${isDark ? 'bg-zinc-600' : 'bg-gray-200'}`}>
+                  <div className={`h-full rounded-full transition-all ${
+                    deadlineInfo.isOverdue ? 'bg-red-500' : deadlineInfo.daysRemaining <= 3 ? 'bg-amber-500' : 'bg-green-500'
+                  }`} style={{ width: `${Math.min(100, Math.max(0, ((deadlineInfo.deadlineDays - deadlineInfo.daysRemaining) / deadlineInfo.deadlineDays) * 100))}%` }} />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Outcome buttons */}
+          <div className={`p-4 rounded-xl border ${c.border} ${c.cardAlt}`}>
+            <p className={`text-xs ${c.textMuted} mb-3`}>Did the company respond?</p>
+            <div className="flex flex-wrap gap-2">
+              <button onClick={() => markStageOutcome(stageNum, 'resolved')} className={`px-3 py-1.5 rounded-lg text-xs font-bold border ${isDark ? 'border-green-700 text-green-300 hover:bg-green-900/20' : 'border-green-300 text-green-700 hover:bg-green-50'}`}>✅ Resolved</button>
+              <button onClick={() => setShowResponseInput(stageNum)} className={`px-3 py-1.5 rounded-lg text-xs font-bold border ${isDark ? 'border-sky-700 text-sky-300 hover:bg-sky-900/20' : 'border-sky-300 text-sky-700 hover:bg-sky-50'}`}>📨 They Responded — Analyze It</button>
+              {nextStage && (
+                <button onClick={() => handleContextEscalate(stageNum, nextStage)} className={`px-3 py-1.5 rounded-lg text-xs font-bold border ${isDark ? 'border-red-700 text-red-300 hover:bg-red-900/20' : 'border-red-300 text-red-700 hover:bg-red-50'}`}>❌ No response → Stage {nextStage}</button>
+              )}
+              {!nextStage && (
+                <button onClick={() => markStageOutcome(stageNum, 'failed')} className={`px-3 py-1.5 rounded-lg text-xs font-bold border ${isDark ? 'border-red-700 text-red-300' : 'border-red-300 text-red-700'}`}>❌ Not resolved</button>
+              )}
+            </div>
           </div>
-          <p className={`text-xs ${c.textMuted} mb-3`}>Did the company resolve your issue?</p>
-          <div className="flex gap-2">
-            <button onClick={() => markStageOutcome(stageNum, 'resolved')} className={`px-3 py-1.5 rounded-lg text-xs font-bold border ${isDark ? 'border-green-700 text-green-300 hover:bg-green-900/20' : 'border-green-300 text-green-700 hover:bg-green-50'}`}>✅ Resolved</button>
-            {nextStage && (
-              <button onClick={() => { markStageOutcome(stageNum, 'failed'); setActiveStage(nextStage); }} className={`px-3 py-1.5 rounded-lg text-xs font-bold border ${isDark ? 'border-red-700 text-red-300 hover:bg-red-900/20' : 'border-red-300 text-red-700 hover:bg-red-50'}`}>❌ Not resolved → Stage {nextStage}</button>
-            )}
-            {!nextStage && (
-              <button onClick={() => markStageOutcome(stageNum, 'failed')} className={`px-3 py-1.5 rounded-lg text-xs font-bold border ${isDark ? 'border-red-700 text-red-300' : 'border-red-300 text-red-700'}`}>❌ Not resolved</button>
-            )}
-          </div>
+
+          {/* Response analysis input */}
+          {showResponseInput === stageNum && (
+            <div className={`p-4 rounded-xl border ${isDark ? 'border-sky-800 bg-sky-900/10' : 'border-sky-200 bg-sky-50'}`}>
+              <p className={`text-sm font-bold ${c.text} mb-2`}>📨 Paste the company's response</p>
+              <textarea
+                value={responseText}
+                onChange={e => setResponseText(e.target.value)}
+                placeholder="Paste the email, letter, or message you received from the company…"
+                rows={5}
+                className={`w-full p-3 border rounded-xl text-sm resize-y outline-none focus:ring-2 ${c.input}`}
+              />
+              <div className="flex items-center gap-2 mt-2">
+                <button onClick={() => handleAnalyzeResponse(stageNum)}
+                  disabled={responseLoading || !responseText.trim()}
+                  className={`px-4 py-2 rounded-lg text-sm font-bold ${responseText.trim() ? c.btnPrimary : isDark ? 'bg-zinc-700 text-zinc-500' : 'bg-gray-200 text-gray-400'}`}>
+                  {responseLoading ? '⏳ Analyzing…' : '🔍 Analyze Response'}
+                </button>
+                <button onClick={() => { setShowResponseInput(null); setResponseText(''); setResponseAnalysis(null); }}
+                  className={`text-xs font-bold ${c.textMuted}`}>Cancel</button>
+              </div>
+
+              {/* Response analysis results */}
+              {responseAnalysis && (
+                <div className="space-y-3 mt-4">
+                  {/* Type + Assessment */}
+                  <div className={`p-3 rounded-xl border ${
+                    responseAnalysis.recommendation === 'accept' ? (isDark ? 'border-green-700 bg-green-900/15' : 'border-green-200 bg-green-50')
+                      : responseAnalysis.recommendation === 'escalate' ? (isDark ? 'border-red-700 bg-red-900/15' : 'border-red-200 bg-red-50')
+                      : isDark ? 'border-amber-700 bg-amber-900/15' : 'border-amber-200 bg-amber-50'
+                  }`}>
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                        responseAnalysis.recommendation === 'accept' ? (isDark ? 'bg-green-900/40 text-green-300' : 'bg-green-100 text-green-700')
+                          : responseAnalysis.recommendation === 'escalate' ? (isDark ? 'bg-red-900/40 text-red-300' : 'bg-red-100 text-red-700')
+                          : (isDark ? 'bg-amber-900/40 text-amber-300' : 'bg-amber-100 text-amber-700')
+                      }`}>
+                        {responseAnalysis.recommendation === 'accept' ? '✅ Accept' : responseAnalysis.recommendation === 'counter' ? '🤝 Counter' : responseAnalysis.recommendation === 'escalate' ? '⬆️ Escalate' : '⏳ Wait'}
+                      </span>
+                      <span className={`text-xs ${c.textMuted}`}>{responseAnalysis.response_type_label}</span>
+                    </div>
+                    <p className={`text-sm leading-relaxed ${c.text}`}>{responseAnalysis.assessment}</p>
+                  </div>
+
+                  <p className={`text-sm leading-relaxed ${c.textSec}`}>{responseAnalysis.recommendation_explanation}</p>
+
+                  {/* Tactics used */}
+                  {responseAnalysis.tactics_used?.length > 0 && (
+                    <div>
+                      <p className={`text-xs font-bold ${c.textMuted} mb-1.5`}>🎭 Corporate Tactics Identified</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {responseAnalysis.tactics_used.map((t, i) => (
+                          <span key={i} className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${isDark ? 'bg-violet-900/30 text-violet-300' : 'bg-violet-50 text-violet-700'}`}>{t}</span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Offer analysis */}
+                  {responseAnalysis.offer_analysis?.what_they_offered && (
+                    <div className={`p-3 rounded-lg ${c.cardAlt}`}>
+                      <p className={`text-xs font-bold ${c.textMuted} mb-2`}>💰 Offer Analysis</p>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                        <div><span className={c.textMuted}>Offered: </span><span className={`font-bold ${c.text}`}>{responseAnalysis.offer_analysis.what_they_offered}</span></div>
+                        <div><span className={c.textMuted}>You asked: </span><span className={`font-bold ${c.text}`}>{responseAnalysis.offer_analysis.what_you_asked_for}</span></div>
+                        {responseAnalysis.offer_analysis.gap && <div className="col-span-2"><span className={c.textMuted}>Gap: </span><span className={`font-bold ${isDark ? 'text-amber-400' : 'text-amber-600'}`}>{responseAnalysis.offer_analysis.gap}</span></div>}
+                        {responseAnalysis.offer_analysis.fair_market_value && <div className="col-span-2"><span className={c.textMuted}>Fair value: </span><span className={c.textSec}>{responseAnalysis.offer_analysis.fair_market_value}</span></div>}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Counter offer */}
+                  {responseAnalysis.if_counter?.counter_offer_text && responseAnalysis.recommendation === 'counter' && (
+                    <div className={`p-3 rounded-xl border ${isDark ? 'border-sky-800 bg-sky-900/10' : 'border-sky-200 bg-sky-50/50'}`}>
+                      <div className="flex items-center justify-between mb-2">
+                        <p className={`text-xs font-bold ${isDark ? 'text-sky-400' : 'text-sky-700'}`}>🤝 Suggested Counter-Offer</p>
+                        <CopyBtn content={responseAnalysis.if_counter.counter_offer_text + '\n\n— Generated by DeftBrain · deftbrain.com'} label="Copy" />
+                      </div>
+                      <div className={`whitespace-pre-wrap text-xs ${c.textSec} leading-relaxed`}>{responseAnalysis.if_counter.counter_offer_text}</div>
+                    </div>
+                  )}
+
+                  {/* Red flags */}
+                  {responseAnalysis.red_flags?.length > 0 && (
+                    <div className={`p-3 rounded-lg ${isDark ? 'bg-red-900/15' : 'bg-red-50'}`}>
+                      <p className={`text-xs font-bold ${isDark ? 'text-red-400' : 'text-red-700'} mb-1`}>🚩 Red Flags in Their Response</p>
+                      {responseAnalysis.red_flags.map((f, i) => <p key={i} className={`text-xs ${c.textSec}`}>• {f}</p>)}
+                    </div>
+                  )}
+
+                  {/* Things to get in writing */}
+                  {responseAnalysis.things_to_get_in_writing?.length > 0 && (
+                    <div className={`p-3 rounded-lg ${c.cardAlt}`}>
+                      <p className={`text-xs font-bold ${c.textMuted} mb-1`}>📝 Get In Writing</p>
+                      {responseAnalysis.things_to_get_in_writing.map((t, i) => <p key={i} className={`text-xs ${c.textSec}`}>• {t}</p>)}
+                    </div>
+                  )}
+
+                  {/* Action buttons based on recommendation */}
+                  <div className="flex flex-wrap gap-2 pt-2">
+                    {responseAnalysis.recommendation === 'accept' && (
+                      <button onClick={() => markStageOutcome(stageNum, 'resolved')} className={`px-3 py-1.5 rounded-lg text-xs font-bold border ${isDark ? 'border-green-700 text-green-300 hover:bg-green-900/20' : 'border-green-300 text-green-700 hover:bg-green-50'}`}>✅ Accept & Mark Resolved</button>
+                    )}
+                    {responseAnalysis.recommendation === 'escalate' && nextStage && (
+                      <button onClick={() => handleContextEscalate(stageNum, nextStage)}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold border ${isDark ? 'border-red-700 text-red-300 hover:bg-red-900/20' : 'border-red-300 text-red-700 hover:bg-red-50'}`}>
+                        ⬆️ Escalate to Stage {nextStage}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       );
     }
@@ -469,6 +798,24 @@ const ComplaintEscalationWriter = () => {
                       </div>
                       <p className={`text-sm ${c.textSec} mb-1`}>{law.how_it_applies}</p>
                       <p className={`text-xs ${c.textMuted}`}>Company risk: {law.consequence_for_company}</p>
+                      {law.time_limit_days && (
+                        <div className={`mt-2 flex items-center gap-2 px-2.5 py-1.5 rounded-lg ${
+                          law.time_limit_days <= 30
+                            ? isDark ? 'bg-red-900/15 border border-red-800/40' : 'bg-red-50 border border-red-100'
+                            : law.time_limit_days <= 90
+                              ? isDark ? 'bg-amber-900/15 border border-amber-800/40' : 'bg-amber-50 border border-amber-100'
+                              : isDark ? 'bg-zinc-700/50' : 'bg-gray-50'
+                        }`}>
+                          <span className="text-xs">{law.time_limit_days <= 30 ? '🚨' : law.time_limit_days <= 90 ? '⏰' : '📅'}</span>
+                          <span className={`text-xs font-bold ${
+                            law.time_limit_days <= 30 ? (isDark ? 'text-red-400' : 'text-red-600')
+                              : law.time_limit_days <= 90 ? (isDark ? 'text-amber-400' : 'text-amber-600')
+                              : c.textMuted
+                          }`}>
+                            Filing window: {law.time_limit_note || `~${law.time_limit_days} days`}
+                          </span>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -550,16 +897,50 @@ const ComplaintEscalationWriter = () => {
             {/* Stage 1: Direct Complaint */}
             {activeStage === 1 && results.escalation_stages?.stage_1_direct && (() => {
               const s = results.escalation_stages.stage_1_direct;
+              const stageKey = 'stage_1_direct';
+              const letterText = getLetterText(stageKey, s.letter_body);
+              const isEditing = editingLetter === stageKey;
               return (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <h4 className={`font-bold ${c.text}`}>Stage 1: Direct Company Complaint</h4>
-                    <CopyBtn content={`Subject: ${s.subject_line}\n\n${s.letter_body}\n\n— Generated by DeftBrain · deftbrain.com`} label="Copy Letter" />
+                    <div className="flex items-center gap-2">
+                      {!isEditing && (
+                        <button onClick={() => startEditingLetter(stageKey, s.letter_body)}
+                          className={`px-2.5 py-1 rounded-lg text-xs font-bold ${c.btnSecondary}`}>✏️ Edit</button>
+                      )}
+                      <CopyBtn content={`Subject: ${s.subject_line}\n\n${letterText}\n\n— Generated by DeftBrain · deftbrain.com`} label="Copy Letter" />
+                    </div>
                   </div>
                   <div className={`rounded-xl p-5 border ${isDark ? 'bg-zinc-700/30 border-zinc-600' : 'bg-slate-50 border-gray-200'}`}>
                     <p className={`text-xs font-bold ${c.textMuted} mb-1`}>SUBJECT</p>
                     <p className={`font-semibold ${c.text} mb-4`}>{s.subject_line}</p>
-                    <div className={`whitespace-pre-wrap text-sm ${c.textSec} leading-relaxed`}>{s.letter_body}</div>
+                    {isEditing ? (
+                      <div>
+                        <textarea
+                          value={editedLetters[stageKey] || s.letter_body}
+                          onChange={e => setEditedLetters(prev => ({ ...prev, [stageKey]: e.target.value }))}
+                          rows={16}
+                          className={`w-full p-3 border rounded-xl text-sm resize-y outline-none focus:ring-2 leading-relaxed ${c.input}`}
+                        />
+                        <div className="flex items-center gap-2 mt-2">
+                          <button onClick={() => setEditingLetter(null)}
+                            className={`px-3 py-1.5 rounded-lg text-xs font-bold ${isDark ? 'bg-green-900/30 text-green-300' : 'bg-green-50 text-green-700'}`}>✅ Done Editing</button>
+                          <button onClick={() => cancelEditingLetter(stageKey, s.letter_body)}
+                            className={`text-xs font-bold ${c.textMuted}`}>Reset to Original</button>
+                          {editedLetters[stageKey] !== s.letter_body && (
+                            <span className={`text-[10px] ${isDark ? 'text-amber-400' : 'text-amber-600'}`}>✏️ Modified</span>
+                          )}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className={`whitespace-pre-wrap text-sm ${c.textSec} leading-relaxed`}>
+                        {letterText}
+                        {editedLetters[stageKey] && editedLetters[stageKey] !== s.letter_body && (
+                          <p className={`text-[10px] mt-2 ${isDark ? 'text-amber-400' : 'text-amber-600'}`}>✏️ You've edited this letter</p>
+                        )}
+                      </div>
+                    )}
                   </div>
                   {s.send_to?.length > 0 && (
                     <div className={`p-4 rounded-lg ${stageColors('blue', 'bg')}`}>
@@ -588,12 +969,32 @@ const ComplaintEscalationWriter = () => {
 
             {/* Stage 2: Regulatory */}
             {activeStage === 2 && results.escalation_stages?.stage_2_regulatory && (() => {
-              const s = results.escalation_stages.stage_2_regulatory;
+              const s = getStageData('stage_2_regulatory', results.escalation_stages.stage_2_regulatory);
+              const stageKey = 'stage_2_regulatory';
+              const isRegenerated = !!regeneratedStages[stageKey];
+              const complaintText = getLetterText(stageKey, s.complaint_text);
+              const isEditing = editingLetter === stageKey;
+              if (regenerating === 2) return (
+                <div className={`p-8 text-center ${c.cardAlt} rounded-xl`}>
+                  <p className="text-lg mb-2"><span className="animate-spin inline-block">⏳</span></p>
+                  <p className={`text-sm font-bold ${c.text}`}>Regenerating Stage 2 with campaign context…</p>
+                  <p className={`text-xs ${c.textMuted} mt-1`}>Weaving in what happened at Stage 1 to make this complaint more powerful</p>
+                </div>
+              );
               return (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <h4 className={`font-bold ${c.text}`}>Stage 2: Regulatory Complaint</h4>
-                    <CopyBtn content={`${s.complaint_text}\n\n— Generated by DeftBrain · deftbrain.com`} label="Copy Complaint" />
+                    <div className="flex items-center gap-2">
+                      <h4 className={`font-bold ${c.text}`}>Stage 2: Regulatory Complaint</h4>
+                      {isRegenerated && <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${isDark ? 'bg-sky-900/40 text-sky-300' : 'bg-sky-50 text-sky-700'}`}>🔄 Context-aware</span>}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {!isEditing && (
+                        <button onClick={() => startEditingLetter(stageKey, s.complaint_text)}
+                          className={`px-2.5 py-1 rounded-lg text-xs font-bold ${c.btnSecondary}`}>✏️ Edit</button>
+                      )}
+                      <CopyBtn content={`${complaintText}\n\n— Generated by DeftBrain · deftbrain.com`} label="Copy Complaint" />
+                    </div>
                   </div>
                   <div className={`p-4 rounded-xl ${stageColors('purple', 'bg')} border ${stageColors('purple', 'border')}`}>
                     <p className={`text-xs font-bold ${stageColors('purple', 'accent')} mb-1`}>FILE WITH</p>
@@ -603,7 +1004,29 @@ const ComplaintEscalationWriter = () => {
                   </div>
                   <div className={`rounded-xl p-5 border ${isDark ? 'bg-zinc-700/30 border-zinc-600' : 'bg-slate-50 border-gray-200'}`}>
                     <p className={`text-xs font-bold ${c.textMuted} mb-2`}>PRE-WRITTEN COMPLAINT TEXT</p>
-                    <div className={`whitespace-pre-wrap text-sm ${c.textSec} leading-relaxed`}>{s.complaint_text}</div>
+                    {isEditing ? (
+                      <div>
+                        <textarea
+                          value={editedLetters[stageKey] || s.complaint_text}
+                          onChange={e => setEditedLetters(prev => ({ ...prev, [stageKey]: e.target.value }))}
+                          rows={12}
+                          className={`w-full p-3 border rounded-xl text-sm resize-y outline-none focus:ring-2 leading-relaxed ${c.input}`}
+                        />
+                        <div className="flex items-center gap-2 mt-2">
+                          <button onClick={() => setEditingLetter(null)}
+                            className={`px-3 py-1.5 rounded-lg text-xs font-bold ${isDark ? 'bg-green-900/30 text-green-300' : 'bg-green-50 text-green-700'}`}>✅ Done</button>
+                          <button onClick={() => cancelEditingLetter(stageKey, s.complaint_text)}
+                            className={`text-xs font-bold ${c.textMuted}`}>Reset</button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className={`whitespace-pre-wrap text-sm ${c.textSec} leading-relaxed`}>
+                        {complaintText}
+                        {editedLetters[stageKey] && editedLetters[stageKey] !== s.complaint_text && (
+                          <p className={`text-[10px] mt-2 ${isDark ? 'text-amber-400' : 'text-amber-600'}`}>✏️ You've edited this text</p>
+                        )}
+                      </div>
+                    )}
                   </div>
                   {s.what_happens_after && <div className={`p-4 rounded-lg ${c.cardAlt}`}><p className={`text-xs font-bold ${c.textMuted} mb-1`}>WHAT HAPPENS AFTER FILING</p><p className={`text-sm ${c.textSec}`}>{s.what_happens_after}</p></div>}
                   {s.company_impact && <div className={`p-4 rounded-lg ${c.cardAlt}`}><p className={`text-xs font-bold ${c.textMuted} mb-1`}>WHY COMPANIES TAKE THIS SERIOUSLY</p><p className={`text-sm ${c.textSec}`}>{s.company_impact}</p></div>}
@@ -614,17 +1037,59 @@ const ComplaintEscalationWriter = () => {
 
             {/* Stage 3: Executive */}
             {activeStage === 3 && results.escalation_stages?.stage_3_executive && (() => {
-              const s = results.escalation_stages.stage_3_executive;
+              const s = getStageData('stage_3_executive', results.escalation_stages.stage_3_executive);
+              const stageKey = 'stage_3_executive';
+              const isRegenerated = !!regeneratedStages[stageKey];
+              const letterText = getLetterText(stageKey, s.letter_body);
+              const isEditing = editingLetter === stageKey;
+              if (regenerating === 3) return (
+                <div className={`p-8 text-center ${c.cardAlt} rounded-xl`}>
+                  <p className="text-lg mb-2"><span className="animate-spin inline-block">⏳</span></p>
+                  <p className={`text-sm font-bold ${c.text}`}>Regenerating Stage 3 with campaign context…</p>
+                  <p className={`text-xs ${c.textMuted} mt-1`}>Incorporating company responses and failed resolution attempts</p>
+                </div>
+              );
               return (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <h4 className={`font-bold ${c.text}`}>Stage 3: Executive Escalation</h4>
-                    <CopyBtn content={`Subject: ${s.subject_line}\n\n${s.letter_body}\n\n— Generated by DeftBrain · deftbrain.com`} label="Copy Letter" />
+                    <div className="flex items-center gap-2">
+                      <h4 className={`font-bold ${c.text}`}>Stage 3: Executive Escalation</h4>
+                      {isRegenerated && <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${isDark ? 'bg-sky-900/40 text-sky-300' : 'bg-sky-50 text-sky-700'}`}>🔄 Context-aware</span>}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {!isEditing && (
+                        <button onClick={() => startEditingLetter(stageKey, s.letter_body)}
+                          className={`px-2.5 py-1 rounded-lg text-xs font-bold ${c.btnSecondary}`}>✏️ Edit</button>
+                      )}
+                      <CopyBtn content={`Subject: ${s.subject_line}\n\n${letterText}\n\n— Generated by DeftBrain · deftbrain.com`} label="Copy Letter" />
+                    </div>
                   </div>
                   <div className={`rounded-xl p-5 border ${isDark ? 'bg-zinc-700/30 border-zinc-600' : 'bg-slate-50 border-gray-200'}`}>
                     <p className={`text-xs font-bold ${c.textMuted} mb-1`}>SUBJECT</p>
                     <p className={`font-semibold ${c.text} mb-4`}>{s.subject_line}</p>
-                    <div className={`whitespace-pre-wrap text-sm ${c.textSec} leading-relaxed`}>{s.letter_body}</div>
+                    {isEditing ? (
+                      <div>
+                        <textarea
+                          value={editedLetters[stageKey] || s.letter_body}
+                          onChange={e => setEditedLetters(prev => ({ ...prev, [stageKey]: e.target.value }))}
+                          rows={12}
+                          className={`w-full p-3 border rounded-xl text-sm resize-y outline-none focus:ring-2 leading-relaxed ${c.input}`}
+                        />
+                        <div className="flex items-center gap-2 mt-2">
+                          <button onClick={() => setEditingLetter(null)}
+                            className={`px-3 py-1.5 rounded-lg text-xs font-bold ${isDark ? 'bg-green-900/30 text-green-300' : 'bg-green-50 text-green-700'}`}>✅ Done</button>
+                          <button onClick={() => cancelEditingLetter(stageKey, s.letter_body)}
+                            className={`text-xs font-bold ${c.textMuted}`}>Reset</button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className={`whitespace-pre-wrap text-sm ${c.textSec} leading-relaxed`}>
+                        {letterText}
+                        {editedLetters[stageKey] && editedLetters[stageKey] !== s.letter_body && (
+                          <p className={`text-[10px] mt-2 ${isDark ? 'text-amber-400' : 'text-amber-600'}`}>✏️ You've edited this letter</p>
+                        )}
+                      </div>
+                    )}
                   </div>
                   {s.target_contacts?.length > 0 && (
                     <div className={`p-4 rounded-lg ${stageColors('orange', 'bg')} border ${stageColors('orange', 'border')}`}>
@@ -646,10 +1111,21 @@ const ComplaintEscalationWriter = () => {
 
             {/* Stage 4: Public Pressure */}
             {activeStage === 4 && results.escalation_stages?.stage_4_public && (() => {
-              const s = results.escalation_stages.stage_4_public;
+              const s = getStageData('stage_4_public', results.escalation_stages.stage_4_public);
+              const isRegenerated = !!regeneratedStages['stage_4_public'];
+              if (regenerating === 4) return (
+                <div className={`p-8 text-center ${c.cardAlt} rounded-xl`}>
+                  <p className="text-lg mb-2"><span className="animate-spin inline-block">⏳</span></p>
+                  <p className={`text-sm font-bold ${c.text}`}>Regenerating Stage 4 with campaign context…</p>
+                  <p className={`text-xs ${c.textMuted} mt-1`}>Building a fact-based public post from your documented campaign history</p>
+                </div>
+              );
               return (
                 <div className="space-y-4">
-                  <h4 className={`font-bold ${c.text}`}>Stage 4: Public Pressure Campaign</h4>
+                  <div className="flex items-center gap-2">
+                    <h4 className={`font-bold ${c.text}`}>Stage 4: Public Pressure Campaign</h4>
+                    {isRegenerated && <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${isDark ? 'bg-sky-900/40 text-sky-300' : 'bg-sky-50 text-sky-700'}`}>🔄 Context-aware</span>}
+                  </div>
                   {s.social_media_post && (
                     <div className={`rounded-xl p-5 border ${isDark ? 'bg-zinc-700/30 border-zinc-600' : 'bg-slate-50 border-gray-200'}`}>
                       <div className="flex items-center justify-between mb-2">
@@ -692,10 +1168,21 @@ const ComplaintEscalationWriter = () => {
 
             {/* Stage 5: Financial & Legal */}
             {activeStage === 5 && results.escalation_stages?.stage_5_financial_legal && (() => {
-              const s = results.escalation_stages.stage_5_financial_legal;
+              const s = getStageData('stage_5_financial_legal', results.escalation_stages.stage_5_financial_legal);
+              const isRegenerated = !!regeneratedStages['stage_5_financial_legal'];
+              if (regenerating === 5) return (
+                <div className={`p-8 text-center ${c.cardAlt} rounded-xl`}>
+                  <p className="text-lg mb-2"><span className="animate-spin inline-block">⏳</span></p>
+                  <p className={`text-sm font-bold ${c.text}`}>Regenerating Stage 5 with campaign context…</p>
+                  <p className={`text-xs ${c.textMuted} mt-1`}>Building your legal case from documented campaign evidence</p>
+                </div>
+              );
               return (
                 <div className="space-y-4">
-                  <h4 className={`font-bold ${c.text}`}>Stage 5: Financial & Legal Remedies</h4>
+                  <div className="flex items-center gap-2">
+                    <h4 className={`font-bold ${c.text}`}>Stage 5: Financial & Legal Remedies</h4>
+                    {isRegenerated && <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${isDark ? 'bg-sky-900/40 text-sky-300' : 'bg-sky-50 text-sky-700'}`}>🔄 Context-aware</span>}
+                  </div>
                   {s.chargeback?.applicable && (
                     <div className={`p-5 rounded-xl border ${stageColors('red', 'border')} ${stageColors('red', 'bg')}`}>
                       <p className={`text-xs font-bold ${stageColors('red', 'accent')} mb-2`}>💳 CREDIT CARD CHARGEBACK</p>
@@ -767,16 +1254,114 @@ const ComplaintEscalationWriter = () => {
             </div>
           )}
 
+          {/* Call Script */}
+          {results.call_script && (
+            <div className={`${c.card} border ${c.border} rounded-xl shadow-lg p-6`}>
+              <button onClick={() => setShowCallScript(!showCallScript)} className={`w-full flex items-center justify-between ${c.text}`}>
+                <h3 className="font-bold flex items-center gap-2"><span>📞</span> If They Call You (Phone Script)</h3>
+                {showCallScript ? <span>▲</span> : <span>▼</span>}
+              </button>
+              {showCallScript && (
+                <div className="space-y-4 mt-4">
+                  <div className={`p-4 rounded-xl ${isDark ? 'bg-sky-900/15 border border-sky-800/40' : 'bg-sky-50 border border-sky-100'}`}>
+                    <p className={`text-xs font-bold ${isDark ? 'text-sky-400' : 'text-sky-700'} mb-1`}>📋 OPEN WITH</p>
+                    <p className={`text-sm ${c.text} leading-relaxed`}>{results.call_script.opening}</p>
+                  </div>
+
+                  {results.call_script.key_phrases?.length > 0 && (
+                    <div>
+                      <p className={`text-xs font-bold ${isDark ? 'text-green-400' : 'text-green-700'} mb-2`}>✅ KEY PHRASES TO USE</p>
+                      {results.call_script.key_phrases.map((phrase, i) => (
+                        <div key={i} className={`flex items-start gap-2 mb-2 p-2 rounded-lg ${isDark ? 'bg-green-900/10' : 'bg-green-50/50'}`}>
+                          <span className="text-xs mt-0.5">💬</span>
+                          <p className={`text-sm italic ${c.text}`}>"{phrase}"</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {results.call_script.things_to_avoid_saying?.length > 0 && (
+                    <div>
+                      <p className={`text-xs font-bold ${isDark ? 'text-red-400' : 'text-red-700'} mb-2`}>🚫 NEVER SAY</p>
+                      {results.call_script.things_to_avoid_saying.map((phrase, i) => (
+                        <div key={i} className={`flex items-start gap-2 mb-2 p-2 rounded-lg ${isDark ? 'bg-red-900/10' : 'bg-red-50/50'}`}>
+                          <span className="text-xs mt-0.5">✕</span>
+                          <p className={`text-sm ${c.textSec}`}>"{phrase}"</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {results.call_script.redirect_to_writing && (
+                    <div className={`p-4 rounded-xl border ${c.border} ${c.cardAlt}`}>
+                      <p className={`text-xs font-bold ${c.textMuted} mb-1`}>📝 REDIRECT TO WRITING</p>
+                      <p className={`text-sm italic ${c.text}`}>"{results.call_script.redirect_to_writing}"</p>
+                      <p className={`text-xs ${c.textMuted} mt-1`}>Companies prefer phone calls because there's no paper trail. Always redirect.</p>
+                    </div>
+                  )}
+
+                  {results.call_script.if_they_pressure && (
+                    <div className={`p-4 rounded-xl ${isDark ? 'bg-amber-900/15 border border-amber-800/40' : 'bg-amber-50 border border-amber-100'}`}>
+                      <p className={`text-xs font-bold ${isDark ? 'text-amber-400' : 'text-amber-700'} mb-1`}>⚡ IF THEY PRESSURE YOU</p>
+                      <p className={`text-sm italic ${c.text}`}>"{results.call_script.if_they_pressure}"</p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Campaign Context Summary */}
+          {getCampaignEntries().length > 0 && (
+            <div className={`${c.card} border ${c.border} rounded-xl shadow-lg p-6`}>
+              <button onClick={() => toggleSection('campaign')} className={`w-full flex items-center justify-between ${c.text}`}>
+                <h3 className="font-bold flex items-center gap-2"><span>📜</span> Campaign Log ({getCampaignEntries().length} stage{getCampaignEntries().length !== 1 ? 's' : ''})</h3>
+                {expandedSections.campaign ? <span>▲</span> : <span>▼</span>}
+              </button>
+              {expandedSections.campaign && (
+                <div className="space-y-3 mt-4">
+                  {getCampaignEntries().sort((a, b) => a.stage - b.stage).map(entry => {
+                    const stg = stageConfig[entry.stage - 1];
+                    return (
+                      <div key={entry.stage} className={`p-3 rounded-xl border ${c.border}`}>
+                        <div className="flex items-center gap-2 mb-1">
+                          <span>{stg?.icon || '📨'}</span>
+                          <p className={`text-sm font-bold ${c.text}`}>Stage {entry.stage}: {stg?.label || 'Unknown'}</p>
+                          {entry.sentDate && <span className={`text-xs ${c.textMuted}`}>Sent {new Date(entry.sentDate).toLocaleDateString()}</span>}
+                          {entry.outcome && <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
+                            entry.outcome === 'resolved' ? (isDark ? 'bg-green-900/40 text-green-300' : 'bg-green-100 text-green-700')
+                              : (isDark ? 'bg-red-900/40 text-red-300' : 'bg-red-100 text-red-700')
+                          }`}>{entry.outcome}</span>}
+                        </div>
+                        {entry.companyResponse && (
+                          <p className={`text-xs ${c.textSec} mt-1`}>📨 Response: {entry.companyResponse.slice(0, 120)}…</p>
+                        )}
+                        {entry.analysisResult?.recommendation && (
+                          <p className={`text-xs ${c.textMuted} mt-0.5`}>AI said: {entry.analysisResult.recommendation} — {entry.analysisResult.assessment?.slice(0, 100)}…</p>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Cross-references */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <a href="/PlainTalk" className={`${c.card} border ${c.border} rounded-xl p-4 flex items-center gap-3 hover:shadow-md transition-shadow`}>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <a href="/PlainTalk" target="_blank" rel="noopener noreferrer" className={`${c.card} border ${c.border} rounded-xl p-4 flex items-center gap-3 hover:shadow-md transition-shadow`}>
               <span className="text-xl">📖</span>
               <div className="flex-1"><p className={`text-sm font-bold ${c.text}`}>PlainTalk</p><p className={`text-xs ${c.textMuted}`}>Decode confusing company responses</p></div>
               <span className={c.textMuted}>→</span>
             </a>
-            <a href="/DecisionCoach" className={`${c.card} border ${c.border} rounded-xl p-4 flex items-center gap-3 hover:shadow-md transition-shadow`}>
+            <a href="/DecisionCoach" target="_blank" rel="noopener noreferrer" className={`${c.card} border ${c.border} rounded-xl p-4 flex items-center gap-3 hover:shadow-md transition-shadow`}>
               <span className="text-xl">🧭</span>
-              <div className="flex-1"><p className={`text-sm font-bold ${c.text}`}>Decision Coach</p><p className={`text-xs ${c.textMuted}`}>Unsure whether to escalate or accept an offer?</p></div>
+              <div className="flex-1"><p className={`text-sm font-bold ${c.text}`}>Decision Coach</p><p className={`text-xs ${c.textMuted}`}>Unsure whether to escalate or accept?</p></div>
+              <span className={c.textMuted}>→</span>
+            </a>
+            <a href="/BillGuiltEraser" target="_blank" rel="noopener noreferrer" className={`${c.card} border ${c.border} rounded-xl p-4 flex items-center gap-3 hover:shadow-md transition-shadow`}>
+              <span className="text-xl">💳</span>
+              <div className="flex-1"><p className={`text-sm font-bold ${c.text}`}>Bill Guilt Eraser</p><p className={`text-xs ${c.textMuted}`}>Analyze unfair charges and billing</p></div>
               <span className={c.textMuted}>→</span>
             </a>
           </div>

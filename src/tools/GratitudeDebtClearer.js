@@ -1,63 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
-import { CopyBtn } from '../components/ActionButtons';
-
-/**
- * TypeScript-style interfaces (for documentation)
- * 
- * interface GratitudeInput {
- *   recipientName: string;
- *   gratitudePoints: string;
- *   context: string;
- *   relationship: string;
- *   tone: string;
- *   length: number; // 1-10 scale
- *   specificGiftDetails?: string; // NEW: Specific details about gift
- *   howYoullUseIt?: string; // NEW: How recipient will use the gift
- *   culturalContext: string; // NEW: Cultural background for etiquette
- *   deliveryMethod: string; // NEW: How message will be sent
- *   needHandwritingTemplate: boolean; // NEW: Generate handwriting layout
- * }
- * 
- * interface ThankYouMessage {
- *   version: string;
- *   message_text: string;
- *   tone: string;
- *   length: number;
- *   why_this_works: string;
- *   best_for: string;
- * }
- * 
- * interface HandwritingTemplate {
- *   opening_placement: string;
- *   message_layout: string;
- *   closing_placement: string;
- *   font_suggestions: string[];
- *   writing_tips: string[];
- *   length_guidance: string;
- * }
- * 
- * interface APIResponse {
- *   thank_you_messages: ThankYouMessage[];
- *   delivery_suggestions: {
- *     method: string;
- *     timing: string;
- *     timing_cultural_note?: string; // NEW
- *     additional_gesture: string;
- *   };
- *   personalization_tips: string[];
- *   if_you_feel_awkward: {
- *     permission: string;
- *     reframe: string;
- *   };
- *   handwriting_template?: HandwritingTemplate; // NEW: Optional
- * }
- */
+import { usePersistentState } from '../hooks/usePersistentState';
+import { CopyBtn, ShareBtn, PrintBtn, ActionBar } from '../components/ActionButtons';
 
 const GratitudeDebtClearer = () => {
   const { callToolEndpoint, loading } = useClaudeAPI();
-    const { theme } = useTheme();
+  const { theme } = useTheme();
   const isDark = theme === 'dark';
 
   // Theme-aware colors
@@ -193,21 +142,57 @@ const GratitudeDebtClearer = () => {
   const [adjustingIndex, setAdjustingIndex] = useState(null);
   const [validationFailed, setValidationFailed] = useState(false);
 
-  // ── Gratitude Debt Ledger (localStorage-persisted) ──
-  const [ledger, setLedger] = useState(() => {
-    try {
-      const saved = localStorage.getItem('deftbrain-gratitude-ledger');
-      return saved ? JSON.parse(saved) : [];
-    } catch { return []; }
-  });
+  // Editable messages
+  const [editingIndex, setEditingIndex] = useState(null);
+  const [editedMessages, setEditedMessages] = useState({}); // { index: edited_text }
+
+  // Message history (persistent)
+  const [messageHistory, setMessageHistory] = usePersistentState('gdc-msg-history', []);
+
+  // Recipient profiles (persistent) — built automatically from history
+  const [recipientProfiles, setRecipientProfiles] = usePersistentState('gdc-profiles', {});
+  // { [name_lower]: { name, relationship, tone, culturalContext, lastThanked, thankCount, reactions: [] } }
+
+  // ── Gratitude Debt Ledger (persisted) ──
+  const [ledger, setLedger] = usePersistentState('gdc-ledger', []);
   const [newLedgerName, setNewLedgerName] = useState('');
   const [newLedgerReason, setNewLedgerReason] = useState('');
   const [showLedger, setShowLedger] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
 
-  // Persist ledger to localStorage
-  useEffect(() => {
-    try { localStorage.setItem('deftbrain-gratitude-ledger', JSON.stringify(ledger)); } catch {}
-  }, [ledger]);
+  // Comparison mode
+  const [showComparison, setShowComparison] = useState(false);
+
+  // Specificity pre-pass
+  const [specificityData, setSpecificityData] = useState(null);
+  const [specificityLoading, setSpecificityLoading] = useState(false);
+  const [specificityAnswers, setSpecificityAnswers] = useState({});
+  const [specificityDismissed, setSpecificityDismissed] = useState(false);
+
+  // Follow-up mode
+  const [followUpTarget, setFollowUpTarget] = useState(null); // history entry to follow up on
+  const [followUpOutcome, setFollowUpOutcome] = useState('');
+  const [followUpResults, setFollowUpResults] = useState(null);
+  const [followUpLoading, setFollowUpLoading] = useState(false);
+
+  // Reaction tracking
+  const [reactionTarget, setReactionTarget] = useState(null); // history entry id
+  const [reactionText, setReactionText] = useState('');
+
+  // Tone calibration
+  const [toneWarning, setToneWarning] = useState(null);
+
+  // Batch mode
+  const [batchMode, setBatchMode] = useState(false);
+  const [batchEntries, setBatchEntries] = useState([]);
+  const [batchContext, setBatchContext] = useState('Gift received');
+  const [batchRelationship, setBatchRelationship] = useState('Family');
+  const [newBatchName, setNewBatchName] = useState('');
+  const [newBatchGift, setNewBatchGift] = useState('');
+
+  // Recipient auto-suggest
+  const [recipientSuggestions, setRecipientSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   const addToLedger = () => {
     if (!newLedgerName.trim()) return;
@@ -223,7 +208,7 @@ const GratitudeDebtClearer = () => {
   };
 
   const toggleLedgerItem = (id) => {
-    setLedger(prev => prev.map(item => item.id === id ? { ...item, done: !item.done } : item));
+    setLedger(prev => prev.map(item => item.id === id ? { ...item, done: !item.done, completedAt: !item.done ? new Date().toISOString() : null } : item));
   };
 
   const removeLedgerItem = (id) => {
@@ -232,9 +217,234 @@ const GratitudeDebtClearer = () => {
 
   const loadFromLedger = (item) => {
     setRecipientName(item.name);
-    setGratitudePoints(item.reason);
+    setGratitudePoints(item.reason || '');
     setResults(null);
+    setEditingIndex(null);
+    setEditedMessages({});
     setShowLedger(false);
+  };
+
+  // ── Mark as sent: bridge ledger ↔ messages ──
+  const markMessageSent = (messageIndex) => {
+    const msg = results?.thank_you_messages?.[messageIndex];
+    if (!msg) return;
+    const messageText = getMessageText(messageIndex, msg.message_text);
+
+    // Save to history
+    const historyEntry = {
+      id: Date.now().toString(),
+      recipientName: recipientName.trim(),
+      context,
+      relationship,
+      tone,
+      messageVersion: msg.version,
+      messageText,
+      generatedAt: new Date().toISOString(),
+      sentAt: new Date().toISOString(),
+    };
+    setMessageHistory(prev => [historyEntry, ...prev].slice(0, 30));
+
+    // Update recipient profile
+    updateRecipientProfile(recipientName, { relationship, tone, culturalContext });
+
+    // Update ledger if there's a matching entry
+    const matchingLedger = ledger.find(l => l.name.toLowerCase() === recipientName.trim().toLowerCase() && !l.done);
+    if (matchingLedger) {
+      setLedger(prev => prev.map(item =>
+        item.id === matchingLedger.id
+          ? { ...item, done: true, completedAt: new Date().toISOString(), sentVersion: msg.version, deliveryMethod }
+          : item
+      ));
+    }
+  };
+
+  // ── Editable messages ──
+  const getMessageText = (index, originalText) => {
+    return editedMessages[index] ?? originalText;
+  };
+
+  const startEditing = (index, originalText) => {
+    if (!editedMessages[index]) {
+      setEditedMessages(prev => ({ ...prev, [index]: originalText }));
+    }
+    setEditingIndex(index);
+  };
+
+  const cancelEditing = (index, originalText) => {
+    setEditedMessages(prev => ({ ...prev, [index]: originalText }));
+    setEditingIndex(null);
+  };
+
+  // ── Recipient auto-fill from history ──
+  const handleRecipientChange = (value) => {
+    setRecipientName(value);
+    if (validationFailed) setValidationFailed(false);
+
+    // Auto-suggest from profiles
+    if (value.trim().length >= 2) {
+      const lower = value.trim().toLowerCase();
+      const matches = Object.values(recipientProfiles)
+        .filter(p => p.name.toLowerCase().includes(lower))
+        .slice(0, 4);
+      setRecipientSuggestions(matches);
+      setShowSuggestions(matches.length > 0);
+    } else {
+      setShowSuggestions(false);
+    }
+  };
+
+  const selectRecipient = (profile) => {
+    setRecipientName(profile.name);
+    if (profile.relationship) setRelationship(profile.relationship);
+    if (profile.tone) setTone(profile.tone);
+    if (profile.culturalContext) setCulturalContext(profile.culturalContext);
+    setShowSuggestions(false);
+  };
+
+  const getRecipientHistory = (name) => {
+    if (!name?.trim()) return [];
+    const lower = name.trim().toLowerCase();
+    return messageHistory.filter(h => h.recipientName.toLowerCase() === lower);
+  };
+
+  // ── Update recipient profile on send ──
+  const updateRecipientProfile = (name, data) => {
+    const key = name.trim().toLowerCase();
+    setRecipientProfiles(prev => ({
+      ...prev,
+      [key]: {
+        name: name.trim(),
+        relationship: data.relationship || prev[key]?.relationship,
+        tone: data.tone || prev[key]?.tone,
+        culturalContext: data.culturalContext || prev[key]?.culturalContext,
+        lastThanked: new Date().toISOString(),
+        thankCount: (prev[key]?.thankCount || 0) + 1,
+      }
+    }));
+  };
+
+  // ── Tone calibration check ──
+  const checkToneCalibration = (selectedTone, rel, ctx) => {
+    const mismatches = [];
+    if (selectedTone === 'Heartfelt & emotional' && rel === 'Professional') {
+      mismatches.push({ suggested: 'Professional', reason: 'Heartfelt & emotional can feel overly personal in professional relationships. A Professional or Warm & casual tone usually lands better with colleagues and bosses.' });
+    }
+    if (selectedTone === 'Professional' && rel === 'Family' && (ctx === 'Emotional support' || ctx === 'General kindness' || ctx === 'Condolence support')) {
+      mismatches.push({ suggested: 'Heartfelt & emotional', reason: 'A Professional tone for a family member who provided emotional support may feel distant. Something warmer would honor the relationship better.' });
+    }
+    if (selectedTone === 'Brief' && (ctx === 'Condolence support' || ctx === 'Mentorship')) {
+      mismatches.push({ suggested: 'Heartfelt & emotional', reason: 'Brief messages can feel dismissive for deep support like condolences or mentorship. A bit more depth shows you value what they did.' });
+    }
+    setToneWarning(mismatches.length > 0 ? mismatches[0] : null);
+  };
+
+  // ── Specificity pre-pass ──
+  const checkSpecificity = async () => {
+    if (!gratitudePoints.trim() || specificityDismissed) return;
+    setSpecificityLoading(true);
+    try {
+      const data = await callToolEndpoint('gratitude-debt-specificity', {
+        recipientName: recipientName.trim(),
+        gratitudePoints: gratitudePoints.trim(),
+        context,
+        relationship,
+        userLanguage: navigator.language || 'en',
+      });
+      if (data.needs_questions) {
+        setSpecificityData(data);
+      } else {
+        setSpecificityData(null);
+      }
+    } catch {
+      // Silently fail — specificity is optional enhancement
+    }
+    setSpecificityLoading(false);
+  };
+
+  // ── Follow-up generation ──
+  const handleFollowUp = async () => {
+    if (!followUpTarget || !followUpOutcome.trim()) return;
+    setFollowUpLoading(true);
+    setFollowUpResults(null);
+    try {
+      const data = await callToolEndpoint('gratitude-debt-followup', {
+        recipientName: followUpTarget.recipientName,
+        originalContext: followUpTarget.context,
+        originalMessage: followUpTarget.messageText,
+        originalDate: followUpTarget.sentAt,
+        outcome: followUpOutcome.trim(),
+        relationship: followUpTarget.relationship,
+        tone: followUpTarget.tone || tone,
+        culturalContext,
+        deliveryMethod,
+        userLanguage: navigator.language || 'en',
+      });
+      setFollowUpResults(data);
+    } catch (err) {
+      setError(err.message || 'Failed to generate follow-up');
+    }
+    setFollowUpLoading(false);
+  };
+
+  // ── Reaction tracking ──
+  const saveReaction = (historyId, reaction) => {
+    setMessageHistory(prev => prev.map(h =>
+      h.id === historyId ? { ...h, reaction } : h
+    ));
+    // Update recipient profile with reaction data
+    const entry = messageHistory.find(h => h.id === historyId);
+    if (entry) {
+      const key = entry.recipientName.trim().toLowerCase();
+      setRecipientProfiles(prev => ({
+        ...prev,
+        [key]: {
+          ...prev[key],
+          lastReaction: reaction,
+          lastReactionTone: entry.tone,
+        }
+      }));
+    }
+    setReactionTarget(null);
+    setReactionText('');
+  };
+
+  // ── Delivery shortcuts ──
+  const buildMailtoLink = (text) => {
+    return `mailto:?subject=${encodeURIComponent(`Thank you, ${recipientName}`)}&body=${encodeURIComponent(text)}`;
+  };
+  const buildSmsLink = (text) => {
+    return `sms:?body=${encodeURIComponent(text)}`;
+  };
+  const buildWhatsAppLink = (text) => {
+    return `https://wa.me/?text=${encodeURIComponent(text)}`;
+  };
+
+  // ── Batch mode ──
+  const addBatchEntry = () => {
+    if (!newBatchName.trim()) return;
+    setBatchEntries(prev => [...prev, {
+      id: Date.now(),
+      name: newBatchName.trim(),
+      gift: newBatchGift.trim(),
+    }]);
+    setNewBatchName('');
+    setNewBatchGift('');
+  };
+
+  const removeBatchEntry = (id) => {
+    setBatchEntries(prev => prev.filter(e => e.id !== id));
+  };
+
+  // ── Follow-up nudges computed from history ──
+  const getFollowUpNudges = () => {
+    const now = Date.now();
+    const thirtyDays = 30 * 24 * 60 * 60 * 1000;
+    return messageHistory
+      .filter(h => {
+        const age = now - new Date(h.sentAt).getTime();
+        return age > thirtyDays && !h.followedUp && !h.reaction;
+      })
+      .slice(0, 3);
   };
 
   // Detect and set cultural context on component mount
@@ -242,6 +452,11 @@ const GratitudeDebtClearer = () => {
     const detectedContext = detectCulturalContext();
     setCulturalContext(detectedContext);
   }, []);
+
+  // Check tone calibration when tone/relationship/context change
+  useEffect(() => {
+    checkToneCalibration(tone, relationship, context);
+  }, [tone, relationship, context]);
 
   const contextOptions = [
     'Post-interview',
@@ -340,7 +555,7 @@ pre{white-space:pre-wrap;word-wrap:break-word;font-family:inherit;margin:0}
   const buildAllText = () => {
     if (!results?.thank_you_messages) return '';
     const combined = results.thank_you_messages
-      .map((m, i) => `── ${m.version} (${m.tone}, ${m.length} words) ──\n\n${m.message_text}\n\nWhy this works: ${m.why_this_works}\nBest for: ${m.best_for}`)
+      .map((m, i) => `── ${m.version} (${m.tone}, ${m.length} words) ──\n\n${getMessageText(i, m.message_text)}\n\nWhy this works: ${m.why_this_works}\nBest for: ${m.best_for}`)
       .join('\n\n────────────────────────────────\n\n');
     const extras = [];
     if (results.delivery_suggestions) {
@@ -371,10 +586,22 @@ pre{white-space:pre-wrap;word-wrap:break-word;font-family:inherit;margin:0}
     setError('');
     setResults(null);
 
+    // Enrich gratitude points with specificity answers
+    let enrichedGratitude = gratitudePoints.trim();
+    if (Object.keys(specificityAnswers).length > 0 && specificityData?.questions) {
+      const extras = specificityData.questions
+        .map((q, i) => specificityAnswers[i]?.trim() ? `${q.question}: ${specificityAnswers[i].trim()}` : null)
+        .filter(Boolean);
+      if (extras.length > 0) {
+        enrichedGratitude += '\n\nAdditional details:\n' + extras.join('\n');
+      }
+    }
+
     try {
+      const recHistory = getRecipientHistory(recipientName);
       const data = await callToolEndpoint('gratitude-debt-clearer', {
         recipientName: recipientName.trim(),
-        gratitudePoints: gratitudePoints.trim(),
+        gratitudePoints: enrichedGratitude,
         context,
         relationship,
         tone,
@@ -384,10 +611,18 @@ pre{white-space:pre-wrap;word-wrap:break-word;font-family:inherit;margin:0}
         culturalContext,
         deliveryMethod,
         needHandwritingTemplate,
+        userLanguage: navigator.language || 'en',
+        recipientHistory: recHistory.length > 0 ? recHistory : null,
+        toneOverride: toneWarning?.suggested || null,
       });
- 
-      
+
       setResults(data);
+      setEditingIndex(null);
+      setEditedMessages({});
+      setSpecificityData(null);
+      setSpecificityAnswers({});
+      setSpecificityDismissed(false);
+      setShowComparison(false);
     } catch (err) {
       setError(err.message || 'Failed to generate messages. Please try again.');
     }
@@ -418,7 +653,8 @@ pre{white-space:pre-wrap;word-wrap:break-word;font-family:inherit;margin:0}
         deliveryMethod,
         needHandwritingTemplate,
         adjustmentPrompt,
-        originalMessage: message.message_text
+        originalMessage: message.message_text,
+        userLanguage: navigator.language || 'en',
       });
 
       // Update just this message
@@ -436,50 +672,64 @@ pre{white-space:pre-wrap;word-wrap:break-word;font-family:inherit;margin:0}
   };
 
   const handleReset = () => {
-    setRecipientName('');
-    setGratitudePoints('');
-    setContext('General kindness');
-    setRelationship('Personal');
-    setTone('Warm & casual');
-    setLength(5);
-    setSpecificGiftDetails('');
-    setHowYoullUseIt('');
-    setCulturalContext('American/Western');
-    setDeliveryMethod('Let AI suggest');
-    setNeedHandwritingTemplate(false);
-    setResults(null);
-    setError('');
-    setValidationFailed(false);
+    setRecipientName(''); setGratitudePoints(''); setContext('General kindness');
+    setRelationship('Personal'); setTone('Warm & casual'); setLength(5);
+    setSpecificGiftDetails(''); setHowYoullUseIt('');
+    setCulturalContext('American/Western'); setDeliveryMethod('Let AI suggest');
+    setNeedHandwritingTemplate(false); setResults(null); setError('');
+    setValidationFailed(false); setEditingIndex(null); setEditedMessages({});
+    setShowComparison(false); setSpecificityData(null); setSpecificityAnswers({});
+    setSpecificityDismissed(false); setToneWarning(null);
+    setFollowUpTarget(null); setFollowUpOutcome(''); setFollowUpResults(null);
   };
 
   return (
-  <div className={`min-h-screen ${c.bg} py-8 px-4`}>
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div>
+      <div className="space-y-6">
       
       {/* Header */}
       <div className={`${c.card} border rounded-xl shadow-lg p-6 transition-colors duration-200`}>
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between mb-2">
           <div>
             <h2 className={`text-2xl font-bold ${c.text}`}>Gratitude Debt Clearer 💝</h2>
             <p className={`text-sm ${c.textMuted}`}>Turn your gratitude into heartfelt messages – without the writing paralysis</p>
           </div>
-          <button
-            onClick={() => setShowLedger(!showLedger)}
-            className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-              showLedger
-                ? (isDark ? 'bg-emerald-900/40 text-emerald-300' : 'bg-emerald-100 text-emerald-700')
-                : c.btnSecondary
-            }`}
-            title="Gratitude Debt Ledger"
-          >
-            <span>📖</span>
-            <span className="hidden sm:inline">Debt Ledger</span>
-            {ledger.filter(i => !i.done).length > 0 && (
-              <span className={`ml-1 px-1.5 py-0.5 rounded-full text-xs font-bold ${isDark ? 'bg-emerald-600 text-white' : 'bg-emerald-600 text-white'}`}>
-                {ledger.filter(i => !i.done).length}
-              </span>
+          <div className="flex items-center gap-2">
+            {messageHistory.length > 0 && (
+              <button
+                onClick={() => { setShowHistory(!showHistory); setShowLedger(false); }}
+                className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  showHistory
+                    ? (isDark ? 'bg-violet-900/40 text-violet-300' : 'bg-violet-100 text-violet-700')
+                    : c.btnSecondary
+                }`}
+                title="Sent Messages"
+              >
+                <span>📜</span>
+                <span className="hidden sm:inline">Sent</span>
+                <span className={`px-1.5 py-0.5 rounded-full text-xs font-bold ${isDark ? 'bg-violet-600 text-white' : 'bg-violet-600 text-white'}`}>
+                  {messageHistory.length}
+                </span>
+              </button>
             )}
-          </button>
+            <button
+              onClick={() => { setShowLedger(!showLedger); setShowHistory(false); }}
+              className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                showLedger
+                  ? (isDark ? 'bg-emerald-900/40 text-emerald-300' : 'bg-emerald-100 text-emerald-700')
+                  : c.btnSecondary
+              }`}
+              title="Gratitude Debt Ledger"
+            >
+              <span>📖</span>
+              <span className="hidden sm:inline">Debt Ledger</span>
+              {ledger.filter(i => !i.done).length > 0 && (
+                <span className={`ml-1 px-1.5 py-0.5 rounded-full text-xs font-bold ${isDark ? 'bg-emerald-600 text-white' : 'bg-emerald-600 text-white'}`}>
+                  {ledger.filter(i => !i.done).length}
+                </span>
+              )}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -497,6 +747,84 @@ pre{white-space:pre-wrap;word-wrap:break-word;font-family:inherit;margin:0}
             Track everyone you want to thank. Click a name to load it into the form.
           </p>
 
+          {/* Mode toggle */}
+          <div className="flex items-center gap-2 mb-3">
+            <button onClick={() => setBatchMode(false)}
+              className={`px-2.5 py-1 rounded text-xs font-medium ${!batchMode ? (isDark ? 'bg-emerald-900/40 text-emerald-300' : 'bg-emerald-100 text-emerald-700') : c.btnSecondary}`}>
+              One at a time
+            </button>
+            <button onClick={() => setBatchMode(true)}
+              className={`px-2.5 py-1 rounded text-xs font-medium ${batchMode ? (isDark ? 'bg-emerald-900/40 text-emerald-300' : 'bg-emerald-100 text-emerald-700') : c.btnSecondary}`}>
+              📦 Batch mode
+            </button>
+          </div>
+
+          {batchMode ? (
+            <div className="space-y-3">
+              <p className={`text-xs ${c.textSecondary}`}>Add everyone at once (post-wedding, post-holiday). Set shared context, then generate messages one by one.</p>
+              <div className="grid grid-cols-2 gap-2">
+                <select value={batchContext} onChange={e => setBatchContext(e.target.value)}
+                  className={`p-2 border rounded-lg text-sm ${c.select}`}>
+                  {contextOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                </select>
+                <select value={batchRelationship} onChange={e => setBatchRelationship(e.target.value)}
+                  className={`p-2 border rounded-lg text-sm ${c.select}`}>
+                  {relationshipOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                </select>
+              </div>
+              <div className="flex gap-2">
+                <input type="text" placeholder="Name" value={newBatchName}
+                  onChange={e => setNewBatchName(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && addBatchEntry()}
+                  className={`flex-1 px-3 py-2 border rounded-lg text-sm outline-none ${c.input}`} />
+                <input type="text" placeholder="Gift / reason (optional)" value={newBatchGift}
+                  onChange={e => setNewBatchGift(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && addBatchEntry()}
+                  className={`flex-1 px-3 py-2 border rounded-lg text-sm outline-none ${c.input}`} />
+                <button onClick={addBatchEntry} disabled={!newBatchName.trim()}
+                  className={`px-3 py-2 rounded-lg text-sm font-medium ${newBatchName.trim() ? c.btnPrimary : c.btnDisabled + ' cursor-not-allowed'}`}>➕</button>
+              </div>
+              {batchEntries.length > 0 && (
+                <div className="space-y-1.5">
+                  {batchEntries.map(entry => (
+                    <div key={entry.id} className={`flex items-center justify-between px-3 py-2 rounded-lg border ${c.cardAlt}`}>
+                      <div>
+                        <span className={`text-sm font-medium ${c.text}`}>{entry.name}</span>
+                        {entry.gift && <span className={`text-xs ${c.textMuted} ml-2`}>— {entry.gift}</span>}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button onClick={() => {
+                          setRecipientName(entry.name);
+                          setGratitudePoints(entry.gift || `Thank you for ${batchContext.toLowerCase()}`);
+                          setContext(batchContext);
+                          setRelationship(batchRelationship);
+                          setResults(null);
+                          setBatchMode(false);
+                          setShowLedger(false);
+                        }} className={`px-2 py-0.5 rounded text-[10px] font-bold ${c.btnPrimary}`}>Generate</button>
+                        <button onClick={() => removeBatchEntry(entry.id)} className={`text-sm ${c.textMuted}`}>🗑️</button>
+                      </div>
+                    </div>
+                  ))}
+                  <button onClick={() => {
+                    batchEntries.forEach(e => {
+                      setLedger(prev => [...prev, {
+                        id: Date.now() + Math.random(),
+                        name: e.name,
+                        reason: e.gift || batchContext,
+                        done: false,
+                        addedAt: new Date().toISOString(),
+                      }]);
+                    });
+                    setBatchEntries([]);
+                  }} className={`w-full py-2 rounded-lg text-xs font-bold ${c.btnSecondary}`}>
+                    📖 Add all {batchEntries.length} to Debt Ledger
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <>
           {/* Add new entry */}
           <div className="flex gap-2 mb-4">
             <input
@@ -564,6 +892,12 @@ pre{white-space:pre-wrap;word-wrap:break-word;font-family:inherit;margin:0}
                     {item.reason && (
                       <span className={`text-xs ${c.textMuted} ml-2`}>— {item.reason}</span>
                     )}
+                    {item.done && item.completedAt && (
+                      <span className={`text-xs ${isDark ? 'text-emerald-400' : 'text-emerald-600'} ml-2`}>
+                        ✅ {new Date(item.completedAt).toLocaleDateString()}
+                        {item.sentVersion ? ` · ${item.sentVersion}` : ''}
+                      </span>
+                    )}
                   </button>
                   <button
                     onClick={() => removeLedgerItem(item.id)}
@@ -574,6 +908,160 @@ pre{white-space:pre-wrap;word-wrap:break-word;font-family:inherit;margin:0}
                   </button>
                 </div>
               ))}
+            </div>
+          )}
+            </>
+          )}
+        </div>
+      )}
+      {showHistory && messageHistory.length > 0 && (
+        <div className={`${c.card} border rounded-xl shadow-lg p-5 transition-colors duration-200`}>
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <span>📜</span>
+              <h3 className={`text-lg font-bold ${c.text}`}>Sent Messages</h3>
+              <span className={`text-xs ${c.textMuted}`}>({messageHistory.length})</span>
+            </div>
+            <button onClick={() => { if (window.confirm('Clear all sent message history?')) setMessageHistory([]); }}
+              className={`text-xs ${c.textMuted} hover:${isDark ? 'text-red-400' : 'text-red-500'}`}>Clear all</button>
+          </div>
+
+          {/* Follow-up nudges */}
+          {(() => {
+            const nudges = getFollowUpNudges();
+            return nudges.length > 0 ? (
+              <div className={`mb-4 p-3 rounded-lg border ${c.purple}`}>
+                <p className={`text-xs font-bold mb-2`}>🔔 Follow-up opportunities</p>
+                {nudges.map(n => (
+                  <div key={n.id} className="flex items-center justify-between mb-1.5">
+                    <span className={`text-xs`}>
+                      You thanked <strong>{n.recipientName}</strong> for {n.context.toLowerCase()} on {new Date(n.sentAt).toLocaleDateString()}
+                    </span>
+                    <button onClick={() => { setFollowUpTarget(n); setShowHistory(false); }}
+                      className={`px-2 py-0.5 rounded text-[10px] font-bold ${isDark ? 'bg-purple-800 text-purple-200' : 'bg-purple-100 text-purple-800'}`}>
+                      Send update →
+                    </button>
+                  </div>
+                ))}
+              </div>
+            ) : null;
+          })()}
+
+          <div className="space-y-2 max-h-72 overflow-y-auto">
+            {messageHistory.map(h => (
+              <div key={h.id} className={`p-3 rounded-xl border ${c.messageCard} transition-colors`}>
+                <div className="flex items-center justify-between mb-1">
+                  <span className={`text-sm font-bold ${c.text}`}>{h.recipientName}</span>
+                  <div className="flex items-center gap-2">
+                    <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${c.toneBadge}`}>{h.messageVersion}</span>
+                    <span className={`text-xs ${c.textMuted}`}>{new Date(h.sentAt).toLocaleDateString()}</span>
+                  </div>
+                </div>
+                <p className={`text-xs ${c.textSecondary} line-clamp-2`}>{h.messageText.slice(0, 140)}…</p>
+                <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+                  <span className={`text-[10px] ${c.textMuted}`}>{h.context} · {h.relationship}</span>
+                  <CopyBtn content={`${h.messageText}\n\n— Generated by DeftBrain · deftbrain.com`} label="Copy" />
+                  {/* Reaction display or prompt */}
+                  {h.reaction ? (
+                    <span className={`px-2 py-0.5 rounded text-[10px] font-medium ${isDark ? 'bg-emerald-900/30 text-emerald-300 border border-emerald-700' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'}`}>
+                      💬 {h.reaction}
+                    </span>
+                  ) : reactionTarget === h.id ? (
+                    <div className="flex items-center gap-1">
+                      <div className="flex gap-1">
+                        {['They loved it', 'Seemed surprised', 'Was touched', 'No response'].map(r => (
+                          <button key={r} onClick={() => saveReaction(h.id, r)}
+                            className={`px-1.5 py-0.5 rounded text-[10px] ${c.btnSecondary}`}>{r}</button>
+                        ))}
+                      </div>
+                      <input type="text" value={reactionText} onChange={e => setReactionText(e.target.value)}
+                        onKeyDown={e => e.key === 'Enter' && reactionText.trim() && saveReaction(h.id, reactionText.trim())}
+                        placeholder="Custom…" className={`w-20 px-1.5 py-0.5 text-[10px] border rounded ${c.input}`} />
+                      <button onClick={() => setReactionTarget(null)} className={`text-[10px] ${c.textMuted}`}>✕</button>
+                    </div>
+                  ) : (
+                    <button onClick={() => setReactionTarget(h.id)}
+                      className={`text-[10px] ${c.textMuted} hover:${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>
+                      💬 How'd it land?
+                    </button>
+                  )}
+                  {/* Follow-up button */}
+                  {!h.followedUp && (
+                    <button onClick={() => { setFollowUpTarget(h); setShowHistory(false); }}
+                      className={`text-[10px] ${isDark ? 'text-violet-400 hover:text-violet-300' : 'text-violet-600 hover:text-violet-700'}`}>
+                      🔁 Send follow-up
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ── Follow-Up Generation ── */}
+      {followUpTarget && !showHistory && (
+        <div className={`${c.card} border rounded-xl shadow-lg p-5`}>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className={`text-lg font-bold ${c.text} flex items-center gap-2`}>
+              <span>🔁</span> Follow Up with {followUpTarget.recipientName}
+            </h3>
+            <button onClick={() => { setFollowUpTarget(null); setFollowUpResults(null); setFollowUpOutcome(''); }}
+              className={`text-sm ${c.textMuted}`}>✕</button>
+          </div>
+          <p className={`text-xs ${c.textSecondary} mb-3`}>
+            You thanked {followUpTarget.recipientName} for {followUpTarget.context.toLowerCase()} on {new Date(followUpTarget.sentAt).toLocaleDateString()}.
+            {followUpTarget.reaction ? ` They reacted: "${followUpTarget.reaction}".` : ''}
+          </p>
+          <div className={`p-3 rounded-lg border mb-3 ${c.messageBody}`}>
+            <p className={`text-xs ${c.textMuted} mb-1`}>Original message:</p>
+            <p className={`text-xs ${c.textSecondary} italic`}>{followUpTarget.messageText.slice(0, 200)}…</p>
+          </div>
+          <label className={`block text-sm font-medium ${c.label} mb-2`}>What happened since? What's the update?</label>
+          <textarea value={followUpOutcome} onChange={e => setFollowUpOutcome(e.target.value)}
+            placeholder="e.g., I got the job! / The cookbook has become my go-to / That advice changed how I approach..."
+            rows={3} className={`w-full p-3 border rounded-lg text-sm outline-none resize-y ${c.input}`} />
+          <button onClick={handleFollowUp} disabled={followUpLoading || !followUpOutcome.trim()}
+            className={`mt-3 px-5 py-2 rounded-lg font-semibold text-sm ${c.btnPrimary} disabled:opacity-40 flex items-center gap-2`}>
+            {followUpLoading ? (<><span className="animate-spin inline-block">⏳</span> Generating…</>) : (<><span>💌</span> Generate Follow-Up</>)}
+          </button>
+
+          {/* Follow-up results */}
+          {followUpResults && (
+            <div className="mt-4 space-y-3">
+              {followUpResults.timing_note && (
+                <p className={`text-xs ${c.textMuted}`}>⏰ {followUpResults.timing_note}</p>
+              )}
+              {followUpResults.follow_up_messages?.map((msg, i) => (
+                <div key={i} className={`p-4 rounded-xl border ${c.messageCard}`}>
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className={`text-sm font-bold ${c.text}`}>{msg.version}</h4>
+                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${c.toneBadge}`}>{msg.tone}</span>
+                  </div>
+                  <p className={`text-sm ${c.textSecondary} leading-relaxed mb-2`}>{msg.message_text}</p>
+                  <p className={`text-[10px] ${c.textMuted} mb-2`}>{msg.why_this_works}</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    <CopyBtn content={`${msg.message_text}\n\n— Generated by DeftBrain · deftbrain.com`} label="Copy" />
+                    <a href={buildMailtoLink(msg.message_text)} target="_blank" rel="noopener noreferrer"
+                      className={`flex items-center gap-1 px-2 py-1 rounded text-[10px] font-medium ${c.btnSecondary}`}>
+                      <span>📧</span> Email
+                    </a>
+                    <a href={buildSmsLink(msg.message_text)} target="_blank" rel="noopener noreferrer"
+                      className={`flex items-center gap-1 px-2 py-1 rounded text-[10px] font-medium ${c.btnSecondary}`}>
+                      <span>📱</span> Text
+                    </a>
+                    <button onClick={() => {
+                      setMessageHistory(prev => prev.map(h => h.id === followUpTarget.id ? { ...h, followedUp: true } : h));
+                      setFollowUpTarget(null); setFollowUpResults(null); setFollowUpOutcome('');
+                    }} className={`flex items-center gap-1 px-2 py-1 rounded text-[10px] font-bold ${isDark ? 'bg-emerald-900/30 text-emerald-300 border border-emerald-700' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'}`}>
+                      <span>✅</span> Sent
+                    </button>
+                  </div>
+                </div>
+              ))}
+              {followUpResults.bonus_gesture && (
+                <p className={`text-xs p-2.5 rounded-lg border ${c.info}`}>🎁 {followUpResults.bonus_gesture}</p>
+              )}
             </div>
           )}
         </div>
@@ -611,17 +1099,50 @@ pre{white-space:pre-wrap;word-wrap:break-word;font-family:inherit;margin:0}
             >
               Who are you thanking?
             </label>
-            <input
-              id="recipient-name"
-              type="text"
-              value={recipientName}
-              onChange={(e) => { setRecipientName(e.target.value); if (validationFailed) setValidationFailed(false); }}
-              placeholder="e.g., Sarah, Dr. Martinez, the whole team"
-              className={`w-full p-4 border-2 rounded-lg focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none transition-all ${c.input} ${
-                validationFailed && !recipientName.trim() ? 'ring-2 ring-red-500 border-red-400' : ''
-              }`}
-              aria-required="true"
-            />
+            <div className="relative">
+              <input
+                id="recipient-name"
+                type="text"
+                value={recipientName}
+                onChange={(e) => handleRecipientChange(e.target.value)}
+                onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                onFocus={() => recipientName.trim().length >= 2 && recipientSuggestions.length > 0 && setShowSuggestions(true)}
+                placeholder="e.g., Sarah, Dr. Martinez, the whole team"
+                className={`w-full p-4 border-2 rounded-lg focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none transition-all ${c.input} ${
+                  validationFailed && !recipientName.trim() ? 'ring-2 ring-red-500 border-red-400' : ''
+                }`}
+                aria-required="true"
+                autoComplete="off"
+              />
+              {/* Auto-suggest dropdown */}
+              {showSuggestions && recipientSuggestions.length > 0 && (
+                <div className={`absolute z-20 w-full mt-1 border rounded-xl shadow-lg overflow-hidden ${c.card}`}>
+                  {recipientSuggestions.map(p => (
+                    <button key={p.name} onClick={() => selectRecipient(p)}
+                      className={`w-full text-left px-4 py-3 flex items-center justify-between transition-colors ${isDark ? 'hover:bg-zinc-700' : 'hover:bg-emerald-50'}`}>
+                      <div>
+                        <span className={`text-sm font-bold ${c.text}`}>{p.name}</span>
+                        <span className={`text-xs ${c.textMuted} ml-2`}>{p.relationship} · {p.tone}</span>
+                      </div>
+                      <span className={`text-[10px] ${c.textMuted}`}>Thanked {p.thankCount}x · last {new Date(p.lastThanked).toLocaleDateString()}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+            {/* Recipient history indicator */}
+            {recipientName.trim().length >= 2 && (() => {
+              const recHist = getRecipientHistory(recipientName);
+              return recHist.length > 0 ? (
+                <div className={`mt-2 p-2.5 rounded-lg border text-xs ${c.info}`}>
+                  <span className="font-bold">💡 You've thanked {recipientName.trim()} {recHist.length} time{recHist.length > 1 ? 's' : ''} before.</span>
+                  <span className={`${isDark ? 'text-blue-300' : 'text-blue-700'} ml-1`}>
+                    Last: {new Date(recHist[0].sentAt).toLocaleDateString()} ({recHist[0].context}).
+                  </span>
+                  <span className={`ml-1 ${c.textMuted}`}>Your messages will be varied to avoid repetition.</span>
+                </div>
+              ) : null;
+            })()}
           </div>
 
           {/* Gratitude Points */}
@@ -645,6 +1166,38 @@ pre{white-space:pre-wrap;word-wrap:break-word;font-family:inherit;margin:0}
             <p className={`text-sm ${c.textMuted} mt-2`}>
               💡 Be specific! The more details you give, the more personal your message will be.
             </p>
+            {/* Specificity analysis */}
+            {gratitudePoints.trim().length > 10 && !specificityData && !specificityDismissed && !results && (
+              <button onClick={checkSpecificity} disabled={specificityLoading}
+                className={`mt-2 flex items-center gap-1.5 text-xs font-medium ${isDark ? 'text-emerald-400 hover:text-emerald-300' : 'text-emerald-600 hover:text-emerald-700'}`}>
+                {specificityLoading ? (<><span className="animate-spin inline-block">⏳</span> Checking…</>) : (<><span>🔍</span> Check if this is specific enough</>)}
+              </button>
+            )}
+            {specificityData && !specificityDismissed && (
+              <div className={`mt-3 p-4 rounded-xl border ${c.info}`}>
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <span>{specificityData.specificity_level === 'vague' ? '🔍' : '💡'}</span>
+                    <span className={`text-xs font-bold ${c.text}`}>
+                      {specificityData.specificity_level === 'vague' ? 'A few details would make this much more personal' : 'Good start — a bit more detail will make it great'}
+                    </span>
+                  </div>
+                  <button onClick={() => setSpecificityDismissed(true)} className={`text-xs ${c.textMuted}`}>Skip</button>
+                </div>
+                <p className={`text-xs ${c.textSecondary} mb-3`}>{specificityData.existing_strengths}</p>
+                <div className="space-y-2">
+                  {specificityData.questions?.map((q, i) => (
+                    <div key={i}>
+                      <label className={`text-xs font-medium ${c.text} mb-1 block`}>{q.question}</label>
+                      <input type="text" value={specificityAnswers[i] || ''} placeholder={q.placeholder}
+                        onChange={(e) => setSpecificityAnswers(prev => ({ ...prev, [i]: e.target.value }))}
+                        className={`w-full p-2.5 border rounded-lg text-sm outline-none ${c.input}`} />
+                      <p className={`text-[10px] ${c.textMuted} mt-0.5`}>{q.why}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Gift Specificity Enhancement - Show for gift-related contexts */}
@@ -756,6 +1309,22 @@ pre{white-space:pre-wrap;word-wrap:break-word;font-family:inherit;margin:0}
                 </button>
               ))}
             </div>
+            {/* Tone calibration warning */}
+            {toneWarning && (
+              <div className={`mt-3 p-3 rounded-lg border ${c.warning}`}>
+                <div className="flex items-start gap-2">
+                  <span className="text-sm mt-0.5">💡</span>
+                  <div>
+                    <p className={`text-xs font-bold`}>Consider: {toneWarning.suggested} tone</p>
+                    <p className={`text-xs mt-0.5`}>{toneWarning.reason}</p>
+                    <button onClick={() => setTone(toneWarning.suggested)}
+                      className={`mt-1.5 px-2.5 py-1 rounded text-[10px] font-bold ${isDark ? 'bg-amber-800 text-amber-100 hover:bg-amber-700' : 'bg-amber-200 text-amber-900 hover:bg-amber-300'}`}>
+                      Switch to {toneWarning.suggested}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Cultural Context */}
@@ -901,7 +1470,7 @@ pre{white-space:pre-wrap;word-wrap:break-word;font-family:inherit;margin:0}
           {/* Pre-result cross-ref */}
           <p className={`text-xs text-center ${c.textMuted} mt-4`}>
             Need to apologize alongside your thanks?{' '}
-            <a href="/ApologyCalibrator" className={c.link}>Apology Calibrator</a>{' '}
+            <a href="/ApologyCalibrator" target="_blank" rel="noopener noreferrer" className={c.link}>Apology Calibrator</a>{' '}
             helps you get the tone exactly right.
           </p>
         </div>
@@ -932,21 +1501,62 @@ pre{white-space:pre-wrap;word-wrap:break-word;font-family:inherit;margin:0}
                 <h2 className={`text-2xl font-bold ${c.text}`}>
                   Your Thank You Messages
                 </h2>
-                <div className="flex gap-1.5">
-                  <CopyBtn content={buildAllText()} label="Copy All" />
-                  <button
-                    onClick={printAll}
-                    className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-colors ${c.btnSecondary}`}
-                    title="Print all messages"
-                  >
-                    <span className="text-sm">🖨️</span>
-                    <span className="hidden sm:inline">Print All</span>
-                  </button>
+                <div className="flex items-center gap-2">
+                  {results.thank_you_messages?.length > 1 && (
+                    <button onClick={() => setShowComparison(!showComparison)}
+                      className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-colors ${
+                        showComparison ? (isDark ? 'bg-emerald-900/40 text-emerald-300' : 'bg-emerald-100 text-emerald-700') : c.btnSecondary
+                      }`}>
+                      <span>{showComparison ? '📋' : '⚖️'}</span> {showComparison ? 'Full View' : 'Compare'}
+                    </button>
+                  )}
+                  <ActionBar
+                    content={buildAllText()}
+                    title={`Thank You Messages — ${recipientName}`}
+                    copyLabel="Copy All"
+                    printLabel="Print All"
+                  />
                 </div>
               </div>
+
+              {/* Tone calibration suggestion from AI */}
+              {results.tone_calibration && (
+                <div className={`mb-4 p-3 rounded-lg border ${c.warning}`}>
+                  <p className="text-xs"><strong>💡 Tone suggestion:</strong> {results.tone_calibration.reason}</p>
+                </div>
+              )}
+
+              {/* ── COMPARISON VIEW ── */}
+              {showComparison && results.thank_you_messages?.length > 1 ? (
+                <div className={`border-2 rounded-xl overflow-hidden ${c.card}`}>
+                  <div className={`grid grid-cols-${Math.min(results.thank_you_messages.length, 3)} divide-x ${isDark ? 'divide-zinc-700' : 'divide-slate-200'}`}>
+                    {results.thank_you_messages.map((msg, i) => (
+                      <div key={i} className="p-4">
+                        <div className="flex items-center justify-between mb-2">
+                          <h4 className={`text-sm font-bold ${c.text}`}>{msg.version}</h4>
+                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${c.toneBadge}`}>{msg.tone}</span>
+                        </div>
+                        <p className={`text-sm ${c.textSecondary} leading-relaxed mb-3`}>{getMessageText(i, msg.message_text)}</p>
+                        <p className={`text-[10px] ${c.textMuted} mb-2`}>{msg.length} words · {msg.best_for}</p>
+                        <div className="flex gap-1.5">
+                          <CopyBtn content={`${getMessageText(i, msg.message_text)}\n\n— Generated by DeftBrain · deftbrain.com`} label="Copy" />
+                          <button onClick={() => { markMessageSent(i); }}
+                            className={`flex items-center gap-1 px-2 py-1 rounded text-[10px] font-bold ${isDark ? 'bg-emerald-900/30 text-emerald-300 border border-emerald-700' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'}`}>
+                            <span>✅</span> Sent
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
               
               <div className="space-y-4">
-                {results.thank_you_messages?.map((message, index) => (
+                {results.thank_you_messages?.map((message, index) => {
+                  const messageText = getMessageText(index, message.message_text);
+                  const isEditing = editingIndex === index;
+                  const isEdited = editedMessages[index] != null && editedMessages[index] !== message.message_text;
+                  return (
                   <div 
                     key={index} 
                     className={`rounded-xl shadow-lg p-6 border-2 transition-colors ${c.messageCard}`}
@@ -954,9 +1564,12 @@ pre{white-space:pre-wrap;word-wrap:break-word;font-family:inherit;margin:0}
                     {/* Message Header */}
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex-1">
-                        <h3 className={`text-lg font-bold ${c.text} mb-1`}>
-                          {message.version}
-                        </h3>
+                        <div className="flex items-center gap-2">
+                          <h3 className={`text-lg font-bold ${c.text} mb-1`}>
+                            {message.version}
+                          </h3>
+                          {isEdited && <span className={`text-xs ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>✏️ edited</span>}
+                        </div>
                         <div className={`flex items-center gap-3 text-sm ${c.textSecondary}`}>
                           <span className={`inline-block px-3 py-1 rounded-full font-medium ${c.toneBadge}`}>
                             {message.tone}
@@ -976,24 +1589,57 @@ pre{white-space:pre-wrap;word-wrap:break-word;font-family:inherit;margin:0}
                       </p>
                     </div>
 
-                    {/* Message Text */}
+                    {/* Message Text — editable */}
                     <div className={`rounded-lg p-4 border mb-4 ${c.messageBody}`}>
-                      <p className={`${c.text} text-base leading-relaxed whitespace-pre-wrap`}>
-                        {message.message_text}
-                      </p>
+                      {isEditing ? (
+                        <textarea
+                          value={editedMessages[index] ?? message.message_text}
+                          onChange={(e) => setEditedMessages(prev => ({ ...prev, [index]: e.target.value }))}
+                          rows={8}
+                          className={`w-full p-3 border rounded-lg outline-none text-sm resize-y focus:ring-2 focus:ring-emerald-300 ${c.input}`}
+                        />
+                      ) : (
+                        <p className={`${c.text} text-base leading-relaxed whitespace-pre-wrap`}>
+                          {messageText}
+                        </p>
+                      )}
                     </div>
+
+                    {/* Edit controls */}
+                    {isEditing ? (
+                      <div className="flex gap-2 mb-3">
+                        <button onClick={() => setEditingIndex(null)}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnPrimary}`}>Done Editing</button>
+                        <button onClick={() => cancelEditing(index, message.message_text)}
+                          className={`text-xs ${c.textMuted}`}>Reset to original</button>
+                      </div>
+                    ) : null}
 
                     {/* Action Buttons */}
                     <div className="flex flex-wrap gap-2">
-                      <CopyBtn content={`${message.message_text}\n\n— Generated by DeftBrain · deftbrain.com`} label="Copy" />
+                      <CopyBtn content={`${messageText}\n\n— Generated by DeftBrain · deftbrain.com`} label="Copy" />
 
                       <button
-                        onClick={() => printSection(message.version, message.message_text)}
+                        onClick={() => printSection(message.version, messageText)}
                         className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors text-sm font-medium ${c.btnSecondary}`}
                         aria-label={`Print ${message.version}`}
                       >
                         <span className="text-sm">🖨️</span>
                         Print
+                      </button>
+
+                      {!isEditing && (
+                        <button onClick={() => startEditing(index, message.message_text)}
+                          className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors text-sm font-medium ${c.btnSecondary}`}>
+                          <span>✏️</span> Edit
+                        </button>
+                      )}
+
+                      <button
+                        onClick={() => { markMessageSent(index); }}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors text-sm font-medium ${isDark ? 'bg-emerald-900/30 text-emerald-300 hover:bg-emerald-800/40 border border-emerald-700' : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200'}`}
+                      >
+                        <span>✅</span> Mark Sent
                       </button>
 
                       <button
@@ -1026,10 +1672,28 @@ pre{white-space:pre-wrap;word-wrap:break-word;font-family:inherit;margin:0}
                         )}
                       </button>
                     </div>
+
+                    {/* Delivery shortcuts */}
+                    <div className={`flex flex-wrap gap-1.5 mt-2 pt-2 border-t ${isDark ? 'border-zinc-700' : 'border-slate-200'}`}>
+                      <span className={`text-[10px] ${c.textMuted} self-center mr-1`}>Send via:</span>
+                      <a href={buildMailtoLink(messageText)} target="_blank" rel="noopener noreferrer"
+                        className={`flex items-center gap-1 px-2 py-1 rounded text-[10px] font-medium ${c.btnSecondary}`}>
+                        <span>📧</span> Email
+                      </a>
+                      <a href={buildSmsLink(messageText)} target="_blank" rel="noopener noreferrer"
+                        className={`flex items-center gap-1 px-2 py-1 rounded text-[10px] font-medium ${c.btnSecondary}`}>
+                        <span>📱</span> Text
+                      </a>
+                      <a href={buildWhatsAppLink(messageText)} target="_blank" rel="noopener noreferrer"
+                        className={`flex items-center gap-1 px-2 py-1 rounded text-[10px] font-medium ${c.btnSecondary}`}>
+                        <span>💬</span> WhatsApp
+                      </a>
+                    </div>
                   </div>
-                ))}
+                  );
+                })}
               </div>
-            </div>
+              )}
 
             {/* Delivery Suggestions */}
             {results.delivery_suggestions && (
@@ -1082,17 +1746,18 @@ pre{white-space:pre-wrap;word-wrap:break-word;font-family:inherit;margin:0}
             {context === 'Post-interview' && (
               <p className={`text-xs text-center ${c.textMuted} mt-2`}>
                 Sending a follow-up can feel awkward —{' '}
-                <a href="/DifficultTalkRehearser" className={c.link}>Difficult Talk Rehearser</a>{' '}
+                <a href="/DifficultTalkRehearser" target="_blank" rel="noopener noreferrer" className={c.link}>Difficult Talk Rehearser</a>{' '}
                 can help you prepare if the conversation continues.
               </p>
             )}
             {(context === 'Condolence support' || context === 'Emotional support') && (
               <p className={`text-xs text-center ${c.textMuted} mt-2`}>
                 If you're navigating a sensitive relationship,{' '}
-                <a href="/VelvetHammer" className={c.link}>Velvet Hammer</a>{' '}
+                <a href="/VelvetHammer" target="_blank" rel="noopener noreferrer" className={c.link}>Velvet Hammer</a>{' '}
                 helps you say hard things with warmth.
               </p>
             )}
+            </div>
           </div>
         )}
 
@@ -1185,7 +1850,7 @@ pre{white-space:pre-wrap;word-wrap:break-word;font-family:inherit;margin:0}
         {results && (
           <p className={`text-xs text-center ${c.textMuted}`}>
             Message feeling close but not quite right?{' '}
-            <a href="/ApologyCalibrator" className={c.link}>Apology Calibrator</a>{' '}
+            <a href="/ApologyCalibrator" target="_blank" rel="noopener noreferrer" className={c.link}>Apology Calibrator</a>{' '}
             fine-tunes tone when gratitude mixes with "sorry it took so long."
           </p>
         )}
@@ -1194,4 +1859,5 @@ pre{white-space:pre-wrap;word-wrap:break-word;font-family:inherit;margin:0}
   );
 };
 
+GratitudeDebtClearer.displayName = 'GratitudeDebtClearer';
 export default GratitudeDebtClearer;

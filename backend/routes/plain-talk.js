@@ -1,266 +1,111 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse } = require('../lib/claude');
+const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+
+// ═══════════════════════════════════════════════════════════════
+// MAIN ANALYSIS — plain-English translation + structural X-ray
+// ═══════════════════════════════════════════════════════════════
 
 router.post('/plaintalk', async (req, res) => {
   try {
-    const { text, textType, context, pdfBase64, readingLevel } = req.body;
+    const { text, textType, focusQuestion, userLanguage } = req.body;
 
-    if (!text && !pdfBase64) {
-      return res.status(400).json({ error: 'Please provide text or upload a PDF' });
+    if (!text || !text.trim()) {
+      return res.status(400).json({ error: 'Text is required' });
     }
 
-    const readingLevelInstructions = {
-      '5th': 'Target reading level: 5th grade. Use the simplest possible words. Maximum 10-12 words per sentence. Explain every concept as if to a child.',
-      '8th': 'Target reading level: 8th grade. Use clear everyday language. Maximum 15 words per sentence. Define any term a typical teenager might not know.',
-      'high_school': 'Target reading level: high school. Standard plain English. Maximum 20 words per sentence. Define specialized terms on first use.',
-      'professional': 'Target reading level: professional simplified. Keep nuance and precision but eliminate unnecessary jargon. Replace legalese with plain equivalents. OK to be more detailed.',
-    };
+    const trimmed = text.trim().slice(0, 15000); // Cap at ~15k chars
+    const typeHint = textType && textType !== 'auto' ? `\nDOCUMENT TYPE (user-specified): ${textType}` : '';
+    const focusHint = focusQuestion ? `\nUSER'S SPECIFIC QUESTION: "${focusQuestion}"` : '';
 
-    // Build multi-modal content blocks
-    const contentBlocks = [];
+    console.log(`[PlainTalk] Analyzing ${trimmed.length} chars, type: ${textType || 'auto'}`);
 
-    if (pdfBase64) {
-      const commaIndex = pdfBase64.indexOf(',');
-      const rawBase64 = commaIndex !== -1 ? pdfBase64.substring(commaIndex + 1) : pdfBase64;
-      const sizeKB = Math.round((rawBase64.length * 0.75) / 1024);
-      console.log(`[PlainTalk] PDF received: ${sizeKB}KB`);
+    const prompt = withLanguage(`You are PlainTalk, a universal text comprehension expert. Your job: take complex text and make it completely understandable.
 
-      contentBlocks.push({
-        type: 'document',
-        source: {
-          type: 'base64',
-          media_type: 'application/pdf',
-          data: rawBase64
-        }
-      });
-      contentBlocks.push({
-        type: 'text',
-        text: 'The document above is the text to analyze. Read it in its entirety.'
-      });
-    }
+ANALYZE THIS TEXT:
+---
+${trimmed}
+---
+${typeHint}${focusHint}
 
-    const prompt = `You are PlainTalk, an expert text analyst who does two things no simple translator can:
+INSTRUCTIONS:
 
-1. TRANSLATE complex text into plain English that anyone can understand
-2. X-RAY the structure underneath — revealing how the text is built and what it's really doing
+1. AUTO-DETECT the text type if not specified. Categories: legal, medical, academic, financial, technical, literary, political, bureaucratic, scientific, general.
 
-You adapt your analysis to whatever type of text you receive. You are not adversarial by default — most complex text isn't trying to deceive anyone, it's written for an audience with specialized knowledge. Your job is to bridge that knowledge gap.
+2. Produce a complete analysis with these sections:
 
-TEXT TYPE: ${textType || 'auto-detect'}
-${context ? `USER'S QUESTION: ${context}` : ''}
-${readingLevel && readingLevelInstructions[readingLevel] ? `READING LEVEL: ${readingLevelInstructions[readingLevel]}` : ''}
-
-${text ? `TEXT TO ANALYZE:\n"""\n${text}\n"""` : 'The text to analyze was provided as a PDF above. Analyze its full contents.'}
-
-═══════════════════════════════════════════════
-ANALYSIS REQUIREMENTS
-═══════════════════════════════════════════════
-
-STEP 1 — DETECT TEXT TYPE
-Classify the text into one of these categories:
-- legal (contracts, agreements, terms of service, policies, regulations)
-- medical (consent forms, lab results, clinical notes, drug information, diagnoses)
-- academic (research papers, journal articles, dissertations, textbook chapters)
-- literary (fiction, poetry, essays, creative nonfiction, criticism)
-- financial (statements, prospectuses, tax documents, loan agreements, investment reports)
-- technical (manuals, specifications, API docs, engineering reports, patents)
-- government (forms, regulations, legislation, public notices, benefits documentation)
-- business (memos, reports, proposals, strategy documents, press releases)
-- persuasive (speeches, op-eds, marketing copy, fundraising letters, manifestos)
-- general (anything that doesn't fit the above)
-
-STEP 2 — PLAIN-LANGUAGE TRANSLATION
-- Preserve ALL factual content — omit nothing important
-- Replace jargon and domain-specific terms with common words
-- Break long sentences into short ones (max 15-20 words)
-- Convert passive voice to active where it improves clarity
-- Define technical terms that MUST remain (in parentheses on first use)
-- Use concrete examples for abstract concepts
-- Match the translation length roughly to the original — don't balloon or truncate significantly
-
-STEP 3 — STRUCTURAL X-RAY (adapt focus to text type)
-
-For LEGAL / FINANCIAL text:
-- What each section is functionally doing (granting rights, imposing obligations, limiting liability, etc.)
-- Your obligations vs. their obligations — extracted and listed separately
-- Asymmetries in rights, obligations, or remedies
-- Internal contradictions or tensions between sections
-- What's boilerplate vs. what's substantive/unusual
-- Exit and termination provisions
-
-For ACADEMIC text:
-- The core argument or finding in one sentence
-- The logical chain: premise → evidence → conclusion
-- Assumptions the paper makes (stated and unstated)
-- Where evidence is strong vs. where the author is speculating
-- What's actually proven vs. what's implied
-
-For LITERARY text:
-- What each scene/section is accomplishing narratively
-- Themes being developed and how
-- Subtext in dialogue — what characters mean vs. what they say
-- Narrative techniques being used (foreshadowing, irony, unreliable narration, symbolism)
-- Structural purpose — why this chapter/passage exists in the larger work
-- Tone shifts and their significance
-
-For PERSUASIVE text:
-- The core ask or thesis
-- Rhetorical strategies being employed (emotional appeal, authority, scarcity, social proof, etc.)
-- What's stated as fact vs. what's opinion vs. what's emotional framing
-- What's left unsaid or conspicuously absent
-- Who the intended audience is and how the text is calibrated to them
-
-For TECHNICAL text:
-- Core concept or purpose in one sentence
-- Logical dependencies — what you need to understand first
-- Essential information vs. reference material you can skip on first read
-- Where precision matters vs. where there's flexibility
-
-For MEDICAL text:
-- What's happening / what this means for you in plain terms
-- What you're being asked to consent to or decide
-- Risks explained with actual context (frequency, severity, alternatives)
-- What questions this should prompt you to ask your provider
-
-For GOVERNMENT / BUSINESS / GENERAL text:
-- Use the structural analysis approach that best fits the content
-- Focus on: purpose, key information, required actions, and what matters most
-
-STEP 4 — SMART ROUTING
-Based on the detected text type, identify which specialist tool (if any) could provide deeper analysis. Only suggest a tool if it's genuinely relevant.
-
-Available specialist tools:
-- LeaseTrapDetector: rental/lease agreements (legal analysis, tenant rights, negotiation scripts)
-- FinePointFinder: terms of service, sign-up agreements, subscription contracts (trap hunting)
-- InsuranceClaimCoach: insurance policies, EOBs, claim documents (filing strategy, coverage language)
-- MedicalBillNegotiator: medical bills, hospital charges (error detection, negotiation scripts)
-- SecondOpinionPrep: medical diagnoses, treatment plans (questions to ask, records to request)
-- OfferDissector: job offers, compensation packages (total comp breakdown)
-- MapTheArgument: op-eds, speeches, persuasive essays (logical structure mapping)
-- MethodologyBullshitDetector: research papers, studies (methodology stress-testing)
-- RuleBookTranslator: regulations, compliance documents (actionable rule extraction)
-- BureaucracyBuster: government forms, institutional processes (step-by-step navigation)
-- ComplaintEscalationWriter: situations requiring formal complaints (letter generation)
-- RightsCheck: situations where rights may have been violated (rights identification)
-
-═══════════════════════════════════════════════
-OUTPUT FORMAT
-═══════════════════════════════════════════════
-
-Return ONLY valid JSON (no markdown, no preamble):
+Return ONLY valid JSON (no markdown, no code fences, no preamble):
 
 {
-  "detected_type": "legal | medical | academic | literary | financial | technical | government | business | persuasive | general",
-  "detected_type_label": "Human-readable label, e.g. 'Legal Contract', 'Literary Fiction', 'Academic Research Paper'",
-  "confidence": "high | medium | low",
-
-  "the_core": "1-3 sentences: the single most important thing this text is saying, asking, or doing. Not a summary — the core purpose or thesis. Written as if answering 'What is this, in 10 seconds?'",
-
-  "summary": "3-5 sentence summary covering: what this text is, who it's written for, and what the reader needs to take away",
-
-  "translation": "The complete plain-language rendering of the full text. Roughly the same length as the original — every important idea preserved, all jargon replaced, all complex sentences simplified. This is a translation, not a summary.",
-
-  "structural_xray": {
-    "sections": [
-      {
-        "title": "Descriptive title for this section",
-        "original_location": "Where this appears, e.g. 'Paragraphs 1-3', 'Section 4', 'Opening scene'",
-        "purpose": "What this section is DOING — its functional role",
-        "importance": "essential | important | context | boilerplate",
-        "key_content": "Critical information in this section, in plain language",
-        "notes": "Observations — contradictions, unusual language, things to pay attention to. Null if nothing notable."
-      }
-    ],
-    "architecture_summary": "2-3 sentences: how the text is structured overall — its logic, flow, or narrative arc"
-  },
-
-  "obligations_and_commitments": {
-    "applicable": true,
-    "yours": ["Things YOU are agreeing to, committing to, or expected to do"],
-    "theirs": ["Things THEY are committing to or promising"],
-    "asymmetry_notes": "Notable imbalance between what you give and what you get — null if balanced or N/A",
-    "decisions_required": ["Decisions you need to make based on this text"],
-    "deadlines": ["Dates, timeframes, or windows mentioned"]
-  },
-
-  "narrative_analysis": {
-    "applicable": true,
-    "themes": ["Themes being developed"],
-    "techniques": [{ "technique": "Name", "example": "Where/how it appears", "effect": "What it accomplishes" }],
-    "subtext": [{ "surface": "What is said/written", "underneath": "What it means or implies" }],
-    "structural_purpose": "Why this passage/chapter exists — what it sets up, resolves, or develops"
-  },
-
-  "argument_analysis": {
-    "applicable": true,
-    "core_thesis": "The central claim or argument",
-    "premises": ["Stated premises or assumptions"],
-    "hidden_assumptions": ["Unstated assumptions the argument depends on"],
-    "evidence_quality": [{ "claim": "", "evidence": "", "strength": "strong | moderate | weak | unsupported" }],
-    "rhetorical_strategies": ["Persuasion techniques being used"],
-    "what_is_missing": ["Important counterarguments, context, or caveats that are absent"]
-  },
-
-  "glossary": [
-    {
-      "term": "Technical or domain-specific term",
-      "definition": "Plain-English definition",
-      "context": "How this term is used specifically in THIS text"
-    }
-  ],
-
-  "what_matters_most": [
-    "The 3-5 most important things the reader should focus on, take away, or act on — prioritized"
-  ],
-
-  "internal_contradictions": [
-    {
-      "section_a": "Where the first statement appears",
-      "says_a": "What it says",
-      "section_b": "Where the contradicting statement appears",
-      "says_b": "What it says",
-      "implication": "Why this matters"
-    }
-  ],
-
+  "detected_type": "legal",
+  "detected_type_label": "Legal / Contract",
+  "confidence": "high",
   "reading_level": {
-    "original": "Estimated grade level of original, e.g. '14th grade / college senior'",
-    "translated": "Grade level of translation (target: 5th-6th grade)"
+    "original": "Graduate / Professional",
+    "original_grade": 16,
+    "translated": "8th Grade",
+    "translated_grade": 8
   },
-
-  "tool_suggestion": {
-    "suggested": true,
-    "tool_id": "ToolId or null",
-    "tool_name": "Tool Name or null",
-    "reason": "One sentence: why this specialist tool would help — or null"
-  }
+  "overview": {
+    "one_sentence": "What this text IS in one plain sentence",
+    "key_takeaways": ["Most important point 1", "Most important point 2", "Most important point 3"],
+    "what_matters_to_you": "If the user asked a specific question, answer it directly here. Otherwise, explain what someone reading this text most needs to know about how it affects THEM personally.",
+    "red_flags": ["Any concerning, unusual, or asymmetric provisions/claims"],
+    "action_items": ["Things the reader should DO based on this text"],
+    "deadlines": ["Any time-sensitive dates, periods, or windows mentioned"]
+  },
+  "sections": [
+    {
+      "id": "sec_1",
+      "original": "The exact original text of this section (preserve verbatim)",
+      "translation": "Plain-English translation of this section — clear, conversational, no jargon",
+      "title": "Short descriptive title for this section",
+      "purpose": "What this section is DOING in the document (e.g., 'Limits your ability to sue', 'Establishes the payment schedule')",
+      "importance": "high|medium|low",
+      "flags": ["Any red flags, asymmetries, or notable aspects of this section"]
+    }
+  ],
+  "structure": {
+    "architecture": "How the overall text is organized and why (e.g., 'Standard employment contract: definitions → terms → restrictions → termination')",
+    "persuasion_techniques": ["Any rhetorical, legal, or structural techniques used to influence the reader"],
+    "what_they_buried": "Anything important that was placed in a non-obvious location or wrapped in complex language",
+    "internal_contradictions": ["Any places where the text contradicts itself or creates ambiguity"]
+  },
+  "specialist_suggestion": {
+    "tool": "OfferDissector|DoctorVisitTranslator|BillGuiltEraser|ComplaintEscalationWriter|null",
+    "reason": "Why this specialist tool would help with this specific text, or null if none applies"
+  },
+  "type_insights": {
+    "type": "Matches detected_type — legal|medical|academic|financial|technical|literary|political|bureaucratic|scientific|general",
+    "power_analysis": "FOR LEGAL/FINANCIAL: Who has more power in this document? Map obligations: YOUR obligations vs THEIR obligations. Note any asymmetries where one party has more rights or fewer obligations than the other. FOR MEDICAL: What is the urgency level — routine monitoring, needs action within weeks, or urgent? FOR ACADEMIC: What is the confidence level of the claims? FOR OTHER: null",
+    "vs_standard": "How does this compare to standard/typical documents of this type? What is unusually strict, generous, vague, or missing compared to what you'd normally see?",
+    "negotiable_items": ["FOR LEGAL/FINANCIAL: Clauses that are commonly negotiated or pushed back on in this type of document"],
+    "urgency": "none|low|medium|high|critical — how quickly does the reader need to act?"
+  },
+  "full_translation": "The COMPLETE text translated into plain, conversational English. Every section, every clause — nothing omitted. Use paragraph breaks. This should be readable by an 8th grader.",
+  "jargon_glossary": [
+    { "term": "force majeure", "definition": "Events outside anyone's control (natural disasters, wars) that excuse not fulfilling the contract" }
+  ]
 }
 
-═══════════════════════════════════════════════
-CRITICAL RULES
-═══════════════════════════════════════════════
-
-1. ADAPTIVE ANALYSIS: Set "applicable" to true ONLY for analysis sections relevant to the text type. A legal contract needs obligations (applicable=true) but not narrative_analysis (applicable=false). A novel chapter is the reverse. A persuasive speech might have both argument_analysis and narrative_analysis applicable. When applicable is false, return that section as: { "applicable": false }
-
-2. RESPECT THE TEXT: Do not assume adversarial intent unless the text demonstrates it. Technical jargon is usually precision, not obfuscation. Academic density is usually thoroughness, not gatekeeping. Only flag something as deliberately obscuring if there's real evidence.
-
-3. TRANSLATION COMPLETENESS: The translation must cover the FULL text, not just highlights. If the original is long, the translation should be comparably long.
-
-4. STRUCTURAL HONESTY: If a section is genuinely boilerplate or standard, say so. Don't manufacture concerns. If the text is well-written and fair, say that too.
-
-5. TOOL SUGGESTIONS: Only suggest a specialist tool when it would genuinely add value. If the text is a recipe, a personal email, or a simple memo — tool_suggestion.suggested should be false.
-
-6. Return ONLY the JSON object. No preamble, no markdown fences, no explanation outside the JSON.`;
-
-    contentBlocks.push({ type: 'text', text: prompt });
-
-    console.log(`[PlainTalk] Sending ${contentBlocks.length} content blocks (PDF: ${!!pdfBase64}, text: ${!!text}, type: ${textType || 'auto'})`);
+CRITICAL RULES:
+- "sections" MUST cover the ENTIRE text — break it into logical chunks of 1-3 paragraphs each. Every sentence of the original must appear in exactly one section.
+- "original" in each section must be VERBATIM from the input text — do not paraphrase the original
+- "translation" must be genuinely plain — imagine explaining to a smart 14-year-old
+- "full_translation" must be COMPLETE — translate every single sentence, omit nothing
+- "importance" should be "high" for anything that creates obligations, costs, risks, or deadlines
+- If the text is literary/creative, adapt: "purpose" becomes narrative function, "flags" becomes literary devices, "persuasion_techniques" becomes style/voice analysis
+- For medical text: flag anything requiring patient action, consent implications, or risk disclosures. "urgency" should reflect how quickly the reader needs medical attention or follow-up.
+- For legal text: explicitly note any asymmetric obligations (one party has more rights/fewer obligations). "vs_standard" should compare clauses to typical industry practice. "negotiable_items" should list clauses commonly pushed back on.
+- For financial text: identify who bears risk, what fees are hidden, and what the total cost of compliance is
+- "type_insights" must ALWAYS be populated — adapt the fields to the document type. This is the most valuable section for the reader.
+- "jargon_glossary" should include 5-15 domain-specific terms used in the text
+- Be thorough but never pad — only include what's genuinely useful`, userLanguage);
 
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 8000,
-      messages: [{ role: 'user', content: contentBlocks }]
+      messages: [{ role: 'user', content: prompt }]
     });
 
     const textContent = message.content.find(item => item.type === 'text')?.text || '';
@@ -269,19 +114,164 @@ CRITICAL RULES
     const cleaned = cleanJsonResponse(textContent);
     const parsed = JSON.parse(cleaned);
 
-    console.log(`[PlainTalk] Type: ${parsed.detected_type}, Sections: ${parsed.structural_xray?.sections?.length || 0}, Tool suggestion: ${parsed.tool_suggestion?.tool_id || 'none'}`);
+    console.log(`[PlainTalk] Type: ${parsed.detected_type}, ${parsed.sections?.length || 0} sections`);
     res.json(parsed);
 
   } catch (error) {
     console.error('[PlainTalk] Error:', error);
+    res.status(500).json({ error: error.message || 'Failed to analyze text' });
+  }
+});
 
-    if (error instanceof SyntaxError) {
-      console.error('[PlainTalk] JSON Parse Error:', error.message);
+// ═══════════════════════════════════════════════════════════════
+// FOLLOW-UP QUESTIONS — ask about specific sections/topics
+// ═══════════════════════════════════════════════════════════════
+
+router.post('/plaintalk/followup', async (req, res) => {
+  try {
+    const { originalText, question, previousAnalysis, userLanguage } = req.body;
+
+    if (!question || !question.trim()) {
+      return res.status(400).json({ error: 'Question is required' });
     }
 
-    res.status(500).json({
-      error: error.message || 'Failed to analyze text'
+    const textSnippet = (originalText || '').slice(0, 8000);
+    const analysisContext = previousAnalysis ? JSON.stringify({
+      type: previousAnalysis.detected_type,
+      overview: previousAnalysis.overview,
+      sections: (previousAnalysis.sections || []).map(s => ({ title: s.title, purpose: s.purpose })),
+    }) : '';
+
+    console.log(`[PlainTalk/followup] Question: "${question.slice(0, 80)}..."`);
+
+    const prompt = withLanguage(`You previously analyzed a document for a user using PlainTalk. Now they have a follow-up question.
+
+ORIGINAL TEXT (excerpt):
+---
+${textSnippet}
+---
+
+PREVIOUS ANALYSIS CONTEXT:
+${analysisContext}
+
+USER'S FOLLOW-UP QUESTION: "${question.trim()}"
+
+Respond in plain, conversational English. Be specific — reference actual parts of the text. If the question is about a specific section, quote the relevant part and explain it.
+
+Return ONLY valid JSON:
+
+{
+  "answer": "Direct, clear answer to their question in plain English",
+  "relevant_sections": ["sec_1", "sec_3"],
+  "key_quote": "The most relevant quote from the original text (if applicable)",
+  "practical_implication": "What this means for the reader practically — what should they DO or KNOW",
+  "follow_up_suggestions": ["Another question they might want to ask", "Another angle to explore"]
+}`, userLanguage);
+
+    const message = await anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 2000,
+      messages: [{ role: 'user', content: prompt }]
     });
+
+    const textContent = message.content.find(item => item.type === 'text')?.text || '';
+    const cleaned = cleanJsonResponse(textContent);
+    const parsed = JSON.parse(cleaned);
+
+    console.log(`[PlainTalk/followup] Answer: ${parsed.answer?.length || 0} chars`);
+    res.json(parsed);
+
+  } catch (error) {
+    console.error('[PlainTalk/followup] Error:', error);
+    res.status(500).json({ error: error.message || 'Failed to answer question' });
+  }
+});
+
+// ═══════════════════════════════════════════════════════════════
+// DOCUMENT COMPARISON — diff two versions of a document
+// ═══════════════════════════════════════════════════════════════
+
+router.post('/plaintalk/compare', async (req, res) => {
+  try {
+    const { textA, textB, labelA, labelB, textType, userLanguage } = req.body;
+
+    if (!textA?.trim() || !textB?.trim()) {
+      return res.status(400).json({ error: 'Both texts are required for comparison' });
+    }
+
+    const trimA = textA.trim().slice(0, 10000);
+    const trimB = textB.trim().slice(0, 10000);
+    const typeHint = textType && textType !== 'auto' ? `\nDOCUMENT TYPE: ${textType}` : '';
+
+    console.log(`[PlainTalk/compare] A: ${trimA.length} chars, B: ${trimB.length} chars`);
+
+    const prompt = withLanguage(`You are PlainTalk, a document comparison expert. Compare two versions of a document and identify every meaningful change.
+
+DOCUMENT A ("${labelA || 'Original'}"):
+---
+${trimA}
+---
+
+DOCUMENT B ("${labelB || 'Revised'}"):
+---
+${trimB}
+---
+${typeHint}
+
+Analyze the differences between these two texts. Focus on SUBSTANTIVE changes — things that change meaning, obligations, rights, risks, or outcomes. Note formatting/wording changes only if they subtly alter meaning.
+
+Return ONLY valid JSON:
+
+{
+  "summary": "2-3 sentence overview of what changed between the two versions and the overall direction of the changes (e.g., 'The revised version is significantly more restrictive for the tenant')",
+  "change_direction": "more_favorable|less_favorable|neutral|mixed",
+  "change_direction_for_whom": "Who benefits from the changes overall and who loses",
+  "changes": [
+    {
+      "id": "chg_1",
+      "category": "added|removed|modified|reworded",
+      "severity": "critical|significant|minor|cosmetic",
+      "topic": "Short label for what this change is about (e.g., 'Termination clause', 'Payment terms')",
+      "text_a": "The relevant text from Document A (or null if added in B)",
+      "text_b": "The relevant text from Document B (or null if removed from A)",
+      "plain_explanation": "What this change means in plain English",
+      "who_benefits": "Who does this change favor — the reader, the other party, both, or neither",
+      "risk_note": "Any risk or concern this change creates for the reader (or null)"
+    }
+  ],
+  "unchanged_important": ["Important clauses/sections that remained the same — worth noting for reassurance"],
+  "hidden_changes": ["Changes that appear cosmetic but actually affect meaning — the quiet rewording trick"],
+  "recommendation": "What the reader should do about these changes — accept, negotiate, flag for review, etc."
+}
+
+CRITICAL:
+- List ALL substantive changes, not just the first few
+- "category" must be one of: added, removed, modified, reworded
+- "severity" must be one of: critical, significant, minor, cosmetic
+- "text_a" and "text_b" should be the actual relevant text from each document (verbatim excerpts)
+- For "added" changes, text_a is null. For "removed" changes, text_b is null.
+- "hidden_changes" is the most valuable section — find anything that was subtly reworded to change meaning
+- Be specific about who benefits from each change
+- The recommendation should be actionable`, userLanguage);
+
+    const message = await anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 6000,
+      messages: [{ role: 'user', content: prompt }]
+    });
+
+    const textContent = message.content.find(item => item.type === 'text')?.text || '';
+    console.log(`[PlainTalk/compare] Response: ${textContent.length} chars`);
+
+    const cleaned = cleanJsonResponse(textContent);
+    const parsed = JSON.parse(cleaned);
+
+    console.log(`[PlainTalk/compare] Found ${parsed.changes?.length || 0} changes`);
+    res.json(parsed);
+
+  } catch (error) {
+    console.error('[PlainTalk/compare] Error:', error);
+    res.status(500).json({ error: error.message || 'Failed to compare documents' });
   }
 });
 

@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse } = require('../lib/claude');
+const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
 
 router.post('/complaint-escalation-writer', async (req, res) => {
   try {
-    const { company, issue, industry, previousAttempts, desiredOutcome, amountAtStake, hasDocumentation, tone } = req.body;
+    const { company, issue, industry, previousAttempts, desiredOutcome, amountAtStake, hasDocumentation, tone, userLanguage } = req.body;
 
     if (!company || !company.trim()) {
       return res.status(400).json({ error: 'Company name is required' });
@@ -19,7 +19,7 @@ router.post('/complaint-escalation-writer', async (req, res) => {
       empathetic: 'Empathetic and resolution-focused. Acknowledge that front-line staff are not at fault. Frame the complaint as seeking fair resolution, not punishment. Still reference legal rights but frame them as context, not threats.',
     };
 
-    const prompt = `You are an elite consumer advocacy strategist who has helped thousands of people get results from unresponsive companies. You combine legal knowledge, corporate psychology, and escalation expertise to build multi-stage campaigns that companies cannot ignore.
+    const prompt = withLanguage(`You are an elite consumer advocacy strategist who has helped thousands of people get results from unresponsive companies. You combine legal knowledge, corporate psychology, and escalation expertise to build multi-stage campaigns that companies cannot ignore.
 
 COMPANY: ${company}
 INDUSTRY: ${industry || 'Unknown — infer from the company name'}
@@ -118,7 +118,9 @@ Return ONLY valid JSON (no markdown, no preamble):
       "what_it_protects": "What right it gives the consumer",
       "how_it_applies": "How it applies to THIS specific situation",
       "consequence_for_company": "What the company risks by violating this",
-      "strength": "strong | moderate | informational"
+      "strength": "strong | moderate | informational",
+      "time_limit_days": "Number of days from the incident within which you must act under this law (or null if no deadline). Be specific — e.g., 60 for credit card chargebacks, 180 for CFPB complaints, varies by state for small claims.",
+      "time_limit_note": "Human-readable explanation of the deadline, e.g., '60 days from statement date' or '2 years from date of injury'"
     }
   ],
 
@@ -219,7 +221,15 @@ Return ONLY valid JSON (no markdown, no preamble):
 
   "quick_tips": [
     "Tactical tips specific to THIS company and situation — things the user might not think of"
-  ]
+  ],
+
+  "call_script": {
+    "opening": "What to say when you pick up or place the call — identify yourself and the issue in one sentence",
+    "key_phrases": ["Exact phrases to use during the call that protect your rights and create leverage — e.g., 'I'd like to receive that offer in writing before I respond', 'Please note this call may be recorded', 'What is your full name and employee ID for my records?'"],
+    "things_to_avoid_saying": ["Phrases that could weaken your position — e.g., 'I accept', 'That sounds fair', 'I guess that works', 'I'll think about it' (without a deadline)"],
+    "redirect_to_writing": "A polite but firm sentence to redirect the conversation to written communication — companies prefer phone calls because there's no paper trail",
+    "if_they_pressure": "What to say if they pressure you to accept immediately or claim the offer expires"
+  }
 }
 
 ═══════════════════════════════════════════════
@@ -238,7 +248,7 @@ CRITICAL RULES
 
 6. CHARGEBACK SPECIFICITY: If the user paid by credit card, the chargeback section should include the specific reason code (e.g., "Visa reason code 13.1 — Merchandise/Services Not Received") and the exact time window. If card payment isn't mentioned, note that chargeback is available IF they paid by card.
 
-7. Return ONLY the JSON object. No preamble, no markdown, no explanation outside the JSON.`;
+7. Return ONLY the JSON object. No preamble, no markdown, no explanation outside the JSON.`, userLanguage);
 
     console.log(`[ComplaintEscalationWriter] Company: ${company}, Industry: ${industry || 'auto'}, Tone: ${tone || 'firm'}`);
 
@@ -267,6 +277,194 @@ CRITICAL RULES
     res.status(500).json({
       error: error.message || 'Failed to generate escalation campaign'
     });
+  }
+});
+
+// ═══════════════════════════════════════════════════════════════
+// RESPONSE ANALYSIS — "They responded, now what?"
+// ═══════════════════════════════════════════════════════════════
+
+router.post('/complaint-escalation-writer/analyze-response', async (req, res) => {
+  try {
+    const { company, originalIssue, stage, companyResponse, desiredOutcome, userLanguage } = req.body;
+
+    if (!companyResponse?.trim()) {
+      return res.status(400).json({ error: 'Company response text is required' });
+    }
+
+    console.log(`[CEW/analyze-response] Company: ${company}, Stage: ${stage}`);
+
+    const prompt = withLanguage(`You are an expert consumer advocate. The user sent a complaint and received a response from the company. Analyze the response and advise on next steps.
+
+COMPANY: ${company || 'Unknown'}
+ORIGINAL ISSUE: ${originalIssue || 'Not provided'}
+DESIRED OUTCOME: ${desiredOutcome || 'Not specified'}
+COMPLAINT WAS SENT AT: Stage ${stage} of the escalation ladder
+COMPANY'S RESPONSE:
+---
+${companyResponse.trim().slice(0, 5000)}
+---
+
+Analyze this response and return ONLY valid JSON:
+
+{
+  "response_type": "offer|partial_offer|rejection|deflection|acknowledgment|non_response|threat",
+  "response_type_label": "Human-readable label for the response type",
+  "assessment": "2-3 sentence plain-English assessment of what the company is actually saying and doing",
+  "tactics_used": ["Corporate tactics identified in this response — e.g., 'delay tactic', 'blame-shifting', 'lowball offer', 'policy shield', 'goodwill gesture without admission'"],
+  "is_genuine": true,
+  "genuineness_explanation": "Is this a genuine attempt to resolve, or a corporate deflection? Explain why.",
+  "offer_analysis": {
+    "what_they_offered": "What specifically they're offering (or null if no offer)",
+    "what_you_asked_for": "What the user originally wanted",
+    "gap": "The difference between what was offered and what was requested",
+    "fair_market_value": "Is the offer fair compared to what courts/regulators typically award for this type of issue?"
+  },
+  "recommendation": "accept|counter|escalate|wait",
+  "recommendation_explanation": "Detailed explanation of why this recommendation, with specific reasoning",
+  "if_accept": "What to watch for if accepting — any strings attached, things to get in writing",
+  "if_counter": {
+    "counter_offer_text": "Ready-to-send counter-offer response (complete, professional)",
+    "target_amount_or_resolution": "What to counter with and why",
+    "leverage_to_mention": "What leverage points to reference in the counter"
+  },
+  "if_escalate": {
+    "next_stage": ${stage + 1},
+    "why": "Why escalation is warranted based on this response",
+    "what_to_reference": "What from their response strengthens your position at the next stage"
+  },
+  "red_flags": ["Any concerning language or clauses in their response — waiver language, 'final offer' claims, etc."],
+  "things_to_get_in_writing": ["Anything from their response that should be confirmed in writing before proceeding"]
+}
+
+CRITICAL:
+- "counter_offer_text" must be a complete, ready-to-send response — not a template
+- Be honest about whether the offer is fair — don't always recommend escalation
+- "tactics_used" should identify specific corporate communication strategies
+- If the response includes any waiver or release language, flag it prominently in red_flags`, userLanguage);
+
+    const message = await anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 4000,
+      messages: [{ role: 'user', content: prompt }]
+    });
+
+    const textContent = message.content.find(item => item.type === 'text')?.text || '';
+    const cleaned = cleanJsonResponse(textContent);
+    const parsed = JSON.parse(cleaned);
+
+    console.log(`[CEW/analyze-response] Type: ${parsed.response_type}, Recommendation: ${parsed.recommendation}`);
+    res.json(parsed);
+
+  } catch (error) {
+    console.error('[CEW/analyze-response] Error:', error);
+    res.status(500).json({ error: error.message || 'Failed to analyze response' });
+  }
+});
+
+// ═══════════════════════════════════════════════════════════════
+// REGENERATE STAGE — rebuild a stage letter with full campaign context
+// ═══════════════════════════════════════════════════════════════
+
+router.post('/complaint-escalation-writer/regenerate-stage', async (req, res) => {
+  try {
+    const { company, issue, industry, desiredOutcome, amountAtStake, tone, targetStage, campaignHistory, originalStageData, userLanguage } = req.body;
+
+    if (!targetStage || !company) {
+      return res.status(400).json({ error: 'Company and target stage are required' });
+    }
+
+    const toneInstructions = {
+      firm: 'Firm but professional.',
+      aggressive: 'Assertive and direct with stronger legal language.',
+      empathetic: 'Empathetic and resolution-focused.',
+    };
+
+    // Build campaign history narrative
+    const historyNarrative = (campaignHistory || []).map(h =>
+      `STAGE ${h.stage}: Sent on ${h.sentDate || 'unknown date'}.\n` +
+      (h.companyResponse ? `COMPANY RESPONDED: "${h.companyResponse.slice(0, 1500)}"\n` : 'NO RESPONSE.\n') +
+      (h.analysisResult ? `AI ANALYSIS: ${h.analysisResult.assessment || ''} Recommendation was: ${h.analysisResult.recommendation || 'escalate'}. Tactics identified: ${(h.analysisResult.tactics_used || []).join(', ')}` : '') +
+      (h.outcome ? `\nOUTCOME: ${h.outcome}` : '')
+    ).join('\n\n');
+
+    const stageFormats = {
+      2: `{
+  "title": "Regulatory Complaint",
+  "agency": "Specific agency name",
+  "agency_url": "Filing URL",
+  "why_this_agency": "Why this is the right regulatory body",
+  "complaint_text": "Pre-written complaint text that REFERENCES the failed Stage 1 attempt and the company's actual response (or non-response). Include specific dates, what was said, and why regulatory intervention is now necessary.",
+  "what_happens_after": "What the agency does with the complaint",
+  "company_impact": "Why companies take this seriously"
+}`,
+      3: `{
+  "title": "Executive Escalation",
+  "subject_line": "Subject line — should reference the specific failure pattern from previous stages",
+  "letter_body": "A letter that weaves in SPECIFIC DETAILS from the company's actual responses (or non-responses). Reference dates, names, offers made, tactics used. This executive should understand that you have documented everything and that previous stages have already been executed. Much more powerful than a generic escalation letter.",
+  "target_contacts": [{ "title": "Executive title", "email_pattern": "Likely email format", "why": "Why this person" }],
+  "timing": "When to send relative to Stage 2"
+}`,
+      4: `{
+  "title": "Public Pressure Campaign",
+  "social_media_post": "Under 280 chars for X/Twitter — reference specific failures from the campaign. Not generic anger — specific documented facts that make the company look bad.",
+  "social_media_long": "Longer version that tells the whole story: what happened, what you did about it (Stage 1-3), how the company responded at each step, and where things stand now.",
+  "platforms_to_target": ["Where to post"],
+  "review_sites": ["Where to review"],
+  "hashtags": ["Relevant hashtags"],
+  "media_tip": "Media angle if applicable"
+}`,
+      5: `{
+  "title": "Financial & Legal Remedies",
+  "chargeback": { "applicable": true, "reason_code": "Code", "time_window": "Window", "how_to_file": "Steps", "documentation_needed": "What to include — reference specific evidence gathered during campaign", "success_likelihood": "Based on documented history" },
+  "small_claims": { "applicable": true, "jurisdiction": "Where", "filing_fee_range": "Cost", "max_claim_amount": "Limit", "typical_outcome": "How these resolve", "company_response": "What company typically does" },
+  "attorney_general": { "applicable": true, "how_to_file": "Process", "what_it_triggers": "What happens" }
+}`,
+    };
+
+    console.log(`[CEW/regenerate] Stage ${targetStage} for ${company}, history: ${campaignHistory?.length || 0} entries`);
+
+    const prompt = withLanguage(`You are an elite consumer advocacy strategist. You are regenerating Stage ${targetStage} of an escalation campaign based on what has ACTUALLY HAPPENED during the campaign so far.
+
+COMPANY: ${company}
+INDUSTRY: ${industry || 'Unknown'}
+ORIGINAL ISSUE: ${issue}
+DESIRED OUTCOME: ${desiredOutcome || 'Not specified'}
+AMOUNT AT STAKE: ${amountAtStake || 'Not specified'}
+TONE: ${toneInstructions[tone] || toneInstructions.firm}
+
+═══ CAMPAIGN HISTORY — WHAT ACTUALLY HAPPENED ═══
+${historyNarrative || 'No previous stage history available.'}
+
+═══ INSTRUCTIONS ═══
+Generate ONLY the Stage ${targetStage} content. This is NOT a pre-written template — this letter/complaint must reference SPECIFIC things that happened during the campaign:
+- Specific dates when actions were taken
+- Specific responses (or non-responses) from the company
+- Specific offers made and why they were insufficient
+- Specific tactics the company used (delay, deflection, lowball, etc.)
+- The documented pattern of behavior across stages
+
+The power of this letter comes from its SPECIFICITY. A company that reads "you failed to respond to my complaint" is unimpressed. A company that reads "On January 15, your representative Maria offered $50 as a goodwill gesture for a $459 billing error, after I had already filed FCC complaint #12345 and your own regulatory response team acknowledged the error in their February 2 letter" takes notice.
+
+Return ONLY valid JSON matching this format:
+${stageFormats[targetStage] || stageFormats[3]}`, userLanguage);
+
+    const message = await anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 4000,
+      messages: [{ role: 'user', content: prompt }]
+    });
+
+    const textContent = message.content.find(item => item.type === 'text')?.text || '';
+    const cleaned = cleanJsonResponse(textContent);
+    const parsed = JSON.parse(cleaned);
+
+    console.log(`[CEW/regenerate] Stage ${targetStage} regenerated: ${textContent.length} chars`);
+    res.json(parsed);
+
+  } catch (error) {
+    console.error('[CEW/regenerate] Error:', error);
+    res.status(500).json({ error: error.message || 'Failed to regenerate stage' });
   }
 });
 
