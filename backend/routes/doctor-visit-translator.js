@@ -4,7 +4,10 @@ const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
 
 router.post('/doctor-visit-translator', async (req, res) => {
   try {
-    const { doctorNotes, visitType, concerns, currentMedications } = req.body;
+    const {
+      doctorNotes, visitType, concerns, currentMedications,
+      language, documentType, knownMedications
+    } = req.body;
 
     // Validation
     if (!doctorNotes || !doctorNotes.trim()) {
@@ -12,13 +15,36 @@ router.post('/doctor-visit-translator', async (req, res) => {
     }
 
     const concernsContext = concerns ? `\n\nPATIENT'S MAIN CONCERNS: ${concerns}` : '';
-    const medsContext = currentMedications ? `\n\nCURRENT MEDICATIONS: ${currentMedications}` : '';
+    const medsContext = currentMedications ? `\n\nCURRENT MEDICATIONS (user-entered): ${currentMedications}` : '';
+    // F3: Auto-injected from persistent medication list
+    const knownMedsContext = knownMedications?.length
+      ? `\n\nKNOWN MEDICATION HISTORY (from patient's tracked list):\n${knownMedications.map(m => `- ${m.name}: ${m.purpose} (since ${m.prescribedDate})`).join('\n')}\n\nIMPORTANT: Cross-reference ALL known medications with any new prescriptions for potential interactions.`
+      : '';
+
+    // F6: Document-type-specific context
+    const docTypeContext = {
+      'prescription-label': '\n\nDOCUMENT TYPE: Prescription Label / Medication Instructions\nFocus especially on: medication details, dosage, timing, side effects, interactions, storage, and pharmacist questions.',
+      'lab-report': '\n\nDOCUMENT TYPE: Laboratory / Test Results\nFocus especially on: test result explanations, normal ranges, what values mean, trends, and whether results are concerning.',
+      'insurance-eob': '\n\nDOCUMENT TYPE: Insurance Explanation of Benefits / Medical Bill\nFocus especially on: what was covered, what the patient owes, appeal options, billing codes explained, and cost-reduction resources.',
+      'discharge': '\n\nDOCUMENT TYPE: Hospital Discharge Summary\nFocus especially on: recovery instructions, medication changes, activity restrictions, warning signs, and follow-up scheduling.',
+    };
+    const documentContext = docTypeContext[documentType] || '';
+
+    // F2: Language instructions
+    const langName = {
+      es: 'Spanish', zh: 'Mandarin Chinese', vi: 'Vietnamese',
+      tl: 'Tagalog', ko: 'Korean', fr: 'French', ar: 'Arabic',
+      pt: 'Portuguese', ru: 'Russian', ht: 'Haitian Creole',
+    };
+    const bilingualInstructions = language && language !== 'en' && langName[language]
+      ? `\n\nBILINGUAL OUTPUT: For the following fields, provide BOTH English AND ${langName[language]} translations. Format each as "English text ||| ${langName[language]} translation":\n- plain_english_summary.diagnosis\n- plain_english_summary.treatment_plan\n- plain_english_summary.prognosis\n- plain_english_summary.timeline\n- Each action in action_checklist (the "action" and "how" fields)\n- Each medication's "purpose" and "how_to_take" fields\n- follow_up_requirements.next_appointment\n- All items in follow_up_requirements.when_to_call_doctor and warning_signs_immediate\n\nKeep all other fields in English only. Use the ||| separator so the app can split and display both languages.`
+      : '';
 
     const prompt = `You are a medical interpreter helping patients understand their doctor visits. Translate medical jargon into clear, understandable language WITHOUT oversimplifying or losing important details.
 
 VISIT TYPE: ${visitType}
 DOCTOR'S NOTES/VISIT SUMMARY:
-${doctorNotes}${concernsContext}${medsContext}
+${doctorNotes}${concernsContext}${medsContext}${knownMedsContext}${documentContext}${bilingualInstructions}
 
 CRITICAL RULES:
 1. Use clear, plain English but maintain medical accuracy
@@ -29,6 +55,8 @@ CRITICAL RULES:
 6. Provide medication safety information
 7. Include second opinion guidance when appropriate
 8. Focus on what patient needs to DO and UNDERSTAND
+9. If known medications are provided, ACTIVELY check for interactions with any newly prescribed medications
+10. For action_checklist items, include a "due_in_days" field (integer estimate) for scheduling reminders
 
 Return ONLY this JSON structure (NO markdown):
 
@@ -45,7 +73,7 @@ Return ONLY this JSON structure (NO markdown):
       "term": "Medical term",
       "definition": "Clear explanation",
       "what_it_means_for_you": "Personal impact",
-      "visual_aid_suggestion": "Brief description of diagram that would help (e.g., 'Diagram showing blood flow through heart' or 'Cross-section of affected joint')"
+      "visual_aid_suggestion": "Brief description of diagram that would help"
     }
   ],
   
@@ -63,7 +91,8 @@ Return ONLY this JSON structure (NO markdown):
       "when": "Specific timing",
       "how": "Step-by-step instructions",
       "what_if_you_dont": "Realistic consequences of not doing this",
-      "priority": "high" | "medium" | "low"
+      "priority": "high" | "medium" | "low",
+      "due_in_days": 7
     }
   ],
   
@@ -84,7 +113,8 @@ Return ONLY this JSON structure (NO markdown):
     "interaction_warnings": "If current medications mentioned, check for potential interactions. If none mentioned, say 'Make sure to tell your pharmacist about ALL medications, supplements, and vitamins you take'",
     "timing_conflicts": "If multiple meds, note any timing issues (e.g., 'Take thyroid med 30 min before other meds')",
     "food_interactions": "Foods or drinks to avoid with these medications",
-    "when_to_call_pharmacist": ["Specific scenarios requiring pharmacist consultation"]
+    "when_to_call_pharmacist": ["Specific scenarios requiring pharmacist consultation"],
+    "known_med_interactions": "If known medications were provided, list specific potential interactions between existing and new medications here. Be specific: 'Lisinopril + Metformin: both affect kidney function - ensure regular kidney monitoring' or 'No significant interactions detected between your current medications and new prescriptions'"
   },
   
   "test_results_explained": [
@@ -113,23 +143,23 @@ Return ONLY this JSON structure (NO markdown):
   ],
   
   "second_opinion_guidance": {
-    "when_appropriate": "Situations where second opinion is reasonable (e.g., 'Major surgery recommended', 'Unclear diagnosis', 'Not improving with treatment', or 'Not applicable for routine care')",
-    "how_to_request_records": "Steps: Call office, request medical records, may need to fill form, usually small fee, legally entitled within 30 days",
-    "what_to_say": "Exact phrase: 'I'd like to get a second opinion. Can you send my records to [other doctor]? I'm not leaving your care, just want another perspective.'",
-    "not_offensive": "Reassurance that good doctors support second opinions for major decisions"
+    "when_appropriate": "Situations where second opinion is reasonable or 'Not applicable for routine care'",
+    "how_to_request_records": "Steps to request medical records",
+    "what_to_say": "Exact phrase to use when requesting second opinion",
+    "not_offensive": "Reassurance that good doctors support second opinions"
   },
   
   "patient_advocacy": {
-    "if_you_disagree": "How to respectfully disagree: 'I understand your recommendation. Can you help me understand why this is the best option? Are there alternatives we could discuss?'",
-    "ask_for_clarification": "It's okay to say: 'Can you explain that in simpler terms?' or 'I'm not sure I understand - can you draw a picture or use a metaphor?'",
-    "bring_support": "You can bring someone to appointments to take notes and ask questions",
-    "get_it_in_writing": "Ask for: written instructions, medication list, test results, treatment plan"
+    "if_you_disagree": "How to respectfully disagree",
+    "ask_for_clarification": "How to ask for simpler explanation",
+    "bring_support": "Encouragement to bring support person",
+    "get_it_in_writing": "What to ask for in writing"
   },
   
   "insurance_navigation": {
-    "likely_coverage": "Based on visit type, what insurance typically covers (e.g., 'Preventive care usually covered 100%', 'Specialist visits have copay', 'Medications need prescription coverage check')",
-    "prior_authorization": "If expensive tests/treatments/meds mentioned: 'May require prior authorization - ask office to submit before appointment'",
-    "appeal_process": "If denied: '1. Get denial reason in writing, 2. Doctor writes letter of medical necessity, 3. Submit appeal within timeline on denial letter, 4. Escalate to state insurance commissioner if needed'",
+    "likely_coverage": "Based on visit type, what insurance typically covers",
+    "prior_authorization": "If applicable, prior authorization guidance",
+    "appeal_process": "Steps if claim is denied",
     "cost_resources": ["GoodRx for medications", "Ask about payment plans", "Hospital financial assistance programs", "Generic medication options"]
   },
   

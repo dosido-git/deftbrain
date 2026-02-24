@@ -1,53 +1,261 @@
-import React, { useState } from 'react';
-import { Users, Clock, Target, Shield, Loader2, Download, Copy, CheckCircle, AlertCircle, Play, MessageSquare, BookOpen, TrendingUp, ChevronDown, ChevronUp, Video, Mic, MicOff, MonitorPlay, Mail, FileText, Calendar, Vote, Users2, Zap } from 'lucide-react';
+import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
+import { usePersistentState } from '../hooks/usePersistentState';
+import { CopyBtn, PrintBtn, ActionBar } from '../components/ActionButtons';
 
+// ════════════════════════════════════════════════════════════
+// THEME
+// ════════════════════════════════════════════════════════════
+function useColors() {
+  const { theme } = useTheme();
+  const d = theme === 'dark';
+  return {
+    bg: d ? 'bg-zinc-900' : 'bg-gradient-to-br from-sky-50 to-blue-50',
+    card: d ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-sky-200',
+    cardAlt: d ? 'bg-zinc-700 border-zinc-600' : 'bg-sky-50 border-sky-200',
+    input: d ? 'bg-zinc-900 border-zinc-700 text-zinc-50 placeholder:text-zinc-500 focus:border-sky-500 focus:ring-sky-500/20' : 'bg-white border-sky-300 text-sky-900 placeholder:text-sky-400 focus:border-sky-600 focus:ring-sky-100',
+    text: d ? 'text-zinc-50' : 'text-sky-900', textSec: d ? 'text-zinc-300' : 'text-sky-700', textMuted: d ? 'text-zinc-400' : 'text-sky-600',
+    label: d ? 'text-zinc-200' : 'text-sky-800', accent: d ? 'text-sky-400' : 'text-sky-600',
+    btnPrimary: d ? 'bg-sky-600 hover:bg-sky-500 text-white' : 'bg-sky-600 hover:bg-sky-700 text-white',
+    btnSec: d ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-50' : 'bg-sky-100 hover:bg-sky-200 text-sky-900',
+    btnDanger: d ? 'bg-red-900/30 hover:bg-red-900/50 text-red-300' : 'bg-red-50 hover:bg-red-100 text-red-700',
+    success: d ? 'bg-green-900/20 border-green-700 text-green-200' : 'bg-green-50 border-green-300 text-green-800',
+    warning: d ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
+    error: d ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
+    info: d ? 'bg-blue-900/20 border-blue-700 text-blue-200' : 'bg-blue-50 border-blue-200 text-blue-900',
+    purple: d ? 'bg-purple-900/20 border-purple-700 text-purple-200' : 'bg-purple-50 border-purple-300 text-purple-800',
+    pillSky: d ? 'bg-sky-900/40 text-sky-300 border-sky-700/40' : 'bg-sky-100 text-sky-700 border-sky-200',
+    pillGreen: d ? 'bg-emerald-900/40 text-emerald-300 border-emerald-700/40' : 'bg-emerald-100 text-emerald-700 border-emerald-200',
+    pillAmber: d ? 'bg-amber-900/40 text-amber-300 border-amber-700/40' : 'bg-amber-100 text-amber-700 border-amber-200',
+    pillRed: d ? 'bg-red-900/40 text-red-300 border-red-700/40' : 'bg-red-100 text-red-700 border-red-200',
+    pillGray: d ? 'bg-zinc-700 text-zinc-400 border-zinc-600' : 'bg-zinc-100 text-zinc-500 border-zinc-200',
+    border: d ? 'border-zinc-700' : 'border-sky-200',
+    timerBg: d ? 'bg-zinc-900' : 'bg-sky-900', timerText: 'text-white',
+  };
+}
+
+// ════════════════════════════════════════════════════════════
+// CONSTANTS
+// ════════════════════════════════════════════════════════════
+const MEETING_TYPES = ['Planning','Decision-making','Update/Status','Brainstorm','Problem-solving','Retrospective','One-on-one'];
+const TEMPLATES = [
+  { id: 'sprint-planning', name: 'Sprint Planning', type: 'Planning', dur: 120 },
+  { id: 'retrospective', name: 'Retrospective', type: 'Retrospective', dur: 60 },
+  { id: 'brainstorm', name: 'Brainstorming', type: 'Brainstorm', dur: 60 },
+  { id: 'decision', name: 'Decision Meeting', type: 'Decision-making', dur: 60 },
+  { id: 'standup', name: 'Daily Standup', type: 'Update/Status', dur: 15 },
+  { id: 'one-on-one', name: '1:1 Check-in', type: 'One-on-one', dur: 30 },
+];
+const PLATFORMS = ['Zoom','Microsoft Teams','Google Meet','Other'];
+const FRAMEWORKS = ['Consensus','Majority Vote','Disagree & Commit','Leader Decides'];
+const DURATIONS = [15, 30, 45, 60, 90, 120];
+const CHALLENGE_OPTS = [
+  { key: 'dominates', label: 'One person dominates', icon: '🗣️' },
+  { key: 'offTopic', label: 'Gets off-topic easily', icon: '🐇' },
+  { key: 'talkOver', label: 'People talk over each other', icon: '📢' },
+  { key: 'schedule', label: 'Hard to keep on schedule', icon: '⏰' },
+  { key: 'quietVoices', label: "Quiet people don't speak up", icon: '🤫' },
+];
+const EFFECTIVENESS_QS = [
+  { id: 'onTime', q: 'Did the meeting end on time?', icon: '⏱️' },
+  { id: 'allSpoke', q: 'Did everyone get to contribute?', icon: '🗣️' },
+  { id: 'decisionsReached', q: 'Were decisions actually made?', icon: '✅' },
+  { id: 'clearActions', q: 'Are action items clear with owners?', icon: '📋' },
+  { id: 'noHijack', q: 'Was the meeting free from hijacking?', icon: '🛡️' },
+];
+const SALARY_TIERS = [
+  { label: 'Junior (~$40/hr)', rate: 40 },
+  { label: 'Mid (~$65/hr)', rate: 65 },
+  { label: 'Senior (~$95/hr)', rate: 95 },
+  { label: 'Lead (~$120/hr)', rate: 120 },
+  { label: 'Director (~$160/hr)', rate: 160 },
+  { label: 'Exec (~$250/hr)', rate: 250 },
+];
+
+// ════════════════════════════════════════════════════════════
+// SECTION COMPONENT
+// ════════════════════════════════════════════════════════════
+function Section({ icon, title, badge, open, onToggle, children, c, actions }) {
+  return (
+    <div className={`${c.card} border rounded-xl p-5`}>
+      <div className="flex items-center gap-2 w-full">
+        <button onClick={onToggle} className="flex items-center gap-2 flex-1 text-left">
+          <span className="text-lg">{icon}</span>
+          <h3 className={`text-sm font-bold ${c.text} flex-1`}>{title}</h3>
+          {badge && <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${c.pillGray} border`}>{badge}</span>}
+          <span className={c.textMuted}>{open ? '▲' : '▼'}</span>
+        </button>
+        {actions}
+      </div>
+      {open && <div className="mt-4">{children}</div>}
+    </div>
+  );
+}
+
+// ════════════════════════════════════════════════════════════
+// FACILITATOR MODE (with F1: Speaking Tracker + F3: Cost)
+// ════════════════════════════════════════════════════════════
+function FacilitatorMode({ results, participants, c, isDark, onEnd, hourlyRate }) {
+  const [currentIdx, setCurrentIdx] = useState(0);
+  const [elapsed, setElapsed] = useState(0);
+  const [totalElapsed, setTotalElapsed] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const [extendedTime, setExtendedTime] = useState(0);
+  const timerRef = useRef(null);
+  // F1: Speaking tracker
+  const [speakingLog, setSpeakingLog] = useState(() => {
+    const log = {};
+    participants.forEach(p => { log[p.name] = { turns: 0, lastStart: null, totalSec: 0 }; });
+    return log;
+  });
+  const [activeSpeaker, setActiveSpeaker] = useState(null);
+
+  const items = results?.meeting_structure?.agenda_items || [];
+  const current = items[currentIdx];
+  const allocated = (current?.time_allocated || 0) * 60 + extendedTime;
+  const remaining = Math.max(allocated - elapsed, 0);
+  const progress = allocated > 0 ? Math.min(elapsed / allocated, 1) : 0;
+  const overTime = elapsed > allocated;
+  // F3: Live cost
+  const costPerSecond = hourlyRate ? (hourlyRate * participants.length / 3600) : 0;
+  const liveCost = (costPerSecond * totalElapsed).toFixed(2);
+
+  useEffect(() => {
+    if (!paused) {
+      timerRef.current = setInterval(() => { setElapsed(p => p + 1); setTotalElapsed(p => p + 1); }, 1000);
+    }
+    return () => clearInterval(timerRef.current);
+  }, [paused]);
+
+  // F1: Track active speaker duration
+  useEffect(() => {
+    if (!activeSpeaker) return;
+    const iv = setInterval(() => {
+      setSpeakingLog(prev => ({ ...prev, [activeSpeaker]: { ...prev[activeSpeaker], totalSec: prev[activeSpeaker].totalSec + 1 } }));
+    }, 1000);
+    return () => clearInterval(iv);
+  }, [activeSpeaker]);
+
+  const next = () => { if (currentIdx < items.length - 1) { setCurrentIdx(p => p + 1); setElapsed(0); setExtendedTime(0); } else endMeeting(); };
+  const prev = () => { if (currentIdx > 0) { setCurrentIdx(p => p - 1); setElapsed(0); setExtendedTime(0); } };
+  const extend = (secs) => setExtendedTime(p => p + secs);
+  const fmt = (s) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+
+  const toggleSpeaker = (name) => {
+    if (activeSpeaker === name) { setActiveSpeaker(null); return; }
+    setActiveSpeaker(name);
+    setSpeakingLog(prev => ({ ...prev, [name]: { ...prev[name], turns: prev[name].turns + 1 } }));
+  };
+
+  const endMeeting = () => {
+    setActiveSpeaker(null);
+    onEnd({ speakingLog, totalElapsed, totalCost: liveCost });
+  };
+
+  const scripts = results?.facilitator_scripts || {};
+  const currentTopic = (current?.topic || '').toLowerCase();
+  const relevantScript = currentTopic.includes('open') ? scripts.opening : currentTopic.includes('clos') || currentTopic.includes('wrap') ? scripts.closing : null;
+
+  return (
+    <div className="space-y-4">
+      {/* Progress bar */}
+      <div className={`${c.card} border rounded-xl p-4`}>
+        <div className="flex items-center gap-2 mb-2">{items.map((_, i) => (
+          <div key={i} className={`flex-1 h-2 rounded-full ${i < currentIdx ? 'bg-emerald-500' : i === currentIdx ? (overTime ? 'bg-red-500' : 'bg-sky-500') : (isDark ? 'bg-zinc-700' : 'bg-sky-100')}`} />
+        ))}</div>
+        <div className="flex items-center justify-between">
+          <p className={`text-xs ${c.textMuted}`}>Item {currentIdx + 1}/{items.length}</p>
+          {/* F3: Live cost */}
+          {costPerSecond > 0 && <p className={`text-xs font-mono font-bold ${totalElapsed > (results.meeting_structure?.total_duration || 60) * 60 ? 'text-red-500' : c.accent}`}>💰 ${liveCost}</p>}
+        </div>
+      </div>
+
+      {/* Timer */}
+      <div className={`${c.timerBg} rounded-xl p-6 text-center`}>
+        <p className={`text-sm ${c.timerText} opacity-70 mb-1`}>{current?.topic}</p>
+        <p className={`text-6xl font-black ${overTime ? 'text-red-400' : c.timerText} font-mono`}>{overTime ? '-' : ''}{fmt(overTime ? elapsed - allocated : remaining)}</p>
+        <p className={`text-xs ${c.timerText} opacity-50 mt-1`}>{fmt(elapsed)} elapsed / {fmt(allocated)} allocated</p>
+        <div className="w-full h-2 rounded-full bg-white/10 mt-4 overflow-hidden">
+          <div className={`h-full rounded-full transition-all ${overTime ? 'bg-red-500' : progress > 0.8 ? 'bg-amber-400' : 'bg-emerald-400'}`} style={{ width: `${Math.min(progress * 100, 100)}%` }} />
+        </div>
+        <div className="flex items-center justify-center gap-3 mt-4">
+          <button onClick={prev} disabled={currentIdx === 0} className="text-white/60 hover:text-white disabled:opacity-30 text-lg">⏮️</button>
+          <button onClick={() => setPaused(!paused)} className="text-white text-2xl">{paused ? '▶️' : '⏸️'}</button>
+          <button onClick={next} className="text-white text-lg">{currentIdx < items.length - 1 ? '⏭️' : '🏁'}</button>
+        </div>
+        <div className="flex items-center justify-center gap-2 mt-3">
+          {[60, 120, 300].map(s => <button key={s} onClick={() => extend(s)} className="text-xs text-white/60 hover:text-white border border-white/20 px-2 py-1 rounded">+{s / 60}m</button>)}
+        </div>
+      </div>
+
+      {/* Current item details */}
+      <div className={`${c.card} border rounded-xl p-5 space-y-3`}>
+        <div><p className={`text-[10px] font-bold ${c.textMuted} uppercase`}>Objective</p><p className={`text-sm ${c.textSec}`}>{current?.objective}</p></div>
+        <div><p className={`text-[10px] font-bold ${c.textMuted} uppercase`}>Your Role</p><p className={`text-sm ${c.textSec}`}>{current?.facilitator_role}</p></div>
+        {current?.speaker_order?.length > 0 && <div><p className={`text-[10px] font-bold ${c.textMuted} uppercase`}>Speaking Order</p><div className="flex flex-wrap gap-1 mt-1">{current.speaker_order.map((s, i) => <span key={i} className={`${c.pillSky} border text-xs px-2 py-0.5 rounded`}>{i + 1}. {s}</span>)}</div></div>}
+        {current?.time_warning && <div className={`${c.warning} border rounded-lg p-2`}><p className="text-xs">⏰ {current.time_warning}</p></div>}
+        {relevantScript && <div className={`${c.info} border rounded-lg p-3`}><p className="text-[10px] font-bold mb-1">💬 SCRIPT</p><p className="text-xs italic">"{relevantScript}"</p></div>}
+      </div>
+
+      {/* F1: SPEAKING TRACKER */}
+      {participants.length > 0 && (
+        <div className={`${c.card} border rounded-xl p-5`}>
+          <p className={`text-xs font-bold ${c.label} mb-3`}>🗣️ Tap who's speaking</p>
+          <div className="grid grid-cols-2 gap-2">{participants.map(p => {
+            const log = speakingLog[p.name] || { turns: 0, totalSec: 0 };
+            const isActive = activeSpeaker === p.name;
+            return (
+              <button key={p.name} onClick={() => toggleSpeaker(p.name)}
+                className={`p-3 border-2 rounded-lg text-left transition-all ${isActive ? 'border-emerald-500 bg-emerald-900/20 ring-2 ring-emerald-500/30' : (isDark ? 'border-zinc-600 hover:border-zinc-500' : 'border-sky-200 hover:border-sky-300')}`}>
+                <div className="flex items-center justify-between">
+                  <span className={`text-sm font-semibold ${c.text}`}>{p.name}</span>
+                  {isActive && <span className="text-xs animate-pulse">🔴</span>}
+                </div>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className={`text-[10px] ${c.textMuted}`}>{log.turns} turns</span>
+                  <span className={`text-[10px] ${c.textMuted}`}>{fmt(log.totalSec)}</span>
+                </div>
+              </button>
+            );
+          })}</div>
+          {activeSpeaker && <p className={`text-xs text-center mt-2 text-emerald-500 font-semibold`}>🎙️ {activeSpeaker} is speaking — tap again to stop</p>}
+        </div>
+      )}
+
+      {/* Quick scripts */}
+      <div className={`${c.card} border rounded-xl p-5`}>
+        <p className={`text-xs font-bold ${c.label} mb-3`}>🚨 Quick Scripts</p>
+        <div className="grid grid-cols-2 gap-2">{[
+          { label: 'Redirect Tangent', key: 'redirecting_tangent', icon: '🐇' },
+          { label: 'Manage Dominance', key: 'managing_dominance', icon: '🗣️' },
+          { label: 'Invite Quiet Voices', key: 'encouraging_quiet_voices', icon: '🤫' },
+          { label: 'Park an Idea', key: 'parking_lot_response', icon: '🅿️' },
+        ].map(s => scripts[s.key] && (
+          <div key={s.key} className={`${c.cardAlt} border rounded-lg p-2`}>
+            <p className="text-[10px] font-bold">{s.icon} {s.label}</p>
+            <p className={`text-[10px] ${c.textSec} italic mt-0.5 line-clamp-3`}>"{scripts[s.key]}"</p>
+          </div>
+        ))}</div>
+      </div>
+
+      <button onClick={endMeeting} className={`w-full ${c.btnDanger} border py-2 rounded-lg text-sm font-semibold`}>🏁 End Meeting</button>
+    </div>
+  );
+}
+
+// ════════════════════════════════════════════════════════════
+// MAIN COMPONENT
+// ════════════════════════════════════════════════════════════
 const MeetingHijackPreventer = () => {
   const { callToolEndpoint, loading } = useClaudeAPI();
+  const c = useColors();
   const { theme } = useTheme();
   const isDark = theme === 'dark';
 
-  // Theme-aware colors
-  const c = {
-    bg: isDark ? 'bg-zinc-900' : 'bg-gradient-to-br from-sky-50 to-blue-50',
-    card: isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-sky-200',
-    cardAlt: isDark ? 'bg-zinc-700 border-zinc-600' : 'bg-sky-50 border-sky-200',
-    
-    input: isDark
-      ? 'bg-zinc-900 border-zinc-700 text-zinc-50 placeholder:text-zinc-500 focus:border-sky-500 focus:ring-sky-500/20'
-      : 'bg-white border-sky-300 text-sky-900 placeholder:text-sky-400 focus:border-sky-600 focus:ring-sky-100',
-    
-    text: isDark ? 'text-zinc-50' : 'text-sky-900',
-    textSecondary: isDark ? 'text-zinc-300' : 'text-sky-700',
-    textMuted: isDark ? 'text-zinc-400' : 'text-sky-600',
-    label: isDark ? 'text-zinc-200' : 'text-sky-800',
-    
-    btnPrimary: isDark
-      ? 'bg-sky-600 hover:bg-sky-700 text-white'
-      : 'bg-sky-600 hover:bg-sky-700 text-white',
-    btnSecondary: isDark
-      ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-50'
-      : 'bg-sky-100 hover:bg-sky-200 text-sky-900',
-    
-    success: isDark
-      ? 'bg-green-900/20 border-green-700 text-green-200'
-      : 'bg-green-50 border-green-300 text-green-800',
-    warning: isDark
-      ? 'bg-amber-900/20 border-amber-700 text-amber-200'
-      : 'bg-amber-50 border-amber-300 text-amber-800',
-    error: isDark
-      ? 'bg-red-900/20 border-red-700 text-red-200'
-      : 'bg-red-50 border-red-200 text-red-800',
-    info: isDark
-      ? 'bg-blue-900/20 border-blue-700 text-blue-200'
-      : 'bg-blue-50 border-blue-200 text-blue-900',
-    purple: isDark
-      ? 'bg-purple-900/20 border-purple-700 text-purple-200'
-      : 'bg-purple-50 border-purple-300 text-purple-800',
-  };
-
-  // Form state
+  // MODE
+  const [mode, setMode] = useState('setup');
+  // FORM
   const [meetingGoal, setMeetingGoal] = useState('');
   const [duration, setDuration] = useState(60);
   const [participantCount, setParticipantCount] = useState(5);
@@ -57,1009 +265,630 @@ const MeetingHijackPreventer = () => {
   const [decisionFramework, setDecisionFramework] = useState('Consensus');
   const [useTemplate, setUseTemplate] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState('');
-  
-  const [challenges, setChallenges] = useState({
-    dominates: false,
-    offTopic: false,
-    talkOver: false,
-    schedule: false,
-    quietVoices: false,
-  });
-
-  // Results state
+  const [challenges, setChallenges] = useState({ dominates: false, offTopic: false, talkOver: false, schedule: false, quietVoices: false });
+  // PARTICIPANTS
+  const [participants, setParticipants] = useState([]);
+  const [newParticipant, setNewParticipant] = useState('');
+  // F3: COST
+  const [hourlyRate, setHourlyRate] = useState(0);
+  // RESULTS
   const [results, setResults] = useState(null);
   const [error, setError] = useState('');
-  const [copiedScript, setCopiedScript] = useState(null);
-  const [expandedSections, setExpandedSections] = useState({
-    scripts: true,
-    strategies: false,
-    checklist: false,
-    virtual: false,
-    artifacts: false,
-  });
+  // UI TOGGLES
+  const [sections, setSections] = useState({ scripts: true, strategies: false, checklist: false, virtual: false, artifacts: false, roles: false, prep: false });
+  const toggle = (k) => setSections(p => ({ ...p, [k]: !p[k] }));
+  // PERSISTENT
+  const [history, setHistory] = usePersistentState('meeting-history', []);
+  const [actionItems, setActionItems] = usePersistentState('meeting-actions', []);
+  const [parkingLot, setParkingLot] = usePersistentState('meeting-parking-lot', []);
+  // CAPTURE
+  const [captureData, setCaptureData] = useState({ decisions: [''], actionItems: [{ task: '', owner: '', deadline: '' }], parkingLot: [''], notes: '' });
+  const [effectiveness, setEffectiveness] = useState({});
+  // F1: speaking data from facilitator
+  const [meetingStats, setMeetingStats] = useState(null);
 
-  const meetingTypes = [
-    'Planning',
-    'Decision-making',
-    'Update/Status',
-    'Brainstorm',
-    'Problem-solving',
-    'Retrospective',
-    'One-on-one',
-  ];
-
-  const meetingTemplates = [
-    { id: 'sprint-planning', name: 'Sprint Planning', type: 'Planning' },
-    { id: 'retrospective', name: 'Retrospective/Postmortem', type: 'Retrospective' },
-    { id: 'brainstorm', name: 'Brainstorming Session', type: 'Brainstorm' },
-    { id: 'decision', name: 'Decision-making Meeting', type: 'Decision-making' },
-    { id: 'standup', name: 'Daily Standup', type: 'Update/Status' },
-    { id: 'one-on-one', name: 'One-on-One Check-in', type: 'One-on-one' },
-  ];
-
-  const virtualPlatforms = ['Zoom', 'Microsoft Teams', 'Google Meet', 'Other'];
-  const decisionFrameworks = ['Consensus', 'Majority Vote', 'Disagree & Commit', 'Leader Decides'];
-  const durationOptions = [15, 30, 45, 60, 90, 120];
-
-  const handleChallengeToggle = (challenge) => {
-    setChallenges(prev => ({
-      ...prev,
-      [challenge]: !prev[challenge]
-    }));
+  // ─── TEMPLATE SELECT ───
+  const handleTemplateSelect = (id) => {
+    const t = TEMPLATES.find(t => t.id === id);
+    if (!t) return;
+    setSelectedTemplate(id); setUseTemplate(true); setMeetingType(t.type); setDuration(t.dur);
+    if (id === 'one-on-one') setParticipantCount(2);
   };
 
-  const handleTemplateSelect = (templateId) => {
-    setSelectedTemplate(templateId);
-    const template = meetingTemplates.find(t => t.id === templateId);
-    if (template) {
-      setMeetingType(template.type);
-      setUseTemplate(true);
-      // Auto-populate common settings based on template
-      switch (templateId) {
-        case 'standup':
-          setDuration(15);
-          break;
-        case 'sprint-planning':
-          setDuration(120);
-          break;
-        case 'one-on-one':
-          setDuration(30);
-          setParticipantCount(2);
-          break;
-        case 'retrospective':
-          setDuration(60);
-          break;
-        default:
-          break;
-      }
-    }
-  };
+  const addParticipant = useCallback(() => {
+    const name = newParticipant.trim();
+    if (!name || participants.some(p => p.name === name)) return;
+    setParticipants(p => [...p, { name, role: '' }]);
+    setNewParticipant('');
+  }, [newParticipant, participants]);
 
+  // ─── GENERATE ───
   const handleGenerate = async () => {
-    if (!meetingGoal.trim() && !useTemplate) {
-      setError('Please enter a meeting goal or select a template');
-      return;
-    }
-
-    setError('');
-    setResults(null);
-
+    if (!meetingGoal.trim() && !useTemplate) { setError('Enter a meeting goal or select a template'); return; }
+    setError(''); setResults(null);
     try {
       const data = await callToolEndpoint('meeting-hijack-preventer', {
-        meetingGoal: meetingGoal.trim(),
-        duration,
-        participantCount,
-        meetingType,
-        challenges,
-        isVirtual,
-        virtualPlatform: isVirtual ? virtualPlatform : null,
-        decisionFramework,
-        useTemplate,
+        meetingGoal: meetingGoal.trim(), duration, participantCount, meetingType, challenges, isVirtual,
+        virtualPlatform: isVirtual ? virtualPlatform : null, decisionFramework, useTemplate,
         selectedTemplate: useTemplate ? selectedTemplate : null,
       });
-      
-      setResults(data);
-      // Auto-expand relevant sections
-      setExpandedSections(prev => ({ 
-        ...prev, 
-        scripts: true,
-        virtual: isVirtual,
-        artifacts: true,
-      }));
-    } catch (err) {
-      setError(err.message || 'Failed to generate meeting structure. Please try again.');
-    }
+      setResults(data); setMode('results');
+      setSections(p => ({ ...p, scripts: true, virtual: isVirtual, artifacts: true }));
+    } catch (err) { setError(err.message || 'Failed to generate.'); }
   };
 
-  const copyScript = (scriptName, scriptText) => {
-    navigator.clipboard.writeText(scriptText);
-    setCopiedScript(scriptName);
-    setTimeout(() => setCopiedScript(null), 2000);
-  };
-
-  const copyAllScripts = () => {
-    if (!results?.facilitator_scripts) return;
-    
-    const allScripts = Object.entries(results.facilitator_scripts)
-      .map(([name, script]) => `${name.toUpperCase().replace(/_/g, ' ')}:\n${script}\n`)
-      .join('\n');
-    
-    navigator.clipboard.writeText(allScripts);
-    setCopiedScript('all');
-    setTimeout(() => setCopiedScript(null), 2000);
-  };
-
-  const copyArtifact = (artifactName, content) => {
-    navigator.clipboard.writeText(content);
-    setCopiedScript(artifactName);
-    setTimeout(() => setCopiedScript(null), 2000);
-  };
-
-  const downloadAgenda = () => {
+  // ─── SAVE TO HISTORY ───
+  const saveToHistory = useCallback((extra = {}) => {
     if (!results) return;
-    
-    let content = `MEETING AGENDA\n`;
-    content += `${'='.repeat(60)}\n\n`;
-    content += `Duration: ${results.meeting_structure.total_duration} minutes\n`;
-    content += `Type: ${meetingType}\n`;
-    content += `Platform: ${isVirtual ? virtualPlatform : 'In-person'}\n`;
-    content += `Decision Framework: ${decisionFramework}\n\n`;
-    
-    content += `AGENDA ITEMS:\n${'-'.repeat(60)}\n`;
-    results.meeting_structure.agenda_items.forEach((item, idx) => {
-      content += `\n${idx + 1}. ${item.topic} (${item.time_allocated} min)\n`;
-      content += `   Objective: ${item.objective}\n`;
-      content += `   Facilitator: ${item.facilitator_role}\n`;
-    });
-    
-    if (results.virtual_meeting_protocols && isVirtual) {
-      content += `\n\nVIRTUAL MEETING PROTOCOLS:\n${'-'.repeat(60)}\n`;
-      Object.entries(results.virtual_meeting_protocols).forEach(([key, value]) => {
-        content += `\n${key.toUpperCase().replace(/_/g, ' ')}:\n${value}\n`;
-      });
-    }
-    
-    content += `\n\nFACILITATOR SCRIPTS:\n${'-'.repeat(60)}\n`;
-    Object.entries(results.facilitator_scripts).forEach(([name, script]) => {
-      content += `\n${name.toUpperCase().replace(/_/g, ' ')}:\n${script}\n`;
-    });
-    
-    if (results.meeting_artifacts?.action_items_template) {
-      content += `\n\nACTION ITEMS TEMPLATE:\n${'-'.repeat(60)}\n`;
-      content += results.meeting_artifacts.action_items_template;
-    }
-    
-    const blob = new Blob([content], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `meeting-agenda-${meetingType.toLowerCase().replace(/\s+/g, '-')}.txt`;
-    a.click();
+    const entry = {
+      id: Date.now(), date: new Date().toISOString().split('T')[0],
+      goal: meetingGoal || selectedTemplate, duration, participantCount,
+      meetingType, isVirtual, virtualPlatform, decisionFramework,
+      template: selectedTemplate, participants, hourlyRate,
+      results, ...extra,
+    };
+    setHistory(prev => [entry, ...prev].slice(0, 50));
+    return entry;
+  }, [results, meetingGoal, selectedTemplate, duration, participantCount, meetingType, isVirtual, virtualPlatform, decisionFramework, participants, hourlyRate, setHistory]);
+
+  // ─── REUSE FROM HISTORY ───
+  const reuseEntry = (entry) => {
+    setMeetingGoal(entry.goal || ''); setDuration(entry.duration); setParticipantCount(entry.participantCount);
+    setMeetingType(entry.meetingType); setIsVirtual(entry.isVirtual); setVirtualPlatform(entry.virtualPlatform || 'Zoom');
+    setDecisionFramework(entry.decisionFramework); setSelectedTemplate(entry.template || '');
+    setUseTemplate(!!entry.template); setParticipants(entry.participants || []);
+    setHourlyRate(entry.hourlyRate || 0); setResults(null); setMode('setup');
   };
 
-  const downloadMinutes = () => {
-    if (!results?.meeting_artifacts?.meeting_minutes_template) return;
-    
-    const blob = new Blob([results.meeting_artifacts.meeting_minutes_template], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'meeting-minutes-template.txt';
-    a.click();
+  // ─── CAPTURE ───
+  const handleCapture = (stats) => {
+    setMode('capture'); setMeetingStats(stats || null);
+    // Pre-populate with parking lot items from persistent lot
+    const pendingParking = parkingLot.filter(p => p.status === 'parked').map(p => p.text);
+    setCaptureData({ decisions: [''], actionItems: [{ task: '', owner: '', deadline: '' }], parkingLot: pendingParking.length > 0 ? [...pendingParking, ''] : [''], notes: '' });
+    setEffectiveness({});
   };
 
-  const toggleSection = (section) => {
-    setExpandedSections(prev => ({
-      ...prev,
-      [section]: !prev[section]
+  const addCaptureItem = (field) => setCaptureData(p => ({ ...p, [field]: [...p[field], field === 'actionItems' ? { task: '', owner: '', deadline: '' } : ''] }));
+  const updateCaptureItem = (field, idx, val) => setCaptureData(p => ({ ...p, [field]: p[field].map((item, i) => i === idx ? val : item) }));
+  const removeCaptureItem = (field, idx) => setCaptureData(p => ({ ...p, [field]: p[field].filter((_, i) => i !== idx) }));
+
+  const finishCapture = () => {
+    const effScore = Object.values(effectiveness).filter(Boolean).length;
+    // F2: Save action items to persistent store
+    const newActions = captureData.actionItems.filter(a => a.task.trim()).map(a => ({
+      id: Date.now() + Math.random(), task: a.task, owner: a.owner, deadline: a.deadline,
+      status: 'not_started', meetingDate: new Date().toISOString().split('T')[0],
+      meetingGoal: meetingGoal || selectedTemplate,
     }));
+    if (newActions.length) setActionItems(prev => [...newActions, ...prev].slice(0, 200));
+    // F6: Save new parking lot items
+    const newParking = captureData.parkingLot.filter(p => p.trim()).map(p => ({
+      id: Date.now() + Math.random(), text: p, status: 'parked',
+      addedDate: new Date().toISOString().split('T')[0], meetingCount: 1,
+      origin: meetingGoal || selectedTemplate,
+    }));
+    if (newParking.length) {
+      // Merge: don't re-add already-existing parked items
+      const existing = new Set(parkingLot.map(p => p.text.toLowerCase()));
+      const truly = newParking.filter(p => !existing.has(p.text.toLowerCase()));
+      if (truly.length) setParkingLot(prev => [...truly, ...prev].slice(0, 100));
+    }
+    saveToHistory({ capture: captureData, effectivenessScore: effScore, effectivenessDetails: effectiveness, speakingLog: meetingStats?.speakingLog, totalMeetingCost: meetingStats?.totalCost, totalMeetingTime: meetingStats?.totalElapsed });
+    setMode('results');
   };
 
-  const getTotalAllocatedTime = () => {
-    if (!results?.meeting_structure?.agenda_items) return 0;
-    return results.meeting_structure.agenda_items.reduce((sum, item) => sum + item.time_allocated, 0);
-  };
+  // F2: Update action status
+  const updateActionStatus = (id, status) => setActionItems(prev => prev.map(a => a.id === id ? { ...a, status } : a));
+  const deleteAction = (id) => setActionItems(prev => prev.filter(a => a.id !== id));
 
-  const handleReset = () => {
-    setMeetingGoal('');
-    setDuration(60);
-    setParticipantCount(5);
-    setMeetingType('Decision-making');
-    setIsVirtual(true);
-    setVirtualPlatform('Zoom');
-    setDecisionFramework('Consensus');
-    setUseTemplate(false);
-    setSelectedTemplate('');
-    setChallenges({
-      dominates: false,
-      offTopic: false,
-      talkOver: false,
-      schedule: false,
-      quietVoices: false,
+  // F6: Parking lot helpers
+  const updateParkingStatus = (id, status) => setParkingLot(prev => prev.map(p => p.id === id ? { ...p, status } : p));
+  const deleteParkingItem = (id) => setParkingLot(prev => prev.filter(p => p.id !== id));
+
+  // F2: Overdue / pending actions
+  const pendingActions = useMemo(() => {
+    const today = new Date().toISOString().split('T')[0];
+    return actionItems.filter(a => a.status !== 'done').map(a => ({
+      ...a, overdue: a.deadline && a.deadline < today,
+    }));
+  }, [actionItems]);
+
+  // F4: Smart template suggestions
+  const templateSuggestions = useMemo(() => {
+    const typed = history.filter(e => e.meetingType === meetingType && e.effectivenessScore !== undefined);
+    if (typed.length < 3) return null;
+    const avgEff = Math.round(typed.reduce((s, e) => s + e.effectivenessScore, 0) / typed.length * 10) / 10;
+    const avgDuration = Math.round(typed.reduce((s, e) => s + e.duration, 0) / typed.length);
+    const tips = [];
+    const onTimeRate = typed.filter(e => e.effectivenessDetails?.onTime).length / typed.length;
+    if (onTimeRate < 0.5) tips.push(`Your ${meetingType} meetings run over ${Math.round((1 - onTimeRate) * 100)}% of the time. Consider adding ${Math.round(avgDuration * 0.1)} min buffer.`);
+    const allSpokeRate = typed.filter(e => e.effectivenessDetails?.allSpoke).length / typed.length;
+    if (allSpokeRate < 0.5) tips.push('Quiet voices remain an issue. Consider round-robin speaking or smaller breakout groups.');
+    const hijackRate = typed.filter(e => e.effectivenessDetails?.noHijack).length / typed.length;
+    if (hijackRate < 0.6) tips.push('Hijacking is still occurring. Try tighter time-boxing and more explicit ground rules.');
+    if (typed.length >= 5) {
+      const recent = typed.slice(0, 3);
+      const recentAvg = Math.round(recent.reduce((s, e) => s + e.effectivenessScore, 0) / recent.length * 10) / 10;
+      if (recentAvg > avgEff + 0.5) tips.push(`📈 Improving! Recent meetings average ${recentAvg}/5 vs overall ${avgEff}/5.`);
+      if (recentAvg < avgEff - 0.5) tips.push(`📉 Recent meetings declining (${recentAvg}/5 vs ${avgEff}/5). Review what changed.`);
+    }
+    return tips.length ? { tips, avgEff, count: typed.length } : null;
+  }, [history, meetingType]);
+
+  // ─── EXPORTS ───
+  const buildFullExport = useCallback(() => {
+    if (!results) return '';
+    const lines = ['MEETING AGENDA', '═'.repeat(50), `Goal: ${meetingGoal || selectedTemplate}`, `Duration: ${results.meeting_structure?.total_duration} min`, `Type: ${meetingType} | ${isVirtual ? virtualPlatform : 'In-person'}`, `Framework: ${decisionFramework}`, ''];
+    (results.meeting_structure?.agenda_items || []).forEach((item, i) => {
+      lines.push(`${i + 1}. ${item.topic} (${item.time_allocated} min)`, `   Objective: ${item.objective}`, `   Facilitator: ${item.facilitator_role}`, '');
     });
-    setResults(null);
-    setError('');
-  };
+    if (results.facilitator_scripts) {
+      lines.push('FACILITATOR SCRIPTS', '─'.repeat(50));
+      Object.entries(results.facilitator_scripts).forEach(([k, v]) => lines.push(`${k.replace(/_/g, ' ').toUpperCase()}:`, v, ''));
+    }
+    lines.push('', '— Generated by DeftBrain · deftbrain.com');
+    return lines.join('\n');
+  }, [results, meetingGoal, selectedTemplate, meetingType, isVirtual, virtualPlatform, decisionFramework]);
 
+  const buildFollowUpEmail = useCallback(() => {
+    const decisions = captureData.decisions.filter(d => d.trim());
+    const actions = captureData.actionItems.filter(a => a.task.trim());
+    const parking = captureData.parkingLot.filter(p => p.trim());
+    const lines = [`Subject: ${meetingGoal || meetingType} — Summary & Next Steps`, '', 'Hi team,', '', `Thanks for today's ${meetingType.toLowerCase()} meeting.`, ''];
+    if (decisions.length) { lines.push('DECISIONS MADE:'); decisions.forEach(d => lines.push(`• ${d}`)); lines.push(''); }
+    if (actions.length) { lines.push('ACTION ITEMS:'); actions.forEach(a => lines.push(`• ${a.owner || '[Owner]'}: ${a.task}${a.deadline ? ` (by ${a.deadline})` : ''}`)); lines.push(''); }
+    if (parking.length) { lines.push('PARKING LOT:'); parking.forEach(p => lines.push(`• ${p}`)); lines.push(''); }
+    // F1: Speaking stats
+    if (meetingStats?.speakingLog) {
+      const sorted = Object.entries(meetingStats.speakingLog).filter(([_, v]) => v.turns > 0).sort((a, b) => b[1].totalSec - a[1].totalSec);
+      if (sorted.length) { lines.push('PARTICIPATION:', ...sorted.map(([name, v]) => `• ${name}: ${v.turns} turns (${Math.round(v.totalSec / 60)} min)`), ''); }
+    }
+    lines.push('Best,', `${participants.find(p => p.role === 'Facilitator')?.name || '[Facilitator]'}`, '', '— Generated by DeftBrain · deftbrain.com');
+    return lines.join('\n');
+  }, [captureData, meetingGoal, meetingType, meetingStats, participants]);
+
+  // F5: Pre-meeting prep
+  const buildPrepMessage = useCallback((participant) => {
+    if (!results) return '';
+    const lines = [`Hi ${participant.name},`, '', `Here's your prep for our upcoming ${meetingType.toLowerCase()} meeting.`, `Goal: ${meetingGoal || selectedTemplate}`, `Duration: ${duration} min | ${isVirtual ? virtualPlatform : 'In-person'}`, ''];
+    if (participant.role) {
+      lines.push(`YOUR ROLE: ${participant.role}`);
+      const roleInfo = (results.speaking_roles || []).find(r => r.role === participant.role);
+      if (roleInfo) lines.push(roleInfo.responsibility);
+      lines.push('');
+    }
+    if (participant.role === 'Facilitator' && results.facilitator_scripts) {
+      lines.push('KEY SCRIPTS TO REVIEW:');
+      Object.entries(results.facilitator_scripts).forEach(([k, v]) => lines.push(`• ${k.replace(/_/g, ' ')}: "${v.slice(0, 80)}..."`));
+      lines.push('');
+    }
+    if (participant.role === 'Notetaker') lines.push('Please set up a shared doc with the agenda items before the meeting.', '');
+    if (participant.role === 'Timekeeper') lines.push('Please have a timer ready and give 2-min and 1-min warnings for each item.', '');
+    // Pending action items for this person
+    const theirActions = pendingActions.filter(a => a.owner === participant.name);
+    if (theirActions.length) {
+      lines.push('YOUR OPEN ACTION ITEMS:');
+      theirActions.forEach(a => lines.push(`• ${a.overdue ? '🔴 OVERDUE' : '⬜'} ${a.task}${a.deadline ? ` (by ${a.deadline})` : ''}`));
+      lines.push('');
+    }
+    lines.push('See you there!', '', '— Generated by DeftBrain · deftbrain.com');
+    return lines.join('\n');
+  }, [results, meetingType, meetingGoal, selectedTemplate, duration, isVirtual, virtualPlatform, pendingActions]);
+
+  const effStats = useMemo(() => {
+    const rated = history.filter(e => e.effectivenessScore !== undefined);
+    if (rated.length < 2) return null;
+    const avg = Math.round(rated.reduce((s, e) => s + e.effectivenessScore, 0) / rated.length * 10) / 10;
+    const qTotals = {};
+    EFFECTIVENESS_QS.forEach(q => { qTotals[q.id] = { yes: 0, total: 0 }; });
+    rated.forEach(e => { if (!e.effectivenessDetails) return; Object.entries(e.effectivenessDetails).forEach(([k, v]) => { if (qTotals[k]) { qTotals[k].total++; if (v) qTotals[k].yes++; } }); });
+    // F3: Total cost
+    const totalCost = history.reduce((s, e) => s + (parseFloat(e.totalMeetingCost) || 0), 0);
+    return { avg, total: rated.length, breakdown: qTotals, totalCost };
+  }, [history]);
+
+  const handleReset = () => { setResults(null); setError(''); setMeetingGoal(''); setDuration(60); setParticipantCount(5); setMeetingType('Decision-making'); setIsVirtual(true); setVirtualPlatform('Zoom'); setDecisionFramework('Consensus'); setUseTemplate(false); setSelectedTemplate(''); setChallenges({ dominates: false, offTopic: false, talkOver: false, schedule: false, quietVoices: false }); setParticipants([]); setHourlyRate(0); setMode('setup'); };
+
+  // ════════════════════════════════════════════════════════════
+  // RENDER
+  // ════════════════════════════════════════════════════════════
   return (
-    <div className={`min-h-screen ${c.bg} py-8 px-4`}>
-      <div className="max-w-4xl mx-auto space-y-6">
-        
-        {/* Header */}
-        <div className={`${c.card} border rounded-xl shadow-lg p-6 transition-colors duration-200`}>
-          <div className="flex items-center gap-3 mb-4">
-            <div>
-              <h2 className={`text-2xl font-bold ${c.text}`}>Meeting Hijack Preventer 🛡️</h2>
-              <p className={`text-sm ${c.textMuted}`}>Create structured agendas that keep meetings focused and inclusive</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Input Form */}
-        <div className={`${c.card} border rounded-xl shadow-lg p-6 transition-colors duration-200`}>
-          
-          {/* Neurodivergent-friendly notice */}
-          <div className={`${c.info} border-l-4 rounded-r-lg p-4 mb-6`}>
-            <div className="flex items-start gap-2">
-              <Target className={`w-4 h-4 flex-shrink-0 mt-0.5`} />
-              <div>
-                <h3 className={`font-bold text-sm mb-1`}>Built for Everyone</h3>
-                <p className={`text-xs ${c.textSecondary}`}>
-                  Designed with neurodivergent users in mind. Clear time boxes, explicit roles, and redirect scripts help everyone participate effectively.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-6">
-            
-            {/* Template Selection */}
-            <div>
-              <label className={`block text-sm font-medium ${c.label} mb-3`}>
-                Quick Start: Use a Template (Optional)
-              </label>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                {meetingTemplates.map(template => (
-                  <button
-                    key={template.id}
-                    onClick={() => handleTemplateSelect(template.id)}
-                    className={`p-3 border-2 rounded-lg text-left transition-all ${
-                      selectedTemplate === template.id
-                        ? isDark
-                          ? 'border-sky-500 bg-sky-900/30'
-                          : 'border-sky-500 bg-sky-50'
-                        : isDark
-                          ? 'border-zinc-700 hover:border-zinc-600'
-                          : 'border-sky-200 hover:border-sky-300'
-                    }`}
-                  >
-                    <div className={`text-sm font-semibold ${c.text}`}>{template.name}</div>
-                    <div className={`text-xs ${c.textMuted} mt-1`}>{template.type}</div>
-                  </button>
-                ))}
-              </div>
-              {selectedTemplate && (
-                <p className={`text-xs ${c.textMuted} mt-2`}>
-                  ✓ Template selected. You can still customize the goal below.
-                </p>
-              )}
-            </div>
-
-            {/* Meeting Goal */}
-            <div>
-              <label htmlFor="goal" className={`block text-sm font-medium ${c.label} mb-2`}>
-                What's the goal of this meeting? {!useTemplate && '*'}
-              </label>
-              <textarea
-                id="goal"
-                value={meetingGoal}
-                onChange={(e) => setMeetingGoal(e.target.value)}
-                placeholder={useTemplate 
-                  ? "Optional: Add specifics to the template..." 
-                  : "e.g., Decide on Q1 marketing strategy, align on project timeline, brainstorm product features..."}
-                className={`w-full h-24 p-4 border-2 rounded-lg ${c.input} outline-none focus:ring-2 resize-none`}
-              />
-            </div>
-
-            {/* Meeting Format */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              
-              {/* Virtual/In-person */}
-              <div>
-                <label className={`block text-sm font-medium ${c.label} mb-2`}>
-                  Meeting Format
-                </label>
-                <div className="flex gap-3">
-                  <label className={`flex-1 flex items-center gap-2 p-3 border-2 rounded-lg cursor-pointer transition-colors ${
-                    isVirtual
-                      ? isDark ? 'border-sky-500 bg-sky-900/20' : 'border-sky-500 bg-sky-50'
-                      : isDark ? 'border-zinc-700' : 'border-sky-200'
-                  }`}>
-                    <input
-                      type="radio"
-                      checked={isVirtual}
-                      onChange={() => setIsVirtual(true)}
-                      className="w-4 h-4"
-                    />
-                    <Video className="w-4 h-4" />
-                    <span className="text-sm">Virtual</span>
-                  </label>
-                  <label className={`flex-1 flex items-center gap-2 p-3 border-2 rounded-lg cursor-pointer transition-colors ${
-                    !isVirtual
-                      ? isDark ? 'border-sky-500 bg-sky-900/20' : 'border-sky-500 bg-sky-50'
-                      : isDark ? 'border-zinc-700' : 'border-sky-200'
-                  }`}>
-                    <input
-                      type="radio"
-                      checked={!isVirtual}
-                      onChange={() => setIsVirtual(false)}
-                      className="w-4 h-4"
-                    />
-                    <Users className="w-4 h-4" />
-                    <span className="text-sm">In-person</span>
-                  </label>
-                </div>
-              </div>
-
-              {/* Platform (if virtual) */}
-              {isVirtual && (
-                <div>
-                  <label htmlFor="platform" className={`block text-sm font-medium ${c.label} mb-2`}>
-                    Platform
-                  </label>
-                  <select
-                    id="platform"
-                    value={virtualPlatform}
-                    onChange={(e) => setVirtualPlatform(e.target.value)}
-                    className={`w-full p-3 border rounded-lg ${c.input} outline-none focus:ring-2`}
-                  >
-                    {virtualPlatforms.map(platform => (
-                      <option key={platform} value={platform}>{platform}</option>
-                    ))}
-                  </select>
-                </div>
-              )}
-            </div>
-
-            {/* Meeting Details */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              
-              {/* Duration */}
-              <div>
-                <label htmlFor="duration" className={`block text-sm font-medium ${c.label} mb-2`}>
-                  Duration (minutes)
-                </label>
-                <select
-                  id="duration"
-                  value={duration}
-                  onChange={(e) => setDuration(Number(e.target.value))}
-                  className={`w-full p-3 border rounded-lg ${c.input} outline-none focus:ring-2`}
-                >
-                  {durationOptions.map(min => (
-                    <option key={min} value={min}>{min} min</option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Participants */}
-              <div>
-                <label htmlFor="participants" className={`block text-sm font-medium ${c.label} mb-2`}>
-                  Participants
-                </label>
-                <input
-                  id="participants"
-                  type="number"
-                  min="2"
-                  max="20"
-                  value={participantCount}
-                  onChange={(e) => setParticipantCount(Number(e.target.value))}
-                  className={`w-full p-3 border rounded-lg ${c.input} outline-none focus:ring-2`}
-                />
-              </div>
-
-              {/* Meeting Type */}
-              <div>
-                <label htmlFor="type" className={`block text-sm font-medium ${c.label} mb-2`}>
-                  Meeting Type
-                </label>
-                <select
-                  id="type"
-                  value={meetingType}
-                  onChange={(e) => setMeetingType(e.target.value)}
-                  className={`w-full p-3 border rounded-lg ${c.input} outline-none focus:ring-2`}
-                >
-                  {meetingTypes.map(type => (
-                    <option key={type} value={type}>{type}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            {/* Decision Framework */}
-            <div>
-              <label htmlFor="framework" className={`block text-sm font-medium ${c.label} mb-2`}>
-                <Vote className="w-4 h-4 inline mr-1" />
-                Decision-Making Framework
-              </label>
-              <select
-                id="framework"
-                value={decisionFramework}
-                onChange={(e) => setDecisionFramework(e.target.value)}
-                className={`w-full p-3 border rounded-lg ${c.input} outline-none focus:ring-2`}
-              >
-                {decisionFrameworks.map(framework => (
-                  <option key={framework} value={framework}>{framework}</option>
-                ))}
-              </select>
-              <p className={`text-xs ${c.textMuted} mt-1`}>
-                {decisionFramework === 'Consensus' && 'Everyone must agree before moving forward'}
-                {decisionFramework === 'Majority Vote' && 'Decision made by voting, majority wins'}
-                {decisionFramework === 'Disagree & Commit' && 'Voice concerns, then commit to decision'}
-                {decisionFramework === 'Leader Decides' && 'Leader decides after hearing input'}
-              </p>
-            </div>
-
-            {/* Known Challenges */}
-            <div>
-              <label className={`block text-sm font-medium ${c.label} mb-3`}>
-                Known challenges (check all that apply)
-              </label>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {[
-                  { key: 'dominates', label: 'One person dominates' },
-                  { key: 'offTopic', label: 'Gets off-topic easily' },
-                  { key: 'talkOver', label: 'People talk over each other' },
-                  { key: 'schedule', label: 'Hard to keep on schedule' },
-                  { key: 'quietVoices', label: 'Quiet people don\'t speak up' },
-                ].map(({ key, label }) => (
-                  <label
-                    key={key}
-                    className={`flex items-center gap-3 p-3 border-2 rounded-lg cursor-pointer transition-colors ${
-                      challenges[key]
-                        ? isDark
-                          ? 'border-sky-500 bg-sky-900/20'
-                          : 'border-sky-500 bg-sky-50'
-                        : isDark
-                          ? 'border-zinc-700 hover:border-zinc-600'
-                          : 'border-sky-200 hover:border-sky-300'
-                    }`}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={challenges[key]}
-                      onChange={() => handleChallengeToggle(key)}
-                      className="w-4 h-4 text-sky-600 rounded focus:ring-2 focus:ring-sky-500"
-                    />
-                    <span className={`text-sm ${c.text}`}>{label}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex gap-3">
-              <button
-                onClick={handleGenerate}
-                disabled={loading || (!meetingGoal.trim() && !useTemplate)}
-                className={`flex-1 ${c.btnPrimary} disabled:opacity-50 disabled:cursor-not-allowed py-3 px-6 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2`}
-              >
-                {loading ? (
-                  <>
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                    Generating structure...
-                  </>
-                ) : (
-                  <>
-                    <Shield className="w-5 h-5" />
-                    Generate Meeting Structure
-                  </>
-                )}
-              </button>
-              
-              {results && (
-                <button
-                  onClick={handleReset}
-                  className={`${c.btnSecondary} py-3 px-6 rounded-lg font-semibold transition-colors`}
-                >
-                  New Meeting
-                </button>
-              )}
-            </div>
-
-            {/* Error */}
-            {error && (
-              <div className={`${c.error} border rounded-lg p-4 flex items-start gap-3`}>
-                <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
-                <p className="text-sm">{error}</p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Results */}
-        {results && (
-          <div className="space-y-6">
-            
-            {/* Meeting Structure Overview */}
-            <div className={`${c.card} border rounded-xl shadow-lg p-6`}>
-              <div className="flex items-center justify-between mb-4">
-                <h3 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-                  <Clock className="w-5 h-5" />
-                  Meeting Structure
-                </h3>
-                <div className="flex gap-2">
-                  <button
-                    onClick={downloadAgenda}
-                    className={`${c.btnSecondary} py-2 px-4 rounded-lg text-sm flex items-center gap-2 transition-colors`}
-                  >
-                    <Download className="w-4 h-4" />
-                    Download Agenda
-                  </button>
-                </div>
-              </div>
-
-              {/* Time Summary */}
-              <div className={`${c.cardAlt} border rounded-lg p-4 mb-4`}>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className={`text-sm ${c.textMuted}`}>Total Duration</p>
-                    <p className={`text-2xl font-bold ${c.text}`}>{results.meeting_structure.total_duration} min</p>
-                  </div>
-                  <div>
-                    <p className={`text-sm ${c.textMuted}`}>Content Time</p>
-                    <p className={`text-2xl font-bold ${c.text}`}>{getTotalAllocatedTime()} min</p>
-                  </div>
-                  <div>
-                    <p className={`text-sm ${c.textMuted}`}>Buffer</p>
-                    <p className={`text-2xl font-bold ${c.text}`}>{results.meeting_structure.buffer_time} min</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Timeline Visualization */}
-              <div className="space-y-3">
-                {results.meeting_structure.agenda_items.map((item, idx) => (
-                  <div key={idx} className={`${c.cardAlt} border rounded-lg p-4`}>
-                    <div className="flex items-start justify-between mb-2">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className={`inline-flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold ${isDark ? 'bg-sky-600 text-white' : 'bg-sky-600 text-white'}`}>
-                            {idx + 1}
-                          </span>
-                          <h4 className={`font-bold ${c.text}`}>{item.topic}</h4>
-                        </div>
-                        <p className={`text-sm ${c.textSecondary} ml-8`}>{item.objective}</p>
-                      </div>
-                      <div className={`flex items-center gap-1 px-3 py-1 rounded-full ${isDark ? 'bg-sky-900/30 text-sky-300' : 'bg-sky-100 text-sky-700'}`}>
-                        <Clock className="w-3 h-3" />
-                        <span className="text-sm font-semibold">{item.time_allocated} min</span>
-                      </div>
-                    </div>
-                    
-                    {/* Facilitator role */}
-                    <div className={`mt-3 p-3 rounded-lg ${isDark ? 'bg-zinc-800' : 'bg-white'} border ${isDark ? 'border-zinc-700' : 'border-sky-200'}`}>
-                      <p className={`text-xs font-semibold ${c.textMuted} mb-1`}>FACILITATOR ROLE:</p>
-                      <p className={`text-sm ${c.textSecondary}`}>{item.facilitator_role}</p>
-                    </div>
-
-                    {/* Speaker order */}
-                    {item.speaker_order && item.speaker_order.length > 0 && (
-                      <div className="mt-2">
-                        <p className={`text-xs font-semibold ${c.textMuted} mb-1`}>SPEAKING ORDER:</p>
-                        <div className="flex flex-wrap gap-2">
-                          {item.speaker_order.map((speaker, sidx) => (
-                            <span key={sidx} className={`text-xs px-2 py-1 rounded ${isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-sky-50 text-sky-700'}`}>
-                              {sidx + 1}. {speaker}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Time warning */}
-                    {item.time_warning && (
-                      <div className={`mt-3 p-2 rounded ${isDark ? 'bg-amber-900/20 border border-amber-700' : 'bg-amber-50 border border-amber-300'}`}>
-                        <p className={`text-xs ${isDark ? 'text-amber-200' : 'text-amber-800'}`}>
-                          <strong>Time warning:</strong> "{item.time_warning}"
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-
-              {/* Parking Lot Instructions */}
-              {results.meeting_structure.parking_lot_instructions && (
-                <div className={`mt-4 p-4 rounded-lg border-2 ${isDark ? 'border-purple-700 bg-purple-900/20' : 'border-purple-300 bg-purple-50'}`}>
-                  <p className={`text-sm font-semibold ${isDark ? 'text-purple-200' : 'text-purple-900'} mb-2`}>
-                    🅿️ Parking Lot Strategy:
-                  </p>
-                  <p className={`text-sm ${isDark ? 'text-purple-300' : 'text-purple-800'}`}>
-                    {results.meeting_structure.parking_lot_instructions}
-                  </p>
-                </div>
-              )}
-
-              {/* Decision Framework Info */}
-              {results.decision_making_structure && (
-                <div className={`mt-4 p-4 rounded-lg border-2 ${isDark ? 'border-blue-700 bg-blue-900/20' : 'border-blue-300 bg-blue-50'}`}>
-                  <div className="flex items-start gap-2">
-                    <Vote className="w-5 h-5 flex-shrink-0 mt-0.5" />
-                    <div>
-                      <p className={`text-sm font-semibold ${isDark ? 'text-blue-200' : 'text-blue-900'} mb-2`}>
-                        Decision Framework: {decisionFramework}
-                      </p>
-                      <p className={`text-sm ${isDark ? 'text-blue-300' : 'text-blue-800'} mb-2`}>
-                        {results.decision_making_structure.when_to_use}
-                      </p>
-                      {results.decision_making_structure.process && (
-                        <div className="mt-2">
-                          <p className={`text-xs font-semibold ${isDark ? 'text-blue-300' : 'text-blue-800'} mb-1`}>PROCESS:</p>
-                          <p className={`text-xs ${isDark ? 'text-blue-300' : 'text-blue-800'}`}>
-                            {results.decision_making_structure.process}
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Virtual Meeting Protocols */}
-            {results.virtual_meeting_protocols && isVirtual && (
-              <div className={`${c.card} border rounded-xl shadow-lg p-6`}>
-                <button
-                  onClick={() => toggleSection('virtual')}
-                  className="flex items-center gap-2 mb-4 w-full"
-                >
-                  <Video className={`w-5 h-5 ${c.accent}`} />
-                  <h3 className={`text-xl font-bold ${c.text}`}>{virtualPlatform} Specific Protocols</h3>
-                  {expandedSections.virtual ? (
-                    <ChevronUp className="w-5 h-5 ml-auto" />
-                  ) : (
-                    <ChevronDown className="w-5 h-5 ml-auto" />
-                  )}
-                </button>
-
-                {expandedSections.virtual && (
-                  <div className="space-y-4">
-                    {Object.entries(results.virtual_meeting_protocols).map(([protocolName, protocol]) => (
-                      <div key={protocolName} className={`${c.cardAlt} border rounded-lg p-4`}>
-                        <div className="flex items-center gap-2 mb-2">
-                          {protocolName.includes('mute') && <MicOff className="w-4 h-4" />}
-                          {protocolName.includes('screen') && <MonitorPlay className="w-4 h-4" />}
-                          {protocolName.includes('chat') && <MessageSquare className="w-4 h-4" />}
-                          {protocolName.includes('hand') && <Users2 className="w-4 h-4" />}
-                          <h4 className={`font-semibold ${c.text} capitalize`}>
-                            {protocolName.replace(/_/g, ' ')}
-                          </h4>
-                        </div>
-                        <p className={`text-sm ${c.textSecondary}`}>{protocol}</p>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Facilitator Scripts */}
-            <div className={`${c.card} border rounded-xl shadow-lg p-6`}>
-              <div className="flex items-center justify-between mb-4">
-                <button
-                  onClick={() => toggleSection('scripts')}
-                  className="flex items-center gap-2"
-                >
-                  <MessageSquare className={`w-5 h-5 ${c.accent}`} />
-                  <h3 className={`text-xl font-bold ${c.text}`}>Facilitator Scripts</h3>
-                  {expandedSections.scripts ? (
-                    <ChevronUp className="w-5 h-5" />
-                  ) : (
-                    <ChevronDown className="w-5 h-5" />
-                  )}
-                </button>
-                <button
-                  onClick={copyAllScripts}
-                  className={`${c.btnSecondary} py-2 px-4 rounded-lg text-sm flex items-center gap-2 transition-colors`}
-                >
-                  {copiedScript === 'all' ? (
-                    <>
-                      <CheckCircle className="w-4 h-4" />
-                      Copied!
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="w-4 h-4" />
-                      Copy All
-                    </>
-                  )}
-                </button>
-              </div>
-
-              {expandedSections.scripts && (
-                <div className="space-y-4">
-                  {Object.entries(results.facilitator_scripts).map(([scriptName, scriptText]) => (
-                    <div key={scriptName} className={`${c.cardAlt} border rounded-lg p-4`}>
-                      <div className="flex items-start justify-between mb-2">
-                        <h4 className={`font-semibold ${c.text} capitalize`}>
-                          {scriptName.replace(/_/g, ' ')}
-                        </h4>
-                        <button
-                          onClick={() => copyScript(scriptName, scriptText)}
-                          className={`${c.btnSecondary} py-1 px-3 rounded text-xs flex items-center gap-1 transition-colors`}
-                        >
-                          {copiedScript === scriptName ? (
-                            <>
-                              <CheckCircle className="w-3 h-3" />
-                              Copied
-                            </>
-                          ) : (
-                            <>
-                              <Copy className="w-3 h-3" />
-                              Copy
-                            </>
-                          )}
-                        </button>
-                      </div>
-                      <p className={`text-sm ${c.textSecondary} italic`}>"{scriptText}"</p>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Speaking Roles */}
-            {results.speaking_roles && results.speaking_roles.length > 0 && (
-              <div className={`${c.card} border rounded-xl shadow-lg p-6`}>
-                <h3 className={`text-xl font-bold ${c.text} mb-4 flex items-center gap-2`}>
-                  <Users className="w-5 h-5" />
-                  Assigned Roles
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {results.speaking_roles.map((role, idx) => (
-                    <div key={idx} className={`${c.cardAlt} border rounded-lg p-4`}>
-                      <h4 className={`font-bold ${c.text} mb-2`}>{role.role}</h4>
-                      <p className={`text-sm ${c.textSecondary}`}>{role.responsibility}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Meeting Artifacts */}
-            {results.meeting_artifacts && (
-              <div className={`${c.card} border rounded-xl shadow-lg p-6`}>
-                <button
-                  onClick={() => toggleSection('artifacts')}
-                  className="flex items-center gap-2 mb-4 w-full"
-                >
-                  <FileText className={`w-5 h-5 ${c.accent}`} />
-                  <h3 className={`text-xl font-bold ${c.text}`}>Meeting Artifacts & Follow-up</h3>
-                  {expandedSections.artifacts ? (
-                    <ChevronUp className="w-5 h-5 ml-auto" />
-                  ) : (
-                    <ChevronDown className="w-5 h-5 ml-auto" />
-                  )}
-                </button>
-
-                {expandedSections.artifacts && (
-                  <div className="space-y-4">
-                    
-                    {/* Action Items Template */}
-                    {results.meeting_artifacts.action_items_template && (
-                      <div className={`${c.cardAlt} border rounded-lg p-4`}>
-                        <div className="flex items-start justify-between mb-2">
-                          <h4 className={`font-semibold ${c.text} flex items-center gap-2`}>
-                            <CheckCircle className="w-4 h-4" />
-                            Action Items Tracker
-                          </h4>
-                          <button
-                            onClick={() => copyArtifact('action-items', results.meeting_artifacts.action_items_template)}
-                            className={`${c.btnSecondary} py-1 px-3 rounded text-xs flex items-center gap-1`}
-                          >
-                            {copiedScript === 'action-items' ? (
-                              <>
-                                <CheckCircle className="w-3 h-3" />
-                                Copied
-                              </>
-                            ) : (
-                              <>
-                                <Copy className="w-3 h-3" />
-                                Copy
-                              </>
-                            )}
-                          </button>
-                        </div>
-                        <pre className={`text-xs ${c.textSecondary} whitespace-pre-wrap font-mono ${isDark ? 'bg-zinc-900' : 'bg-white'} p-3 rounded`}>
-                          {results.meeting_artifacts.action_items_template}
-                        </pre>
-                      </div>
-                    )}
-
-                    {/* Meeting Minutes Template */}
-                    {results.meeting_artifacts.meeting_minutes_template && (
-                      <div className={`${c.cardAlt} border rounded-lg p-4`}>
-                        <div className="flex items-start justify-between mb-2">
-                          <h4 className={`font-semibold ${c.text} flex items-center gap-2`}>
-                            <BookOpen className="w-4 h-4" />
-                            Meeting Minutes Template
-                          </h4>
-                          <div className="flex gap-2">
-                            <button
-                              onClick={downloadMinutes}
-                              className={`${c.btnSecondary} py-1 px-3 rounded text-xs flex items-center gap-1`}
-                            >
-                              <Download className="w-3 h-3" />
-                              Download
-                            </button>
-                            <button
-                              onClick={() => copyArtifact('minutes', results.meeting_artifacts.meeting_minutes_template)}
-                              className={`${c.btnSecondary} py-1 px-3 rounded text-xs flex items-center gap-1`}
-                            >
-                              {copiedScript === 'minutes' ? (
-                                <>
-                                  <CheckCircle className="w-3 h-3" />
-                                  Copied
-                                </>
-                              ) : (
-                                <>
-                                  <Copy className="w-3 h-3" />
-                                  Copy
-                                </>
-                              )}
-                            </button>
-                          </div>
-                        </div>
-                        <p className={`text-xs ${c.textMuted}`}>Fill out during or immediately after the meeting</p>
-                      </div>
-                    )}
-
-                    {/* Follow-up Email */}
-                    {results.meeting_artifacts.follow_up_email && (
-                      <div className={`${c.cardAlt} border rounded-lg p-4`}>
-                        <div className="flex items-start justify-between mb-2">
-                          <h4 className={`font-semibold ${c.text} flex items-center gap-2`}>
-                            <Mail className="w-4 h-4" />
-                            Follow-up Email Draft
-                          </h4>
-                          <button
-                            onClick={() => copyArtifact('email', results.meeting_artifacts.follow_up_email)}
-                            className={`${c.btnSecondary} py-1 px-3 rounded text-xs flex items-center gap-1`}
-                          >
-                            {copiedScript === 'email' ? (
-                              <>
-                                <CheckCircle className="w-3 h-3" />
-                                Copied
-                              </>
-                            ) : (
-                              <>
-                                <Copy className="w-3 h-3" />
-                                Copy
-                              </>
-                            )}
-                          </button>
-                        </div>
-                        <pre className={`text-sm ${c.textSecondary} whitespace-pre-wrap ${isDark ? 'bg-zinc-900' : 'bg-white'} p-3 rounded border ${isDark ? 'border-zinc-700' : 'border-sky-200'}`}>
-                          {results.meeting_artifacts.follow_up_email}
-                        </pre>
-                      </div>
-                    )}
-
-                    {/* Decision Log */}
-                    {results.meeting_artifacts.decision_log && (
-                      <div className={`${c.cardAlt} border rounded-lg p-4`}>
-                        <div className="flex items-start justify-between mb-2">
-                          <h4 className={`font-semibold ${c.text} flex items-center gap-2`}>
-                            <Vote className="w-4 h-4" />
-                            Decision Log Template
-                          </h4>
-                          <button
-                            onClick={() => copyArtifact('decisions', results.meeting_artifacts.decision_log)}
-                            className={`${c.btnSecondary} py-1 px-3 rounded text-xs flex items-center gap-1`}
-                          >
-                            {copiedScript === 'decisions' ? (
-                              <>
-                                <CheckCircle className="w-3 h-3" />
-                                Copied
-                              </>
-                            ) : (
-                              <>
-                                <Copy className="w-3 h-3" />
-                                Copy
-                              </>
-                            )}
-                          </button>
-                        </div>
-                        <p className={`text-xs ${c.textSecondary}`}>{results.meeting_artifacts.decision_log}</p>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Anti-Hijack Strategies */}
-            {results.anti_hijack_strategies && results.anti_hijack_strategies.length > 0 && (
-              <div className={`${c.card} border rounded-xl shadow-lg p-6`}>
-                <button
-                  onClick={() => toggleSection('strategies')}
-                  className="flex items-center gap-2 mb-4 w-full"
-                >
-                  <Target className={`w-5 h-5 ${c.accent}`} />
-                  <h3 className={`text-xl font-bold ${c.text}`}>Anti-Hijack Strategies</h3>
-                  {expandedSections.strategies ? (
-                    <ChevronUp className="w-5 h-5 ml-auto" />
-                  ) : (
-                    <ChevronDown className="w-5 h-5 ml-auto" />
-                  )}
-                </button>
-
-                {expandedSections.strategies && (
-                  <div className="space-y-4">
-                    {results.anti_hijack_strategies.map((strategy, idx) => (
-                      <div key={idx} className={`${c.cardAlt} border rounded-lg p-4`}>
-                        <h4 className={`font-bold ${c.text} mb-3`}>Scenario: {strategy.scenario}</h4>
-                        <div className="space-y-2">
-                          <div>
-                            <p className={`text-xs font-semibold ${c.textMuted} mb-1`}>PREVENTION:</p>
-                            <p className={`text-sm ${c.textSecondary}`}>{strategy.prevention}</p>
-                          </div>
-                          <div>
-                            <p className={`text-xs font-semibold ${c.textMuted} mb-1`}>IF IT HAPPENS:</p>
-                            <p className={`text-sm ${c.textSecondary}`}>{strategy.response}</p>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Preparation Checklist */}
-            {results.preparation_checklist && results.preparation_checklist.length > 0 && (
-              <div className={`${c.card} border rounded-xl shadow-lg p-6`}>
-                <button
-                  onClick={() => toggleSection('checklist')}
-                  className="flex items-center gap-2 mb-4 w-full"
-                >
-                  <BookOpen className={`w-5 h-5 ${c.accent}`} />
-                  <h3 className={`text-xl font-bold ${c.text}`}>Preparation Checklist</h3>
-                  {expandedSections.checklist ? (
-                    <ChevronUp className="w-5 h-5 ml-auto" />
-                  ) : (
-                    <ChevronDown className="w-5 h-5 ml-auto" />
-                  )}
-                </button>
-
-                {expandedSections.checklist && (
-                  <ul className="space-y-2">
-                    {results.preparation_checklist.map((item, idx) => (
-                      <li key={idx} className="flex items-start gap-2">
-                        <CheckCircle className={`w-4 h-4 ${isDark ? 'text-green-400' : 'text-green-600'} flex-shrink-0 mt-0.5`} />
-                        <span className={`text-sm ${c.textSecondary}`}>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            )}
-
-            {/* Success Metrics */}
-            {results.success_metrics && (
-              <div className={`${c.success} border-l-4 rounded-r-lg p-6`}>
-                <h3 className="font-bold mb-2 flex items-center gap-2">
-                  <TrendingUp className="w-5 h-5" />
-                  Success Metrics
-                </h3>
-                <p className="text-sm">{results.success_metrics}</p>
-              </div>
-            )}
-          </div>
-        )}
+    <div className={`space-y-6 ${c.text}`}>
+      <div className="mb-2">
+        <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>🛡️ Meeting Hijack Preventer</h2>
+        <p className={`text-sm ${isDark ? 'text-zinc-400' : 'text-gray-500'}`}>Structured agendas that keep meetings focused and inclusive</p>
       </div>
+
+      {/* MODE TABS */}
+      <div className={`${c.card} border rounded-xl p-4`}>
+        <div className="grid grid-cols-5 gap-2">
+          {[
+            { id: 'setup', icon: '✏️', label: 'Setup' },
+            { id: 'results', icon: '📋', label: 'Agenda', disabled: !results },
+            { id: 'facilitator', icon: '🎯', label: 'Facilitate', disabled: !results },
+            { id: 'actions', icon: '☑️', label: `Actions (${pendingActions.length})` },
+            { id: 'history', icon: '📚', label: `History (${history.length})` },
+          ].map(m => (
+            <button key={m.id} onClick={() => !m.disabled && setMode(m.id)} disabled={m.disabled}
+              className={`p-2.5 border-2 rounded-lg text-center transition-colors ${m.disabled ? 'opacity-30 cursor-not-allowed' : ''} ${mode === m.id ? (isDark ? 'border-sky-500 bg-sky-900/20' : 'border-sky-500 bg-sky-50') : (isDark ? 'border-zinc-700 hover:border-zinc-600' : 'border-sky-200 hover:border-sky-300')}`}>
+              <span className="text-lg block">{m.icon}</span>
+              <p className={`text-[10px] font-semibold ${c.text}`}>{m.label}</p>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* F2: Overdue action items alert */}
+      {mode === 'setup' && pendingActions.some(a => a.overdue) && (
+        <div className={`${c.error} border rounded-xl p-4 flex items-start gap-2`}>
+          <span>🔴</span>
+          <div><p className="text-sm font-bold">Overdue action items</p>
+            {pendingActions.filter(a => a.overdue).slice(0, 3).map(a => (
+              <p key={a.id} className="text-xs mt-0.5">{a.owner ? `${a.owner}: ` : ''}{a.task} (due {a.deadline})</p>
+            ))}
+            <button onClick={() => setMode('actions')} className="text-xs underline mt-1">View all →</button>
+          </div>
+        </div>
+      )}
+
+      {/* F6: Parking lot reminder */}
+      {mode === 'setup' && parkingLot.filter(p => p.status === 'parked').length > 0 && (
+        <div className={`${c.purple} border rounded-xl p-4 flex items-start gap-2`}>
+          <span>🅿️</span>
+          <div><p className="text-sm font-bold">{parkingLot.filter(p => p.status === 'parked').length} parked items</p>
+            {parkingLot.filter(p => p.status === 'parked').slice(0, 3).map(p => (
+              <p key={p.id} className="text-xs mt-0.5">• {p.text} <span className={`${c.textMuted}`}>(from {p.addedDate})</span></p>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* F4: Smart suggestions */}
+      {mode === 'setup' && templateSuggestions && (
+        <div className={`${c.warning} border rounded-xl p-4`}>
+          <p className="text-sm font-bold mb-2">💡 Insights from {templateSuggestions.count} past {meetingType} meetings (avg {templateSuggestions.avgEff}/5)</p>
+          {templateSuggestions.tips.map((tip, i) => <p key={i} className="text-xs mt-1">• {tip}</p>)}
+        </div>
+      )}
+
+      {/* ══════════ SETUP MODE ══════════ */}
+      {mode === 'setup' && (
+        <div className={`${c.card} border rounded-xl p-6 space-y-5`}>
+          <div className={`${c.info} border-l-4 rounded-r-lg p-4 flex items-start gap-2`}>
+            <span>🎯</span>
+            <div><h4 className="font-bold text-sm mb-0.5">Built for Everyone</h4><p className={`text-xs ${c.textSec}`}>Neurodivergent-friendly: clear time boxes, explicit roles, and redirect scripts.</p></div>
+          </div>
+
+          {/* Templates */}
+          <div>
+            <label className={`text-sm font-semibold ${c.label} block mb-2`}>Template <span className={`text-[10px] ${c.textMuted}`}>(optional)</span></label>
+            <div className="grid grid-cols-3 gap-2">{TEMPLATES.map(t => (
+              <button key={t.id} onClick={() => handleTemplateSelect(t.id)}
+                className={`p-3 border-2 rounded-lg text-left transition-colors ${selectedTemplate === t.id ? (isDark ? 'border-sky-500 bg-sky-900/20' : 'border-sky-500 bg-sky-50') : (isDark ? 'border-zinc-700 hover:border-zinc-600' : 'border-sky-200 hover:border-sky-300')}`}>
+                <p className={`text-sm font-semibold ${c.text}`}>{t.name}</p>
+                <p className={`text-[10px] ${c.textMuted}`}>{t.type} · {t.dur}m</p>
+              </button>
+            ))}</div>
+          </div>
+
+          <div>
+            <label className={`text-sm font-semibold ${c.label} block mb-1.5`}>Goal {!useTemplate && '*'}</label>
+            <textarea value={meetingGoal} onChange={e => setMeetingGoal(e.target.value)} placeholder={useTemplate ? 'Optional: customize...' : 'e.g., Decide Q1 strategy...'} className={`w-full h-20 p-4 border-2 rounded-lg ${c.input} outline-none focus:ring-2 resize-none text-sm`} />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div><label className={`text-sm font-semibold ${c.label} block mb-1.5`}>Format</label>
+              <div className="flex gap-2">
+                <button onClick={() => setIsVirtual(true)} className={`flex-1 p-2.5 border-2 rounded-lg text-sm font-semibold transition-colors ${isVirtual ? (isDark ? 'border-sky-500 bg-sky-900/20' : 'border-sky-500 bg-sky-50') : (isDark ? 'border-zinc-700' : 'border-sky-200')}`}>📹 Virtual</button>
+                <button onClick={() => setIsVirtual(false)} className={`flex-1 p-2.5 border-2 rounded-lg text-sm font-semibold transition-colors ${!isVirtual ? (isDark ? 'border-sky-500 bg-sky-900/20' : 'border-sky-500 bg-sky-50') : (isDark ? 'border-zinc-700' : 'border-sky-200')}`}>👥 In-person</button>
+              </div></div>
+            {isVirtual && <div><label className={`text-sm font-semibold ${c.label} block mb-1.5`}>Platform</label>
+              <select value={virtualPlatform} onChange={e => setVirtualPlatform(e.target.value)} className={`w-full p-2.5 border rounded-lg ${c.input} outline-none text-sm`}>{PLATFORMS.map(p => <option key={p} value={p}>{p}</option>)}</select></div>}
+          </div>
+
+          <div className="grid grid-cols-3 gap-3">
+            <div><label className={`text-sm font-semibold ${c.label} block mb-1.5`}>Duration</label>
+              <select value={duration} onChange={e => setDuration(Number(e.target.value))} className={`w-full p-2.5 border rounded-lg ${c.input} outline-none text-sm`}>{DURATIONS.map(d => <option key={d} value={d}>{d} min</option>)}</select></div>
+            <div><label className={`text-sm font-semibold ${c.label} block mb-1.5`}>People</label>
+              <input type="number" min="2" max="30" value={participantCount} onChange={e => setParticipantCount(Number(e.target.value))} className={`w-full p-2.5 border rounded-lg ${c.input} outline-none text-sm`} /></div>
+            <div><label className={`text-sm font-semibold ${c.label} block mb-1.5`}>Type</label>
+              <select value={meetingType} onChange={e => setMeetingType(e.target.value)} className={`w-full p-2.5 border rounded-lg ${c.input} outline-none text-sm`}>{MEETING_TYPES.map(t => <option key={t} value={t}>{t}</option>)}</select></div>
+          </div>
+
+          <div><label className={`text-sm font-semibold ${c.label} block mb-1.5`}>🗳️ Framework</label>
+            <select value={decisionFramework} onChange={e => setDecisionFramework(e.target.value)} className={`w-full p-2.5 border rounded-lg ${c.input} outline-none text-sm`}>{FRAMEWORKS.map(f => <option key={f} value={f}>{f}</option>)}</select></div>
+
+          <div><label className={`text-sm font-semibold ${c.label} block mb-2`}>Known Challenges</label>
+            <div className="grid grid-cols-2 gap-2">{CHALLENGE_OPTS.map(ch => (
+              <button key={ch.key} onClick={() => setChallenges(p => ({ ...p, [ch.key]: !p[ch.key] }))}
+                className={`flex items-center gap-2 p-2.5 border-2 rounded-lg text-left text-sm transition-colors ${challenges[ch.key] ? (isDark ? 'border-sky-500 bg-sky-900/20' : 'border-sky-500 bg-sky-50') : (isDark ? 'border-zinc-700' : 'border-sky-200')}`}><span>{ch.icon}</span><span>{ch.label}</span></button>
+            ))}</div></div>
+
+          {/* Participants */}
+          <div><label className={`text-sm font-semibold ${c.label} block mb-1.5`}>👥 Participants <span className={`text-[10px] ${c.textMuted}`}>(optional)</span></label>
+            <div className="flex gap-2 mb-2"><input value={newParticipant} onChange={e => setNewParticipant(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addParticipant(); } }} placeholder="Name..." className={`flex-1 p-2 border rounded-lg ${c.input} outline-none text-sm`} />
+              <button onClick={addParticipant} disabled={!newParticipant.trim()} className={`${c.btnSec} px-3 py-2 rounded-lg text-sm disabled:opacity-40`}>➕</button></div>
+            {participants.length > 0 && <div className="space-y-1.5">{participants.map((p, i) => (
+              <div key={i} className="flex items-center gap-2">
+                <span className={`text-sm font-semibold ${c.text} w-28 truncate`}>{p.name}</span>
+                <select value={p.role} onChange={e => setParticipants(prev => prev.map((pp, j) => j === i ? { ...pp, role: e.target.value } : pp))} className={`flex-1 p-1.5 border rounded-lg ${c.input} outline-none text-xs`}>
+                  <option value="">No role</option>{['Facilitator','Timekeeper','Notetaker','Tech Support','Presenter'].map(r => <option key={r} value={r}>{r}</option>)}</select>
+                <button onClick={() => setParticipants(p => p.filter((_, j) => j !== i))} className={`text-sm ${c.textMuted} hover:text-red-500`}>🗑️</button>
+              </div>
+            ))}</div>}</div>
+
+          {/* F3: Cost calculator */}
+          <div><label className={`text-sm font-semibold ${c.label} block mb-1.5`}>💰 Cost Tracking <span className={`text-[10px] ${c.textMuted}`}>(optional)</span></label>
+            <select value={hourlyRate} onChange={e => setHourlyRate(Number(e.target.value))} className={`w-full p-2.5 border rounded-lg ${c.input} outline-none text-sm`}>
+              <option value={0}>Off — no cost tracking</option>
+              {SALARY_TIERS.map(t => <option key={t.rate} value={t.rate}>{t.label}</option>)}
+            </select>
+            {hourlyRate > 0 && <p className={`text-[10px] ${c.textMuted} mt-1`}>Estimated cost: ${Math.round(hourlyRate * participantCount * duration / 60)} for {duration} min with {participantCount} people</p>}
+          </div>
+
+          <button onClick={handleGenerate} disabled={loading || (!meetingGoal.trim() && !useTemplate)} className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2`}>
+            {loading ? <><span className="animate-spin inline-block">⏳</span> Generating...</> : <>🛡️ Generate Structure</>}</button>
+          {error && <div className={`${c.error} border rounded-lg p-4 flex items-start gap-2`}><span>⚠️</span><p className="text-sm">{error}</p></div>}
+        </div>
+      )}
+
+      {/* ══════════ RESULTS MODE ══════════ */}
+      {mode === 'results' && results && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2">
+              <button onClick={() => setMode('facilitator')} className={`${c.btnPrimary} py-2 px-4 rounded-lg text-sm font-semibold`}>🎯 Start Meeting</button>
+              <button onClick={() => handleCapture(null)} className={`${c.btnSec} py-2 px-3 rounded-lg text-sm`}>📝 Capture</button>
+              <button onClick={() => saveToHistory()} className={`${c.btnSec} py-2 px-3 rounded-lg text-sm`}>💾 Save</button>
+            </div>
+            <ActionBar><CopyBtn content={buildFullExport()} label="Copy" /><PrintBtn content={buildFullExport()} title="Meeting Agenda" /></ActionBar>
+          </div>
+
+          {/* Time summary */}
+          <div className={`${c.card} border rounded-xl p-5`}>
+            <h3 className={`text-sm font-bold ${c.text} mb-3 flex items-center gap-2`}><span>⏱️</span> Structure</h3>
+            <div className="grid grid-cols-3 gap-3 mb-4">
+              {[{ l: 'Total', v: results.meeting_structure?.total_duration }, { l: 'Content', v: (results.meeting_structure?.agenda_items || []).reduce((s, i) => s + i.time_allocated, 0) }, { l: 'Buffer', v: results.meeting_structure?.buffer_time }].map(s => (
+                <div key={s.l} className={`${c.cardAlt} border rounded-lg p-3 text-center`}><p className={`text-[10px] ${c.textMuted}`}>{s.l}</p><p className={`text-2xl font-black ${c.text}`}>{s.v}<span className="text-xs"> min</span></p></div>
+              ))}
+            </div>
+            {hourlyRate > 0 && <div className={`${c.warning} border rounded-lg p-2 mb-4`}><p className="text-xs">💰 Estimated cost: <strong>${Math.round(hourlyRate * participantCount * duration / 60)}</strong> ({participantCount} people × {duration} min × ${hourlyRate}/hr)</p></div>}
+
+            <div className="space-y-3">{(results.meeting_structure?.agenda_items || []).map((item, idx) => (
+              <div key={idx} className={`${c.cardAlt} border rounded-lg p-4`}>
+                <div className="flex items-start justify-between mb-2">
+                  <div className="flex items-center gap-2"><span className="inline-flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold bg-sky-600 text-white">{idx + 1}</span><h4 className={`font-bold ${c.text}`}>{item.topic}</h4></div>
+                  <span className={`${c.pillSky} border text-xs font-bold px-2 py-0.5 rounded`}>⏱️ {item.time_allocated}m</span>
+                </div>
+                <p className={`text-sm ${c.textSec} ml-8 mb-2`}>{item.objective}</p>
+                <div className={`ml-8 p-2.5 rounded-lg ${isDark ? 'bg-zinc-800' : 'bg-white'} border ${c.border}`}><p className={`text-[10px] font-bold ${c.textMuted} mb-0.5`}>FACILITATOR</p><p className={`text-xs ${c.textSec}`}>{item.facilitator_role}</p></div>
+                {item.speaker_order?.length > 0 && <div className="ml-8 mt-2"><p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>SPEAKERS</p><div className="flex flex-wrap gap-1">{item.speaker_order.map((s, i) => <span key={i} className={`${c.pillSky} border text-[10px] px-1.5 py-0.5 rounded`}>{i + 1}. {s}</span>)}</div></div>}
+                {item.time_warning && <div className={`${c.warning} border rounded-lg p-2 ml-8 mt-2`}><p className="text-[10px]">⏰ "{item.time_warning}"</p></div>}
+              </div>
+            ))}</div>
+            {results.meeting_structure?.parking_lot_instructions && <div className={`${c.purple} border-2 rounded-lg p-4 mt-4`}><p className="text-sm font-bold mb-1">🅿️ Parking Lot</p><p className="text-xs">{results.meeting_structure.parking_lot_instructions}</p></div>}
+            {results.decision_making_structure && <div className={`${c.info} border-2 rounded-lg p-4 mt-4`}><p className="text-sm font-bold mb-1">🗳️ {decisionFramework}</p>{results.decision_making_structure.process && <p className="text-xs">{results.decision_making_structure.process}</p>}</div>}
+          </div>
+
+          {results.virtual_meeting_protocols && isVirtual && <Section icon="📹" title={`${virtualPlatform} Protocols`} open={sections.virtual} onToggle={() => toggle('virtual')} c={c}>
+            <div className="space-y-3">{Object.entries(results.virtual_meeting_protocols).map(([k, v]) => <div key={k} className={`${c.cardAlt} border rounded-lg p-3`}><p className={`text-xs font-bold ${c.text} capitalize mb-1`}>{k.includes('mute') ? '🔇' : k.includes('screen') ? '🖥️' : k.includes('chat') ? '💬' : k.includes('hand') ? '✋' : '📹'} {k.replace(/_/g, ' ')}</p><p className={`text-xs ${c.textSec}`}>{v}</p></div>)}</div></Section>}
+
+          {results.facilitator_scripts && <Section icon="💬" title="Scripts" open={sections.scripts} onToggle={() => toggle('scripts')} c={c}
+            actions={<CopyBtn content={Object.entries(results.facilitator_scripts).map(([k, v]) => `${k.replace(/_/g, ' ').toUpperCase()}:\n${v}`).join('\n\n') + '\n\n— Generated by DeftBrain · deftbrain.com'} label="All" />}>
+            <div className="space-y-3">{Object.entries(results.facilitator_scripts).map(([k, v]) => <div key={k} className={`${c.cardAlt} border rounded-lg p-4`}><div className="flex items-start justify-between mb-1"><h4 className={`font-semibold text-sm ${c.text} capitalize`}>{k.replace(/_/g, ' ')}</h4><CopyBtn content={v + '\n\n— Generated by DeftBrain · deftbrain.com'} label="Copy" /></div><p className={`text-sm ${c.textSec} italic`}>"{v}"</p></div>)}</div></Section>}
+
+          {results.speaking_roles?.length > 0 && <Section icon="👥" title="Roles" open={sections.roles} onToggle={() => toggle('roles')} c={c}>
+            <div className="grid grid-cols-2 gap-3">{results.speaking_roles.map((r, i) => <div key={i} className={`${c.cardAlt} border rounded-lg p-3`}><h4 className={`font-bold text-sm ${c.text} mb-1`}>{r.role}</h4>{participants.find(p => p.role === r.role) && <p className={`text-xs font-semibold ${c.accent} mb-1`}>→ {participants.find(p => p.role === r.role).name}</p>}<p className={`text-xs ${c.textSec}`}>{r.responsibility}</p></div>)}</div></Section>}
+
+          {results.anti_hijack_strategies?.length > 0 && <Section icon="🎯" title="Anti-Hijack" badge={`${results.anti_hijack_strategies.length}`} open={sections.strategies} onToggle={() => toggle('strategies')} c={c}>
+            <div className="space-y-3">{results.anti_hijack_strategies.map((s, i) => <div key={i} className={`${c.cardAlt} border rounded-lg p-4`}><h4 className={`font-bold text-sm ${c.text} mb-2`}>🎭 {s.scenario}</h4><div className="space-y-2"><div><p className={`text-[10px] font-bold ${c.textMuted}`}>PREVENTION</p><p className={`text-xs ${c.textSec}`}>{s.prevention}</p></div><div><p className={`text-[10px] font-bold ${c.textMuted}`}>IF IT HAPPENS</p><p className={`text-xs ${c.textSec}`}>{s.response}</p></div></div></div>)}</div></Section>}
+
+          {results.preparation_checklist?.length > 0 && <Section icon="✅" title="Checklist" open={sections.checklist} onToggle={() => toggle('checklist')} c={c}>
+            <div className="space-y-1.5">{results.preparation_checklist.map((item, i) => <div key={i} className="flex items-start gap-2"><span>✅</span><p className={`text-sm ${c.textSec}`}>{item}</p></div>)}</div></Section>}
+
+          {/* F5: PRE-MEETING PREP */}
+          {participants.length > 0 && <Section icon="📨" title="Pre-Meeting Prep" badge={`${participants.length} people`} open={sections.prep} onToggle={() => toggle('prep')} c={c}>
+            <div className="space-y-3">{participants.map((p, i) => (
+              <div key={i} className={`${c.cardAlt} border rounded-lg p-4`}>
+                <div className="flex items-start justify-between mb-2">
+                  <div><h4 className={`font-bold text-sm ${c.text}`}>{p.name}</h4>{p.role && <span className={`${c.pillSky} border text-[10px] font-bold px-1.5 py-0.5 rounded`}>{p.role}</span>}</div>
+                  <CopyBtn content={buildPrepMessage(p)} label="Copy" />
+                </div>
+                <p className={`text-[10px] ${c.textSec} line-clamp-2`}>{buildPrepMessage(p).split('\n').slice(2, 5).join(' ')}</p>
+                {pendingActions.filter(a => a.owner === p.name).length > 0 && <p className={`text-[10px] ${c.accent} mt-1`}>📋 {pendingActions.filter(a => a.owner === p.name).length} pending action items</p>}
+              </div>
+            ))}</div>
+          </Section>}
+
+          {results.meeting_artifacts && <Section icon="📄" title="Artifacts" open={sections.artifacts} onToggle={() => toggle('artifacts')} c={c}>
+            <div className="space-y-3">
+              {results.meeting_artifacts.action_items_template && <div className={`${c.cardAlt} border rounded-lg p-4`}><div className="flex items-start justify-between mb-2"><h4 className={`font-semibold text-sm ${c.text}`}>✅ Action Items</h4><CopyBtn content={results.meeting_artifacts.action_items_template + '\n\n— Generated by DeftBrain · deftbrain.com'} label="Copy" /></div><pre className={`text-[10px] ${c.textSec} whitespace-pre-wrap font-mono ${isDark ? 'bg-zinc-900' : 'bg-white'} p-2 rounded border ${c.border}`}>{results.meeting_artifacts.action_items_template}</pre></div>}
+              {results.meeting_artifacts.follow_up_email && <div className={`${c.cardAlt} border rounded-lg p-4`}><div className="flex items-start justify-between mb-2"><h4 className={`font-semibold text-sm ${c.text}`}>📧 Follow-up Email</h4><CopyBtn content={results.meeting_artifacts.follow_up_email + '\n\n— Generated by DeftBrain · deftbrain.com'} label="Copy" /></div></div>}
+              {results.meeting_artifacts.decision_log && <div className={`${c.cardAlt} border rounded-lg p-4`}><div className="flex items-start justify-between mb-2"><h4 className={`font-semibold text-sm ${c.text}`}>🗳️ Decision Log</h4><CopyBtn content={results.meeting_artifacts.decision_log + '\n\n— Generated by DeftBrain · deftbrain.com'} label="Copy" /></div></div>}
+            </div></Section>}
+
+          {results.success_metrics && <div className={`${c.success} border-l-4 rounded-r-lg p-4`}><p className="text-sm">📊 {results.success_metrics}</p></div>}
+          <button onClick={handleReset} className={`${c.btnSec} w-full py-2 rounded-lg text-sm`}>✨ New Meeting</button>
+        </div>
+      )}
+
+      {/* ══════════ FACILITATOR MODE ══════════ */}
+      {mode === 'facilitator' && results && <FacilitatorMode results={results} participants={participants} c={c} isDark={isDark} onEnd={handleCapture} hourlyRate={hourlyRate} />}
+
+      {/* ══════════ CAPTURE MODE ══════════ */}
+      {mode === 'capture' && (
+        <div className="space-y-4">
+          {/* F1: Speaking summary */}
+          {meetingStats?.speakingLog && Object.values(meetingStats.speakingLog).some(v => v.turns > 0) && (
+            <div className={`${c.card} border rounded-xl p-5`}>
+              <h3 className={`text-sm font-bold ${c.text} mb-3`}>🗣️ Participation Summary</h3>
+              <div className="space-y-2">{Object.entries(meetingStats.speakingLog).sort((a, b) => b[1].totalSec - a[1].totalSec).map(([name, data]) => {
+                const maxSec = Math.max(...Object.values(meetingStats.speakingLog).map(v => v.totalSec), 1);
+                const pct = Math.round(data.totalSec / maxSec * 100);
+                return <div key={name} className="flex items-center gap-2">
+                  <span className="w-20 text-xs truncate font-semibold">{name}</span>
+                  <div className={`flex-1 h-4 rounded-sm overflow-hidden ${isDark ? 'bg-zinc-800' : 'bg-sky-100'}`}><div className={`h-full rounded-sm ${data.turns === 0 ? 'bg-red-400' : pct > 60 ? 'bg-amber-500' : 'bg-sky-500'}`} style={{ width: `${Math.max(pct, 2)}%` }} /></div>
+                  <span className={`w-16 text-right text-[10px] ${c.textMuted}`}>{data.turns}t / {Math.round(data.totalSec / 60)}m</span>
+                </div>;
+              })}</div>
+              {meetingStats.totalCost && hourlyRate > 0 && <p className={`text-xs ${c.accent} text-center mt-3`}>💰 Meeting cost: ${meetingStats.totalCost}</p>}
+            </div>
+          )}
+
+          <div className={`${c.card} border rounded-xl p-5 space-y-4`}>
+            <h3 className={`text-lg font-bold ${c.text}`}>📝 Post-Meeting Capture</h3>
+            <div><div className="flex items-center justify-between mb-1.5"><label className={`text-sm font-semibold ${c.label}`}>Decisions</label><button onClick={() => addCaptureItem('decisions')} className={`text-xs ${c.accent}`}>➕</button></div>
+              <div className="space-y-1.5">{captureData.decisions.map((d, i) => <div key={i} className="flex gap-2"><input value={d} onChange={e => updateCaptureItem('decisions', i, e.target.value)} placeholder={`Decision ${i + 1}...`} className={`flex-1 p-2 border rounded-lg ${c.input} outline-none text-sm`} />{captureData.decisions.length > 1 && <button onClick={() => removeCaptureItem('decisions', i)} className={`${c.textMuted} hover:text-red-500`}>🗑️</button>}</div>)}</div></div>
+
+            <div><div className="flex items-center justify-between mb-1.5"><label className={`text-sm font-semibold ${c.label}`}>Action Items</label><button onClick={() => addCaptureItem('actionItems')} className={`text-xs ${c.accent}`}>➕</button></div>
+              <div className="space-y-2">{captureData.actionItems.map((a, i) => <div key={i} className="flex gap-2 items-start">
+                <input value={a.task} onChange={e => updateCaptureItem('actionItems', i, { ...a, task: e.target.value })} placeholder="Task..." className={`flex-1 p-2 border rounded-lg ${c.input} outline-none text-sm`} />
+                <select value={a.owner} onChange={e => updateCaptureItem('actionItems', i, { ...a, owner: e.target.value })} className={`w-28 p-2 border rounded-lg ${c.input} outline-none text-sm`}><option value="">Owner</option>{participants.map((p, j) => <option key={j} value={p.name}>{p.name}</option>)}</select>
+                <input type="date" value={a.deadline} onChange={e => updateCaptureItem('actionItems', i, { ...a, deadline: e.target.value })} className={`p-2 border rounded-lg ${c.input} outline-none text-sm`} />
+                {captureData.actionItems.length > 1 && <button onClick={() => removeCaptureItem('actionItems', i)} className={`${c.textMuted} hover:text-red-500`}>🗑️</button>}
+              </div>)}</div></div>
+
+            <div><div className="flex items-center justify-between mb-1.5"><label className={`text-sm font-semibold ${c.label}`}>🅿️ Parking Lot</label><button onClick={() => addCaptureItem('parkingLot')} className={`text-xs ${c.accent}`}>➕</button></div>
+              <div className="space-y-1.5">{captureData.parkingLot.map((p, i) => <div key={i} className="flex gap-2"><input value={p} onChange={e => updateCaptureItem('parkingLot', i, e.target.value)} placeholder={`Item ${i + 1}...`} className={`flex-1 p-2 border rounded-lg ${c.input} outline-none text-sm`} />{captureData.parkingLot.length > 1 && <button onClick={() => removeCaptureItem('parkingLot', i)} className={`${c.textMuted} hover:text-red-500`}>🗑️</button>}</div>)}</div></div>
+
+            <div><label className={`text-sm font-semibold ${c.label} block mb-1.5`}>Notes</label>
+              <textarea value={captureData.notes} onChange={e => setCaptureData(p => ({ ...p, notes: e.target.value }))} placeholder="Other notes..." className={`w-full h-16 p-3 border rounded-lg ${c.input} outline-none resize-none text-sm`} /></div>
+          </div>
+
+          <div className={`${c.card} border rounded-xl p-5`}>
+            <h3 className={`text-sm font-bold ${c.text} mb-3`}>📊 Effectiveness</h3>
+            <div className="space-y-2">{EFFECTIVENESS_QS.map(q => <button key={q.id} onClick={() => setEffectiveness(p => ({ ...p, [q.id]: !p[q.id] }))} className={`w-full flex items-center gap-3 p-3 border-2 rounded-lg text-left transition-colors ${effectiveness[q.id] ? (isDark ? 'border-emerald-500 bg-emerald-900/20' : 'border-emerald-500 bg-emerald-50') : (isDark ? 'border-zinc-700' : 'border-sky-200')}`}><span>{effectiveness[q.id] ? '✅' : '⬜'}</span><span className="text-sm">{q.icon} {q.q}</span></button>)}</div>
+            <p className={`text-xs ${c.textMuted} text-center mt-2`}>Score: {Object.values(effectiveness).filter(Boolean).length}/5</p>
+          </div>
+
+          {(captureData.decisions.some(d => d.trim()) || captureData.actionItems.some(a => a.task.trim())) && (
+            <div className={`${c.card} border rounded-xl p-5`}>
+              <div className="flex items-center justify-between mb-3"><h3 className={`text-sm font-bold ${c.text}`}>📧 Follow-up Email</h3><CopyBtn content={buildFollowUpEmail()} label="Copy" /></div>
+              <pre className={`text-xs ${c.textSec} whitespace-pre-wrap ${isDark ? 'bg-zinc-900' : 'bg-sky-50'} p-3 rounded border ${c.border}`}>{buildFollowUpEmail()}</pre>
+            </div>
+          )}
+
+          <div className="flex gap-3"><button onClick={finishCapture} className={`flex-1 ${c.btnPrimary} py-3 rounded-lg font-semibold`}>💾 Save & Finish</button><button onClick={() => setMode('results')} className={`${c.btnSec} py-3 px-6 rounded-lg`}>Skip</button></div>
+        </div>
+      )}
+
+      {/* ══════════ F2: ACTIONS MODE ══════════ */}
+      {mode === 'actions' && (
+        <div className="space-y-4">
+          <div className={`${c.card} border rounded-xl p-5`}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className={`text-sm font-bold ${c.text} flex items-center gap-2`}><span>☑️</span> Action Items ({actionItems.length})</h3>
+              {actionItems.length > 0 && <button onClick={() => { if (window.confirm('Clear completed?')) setActionItems(p => p.filter(a => a.status !== 'done')); }} className={`text-xs ${c.textMuted} hover:text-red-500`}>Clear done</button>}
+            </div>
+            {actionItems.length === 0 ? (
+              <div className={`${c.cardAlt} border rounded-lg p-6 text-center`}><span className="text-3xl block mb-2">☑️</span><p className={`text-sm ${c.textSec}`}>Action items from post-meeting capture appear here.</p></div>
+            ) : (
+              <div className="space-y-2">{actionItems.map(a => {
+                const today = new Date().toISOString().split('T')[0];
+                const overdue = a.deadline && a.deadline < today && a.status !== 'done';
+                return <div key={a.id} className={`${overdue ? c.error : a.status === 'done' ? c.success : c.cardAlt} border rounded-lg p-3`}>
+                  <div className="flex items-start justify-between mb-1">
+                    <div className="flex-1">
+                      <p className={`text-sm font-semibold ${a.status === 'done' ? 'line-through opacity-60' : c.text}`}>{a.task}</p>
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {a.owner && <span className={`${c.pillSky} border text-[9px] px-1.5 py-0.5 rounded`}>{a.owner}</span>}
+                        {a.deadline && <span className={`${overdue ? c.pillRed : c.pillGray} border text-[9px] px-1.5 py-0.5 rounded`}>{overdue ? '🔴 ' : ''}{a.deadline}</span>}
+                        <span className={`${c.pillGray} border text-[9px] px-1.5 py-0.5 rounded`}>from {a.meetingDate}</span>
+                      </div>
+                    </div>
+                    <button onClick={() => deleteAction(a.id)} className={`text-xs ${c.textMuted} hover:text-red-500 ml-2`}>🗑️</button>
+                  </div>
+                  <div className="flex gap-1.5 mt-2">{['not_started','in_progress','done'].map(s => (
+                    <button key={s} onClick={() => updateActionStatus(a.id, s)} className={`text-[10px] px-2 py-1 rounded border transition-colors ${a.status === s ? (s === 'done' ? 'bg-emerald-600 text-white border-emerald-600' : s === 'in_progress' ? 'bg-sky-600 text-white border-sky-600' : `${c.pillGray} border font-bold`) : `${c.pillGray} border hover:border-sky-400`}`}>
+                      {s === 'not_started' ? '⬜ Not started' : s === 'in_progress' ? '🔄 In progress' : '✅ Done'}
+                    </button>
+                  ))}</div>
+                </div>;
+              })}</div>
+            )}
+          </div>
+
+          {/* F6: PARKING LOT MANAGER */}
+          <div className={`${c.card} border rounded-xl p-5`}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className={`text-sm font-bold ${c.text} flex items-center gap-2`}><span>🅿️</span> Parking Lot ({parkingLot.length})</h3>
+              {parkingLot.length > 0 && <button onClick={() => { if (window.confirm('Clear resolved?')) setParkingLot(p => p.filter(i => i.status === 'parked')); }} className={`text-xs ${c.textMuted}`}>Clear resolved</button>}
+            </div>
+            {parkingLot.length === 0 ? (
+              <div className={`${c.cardAlt} border rounded-lg p-6 text-center`}><span className="text-3xl block mb-2">🅿️</span><p className={`text-sm ${c.textSec}`}>Parking lot items carry over between meetings.</p></div>
+            ) : (
+              <div className="space-y-2">{parkingLot.map(p => {
+                const daysSinceAdd = Math.floor((Date.now() - new Date(p.addedDate).getTime()) / 86400000);
+                return <div key={p.id} className={`${p.status === 'resolved' ? c.success : p.status === 'promoted' ? c.info : c.cardAlt} border rounded-lg p-3`}>
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <p className={`text-sm ${p.status !== 'parked' ? 'opacity-60' : c.text}`}>{p.text}</p>
+                      <div className="flex gap-1 mt-1">
+                        <span className={`${c.pillGray} border text-[9px] px-1.5 py-0.5 rounded`}>{p.addedDate}</span>
+                        {daysSinceAdd > 14 && p.status === 'parked' && <span className={`${c.pillAmber} border text-[9px] px-1.5 py-0.5 rounded`}>⏳ {daysSinceAdd}d parked</span>}
+                        {p.origin && <span className={`${c.pillGray} border text-[9px] px-1.5 py-0.5 rounded`}>{p.origin}</span>}
+                      </div>
+                    </div>
+                    <button onClick={() => deleteParkingItem(p.id)} className={`text-xs ${c.textMuted} hover:text-red-500`}>🗑️</button>
+                  </div>
+                  {p.status === 'parked' && <div className="flex gap-1.5 mt-2">
+                    <button onClick={() => updateParkingStatus(p.id, 'promoted')} className={`${c.pillSky} border text-[10px] px-2 py-1 rounded hover:opacity-80`}>📈 Promote to agenda</button>
+                    <button onClick={() => updateParkingStatus(p.id, 'resolved')} className={`${c.pillGreen} border text-[10px] px-2 py-1 rounded hover:opacity-80`}>✅ Resolved</button>
+                  </div>}
+                </div>;
+              })}</div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ══════════ HISTORY MODE ══════════ */}
+      {mode === 'history' && (
+        <div className="space-y-4">
+          {effStats && <div className={`${c.card} border rounded-xl p-5`}>
+            <h3 className={`text-sm font-bold ${c.text} mb-3`}>📊 Effectiveness Over Time</h3>
+            <div className="grid grid-cols-3 gap-3 mb-3">
+              <div className={`${c.cardAlt} border rounded-lg p-3 text-center`}><p className={`text-[10px] ${c.textMuted}`}>Avg</p><p className={`text-2xl font-black ${effStats.avg >= 4 ? 'text-emerald-500' : effStats.avg >= 3 ? 'text-amber-500' : 'text-red-500'}`}>{effStats.avg}<span className="text-xs">/5</span></p></div>
+              <div className={`${c.cardAlt} border rounded-lg p-3 text-center`}><p className={`text-[10px] ${c.textMuted}`}>Rated</p><p className={`text-2xl font-black ${c.text}`}>{effStats.total}</p></div>
+              {effStats.totalCost > 0 && <div className={`${c.cardAlt} border rounded-lg p-3 text-center`}><p className={`text-[10px] ${c.textMuted}`}>Total Cost</p><p className={`text-2xl font-black ${c.accent}`}>${Math.round(effStats.totalCost)}</p></div>}
+            </div>
+            <div className="space-y-1">{EFFECTIVENESS_QS.map(q => {
+              const data = effStats.breakdown[q.id]; if (!data || data.total === 0) return null;
+              const pct = Math.round(data.yes / data.total * 100);
+              return <div key={q.id} className="flex items-center gap-2"><span className="w-4 text-center text-sm">{q.icon}</span><div className={`flex-1 h-3 rounded-full overflow-hidden ${isDark ? 'bg-zinc-800' : 'bg-sky-100'}`}><div className={`h-full rounded-full ${pct >= 80 ? 'bg-emerald-500' : pct >= 50 ? 'bg-amber-500' : 'bg-red-500'}`} style={{ width: `${pct}%` }} /></div><span className={`w-10 text-right text-[10px] font-bold ${c.textMuted}`}>{pct}%</span></div>;
+            })}</div>
+          </div>}
+
+          <div className={`${c.card} border rounded-xl p-5`}>
+            <div className="flex items-center justify-between mb-4"><h3 className={`text-sm font-bold ${c.text}`}>📚 History ({history.length})</h3>{history.length > 0 && <button onClick={() => { if (window.confirm('Clear all?')) setHistory([]); }} className={`text-xs ${c.textMuted} hover:text-red-500`}>Clear</button>}</div>
+            {history.length === 0 ? <div className={`${c.cardAlt} border rounded-lg p-6 text-center`}><span className="text-3xl block mb-2">📋</span><p className={`text-sm ${c.textSec}`}>History appears here after saving meetings.</p></div>
+            : <div className="space-y-2 max-h-96 overflow-y-auto">{history.map(entry => (
+              <div key={entry.id} className={`${c.cardAlt} border rounded-lg p-4`}>
+                <div className="flex items-center gap-2 mb-1 flex-wrap">
+                  <span className={`text-xs font-semibold ${c.text}`}>{entry.date}</span>
+                  <span className={`${c.pillSky} border text-[9px] font-bold px-1.5 py-0.5 rounded`}>{entry.meetingType}</span>
+                  {entry.isVirtual && <span className={`${c.pillGray} border text-[9px] px-1.5 py-0.5 rounded`}>📹</span>}
+                  {entry.effectivenessScore !== undefined && <span className={`${entry.effectivenessScore >= 4 ? c.pillGreen : entry.effectivenessScore >= 3 ? c.pillAmber : c.pillRed} border text-[9px] font-bold px-1.5 py-0.5 rounded`}>{entry.effectivenessScore}/5</span>}
+                  {entry.totalMeetingCost && <span className={`${c.pillAmber} border text-[9px] px-1.5 py-0.5 rounded`}>💰 ${entry.totalMeetingCost}</span>}
+                </div>
+                <p className={`text-sm font-semibold ${c.text}`}>{entry.goal || entry.template}</p>
+                <p className={`text-[10px] ${c.textMuted}`}>{entry.duration}m · {entry.participantCount} people</p>
+                {entry.speakingLog && Object.values(entry.speakingLog).some(v => v.turns > 0) && (
+                  <div className="flex flex-wrap gap-1 mt-1">{Object.entries(entry.speakingLog).filter(([_, v]) => v.turns > 0).sort((a, b) => b[1].totalSec - a[1].totalSec).slice(0, 4).map(([name, v]) => <span key={name} className={`${c.pillGray} border text-[9px] px-1.5 py-0.5 rounded`}>{name}: {v.turns}t</span>)}</div>
+                )}
+                <div className="flex gap-2 mt-2">
+                  <button onClick={() => reuseEntry(entry)} className={`${c.btnSec} text-xs px-3 py-1 rounded-lg`}>♻️ Reuse</button>
+                  <button onClick={() => setHistory(p => p.filter(e => e.id !== entry.id))} className={`text-xs ${c.textMuted} hover:text-red-500 px-2 py-1`}>🗑️</button>
+                </div>
+              </div>
+            ))}</div>}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
+MeetingHijackPreventer.displayName = 'MeetingHijackPreventer';
 export default MeetingHijackPreventer;

@@ -45,6 +45,39 @@ template:
 export const tools = [
 
   {
+    id: "TheFinalWord",
+    title: "The Final Word",
+    category: "Daily Life",
+    icon: "⚖️",
+    description: "The argument-settling, fact-checking, trivia-hosting authority. Four modes in one tool: Quick Answer delivers bold, confident responses to any factual question with confidence ratings. Settle It acts as an impartial referee when two people disagree — enter both sides, get a verdict with accuracy scores, a breakdown of who got what right, and a settlement suggestion. Fact Check gives clear TRUE/FALSE/MISLEADING rulings on any claim with explanations and myth origins. Trivia Night generates quick-fire multiple-choice rounds with team scoring, streak tracking, difficulty settings, and 10 categories — plus an 'Actually...' challenge button if you think the answer is wrong. Voice input supported on all modes.",
+    tagline: "Arguments settled. Facts checked. No appeals.",
+
+    guide: {
+      overview: "The Final Word is four tools in one, built for settling debates, answering disputed questions, checking facts, and hosting trivia nights. Quick Answer mode takes any factual question and delivers a bold, confident response with a confidence level (certain → uncertain), supporting facts, and a bonus fun fact. Settle It mode takes two opposing claims (with optional names and context), scores each side's accuracy 0–100, declares a winner, and suggests a fun way to move on. Fact Check mode rates any claim as TRUE, FALSE, MOSTLY TRUE, MOSTLY FALSE, MISLEADING, or IT'S COMPLICATED with an explanation and myth origin. Trivia Night generates multiple-choice questions across 10 categories at 3 difficulty levels, with full team management (1–6 teams), score and streak tracking, and an 'Actually...' challenge system for disputed answers. Voice input works on all text modes.",
+      howToUse: [
+        "Pick a mode: Quick Answer, Settle It, Fact Check, or Trivia Night",
+        "Quick Answer — type or speak a factual question and get a confident answer with confidence rating and supporting facts",
+        "Settle It — enter both sides of a dispute (with optional names and context), then get a verdict with accuracy scores for each person",
+        "Fact Check — enter any claim and get a clear TRUE/FALSE/MISLEADING ruling with explanation",
+        "Trivia Night — set up teams (1–6), choose a category and difficulty, then play quick-fire rounds with score tracking",
+        "Use the 'Actually...' button on any answer to challenge it if you think the tool got it wrong",
+        "Share, copy, or print verdicts using the action buttons on results"
+      ],
+      example: {
+        scenario: "You and a friend are arguing about whether the Great Wall of China is visible from space.",
+        action: "Choose Settle It mode. Enter your friend's name and their claim ('The Great Wall is visible from space with the naked eye'), then your name and your claim ('It's not visible from space — that's a myth'). Hit 'Deliver the Verdict.'",
+        result: "The Final Word rules in your favor with a bold verdict headline. Your friend scores ~15% accuracy (the Wall exists but isn't visible from low Earth orbit without aid). You score ~95% accuracy. The explanation cites astronaut testimony and the Wall's width relative to visibility thresholds. Settlement suggestion: 'Loser buys the next round — and agrees to stop spreading this myth.'"
+      },
+      tips: [
+        "Settle It mode works best when both sides state specific, clear claims rather than vague opinions",
+        "In Trivia Night, the 'Actually...' challenge system is genuinely fair — if you have a legitimate counterpoint, it will acknowledge it and adjust",
+        "Voice input auto-fills the active text field — in Dispute mode it fills Person A's claim first, then Person B's",
+        "For time-sensitive questions (sports stats, current rankings), the tool will acknowledge its knowledge limits and suggest where to verify",
+        "Use team names in Trivia Night to make it personal — streaks of 3+ trigger a fire emoji for extra motivation"
+      ]
+    }
+  },
+  {
     id: "NameAudit",
     title: "NameAudit",
     category: "Creative",
@@ -1349,89 +1382,7 @@ export const tools = [
     "May not understand very domain-specific jargon",
     "Your judgment should override if you have additional context"
   ]
-},  
-  {
-    id: "MedsCheck",
-    title: "MedsCheck",
-    category: "Health",
-    icon: "💊",
-    description: "Simple 'Red/Green' light for drug and alcohol interactions.",
-    tagline: "Simple medication tracking and interaction alerts",
-    
-    guide: {
-      overview: "MedsCheck gives you instant red/yellow/green warnings about drug interactions and alcohol mixing. No medical jargon, just clear 'safe' or 'dangerous' guidance.",
-      
-      howToUse: [
-        "Add your current medications",
-        "Enter what you're about to take (new med or alcohol)",
-        "See instant color-coded warning",
-        "Green = safe, Yellow = caution, Red = don't mix",
-        "Read simple explanation if yellow/red"
-      ],
-      
-      example: "Taking antibiotic. Want to drink at party. Enter 'alcohol' into MedsCheck. Red warning: 'Dangerous interaction - can cause severe nausea and reduce effectiveness.' Don't drink tonight.",
-      
-      tips: [
-        "Always check before mixing ANY medication with alcohol",
-        "Update your med list when prescriptions change",
-        "When in doubt, don't mix - ask a pharmacist"
-      ]
-    }
-  },  
-  {
-    id: "SafeSpace",
-    title: "SafeSpace",
-    category: "Health",
-    icon: "🏠",
-    description: "Timestamps trigger warnings in movies so you can skip safely.",
-    tagline: "Skip triggering scenes in movies with confidence",
-    
-    guide: {
-      overview: "SafeSpace provides exact timestamps of potentially triggering content in movies/shows (violence, sexual assault, self-harm, etc.). Skip scenes that might be harmful while still enjoying the rest.",
-      
-      howToUse: [
-        "Search for the movie/show you want to watch",
-        "Review the trigger warnings and their timestamps",
-        "Note timestamps of scenes you want to skip",
-        "Watch the movie, skip forward when timestamps approach",
-        "Submit timestamps for content you notice to help others"
-      ],
-      
-      tips: [
-        "Set alerts 30 seconds before timestamp so you have time to skip",
-        "Can filter by trigger type if only avoiding specific content",
-        "Community-submitted so coverage varies - newer content may be incomplete"
-      ]
-    }
-  },
-  
-  {
-    id: "MoodMusic",
-    title: "MoodMusic",
-    category: "Health",
-    icon: "🎵",
-    description: "Generates binaural beats tuned to alpha waves for focus.",
-    tagline: "Binaural beats tuned to your focus state",
-    
-    guide: {
-      overview: "MoodMusic creates custom binaural beat tracks designed to induce specific brain states (focus, relaxation, sleep) using scientifically-researched frequencies.",
-      
-      howToUse: [
-        "Select desired state (focus, relaxation, sleep, creativity)",
-        "Choose session length (15-60 minutes)",
-        "Put on headphones (required for binaural beats to work)",
-        "Play the generated track",
-        "Let the frequencies guide your brain state"
-      ],
-      
-      tips: [
-        "Headphones required - binaural beats need stereo separation",
-        "Start with 15-minute sessions, work up to longer",
-        "Use focus mode while studying, relaxation mode before bed",
-        "Doesn't work for everyone - try 3-5 sessions before judging"
-      ]
-    }
-  },
+},     
   // FreezeStateUnblocker-metadata.js
 {
   id: "FreezeStateUnblocker",
@@ -1867,94 +1818,6 @@ export const tools = [
       ]
     }
   },
-    {
-    id: "LocalDeals",
-    title: "LocalDeals",
-    category: "Money",
-    icon: "🏷️",
-    description: "Geo-fenced map of every student discount within walking distance.",
-    tagline: "Every student discount within walking distance",
-    
-    guide: {
-      overview: "LocalDeals uses your location to show student discounts and deals within walking distance. It aggregates merchant offers, student-specific deals, flash sales, and time-limited promotions on a real-time map. Get notified when you're near an active deal.",
-      
-      howToUse: [
-        "Allow location access and verify your student status (.edu email)",
-        "Browse the map or list view of nearby deals",
-        "Filter by category (food, retail, services, entertainment)",
-        "Tap a deal to see details and expiration time",
-        "Show the deal code/badge at checkout to redeem",
-        "Rate deals after using them to help other students"
-      ],
-      
-      example: {
-        scenario: "Emma is walking to campus for a 2pm class. She's hungry and wants coffee. It's 1:30pm.",
-        action: "Emma opens LocalDeals. The map shows: (1) Café 200ft away: '20% off with student ID, valid until 2pm' (2) Sandwich shop 0.3 miles: '50% off until 3pm' (3) Starbucks 0.5 miles: 'Free pastry with drink purchase, expires 4pm'.",
-        result: "Emma sees the café is closest and the 20% off expires in 30min. She stops there, gets coffee and a muffin for $6.40 instead of $8. Saves $1.60 and makes it to class on time."
-      },
-      
-      tips: [
-        "Enable push notifications - you'll get alerts when passing by active deals",
-        "Flash deals (limited time) have bigger discounts than standing student deals",
-        "Check the map before leaving home to plan routes around good deals",
-        "Combine deals with cashback apps (Rakuten, Honey) for double savings",
-        "Submit deals you find to earn points and unlock premium features"
-      ],
-      
-      pitfalls: [
-        "Don't buy things just because they're discounted - only use for planned purchases",
-        "Check expiration times - nothing worse than arriving after a deal expires",
-        "Verify you have your student ID before going - most places require it"
-      ],
-      
-      quickReference: {
-        "Range": "Adjustable 0.5-5 mile radius",
-        "Filters": "Food, Retail, Services, Events",
-        "Notifications": "Real-time when nearby",
-        "Verification": ".edu email required"
-      }
-    }
-  },
-  {
-  id: "MaskingCostCalculator",
-  title: "Masking Cost Calculator",
-  category: "Mind & Energy",
-  icon: "🎭",
-  description: "Tracks energy cost of code-switching and hiding neurodivergence. Log interactions with masking effort (1-10) and energy drain. Identifies which situations/people cost most. Validates that masking exhaustion is real. '12 hours masking = 3 rest days needed.'",
-  tagline: "Track the hidden energy cost of code-switching",
-  
-  guide: {
-    overview: "Masking costs enormous energy but is invisible. This tool tracks masking effort across interactions to show which situations drain most, how much total weekly cost, and validate that your exhaustion is real work.",
-    
-    howToUse: [
-      "Log interactions: who/where, masking effort 1-10, energy before/after",
-      "Add multiple interactions (ideally a week's worth)",
-      "Get analysis: highest cost vs lower cost situations",
-      "See total weekly masking cost and recovery needed",
-      "Identify safest spaces where you can unmask"
-    ],
-    
-    example: {
-      scenario: "You logged: Work meeting with boss (masking 9/10, energy drain 80%), networking event (10/10, drain 95%), one-on-one with close friend (2/10, drain 10%), small team meeting (5/10, drain 40%).",
-      action: "Input all those interactions.",
-      result: "Highest cost: Work meetings with boss (effort 9/10, drain 80%), Networking events (10/10, 95%). Lower cost: One-on-one with friend (2/10, 10%). Total weekly masking: 12 hours of masking = equivalent to 3 full rest days needed for recovery. Insights: Boss meetings and networking cost most because you're hiding stims, forcing eye contact, scripting responses, and monitoring constantly. Friend is low cost because you can be yourself. Recommendations: Limit networking events to one per month max. Request written reports instead of meetings with boss when possible. Protect Friday nights for friend time (safe space). Validation: Masking is REAL WORK that costs REAL ENERGY. Your exhaustion is legitimate."
-    },
-    
-    tips: [
-      "Log consistently for 1-2 weeks to see patterns, not just worst day",
-      "Be honest about masking effort - no one sees this but you",
-      "High-cost situations might be necessary (work) but knowing the cost helps you plan recovery",
-      "Seek out lower-cost situations intentionally to restore",
-      "If everything is high-cost, you may not have ANY safe unmask spaces (needs addressing)"
-    ],
-    
-    pitfalls: [
-      "Don't conclude 'I should just unmask everywhere' - context matters (safety, livelihood)",
-      "Some masking is chosen adaptation vs forced suppression - distinguish these",
-      "If masking cost is crushing, consider whether job/relationship alignment is off"
-    ]
-  }
-},
 {
   id: "MoneyShameRemover",
   title: "Money Shame Remover",
@@ -3858,7 +3721,7 @@ export const tools = [
   
   {
     id: "BuyWise",
-    title: "BuyWise",
+    title: "Buy Wise",
     category: "Money",
     icon: "🧠",
     description: "Pre-purchase research assistant. Enter what you're buying and get fair price analysis, timing advice, total cost of ownership, cheaper alternatives, regret predictions, negotiation scripts, and an impulse check. Like having a knowledgeable friend who stops you from overpaying.",

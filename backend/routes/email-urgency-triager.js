@@ -2,25 +2,22 @@ const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
 
+// ════════════════════════════════════════════════════════════
+// TRIAGE ACTION (default)
+// ════════════════════════════════════════════════════════════
 router.post('/email-urgency-triager', async (req, res) => {
-  console.log('✅ Email Urgency Triager V2 endpoint called');
-  
   try {
-    const { 
-      emailContent, 
-      userRole, 
-      userTimezone,
-      senderHistory 
-    } = req.body;
-    
-    console.log('📝 Request:', { 
-      userRole, 
-      userTimezone,
-      emailLength: emailContent?.length,
-      learnedSenders: Object.keys(senderHistory || {}).length
-    });
+    const { action } = req.body;
 
-    // Validation
+    // Route to compose handler
+    if (action === 'compose') return handleCompose(req, res);
+
+    // Default: triage
+    const {
+      emailContent, userRole, userTimezone,
+      senderHistory, triageHistory
+    } = req.body;
+
     if (!emailContent || !emailContent.trim()) {
       return res.status(400).json({ error: 'Email content is required' });
     }
@@ -30,11 +27,16 @@ router.post('/email-urgency-triager', async (req, res) => {
     const emails = emailContent.trim();
     const history = senderHistory || {};
 
+    const patternContext = triageHistory?.length
+      ? `\n\nPREVIOUS TRIAGE PATTERNS (from ${triageHistory.length} past sessions):\n${triageHistory.slice(0, 5).map(t => `${t.date}: ${t.summary?.total_emails || 0} emails (${t.summary?.urgent_count || 0} urgent, ${t.summary?.optional_count || 0} optional)`).join('\n')}\nUse this to detect recurring senders the user always ignores or always treats as urgent.`
+      : '';
+
     const prompt = `You are an advanced email urgency analyzer with AI learning capabilities. Analyze emails with:
 1. **Thread intelligence** - detect escalation patterns
 2. **Sender profiling** - use historical patterns to detect "cry wolf" senders
 3. **Auto-categorization** - FYI vs Action Required vs Response Expected
 4. **Smart scheduling** - timezone-aware response timing
+5. **Draft replies** - contextual response drafts for each email needing response
 
 USER ROLE: ${role}
 USER TIMEZONE: ${timezone}
@@ -44,143 +46,50 @@ EMAILS TO ANALYZE:
 ${emails}
 
 SENDER HISTORY (learned patterns):
-${Object.keys(history).length > 0 ? JSON.stringify(history, null, 2) : 'No history yet'}
+${Object.keys(history).length > 0 ? JSON.stringify(history, null, 2) : 'No history yet'}${patternContext}
 
 ANALYSIS FRAMEWORK:
 
-## 1. THREAD INTELLIGENCE
-Analyze the full email thread, not just latest message:
+## THREAD INTELLIGENCE
+- Look for "Re:", "Fwd:", ">", "On [date], [sender] wrote:"
+- Count messages in thread, detect TO vs CC
+- Escalation: 1st=baseline, 2nd=slight, 3rd=significant, 4+=URGENT
 
-**Thread Detection:**
-- Look for "Re:", "Fwd:", ">" quote markers, "On [date], [sender] wrote:"
-- Count messages in thread
-- Detect if user is on TO line vs CC line (TO = higher urgency)
-- Track follow-up frequency
+## SENDER PROFILING
+- cryWolfScore > 0.5: Downgrade urgency claims
+- actuallyUrgent/total > 0.7: Upgrade priority (VIP)
+- New sender: trust at face value
 
-**Escalation Detection:**
-- 1st message = baseline urgency
-- 2nd follow-up = slight increase
-- 3rd follow-up = significant escalation
-- 4+ follow-ups = URGENT (shows frustration/importance)
+## AUTO-CATEGORIZATION
+FYI / Action Required / Response Expected / Automated / Newsletter
 
-**Patterns:**
-- "Re: Re: Re:" = long thread, likely escalating
-- "Following up on..." = 2nd+ attempt to get response
-- "Gentle reminder" → "Second reminder" → "Final reminder" = clear escalation
-- Increasing ALL CAPS or exclamation marks = escalating emotion
+## RESPONSE OPTIMIZATION
+- Timezone-aware scheduling from domain/signature/mentions
+- Time estimation: 5min (quick ack), 30min (thoughtful), 1-2hr (research)
+- Batching and delegation suggestions
 
-## 2. SENDER PROFILING
-Use sender history to adjust urgency:
-
-**Cry Wolf Detection:**
-If sender has pattern:
-- markedUrgent > 50% of emails
-- actuallyUrgent < 20% of emails
-- cryWolfScore > 0.5
-
-Then: Downgrade their urgency claims. Example:
-"Sender marks everything URGENT but only 15% actually are. Treating as THIS_WEEK despite subject line."
-
-**VIP Identification:**
-If sender has pattern:
-- actuallyUrgent / total > 70%
-
-Then: Upgrade priority. Example:
-"This sender's emails are urgent 80% of the time. Treating seriously even though subject seems casual."
-
-**New Senders:**
-No history = trust subject line signals at face value, but note: "New sender - learning pattern"
-
-## 3. AUTO-CATEGORIZATION
-Categorize every email:
-
-**FYI (no response needed):**
-- "FYI", "For your information", "Keeping you in the loop"
-- "No action needed"
-- User is CC'd, not TO'd
-- Meeting notes, status updates without questions
-
-**Action Required (must DO something, not just reply):**
-- "Please approve", "Review and sign", "Complete this form"
-- Task assignment: "Can you handle X"
-- Deadline-driven tasks
-
-**Response Expected (social/professional courtesy):**
-- Direct questions to user
-- Meeting invitations requiring RSVP
-- Requests for input/feedback
-- "What do you think?"
-
-**Automated (system-generated):**
-- From: noreply@, no-reply@, automated@
-- Calendar notifications
-- System alerts
-
-**Newsletter (marketing/promotional):**
-- Contains "Unsubscribe" link
-- Weekly/monthly recurring content
-- Marketing copy tone
-- From known newsletter domains
-
-## 4. RESPONSE OPTIMIZATION
-
-**Timezone-Aware Scheduling:**
-- Detect recipient timezone from:
-  * Email signature
-  * Domain (.co.uk = UK, .de = Germany)
-  * Explicit mentions ("I'm in London", "PST here")
-  * Business hours references
-
-- Suggest response time when recipient is likely available:
-  * EU recipients: Respond by 11am user time (before they leave for day)
-  * Asia recipients: Respond after 5pm user time (start of their day)
-  * US East Coast from West Coast: Morning or late afternoon work
-
-**Time Estimation:**
-- Quick acknowledge: "5 min"
-- Thoughtful response: "30 min"
-- Research required: "1-2 hours"
-
-**Batching Suggestions:**
-- Group similar emails: "All client questions", "All feedback requests"
-- Suggest batch timing: "Handle all tomorrow 2-3pm"
-
-**Delegation Detection:**
-- "Can someone review..." = delegate to team
-- Technical issue outside your expertise = delegate to tech team
-- Routine task others could handle = note delegation opportunity
+## DRAFT REPLIES
+For "now" and "this_week" emails needing response:
+- Reference the SPECIFIC email topic (not generic)
+- Match formality to sender relationship
+- Use [brackets] for user fill-in details
+- "now" = ready-to-send; "this_week" = thoughtful framework
+- "optional" = null
 
 URGENCY TIERS:
-
-**NOW (reply today):**
-- Explicit deadline within 24 hours
-- Business-critical (systems down, revenue impact)
-- Thread with 3+ escalating follow-ups
-- Blocking someone's work RIGHT NOW
-- VIP sender with deadline
-
-**THIS_WEEK (reply within 3-5 days):**
-- Deadline within week
-- Important but not blocking immediately
-- Routine business requests
-- Single follow-up (not yet escalated)
-
-**OPTIONAL (no response needed):**
-- FYI emails
-- Newsletters/marketing (ALWAYS optional)
-- Automated notifications
-- "Just checking in" with no ask
-- User is CC'd not TO'd
+- **NOW** = reply today (24h deadline, business-critical, 3+ follow-ups, blocking, VIP+deadline)
+- **THIS_WEEK** = reply within 3-5 days (week deadline, important not blocking, routine, single follow-up)
+- **OPTIONAL** = no response (FYI, newsletters, automated, CC-only, no ask)
 
 OUTPUT (JSON only):
 {
   "urgency_analysis": [
     {
       "email_subject": "subject",
-      "from": "sender email",
+      "from": "sender",
       "urgency_tier": "now / this_week / optional",
       "email_category": "FYI / Action Required / Response Expected / Automated / Newsletter",
-      "reasoning": "why this tier and category - reference thread/sender history if relevant",
+      "reasoning": "why this tier",
       "sender_marked_urgent": true/false,
       "thread_analysis": {
         "follow_up_count": 0,
@@ -191,140 +100,171 @@ OUTPUT (JSON only):
       "deadline_detected": "deadline or null",
       "consequence_of_delay": "what happens if you wait",
       "response_optimization": {
-        "best_time": "When to respond with timezone consideration",
-        "recipient_timezone": "detected timezone or null",
+        "best_time": "when to respond",
+        "recipient_timezone": "detected or null",
         "estimated_time": "5 min / 30 min / 1-2 hours",
-        "can_delegate": true/false,
-        "delegate_to": "who/what role" or null
-      }
+        "estimated_minutes": 5,
+        "can_delegate": false,
+        "delegate_to": null
+      },
+      "draft_reply": "Contextual draft or null for optional"
     }
   ],
   "summary": {
     "total_emails": 0,
     "urgent_count": 0,
     "this_week_count": 0,
-    "optional_count": 0
+    "optional_count": 0,
+    "total_estimated_minutes": 0,
+    "delegation_count": 0
   },
   "batch_insights": {
-    "similar_emails": ["Batch description 1", "Batch description 2"],
-    "delegation_opportunities": "Summary of delegatable emails"
+    "similar_emails": ["Batch description"],
+    "delegation_opportunities": "Summary",
+    "time_block_suggestion": "Suggested time block"
   },
   "anxiety_relief": {
     "permission_to_wait": "Reassuring message",
-    "what_to_ignore": "List of ignorable emails",
-    "batch_processing_tip": "Batching strategy"
+    "what_to_ignore": "Safe to ignore",
+    "batch_processing_tip": "Strategy"
+  },
+  "recurring_patterns": {
+    "always_optional_senders": ["sender - reason"],
+    "always_urgent_senders": ["sender - reason"],
+    "unsubscribe_candidates": ["sender - reason to unsubscribe"],
+    "volume_observation": "Pattern observation"
   },
   "response_templates": [
     {
-      "for_urgency": "type",
-      "template": "Quick response template"
+      "for_email": "subject line",
+      "for_urgency": "now / this_week",
+      "template": "Contextual template"
     }
   ]
 }
 
 CRITICAL RULES:
-1. **Thread Escalation:** 3+ follow-ups = automatic upgrade to NOW
-2. **Cry Wolf Override:** High cry wolf score = downgrade urgency claims
-3. **VIP Priority:** High actual urgency rate = upgrade priority
-4. **CC vs TO:** CC = lower urgency than TO (unless explicitly mentioned)
-5. **Newsletter Detection:** Unsubscribe link = always OPTIONAL
-6. **FYI Category:** No action needed = always OPTIONAL
-7. **Timezone Intelligence:** Consider recipient location for timing
-8. **Specific Reasoning:** Reference thread position, sender history, category
-9. **Delegation Practical:** Only suggest if actually delegatable
-10. **Batching Useful:** Group actionable similar emails
+1. 3+ follow-ups = NOW
+2. High cry wolf score = downgrade
+3. High actual urgency rate = upgrade (VIP)
+4. CC = lower than TO
+5. Unsubscribe link = OPTIONAL
+6. Draft replies MUST reference actual email content
+7. estimated_minutes must be a number
 
-EXAMPLE ANALYSIS:
+Return ONLY valid JSON.`;
 
-Email: 
-From: client@uk.com
-Subject: Re: Re: Re: Project deadline
-Body: This is my 4th email about this. Really need answer today.
-Thread: Shows 3 previous unanswered messages over 2 days
-
-Analysis:
-{
-  "urgency_tier": "now",
-  "email_category": "Response Expected",
-  "reasoning": "Thread has escalated to 4th follow-up in 2 days showing clear frustration. Client is awaiting your response to proceed. Explicit deadline mentioned (today).",
-  "thread_analysis": {
-    "follow_up_count": 3,
-    "is_escalating": true,
-    "urgency_trend": "Started as routine question, now urgent after 3 unanswered follow-ups",
-    "on_cc": false
-  },
-  "response_optimization": {
-    "best_time": "Respond within 2 hours. Client is in UK (5 hours ahead of PST) - it's late afternoon there",
-    "recipient_timezone": "Europe/London",
-    "estimated_time": "10 min",
-    "can_delegate": false
-  }
-}
-
-Return ONLY valid JSON. No markdown, no explanations.`;
-
-    console.log('🤖 Calling Claude API...');
-
-    // Call Claude API
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
-      max_tokens: 3000,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     });
 
-    console.log('✅ Claude API responded');
-
-    // Extract text content
-    const textContent = message.content.find(item => item.type === 'text')?.text || '';
-    
-    // Robust JSON extraction
-    let cleaned = textContent.trim();
-    
-    // Remove markdown code blocks
-    cleaned = cleaned.replace(/```json\n?/g, '').replace(/```\n?/g, '');
-    
-    // Find first { and last }
-    const firstBrace = cleaned.indexOf('{');
-    const lastBrace = cleaned.lastIndexOf('}');
-    
-    if (firstBrace === -1 || lastBrace === -1) {
-      throw new Error('No JSON object found in response');
-    }
-    
-    // Extract only the JSON object
-    cleaned = cleaned.substring(firstBrace, lastBrace + 1);
-    
-    console.log('Cleaned JSON length:', cleaned.length);
-    
-    // Parse JSON
-    let parsed;
-    try {
-      parsed = JSON.parse(cleaned);
-    } catch (parseError) {
-      console.error('JSON parse error:', parseError.message);
-      console.error('Problematic JSON (first 500 chars):', cleaned.substring(0, 500));
-      throw new Error('Failed to parse response as JSON: ' + parseError.message);
-    }
-    
-    console.log('✅ Response parsed successfully');
-    console.log('📊 Analysis:', {
-      total: parsed.summary?.total_emails,
-      urgent: parsed.summary?.urgent_count,
-      thisWeek: parsed.summary?.this_week_count,
-      optional: parsed.summary?.optional_count,
-      threadEscalations: parsed.urgency_analysis?.filter(e => e.thread_analysis?.is_escalating).length || 0
-    });
-
-    // Send response
+    const parsed = extractJSON(message);
     res.json(parsed);
 
   } catch (error) {
-    console.error('❌ Reply Urgency Triager V2 error:', error);
-    res.status(500).json({ 
-      error: error.message || 'Failed to analyze email urgency' 
-    });
+    console.error('Email Urgency Triager error:', error);
+    res.status(500).json({ error: error.message || 'Failed to analyze emails' });
   }
 });
 
+// ════════════════════════════════════════════════════════════
+// COMPOSE ACTION
+// ════════════════════════════════════════════════════════════
+async function handleCompose(req, res) {
+  try {
+    const {
+      emailSubject, emailFrom, emailBody,
+      currentDraft, tone, length, instructions, userRole
+    } = req.body;
+
+    if (!emailSubject && !emailBody) {
+      return res.status(400).json({ error: 'Email context is required' });
+    }
+
+    const toneGuide = {
+      professional: 'Professional, polished, business-appropriate. Clear and direct.',
+      casual: 'Friendly and conversational. Warm but still competent.',
+      firm: 'Assertive and clear. Sets boundaries without being rude. Confident.',
+      apologetic: 'Sincere and takes responsibility. Acknowledges the issue without groveling.',
+      grateful: 'Warm and appreciative. Shows genuine gratitude.',
+      urgent: 'Direct and action-oriented. Emphasizes time sensitivity.',
+    };
+
+    const lengthGuide = {
+      quick: '2-3 sentences max. Acknowledge and confirm only.',
+      standard: '1-2 short paragraphs. Cover key points concisely.',
+      detailed: '2-3 paragraphs. Thorough, covers nuances, provides context.',
+    };
+
+    const prompt = `You are an expert email composer. Write a polished, ready-to-send reply.
+
+ORIGINAL EMAIL:
+Subject: ${emailSubject || 'Unknown'}
+From: ${emailFrom || 'Unknown'}
+${emailBody ? `Body: ${emailBody}` : ''}
+
+${currentDraft ? `USER'S CURRENT DRAFT (refine this):\n${currentDraft}` : 'Write a fresh reply.'}
+
+TONE: ${toneGuide[tone] || toneGuide.professional}
+LENGTH: ${lengthGuide[length] || lengthGuide.standard}
+USER ROLE: ${userRole || 'Employee'}
+${instructions ? `SPECIAL INSTRUCTIONS: ${instructions}` : ''}
+
+OUTPUT (JSON only):
+{
+  "composed_reply": "The polished email reply ready to send. No [brackets] unless user needs to fill something.",
+  "subject_line": "Re: appropriate subject",
+  "tone_used": "${tone || 'professional'}",
+  "word_count": 0,
+  "key_points_addressed": ["point 1", "point 2"],
+  "alternative_closings": ["Best regards,", "Thanks,", "Looking forward to hearing from you,"]
+}
+
+RULES:
+1. Directly address the specific email content — no generic filler
+2. Match formality of original unless tone override specified
+3. Every sentence must earn its place
+4. Include clear next step or call to action when appropriate
+5. If refining a draft, preserve user intent while improving clarity
+6. No "I hope this email finds you well" unless it genuinely fits
+
+Return ONLY valid JSON.`;
+
+    const message = await anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 2000,
+      messages: [{ role: 'user', content: prompt }]
+    });
+
+    const parsed = extractJSON(message);
+    res.json(parsed);
+
+  } catch (error) {
+    console.error('Email compose error:', error);
+    res.status(500).json({ error: error.message || 'Failed to compose reply' });
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+// JSON EXTRACTION HELPER
+// ════════════════════════════════════════════════════════════
+function extractJSON(message) {
+  const textContent = message.content.find(item => item.type === 'text')?.text || '';
+  let cleaned = textContent.trim();
+  cleaned = cleaned.replace(/```json\n?/g, '').replace(/```\n?/g, '');
+  const firstBrace = cleaned.indexOf('{');
+  const lastBrace = cleaned.lastIndexOf('}');
+  if (firstBrace === -1 || lastBrace === -1) throw new Error('No JSON found in response');
+  cleaned = cleaned.substring(firstBrace, lastBrace + 1);
+  cleaned = cleaned.replace(/,(\s*[}\]])/g, '$1');
+  try {
+    return JSON.parse(cleaned);
+  } catch (e) {
+    console.error('JSON parse error:', e.message);
+    throw new Error('Failed to parse response: ' + e.message);
+  }
+}
 
 module.exports = router;

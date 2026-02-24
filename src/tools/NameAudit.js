@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
+import { usePersistentState } from '../hooks/usePersistentState';
 import { usePremium, PremiumGate, PremiumBadge } from '../hooks/usePremium';
 import { BookmarkButton } from '../hooks/useBookmarks';
 import { getToolById } from '../data/tools';
@@ -53,6 +54,60 @@ const NameAudit = () => {
   const [compareResults, setCompareResults] = useState(null);
   const [compareLoading, setCompareLoading] = useState(false);
 
+  // ─── Audit History (persistent) ───
+  const [auditHistory, setAuditHistory] = usePersistentState('nameaudit-history', []);
+  const [showHistory, setShowHistory] = useState(false);
+
+  // ─── Analyze Another (quick input in results view) ───
+  const [quickName, setQuickName] = useState('');
+
+  // ─── Fix This Name State ───
+  const [fixLoading, setFixLoading] = useState(false);
+  const [fixResults, setFixResults] = useState(null);
+
+  // ─── Section Explainers ───
+  const [showExplainer, setShowExplainer] = useState({});
+
+  // ─── Compare from Analyze ───
+  const [analyzeToCompare, setAnalyzeToCompare] = useState(false);
+  const [compareSecondName, setCompareSecondName] = useState('');
+
+  // ─── Audience Reaction Simulator (#1) ───
+  const [reactionsLoading, setReactionsLoading] = useState(false);
+  const [reactionsResults, setReactionsResults] = useState(null);
+
+  // ─── Context Deep Dive (#3) ───
+  const [deepDiveLoading, setDeepDiveLoading] = useState(false);
+  const [deepDiveResults, setDeepDiveResults] = useState(null);
+
+  // ─── Name Evolution Timeline (#4) ───
+  const [evolutionTimeline, setEvolutionTimeline] = usePersistentState('nameaudit-evolution', []);
+
+  // ─── Name Psychology Profile (#6) ───
+  // (rendered from existing results + computed frontend-side)
+
+  // ─── Context Mockups (#9) ───
+  const [showMockups, setShowMockups] = useState(false);
+
+  // ─── Second Opinion (#10) ───
+  const [secondOpinionLoading, setSecondOpinionLoading] = useState(false);
+  const [secondOpinionResults, setSecondOpinionResults] = useState(null);
+
+  // ─── Naming Journal (#11) ───
+  const [journalEntries, setJournalEntries] = usePersistentState('nameaudit-journal', {});
+  const [journalDraft, setJournalDraft] = useState('');
+
+  // ─── URL param handoff (from NameStorm) ───
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const nameParam = params.get('name');
+    if (nameParam) {
+      setName(nameParam);
+      // Clean up URL without reload
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  }, []);
+
   // ─── Options ───
   const contexts = [
     { value: 'Business', icon: '🏢' },
@@ -71,11 +126,596 @@ const NameAudit = () => {
 
   // ─── Handlers ───
   const toggleSection = (key) => setExpandedSections(prev => ({ ...prev, [key]: !prev[key] }));
+  const toggleExplainer = (key) => setShowExplainer(prev => ({ ...prev, [key]: !prev[key] }));
+
+  // ─── Expand / Collapse All ───
+  const allSectionIds = ['impression', 'phonetic', 'memorability', 'radio', 'visual', 'language', 'abbreviation', 'competitive', 'seo', 'longevity', 'tld', 'domain-tests', 'emotion', 'availability'];
+  const allExpanded = allSectionIds.every(id => expandedSections[id]);
+  const expandAll = () => setExpandedSections(Object.fromEntries(allSectionIds.map(id => [id, true])));
+  const collapseAll = () => setExpandedSections({});
+
+  // ─── Pronunciation Audio ───
+  const speakName = (text) => {
+    if (!window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = 0.85;
+    utterance.pitch = 1;
+    window.speechSynthesis.speak(utterance);
+  };
+
+  // ─── Save to History ───
+  const saveToHistory = useCallback((data) => {
+    const entry = {
+      id: Date.now(),
+      name: data.name_analyzed,
+      grade: data.overall_grade,
+      score: data.overall_score,
+      context,
+      timestamp: new Date().toISOString(),
+      strengths: data.strengths?.length || 0,
+      weaknesses: data.weaknesses?.length || 0,
+      dealBreakers: data.deal_breakers?.length || 0,
+    };
+    setAuditHistory(prev => [entry, ...prev.filter(e => e.name !== data.name_analyzed)].slice(0, 30));
+  }, [context, setAuditHistory]);
+
+  const loadFromHistory = (entry) => {
+    setName(entry.name);
+    setContext(entry.context || '');
+    setShowHistory(false);
+  };
+
+  // ─── Analyze Another (quick re-analyze from results) ───
+  const handleQuickAnalyze = async () => {
+    if (!quickName.trim()) return;
+    setName(quickName.trim());
+    setError(''); setResults(null); setFixResults(null);
+    setReactionsResults(null); setDeepDiveResults(null); setSecondOpinionResults(null);
+    setShowMockups(false);
+    try {
+      const data = await callToolEndpoint('nameaudit', {
+        name: quickName.trim(), context,
+        industry: industry.trim() || null,
+        targetAudience: targetAudience.trim() || null,
+      });
+      setResults(data);
+      setExpandedSections({ phonetic: true, memorability: true, language: true });
+      setQuickName('');
+      saveToHistory(data);
+      saveToEvolution(data);
+    } catch (err) {
+      setError(err.message || 'Failed to analyze name.');
+    }
+  };
+
+  // ─── Compare from Analyze ───
+  const handleCompareFromAnalyze = async () => {
+    if (!compareSecondName.trim() || !results?.name_analyzed) return;
+    const names = [results.name_analyzed, compareSecondName.trim()];
+    setError(''); setCompareResults(null); setResults(null); setCompareLoading(true);
+    setAnalyzeToCompare(false);
+    setCompareNames(names);
+    setMode('compare');
+    try {
+      const data = await callToolEndpoint('nameaudit/compare', {
+        names, context,
+        industry: industry.trim() || null,
+      });
+      setCompareResults(data);
+    } catch (err) {
+      setError(err.message || 'Failed to compare names.');
+    }
+    setCompareLoading(false);
+  };
+
+  // ─── Fix This Name Handler ───
+  const handleFixThisName = async () => {
+    if (!results || fixLoading) return;
+    setFixLoading(true);
+    try {
+      const data = await callToolEndpoint('nameaudit/fix', {
+        name: results.name_analyzed,
+        context,
+        industry: industry.trim() || null,
+        targetAudience: targetAudience.trim() || null,
+        grade: results.overall_grade,
+        strengths: results.strengths,
+        weaknesses: results.weaknesses,
+        dealBreakers: results.deal_breakers,
+        overallSummary: results.overall_summary,
+      });
+      setFixResults(data);
+    } catch (err) {
+      console.error('Fix this name failed:', err);
+      setError('Failed to generate fixes. Please try again.');
+    }
+    setFixLoading(false);
+  };
+
+  // ─── PDF Export ───
+  const handlePdfExport = () => {
+    const content = buildFullText();
+    const pw = window.open('', '_blank');
+    if (!pw) return;
+    const grade = results?.overall_grade || '';
+    const score = results?.overall_score != null ? `${results.overall_score}/100` : '';
+    pw.document.write(`<!DOCTYPE html><html><head><title>NameAudit Report — ${name}</title>
+<style>
+  body{font-family:Georgia,serif;max-width:750px;margin:40px auto;padding:0 30px;color:#1a1a1a;line-height:1.7;font-size:13px;}
+  pre{white-space:pre-wrap;word-wrap:break-word;font-family:inherit;margin:0;}
+  .header{text-align:center;border-bottom:2px solid #1a1a1a;padding-bottom:20px;margin-bottom:25px;}
+  .header h1{font-size:22px;margin:0 0 6px 0;}
+  .header .grade{font-size:16px;font-weight:bold;margin:8px 0;}
+  .branding{text-align:center;margin-top:40px;padding-top:15px;border-top:1px solid #ccc;color:#888;font-size:11px;}
+  @media print{body{margin:20px;} @page{margin:1.5cm;}}
+</style></head><body>
+<div class="header">
+  <h1>NameAudit Report</h1>
+  <p style="font-size:18px;font-weight:bold;">"${results?.name_analyzed || name}"</p>
+  <p class="grade">Grade: ${grade} ${score ? `· Score: ${score}` : ''}</p>
+  <p style="font-size:11px;color:#666;">${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+</div>
+<pre>${content.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</pre>
+<div class="branding">Generated by DeftBrain · deftbrain.com</div>
+</body></html>`);
+    pw.document.close(); pw.focus(); setTimeout(() => pw.print(), 300);
+  };
+
+  // ─── Section Explainer Data ───
+  const sectionExplainers = {
+    impression: "First impressions form in milliseconds. This section captures the gut reaction, associations, and personality your name projects before anyone knows what you do.",
+    phonetic: "How a name sounds affects how people feel about it. Hard consonants project power, soft vowels feel warm. Mouth feel determines whether the name is pleasant or awkward to say repeatedly.",
+    memorability: "A name is only as good as people's ability to recall it. These 5 tests simulate real-world memory challenges — from casual mention to noisy environments.",
+    radio: "If someone hears your name on a podcast, can they Google it? The radio test predicts how often people will misspell your name from hearing it alone.",
+    visual: "Names live on screens, signs, and cards. This section checks how yours looks in different cases, as a URL, and whether it has visual ambiguity (like 'Iliad' where I and l look identical).",
+    language: "A name that works in English might mean something unfortunate in Japanese or Spanish. This scan checks 15+ languages for unintended meanings, sounds, or cultural associations.",
+    abbreviation: "People will shorten your name. This section checks whether the natural nicknames, initials, and hashtag form are clean — or accidentally spell something problematic.",
+    competitive: "Is your name already taken by someone in your space? Similar-sounding competitors create confusion and dilute your brand equity.",
+    seo: "Can people find you by searching your name? Generic or already-popular names make SEO an uphill battle from day one.",
+    longevity: "Trendy names age fast. This checks whether your name is tied to a passing trend, a specific era, or a technology that might become obsolete.",
+    emotion: "Beyond logic, names trigger emotional responses. This section maps the sensory and personality associations your name evokes.",
+  };
+
+  // ─── Radar Chart Component ───
+  const RadarChart = ({ scores }) => {
+    if (!scores || Object.keys(scores).length < 3) return null;
+    const labels = {
+      first_impression: 'Impression', phonetics: 'Phonetics', memorability: 'Memory',
+      radio_test: 'Radio', visual: 'Visual', global_safety: 'Global',
+      abbreviations: 'Abbrev.', competitive: 'Compet.', seo: 'SEO',
+      longevity: 'Longevity', emotional_resonance: 'Emotion',
+    };
+    const entries = Object.entries(scores).filter(([k]) => labels[k]);
+    if (entries.length < 3) return null;
+    const n = entries.length;
+    const cx = 120, cy = 120, maxR = 90;
+    const angleStep = (2 * Math.PI) / n;
+    const getPoint = (i, val) => {
+      const angle = angleStep * i - Math.PI / 2;
+      const r = (val / 10) * maxR;
+      return { x: cx + r * Math.cos(angle), y: cy + r * Math.sin(angle) };
+    };
+    const gridLevels = [2, 4, 6, 8, 10];
+    const dataPoints = entries.map(([, v], i) => getPoint(i, v));
+    const pathD = dataPoints.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x},${p.y}`).join(' ') + 'Z';
+
+    return (
+      <div className="flex justify-center">
+        <svg width="240" height="240" viewBox="0 0 240 240">
+          {/* Grid */}
+          {gridLevels.map(level => {
+            const pts = entries.map((_, i) => getPoint(i, level));
+            return <polygon key={level} points={pts.map(p => `${p.x},${p.y}`).join(' ')}
+              fill="none" stroke={isDark ? '#3f3f46' : '#e5e7eb'} strokeWidth="0.5" />;
+          })}
+          {/* Axes */}
+          {entries.map((_, i) => {
+            const p = getPoint(i, 10);
+            return <line key={i} x1={cx} y1={cy} x2={p.x} y2={p.y}
+              stroke={isDark ? '#3f3f46' : '#e5e7eb'} strokeWidth="0.5" />;
+          })}
+          {/* Data polygon */}
+          <polygon points={dataPoints.map(p => `${p.x},${p.y}`).join(' ')}
+            fill={isDark ? 'rgba(34,211,238,0.15)' : 'rgba(8,145,178,0.12)'}
+            stroke={isDark ? '#22d3ee' : '#0891b2'} strokeWidth="2" />
+          {/* Data dots */}
+          {dataPoints.map((p, i) => (
+            <circle key={i} cx={p.x} cy={p.y} r="3"
+              fill={isDark ? '#22d3ee' : '#0891b2'} />
+          ))}
+          {/* Labels */}
+          {entries.map(([k], i) => {
+            const p = getPoint(i, 12.2);
+            return <text key={i} x={p.x} y={p.y} textAnchor="middle" dominantBaseline="middle"
+              className={`text-[8px] font-medium ${isDark ? 'fill-zinc-400' : 'fill-gray-500'}`}>
+              {labels[k]}
+            </text>;
+          })}
+        </svg>
+      </div>
+    );
+  };
+
+  // ═══════════════════════════════════════════════════
+  // NEW FEATURE HANDLERS
+  // ═══════════════════════════════════════════════════
+
+  // ─── #1: Audience Reaction Simulator ───
+  const handleReactions = async () => {
+    if (!results || reactionsLoading) return;
+    setReactionsLoading(true);
+    try {
+      const data = await callToolEndpoint('nameaudit/reactions', {
+        name: results.name_analyzed,
+        context,
+        industry: industry.trim() || null,
+        targetAudience: targetAudience.trim() || null,
+        overallSummary: results.overall_summary,
+        personality: results.first_impression?.personality_projected,
+      });
+      setReactionsResults(data);
+    } catch (err) {
+      console.error('Reactions failed:', err);
+    }
+    setReactionsLoading(false);
+  };
+
+  // ─── #3: Context-Specific Deep Dive ───
+  const handleDeepDive = async () => {
+    if (!results || deepDiveLoading) return;
+    setDeepDiveLoading(true);
+    try {
+      const data = await callToolEndpoint('nameaudit/deepdive', {
+        name: results.name_analyzed,
+        context,
+        industry: industry.trim() || null,
+        targetAudience: targetAudience.trim() || null,
+        grade: results.overall_grade,
+        score: results.overall_score,
+      });
+      setDeepDiveResults(data);
+    } catch (err) {
+      console.error('Deep dive failed:', err);
+    }
+    setDeepDiveLoading(false);
+  };
+
+  // ─── #4: Evolution Timeline — save on each audit ───
+  const saveToEvolution = useCallback((data) => {
+    setEvolutionTimeline(prev => {
+      const entry = {
+        name: data.name_analyzed,
+        score: data.overall_score,
+        grade: data.overall_grade,
+        timestamp: new Date().toISOString(),
+        weaknessCount: data.weaknesses?.length || 0,
+        dealBreakerCount: data.deal_breakers?.length || 0,
+      };
+      return [...prev, entry].slice(-50); // keep last 50
+    });
+  }, [setEvolutionTimeline]);
+
+  // ─── #6: Name Psychology (computed from existing phonetic data) ───
+  const computePsychology = (nameStr) => {
+    if (!nameStr) return null;
+    const lower = nameStr.toLowerCase();
+    const vowels = (lower.match(/[aeiou]/g) || []);
+    const consonants = (lower.match(/[bcdfghjklmnpqrstvwxyz]/g) || []);
+    const frontVowels = (lower.match(/[eiy]/g) || []).length;
+    const backVowels = (lower.match(/[aou]/g) || []).length;
+    const plosives = (lower.match(/[bpdtgk]/g) || []).length;
+    const sibilants = (lower.match(/[szʃʒ]|sh|ch/g) || []).length;
+    const nasals = (lower.match(/[mn]/g) || []).length;
+    const liquids = (lower.match(/[lr]/g) || []).length;
+
+    // Bouba/Kiki: round sounds (m,n,l,o,u,b) vs sharp sounds (k,t,i,e,z,x)
+    const roundSounds = (lower.match(/[mnloub]/g) || []).length;
+    const sharpSounds = (lower.match(/[ktiezxp]/g) || []).length;
+    const boubaKiki = roundSounds > sharpSounds ? 'Bouba (soft/round)' : sharpSounds > roundSounds ? 'Kiki (sharp/angular)' : 'Balanced';
+
+    // Size symbolism
+    const sizeSymbol = frontVowels > backVowels ? 'Small / Light / Fast' : backVowels > frontVowels ? 'Large / Heavy / Grounded' : 'Neutral';
+
+    // Consonant personality
+    const traits = [];
+    if (plosives >= 2) traits.push('Energetic & impactful');
+    if (sibilants >= 2) traits.push('Sleek & swift');
+    if (nasals >= 2) traits.push('Warm & approachable');
+    if (liquids >= 2) traits.push('Flowing & elegant');
+    if (vowels.length > consonants.length) traits.push('Open & inviting');
+    if (consonants.length > vowels.length + 1) traits.push('Dense & technical');
+
+    // Lexical neighborhood (very rough heuristic)
+    const neighborDensity = lower.length <= 4 ? 'High (many similar words)' : lower.length <= 7 ? 'Medium' : 'Low (distinctive)';
+
+    return { boubaKiki, sizeSymbol, traits, neighborDensity, vowelRatio: `${vowels.length}V : ${consonants.length}C` };
+  };
+
+  // ─── #7: Pronunciation Confidence Map regions ───
+  const pronunciationRegions = (nameStr) => {
+    if (!nameStr) return [];
+    const lower = nameStr.toLowerCase();
+    const hasR = /r/.test(lower);
+    const hasTh = /th/.test(lower);
+    const hasW = /w/.test(lower);
+    const hasH = /h/.test(lower);
+    const hasVowelClusters = /[aeiou]{2,}/.test(lower);
+    const hasSh = /sh/.test(lower);
+    const hasTz = /tz|ts/.test(lower);
+    const len = lower.length;
+    const isSimple = len <= 6 && !hasTh && !hasVowelClusters;
+
+    const regions = [
+      { name: 'English', confidence: 'high', emoji: '🇬🇧' },
+      { name: 'Spanish', confidence: hasTh ? 'medium' : hasW ? 'medium' : 'high', emoji: '🇪🇸' },
+      { name: 'French', confidence: hasH ? 'medium' : hasTh ? 'low' : 'high', emoji: '🇫🇷' },
+      { name: 'German', confidence: hasW ? 'medium' : 'high', emoji: '🇩🇪' },
+      { name: 'Mandarin', confidence: hasR && hasTh ? 'low' : hasR ? 'medium' : isSimple ? 'high' : 'medium', emoji: '🇨🇳' },
+      { name: 'Japanese', confidence: /[lv]/.test(lower) ? 'medium' : hasTh ? 'low' : 'high', emoji: '🇯🇵' },
+      { name: 'Korean', confidence: /[fvz]/.test(lower) ? 'medium' : 'high', emoji: '🇰🇷' },
+      { name: 'Arabic', confidence: /[pv]/.test(lower) ? 'medium' : 'high', emoji: '🇸🇦' },
+      { name: 'Hindi', confidence: 'high', emoji: '🇮🇳' },
+      { name: 'Portuguese', confidence: hasTh ? 'medium' : 'high', emoji: '🇧🇷' },
+      { name: 'Russian', confidence: hasTh ? 'low' : hasH ? 'medium' : 'high', emoji: '🇷🇺' },
+      { name: 'Turkish', confidence: hasW || hasTh ? 'medium' : 'high', emoji: '🇹🇷' },
+    ];
+    return regions;
+  };
+
+  // ─── #10: Second Opinion ───
+  const handleSecondOpinion = async () => {
+    if (!results || secondOpinionLoading) return;
+    setSecondOpinionLoading(true);
+    try {
+      const data = await callToolEndpoint('nameaudit/second-opinion', {
+        name: results.name_analyzed,
+        context,
+        industry: industry.trim() || null,
+        targetAudience: targetAudience.trim() || null,
+        firstOpinion: {
+          grade: results.overall_grade,
+          score: results.overall_score,
+          strengths: results.strengths,
+          weaknesses: results.weaknesses,
+          dealBreakers: results.deal_breakers,
+        },
+      });
+      setSecondOpinionResults(data);
+    } catch (err) {
+      console.error('Second opinion failed:', err);
+    }
+    setSecondOpinionLoading(false);
+  };
+
+  // ─── #11: Journal — add note to a name ───
+  const addJournalNote = (nameKey) => {
+    if (!journalDraft.trim()) return;
+    const note = {
+      id: Date.now(),
+      text: journalDraft.trim(),
+      timestamp: new Date().toISOString(),
+    };
+    setJournalEntries(prev => ({
+      ...prev,
+      [nameKey]: [...(prev[nameKey] || []), note],
+    }));
+    setJournalDraft('');
+  };
+
+  const deleteJournalNote = (nameKey, noteId) => {
+    setJournalEntries(prev => ({
+      ...prev,
+      [nameKey]: (prev[nameKey] || []).filter(n => n.id !== noteId),
+    }));
+  };
+
+  // ─── #9: Context Mockup Data ───
+  const mockupContexts = {
+    'Business': ['app_store', 'business_card', 'email_sig', 'hero'],
+    'Product': ['app_store', 'hero', 'email_sig', 'packaging'],
+    'App': ['app_store', 'hero', 'notification', 'email_sig'],
+    'Domain Name': ['browser_bar', 'email_sig', 'hero', 'business_card'],
+    'Band / Music Project': ['spotify', 'poster', 'merch'],
+    'Baby': ['birth_announcement', 'nametag'],
+    'Pet': ['nametag', 'vet_record'],
+  };
+
+  const MockupCard = ({ type, displayName }) => {
+    const n = displayName || results?.name_analyzed || 'Name';
+    const slug = n.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const initial = n.charAt(0).toUpperCase();
+    const mockups = {
+      app_store: (
+        <div className={`p-4 rounded-lg border ${c.border} ${isDark ? 'bg-zinc-900' : 'bg-gray-50'}`}>
+          <p className={`text-xs ${c.textMuted} mb-2`}>App Store Listing</p>
+          <div className="flex items-center gap-3">
+            <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-2xl font-bold ${isDark ? 'bg-cyan-600 text-white' : 'bg-cyan-500 text-white'}`}>{initial}</div>
+            <div>
+              <p className={`font-bold ${c.text}`}>{n}</p>
+              <p className={`text-xs ${c.textMuted}`}>{industry || 'Productivity'} · ★★★★★ 4.8</p>
+              <p className={`text-[10px] ${c.textMuted}`}>{slug}.com</p>
+            </div>
+          </div>
+        </div>
+      ),
+      business_card: (
+        <div className={`p-6 rounded-lg border-2 ${isDark ? 'border-zinc-600 bg-zinc-900' : 'border-gray-300 bg-white'} text-center`}>
+          <p className={`text-xs ${c.textMuted} mb-3`}>Business Card</p>
+          <p className={`text-xl font-bold tracking-wide ${c.text}`} style={{ fontFamily: 'Georgia, serif' }}>{n}</p>
+          <p className={`text-[10px] ${c.textMuted} mt-1`}>{industry || 'Innovation for everyone'}</p>
+          <div className={`mt-3 pt-2 border-t ${c.border}`}>
+            <p className={`text-[10px] ${c.textMuted}`}>hello@{slug}.com · {slug}.com</p>
+          </div>
+        </div>
+      ),
+      email_sig: (
+        <div className={`p-4 rounded-lg border ${c.border} ${isDark ? 'bg-zinc-900' : 'bg-gray-50'}`}>
+          <p className={`text-xs ${c.textMuted} mb-2`}>Email Signature</p>
+          <div className={`text-xs ${c.textSecondary} space-y-0.5`}>
+            <p className="font-semibold">Alex Johnson</p>
+            <p>Co-founder & CEO, <span className={`font-bold ${c.text}`}>{n}</span></p>
+            <p className={`${c.textMuted}`}>alex@{slug}.com | {slug}.com</p>
+          </div>
+        </div>
+      ),
+      hero: (
+        <div className={`p-6 rounded-lg border ${c.border} ${isDark ? 'bg-gradient-to-b from-zinc-800 to-zinc-900' : 'bg-gradient-to-b from-gray-50 to-white'} text-center`}>
+          <p className={`text-xs ${c.textMuted} mb-3`}>Website Hero</p>
+          <p className={`text-2xl font-bold ${c.text} mb-1`}>{n}</p>
+          <p className={`text-sm ${c.textSecondary}`}>{industry ? `The future of ${industry.toLowerCase()}` : 'Built for what comes next'}</p>
+          <div className={`inline-block mt-3 px-4 py-1.5 rounded-full text-xs font-semibold ${isDark ? 'bg-cyan-600 text-white' : 'bg-cyan-500 text-white'}`}>Get Started</div>
+        </div>
+      ),
+      browser_bar: (
+        <div className={`p-3 rounded-lg border ${c.border} ${isDark ? 'bg-zinc-900' : 'bg-gray-50'}`}>
+          <p className={`text-xs ${c.textMuted} mb-2`}>Browser Bar</p>
+          <div className={`flex items-center gap-2 p-2 rounded border ${isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-gray-300'}`}>
+            <span className="text-xs">🔒</span>
+            <span className={`text-sm font-mono ${c.text}`}>https://{slug}.com</span>
+          </div>
+        </div>
+      ),
+      notification: (
+        <div className={`p-3 rounded-lg border ${c.border} ${isDark ? 'bg-zinc-900' : 'bg-gray-50'}`}>
+          <p className={`text-xs ${c.textMuted} mb-2`}>Push Notification</p>
+          <div className={`flex items-center gap-2.5 p-2.5 rounded-lg ${isDark ? 'bg-zinc-800' : 'bg-white'} shadow`}>
+            <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold ${isDark ? 'bg-cyan-600 text-white' : 'bg-cyan-500 text-white'}`}>{initial}</div>
+            <div>
+              <p className={`text-xs font-bold ${c.text}`}>{n}</p>
+              <p className={`text-[10px] ${c.textMuted}`}>Your weekly report is ready</p>
+            </div>
+          </div>
+        </div>
+      ),
+      spotify: (
+        <div className={`p-4 rounded-lg border ${c.border} ${isDark ? 'bg-zinc-900' : 'bg-gray-50'}`}>
+          <p className={`text-xs ${c.textMuted} mb-2`}>Spotify Artist Page</p>
+          <div className="flex items-center gap-3">
+            <div className={`w-14 h-14 rounded-full flex items-center justify-center text-xl font-bold ${isDark ? 'bg-green-700 text-white' : 'bg-green-600 text-white'}`}>{initial}</div>
+            <div>
+              <p className={`font-bold ${c.text}`}>{n}</p>
+              <p className={`text-xs ${c.textMuted}`}>23,847 monthly listeners</p>
+            </div>
+          </div>
+        </div>
+      ),
+      poster: (
+        <div className={`p-6 rounded-lg border-2 ${isDark ? 'border-zinc-500 bg-zinc-900' : 'border-gray-400 bg-gray-50'} text-center`}>
+          <p className={`text-xs ${c.textMuted} mb-3`}>Tour Poster</p>
+          <p className={`text-3xl font-black tracking-wider uppercase ${c.text}`} style={{ fontFamily: 'Impact, sans-serif' }}>{n}</p>
+          <p className={`text-xs ${c.textMuted} mt-2`}>LIVE AT THE FILLMORE · OCT 15</p>
+        </div>
+      ),
+      merch: (
+        <div className={`p-4 rounded-lg border ${c.border} ${isDark ? 'bg-zinc-900' : 'bg-gray-50'} text-center`}>
+          <p className={`text-xs ${c.textMuted} mb-2`}>Merch / T-Shirt</p>
+          <div className={`py-6 rounded ${isDark ? 'bg-zinc-800' : 'bg-gray-800'}`}>
+            <p className="text-white text-lg font-bold tracking-widest uppercase">{n}</p>
+          </div>
+        </div>
+      ),
+      packaging: (
+        <div className={`p-4 rounded-lg border-2 ${c.border} ${isDark ? 'bg-zinc-900' : 'bg-white'} text-center`}>
+          <p className={`text-xs ${c.textMuted} mb-2`}>Product Label</p>
+          <p className={`text-lg font-bold tracking-wider ${c.text}`} style={{ fontFamily: 'Georgia, serif' }}>{n}</p>
+          <div className={`h-px ${isDark ? 'bg-zinc-600' : 'bg-gray-300'} my-1.5 mx-8`}></div>
+          <p className={`text-[10px] tracking-widest uppercase ${c.textMuted}`}>{industry || 'Premium Quality'}</p>
+        </div>
+      ),
+      birth_announcement: (
+        <div className={`p-6 rounded-lg border-2 ${isDark ? 'border-pink-700 bg-pink-950/20' : 'border-pink-300 bg-pink-50'} text-center`}>
+          <p className={`text-xs ${c.textMuted} mb-2`}>Birth Announcement</p>
+          <p className={`text-xs tracking-widest uppercase ${c.textMuted}`}>welcome to the world</p>
+          <p className={`text-3xl font-light mt-1 ${c.text}`} style={{ fontFamily: 'Georgia, serif' }}>{n}</p>
+          <p className={`text-xs ${c.textMuted} mt-1`}>7 lbs 4 oz · January 15, 2026</p>
+        </div>
+      ),
+      nametag: (
+        <div className={`p-4 rounded-lg border-2 ${isDark ? 'border-amber-700 bg-amber-950/20' : 'border-amber-300 bg-amber-50'} text-center`}>
+          <p className={`text-xs ${c.textMuted} mb-1`}>Name Tag</p>
+          <p className={`text-2xl font-bold ${c.text}`}>{n}</p>
+        </div>
+      ),
+      vet_record: (
+        <div className={`p-4 rounded-lg border ${c.border} ${isDark ? 'bg-zinc-900' : 'bg-gray-50'}`}>
+          <p className={`text-xs ${c.textMuted} mb-2`}>Vet Record</p>
+          <div className={`text-xs ${c.textSecondary} space-y-0.5`}>
+            <p><span className="font-bold">Patient:</span> <span className={`font-bold ${c.text}`}>{n}</span></p>
+            <p><span className="font-bold">Species:</span> Canine · <span className="font-bold">Breed:</span> Golden Retriever</p>
+            <p><span className="font-bold">Owner:</span> Johnson, A.</p>
+          </div>
+        </div>
+      ),
+    };
+    return mockups[type] || null;
+  };
+
+  // ─── #7: Pronunciation Confidence Map Component ───
+  const PronunciationMap = ({ nameStr }) => {
+    const regions = pronunciationRegions(nameStr);
+    if (!regions.length) return null;
+    const confColor = (conf) => {
+      if (conf === 'high') return isDark ? 'bg-green-900/40 border-green-700 text-green-300' : 'bg-green-50 border-green-300 text-green-700';
+      if (conf === 'medium') return isDark ? 'bg-amber-900/40 border-amber-700 text-amber-300' : 'bg-amber-50 border-amber-300 text-amber-700';
+      return isDark ? 'bg-red-900/40 border-red-700 text-red-300' : 'bg-red-50 border-red-300 text-red-700';
+    };
+    return (
+      <div className="flex flex-wrap gap-2">
+        {regions.map(r => (
+          <div key={r.name} className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-xs font-medium ${confColor(r.confidence)}`}>
+            <span>{r.emoji}</span> {r.name}
+            <span className="font-bold">{r.confidence === 'high' ? '✓' : r.confidence === 'medium' ? '~' : '✗'}</span>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  // ─── #4: Evolution Timeline Component ───
+  const EvolutionTimeline = () => {
+    if (evolutionTimeline.length < 2) return null;
+    const maxScore = Math.max(...evolutionTimeline.map(e => e.score || 0));
+    return (
+      <div className={`${c.card} rounded-xl shadow-lg p-6`}>
+        <h3 className={`font-bold ${c.text} mb-3 flex items-center gap-2`}>
+          <span>📈</span> Name Evolution Timeline
+        </h3>
+        <p className={`text-xs ${c.textMuted} mb-3`}>Track your naming journey — how scores changed across audits</p>
+        <div className="flex items-end gap-1 h-24 mb-2">
+          {evolutionTimeline.slice(-15).map((entry, i) => {
+            const pct = entry.score ? (entry.score / 100) * 100 : 10;
+            const barColor = entry.score >= 70 ? (isDark ? 'bg-green-500' : 'bg-green-500')
+              : entry.score >= 50 ? (isDark ? 'bg-amber-500' : 'bg-amber-500')
+              : (isDark ? 'bg-red-500' : 'bg-red-500');
+            return (
+              <div key={i} className="flex-1 flex flex-col items-center gap-1 group relative">
+                <div className={`w-full rounded-t ${barColor} transition-all`} style={{ height: `${pct}%`, minHeight: '4px' }}></div>
+                <p className={`text-[8px] ${c.textMuted} truncate max-w-full`}>{entry.name?.slice(0, 6)}</p>
+                {/* Tooltip */}
+                <div className={`absolute bottom-full mb-1 left-1/2 -translate-x-1/2 hidden group-hover:block z-10 px-2 py-1 rounded text-xs whitespace-nowrap ${isDark ? 'bg-zinc-700 text-zinc-100' : 'bg-gray-800 text-white'}`}>
+                  {entry.name}: {entry.score}/100 ({entry.grade})
+                </div>
+              </div>
+            );
+          })}
+        </div>
+        <div className="flex justify-between">
+          <span className={`text-[9px] ${c.textMuted}`}>← Older</span>
+          <span className={`text-[9px] ${c.textMuted}`}>Newer →</span>
+        </div>
+        <button onClick={() => { if (window.confirm('Clear evolution timeline?')) setEvolutionTimeline([]); }}
+          className={`text-xs ${c.textMuted} hover:underline mt-2`}>Clear timeline</button>
+      </div>
+    );
+  };
 
   const handleAnalyze = async () => {
     if (!name.trim()) { setError('Please enter a name to analyze'); return; }
     if (!context) { setError('Please select what this name is for'); return; }
-    setError(''); setResults(null);
+    setError(''); setResults(null); setFixResults(null);
+    setReactionsResults(null); setDeepDiveResults(null); setSecondOpinionResults(null);
+    setShowMockups(false);
     try {
       const data = await callToolEndpoint('nameaudit', {
         name: name.trim(), context,
@@ -84,6 +724,8 @@ const NameAudit = () => {
       });
       setResults(data);
       setExpandedSections({ phonetic: true, memorability: true, language: true });
+      saveToHistory(data);
+      saveToEvolution(data);
     } catch (err) {
       setError(err.message || 'Failed to analyze name.');
     }
@@ -108,7 +750,10 @@ const NameAudit = () => {
   const reset = () => {
     setName(''); setContext(''); setIndustry(''); setTargetAudience('');
     setResults(null); setError(''); setCompareResults(null);
-    setCompareNames(['', '']);
+    setCompareNames(['', '']); setFixResults(null); setFixLoading(false);
+    setQuickName(''); setAnalyzeToCompare(false); setCompareSecondName('');
+    setShowExplainer({}); setReactionsResults(null); setDeepDiveResults(null);
+    setSecondOpinionResults(null); setShowMockups(false); setJournalDraft('');
   };
 
   const gradeColors = {
@@ -334,17 +979,29 @@ const NameAudit = () => {
   // Collapsible section helper
   const Section = ({ id, title, icon, children, defaultOpen = false, score }) => {
     const isOpen = expandedSections[id] !== undefined ? expandedSections[id] : defaultOpen;
+    const explainer = sectionExplainers[id];
+    const explainerVisible = showExplainer[id];
     return (
       <div className={`${c.card} rounded-xl shadow-lg p-6`}>
         <button onClick={() => toggleSection(id)} className={`w-full flex items-center justify-between ${c.text}`}>
           <h3 className="font-bold flex items-center gap-2">
             <span>{icon}</span> {title}
+            {explainer && (
+              <span onClick={(e) => { e.stopPropagation(); toggleExplainer(id); }}
+                className={`text-xs cursor-pointer ${isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-gray-400 hover:text-gray-600'}`}
+                title="Why does this matter?">ℹ️</span>
+            )}
           </h3>
           <div className="flex items-center gap-3">
             {score != null && <ScoreBar score={score} />}
             {isOpen ? <span>▲</span> : <span>▼</span>}
           </div>
         </button>
+        {explainerVisible && explainer && (
+          <div className={`mt-2 p-3 rounded-lg ${c.info} border text-sm`}>
+            💡 {explainer}
+          </div>
+        )}
         {isOpen && <div className="mt-4">{children}</div>}
       </div>
     );
@@ -456,6 +1113,47 @@ const NameAudit = () => {
             )}
           </div>
 
+          {/* Audit History */}
+          {auditHistory.length > 0 && (
+            <div className={`${c.card} rounded-xl shadow-lg p-5`}>
+              <button onClick={() => setShowHistory(!showHistory)}
+                className={`w-full flex items-center justify-between ${c.text}`}>
+                <span className="flex items-center gap-2 font-semibold text-sm">
+                  <span>📜</span> Previous Audits ({auditHistory.length})
+                </span>
+                <span>{showHistory ? '▲' : '▼'}</span>
+              </button>
+              {showHistory && (
+                <div className="mt-3 space-y-2">
+                  {auditHistory.map((entry) => (
+                    <div key={entry.id} className={`flex items-center gap-3 p-3 rounded-lg border ${c.border} ${c.cardAlt}`}>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className={`font-bold text-sm ${c.text}`}>{entry.name}</span>
+                          <span className={`px-2 py-0.5 text-xs font-bold rounded-full border ${gradeColors[entry.grade] || c.warning}`}>{entry.grade}</span>
+                          {entry.score != null && <span className={`text-xs font-bold ${scoreColor(entry.score)}`}>{entry.score}/100</span>}
+                          {entry.dealBreakers > 0 && <span className={`text-xs px-1.5 py-0.5 rounded border ${c.danger}`}>🚨 {entry.dealBreakers} deal breaker{entry.dealBreakers > 1 ? 's' : ''}</span>}
+                        </div>
+                        <div className="flex items-center gap-2 mt-0.5">
+                          {entry.context && <span className={`text-xs ${c.textMuted}`}>{entry.context}</span>}
+                          <span className={`text-xs ${c.textMuted}`}>
+                            {new Date(entry.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
+                          </span>
+                        </div>
+                      </div>
+                      <button onClick={() => loadFromHistory(entry)}
+                        className={`flex-shrink-0 flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium ${c.btnSecondary}`}>
+                        <span>🔄</span> Re-audit
+                      </button>
+                    </div>
+                  ))}
+                  <button onClick={() => { setAuditHistory([]); setShowHistory(false); }}
+                    className={`text-xs ${c.textMuted} hover:underline mt-1`}>Clear history</button>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Submit */}
           <button onClick={mode === 'analyze' ? handleAnalyze : handleCompare}
             disabled={loading || compareLoading || (mode === 'analyze' ? (!name.trim() || !context) : (compareNames.filter(n => n.trim()).length < 2 || !context))}
@@ -564,24 +1262,74 @@ const NameAudit = () => {
         <div className="space-y-5">
 
           {/* Controls */}
-          <div className={`${c.card} rounded-xl shadow-lg p-4 flex items-center justify-between flex-wrap gap-3`}>
-            <span className={`text-sm font-semibold ${c.text}`}>Analysis: "{results.name_analyzed}"</span>
-            <div className="flex items-center gap-2 flex-wrap">
-              <CopyBtn content={buildFullText()} label="Copy All" />
-              <button onClick={handlePrint} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
-                <span>🖨️</span> Print
-              </button>
-              <button onClick={handleShare} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
-                <span>📤</span> Share
-              </button>
-              <PremiumGate feature="nameAudit.pdfExport" inline>
-                <button className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
-                  <span>📄</span> PDF <PremiumBadge feature="nameAudit.pdfExport" />
+          <div className={`${c.card} rounded-xl shadow-lg p-4 space-y-3`}>
+            <div className="flex items-center justify-between flex-wrap gap-3">
+              <div className="flex items-center gap-2">
+                <span className={`text-sm font-semibold ${c.text}`}>"{results.name_analyzed}"</span>
+                <button onClick={() => speakName(results.name_analyzed)}
+                  className={`p-1 rounded transition-all ${isDark ? 'hover:bg-zinc-700' : 'hover:bg-gray-100'}`}
+                  title="Hear pronunciation">
+                  <span className="text-sm">🔊</span>
                 </button>
-              </PremiumGate>
-              <button onClick={reset} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-50 text-cyan-700'}`}>
-                <span>🔄</span> New Analysis
+              </div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <CopyBtn content={buildFullText()} label="Copy All" />
+                <button onClick={handlePrint} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
+                  <span>🖨️</span> Print
+                </button>
+                <button onClick={handleShare} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
+                  <span>📤</span> Share
+                </button>
+                <PremiumGate feature="nameAudit.pdfExport" inline>
+                  <button onClick={handlePdfExport} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
+                    <span>📄</span> PDF <PremiumBadge feature="nameAudit.pdfExport" />
+                  </button>
+                </PremiumGate>
+                <button onClick={() => allExpanded ? collapseAll() : expandAll()}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
+                  <span>{allExpanded ? '🔼' : '🔽'}</span> {allExpanded ? 'Collapse All' : 'Expand All'}
+                </button>
+                <button onClick={() => setShowMockups(!showMockups)}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${showMockups ? (isDark ? 'bg-cyan-900/40 text-cyan-200' : 'bg-cyan-100 text-cyan-700') : c.btnSecondary}`}>
+                  <span>🎨</span> Mockups
+                </button>
+                <button onClick={reset} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-50 text-cyan-700'}`}>
+                  <span>🔄</span> New Analysis
+                </button>
+              </div>
+            </div>
+
+            {/* Analyze Another — quick input */}
+            <div className={`flex items-center gap-2 pt-2 border-t ${c.border}`}>
+              <span className={`text-xs font-semibold ${c.textMuted} flex-shrink-0`}>Quick audit:</span>
+              <input type="text" value={quickName} onChange={(e) => setQuickName(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter') handleQuickAnalyze(); }}
+                placeholder="Test another name (same settings)"
+                className={`flex-1 p-2 border rounded-lg outline-none text-sm focus:ring-2 focus:ring-cyan-300 ${c.input}`} />
+              <button onClick={handleQuickAnalyze} disabled={loading || !quickName.trim()}
+                className={`px-3 py-2 rounded-lg text-sm font-medium ${loading || !quickName.trim() ? (isDark ? 'bg-zinc-700 text-zinc-500' : 'bg-gray-100 text-gray-400') : c.btnPrimary}`}>
+                {loading ? <span className="animate-spin inline-block">⏳</span> : 'Audit'}
               </button>
+              {/* Compare from Analyze */}
+              {!analyzeToCompare ? (
+                <button onClick={() => setAnalyzeToCompare(true)}
+                  className={`flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium flex-shrink-0 ${c.btnSecondary}`}>
+                  <span>📊</span> Compare
+                </button>
+              ) : (
+                <>
+                  <input type="text" value={compareSecondName} onChange={(e) => setCompareSecondName(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === 'Enter') handleCompareFromAnalyze(); }}
+                    placeholder="vs..."
+                    className={`w-28 p-2 border rounded-lg outline-none text-sm focus:ring-2 focus:ring-cyan-300 ${c.input}`} />
+                  <button onClick={handleCompareFromAnalyze} disabled={compareLoading || !compareSecondName.trim()}
+                    className={`px-3 py-2 rounded-lg text-sm font-medium ${compareLoading || !compareSecondName.trim() ? (isDark ? 'bg-zinc-700 text-zinc-500' : 'bg-gray-100 text-gray-400') : c.btnPrimary}`}>
+                    {compareLoading ? <span className="animate-spin inline-block">⏳</span> : 'Go'}
+                  </button>
+                  <button onClick={() => { setAnalyzeToCompare(false); setCompareSecondName(''); }}
+                    className={`text-xs ${c.textMuted}`}>✕</button>
+                </>
+              )}
             </div>
           </div>
 
@@ -629,6 +1377,84 @@ const NameAudit = () => {
             <div className={`p-5 rounded-xl ${c.danger} border`}>
               <p className="text-xs font-bold mb-2">🚨 DEAL BREAKERS</p>
               {results.deal_breakers.map((d, i) => <p key={i} className="text-sm mb-1 font-medium">{d}</p>)}
+            </div>
+          )}
+
+          {/* Score Radar Chart */}
+          {results.section_scores && Object.keys(results.section_scores).length >= 3 && (
+            <div className={`${c.card} rounded-xl shadow-lg p-6`}>
+              <h3 className={`font-bold ${c.text} mb-3 flex items-center gap-2`}>
+                <span>📊</span> Score Profile
+              </h3>
+              <RadarChart scores={results.section_scores} />
+              <p className={`text-xs ${c.textMuted} text-center mt-2`}>Each axis represents a 0-10 score. Larger area = stronger name overall.</p>
+            </div>
+          )}
+
+          {/* ─── #6: Name Psychology Profile ─── */}
+          {results && (() => {
+            const psych = computePsychology(results.name_analyzed);
+            if (!psych) return null;
+            return (
+              <Section id="psychology" title="Name Psychology (Sound Science)" icon="🧠">
+                <div className="space-y-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className={`p-3 rounded-lg ${c.cardAlt}`}>
+                      <p className={`text-xs font-bold ${c.textMuted} mb-1`}>BOUBA / KIKI EFFECT</p>
+                      <p className={`text-sm font-semibold ${c.text}`}>{psych.boubaKiki}</p>
+                      <p className={`text-xs ${c.textMuted} mt-0.5`}>Round sounds feel soft & friendly. Sharp sounds feel angular & modern.</p>
+                    </div>
+                    <div className={`p-3 rounded-lg ${c.cardAlt}`}>
+                      <p className={`text-xs font-bold ${c.textMuted} mb-1`}>SIZE SYMBOLISM</p>
+                      <p className={`text-sm font-semibold ${c.text}`}>{psych.sizeSymbol}</p>
+                      <p className={`text-xs ${c.textMuted} mt-0.5`}>Front vowels (e, i) feel small & light. Back vowels (a, o, u) feel large & heavy.</p>
+                    </div>
+                    <div className={`p-3 rounded-lg ${c.cardAlt}`}>
+                      <p className={`text-xs font-bold ${c.textMuted} mb-1`}>VOWEL : CONSONANT RATIO</p>
+                      <p className={`text-sm font-semibold ${c.text}`}>{psych.vowelRatio}</p>
+                    </div>
+                    <div className={`p-3 rounded-lg ${c.cardAlt}`}>
+                      <p className={`text-xs font-bold ${c.textMuted} mb-1`}>LEXICAL NEIGHBORHOOD</p>
+                      <p className={`text-sm font-semibold ${c.text}`}>{psych.neighborDensity}</p>
+                      <p className={`text-xs ${c.textMuted} mt-0.5`}>More similar-sounding words = harder to recall distinctly.</p>
+                    </div>
+                  </div>
+                  {psych.traits.length > 0 && (
+                    <div className={`p-3 rounded-lg ${c.cyan} border`}>
+                      <p className="text-xs font-bold mb-1">PHONETIC PERSONALITY TRAITS</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {psych.traits.map((t, i) => (
+                          <span key={i} className={`px-2 py-0.5 rounded-full text-xs border ${c.chip(false)}`}>{t}</span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </Section>
+            );
+          })()}
+
+          {/* ─── #7: Pronunciation Confidence Map ─── */}
+          {results && (
+            <Section id="pronunciation-map" title="Global Pronunciation Confidence" icon="🗺️">
+              <div className="space-y-3">
+                <p className={`text-xs ${c.textMuted}`}>Estimated pronunciation accuracy based on phoneme inventory of each language. ✓ = likely correct, ~ = close but imperfect, ✗ = frequently mispronounced.</p>
+                <PronunciationMap nameStr={results.name_analyzed} />
+              </div>
+            </Section>
+          )}
+
+          {/* ─── #9: Context Mockups Toggle (in controls area) ─── */}
+          {results && showMockups && (
+            <div className={`${c.card} rounded-xl shadow-lg p-6`}>
+              <h3 className={`font-bold ${c.text} mb-3 flex items-center gap-2`}>
+                <span>🎨</span> Real-World Mockups
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {(mockupContexts[context] || mockupContexts['Business'] || ['app_store', 'business_card', 'email_sig', 'hero']).map(type => (
+                  <MockupCard key={type} type={type} displayName={results.name_analyzed} />
+                ))}
+              </div>
             </div>
           )}
 
@@ -907,6 +1733,158 @@ const NameAudit = () => {
             </Section>
           )}
 
+          {/* ═══ NEW AI FEATURES ═══ */}
+
+          {/* ─── #1: Audience Reaction Simulator ─── */}
+          <div className={`${c.card} rounded-xl shadow-lg p-6`}>
+            <h3 className={`font-bold ${c.text} mb-2 flex items-center gap-2`}>
+              <span>👥</span> Audience Reaction Simulator
+            </h3>
+            <p className={`text-xs ${c.textMuted} mb-3`}>
+              How would your target audience react to hearing this name for the first time?
+            </p>
+            {!reactionsResults ? (
+              <button onClick={handleReactions} disabled={reactionsLoading}
+                className={`w-full py-3 px-4 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all ${
+                  reactionsLoading ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : c.btnPrimary
+                }`}>
+                {reactionsLoading ? (<><span className="animate-spin inline-block">⏳</span> Simulating reactions...</>)
+                  : (<><span>👥</span> Simulate Audience Reactions
+                    <span className={`text-[9px] px-1 py-0.5 rounded font-bold ${isDark ? 'bg-cyan-900/50 text-cyan-300' : 'bg-cyan-100 text-cyan-700'}`}>PRO</span></>)}
+              </button>
+            ) : (
+              <div className="space-y-3">
+                {reactionsResults.personas?.map((persona, i) => (
+                  <div key={i} className={`p-4 rounded-lg border ${c.border} ${c.cardAlt}`}>
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-lg">{persona.emoji || '👤'}</span>
+                      <div>
+                        <p className={`text-sm font-bold ${c.text}`}>{persona.name}</p>
+                        <p className={`text-xs ${c.textMuted}`}>{persona.description}</p>
+                      </div>
+                    </div>
+                    <p className={`text-sm ${c.textSecondary} italic`}>"{persona.reaction}"</p>
+                    {persona.would_they_remember && (
+                      <p className={`text-xs ${c.textMuted} mt-1.5`}>
+                        Would they remember it? <span className="font-semibold">{persona.would_they_remember}</span>
+                      </p>
+                    )}
+                    {persona.trust_level && (
+                      <p className={`text-xs ${c.textMuted}`}>
+                        Trust level: <span className="font-semibold">{persona.trust_level}</span>
+                      </p>
+                    )}
+                  </div>
+                ))}
+                {reactionsResults.consensus && (
+                  <div className={`p-3 rounded-lg ${c.info} border`}>
+                    <p className="text-xs font-bold mb-1">AUDIENCE CONSENSUS</p>
+                    <p className="text-sm">{reactionsResults.consensus}</p>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* ─── #3: Context-Specific Deep Dive ─── */}
+          <div className={`${c.card} rounded-xl shadow-lg p-6`}>
+            <h3 className={`font-bold ${c.text} mb-2 flex items-center gap-2`}>
+              <span>🔬</span> {context === 'Baby' ? 'Baby Name Deep Dive' : context === 'Band / Music Project' ? 'Music Industry Deep Dive' : context === 'Pet' ? 'Pet Name Deep Dive' : 'Industry-Specific Deep Dive'}
+            </h3>
+            <p className={`text-xs ${c.textMuted} mb-3`}>
+              {context === 'Baby' ? 'Popularity trends, sibling compatibility, playground-proofing, and more.'
+                : context === 'Band / Music Project' ? 'Genre fit, Spotify searchability, tour poster test, and merch potential.'
+                : context === 'Pet' ? 'Call-and-response test, vet-confusion check, and multi-pet compatibility.'
+                : 'Trademark risk, expansion readiness, funding potential, and market positioning.'}
+            </p>
+            {!deepDiveResults ? (
+              <button onClick={handleDeepDive} disabled={deepDiveLoading}
+                className={`w-full py-3 px-4 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all ${
+                  deepDiveLoading ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : c.btnPrimary
+                }`}>
+                {deepDiveLoading ? (<><span className="animate-spin inline-block">⏳</span> Running deep dive...</>)
+                  : (<><span>🔬</span> Run Deep Dive
+                    <span className={`text-[9px] px-1 py-0.5 rounded font-bold ${isDark ? 'bg-cyan-900/50 text-cyan-300' : 'bg-cyan-100 text-cyan-700'}`}>PRO</span></>)}
+              </button>
+            ) : (
+              <div className="space-y-3">
+                {deepDiveResults.sections?.map((section, i) => (
+                  <div key={i} className={`p-3 rounded-lg ${section.severity === 'positive' ? c.success : section.severity === 'problem' ? c.danger : section.severity === 'caution' ? c.warning : c.cardAlt} ${section.severity ? 'border' : ''}`}>
+                    <p className="text-xs font-bold mb-1">{section.title}</p>
+                    <p className="text-sm">{section.finding}</p>
+                    {section.detail && <p className={`text-xs ${c.textMuted} mt-1`}>{section.detail}</p>}
+                  </div>
+                ))}
+                {deepDiveResults.verdict && (
+                  <div className={`p-3 rounded-lg ${c.info} border`}>
+                    <p className="text-xs font-bold mb-1">DEEP DIVE VERDICT</p>
+                    <p className="text-sm">{deepDiveResults.verdict}</p>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* ─── #10: Second Opinion ─── */}
+          <div className={`${c.card} rounded-xl shadow-lg p-6`}>
+            <h3 className={`font-bold ${c.text} mb-2 flex items-center gap-2`}>
+              <span>🔄</span> Second Opinion
+            </h3>
+            <p className={`text-xs ${c.textMuted} mb-3`}>
+              Run the analysis again independently and see where two opinions agree vs. disagree. Agreement = reliable signal.
+            </p>
+            {!secondOpinionResults ? (
+              <button onClick={handleSecondOpinion} disabled={secondOpinionLoading}
+                className={`w-full py-3 px-4 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all ${
+                  secondOpinionLoading ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : c.btnPrimary
+                }`}>
+                {secondOpinionLoading ? (<><span className="animate-spin inline-block">⏳</span> Getting second opinion...</>)
+                  : (<><span>🔄</span> Get Second Opinion
+                    <span className={`text-[9px] px-1 py-0.5 rounded font-bold ${isDark ? 'bg-cyan-900/50 text-cyan-300' : 'bg-cyan-100 text-cyan-700'}`}>PRO</span></>)}
+              </button>
+            ) : (
+              <div className="space-y-3">
+                {/* Score comparison */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div className={`p-3 rounded-lg text-center ${c.cardAlt}`}>
+                    <p className={`text-xs font-bold ${c.textMuted} mb-1`}>FIRST ANALYSIS</p>
+                    <p className={`text-2xl font-bold ${scoreColor(results?.overall_score || 0)}`}>{results?.overall_score}</p>
+                    <p className={`text-xs font-bold ${c.textMuted}`}>{results?.overall_grade}</p>
+                  </div>
+                  <div className={`p-3 rounded-lg text-center ${c.cardAlt}`}>
+                    <p className={`text-xs font-bold ${c.textMuted} mb-1`}>SECOND OPINION</p>
+                    <p className={`text-2xl font-bold ${scoreColor(secondOpinionResults.score || 0)}`}>{secondOpinionResults.score}</p>
+                    <p className={`text-xs font-bold ${c.textMuted}`}>{secondOpinionResults.grade}</p>
+                  </div>
+                </div>
+                {/* Agreements */}
+                {secondOpinionResults.agreements?.length > 0 && (
+                  <div className={`p-3 rounded-lg ${c.success} border`}>
+                    <p className="text-xs font-bold mb-1">✅ BOTH ANALYSES AGREE</p>
+                    {secondOpinionResults.agreements.map((a, i) => <p key={i} className="text-sm mb-0.5">• {a}</p>)}
+                  </div>
+                )}
+                {/* Disagreements */}
+                {secondOpinionResults.disagreements?.length > 0 && (
+                  <div className={`p-3 rounded-lg ${c.warning} border`}>
+                    <p className="text-xs font-bold mb-1">⚠ ANALYSES DISAGREE ON</p>
+                    {secondOpinionResults.disagreements.map((d, i) => <p key={i} className="text-sm mb-0.5">• {d}</p>)}
+                  </div>
+                )}
+                {/* New insights */}
+                {secondOpinionResults.new_insights?.length > 0 && (
+                  <div className={`p-3 rounded-lg ${c.info} border`}>
+                    <p className="text-xs font-bold mb-1">💡 NEW INSIGHTS</p>
+                    {secondOpinionResults.new_insights.map((n, i) => <p key={i} className="text-sm mb-0.5">• {n}</p>)}
+                  </div>
+                )}
+                {secondOpinionResults.confidence_verdict && (
+                  <p className={`text-sm ${c.textSecondary} italic text-center`}>🎯 {secondOpinionResults.confidence_verdict}</p>
+                )}
+              </div>
+            )}
+          </div>
+
           {/* Suggestions */}
           {results.suggestions && (
             <div className={`${c.card} rounded-xl shadow-lg p-6`}>
@@ -927,33 +1905,159 @@ const NameAudit = () => {
               )}
               {/* Fix This Name — premium */}
               <PremiumGate feature="nameAudit.fixThisName" label="Fix This Name">
-                <button
+                <button onClick={handleFixThisName} disabled={fixLoading || !!fixResults}
                   className={`w-full mt-2 py-3 px-4 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all ${
-                    isDark ? 'bg-violet-900/30 border border-violet-700 text-violet-200 hover:bg-violet-900/50'
+                    fixResults ? (isDark ? 'bg-zinc-700 border border-zinc-600 text-zinc-400' : 'bg-gray-100 border border-gray-200 text-gray-400')
+                    : fixLoading ? (isDark ? 'bg-zinc-700 border border-zinc-600 text-zinc-400' : 'bg-gray-200 border border-gray-200 text-gray-400')
+                    : isDark ? 'bg-violet-900/30 border border-violet-700 text-violet-200 hover:bg-violet-900/50'
                       : 'bg-violet-50 border border-violet-200 text-violet-700 hover:bg-violet-100'
                   }`}
                 >
-                  <span>✨</span>
-                  Fix This Name — Generate improved variations
-                  <PremiumBadge feature="nameAudit.fixThisName" />
+                  {fixLoading ? (<><span className="animate-spin inline-block">⏳</span> Generating fixes...</>)
+                    : fixResults ? (<><span>✅</span> Fixes generated below</>)
+                    : (<><span>✨</span> Fix This Name — Generate improved variations <PremiumBadge feature="nameAudit.fixThisName" /></>)}
                 </button>
               </PremiumGate>
             </div>
           )}
 
-          {/* Cross-tool: conditional based on grade */}
-          {(results.overall_grade === 'WEAK' || results.overall_grade === 'RECONSIDER') ? (
-            <p className={`text-xs text-center ${c.textMuted}`}>
-              This name scored low — try{' '}
-              <a href="/NameStorm" className={linkStyle}>NameStorm</a>{' '}
-              to generate stronger alternatives.
-            </p>
-          ) : (
-            <p className={`text-xs text-center ${c.textMuted}`}>
-              Want alternatives? Use{' '}
-              <a href="/NameStorm" className={linkStyle}>NameStorm</a>{' '}
-              to generate names, then bring your favorites back here.
-            </p>
+          {/* ─── Fix This Name Results ─── */}
+          {fixResults && (
+            <div className={`${c.card} rounded-xl shadow-lg p-6`}>
+              <h3 className={`font-bold ${c.text} mb-2 flex items-center gap-2`}>
+                <span>✨</span> Improved Variations of "{results?.name_analyzed}"
+              </h3>
+              {fixResults.approach && (
+                <p className={`text-sm ${c.textSecondary} mb-4 italic`}>{fixResults.approach}</p>
+              )}
+              <div className="space-y-3">
+                {fixResults.variations?.map((v, i) => (
+                  <div key={i} className={`p-4 rounded-xl border ${c.border} ${c.cardAlt}`}>
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h4 className={`text-lg font-bold ${c.text}`}>{v.name}</h4>
+                          {v.pronunciation && <span className={`text-xs font-mono ${c.textMuted}`}>/{v.pronunciation}/</span>}
+                          <button onClick={() => speakName(v.name)} className="p-0.5 rounded" title="Hear it">
+                            <span className="text-sm">🔊</span>
+                          </button>
+                          {v.estimated_score != null && (
+                            <span className={`text-xs font-bold px-1.5 py-0.5 rounded border ${
+                              v.estimated_score >= 80 ? (isDark ? 'text-green-400 bg-green-900/30 border-green-700' : 'text-green-700 bg-green-50 border-green-300')
+                              : v.estimated_score >= 60 ? (isDark ? 'text-amber-400 bg-amber-900/30 border-amber-700' : 'text-amber-700 bg-amber-50 border-amber-300')
+                              : (isDark ? 'text-red-400 bg-red-900/30 border-red-700' : 'text-red-600 bg-red-50 border-red-300')
+                            }`}>{v.estimated_score}</span>
+                          )}
+                        </div>
+                        <p className={`text-sm ${c.textSecondary} mt-1.5`}>{v.why_its_better}</p>
+                        {v.what_it_fixes && (
+                          <p className={`text-xs ${isDark ? 'text-violet-300' : 'text-violet-600'} mt-1 font-medium`}>
+                            → Fixes: {v.what_it_fixes}
+                          </p>
+                        )}
+                        {v.tradeoff && (
+                          <p className={`text-xs ${c.textMuted} mt-1`}>⚖️ Tradeoff: {v.tradeoff}</p>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-1 flex-shrink-0">
+                        <CopyBtn content={v.name} />
+                        <a href={`/NameAudit?name=${encodeURIComponent(v.name)}`}
+                          className={`p-1.5 rounded-lg transition-all ${c.btnSecondary}`} title="Audit this name">
+                          <span className="text-sm">🔍</span>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              {fixResults.naming_direction && (
+                <p className={`text-sm ${c.textSecondary} mt-4 italic`}>💡 {fixResults.naming_direction}</p>
+              )}
+            </div>
+          )}
+
+          {/* Cross-tool: smart NameStorm handoff with context */}
+          {(() => {
+            const isWeak = results?.overall_grade === 'WEAK' || results?.overall_grade === 'RECONSIDER';
+            const weaknesses = results?.weaknesses?.slice(0, 2).join(', ') || '';
+            const stormParams = new URLSearchParams();
+            if (context && context !== 'Other') stormParams.set('category', context);
+            if (weaknesses) stormParams.set('constraints', `Avoid issues: ${weaknesses}`);
+            if (industry) stormParams.set('industry', industry);
+            const stormUrl = `/NameStorm${stormParams.toString() ? '?' + stormParams.toString() : ''}`;
+
+            return isWeak ? (
+              <div className={`p-4 rounded-xl ${c.warning} border text-center`}>
+                <p className={`text-sm font-medium mb-2`}>This name scored low — try NameStorm for stronger alternatives.</p>
+                <a href={stormUrl} className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${isDark ? 'bg-amber-600 hover:bg-amber-500 text-white' : 'bg-amber-600 hover:bg-amber-700 text-white'}`}>
+                  <span>⚡</span> Generate Better Names
+                </a>
+                {weaknesses && <p className={`text-xs ${c.textMuted} mt-2`}>NameStorm will be pre-filled with your context and told to avoid: {weaknesses}</p>}
+              </div>
+            ) : (
+              <p className={`text-xs text-center ${c.textMuted}`}>
+                Want alternatives? <a href={stormUrl} className={linkStyle}>Open NameStorm</a> with your settings pre-filled.
+              </p>
+            );
+          })()}
+
+          {/* ─── #4: Evolution Timeline ─── */}
+          <EvolutionTimeline />
+
+          {/* ─── #11: Naming Journal ─── */}
+          {results && (
+            <div className={`${c.card} rounded-xl shadow-lg p-6`}>
+              <h3 className={`font-bold ${c.text} mb-3 flex items-center gap-2`}>
+                <span>📝</span> Naming Journal
+              </h3>
+              <p className={`text-xs ${c.textMuted} mb-3`}>
+                Jot down thoughts, stakeholder feedback, or context that will help you decide later.
+              </p>
+              {/* Existing notes */}
+              {(journalEntries[results.name_analyzed] || []).length > 0 && (
+                <div className="space-y-2 mb-3">
+                  {journalEntries[results.name_analyzed].map((note) => (
+                    <div key={note.id} className={`flex items-start justify-between gap-2 p-2.5 rounded-lg ${c.cardAlt}`}>
+                      <div className="flex-1 min-w-0">
+                        <p className={`text-sm ${c.textSecondary}`}>{note.text}</p>
+                        <p className={`text-xs ${c.textMuted} mt-0.5`}>
+                          {new Date(note.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
+                        </p>
+                      </div>
+                      <button onClick={() => deleteJournalNote(results.name_analyzed, note.id)}
+                        className={`text-xs ${c.textMuted} hover:${c.text} flex-shrink-0`}>✕</button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {/* Add note input */}
+              <div className="flex gap-2">
+                <input type="text" value={journalDraft} onChange={(e) => setJournalDraft(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === 'Enter') addJournalNote(results.name_analyzed); }}
+                  placeholder="e.g., Sarah loved this one / Board prefers shorter names / Too close to CompetitorX"
+                  className={`flex-1 p-2.5 border rounded-lg outline-none text-sm focus:ring-2 focus:ring-cyan-300 ${c.input}`} />
+                <button onClick={() => addJournalNote(results.name_analyzed)} disabled={!journalDraft.trim()}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium ${!journalDraft.trim() ? (isDark ? 'bg-zinc-700 text-zinc-500' : 'bg-gray-100 text-gray-400') : c.btnPrimary}`}>
+                  Add
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* ─── #2: Stakeholder Decision Kit (export CTA) ─── */}
+          {results && (
+            <div className={`p-4 rounded-xl border-2 border-dashed ${isDark ? 'border-cyan-800' : 'border-cyan-300'} text-center`}>
+              <p className={`text-sm font-semibold ${c.text} mb-1`}>📋 Need to share this with your team?</p>
+              <p className={`text-xs ${c.textMuted} mb-3`}>Copy the full analysis with radar chart, key findings, and your journal notes.</p>
+              <div className="flex items-center justify-center gap-2 flex-wrap">
+                <CopyBtn content={buildFullText() + (journalEntries[results.name_analyzed]?.length > 0
+                  ? '\n\nJOURNAL NOTES\n' + journalEntries[results.name_analyzed].map(n => `• ${n.text}`).join('\n')
+                  : '')} label="Copy Full Report" />
+                <button onClick={handlePdfExport} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
+                  <span>📄</span> Print / Save as PDF
+                </button>
+              </div>
+            </div>
           )}
 
           {/* Disclaimer */}

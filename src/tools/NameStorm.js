@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
+import { usePersistentState } from '../hooks/usePersistentState';
 import { getToolById } from '../data/tools';
 import { CopyBtn } from '../components/ActionButtons';
 
@@ -51,7 +52,7 @@ const NameStorm = () => {
   const [results, setResults] = useState(null);
   const [error, setError] = useState('');
   const [activeCategory, setActiveCategory] = useState(0);
-  const [favorites, setFavorites] = useState([]);
+  const [favorites, setFavorites] = usePersistentState('namestorm-favorites', []);
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
 
   // ─── Availability Check State ───
@@ -61,6 +62,38 @@ const NameStorm = () => {
   // ─── More Like This State ───
   const [moreLikeLoading, setMoreLikeLoading] = useState(null);
   const [moreLikeResults, setMoreLikeResults] = useState({});
+
+  // ─── Filter / Sort / Dismiss State ───
+  const [filterCleanOnly, setFilterCleanOnly] = useState(false);
+  const [sortByProblems, setSortByProblems] = useState(false);
+  const [dismissed, setDismissed] = useState([]);
+  const [hideDismissed, setHideDismissed] = useState(true);
+
+  // ─── Compare View State ───
+  const [showCompare, setShowCompare] = useState(false);
+
+  // ─── Storm History (persistent) ───
+  const [stormHistory, setStormHistory] = usePersistentState('namestorm-history', []);
+  const [showHistory, setShowHistory] = useState(false);
+
+  // ─── Competitor-Aware Generation ───
+  const [competitors, setCompetitors] = useState('');
+
+  // ─── Iterative Refinement State ───
+  const [refineOpen, setRefineOpen] = useState(null); // name string or null
+  const [refineInput, setRefineInput] = useState('');
+  const [refineLoading, setRefineLoading] = useState(null);
+  const [refineResults, setRefineResults] = useState({}); // { [name]: { variations: [...] } }
+
+  // ─── Brand Story State ───
+  const [storyLoading, setStoryLoading] = useState(null);
+  const [storyResults, setStoryResults] = useState({}); // { [name]: { story, tagline, elevator } }
+
+  // ─── Visual Preview State ───
+  const [previewOpen, setPreviewOpen] = useState(null); // name string or null
+
+  // ─── Sort by Score ───
+  const [sortByScore, setSortByScore] = useState(false);
 
   // ─── Domain Mode State ───
   const [preferredTLDs, setPreferredTLDs] = useState([]);
@@ -113,6 +146,50 @@ const NameStorm = () => {
   // ─── Handlers ───
   const toggleVibe = (v) => setVibeChips(prev => prev.includes(v) ? prev.filter(x => x !== v) : [...prev, v]);
   const toggleFavorite = (name) => setFavorites(prev => prev.includes(name) ? prev.filter(n => n !== name) : [...prev, name]);
+  const toggleDismiss = (name) => setDismissed(prev => prev.includes(name) ? prev.filter(n => n !== name) : [...prev, name]);
+
+  // ─── Filter + Sort Logic ───
+  const filterAndSortNames = (names) => {
+    let filtered = [...names];
+    if (filterCleanOnly) filtered = filtered.filter(n => n.clean);
+    if (hideDismissed) filtered = filtered.filter(n => !dismissed.includes(n.name));
+    if (sortByScore) {
+      filtered.sort((a, b) => computeScore(b) - computeScore(a));
+    } else if (sortByProblems) {
+      filtered.sort((a, b) => (a.problems?.length || 0) - (b.problems?.length || 0));
+    }
+    return filtered;
+  };
+
+  // ─── Lookup helpers ───
+  const findNameData = (favName) => {
+    const fromCategories = results?.names_by_category
+      ?.flatMap(cat => cat.names.map(n => ({ ...n, _cat: cat.category })))
+      .find(n => n.name === favName);
+    if (fromCategories) return fromCategories;
+    const fromMore = Object.values(moreLikeResults)
+      .flatMap(m => m.variations || [])
+      .find(v => v.name === favName);
+    return fromMore || { name: favName, why_it_works: '', problems: [], clean: true };
+  };
+
+  // ─── Detailed Favorites Export ───
+  const buildFavoritesText = () => {
+    if (favorites.length === 0) return '';
+    const lines = ['NAMESTORM SHORTLIST', `${favorites.length} favorited names`, ''];
+    favorites.forEach((favName, i) => {
+      const obj = findNameData(favName);
+      lines.push(`${i + 1}. ${obj.name}${obj.pronunciation ? ` (/${obj.pronunciation}/)` : ''}${obj.clean ? ' ✅' : ''}`);
+      if (obj.why_it_works) lines.push(`   ${obj.why_it_works}`);
+      if (obj.blend_components) lines.push(`   Blend: ${obj.blend_components}`);
+      if (obj.tld_rationale) lines.push(`   TLD: ${obj.tld_rationale}`);
+      if (Array.isArray(obj.problems) && obj.problems.length > 0)
+        obj.problems.forEach(p => lines.push(`   ⚠ ${p.detail}`));
+      if (obj.domain_note) lines.push(`   🌐 ${obj.domain_note}`);
+      lines.push('');
+    });
+    return lines.join('\n');
+  };
 
   const addCustomTLD = () => {
     const raw = tldInput.trim().toLowerCase().replace(/^\./, '');
@@ -122,7 +199,7 @@ const NameStorm = () => {
     setTldInput('');
   };
 
-  const handleGenerate = async () => {
+  const handleGenerate = async (preserveFavorites = false) => {
     if (isBlendMode) {
       if (filledSeeds.length < 2) { setError('Enter at least 2 seed words or concepts'); return; }
     } else {
@@ -131,9 +208,10 @@ const NameStorm = () => {
     if (!isBlendMode && !vibe.trim() && vibeChips.length === 0) { setError('Please describe the vibe or select at least one vibe chip'); return; }
     setError('');
     setResults(null);
-    setFavorites([]);
+    if (!preserveFavorites) setFavorites(prev => prev); // keep persistent favorites
     setAvailabilityResults({});
     setMoreLikeResults({});
+    setDismissed([]);
 
     try {
       if (isBlendMode) {
@@ -146,10 +224,13 @@ const NameStorm = () => {
           primaryLanguage: primaryLanguage !== 'English' ? primaryLanguage : null,
           pairWithDomains,
           preferredTLDs: pairWithDomains && preferredTLDs.length > 0 ? preferredTLDs : null,
+          competitors: competitors.trim() || null,
         };
         const data = await callToolEndpoint('namestorm/blend', payload);
         setResults(data);
         setActiveCategory(0);
+        // Save to history
+        saveToHistory(data, `Blend: ${filledSeeds.join(' + ')}`);
       } else {
         const payload = {
           category,
@@ -158,6 +239,7 @@ const NameStorm = () => {
           constraints: constraints.trim() || null,
           industryContext: industryContext.trim() || null,
           primaryLanguage: primaryLanguage !== 'English' ? primaryLanguage : null,
+          competitors: competitors.trim() || null,
         };
         if (isDomainMode) {
           payload.preferredTLDs = preferredTLDs.length > 0 ? preferredTLDs : null;
@@ -167,11 +249,48 @@ const NameStorm = () => {
         const data = await callToolEndpoint('namestorm', payload);
         setResults(data);
         setActiveCategory(0);
+        // Save to history
+        saveToHistory(data, `${category}${vibe ? ' — ' + vibe.slice(0, 40) : ''}`);
       }
     } catch (err) {
       setError(err.message || 'Failed to generate names. Please try again.');
     }
   };
+
+  const handleRegenerate = () => handleGenerate(true);
+
+  const saveToHistory = (data, label) => {
+    const topNames = data.top_picks?.map(p => p.name).slice(0, 5) || 
+                     data.names_by_category?.[0]?.names?.map(n => n.name).slice(0, 5) || [];
+    const entry = {
+      id: Date.now(),
+      label,
+      timestamp: new Date().toISOString(),
+      topNames,
+      mode: isBlendMode ? 'blend' : 'generate',
+      category: isBlendMode ? null : category,
+      vibeChips: [...vibeChips],
+      vibe: vibe.trim(),
+      seedWords: isBlendMode ? [...filledSeeds] : null,
+    };
+    setStormHistory(prev => [entry, ...prev].slice(0, 20)); // Keep last 20
+  };
+
+  const loadFromHistory = (entry) => {
+    if (entry.mode === 'blend') {
+      setMode('blend');
+      const padded = [...(entry.seedWords || []), '', '', '', ''].slice(0, 4);
+      setSeedWords(padded);
+    } else {
+      setMode('generate');
+      setCategory(entry.category || '');
+    }
+    setVibeChips(entry.vibeChips || []);
+    setVibe(entry.vibe || '');
+    setShowHistory(false);
+  };
+
+  const clearHistory = () => { setStormHistory([]); setShowHistory(false); };
 
   const handleCheckAvailability = async (name) => {
     if (checkingName) return;
@@ -209,10 +328,13 @@ const NameStorm = () => {
 
   const reset = () => {
     setCategory(''); setVibe(''); setVibeChips([]); setConstraints(''); setIndustryContext('');
-    setResults(null); setError(''); setFavorites([]);
+    setResults(null); setError(''); setCompetitors('');
     setAvailabilityResults({}); setMoreLikeResults({});
     setPreferredTLDs([]); setTargetLanguages([]); setMaxChars(''); setPrimaryLanguage('English'); setTldInput('');
     setSeedWords(['', '', '', '']); setPairWithDomains(false);
+    setDismissed([]); setFilterCleanOnly(false); setSortByProblems(false); setSortByScore(false);
+    setShowCompare(false); setShowFavoritesOnly(false);
+    setRefineResults({}); setStoryResults({}); setRefineOpen(null); setPreviewOpen(null);
   };
 
   const buildFullText = () => {
@@ -276,13 +398,126 @@ const NameStorm = () => {
     return c.info;
   };
 
+  // ─── Name Score (1-100) ───
+  const computeScore = (nameObj) => {
+    let score = 60; // baseline
+    // Clean bonus
+    if (nameObj.clean) score += 20;
+    // Problem penalties
+    const problems = nameObj.problems || [];
+    problems.forEach(p => {
+      if (p.severity === 'warning') score -= 12;
+      else if (p.severity === 'caution') score -= 6;
+      else score -= 3;
+    });
+    // Pronunciation guide present (AI thought about it)
+    if (nameObj.pronunciation) score += 5;
+    // Short names get a bonus (memorability)
+    const len = nameObj.name?.replace(/[^a-zA-Z]/g, '').length || 10;
+    if (len <= 6) score += 8;
+    else if (len <= 8) score += 4;
+    else if (len >= 14) score -= 5;
+    // Domain availability bonus
+    const avail = availabilityResults[nameObj.name];
+    if (avail && !avail.error) {
+      const domains = Object.values(avail.domains || {});
+      const available = domains.filter(d => d === 'likely_available').length;
+      score += Math.min(available * 3, 10);
+    }
+    return Math.max(1, Math.min(100, Math.round(score)));
+  };
+
+  const scoreColor = (score) => {
+    if (score >= 80) return isDark ? 'text-green-400 bg-green-900/30 border-green-700' : 'text-green-700 bg-green-50 border-green-300';
+    if (score >= 60) return isDark ? 'text-amber-400 bg-amber-900/30 border-amber-700' : 'text-amber-700 bg-amber-50 border-amber-300';
+    return isDark ? 'text-red-400 bg-red-900/30 border-red-700' : 'text-red-600 bg-red-50 border-red-300';
+  };
+
+  // ─── Pronunciation Audio ───
+  const speakName = (text) => {
+    if (!window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = 0.85;
+    utterance.pitch = 1;
+    window.speechSynthesis.speak(utterance);
+  };
+
+  // ─── Iterative Refinement ("Almost Love") ───
+  const handleRefine = async (nameObj, instruction) => {
+    if (!instruction.trim() || refineLoading) return;
+    const key = nameObj.name;
+    setRefineLoading(key);
+    try {
+      const data = await callToolEndpoint('namestorm/refine', {
+        name: nameObj.name,
+        whyItWorks: nameObj.why_it_works,
+        pronunciation: nameObj.pronunciation,
+        problems: nameObj.problems,
+        instruction: instruction.trim(),
+        category,
+        vibe: [vibeChips.join(', '), vibe].filter(Boolean).join('. '),
+        isDomainMode,
+        competitors: competitors.trim() || null,
+        preferredTLDs: isDomainMode && preferredTLDs.length > 0 ? preferredTLDs : null,
+        primaryLanguage: primaryLanguage !== 'English' ? primaryLanguage : null,
+      });
+      setRefineResults(prev => ({ ...prev, [key]: data }));
+      setRefineOpen(null);
+      setRefineInput('');
+    } catch (err) {
+      console.error('Refine failed:', err);
+    }
+    setRefineLoading(null);
+  };
+
+  // ─── Brand Story Generator ───
+  const handleGenerateStory = async (nameObj) => {
+    if (storyLoading) return;
+    const key = nameObj.name;
+    setStoryLoading(key);
+    try {
+      const data = await callToolEndpoint('namestorm/story', {
+        name: nameObj.name,
+        whyItWorks: nameObj.why_it_works,
+        pronunciation: nameObj.pronunciation,
+        blendComponents: nameObj.blend_components,
+        category,
+        industryContext: industryContext.trim() || null,
+        vibe: [vibeChips.join(', '), vibe].filter(Boolean).join('. '),
+      });
+      setStoryResults(prev => ({ ...prev, [key]: data }));
+    } catch (err) {
+      console.error('Brand story failed:', err);
+    }
+    setStoryLoading(null);
+  };
+
+  // ─── Visual Preview Fonts ───
+  const previewFonts = [
+    { name: 'Clean Sans', family: 'Inter, system-ui, sans-serif', weight: '600' },
+    { name: 'Bold Display', family: 'Georgia, serif', weight: '700', transform: 'uppercase', letterSpacing: '0.12em' },
+    { name: 'Handwritten', family: 'Segoe Script, Brush Script MT, cursive', weight: '400' },
+    { name: 'Monospace', family: 'SF Mono, Consolas, monospace', weight: '500', transform: 'lowercase' },
+    { name: 'Compact', family: 'system-ui, sans-serif', weight: '800', transform: 'uppercase', letterSpacing: '0.2em', fontSize: '0.75em' },
+  ];
+
   // ─── Name Card Component ───
   const NameCard = ({ nameObj, categoryName, compact = false }) => {
     const isFav = favorites.includes(nameObj.name);
+    const isDismissedName = dismissed.includes(nameObj.name);
     const avail = availabilityResults[nameObj.name];
     const moreData = moreLikeResults[nameObj.name];
     const isChecking = checkingName === nameObj.name;
     const isLoadingMore = moreLikeLoading === nameObj.name;
+    const score = computeScore(nameObj);
+    const refineData = refineResults[nameObj.name];
+    const storyData = storyResults[nameObj.name];
+    const isRefineOpen = refineOpen === nameObj.name;
+    const isPreviewOpen = previewOpen === nameObj.name;
+    const isRefining = refineLoading === nameObj.name;
+    const isStorying = storyLoading === nameObj.name;
+    const showStoryButton = ['Business', 'Product', 'Band / Music Project', 'Creative Project', 'Event', 'Domain Name'].includes(category) || isBlendMode;
 
     return (
       <div className={`p-4 rounded-xl border transition-all ${isFav ? (isDark ? 'border-amber-600 bg-amber-900/10' : 'border-amber-400 bg-amber-50/50') : c.border} ${c.card}`}>
@@ -293,7 +528,17 @@ const NameStorm = () => {
               {nameObj.pronunciation && (
                 <span className={`text-xs font-mono ${c.textMuted}`}>/{nameObj.pronunciation}/</span>
               )}
+              {/* Audio button */}
+              <button onClick={() => speakName(nameObj.name)}
+                className={`p-0.5 rounded transition-all ${isDark ? 'hover:bg-zinc-700' : 'hover:bg-gray-100'}`}
+                title="Hear pronunciation">
+                <span className="text-sm">🔊</span>
+              </button>
               {nameObj.clean && <span className="flex-shrink-0">✅</span>}
+              {/* Score badge */}
+              <span className={`text-xs font-bold px-1.5 py-0.5 rounded border ${scoreColor(score)}`} title={`Quality score: ${score}/100`}>
+                {score}
+              </span>
             </div>
           </div>
           <div className="flex items-center gap-1 flex-shrink-0">
@@ -362,7 +607,167 @@ const NameStorm = () => {
             {moreData ? 'See below' : isLoadingMore ? 'Generating...' : 'More Like This'}
             {!moreData && !isLoadingMore && <span className={`text-[9px] px-1 py-0.5 rounded font-bold ${isDark ? 'bg-amber-900/50 text-amber-300' : 'bg-amber-100 text-amber-700'}`}>PRO</span>}
           </button>
+          {/* Refine button */}
+          <button onClick={() => { setRefineOpen(isRefineOpen ? null : nameObj.name); setRefineInput(''); }}
+            className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium transition-all ${isRefineOpen ? c.chip(true) : c.btnSecondary}`}>
+            <span className="text-xs">🎯</span> {refineData ? 'Refine Again' : 'Refine'}
+            {!refineData && <span className={`text-[9px] px-1 py-0.5 rounded font-bold ${isDark ? 'bg-amber-900/50 text-amber-300' : 'bg-amber-100 text-amber-700'}`}>PRO</span>}
+          </button>
+          {/* Visual Preview toggle */}
+          <button onClick={() => setPreviewOpen(isPreviewOpen ? null : nameObj.name)}
+            className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium transition-all ${isPreviewOpen ? c.chip(true) : c.btnSecondary}`}>
+            <span className="text-xs">🎨</span> Preview
+          </button>
+          {/* Brand Story (for business-oriented categories) */}
+          {showStoryButton && !compact && (
+            <button onClick={() => handleGenerateStory(nameObj)} disabled={isStorying || !!storyData}
+              className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium transition-all ${storyData ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-100 text-gray-400') : c.btnSecondary}`}>
+              {isStorying ? <span className="animate-spin inline-block text-xs">⏳</span> : <span className="text-xs">📖</span>}
+              {storyData ? 'Story below' : isStorying ? 'Writing...' : 'Brand Story'}
+              {!storyData && !isStorying && <span className={`text-[9px] px-1 py-0.5 rounded font-bold ${isDark ? 'bg-amber-900/50 text-amber-300' : 'bg-amber-100 text-amber-700'}`}>PRO</span>}
+            </button>
+          )}
+          <a href={`/NameAudit?name=${encodeURIComponent(nameObj.name)}`} target="_blank" rel="noopener noreferrer"
+            className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium transition-all ${c.btnSecondary}`}>
+            <span className="text-xs">🔍</span> Audit
+          </a>
+          {!compact && (
+            <button onClick={() => toggleDismiss(nameObj.name)}
+              className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium transition-all ${
+                isDismissedName ? (isDark ? 'bg-zinc-600 text-zinc-300' : 'bg-gray-200 text-gray-500') : (isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-gray-400 hover:text-gray-600')
+              }`}>
+              <span className="text-xs">{isDismissedName ? '↩️' : '👎'}</span> {isDismissedName ? 'Restore' : 'Dismiss'}
+            </button>
+          )}
         </div>
+
+        {/* ─── Visual Preview Panel ─── */}
+        {isPreviewOpen && (
+          <div className={`mt-3 p-4 rounded-lg ${c.cardAlt} space-y-3`}>
+            <p className={`text-xs font-bold ${c.textMuted}`}>VISUAL PREVIEW</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {previewFonts.map((font, idx) => (
+                <div key={idx} className={`p-4 rounded-lg border ${c.border} ${isDark ? 'bg-zinc-800' : 'bg-white'} text-center`}>
+                  <p className={`text-xs ${c.textMuted} mb-2`}>{font.name}</p>
+                  <p style={{
+                    fontFamily: font.family,
+                    fontWeight: font.weight,
+                    textTransform: font.transform || 'none',
+                    letterSpacing: font.letterSpacing || 'normal',
+                    fontSize: font.fontSize || '1.5em',
+                    lineHeight: 1.2,
+                  }} className={c.text}>
+                    {nameObj.name}
+                  </p>
+                </div>
+              ))}
+              {/* Favicon mockup */}
+              <div className={`p-4 rounded-lg border ${c.border} ${isDark ? 'bg-zinc-800' : 'bg-white'} text-center`}>
+                <p className={`text-xs ${c.textMuted} mb-2`}>Favicon / App Icon</p>
+                <div className="flex justify-center gap-3 items-center">
+                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center font-bold text-lg ${isDark ? 'bg-amber-600 text-white' : 'bg-amber-500 text-white'}`}>
+                    {nameObj.name.charAt(0).toUpperCase()}
+                  </div>
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg ${isDark ? 'bg-zinc-600 text-zinc-100' : 'bg-gray-800 text-white'}`}>
+                    {nameObj.name.charAt(0).toUpperCase()}
+                  </div>
+                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center font-bold text-xs border-2 ${isDark ? 'border-amber-500 text-amber-400' : 'border-amber-600 text-amber-700'}`}
+                    style={{ fontFamily: 'system-ui, sans-serif', letterSpacing: '0.05em' }}>
+                    {nameObj.name.slice(0, 3).toUpperCase()}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ─── Refinement Input ─── */}
+        {isRefineOpen && (
+          <div className={`mt-3 p-3 rounded-lg ${c.cardAlt} space-y-2`}>
+            <p className={`text-xs font-bold ${c.textMuted}`}>🎯 WHAT WOULD MAKE "{nameObj.name.toUpperCase()}" BETTER?</p>
+            <p className={`text-xs ${c.textSecondary}`}>Describe what to change — shorter, less corporate, fix the pronunciation, works in Spanish, more playful, etc.</p>
+            <div className="flex gap-2">
+              <input type="text" value={refineInput} onChange={(e) => setRefineInput(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleRefine(nameObj, refineInput); } }}
+                placeholder="e.g., Make it shorter and more playful"
+                className={`flex-1 p-2.5 border rounded-lg outline-none text-sm focus:ring-2 focus:ring-amber-300 ${c.input}`}
+                disabled={isRefining} />
+              <button onClick={() => handleRefine(nameObj, refineInput)} disabled={isRefining || !refineInput.trim()}
+                className={`px-4 py-2 rounded-lg text-sm font-medium ${isRefining ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : c.btnPrimary}`}>
+                {isRefining ? <span className="animate-spin inline-block">⏳</span> : 'Refine'}
+              </button>
+            </div>
+            {/* Quick refinement chips */}
+            <div className="flex flex-wrap gap-1.5">
+              {['Make it shorter', 'Less corporate', 'More playful', 'Fix pronunciation', 'Works internationally', 'More unique'].map(chip => (
+                <button key={chip} onClick={() => { setRefineInput(chip); }}
+                  className={`px-2 py-1 rounded-lg border text-xs font-medium transition-all ${c.chip(refineInput === chip)}`}>
+                  {chip}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ─── Refinement Results ─── */}
+        {refineData && refineData.variations && (
+          <div className={`mt-3 p-3 rounded-lg ${c.cardAlt} space-y-2`}>
+            <p className={`text-xs font-bold ${c.textMuted}`}>🎯 REFINED FROM "{nameObj.name.toUpperCase()}"</p>
+            {refineData.refinement_note && <p className={`text-xs ${c.textSecondary} italic mb-2`}>{refineData.refinement_note}</p>}
+            <div className="space-y-2">
+              {refineData.variations.map((v, i) => (
+                <div key={i} className={`flex items-start justify-between gap-2 p-2 rounded-lg ${isDark ? 'bg-zinc-800' : 'bg-white'}`}>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className={`font-bold text-sm ${c.text}`}>{v.name}</span>
+                      {v.pronunciation && <span className={`text-xs font-mono ${c.textMuted}`}>/{v.pronunciation}/</span>}
+                      <button onClick={() => speakName(v.name)} className="p-0.5 rounded" title="Hear it"><span className="text-xs">🔊</span></button>
+                      {v.clean && <span>✅</span>}
+                    </div>
+                    <p className={`text-xs ${c.textSecondary} mt-0.5`}>{v.why_it_works}</p>
+                    {v.how_it_addresses_feedback && (
+                      <p className={`text-[10px] ${isDark ? 'text-amber-300' : 'text-amber-700'} mt-0.5 font-medium`}>→ {v.how_it_addresses_feedback}</p>
+                    )}
+                  </div>
+                  <div className="flex gap-1 flex-shrink-0">
+                    <CopyBtn content={v.name} />
+                    <button onClick={() => toggleFavorite(v.name)} className="p-1 rounded">
+                      <span className="text-sm">{favorites.includes(v.name) ? '⭐' : '☆'}</span>
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ─── Brand Story ─── */}
+        {storyData && (
+          <div className={`mt-3 p-4 rounded-lg border-l-4 ${isDark ? 'border-purple-500 bg-purple-900/15' : 'border-purple-400 bg-purple-50/50'}`}>
+            <p className={`text-xs font-bold ${c.textMuted} mb-2`}>📖 BRAND STORY</p>
+            {storyData.origin_story && (
+              <p className={`text-sm ${c.text} leading-relaxed`}>{storyData.origin_story}</p>
+            )}
+            {storyData.tagline && (
+              <p className={`text-sm font-semibold ${isDark ? 'text-purple-300' : 'text-purple-700'} mt-3 italic`}>"{storyData.tagline}"</p>
+            )}
+            {storyData.elevator_pitch && (
+              <div className="mt-3">
+                <p className={`text-xs font-bold ${c.textMuted} mb-1`}>ELEVATOR PITCH</p>
+                <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{storyData.elevator_pitch}</p>
+              </div>
+            )}
+            {storyData.introduction_script && (
+              <div className="mt-3">
+                <p className={`text-xs font-bold ${c.textMuted} mb-1`}>HOW TO INTRODUCE IT</p>
+                <p className={`text-sm ${c.textSecondary} leading-relaxed italic`}>"{storyData.introduction_script}"</p>
+              </div>
+            )}
+            <div className="mt-2">
+              <CopyBtn content={`${nameObj.name}\n\n${storyData.origin_story || ''}\n\nTagline: "${storyData.tagline || ''}"\n\n${storyData.elevator_pitch || ''}`} label="Copy Story" />
+            </div>
+          </div>
+        )}
 
         {/* Availability Results */}
         {avail && !avail.error && (
@@ -370,7 +775,6 @@ const NameStorm = () => {
             <p className={`text-xs font-bold ${c.textMuted}`}>{isDomainMode ? 'DOMAIN & COMPETING TLDs' : 'DOMAIN AVAILABILITY'}</p>
             <div className="flex flex-wrap gap-1.5">
               {Object.entries(avail.domains || {}).sort(([a], [b]) => {
-                // In domain mode, put the exact domain first
                 if (isDomainMode && nameObj.name) {
                   const exactDomain = nameObj.name.toLowerCase();
                   if (a === exactDomain) return -1;
@@ -427,6 +831,7 @@ const NameStorm = () => {
                     <div className="flex items-center gap-2">
                       <span className={`font-bold text-sm ${c.text}`}>{v.name}</span>
                       {v.pronunciation && <span className={`text-xs font-mono ${c.textMuted}`}>/{v.pronunciation}/</span>}
+                      <button onClick={() => speakName(v.name)} className="p-0.5 rounded" title="Hear it"><span className="text-xs">🔊</span></button>
                       {v.clean && <span>✅</span>}
                     </div>
                     <p className={`text-xs ${c.textSecondary} mt-0.5`}>{v.why_it_works}</p>
@@ -469,6 +874,20 @@ const NameStorm = () => {
       {/* ═══════════════ INPUT VIEW ═══════════════ */}
       {!results && (
         <div className="space-y-5">
+
+          {/* Persistent Favorites Banner */}
+          {favorites.length > 0 && (
+            <div className={`p-4 rounded-xl border ${isDark ? 'border-amber-700 bg-amber-900/15' : 'border-amber-300 bg-amber-50'} flex items-center justify-between flex-wrap gap-2`}>
+              <span className={`text-sm ${c.text}`}>
+                <span>⭐</span> You have <strong>{favorites.length}</strong> saved favorite{favorites.length !== 1 ? 's' : ''} from previous storms
+              </span>
+              <div className="flex gap-2">
+                <CopyBtn content={favorites.join('\n')} label="Copy Names" />
+                <button onClick={() => { if (window.confirm('Clear all favorites?')) setFavorites([]); }}
+                  className={`text-xs px-2 py-1 rounded-lg ${c.btnSecondary}`}>Clear</button>
+              </div>
+            </div>
+          )}
 
           {/* Mode Toggle */}
           <div className="flex gap-2">
@@ -547,7 +966,7 @@ const NameStorm = () => {
             </div>
           </div>
 
-          {/* Constraints + Industry + Language */}
+          {/* Constraints + Industry + Competitors + Language */}
           <div className={`${c.card} rounded-xl shadow-lg p-6 space-y-4`}>
             <p className={`text-xs font-bold uppercase tracking-wide ${c.textMuted}`}>Optional refinements</p>
             <div>
@@ -564,6 +983,22 @@ const NameStorm = () => {
                   className={`w-full p-3 border rounded-xl outline-none text-sm focus:ring-2 focus:ring-amber-300 ${c.input}`} />
               </div>
             )}
+
+            {/* Competitor-Aware Generation */}
+            <div>
+              <label className={`block text-sm font-semibold ${c.text} mb-1`}>
+                Competitors / Names to avoid sounding like
+                <span className={`font-normal text-xs ${c.textMuted} ml-1`}>(optional)</span>
+              </label>
+              <input type="text" value={competitors} onChange={(e) => setCompetitors(e.target.value)}
+                placeholder="e.g., Stripe, Square, Plaid — generated names will deliberately contrast"
+                className={`w-full p-3 border rounded-xl outline-none text-sm focus:ring-2 focus:ring-amber-300 ${c.input}`} />
+              {competitors.trim() && (
+                <p className={`text-xs ${isDark ? 'text-amber-300' : 'text-amber-700'} mt-1`}>
+                  ⚡ Names will be generated to stand apart from: {competitors}
+                </p>
+              )}
+            </div>
 
             {/* Primary audience language */}
             <div>
@@ -641,6 +1076,49 @@ const NameStorm = () => {
             </div>
           )}
 
+          {/* Storm History */}
+          {stormHistory.length > 0 && (
+            <div className={`${c.card} rounded-xl shadow-lg p-5`}>
+              <button onClick={() => setShowHistory(!showHistory)}
+                className={`w-full flex items-center justify-between ${c.text}`}>
+                <span className="flex items-center gap-2 font-semibold text-sm">
+                  <span>📜</span> Previous Storms ({stormHistory.length})
+                </span>
+                <span>{showHistory ? '▲' : '▼'}</span>
+              </button>
+              {showHistory && (
+                <div className="mt-3 space-y-2">
+                  {stormHistory.map((entry) => (
+                    <div key={entry.id} className={`flex items-start gap-3 p-3 rounded-lg border ${c.border} ${c.cardAlt}`}>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className={`text-xs px-1.5 py-0.5 rounded-full border ${c.chip(false)}`}>
+                            {entry.mode === 'blend' ? '✨ Blend' : `⚡ ${entry.category}`}
+                          </span>
+                          <span className={`text-xs ${c.textMuted}`}>
+                            {new Date(entry.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
+                          </span>
+                        </div>
+                        <p className={`text-sm font-medium ${c.text} mt-1`}>{entry.label}</p>
+                        {entry.vibeChips?.length > 0 && (
+                          <p className={`text-xs ${c.textMuted} mt-0.5`}>{entry.vibeChips.join(', ')}</p>
+                        )}
+                        {entry.topNames?.length > 0 && (
+                          <p className={`text-xs ${c.textSecondary} mt-1`}>Top: {entry.topNames.join(', ')}</p>
+                        )}
+                      </div>
+                      <button onClick={() => loadFromHistory(entry)}
+                        className={`flex-shrink-0 flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium ${c.btnSecondary}`}>
+                        <span>↩️</span> Reuse Settings
+                      </button>
+                    </div>
+                  ))}
+                  <button onClick={clearHistory} className={`text-xs ${c.textMuted} hover:underline mt-1`}>Clear history</button>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Submit */}
           <button onClick={handleGenerate} disabled={loading || (isBlendMode ? filledSeeds.length < 2 : (!category || (!vibe.trim() && vibeChips.length === 0)))}
             className={`w-full py-4 px-6 rounded-xl font-semibold text-lg transition-all flex items-center justify-center gap-2 shadow-lg ${
@@ -667,29 +1145,67 @@ const NameStorm = () => {
         <div className="space-y-5">
 
           {/* Controls */}
-          <div className={`${c.card} rounded-xl shadow-lg p-4 flex items-center justify-between flex-wrap gap-3`}>
-            <div className="flex items-center gap-3">
-              <span className={`text-sm font-semibold ${c.text}`}>{isBlendMode ? `Blends from: ${filledSeeds.join(' + ')}` : isDomainMode ? 'Domains' : 'Names'}{!isBlendMode ? ` for: ${category}` : ''}</span>
-              {favorites.length > 0 && (
-                <button onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
-                  className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium border transition-all ${
-                    showFavoritesOnly ? c.chip(true) : c.chip(false)
-                  }`}>
-                  <span className="text-sm">{showFavoritesOnly ? '⭐' : '☆'}</span> {favorites.length} Favorites
+          <div className={`${c.card} rounded-xl shadow-lg p-4 space-y-3`}>
+            <div className="flex items-center justify-between flex-wrap gap-3">
+              <div className="flex items-center gap-3">
+                <span className={`text-sm font-semibold ${c.text}`}>{isBlendMode ? `Blends from: ${filledSeeds.join(' + ')}` : isDomainMode ? 'Domains' : 'Names'}{!isBlendMode ? ` for: ${category}` : ''}</span>
+                {favorites.length > 0 && (
+                  <button onClick={() => { setShowFavoritesOnly(!showFavoritesOnly); setShowCompare(false); }}
+                    className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium border transition-all ${
+                      showFavoritesOnly ? c.chip(true) : c.chip(false)
+                    }`}>
+                    <span className="text-sm">{showFavoritesOnly ? '⭐' : '☆'}</span> {favorites.length} Favorites
+                  </button>
+                )}
+                {favorites.length >= 2 && (
+                  <button onClick={() => { setShowCompare(!showCompare); setShowFavoritesOnly(false); }}
+                    className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium border transition-all ${
+                      showCompare ? c.chip(true) : c.chip(false)
+                    }`}>
+                    <span className="text-xs">⚖️</span> Compare
+                  </button>
+                )}
+              </div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <CopyBtn content={buildFullText()} field="full-list" label="Copy All" />
+                <button onClick={handlePrint} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
+                  <span>🖨️</span> Print
                 </button>
-              )}
+                <button onClick={handleShare} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
+                  <span>📤</span> Share
+                </button>
+                <button onClick={handleRegenerate} disabled={loading}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${isDark ? 'bg-amber-900/30 text-amber-300 hover:bg-amber-800/40' : 'bg-amber-50 text-amber-700 hover:bg-amber-100'}`}>
+                  {loading ? <span className="animate-spin inline-block">⏳</span> : <span>⚡</span>} Storm Again
+                </button>
+                <button onClick={reset} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
+                  <span>🔄</span> New Storm
+                </button>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <CopyBtn content={buildFullText()} field="full-list" label="Copy All" />
-              <button onClick={handlePrint} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
-                <span>🖨️</span> Print
+
+            {/* Filter / Sort Row */}
+            <div className={`flex items-center gap-2 pt-2 border-t ${c.border} flex-wrap`}>
+              <span className={`text-xs font-semibold ${c.textMuted}`}>Filters:</span>
+              <button onClick={() => setFilterCleanOnly(!filterCleanOnly)}
+                className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium border transition-all ${c.chip(filterCleanOnly)}`}>
+                <span>✅</span> Clean Only
               </button>
-              <button onClick={handleShare} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
-                <span>📤</span> Share
+              <button onClick={() => { setSortByScore(!sortByScore); if (!sortByScore) setSortByProblems(false); }}
+                className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium border transition-all ${c.chip(sortByScore)}`}>
+                <span>🏆</span> Best Score First
               </button>
-              <button onClick={reset} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${isDark ? 'bg-amber-900/30 text-amber-300 hover:bg-amber-800/40' : 'bg-amber-50 text-amber-700 hover:bg-amber-100'}`}>
-                <span>🔄</span> New Storm
+              <button onClick={() => { setSortByProblems(!sortByProblems); if (!sortByProblems) setSortByScore(false); }}
+                className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium border transition-all ${c.chip(sortByProblems)}`}>
+                <span>⚠️</span> Fewest Issues First
               </button>
+              <button onClick={() => setHideDismissed(!hideDismissed)}
+                className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium border transition-all ${c.chip(hideDismissed)}`}>
+                <span>👎</span> {hideDismissed ? `Hide Dismissed${dismissed.length ? ` (${dismissed.length})` : ''}` : `Show Dismissed (${dismissed.length})`}
+              </button>
+              {dismissed.length > 0 && (
+                <button onClick={() => setDismissed([])} className={`text-xs ${c.textMuted} hover:underline`}>Clear dismissed</button>
+              )}
             </div>
           </div>
 
@@ -699,7 +1215,7 @@ const NameStorm = () => {
           )}
 
           {/* Seed Expansion (blend mode) */}
-          {results.seed_expansion && !showFavoritesOnly && (
+          {results.seed_expansion && !showFavoritesOnly && !showCompare && (
             <div className={`${c.card} rounded-xl shadow-lg p-5`}>
               <h3 className={`font-bold ${c.text} mb-3 flex items-center gap-2`}>
                 <span>✨</span> Seed Expansion
@@ -718,7 +1234,7 @@ const NameStorm = () => {
           )}
 
           {/* Top Picks */}
-          {results.top_picks?.length > 0 && !showFavoritesOnly && (
+          {results.top_picks?.length > 0 && !showFavoritesOnly && !showCompare && (
             <div className={`${c.card} rounded-xl shadow-lg p-6 border-l-4 ${isDark ? 'border-amber-500' : 'border-amber-400'}`}>
               <h3 className={`font-bold ${c.text} mb-4 flex items-center gap-2`}>
                 <span>⚡</span> Top Picks
@@ -756,7 +1272,7 @@ const NameStorm = () => {
           )}
 
           {/* Say It Out Loud */}
-          {results.say_it_out_loud?.length > 0 && !showFavoritesOnly && (
+          {results.say_it_out_loud?.length > 0 && !showFavoritesOnly && !showCompare && (
             <div className={`${c.card} rounded-xl shadow-lg p-5`}>
               <h3 className={`font-bold ${c.text} mb-3 flex items-center gap-2`}>
                 <span>🔊</span> Say It Out Loud Test
@@ -771,6 +1287,93 @@ const NameStorm = () => {
             </div>
           )}
 
+          {/* Compare View */}
+          {showCompare && favorites.length >= 2 && (
+            <div className={`${c.card} rounded-xl shadow-lg p-6`}>
+              <h3 className={`font-bold ${c.text} mb-4 flex items-center gap-2`}>
+                <span>⚖️</span> Compare Favorites ({favorites.length})
+              </h3>
+              <div className="overflow-x-auto">
+                <div className={`grid gap-3`} style={{ gridTemplateColumns: `repeat(${Math.min(favorites.length, 3)}, minmax(220px, 1fr))` }}>
+                  {favorites.map(favName => {
+                    const obj = findNameData(favName);
+                    const avail = availabilityResults[favName];
+                    return (
+                      <div key={favName} className={`p-4 rounded-xl border ${c.border} ${c.cardAlt} space-y-2`}>
+                        <div className="flex items-center justify-between gap-2">
+                          <h4 className={`font-bold ${c.text} text-base`}>{obj.name}</h4>
+                          <button onClick={() => toggleFavorite(favName)} className="flex-shrink-0">
+                            <span className="text-lg">⭐</span>
+                          </button>
+                        </div>
+                        {obj.pronunciation && <p className={`text-xs font-mono ${c.textMuted}`}>/{obj.pronunciation}/</p>}
+                        
+                        {/* Status badges */}
+                        <div className="flex flex-wrap gap-1">
+                          {obj.clean && <span className={`text-xs px-1.5 py-0.5 rounded border ${c.success}`}>✅ Clean</span>}
+                          {Array.isArray(obj.problems) && obj.problems.length > 0
+                            ? <span className={`text-xs px-1.5 py-0.5 rounded border ${c.warning}`}>⚠️ {obj.problems.length} issue{obj.problems.length > 1 ? 's' : ''}</span>
+                            : !obj.clean && <span className={`text-xs px-1.5 py-0.5 rounded border ${c.info}`}>No flags</span>
+                          }
+                        </div>
+
+                        {/* Rationale */}
+                        <p className={`text-xs ${c.textSecondary} leading-relaxed`}>{obj.why_it_works}</p>
+
+                        {/* Blend components */}
+                        {obj.blend_components && (
+                          <p className={`text-xs ${isDark ? 'text-purple-300' : 'text-purple-600'} font-medium`}>{obj.blend_components}</p>
+                        )}
+
+                        {/* Domain info */}
+                        {obj.tld_rationale && (
+                          <p className={`text-[10px] ${c.textMuted} italic`}>🔗 {obj.tld_rationale}</p>
+                        )}
+                        {obj.verbal_form && (
+                          <p className={`text-[10px] ${c.textMuted}`}>🗣️ "{obj.verbal_form}"</p>
+                        )}
+
+                        {/* Problems detail */}
+                        {Array.isArray(obj.problems) && obj.problems.length > 0 && (
+                          <div className="space-y-1">
+                            {obj.problems.map((p, i) => (
+                              <span key={i} className={`block text-[10px] px-1.5 py-0.5 rounded border ${severityStyle(p.severity)}`}>⚠ {p.detail}</span>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* Availability if checked */}
+                        {avail && !avail.error && (
+                          <div className="flex flex-wrap gap-1 pt-1">
+                            {Object.entries(avail.domains || {}).slice(0, 4).map(([domain, status]) => (
+                              <span key={domain} className={`px-1.5 py-0.5 rounded text-[10px] font-mono border ${
+                                status === 'likely_available' ? (isDark ? 'bg-green-900/30 border-green-700 text-green-300' : 'bg-green-50 border-green-300 text-green-700')
+                                : status === 'taken' ? (isDark ? 'bg-red-900/20 border-red-800 text-red-400' : 'bg-red-50 border-red-200 text-red-500')
+                                : (isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-400' : 'bg-gray-100 border-gray-200 text-gray-400')
+                              }`}>{domain} {status === 'likely_available' ? '✓' : status === 'taken' ? '✗' : '?'}</span>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* Actions */}
+                        <div className="flex gap-1 pt-1">
+                          <a href={`/NameAudit?name=${encodeURIComponent(obj.name)}`} target="_blank" rel="noopener noreferrer"
+                            className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium transition-all ${c.btnSecondary}`}>
+                            <span>🔍</span> Audit
+                          </a>
+                          <CopyBtn content={obj.name} />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+              <div className="mt-4">
+                <CopyBtn content={buildFavoritesText()} label="Copy Detailed Shortlist" />
+              </div>
+            </div>
+          )}
+
           {/* Favorites View */}
           {showFavoritesOnly && (
             <div className={`${c.card} rounded-xl shadow-lg p-6`}>
@@ -782,25 +1385,24 @@ const NameStorm = () => {
               ) : (
                 <div className="space-y-3">
                   {favorites.map(favName => {
-                    const nameData = results.names_by_category
-                      ?.flatMap(cat => ({ ...cat, names: cat.names }))
-                      .flatMap(cat => cat.names.map(n => ({ ...n, _cat: cat.category })))
-                      .find(n => n.name === favName);
-                    // Also check more-like-this results
-                    const moreVariation = !nameData ? Object.values(moreLikeResults)
-                      .flatMap(m => m.variations || [])
-                      .find(v => v.name === favName) : null;
-                    const obj = nameData || moreVariation || { name: favName, why_it_works: '', problems: [], clean: true };
+                    const obj = findNameData(favName);
                     return <NameCard key={favName} nameObj={obj} categoryName={obj._cat || ''} />;
                   })}
                 </div>
               )}
-              <CopyBtn content={favorites.join('\n')} label="Copy Favorites List" />
+              <div className="flex flex-wrap gap-2 mt-4">
+                <CopyBtn content={favorites.join('\n')} label="Copy Names" />
+                <CopyBtn content={buildFavoritesText()} label="Copy Detailed Shortlist" />
+              </div>
+              {favorites.length > 0 && (
+                <button onClick={() => { if (window.confirm('Clear all favorites? This cannot be undone.')) setFavorites([]); }}
+                  className={`mt-3 text-xs ${c.textMuted} hover:underline`}>Clear all favorites</button>
+              )}
             </div>
           )}
 
           {/* Names By Category */}
-          {!showFavoritesOnly && results.names_by_category?.length > 0 && (
+          {!showFavoritesOnly && !showCompare && results.names_by_category?.length > 0 && (
             <div className={`${c.card} rounded-xl shadow-lg p-6`}>
               <h3 className={`font-bold ${c.text} mb-4 flex items-center gap-2`}>
                 <span>#️⃣</span> {isBlendMode ? 'Blends by Strategy' : isDomainMode ? 'Domains by Style' : 'Names by Style'}
@@ -808,27 +1410,35 @@ const NameStorm = () => {
 
               {/* Category Tabs */}
               <div className="flex gap-1.5 mb-5 overflow-x-auto pb-1">
-                {results.names_by_category.map((cat, idx) => (
-                  <button key={idx} onClick={() => setActiveCategory(idx)}
-                    className={`px-3 py-2 rounded-lg border text-sm font-semibold whitespace-nowrap transition-all ${c.tab(activeCategory === idx)}`}>
-                    {cat.category}
-                  </button>
-                ))}
+                {results.names_by_category.map((cat, idx) => {
+                  const filteredCount = filterAndSortNames(cat.names).length;
+                  return (
+                    <button key={idx} onClick={() => setActiveCategory(idx)}
+                      className={`px-3 py-2 rounded-lg border text-sm font-semibold whitespace-nowrap transition-all ${c.tab(activeCategory === idx)}`}>
+                      {cat.category} {filteredCount !== cat.names.length && <span className={`text-xs ${c.textMuted}`}>({filteredCount})</span>}
+                    </button>
+                  );
+                })}
               </div>
 
               {/* Active Category Names */}
-              {results.names_by_category[activeCategory] && (
-                <div className="space-y-3">
-                  {results.names_by_category[activeCategory].names.map((nameObj, idx) => (
-                    <NameCard key={idx} nameObj={nameObj} categoryName={results.names_by_category[activeCategory].category} />
-                  ))}
-                </div>
-              )}
+              {results.names_by_category[activeCategory] && (() => {
+                const filtered = filterAndSortNames(results.names_by_category[activeCategory].names);
+                return filtered.length > 0 ? (
+                  <div className="space-y-3">
+                    {filtered.map((nameObj, idx) => (
+                      <NameCard key={idx} nameObj={nameObj} categoryName={results.names_by_category[activeCategory].category} />
+                    ))}
+                  </div>
+                ) : (
+                  <p className={`text-sm ${c.textMuted} text-center py-4`}>All names in this category have been filtered out. Try adjusting your filters.</p>
+                );
+              })()}
             </div>
           )}
 
           {/* Naming Notes */}
-          {results.naming_notes && !showFavoritesOnly && (
+          {results.naming_notes && !showFavoritesOnly && !showCompare && (
             <div className={`p-5 rounded-xl ${c.info} border`}>
               <p className={`text-xs font-bold mb-1`}>💡 NAMING NOTES</p>
               <p className="text-sm">{results.naming_notes}</p>

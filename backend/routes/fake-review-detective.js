@@ -91,17 +91,12 @@ Score EVERY review. Verdicts must be: "likely_fake" (score 0-39), "uncertain" (4
         });
 
         const text = message.content.find(b => b.type === 'text')?.text || '';
-        const cleaned = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-        const first = cleaned.indexOf('{');
-        const last = cleaned.lastIndexOf('}');
-        if (first === -1 || last === -1) throw new Error('No JSON in response');
-        const parsed = JSON.parse(cleaned.substring(first, last + 1));
-
+        const parsed = JSON.parse(cleanJsonResponse(text));
         return res.json(parsed);
       }
 
       // ════════════════════════════════════════════════════════
-      // ACTION: ANALYZE — cross-review pattern analysis
+      // ACTION: ANALYZE — cross-review pattern analysis + playbook
       // ════════════════════════════════════════════════════════
       case 'analyze': {
         const { reviews, scores, stats, category, userLanguage } = req.body;
@@ -119,14 +114,16 @@ FOCUS ON:
 4. Category norms: How do these patterns compare to typical ${category} products?
 5. The gap between verified and unverified: Do verified reviews tell a different story than unverified ones?
 6. Purchase recommendation: Based on ONLY the genuine reviews, what's the actual product quality?
+7. PLAYBOOK EDUCATION: Identify which specific fake review tactics are being used and explain them in plain language so the user learns to spot them independently.
 
 IMPORTANT:
 - All statistics are pre-computed and accurate. Trust them.
 - Per-review scores are from a prior analysis pass. Use them but apply your own judgment.
 - Be specific. "Reviews look suspicious" is useless. Cite specific reviews by number and specific patterns.
-- Don't fearmonger. Some products genuinely have lots of positive reviews. Look for PATTERNS of manipulation, not just positivity.
-- The purchase recommendation should be based on what the GENUINE reviews say about the product, not on whether fake reviews exist.
-- The trust_score (0-100) represents overall trustworthiness of this review SET, not the product quality.`;
+- Don't fearmonger. Some products genuinely have lots of positive reviews.
+- The purchase recommendation should be based on what the GENUINE reviews say about the product.
+- The trust_score (0-100) represents overall trustworthiness of this review SET.
+- For the playbook: identify specific named tactics (review seeding, review bombing, incentivized reviews, competitive sabotage, template farming, etc.) and explain what to look for next time.`;
 
         const scoreSummary = scores.map(s =>
           `Review #${s.index}: score=${s.authenticity_score}, verdict=${s.verdict}, flags=[${(s.red_flags || []).join('; ')}]`
@@ -156,7 +153,7 @@ Return ONLY valid JSON:
   "quick_verdict": {
     "trust_score": 42,
     "label": "Approach with Caution",
-    "one_liner": "Concise 1-2 sentence summary of the overall situation"
+    "one_liner": "Concise 1-2 sentence summary"
   },
   "manipulation_detected": {
     "type": "positive_campaign | negative_bombing | mixed | none",
@@ -169,20 +166,99 @@ Return ONLY valid JSON:
     "description": "What the timeline tells us"
   },
   "genuine_consensus": {
-    "summary": "What trustworthy reviews actually say about the product",
+    "summary": "What trustworthy reviews actually say",
     "real_pros": ["specific pro"],
     "real_cons": ["specific con"],
     "real_rating": 3.5
   },
   "category_comparison": {
-    "unusual_patterns": ["unusual pattern for this category"],
-    "normal_patterns": ["normal pattern for this category"]
+    "unusual_patterns": ["unusual pattern"],
+    "normal_patterns": ["normal pattern"]
   },
   "purchase_recommendation": {
     "verdict": "buy | skip | wait",
     "confidence": "high | medium | low",
     "reasoning": "Based on genuine reviews only"
+  },
+  "playbook": {
+    "tactics_detected": [
+      {
+        "name": "Review Seeding",
+        "icon": "🌱",
+        "description": "Brief explanation of what this tactic is",
+        "evidence_here": "How it shows up in these specific reviews",
+        "how_to_spot": "What to look for next time you see this in the wild"
+      }
+    ],
+    "overall_tip": "One actionable takeaway for the user"
   }
+}`;
+
+        const message = await anthropic.messages.create({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 2500,
+          system: withLanguage(systemPrompt, userLanguage),
+          messages: [{ role: 'user', content: userPrompt }],
+        });
+
+        const text = message.content.find(b => b.type === 'text')?.text || '';
+        const parsed = JSON.parse(cleanJsonResponse(text));
+        return res.json(parsed);
+      }
+
+      // ════════════════════════════════════════════════════════
+      // ACTION: FINGERPRINT — detect same-author patterns
+      // ════════════════════════════════════════════════════════
+      case 'fingerprint': {
+        const { reviews, scores, userLanguage } = req.body;
+
+        if (!reviews || reviews.length < 3) {
+          return res.status(400).json({ error: 'Need at least 3 reviews for fingerprinting' });
+        }
+
+        const systemPrompt = `You are a forensic linguistics expert specializing in authorship attribution. Your job is to analyze a set of product reviews and detect if any were likely written by the same person, the same organization, or from the same template.
+
+ANALYZE THESE DIMENSIONS:
+1. Sentence structure patterns: Do any reviews use suspiciously similar grammar, sentence openings, or paragraph structures?
+2. Vocabulary fingerprints: Shared unusual word choices, phrases, or idioms across reviews
+3. Punctuation habits: Similar use of exclamation marks, ellipses, capitalization patterns, emoji usage
+4. Review structure: Do multiple reviews follow the same template (e.g., "intro praise → feature mention → recommendation")?
+5. Content patterns: Suspiciously similar topics covered in the same order, or the same product features highlighted
+6. Length similarity: Groups of reviews with unusually similar character/word counts
+
+GROUP reviews that appear linked. A group means "likely same author or same template." Provide specific evidence for each group. Not every review needs to be in a group — solo reviews are fine.
+
+Be precise. Don't flag reviews as linked just because they're both positive or both short. The fingerprint needs to be in the LANGUAGE itself.`;
+
+        const reviewTexts = reviews.map(r => {
+          const sc = scores?.find(s => s.index === r.index);
+          return `[Review #${r.index}] Score: ${sc?.authenticity_score ?? '?'} | ${r.starRating || '?'}★ | ${r.isVerified ? 'Verified' : 'Unverified'} | ${r.wordCount}w
+"${r.rawText}"`;
+        }).join('\n\n');
+
+        const userPrompt = `REVIEWS TO FINGERPRINT:
+${reviewTexts}
+
+Return ONLY valid JSON:
+{
+  "author_groups": [
+    {
+      "group_id": 1,
+      "review_indices": [0, 2, 4],
+      "confidence": "high | medium | low",
+      "pattern_type": "same_author | same_template | same_organization",
+      "evidence": [
+        "Specific linguistic evidence 1",
+        "Specific linguistic evidence 2"
+      ],
+      "shared_phrases": ["exact phrase found in multiple reviews"],
+      "summary": "One sentence explaining the connection"
+    }
+  ],
+  "singleton_reviews": [1, 3, 5],
+  "overall_assessment": "One paragraph summary of authorship patterns found",
+  "template_detected": true,
+  "template_structure": "Description of the template structure if found, or null"
 }`;
 
         const message = await anthropic.messages.create({
@@ -193,12 +269,82 @@ Return ONLY valid JSON:
         });
 
         const text = message.content.find(b => b.type === 'text')?.text || '';
-        const cleaned = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-        const first = cleaned.indexOf('{');
-        const last = cleaned.lastIndexOf('}');
-        if (first === -1 || last === -1) throw new Error('No JSON in response');
-        const parsed = JSON.parse(cleaned.substring(first, last + 1));
+        const parsed = JSON.parse(cleanJsonResponse(text));
+        return res.json(parsed);
+      }
 
+      // ════════════════════════════════════════════════════════
+      // ACTION: SYNTHESIZE — cross-platform analysis
+      // ════════════════════════════════════════════════════════
+      case 'synthesize': {
+        const { sources, userLanguage } = req.body;
+
+        if (!sources || sources.length < 2) {
+          return res.status(400).json({ error: 'Need at least 2 sources to synthesize' });
+        }
+
+        const systemPrompt = `You are a cross-platform review analyst. You've received review analysis results from MULTIPLE sources (e.g., Amazon, Best Buy, Reddit, etc.) for the SAME or similar products. Your job is to synthesize them into a unified truth.
+
+KEY PRINCIPLES:
+1. Compare trust scores across platforms. If one source is manipulated but others aren't, the genuine sources are more reliable.
+2. Look for consensus: What do the genuine reviews across ALL platforms agree on?
+3. Identify platform-specific manipulation: Some platforms are easier to manipulate than others.
+4. Give a unified "real" recommendation that weighs all sources appropriately.
+5. Identify disagreements between sources and explain why they might differ.
+6. Be specific about which source you trust most and why.`;
+
+        const sourceSummaries = sources.map((s, i) => `
+[SOURCE ${i + 1}: ${s.sourceName || 'Unknown'}]
+- Trust Score: ${s.trustScore}/100
+- Reviews: ${s.reviewCount} total, ${s.fakeCount} fake, ${s.genuineCount} genuine
+- Verdict: ${s.verdict || 'N/A'}
+- Category: ${s.category}
+- Summary: ${s.summary}
+- Genuine Pros: ${(s.realPros || []).join(', ') || 'none listed'}
+- Genuine Cons: ${(s.realCons || []).join(', ') || 'none listed'}
+- Manipulation: ${s.manipulationType || 'none'}
+- Real Rating: ${s.realRating || '?'}/5`).join('\n');
+
+        const userPrompt = `MULTI-SOURCE ANALYSIS:
+${sourceSummaries}
+
+Return ONLY valid JSON:
+{
+  "unified_trust_score": 65,
+  "unified_verdict": "buy | skip | wait",
+  "unified_confidence": "high | medium | low",
+  "source_rankings": [
+    {
+      "source_name": "Best Buy",
+      "trust_level": "most_reliable | reliable | somewhat_reliable | unreliable",
+      "reasoning": "Why this source ranks here"
+    }
+  ],
+  "consensus": {
+    "agreed_pros": ["Things all genuine reviews across platforms agree on"],
+    "agreed_cons": ["Cons agreed upon across platforms"],
+    "real_rating": 3.5,
+    "summary": "The cross-platform truth about this product"
+  },
+  "disagreements": [
+    {
+      "topic": "Battery life",
+      "description": "Amazon reviews say 8hrs, Best Buy reviews say 5hrs — likely different usage patterns or different product versions"
+    }
+  ],
+  "platform_insights": "What the cross-platform comparison reveals about manipulation",
+  "final_recommendation": "Clear, actionable recommendation based on all sources"
+}`;
+
+        const message = await anthropic.messages.create({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 2000,
+          system: withLanguage(systemPrompt, userLanguage),
+          messages: [{ role: 'user', content: userPrompt }],
+        });
+
+        const text = message.content.find(b => b.type === 'text')?.text || '';
+        const parsed = JSON.parse(cleanJsonResponse(text));
         return res.json(parsed);
       }
 
@@ -212,81 +358,60 @@ Return ONLY valid JSON:
           return res.status(400).json({ error: 'URL is required' });
         }
 
-        // Validate URL
         let parsedUrl;
         try {
           parsedUrl = new URL(url.trim());
-          if (!['http:', 'https:'].includes(parsedUrl.protocol)) {
-            throw new Error('Invalid protocol');
-          }
+          if (!['http:', 'https:'].includes(parsedUrl.protocol)) throw new Error('Invalid protocol');
         } catch {
           return res.status(400).json({ error: 'Please enter a valid URL (https://...)' });
         }
 
-        // Fetch the page
         let html;
         try {
           const controller = new AbortController();
           const timeout = setTimeout(() => controller.abort(), 15000);
-
           const response = await fetch(parsedUrl.href, {
             headers: {
               'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
               'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
               'Accept-Language': 'en-US,en;q=0.9',
             },
-            signal: controller.signal,
-            redirect: 'follow',
+            signal: controller.signal, redirect: 'follow',
           });
           clearTimeout(timeout);
-
-          if (!response.ok) {
-            throw new Error(`Page returned ${response.status} ${response.statusText}`);
-          }
-
+          if (!response.ok) throw new Error(`Page returned ${response.status} ${response.statusText}`);
           html = await response.text();
         } catch (fetchErr) {
-          if (fetchErr.name === 'AbortError') {
-            return res.status(504).json({ error: 'Page took too long to load (15s timeout)' });
-          }
-          return res.status(502).json({
-            error: `Couldn't fetch that page: ${fetchErr.message}. The site may be blocking automated requests.`
-          });
+          if (fetchErr.name === 'AbortError') return res.status(504).json({ error: 'Page took too long (15s timeout)' });
+          return res.status(502).json({ error: `Couldn't fetch: ${fetchErr.message}. Site may block automated requests.` });
         }
 
-        // Truncate HTML to ~80k chars to stay within token limits
         const maxChars = 80000;
-        const truncatedHtml = html.length > maxChars
-          ? html.substring(0, maxChars) + '\n[... truncated ...]'
-          : html;
+        const truncatedHtml = html.length > maxChars ? html.substring(0, maxChars) + '\n[... truncated ...]' : html;
 
-        // Use AI to extract reviews from the HTML
-        const systemPrompt = `You are an expert at extracting product reviews from web page HTML. Your job is to find ALL individual customer reviews on the page and output them in a clean, structured text format.
+        const systemPrompt = `You are an expert at extracting product reviews from web page HTML. Find ALL individual customer reviews and output them in clean, structured text.
 
 EXTRACTION RULES:
-1. Find every customer review on the page
-2. For each review, extract: star rating, review text, reviewer name (if available), date posted (if available), and whether it's a verified/confirmed purchase
-3. Output each review in this exact format (one blank line between reviews):
+1. Find every customer review
+2. For each: star rating, text, reviewer name (if available), date, verified purchase status
+3. Output format (one blank line between reviews):
 
-⭐⭐⭐⭐⭐ [review text here]
+⭐⭐⭐⭐⭐ [review text]
 - [Verified Purchase, ]Posted [date]
 
-4. Convert numeric ratings to star emoji (e.g., 4.0 = ⭐⭐⭐⭐, 3 out of 5 = ⭐⭐⭐)
-5. If a review has no star rating, omit the stars line and just include the text
-6. Include "Verified Purchase" prefix on the date line only if the page indicates the reviewer actually purchased the product
-7. Preserve the actual review text — don't summarize or paraphrase
-8. If the page has no reviews, return exactly: NO_REVIEWS_FOUND
-9. Also detect the product name and category if visible on the page
+4. Convert numeric ratings to star emoji
+5. Include "Verified Purchase" only if page indicates actual purchase
+6. Preserve actual review text — don't summarize
+7. If no reviews found: return exactly NO_REVIEWS_FOUND
+8. Detect product name and category if visible
 
 OUTPUT FORMAT:
-First line: PRODUCT: [product name or "Unknown"]
-Second line: CATEGORY: [best guess category: Electronics, Home & Kitchen, Beauty, Fashion, Sports, Books, Health, Food, Toys, Automotive, or Other]
+First line: PRODUCT: [name or "Unknown"]
+Second line: CATEGORY: [Electronics, Home & Kitchen, Beauty, Fashion, Sports, Books, Health, Food, Toys, Automotive, or Other]
 Third line: REVIEWS_FOUND: [count]
-Then a blank line, then all reviews separated by blank lines.
+Then blank line, then reviews.`;
 
-Only output the formatted reviews. No explanations, no commentary.`;
-
-        const userPrompt = `Extract all customer/product reviews from this web page HTML:\n\n${truncatedHtml}`;
+        const userPrompt = `Extract all customer/product reviews from this HTML:\n\n${truncatedHtml}`;
 
         const message = await anthropic.messages.create({
           model: 'claude-sonnet-4-20250514',
@@ -298,33 +423,18 @@ Only output the formatted reviews. No explanations, no commentary.`;
         const text = message.content.find(b => b.type === 'text')?.text || '';
 
         if (text.includes('NO_REVIEWS_FOUND')) {
-          return res.json({
-            reviews: '',
-            productName: null,
-            category: null,
-            reviewCount: 0,
-            message: 'No reviews found on that page. The site may require JavaScript to load reviews, or the page may not contain customer reviews.',
-          });
+          return res.json({ reviews: '', productName: null, category: null, reviewCount: 0,
+            message: 'No reviews found. Site may require JavaScript or page may not contain reviews.' });
         }
 
-        // Parse metadata from response
         const productMatch = text.match(/^PRODUCT:\s*(.+)$/m);
         const categoryMatch = text.match(/^CATEGORY:\s*(.+)$/m);
         const countMatch = text.match(/^REVIEWS_FOUND:\s*(\d+)$/m);
 
-        // Extract just the review text (everything after the metadata header)
         let reviewText = text;
         const headerEnd = text.search(/\n\s*\n⭐|^\n*⭐/m);
-        if (headerEnd !== -1) {
-          reviewText = text.substring(headerEnd).trim();
-        } else {
-          // Try to strip the metadata lines
-          reviewText = text
-            .replace(/^PRODUCT:.*$/m, '')
-            .replace(/^CATEGORY:.*$/m, '')
-            .replace(/^REVIEWS_FOUND:.*$/m, '')
-            .trim();
-        }
+        if (headerEnd !== -1) { reviewText = text.substring(headerEnd).trim(); }
+        else { reviewText = text.replace(/^PRODUCT:.*$/m, '').replace(/^CATEGORY:.*$/m, '').replace(/^REVIEWS_FOUND:.*$/m, '').trim(); }
 
         return res.json({
           reviews: reviewText,

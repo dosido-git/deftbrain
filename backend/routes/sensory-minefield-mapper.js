@@ -2,401 +2,423 @@ const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
 
+function safeParseJSON(text) {
+  let cleaned = cleanJsonResponse(text);
+  cleaned = cleaned.replace(/,(\s*[}\]])/g, '$1');
+  try { return JSON.parse(cleaned); } catch {
+    cleaned = cleaned.replace(/[\x00-\x1F\x7F]/g, ' ');
+    try { return JSON.parse(cleaned); } catch {
+      cleaned = cleaned.replace(/([{,]\s*)(\w+)\s*:/g, '$1"$2":');
+      return JSON.parse(cleaned);
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// MAIN — preview a location before visiting
+// ═══════════════════════════════════════════════════════════════
+
 router.post('/sensory-minefield-mapper', async (req, res) => {
   try {
-    const { 
-      location, 
-      visitDateTime, 
-      placeType, 
-      sensitivities,
-      accessibilityNeeds,
-      specificTriggers,
-      savedWarningSigns,
-      successfulCoping
-    } = req.body;
+    const { location, visitDateTime, placeType, concerns, specificNotes, pastVisits } = req.body;
 
-    console.log('📥 Sensory Mapper Enhanced request:', { location, visitDateTime, placeType });
+    if (!location?.trim()) return res.status(400).json({ error: 'Location is required' });
+    if (!visitDateTime) return res.status(400).json({ error: 'Visit date and time are required' });
+    if (!placeType) return res.status(400).json({ error: 'Place type is required' });
+    if (!concerns?.length) return res.status(400).json({ error: 'Select at least one concern' });
 
-    // Validation
-    if (!location || !location.trim()) {
-      return res.status(400).json({ error: 'Location is required' });
-    }
-    if (!visitDateTime) {
-      return res.status(400).json({ error: 'Visit date and time are required' });
-    }
-    if (!placeType) {
-      return res.status(400).json({ error: 'Place type is required' });
-    }
-    if (!sensitivities || sensitivities.length === 0) {
-      return res.status(400).json({ error: 'At least one sensory sensitivity is required' });
-    }
+    const pastBlock = pastVisits?.length
+      ? `\nPAST VISITS TO THIS LOCATION:\n${pastVisits.slice(0, 3).map(v => `- ${v.date}: Rating ${v.rating}/5. Notes: ${v.notes}`).join('\n')}`
+      : '';
 
-    // ENHANCED prompt with STRICT JSON formatting rules
-    const prompt = `You are a comprehensive sensory environment analyst helping neurodivergent individuals predict and navigate sensory challenges.
+    const prompt = `You are a location scout helping someone preview what a place will be like before they visit. Many people like to know what to expect — how busy it'll be, how loud, what the vibe is, where to find quiet spots, and what to do if it's more intense than expected. This is practical planning, not medical advice.
 
 LOCATION: ${location}
 VISIT TIME: ${visitDateTime}
 PLACE TYPE: ${placeType}
-SENSORY SENSITIVITIES: ${sensitivities.join(', ')}
-${accessibilityNeeds && accessibilityNeeds.length > 0 ? `ACCESSIBILITY NEEDS: ${accessibilityNeeds.join(', ')}` : ''}
-${specificTriggers ? `SPECIFIC TRIGGERS: ${specificTriggers}` : ''}
+WHAT THEY CARE ABOUT: ${concerns.join(', ')}
+${specificNotes ? `SPECIFIC NOTES: ${specificNotes}` : ''}
+${pastBlock}
 
-Provide COMPREHENSIVE analysis with ALL sections below.
+Analyze this specific location and time combination. Be concrete and practical — predict actual conditions, not generic advice.
 
-⚠️ CRITICAL JSON FORMATTING RULES - FOLLOW EXACTLY:
-1. Return ONLY valid JSON - no markdown, no preamble, no explanatory text before or after
-2. NO trailing commas - check EVERY array and object
-3. Use double quotes for ALL strings, never single quotes
-4. NO line breaks inside string values - use spaces instead
-5. Limit each array to maximum 10 items to avoid complexity
-6. Close ALL brackets and braces properly
-7. Use simple string values - avoid nested quotes or special characters
-8. Test the structure: every opened bracket must have a closing bracket
-
-Return this COMPLETE structure:
-
+Return ONLY valid JSON:
 {
-  "location_analysis": {
-    "location_name": "${location}",
-    "expected_visit_time": "${visitDateTime}",
-    "overall_sensory_rating": "moderate",
-    "rating_explanation": "Brief explanation",
-    "community_rating": "3.8 out of 5 from 24 users"
+  "location_summary": {
+    "name": "Location name",
+    "visit_time": "When they plan to go",
+    "intensity_rating": "low / moderate / high / intense",
+    "intensity_explanation": "One sentence explaining the rating for this specific time",
+    "vibe": "Brief 5-7 word vibe description"
   },
-  "sensory_factors": [
+  "factors": [
     {
-      "factor": "Noise level",
-      "predicted_level": "moderate 60-70 dB",
-      "peak_times": ["checkout area", "entrance"],
-      "your_sensitivity": "high",
-      "coping_strategies": ["noise-canceling headphones", "visit during quiet hours", "use self-checkout"],
-      "community_notes": "Users report checkout is loudest"
-    },
-    {
-      "factor": "Crowd density",
-      "predicted_level": "40 percent capacity",
-      "peak_times": ["Saturday afternoons", "weekday evenings 5-7pm"],
-      "your_sensitivity": "high",
-      "coping_strategies": ["visit weekday mornings", "scout exits first", "take breaks"],
-      "community_notes": "Much quieter before 11am"
-    },
-    {
-      "factor": "Lighting",
-      "predicted_level": "bright fluorescent throughout",
-      "peak_times": ["entire store"],
-      "your_sensitivity": "high",
-      "coping_strategies": ["wear sunglasses", "visit during natural light hours", "limit time"],
-      "community_notes": "Sunglasses help significantly"
-    },
-    {
-      "factor": "Smells",
-      "predicted_level": "moderate cleaning products and food",
-      "peak_times": ["morning cleaning", "food sections"],
-      "your_sensitivity": "medium",
-      "coping_strategies": ["avoid food court", "fresh air breaks", "visit afternoon"],
-      "community_notes": "Cleaning smell strongest before 10am"
-    },
-    {
-      "factor": "Visual chaos",
-      "predicted_level": "high - many signs and movement",
-      "peak_times": ["promotional areas", "main aisles"],
-      "your_sensitivity": "high",
-      "coping_strategies": ["make specific list", "avoid browsing", "focus on task"],
-      "community_notes": "Perimeter aisles less chaotic"
+      "factor": "Noise / Crowds / Lighting / Smells / Visual Clutter / Temperature",
+      "prediction": "Specific prediction for this time (e.g., 'Moderate — background music + espresso machine, ~65dB')",
+      "concern_level": "low / medium / high",
+      "peak_zones": ["Areas where this factor is worst"],
+      "avoid_times": ["Times when this factor spikes"],
+      "tips": ["Practical tip 1", "Practical tip 2"]
     }
   ],
-  "accessibility_information": {
-    "wheelchair_accessible": true,
-    "details": "Automatic doors at entrance, wide aisles, accessible checkout lanes",
-    "accessible_bathrooms": [
-      {
-        "location": "Near customer service front of store",
-        "features": "Single-stall grab bars automatic door",
-        "distance_from_entrance": "50 feet"
-      }
-    ],
-    "elevator_access": "Single floor no elevator needed",
-    "service_animal_policy": "Service animals welcome staff trained",
-    "accessible_parking": {
-      "available": true,
-      "number_of_spots": "8 spots",
-      "proximity": "20-30 feet to automatic doors"
-    },
-    "sensory_friendly_features": "Quiet hours Tuesdays 8-9am reduced lighting no music"
+  "best_time": {
+    "recommended": "Best day and time to visit",
+    "why": "Why this time is better",
+    "crowd_comparison": "How much less busy vs their chosen time"
   },
-  "visual_mapping": {
-    "quietest_areas": [
-      {
-        "area": "Garden section",
-        "location_description": "Back left corner",
-        "why_quiet": "Low traffic natural light open space",
-        "distance_from_entrance": "200 feet straight back then left"
-      },
-      {
-        "area": "Home goods aisle",
-        "location_description": "Center back",
-        "why_quiet": "Less popular wide aisles",
-        "distance_from_entrance": "150 feet straight back"
-      }
+  "layout_intel": {
+    "quietest_spots": [
+      { "area": "Area name", "where": "How to find it", "why_quiet": "Why it's calm" }
     ],
-    "escape_routes": [
-      {
-        "route_name": "Garden section path",
-        "description": "From entrance go straight back turn left at sporting goods",
-        "accessibility": "Fully wheelchair accessible wide aisles",
-        "estimated_time": "2 minutes from entrance"
-      },
-      {
-        "route_name": "Side exit emergency",
-        "description": "East side near electronics",
-        "accessibility": "Exit only alarm will sound",
-        "estimated_time": "If overwhelmed use immediately"
-      }
+    "exits": [
+      { "name": "Exit name", "location": "Where it is", "note": "Any relevant detail" }
     ],
-    "bathroom_locations": [
-      {
-        "name": "Main accessible bathroom",
-        "description": "Front left near customer service",
-        "accessibility": "Single-stall fully accessible private",
-        "from_entrance": "30 feet turn left"
-      }
+    "restrooms": [
+      { "location": "Where", "note": "Private/accessible/etc" }
     ],
-    "outdoor_access": [
-      {
-        "location": "Main entrance patio",
-        "description": "Covered area with benches",
-        "when_available": "Always accessible",
-        "use": "Quick fresh air break"
-      }
-    ],
-    "parking_to_entrance": {
-      "accessible_route": "Spots adjacent to entrance curb cut automatic doors",
-      "distance": "20-30 feet",
-      "obstacles": "None fully paved"
-    }
-  },
-  "optimal_visit_time": {
-    "recommended": "Tuesday 10:00am",
-    "why": "Lowest crowd 25 percent capacity post-opening calm natural light",
-    "crowd_reduction": "70 percent less crowded than Saturday 6pm",
-    "accessibility_note": "Accessible parking least crowded before 11am"
-  },
-  "preparation_strategies": {
-    "before_you_go": [
-      "Make specific list minimize browsing",
-      "Bring noise-canceling headphones",
-      "Bring sunglasses for lights",
-      "Eat first low blood sugar increases sensitivity",
-      "Screenshot this map for offline access"
-    ],
-    "during_visit": [
-      "Scout escape routes first",
-      "Take breaks every 15 minutes",
-      "Use headphones even without music",
-      "Stick to list avoid browsing",
-      "Set 30 minute time limit"
-    ],
-    "exit_strategy": "Leave immediately if warning signs appear no guilt about abandoned cart"
-  },
-  "real_time_checkin": {
-    "check_frequency": "Every 10-15 minutes",
-    "questions_to_ask_yourself": [
-      "Is my jaw or shoulders tense",
-      "Am I feeling irritable",
-      "Is it harder to make decisions than when I arrived",
-      "Do sounds feel louder than 10 minutes ago",
-      "Do I have an urge to leave"
-    ],
-    "if_yes_to_2_or_more": "Go to escape route immediately for 5 minute break then reevaluate",
-    "emergency_protocol_triggers": [
-      "Feeling panicked or desperate to leave",
-      "Physical pain from sensory input",
-      "Shutdown approaching feeling disconnected",
-      "Meltdown warning signs appearing"
+    "fresh_air": [
+      { "spot": "Where to step outside", "note": "Covered? Seating?" }
     ]
   },
-  "emergency_protocols": {
-    "if_worse_than_predicted": [
-      "Use nearest escape route immediately",
-      "Exit to outdoor patio or parking lot",
-      "Do not try to finish shopping leave cart",
-      "Call support person if available"
-    ],
-    "nearby_recovery_locations": [
-      {
-        "location": "Riverside Park",
-        "distance": "0.3 miles 5 minute drive",
-        "why": "Quiet natural benches accessible",
-        "accessibility": "Wheelchair paths accessible bathrooms"
-      },
-      {
-        "location": "Your car in parking lot",
-        "distance": "Immediate",
-        "why": "Private controlled environment",
-        "tip": "Keep comfort items in car"
-      }
-    ],
-    "exit_script": "If staff ask - I am fine just needed to step out OR Sensory overload I need to leave"
+  "game_plan": {
+    "before": ["Prep step 1", "Prep step 2", "Prep step 3"],
+    "during": ["During tip 1", "During tip 2", "During tip 3"],
+    "if_overwhelming": "One clear sentence: what to do if it's too much",
+    "time_limit": "Suggested max time to spend"
   },
-  "warning_signs_to_monitor": [
-    "Jaw or shoulder tension",
-    "Irritability",
-    "Decision difficulty",
-    "Sounds feeling louder",
-    "Urge to escape",
-    "Physical discomfort"
-  ],
-  "accommodation_requests": [
+  "accommodation_scripts": [
     {
-      "what_to_ask": "Quieter checkout lane",
-      "how_to_ask": "Is there a quieter checkout available",
-      "likelihood_granted": "high"
-    },
-    {
-      "what_to_ask": "Store map",
-      "how_to_ask": "Do you have a map I can use",
-      "likelihood_granted": "medium"
+      "situation": "What you might need",
+      "script": "Exact words to say",
+      "likelihood": "high / medium / low"
     }
   ],
-  "backup_plan": "If overwhelmed abandon cart use nearest exit no guilt. Order online or visit during quiet hours Tuesday 8-9am.",
-  "post_visit_report_template": {
-    "questions": [
-      "Overall Better Same or Worse than predicted",
-      "Noise level Accurate Louder or Quieter",
-      "Crowd level Accurate More or Less crowded",
-      "Did you use escape routes Were they helpful",
-      "Did you need to leave early At what point",
-      "What worked from prep strategies",
-      "What would you change for next time",
-      "Would you recommend this location and time to others"
-    ],
-    "share_with_community": true,
-    "improves_your_predictions": true
-  }
+  "check_in_prompts": [
+    "Quick self-check question 1",
+    "Quick self-check question 2",
+    "Quick self-check question 3",
+    "Quick self-check question 4"
+  ],
+  "backup_plan": "One clear sentence: if this doesn't work, here's plan B"
 }
 
-Remember: NO trailing commas. Check every array and object before returning.`;
+Return ONLY valid JSON.`;
 
-    console.log('🤖 Calling Claude API for enhanced analysis...');
+    console.log(`[SceneScout] Analyzing ${location} (${placeType}, ${visitDateTime})`);
 
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
-      max_tokens: 3500,  // Increased for full enhanced response
-      messages: [{ role: 'user', content: prompt }]
+      max_tokens: 2000,
+      messages: [{ role: 'user', content: prompt }],
     });
 
-    console.log('✅ Received response, parsing JSON...');
-
-    // ULTRA-ROBUST JSON PARSING
-    let jsonText = message.content[0].text.trim();
-    
-    console.log('📝 Raw response length:', jsonText.length, 'characters');
-    
-    // Step 1: Remove markdown code blocks
-    jsonText = jsonText.replace(/```json\s*/g, '').replace(/```\s*/g, '').replace(/```/g, '');
-    
-    // Step 2: Remove any preamble or postamble text
-    const firstBrace = jsonText.indexOf('{');
-    const lastBrace = jsonText.lastIndexOf('}');
-    
-    if (firstBrace === -1 || lastBrace === -1) {
-      console.error('❌ No JSON braces found in response');
-      throw new Error('No JSON structure found in AI response');
-    }
-    
-    jsonText = jsonText.substring(firstBrace, lastBrace + 1);
-    
-    // Step 3: Aggressive JSON cleaning
-    console.log('🧹 Cleaning JSON...');
-    
-    // Remove trailing commas before } or ]
-    jsonText = jsonText.replace(/,(\s*[}\]])/g, '$1');
-    
-    // Remove multiple consecutive commas
-    jsonText = jsonText.replace(/,+/g, ',');
-    
-    // Fix common quote issues - replace smart quotes with straight quotes
-    jsonText = jsonText.replace(/[""]/g, '"');
-    jsonText = jsonText.replace(/['']/g, "'");
-    
-    // Remove line breaks inside strings (between quotes)
-    // This regex finds strings and removes \n inside them
-    jsonText = jsonText.replace(/"([^"]*)\n([^"]*)"/g, '"$1 $2"');
-    
-    // Remove any control characters that might break JSON
-    jsonText = jsonText.replace(/[\x00-\x1F\x7F]/g, '');
-    
-    console.log('✨ Cleaned JSON length:', jsonText.length, 'characters');
-    
-    // Step 4: Attempt to parse
-    let results;
-    let parseAttempt = 1;
-    const maxAttempts = 3;
-    
-    while (parseAttempt <= maxAttempts) {
-      try {
-        console.log(`🔍 Parse attempt ${parseAttempt}/${maxAttempts}...`);
-        results = JSON.parse(jsonText);
-        console.log('✅ JSON parsed successfully on attempt', parseAttempt);
-        break;
-        
-      } catch (parseError) {
-        console.error(`❌ Parse attempt ${parseAttempt} failed:`, parseError.message);
-        
-        if (parseAttempt === maxAttempts) {
-          // Final attempt failed - show detailed error info
-          const match = parseError.message.match(/position (\d+)/);
-          if (match) {
-            const errorPos = parseInt(match[1]);
-            const contextStart = Math.max(0, errorPos - 200);
-            const contextEnd = Math.min(jsonText.length, errorPos + 200);
-            
-            console.error('\n' + '='.repeat(60));
-            console.error('CONTEXT BEFORE ERROR:');
-            console.error(jsonText.substring(contextStart, errorPos));
-            console.error('\n>>> ERROR AT THIS POSITION <<<\n');
-            console.error('CONTEXT AFTER ERROR:');
-            console.error(jsonText.substring(errorPos, contextEnd));
-            console.error('='.repeat(60) + '\n');
-          }
-          
-          throw new Error(`JSON parse failed after ${maxAttempts} attempts: ${parseError.message}`);
-        }
-        
-        // Try additional cleaning for next attempt
-        if (parseAttempt === 1) {
-          // Second attempt: try fixing unescaped quotes in strings
-          jsonText = jsonText.replace(/([^\\])"([^",:}\]]*)"([^,:}\]]*)/g, '$1\\"$2\\"$3');
-        } else if (parseAttempt === 2) {
-          // Third attempt: try removing problematic characters entirely
-          jsonText = jsonText.replace(/[^\x20-\x7E\n\r\t]/g, '');
-        }
-        
-        parseAttempt++;
-      }
-    }
-
-    // Step 5: Validate structure
-    const requiredFields = ['location_analysis', 'sensory_factors', 'backup_plan'];
-    const missingFields = requiredFields.filter(field => !results[field]);
-    
-    if (missingFields.length > 0) {
-      throw new Error(`Invalid response structure - missing required fields: ${missingFields.join(', ')}`);
-    }
-
-    console.log('✅ Validation passed - all required fields present');
-    console.log('📊 Response includes', Object.keys(results).length, 'main sections');
-    
-    res.json(results);
+    const raw = message.content.find(item => item.type === 'text')?.text || '';
+    const parsed = safeParseJSON(raw);
+    res.json(parsed);
 
   } catch (error) {
-    console.error('❌ Sensory Minefield Mapper Error:', error);
-    res.status(500).json({
-      error: error.message || 'Failed to analyze location',
-      details: process.env.NODE_ENV === 'development' ? error.stack : undefined
-    });
+    console.error('[SceneScout] Error:', error);
+    res.status(500).json({ error: error.message || 'Failed to analyze location' });
   }
 });
 
+// ═══════════════════════════════════════════════════════════════
+// ALTERNATIVES — suggest better times or similar places
+// ═══════════════════════════════════════════════════════════════
+
+router.post('/sensory-minefield-mapper/alternatives', async (req, res) => {
+  try {
+    const { location, placeType, visitDateTime, concerns, analysisContext } = req.body;
+
+    if (!location?.trim()) return res.status(400).json({ error: 'Location is required' });
+
+    const prompt = `Someone previewed a location and it looks too intense. Suggest alternatives — either different times for the same place, similar places nearby that might be calmer, or online/delivery options.
+
+ORIGINAL PLAN: ${location} (${placeType}) at ${visitDateTime}
+THEIR CONCERNS: ${concerns?.join(', ') || 'general comfort'}
+INTENSITY RATING: ${analysisContext?.location_summary?.intensity_rating || 'unknown'}
+
+Return ONLY valid JSON:
+{
+  "better_times": [
+    {
+      "when": "Specific day and time",
+      "why_better": "Why this time is calmer",
+      "estimated_intensity": "low / moderate"
+    }
+  ],
+  "alternative_places": [
+    {
+      "name": "Alternative location name",
+      "type": "What kind of place",
+      "why_better": "Why it might be less intense",
+      "trade_off": "What you give up by going here instead"
+    }
+  ],
+  "skip_it_options": [
+    {
+      "option": "Online/delivery/other alternative",
+      "how": "How to do it",
+      "note": "Any relevant detail"
+    }
+  ],
+  "bottom_line": "One practical recommendation sentence"
+}
+
+Return ONLY valid JSON.`;
+
+    console.log(`[SceneScout/alternatives] For ${location}`);
+
+    const message = await anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1000,
+      messages: [{ role: 'user', content: prompt }],
+    });
+
+    const raw = message.content.find(item => item.type === 'text')?.text || '';
+    const parsed = safeParseJSON(raw);
+    res.json(parsed);
+
+  } catch (error) {
+    console.error('[SceneScout/alternatives] Error:', error);
+    res.status(500).json({ error: error.message || 'Failed to generate alternatives' });
+  }
+});
+
+// ═══════════════════════════════════════════════════════════════
+// COMPANION SUMMARY — shareable brief for whoever you're with
+// ═══════════════════════════════════════════════════════════════
+
+router.post('/sensory-minefield-mapper/companion-summary', async (req, res) => {
+  try {
+    const { name, location, concerns, gamePlan, companionName } = req.body;
+
+    if (!location?.trim()) return res.status(400).json({ error: 'Location is required' });
+
+    const prompt = `Write a short, casual message someone can share with the person they're going to ${location} with. It should explain what they need in a way that's direct and comfortable — not clinical, not apologetic, just practical. Think "hey, heads up about what works for me."
+
+${name ? `FROM: ${name}` : ''}
+${companionName ? `TO: ${companionName}` : ''}
+LOCATION: ${location}
+THEIR CONCERNS: ${concerns?.join(', ') || 'crowds and noise'}
+GAME PLAN CONTEXT: ${gamePlan ? JSON.stringify(gamePlan) : 'standard visit plan'}
+
+Return ONLY valid JSON:
+{
+  "message_casual": "A casual text-style message (2-4 sentences, friendly tone)",
+  "message_detailed": "A slightly longer version with specifics (3-5 sentences)",
+  "key_asks": ["Specific thing they need from their companion", "Another ask"],
+  "signal_system": {
+    "description": "A simple signal system they can use during the visit",
+    "signals": [
+      { "signal": "What to do/say", "meaning": "What it means" }
+    ]
+  }
+}
+
+Return ONLY valid JSON.`;
+
+    console.log(`[SceneScout/companion] For ${location}`);
+
+    const message = await anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 800,
+      messages: [{ role: 'user', content: prompt }],
+    });
+
+    const raw = message.content.find(item => item.type === 'text')?.text || '';
+    const parsed = safeParseJSON(raw);
+    res.json(parsed);
+
+  } catch (error) {
+    console.error('[SceneScout/companion] Error:', error);
+    res.status(500).json({ error: error.message || 'Failed to generate summary' });
+  }
+});
+
+// ═══════════════════════════════════════════════════════════════
+// QUICK RESCAN — adjust strategy when already at the location
+// ═══════════════════════════════════════════════════════════════
+
+router.post('/sensory-minefield-mapper/rescan', async (req, res) => {
+  try {
+    const { location, placeType, originalPrediction, currentConditions, concerns } = req.body;
+
+    if (!location?.trim()) return res.status(400).json({ error: 'Location is required' });
+    if (!currentConditions?.trim()) return res.status(400).json({ error: 'Describe current conditions' });
+
+    const prompt = `Someone is AT a location right now and conditions are different from what they expected. Give them a quick, calm adjusted strategy. No preamble — they need actionable advice fast.
+
+LOCATION: ${location} (${placeType || 'unknown type'})
+ORIGINAL PREDICTION: ${originalPrediction || 'moderate intensity'}
+WHAT THEY'RE EXPERIENCING: ${currentConditions}
+THEIR CONCERNS: ${concerns?.join(', ') || 'comfort'}
+
+Return ONLY valid JSON:
+{
+  "quick_assessment": "One sentence: how this compares to what was expected",
+  "adjusted_intensity": "low / moderate / high / intense",
+  "immediate_actions": ["Do this right now", "Then this", "And this"],
+  "stay_or_go": "stay_with_adjustments / take_a_break / consider_leaving",
+  "if_staying": "Practical advice for making it work",
+  "nearest_relief": "Where to go for a quick reset (bathroom, outside, quiet corner)",
+  "revised_time_limit": "How long you should plan to stay given conditions"
+}
+
+Return ONLY valid JSON.`;
+
+    console.log(`[SceneScout/rescan] ${location}: ${currentConditions.slice(0, 50)}...`);
+
+    const message = await anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 600,
+      messages: [{ role: 'user', content: prompt }],
+    });
+
+    const raw = message.content.find(item => item.type === 'text')?.text || '';
+    const parsed = safeParseJSON(raw);
+    res.json(parsed);
+
+  } catch (error) {
+    console.error('[SceneScout/rescan] Error:', error);
+    res.status(500).json({ error: error.message || 'Failed to rescan' });
+  }
+});
+
+// ═══════════════════════════════════════════════════════════════
+// ROUTE — plan a multi-stop trip with cumulative energy modeling
+// ═══════════════════════════════════════════════════════════════
+
+router.post('/sensory-minefield-mapper/route', async (req, res) => {
+  try {
+    const { stops, concerns, specificNotes } = req.body;
+
+    if (!stops?.length || stops.length < 2) return res.status(400).json({ error: 'Need at least 2 stops' });
+    if (stops.length > 5) return res.status(400).json({ error: 'Max 5 stops per route' });
+
+    const stopsBlock = stops.map((s, i) =>
+      `${i + 1}. ${s.location} (${s.placeType})${s.time ? ` around ${s.time}` : ''}`
+    ).join('\n');
+
+    const prompt = `Someone has multiple stops to make today. Analyze the full route considering that energy is CUMULATIVE — a moderate stop after two other moderate stops feels intense. Your job: optimal order, where to put breaks, and when to call it.
+
+STOPS:
+${stopsBlock}
+
+THEIR CONCERNS: ${concerns?.join(', ') || 'general comfort'}
+${specificNotes ? `NOTES: ${specificNotes}` : ''}
+
+Return ONLY valid JSON:
+{
+  "route_summary": {
+    "total_stops": ${stops.length},
+    "estimated_total_time": "Total hours including travel and breaks",
+    "overall_difficulty": "manageable / challenging / ambitious",
+    "recommendation": "One sentence summary"
+  },
+  "optimal_order": [
+    {
+      "order": 1,
+      "location": "Stop name",
+      "place_type": "Type",
+      "intensity": "low / moderate / high",
+      "cumulative_energy": "fresh / fine / draining / depleted",
+      "suggested_time": "When to go",
+      "time_limit": "Max time here",
+      "why_this_order": "Brief reason",
+      "key_tip": "One practical tip"
+    }
+  ],
+  "breaks": [
+    {
+      "after_stop": 1,
+      "type": "quick_reset / proper_break / meal_break",
+      "duration": "5-10 min",
+      "suggestion": "What to do during break"
+    }
+  ],
+  "cut_point": {
+    "after_stop": 2,
+    "explanation": "If you're feeling drained after stop 2, skip the rest and do them another day",
+    "reschedule_suggestion": "Best time to do remaining stops"
+  },
+  "comfort_items": ["Item to bring for this specific route"],
+  "route_backup": "If the whole route feels too much: one sentence plan B"
+}
+
+Return ONLY valid JSON.`;
+
+    console.log(`[SceneScout/route] ${stops.length} stops`);
+
+    const message = await anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1500,
+      messages: [{ role: 'user', content: prompt }],
+    });
+
+    const raw = message.content.find(item => item.type === 'text')?.text || '';
+    const parsed = safeParseJSON(raw);
+    res.json(parsed);
+
+  } catch (error) {
+    console.error('[SceneScout/route] Error:', error);
+    res.status(500).json({ error: error.message || 'Failed to plan route' });
+  }
+});
+
+// ═══════════════════════════════════════════════════════════════
+// COMFORT KIT — dynamic packing checklist
+// ═══════════════════════════════════════════════════════════════
+
+router.post('/sensory-minefield-mapper/comfort-kit', async (req, res) => {
+  try {
+    const { concerns, placeType, visitTime, specificNotes, duration } = req.body;
+
+    if (!concerns?.length) return res.status(400).json({ error: 'Concerns are required' });
+
+    const prompt = `Generate a practical packing checklist for someone heading out. This should be specific to what they care about and where they're going — not a generic list.
+
+GOING TO: ${placeType || 'general outing'}
+TIME: ${visitTime || 'daytime'}
+ESTIMATED DURATION: ${duration || 'unknown'}
+THEIR CONCERNS: ${concerns.join(', ')}
+${specificNotes ? `NOTES: ${specificNotes}` : ''}
+
+Return ONLY valid JSON:
+{
+  "essentials": [
+    { "item": "Item name", "why": "Why for this specific trip", "priority": "must_have / nice_to_have" }
+  ],
+  "comfort_items": [
+    { "item": "Item name", "why": "Why it helps with their specific concerns", "priority": "must_have / nice_to_have" }
+  ],
+  "just_in_case": [
+    { "item": "Item name", "why": "When you might need it" }
+  ],
+  "car_stash": [
+    { "item": "Item to keep in the car", "why": "For recovery after" }
+  ],
+  "quick_note": "One practical packing tip for this type of outing"
+}
+
+Return ONLY valid JSON.`;
+
+    console.log(`[SceneScout/comfort-kit] ${placeType}, ${concerns.join(', ')}`);
+
+    const message = await anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 800,
+      messages: [{ role: 'user', content: prompt }],
+    });
+
+    const raw = message.content.find(item => item.type === 'text')?.text || '';
+    const parsed = safeParseJSON(raw);
+    res.json(parsed);
+
+  } catch (error) {
+    console.error('[SceneScout/comfort-kit] Error:', error);
+    res.status(500).json({ error: error.message || 'Failed to generate kit' });
+  }
+});
 
 module.exports = router;

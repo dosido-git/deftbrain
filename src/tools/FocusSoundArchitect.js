@@ -599,6 +599,35 @@ const FocusSoundArchitect = () => {
     setTimerStartedAt(null);
   }, []);
 
+  const recordListeningSession = useCallback(() => {
+    if (!recipe || !isPlaying) return;
+    const entry = {
+      id: Date.now(),
+      date: new Date().toISOString(),
+      name: recipe.soundscape_name || 'Unnamed',
+      layers: (recipe.layers || []).map(l => ({ type: l.type, volume: l.volume })),
+      durationMin: timerStartedAt ? Math.round((Date.now() - timerStartedAt) / 60000) : 0,
+      scene: activeScene?.id || null,
+    };
+    if (entry.durationMin >= 1) {
+      setListeningHistory(prev => [entry, ...prev].slice(0, 50));
+    }
+  }, [recipe, isPlaying, timerStartedAt, activeScene, setListeningHistory]);
+
+  const stopLayersWithHistory = useCallback(() => {
+    recordListeningSession();
+    stopLayers();
+  }, [recordListeningSession, stopLayers]);
+
+  const stopScene = useCallback(() => {
+    stopLayers();
+    setActiveScene(null);
+    setScenePhaseIdx(0);
+    setSceneStartedAt(null);
+    setScenePhaseStartedAt(null);
+    clearInterval(sceneTimerRef.current);
+  }, [stopLayers]);
+
   const startAudio = useCallback(async (recipeData) => {
     stopLayers();
     let ctx = ctxRef.current;
@@ -798,14 +827,6 @@ const FocusSoundArchitect = () => {
     }
   }, [now, activeScene, scenePhaseIdx, scenePhaseStartedAt, isPlaying, advanceScenePhase]);
 
-  const stopScene = useCallback(() => {
-    stopLayers();
-    setActiveScene(null);
-    setScenePhaseIdx(0);
-    setSceneStartedAt(null);
-    setScenePhaseStartedAt(null);
-    clearInterval(sceneTimerRef.current);
-  }, [stopLayers]);
 
   // Scene progress calculations
   const sceneProgress = activeScene && sceneStartedAt ? (() => {
@@ -825,30 +846,6 @@ const FocusSoundArchitect = () => {
   })() : null;
 
   // ═══════════════════════════════════════
-  // LISTENING HISTORY
-  // ═══════════════════════════════════════
-
-  const recordListeningSession = useCallback(() => {
-    if (!recipe || !isPlaying) return;
-    const entry = {
-      id: Date.now(),
-      date: new Date().toISOString(),
-      name: recipe.soundscape_name || 'Unnamed',
-      layers: (recipe.layers || []).map(l => ({ type: l.type, volume: l.volume })),
-      durationMin: timerStartedAt ? Math.round((Date.now() - timerStartedAt) / 60000) : 0,
-      scene: activeScene?.id || null,
-    };
-    if (entry.durationMin >= 1) {
-      setListeningHistory(prev => [entry, ...prev].slice(0, 50));
-    }
-  }, [recipe, isPlaying, timerStartedAt, activeScene, setListeningHistory]);
-
-  // Record when stopping
-  const stopLayersWithHistory = useCallback(() => {
-    recordListeningSession();
-    stopLayers();
-  }, [recordListeningSession, stopLayers]);
-
   // ═══════════════════════════════════════
   // LISTENING STATS
   // ═══════════════════════════════════════

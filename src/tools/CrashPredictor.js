@@ -1,892 +1,858 @@
-import React, { useState, useEffect } from 'react';
-import { Battery, TrendingDown, AlertTriangle, Moon, Activity, Loader2, Calendar, Check, X, Save, ChevronDown, ChevronUp, BarChart3, Clock } from 'lucide-react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
+import { usePersistentState } from '../hooks/usePersistentState';
+import { CopyBtn, PrintBtn, ActionBar } from '../components/ActionButtons';
+
+// ─── Reusable sub-components ────────────────────────────────────────
+
+const Slider = ({ label, emoji, value, onChange, min = 1, max = 10, lowLabel, highLabel, c }) => (
+  <div>
+    <label className={`block text-sm font-medium ${c.label} mb-2 flex items-center justify-between`}>
+      <span>{label} {emoji}</span>
+      <span className={`text-2xl font-bold ${c.text}`}>{value}</span>
+    </label>
+    <input type="range" min={min} max={max} value={value}
+      onChange={(e) => onChange(Number(e.target.value))}
+      className="w-full h-2 rounded-lg appearance-none cursor-pointer accent-red-600" />
+    <div className="flex justify-between text-xs mt-1">
+      <span className={c.textMuted}>{lowLabel}</span>
+      <span className={c.textMuted}>{highLabel}</span>
+    </div>
+  </div>
+);
+
+const CheckGroup = ({ items, selected, onChange, activeClass, c }) => (
+  <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+    {items.map(({ key, label, icon }) => (
+      <label key={key}
+        className={`flex items-center gap-2 p-2.5 border-2 rounded-lg cursor-pointer transition-colors text-sm ${
+          selected[key] ? activeClass : `${c.chipBase} hover:${c.chipHover}`}`}>
+        <input type="checkbox" checked={!!selected[key]} onChange={() => onChange(key)}
+          className="w-3.5 h-3.5 rounded accent-red-600" />
+        <span>{icon ? `${icon} ` : ''}{label}</span>
+      </label>
+    ))}
+  </div>
+);
+
+const Section = ({ id, title, icon, expanded, onToggle, children, c, badge }) => (
+  <div className={`${c.card} border rounded-xl shadow-lg p-5`}>
+    <button onClick={() => onToggle(id)} className={`flex items-center gap-2 w-full text-left ${expanded ? 'mb-4' : ''}`}>
+      <span className="text-lg">{icon}</span>
+      <h3 className={`text-lg font-bold ${c.text} flex-1`}>{title}</h3>
+      {badge && <span className="text-xs px-2 py-0.5 rounded-full bg-red-500 text-white font-bold">{badge}</span>}
+      <span className={c.textMuted}>{expanded ? '▲' : '▼'}</span>
+    </button>
+    {expanded && children}
+  </div>
+);
+
+// ─── Main component ─────────────────────────────────────────────────
 
 const CrashPredictor = () => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { theme } = useTheme();
   const isDark = theme === 'dark';
 
-  // Theme-aware colors (warning red/orange)
   const c = {
     bg: isDark ? 'bg-zinc-900' : 'bg-gradient-to-br from-red-50 via-orange-50 to-yellow-50',
     card: isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-red-200',
     cardAlt: isDark ? 'bg-zinc-700 border-zinc-600' : 'bg-red-50 border-red-200',
-    
     input: isDark
       ? 'bg-zinc-900 border-zinc-700 text-zinc-50 placeholder:text-zinc-500 focus:border-red-500 focus:ring-red-500/20'
       : 'bg-white border-red-300 text-red-900 placeholder:text-red-400 focus:border-red-600 focus:ring-red-100',
-    
     text: isDark ? 'text-zinc-50' : 'text-red-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-red-700',
     textMuted: isDark ? 'text-zinc-400' : 'text-red-600',
     label: isDark ? 'text-zinc-200' : 'text-red-800',
-    
-    btnPrimary: isDark
-      ? 'bg-red-600 hover:bg-red-700 text-white'
-      : 'bg-red-600 hover:bg-red-700 text-white',
-    btnSecondary: isDark
-      ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-50'
-      : 'bg-red-100 hover:bg-red-200 text-red-900',
-    
-    urgent: isDark
-      ? 'bg-red-900/30 border-red-700 text-red-200'
-      : 'bg-red-100 border-red-400 text-red-900',
-    high: isDark
-      ? 'bg-orange-900/30 border-orange-700 text-orange-200'
-      : 'bg-orange-100 border-orange-400 text-orange-900',
-    moderate: isDark
-      ? 'bg-yellow-900/30 border-yellow-700 text-yellow-200'
-      : 'bg-yellow-100 border-yellow-400 text-yellow-900',
-    low: isDark
-      ? 'bg-green-900/30 border-green-700 text-green-200'
-      : 'bg-green-100 border-green-400 text-green-900',
+    btnPrimary: isDark ? 'bg-red-600 hover:bg-red-700 text-white' : 'bg-red-600 hover:bg-red-700 text-white',
+    btnSecondary: isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-50' : 'bg-red-100 hover:bg-red-200 text-red-900',
+    chipBase: isDark ? 'border-zinc-700' : 'border-red-200',
+    chipHover: isDark ? 'border-zinc-600' : 'border-red-300',
+    chipActive: isDark ? 'border-red-500 bg-red-900/20' : 'border-red-500 bg-red-50',
+    chipOrange: isDark ? 'border-orange-500 bg-orange-900/20' : 'border-orange-500 bg-orange-50',
+    chipPurple: isDark ? 'border-purple-500 bg-purple-900/20' : 'border-purple-500 bg-purple-50',
+    urgent: isDark ? 'bg-red-900/30 border-red-700 text-red-200' : 'bg-red-100 border-red-400 text-red-900',
+    high: isDark ? 'bg-orange-900/30 border-orange-700 text-orange-200' : 'bg-orange-100 border-orange-400 text-orange-900',
+    moderate: isDark ? 'bg-yellow-900/30 border-yellow-700 text-yellow-200' : 'bg-yellow-100 border-yellow-400 text-yellow-900',
+    low: isDark ? 'bg-green-900/30 border-green-700 text-green-200' : 'bg-green-100 border-green-400 text-green-900',
+    escalGreen: isDark ? 'bg-green-800/50 border-green-600 text-green-200' : 'bg-green-50 border-green-400 text-green-900',
+    escalYellow: isDark ? 'bg-yellow-800/50 border-yellow-600 text-yellow-200' : 'bg-yellow-50 border-yellow-400 text-yellow-900',
+    escalOrange: isDark ? 'bg-orange-800/50 border-orange-600 text-orange-200' : 'bg-orange-50 border-orange-400 text-orange-900',
+    escalRed: isDark ? 'bg-red-800/50 border-red-600 text-red-200' : 'bg-red-50 border-red-400 text-red-900',
   };
 
-  // Mode
-  const [mode, setMode] = useState('checkin'); // 'checkin' or 'analysis'
-
-  // Daily check-in state
-  const [currentEntry, setCurrentEntry] = useState({
-    date: new Date().toISOString().split('T')[0],
-    energy: 5,
-    sleep: 5,
-    stress: 5,
-    activities: {
-      work: false,
-      social: false,
-      exercise: false,
-      rest: false,
-      obligations: false,
-    },
-    physicalSymptoms: {
-      headache: false,
-      fatigue: false,
-      tension: false,
-      appetiteChanges: false,
-      sleepIssues: false,
-    },
-    warningSigns: {
-      irritability: false,
-      brainFog: false,
-      difficultyDeciding: false,
-      cryingEasily: false,
-      withdrawing: false,
-    },
+  // ─── Blank entry ───
+  const blankEntry = (date) => ({
+    date: date || new Date().toISOString().split('T')[0],
+    energy: 5, sleep: 5, stress: 5, mood: 5,
+    activities: { work: false, social: false, exercise: false, rest: false, obligations: false },
+    physicalSymptoms: { headache: false, fatigue: false, tension: false, appetiteChanges: false, sleepIssues: false },
+    warningSigns: { irritability: false, brainFog: false, difficultyDeciding: false, cryingEasily: false, withdrawing: false },
+    customSymptoms: [], caffeine: 0, alcohol: 0, medications: '',
+    menstrualPhase: 'na', notes: '',
+    biometrics: { hrv: '', restingHR: '', sleepHours: '', steps: '' },
+    weather: { condition: '', barometricPressure: '' },
+    calendarContext: '',
   });
 
-  // Stored logs (localStorage)
-  const [logs, setLogs] = useState([]);
-
-  // Analysis results
+  // ─── State ───
+  const [mode, setMode] = useState('dashboard');
+  const [quickMode, setQuickMode] = useState(false);
+  const [currentEntry, setCurrentEntry] = useState(blankEntry());
+  const [logs, setLogs] = usePersistentState('crashpredictor-logs', []);
+  const [customSymptoms, setCustomSymptoms] = usePersistentState('crashpredictor-custom-symptoms', []);
+  const [emergencyContacts, setEmergencyContacts] = usePersistentState('crashpredictor-contacts', []);
+  const [analysisHistory, setAnalysisHistory] = usePersistentState('crashpredictor-analysis-history', []);
+  const [recoveryGoals, setRecoveryGoals] = usePersistentState('crashpredictor-goals', []);
+  const [experiments, setExperiments] = usePersistentState('crashpredictor-experiments', []);
+  const [patterns, setPatterns] = usePersistentState('crashpredictor-patterns', null);
+  const [customThresholds, setCustomThresholds] = usePersistentState('crashpredictor-thresholds', []);
+  const [dismissedAlerts, setDismissedAlerts] = useState([]);
   const [analysis, setAnalysis] = useState(null);
   const [error, setError] = useState('');
   const [expandedSections, setExpandedSections] = useState({
-    pattern: true,
-    warnings: true,
-    interventions: true,
-    capacity: true,
-    crashed: false,
-    interoception: true,
+    pattern: true, warnings: true, interventions: true, capacity: true,
+    crashed: false, interoception: true, escalation: true, recovery: false,
+    estimate: true, medCorrelation: false, biometricAnalysis: false,
+    weatherAnalysis: false, cycleAnalysis: false, crossTools: false,
   });
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [editingLogIndex, setEditingLogIndex] = useState(null);
+  const [dismissedReminder, setDismissedReminder] = useState(false);
+  const [newCustomSymptom, setNewCustomSymptom] = useState('');
+  const [newContactName, setNewContactName] = useState('');
+  const [newContactRel, setNewContactRel] = useState('');
+  const [newGoalText, setNewGoalText] = useState('');
+  const [showBiometrics, setShowBiometrics] = useState(false);
+  const [showWeather, setShowWeather] = useState(false);
+  const [showCalendar, setShowCalendar] = useState(false);
+  const [patternsLoading, setPatternsLoading] = useState(false);
+  const [showPartnerPreview, setShowPartnerPreview] = useState(false);
+  const [newExpIntervention, setNewExpIntervention] = useState('');
+  const [newExpDays, setNewExpDays] = useState(7);
+  const [newThresholdMetric, setNewThresholdMetric] = useState('energy');
+  const [newThresholdOp, setNewThresholdOp] = useState('<');
+  const [newThresholdVal, setNewThresholdVal] = useState(4);
+  const [newThresholdDays, setNewThresholdDays] = useState(3);
 
-  // Load logs from localStorage on mount
-  useEffect(() => {
-    const stored = localStorage.getItem('crashPredictorLogs');
-    if (stored) {
-      setLogs(JSON.parse(stored));
+  // ─── Computed ───
+  const todayStr = new Date().toISOString().split('T')[0];
+  const checkedInToday = logs.some(l => l.date === todayStr);
+
+  const streak = useMemo(() => {
+    if (logs.length === 0) return 0;
+    const sorted = [...logs].sort((a, b) => b.date.localeCompare(a.date));
+    let count = 0;
+    const start = new Date();
+    if (!checkedInToday) start.setDate(start.getDate() - 1);
+    for (let i = 0; i < 60; i++) {
+      const d = new Date(start); d.setDate(d.getDate() - i);
+      if (sorted.some(l => l.date === d.toISOString().split('T')[0])) count++; else break;
     }
-  }, []);
+    return count;
+  }, [logs, checkedInToday]);
 
-  // Save log entry
+  // ════════════════════════════════════════════════════════════════════
+  // FEATURE 1: PREDICTIVE ALERTS — client-side pattern detection
+  // ════════════════════════════════════════════════════════════════════
+  const predictiveAlerts = useMemo(() => {
+    if (logs.length < 2) return [];
+    const sorted = [...logs].sort((a, b) => a.date.localeCompare(b.date));
+    const recent = sorted.slice(-7);
+    const alerts = [];
+    const last = recent[recent.length - 1];
+
+    // Declining energy 3+ days
+    if (recent.length >= 3) {
+      let declining = 0;
+      for (let i = recent.length - 1; i >= 1; i--) {
+        if (recent[i].energy < recent[i - 1].energy) declining++; else break;
+      }
+      if (declining >= 2) {
+        alerts.push({ id: 'energy-decline', severity: declining >= 4 ? 'red' : 'orange',
+          icon: '📉', message: `Energy has dropped ${declining + 1} days in a row (${recent[recent.length - declining - 1]?.energy || '?'} → ${last.energy}).`,
+          action: 'Run full analysis or schedule rest now.' });
+      }
+    }
+
+    // High stress sustained
+    const highStressDays = recent.filter(l => l.stress >= 7).length;
+    if (highStressDays >= 3) {
+      alerts.push({ id: 'high-stress', severity: highStressDays >= 5 ? 'red' : 'orange',
+        icon: '😰', message: `Stress 7+ for ${highStressDays} of the last ${recent.length} days.`,
+        action: 'Cancel non-essential commitments today.' });
+    }
+
+    // Poor sleep sustained
+    const poorSleepDays = recent.filter(l => l.sleep <= 4).length;
+    if (poorSleepDays >= 3) {
+      alerts.push({ id: 'poor-sleep', severity: 'orange',
+        icon: '😴', message: `Sleep quality ≤4 for ${poorSleepDays} recent days.`,
+        action: 'Prioritize sleep tonight — no screens 1hr before bed.' });
+    }
+
+    // No rest days
+    if (recent.length >= 5 && recent.filter(l => !l.activities?.rest).length >= 5) {
+      alerts.push({ id: 'no-rest', severity: 'orange',
+        icon: '🛋️', message: `No rest days in your last ${recent.length} days.`,
+        action: 'Block time for rest before the weekend.' });
+    }
+
+    // High caffeine + poor sleep
+    if (last && last.caffeine >= 4 && last.sleep <= 5) {
+      alerts.push({ id: 'caffeine-sleep', severity: 'yellow',
+        icon: '☕', message: `${last.caffeine} caffeine + sleep ${last.sleep}/10 yesterday.`,
+        action: 'Cut caffeine after noon today.' });
+    }
+
+    // Accumulating warning signs
+    if (last) {
+      const warnCount = Object.values(last.warningSigns || {}).filter(Boolean).length + (last.customSymptoms || []).filter(s => s.active).length;
+      if (warnCount >= 3) {
+        alerts.push({ id: 'warning-signs', severity: 'red',
+          icon: '⚠️', message: `${warnCount} warning signs active in your last check-in.`,
+          action: 'Your body is talking. Run analysis now.' });
+      }
+    }
+
+    // Custom thresholds
+    customThresholds.forEach(t => {
+      const vals = recent.slice(-t.days);
+      const breaches = vals.filter(l => {
+        const v = l[t.metric] ?? 5;
+        return t.op === '<' ? v < t.value : v > t.value;
+      }).length;
+      if (breaches >= t.days) {
+        alerts.push({ id: `custom-${t.metric}-${t.value}`, severity: 'orange',
+          icon: '🎯', message: `Custom: ${t.metric} ${t.op} ${t.value} for ${breaches} days straight.`,
+          action: 'You set this threshold because it matters.' });
+      }
+    });
+
+    return alerts.filter(a => !dismissedAlerts.includes(a.id));
+  }, [logs, customThresholds, dismissedAlerts]);
+
+  // ════════════════════════════════════════════════════════════════════
+  // FEATURE 6: A/B EXPERIMENT RESULTS
+  // ════════════════════════════════════════════════════════════════════
+  const experimentResults = useMemo(() => {
+    return experiments.map(exp => {
+      const durationDays = exp.durationDays || 7;
+      const beforeStart = new Date(exp.startDate);
+      beforeStart.setDate(beforeStart.getDate() - durationDays);
+      const beforeStr = beforeStart.toISOString().split('T')[0];
+      const endDate = exp.endDate || todayStr;
+
+      const beforeLogs = logs.filter(l => l.date >= beforeStr && l.date < exp.startDate);
+      const duringLogs = logs.filter(l => l.date >= exp.startDate && l.date <= endDate);
+
+      const avg = (arr, key) => arr.length === 0 ? null : (arr.reduce((s, l) => s + (l[key] || 5), 0) / arr.length).toFixed(1);
+
+      const comparison = {};
+      ['energy', 'sleep', 'stress', 'mood'].forEach(m => {
+        const b = avg(beforeLogs, m), d = avg(duringLogs, m);
+        if (b !== null && d !== null) {
+          const diff = (d - b).toFixed(1);
+          comparison[m] = { before: b, during: d, diff: Number(diff), improved: m === 'stress' ? diff < 0 : diff > 0 };
+        }
+      });
+
+      return { ...exp, comparison, daysLogged: duringLogs.length, isComplete: exp.endDate && exp.endDate <= todayStr, beforeCount: beforeLogs.length };
+    });
+  }, [experiments, logs, todayStr]);
+
+  // ─── Helpers ───
+  const toggleSection = (key) => setExpandedSections(prev => ({ ...prev, [key]: !prev[key] }));
+  const getEnergyEmoji = (v) => v >= 9 ? '🔋' : v >= 7 ? '😊' : v >= 5 ? '😐' : v >= 3 ? '😓' : '🪫';
+  const getMoodEmoji = (v) => v >= 9 ? '🤩' : v >= 7 ? '😊' : v >= 5 ? '😐' : v >= 3 ? '😔' : '😞';
+  const getRiskColor = (l) => l === 'high' || l === 'critical' ? c.urgent : l === 'moderate' ? c.high : l === 'low' ? c.low : c.moderate;
+  const getPriorityColor = (p) => p === 'urgent' || p === 'critical' ? c.urgent : p === 'high' ? c.high : p === 'medium' ? c.moderate : c.low;
+  const getEscalColor = (lv) => lv === 'green' ? c.escalGreen : lv === 'yellow' ? c.escalYellow : lv === 'orange' ? c.escalOrange : lv === 'red' ? c.escalRed : c.escalYellow;
+  const getEscalEmoji = (lv) => lv === 'green' ? '🟢' : lv === 'yellow' ? '🟡' : lv === 'orange' ? '🟠' : lv === 'red' ? '🔴' : '🟡';
+  const alertColor = (s) => s === 'red' ? c.urgent : s === 'orange' ? c.high : c.moderate;
+
+  const updateEntry = (f, v) => setCurrentEntry(prev => ({ ...prev, [f]: v }));
+  const updateNested = (g, k) => setCurrentEntry(prev => ({ ...prev, [g]: { ...prev[g], [k]: !prev[g][k] } }));
+  const updateBiometric = (k, v) => setCurrentEntry(prev => ({ ...prev, biometrics: { ...prev.biometrics, [k]: v } }));
+  const updateWeather = (k, v) => setCurrentEntry(prev => ({ ...prev, weather: { ...prev.weather, [k]: v } }));
+
+  // ─── Save handler ───
   const handleSaveEntry = () => {
-    const newLog = {
-      ...currentEntry,
-      timestamp: new Date().toISOString(),
-    };
-
-    // Check if entry for today already exists
-    const existingIndex = logs.findIndex(log => log.date === currentEntry.date);
-    let updatedLogs;
-    
-    if (existingIndex >= 0) {
-      // Update existing entry
-      updatedLogs = [...logs];
-      updatedLogs[existingIndex] = newLog;
-    } else {
-      // Add new entry
-      updatedLogs = [...logs, newLog];
-    }
-
-    // Sort by date (newest first)
-    updatedLogs.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-    setLogs(updatedLogs);
-    localStorage.setItem('crashPredictorLogs', JSON.stringify(updatedLogs));
-    
+    const activeCustom = customSymptoms.map(s => ({ label: s.label, active: currentEntry.customSymptoms?.some(cs => cs.label === s.label && cs.active) || false }));
+    const newLog = { ...currentEntry, customSymptoms: activeCustom, timestamp: new Date().toISOString() };
+    let updated;
+    if (editingLogIndex !== null) { updated = [...logs]; updated[editingLogIndex] = newLog; setEditingLogIndex(null); }
+    else { const i = logs.findIndex(l => l.date === currentEntry.date); if (i >= 0) { updated = [...logs]; updated[i] = newLog; } else { updated = [...logs, newLog]; } }
+    updated.sort((a, b) => b.date.localeCompare(a.date));
+    setLogs(updated);
     setSaveSuccess(true);
     setTimeout(() => setSaveSuccess(false), 2000);
   };
 
-  // Analyze patterns
+  // ─── Analyze handler ───
   const handleAnalyze = async () => {
-    if (logs.length < 3) {
-      setError('Need at least 3 days of logs for pattern analysis. Keep checking in!');
-      return;
-    }
-
-    setError('');
-    setAnalysis(null);
-
+    if (logs.length < 3) { setError('Need at least 3 days of logs.'); return; }
+    setError(''); setAnalysis(null);
     try {
       const data = await callToolEndpoint('crash-predictor-analyze', {
-        logs: logs.slice(0, 30), // Last 30 days max
+        logs: logs.slice(0, 30), emergencyContacts, calendarContext: logs[0]?.calendarContext || '', userLanguage: navigator.language,
       });
-      
-      setAnalysis(data);
-      setMode('analysis');
-      setExpandedSections(prev => ({
-        ...prev,
-        pattern: true,
-        warnings: true,
-        interventions: true,
-        capacity: true,
-        interoception: true,
-      }));
-    } catch (err) {
-      setError(err.message || 'Failed to analyze patterns. Please try again.');
-    }
+      setAnalysis(data); setMode('analysis');
+      setAnalysisHistory(prev => [{ date: todayStr, timestamp: new Date().toISOString(),
+        riskLevel: data.burnout_risk_assessment?.current_risk_level || 'unknown',
+        riskColor: data.burnout_risk_assessment?.risk_color || 'yellow',
+        daysUntilCrash: data.burnout_risk_assessment?.days_until_likely_crash,
+        trajectory: data.burnout_risk_assessment?.trajectory,
+        escalationLevel: data.intervention_escalation?.current_level || 'yellow',
+      }, ...prev].slice(0, 50));
+    } catch (err) { setError(err.message || 'Analysis failed.'); }
   };
 
-  // Quick crash check
-  const handleQuickCheck = () => {
-    if (logs.length === 0) {
-      setError('No logs yet. Complete a daily check-in first!');
-      return;
-    }
-
-    // Use last 3 entries for quick check
-    const recentLogs = logs.slice(0, 3);
-    const avgEnergy = recentLogs.reduce((sum, log) => sum + log.energy, 0) / recentLogs.length;
-    const avgSleep = recentLogs.reduce((sum, log) => sum + log.sleep, 0) / recentLogs.length;
-    const avgStress = recentLogs.reduce((sum, log) => sum + log.stress, 0) / recentLogs.length;
-
-    let message = '';
-    if (avgEnergy < 4 || avgSleep < 5 || avgStress > 7) {
-      message = '⚠️ Quick check shows concerning patterns. Run full analysis for details.';
-    } else if (avgEnergy < 6 || avgSleep < 6 || avgStress > 6) {
-      message = '⚠️ Moderate concerns detected. Consider running full analysis.';
-    } else {
-      message = '✓ Recent patterns look stable. Keep monitoring.';
-    }
-
-    alert(message);
+  // ─── Pattern detection ───
+  const handleDetectPatterns = async () => {
+    if (logs.length < 14) { setError('Need 14+ days for pattern detection.'); return; }
+    setPatternsLoading(true); setError('');
+    try {
+      const data = await callToolEndpoint('crash-predictor-patterns', { logs: logs.slice(0, 90), userLanguage: navigator.language });
+      setPatterns({ ...data, detectedAt: todayStr });
+    } catch (err) { setError(err.message || 'Pattern detection failed.'); }
+    finally { setPatternsLoading(false); }
   };
 
-  const toggleSection = (section) => {
-    setExpandedSections(prev => ({
-      ...prev,
-      [section]: !prev[section]
-    }));
+  // ─── Edit / Delete ───
+  const handleEditLog = (idx) => {
+    const log = logs[idx];
+    setCurrentEntry({ ...blankEntry(log.date), ...log,
+      biometrics: { hrv: '', restingHR: '', sleepHours: '', steps: '', ...(log.biometrics || {}) },
+      weather: { condition: '', barometricPressure: '', ...(log.weather || {}) },
+    });
+    setEditingLogIndex(idx); setMode('checkin'); setQuickMode(false);
+  };
+  const handleDeleteLog = (idx) => { if (window.confirm('Delete this entry?')) setLogs(prev => prev.filter((_, i) => i !== idx)); };
+
+  // ─── Custom symptoms ───
+  const addCustomSymptom = () => { const t = newCustomSymptom.trim(); if (!t || customSymptoms.some(s => s.label === t)) return; setCustomSymptoms(prev => [...prev, { label: t }]); setNewCustomSymptom(''); };
+  const removeCustomSymptom = (label) => setCustomSymptoms(prev => prev.filter(s => s.label !== label));
+  const toggleCustomSymptom = (label) => {
+    setCurrentEntry(prev => { const syms = prev.customSymptoms || []; const ex = syms.find(s => s.label === label);
+      if (ex) return { ...prev, customSymptoms: syms.map(s => s.label === label ? { ...s, active: !s.active } : s) };
+      return { ...prev, customSymptoms: [...syms, { label, active: true }] }; });
   };
 
-  const getEnergyEmoji = (level) => {
-    if (level >= 9) return '🔋';
-    if (level >= 7) return '😊';
-    if (level >= 5) return '😐';
-    if (level >= 3) return '😓';
-    return '🪫';
+  // ─── Contacts ───
+  const addContact = () => { if (!newContactName.trim()) return; setEmergencyContacts(prev => [...prev, { name: newContactName.trim(), relationship: newContactRel.trim() || 'Contact' }]); setNewContactName(''); setNewContactRel(''); };
+  const removeContact = (idx) => setEmergencyContacts(prev => prev.filter((_, i) => i !== idx));
+
+  // ─── Goals ───
+  const addGoal = () => { if (!newGoalText.trim()) return; setRecoveryGoals(prev => [...prev, { text: newGoalText.trim(), done: false, created: todayStr }]); setNewGoalText(''); };
+  const toggleGoal = (idx) => setRecoveryGoals(prev => prev.map((g, i) => i === idx ? { ...g, done: !g.done } : g));
+  const removeGoal = (idx) => setRecoveryGoals(prev => prev.filter((_, i) => i !== idx));
+
+  // ─── Experiments ───
+  const startExperiment = () => {
+    if (!newExpIntervention.trim()) return;
+    const end = new Date(); end.setDate(end.getDate() + newExpDays);
+    setExperiments(prev => [...prev, { id: Date.now(), intervention: newExpIntervention.trim(), startDate: todayStr, endDate: end.toISOString().split('T')[0], durationDays: newExpDays, active: true }]);
+    setNewExpIntervention('');
+  };
+  const endExperiment = (id) => setExperiments(prev => prev.map(e => e.id === id ? { ...e, endDate: todayStr, active: false } : e));
+  const removeExperiment = (id) => setExperiments(prev => prev.filter(e => e.id !== id));
+
+  // ─── Custom thresholds ───
+  const addThreshold = () => { setCustomThresholds(prev => [...prev, { metric: newThresholdMetric, op: newThresholdOp, value: newThresholdVal, days: newThresholdDays }]); };
+  const removeThreshold = (idx) => setCustomThresholds(prev => prev.filter((_, i) => i !== idx));
+
+  // ─── Build full text ───
+  const buildFullText = useCallback(() => {
+    if (!analysis) return '';
+    const L = ['CRASH PREDICTOR — ANALYSIS REPORT', `Date: ${todayStr}`, ''];
+    const b = analysis.burnout_risk_assessment;
+    if (b) L.push(`RISK: ${(b.current_risk_level||'').toUpperCase()} (${b.confidence||'—'}%)`, `Days to crash: ${b.days_until_likely_crash||'—'}`, `Trajectory: ${b.trajectory||'—'}`, '');
+    const e = analysis.intervention_escalation;
+    if (e) L.push(`ALERT: ${(e.current_level||'').toUpperCase()}`, `Why: ${e.why_this_level||''}`, '');
+    if (analysis.your_crash_pattern) { L.push('PATTERN', analysis.your_crash_pattern.pattern_recognition||'', ''); (analysis.your_crash_pattern.identified_indicators||[]).forEach(i => L.push(`  • ${i}`)); L.push(''); }
+    (analysis.warning_signs_present||[]).forEach(w => L.push(`⚠️ ${w.sign}: ${w.current_status} (${w.urgency})`));
+    (analysis.preventive_interventions||[]).forEach(i => { L.push(`[${(i.priority||'').toUpperCase()}] ${i.action}`); if (i.why) L.push(`  ${i.why}`); L.push(''); });
+    const r = analysis.personalized_recovery_estimate;
+    if (r) L.push('RECOVERY MATH', `Act now: ${r.if_you_act_now||''}`, `Wait: ${r.if_you_wait_1_week||''}`, `Crash: ${r.if_you_crash_completely||''}`, r.cost_benefit||'', '');
+    L.push('', '— Generated by DeftBrain · deftbrain.com');
+    return L.join('\n');
+  }, [analysis, todayStr]);
+
+  // ─── Partner summary ───
+  const buildPartnerSummary = useCallback(() => {
+    const la = analysisHistory[0];
+    const rec = [...logs].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 3);
+    const avgE = rec.length ? (rec.reduce((s, l) => s + l.energy, 0) / rec.length).toFixed(1) : '?';
+    return [
+      '📊 Crash Predictor — Partner Update', `Date: ${todayStr}`, '',
+      `Streak: ${streak > 0 ? `${streak} days` : 'not consistent'}`, `Energy: ${avgE}/10`,
+      la ? `Risk: ${(la.riskLevel||'?').toUpperCase()} (${la.date})` : 'No analysis yet',
+      la ? `Alert: ${getEscalEmoji(la.escalationLevel)} ${(la.escalationLevel||'?').toUpperCase()}` : '',
+      '', 'Check on me if you don\'t hear from me.', '', '— Generated by DeftBrain · deftbrain.com',
+    ].filter(Boolean).join('\n');
+  }, [analysisHistory, logs, streak, todayStr]);
+
+  // ─── TrendChart ───
+  const TrendChart = ({ compact }) => {
+    const sorted = [...logs].sort((a, b) => a.date.localeCompare(b.date)).slice(compact ? -7 : -21);
+    if (sorted.length < 2) return <p className={`text-sm ${c.textMuted} text-center py-3`}>Need 2+ days</p>;
+    const w = 100, h = compact ? 30 : 50, pad = 2;
+    const xStep = (w - pad * 2) / (sorted.length - 1);
+    const yScale = (v) => h - pad - ((v - 1) / 9) * (h - pad * 2);
+    const makePath = (key) => sorted.map((l, i) => `${i === 0 ? 'M' : 'L'}${pad + i * xStep},${yScale(l[key] || 5)}`).join(' ');
+    const stressPath = sorted.map((l, i) => `${i === 0 ? 'M' : 'L'}${pad + i * xStep},${yScale(11 - (l.stress || 5))}`).join(' ');
+    return (
+      <div>
+        <svg viewBox={`0 0 ${w} ${h}`} className="w-full" style={{ maxHeight: compact ? 100 : 180 }}>
+          {!compact && [0,2,4,6,8,10].map(v => <line key={v} x1={pad} x2={w-pad} y1={yScale(v)} y2={yScale(v)} stroke={isDark?'#3f3f46':'#fecaca'} strokeWidth="0.3" />)}
+          <path d={makePath('energy')} fill="none" stroke="#eab308" strokeWidth={compact?'1':'0.8'} />
+          <path d={makePath('sleep')} fill="none" stroke="#3b82f6" strokeWidth={compact?'1':'0.8'} />
+          <path d={stressPath} fill="none" stroke="#ef4444" strokeWidth={compact?'1':'0.8'} strokeDasharray="1.5,1" />
+          <path d={makePath('mood')} fill="none" stroke="#a855f7" strokeWidth={compact?'1':'0.8'} />
+        </svg>
+        {!compact && <div className="flex flex-wrap gap-3 justify-center mt-2 text-xs">
+          <span><span style={{color:'#eab308'}}>●</span> Energy</span><span><span style={{color:'#3b82f6'}}>●</span> Sleep</span>
+          <span><span style={{color:'#ef4444'}}>●</span> Stress <span className={c.textMuted}>(inv.)</span></span><span><span style={{color:'#a855f7'}}>●</span> Mood</span>
+        </div>}
+      </div>
+    );
   };
 
-  const getRiskColor = (level) => {
-    switch(level) {
-      case 'high': return c.urgent;
-      case 'moderate': return c.high;
-      case 'low': return c.low;
-      default: return c.moderate;
-    }
+  const AnalysisHistoryChart = () => {
+    const recent = analysisHistory.slice(0, 15).reverse();
+    if (recent.length < 1) return null;
+    const barW = 100 / Math.max(recent.length, 1);
+    const lvl = (l) => l === 'critical' ? 4 : l === 'high' ? 3 : l === 'moderate' ? 2 : 1;
+    const clr = (l) => l === 'critical' || l === 'high' ? '#ef4444' : l === 'moderate' ? '#f59e0b' : '#22c55e';
+    return <svg viewBox="0 0 100 40" className="w-full" style={{maxHeight:120}}>{recent.map((a,i)=>{const h=(lvl(a.riskLevel)/4)*32;return<g key={i}><rect x={i*barW+barW*.15} y={36-h} width={barW*.7} height={h} rx="1" fill={clr(a.riskLevel)} opacity=".8"/><text x={i*barW+barW/2} y={39} textAnchor="middle" fontSize="2.5" fill={isDark?'#a1a1aa':'#991b1b'}>{a.date.slice(5)}</text></g>})}</svg>;
   };
 
-  const getPriorityColor = (priority) => {
-    switch(priority) {
-      case 'urgent': return c.urgent;
-      case 'high': return c.high;
-      case 'medium': return c.moderate;
-      default: return c.low;
-    }
+  const EscalMini = ({ level }) => (
+    <div className="flex gap-1">{['green','yellow','orange','red'].map(l=><div key={l} className={`flex-1 h-2.5 rounded-full transition-all ${l===level?'ring-2 ring-offset-1 scale-y-125':'opacity-30'} ${l==='green'?'bg-green-500 ring-green-400':l==='yellow'?'bg-yellow-400 ring-yellow-300':l==='orange'?'bg-orange-500 ring-orange-400':'bg-red-600 ring-red-400'}`}/>)}</div>
+  );
+
+  const CrossTools = ({ level }) => {
+    const tools = [];
+    if (level === 'red' || level === 'orange') { tools.push({ id:'CrisisPrioritizer',icon:'🚨',label:'Crisis Prioritizer',desc:'Triage what matters now' }); tools.push({ id:'FreezeStateUnblocker',icon:'🧊',label:'Freeze State Unblocker',desc:'Can\'t move? Start here' }); }
+    if (level !== 'green') { tools.push({ id:'DopamineMenuBuilder',icon:'🎯',label:'Dopamine Menu',desc:'Low-energy feel-good activities' }); tools.push({ id:'BrainStateDeejay',icon:'🎵',label:'Brain State Deejay',desc:'Music for your energy' }); }
+    tools.push({ id:'SleepDebt',icon:'😴',label:'Sleep Debt',desc:'Check sleep balance' }); tools.push({ id:'BurnoutBreadcrumbTracker',icon:'🔥',label:'Burnout Breadcrumbs',desc:'Track smaller patterns' });
+    return <div className="grid grid-cols-1 md:grid-cols-2 gap-2">{tools.map(t=><a key={t.id} href={`/${t.id}`} target="_blank" rel="noopener noreferrer" className={`${c.cardAlt} border rounded-lg p-3 hover:opacity-80 transition-opacity block`}><div className="flex items-center gap-2"><span>{t.icon}</span><div className="flex-1 min-w-0"><p className={`text-sm font-semibold ${c.text}`}>{t.label}</p><p className={`text-xs ${c.textMuted} truncate`}>{t.desc}</p></div><span className="text-xs">→</span></div></a>)}</div>;
   };
 
+  // ────────────────────────────────────────────────────────────────────
+  // RENDER
+  // ────────────────────────────────────────────────────────────────────
   return (
-    <div className={`min-h-screen ${c.bg} py-8 px-4`}>
-      <div className="max-w-4xl mx-auto space-y-6">
-        
-        {/* Header */}
-        <div className={`${c.card} border rounded-xl shadow-lg p-6 transition-colors duration-200`}>
-          <div className="flex items-center gap-3 mb-4">
-            <div>
-              <h2 className={`text-2xl font-bold ${c.text}`}>Crash Predictor ⚠️</h2>
-              <p className={`text-sm ${c.textMuted}`}>Track patterns and prevent burnout before it happens</p>
-            </div>
-          </div>
+    <div className={`min-h-screen ${c.bg} py-6 px-4`}>
+      <div className="max-w-4xl mx-auto space-y-4">
 
-          {/* Important Info */}
-          <div className={`${c.urgent} border-l-4 rounded-r-lg p-4`}>
-            <div className="flex items-start gap-2">
-              <Battery className="w-4 h-4 flex-shrink-0 mt-0.5" />
-              <div>
-                <h3 className="font-bold text-sm mb-1">For People Who Push Through Everything</h3>
-                <p className="text-xs">
-                  This tool recognizes YOUR crash patterns before YOU do. It's for people who mask symptoms, 
-                  have poor interoception, or can't trust their own assessment. Let the data speak.
-                </p>
-              </div>
-            </div>
-          </div>
+        {/* PREDICTIVE ALERTS */}
+        {predictiveAlerts.length > 0 && <div className="space-y-2">{predictiveAlerts.map(a => (
+          <div key={a.id} className={`${alertColor(a.severity)} border-2 rounded-xl p-4 flex items-start gap-3`}>
+            <span className="text-xl flex-shrink-0">{a.icon}</span>
+            <div className="flex-1 min-w-0"><p className="text-sm font-bold">{a.message}</p><p className="text-xs mt-0.5">{a.action}</p></div>
+            <button onClick={() => setDismissedAlerts(prev => [...prev, a.id])} className="text-xs opacity-60 hover:opacity-100 flex-shrink-0">✕</button>
+          </div>))}</div>}
 
-          {/* Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4">
-            <div className={`${c.cardAlt} border rounded-lg p-3`}>
-              <p className={`text-xs ${c.textMuted}`}>Days Logged</p>
-              <p className={`text-2xl font-bold ${c.text}`}>{logs.length}</p>
-            </div>
-            <div className={`${c.cardAlt} border rounded-lg p-3`}>
-              <p className={`text-xs ${c.textMuted}`}>Today's Check-in</p>
-              <p className={`text-2xl font-bold ${c.text}`}>
-                {logs.some(l => l.date === new Date().toISOString().split('T')[0]) ? '✓' : '—'}
-              </p>
-            </div>
-            <div className={`${c.cardAlt} border rounded-lg p-3`}>
-              <p className={`text-xs ${c.textMuted}`}>Streak</p>
-              <p className={`text-2xl font-bold ${c.text}`}>{logs.length > 0 ? '🔥' : '—'}</p>
-            </div>
-            <div className={`${c.cardAlt} border rounded-lg p-3`}>
-              <button
-                onClick={handleQuickCheck}
-                className={`text-xs ${c.btnSecondary} px-3 py-1 rounded w-full`}
-              >
-                Quick Check
-              </button>
-            </div>
-          </div>
+        {/* MODE TABS */}
+        <div className={`${c.card} border rounded-xl shadow-lg p-2`}>
+          <div className="grid grid-cols-4 gap-1.5">{[
+            { key:'dashboard',icon:'🏠',label:'Dashboard' }, { key:'checkin',icon:'📅',label:'Check-In' },
+            { key:'analysis',icon:'📊',label:'Analysis',disabled:logs.length<3 }, { key:'history',icon:'📋',label:'History' },
+          ].map(tab => <button key={tab.key} onClick={()=>!tab.disabled&&setMode(tab.key)} disabled={tab.disabled}
+            className={`p-2 border-2 rounded-lg transition-colors text-center ${mode===tab.key?c.chipActive:`${c.chipBase} hover:${c.chipHover}`} disabled:opacity-40 disabled:cursor-not-allowed`}>
+            <span className="text-lg block">{tab.icon}</span><span className={`text-xs font-semibold ${c.text}`}>{tab.label}</span>
+          </button>)}</div>
         </div>
 
-        {/* Mode Toggle */}
-        <div className={`${c.card} border rounded-xl shadow-lg p-6`}>
-          <div className="grid grid-cols-2 gap-4">
-            <button
-              onClick={() => setMode('checkin')}
-              className={`p-4 border-2 rounded-lg transition-colors ${
-                mode === 'checkin'
-                  ? isDark
-                    ? 'border-red-500 bg-red-900/20'
-                    : 'border-red-500 bg-red-50'
-                  : isDark
-                    ? 'border-zinc-700 hover:border-zinc-600'
-                    : 'border-red-200 hover:border-red-300'
-              }`}
-            >
-              <Calendar className={`w-6 h-6 mx-auto mb-2 ${mode === 'checkin' ? 'text-red-600' : c.textMuted}`} />
-              <h4 className={`font-semibold ${c.text} mb-1`}>Daily Check-In</h4>
-              <p className={`text-xs ${c.textMuted}`}>Log today's status</p>
-            </button>
-            
-            <button
-              onClick={() => setMode('analysis')}
-              disabled={logs.length < 3}
-              className={`p-4 border-2 rounded-lg transition-colors ${
-                mode === 'analysis'
-                  ? isDark
-                    ? 'border-red-500 bg-red-900/20'
-                    : 'border-red-500 bg-red-50'
-                  : isDark
-                    ? 'border-zinc-700 hover:border-zinc-600'
-                    : 'border-red-200 hover:border-red-300'
-              } disabled:opacity-50 disabled:cursor-not-allowed`}
-            >
-              <BarChart3 className={`w-6 h-6 mx-auto mb-2 ${mode === 'analysis' ? 'text-red-600' : c.textMuted}`} />
-              <h4 className={`font-semibold ${c.text} mb-1`}>Pattern Analysis</h4>
-              <p className={`text-xs ${c.textMuted}`}>
-                {logs.length < 3 ? `Need ${3 - logs.length} more days` : 'View trends'}
-              </p>
-            </button>
-          </div>
-        </div>
+        {error && <div className={`${c.urgent} border rounded-lg p-3`}><p className="text-sm">{error}</p></div>}
 
-        {/* Daily Check-In Mode */}
-        {mode === 'checkin' && (
-          <div className={`${c.card} border rounded-xl shadow-lg p-6`}>
-            <h3 className={`text-lg font-bold ${c.text} mb-4`}>Today's Check-In</h3>
-            
-            <div className="space-y-6">
-              
-              {/* Energy Level */}
-              <div>
-                <label className={`block text-sm font-medium ${c.label} mb-2 flex items-center justify-between`}>
-                  <span>Energy Level {getEnergyEmoji(currentEntry.energy)}</span>
-                  <span className={`text-2xl font-bold ${c.text}`}>{currentEntry.energy}</span>
-                </label>
-                <input
-                  type="range"
-                  min="1"
-                  max="10"
-                  value={currentEntry.energy}
-                  onChange={(e) => setCurrentEntry(prev => ({ ...prev, energy: Number(e.target.value) }))}
-                  className="w-full h-2 bg-red-200 rounded-lg appearance-none cursor-pointer"
-                />
-                <div className="flex justify-between text-xs mt-1">
-                  <span className={c.textMuted}>Depleted</span>
-                  <span className={c.textMuted}>Full</span>
+        {/* ═══════════ DASHBOARD ═══════════ */}
+        {mode === 'dashboard' && (
+          <div className="space-y-4">
+            <div className={`${c.card} border rounded-xl shadow-lg p-5`}>
+              <div className="flex items-center justify-between mb-3">
+                <h2 className={`text-xl font-bold ${c.text}`}>⚠️ Crash Predictor</h2>
+                <span className={`text-sm ${c.textMuted}`}>{todayStr}</span>
+              </div>
+              {analysisHistory.length > 0 ? (
+                <div className="space-y-3">
+                  <EscalMini level={analysisHistory[0].escalationLevel} />
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className={`${c.cardAlt} border rounded-lg p-3 text-center`}><p className={`text-xs ${c.textMuted}`}>Risk</p><p className={`text-lg font-bold ${c.text} uppercase`}>{analysisHistory[0].riskLevel}</p></div>
+                    <div className={`${c.cardAlt} border rounded-lg p-3 text-center`}><p className={`text-xs ${c.textMuted}`}>Days to Crash</p><p className={`text-lg font-bold ${c.text}`}>{analysisHistory[0].daysUntilCrash??'—'}</p></div>
+                    <div className={`${c.cardAlt} border rounded-lg p-3 text-center`}><p className={`text-xs ${c.textMuted}`}>Trajectory</p><p className={`text-sm font-bold ${c.text} capitalize`}>{analysisHistory[0].trajectory||'—'}</p></div>
+                  </div>
+                  <p className={`text-xs ${c.textMuted} text-center`}>Last analysis: {analysisHistory[0].date}</p>
                 </div>
-              </div>
-
-              {/* Sleep Quality */}
-              <div>
-                <label className={`block text-sm font-medium ${c.label} mb-2 flex items-center justify-between`}>
-                  <span>Sleep Quality 😴</span>
-                  <span className={`text-2xl font-bold ${c.text}`}>{currentEntry.sleep}</span>
-                </label>
-                <input
-                  type="range"
-                  min="1"
-                  max="10"
-                  value={currentEntry.sleep}
-                  onChange={(e) => setCurrentEntry(prev => ({ ...prev, sleep: Number(e.target.value) }))}
-                  className="w-full h-2 bg-red-200 rounded-lg appearance-none cursor-pointer"
-                />
-                <div className="flex justify-between text-xs mt-1">
-                  <span className={c.textMuted}>Terrible</span>
-                  <span className={c.textMuted}>Excellent</span>
-                </div>
-              </div>
-
-              {/* Stress Level */}
-              <div>
-                <label className={`block text-sm font-medium ${c.label} mb-2 flex items-center justify-between`}>
-                  <span>Stress Level 😰</span>
-                  <span className={`text-2xl font-bold ${c.text}`}>{currentEntry.stress}</span>
-                </label>
-                <input
-                  type="range"
-                  min="1"
-                  max="10"
-                  value={currentEntry.stress}
-                  onChange={(e) => setCurrentEntry(prev => ({ ...prev, stress: Number(e.target.value) }))}
-                  className="w-full h-2 bg-red-200 rounded-lg appearance-none cursor-pointer"
-                />
-                <div className="flex justify-between text-xs mt-1">
-                  <span className={c.textMuted}>None</span>
-                  <span className={c.textMuted}>Extreme</span>
-                </div>
-              </div>
-
-              {/* Activities */}
-              <div>
-                <label className={`block text-sm font-medium ${c.label} mb-3`}>
-                  Activities today
-                </label>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                  {[
-                    { key: 'work', label: 'Work', icon: '💼' },
-                    { key: 'social', label: 'Social', icon: '👥' },
-                    { key: 'exercise', label: 'Exercise', icon: '💪' },
-                    { key: 'rest', label: 'Rest', icon: '🛋️' },
-                    { key: 'obligations', label: 'Obligations', icon: '📋' },
-                  ].map(({ key, label, icon }) => (
-                    <label
-                      key={key}
-                      className={`flex items-center gap-2 p-3 border-2 rounded-lg cursor-pointer transition-colors ${
-                        currentEntry.activities[key]
-                          ? isDark
-                            ? 'border-red-500 bg-red-900/20'
-                            : 'border-red-500 bg-red-50'
-                          : isDark
-                            ? 'border-zinc-700 hover:border-zinc-600'
-                            : 'border-red-200 hover:border-red-300'
-                      }`}
-                    >
-                      <input
-                        type="checkbox"
-                        checked={currentEntry.activities[key]}
-                        onChange={() => setCurrentEntry(prev => ({
-                          ...prev,
-                          activities: {
-                            ...prev.activities,
-                            [key]: !prev.activities[key]
-                          }
-                        }))}
-                        className="w-4 h-4 text-red-600 rounded focus:ring-2 focus:ring-red-500"
-                      />
-                      <span className="text-sm">{icon} {label}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              {/* Physical Symptoms */}
-              <div>
-                <label className={`block text-sm font-medium ${c.label} mb-3`}>
-                  Physical symptoms
-                </label>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                  {[
-                    { key: 'headache', label: 'Headache' },
-                    { key: 'fatigue', label: 'Fatigue' },
-                    { key: 'tension', label: 'Tension' },
-                    { key: 'appetiteChanges', label: 'Appetite changes' },
-                    { key: 'sleepIssues', label: 'Sleep issues' },
-                  ].map(({ key, label }) => (
-                    <label
-                      key={key}
-                      className={`flex items-center gap-2 p-3 border-2 rounded-lg cursor-pointer transition-colors ${
-                        currentEntry.physicalSymptoms[key]
-                          ? isDark
-                            ? 'border-orange-500 bg-orange-900/20'
-                            : 'border-orange-500 bg-orange-50'
-                          : isDark
-                            ? 'border-zinc-700 hover:border-zinc-600'
-                            : 'border-red-200 hover:border-red-300'
-                      }`}
-                    >
-                      <input
-                        type="checkbox"
-                        checked={currentEntry.physicalSymptoms[key]}
-                        onChange={() => setCurrentEntry(prev => ({
-                          ...prev,
-                          physicalSymptoms: {
-                            ...prev.physicalSymptoms,
-                            [key]: !prev.physicalSymptoms[key]
-                          }
-                        }))}
-                        className="w-4 h-4 text-orange-600 rounded focus:ring-2 focus:ring-orange-500"
-                      />
-                      <span className="text-sm">{label}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              {/* Warning Signs */}
-              <div>
-                <label className={`block text-sm font-medium ${c.label} mb-3`}>
-                  Warning signs (emotional/cognitive)
-                </label>
-                <div className="grid grid-cols-2 gap-3">
-                  {[
-                    { key: 'irritability', label: 'Irritability' },
-                    { key: 'brainFog', label: 'Brain fog' },
-                    { key: 'difficultyDeciding', label: 'Difficulty deciding' },
-                    { key: 'cryingEasily', label: 'Crying easily' },
-                    { key: 'withdrawing', label: 'Withdrawing' },
-                  ].map(({ key, label }) => (
-                    <label
-                      key={key}
-                      className={`flex items-center gap-2 p-3 border-2 rounded-lg cursor-pointer transition-colors ${
-                        currentEntry.warningSigns[key]
-                          ? isDark
-                            ? 'border-red-500 bg-red-900/20'
-                            : 'border-red-500 bg-red-50'
-                          : isDark
-                            ? 'border-zinc-700 hover:border-zinc-600'
-                            : 'border-red-200 hover:border-red-300'
-                      }`}
-                    >
-                      <input
-                        type="checkbox"
-                        checked={currentEntry.warningSigns[key]}
-                        onChange={() => setCurrentEntry(prev => ({
-                          ...prev,
-                          warningSigns: {
-                            ...prev.warningSigns,
-                            [key]: !prev.warningSigns[key]
-                          }
-                        }))}
-                        className="w-4 h-4 text-red-600 rounded focus:ring-2 focus:ring-red-500"
-                      />
-                      <span className="text-sm">{label}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex gap-3">
-                <button
-                  onClick={handleSaveEntry}
-                  className={`flex-1 ${c.btnPrimary} py-3 px-6 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2`}
-                >
-                  <Save className="w-5 h-5" />
-                  {saveSuccess ? 'Saved!' : 'Save Check-In'}
-                </button>
-                
-                {logs.length >= 3 && (
-                  <button
-                    onClick={handleAnalyze}
-                    disabled={loading}
-                    className={`${c.btnSecondary} py-3 px-6 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2`}
-                  >
-                    {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <BarChart3 className="w-5 h-5" />}
-                    Analyze
-                  </button>
-                )}
-              </div>
-
-              {saveSuccess && (
-                <div className={`${c.low} border rounded-lg p-3 text-center`}>
-                  <p className="text-sm font-semibold">✓ Check-in saved! Keep tracking daily.</p>
+              ) : (
+                <div className={`${c.cardAlt} border rounded-lg p-6 text-center`}>
+                  <p className={`text-lg ${c.textMuted} mb-1`}>No analysis yet</p>
+                  <p className={`text-sm ${c.textMuted}`}>{logs.length<3?`Log ${3-logs.length} more days`:'Ready to analyze!'}</p>
                 </div>
               )}
             </div>
-          </div>
-        )}
 
-        {/* Error */}
-        {error && (
-          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-lg p-4">
-            <p className="text-sm text-red-700 dark:text-red-300">{error}</p>
-          </div>
-        )}
+            <div className="grid grid-cols-3 gap-3">
+              <div className={`${c.card} border rounded-lg p-3 text-center`}><p className={`text-2xl font-bold ${c.text}`}>{streak>0?`🔥${streak}`:'—'}</p><p className={`text-xs ${c.textMuted}`}>Streak</p></div>
+              <div className={`${c.card} border rounded-lg p-3 text-center`}><p className={`text-2xl font-bold ${c.text}`}>{checkedInToday?'✅':'⬜'}</p><p className={`text-xs ${c.textMuted}`}>Today</p></div>
+              <div className={`${c.card} border rounded-lg p-3 text-center`}><p className={`text-2xl font-bold ${c.text}`}>{logs.length}</p><p className={`text-xs ${c.textMuted}`}>Logged</p></div>
+            </div>
 
-        {/* Analysis Results */}
-        {mode === 'analysis' && analysis && (
-          <div className="space-y-6">
-            
-            {/* Burnout Risk Assessment */}
-            {analysis.burnout_risk_assessment && (
-              <div className={`${c.card} border rounded-xl shadow-lg p-6`}>
-                <h3 className={`text-xl font-bold ${c.text} mb-4`}>Burnout Risk Assessment</h3>
-                
-                <div className={`${getRiskColor(analysis.burnout_risk_assessment.current_risk_level)} border-2 rounded-xl p-6 mb-4`}>
-                  <div className="text-center">
-                    <p className="text-sm font-medium mb-2">Current Risk Level</p>
-                    <p className="text-4xl font-bold uppercase mb-2">
-                      {analysis.burnout_risk_assessment.current_risk_level}
-                    </p>
-                    {analysis.burnout_risk_assessment.confidence && (
-                      <p className="text-sm opacity-75">
-                        {analysis.burnout_risk_assessment.confidence}% confidence
-                      </p>
-                    )}
-                  </div>
-                </div>
+            {logs.length >= 2 && <div className={`${c.card} border rounded-xl shadow-lg p-4`}><p className={`text-xs font-bold ${c.text} mb-2`}>7-Day Trend</p><TrendChart compact /></div>}
 
-                <div className="grid grid-cols-2 gap-4">
-                  {analysis.burnout_risk_assessment.days_until_likely_crash && (
-                    <div className={`${c.cardAlt} border rounded-lg p-4`}>
-                      <p className={`text-xs ${c.textMuted} mb-1`}>Days Until Likely Crash</p>
-                      <p className={`text-3xl font-bold ${c.text}`}>
-                        {analysis.burnout_risk_assessment.days_until_likely_crash}
-                      </p>
-                    </div>
-                  )}
-                  {analysis.burnout_risk_assessment.trajectory && (
-                    <div className={`${c.cardAlt} border rounded-lg p-4`}>
-                      <p className={`text-xs ${c.textMuted} mb-1`}>Trajectory</p>
-                      <p className={`text-lg font-bold ${c.text} capitalize`}>
-                        {analysis.burnout_risk_assessment.trajectory}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </div>
+            {analysis?.preventive_interventions?.length > 0 && (
+              <div className={`${c.card} border rounded-xl shadow-lg p-4`}><p className={`text-xs font-bold ${c.text} mb-2`}>🛡️ Top Priority</p>
+                {analysis.preventive_interventions.slice(0,2).map((i,idx) => <div key={idx} className={`${getPriorityColor(i.priority)} border rounded-lg p-3 ${idx>0?'mt-2':''}`}><p className="text-sm font-bold">{i.action}</p>{i.why&&<p className="text-xs mt-1">{i.why}</p>}</div>)}
+              </div>)}
+
+            {analysis?.recovery_protocol?.self_compassion_scripts?.length > 0 && (
+              <div className={`${c.low} border rounded-xl p-4 text-center`}><p className="text-sm font-semibold">💚 {analysis.recovery_protocol.self_compassion_scripts[Math.floor(Date.now()/86400000)%analysis.recovery_protocol.self_compassion_scripts.length]}</p></div>
             )}
 
-            {/* Crash Pattern */}
-            {analysis.your_crash_pattern && (
-              <div className={`${c.card} border rounded-xl shadow-lg p-6`}>
-                <button
-                  onClick={() => toggleSection('pattern')}
-                  className="flex items-center gap-2 mb-4 w-full"
-                >
-                  <TrendingDown className="w-5 h-5" />
-                  <h3 className={`text-xl font-bold ${c.text}`}>Your Crash Pattern</h3>
-                  {expandedSections.pattern ? (
-                    <ChevronUp className="w-5 h-5 ml-auto" />
-                  ) : (
-                    <ChevronDown className="w-5 h-5 ml-auto" />
-                  )}
-                </button>
-
-                {expandedSections.pattern && (
-                  <div className="space-y-4">
-                    {analysis.your_crash_pattern.pattern_recognition && (
-                      <div className={`${c.urgent} border rounded-lg p-4`}>
-                        <h4 className="font-semibold mb-2">Pattern Recognition:</h4>
-                        <p className="text-sm">{analysis.your_crash_pattern.pattern_recognition}</p>
-                      </div>
-                    )}
-
-                    {analysis.your_crash_pattern.identified_indicators && 
-                     analysis.your_crash_pattern.identified_indicators.length > 0 && (
-                      <div className={`${c.cardAlt} border rounded-lg p-4`}>
-                        <h4 className={`font-semibold ${c.text} mb-3`}>Your Crash Indicators:</h4>
-                        <ul className="space-y-2">
-                          {analysis.your_crash_pattern.identified_indicators.map((indicator, idx) => (
-                            <li key={idx} className={`text-sm ${c.textSecondary} flex items-start gap-2`}>
-                              <span className="text-red-500 mt-0.5">⚠️</span>
-                              <span>{indicator}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-
-                    {analysis.your_crash_pattern.current_status && (
-                      <div className={`${c.cardAlt} border rounded-lg p-4`}>
-                        <h4 className={`font-semibold ${c.text} mb-3`}>Current Status:</h4>
-                        <div className="space-y-2 text-sm">
-                          {Object.entries(analysis.your_crash_pattern.current_status).map(([key, value]) => (
-                            <div key={key} className="flex items-center justify-between">
-                              <span className="capitalize">{key}:</span>
-                              <span className={`font-semibold ${value.includes('below') || value.includes('deficit') ? 'text-red-600' : ''}`}>
-                                {value}
-                              </span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Warning Signs Present */}
-            {analysis.warning_signs_present && analysis.warning_signs_present.length > 0 && (
-              <div className={`${c.card} border rounded-xl shadow-lg p-6`}>
-                <button
-                  onClick={() => toggleSection('warnings')}
-                  className="flex items-center gap-2 mb-4 w-full"
-                >
-                  <AlertTriangle className="w-5 h-5 text-red-500" />
-                  <h3 className={`text-xl font-bold ${c.text}`}>Warning Signs Present</h3>
-                  {expandedSections.warnings ? (
-                    <ChevronUp className="w-5 h-5 ml-auto" />
-                  ) : (
-                    <ChevronDown className="w-5 h-5 ml-auto" />
-                  )}
-                </button>
-
-                {expandedSections.warnings && (
-                  <div className="space-y-3">
-                    {analysis.warning_signs_present.map((warning, idx) => (
-                      <div key={idx} className={`${c.high} border rounded-lg p-4`}>
-                        <h4 className="font-bold mb-2">{warning.sign}</h4>
-                        {warning.your_typical_timeline && (
-                          <p className="text-sm mb-1">
-                            <strong>Your timeline:</strong> {warning.your_typical_timeline}
-                          </p>
-                        )}
-                        {warning.current_status && (
-                          <p className="text-sm">
-                            <strong>Status:</strong> {warning.current_status}
-                          </p>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Preventive Interventions */}
-            {analysis.preventive_interventions && analysis.preventive_interventions.length > 0 && (
-              <div className={`${c.card} border rounded-xl shadow-lg p-6`}>
-                <button
-                  onClick={() => toggleSection('interventions')}
-                  className="flex items-center gap-2 mb-4 w-full"
-                >
-                  <Activity className="w-5 h-5" />
-                  <h3 className={`text-xl font-bold ${c.text}`}>Preventive Actions (Do These Now)</h3>
-                  {expandedSections.interventions ? (
-                    <ChevronUp className="w-5 h-5 ml-auto" />
-                  ) : (
-                    <ChevronDown className="w-5 h-5 ml-auto" />
-                  )}
-                </button>
-
-                {expandedSections.interventions && (
-                  <div className="space-y-4">
-                    {analysis.preventive_interventions.map((intervention, idx) => (
-                      <div key={idx} className={`${getPriorityColor(intervention.priority)} border-2 rounded-lg p-4`}>
-                        <div className="flex items-start justify-between mb-3">
-                          <h4 className="font-bold text-lg">{intervention.action}</h4>
-                          <span className="text-xs px-2 py-1 rounded bg-black/10 uppercase font-semibold">
-                            {intervention.priority}
-                          </span>
-                        </div>
-
-                        {intervention.why && (
-                          <p className="text-sm mb-2">
-                            <strong>Why:</strong> {intervention.why}
-                          </p>
-                        )}
-
-                        {intervention.how && (
-                          <p className="text-sm mb-2">
-                            <strong>How:</strong> {intervention.how}
-                          </p>
-                        )}
-
-                        {intervention.when && (
-                          <p className="text-sm mb-2">
-                            <strong>When:</strong> {intervention.when}
-                          </p>
-                        )}
-
-                        {intervention.resistance_you_might_feel && (
-                          <p className="text-sm mb-2">
-                            <strong>Resistance you might feel:</strong> {intervention.resistance_you_might_feel}
-                          </p>
-                        )}
-
-                        {intervention.reframe && (
-                          <div className="bg-black/10 rounded p-3 mt-3">
-                            <p className="text-sm font-semibold">💭 Reframe: {intervention.reframe}</p>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Capacity Reality Check */}
-            {analysis.capacity_reality_check && (
-              <div className={`${c.card} border rounded-xl shadow-lg p-6`}>
-                <button
-                  onClick={() => toggleSection('capacity')}
-                  className="flex items-center gap-2 mb-4 w-full"
-                >
-                  <Battery className="w-5 h-5" />
-                  <h3 className={`text-xl font-bold ${c.text}`}>Capacity Reality Check</h3>
-                  {expandedSections.capacity ? (
-                    <ChevronUp className="w-5 h-5 ml-auto" />
-                  ) : (
-                    <ChevronDown className="w-5 h-5 ml-auto" />
-                  )}
-                </button>
-
-                {expandedSections.capacity && (
-                  <div className="space-y-3">
-                    {analysis.capacity_reality_check.your_current_capacity && (
-                      <div className={`${c.high} border rounded-lg p-4`}>
-                        <p className="font-bold mb-2">Your Current Capacity:</p>
-                        <p className="text-lg">{analysis.capacity_reality_check.your_current_capacity}</p>
-                      </div>
-                    )}
-
-                    {analysis.capacity_reality_check.what_this_means && (
-                      <div className={`${c.cardAlt} border rounded-lg p-4`}>
-                        <p className={`text-sm ${c.textSecondary}`}>
-                          <strong>What this means:</strong> {analysis.capacity_reality_check.what_this_means}
-                        </p>
-                      </div>
-                    )}
-
-                    {analysis.capacity_reality_check.permission && (
-                      <div className={`${c.low} border rounded-lg p-4`}>
-                        <p className="text-sm font-semibold">
-                          ✓ {analysis.capacity_reality_check.permission}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* If You're Already Crashed */}
-            {analysis.if_youre_already_crashed && (
-              <div className={`${c.card} border rounded-xl shadow-lg p-6`}>
-                <button
-                  onClick={() => toggleSection('crashed')}
-                  className="flex items-center gap-2 mb-4 w-full"
-                >
-                  <X className="w-5 h-5" />
-                  <h3 className={`text-xl font-bold ${c.text}`}>If You're Already Crashed</h3>
-                  {expandedSections.crashed ? (
-                    <ChevronUp className="w-5 h-5 ml-auto" />
-                  ) : (
-                    <ChevronDown className="w-5 h-5 ml-auto" />
-                  )}
-                </button>
-
-                {expandedSections.crashed && (
-                  <div className="space-y-4">
-                    {analysis.if_youre_already_crashed.recognition && (
-                      <div className={`${c.urgent} border rounded-lg p-4`}>
-                        <p className="font-semibold">{analysis.if_youre_already_crashed.recognition}</p>
-                      </div>
-                    )}
-
-                    {analysis.if_youre_already_crashed.immediate_actions && 
-                     analysis.if_youre_already_crashed.immediate_actions.length > 0 && (
-                      <div className={`${c.cardAlt} border rounded-lg p-4`}>
-                        <h4 className={`font-semibold ${c.text} mb-3`}>Immediate Actions:</h4>
-                        <ul className="space-y-1">
-                          {analysis.if_youre_already_crashed.immediate_actions.map((action, idx) => (
-                            <li key={idx} className={`text-sm ${c.textSecondary}`}>• {action}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-
-                    {analysis.if_youre_already_crashed.recovery_timeline && (
-                      <div className={`${c.cardAlt} border rounded-lg p-4`}>
-                        <p className={`text-sm ${c.textSecondary}`}>
-                          <strong>Recovery timeline:</strong> {analysis.if_youre_already_crashed.recovery_timeline}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Poor Interoception Support */}
-            {analysis.poor_interoception_support && (
-              <div className={`${c.card} border rounded-xl shadow-lg p-6`}>
-                <button
-                  onClick={() => toggleSection('interoception')}
-                  className="flex items-center gap-2 mb-4 w-full"
-                >
-                  <Check className="w-5 h-5" />
-                  <h3 className={`text-xl font-bold ${c.text}`}>Trust the Data (Not Your Feelings)</h3>
-                  {expandedSections.interoception ? (
-                    <ChevronUp className="w-5 h-5 ml-auto" />
-                  ) : (
-                    <ChevronDown className="w-5 h-5 ml-auto" />
-                  )}
-                </button>
-
-                {expandedSections.interoception && (
-                  <div className={`${c.high} border rounded-lg p-4`}>
-                    {analysis.poor_interoception_support.objective_data && (
-                      <p className="text-sm mb-3">
-                        <strong>Objective Data:</strong> {analysis.poor_interoception_support.objective_data}
-                      </p>
-                    )}
-                    {analysis.poor_interoception_support.trust_the_data && (
-                      <p className="text-sm font-semibold">
-                        ⚠️ {analysis.poor_interoception_support.trust_the_data}
-                      </p>
-                    )}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Back to Check-in */}
-            <div className="flex justify-center">
-              <button
-                onClick={() => setMode('checkin')}
-                className={`${c.btnSecondary} py-3 px-6 rounded-lg font-semibold`}
-              >
-                Back to Check-In
+            <div className="grid grid-cols-2 gap-3">
+              <button onClick={()=>{setMode('checkin');setQuickMode(true);}} className={`${c.btnPrimary} py-3 rounded-xl font-semibold text-sm`}>⚡ Quick Check-In</button>
+              <button onClick={()=>logs.length>=3?handleAnalyze():setMode('checkin')} disabled={loading} className={`${c.btnSecondary} py-3 rounded-xl font-semibold text-sm`}>
+                {loading?<span className="animate-spin inline-block">⏳</span>:'📊'} {logs.length>=3?'Analyze':'Start Logging'}
               </button>
+            </div>
+          </div>
+        )}
+
+        {/* ═══════════ CHECK-IN ═══════════ */}
+        {mode === 'checkin' && (
+          <div className="space-y-4">
+            <div className="flex justify-center gap-2">
+              <button onClick={()=>setQuickMode(true)} className={`text-sm px-4 py-1.5 rounded-full border-2 transition-colors ${quickMode?c.chipActive:c.chipBase}`}>⚡ Quick (3-tap)</button>
+              <button onClick={()=>setQuickMode(false)} className={`text-sm px-4 py-1.5 rounded-full border-2 transition-colors ${!quickMode?c.chipActive:c.chipBase}`}>📋 Detailed</button>
+            </div>
+
+            {/* QUICK MODE */}
+            {quickMode && (
+              <div className={`${c.card} border rounded-xl shadow-lg p-5`}>
+                <h3 className={`text-lg font-bold ${c.text} mb-4 text-center`}>How are you right now?</h3>
+                {[{ key:'energy',label:'Energy',faces:['🪫','😓','😐','😊','🔋'] },
+                  { key:'sleep',label:'Sleep',faces:['😵','😴','😐','🙂','😌'] },
+                  { key:'stress',label:'Stress',faces:['😌','🙂','😐','😰','🤯'] }
+                ].map(({key,label,faces})=>(
+                  <div key={key} className="mb-5">
+                    <p className={`text-sm font-medium ${c.label} mb-2 text-center`}>{label}</p>
+                    <div className="flex justify-center gap-2">{faces.map((face,i)=>{
+                      const val=(i+1)*2; const sel=Math.ceil(currentEntry[key]/2)===(i+1);
+                      return <button key={i} onClick={()=>updateEntry(key,val)} className={`text-3xl p-2 rounded-xl border-2 transition-all ${sel?`${c.chipActive} scale-110`:`${c.chipBase} opacity-50 hover:opacity-80`}`}>{face}</button>;
+                    })}</div>
+                  </div>
+                ))}
+                <button onClick={handleSaveEntry} className={`w-full ${c.btnPrimary} py-3 rounded-xl font-semibold text-lg`}>
+                  {saveSuccess?'✅ Saved!':'💾 Save'}
+                </button>
+                {saveSuccess && <p className={`text-center text-sm ${c.textMuted} mt-2`}>✅ Logged! <button onClick={()=>setQuickMode(false)} className="underline">Add details →</button></p>}
+              </div>
+            )}
+
+            {/* DETAILED MODE */}
+            {!quickMode && (
+              <div className={`${c.card} border rounded-xl shadow-lg p-5`}>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className={`text-lg font-bold ${c.text}`}>{editingLogIndex!==null?'✏️ Edit':'📅 Check-In'}</h3>
+                  <input type="date" value={currentEntry.date} onChange={e=>updateEntry('date',e.target.value)} className={`${c.input} border rounded-lg px-3 py-1.5 text-sm`}/>
+                </div>
+                <div className="space-y-5">
+                  <Slider label="Energy" emoji={getEnergyEmoji(currentEntry.energy)} value={currentEntry.energy} onChange={v=>updateEntry('energy',v)} lowLabel="Depleted" highLabel="Full" c={c}/>
+                  <Slider label="Sleep" emoji="😴" value={currentEntry.sleep} onChange={v=>updateEntry('sleep',v)} lowLabel="Terrible" highLabel="Excellent" c={c}/>
+                  <Slider label="Stress" emoji="😰" value={currentEntry.stress} onChange={v=>updateEntry('stress',v)} lowLabel="None" highLabel="Extreme" c={c}/>
+                  <Slider label="Mood" emoji={getMoodEmoji(currentEntry.mood)} value={currentEntry.mood} onChange={v=>updateEntry('mood',v)} lowLabel="Awful" highLabel="Great" c={c}/>
+
+                  <div><label className={`block text-sm font-medium ${c.label} mb-2`}>💼 Activities</label>
+                    <CheckGroup items={[{key:'work',label:'Work',icon:'💼'},{key:'social',label:'Social',icon:'👥'},{key:'exercise',label:'Exercise',icon:'💪'},{key:'rest',label:'Rest',icon:'🛋️'},{key:'obligations',label:'Obligations',icon:'📋'}]}
+                      selected={currentEntry.activities} onChange={k=>updateNested('activities',k)} activeClass={c.chipActive} c={c}/></div>
+
+                  <div><label className={`block text-sm font-medium ${c.label} mb-2`}>🤕 Physical symptoms</label>
+                    <CheckGroup items={[{key:'headache',label:'Headache'},{key:'fatigue',label:'Fatigue'},{key:'tension',label:'Tension'},{key:'appetiteChanges',label:'Appetite changes'},{key:'sleepIssues',label:'Sleep issues'}]}
+                      selected={currentEntry.physicalSymptoms} onChange={k=>updateNested('physicalSymptoms',k)} activeClass={c.chipOrange} c={c}/></div>
+
+                  <div><label className={`block text-sm font-medium ${c.label} mb-2`}>⚠️ Warning signs</label>
+                    <CheckGroup items={[{key:'irritability',label:'Irritability'},{key:'brainFog',label:'Brain fog'},{key:'difficultyDeciding',label:'Can\'t decide'},{key:'cryingEasily',label:'Crying easily'},{key:'withdrawing',label:'Withdrawing'}]}
+                      selected={currentEntry.warningSigns} onChange={k=>updateNested('warningSigns',k)} activeClass={c.chipActive} c={c}/></div>
+
+                  {customSymptoms.length>0&&<div><label className={`block text-sm font-medium ${c.label} mb-2`}>🏷️ Your signals</label>
+                    <div className="flex flex-wrap gap-2">{customSymptoms.map(s=>{const a=currentEntry.customSymptoms?.some(cs=>cs.label===s.label&&cs.active);return<button key={s.label} onClick={()=>toggleCustomSymptom(s.label)} className={`text-sm px-3 py-1.5 rounded-full border-2 transition-colors ${a?c.chipPurple:c.chipBase}`}>{s.label}</button>})}</div></div>}
+                  <div className="flex gap-2"><input value={newCustomSymptom} onChange={e=>setNewCustomSymptom(e.target.value)} onKeyDown={e=>e.key==='Enter'&&addCustomSymptom()} placeholder="Add custom signal" className={`${c.input} border rounded-lg px-3 py-1.5 text-sm flex-1`}/><button onClick={addCustomSymptom} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-sm`}>➕</button></div>
+                  {customSymptoms.length>0&&<div className="flex flex-wrap gap-1">{customSymptoms.map(s=><span key={s.label} className={`text-xs ${c.textMuted}`}>{s.label} <button onClick={()=>removeCustomSymptom(s.label)} className="hover:text-red-500">✕</button></span>)}</div>}
+
+                  <div className={`${c.cardAlt} border rounded-lg p-4`}>
+                    <label className={`block text-sm font-medium ${c.label} mb-3`}>☕ Substances & Medications</label>
+                    <div className="grid grid-cols-2 gap-3 mb-3">
+                      <div><label className={`text-xs ${c.textMuted}`}>☕ Caffeine</label><input type="number" min="0" max="20" value={currentEntry.caffeine} onChange={e=>updateEntry('caffeine',Number(e.target.value))} className={`${c.input} border rounded-lg px-3 py-1.5 text-sm w-full mt-1`}/></div>
+                      <div><label className={`text-xs ${c.textMuted}`}>🍷 Alcohol</label><input type="number" min="0" max="20" value={currentEntry.alcohol} onChange={e=>updateEntry('alcohol',Number(e.target.value))} className={`${c.input} border rounded-lg px-3 py-1.5 text-sm w-full mt-1`}/></div>
+                    </div>
+                    <div><label className={`text-xs ${c.textMuted}`}>💊 Medications</label><input value={currentEntry.medications} onChange={e=>updateEntry('medications',e.target.value)} placeholder="Changes, missed doses" className={`${c.input} border rounded-lg px-3 py-1.5 text-sm w-full mt-1`}/></div>
+                  </div>
+
+                  <div><label className={`block text-sm font-medium ${c.label} mb-2`}>🩸 Cycle Phase</label>
+                    <div className="flex flex-wrap gap-2">{[{key:'na',label:'N/A'},{key:'menstrual',label:'Menstrual'},{key:'follicular',label:'Follicular'},{key:'ovulation',label:'Ovulation'},{key:'luteal',label:'Luteal'}].map(p=><button key={p.key} onClick={()=>updateEntry('menstrualPhase',p.key)} className={`text-sm px-3 py-1.5 rounded-full border-2 transition-colors ${currentEntry.menstrualPhase===p.key?c.chipActive:c.chipBase}`}>{p.label}</button>)}</div></div>
+
+                  <button onClick={()=>setShowBiometrics(!showBiometrics)} className={`text-sm font-medium ${c.label} flex items-center gap-1`}><span>📟 Biometrics</span><span className={c.textMuted}>(opt.)</span><span className="ml-1">{showBiometrics?'▲':'▼'}</span></button>
+                  {showBiometrics&&<div className="grid grid-cols-2 gap-3">{[{k:'hrv',l:'HRV (ms)',p:'45'},{k:'restingHR',l:'Resting HR',p:'68'},{k:'sleepHours',l:'Sleep Hours',p:'7'},{k:'steps',l:'Steps',p:'8000'}].map(f=><div key={f.k}><label className={`text-xs ${c.textMuted}`}>{f.l}</label><input type="number" step={f.k==='sleepHours'?'0.5':'1'} value={currentEntry.biometrics[f.k]} onChange={e=>updateBiometric(f.k,e.target.value)} placeholder={f.p} className={`${c.input} border rounded-lg px-3 py-1.5 text-sm w-full mt-1`}/></div>)}</div>}
+
+                  <button onClick={()=>setShowWeather(!showWeather)} className={`text-sm font-medium ${c.label} flex items-center gap-1`}><span>🌤️ Weather</span><span className={c.textMuted}>(opt.)</span><span className="ml-1">{showWeather?'▲':'▼'}</span></button>
+                  {showWeather&&<div className="grid grid-cols-2 gap-3">
+                    <div><label className={`text-xs ${c.textMuted}`}>Conditions</label><select value={currentEntry.weather.condition} onChange={e=>updateWeather('condition',e.target.value)} className={`${c.input} border rounded-lg px-3 py-1.5 text-sm w-full mt-1`}><option value="">Select...</option><option value="clear">☀️ Clear</option><option value="cloudy">☁️ Cloudy</option><option value="overcast">🌫️ Overcast</option><option value="rain">🌧️ Rain</option><option value="storm">⛈️ Storm</option><option value="snow">❄️ Snow</option><option value="pressure_drop">📉 Pressure Drop</option><option value="pressure_rise">📈 Pressure Rise</option></select></div>
+                    <div><label className={`text-xs ${c.textMuted}`}>Barometric (mb)</label><input type="number" value={currentEntry.weather.barometricPressure} onChange={e=>updateWeather('barometricPressure',e.target.value)} placeholder="1013" className={`${c.input} border rounded-lg px-3 py-1.5 text-sm w-full mt-1`}/></div>
+                  </div>}
+
+                  <button onClick={()=>setShowCalendar(!showCalendar)} className={`text-sm font-medium ${c.label} flex items-center gap-1`}><span>📅 Commitments</span><span className={c.textMuted}>(opt.)</span><span className="ml-1">{showCalendar?'▲':'▼'}</span></button>
+                  {showCalendar&&<textarea value={currentEntry.calendarContext} onChange={e=>updateEntry('calendarContext',e.target.value)} placeholder="What's on your plate this week?" rows={2} className={`${c.input} border rounded-lg px-3 py-2 text-sm w-full`}/>}
+
+                  <div><label className={`block text-sm font-medium ${c.label} mb-2`}>📝 Notes</label><textarea value={currentEntry.notes} onChange={e=>updateEntry('notes',e.target.value)} placeholder="Big deadline... fight with partner..." rows={2} className={`${c.input} border rounded-lg px-3 py-2 text-sm w-full`}/></div>
+
+                  <div className="flex gap-3">
+                    <button onClick={handleSaveEntry} className={`flex-1 ${c.btnPrimary} py-3 rounded-lg font-semibold`}>{saveSuccess?'✅ Saved!':editingLogIndex!==null?'💾 Update':'💾 Save'}</button>
+                    {editingLogIndex!==null&&<button onClick={()=>{setEditingLogIndex(null);setCurrentEntry(blankEntry());}} className={`${c.btnSecondary} py-3 px-4 rounded-lg`}>Cancel</button>}
+                    {logs.length>=3&&<button onClick={handleAnalyze} disabled={loading} className={`${c.btnSecondary} py-3 px-4 rounded-lg`}>{loading?<span className="animate-spin inline-block">⏳</span>:'📊'}</button>}
+                  </div>
+                  {saveSuccess&&<div className={`${c.low} border rounded-lg p-3 text-center`}><p className="text-sm font-semibold">✅ Saved!</p></div>}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ═══════════ ANALYSIS ═══════════ */}
+        {mode === 'analysis' && analysis && (
+          <div className="space-y-4">
+            <div className="flex justify-end"><ActionBar><CopyBtn content={buildFullText()} label="Copy Report"/><CopyBtn content={buildPartnerSummary()} label="Partner Summary"/><PrintBtn content={buildFullText()} title="Crash Predictor"/></ActionBar></div>
+
+            {analysis.burnout_risk_assessment && (
+              <div className={`${c.card} border rounded-xl shadow-lg p-5`}>
+                <h3 className={`text-lg font-bold ${c.text} mb-3`}>📉 Burnout Risk</h3>
+                <div className={`${getRiskColor(analysis.burnout_risk_assessment.current_risk_level)} border-2 rounded-xl p-5 mb-3`}>
+                  <div className="text-center"><p className="text-4xl font-bold uppercase">{analysis.burnout_risk_assessment.current_risk_level}</p>{analysis.burnout_risk_assessment.confidence&&<p className="text-sm opacity-75">{analysis.burnout_risk_assessment.confidence}% confidence</p>}</div>
+                </div>
+                <div className="grid grid-cols-3 gap-3">
+                  <div className={`${c.cardAlt} border rounded-lg p-3 text-center`}><p className={`text-xs ${c.textMuted}`}>Days</p><p className={`text-xl font-bold ${c.text}`}>{analysis.burnout_risk_assessment.days_until_likely_crash??'—'}</p></div>
+                  <div className={`${c.cardAlt} border rounded-lg p-3 text-center`}><p className={`text-xs ${c.textMuted}`}>Trajectory</p><p className={`text-sm font-bold ${c.text} capitalize`}>{analysis.burnout_risk_assessment.trajectory||'—'}</p></div>
+                  <div className={`${c.cardAlt} border rounded-lg p-3 text-center`}><p className={`text-xs ${c.textMuted}`}>Severity</p><p className={`text-sm font-bold ${c.text} capitalize`}>{analysis.burnout_risk_assessment.crash_severity_predicted||'—'}</p></div>
+                </div>
+              </div>
+            )}
+
+            {analysis.intervention_escalation && (
+              <div className={`${c.card} border rounded-xl shadow-lg p-5`}>
+                <div className="flex items-center gap-2 mb-3"><span className="text-lg">🚦</span><h3 className={`text-lg font-bold ${c.text}`}>Alert Level</h3></div>
+                <div className="flex gap-1 mb-3">{['green','yellow','orange','red'].map(l=><div key={l} className={`flex-1 h-3 rounded-full transition-all ${l===analysis.intervention_escalation.current_level?'ring-2 ring-offset-1 scale-y-125':'opacity-30'} ${l==='green'?'bg-green-500 ring-green-400':l==='yellow'?'bg-yellow-400 ring-yellow-300':l==='orange'?'bg-orange-500 ring-orange-400':'bg-red-600 ring-red-400'}`}/>)}</div>
+                <div className={`${getEscalColor(analysis.intervention_escalation.current_level)} border-2 rounded-lg p-4 mb-3`}>
+                  <p className="text-xl font-bold uppercase">{getEscalEmoji(analysis.intervention_escalation.current_level)} {analysis.intervention_escalation.current_level}</p>
+                  <p className="text-sm">{analysis.intervention_escalation.level_definitions?.[analysis.intervention_escalation.current_level]}</p>
+                </div>
+                {analysis.intervention_escalation.why_this_level&&<div className={`${c.cardAlt} border rounded-lg p-3 mb-2`}><p className={`text-sm ${c.textSecondary}`}><strong>Why:</strong> {analysis.intervention_escalation.why_this_level}</p></div>}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                  {analysis.intervention_escalation.escalation_triggers&&<div className={`${c.urgent} border rounded-lg p-3`}><p className="text-xs font-bold mb-1">⬆️ Escalates if:</p><p className="text-xs">{analysis.intervention_escalation.escalation_triggers}</p></div>}
+                  {analysis.intervention_escalation.de_escalation_criteria&&<div className={`${c.low} border rounded-lg p-3`}><p className="text-xs font-bold mb-1">⬇️ Improves when:</p><p className="text-xs">{analysis.intervention_escalation.de_escalation_criteria}</p></div>}
+                </div>
+              </div>
+            )}
+
+            {analysis.personalized_recovery_estimate && (
+              <div className={`${c.card} border rounded-xl shadow-lg p-5`}>
+                <h3 className={`text-lg font-bold ${c.text} mb-3`}>⏱️ The Math</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
+                  {[{k:'if_you_act_now',l:'✅ Act Now',cl:c.low},{k:'if_you_wait_1_week',l:'⚠️ Wait',cl:c.moderate},{k:'if_you_crash_completely',l:'🔴 Crash',cl:c.urgent}].map(s=><div key={s.k} className={`${s.cl} border rounded-lg p-3`}><p className="text-xs font-bold mb-1">{s.l}</p><p className="text-sm">{analysis.personalized_recovery_estimate[s.k]||'—'}</p></div>)}
+                </div>
+                {analysis.personalized_recovery_estimate.cost_benefit&&<div className={`${c.urgent} border-2 rounded-lg p-3`}><p className="text-sm font-bold">💡 {analysis.personalized_recovery_estimate.cost_benefit}</p></div>}
+              </div>
+            )}
+
+            <Section id="trend" title="Trend" icon="📈" expanded={expandedSections.trend!==false} onToggle={toggleSection} c={c}><TrendChart /></Section>
+
+            {analysis.your_crash_pattern&&<Section id="pattern" title="Your Crash Pattern" icon="📉" expanded={expandedSections.pattern} onToggle={toggleSection} c={c}>
+              <div className="space-y-3">
+                {analysis.your_crash_pattern.pattern_recognition&&<div className={`${c.urgent} border rounded-lg p-3`}><p className="text-sm">{analysis.your_crash_pattern.pattern_recognition}</p></div>}
+                {analysis.your_crash_pattern.identified_indicators?.length>0&&<div className={`${c.cardAlt} border rounded-lg p-3`}>{analysis.your_crash_pattern.identified_indicators.map((ind,i)=><p key={i} className={`text-sm ${c.textSecondary} mb-1`}>⚠️ {ind}</p>)}</div>}
+                {analysis.your_crash_pattern.current_status&&<div className={`${c.cardAlt} border rounded-lg p-3`}>{Object.entries(analysis.your_crash_pattern.current_status).map(([k,v])=><div key={k} className="flex justify-between text-sm mb-1"><span className={`${c.textSecondary} capitalize`}>{k.replace(/_/g,' ')}</span><span className={`font-semibold ${String(v).match(/critical|below|deficit|depleted/)?'text-red-500':''}`}>{v}</span></div>)}</div>}
+              </div>
+            </Section>}
+
+            {analysis.warning_signs_present?.length>0&&<Section id="warnings" title="Warning Signs" icon="⚠️" expanded={expandedSections.warnings} onToggle={toggleSection} c={c} badge={analysis.warning_signs_present.length}>
+              <div className="space-y-2">{analysis.warning_signs_present.map((w,i)=><div key={i} className={`${c.high} border rounded-lg p-3`}><h4 className="font-bold text-sm">{w.sign}</h4>{w.your_typical_timeline&&<p className="text-xs"><strong>Timeline:</strong> {w.your_typical_timeline}</p>}{w.current_status&&<p className="text-xs"><strong>Status:</strong> {w.current_status}</p>}{w.days_until_crash_if_persists&&<p className="text-xs font-bold mt-1">⏰ Crash in: {w.days_until_crash_if_persists}d</p>}</div>)}</div>
+            </Section>}
+
+            {analysis.medication_correlation&&<Section id="medCorrelation" title="Substance Correlation" icon="💊" expanded={expandedSections.medCorrelation} onToggle={toggleSection} c={c}>
+              <div className="space-y-2">{['caffeine_impact','alcohol_impact','medication_notes','substance_recommendation'].map(k=>{const v=analysis.medication_correlation[k];if(!v)return null;const labels={caffeine_impact:'☕ Caffeine',alcohol_impact:'🍷 Alcohol',medication_notes:'💊 Meds',substance_recommendation:'💡 Advice'};return<div key={k} className={`${k==='substance_recommendation'?c.low:c.cardAlt} border rounded-lg p-3`}><p className="text-xs font-bold mb-1">{labels[k]}</p><p className={`text-sm ${c.textSecondary}`}>{v}</p></div>})}</div>
+            </Section>}
+
+            {analysis.biometric_analysis&&<Section id="biometricAnalysis" title="Biometrics" icon="📟" expanded={expandedSections.biometricAnalysis} onToggle={toggleSection} c={c}>
+              <div className="space-y-2">{Object.entries(analysis.biometric_analysis).map(([k,v])=>v?<div key={k} className={`${c.cardAlt} border rounded-lg p-3`}><p className="text-xs font-bold mb-1 capitalize">{k.replace(/_/g,' ')}</p><p className={`text-sm ${c.textSecondary}`}>{v}</p></div>:null)}</div>
+            </Section>}
+
+            {analysis.preventive_interventions?.length>0&&<Section id="interventions" title="Do These Now" icon="🛡️" expanded={expandedSections.interventions} onToggle={toggleSection} c={c}>
+              <div className="space-y-3">{analysis.preventive_interventions.map((int,i)=><div key={i} className={`${getPriorityColor(int.priority)} border-2 rounded-lg p-4`}>
+                <div className="flex items-start justify-between mb-2"><h4 className="font-bold text-sm">{int.action}</h4><span className="text-xs px-2 py-0.5 rounded bg-black/10 uppercase font-semibold ml-2">{int.priority}</span></div>
+                {int.why&&<p className="text-xs mb-1"><strong>Why:</strong> {int.why}</p>}{int.how&&<p className="text-xs mb-1"><strong>How:</strong> {int.how}</p>}{int.when&&<p className="text-xs mb-1"><strong>When:</strong> {int.when}</p>}
+                {int.resistance_you_might_feel&&<p className="text-xs mb-1"><strong>Resistance:</strong> {int.resistance_you_might_feel}</p>}
+                {int.reframe&&<div className="bg-black/10 rounded p-2 mt-2"><p className="text-xs font-semibold">💭 {int.reframe}</p></div>}
+              </div>)}</div>
+            </Section>}
+
+            {analysis.capacity_reality_check&&<Section id="capacity" title="Capacity" icon="🔋" expanded={expandedSections.capacity} onToggle={toggleSection} c={c}>
+              <div className="space-y-2">
+                {analysis.capacity_reality_check.your_current_capacity&&<div className={`${c.high} border rounded-lg p-3`}><p className="font-bold text-sm">Capacity:</p><p>{analysis.capacity_reality_check.your_current_capacity}</p></div>}
+                {analysis.capacity_reality_check.what_this_means&&<div className={`${c.cardAlt} border rounded-lg p-3`}><p className={`text-sm ${c.textSecondary}`}>{analysis.capacity_reality_check.what_this_means}</p></div>}
+                {analysis.capacity_reality_check.permission&&<div className={`${c.low} border rounded-lg p-3`}><p className="text-sm font-semibold">✅ {analysis.capacity_reality_check.permission}</p></div>}
+              </div>
+            </Section>}
+
+            {analysis.if_youre_already_crashed&&<Section id="crashed" title="If Crashed" icon="💥" expanded={expandedSections.crashed} onToggle={toggleSection} c={c}>
+              <div className="space-y-3">
+                {analysis.if_youre_already_crashed.recognition&&<div className={`${c.urgent} border rounded-lg p-3`}><p className="text-sm font-semibold">{analysis.if_youre_already_crashed.recognition}</p></div>}
+                {analysis.if_youre_already_crashed.minimum_survival_tasks?.length>0&&<div className={`${c.low} border rounded-lg p-3`}><h4 className="font-semibold text-sm mb-2">🫶 Survival:</h4>{analysis.if_youre_already_crashed.minimum_survival_tasks.map((t,i)=><p key={i} className="text-sm mb-1">✓ {t}</p>)}</div>}
+                {analysis.if_youre_already_crashed.recovery_stages&&<div className={`${c.cardAlt} border rounded-lg p-3`}>{Object.entries(analysis.if_youre_already_crashed.recovery_stages).map(([k,v])=><div key={k} className="mb-2"><p className="text-xs font-bold capitalize">{k.replace(/_/g,' ')}</p><p className={`text-sm ${c.textSecondary}`}>{v}</p></div>)}</div>}
+                {analysis.if_youre_already_crashed.what_not_to_do&&<div className={`${c.urgent} border rounded-lg p-3`}><p className="text-xs font-bold mb-1">🚫</p><p className="text-sm">{analysis.if_youre_already_crashed.what_not_to_do}</p></div>}
+              </div>
+            </Section>}
+
+            {analysis.recovery_protocol&&<Section id="recovery" title="Recovery Protocol" icon="🛟" expanded={expandedSections.recovery} onToggle={toggleSection} c={c}>
+              <div className="space-y-3">
+                {analysis.recovery_protocol.who_to_notify?.length>0&&<div className={`${c.cardAlt} border rounded-lg p-3`}><h4 className={`font-semibold text-sm mb-2 ${c.text}`}>📱 Notify:</h4>{analysis.recovery_protocol.who_to_notify.map((n,i)=><div key={i} className={`${c.card} border rounded-lg p-3 mb-2`}><p className="text-xs font-bold mb-1">{n.person}—{n.when}</p><p className="text-sm italic mb-1">"{n.message}"</p><CopyBtn content={n.message} label="Copy"/></div>)}</div>}
+                {analysis.recovery_protocol.self_compassion_scripts?.length>0&&<div className={`${c.low} border rounded-lg p-3`}><h4 className="font-semibold text-sm mb-2">💚 Self-Compassion:</h4>{analysis.recovery_protocol.self_compassion_scripts.map((s,i)=><p key={i} className="text-sm mb-2 pl-2 border-l-2 border-green-400">{s}</p>)}</div>}
+                {analysis.recovery_protocol.relapse_prevention&&<div className={`${c.high} border rounded-lg p-3`}><h4 className="font-semibold text-sm mb-2">🔄 Relapse:</h4>{analysis.recovery_protocol.relapse_prevention.warning_signs_of_relapse&&<p className="text-xs mb-1"><strong>Watch:</strong> {analysis.recovery_protocol.relapse_prevention.warning_signs_of_relapse}</p>}{analysis.recovery_protocol.relapse_prevention.if_relapse_starting&&<p className="text-xs font-bold"><strong>Act:</strong> {analysis.recovery_protocol.relapse_prevention.if_relapse_starting}</p>}</div>}
+              </div>
+            </Section>}
+
+            {analysis.poor_interoception_support&&<Section id="interoception" title="Trust the Data" icon="📊" expanded={expandedSections.interoception} onToggle={toggleSection} c={c}>
+              <div className={`${c.high} border rounded-lg p-4 space-y-2`}>
+                {analysis.poor_interoception_support.objective_data&&<p className="text-sm"><strong>Data:</strong> {analysis.poor_interoception_support.objective_data}</p>}
+                {analysis.poor_interoception_support.trust_the_data&&<p className="text-sm font-semibold">⚠️ {analysis.poor_interoception_support.trust_the_data}</p>}
+                {analysis.poor_interoception_support.for_doubters&&<p className="text-sm italic">{analysis.poor_interoception_support.for_doubters}</p>}
+              </div>
+            </Section>}
+
+            <Section id="crossTools" title="Tools That Help" icon="🔗" expanded={expandedSections.crossTools} onToggle={toggleSection} c={c}>
+              <CrossTools level={analysis.intervention_escalation?.current_level||'yellow'}/>
+            </Section>
+
+            <div className={`${c.card} border-2 border-dashed rounded-xl p-4 text-center`}>
+              <p className={`text-sm ${c.textSecondary} mb-2`}>Took action? Track recovery.</p>
+              <button onClick={()=>{setCurrentEntry(blankEntry());setMode('checkin');setQuickMode(true);}} className={`${c.btnPrimary} px-6 py-2 rounded-lg text-sm font-semibold`}>🔄 Quick Check-In</button>
+            </div>
+          </div>
+        )}
+
+        {mode==='analysis'&&!analysis&&!loading&&(
+          <div className={`${c.card} border rounded-xl shadow-lg p-8 text-center`}><p className={`text-lg ${c.textMuted} mb-3`}>📊 No analysis yet</p>
+            <button onClick={handleAnalyze} disabled={loading||logs.length<3} className={`${c.btnPrimary} px-6 py-2 rounded-lg font-semibold disabled:opacity-50`}>{logs.length<3?`Need ${3-logs.length} more days`:'Run Analysis'}</button></div>
+        )}
+
+        {/* ═══════════ HISTORY ═══════════ */}
+        {mode === 'history' && (
+          <div className="space-y-4">
+            <div className={`${c.card} border rounded-xl shadow-lg p-5`}><h3 className={`text-sm font-bold ${c.text} mb-3`}>📈 Trends</h3><TrendChart/></div>
+
+            {analysisHistory.length>0&&<div className={`${c.card} border rounded-xl shadow-lg p-5`}><h3 className={`text-sm font-bold ${c.text} mb-3`}>📊 Risk History</h3><AnalysisHistoryChart/><div className="flex gap-3 justify-center mt-1 text-xs"><span><span style={{color:'#22c55e'}}>●</span> Low</span><span><span style={{color:'#f59e0b'}}>●</span> Moderate</span><span><span style={{color:'#ef4444'}}>●</span> High</span></div></div>}
+
+            {/* RECURRING PATTERNS */}
+            <div className={`${c.card} border rounded-xl shadow-lg p-5`}>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className={`text-sm font-bold ${c.text}`}>🔁 Recurring Patterns</h3>
+                <button onClick={handleDetectPatterns} disabled={patternsLoading||logs.length<14} className={`${c.btnSecondary} text-xs px-3 py-1.5 rounded-lg disabled:opacity-50`}>
+                  {patternsLoading?<span className="animate-spin inline-block">⏳</span>:logs.length<14?`Need ${14-logs.length} more`:patterns?'🔄 Refresh':'🔍 Detect'}</button>
+              </div>
+              {patterns?(
+                <div className="space-y-3">
+                  {patterns.summary&&<p className={`text-sm ${c.textSecondary}`}>{patterns.summary}</p>}
+                  {patterns.weekly_heatmap&&<div className="mb-3"><p className={`text-xs font-bold ${c.text} mb-2`}>Weekly Energy</p>
+                    <div className="grid grid-cols-7 gap-1">{Object.entries(patterns.weekly_heatmap).map(([day,data],i)=>{
+                      const risk=data?.risk_level||'low';const bg=risk==='high'?(isDark?'bg-red-800/50':'bg-red-100'):risk==='moderate'?(isDark?'bg-yellow-800/50':'bg-yellow-100'):(isDark?'bg-green-800/50':'bg-green-100');
+                      return<div key={day} className={`${bg} rounded p-1.5 text-center`}><p className="text-xs font-bold capitalize">{day.slice(0,3)}</p><p className="text-xs">{data?.avg_energy?`⚡${data.avg_energy}`:'—'}</p></div>})}</div></div>}
+                  {patterns.patterns_found?.map((p,i)=><div key={i} className={`${p.confidence==='high'?c.urgent:p.confidence==='medium'?c.high:c.cardAlt} border rounded-lg p-3`}>
+                    <div className="flex items-start gap-2"><span>{p.icon||'📊'}</span><div className="flex-1"><p className="text-sm font-bold">{p.pattern}</p><p className={`text-xs ${c.textSecondary} mt-1`}>{p.evidence}</p><p className="text-xs font-semibold mt-1">💡 {p.actionable_insight}</p></div><span className={`text-xs px-1.5 py-0.5 rounded ${p.confidence==='high'?'bg-red-500/20':'bg-yellow-500/20'}`}>{p.confidence}</span></div></div>)}
+                  {patterns.crash_sequences?.length>0&&<div><p className={`text-xs font-bold ${c.text} mt-2 mb-2`}>⚡ Crash Sequences</p>{patterns.crash_sequences.map((seq,i)=><div key={i} className={`${c.cardAlt} border rounded-lg p-3 mb-2`}><p className="text-sm font-bold">{seq.trigger}</p>{seq.sequence?.map((s,j)=><p key={j} className={`text-xs ${c.textSecondary} ml-2`}>→ {s}</p>)}<p className="text-xs font-semibold mt-1">🎯 Intervene: {seq.early_warning_day}</p></div>)}</div>}
+                </div>
+              ):<p className={`text-sm ${c.textMuted} text-center py-3`}>{logs.length<14?'Need 14+ days':'Click detect'}</p>}
+            </div>
+
+            {/* A/B EXPERIMENTS */}
+            <div className={`${c.card} border rounded-xl shadow-lg p-5`}>
+              <h3 className={`text-sm font-bold ${c.text} mb-2`}>🧪 Intervention Experiments</h3>
+              <p className={`text-xs ${c.textMuted} mb-3`}>Test what works. Start an experiment, keep logging, see if your metrics improve.</p>
+              {experimentResults.filter(e=>e.active).map(exp=>(
+                <div key={exp.id} className={`${c.chipPurple} border-2 rounded-lg p-4 mb-3`}>
+                  <div className="flex items-center justify-between mb-2"><p className={`text-sm font-bold ${c.text}`}>🧪 {exp.intervention}</p><button onClick={()=>endExperiment(exp.id)} className={`text-xs ${c.btnSecondary} px-2 py-1 rounded`}>End</button></div>
+                  <p className={`text-xs ${c.textMuted}`}>Day {exp.daysLogged}/{exp.durationDays}</p>
+                  {exp.daysLogged>=3&&Object.keys(exp.comparison).length>0&&<div className="grid grid-cols-4 gap-2 mt-2">{Object.entries(exp.comparison).map(([m,d])=><div key={m} className={`${c.cardAlt} border rounded p-2 text-center`}><p className="text-xs capitalize">{m}</p><p className={`text-sm font-bold ${d.improved?'text-green-500':'text-red-500'}`}>{d.diff>0?'+':''}{d.diff}</p><p className={`text-xs ${c.textMuted}`}>{d.before}→{d.during}</p></div>)}</div>}
+                </div>
+              ))}
+              {experimentResults.filter(e=>!e.active).length>0&&<div className="mb-3"><p className={`text-xs font-bold ${c.text} mb-2`}>Past:</p>{experimentResults.filter(e=>!e.active).map(exp=>(
+                <div key={exp.id} className={`${c.cardAlt} border rounded-lg p-3 mb-2`}>
+                  <div className="flex items-center justify-between"><p className={`text-sm font-semibold ${c.text}`}>{exp.intervention}</p><button onClick={()=>removeExperiment(exp.id)} className={`text-xs ${c.textMuted} hover:text-red-500`}>✕</button></div>
+                  <p className={`text-xs ${c.textMuted}`}>{exp.daysLogged}d logged</p>
+                  {Object.keys(exp.comparison).length>0&&<div className="grid grid-cols-4 gap-2 mt-2">{Object.entries(exp.comparison).map(([m,d])=><div key={m} className="text-center"><p className="text-xs capitalize">{m}</p><p className={`text-sm font-bold ${d.improved?'text-green-500':'text-red-500'}`}>{d.diff>0?'+':''}{d.diff}</p></div>)}</div>}
+                </div>))}</div>}
+              <div className="flex gap-2"><input value={newExpIntervention} onChange={e=>setNewExpIntervention(e.target.value)} onKeyDown={e=>e.key==='Enter'&&startExperiment()} placeholder="e.g., No caffeine after noon" className={`${c.input} border rounded-lg px-3 py-1.5 text-sm flex-1`}/>
+                <select value={newExpDays} onChange={e=>setNewExpDays(Number(e.target.value))} className={`${c.input} border rounded-lg px-2 py-1.5 text-sm w-16`}><option value={7}>7d</option><option value={14}>14d</option><option value={21}>21d</option><option value={30}>30d</option></select>
+                <button onClick={startExperiment} className={`${c.btnPrimary} px-3 py-1.5 rounded-lg text-sm`}>Start</button></div>
+            </div>
+
+            {/* CUSTOM THRESHOLDS */}
+            <div className={`${c.card} border rounded-xl shadow-lg p-5`}>
+              <h3 className={`text-sm font-bold ${c.text} mb-2`}>🎯 Custom Alerts</h3>
+              <p className={`text-xs ${c.textMuted} mb-3`}>Triggers that fire on the dashboard when your numbers hit patterns you define.</p>
+              {customThresholds.length>0&&<div className="space-y-2 mb-3">{customThresholds.map((t,i)=><div key={i} className={`${c.cardAlt} border rounded-lg p-2 flex items-center justify-between`}><span className={`text-sm ${c.text}`}>Alert: <strong>{t.metric}</strong> {t.op} {t.value} for {t.days}d</span><button onClick={()=>removeThreshold(i)} className={`text-xs ${c.textMuted} hover:text-red-500`}>✕</button></div>)}</div>}
+              <div className="flex gap-2 flex-wrap">
+                <select value={newThresholdMetric} onChange={e=>setNewThresholdMetric(e.target.value)} className={`${c.input} border rounded-lg px-2 py-1.5 text-sm`}><option value="energy">Energy</option><option value="sleep">Sleep</option><option value="stress">Stress</option><option value="mood">Mood</option></select>
+                <select value={newThresholdOp} onChange={e=>setNewThresholdOp(e.target.value)} className={`${c.input} border rounded-lg px-2 py-1.5 text-sm w-12`}><option value="<">&lt;</option><option value=">">&gt;</option></select>
+                <input type="number" min="1" max="10" value={newThresholdVal} onChange={e=>setNewThresholdVal(Number(e.target.value))} className={`${c.input} border rounded-lg px-2 py-1.5 text-sm w-14`}/>
+                <span className={`text-sm ${c.textMuted} self-center`}>for</span>
+                <input type="number" min="1" max="7" value={newThresholdDays} onChange={e=>setNewThresholdDays(Number(e.target.value))} className={`${c.input} border rounded-lg px-2 py-1.5 text-sm w-12`}/>
+                <span className={`text-sm ${c.textMuted} self-center`}>days</span>
+                <button onClick={addThreshold} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-sm`}>➕</button>
+              </div>
+            </div>
+
+            {/* PARTNER VIEW */}
+            <div className={`${c.card} border rounded-xl shadow-lg p-5`}>
+              <h3 className={`text-sm font-bold ${c.text} mb-2`}>🫂 Accountability Partner</h3>
+              <p className={`text-xs ${c.textMuted} mb-3`}>Share a minimal status with someone you trust. No raw data — just status and streak.</p>
+              <div className="flex gap-2 mb-3"><CopyBtn content={buildPartnerSummary()} label="Copy Update"/><button onClick={()=>setShowPartnerPreview(!showPartnerPreview)} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-sm`}>{showPartnerPreview?'Hide':'👁️ Preview'}</button></div>
+              {showPartnerPreview&&<div className={`${isDark?'bg-zinc-900':'bg-white'} border-2 ${isDark?'border-zinc-600':'border-red-200'} rounded-xl p-4`}>
+                <p className={`text-xs ${c.textMuted} mb-2`}>Partner sees:</p>
+                <div className="text-center space-y-2">
+                  <p className={`text-lg font-bold ${c.text}`}>📊 Partner Status</p>
+                  {analysisHistory.length>0?<><EscalMini level={analysisHistory[0].escalationLevel}/><p className={`text-2xl font-bold uppercase ${c.text}`}>{analysisHistory[0].riskLevel}</p><p className={c.textMuted}>Streak: {streak>0?`🔥 ${streak}d`:'Not consistent'}</p>{!checkedInToday&&<p className="text-sm text-red-500 font-semibold">⚠️ Not checked in today</p>}</>:<p className={c.textMuted}>No data yet</p>}
+                </div>
+              </div>}
+            </div>
+
+            {/* GOALS */}
+            <div className={`${c.card} border rounded-xl shadow-lg p-5`}>
+              <h3 className={`text-sm font-bold ${c.text} mb-3`}>🎯 Recovery Goals</h3>
+              {recoveryGoals.length>0&&<div className="space-y-2 mb-3">{recoveryGoals.map((g,i)=><div key={i} className={`flex items-center gap-2 p-2 rounded-lg ${g.done?(isDark?'bg-green-900/20':'bg-green-50'):''}`}><button onClick={()=>toggleGoal(i)} className="text-lg">{g.done?'✅':'⬜'}</button><span className={`text-sm flex-1 ${g.done?'line-through opacity-60':''} ${c.text}`}>{g.text}</span><button onClick={()=>removeGoal(i)} className={`text-xs ${c.textMuted} hover:text-red-500`}>✕</button></div>)}</div>}
+              <div className="flex gap-2"><input value={newGoalText} onChange={e=>setNewGoalText(e.target.value)} onKeyDown={e=>e.key==='Enter'&&addGoal()} placeholder="e.g., Sleep 7+ for 3 nights" className={`${c.input} border rounded-lg px-3 py-1.5 text-sm flex-1`}/><button onClick={addGoal} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-sm`}>➕</button></div>
+            </div>
+
+            {/* CONTACTS */}
+            <div className={`${c.card} border rounded-xl shadow-lg p-5`}>
+              <h3 className={`text-sm font-bold ${c.text} mb-3`}>🚨 Emergency Contacts</h3>
+              {emergencyContacts.length>0&&<div className="space-y-2 mb-3">{emergencyContacts.map((ct,i)=><div key={i} className={`${c.cardAlt} border rounded-lg p-2 flex items-center justify-between`}><span className={`text-sm ${c.text}`}>{ct.name} <span className={c.textMuted}>({ct.relationship})</span></span><button onClick={()=>removeContact(i)} className={`text-xs ${c.textMuted} hover:text-red-500`}>✕</button></div>)}</div>}
+              <div className="flex gap-2"><input value={newContactName} onChange={e=>setNewContactName(e.target.value)} placeholder="Name" className={`${c.input} border rounded-lg px-3 py-1.5 text-sm flex-1`}/><input value={newContactRel} onChange={e=>setNewContactRel(e.target.value)} placeholder="Relationship" className={`${c.input} border rounded-lg px-3 py-1.5 text-sm w-28`}/><button onClick={addContact} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-sm`}>➕</button></div>
+            </div>
+
+            {/* LOG ENTRIES */}
+            <div className={`${c.card} border rounded-xl shadow-lg p-5`}>
+              <div className="flex items-center justify-between mb-3"><h3 className={`text-sm font-bold ${c.text}`}>📋 Entries ({logs.length})</h3>{logs.length>0&&<button onClick={()=>{if(window.confirm('Clear all?'))setLogs([])}} className={`text-xs ${c.textMuted} hover:text-red-500`}>Clear</button>}</div>
+              {logs.length===0?<p className={`text-sm ${c.textMuted} text-center py-3`}>No entries</p>:
+              <div className="space-y-2 max-h-80 overflow-y-auto">{logs.map((log,idx)=><div key={idx} className={`${c.cardAlt} border rounded-lg p-3`}>
+                <div className="flex items-center justify-between mb-1"><span className={`text-sm font-bold ${c.text}`}>{log.date}</span><div className="flex gap-1"><button onClick={()=>handleEditLog(idx)} className={`text-xs ${c.btnSecondary} px-2 py-0.5 rounded`}>✏️</button><button onClick={()=>handleDeleteLog(idx)} className="text-xs text-red-500 px-2 py-0.5">🗑️</button></div></div>
+                <div className="flex flex-wrap gap-2 text-xs"><span>⚡{log.energy}</span><span>😴{log.sleep}</span><span>😰{log.stress}</span>{log.mood&&<span>😊{log.mood}</span>}{log.caffeine>0&&<span>☕{log.caffeine}</span>}{log.alcohol>0&&<span>🍷{log.alcohol}</span>}</div>
+                <div className="flex flex-wrap gap-1 mt-1">
+                  {Object.keys(log.warningSigns||{}).filter(k=>log.warningSigns[k]).map(k=><span key={k} className={`text-xs px-1 py-0.5 rounded ${isDark?'bg-red-900/30':'bg-red-100'}`}>{k}</span>)}
+                  {(log.customSymptoms||[]).filter(s=>s.active).map(s=><span key={s.label} className={`text-xs px-1 py-0.5 rounded ${isDark?'bg-purple-900/30':'bg-purple-100'}`}>{s.label}</span>)}
+                </div>
+                {log.notes&&<p className={`text-xs ${c.textMuted} mt-1 truncate`}>📝 {log.notes}</p>}
+              </div>)}</div>}
             </div>
           </div>
         )}

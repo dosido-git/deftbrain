@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const dns = require('dns').promises;
-const { anthropic, cleanJsonResponse, callClaudeWithRetry } = require('../lib/claude');
+const { anthropic, cleanJsonResponse, callClaudeWithRetry, withLanguage } = require('../lib/claude');
 const { rateLimit, CREATIVE_LIMITS } = require('../lib/rateLimiter');
 
 // Apply creative-tier rate limit to all NameStorm routes (separate bucket from global)
@@ -248,6 +248,7 @@ router.post('/namestorm', async (req, res) => {
       targetLanguages,
       maxChars,
       primaryLanguage,
+      competitors,
     } = req.body;
 
     if (!category) {
@@ -266,6 +267,10 @@ router.post('/namestorm', async (req, res) => {
 
     const isNonEnglish = primaryLanguage && primaryLanguage !== 'English';
 
+    const competitorBlock = competitors
+      ? `\n═══ COMPETITOR DIFFERENTIATION ═══\nCompetitors / names to avoid sounding like: ${competitors}\nCRITICAL: Generated names MUST sound, look, and feel clearly distinct from these competitors. Avoid similar:\n- Sound patterns (rhyme, alliteration, syllable structure)\n- Root words or morphemes\n- Visual similarity (same letter shapes, same length)\n- Conceptual overlap (same metaphor family)\nFlag any generated name that gets too close.\n`
+      : '';
+
     const prompt = isDomainMode
       ? buildDomainStormPrompt(vibeText, constraints, industryContext, preferredTLDs, targetLanguages, maxChars, primaryLanguage)
       : `You are an elite naming strategist who combines creative linguistics, brand psychology, cultural awareness, and market intelligence. You've named hundreds of successful brands, products, and projects.${isNonEnglish ? ` You are generating names for a ${primaryLanguage}-speaking audience. Think in ${primaryLanguage} first.` : ''}
@@ -275,7 +280,7 @@ NAMING BRIEF
 WHAT NEEDS A NAME: ${category}
 VIBE / ENERGY: ${vibeText}
 CONSTRAINTS: ${constraints || 'None specified'}
-INDUSTRY / CONTEXT: ${industryContext || 'Not specified'}${isNonEnglish ? `
+INDUSTRY / CONTEXT: ${industryContext || 'Not specified'}${competitorBlock}${isNonEnglish ? `
 PRIMARY AUDIENCE LANGUAGE: ${primaryLanguage}. Names should feel natural and resonant to ${primaryLanguage} speakers FIRST. English compatibility is a bonus, not a requirement. Prioritize words, sounds, and cultural references from ${primaryLanguage} and closely related languages.` : ''}
 
 STYLE CATEGORIES AVAILABLE
@@ -545,6 +550,7 @@ router.post('/namestorm/blend', async (req, res) => {
       primaryLanguage,
       pairWithDomains,
       preferredTLDs,
+      competitors,
     } = req.body;
 
     if (!seedWords || seedWords.length < 2) {
@@ -565,12 +571,16 @@ router.post('/namestorm/blend', async (req, res) => {
       ? `\nPRIMARY LANGUAGE: ${primaryLanguage}. Expand seeds using ${primaryLanguage} synonyms and related words first, then also include cross-language options. Blended names should feel natural to ${primaryLanguage} speakers.`
       : '';
 
+    const blendCompetitorBlock = competitors
+      ? `\nCOMPETITORS TO AVOID: ${competitors}\nBlended names must sound, look, and feel clearly distinct from these competitors.`
+      : '';
+
     const prompt = `You are an expert linguistic blender and portmanteau creator. Your job is to take seed words, expand them into clouds of related words, then systematically blend them into original, brandable names that could NOT have been found by simply combining two whole words.
 
 SEED WORDS: ${seedWords.join(', ')}
 VIBE: ${vibeText}
 CONSTRAINTS: ${constraints || 'None'}
-INDUSTRY: ${industryContext || 'Not specified'}${langDirective}${tldDirective}
+INDUSTRY: ${industryContext || 'Not specified'}${blendCompetitorBlock}${langDirective}${tldDirective}
 
 STEP 1: EXPAND EACH SEED
 
@@ -680,6 +690,173 @@ RULES:
   } catch (error) {
     console.error('[NameStorm/Blend] Error:', error);
     res.status(500).json({ error: 'Failed to generate blends', details: error.message });
+  }
+});
+
+// ═══════════════════════════════════════════════════
+// ROUTE 5: ITERATIVE REFINEMENT ("Almost Love")
+// Takes a name the user almost likes + specific feedback
+// ═══════════════════════════════════════════════════
+router.post('/namestorm/refine', async (req, res) => {
+  try {
+    const {
+      name, whyItWorks, pronunciation, problems,
+      instruction, category, vibe,
+      isDomainMode, competitors, preferredTLDs,
+      primaryLanguage, userLanguage,
+    } = req.body;
+
+    if (!name || !instruction) {
+      return res.status(400).json({ error: 'Name and refinement instruction are required' });
+    }
+
+    const langDirective = withLanguage(userLanguage);
+    const competitorNote = competitors
+      ? `\nCOMPETITOR NAMES TO CONTRAST AGAINST: ${competitors}\nGenerated names must sound, look, and feel clearly distinct from these competitors.`
+      : '';
+    const tldBlock = isDomainMode && preferredTLDs?.length > 0
+      ? `\nPreferred TLDs: ${preferredTLDs.join(', ')}`
+      : '';
+
+    const prompt = `You are a world-class naming consultant. A client almost loves a name but wants specific changes. Your job: take their feedback and generate refined variations that address exactly what they asked for while keeping what made the original name work.
+${langDirective ? `\n${langDirective}` : ''}
+
+═══════════════════════════════
+THE ORIGINAL NAME
+═══════════════════════════════
+Name: "${name}"
+Why it works: ${whyItWorks || 'Not specified'}
+Pronunciation: ${pronunciation || 'Not specified'}
+Known problems: ${problems?.length > 0 ? problems.map(p => p.detail).join('; ') : 'None flagged'}
+
+Category: ${category || 'General'}
+Vibe: ${vibe || 'Not specified'}
+${competitorNote}${tldBlock}
+
+═══════════════════════════════
+WHAT THE CLIENT WANTS CHANGED
+═══════════════════════════════
+"${instruction}"
+
+═══════════════════════════════
+YOUR TASK
+═══════════════════════════════
+Generate 6-8 refined variations that directly address the client's feedback while preserving the core appeal of the original name.
+
+For each variation, explain how it specifically addresses the feedback.
+
+Respond in JSON:
+{
+  "refinement_note": "Brief note on what approach you took to address the feedback",
+  "variations": [
+    {
+      "name": "RefinedName",
+      "pronunciation": "ruh-FIND-name",
+      "why_it_works": "Why this variation is strong",
+      "how_it_addresses_feedback": "Specifically how this addresses: ${instruction}",
+      "clean": true,
+      "problems": []
+    }
+  ]
+}
+
+For "problems", flag issues like the original tool does:
+- { "detail": "description", "severity": "warning|caution|info" }
+- Check: unintended meanings in other languages, phonetic issues, brand conflicts, awkward abbreviations
+- "clean" = true means no problems found
+
+Return ONLY valid JSON.`;
+
+    console.log(`[NameStorm/Refine] Refining: "${name}" — instruction: "${instruction.substring(0, 50)}"`);
+
+    const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 3000,
+      temperature: 0.9,
+      messages: [{ role: 'user', content: prompt }],
+    }, { label: 'NameStorm/Refine' });
+
+    // Normalize problems arrays
+    parsed.variations?.forEach(v => {
+      if (!Array.isArray(v.problems)) v.problems = [];
+    });
+
+    console.log(`[NameStorm/Refine] Generated ${parsed.variations?.length || 0} refinements`);
+    res.json(parsed);
+
+  } catch (error) {
+    console.error('[NameStorm/Refine] Error:', error);
+    res.status(500).json({ error: 'Failed to refine name', details: error.message });
+  }
+});
+
+// ═══════════════════════════════════════════════════
+// ROUTE 6: BRAND STORY GENERATOR
+// Creates a brand narrative package for a chosen name
+// ═══════════════════════════════════════════════════
+router.post('/namestorm/story', async (req, res) => {
+  try {
+    const {
+      name, whyItWorks, pronunciation, blendComponents,
+      category, industryContext, vibe, userLanguage,
+    } = req.body;
+
+    if (!name) {
+      return res.status(400).json({ error: 'Name is required' });
+    }
+
+    const langDirective = withLanguage(userLanguage);
+
+    const prompt = `You are a world-class brand storyteller and naming consultant. A client has chosen a name and needs help selling it — to cofounders, investors, partners, and themselves. Create a compelling brand narrative around this name.
+${langDirective ? `\n${langDirective}` : ''}
+
+═══════════════════════════════
+THE NAME
+═══════════════════════════════
+Name: "${name}"
+Why it works: ${whyItWorks || 'Not specified'}
+Pronunciation: ${pronunciation || 'Not specified'}
+${blendComponents ? `Blend components: ${blendComponents}` : ''}
+Category: ${category || 'Business'}
+Industry: ${industryContext || 'Not specified'}
+Vibe: ${vibe || 'Not specified'}
+
+═══════════════════════════════
+YOUR TASK
+═══════════════════════════════
+Create a brand story package. This should feel like something from a top naming agency's final presentation.
+
+Respond in JSON:
+{
+  "origin_story": "2-3 sentences explaining where this name 'came from' — the insight, the metaphor, the connection. Make it feel intentional and meaningful, even if the name was AI-generated. This is the story people will tell when asked 'why that name?'",
+  "tagline": "A 3-8 word tagline that pairs naturally with the name. Should feel like it belongs on a website hero section or business card.",
+  "elevator_pitch": "1-2 sentences that use the name naturally in context. How you'd introduce the brand in conversation. Should demonstrate the name working in a real sentence.",
+  "introduction_script": "A short script for how to verbally introduce the name: 'We're called [Name] — it comes from [origin]. We [what you do] for [who you serve].' Fill in plausible details based on the category and industry."
+}
+
+The story should:
+- Feel authentic, not manufactured
+- Connect the name's linguistic properties to the brand's purpose
+- Be specific enough to use immediately, generic enough to not box them in
+- Make the listener think "that's a great name" even if they didn't before
+
+Return ONLY valid JSON.`;
+
+    console.log(`[NameStorm/Story] Generating story for: "${name}"`);
+
+    const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 2000,
+      temperature: 0.8,
+      messages: [{ role: 'user', content: prompt }],
+    }, { label: 'NameStorm/Story' });
+
+    console.log(`[NameStorm/Story] Story generated for "${name}"`);
+    res.json(parsed);
+
+  } catch (error) {
+    console.error('[NameStorm/Story] Error:', error);
+    res.status(500).json({ error: 'Failed to generate brand story', details: error.message });
   }
 });
 

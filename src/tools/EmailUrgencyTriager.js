@@ -1,779 +1,816 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
-import { CopyBtn } from '../components/ActionButtons';
+import { usePersistentState } from '../hooks/usePersistentState';
+import { CopyBtn, PrintBtn, ActionBar } from '../components/ActionButtons';
 
+// ════════════════════════════════════════════════════════════
+// THEME
+// ════════════════════════════════════════════════════════════
+function useColors() {
+  const { theme } = useTheme();
+  const d = theme === 'dark';
+  return {
+    card: d ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-emerald-200',
+    cardAlt: d ? 'bg-zinc-700 border-zinc-600' : 'bg-emerald-50 border-emerald-200',
+    input: d ? 'bg-zinc-900 border-zinc-700 text-zinc-50 placeholder:text-zinc-500 focus:border-emerald-500 focus:ring-emerald-500/20' : 'bg-white border-emerald-300 text-emerald-900 placeholder:text-emerald-400 focus:border-emerald-600 focus:ring-emerald-100',
+    text: d ? 'text-zinc-50' : 'text-emerald-900',
+    textSec: d ? 'text-zinc-300' : 'text-emerald-700',
+    textMuted: d ? 'text-zinc-400' : 'text-emerald-600',
+    label: d ? 'text-zinc-200' : 'text-emerald-800',
+    accent: d ? 'text-emerald-400' : 'text-emerald-600',
+    btnPrimary: d ? 'bg-emerald-600 hover:bg-emerald-500 text-white' : 'bg-emerald-600 hover:bg-emerald-700 text-white',
+    btnSec: d ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-50' : 'bg-emerald-100 hover:bg-emerald-200 text-emerald-900',
+    btnDanger: d ? 'bg-red-900/30 hover:bg-red-900/50 text-red-300' : 'bg-red-50 hover:bg-red-100 text-red-700',
+    urgent: d ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-300 text-red-800',
+    thisWeek: d ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
+    optional: d ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
+    info: d ? 'bg-blue-900/20 border-blue-700 text-blue-200' : 'bg-blue-50 border-blue-200 text-blue-900',
+    success: d ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-200 text-emerald-800',
+    warning: d ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
+    purple: d ? 'bg-purple-900/20 border-purple-700 text-purple-200' : 'bg-purple-50 border-purple-200 text-purple-900',
+    pillSky: d ? 'bg-sky-900/40 text-sky-300 border-sky-700/40' : 'bg-sky-100 text-sky-700 border-sky-200',
+    pillGreen: d ? 'bg-emerald-900/40 text-emerald-300 border-emerald-700/40' : 'bg-emerald-100 text-emerald-700 border-emerald-200',
+    pillAmber: d ? 'bg-amber-900/40 text-amber-300 border-amber-700/40' : 'bg-amber-100 text-amber-700 border-amber-200',
+    pillRed: d ? 'bg-red-900/40 text-red-300 border-red-700/40' : 'bg-red-100 text-red-700 border-red-200',
+    pillGray: d ? 'bg-zinc-700 text-zinc-400 border-zinc-600' : 'bg-zinc-100 text-zinc-500 border-zinc-200',
+    border: d ? 'border-zinc-700' : 'border-emerald-200',
+  };
+}
+
+// ════════════════════════════════════════════════════════════
+// CONSTANTS
+// ════════════════════════════════════════════════════════════
+const ROLES = ['Employee', 'Manager', 'Freelancer', 'Student', 'Personal', 'Executive', 'Academic/Researcher'];
+const TIER_CFG = {
+  now: { icon: '🔴', label: 'Reply Now', sub: 'Needs response today', ck: 'urgent', bc: 'border-red-400' },
+  this_week: { icon: '⏰', label: 'This Week', sub: 'Can wait a few days', ck: 'thisWeek', bc: 'border-amber-400' },
+  optional: { icon: '☕', label: 'Optional', sub: 'No response needed', ck: 'optional', bc: 'border-emerald-400' },
+};
+const CAT_MAP = {
+  'fyi': { icon: 'ℹ️', bg: 'bg-blue-500' }, 'action required': { icon: '🎯', bg: 'bg-red-500' },
+  'response expected': { icon: '💬', bg: 'bg-amber-500' }, 'automated': { icon: '🔔', bg: 'bg-gray-500' },
+  'newsletter': { icon: '✉️', bg: 'bg-purple-500' },
+};
+const TONES = [
+  { id: 'professional', label: '💼 Professional' }, { id: 'casual', label: '😊 Casual' },
+  { id: 'firm', label: '🛡️ Firm' }, { id: 'apologetic', label: '🙏 Apologetic' },
+  { id: 'grateful', label: '🙂 Grateful' }, { id: 'urgent', label: '⚡ Urgent' },
+];
+const LENGTHS = [
+  { id: 'quick', label: '⚡ Quick (2-3 sentences)' },
+  { id: 'standard', label: '📝 Standard (1-2 paragraphs)' },
+  { id: 'detailed', label: '📄 Detailed (2-3 paragraphs)' },
+];
+const DEFAULT_PROFILES = [{ id: 'work', name: 'Work', icon: '💼', role: 'Employee' }];
+const RULE_TYPES = [
+  { id: 'sender', label: 'Sender contains' },
+  { id: 'subject', label: 'Subject contains' },
+  { id: 'cc_only', label: 'CC only (always)' },
+];
+
+// ════════════════════════════════════════════════════════════
+// MAIN COMPONENT
+// ════════════════════════════════════════════════════════════
 const EmailUrgencyTriager = () => {
   const { callToolEndpoint, loading } = useClaudeAPI();
+  const c = useColors();
   const { theme } = useTheme();
   const isDark = theme === 'dark';
 
-  // Form state
+  // MODE
+  const [mode, setMode] = useState('input');
+
+  // FORM
   const [emailContent, setEmailContent] = useState('');
   const [userRole, setUserRole] = useState('Employee');
-  const [userTimezone, setUserTimezone] = useState(Intl.DateTimeFormat().resolvedOptions().timeZone);
+  const [userTimezone] = useState(Intl.DateTimeFormat().resolvedOptions().timeZone);
 
-  // Results state
+  // RESULTS + UI
   const [results, setResults] = useState(null);
   const [error, setError] = useState('');
   const [expandedEmail, setExpandedEmail] = useState(null);
+  const [expandAll, setExpandAll] = useState(false);
+  const [handled, setHandled] = useState({});
+  const [overrides, setOverrides] = useState({});
 
-  // Sender learning state
-  const [senderHistory, setSenderHistory] = useState({});
-  const [showSenderInsights, setShowSenderInsights] = useState(false);
+  // COMPOSE (F1)
+  const [composeTarget, setComposeTarget] = useState(null);
+  const [composeDraft, setComposeDraft] = useState('');
+  const [composeTone, setComposeTone] = useState('professional');
+  const [composeLength, setComposeLength] = useState('standard');
+  const [composeInstructions, setComposeInstructions] = useState('');
+  const [composeResult, setComposeResult] = useState(null);
 
-  const roleOptions = [
-    'Employee',
-    'Manager',
-    'Freelancer',
-    'Student',
-    'Personal',
-    'Executive',
-    'Academic/Researcher'
-  ];
+  // RULE FORM (F3)
+  const [ruleForm, setRuleForm] = useState({ type: 'sender', pattern: '', tier: 'optional' });
 
-  // Load sender history from localStorage
-  useEffect(() => {
-    const saved = localStorage.getItem('email-sender-history');
-    if (saved) {
-      try {
-        setSenderHistory(JSON.parse(saved));
-      } catch (e) {
-        console.error('Failed to load sender history:', e);
-      }
-    }
-  }, []);
+  // PERSISTENT STORES
+  const [senderHistory, setSenderHistory] = usePersistentState('email-sender-history', {});
+  const [triageHistory, setTriageHistory] = usePersistentState('email-triage-history', []);
+  const [rules, setRules] = usePersistentState('email-triage-rules', []);
+  const [responseTimes, setResponseTimes] = usePersistentState('email-response-times', []);
+  const [profiles, setProfiles] = usePersistentState('email-profiles', DEFAULT_PROFILES);
+  const [activeProfileId, setActiveProfileId] = usePersistentState('email-active-profile', 'work');
 
-  // Save sender history
-  const updateSenderHistory = (sender, wasActuallyUrgent, markedUrgent) => {
-    const history = { ...senderHistory };
-    if (!history[sender]) {
-      history[sender] = {
-        total: 0,
-        markedUrgent: 0,
-        actuallyUrgent: 0,
-        cryWolfScore: 0
-      };
-    }
+  // ─── PROFILE HELPERS ───
+  const activeProfile = useMemo(() => profiles.find(p => p.id === activeProfileId) || profiles[0], [profiles, activeProfileId]);
+  const pfx = activeProfileId + ':';
+  const profileSenders = useMemo(() => {
+    const out = {};
+    Object.entries(senderHistory).forEach(([k, v]) => { if (k.startsWith(pfx)) out[k.slice(pfx.length)] = v; });
+    return out;
+  }, [senderHistory, pfx]);
+  const profileTriages = useMemo(() => triageHistory.filter(t => t.profileId === activeProfileId), [triageHistory, activeProfileId]);
+  const profileRules = useMemo(() => rules.filter(r => r.profileId === activeProfileId && r.enabled), [rules, activeProfileId]);
+  const profileResponses = useMemo(() => responseTimes.filter(r => r.profileId === activeProfileId), [responseTimes, activeProfileId]);
 
-    history[sender].total++;
-    if (markedUrgent) history[sender].markedUrgent++;
-    if (wasActuallyUrgent) history[sender].actuallyUrgent++;
-
-    // Calculate cry wolf score (how often they mark urgent but it's not)
-    if (history[sender].markedUrgent > 0) {
-      history[sender].cryWolfScore = 
-        (history[sender].markedUrgent - history[sender].actuallyUrgent) / history[sender].markedUrgent;
-    }
-
-    setSenderHistory(history);
-    localStorage.setItem('email-sender-history', JSON.stringify(history));
-  };
-
-  // Theme-aware colors
-  const c = {
-    bg: isDark ? 'bg-zinc-900' : 'bg-gradient-to-br from-emerald-50 to-emerald-50',
-    card: isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-emerald-200',
-    cardAlt: isDark ? 'bg-zinc-700 border-zinc-600' : 'bg-emerald-50 border-emerald-200',
-    
-    input: isDark 
-      ? 'bg-zinc-900 border-zinc-700 text-zinc-50 placeholder:text-zinc-500 focus:border-emerald-500 focus:ring-emerald-500/20'
-      : 'bg-white border-emerald-300 text-emerald-900 placeholder:text-emerald-400 focus:border-emerald-600 focus:ring-emerald-100',
-    
-    text: isDark ? 'text-zinc-50' : 'text-emerald-900',
-    textSecondary: isDark ? 'text-zinc-400' : 'text-emerald-700',
-    textMuted: isDark ? 'text-zinc-500' : 'text-emerald-600',
-    label: isDark ? 'text-zinc-300' : 'text-emerald-800',
-    
-    accent: isDark ? 'text-emerald-400' : 'text-emerald-600',
-    
-    btnPrimary: isDark
-      ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
-      : 'bg-emerald-600 hover:bg-emerald-700 text-white',
-    btnSecondary: isDark
-      ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-50'
-      : 'bg-emerald-100 hover:bg-emerald-200 text-emerald-900',
-    btnOutline: isDark
-      ? 'border-zinc-600 hover:border-zinc-500 text-zinc-300'
-      : 'border-emerald-300 hover:border-emerald-400 text-emerald-700',
-    
-    // Urgency-specific colors
-    urgent: isDark
-      ? 'bg-red-900/20 border-red-700 text-red-200'
-      : 'bg-red-50 border-red-300 text-red-800',
-    urgentBadge: isDark ? 'bg-red-600' : 'bg-red-500',
-    
-    thisWeek: isDark
-      ? 'bg-amber-900/20 border-amber-700 text-amber-200'
-      : 'bg-amber-50 border-amber-300 text-amber-800',
-    thisWeekBadge: isDark ? 'bg-amber-600' : 'bg-amber-500',
-    
-    optional: isDark
-      ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200'
-      : 'bg-emerald-50 border-emerald-300 text-emerald-800',
-    optionalBadge: isDark ? 'bg-emerald-600' : 'bg-emerald-500',
-    
-    infoBox: isDark
-      ? 'bg-blue-900/20 border-blue-700 text-blue-200'
-      : 'bg-blue-50 border-blue-200 text-blue-900',
-    successBox: isDark
-      ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200'
-      : 'bg-emerald-50 border-emerald-200 text-emerald-800',
-    warningBox: isDark
-      ? 'bg-red-900/20 border-red-700 text-red-200'
-      : 'bg-red-50 border-red-200 text-red-800',
-    purpleBox: isDark
-      ? 'bg-purple-900/20 border-purple-700 text-purple-200'
-      : 'bg-purple-50 border-purple-200 text-purple-900',
-  };
-
-  const handleAnalyze = async () => {
-    if (!emailContent.trim()) {
-      setError('Please paste at least one email to analyze');
-      return;
-    }
-
-    setError('');
-    setResults(null);
-
-    try {
-      const data = await callToolEndpoint('email-urgency-triager', {
-        emailContent: emailContent.trim(),
-        userRole,
-        userTimezone,
-        senderHistory: senderHistory
-      });
-      setResults(data);
-      setExpandedEmail(null);
-
-      // Update sender history based on results
-      if (data.urgency_analysis) {
-        data.urgency_analysis.forEach(email => {
-          const wasActuallyUrgent = email.urgency_tier === 'now';
-          const markedUrgent = email.sender_marked_urgent || false;
-          if (email.from) {
-            updateSenderHistory(email.from, wasActuallyUrgent, markedUrgent);
-          }
-        });
-      }
-    } catch (err) {
-      setError(err.message || 'Failed to analyze emails. Please try again.');
-    }
-  };
-
-  const handleReset = () => {
-    setEmailContent('');
-    setResults(null);
-    setError('');
-    setExpandedEmail(null);
-  };
-
-  const toggleExpanded = (index) => {
-    setExpandedEmail(expandedEmail === index ? null : index);
-  };
-
-  const getEmailsByUrgency = (tier) => {
-    if (!results?.urgency_analysis) return [];
-    return results.urgency_analysis.filter(email => 
-      email.urgency_tier?.toLowerCase() === tier.toLowerCase() ||
-      (tier === 'this_week' && email.urgency_tier?.toLowerCase() === 'this week') ||
-      (tier === 'now' && email.urgency_tier?.toLowerCase() === 'urgent')
-    );
-  };
-
-  const getCategoryIcon = (category) => {
-    switch(category?.toLowerCase()) {
-      case 'fyi': return <span className="text-xs">ℹ️</span>;
-      case 'action required': return <span className="text-xs">🎯</span>;
-      case 'response expected': return <span className="text-xs">💬</span>;
-      case 'automated': return <span className="text-xs">🔔</span>;
-      case 'newsletter': return <span className="text-xs">✉️</span>;
-      default: return <span className="text-xs">✉️</span>;
-    }
-  };
-
-  const getCategoryColor = (category) => {
-    switch(category?.toLowerCase()) {
-      case 'fyi': return isDark ? 'bg-blue-600' : 'bg-blue-500';
-      case 'action required': return isDark ? 'bg-red-600' : 'bg-red-500';
-      case 'response expected': return isDark ? 'bg-amber-600' : 'bg-amber-500';
-      case 'automated': return isDark ? 'bg-gray-600' : 'bg-gray-500';
-      case 'newsletter': return isDark ? 'bg-purple-600' : 'bg-purple-500';
-      default: return isDark ? 'bg-zinc-600' : 'bg-gray-400';
-    }
-  };
-
-  const getSenderReputation = (sender) => {
-    const history = senderHistory[sender];
-    if (!history || history.total < 3) return null;
-
-    if (history.cryWolfScore > 0.5) {
-      return {
-        label: 'Cry Wolf',
-        icon: '🐺',
-        color: 'text-red-500',
-        tip: 'This sender often marks things urgent when they\'re not'
-      };
-    } else if (history.actuallyUrgent / history.total > 0.7) {
-      return {
-        label: 'VIP',
-        icon: '⭐',
-        color: 'text-amber-500',
-        tip: 'This sender\'s emails are usually important'
-      };
-    }
+  // ─── HELPERS ───
+  const getCat = (cat) => CAT_MAP[cat?.toLowerCase()] || { icon: '✉️', bg: 'bg-gray-400' };
+  const getRep = (sender) => {
+    const h = profileSenders[sender];
+    if (!h || h.total < 3) return null;
+    if (h.cryWolfScore > 0.5) return { label: 'Cry Wolf', icon: '🐺', pill: 'pillRed' };
+    if (h.actuallyUrgent / h.total > 0.7) return { label: 'VIP', icon: '⭐', pill: 'pillAmber' };
     return null;
   };
 
-  return (
-    <div className="space-y-6">
-      
-      {/* Enhanced Info Banner */}
-      <div className={`${c.infoBox} border-l-4 rounded-r-lg p-5 transition-colors duration-200`}>
-        <div className="flex items-start gap-3">
-          <span className="flex-shrink-0 mt-0.5">ℹ️</span>
-          <div>
-            <h3 className={`font-bold mb-1 ${c.text}`}>Smart Email Triage with AI Learning</h3>
-            <p className={`text-sm ${c.textSecondary}`}>
-              Analyzes entire threads, learns sender patterns, detects "cry wolf" behavior, 
-              and suggests optimal response times based on recipient timezones.
-            </p>
+  // F3: Apply rules to determine effective tier
+  const applyRules = useCallback((email) => {
+    for (const rule of profileRules) {
+      if (rule.type === 'sender' && email.from?.toLowerCase().includes(rule.pattern.toLowerCase())) return rule.tier;
+      if (rule.type === 'subject' && email.email_subject?.toLowerCase().includes(rule.pattern.toLowerCase())) return rule.tier;
+      if (rule.type === 'cc_only' && email.thread_analysis?.on_cc) return rule.tier;
+    }
+    return null;
+  }, [profileRules]);
+
+  const getEmailsByTier = useCallback((tier) => {
+    if (!results?.urgency_analysis) return [];
+    return results.urgency_analysis.map((email, idx) => ({ ...email, _idx: idx })).filter(email => {
+      const raw = email.urgency_tier?.toLowerCase().replace(' ', '_').replace('urgent', 'now');
+      const origTier = raw === 'this week' ? 'this_week' : raw;
+      const ruleOverride = applyRules(email);
+      const overKey = `${origTier}-${email._idx}`;
+      const manualOverride = overrides[overKey];
+      const effectiveTier = manualOverride || ruleOverride || origTier;
+      return effectiveTier === tier;
+    });
+  }, [results, overrides, applyRules]);
+
+  // ─── SENDER LEARNING ───
+  const updateSenderHistory = useCallback((analysisResults) => {
+    if (!analysisResults?.length) return;
+    const updated = { ...senderHistory };
+    analysisResults.forEach(email => {
+      if (!email.from) return;
+      const key = pfx + email.from;
+      if (!updated[key]) updated[key] = { total: 0, markedUrgent: 0, actuallyUrgent: 0, cryWolfScore: 0, firstSeen: new Date().toISOString().split('T')[0], categories: {} };
+      updated[key].total++;
+      if (email.sender_marked_urgent) updated[key].markedUrgent++;
+      if (email.urgency_tier === 'now') updated[key].actuallyUrgent++;
+      const cat = email.email_category || 'Unknown';
+      updated[key].categories[cat] = (updated[key].categories[cat] || 0) + 1;
+      updated[key].lastSeen = new Date().toISOString().split('T')[0];
+      if (updated[key].markedUrgent > 0) updated[key].cryWolfScore = (updated[key].markedUrgent - updated[key].actuallyUrgent) / updated[key].markedUrgent;
+    });
+    setSenderHistory(updated);
+  }, [senderHistory, setSenderHistory, pfx]);
+
+  // ─── ANALYZE ───
+  const handleAnalyze = async () => {
+    if (!emailContent.trim()) { setError('Please paste at least one email'); return; }
+    setError(''); setResults(null); setHandled({}); setOverrides({});
+    try {
+      const data = await callToolEndpoint('email-urgency-triager', {
+        emailContent: emailContent.trim(), userRole: activeProfile.role || userRole, userTimezone,
+        senderHistory: profileSenders, triageHistory: profileTriages.slice(0, 5),
+      });
+      setResults(data); setMode('results');
+      updateSenderHistory(data.urgency_analysis);
+    } catch (err) { setError(err.message || 'Failed to analyze.'); }
+  };
+
+  // F1: COMPOSE
+  const handleCompose = async () => {
+    if (!composeTarget) return;
+    setError(''); setComposeResult(null);
+    try {
+      const data = await callToolEndpoint('email-urgency-triager', {
+        action: 'compose', emailSubject: composeTarget.email_subject, emailFrom: composeTarget.from,
+        emailBody: composeTarget.reasoning, currentDraft: composeDraft.trim() || composeTarget.draft_reply || null,
+        tone: composeTone, length: composeLength,
+        instructions: composeInstructions.trim() || null, userRole: activeProfile.role || userRole,
+      });
+      setComposeResult(data);
+    } catch (err) { setError(err.message || 'Failed to compose.'); }
+  };
+
+  const openComposer = (email) => {
+    setComposeTarget(email); setComposeDraft(email.draft_reply || '');
+    setComposeTone('professional'); setComposeLength('standard');
+    setComposeInstructions(''); setComposeResult(null); setMode('compose');
+  };
+
+  // SAVE + F4 RESPONSE TRACKING
+  const saveToHistory = useCallback(() => {
+    if (!results) return;
+    const entry = {
+      id: Date.now(), date: new Date().toISOString().split('T')[0],
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      profileId: activeProfileId, summary: results.summary,
+      emailCount: results.urgency_analysis?.length || 0,
+      subjects: results.urgency_analysis?.map(e => e.email_subject).slice(0, 10) || [],
+      handled: { ...handled }, results,
+    };
+    setTriageHistory(prev => [entry, ...prev].slice(0, 50));
+  }, [results, handled, activeProfileId, setTriageHistory]);
+
+  // F4: Mark done with timestamp tracking
+  const markHandled = useCallback((key, emailData) => {
+    setHandled(p => ({ ...p, [key]: p[key] === 'done' ? undefined : 'done' }));
+    if (emailData && !handled[key]) {
+      setResponseTimes(prev => [...prev, {
+        id: Date.now(), profileId: activeProfileId,
+        subject: emailData.email_subject, from: emailData.from,
+        tier: key.split('-')[0], triageTime: new Date().toISOString(),
+        doneTime: new Date().toISOString(),
+      }].slice(0, 200));
+    }
+  }, [handled, activeProfileId, setResponseTimes]);
+
+  const overrideUrgency = (origTier, idx, newTier) => {
+    const key = `${origTier}-${idx}`;
+    setOverrides(prev => newTier === origTier ? (({ [key]: _, ...rest }) => rest)(prev) : { ...prev, [key]: newTier });
+  };
+
+  // ─── EXPORTS ───
+  const buildFullExport = useCallback(() => {
+    if (!results) return '';
+    const lines = ['EMAIL TRIAGE REPORT', '═'.repeat(50), `Date: ${new Date().toISOString().split('T')[0]}`, `Profile: ${activeProfile.name}`, ''];
+    const s = results.summary;
+    if (s) lines.push(`Total: ${s.total_emails} | 🔴 ${s.urgent_count} | ⏰ ${s.this_week_count} | ☕ ${s.optional_count}`, s.total_estimated_minutes ? `⏱️ ~${s.total_estimated_minutes} min total` : '', '');
+    ['now', 'this_week', 'optional'].forEach(tier => {
+      const emails = getEmailsByTier(tier);
+      if (!emails.length) return;
+      lines.push(`${TIER_CFG[tier].icon} ${TIER_CFG[tier].label.toUpperCase()} (${emails.length})`, '─'.repeat(40));
+      emails.forEach((e, i) => {
+        const st = handled[`${tier}-${e._idx}`];
+        lines.push(`${i + 1}. ${st === 'done' ? '✅' : '⬜'} [${e.email_category || ''}] ${e.email_subject}`, `   From: ${e.from}`, `   ${e.reasoning}`, '');
+      });
+    });
+    lines.push('', '— Generated by DeftBrain · deftbrain.com');
+    return lines.join('\n');
+  }, [results, activeProfile, getEmailsByTier, handled]);
+
+  const buildUrgentExport = useCallback(() => {
+    const urgent = getEmailsByTier('now');
+    if (!urgent.length) return 'No urgent emails! 🎉\n\n— Generated by DeftBrain · deftbrain.com';
+    const lines = ['🔴 URGENT — REPLY TODAY', '═'.repeat(40), ''];
+    urgent.forEach((e, i) => { lines.push(`${i + 1}. ${e.email_subject}`, `   From: ${e.from}`, `   ${e.reasoning}`, e.draft_reply ? `   Draft: ${e.draft_reply}` : '', ''); });
+    lines.push('— Generated by DeftBrain · deftbrain.com');
+    return lines.join('\n');
+  }, [getEmailsByTier]);
+
+  // ─── STATS ───
+  const handledStats = useMemo(() => {
+    const d = Object.values(handled).filter(v => v === 'done').length;
+    const t = results?.urgency_analysis?.length || 0;
+    return { done: d, remaining: t - d, total: t };
+  }, [handled, results]);
+
+  const senderStats = useMemo(() => {
+    const entries = Object.entries(profileSenders);
+    return { total: entries.length, vips: entries.filter(([_, h]) => h.total >= 3 && h.actuallyUrgent / h.total > 0.7).length, wolves: entries.filter(([_, h]) => h.total >= 3 && h.cryWolfScore > 0.5).length };
+  }, [profileSenders]);
+
+  // F5: INBOX HEALTH SCORE
+  const inboxHealth = useMemo(() => {
+    const recent = profileTriages.slice(0, 10);
+    if (recent.length < 2) return null;
+    const totalEmails = recent.reduce((s, t) => s + (t.summary?.total_emails || 0), 0);
+    const urgentEmails = recent.reduce((s, t) => s + (t.summary?.urgent_count || 0), 0);
+    const optionalEmails = recent.reduce((s, t) => s + (t.summary?.optional_count || 0), 0);
+    if (!totalEmails) return null;
+    const urgentRatio = 1 - (urgentEmails / totalEmails); // fewer urgent = better
+    const optionalRatio = optionalEmails / totalEmails; // more optional = healthier (less noise reaching you)
+    const wolfCount = Object.values(profileSenders).filter(h => h.cryWolfScore > 0.5).length;
+    const wolfPenalty = Math.min(wolfCount * 5, 20);
+    const handledRate = recent.filter(t => Object.values(t.handled || {}).some(v => v === 'done')).length / recent.length;
+    const score = Math.round(Math.min(100, Math.max(0, urgentRatio * 30 + optionalRatio * 20 + handledRate * 30 + 20 - wolfPenalty)));
+    const label = score >= 80 ? 'Excellent' : score >= 60 ? 'Good' : score >= 40 ? 'Needs Work' : 'Stressed';
+    const color = score >= 80 ? 'bg-emerald-500' : score >= 60 ? 'bg-amber-500' : 'bg-red-500';
+    return { score, label, color, sessions: recent.length, urgentRatio: Math.round(urgentEmails / totalEmails * 100), totalEmails };
+  }, [profileTriages, profileSenders]);
+
+  // F2: BRIEFING DATA
+  const briefingData = useMemo(() => {
+    if (!profileTriages.length) return null;
+    const latest = profileTriages[0];
+    const previous = profileTriages[1];
+    // Overdue: urgent items from previous triages not marked done
+    const overdue = profileTriages.slice(0, 3).flatMap(t =>
+      (t.results?.urgency_analysis || []).filter(e => e.urgency_tier === 'now')
+        .filter(e => !t.handled?.[`now-${(t.results?.urgency_analysis || []).indexOf(e)}`])
+        .map(e => ({ ...e, triageDate: t.date }))
+    ).slice(0, 5);
+    // Volume comparison
+    const latestCount = latest.summary?.total_emails || 0;
+    const prevCount = previous?.summary?.total_emails || 0;
+    const volumeChange = previous ? Math.round(((latestCount - prevCount) / Math.max(prevCount, 1)) * 100) : null;
+    // Avg urgent
+    const avgUrgent = profileTriages.length >= 3 ? Math.round(profileTriages.slice(0, 5).reduce((s, t) => s + (t.summary?.urgent_count || 0), 0) / Math.min(profileTriages.length, 5) * 10) / 10 : null;
+    return { latest, previous, overdue, volumeChange, latestCount, prevCount, avgUrgent };
+  }, [profileTriages]);
+
+  // F4: SLA METRICS
+  const slaMetrics = useMemo(() => {
+    if (profileResponses.length < 3) return null;
+    const byTier = {};
+    profileResponses.forEach(r => {
+      if (!byTier[r.tier]) byTier[r.tier] = [];
+      byTier[r.tier].push(r);
+    });
+    return { total: profileResponses.length, byTier, recentWeek: profileResponses.filter(r => { const d = new Date(r.doneTime); const w = new Date(); w.setDate(w.getDate() - 7); return d >= w; }).length };
+  }, [profileResponses]);
+
+  const handleReset = () => { setEmailContent(''); setResults(null); setError(''); setExpandedEmail(null); setHandled({}); setOverrides({}); setExpandAll(false); setMode('input'); };
+
+  // ════════════════════════════════════════════════════════════
+  // EMAIL CARD RENDERER
+  // ════════════════════════════════════════════════════════════
+  const renderCard = (email, tier, idx) => {
+    const rep = getRep(email.from);
+    const catInfo = getCat(email.email_category);
+    const key = `${tier}-${email._idx}`;
+    const isExp = expandAll || expandedEmail === key;
+    const status = handled[key];
+    return (
+      <div key={key} className={`${c.card} border-2 ${TIER_CFG[tier].bc} rounded-lg p-4 transition-all ${status === 'done' ? 'opacity-50' : ''}`}>
+        <div className="flex items-start justify-between mb-2">
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-1.5 flex-wrap mb-1">
+              {email.email_category && <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold text-white ${catInfo.bg}`}>{catInfo.icon} {email.email_category}</span>}
+              {rep && <span className={`${c[rep.pill]} border text-[9px] font-bold px-1.5 py-0.5 rounded`}>{rep.icon} {rep.label}</span>}
+              {email.thread_analysis?.is_escalating && <span className={`${c.pillRed} border text-[9px] font-bold px-1.5 py-0.5 rounded`}>📈 Escalating</span>}
+              {email.thread_analysis?.on_cc && <span className={`${c.pillGray} border text-[9px] px-1.5 py-0.5 rounded`}>CC</span>}
+              {email.thread_analysis?.follow_up_count > 0 && <span className={`${c.pillGray} border text-[9px] px-1.5 py-0.5 rounded`}>{email.thread_analysis.follow_up_count} follow-ups</span>}
+            </div>
+            <p className={`text-sm font-semibold ${c.text} truncate`}>{email.email_subject}</p>
+            <p className={`text-xs ${c.textMuted} mt-0.5`}>From: {email.from}</p>
+            {email.deadline_detected && <p className={`text-xs mt-1 font-medium ${c.accent}`}>📅 {email.deadline_detected}</p>}
           </div>
+          <div className="flex items-center gap-1 ml-2 flex-shrink-0">
+            {tier !== 'optional' && <button onClick={() => markHandled(key, email)} className={`text-sm p-1 rounded ${status === 'done' ? 'opacity-100' : 'opacity-40 hover:opacity-100'}`} title="Done">✅</button>}
+            {tier !== 'optional' && <button onClick={() => openComposer(email)} className={`text-sm p-1 rounded opacity-40 hover:opacity-100`} title="Compose reply">✍️</button>}
+            <button onClick={() => setExpandedEmail(isExp && !expandAll ? null : key)} className={`p-1 rounded ${c.btnSec} text-xs`}>{isExp ? '▲' : '▼'}</button>
+          </div>
+        </div>
+        {isExp && (
+          <div className={`mt-3 pt-3 ${c.border} border-t space-y-3`}>
+            <div><p className={`text-[10px] font-bold ${c.textMuted}`}>WHY</p><p className={`text-xs ${c.textSec}`}>{email.reasoning}</p></div>
+            {email.consequence_of_delay && <div><p className={`text-[10px] font-bold ${c.textMuted}`}>IF YOU WAIT</p><p className={`text-xs ${c.textSec}`}>{email.consequence_of_delay}</p></div>}
+            {email.response_optimization && (
+              <div className={`${c.cardAlt} border rounded-lg p-3 space-y-1`}>
+                <p className="text-xs"><strong>Best time:</strong> {email.response_optimization.best_time}</p>
+                {email.response_optimization.estimated_time && <p className="text-xs"><strong>Time:</strong> {email.response_optimization.estimated_time}</p>}
+                {email.response_optimization.can_delegate && <p className={`text-xs ${c.accent}`}>💡 Delegate to: {email.response_optimization.delegate_to}</p>}
+              </div>
+            )}
+            {email.draft_reply && (
+              <div>
+                <div className="flex items-center justify-between mb-1"><p className={`text-[10px] font-bold ${c.textMuted}`}>DRAFT REPLY</p><CopyBtn content={email.draft_reply + '\n\n— Generated by DeftBrain · deftbrain.com'} label="Copy" /></div>
+                <div className={`${c.info} border rounded-lg p-3`}><p className={`text-xs ${c.textSec} whitespace-pre-wrap`}>{email.draft_reply}</p></div>
+              </div>
+            )}
+            <div><p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>MOVE TO</p><div className="flex gap-1.5">
+              {Object.entries(TIER_CFG).filter(([k]) => k !== tier).map(([k, cfg]) => (<button key={k} onClick={() => overrideUrgency(tier, email._idx, k)} className={`text-[10px] px-2 py-1 rounded border ${c.pillGray} border hover:opacity-80`}>{cfg.icon} {cfg.label}</button>))}
+            </div></div>
+            <CopyBtn content={`${email.email_subject}\nFrom: ${email.from}\nUrgency: ${tier}\n${email.reasoning}${email.draft_reply ? `\n\nDraft: ${email.draft_reply}` : ''}\n\n— Generated by DeftBrain · deftbrain.com`} label="Copy Analysis" />
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // ════════════════════════════════════════════════════════════
+  // RENDER
+  // ════════════════════════════════════════════════════════════
+  return (
+    <div className={`space-y-6 ${c.text}`}>
+      <div className="mb-2">
+        <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Email Urgency Triager 📨</h2>
+        <p className={`text-sm ${isDark ? 'text-zinc-400' : 'text-gray-500'}`}>AI triage with composer, sender learning, health tracking, and smart rules</p>
+      </div>
+
+      {/* F6: PROFILE SWITCHER */}
+      <div className={`${c.card} border rounded-xl p-3 flex items-center gap-2 flex-wrap`}>
+        <span className={`text-xs font-bold ${c.textMuted}`}>PROFILE:</span>
+        {profiles.map(p => (
+          <button key={p.id} onClick={() => { setActiveProfileId(p.id); setUserRole(p.role); }}
+            className={`text-xs px-2.5 py-1 rounded-lg border-2 transition-colors ${activeProfileId === p.id ? (isDark ? 'border-emerald-500 bg-emerald-900/20' : 'border-emerald-500 bg-emerald-50') : `${c.pillGray} border`}`}>
+            {p.icon} {p.name}
+          </button>
+        ))}
+        <button onClick={() => {
+          const name = window.prompt('Profile name:');
+          if (!name?.trim()) return;
+          const icon = window.prompt('Icon emoji:', '📧') || '📧';
+          const role = window.prompt('Role:', 'Employee') || 'Employee';
+          setProfiles(prev => [...prev, { id: Date.now().toString(), name: name.trim(), icon, role }]);
+        }} className={`text-xs px-2 py-1 rounded-lg border ${c.pillGray} border hover:opacity-80`}>➕</button>
+        {profiles.length > 1 && activeProfileId !== 'work' && (
+          <button onClick={() => { if (window.confirm(`Delete "${activeProfile.name}"?`)) { setProfiles(p => p.filter(pr => pr.id !== activeProfileId)); setActiveProfileId('work'); } }}
+            className={`text-[10px] ${c.textMuted} hover:text-red-500 ml-auto`}>🗑️ Delete</button>
+        )}
+      </div>
+
+      {/* MODE TABS */}
+      <div className={`${c.card} border rounded-xl p-4`}>
+        <div className="grid grid-cols-6 gap-1.5">
+          {[
+            { id: 'input', icon: '✉️', label: 'Triage' },
+            { id: 'results', icon: '📋', label: 'Results', disabled: !results },
+            { id: 'compose', icon: '✍️', label: 'Compose', disabled: !composeTarget && !results },
+            { id: 'briefing', icon: '📰', label: 'Briefing' },
+            { id: 'history', icon: '📚', label: `History` },
+            { id: 'settings', icon: '⚙️', label: 'Settings' },
+          ].map(m => (
+            <button key={m.id} onClick={() => !m.disabled && setMode(m.id)} disabled={m.disabled}
+              className={`p-2 border-2 rounded-lg text-center transition-colors ${m.disabled ? 'opacity-30 cursor-not-allowed' : ''} ${mode === m.id ? (isDark ? 'border-emerald-500 bg-emerald-900/20' : 'border-emerald-500 bg-emerald-50') : (isDark ? 'border-zinc-700 hover:border-zinc-600' : 'border-emerald-200 hover:border-emerald-300')}`}>
+              <span className="text-lg block">{m.icon}</span>
+              <p className={`text-[10px] font-semibold ${c.text}`}>{m.label}</p>
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* Sender Insights Toggle */}
-      {Object.keys(senderHistory).length > 0 && (
-        <div className={`${c.purpleBox} border-l-4 rounded-r-lg p-4 transition-colors duration-200`}>
-          <button
-            onClick={() => setShowSenderInsights(!showSenderInsights)}
-            className={`flex items-center gap-2 w-full ${c.text}`}
-          >
-            <span>📈</span>
-            <span className="font-semibold">
-              Sender Learning Active ({Object.keys(senderHistory).length} senders tracked)
-            </span>
-            {showSenderInsights ? <span className="ml-auto">▲</span> : <span className="ml-auto">▼</span>}
-          </button>
-          
-          {showSenderInsights && (
-            <div className="mt-3 space-y-2">
-              {Object.entries(senderHistory)
-                .sort((a, b) => b[1].total - a[1].total)
-                .slice(0, 5)
-                .map(([sender, data]) => (
-                  <div key={sender} className={`p-2 rounded ${isDark ? 'bg-zinc-700' : 'bg-white'} text-xs`}>
-                    <div className="flex items-center justify-between">
-                      <span className={`font-medium ${c.text}`}>{sender}</span>
-                      <div className="flex items-center gap-2">
-                        {data.cryWolfScore > 0.5 && <span title="Cry Wolf">🐺</span>}
-                        {data.actuallyUrgent / data.total > 0.7 && <span title="VIP">⭐</span>}
-                      </div>
-                    </div>
-                    <div className={`text-xs mt-1 ${c.textSecondary}`}>
-                      {data.total} emails • {data.actuallyUrgent} actually urgent • Cry Wolf: {Math.round(data.cryWolfScore * 100)}%
-                    </div>
-                  </div>
-                ))}
+      {/* ══════════ INPUT MODE ══════════ */}
+      {mode === 'input' && (
+        <div className="space-y-4">
+          {senderStats.total > 0 && (
+            <div className={`${c.purple} border-l-4 rounded-r-lg p-3 flex items-center gap-2`}>
+              <span>📈</span><span className="text-xs font-semibold">{senderStats.total} senders tracked{senderStats.vips > 0 ? ` · ${senderStats.vips} ⭐` : ''}{senderStats.wolves > 0 ? ` · ${senderStats.wolves} 🐺` : ''}</span>
+              {profileRules.length > 0 && <span className={`${c.pillSky} border text-[9px] px-1.5 py-0.5 rounded ml-auto`}>{profileRules.length} rules active</span>}
             </div>
+          )}
+          <div className={`${c.card} border rounded-xl p-6 space-y-5`}>
+            <div><label className={`text-sm font-semibold ${c.label} block mb-1.5`}>Paste Emails</label>
+              <p className={`text-[10px] ${c.textMuted} mb-1`}>Include full threads for best analysis. Separate with '---'</p>
+              <textarea value={emailContent} onChange={e => setEmailContent(e.target.value)}
+                placeholder={"From: client@company.com\nSubject: Re: Project timeline\n\nFollowing up on my earlier email...\n\n---\n\nFrom: newsletter@service.com\nSubject: Weekly Tips\n[content...]"}
+                className={`w-full h-44 p-4 border-2 rounded-lg ${c.input} outline-none focus:ring-2 resize-none text-sm font-mono`} />
+            </div>
+            <button onClick={handleAnalyze} disabled={loading || !emailContent.trim()}
+              className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2`}>
+              {loading ? <><span className="animate-spin inline-block">⏳</span> Analyzing...</> : <>⚡ Analyze Urgency</>}
+            </button>
+            {error && <div className={`${c.warning} border rounded-lg p-4 flex items-start gap-2`}><span>⚠️</span><p className="text-sm">{error}</p></div>}
+          </div>
+        </div>
+      )}
+
+      {/* ══════════ RESULTS MODE ══════════ */}
+      {mode === 'results' && results && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2">
+              <button onClick={saveToHistory} className={`${c.btnPrimary} py-2 px-4 rounded-lg text-sm font-semibold`}>💾 Save</button>
+              <button onClick={handleReset} className={`${c.btnSec} py-2 px-3 rounded-lg text-sm`}>✨ New</button>
+              <button onClick={() => setExpandAll(p => !p)} className={`${c.btnSec} py-2 px-3 rounded-lg text-sm`}>{expandAll ? '▲ Collapse' : '▼ Expand'}</button>
+            </div>
+            <ActionBar><CopyBtn content={buildUrgentExport()} label="Urgent" /><CopyBtn content={buildFullExport()} label="Full" /><PrintBtn content={buildFullExport()} title="Email Triage Report" /></ActionBar>
+          </div>
+
+          <div className="grid grid-cols-4 gap-3">
+            <div className={`${c.card} border rounded-xl p-3 text-center`}><p className="text-2xl font-bold">{results.summary?.total_emails || 0}</p><p className={`text-[10px] ${c.textMuted}`}>Total</p></div>
+            <div className={`${c.urgent} border rounded-xl p-3 text-center`}><p className="text-2xl font-bold">{getEmailsByTier('now').length}</p><p className="text-[10px] opacity-75">🔴 Now</p></div>
+            <div className={`${c.thisWeek} border rounded-xl p-3 text-center`}><p className="text-2xl font-bold">{getEmailsByTier('this_week').length}</p><p className="text-[10px] opacity-75">⏰ Week</p></div>
+            <div className={`${c.optional} border rounded-xl p-3 text-center`}><p className="text-2xl font-bold">{getEmailsByTier('optional').length}</p><p className="text-[10px] opacity-75">☕ Skip</p></div>
+          </div>
+
+          {handledStats.done > 0 && (
+            <div className={`${c.card} border rounded-xl p-4`}>
+              <div className="flex items-center justify-between mb-2"><p className={`text-sm font-semibold ${c.text}`}>Progress</p><p className={`text-xs ${c.textMuted}`}>{handledStats.done} done · {handledStats.remaining} left</p></div>
+              <div className={`h-3 rounded-full overflow-hidden ${isDark ? 'bg-zinc-700' : 'bg-emerald-100'}`}><div className="h-full bg-emerald-500 rounded-full transition-all" style={{ width: `${(handledStats.done / handledStats.total) * 100}%` }} /></div>
+            </div>
+          )}
+
+          {results.batch_insights?.time_block_suggestion && (
+            <div className={`${c.purple} border-l-4 rounded-r-lg p-4 flex items-start gap-2`}><span>⚡</span><div><p className="text-sm font-bold">Time Block</p><p className="text-xs">{results.batch_insights.time_block_suggestion}</p>{results.summary?.total_estimated_minutes > 0 && <p className="text-xs mt-1 font-semibold">⏱️ ~{results.summary.total_estimated_minutes} min</p>}</div></div>
+          )}
+
+          {results.anxiety_relief && (
+            <div className={`${c.success} border-l-4 rounded-r-lg p-4`}><h4 className="font-bold text-sm mb-1">✅ Permission to Breathe</h4>
+              {results.anxiety_relief.permission_to_wait && <p className="text-xs mb-1">{results.anxiety_relief.permission_to_wait}</p>}
+              {results.anxiety_relief.what_to_ignore && <p className="text-xs mb-1"><strong>Ignore:</strong> {results.anxiety_relief.what_to_ignore}</p>}
+              {results.anxiety_relief.batch_processing_tip && <p className="text-xs">💡 {results.anxiety_relief.batch_processing_tip}</p>}
+            </div>
+          )}
+
+          {results.recurring_patterns?.unsubscribe_candidates?.length > 0 && (
+            <div className={`${c.info} border-l-4 rounded-r-lg p-4`}><h4 className="font-bold text-sm mb-1">🔄 Patterns</h4>{results.recurring_patterns.unsubscribe_candidates.map((u, i) => <p key={i} className="text-xs mb-0.5">📬 {u}</p>)}{results.recurring_patterns.volume_observation && <p className="text-xs mt-1">{results.recurring_patterns.volume_observation}</p>}</div>
+          )}
+
+          {Object.keys(overrides).length > 0 && (
+            <div className={`${c.thisWeek} border rounded-lg p-3 flex items-center justify-between`}><p className="text-xs font-semibold">{Object.keys(overrides).length} manually moved</p><button onClick={() => setOverrides({})} className="text-xs underline">Reset</button></div>
+          )}
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            {['now', 'this_week', 'optional'].map(tier => {
+              const cfg = TIER_CFG[tier]; const emails = getEmailsByTier(tier);
+              return (<div key={tier}>
+                <div className={`${c[cfg.ck]} border-2 rounded-t-xl p-4`}><div className="flex items-center gap-2"><span>{cfg.icon}</span><h3 className="font-bold text-lg">{cfg.label}</h3><span className="text-sm font-bold opacity-75">({emails.length})</span></div><p className="text-sm opacity-75 mt-0.5">{cfg.sub}</p></div>
+                <div className="space-y-3 mt-3">{emails.length === 0 ? <div className={`${c.cardAlt} border rounded-lg p-4 text-center`}><span className="text-2xl block mb-1">{tier === 'now' ? '✅' : cfg.icon}</span><p className={`text-sm ${c.textMuted}`}>{tier === 'now' ? 'Nothing urgent! 🎉' : 'Nothing here'}</p></div> : emails.map((e, i) => renderCard(e, tier, i))}</div>
+              </div>);
+            })}
+          </div>
+
+          {results.response_templates?.length > 0 && (
+            <div className={`${c.card} border rounded-xl p-5`}><h3 className={`text-sm font-bold ${c.text} mb-3`}>⚡ Templates</h3><div className="space-y-2">{results.response_templates.map((t, i) => (
+              <div key={i} className={`${c.cardAlt} border rounded-lg p-3`}><div className="flex items-center justify-between mb-1"><span className={`${t.for_urgency === 'now' ? c.pillRed : c.pillAmber} border text-[9px] font-bold px-1.5 py-0.5 rounded`}>{t.for_urgency}</span><CopyBtn content={t.template + '\n\n— Generated by DeftBrain · deftbrain.com'} label="Copy" /></div><p className={`text-xs ${c.textSec}`}>{t.template}</p></div>
+            ))}</div></div>
+          )}
+
+          <div className={`${c.cardAlt} border rounded-xl p-4`}><p className={`text-[10px] font-bold ${c.textMuted} mb-2`}>RELATED TOOLS</p><div className="flex flex-wrap gap-2">
+            {[{ s: 'confrontation-coach', l: '🥊 Confrontation Coach' }, { s: 'apology-calibrator', l: '🙏 Apology Calibrator' }, { s: 'jargon-assassin', l: '🗡️ Jargon Assassin' }, { s: 'brain-dump-structurer', l: '🧠 Brain Dump' }].map(t => (
+              <a key={t.s} href={`/tool/${t.s}`} target="_blank" rel="noopener noreferrer" className={`${c.pillGray} border text-[10px] px-2 py-1 rounded hover:opacity-80`}>{t.l}</a>
+            ))}
+          </div></div>
+        </div>
+      )}
+
+      {/* ══════════ F1: COMPOSE MODE ══════════ */}
+      {mode === 'compose' && (
+        <div className="space-y-4">
+          {!composeTarget ? (
+            <div className={`${c.card} border rounded-xl p-6 text-center`}><span className="text-4xl block mb-3">✍️</span><p className={`text-sm ${c.textSec}`}>Click the ✍️ button on any email in Results to compose a reply.</p><button onClick={() => setMode('results')} className={`${c.btnPrimary} px-4 py-2 rounded-lg text-sm mt-3`}>← Back to Results</button></div>
+          ) : (<>
+            <div className={`${c.card} border rounded-xl p-5`}>
+              <h3 className={`text-sm font-bold ${c.text} mb-3 flex items-center gap-2`}><span>✍️</span> Reply Composer</h3>
+              <div className={`${c.cardAlt} border rounded-lg p-3 mb-4`}>
+                <p className={`text-xs ${c.textMuted}`}>Replying to:</p>
+                <p className={`text-sm font-semibold ${c.text}`}>{composeTarget.email_subject}</p>
+                <p className={`text-xs ${c.textMuted}`}>From: {composeTarget.from}</p>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className={`text-xs font-semibold ${c.label} block mb-1`}>Current Draft</label>
+                  <textarea value={composeDraft} onChange={e => setComposeDraft(e.target.value)}
+                    placeholder="Start typing or let AI compose from scratch..."
+                    className={`w-full h-24 p-3 border-2 rounded-lg ${c.input} outline-none resize-none text-sm`} />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div><label className={`text-xs font-semibold ${c.label} block mb-1`}>Tone</label>
+                    <div className="flex flex-wrap gap-1">{TONES.map(t => (<button key={t.id} onClick={() => setComposeTone(t.id)} className={`text-[10px] px-2 py-1 rounded border transition-colors ${composeTone === t.id ? (isDark ? 'border-emerald-500 bg-emerald-900/20' : 'border-emerald-500 bg-emerald-50') : `${c.pillGray} border`}`}>{t.label}</button>))}</div>
+                  </div>
+                  <div><label className={`text-xs font-semibold ${c.label} block mb-1`}>Length</label>
+                    <div className="flex flex-wrap gap-1">{LENGTHS.map(l => (<button key={l.id} onClick={() => setComposeLength(l.id)} className={`text-[10px] px-2 py-1 rounded border transition-colors ${composeLength === l.id ? (isDark ? 'border-emerald-500 bg-emerald-900/20' : 'border-emerald-500 bg-emerald-50') : `${c.pillGray} border`}`}>{l.label}</button>))}</div>
+                  </div>
+                </div>
+                <div><label className={`text-xs font-semibold ${c.label} block mb-1`}>Instructions <span className={`text-[10px] ${c.textMuted}`}>(optional)</span></label>
+                  <input value={composeInstructions} onChange={e => setComposeInstructions(e.target.value)} placeholder="Make it shorter, add the deadline, push back politely..."
+                    className={`w-full p-2.5 border rounded-lg ${c.input} outline-none text-sm`} />
+                </div>
+                <button onClick={handleCompose} disabled={loading} className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2`}>
+                  {loading ? <><span className="animate-spin inline-block">⏳</span> Composing...</> : <>✍️ {composeDraft.trim() ? 'Refine Reply' : 'Compose Reply'}</>}
+                </button>
+              </div>
+            </div>
+
+            {composeResult && (
+              <div className={`${c.card} border rounded-xl p-5 space-y-4`}>
+                <div className="flex items-center justify-between"><h3 className={`text-sm font-bold ${c.text}`}>📧 Composed Reply</h3>
+                  <ActionBar><CopyBtn content={composeResult.composed_reply + '\n\n— Generated by DeftBrain · deftbrain.com'} label="Copy" /><PrintBtn content={`Subject: ${composeResult.subject_line}\n\n${composeResult.composed_reply}`} title="Email Reply" /></ActionBar>
+                </div>
+                <div className={`${c.cardAlt} border rounded-lg p-3`}><p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>SUBJECT</p><p className={`text-sm ${c.text}`}>{composeResult.subject_line}</p></div>
+                <div className={`${c.info} border rounded-lg p-4`}><p className={`text-sm ${c.textSec} whitespace-pre-wrap`}>{composeResult.composed_reply}</p></div>
+                <div className="flex flex-wrap gap-2">
+                  {composeResult.key_points_addressed?.map((p, i) => <span key={i} className={`${c.pillGreen} border text-[9px] px-1.5 py-0.5 rounded`}>✓ {p}</span>)}
+                  <span className={`${c.pillGray} border text-[9px] px-1.5 py-0.5 rounded`}>{composeResult.word_count} words · {composeResult.tone_used}</span>
+                </div>
+                {composeResult.alternative_closings?.length > 0 && (
+                  <div><p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>ALTERNATIVE CLOSINGS</p><div className="flex flex-wrap gap-1">{composeResult.alternative_closings.map((cl, i) => <span key={i} className={`${c.pillGray} border text-[10px] px-2 py-0.5 rounded`}>{cl}</span>)}</div></div>
+                )}
+                <button onClick={() => { setComposeDraft(composeResult.composed_reply); setComposeResult(null); }} className={`${c.btnSec} text-xs px-3 py-2 rounded-lg`}>🔄 Refine Further</button>
+              </div>
+            )}
+          </>)}
+        </div>
+      )}
+
+      {/* ══════════ F2+F5: BRIEFING MODE ══════════ */}
+      {mode === 'briefing' && (
+        <div className="space-y-4">
+          {/* F5: Inbox Health */}
+          {inboxHealth ? (
+            <div className={`${c.card} border rounded-xl p-5`}>
+              <h3 className={`text-sm font-bold ${c.text} mb-3`}>🏥 Inbox Health</h3>
+              <div className="flex items-center gap-4">
+                <div className="relative w-20 h-20 flex-shrink-0">
+                  <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
+                    <path d="M18 2.0845a 15.9155 15.9155 0 0 1 0 31.831a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke={isDark ? '#374151' : '#d1fae5'} strokeWidth="3" />
+                    <path d="M18 2.0845a 15.9155 15.9155 0 0 1 0 31.831a 15.9155 15.9155 0 0 1 0 -31.831" fill="none"
+                      stroke={inboxHealth.score >= 80 ? '#10b981' : inboxHealth.score >= 60 ? '#f59e0b' : '#ef4444'}
+                      strokeWidth="3" strokeDasharray={`${inboxHealth.score}, 100`} strokeLinecap="round" />
+                  </svg>
+                  <div className="absolute inset-0 flex items-center justify-center"><span className={`text-lg font-bold ${c.text}`}>{inboxHealth.score}</span></div>
+                </div>
+                <div>
+                  <p className={`text-sm font-bold ${c.text}`}>{inboxHealth.label}</p>
+                  <p className={`text-xs ${c.textMuted}`}>{inboxHealth.sessions} sessions · {inboxHealth.totalEmails} emails analyzed</p>
+                  <p className={`text-xs ${c.textMuted}`}>{inboxHealth.urgentRatio}% urgent rate</p>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className={`${c.card} border rounded-xl p-5 text-center`}><span className="text-3xl block mb-2">🏥</span><p className={`text-sm ${c.textSec}`}>Triage 2+ batches to see your Inbox Health Score</p></div>
+          )}
+
+          {/* F2: Briefing */}
+          {briefingData ? (
+            <div className="space-y-4">
+              {/* Overdue from previous */}
+              {briefingData.overdue.length > 0 && (
+                <div className={`${c.urgent} border-2 rounded-xl p-4`}>
+                  <h4 className="font-bold text-sm mb-2">⚠️ Unreplied Urgent ({briefingData.overdue.length})</h4>
+                  {briefingData.overdue.map((e, i) => <div key={i} className="flex items-center gap-2 mb-1"><span className={`text-[10px] ${c.textMuted}`}>{e.triageDate}</span><p className={`text-xs ${c.text} truncate`}>{e.email_subject} — {e.from}</p></div>)}
+                </div>
+              )}
+
+              {/* Latest session summary */}
+              <div className={`${c.card} border rounded-xl p-5`}>
+                <h3 className={`text-sm font-bold ${c.text} mb-3`}>📰 Latest Triage — {briefingData.latest.date}</h3>
+                <div className="grid grid-cols-3 gap-3 mb-3">
+                  <div className="text-center"><p className="text-xl font-bold">{briefingData.latest.summary?.urgent_count || 0}</p><p className={`text-[10px] ${c.textMuted}`}>🔴 Urgent</p></div>
+                  <div className="text-center"><p className="text-xl font-bold">{briefingData.latest.summary?.this_week_count || 0}</p><p className={`text-[10px] ${c.textMuted}`}>⏰ This Week</p></div>
+                  <div className="text-center"><p className="text-xl font-bold">{briefingData.latest.summary?.optional_count || 0}</p><p className={`text-[10px] ${c.textMuted}`}>☕ Optional</p></div>
+                </div>
+                {briefingData.volumeChange !== null && (
+                  <div className={`${briefingData.volumeChange > 20 ? c.urgent : briefingData.volumeChange < -20 ? c.success : c.info} border rounded-lg p-3`}>
+                    <p className="text-xs">{briefingData.volumeChange > 0 ? `📈 ${briefingData.volumeChange}% more` : briefingData.volumeChange < 0 ? `📉 ${Math.abs(briefingData.volumeChange)}% fewer` : '➡️ Same volume'} emails vs previous ({briefingData.prevCount} → {briefingData.latestCount})</p>
+                  </div>
+                )}
+                {briefingData.avgUrgent !== null && <p className={`text-xs ${c.textMuted} mt-2`}>📊 Average urgent per session: {briefingData.avgUrgent}</p>}
+              </div>
+
+              {/* Volume trend */}
+              {profileTriages.length >= 3 && (
+                <div className={`${c.card} border rounded-xl p-5`}>
+                  <h3 className={`text-sm font-bold ${c.text} mb-3`}>📈 Volume Trend</h3>
+                  <div className="space-y-1.5">{profileTriages.slice(0, 10).map(entry => {
+                    const total = entry.summary?.total_emails || 0;
+                    const urgent = entry.summary?.urgent_count || 0;
+                    const max = Math.max(...profileTriages.slice(0, 10).map(e => e.summary?.total_emails || 1));
+                    return (<div key={entry.id} className="flex items-center gap-2"><span className={`w-16 text-[10px] ${c.textMuted}`}>{entry.date}</span><div className={`flex-1 h-4 rounded-full overflow-hidden ${isDark ? 'bg-zinc-700' : 'bg-emerald-100'} flex`}><div className="h-full bg-red-500 rounded-l-full" style={{ width: `${(urgent / max) * 100}%` }} /><div className="h-full bg-emerald-500" style={{ width: `${((total - urgent) / max) * 100}%` }} /></div><span className={`w-8 text-right text-[10px] font-bold ${c.textMuted}`}>{total}</span></div>);
+                  })}</div>
+                  <div className="flex items-center gap-3 mt-2"><div className="flex items-center gap-1"><div className="w-2 h-2 rounded bg-red-500" /><span className={`text-[9px] ${c.textMuted}`}>Urgent</span></div><div className="flex items-center gap-1"><div className="w-2 h-2 rounded bg-emerald-500" /><span className={`text-[9px] ${c.textMuted}`}>Other</span></div></div>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className={`${c.card} border rounded-xl p-6 text-center`}><span className="text-3xl block mb-2">📰</span><p className={`text-sm ${c.textSec}`}>Save a triage to start seeing your daily briefing.</p></div>
           )}
         </div>
       )}
 
-      {/* Input Form */}
-      <div className={`${c.card} border rounded-xl shadow-sm p-6 transition-colors duration-200`}>
-        
-        {/* Header */}
-        <div className="flex items-center gap-3 mb-6">
-          <div className={`p-3 rounded-lg ${isDark ? 'bg-emerald-900/30' : 'bg-emerald-100'}`}>
-            <span className="text-xl">✉️</span>
-          </div>
-          <div>
-            <h2 className={`text-xl font-bold ${c.text}`}>Smart Email Urgency Analysis</h2>
-            <p className={`text-sm ${c.textMuted}`}>With thread intelligence & sender learning</p>
-          </div>
-        </div>
-
-        {/* User Role */}
-        <div className="mb-6">
-          <label htmlFor="user-role" className={`block text-sm font-medium ${c.label} mb-2`}>
-            Your role/context
-          </label>
-          <select
-            id="user-role"
-            value={userRole}
-            onChange={(e) => setUserRole(e.target.value)}
-            className={`w-full p-3 border rounded-lg ${c.input} outline-none focus:ring-2 transition-colors duration-200`}
-          >
-            {roleOptions.map(option => (
-              <option key={option} value={option}>{option}</option>
-            ))}
-          </select>
-        </div>
-
-        {/* Timezone */}
-        <div className="mb-6">
-          <label htmlFor="timezone" className={`block text-sm font-medium ${c.label} mb-2 flex items-center gap-2`}>
-            <span>🌍</span>
-            Your timezone
-          </label>
-          <input
-            id="timezone"
-            type="text"
-            value={userTimezone}
-            onChange={(e) => setUserTimezone(e.target.value)}
-            className={`w-full p-3 border rounded-lg ${c.input} outline-none focus:ring-2 transition-colors duration-200`}
-            placeholder="e.g., America/New_York, Europe/London"
-          />
-          <p className={`text-xs ${c.textMuted} mt-1`}>
-            Used to suggest optimal response times
-          </p>
-        </div>
-
-        {/* Email Content */}
-        <div className="mb-6">
-          <label htmlFor="email-content" className={`block text-sm font-medium ${c.label} mb-2`}>
-            Paste your emails (including full threads)
-          </label>
-          <textarea
-            id="email-content"
-            value={emailContent}
-            onChange={(e) => setEmailContent(e.target.value)}
-            placeholder={`Paste entire email threads for best analysis. I'll detect:
-• Thread escalation patterns
-• Whether you're on TO vs CC
-• Follow-up count
-• Sender urgency patterns
-
-Example with thread:
-From: client@company.com
-Subject: Re: Re: Project timeline
-[Previous message from you: "I'll have this by Friday"]
-Thanks, but we actually need it by Wednesday now. Client moved up deadline.
-
----
-
-From: newsletter@service.com
-Subject: Weekly Tips
-[Newsletter content...]`}
-            className={`w-full p-4 border rounded-lg ${c.input} outline-none focus:ring-2 transition-colors duration-200 font-mono text-sm`}
-            rows={12}
-          />
-          <p className={`text-xs ${c.textMuted} mt-1`}>
-            💡 Include full threads for escalation detection. Separate emails with '---'
-          </p>
-        </div>
-
-        {/* Analyze button */}
-        <div className="flex gap-3">
-          <button
-            onClick={handleAnalyze}
-            disabled={loading || !emailContent.trim()}
-            className={`flex-1 ${c.btnPrimary} disabled:opacity-50 disabled:cursor-not-allowed font-medium py-3 px-6 rounded-lg transition-all duration-200 flex items-center justify-center gap-2`}
-          >
-            {loading ? (
-              <>
-                <span className="animate-spin inline-block">⏳</span>
-                Analyzing with AI...
-              </>
-            ) : (
-              <>
-                <span>⚡</span>
-                Analyze Urgency
-              </>
-            )}
-          </button>
-
-          {results && (
-            <button
-              onClick={handleReset}
-              className={`px-6 py-3 border-2 ${c.btnOutline} font-medium rounded-lg transition-all duration-200`}
-            >
-              New Batch
-            </button>
-          )}
-        </div>
-
-        {/* Error Display */}
-        {error && (
-          <div className={`mt-4 p-4 ${c.warningBox} border rounded-lg flex items-start gap-3 transition-colors duration-200`} role="alert">
-            <span className="flex-shrink-0 mt-0.5">⚠️</span>
-            <p className="text-sm">{error}</p>
-          </div>
-        )}
-      </div>
-
-      {/* Results Display */}
-      {results && (
-        <div className="space-y-6">
-          
-          {/* Summary Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className={`${c.card} border rounded-xl p-4 transition-colors duration-200`}>
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className={`text-sm ${c.textMuted}`}>Total Emails</div>
-                  <div className={`text-3xl font-bold ${c.text}`}>{results.summary?.total_emails || 0}</div>
-                </div>
-                <span className="text-2xl">✉️</span>
+      {/* ══════════ HISTORY + F4 SLA ══════════ */}
+      {mode === 'history' && (
+        <div className="space-y-4">
+          {/* F4: SLA metrics */}
+          {slaMetrics && (
+            <div className={`${c.card} border rounded-xl p-5`}>
+              <h3 className={`text-sm font-bold ${c.text} mb-3`}>⏱️ Response Tracking</h3>
+              <div className="grid grid-cols-3 gap-3">
+                <div className="text-center"><p className="text-xl font-bold">{slaMetrics.total}</p><p className={`text-[10px] ${c.textMuted}`}>Completed</p></div>
+                <div className="text-center"><p className="text-xl font-bold">{slaMetrics.recentWeek}</p><p className={`text-[10px] ${c.textMuted}`}>This Week</p></div>
+                <div className="text-center"><p className="text-xl font-bold">{Object.keys(slaMetrics.byTier).length}</p><p className={`text-[10px] ${c.textMuted}`}>Tiers Used</p></div>
               </div>
-            </div>
-
-            <div className={`${c.urgent} border rounded-xl p-4 transition-colors duration-200`}>
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-sm opacity-75">Reply Now</div>
-                  <div className="text-3xl font-bold">{results.summary?.urgent_count || 0}</div>
-                </div>
-                <span className="text-2xl opacity-75">🔴</span>
-              </div>
-            </div>
-
-            <div className={`${c.thisWeek} border rounded-xl p-4 transition-colors duration-200`}>
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-sm opacity-75">This Week</div>
-                  <div className="text-3xl font-bold">{results.summary?.this_week_count || 0}</div>
-                </div>
-                <span className="text-2xl opacity-75">⏰</span>
-              </div>
-            </div>
-
-            <div className={`${c.optional} border rounded-xl p-4 transition-colors duration-200`}>
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-sm opacity-75">Optional</div>
-                  <div className="text-3xl font-bold">{results.summary?.optional_count || 0}</div>
-                </div>
-                <span className="text-2xl opacity-75">☕</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Batch Processing Insights */}
-          {results.batch_insights && (
-            <div className={`${c.purpleBox} border-l-4 rounded-r-lg p-5 transition-colors duration-200`}>
-              <h3 className={`font-bold mb-2 flex items-center gap-2 ${c.text}`}>
-                <span>⚡</span>
-                Smart Batching Suggestions
-              </h3>
-              {results.batch_insights.similar_emails && results.batch_insights.similar_emails.length > 0 && (
-                <div className="mb-3">
-                  <p className={`text-sm font-semibold mb-1 ${c.textSecondary}`}>Batch these together:</p>
-                  <ul className={`text-sm space-y-1 ${c.textSecondary}`}>
-                    {results.batch_insights.similar_emails.map((batch, idx) => (
-                      <li key={idx}>• {batch}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-              {results.batch_insights.delegation_opportunities && (
-                <div>
-                  <p className={`text-sm font-semibold mb-1 ${c.textSecondary}`}>Can delegate:</p>
-                  <p className={`text-sm ${c.textSecondary}`}>{results.batch_insights.delegation_opportunities}</p>
-                </div>
-              )}
+              {Object.entries(slaMetrics.byTier).map(([tier, items]) => (
+                <div key={tier} className="flex items-center gap-2 mt-2"><span className={`w-20 text-[10px] font-bold ${c.textMuted}`}>{TIER_CFG[tier]?.icon || '📧'} {tier}</span>
+                  <div className={`flex-1 h-3 rounded-full overflow-hidden ${isDark ? 'bg-zinc-700' : 'bg-emerald-100'}`}><div className="h-full bg-emerald-500 rounded-full" style={{ width: `${(items.length / slaMetrics.total) * 100}%` }} /></div>
+                  <span className={`w-6 text-right text-[10px] font-bold ${c.textMuted}`}>{items.length}</span></div>
+              ))}
             </div>
           )}
 
-          {/* Anxiety Relief Message */}
-          {results.anxiety_relief && (
-            <div className={`${c.successBox} border-l-4 rounded-r-lg p-5 transition-colors duration-200`}>
-              <h3 className={`font-bold mb-2 flex items-center gap-2 ${c.text}`}>
-                <span>✅</span>
-                Permission to Breathe
-              </h3>
-              {results.anxiety_relief.permission_to_wait && (
-                <p className={`text-sm mb-3 ${c.textSecondary}`}>
-                  <strong>You can relax:</strong> {results.anxiety_relief.permission_to_wait}
-                </p>
-              )}
-              {results.anxiety_relief.what_to_ignore && (
-                <p className={`text-sm mb-3 ${c.textSecondary}`}>
-                  <strong>What to ignore:</strong> {results.anxiety_relief.what_to_ignore}
-                </p>
-              )}
-              {results.anxiety_relief.batch_processing_tip && (
-                <p className={`text-sm ${c.textSecondary}`}>
-                  <strong>💡 Tip:</strong> {results.anxiety_relief.batch_processing_tip}
-                </p>
-              )}
+          <div className={`${c.card} border rounded-xl p-5`}>
+            <div className="flex items-center justify-between mb-3">
+              <h3 className={`text-sm font-bold ${c.text}`}>📚 History ({profileTriages.length})</h3>
+              {profileTriages.length > 0 && <button onClick={() => { if (window.confirm('Clear history?')) setTriageHistory(p => p.filter(t => t.profileId !== activeProfileId)); }} className={`text-xs ${c.textMuted} hover:text-red-500`}>Clear</button>}
             </div>
-          )}
-
-          {/* Urgency Columns */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            
-            {/* Reply Now */}
-            <div>
-              <div className={`${c.urgent} border-2 rounded-t-xl p-4 transition-colors duration-200`}>
-                <div className="flex items-center gap-2">
-                  <span>⚠️</span>
-                  <h3 className="font-bold text-lg">Reply Now</h3>
-                </div>
-                <p className="text-sm opacity-75 mt-1">Needs response today</p>
-              </div>
-              <div className="space-y-3 mt-3">
-                {getEmailsByUrgency('now').length === 0 ? (
-                  <div className={`${c.cardAlt} border rounded-lg p-4 text-center transition-colors duration-200`}>
-                    <span className="text-2xl mx-auto mb-2">✅</span>
-                    <p className={`text-sm ${c.textMuted}`}>Nothing urgent! 🎉</p>
+            {profileTriages.length === 0 ? <p className={`text-sm ${c.textSec} text-center py-6`}>Save triages to build history.</p>
+            : <div className="space-y-2 max-h-[500px] overflow-y-auto">{profileTriages.map(entry => (
+              <div key={entry.id} className={`${c.cardAlt} border rounded-lg p-4`}>
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2"><span className={`text-xs font-bold ${c.text}`}>{entry.date}</span><span className={`text-[10px] ${c.textMuted}`}>{entry.time}</span></div>
+                  <div className="flex items-center gap-1.5">
+                    <span className={`${c.pillRed} border text-[9px] font-bold px-1.5 py-0.5 rounded`}>{entry.summary?.urgent_count || 0}</span>
+                    <span className={`${c.pillAmber} border text-[9px] font-bold px-1.5 py-0.5 rounded`}>{entry.summary?.this_week_count || 0}</span>
+                    <span className={`${c.pillGreen} border text-[9px] font-bold px-1.5 py-0.5 rounded`}>{entry.summary?.optional_count || 0}</span>
                   </div>
-                ) : (
-                  getEmailsByUrgency('now').map((email, idx) => {
-                    const reputation = getSenderReputation(email.from);
-                    
-                    return (
-                      <div key={idx} className={`${c.card} border-2 border-red-400 rounded-lg p-4 transition-colors duration-200`}>
-                        <div className="flex items-start justify-between mb-2">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-1">
-                              {email.email_category && (
-                                <span className={`px-2 py-0.5 rounded text-xs font-semibold text-white flex items-center gap-1 ${getCategoryColor(email.email_category)}`}>
-                                  {getCategoryIcon(email.email_category)}
-                                  {email.email_category}
-                                </span>
-                              )}
-                              {reputation && (
-                                <span className={`text-xs ${reputation.color}`} title={reputation.tip}>
-                                  {reputation.icon} {reputation.label}
-                                </span>
-                              )}
-                            </div>
-                            <div className={`text-sm font-semibold ${c.text}`}>{email.email_subject}</div>
-                            <div className={`text-xs ${c.textMuted} mt-1`}>From: {email.from}</div>
-                            
-                            {/* Thread indicators */}
-                            {email.thread_analysis && (
-                              <div className="flex items-center gap-2 mt-2 text-xs">
-                                {email.thread_analysis.is_escalating && (
-                                  <span className="text-red-500 font-semibold flex items-center gap-1">
-                                    <span className="text-xs">📈</span> Escalating
-                                  </span>
-                                )}
-                                {email.thread_analysis.follow_up_count > 0 && (
-                                  <span className="opacity-75">
-                                    {email.thread_analysis.follow_up_count} follow-ups
-                                  </span>
-                                )}
-                                {email.thread_analysis.on_cc && (
-                                  <span className="opacity-75">(CC)</span>
-                                )}
-                              </div>
-                            )}
-                          </div>
-                          <button
-                            onClick={() => toggleExpanded(idx + '-now')}
-                            className={`p-1 rounded ${c.btnSecondary}`}
-                          >
-                            {expandedEmail === idx + '-now' ? <span>▲</span> : <span>▼</span>}
-                          </button>
-                        </div>
-                        
-                        {email.deadline_detected && (
-                          <div className="flex items-center gap-2 text-xs mb-2">
-                            <span className="text-xs">📅</span>
-                            <span className="font-medium">Deadline: {email.deadline_detected}</span>
-                          </div>
-                        )}
-                        
-                        {expandedEmail === idx + '-now' && (
-                          <div className="mt-3 pt-3 border-t space-y-2">
-                            <div>
-                              <div className="text-xs font-semibold mb-1">Why urgent:</div>
-                              <p className="text-xs">{email.reasoning}</p>
-                            </div>
-                            {email.consequence_of_delay && (
-                              <div>
-                                <div className="text-xs font-semibold mb-1">If you wait:</div>
-                                <p className="text-xs">{email.consequence_of_delay}</p>
-                              </div>
-                            )}
-                            {email.thread_analysis?.urgency_trend && (
-                              <div>
-                                <div className="text-xs font-semibold mb-1">Thread pattern:</div>
-                                <p className="text-xs">{email.thread_analysis.urgency_trend}</p>
-                              </div>
-                            )}
-                            {email.response_optimization && (
-                              <div className="text-xs bg-red-100 dark:bg-red-900/30 p-2 rounded space-y-1">
-                                <div><strong>Best time to respond:</strong> {email.response_optimization.best_time}</div>
-                                {email.response_optimization.recipient_timezone && (
-                                  <div className="text-xs opacity-75">
-                                    (Recipient timezone: {email.response_optimization.recipient_timezone})
-                                  </div>
-                                )}
-                                {email.response_optimization.estimated_time && (
-                                  <div><strong>Time needed:</strong> {email.response_optimization.estimated_time}</div>
-                                )}
-                                {email.response_optimization.can_delegate && (
-                                  <div className="text-xs mt-1 pt-1 border-t border-red-300 dark:border-red-700">
-                                    💡 Can delegate to: {email.response_optimization.delegate_to}
-                                  </div>
-                                )}
-                              </div>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })
-                )}
-              </div>
-            </div>
-
-            {/* Reply This Week - Similar structure */}
-            <div>
-              <div className={`${c.thisWeek} border-2 rounded-t-xl p-4 transition-colors duration-200`}>
-                <div className="flex items-center gap-2">
-                  <span>⏰</span>
-                  <h3 className="font-bold text-lg">Reply This Week</h3>
                 </div>
-                <p className="text-sm opacity-75 mt-1">Can wait a few days</p>
-              </div>
-              <div className="space-y-3 mt-3">
-                {getEmailsByUrgency('this_week').length === 0 ? (
-                  <div className={`${c.cardAlt} border rounded-lg p-4 text-center transition-colors duration-200`}>
-                    <span className="text-2xl mx-auto mb-2">⏰</span>
-                    <p className={`text-sm ${c.textMuted}`}>Nothing here</p>
-                  </div>
-                ) : (
-                  getEmailsByUrgency('this_week').map((email, idx) => {
-                    const reputation = getSenderReputation(email.from);
-                    
-                    return (
-                      <div key={idx} className={`${c.card} border-2 border-amber-400 rounded-lg p-4 transition-colors duration-200`}>
-                        <div className="flex items-start justify-between mb-2">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-1">
-                              {email.email_category && (
-                                <span className={`px-2 py-0.5 rounded text-xs font-semibold text-white flex items-center gap-1 ${getCategoryColor(email.email_category)}`}>
-                                  {getCategoryIcon(email.email_category)}
-                                  {email.email_category}
-                                </span>
-                              )}
-                              {reputation && (
-                                <span className={`text-xs ${reputation.color}`} title={reputation.tip}>
-                                  {reputation.icon}
-                                </span>
-                              )}
-                            </div>
-                            <div className={`text-sm font-semibold ${c.text}`}>{email.email_subject}</div>
-                            <div className={`text-xs ${c.textMuted} mt-1`}>From: {email.from}</div>
-                          </div>
-                          <button
-                            onClick={() => toggleExpanded(idx + '-week')}
-                            className={`p-1 rounded ${c.btnSecondary}`}
-                          >
-                            {expandedEmail === idx + '-week' ? <span>▲</span> : <span>▼</span>}
-                          </button>
-                        </div>
-                        
-                        {expandedEmail === idx + '-week' && (
-                          <div className="mt-3 pt-3 border-t space-y-2">
-                            <div>
-                              <div className="text-xs font-semibold mb-1">Why this week:</div>
-                              <p className="text-xs">{email.reasoning}</p>
-                            </div>
-                            {email.response_optimization && (
-                              <div className="text-xs bg-amber-100 dark:bg-amber-900/30 p-2 rounded">
-                                <div><strong>Best time:</strong> {email.response_optimization.best_time}</div>
-                                {email.response_optimization.estimated_time && (
-                                  <div><strong>Time needed:</strong> {email.response_optimization.estimated_time}</div>
-                                )}
-                              </div>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })
-                )}
-              </div>
-            </div>
-
-            {/* Optional/Never */}
-            <div>
-              <div className={`${c.optional} border-2 rounded-t-xl p-4 transition-colors duration-200`}>
-                <div className="flex items-center gap-2">
-                  <span>☕</span>
-                  <h3 className="font-bold text-lg">Optional/Never</h3>
+                <p className={`text-xs ${c.textSec}`}>{entry.emailCount} emails</p>
+                {entry.subjects?.slice(0, 3).map((s, i) => <p key={i} className={`text-[10px] ${c.textMuted} truncate`}>• {s}</p>)}
+                {Object.values(entry.handled || {}).filter(v => v === 'done').length > 0 && <p className={`text-[10px] ${c.accent} mt-1`}>✅ {Object.values(entry.handled).filter(v => v === 'done').length} handled</p>}
+                <div className="flex gap-2 mt-2">
+                  <button onClick={() => { setResults(entry.results); setHandled(entry.handled || {}); setOverrides({}); setMode('results'); }} className={`${c.btnSec} text-xs px-3 py-1 rounded-lg`}>👁️ View</button>
+                  <button onClick={() => setTriageHistory(p => p.filter(e => e.id !== entry.id))} className={`text-xs ${c.textMuted} hover:text-red-500 px-1`}>🗑️</button>
                 </div>
-                <p className="text-sm opacity-75 mt-1">No response needed</p>
               </div>
-              <div className="space-y-3 mt-3">
-                {getEmailsByUrgency('optional').length === 0 ? (
-                  <div className={`${c.cardAlt} border rounded-lg p-4 text-center transition-colors duration-200`}>
-                    <span className="text-2xl mx-auto mb-2">☕</span>
-                    <p className={`text-sm ${c.textMuted}`}>Nothing here</p>
-                  </div>
-                ) : (
-                  getEmailsByUrgency('optional').map((email, idx) => (
-                    <div key={idx} className={`${c.card} border-2 border-emerald-400 rounded-lg p-4 transition-colors duration-200`}>
-                      <div className="flex items-start justify-between mb-2">
-                        <div className="flex-1">
-                          {email.email_category && (
-                            <span className={`px-2 py-0.5 rounded text-xs font-semibold text-white flex items-center gap-1 mb-1 inline-flex ${getCategoryColor(email.email_category)}`}>
-                              {getCategoryIcon(email.email_category)}
-                              {email.email_category}
-                            </span>
-                          )}
-                          <div className={`text-sm font-semibold ${c.text}`}>{email.email_subject}</div>
-                          <div className={`text-xs ${c.textMuted} mt-1`}>From: {email.from}</div>
-                        </div>
-                        <button
-                          onClick={() => toggleExpanded(idx + '-optional')}
-                          className={`p-1 rounded ${c.btnSecondary}`}
-                        >
-                          {expandedEmail === idx + '-optional' ? <span>▲</span> : <span>▼</span>}
-                        </button>
-                      </div>
-                      
-                      {expandedEmail === idx + '-optional' && (
-                        <div className="mt-3 pt-3 border-t space-y-2">
-                          <div>
-                            <div className="text-xs font-semibold mb-1">Why optional:</div>
-                            <p className="text-xs">{email.reasoning}</p>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs">📥</span>
-                            <span className="text-xs">Safe to archive or ignore</span>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  ))
-                )}
+            ))}</div>}
+          </div>
+        </div>
+      )}
+
+      {/* ══════════ SETTINGS: F3 RULES + F6 PROFILES + SENDERS ══════════ */}
+      {mode === 'settings' && (
+        <div className="space-y-4">
+          {/* F3: Smart Rules */}
+          <div className={`${c.card} border rounded-xl p-5`}>
+            <h3 className={`text-sm font-bold ${c.text} mb-3`}>⚡ Auto-Triage Rules ({profileRules.length})</h3>
+            <p className={`text-xs ${c.textMuted} mb-3`}>Rules run before AI analysis — instant categorization for known senders and patterns.</p>
+            <div className={`${c.cardAlt} border rounded-lg p-3 mb-3 space-y-2`}>
+              <div className="grid grid-cols-3 gap-2">
+                <select value={ruleForm.type} onChange={e => setRuleForm(p => ({ ...p, type: e.target.value }))} className={`p-2 border rounded-lg ${c.input} text-xs`}>{RULE_TYPES.map(r => <option key={r.id} value={r.id}>{r.label}</option>)}</select>
+                {ruleForm.type !== 'cc_only' && <input value={ruleForm.pattern} onChange={e => setRuleForm(p => ({ ...p, pattern: e.target.value }))} placeholder="Pattern..." className={`p-2 border rounded-lg ${c.input} text-xs`} />}
+                <select value={ruleForm.tier} onChange={e => setRuleForm(p => ({ ...p, tier: e.target.value }))} className={`p-2 border rounded-lg ${c.input} text-xs`}>{Object.entries(TIER_CFG).map(([k, v]) => <option key={k} value={k}>{v.icon} {v.label}</option>)}</select>
               </div>
+              <button onClick={() => {
+                if (ruleForm.type !== 'cc_only' && !ruleForm.pattern.trim()) return;
+                setRules(prev => [...prev, { id: Date.now(), profileId: activeProfileId, type: ruleForm.type, pattern: ruleForm.pattern.trim(), tier: ruleForm.tier, enabled: true }]);
+                setRuleForm({ type: 'sender', pattern: '', tier: 'optional' });
+              }} disabled={ruleForm.type !== 'cc_only' && !ruleForm.pattern.trim()} className={`${c.btnPrimary} disabled:opacity-40 text-xs px-3 py-1.5 rounded-lg`}>➕ Add Rule</button>
             </div>
+            {rules.filter(r => r.profileId === activeProfileId).length === 0 ? <p className={`text-xs ${c.textMuted} text-center py-2`}>No rules yet. Add one above.</p>
+            : <div className="space-y-1.5">{rules.filter(r => r.profileId === activeProfileId).map(rule => (
+              <div key={rule.id} className="flex items-center gap-2">
+                <button onClick={() => setRules(p => p.map(r => r.id === rule.id ? { ...r, enabled: !r.enabled } : r))} className={`text-xs ${rule.enabled ? 'opacity-100' : 'opacity-40'}`}>{rule.enabled ? '✅' : '⬜'}</button>
+                <span className={`text-[10px] font-bold ${c.textMuted} w-20`}>{RULE_TYPES.find(t => t.id === rule.type)?.label || rule.type}</span>
+                {rule.pattern && <span className={`text-xs ${c.text}`}>"{rule.pattern}"</span>}
+                <span className="text-xs">→</span>
+                <span className={`${c.pillGray} border text-[9px] px-1.5 py-0.5 rounded`}>{TIER_CFG[rule.tier]?.icon} {TIER_CFG[rule.tier]?.label}</span>
+                <button onClick={() => setRules(p => p.filter(r => r.id !== rule.id))} className={`text-[10px] ${c.textMuted} hover:text-red-500 ml-auto`}>✕</button>
+              </div>
+            ))}</div>}
           </div>
 
-          {/* Response Templates */}
-          {results.response_templates && results.response_templates.length > 0 && (
-            <div className={`${c.card} border rounded-xl p-6 transition-colors duration-200`}>
-              <h3 className={`text-lg font-bold ${c.text} mb-4 flex items-center gap-2`}>
-                <span>⚡</span>
-                Quick Response Templates
-              </h3>
-              <div className="space-y-3">
-                {results.response_templates.map((template, idx) => (
-                  <div key={idx} className={`p-4 rounded-lg ${isDark ? 'bg-zinc-700' : 'bg-emerald-50'} border ${isDark ? 'border-zinc-600' : 'border-emerald-200'}`}>
-                    <div className="flex items-center justify-between mb-2">
-                      <div className={`text-xs font-semibold uppercase ${c.textMuted}`}>
-                        For: {template.for_urgency}
-                      </div>
-                      <CopyBtn content={template.template} />
-                    </div>
-                    <p className={`text-sm ${c.textSecondary}`}>{template.template}</p>
-                  </div>
-                ))}
-              </div>
+          {/* Sender Intelligence */}
+          <div className={`${c.card} border rounded-xl p-5`}>
+            <div className="flex items-center justify-between mb-3">
+              <h3 className={`text-sm font-bold ${c.text}`}>📊 Senders ({senderStats.total})</h3>
+              {senderStats.total > 0 && <button onClick={() => { if (window.confirm('Clear sender data?')) { const updated = { ...senderHistory }; Object.keys(updated).forEach(k => { if (k.startsWith(pfx)) delete updated[k]; }); setSenderHistory(updated); } }} className={`text-xs ${c.textMuted} hover:text-red-500`}>Clear</button>}
             </div>
-          )}
+            {senderStats.total === 0 ? <p className={`text-xs ${c.textMuted} text-center py-3`}>Analyze emails to start tracking senders.</p>
+            : <div className="space-y-2 max-h-80 overflow-y-auto">{Object.entries(profileSenders).sort((a, b) => b[1].total - a[1].total).map(([sender, data]) => {
+              const rep = getRep(sender);
+              const topCat = data.categories ? Object.entries(data.categories).sort((a, b) => b[1] - a[1])[0] : null;
+              return (
+                <div key={sender} className={`${c.cardAlt} border rounded-lg p-3`}>
+                  <div className="flex items-center justify-between mb-1">
+                    <div className="flex items-center gap-2"><span className={`text-xs font-semibold ${c.text}`}>{sender}</span>{rep && <span className={`${c[rep.pill]} border text-[9px] font-bold px-1.5 py-0.5 rounded`}>{rep.icon} {rep.label}</span>}</div>
+                    <button onClick={() => { const updated = { ...senderHistory }; delete updated[pfx + sender]; setSenderHistory(updated); }} className={`text-[10px] ${c.textMuted} hover:text-red-500`}>✕</button>
+                  </div>
+                  <div className="flex flex-wrap gap-1.5 items-center">
+                    <span className={`${c.pillGray} border text-[9px] px-1.5 py-0.5 rounded`}>{data.total} emails</span>
+                    <span className={`${c.pillRed} border text-[9px] px-1.5 py-0.5 rounded`}>{data.actuallyUrgent || 0} urgent</span>
+                    {data.cryWolfScore > 0.3 && <span className={`${c.pillAmber} border text-[9px] px-1.5 py-0.5 rounded`}>🐺 {Math.round(data.cryWolfScore * 100)}%</span>}
+                    {topCat && <span className={`${c.pillSky} border text-[9px] px-1.5 py-0.5 rounded`}>{topCat[0]}</span>}
+                  </div>
+                  <div className="flex gap-1.5 mt-2">
+                    <button onClick={() => setSenderHistory(prev => ({ ...prev, [pfx + sender]: { ...prev[pfx + sender], actuallyUrgent: prev[pfx + sender].total, cryWolfScore: 0 } }))} className={`text-[9px] px-2 py-0.5 rounded border ${c.pillAmber} border`}>⭐ VIP</button>
+                    <button onClick={() => setSenderHistory(prev => ({ ...prev, [pfx + sender]: { ...prev[pfx + sender], actuallyUrgent: 0, cryWolfScore: 1 } }))} className={`text-[9px] px-2 py-0.5 rounded border ${c.pillGray} border`}>🔇 Noise</button>
+                    <button onClick={() => { setRules(prev => [...prev, { id: Date.now(), profileId: activeProfileId, type: 'sender', pattern: sender, tier: 'optional', enabled: true }]); }} className={`text-[9px] px-2 py-0.5 rounded border ${c.pillGray} border`}>📝 Rule</button>
+                  </div>
+                </div>
+              );
+            })}</div>}
+          </div>
+
+          {/* Category breakdown */}
+          {(() => {
+            const allCats = {};
+            Object.values(profileSenders).forEach(h => { if (h.categories) Object.entries(h.categories).forEach(([cat, count]) => { allCats[cat] = (allCats[cat] || 0) + count; }); });
+            const total = Object.values(allCats).reduce((s, v) => s + v, 0);
+            if (!total) return null;
+            return (
+              <div className={`${c.card} border rounded-xl p-5`}><h3 className={`text-sm font-bold ${c.text} mb-3`}>📧 Categories</h3>
+                <div className="space-y-1.5">{Object.entries(allCats).sort((a, b) => b[1] - a[1]).map(([cat, count]) => {
+                  const info = getCat(cat);
+                  return (<div key={cat} className="flex items-center gap-2"><span className={`text-xs font-semibold ${c.text} w-32`}>{info.icon} {cat}</span><div className={`flex-1 h-3 rounded-full overflow-hidden ${isDark ? 'bg-zinc-700' : 'bg-emerald-100'}`}><div className={`h-full rounded-full ${info.bg}`} style={{ width: `${(count / total) * 100}%` }} /></div><span className={`w-8 text-right text-[10px] font-bold ${c.textMuted}`}>{count}</span></div>);
+                })}</div>
+              </div>
+            );
+          })()}
+
+          {/* Response time clear */}
+          {profileResponses.length > 0 && <button onClick={() => { if (window.confirm('Clear response tracking?')) setResponseTimes(p => p.filter(r => r.profileId !== activeProfileId)); }} className={`text-xs ${c.textMuted} hover:text-red-500`}>🗑️ Clear response tracking ({profileResponses.length} entries)</button>}
         </div>
       )}
     </div>
   );
 };
 
+EmailUrgencyTriager.displayName = 'EmailUrgencyTriager';
 export default EmailUrgencyTriager;

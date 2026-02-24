@@ -2,171 +2,279 @@ const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
 
+function safeParseJSON(text) {
+  let cleaned = cleanJsonResponse(text);
+  cleaned = cleaned.replace(/,(\s*[}\]])/g, '$1');
+  try { return JSON.parse(cleaned); } catch {
+    cleaned = cleaned.replace(/[\x00-\x1F\x7F]/g, ' ');
+    try { return JSON.parse(cleaned); } catch {
+      cleaned = cleaned.replace(/([{,]\s*)(\w+)\s*:/g, '$1"$2":');
+      return JSON.parse(cleaned);
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// MAIN — generate conversation starters for one person
+// ═══════════════════════════════════════════════════════════════
+
 router.post('/friendship-fade-alerter', async (req, res) => {
   try {
-    const { name, relationshipType, daysSinceContact, contextNotes } = req.body;
+    const { name, relationshipType, daysSinceContact, contextNotes, contactLog, upcomingEvents, usedTopics, reciprocity } = req.body;
 
-    console.log('📥 Received request:', { name, relationshipType, daysSinceContact });
+    if (!name?.trim()) return res.status(400).json({ error: 'Name is required' });
+    if (!relationshipType) return res.status(400).json({ error: 'Relationship type is required' });
+    if (daysSinceContact === undefined) return res.status(400).json({ error: 'Days since contact is required' });
 
-    // Validation
-    if (!name || !name.trim()) {
-      return res.status(400).json({ error: 'Person name is required' });
-    }
-    if (!relationshipType) {
-      return res.status(400).json({ error: 'Relationship type is required' });
-    }
-    if (daysSinceContact === undefined || daysSinceContact === null) {
-      return res.status(400).json({ error: 'Days since contact is required' });
-    }
+    const logBlock = contactLog?.length
+      ? `\nPAST INTERACTIONS (most recent first):\n${contactLog.slice(0, 5).map(l => `- ${l.date}: ${l.note}${l.initiator === 'them' ? ' (they initiated)' : ''}`).join('\n')}`
+      : '';
 
-    // Build the prompt
-    const prompt = `You are helping someone with ADHD reconnect with a relationship they care about. They struggle with time-blindness and feel guilty about letting time pass.
+    const eventsBlock = upcomingEvents?.length
+      ? `\nUPCOMING EVENTS:\n${upcomingEvents.map(e => `- ${e.label} on ${e.date}`).join('\n')}`
+      : '';
 
-RELATIONSHIP DETAILS:
-- Person: ${name}
-- Relationship: ${relationshipType}
-- Days since last contact: ${daysSinceContact}
-${contextNotes ? `- Context/shared interests: ${contextNotes}` : ''}
+    const freshnessBlock = usedTopics?.length
+      ? `\nTOPICS ALREADY USED IN PAST MESSAGES (avoid these — find fresh angles):\n${usedTopics.map(t => `- "${t}"`).join('\n')}`
+      : '';
 
-Your response must be:
-- GUILT-FREE (no apology-focused messages)
-- NATURAL (sounds like them, not forced)
-- PERSONALIZED (uses context if provided)
-- ACTIONABLE (ready to send)
-- WARM (genuine reconnection, not transactional)
+    const reciprocityBlock = reciprocity
+      ? `\nINITIATION PATTERN: You initiated ${reciprocity.youInitiated} times, they initiated ${reciprocity.theyInitiated} times out of last ${reciprocity.total} contacts.`
+      : '';
 
-Generate conversation starters that:
-1. Acknowledge time passed WITHOUT apologizing
-2. Show genuine interest in the person
-3. Reference shared interests/context if available
-4. Give multiple approach options (quick vs lengthy)
-5. Provide follow-up conversation directions
+    const prompt = `You are helping someone reconnect with a person in their life. Life gets busy and people lose track of time between conversations — that's completely normal. Your job is to make reaching out easy and natural.
 
-CRITICAL: Do NOT start messages with "I'm sorry" or "I apologize". Time passing is normal. Frame reconnection positively.
+PERSON: ${name}
+RELATIONSHIP: ${relationshipType}
+DAYS SINCE LAST CONTACT: ${daysSinceContact}
+${contextNotes ? `CONTEXT / SHARED INTERESTS: ${contextNotes}` : ''}
+${logBlock}
+${eventsBlock}
+${freshnessBlock}
+${reciprocityBlock}
 
-Return ONLY valid JSON in this EXACT structure (no preamble, no markdown):
+RULES:
+- Messages should sound like THEM, not a template
+- No guilt, no apologies for time passing — just natural warmth
+- Reference specific shared interests, past conversations, or upcoming events when available
+- Provide a range: quick low-effort texts AND deeper catch-up invitations
+- Each message should be ready to copy and send as-is
+- If TOPICS ALREADY USED are listed, do NOT reuse those angles — find fresh conversation starters
+- If initiation pattern is one-sided, subtly adjust tone (don't lecture about it, just keep it lighter/lower-effort if they rarely initiate)
 
+Return ONLY valid JSON:
 {
-  "relationship_context": {
-    "name": "${name}",
-    "days_since_contact": ${daysSinceContact},
-    "relationship_type": "${relationshipType}",
-    "last_topic": "${contextNotes || 'not provided'}"
-  },
-  "conversation_starters": [
+  "starters": [
     {
-      "opener": "Hey! I realized it's been a minute - hope you're doing well! How's [specific thing] going?",
-      "tone": "casual/warm",
-      "why_this_works": "Acknowledges time without apologizing, shows interest in their life, asks about specific topic",
-      "follow_up_ideas": [
-        "Share update about your own life",
-        "Suggest catching up soon",
-        "Ask about shared interest"
-      ]
-    },
-    {
-      "opener": "Thinking of you! Want to grab coffee/call this week and catch up?",
-      "tone": "direct/inviting",
-      "why_this_works": "Simple, warm, action-oriented, no guilt, clear invitation",
-      "follow_up_ideas": [
-        "Suggest specific times",
-        "Offer virtual or in-person",
-        "Mention you miss talking"
-      ]
-    },
-    {
-      "opener": "I saw [thing related to shared interest] and immediately thought of you - made me realize we should catch up soon!",
-      "tone": "warm/connecting",
-      "why_this_works": "Uses shared interest as natural hook, positive framing, expresses wanting to connect",
-      "follow_up_ideas": [
-        "Share the thing that made you think of them",
-        "Ask their take on it",
-        "Transition to general catch-up"
-      ]
+      "message": "Ready-to-send message text",
+      "tone": "casual / warm / direct / playful",
+      "effort": "low / medium / high",
+      "why_it_works": "Brief explanation",
+      "follow_ups": ["Follow-up idea 1", "Follow-up idea 2"]
     }
   ],
-  "reconnection_approaches": [
+  "approaches": [
     {
-      "approach": "Quick check-in",
-      "message": "Hey! Just thinking of you - hope you're doing well! How have you been?",
-      "when_to_use": "When you're busy or testing waters before longer conversation"
+      "name": "Quick ping",
+      "message": "Short ready-to-send message",
+      "best_for": "When to use this approach"
     },
     {
-      "approach": "Catch-up invitation",
-      "message": "I'd love to catch up soon! Are you free for coffee/a call this week?",
-      "when_to_use": "When you have time and energy for real conversation"
+      "name": "Catch-up invite",
+      "message": "Message with a specific invitation",
+      "best_for": "When to use this"
     }
   ],
-  "guilt_relief": {
-    "reframe": "It's been ${daysSinceContact} days, but that's life - you both have been busy. Reaching out now is what matters.",
-    "permission": "You don't need to apologize for living your life. Time passing doesn't mean you don't care. Just reconnect now."
-  },
-  "shared_interest_hooks": [
-    ${contextNotes ? `{
-      "topic": "${contextNotes.split(',')[0].trim()}",
-      "conversation_angle": "Ask how they're doing with this, share your recent experience with it, or mention something new related to it"
-    }` : `{
-      "topic": "General catch-up",
-      "conversation_angle": "Ask about what's new in their life, what they've been up to lately"
-    }`}
-  ]
-}`;
+  "context_hooks": [
+    {
+      "topic": "Specific topic to bring up",
+      "angle": "How to naturally bring this into conversation"
+    }
+  ],
+  "encouragement": "One warm, practical sentence about why reaching out now is a good idea (no guilt, no psychology, just real talk)"
+}
 
-    console.log('🤖 Calling Claude API...');
+Return ONLY valid JSON.`;
 
-    // Call Claude API
+    console.log(`[FriendshipFade] Generating for ${name} (${daysSinceContact}d, ${relationshipType})`);
+
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
-      max_tokens: 1000,
-      messages: [{ role: 'user', content: prompt }]
+      max_tokens: 1200,
+      messages: [{ role: 'user', content: prompt }],
     });
 
-    console.log('✅ Claude API response received');
-
-    // Parse response
-    let jsonText = message.content[0].text.trim();
-    
-    // Remove markdown code blocks if present
-    jsonText = jsonText.replace(/```json\s*/g, '').replace(/```\s*/g, '');
-    
-    // Find JSON object
-    const firstBrace = jsonText.indexOf('{');
-    const lastBrace = jsonText.lastIndexOf('}');
-    
-    if (firstBrace === -1 || lastBrace === -1) {
-      throw new Error('No JSON found in AI response');
-    }
-    
-    jsonText = jsonText.substring(firstBrace, lastBrace + 1);
-    
-    // Remove trailing commas
-    jsonText = jsonText.replace(/,(\s*[}\]])/g, '$1');
-    
-    let results;
-    try {
-      results = JSON.parse(jsonText);
-    } catch (parseError) {
-      console.error('JSON Parse Error:', parseError.message);
-      console.error('Raw response:', jsonText.substring(0, 500));
-      throw new Error(`JSON parse failed: ${parseError.message}`);
-    }
-
-    // Validate required fields
-    if (!results.relationship_context || !results.conversation_starters || !results.guilt_relief) {
-      throw new Error('Invalid response structure - missing required fields');
-    }
-
-    console.log('✅ Sending results back to client');
-    res.json(results);
+    const raw = message.content.find(item => item.type === 'text')?.text || '';
+    const parsed = safeParseJSON(raw);
+    res.json(parsed);
 
   } catch (error) {
-    console.error('❌ Friendship Fade Alerter Error:', error);
-    res.status(500).json({
-      error: error.message || 'Failed to generate conversation starters',
-      details: process.env.NODE_ENV === 'development' ? error.stack : undefined
-    });
+    console.error('[FriendshipFade] Error:', error);
+    res.status(500).json({ error: error.message || 'Failed to generate starters' });
   }
 });
 
+// ═══════════════════════════════════════════════════════════════
+// BATCH — generate starters for multiple overdue people at once
+// ═══════════════════════════════════════════════════════════════
+
+router.post('/friendship-fade-alerter/batch', async (req, res) => {
+  try {
+    const { people } = req.body;
+
+    if (!people?.length) return res.status(400).json({ error: 'No people provided' });
+    if (people.length > 8) return res.status(400).json({ error: 'Max 8 people per batch' });
+
+    const peopleBlock = people.map((p, i) =>
+      `${i + 1}. ${p.name} (${p.relationshipType}, ${p.daysSinceContact} days)${p.contextNotes ? ` — Context: ${p.contextNotes}` : ''}${p.lastNote ? ` — Last talked about: ${p.lastNote}` : ''}`
+    ).join('\n');
+
+    const prompt = `You are helping someone do a quick catch-up sprint — they have ${people.length} people they want to reach out to. Generate one ready-to-send message for each person. Messages should be natural, warm, and varied (don't use the same template for everyone).
+
+PEOPLE TO REACH OUT TO:
+${peopleBlock}
+
+RULES:
+- Each message must sound different — vary the opening, tone, and approach
+- Keep messages short and sendable (1-3 sentences)
+- Reference context/shared interests when provided
+- No guilt, no apologies — just natural reconnection
+- Mix of tones: some playful, some warm, some direct
+
+Return ONLY valid JSON:
+{
+  "messages": [
+    {
+      "name": "Person's name",
+      "message": "Ready-to-send message",
+      "tone": "casual / warm / direct / playful",
+      "tip": "One-line tip for this specific reconnection"
+    }
+  ],
+  "sprint_encouragement": "One motivating sentence about knocking these all out"
+}
+
+Return ONLY valid JSON.`;
+
+    console.log(`[FriendshipFade/batch] ${people.length} people`);
+
+    const message = await anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1500,
+      messages: [{ role: 'user', content: prompt }],
+    });
+
+    const raw = message.content.find(item => item.type === 'text')?.text || '';
+    const parsed = safeParseJSON(raw);
+    res.json(parsed);
+
+  } catch (error) {
+    console.error('[FriendshipFade/batch] Error:', error);
+    res.status(500).json({ error: error.message || 'Failed to generate batch' });
+  }
+});
+
+// ═══════════════════════════════════════════════════════════════
+// FOLLOWUP ADVICE — what to do when someone didn't respond
+// ═══════════════════════════════════════════════════════════════
+
+router.post('/friendship-fade-alerter/followup-advice', async (req, res) => {
+  try {
+    const { name, relationshipType, daysSinceOutreach, originalMessage, contextNotes } = req.body;
+
+    if (!name?.trim()) return res.status(400).json({ error: 'Name is required' });
+
+    const prompt = `Someone reached out to a friend/contact and hasn't heard back. Help them figure out what to do — no overthinking, just practical advice.
+
+PERSON: ${name}
+RELATIONSHIP: ${relationshipType || 'friend'}
+DAYS SINCE THEY REACHED OUT: ${daysSinceOutreach || 'unknown'}
+${originalMessage ? `WHAT THEY SENT: "${originalMessage}"` : ''}
+${contextNotes ? `CONTEXT: ${contextNotes}` : ''}
+
+Give practical, non-anxious advice. Sometimes people are just busy. Sometimes the message got buried. Rarely is it personal.
+
+Return ONLY valid JSON:
+{
+  "assessment": "Brief, honest read on the situation (1-2 sentences)",
+  "recommendation": "wait / follow_up / let_it_go",
+  "follow_up_message": "If follow-up is recommended: a ready-to-send message. If not: null",
+  "follow_up_timing": "When to send it (e.g., 'Give it another 3-4 days')",
+  "perspective": "One grounding sentence — not dismissive, not anxious, just realistic",
+  "if_still_no_response": "What to do if they still don't respond after the follow-up"
+}
+
+Return ONLY valid JSON.`;
+
+    console.log(`[FriendshipFade/followup] ${name}, ${daysSinceOutreach}d since outreach`);
+
+    const message = await anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 800,
+      messages: [{ role: 'user', content: prompt }],
+    });
+
+    const raw = message.content.find(item => item.type === 'text')?.text || '';
+    const parsed = safeParseJSON(raw);
+    res.json(parsed);
+
+  } catch (error) {
+    console.error('[FriendshipFade/followup] Error:', error);
+    res.status(500).json({ error: error.message || 'Failed to generate advice' });
+  }
+});
+
+// ═══════════════════════════════════════════════════════════════
+// DIGEST — weekly relationship summary
+// ═══════════════════════════════════════════════════════════════
+
+router.post('/friendship-fade-alerter/digest', async (req, res) => {
+  try {
+    const { stats } = req.body;
+
+    if (!stats) return res.status(400).json({ error: 'Stats are required' });
+
+    const prompt = `Generate a brief, warm weekly relationship digest based on these stats. Be encouraging and practical — not preachy. If things look good, say so. If things are slipping, be honest but kind.
+
+THIS WEEK'S STATS:
+- People tracked: ${stats.total}
+- Contacted this week: ${stats.contactedThisWeek} (${stats.contactedNames?.join(', ') || 'none'})
+- Currently overdue: ${stats.overdueCount} (${stats.overdueNames?.join(', ') || 'none'})
+- Due next week: ${stats.dueNextWeek} (${stats.dueNextWeekNames?.join(', ') || 'none'})
+- Upcoming events (next 14 days): ${stats.upcomingEvents?.map(e => `${e.name}: ${e.label} on ${e.date}`).join(', ') || 'none'}
+- Longest neglected: ${stats.longestNeglected || 'N/A'} (${stats.longestNeglectedDays || 0} days)
+- One-sided relationships (you always initiate): ${stats.oneSided?.join(', ') || 'none'}
+- Weekly streak: ${stats.streak || 0} weeks maintaining your contact goals
+${stats.circles?.length ? `- Circle health: ${stats.circles.map(c => `${c.name}: ${c.overdue}/${c.total} overdue`).join(', ')}` : ''}
+
+Return ONLY valid JSON:
+{
+  "headline": "One punchy sentence summarizing the week (e.g., 'Solid week — 4 catch-ups and only 1 overdue')",
+  "wins": ["Something positive from this week", "Another win if applicable"],
+  "attention_needed": ["Specific person or pattern that needs attention"],
+  "next_week_priorities": ["Top priority for next week", "Secondary priority"],
+  "streak_note": "Comment on their consistency streak (encouraging if good, motivating if broken)",
+  "one_liner": "One warm closing sentence"
+}
+
+Return ONLY valid JSON.`;
+
+    console.log(`[FriendshipFade/digest] ${stats.total} people, ${stats.contactedThisWeek} contacted`);
+
+    const message = await anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 800,
+      messages: [{ role: 'user', content: prompt }],
+    });
+
+    const raw = message.content.find(item => item.type === 'text')?.text || '';
+    const parsed = safeParseJSON(raw);
+    res.json(parsed);
+
+  } catch (error) {
+    console.error('[FriendshipFade/digest] Error:', error);
+    res.status(500).json({ error: error.message || 'Failed to generate digest' });
+  }
+});
 
 module.exports = router;

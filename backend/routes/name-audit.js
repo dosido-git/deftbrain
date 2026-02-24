@@ -446,4 +446,353 @@ Be honest and decisive. The client needs clarity, not diplomacy. Return ONLY JSO
   }
 });
 
+// ═══════════════════════════════════════════════════
+// ROUTE 3: FIX THIS NAME
+// Takes a name + its audit results, generates improved variations
+// ═══════════════════════════════════════════════════
+router.post('/nameaudit/fix', async (req, res) => {
+  try {
+    const {
+      name, context, industry, targetAudience,
+      grade, strengths, weaknesses, dealBreakers,
+      overallSummary, userLanguage,
+    } = req.body;
+
+    if (!name || !name.trim()) {
+      return res.status(400).json({ error: 'Name is required' });
+    }
+
+    const langDirective = withLanguage(userLanguage);
+
+    const strengthsList = Array.isArray(strengths) && strengths.length > 0
+      ? `\nSTRENGTHS TO PRESERVE:\n${strengths.map(s => `  ✓ ${s}`).join('\n')}`
+      : '';
+    const weaknessesList = Array.isArray(weaknesses) && weaknesses.length > 0
+      ? `\nWEAKNESSES TO FIX:\n${weaknesses.map(w => `  ✗ ${w}`).join('\n')}`
+      : '';
+    const dealBreakersList = Array.isArray(dealBreakers) && dealBreakers.length > 0
+      ? `\nDEAL BREAKERS TO ELIMINATE:\n${dealBreakers.map(d => `  🚨 ${d}`).join('\n')}`
+      : '';
+
+    const prompt = `You are a world-class naming consultant. A client ran their name through an audit tool and it revealed specific problems. Your job: generate improved name variations that keep what works and fix what doesn't.
+${langDirective ? `\n${langDirective}` : ''}
+
+═══════════════════════════════
+THE ORIGINAL NAME & ITS AUDIT
+═══════════════════════════════
+Name: "${name}"
+Context: ${context || 'General'}
+${industry ? `Industry: ${industry}` : ''}
+${targetAudience ? `Target Audience: ${targetAudience}` : ''}
+Grade: ${grade || 'Not graded'}
+Summary: ${overallSummary || 'No summary'}
+${strengthsList}${weaknessesList}${dealBreakersList}
+
+═══════════════════════════════
+YOUR TASK
+═══════════════════════════════
+Generate 5-7 improved name variations. Each should:
+1. PRESERVE the strengths identified above (these are what the client liked)
+2. FIX the weaknesses and eliminate deal breakers
+3. Stay in the same general naming territory (don't radically change direction unless deal breakers require it)
+4. Be immediately usable — not just tweaks but genuinely strong alternatives
+
+For each variation, clearly explain:
+- What makes it better than the original
+- Which specific weakness/problem it fixes
+- Any tradeoffs (what you might lose by making this change)
+- An estimated audit score (your honest guess of what this name would score on a 0-100 scale)
+
+Respond in JSON:
+{
+  "approach": "Brief explanation of your fix strategy — what you're keeping, what you're changing, and why",
+  "variations": [
+    {
+      "name": "ImprovedName",
+      "pronunciation": "im-PROOVD-name",
+      "why_its_better": "Clear explanation of why this variation is stronger",
+      "what_it_fixes": "Specific weaknesses/problems this addresses",
+      "tradeoff": "Any downside of this change, or null if none",
+      "estimated_score": 82
+    }
+  ],
+  "naming_direction": "If the client wants to explore further, here's the direction I'd recommend and why"
+}
+
+IMPORTANT:
+- Don't just add/remove a letter — make meaningful improvements
+- Each variation should fix a DIFFERENT combination of problems when possible
+- At least 2 variations should be "close cousins" (small evolution from original)
+- At least 2 should be "fresh takes" (same energy, different approach)
+- Be honest about tradeoffs — every name change involves compromise
+- Estimated scores should be realistic, not inflated
+
+Return ONLY valid JSON.`;
+
+    console.log(`[NameAudit/Fix] Fixing: "${name}" (${grade})`);
+
+    const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 3500,
+      temperature: 0.9,
+      messages: [{ role: 'user', content: prompt }],
+    }, { label: 'NameAudit/Fix' });
+
+    console.log(`[NameAudit/Fix] Generated ${parsed.variations?.length || 0} variations`);
+    res.json(parsed);
+
+  } catch (error) {
+    console.error('[NameAudit/Fix] Error:', error);
+    res.status(500).json({ error: 'Failed to generate fixes', details: error.message });
+  }
+});
+
+// ═══════════════════════════════════════════════════
+// ROUTE 4: AUDIENCE REACTION SIMULATOR
+// Simulates 4-5 target audience personas reacting to the name
+// ═══════════════════════════════════════════════════
+router.post('/nameaudit/reactions', async (req, res) => {
+  try {
+    const {
+      name, context, industry, targetAudience,
+      overallSummary, personality, userLanguage,
+    } = req.body;
+
+    if (!name) return res.status(400).json({ error: 'Name is required' });
+
+    const langDirective = withLanguage(userLanguage);
+
+    const audienceHint = targetAudience
+      ? `The client's target audience is: ${targetAudience}. Create personas that represent this specific audience.`
+      : `Create realistic personas appropriate for a ${context || 'business'} ${industry ? `in ${industry}` : ''}.`;
+
+    const prompt = `You are a consumer psychologist and brand researcher. A client wants to understand how real people would react to a name. Your job: create 4-5 realistic personas from the target audience and simulate their genuine first-impression reaction.
+${langDirective ? `\n${langDirective}` : ''}
+
+NAME: "${name}"
+CONTEXT: ${context || 'Business'}
+INDUSTRY: ${industry || 'Not specified'}
+OVERALL VIBE: ${personality || overallSummary || 'Not specified'}
+
+${audienceHint}
+
+IMPORTANT RULES:
+- Make reactions feel REAL — not marketing-speak. Include awkward honesty, mild confusion, enthusiasm, and skepticism.
+- Each persona should have a different perspective. Include at least one skeptic.
+- Reactions should be 1-3 sentences, in the persona's natural voice (casual for Gen Z, measured for executives, etc.)
+- "Would they remember it" should be honest — most names are forgettable.
+- Trust level should reflect what this name signals about quality/legitimacy.
+
+Return ONLY this JSON:
+{
+  "personas": [
+    {
+      "emoji": "👩‍💻",
+      "name": "Maya, 28 — Product Designer",
+      "description": "Early adopter, design-savvy, values aesthetics",
+      "reaction": "Their genuine, in-voice reaction to hearing this name for the first time",
+      "would_they_remember": "Yes/No/Maybe + brief why",
+      "trust_level": "High/Medium/Low — what the name signals to them about credibility"
+    }
+  ],
+  "consensus": "1-2 sentence summary of the overall audience sentiment. Where do most personas agree? What's the pattern?"
+}
+
+Return ONLY valid JSON.`;
+
+    console.log(`[NameAudit/Reactions] Simulating audience for: "${name}"`);
+
+    const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 2500,
+      temperature: 0.95,
+      messages: [{ role: 'user', content: prompt }],
+    }, { label: 'NameAudit/Reactions' });
+
+    console.log(`[NameAudit/Reactions] Generated ${parsed.personas?.length || 0} personas`);
+    res.json(parsed);
+
+  } catch (error) {
+    console.error('[NameAudit/Reactions] Error:', error);
+    res.status(500).json({ error: 'Failed to simulate reactions', details: error.message });
+  }
+});
+
+// ═══════════════════════════════════════════════════
+// ROUTE 5: CONTEXT-SPECIFIC DEEP DIVE
+// Runs specialized analysis based on name category
+// ═══════════════════════════════════════════════════
+router.post('/nameaudit/deepdive', async (req, res) => {
+  try {
+    const {
+      name, context, industry, targetAudience,
+      grade, score, userLanguage,
+    } = req.body;
+
+    if (!name) return res.status(400).json({ error: 'Name is required' });
+
+    const langDirective = withLanguage(userLanguage);
+
+    // Build context-specific analysis framework
+    const contextFrameworks = {
+      'Baby': `BABY NAME DEEP DIVE for "${name}":
+1. POPULARITY TREND: Is this name rising, falling, or stable? Is it about to spike (celebrity baby, TV character)?
+2. GENERATIONAL PATTERN: Will there be 6 of these in the same class? Is it a "teacher name" or "grandparent name" cycling back?
+3. SIBLING COMPATIBILITY: What sibling names pair well? Would "${name}" and common sibling names feel cohesive?
+4. PLAYGROUND AUDIT: What rhymes or teasing angles exist? What will kids actually call them?
+5. NICKNAME EVOLUTION: How will this name morph as they grow? Baby → child → teen → adult → elderly — does it work at every stage?
+6. CULTURAL HERITAGE: Does this name connect to any heritage, mythology, or literary tradition?
+7. PROFESSIONAL READINESS: Will "Dr. ${name}" or "${name}, Attorney at Law" feel natural on a business card in 2050?`,
+
+      'Band / Music Project': `MUSIC INDUSTRY DEEP DIVE for "${name}":
+1. GENRE FIT: What genre does this name signal? Would metal fans, indie listeners, or pop audiences gravitate to it?
+2. SPOTIFY SEARCHABILITY: Is this a unique search term or will it compete with existing artists/songs?
+3. TOUR POSTER TEST: Does this name look good in large type on a poster? Does it have visual impact?
+4. MERCH POTENTIAL: How does it look on a t-shirt? Can it be stylized into a logo wordmark?
+5. RADIO DJ TEST: Would a DJ feel natural saying "That was ${name} with their new single..."?
+6. CROWD CHANT: Could a festival crowd chant this name? Does it have rhythm?
+7. DISCOGRAPHY FIT: Does it work as a prefix? "${name}: The Album" or "${name} Live at..."?`,
+
+      'Pet': `PET NAME DEEP DIVE for "${name}":
+1. CALL TEST: Can you shout "${name}!" across a dog park without embarrassment? Does it carry?
+2. COMMAND CONFUSION: Does it sound like common commands (sit, stay, come, no, down)?
+3. VET OFFICE: How will "${name}" sound in a waiting room? Will multiple pets respond?
+4. MULTI-PET COMPATIBILITY: What other pet names pair well with "${name}"?
+5. SYLLABLE TEST: 1-2 syllables are ideal for dogs. How does this name score for responsiveness?
+6. HUMAN CONFUSION: Will people think you're calling a person? Is that a feature or a bug?`,
+    };
+
+    const defaultFramework = `BUSINESS/PRODUCT DEEP DIVE for "${name}":
+1. TRADEMARK RISK: How defensible is this name? Is it descriptive (hard to trademark) or distinctive (strong mark)?
+2. EXPANSION READINESS: If the company pivots or adds products, does this name box them in or leave room?
+3. FUNDING APPEAL: Does this name sound like a company investors would back? Does it signal ambition and scale?
+4. ACQUISITION PROOF: Could a larger company absorb this name, or is it too generic/specific to defend?
+5. PARTNERSHIP FIT: How does this name sound next to "powered by [BigCo]" or "[Name] by [Partner]"?
+6. INTERNATIONAL EXPANSION: Beyond language issues, does this name work as a global brand?
+7. TALENT ATTRACTION: Would top talent feel proud to have this on their LinkedIn? Does it attract or repel?
+8. CUSTOMER SENTENCE TEST: Can customers naturally say "I use ${name}" or "I bought it from ${name}" without awkwardness?`;
+
+    const framework = contextFrameworks[context] || defaultFramework;
+
+    const prompt = `You are a specialized naming consultant. A client has already run a general audit on their name. Now they need a deep dive specific to their exact use case.
+${langDirective ? `\n${langDirective}` : ''}
+
+NAME: "${name}"
+CONTEXT: ${context || 'Business'}
+INDUSTRY: ${industry || 'Not specified'}
+TARGET AUDIENCE: ${targetAudience || 'Not specified'}
+CURRENT GRADE: ${grade || 'N/A'} (${score || 'N/A'}/100)
+
+${framework}
+
+For each test, give a severity: "positive" (passes well), "neutral" (no issues), "caution" (minor concern), or "problem" (serious issue).
+
+Return ONLY this JSON:
+{
+  "sections": [
+    {
+      "title": "TEST NAME (e.g., POPULARITY TREND)",
+      "finding": "Clear, specific finding in 1-2 sentences",
+      "detail": "Additional context if needed, or null",
+      "severity": "positive | neutral | caution | problem"
+    }
+  ],
+  "verdict": "1-2 sentence overall deep dive verdict — does the context-specific analysis change the overall assessment?"
+}
+
+Return ONLY valid JSON.`;
+
+    console.log(`[NameAudit/DeepDive] Deep dive for: "${name}" (${context})`);
+
+    const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 3000,
+      temperature: 0.85,
+      messages: [{ role: 'user', content: prompt }],
+    }, { label: 'NameAudit/DeepDive' });
+
+    console.log(`[NameAudit/DeepDive] ${parsed.sections?.length || 0} sections, verdict: ${parsed.verdict?.slice(0, 50)}...`);
+    res.json(parsed);
+
+  } catch (error) {
+    console.error('[NameAudit/DeepDive] Error:', error);
+    res.status(500).json({ error: 'Failed to run deep dive', details: error.message });
+  }
+});
+
+// ═══════════════════════════════════════════════════
+// ROUTE 6: SECOND OPINION
+// Independent re-analysis compared against the first
+// ═══════════════════════════════════════════════════
+router.post('/nameaudit/second-opinion', async (req, res) => {
+  try {
+    const {
+      name, context, industry, targetAudience,
+      firstOpinion, userLanguage,
+    } = req.body;
+
+    if (!name) return res.status(400).json({ error: 'Name is required' });
+
+    const langDirective = withLanguage(userLanguage);
+
+    const prompt = `You are an independent naming consultant providing a SECOND OPINION. Another consultant already analyzed this name. Your job is to give your own honest, independent assessment — then compare it to the first opinion to identify agreements and disagreements.
+${langDirective ? `\n${langDirective}` : ''}
+
+NAME: "${name}"
+CONTEXT: ${context || 'Business'}
+INDUSTRY: ${industry || 'Not specified'}
+TARGET AUDIENCE: ${targetAudience || 'Not specified'}
+
+THE FIRST CONSULTANT'S OPINION:
+- Grade: ${firstOpinion?.grade || 'N/A'}
+- Score: ${firstOpinion?.score || 'N/A'}/100
+- Strengths: ${(firstOpinion?.strengths || []).join('; ') || 'None listed'}
+- Weaknesses: ${(firstOpinion?.weaknesses || []).join('; ') || 'None listed'}
+- Deal breakers: ${(firstOpinion?.dealBreakers || []).join('; ') || 'None'}
+
+YOUR TASK:
+1. Give your own independent grade and score (be honest — you may agree or disagree)
+2. Identify where you AGREE with the first opinion (these are reliable signals)
+3. Identify where you DISAGREE (these are debatable — the client should think harder about these)
+4. Surface any NEW INSIGHTS the first analysis missed
+5. Give a confidence verdict: how reliable is the overall assessment?
+
+IMPORTANT: Don't just agree to be diplomatic. If you think the first analysis was too harsh or too generous, say so. The client benefits from genuine disagreement.
+
+Return ONLY this JSON:
+{
+  "score": 72,
+  "grade": "GOOD",
+  "agreements": [
+    "Both analyses agree: [specific finding]"
+  ],
+  "disagreements": [
+    "First analysis said [X], but I'd argue [Y] because [reason]"
+  ],
+  "new_insights": [
+    "Something the first analysis didn't catch: [finding]"
+  ],
+  "confidence_verdict": "How confident should you be in the overall assessment? e.g., 'High confidence — both analyses converge on the same grade.' or 'Mixed signals — the disagreements suggest this name is more polarizing than the score suggests.'"
+}
+
+Return ONLY valid JSON.`;
+
+    console.log(`[NameAudit/SecondOpinion] Re-analyzing: "${name}" (first opinion: ${firstOpinion?.grade} ${firstOpinion?.score})`);
+
+    const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 2500,
+      temperature: 1.0,
+      messages: [{ role: 'user', content: prompt }],
+    }, { label: 'NameAudit/SecondOpinion' });
+
+    console.log(`[NameAudit/SecondOpinion] Second grade: ${parsed.grade} ${parsed.score}, ${parsed.agreements?.length || 0} agreements, ${parsed.disagreements?.length || 0} disagreements`);
+    res.json(parsed);
+
+  } catch (error) {
+    console.error('[NameAudit/SecondOpinion] Error:', error);
+    res.status(500).json({ error: 'Failed to get second opinion', details: error.message });
+  }
+});
+
 module.exports = router;
