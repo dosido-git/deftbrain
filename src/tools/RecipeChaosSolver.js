@@ -1,8 +1,128 @@
-import React, { useState, useRef, useCallback } from 'react';
-import { ChefHat, Loader2, AlertCircle, Camera, Upload, X, Check, Sparkles, Clock, AlertTriangle, Flame, ThermometerSun, Beaker, Utensils, Egg, Scale, RefreshCw, ChevronDown, ChevronUp, Lightbulb, Heart, Copy, Zap, Shield, Image as ImageIcon } from 'lucide-react';
+import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
+import { CopyBtn, ActionBar } from '../components/ActionButtons';
 
+// ════════════════════════════════════════════════════════════
+// CONSTANTS
+// ════════════════════════════════════════════════════════════
+const PROBLEM_CATEGORIES = [
+  { id: 'missing_ingredient', label: 'Missing Ingredient', emoji: '🥚' },
+  { id: 'technique_failure', label: 'Technique Failure', emoji: '🔥' },
+  { id: 'timing_issue', label: 'Timing / Temperature', emoji: '⏱️' },
+  { id: 'consistency', label: 'Consistency Problem', emoji: '🧪' },
+  { id: 'equipment_missing', label: 'Equipment Missing', emoji: '🍳' },
+  { id: 'quantity_error', label: 'Quantity Error', emoji: '⚖️' },
+];
+
+const QUICK_PROBLEMS = [
+  { label: '🚫 No eggs', problem: 'missing_ingredient', desc: "I don't have eggs", ingredient: 'eggs' },
+  { label: '💔 Sauce broke', problem: 'technique_failure', desc: 'My sauce broke/separated' },
+  { label: '🔥 It\'s burning!', problem: 'timing_issue', desc: 'My food is burning or overcooking' },
+  { label: '🫠 Too thin', problem: 'consistency', desc: 'My sauce/batter is too thin' },
+  { label: '🧱 Too thick', problem: 'consistency', desc: 'My sauce/batter is too thick' },
+  { label: '🍞 Won\'t rise', problem: 'technique_failure', desc: "My dough/bread won't rise" },
+  { label: '🥩 Overcooked', problem: 'technique_failure', desc: 'I overcooked my protein' },
+  { label: '🧂 Too salty', problem: 'consistency', desc: 'I added too much salt' },
+];
+
+const COMMON_SWAPS = [
+  'eggs', 'buttermilk', 'butter', 'heavy cream', 'sour cream',
+  'all-purpose flour', 'baking powder', 'cornstarch', 'brown sugar',
+  'whole milk', 'fresh herbs', 'lemon juice', 'wine (cooking)',
+];
+
+const HISTORY_KEY = 'rcs-history';
+const SAVED_KEY = 'rcs-saved';
+const MAX_HISTORY = 20;
+const MAX_SAVED = 30;
+
+function loadStore(key) {
+  try { return JSON.parse(localStorage.getItem(key) || '[]'); } catch { return []; }
+}
+function saveStore(key, items, max) {
+  try { localStorage.setItem(key, JSON.stringify(items.slice(0, max))); } catch {}
+}
+
+const CROSS_REFS = [
+  { id: 'FridgeAlchemy', icon: '🧪', label: 'Make a meal from what you have' },
+  { id: 'BillGuiltEraser', icon: '💸', label: 'Was that grocery run worth it?' },
+];
+
+// ════════════════════════════════════════════════════════════
+// SECTION COMPONENT
+// ════════════════════════════════════════════════════════════
+function Section({ icon, title, badge, children, defaultOpen = false, c }) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div className={`${c.card} border rounded-xl overflow-hidden`}>
+      <button onClick={() => setOpen(p => !p)}
+        className="w-full p-4 flex items-center justify-between text-left min-h-[44px]">
+        <div className="flex items-center gap-2.5">
+          {icon && <span className="text-sm">{icon}</span>}
+          <h3 className={`text-sm font-bold ${c.text}`}>{title}</h3>
+          {badge && <span className={`text-[9px] font-black px-2 py-0.5 rounded ${c.accentBg}`}>{badge}</span>}
+        </div>
+        <span className={`text-xs ${c.textMuted}`}>{open ? '▲' : '▼'}</span>
+      </button>
+      {open && <div className={`px-4 pb-4 border-t ${c.divider} pt-3 space-y-3`}>{children}</div>}
+    </div>
+  );
+}
+
+// ════════════════════════════════════════════════════════════
+// IMAGE COMPRESSION — canvas-based, ≤800KB target
+// ════════════════════════════════════════════════════════════
+function compressImageFile(file) {
+  return new Promise((resolve, reject) => {
+    if (!file || !file.type.startsWith('image/')) { reject(new Error('Invalid file type')); return; }
+    const maxDim = 1024, quality = 0.8, maxSizeKB = 800;
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error('Failed to read image'));
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onerror = () => reject(new Error('Failed to load image'));
+      img.onload = () => {
+        try {
+          let w = img.width, h = img.height;
+          if (w > maxDim || h > maxDim) {
+            if (w > h) { h = Math.round((h / w) * maxDim); w = maxDim; }
+            else { w = Math.round((w / h) * maxDim); h = maxDim; }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = w; canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.imageSmoothingEnabled = true;
+          ctx.imageSmoothingQuality = 'high';
+          ctx.drawImage(img, 0, 0, w, h);
+          let dataUrl = canvas.toDataURL('image/jpeg', quality);
+          let sizeKB = Math.round((dataUrl.length * 0.75) / 1024);
+          if (sizeKB > maxSizeKB) {
+            dataUrl = canvas.toDataURL('image/jpeg', 0.6);
+            sizeKB = Math.round((dataUrl.length * 0.75) / 1024);
+          }
+          if (sizeKB > maxSizeKB) {
+            const sc = 768 / Math.max(w, h);
+            const c2 = document.createElement('canvas');
+            c2.width = Math.round(w * sc); c2.height = Math.round(h * sc);
+            const ctx2 = c2.getContext('2d');
+            ctx2.imageSmoothingEnabled = true;
+            ctx2.imageSmoothingQuality = 'high';
+            ctx2.drawImage(canvas, 0, 0, c2.width, c2.height);
+            dataUrl = c2.toDataURL('image/jpeg', 0.6);
+          }
+          resolve(dataUrl);
+        } catch (err) { reject(new Error(`Compression failed: ${err.message}`)); }
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+// ════════════════════════════════════════════════════════════
+// COMPONENT
+// ════════════════════════════════════════════════════════════
 const RecipeChaosSolver = () => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { theme } = useTheme();
@@ -10,287 +130,233 @@ const RecipeChaosSolver = () => {
 
   const recipePhotoRef = useRef(null);
   const pantryPhotoRef = useRef(null);
+  const disasterPhotoRef = useRef(null);
 
-  // ── Input state ──
-  const [inputMode, setInputMode] = useState('quick'); // 'quick', 'paste', 'photo'
+  const c = {
+    card: isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-slate-200',
+    input: isDark
+      ? 'bg-zinc-900 border-zinc-600 text-zinc-50 placeholder:text-zinc-500 focus:border-orange-500 focus:ring-orange-500/20'
+      : 'bg-white border-slate-300 text-slate-900 placeholder:text-slate-400 focus:border-orange-500 focus:ring-orange-100',
+    text: isDark ? 'text-zinc-50' : 'text-slate-900',
+    textSec: isDark ? 'text-zinc-400' : 'text-slate-600',
+    textMuted: isDark ? 'text-zinc-500' : 'text-slate-500',
+    label: isDark ? 'text-zinc-300' : 'text-slate-700',
+    accent: isDark ? 'text-orange-400' : 'text-orange-600',
+    accentBg: isDark ? 'bg-orange-900/30 border-orange-700/50' : 'bg-orange-50 border-orange-200',
+    btnPrimary: isDark ? 'bg-orange-600 hover:bg-orange-500 text-white' : 'bg-orange-600 hover:bg-orange-700 text-white',
+    btnSec: isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-slate-100 hover:bg-slate-200 text-slate-800',
+    btnEmergency: isDark ? 'bg-red-600 hover:bg-red-500 text-white' : 'bg-red-600 hover:bg-red-700 text-white',
+    danger: isDark ? 'bg-red-900/20 border-red-700/50 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
+    dangerText: isDark ? 'text-red-400' : 'text-red-600',
+    success: isDark ? 'bg-emerald-900/20 border-emerald-700/50 text-emerald-200' : 'bg-emerald-50 border-emerald-200 text-emerald-800',
+    successText: isDark ? 'text-emerald-400' : 'text-emerald-600',
+    warning: isDark ? 'bg-amber-900/20 border-amber-700/50 text-amber-200' : 'bg-amber-50 border-amber-200 text-amber-800',
+    warningText: isDark ? 'text-amber-400' : 'text-amber-600',
+    info: isDark ? 'bg-blue-900/20 border-blue-700/50 text-blue-200' : 'bg-blue-50 border-blue-200 text-blue-800',
+    science: isDark ? 'bg-violet-900/20 border-violet-700/50 text-violet-200' : 'bg-violet-50 border-violet-200 text-violet-800',
+    chaos: isDark ? 'bg-fuchsia-900/20 border-fuchsia-700/50 text-fuchsia-200' : 'bg-fuchsia-50 border-fuchsia-200 text-fuchsia-800',
+    pantry: isDark ? 'bg-teal-900/20 border-teal-700/50 text-teal-200' : 'bg-teal-50 border-teal-200 text-teal-800',
+    pillActive: isDark ? 'bg-orange-600 border-orange-500 text-white' : 'bg-orange-600 border-orange-600 text-white',
+    pillInactive: isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-300 hover:border-zinc-500' : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300',
+    divider: isDark ? 'border-zinc-700' : 'border-slate-200',
+    quoteBg: isDark ? 'bg-zinc-900/60' : 'bg-slate-50',
+    dropzone: isDark ? 'border-zinc-600 bg-zinc-800/50 hover:border-orange-500' : 'border-slate-300 bg-slate-50 hover:border-orange-400',
+    stepDone: isDark ? 'bg-emerald-900/30 border-emerald-600' : 'bg-emerald-50 border-emerald-300',
+    stepPending: isDark ? 'bg-zinc-800 border-zinc-600' : 'bg-white border-slate-200',
+  };
+
+  // ── State ──
+  const [view, setView] = useState('rescue');
+  const [error, setError] = useState('');
+
+  // Rescue
+  const [inputMode, setInputMode] = useState('quick'); // quick | paste | photo
   const [quickDish, setQuickDish] = useState('');
   const [recipeText, setRecipeText] = useState('');
   const [recipeImagePreview, setRecipeImagePreview] = useState(null);
   const [recipeImageBase64, setRecipeImageBase64] = useState(null);
-
-  // ── Problem state ──
+  const [compressingRecipe, setCompressingRecipe] = useState(false);
+  const [pantryImagePreview, setPantryImagePreview] = useState(null);
+  const [pantryImageBase64, setPantryImageBase64] = useState(null);
+  const [compressingPantry, setCompressingPantry] = useState(false);
   const [problemCategory, setProblemCategory] = useState('missing_ingredient');
   const [problemDescription, setProblemDescription] = useState('');
   const [missingIngredient, setMissingIngredient] = useState('');
   const [availableSubstitutes, setAvailableSubstitutes] = useState('');
-
-  // ── Context state ──
+  const [availableIngredients, setAvailableIngredients] = useState('');
   const [dietaryRestrictions, setDietaryRestrictions] = useState('');
   const [cookingSkill, setCookingSkill] = useState('beginner');
-  const [timeAvailable, setTimeAvailable] = useState('');
   const [timePressure, setTimePressure] = useState('');
   const [embraceChaos, setEmbraceChaos] = useState(false);
-
-  // ── Pantry photo ──
-  const [pantryImagePreview, setPantryImagePreview] = useState(null);
-  const [pantryImageBase64, setPantryImageBase64] = useState(null);
-
-  // ── Available ingredients (for classic mode) ──
-  const [availableIngredients, setAvailableIngredients] = useState('');
-
-  // ── Image compression state ──
-  const [compressingRecipe, setCompressingRecipe] = useState(false);
-  const [compressingPantry, setCompressingPantry] = useState(false);
-
-  // ── Results ──
-  const [results, setResults] = useState(null);
-  const [error, setError] = useState('');
+  const [rescueResults, setRescueResults] = useState(null);
   const [completedSteps, setCompletedSteps] = useState({});
   const [showScience, setShowScience] = useState({});
-  const [copiedRecipe, setCopiedRecipe] = useState(false);
 
-  // Theme colors
-  const c = {
-    bg: isDark ? 'bg-zinc-900' : 'bg-gradient-to-br from-amber-50 via-orange-50 to-red-50',
-    card: isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-slate-200',
-    cardHover: isDark ? 'hover:border-zinc-500' : 'hover:border-orange-300',
-    input: isDark
-      ? 'bg-zinc-900 border-zinc-700 text-zinc-50 placeholder:text-zinc-500 focus:border-orange-500 focus:ring-orange-500/20'
-      : 'bg-white border-slate-300 text-slate-900 placeholder:text-slate-400 focus:border-orange-500 focus:ring-orange-200',
-    text: isDark ? 'text-zinc-50' : 'text-slate-900',
-    textSecondary: isDark ? 'text-zinc-400' : 'text-slate-600',
-    textMuted: isDark ? 'text-zinc-500' : 'text-slate-500',
-    label: isDark ? 'text-zinc-300' : 'text-slate-700',
-    accent: isDark ? 'text-orange-400' : 'text-orange-600',
-    btnPrimary: isDark
-      ? 'bg-orange-600 hover:bg-orange-700 text-white'
-      : 'bg-orange-600 hover:bg-orange-700 text-white',
-    btnSecondary: isDark
-      ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-50'
-      : 'bg-slate-100 hover:bg-slate-200 text-slate-700',
-    btnEmergency: isDark
-      ? 'bg-red-600 hover:bg-red-700 text-white ring-2 ring-red-400/50'
-      : 'bg-red-600 hover:bg-red-700 text-white ring-2 ring-red-300',
-    tabActive: isDark ? 'bg-orange-600 text-white' : 'bg-orange-600 text-white',
-    tabInactive: isDark ? 'bg-zinc-800 text-zinc-400 hover:text-zinc-200' : 'bg-white text-slate-500 hover:text-slate-700',
-    dropzone: isDark
-      ? 'border-zinc-600 bg-zinc-800/50 hover:border-orange-500'
-      : 'border-slate-300 bg-slate-50 hover:border-orange-400 hover:bg-orange-50',
-    successBox: isDark ? 'bg-emerald-900/30 border-emerald-700' : 'bg-emerald-50 border-emerald-300',
-    warningBox: isDark ? 'bg-amber-900/30 border-amber-700' : 'bg-amber-50 border-amber-300',
-    dangerBox: isDark ? 'bg-red-900/30 border-red-700' : 'bg-red-50 border-red-300',
-    infoBox: isDark ? 'bg-blue-900/30 border-blue-700' : 'bg-blue-50 border-blue-200',
-    scienceBox: isDark ? 'bg-violet-900/30 border-violet-700' : 'bg-violet-50 border-violet-200',
-    chaosBox: isDark ? 'bg-fuchsia-900/30 border-fuchsia-700' : 'bg-fuchsia-50 border-fuchsia-200',
-    stepDone: isDark ? 'bg-emerald-900/30 border-emerald-600' : 'bg-emerald-50 border-emerald-300',
-    stepPending: isDark ? 'bg-zinc-800 border-zinc-600' : 'bg-white border-slate-200',
-    pantryBox: isDark ? 'bg-teal-900/30 border-teal-700' : 'bg-teal-50 border-teal-200',
-  };
+  // Disaster photo (for rescue)
+  const [disasterImagePreview, setDisasterImagePreview] = useState(null);
+  const [disasterImageBase64, setDisasterImageBase64] = useState(null);
+  const [compressingDisaster, setCompressingDisaster] = useState(false);
 
-  // ── Problem categories ──
-  const problemCategories = [
-    { id: 'missing_ingredient', label: 'Missing Ingredient', emoji: '🥚' },
-    { id: 'technique_failure', label: 'Technique Failure', emoji: '🔥' },
-    { id: 'timing_issue', label: 'Timing / Temperature', emoji: '⏱️' },
-    { id: 'consistency', label: 'Consistency Problem', emoji: '🧪' },
-    { id: 'equipment_missing', label: 'Equipment Missing', emoji: '🍳' },
-    { id: 'quantity_error', label: 'Quantity Error', emoji: '⚖️' },
-  ];
+  // Quick Swap
+  const [swapIngredient, setSwapIngredient] = useState('');
+  const [swapContext, setSwapContext] = useState('');
+  const [swapDiet, setSwapDiet] = useState('');
+  const [swapResults, setSwapResults] = useState(null);
 
-  // ── Quick problem buttons ──
-  const quickProblems = [
-    { label: '🚫 No eggs', problem: 'missing_ingredient', desc: 'I don\'t have eggs', ingredient: 'eggs' },
-    { label: '💔 Sauce broke', problem: 'technique_failure', desc: 'My sauce broke/separated' },
-    { label: '🔥 It\'s burning!', problem: 'timing_issue', desc: 'My food is burning or overcooking' },
-    { label: '🫠 Too thin', problem: 'consistency', desc: 'My sauce/batter is too thin' },
-    { label: '🧱 Too thick', problem: 'consistency', desc: 'My sauce/batter is too thick' },
-    { label: '🍞 Won\'t rise', problem: 'technique_failure', desc: 'My dough/bread won\'t rise' },
-    { label: '🥩 Overcooked', problem: 'technique_failure', desc: 'I overcooked my protein/meat' },
-    { label: '🧂 Too salty', problem: 'consistency', desc: 'I added too much salt' },
-  ];
+  // Scale
+  const [scaleRecipe, setScaleRecipe] = useState('');
+  const [scaleOriginal, setScaleOriginal] = useState('4');
+  const [scaleTarget, setScaleTarget] = useState('');
+  const [scaleResults, setScaleResults] = useState(null);
 
-  // ══════════════════════════════════════════════════
-  // IMAGE COMPRESSION — inline canvas-based resizer
-  // Max 1024×1024, JPEG @ 0.8 quality, ≤800KB target
-  // Matches project's CompressionPresets.API_UPLOAD
-  // ══════════════════════════════════════════════════
-  const compressImageFile = (file) => {
-    return new Promise((resolve, reject) => {
-      if (!file || !file.type.startsWith('image/')) {
-        reject(new Error('Invalid file type'));
-        return;
-      }
+  // History & Saved
+  const [history, setHistory] = useState(() => loadStore(HISTORY_KEY));
+  const [saved, setSaved] = useState(() => loadStore(SAVED_KEY));
 
-      const maxDim = 1024;
-      const quality = 0.8;
-      const maxSizeKB = 800;
-      const origSizeKB = Math.round(file.size / 1024);
-      console.log(`[RecipeChaosSolver] Original image: ${origSizeKB}KB (${file.type})`);
+  // Multi-swap
+  const [multiSwapIngredients, setMultiSwapIngredients] = useState(['', '']);
+  const [multiSwapContext, setMultiSwapContext] = useState('');
+  const [multiSwapDiet, setMultiSwapDiet] = useState('');
+  const [multiSwapResults, setMultiSwapResults] = useState(null);
 
-      const reader = new FileReader();
-      reader.onerror = () => reject(new Error('Failed to read image file'));
-      reader.onload = (e) => {
-        const img = new Image();
-        img.onerror = () => reject(new Error('Failed to load image'));
-        img.onload = () => {
-          try {
-            let width = img.width;
-            let height = img.height;
+  // Saved search
+  const [savedSearch, setSavedSearch] = useState('');
 
-            if (width > maxDim || height > maxDim) {
-              if (width > height) {
-                height = Math.round((height / width) * maxDim);
-                width = maxDim;
-              } else {
-                width = Math.round((width / height) * maxDim);
-                height = maxDim;
-              }
-            }
+  // Step timers
+  const [activeTimers, setActiveTimers] = useState({}); // key: 'rIdx-sIdx', value: { total, remaining, interval }
 
-            const canvas = document.createElement('canvas');
-            canvas.width = width;
-            canvas.height = height;
-            const ctx = canvas.getContext('2d');
-            ctx.imageSmoothingEnabled = true;
-            ctx.imageSmoothingQuality = 'high';
-            ctx.drawImage(img, 0, 0, width, height);
+  // Pre-flight
+  const [pfRecipe, setPfRecipe] = useState('');
+  const [pfIngredients, setPfIngredients] = useState('');
+  const [pfEquipment, setPfEquipment] = useState('standard kitchen');
+  const [pfSkill, setPfSkill] = useState('beginner');
+  const [pfResults, setPfResults] = useState(null);
 
-            let dataUrl = canvas.toDataURL('image/jpeg', quality);
-            let sizeKB = Math.round((dataUrl.length * 0.75) / 1024);
+  // Flavor Fix
+  const [ffDish, setFfDish] = useState('');
+  const [ffWrong, setFfWrong] = useState('');
+  const [ffIngredients, setFfIngredients] = useState('');
+  const [ffDiet, setFfDiet] = useState('');
+  const [ffResults, setFfResults] = useState(null);
 
-            // Retry with lower quality if still too large
-            if (sizeKB > maxSizeKB) {
-              console.log(`[RecipeChaosSolver] First pass ${sizeKB}KB > ${maxSizeKB}KB, retrying at 0.6 quality...`);
-              dataUrl = canvas.toDataURL('image/jpeg', 0.6);
-              sizeKB = Math.round((dataUrl.length * 0.75) / 1024);
-            }
+  // Wins Journal
+  const [winText, setWinText] = useState('');
+  const [winRating, setWinRating] = useState(4);
+  const [wins, setWins] = useState(() => loadStore('rcs-wins'));
 
-            // Resize further if still too large
-            if (sizeKB > maxSizeKB) {
-              console.log(`[RecipeChaosSolver] Still ${sizeKB}KB, resizing to 768px...`);
-              const smallCanvas = document.createElement('canvas');
-              const scale = 768 / Math.max(width, height);
-              smallCanvas.width = Math.round(width * scale);
-              smallCanvas.height = Math.round(height * scale);
-              const sCtx = smallCanvas.getContext('2d');
-              sCtx.imageSmoothingEnabled = true;
-              sCtx.imageSmoothingQuality = 'high';
-              sCtx.drawImage(canvas, 0, 0, smallCanvas.width, smallCanvas.height);
-              dataUrl = smallCanvas.toDataURL('image/jpeg', 0.6);
-              sizeKB = Math.round((dataUrl.length * 0.75) / 1024);
-            }
+  // Teach Me
+  const [teachResults, setTeachResults] = useState(null);
+  const [teachLoading, setTeachLoading] = useState(false);
 
-            const savings = origSizeKB > 0 ? Math.round((1 - sizeKB / origSizeKB) * 100) : 0;
-            console.log(`[RecipeChaosSolver] Compressed: ${sizeKB}KB (${savings}% smaller, ${width}×${height}px)`);
-            resolve(dataUrl);
-          } catch (err) {
-            reject(new Error(`Compression failed: ${err.message}`));
-          }
-        };
-        img.src = e.target.result;
-      };
-      reader.readAsDataURL(file);
-    });
-  };
+  // Kitchen Companion mode
+  const [companionMode, setCompanionMode] = useState(false);
+  const [companionRecipe, setCompanionRecipe] = useState(null); // which recipe index
+  const [companionStep, setCompanionStep] = useState(0);
 
-  // ── Compressed upload handlers ──
-  const handleRecipePhotoUpload = async (e) => {
+  // ── Image handlers ──
+  const handleImageUpload = useCallback(async (e, type) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (!file.type.startsWith('image/')) { setError('Please upload an image file'); return; }
-    if (file.size > 10 * 1024 * 1024) { setError('Image must be less than 10MB'); return; }
+    if (!file.type.startsWith('image/')) { setError('Please upload an image'); return; }
+    if (file.size > 10 * 1024 * 1024) { setError('Image must be under 10MB'); return; }
 
     setError('');
-    setCompressingRecipe(true);
+    const setters = {
+      recipe: { compress: setCompressingRecipe, preview: setRecipeImagePreview, base64: setRecipeImageBase64 },
+      pantry: { compress: setCompressingPantry, preview: setPantryImagePreview, base64: setPantryImageBase64 },
+      disaster: { compress: setCompressingDisaster, preview: setDisasterImagePreview, base64: setDisasterImageBase64 },
+    };
+    const s = setters[type];
+    if (!s) return;
+
+    s.compress(true);
     try {
       const compressed = await compressImageFile(file);
-      setRecipeImagePreview(compressed);
-      setRecipeImageBase64(compressed);
-      console.log('[RecipeChaosSolver] Recipe image compressed and ready');
+      s.preview(compressed);
+      s.base64(compressed);
     } catch (err) {
-      setError(err.message || 'Failed to process image. Try a different photo.');
-      console.error('Recipe image error:', err);
+      setError(err.message || 'Failed to process image');
     } finally {
-      setCompressingRecipe(false);
+      s.compress(false);
     }
-  };
-
-  const handlePantryPhotoUpload = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (!file.type.startsWith('image/')) { setError('Please upload an image file'); return; }
-    if (file.size > 10 * 1024 * 1024) { setError('Image must be less than 10MB'); return; }
-
-    setError('');
-    setCompressingPantry(true);
-    try {
-      const compressed = await compressImageFile(file);
-      setPantryImagePreview(compressed);
-      setPantryImageBase64(compressed);
-      console.log('[RecipeChaosSolver] Pantry image compressed and ready');
-    } catch (err) {
-      setError(err.message || 'Failed to process image. Try a different photo.');
-      console.error('Pantry image error:', err);
-    } finally {
-      setCompressingPantry(false);
-    }
-  };
+  }, []);
 
   const handleDrop = useCallback(async (e, type) => {
     e.preventDefault();
     const file = e.dataTransfer.files?.[0];
     if (!file || !file.type.startsWith('image/')) return;
+    handleImageUpload({ target: { files: [file] } }, type);
+  }, [handleImageUpload]);
 
-    const setCompressing = type === 'recipe' ? setCompressingRecipe : setCompressingPantry;
-    const setPreview = type === 'recipe' ? setRecipeImagePreview : setPantryImagePreview;
-    const setBase64 = type === 'recipe' ? setRecipeImageBase64 : setPantryImageBase64;
-
-    setCompressing(true);
-    try {
-      const compressed = await compressImageFile(file);
-      setPreview(compressed);
-      setBase64(compressed);
-    } catch (err) {
-      setError(err.message || 'Failed to process dropped image');
-    } finally {
-      setCompressing(false);
+  const clearImage = useCallback((type) => {
+    if (type === 'recipe') {
+      setRecipeImagePreview(null);
+      setRecipeImageBase64(null);
+      if (recipePhotoRef.current) recipePhotoRef.current.value = '';
+    } else if (type === 'pantry') {
+      setPantryImagePreview(null);
+      setPantryImageBase64(null);
+      if (pantryPhotoRef.current) pantryPhotoRef.current.value = '';
+    } else if (type === 'disaster') {
+      setDisasterImagePreview(null);
+      setDisasterImageBase64(null);
+      if (disasterPhotoRef.current) disasterPhotoRef.current.value = '';
     }
   }, []);
 
-  // ── Quick problem select ──
-  const selectQuickProblem = (qp) => {
-    setProblemCategory(qp.problem);
-    setProblemDescription(qp.desc);
-    if (qp.ingredient) setMissingIngredient(qp.ingredient);
-  };
+  // ── History helpers ──
+  const addToHistory = useCallback((type, title, verdict) => {
+    const entry = {
+      id: Date.now(), type, title: title.slice(0, 80), verdict,
+      date: new Date().toISOString(),
+    };
+    const updated = [entry, ...history].slice(0, MAX_HISTORY);
+    setHistory(updated);
+    saveStore(HISTORY_KEY, updated, MAX_HISTORY);
+  }, [history]);
 
-  // ── Submit ──
-  const handleSolve = async () => {
-    let recipeContext = '';
-    if (inputMode === 'quick' && quickDish.trim()) {
-      recipeContext = `I'm making: ${quickDish.trim()}`;
-    } else if (inputMode === 'paste' && recipeText.trim()) {
-      recipeContext = recipeText.trim();
-    } else if (inputMode === 'photo' && recipeImageBase64) {
-      recipeContext = '[Recipe photo provided]';
-    } else if (availableIngredients.trim()) {
-      recipeContext = `Available ingredients: ${availableIngredients.trim()}`;
-    }
+  // ── Save helpers ──
+  const saveItem = useCallback((type, title, content) => {
+    if (saved.some(s => s.title === title && s.type === type)) return; // no dupes
+    const item = {
+      id: Date.now(), type, title: title.slice(0, 80), content,
+      date: new Date().toISOString(),
+    };
+    const updated = [item, ...saved].slice(0, MAX_SAVED);
+    setSaved(updated);
+    saveStore(SAVED_KEY, updated, MAX_SAVED);
+  }, [saved]);
 
-    if (!recipeContext && !problemDescription.trim() && !availableIngredients.trim() && !recipeImageBase64 && !pantryImageBase64) {
-      setError('Please describe what you\'re making, upload a photo, or describe the problem');
+  const removeSaved = useCallback((id) => {
+    const updated = saved.filter(s => s.id !== id);
+    setSaved(updated);
+    saveStore(SAVED_KEY, updated, MAX_SAVED);
+  }, [saved]);
+
+  // ── API: Rescue ──
+  const runRescue = useCallback(async () => {
+    let context = '';
+    if (inputMode === 'quick' && quickDish.trim()) context = `I'm making: ${quickDish.trim()}`;
+    else if (inputMode === 'paste' && recipeText.trim()) context = recipeText.trim();
+    else if (inputMode === 'photo' && recipeImageBase64) context = '[Recipe photo provided]';
+    else if (availableIngredients.trim()) context = `Available: ${availableIngredients.trim()}`;
+
+    if (!context && !problemDescription.trim() && !recipeImageBase64 && !pantryImageBase64) {
+      setError('Describe what you\'re making or the problem');
       return;
     }
 
     setError('');
-    setResults(null);
+    setRescueResults(null);
     setCompletedSteps({});
+    setShowScience({});
 
     try {
-      const payload = {
-        recipeContext,
+      const data = await callToolEndpoint('recipe-chaos-solver', {
+        recipeContext: context,
         recipeImageBase64: inputMode === 'photo' ? recipeImageBase64 : null,
         pantryImageBase64: pantryImageBase64 || null,
+        disasterImageBase64: disasterImageBase64 || null,
         problemCategory,
         problemDescription: problemDescription.trim(),
         missingIngredient: missingIngredient.trim(),
@@ -298,586 +364,2212 @@ const RecipeChaosSolver = () => {
         availableIngredients: availableIngredients.trim(),
         dietaryRestrictions: dietaryRestrictions.trim(),
         cookingSkill,
-        timeAvailable: timeAvailable.trim(),
         timePressure: timePressure.trim(),
         embraceChaos,
-      };
-
-      console.log('[RecipeChaosSolver] Sending:', {
-        hasRecipeImage: !!payload.recipeImageBase64,
-        recipeImageKB: payload.recipeImageBase64 ? Math.round((payload.recipeImageBase64.length * 0.75) / 1024) : 0,
-        hasPantryImage: !!payload.pantryImageBase64,
-        pantryImageKB: payload.pantryImageBase64 ? Math.round((payload.pantryImageBase64.length * 0.75) / 1024) : 0,
-        problemCategory,
       });
-
-      const data = await callToolEndpoint('recipe-chaos-solver', payload);
-      console.log('[RecipeChaosSolver] Response received:', Object.keys(data));
-      setResults(data);
+      setRescueResults(data);
+      const title = quickDish.trim() || problemDescription.trim() || 'Rescue';
+      const verdict = data.success_probability ? `${data.success_probability}% success` : data.recipes?.[0]?.name || 'Solved';
+      addToHistory('rescue', title, verdict);
     } catch (err) {
-      console.error('[RecipeChaosSolver] API error:', err);
-      setError(err.message || 'Failed to generate solution. Please try again.');
+      setError(err.message || 'Rescue failed');
     }
+  }, [inputMode, quickDish, recipeText, recipeImageBase64, pantryImageBase64, availableIngredients,
+    problemCategory, problemDescription, missingIngredient, availableSubstitutes, dietaryRestrictions,
+    cookingSkill, timePressure, embraceChaos, callToolEndpoint, addToHistory]);
+
+  // ── API: Quick Swap ──
+  const runSwap = useCallback(async () => {
+    if (!swapIngredient.trim()) return;
+    setError('');
+    setSwapResults(null);
+    try {
+      const data = await callToolEndpoint('recipe-chaos-solver/swap', {
+        ingredient: swapIngredient.trim(),
+        recipeContext: swapContext.trim() || null,
+        dietaryRestrictions: swapDiet.trim() || null,
+      });
+      setSwapResults(data);
+      addToHistory('swap', swapIngredient.trim(), `${data.swaps?.length || 0} options`);
+    } catch (err) {
+      setError(err.message || 'Swap lookup failed');
+    }
+  }, [swapIngredient, swapContext, swapDiet, callToolEndpoint, addToHistory]);
+
+  // ── API: Scale ──
+  const runScale = useCallback(async () => {
+    if (!scaleRecipe.trim() || !scaleTarget) return;
+    setError('');
+    setScaleResults(null);
+    try {
+      const data = await callToolEndpoint('recipe-chaos-solver/scale', {
+        recipeText: scaleRecipe.trim(),
+        originalServings: parseInt(scaleOriginal) || 4,
+        targetServings: parseInt(scaleTarget),
+      });
+      setScaleResults(data);
+      addToHistory('scale', `${scaleOriginal} → ${scaleTarget} servings`, `${data.scale_factor}x`);
+    } catch (err) {
+      setError(err.message || 'Scaling failed');
+    }
+  }, [scaleRecipe, scaleOriginal, scaleTarget, callToolEndpoint, addToHistory]);
+
+  // ── API: Multi-swap ──
+  const runMultiSwap = useCallback(async () => {
+    const valid = multiSwapIngredients.filter(i => i.trim());
+    if (valid.length < 2) return;
+    setError('');
+    setMultiSwapResults(null);
+    try {
+      const data = await callToolEndpoint('recipe-chaos-solver/multi-swap', {
+        ingredients: valid.map(i => i.trim()),
+        recipeContext: multiSwapContext.trim() || null,
+        dietaryRestrictions: multiSwapDiet.trim() || null,
+      });
+      setMultiSwapResults(data);
+      addToHistory('multi-swap', valid.join(' + '), data.feasibility || 'analyzed');
+    } catch (err) {
+      setError(err.message || 'Multi-swap failed');
+    }
+  }, [multiSwapIngredients, multiSwapContext, multiSwapDiet, callToolEndpoint, addToHistory]);
+
+  // ── Multi-swap helpers ──
+  const addMultiSwapSlot = () => setMultiSwapIngredients(p => [...p, '']);
+  const removeMultiSwapSlot = (i) => setMultiSwapIngredients(p => p.filter((_, idx) => idx !== i));
+  const updateMultiSwapSlot = (i, val) => setMultiSwapIngredients(p => p.map((v, idx) => idx === i ? val : v));
+
+  // ── API: Pre-flight ──
+  const runPreflight = useCallback(async () => {
+    if (!pfRecipe.trim()) return;
+    setError('');
+    setPfResults(null);
+    try {
+      const savedSwapList = saved.filter(s => s.type === 'swap' || s.type === 'multi-swap')
+        .map(s => s.title).slice(0, 10);
+      const data = await callToolEndpoint('recipe-chaos-solver/preflight', {
+        recipeText: pfRecipe.trim(),
+        availableIngredients: pfIngredients.trim() || null,
+        equipment: pfEquipment,
+        skillLevel: pfSkill,
+        savedSwaps: savedSwapList.length > 0 ? savedSwapList : null,
+      });
+      setPfResults(data);
+      addToHistory('preflight', data.recipe_name || 'Pre-flight', data.readiness || 'checked');
+    } catch (err) {
+      setError(err.message || 'Pre-flight check failed');
+    }
+  }, [pfRecipe, pfIngredients, pfEquipment, pfSkill, saved, callToolEndpoint, addToHistory]);
+
+  // ── API: Flavor Fix ──
+  const runFlavorFix = useCallback(async () => {
+    if (!ffDish.trim()) return;
+    setError('');
+    setFfResults(null);
+    try {
+      const data = await callToolEndpoint('recipe-chaos-solver/flavor-fix', {
+        dish: ffDish.trim(),
+        whatsWrong: ffWrong.trim() || null,
+        availableIngredients: ffIngredients.trim() || null,
+        dietaryRestrictions: ffDiet.trim() || null,
+      });
+      setFfResults(data);
+      addToHistory('flavor-fix', ffDish.trim(), data.the_move?.slice(0, 40) || 'fixed');
+    } catch (err) {
+      setError(err.message || 'Flavor fix failed');
+    }
+  }, [ffDish, ffWrong, ffIngredients, ffDiet, callToolEndpoint, addToHistory]);
+
+  // ── API: Teach Me ──
+  const runTeach = useCallback(async (context, type) => {
+    setTeachResults(null);
+    setTeachLoading(true);
+    try {
+      const data = await callToolEndpoint('recipe-chaos-solver/teach', {
+        rescueContext: context,
+        rescueType: type || 'general',
+      });
+      setTeachResults(data);
+    } catch (err) {
+      setError(err.message || 'Lesson failed');
+    } finally {
+      setTeachLoading(false);
+    }
+  }, [callToolEndpoint]);
+
+  // ── Wins journal helpers ──
+  const addWin = useCallback(() => {
+    if (!winText.trim()) return;
+    const win = {
+      id: Date.now(),
+      text: winText.trim(),
+      rating: winRating,
+      date: new Date().toISOString(),
+    };
+    const updated = [win, ...wins].slice(0, 50);
+    setWins(updated);
+    saveStore('rcs-wins', updated, 50);
+    setWinText('');
+    setWinRating(4);
+  }, [winText, winRating, wins]);
+
+  const removeWin = useCallback((id) => {
+    const updated = wins.filter(w => w.id !== id);
+    setWins(updated);
+    saveStore('rcs-wins', updated, 50);
+  }, [wins]);
+
+  // ── Companion helpers ──
+  const enterCompanion = useCallback((recipeIdx) => {
+    setCompanionRecipe(recipeIdx);
+    setCompanionStep(0);
+    setCompanionMode(true);
+  }, []);
+
+  const exitCompanion = useCallback(() => {
+    setCompanionMode(false);
+    setCompanionRecipe(null);
+    setCompanionStep(0);
+  }, []);
+
+  // ── Timer helpers ──
+  const parseTimeFromStep = (step) => {
+    const patterns = [
+      /(\d+)\s*(?:to\s*\d+\s*)?minute/i,
+      /(\d+)\s*(?:to\s*\d+\s*)?min\b/i,
+      /(\d+)\s*(?:to\s*\d+\s*)?second/i,
+      /(\d+)\s*(?:to\s*\d+\s*)?sec\b/i,
+      /(\d+)\s*(?:to\s*\d+\s*)?hour/i,
+    ];
+    for (const pat of patterns) {
+      const m = step.match(pat);
+      if (m) {
+        const n = parseInt(m[1]);
+        if (pat.source.includes('hour')) return n * 3600;
+        if (pat.source.includes('second') || pat.source.includes('sec')) return n;
+        return n * 60; // minutes
+      }
+    }
+    return null;
   };
 
-  // ── Helpers ──
+  const startTimer = useCallback((key, totalSeconds) => {
+    // Clear any existing timer for this key
+    setActiveTimers(prev => {
+      if (prev[key]?.interval) clearInterval(prev[key].interval);
+      return prev;
+    });
+
+    const interval = setInterval(() => {
+      setActiveTimers(prev => {
+        const timer = prev[key];
+        if (!timer || timer.remaining <= 1) {
+          clearInterval(interval);
+          // Play alert
+          try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            osc.type = 'sine';
+            osc.frequency.value = 880;
+            osc.connect(ctx.destination);
+            osc.start();
+            setTimeout(() => { osc.stop(); ctx.close(); }, 300);
+          } catch {}
+          return { ...prev, [key]: { ...timer, remaining: 0, interval: null, done: true } };
+        }
+        return { ...prev, [key]: { ...timer, remaining: timer.remaining - 1 } };
+      });
+    }, 1000);
+
+    setActiveTimers(prev => ({
+      ...prev,
+      [key]: { total: totalSeconds, remaining: totalSeconds, interval, done: false },
+    }));
+  }, []);
+
+  const stopTimer = useCallback((key) => {
+    setActiveTimers(prev => {
+      if (prev[key]?.interval) clearInterval(prev[key].interval);
+      const { [key]: _, ...rest } = prev;
+      return rest;
+    });
+  }, []);
+
+  const formatTimer = (seconds) => {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return m > 0 ? `${m}:${s.toString().padStart(2, '0')}` : `${s}s`;
+  };
+
+  // Cleanup timers on unmount
+  useEffect(() => {
+    return () => {
+      Object.values(activeTimers).forEach(t => t.interval && clearInterval(t.interval));
+    };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ── Pattern insights (computed from history) ──
+  const patternInsights = useMemo(() => {
+    if (history.length < 3) return null;
+
+    const rescues = history.filter(h => h.type === 'rescue');
+    const swaps = history.filter(h => h.type === 'swap');
+
+    // Find most common problem category from titles
+    const categoryKeywords = {
+      'timing_issue': ['burn', 'overcook', 'undercook', 'timing', 'temperature', 'too long', 'too short'],
+      'missing_ingredient': ['no ', 'missing', 'don\'t have', 'without', 'substitute', 'swap'],
+      'technique_failure': ['broke', 'separate', 'won\'t rise', 'didn\'t rise', 'collapse', 'flat'],
+      'consistency': ['too thin', 'too thick', 'salty', 'dry', 'wet', 'runny', 'lumpy'],
+    };
+
+    const categoryCounts = {};
+    rescues.forEach(r => {
+      const title = (r.title || '').toLowerCase();
+      for (const [cat, keywords] of Object.entries(categoryKeywords)) {
+        if (keywords.some(k => title.includes(k))) {
+          categoryCounts[cat] = (categoryCounts[cat] || 0) + 1;
+        }
+      }
+    });
+
+    const topCategory = Object.entries(categoryCounts).sort((a, b) => b[1] - a[1])[0];
+
+    // Most swapped ingredients
+    const swappedItems = swaps.map(s => s.title.toLowerCase()).sort();
+    const swapCounts = {};
+    swappedItems.forEach(s => { swapCounts[s] = (swapCounts[s] || 0) + 1; });
+    const topSwap = Object.entries(swapCounts).sort((a, b) => b[1] - a[1])[0];
+
+    // Success rate from verdicts
+    const successVerdicts = rescues.filter(r => {
+      const v = r.verdict || '';
+      const pct = parseInt(v);
+      return pct && pct >= 70;
+    }).length;
+    const successRate = rescues.length > 0 ? Math.round((successVerdicts / rescues.length) * 100) : null;
+
+    return {
+      totalRescues: rescues.length,
+      totalSwaps: swaps.length,
+      topCategory: topCategory ? { name: topCategory[0], count: topCategory[1] } : null,
+      topSwap: topSwap ? { name: topSwap[0], count: topSwap[1] } : null,
+      successRate,
+      categoryLabels: {
+        timing_issue: '⏱️ Timing/Temperature',
+        missing_ingredient: '🥚 Missing Ingredients',
+        technique_failure: '🔥 Technique Failures',
+        consistency: '🧪 Consistency Issues',
+      },
+    };
+  }, [history]);
+
+  // ── Rescue helpers ──
+  const selectQuickProblem = (qp) => {
+    setProblemCategory(qp.problem);
+    setProblemDescription(qp.desc);
+    if (qp.ingredient) setMissingIngredient(qp.ingredient);
+  };
+
   const toggleStep = (rIdx, sIdx) => {
     const key = `${rIdx}-${sIdx}`;
     setCompletedSteps(prev => ({ ...prev, [key]: !prev[key] }));
   };
+
   const toggleScience = (idx) => setShowScience(prev => ({ ...prev, [idx]: !prev[idx] }));
 
-  const copyModifiedRecipe = (recipe) => {
-    const text = [
-      recipe.name, recipe.description, '',
-      'Ingredients:',
-      ...(recipe.ingredients_used || []).map(i => `- ${i}`),
-      ...(recipe.missing_staples || []).map(i => `- ${i} (you may need)`),
-      '', 'Instructions:',
-      ...(recipe.instructions || recipe.solution_steps || []).map((s, i) => `${i + 1}. ${s}`),
-      '', recipe.tips ? `Tip: ${recipe.tips}` : '',
-      recipe.preventive_tip ? `Next time: ${recipe.preventive_tip}` : '',
-    ].filter(Boolean).join('\n');
-    navigator.clipboard.writeText(text);
-    setCopiedRecipe(true);
-    setTimeout(() => setCopiedRecipe(false), 2000);
-  };
-
-  const getProbabilityConfig = (prob) => {
+  const getProbConfig = (prob) => {
     const p = parseInt(prob) || 0;
-    if (p >= 90) return { label: 'This will work great', color: c.successBox, textColor: isDark ? 'text-emerald-300' : 'text-emerald-800', barColor: 'bg-emerald-500', emoji: '✅' };
-    if (p >= 70) return { label: 'Will work, flavor may differ', color: c.warningBox, textColor: isDark ? 'text-amber-300' : 'text-amber-800', barColor: 'bg-amber-500', emoji: '👍' };
-    if (p >= 50) return { label: 'Emergency measure — not ideal', color: c.warningBox, textColor: isDark ? 'text-amber-300' : 'text-amber-800', barColor: 'bg-amber-500', emoji: '⚠️' };
-    return { label: 'This dish may not be salvageable', color: c.dangerBox, textColor: isDark ? 'text-red-300' : 'text-red-800', barColor: 'bg-red-500', emoji: '😬' };
+    if (p >= 90) return { label: 'This will work great', bg: c.success, emoji: '✅' };
+    if (p >= 70) return { label: 'Will work, flavor may differ', bg: c.warning, emoji: '👍' };
+    if (p >= 50) return { label: 'Emergency measure', bg: c.warning, emoji: '⚠️' };
+    return { label: 'May not be salvageable', bg: c.danger, emoji: '😬' };
   };
 
-  const getDifficultyBadge = (diff) => {
+  const getDiffBadge = (diff) => {
     const d = (diff || '').toLowerCase();
-    if (d === 'easy' || d === 'beginner') return { label: 'Easy fix', color: isDark ? 'bg-emerald-900/40 text-emerald-300' : 'bg-emerald-100 text-emerald-700' };
-    if (d === 'moderate' || d === 'intermediate' || d === 'medium') return { label: 'Some technique needed', color: isDark ? 'bg-amber-900/40 text-amber-300' : 'bg-amber-100 text-amber-700' };
-    return { label: 'Advanced technique', color: isDark ? 'bg-red-900/40 text-red-300' : 'bg-red-100 text-red-700' };
+    if (d.includes('easy') || d.includes('beginner')) return { label: 'Easy fix', bg: c.success };
+    if (d.includes('moderate') || d.includes('medium') || d.includes('intermediate')) return { label: 'Some technique', bg: c.warning };
+    return { label: 'Advanced', bg: c.danger };
   };
 
-  const handleReset = () => {
+  const getQualityBadge = (q) => {
+    if (!q) return null;
+    const s = q.toLowerCase();
+    if (s.includes('excellent')) return { label: '✅ Excellent swap', bg: c.success };
+    if (s.includes('good')) return { label: '👍 Good swap', bg: c.success };
+    if (s.includes('workable') || s.includes('will work')) return { label: '⚠️ Workable', bg: c.warning };
+    return { label: '🆘 Emergency only', bg: c.danger };
+  };
+
+  const resetRescue = () => {
     setQuickDish(''); setRecipeText('');
     setRecipeImagePreview(null); setRecipeImageBase64(null);
     setPantryImagePreview(null); setPantryImageBase64(null);
+    setDisasterImagePreview(null); setDisasterImageBase64(null);
     setProblemDescription(''); setMissingIngredient('');
     setAvailableSubstitutes(''); setAvailableIngredients('');
-    setTimePressure(''); setResults(null); setError('');
-    setCompletedSteps({});
+    setTimePressure(''); setRescueResults(null);
+    setCompletedSteps({}); setShowScience({});
+    setActiveTimers(prev => {
+      Object.values(prev).forEach(t => t.interval && clearInterval(t.interval));
+      return {};
+    });
   };
 
-  return (
-    <div className={`min-h-screen ${c.bg} py-8 px-4`}>
-      <div className="max-w-5xl mx-auto">
+  // ── Build text ──
+  const buildRescueText = useCallback(() => {
+    if (!rescueResults) return '';
+    const r = rescueResults;
+    let t = `🍳 Recipe Rescue\n`;
+    if (r.immediate_action) t += `\n⚡ DO NOW: ${r.immediate_action}\n`;
+    if (r.recipes) {
+      r.recipes.forEach((rec, i) => {
+        t += `\n${i + 1}. ${rec.name} (${rec.success_probability}% success)\n`;
+        t += `${rec.description}\n`;
+        if (rec.ingredients_used) t += `Ingredients: ${rec.ingredients_used.join(', ')}\n`;
+        if (rec.instructions) t += `Steps:\n${rec.instructions.map((s, j) => `  ${j + 1}. ${s}`).join('\n')}\n`;
+        if (rec.explanation) t += `Why: ${rec.explanation}\n`;
+        if (rec.preventive_tip) t += `Next time: ${rec.preventive_tip}\n`;
+      });
+    }
+    t += '\n— Generated by DeftBrain · deftbrain.com';
+    return t;
+  }, [rescueResults]);
 
-        {/* ── Header ── */}
-        <div className="text-center mb-6">
-          <div className="inline-flex items-center gap-3 mb-2">
-            <div className={`p-3 rounded-2xl ${isDark ? 'bg-orange-900/40' : 'bg-orange-100'}`}>
-              <ChefHat className={`w-7 h-7 ${c.accent}`} />
+  const buildSwapText = useCallback(() => {
+    if (!swapResults) return '';
+    const r = swapResults;
+    let t = `🔄 Substitution: ${r.ingredient}\nFunction: ${r.function_in_cooking}\n\n`;
+    r.swaps?.forEach((s, i) => {
+      t += `${i + 1}. ${s.name} — ${s.ratio} (${s.quality})\n`;
+      t += `   ${s.science}\n`;
+      if (s.notes) t += `   Note: ${s.notes}\n`;
+      t += '\n';
+    });
+    if (r.pro_tip) t += `Pro tip: ${r.pro_tip}\n`;
+    t += '\n— Generated by DeftBrain · deftbrain.com';
+    return t;
+  }, [swapResults]);
+
+  const buildScaleText = useCallback(() => {
+    if (!scaleResults) return '';
+    const r = scaleResults;
+    let t = `⚖️ Scaled Recipe (${r.original_servings} → ${r.target_servings} servings, ${r.scale_factor}x)\n\n`;
+    t += `Ingredients:\n`;
+    r.scaled_ingredients?.forEach(i => {
+      t += `• ${i.scaled}${i.note ? ` ⚠️ ${i.note}` : ''}\n`;
+    });
+    if (r.timing_changes?.length) t += `\nTiming: ${r.timing_changes.join(', ')}\n`;
+    if (r.warnings?.length) t += `\n⚠️ ${r.warnings.join(', ')}\n`;
+    if (r.pro_tip) t += `\n💡 ${r.pro_tip}\n`;
+    t += '\n— Generated by DeftBrain · deftbrain.com';
+    return t;
+  }, [scaleResults]);
+
+  const buildMultiSwapText = useCallback(() => {
+    if (!multiSwapResults) return '';
+    const r = multiSwapResults;
+    let t = `🔄 Multi-Swap: ${r.missing_count} ingredients\n\n`;
+    t += `Impact: ${r.combined_impact}\n`;
+    t += `Strategy: ${r.strategy}\n`;
+    t += `Feasibility: ${r.feasibility} — ${r.feasibility_note}\n\n`;
+    r.swaps?.forEach((s, i) => {
+      t += `${i + 1}. ${s.original} → ${s.substitute} (${s.ratio}) [${s.quality}]\n`;
+      if (s.interaction_note) t += `   ⚠️ ${s.interaction_note}\n`;
+    });
+    if (r.combined_adjustments?.length) t += `\nAdjustments:\n${r.combined_adjustments.map(a => `• ${a}`).join('\n')}\n`;
+    if (r.expected_result) t += `\nExpected result: ${r.expected_result}\n`;
+    t += '\n— Generated by DeftBrain · deftbrain.com';
+    return t;
+  }, [multiSwapResults]);
+
+  const buildPreflightText = useCallback(() => {
+    if (!pfResults) return '';
+    const r = pfResults;
+    let t = `${r.readiness_emoji} Pre-Flight: ${r.recipe_name} — ${r.readiness}\n\n`;
+    if (r.ingredient_check) {
+      t += 'Ingredients:\n';
+      r.ingredient_check.forEach(i => {
+        t += `${i.status === 'have' ? '✅' : i.status === 'missing' ? '❌' : '❓'} ${i.ingredient}`;
+        if (i.substitute) t += ` → ${i.substitute}${i.sub_ratio ? ` (${i.sub_ratio})` : ''}`;
+        t += '\n';
+      });
+    }
+    if (r.time_estimate) t += `\n⏱️ Recipe says ${r.time_estimate.recipe_says}, realistically ${r.time_estimate.realistic}\n`;
+    if (r.go_no_go) t += `\n🎯 ${r.go_no_go}\n`;
+    t += '\n— Generated by DeftBrain · deftbrain.com';
+    return t;
+  }, [pfResults]);
+
+  const buildFlavorText = useCallback(() => {
+    if (!ffResults) return '';
+    const r = ffResults;
+    let t = `✨ Flavor Fix: ${r.diagnosis}\n\n`;
+    if (r.the_move) t += `THE MOVE: ${r.the_move}\n\n`;
+    r.quick_fixes?.forEach((f, i) => {
+      t += `${i + 1}. ${f.fix} (${f.amount}) — ${f.why}\n`;
+    });
+    if (r.chef_trick) t += `\n👨‍🍳 Chef trick: ${r.chef_trick}\n`;
+    t += '\n— Generated by DeftBrain · deftbrain.com';
+    return t;
+  }, [ffResults]);
+
+  const buildTeachText = useCallback(() => {
+    if (!teachResults) return '';
+    const r = teachResults;
+    let t = `${r.lesson_emoji} ${r.lesson_title}\n\n`;
+    t += `${r.the_principle}\n\n`;
+    if (r.the_rule) t += `THE RULE: ${r.the_rule}\n\n`;
+    if (r.analogy) t += `Think of it like: ${r.analogy}\n\n`;
+    if (r.apply_it) t += `Also applies to:\n${r.apply_it.map(a => `• ${a}`).join('\n')}\n`;
+    t += '\n— Generated by DeftBrain · deftbrain.com';
+    return t;
+  }, [teachResults]);
+
+  // ── Saved filter + search ──
+  const [savedFilter, setSavedFilter] = useState('all');
+  const filteredSaved = useMemo(() => {
+    let items = saved;
+    if (savedFilter !== 'all') items = items.filter(s => s.type === savedFilter);
+    if (savedSearch.trim()) {
+      const q = savedSearch.toLowerCase();
+      items = items.filter(s =>
+        s.title.toLowerCase().includes(q) ||
+        s.content?.ratio?.toLowerCase().includes(q) ||
+        s.content?.description?.toLowerCase().includes(q) ||
+        s.content?.science?.toLowerCase().includes(q) ||
+        s.content?.name?.toLowerCase().includes(q) ||
+        s.content?.swap?.toLowerCase().includes(q) ||
+        s.content?.ingredient?.toLowerCase().includes(q)
+      );
+    }
+    return items;
+  }, [saved, savedFilter, savedSearch]);
+
+  // ════════════════════════════════════════════════════════════
+  // NAV
+  // ════════════════════════════════════════════════════════════
+  const renderNav = () => (
+    <div className="flex gap-1 flex-wrap mb-4">
+      {[
+        { key: 'rescue', label: '🍳 Rescue' },
+        { key: 'preflight', label: '✈️ Pre-Flight' },
+        { key: 'flavor', label: '✨ Flavor Fix' },
+        { key: 'swap', label: '🔄 Swap' },
+        { key: 'multiswap', label: '🔄🔄 Multi' },
+        { key: 'scale', label: '⚖️ Scale' },
+        { key: 'wins', label: `🏆 Wins${wins.length ? ` (${wins.length})` : ''}` },
+        { key: 'saved', label: `📌 Saved${saved.length ? ` (${saved.length})` : ''}` },
+        { key: 'history', label: `📊 History` },
+      ].map(t => (
+        <button key={t.key} onClick={() => setView(t.key)}
+          className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors min-h-[36px] ${
+            view === t.key ? c.pillActive : c.pillInactive
+          }`}>{t.label}</button>
+      ))}
+    </div>
+  );
+
+  // ════════════════════════════════════════════════════════════
+  // RENDER: RESCUE
+  // ════════════════════════════════════════════════════════════
+  const renderRescue = () => (
+    <div className="space-y-4">
+      {/* Quick problems */}
+      <div className={`${c.card} border rounded-xl p-4`}>
+        <p className={`text-xs font-bold ${c.label} mb-2`}>⚡ Quick problems:</p>
+        <div className="flex flex-wrap gap-1.5">
+          {QUICK_PROBLEMS.map((qp, i) => (
+            <button key={i} onClick={() => selectQuickProblem(qp)}
+              className={`px-2.5 py-1.5 rounded-lg text-xs font-medium border transition-colors min-h-[32px] ${
+                problemDescription === qp.desc ? c.pillActive : c.pillInactive
+              }`}>{qp.label}</button>
+          ))}
+        </div>
+      </div>
+
+      {/* Recipe input */}
+      <div className={`${c.card} border rounded-xl p-5`}>
+        <div className={`mb-4 pb-3 border-b ${c.divider}`}>
+          <h2 className={`text-base font-black ${c.text}`}>🍳 What are you making?</h2>
+        </div>
+
+        {/* Input mode tabs */}
+        <div className="flex gap-1.5 mb-4">
+          {[
+            { id: 'quick', label: '🍽️ Quick', desc: 'Dish name' },
+            { id: 'paste', label: '📄 Paste', desc: 'Full recipe' },
+            { id: 'photo', label: '📸 Photo', desc: 'Recipe image' },
+          ].map(tab => (
+            <button key={tab.id} onClick={() => setInputMode(tab.id)}
+              className={`flex-1 py-2 rounded-lg text-xs font-bold border transition-colors min-h-[36px] ${
+                inputMode === tab.id ? c.pillActive : c.pillInactive
+              }`}>
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {inputMode === 'quick' && (
+          <input type="text" value={quickDish} onChange={e => setQuickDish(e.target.value)}
+            placeholder='e.g. "Carbonara", "Chocolate cake", "Chicken stir fry"'
+            className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2 mb-4`} />
+        )}
+
+        {inputMode === 'paste' && (
+          <textarea value={recipeText} onChange={e => setRecipeText(e.target.value)}
+            placeholder="Paste your full recipe here (ingredients + instructions)..."
+            rows={5} className={`w-full px-3 py-2.5 border rounded-lg text-sm resize-y ${c.input} outline-none focus:ring-2 mb-4`} />
+        )}
+
+        {inputMode === 'photo' && (
+          <div className="mb-4">
+            {compressingRecipe ? (
+              <div className={`border-2 border-dashed rounded-xl p-6 text-center ${c.dropzone}`}>
+                <span className="animate-spin inline-block text-2xl">⏳</span>
+                <p className={`text-sm font-medium ${c.text} mt-2`}>Compressing image...</p>
+              </div>
+            ) : recipeImagePreview ? (
+              <div className="relative inline-block">
+                <img src={recipeImagePreview} alt="Recipe" className="max-h-48 rounded-xl border-2" />
+                <button onClick={() => clearImage('recipe')}
+                  className="absolute -top-2 -right-2 p-1.5 bg-red-500 text-white rounded-full shadow-lg text-xs">✕</button>
+                <p className={`text-xs ${c.successText} mt-1`}>✅ Image ready</p>
+              </div>
+            ) : (
+              <div onClick={() => recipePhotoRef.current?.click()}
+                onDragOver={e => e.preventDefault()} onDrop={e => handleDrop(e, 'recipe')}
+                className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all ${c.dropzone}`}>
+                <span className="text-2xl block mb-1">📸</span>
+                <p className={`text-sm font-medium ${c.text}`}>Snap or upload recipe photo</p>
+                <p className={`text-[10px] ${c.textMuted} mt-0.5`}>We'll read the recipe from the image</p>
+              </div>
+            )}
+            <input ref={recipePhotoRef} type="file" accept="image/*"
+              onChange={e => handleImageUpload(e, 'recipe')} className="hidden" />
+          </div>
+        )}
+
+        {/* Available ingredients */}
+        <div className="mb-4">
+          <label className={`text-xs font-bold ${c.label} block mb-1`}>What ingredients do you have?</label>
+          <textarea value={availableIngredients} onChange={e => setAvailableIngredients(e.target.value)}
+            placeholder="e.g. chicken, rice, onion, garlic, soy sauce..." rows={2}
+            className={`w-full px-3 py-2 border rounded-lg text-sm resize-y ${c.input} outline-none focus:ring-2`} />
+        </div>
+
+        {/* Pantry photo */}
+        <div className="mb-4">
+          <label className={`text-xs font-bold ${c.label} block mb-1`}>
+            📸 Pantry photo <span className={`font-normal ${c.textMuted}`}>(optional — AI identifies ingredients)</span>
+          </label>
+          {compressingPantry ? (
+            <div className={`flex items-center gap-3 p-3 rounded-lg border-2 border-dashed ${c.dropzone}`}>
+              <span className="animate-spin inline-block">⏳</span>
+              <span className={`text-sm ${c.text}`}>Compressing...</span>
             </div>
-            <h1 className={`text-3xl font-bold ${c.text}`} style={{ fontFamily: "'Georgia', serif" }}>
-              Recipe Chaos Solver
-            </h1>
-          </div>
-          <p className={c.textSecondary}>Cooking rescue — fix mistakes, swap ingredients, save dinner</p>
+          ) : pantryImagePreview ? (
+            <div className="flex items-start gap-3">
+              <div className="relative flex-shrink-0">
+                <img src={pantryImagePreview} alt="Pantry" className="w-24 h-24 object-cover rounded-lg border-2" />
+                <button onClick={() => clearImage('pantry')}
+                  className="absolute -top-1 -right-1 p-1 bg-red-500 text-white rounded-full text-[9px]">✕</button>
+              </div>
+              <div className={`${c.success} border rounded-lg p-2 flex-1`}>
+                <p className="text-xs font-bold">✅ Pantry image ready</p>
+                <p className={`text-[10px] ${c.textMuted} mt-0.5`}>AI will scan for ingredients</p>
+              </div>
+            </div>
+          ) : (
+            <div onClick={() => pantryPhotoRef.current?.click()}
+              onDragOver={e => e.preventDefault()} onDrop={e => handleDrop(e, 'pantry')}
+              className={`border-2 border-dashed rounded-xl p-4 text-center cursor-pointer transition-all ${c.dropzone}`}>
+              <span className="text-lg">📷</span>
+              <span className={`text-xs font-medium ${c.text} ml-2`}>Upload pantry photo</span>
+            </div>
+          )}
+          <input ref={pantryPhotoRef} type="file" accept="image/*"
+            onChange={e => handleImageUpload(e, 'pantry')} className="hidden" />
         </div>
 
-        {/* ══════════════ QUICK PROBLEM BUTTONS ══════════════ */}
-        <div className={`${c.card} border rounded-2xl shadow-sm p-5 mb-5`}>
-          <div className={`text-sm font-semibold ${c.label} mb-3 flex items-center gap-2`}>
-            <Zap className="w-4 h-4" /> Quick Problems
+        {/* Disaster photo */}
+        <div className="mb-4">
+          <label className={`text-xs font-bold ${c.label} block mb-1`}>
+            📸 Photo of the problem <span className={`font-normal ${c.textMuted}`}>(optional — AI diagnoses what went wrong)</span>
+          </label>
+          {compressingDisaster ? (
+            <div className={`flex items-center gap-3 p-3 rounded-lg border-2 border-dashed ${c.dropzone}`}>
+              <span className="animate-spin inline-block">⏳</span>
+              <span className={`text-sm ${c.text}`}>Compressing...</span>
+            </div>
+          ) : disasterImagePreview ? (
+            <div className="flex items-start gap-3">
+              <div className="relative flex-shrink-0">
+                <img src={disasterImagePreview} alt="Problem" className="w-24 h-24 object-cover rounded-lg border-2" />
+                <button onClick={() => clearImage('disaster')}
+                  className="absolute -top-1 -right-1 p-1 bg-red-500 text-white rounded-full text-[9px]">✕</button>
+              </div>
+              <div className={`${c.danger} border rounded-lg p-2 flex-1`}>
+                <p className="text-xs font-bold">📸 Disaster photo ready</p>
+                <p className={`text-[10px] ${c.textMuted} mt-0.5`}>AI will diagnose what went wrong</p>
+              </div>
+            </div>
+          ) : (
+            <div onClick={() => disasterPhotoRef.current?.click()}
+              onDragOver={e => e.preventDefault()} onDrop={e => handleDrop(e, 'disaster')}
+              className={`border-2 border-dashed rounded-xl p-4 text-center cursor-pointer transition-all ${c.dropzone}`}>
+              <span className="text-lg">🔍</span>
+              <span className={`text-xs font-medium ${c.text} ml-2`}>"What went wrong?" — upload a photo</span>
+            </div>
+          )}
+          <input ref={disasterPhotoRef} type="file" accept="image/*"
+            onChange={e => handleImageUpload(e, 'disaster')} className="hidden" />
+        </div>
+      </div>
+
+      {/* Problem details */}
+      <div className={`${c.card} border rounded-xl p-5`}>
+        <p className={`text-xs font-bold ${c.label} mb-2`}>⚠️ What's the problem?</p>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 mb-4">
+          {PROBLEM_CATEGORIES.map(cat => (
+            <button key={cat.id} onClick={() => setProblemCategory(cat.id)}
+              className={`flex items-center gap-1.5 px-2.5 py-2 rounded-lg text-xs font-medium border transition-colors min-h-[36px] ${
+                problemCategory === cat.id ? c.pillActive : c.pillInactive
+              }`}>
+              <span>{cat.emoji}</span>
+              <span className="truncate">{cat.label}</span>
+            </button>
+          ))}
+        </div>
+
+        <textarea value={problemDescription} onChange={e => setProblemDescription(e.target.value)}
+          placeholder={
+            problemCategory === 'missing_ingredient' ? "What ingredient are you missing?"
+            : problemCategory === 'technique_failure' ? "What went wrong? (sauce broke, didn't rise, burned...)"
+            : problemCategory === 'timing_issue' ? "Describe the timing/temperature issue..."
+            : problemCategory === 'consistency' ? "Too thick, thin, dry, wet?"
+            : problemCategory === 'equipment_missing' ? "What equipment don't you have?"
+            : "Describe the quantity problem..."
+          } rows={2} className={`w-full px-3 py-2 border rounded-lg text-sm resize-y ${c.input} outline-none focus:ring-2 mb-3`} />
+
+        {problemCategory === 'missing_ingredient' && (
+          <div className="grid grid-cols-2 gap-2 mb-3">
+            <input type="text" value={missingIngredient} onChange={e => setMissingIngredient(e.target.value)}
+              placeholder="Missing ingredient (e.g. eggs)"
+              className={`px-3 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
+            <input type="text" value={availableSubstitutes} onChange={e => setAvailableSubstitutes(e.target.value)}
+              placeholder="What could you use instead?"
+              className={`px-3 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
           </div>
-          <div className="flex flex-wrap gap-2">
-            {quickProblems.map((qp, idx) => (
-              <button
-                key={idx}
-                onClick={() => selectQuickProblem(qp)}
-                className={`px-3.5 py-2 rounded-xl text-sm font-medium transition-all border ${
-                  problemDescription === qp.desc
-                    ? (isDark ? 'bg-orange-700 text-white border-orange-600' : 'bg-orange-600 text-white border-orange-600')
-                    : (isDark ? 'bg-zinc-800 text-zinc-300 border-zinc-600 hover:border-orange-500' : 'bg-white text-slate-600 border-slate-200 hover:border-orange-400')
-                }`}
-              >
-                {qp.label}
-              </button>
-            ))}
+        )}
+
+        <div className="grid grid-cols-3 gap-2 mb-3">
+          <div>
+            <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>Dietary</label>
+            <input type="text" value={dietaryRestrictions} onChange={e => setDietaryRestrictions(e.target.value)}
+              placeholder="Vegetarian..." className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
+          </div>
+          <div>
+            <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>Skill</label>
+            <select value={cookingSkill} onChange={e => setCookingSkill(e.target.value)}
+              className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input}`}>
+              <option value="beginner">Beginner</option>
+              <option value="intermediate">Intermediate</option>
+              <option value="advanced">Advanced</option>
+            </select>
+          </div>
+          <div>
+            <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>Time pressure</label>
+            <input type="text" value={timePressure} onChange={e => setTimePressure(e.target.value)}
+              placeholder="Guests in 30m..." className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
           </div>
         </div>
 
-        {/* ══════════════ RECIPE INPUT ══════════════ */}
-        <div className={`${c.card} border rounded-2xl shadow-sm p-6 mb-5`}>
-          <div className={`text-sm font-semibold ${c.label} mb-3`}>What are you making?</div>
-          <div className="flex gap-2 mb-4">
-            {[
-              { id: 'quick', label: 'Quick Entry', icon: <ChefHat className="w-4 h-4" /> },
-              { id: 'paste', label: 'Paste Recipe', icon: <Copy className="w-4 h-4" /> },
-              { id: 'photo', label: 'Recipe Photo', icon: <Camera className="w-4 h-4" /> },
-            ].map(tab => (
-              <button key={tab.id} onClick={() => setInputMode(tab.id)}
-                className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-sm font-semibold transition-all ${inputMode === tab.id ? c.tabActive : c.tabInactive}`}>
-                {tab.icon}<span className="hidden sm:inline">{tab.label}</span>
-              </button>
-            ))}
+        {/* Chaos toggle */}
+        <button onClick={() => setEmbraceChaos(!embraceChaos)}
+          className={`w-full flex items-center gap-3 p-3 rounded-lg border transition-colors text-left min-h-[44px] mb-4 ${
+            embraceChaos ? c.chaos : `${c.card}`
+          }`}>
+          <div className={`w-9 h-5 rounded-full transition-all flex items-center px-0.5 ${
+            embraceChaos ? 'bg-fuchsia-500 justify-end' : (isDark ? 'bg-zinc-600' : 'bg-slate-300')
+          }`}>
+            <div className="w-4 h-4 rounded-full bg-white shadow-sm" />
           </div>
+          <div>
+            <span className={`text-xs font-bold ${c.text}`}>🎲 Embrace the Chaos</span>
+            <span className={`text-[10px] ${c.textMuted} ml-2`}>Turn mistakes into new dishes</span>
+          </div>
+        </button>
 
-          {inputMode === 'quick' && (
-            <input type="text" value={quickDish} onChange={(e) => setQuickDish(e.target.value)}
-              placeholder='e.g. "Carbonara", "Chocolate cake", "Stir fry with chicken"'
-              className={`w-full p-4 border rounded-xl outline-none text-base mb-4 ${c.input}`} />
+        {/* Submit */}
+        <button onClick={runRescue} disabled={loading || compressingRecipe || compressingPantry}
+          className={`w-full ${
+            problemCategory === 'timing_issue' && problemDescription.toLowerCase().includes('burn')
+              ? c.btnEmergency : c.btnPrimary
+          } disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+          {loading
+            ? <><span className="animate-spin inline-block">⏳</span> {pantryImageBase64 ? 'Scanning pantry & solving...' : 'Finding a solution...'}</>
+            : <><span>🍳</span> Rescue My Dish</>
+          }
+        </button>
+      </div>
+
+      {/* ── RESCUE RESULTS ── */}
+      {rescueResults && (
+        <div className="space-y-3">
+          {/* Safety warning */}
+          {rescueResults.safety_warning && (
+            <div className={`${c.danger} border rounded-xl p-4`}>
+              <p className="text-xs font-bold mb-1">🛡️ Safety Warning</p>
+              <p className="text-xs">{rescueResults.safety_warning}</p>
+            </div>
           )}
 
-          {inputMode === 'paste' && (
-            <textarea value={recipeText} onChange={(e) => setRecipeText(e.target.value)}
-              placeholder="Paste your full recipe here (ingredients + instructions)..." rows={6}
-              className={`w-full p-4 border rounded-xl outline-none text-sm resize-y mb-4 ${c.input}`} />
+          {/* Pantry items */}
+          {rescueResults.pantry_items_identified?.length > 0 && (
+            <div className={`${c.pantry} border rounded-xl p-4`}>
+              <p className="text-xs font-bold mb-2">📸 Identified from pantry photo:</p>
+              <div className="flex flex-wrap gap-1.5">
+                {rescueResults.pantry_items_identified.map((item, i) => (
+                  <span key={i} className={`px-2 py-0.5 rounded-full text-[10px] font-medium border ${c.pantry}`}>{item}</span>
+                ))}
+              </div>
+            </div>
           )}
 
-          {inputMode === 'photo' && (
-            <div className="mb-4">
-              {compressingRecipe ? (
-                <div className={`border-2 border-dashed rounded-2xl p-8 text-center ${c.dropzone}`}>
-                  <Loader2 className={`w-10 h-10 mx-auto mb-3 animate-spin ${c.accent}`} />
-                  <p className={`font-medium ${c.text}`}>Compressing image...</p>
-                  <p className={`text-xs ${c.textMuted} mt-1`}>Optimizing for analysis</p>
+          {/* Visual diagnosis */}
+          {rescueResults.visual_diagnosis && (
+            <div className={`${c.science} border rounded-xl p-4`}>
+              <p className="text-xs font-bold mb-1">🔍 Visual Diagnosis:</p>
+              <p className="text-xs">{rescueResults.visual_diagnosis}</p>
+            </div>
+          )}
+
+          {/* Immediate action */}
+          {rescueResults.immediate_action && (
+            <div className={`${rescueResults.success_probability < 50 ? c.danger : c.warning} border rounded-xl p-4`}>
+              <p className="text-xs font-bold mb-1">⚡ Do this right now:</p>
+              <p className="text-sm font-medium">{rescueResults.immediate_action}</p>
+            </div>
+          )}
+
+          {/* Overall probability */}
+          {rescueResults.success_probability !== undefined && (
+            <div className={`${getProbConfig(rescueResults.success_probability).bg} border rounded-xl p-4`}>
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <span>{getProbConfig(rescueResults.success_probability).emoji}</span>
+                  <span className="text-xs font-bold">{getProbConfig(rescueResults.success_probability).label}</span>
                 </div>
-              ) : recipeImagePreview ? (
-                <div className="relative inline-block">
-                  <img src={recipeImagePreview} alt="Recipe" className="max-h-48 rounded-xl border-2 border-slate-200" />
-                  <button onClick={() => { setRecipeImagePreview(null); setRecipeImageBase64(null); if (recipePhotoRef.current) recipePhotoRef.current.value = ''; }}
-                    className="absolute -top-2 -right-2 p-1.5 bg-red-500 text-white rounded-full shadow-lg">
-                    <X className="w-4 h-4" />
-                  </button>
-                  <div className={`mt-2 text-xs ${isDark ? 'text-emerald-400' : 'text-emerald-600'} flex items-center gap-1`}>
-                    <Check className="w-3 h-3" /> Image compressed &amp; ready for analysis
-                  </div>
+                <span className="text-xl font-black">{rescueResults.success_probability}%</span>
+              </div>
+              <div className={`h-2.5 rounded-full overflow-hidden ${isDark ? 'bg-zinc-700' : 'bg-white/60'}`}>
+                <div className={`h-full rounded-full transition-all ${
+                  rescueResults.success_probability >= 70 ? 'bg-emerald-500' :
+                  rescueResults.success_probability >= 50 ? 'bg-amber-500' : 'bg-red-500'
+                }`} style={{ width: `${Math.min(100, rescueResults.success_probability)}%` }} />
+              </div>
+              {rescueResults.difficulty && (
+                <span className={`inline-block mt-2 px-2 py-0.5 rounded text-[9px] font-bold ${getDiffBadge(rescueResults.difficulty).bg}`}>
+                  {getDiffBadge(rescueResults.difficulty).label}
+                </span>
+              )}
+            </div>
+          )}
+
+          {/* Recipes / Solutions */}
+          {rescueResults.recipes?.map((recipe, idx) => (
+            <div key={idx} className={`${c.card} border rounded-xl p-5`}>
+              <div className="flex items-start justify-between gap-2 mb-3">
+                <div className="flex-1">
+                  <h3 className={`text-sm font-black ${c.text}`}>{recipe.name}</h3>
+                  <p className={`text-xs ${c.textSec} mt-0.5`}>{recipe.description}</p>
                 </div>
-              ) : (
-                <div onClick={() => recipePhotoRef.current?.click()} onDragOver={(e) => e.preventDefault()}
-                  onDrop={(e) => handleDrop(e, 'recipe')}
-                  className={`border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all ${c.dropzone}`}>
-                  <Camera className={`w-8 h-8 mx-auto mb-2 ${c.textMuted}`} />
-                  <p className={`font-medium ${c.text}`}>Snap or upload recipe photo</p>
-                  <p className={`text-xs ${c.textMuted} mt-1`}>We'll read the recipe from the image</p>
+                <div className="flex items-center gap-1.5 flex-shrink-0">
+                  {recipe.time && <span className={`text-[10px] px-1.5 py-0.5 rounded ${c.accentBg}`}>⏱️ {recipe.time}</span>}
+                  {recipe.difficulty && <span className={`text-[10px] px-1.5 py-0.5 rounded ${getDiffBadge(recipe.difficulty).bg}`}>{recipe.difficulty}</span>}
+                </div>
+              </div>
+
+              {/* Swap quality */}
+              {recipe.swap_quality && getQualityBadge(recipe.swap_quality) && (
+                <div className={`${getQualityBadge(recipe.swap_quality).bg} border rounded-lg p-2 mb-3`}>
+                  <p className="text-xs font-bold">{getQualityBadge(recipe.swap_quality).label}</p>
                 </div>
               )}
-              <input ref={recipePhotoRef} type="file" accept="image/*" onChange={handleRecipePhotoUpload} className="hidden" />
-            </div>
-          )}
 
-          {/* Available ingredients */}
-          <div className="mb-4">
-            <label className={`block text-sm font-semibold ${c.label} mb-2`}>What ingredients do you have on hand?</label>
-            <textarea value={availableIngredients} onChange={(e) => setAvailableIngredients(e.target.value)}
-              placeholder="e.g. chicken, rice, onion, garlic, soy sauce, eggs, butter, flour..." rows={3}
-              className={`w-full p-3 border rounded-xl outline-none text-sm resize-y ${c.input}`} />
-          </div>
-
-          {/* ── Pantry photo section ── */}
-          <div className="mb-4">
-            <label className={`block text-sm font-semibold ${c.label} mb-2`}>
-              📸 Pantry / Fridge photo <span className={`font-normal ${c.textMuted}`}>(optional — AI will identify your ingredients)</span>
-            </label>
-            {compressingPantry ? (
-              <div className={`flex items-center gap-3 p-4 rounded-xl border-2 border-dashed ${c.dropzone}`}>
-                <Loader2 className={`w-5 h-5 animate-spin ${c.accent}`} />
-                <div>
-                  <p className={`text-sm font-medium ${c.text}`}>Compressing pantry image...</p>
-                  <p className={`text-xs ${c.textMuted}`}>Optimizing for ingredient identification</p>
-                </div>
-              </div>
-            ) : pantryImagePreview ? (
-              <div className="flex items-start gap-4">
-                <div className="relative flex-shrink-0">
-                  <img src={pantryImagePreview} alt="Pantry" className="w-32 h-32 object-cover rounded-xl border-2 border-slate-200" />
-                  <button onClick={() => { setPantryImagePreview(null); setPantryImageBase64(null); if (pantryPhotoRef.current) pantryPhotoRef.current.value = ''; }}
-                    className="absolute -top-2 -right-2 p-1 bg-red-500 text-white rounded-full shadow-lg">
-                    <X className="w-3 h-3" />
-                  </button>
-                </div>
-                <div className={`flex-1 p-3 rounded-xl border ${isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-200'}`}>
-                  <div className={`flex items-center gap-1.5 text-sm font-medium ${isDark ? 'text-emerald-300' : 'text-emerald-700'}`}>
-                    <Check className="w-4 h-4" /> Pantry image compressed &amp; ready
+              {/* Success prob */}
+              {recipe.success_probability !== undefined && (
+                <div className="mb-3">
+                  <div className="flex items-center justify-between mb-0.5">
+                    <span className={`text-[10px] ${c.textMuted}`}>Success probability</span>
+                    <span className={`text-xs font-bold ${
+                      recipe.success_probability >= 70 ? c.successText : recipe.success_probability >= 50 ? c.warningText : c.dangerText
+                    }`}>{recipe.success_probability}%</span>
                   </div>
-                  <p className={`text-xs mt-1 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>
-                    AI will scan this photo to identify available ingredients when you submit
-                  </p>
-                </div>
-              </div>
-            ) : (
-              <div onClick={() => pantryPhotoRef.current?.click()} onDragOver={(e) => e.preventDefault()}
-                onDrop={(e) => handleDrop(e, 'pantry')}
-                className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all ${c.dropzone}`}>
-                <div className="flex items-center justify-center gap-3">
-                  <ImageIcon className={`w-6 h-6 ${c.textMuted}`} />
-                  <div className="text-left">
-                    <p className={`text-sm font-medium ${c.text}`}>Drop or click to upload pantry photo</p>
-                    <p className={`text-xs ${c.textMuted}`}>AI will identify ingredients and suggest substitutes from what it sees</p>
+                  <div className={`h-1.5 rounded-full overflow-hidden ${isDark ? 'bg-zinc-700' : 'bg-slate-200'}`}>
+                    <div className={`h-full rounded-full ${
+                      recipe.success_probability >= 70 ? 'bg-emerald-500' : recipe.success_probability >= 50 ? 'bg-amber-500' : 'bg-red-500'
+                    }`} style={{ width: `${Math.min(100, recipe.success_probability)}%` }} />
                   </div>
                 </div>
-              </div>
-            )}
-            <input ref={pantryPhotoRef} type="file" accept="image/*" onChange={handlePantryPhotoUpload} className="hidden" />
-          </div>
-        </div>
+              )}
 
-        {/* ══════════════ PROBLEM DETAILS ══════════════ */}
-        <div className={`${c.card} border rounded-2xl shadow-sm p-6 mb-5`}>
-          <div className={`text-sm font-semibold ${c.label} mb-3 flex items-center gap-2`}>
-            <AlertTriangle className="w-4 h-4" /> What's the problem?
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-4">
-            {problemCategories.map(cat => (
-              <button key={cat.id} onClick={() => setProblemCategory(cat.id)}
-                className={`flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium transition-all border ${
-                  problemCategory === cat.id
-                    ? (isDark ? 'bg-orange-700 text-white border-orange-600' : 'bg-orange-600 text-white border-orange-600')
-                    : (isDark ? 'bg-zinc-800 text-zinc-300 border-zinc-600 hover:border-orange-500' : 'bg-white text-slate-600 border-slate-200 hover:border-orange-400')
-                }`}>
-                <span>{cat.emoji}</span>
-                <span className="hidden sm:inline">{cat.label}</span>
-                <span className="sm:hidden text-xs">{cat.label.split(' ')[0]}</span>
-              </button>
-            ))}
-          </div>
-
-          <textarea value={problemDescription} onChange={(e) => setProblemDescription(e.target.value)}
-            placeholder={
-              problemCategory === 'missing_ingredient' ? 'Describe what ingredient you\'re missing...'
-              : problemCategory === 'technique_failure' ? 'What went wrong? (sauce broke, didn\'t rise, burned, etc.)'
-              : problemCategory === 'timing_issue' ? 'Describe the timing/temperature issue...'
-              : problemCategory === 'consistency' ? 'Is it too thick, thin, dry, wet?'
-              : problemCategory === 'equipment_missing' ? 'What equipment don\'t you have?'
-              : 'Describe the quantity problem...'
-            } rows={3} className={`w-full p-3 border rounded-xl outline-none text-sm resize-y mb-4 ${c.input}`} />
-
-          {problemCategory === 'missing_ingredient' && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
-              <input type="text" value={missingIngredient} onChange={(e) => setMissingIngredient(e.target.value)}
-                placeholder="Specific missing ingredient (e.g. eggs)" className={`p-3 border rounded-xl outline-none text-sm ${c.input}`} />
-              <input type="text" value={availableSubstitutes} onChange={(e) => setAvailableSubstitutes(e.target.value)}
-                placeholder="What could you use instead? (optional)" className={`p-3 border rounded-xl outline-none text-sm ${c.input}`} />
-            </div>
-          )}
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
-            <div>
-              <label className={`block text-xs font-medium ${c.textMuted} mb-1`}>Dietary restrictions</label>
-              <input type="text" value={dietaryRestrictions} onChange={(e) => setDietaryRestrictions(e.target.value)}
-                placeholder="Vegetarian, gluten-free..." className={`w-full p-2.5 border rounded-lg outline-none text-sm ${c.input}`} />
-            </div>
-            <div>
-              <label className={`block text-xs font-medium ${c.textMuted} mb-1`}>Skill level</label>
-              <select value={cookingSkill} onChange={(e) => setCookingSkill(e.target.value)}
-                className={`w-full p-2.5 border rounded-lg outline-none text-sm ${c.input}`}>
-                <option value="beginner">Beginner</option>
-                <option value="intermediate">Intermediate</option>
-                <option value="advanced">Advanced</option>
-              </select>
-            </div>
-            <div>
-              <label className={`block text-xs font-medium ${c.textMuted} mb-1`}>Time pressure</label>
-              <input type="text" value={timePressure} onChange={(e) => setTimePressure(e.target.value)}
-                placeholder="Guests in 30 min..." className={`w-full p-2.5 border rounded-lg outline-none text-sm ${c.input}`} />
-            </div>
-          </div>
-
-          {/* Embrace chaos toggle */}
-          <div className={`flex items-center gap-3 p-3 rounded-xl border transition-all cursor-pointer mb-4 ${embraceChaos ? (isDark ? 'bg-fuchsia-900/30 border-fuchsia-600' : 'bg-fuchsia-50 border-fuchsia-300') : (isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-slate-50 border-slate-200')}`}
-            onClick={() => setEmbraceChaos(!embraceChaos)}>
-            <div className={`w-10 h-6 rounded-full transition-all flex items-center px-0.5 ${embraceChaos ? 'bg-fuchsia-500 justify-end' : (isDark ? 'bg-zinc-600' : 'bg-slate-300')}`}>
-              <div className="w-5 h-5 rounded-full bg-white shadow-sm" />
-            </div>
-            <div>
-              <div className={`text-sm font-semibold ${c.text}`}>🎲 Embrace the Chaos</div>
-              <div className={`text-xs ${c.textMuted}`}>Turn mistakes into intentional new dishes</div>
-            </div>
-          </div>
-
-          {/* Images being sent indicator */}
-          {(recipeImageBase64 || pantryImageBase64) && (
-            <div className={`mb-4 p-3 rounded-xl border ${isDark ? 'bg-zinc-900 border-zinc-700' : 'bg-slate-50 border-slate-200'}`}>
-              <div className={`text-xs font-semibold uppercase tracking-wider ${c.textMuted} mb-1`}>Images included in analysis</div>
-              <div className="flex gap-3">
-                {recipeImageBase64 && inputMode === 'photo' && (
-                  <span className={`inline-flex items-center gap-1 text-xs font-medium ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>
-                    <Check className="w-3 h-3" /> Recipe photo ({Math.round((recipeImageBase64.length * 0.75) / 1024)}KB)
-                  </span>
-                )}
-                {pantryImageBase64 && (
-                  <span className={`inline-flex items-center gap-1 text-xs font-medium ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>
-                    <Check className="w-3 h-3" /> Pantry photo ({Math.round((pantryImageBase64.length * 0.75) / 1024)}KB)
-                  </span>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* Submit */}
-          <button onClick={handleSolve} disabled={loading || compressingRecipe || compressingPantry}
-            className={`w-full font-semibold py-3.5 px-6 rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm text-base ${
-              loading || compressingRecipe || compressingPantry
-                ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-slate-200 text-slate-400')
-                : problemCategory === 'timing_issue' && problemDescription.toLowerCase().includes('burn')
-                  ? c.btnEmergency : c.btnPrimary
-            }`}>
-            {loading ? (
-              <><Loader2 className="w-5 h-5 animate-spin" />{pantryImageBase64 ? 'Scanning pantry & finding solutions...' : 'Finding a solution...'}</>
-            ) : (
-              <><ChefHat className="w-5 h-5" />Rescue My Dish</>
-            )}
-          </button>
-
-          {error && (
-            <div className={`mt-4 p-4 rounded-xl flex items-start gap-3 ${isDark ? 'bg-red-900/20 border border-red-800' : 'bg-red-50 border border-red-200'}`}>
-              <AlertCircle className={`w-5 h-5 flex-shrink-0 mt-0.5 ${isDark ? 'text-red-400' : 'text-red-600'}`} />
-              <p className={`text-sm ${isDark ? 'text-red-300' : 'text-red-800'}`}>{error}</p>
-            </div>
-          )}
-        </div>
-
-        {/* ══════════════════ RESULTS ══════════════════ */}
-        {results && (
-          <div className="space-y-5">
-
-            {results.safety_warning && (
-              <div className={`border-2 rounded-2xl p-5 ${c.dangerBox}`}>
-                <div className="flex items-center gap-2 mb-2">
-                  <Shield className={`w-5 h-5 ${isDark ? 'text-red-400' : 'text-red-600'}`} />
-                  <h3 className={`font-bold ${isDark ? 'text-red-300' : 'text-red-800'}`}>⚠️ Safety Warning</h3>
-                </div>
-                <p className={`text-sm ${isDark ? 'text-red-200' : 'text-red-700'}`}>{results.safety_warning}</p>
-              </div>
-            )}
-
-            {/* ── Pantry Items Identified ── */}
-            {results.pantry_items_identified && results.pantry_items_identified.length > 0 && (
-              <div className={`border-2 rounded-2xl p-5 ${c.pantryBox}`}>
-                <div className="flex items-center gap-2 mb-3">
-                  <ImageIcon className={`w-5 h-5 ${isDark ? 'text-teal-400' : 'text-teal-600'}`} />
-                  <h3 className={`font-bold ${isDark ? 'text-teal-200' : 'text-teal-800'}`}>📸 Identified from your pantry photo</h3>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {results.pantry_items_identified.map((item, i) => (
-                    <span key={i} className={`px-2.5 py-1.5 rounded-lg text-sm font-medium ${isDark ? 'bg-teal-900/40 text-teal-200 border border-teal-700' : 'bg-teal-100 text-teal-800'}`}>
-                      {item}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {results.immediate_action && (
-              <div className={`border-2 rounded-2xl p-5 ${(results.success_probability || 0) < 50 ? c.dangerBox : c.warningBox}`}>
-                <div className="flex items-center gap-2 mb-2">
-                  <Zap className={`w-5 h-5 ${isDark ? 'text-amber-400' : 'text-amber-600'}`} />
-                  <h3 className={`text-lg font-bold ${isDark ? 'text-amber-200' : 'text-amber-900'}`}>Do this right now</h3>
-                </div>
-                <p className={`text-base font-medium ${isDark ? 'text-amber-100' : 'text-amber-800'}`}>{results.immediate_action}</p>
-              </div>
-            )}
-
-            {results.success_probability !== undefined && (
-              <div className={`border-2 rounded-2xl p-5 ${getProbabilityConfig(results.success_probability).color}`}>
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xl">{getProbabilityConfig(results.success_probability).emoji}</span>
-                    <h3 className={`font-bold ${getProbabilityConfig(results.success_probability).textColor}`}>
-                      {getProbabilityConfig(results.success_probability).label}
-                    </h3>
-                  </div>
-                  <span className={`text-2xl font-bold ${getProbabilityConfig(results.success_probability).textColor}`}>
-                    {results.success_probability}%
-                  </span>
-                </div>
-                <div className={`h-3 rounded-full overflow-hidden ${isDark ? 'bg-zinc-700' : 'bg-white/60'}`}>
-                  <div className={`h-full rounded-full transition-all ${getProbabilityConfig(results.success_probability).barColor}`}
-                    style={{ width: `${Math.min(100, results.success_probability)}%` }} />
-                </div>
-                {results.difficulty && (
-                  <div className="mt-2">
-                    <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold ${getDifficultyBadge(results.difficulty).color}`}>
-                      {getDifficultyBadge(results.difficulty).label}
-                    </span>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* ── Recipes / Solutions ── */}
-            {results.recipes && results.recipes.length > 0 && results.recipes.map((recipe, idx) => (
-              <div key={idx} className={`${c.card} border rounded-2xl shadow-sm p-6`}>
-                <div className="flex items-start justify-between mb-4">
-                  <div>
-                    <h3 className={`text-xl font-bold ${c.text}`}>{recipe.name}</h3>
-                    <p className={`text-sm mt-1 ${c.textSecondary}`}>{recipe.description}</p>
-                  </div>
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    {recipe.time && (
-                      <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium ${isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-slate-100 text-slate-600'}`}>
-                        <Clock className="w-3 h-3" /> {recipe.time}
-                      </span>
-                    )}
-                    {recipe.difficulty && (
-                      <span className={`px-2 py-1 rounded-lg text-xs font-semibold ${getDifficultyBadge(recipe.difficulty).color}`}>{recipe.difficulty}</span>
-                    )}
-                  </div>
-                </div>
-
-                {recipe.success_probability !== undefined && (
-                  <div className="mb-4">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className={`text-xs font-medium ${c.textMuted}`}>Success probability</span>
-                      <span className={`text-sm font-bold ${getProbabilityConfig(recipe.success_probability).textColor}`}>{recipe.success_probability}%</span>
-                    </div>
-                    <div className={`h-2 rounded-full overflow-hidden ${isDark ? 'bg-zinc-700' : 'bg-slate-200'}`}>
-                      <div className={`h-full rounded-full ${getProbabilityConfig(recipe.success_probability).barColor}`}
-                        style={{ width: `${Math.min(100, recipe.success_probability)}%` }} />
-                    </div>
-                  </div>
-                )}
-
-                {recipe.ingredients_used && recipe.ingredients_used.length > 0 && (
-                  <div className="mb-4">
-                    <h4 className={`text-sm font-semibold ${c.label} mb-2`}>Ingredients</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {recipe.ingredients_used.map((ing, i) => (
-                        <span key={i} className={`px-2.5 py-1 rounded-lg text-xs font-medium ${isDark ? 'bg-emerald-900/30 text-emerald-300 border border-emerald-700' : 'bg-emerald-100 text-emerald-800'}`}>{ing}</span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {recipe.missing_staples && recipe.missing_staples.length > 0 && (
-                  <div className="mb-4">
-                    <h4 className={`text-sm font-semibold ${c.label} mb-2`}>You'll also need</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {recipe.missing_staples.map((s, i) => (
-                        <span key={i} className={`px-2.5 py-1 rounded-lg text-xs font-medium ${isDark ? 'bg-amber-900/30 text-amber-300 border border-amber-700' : 'bg-amber-100 text-amber-800'}`}>{s}</span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {(recipe.instructions || recipe.solution_steps) && (
-                  <div className="mb-4">
-                    <h4 className={`text-sm font-semibold ${c.label} mb-2`}>Steps</h4>
-                    <div className="space-y-2">
-                      {(recipe.instructions || recipe.solution_steps).map((step, sIdx) => {
-                        const done = completedSteps[`${idx}-${sIdx}`];
-                        return (
-                          <div key={sIdx} onClick={() => toggleStep(idx, sIdx)}
-                            className={`flex items-start gap-3 p-3 rounded-xl border-2 cursor-pointer transition-all ${done ? c.stepDone : c.stepPending}`}>
-                            <div className={`flex-shrink-0 w-6 h-6 rounded-lg flex items-center justify-center text-xs font-bold transition-all ${
-                              done ? (isDark ? 'bg-emerald-600 text-white' : 'bg-emerald-500 text-white') : (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-slate-200 text-slate-500')}`}>
-                              {done ? <Check className="w-4 h-4" /> : sIdx + 1}
-                            </div>
-                            <span className={`text-sm ${done ? (isDark ? 'text-emerald-300 line-through opacity-70' : 'text-emerald-700 line-through opacity-70') : c.text}`}>{step}</span>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-
-                {recipe.explanation && (
-                  <div className="mb-4">
-                    <button onClick={() => toggleScience(idx)}
-                      className={`flex items-center gap-2 text-sm font-medium ${isDark ? 'text-violet-400' : 'text-violet-600'} mb-2`}>
-                      <Beaker className="w-4 h-4" />
-                      {showScience[idx] ? 'Hide' : 'Show'} cooking science
-                      {showScience[idx] ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-                    </button>
-                    {showScience[idx] && (
-                      <div className={`border-2 rounded-xl p-4 ${c.scienceBox}`}>
-                        <p className={`text-sm ${isDark ? 'text-violet-200' : 'text-violet-800'}`}>🔬 {recipe.explanation}</p>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {recipe.tips && (
-                  <div className={`rounded-xl p-3 border ${isDark ? 'bg-orange-900/20 border-orange-700' : 'bg-orange-50 border-orange-200'} mb-3`}>
-                    <p className={`text-sm ${isDark ? 'text-orange-200' : 'text-orange-800'}`}><strong>💡 Tip:</strong> {recipe.tips}</p>
-                  </div>
-                )}
-
-                {recipe.preventive_tip && (
-                  <div className={`rounded-xl p-3 border ${c.infoBox} mb-3`}>
-                    <p className={`text-sm ${isDark ? 'text-blue-200' : 'text-blue-700'}`}><strong>Next time:</strong> {recipe.preventive_tip}</p>
-                  </div>
-                )}
-
-                {recipe.what_if_you_dont_have && (
-                  <div className={`text-sm ${c.textSecondary} mb-3`}><strong>Substitutions:</strong> {recipe.what_if_you_dont_have}</div>
-                )}
-
-                <div className="flex justify-end">
-                  <button onClick={() => copyModifiedRecipe(recipe)}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${c.btnSecondary}`}>
-                    {copiedRecipe ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
-                    {copiedRecipe ? 'Copied!' : 'Copy Recipe'}
-                  </button>
-                </div>
-              </div>
-            ))}
-
-            {results.chaos_alternative && (
-              <div className={`border-2 rounded-2xl p-5 ${c.chaosBox}`}>
-                <div className="flex items-center gap-2 mb-3">
-                  <Sparkles className={`w-5 h-5 ${isDark ? 'text-fuchsia-400' : 'text-fuchsia-600'}`} />
-                  <h3 className={`text-lg font-bold ${isDark ? 'text-fuchsia-200' : 'text-fuchsia-900'}`}>🎲 Embrace the Chaos</h3>
-                </div>
-                {results.chaos_alternative.new_dish_name && (
-                  <p className={`text-base font-medium mb-2 ${isDark ? 'text-fuchsia-100' : 'text-fuchsia-800'}`}>
-                    Your mistake just became: <strong>{results.chaos_alternative.new_dish_name}</strong>
-                  </p>
-                )}
-                <p className={`text-sm ${isDark ? 'text-fuchsia-200' : 'text-fuchsia-700'}`}>
-                  {results.chaos_alternative.description || results.chaos_alternative}
-                </p>
-                {results.chaos_alternative.instructions && (
-                  <div className="mt-3 space-y-1">
-                    {results.chaos_alternative.instructions.map((step, i) => (
-                      <p key={i} className={`text-sm ${isDark ? 'text-fuchsia-200' : 'text-fuchsia-700'}`}>{i + 1}. {step}</p>
+              {/* Ingredients */}
+              {recipe.ingredients_used?.length > 0 && (
+                <div className="mb-3">
+                  <p className={`text-[10px] font-bold ${c.label} uppercase mb-1`}>Ingredients</p>
+                  <div className="flex flex-wrap gap-1">
+                    {recipe.ingredients_used.map((ing, i) => (
+                      <span key={i} className={`px-2 py-0.5 rounded-full text-[10px] font-medium border ${c.success}`}>{ing}</span>
                     ))}
                   </div>
-                )}
-              </div>
-            )}
+                </div>
+              )}
 
-            {results.ingredients_not_used && results.ingredients_not_used.length > 0 && (
-              <div className={`border-2 rounded-2xl p-5 ${c.infoBox}`}>
-                <h3 className={`font-bold mb-2 ${isDark ? 'text-blue-300' : 'text-blue-800'}`}>Ingredients not used</h3>
-                <div className="flex flex-wrap gap-2">
-                  {results.ingredients_not_used.map((ing, i) => (
-                    <span key={i} className={`px-2.5 py-1 rounded-lg text-xs font-medium ${isDark ? 'bg-blue-900/30 text-blue-300' : 'bg-blue-100 text-blue-700'}`}>{ing}</span>
+              {recipe.missing_staples?.length > 0 && (
+                <div className="flex flex-wrap gap-1 mb-3">
+                  {recipe.missing_staples.map((s, i) => (
+                    <span key={i} className={`px-2 py-0.5 rounded-full text-[10px] font-medium border ${c.warning}`}>{s} (needed)</span>
                   ))}
                 </div>
-              </div>
-            )}
+              )}
 
-            {results.meal_plan_suggestion && (
-              <div className={`border-2 rounded-2xl p-5 ${c.successBox}`}>
-                <h3 className={`font-bold mb-2 ${isDark ? 'text-emerald-300' : 'text-emerald-800'}`}>🍽️ Meal Plan Suggestion</h3>
-                <p className={`text-sm ${isDark ? 'text-emerald-200' : 'text-emerald-700'}`}>{results.meal_plan_suggestion}</p>
-              </div>
-            )}
+              {/* Steps */}
+              {(recipe.instructions || recipe.solution_steps)?.length > 0 && (
+                <div className="space-y-1.5 mb-3">
+                  <p className={`text-[10px] font-bold ${c.label} uppercase`}>Steps</p>
+                  {(recipe.instructions || recipe.solution_steps).map((step, sIdx) => {
+                    const done = completedSteps[`${idx}-${sIdx}`];
+                    const timerKey = `${idx}-${sIdx}`;
+                    const stepTime = parseTimeFromStep(step);
+                    const timer = activeTimers[timerKey];
+                    return (
+                      <div key={sIdx} className={`rounded-lg border transition-all ${done ? c.stepDone : c.stepPending}`}>
+                        <button onClick={() => toggleStep(idx, sIdx)}
+                          className={`w-full flex items-start gap-2.5 p-2.5 text-left min-h-[36px]`}>
+                          <div className={`flex-shrink-0 w-5 h-5 rounded flex items-center justify-center text-[10px] font-bold ${
+                            done ? 'bg-emerald-500 text-white' : (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-slate-200 text-slate-500')
+                          }`}>{done ? '✓' : sIdx + 1}</div>
+                          <span className={`text-xs flex-1 ${done ? 'line-through opacity-60' : c.text}`}>{step}</span>
+                        </button>
+                        {/* Timer */}
+                        {stepTime && (
+                          <div className={`px-2.5 pb-2 flex items-center gap-2`}>
+                            {timer ? (
+                              <div className="flex items-center gap-2 w-full">
+                                <div className={`flex-1 h-1.5 rounded-full overflow-hidden ${isDark ? 'bg-zinc-700' : 'bg-slate-200'}`}>
+                                  <div className={`h-full rounded-full transition-all ${
+                                    timer.done ? 'bg-red-500 animate-pulse' : timer.remaining < 30 ? 'bg-amber-500' : 'bg-emerald-500'
+                                  }`} style={{ width: `${timer.total > 0 ? ((timer.total - timer.remaining) / timer.total) * 100 : 0}%` }} />
+                                </div>
+                                <span className={`text-xs font-black min-w-[40px] text-right ${
+                                  timer.done ? c.dangerText : timer.remaining < 30 ? c.warningText : c.successText
+                                }`}>
+                                  {timer.done ? '🔔 Done!' : formatTimer(timer.remaining)}
+                                </span>
+                                <button onClick={() => stopTimer(timerKey)}
+                                  className={`text-[9px] ${c.dangerText} min-h-[20px]`}>✕</button>
+                              </div>
+                            ) : (
+                              <button onClick={() => startTimer(timerKey, stepTime)}
+                                className={`${c.btnSec} px-2 py-0.5 rounded text-[9px] font-bold min-h-[22px]`}>
+                                ⏱️ {formatTimer(stepTime)}
+                              </button>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
 
-            <div className={`${c.card} border rounded-2xl shadow-sm p-4 flex flex-wrap items-center gap-3 justify-center`}>
-              <button onClick={handleReset}
-                className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition-colors ${c.btnSecondary}`}>
-                <RefreshCw className="w-4 h-4" /> New Problem
-              </button>
+              {/* Science */}
+              {recipe.explanation && (
+                <div className="mb-3">
+                  <button onClick={() => toggleScience(idx)}
+                    className={`flex items-center gap-1.5 text-xs font-bold ${isDark ? 'text-violet-400' : 'text-violet-600'}`}>
+                    <span>🔬</span>
+                    {showScience[idx] ? 'Hide' : 'Show'} cooking science
+                    <span className="text-[9px]">{showScience[idx] ? '▲' : '▼'}</span>
+                  </button>
+                  {showScience[idx] && (
+                    <div className={`${c.science} border rounded-lg p-3 mt-1.5`}>
+                      <p className="text-xs">🔬 {recipe.explanation}</p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Tips */}
+              {recipe.tips && (
+                <div className={`${c.accentBg} border rounded-lg p-2.5 mb-2`}>
+                  <p className="text-xs"><strong>💡 Tip:</strong> {recipe.tips}</p>
+                </div>
+              )}
+              {recipe.preventive_tip && (
+                <div className={`${c.info} border rounded-lg p-2.5 mb-2`}>
+                  <p className="text-xs"><strong>Next time:</strong> {recipe.preventive_tip}</p>
+                </div>
+              )}
+              {recipe.what_if_you_dont_have && (
+                <p className={`text-[10px] ${c.textSec} mb-2`}><strong>More substitutions:</strong> {recipe.what_if_you_dont_have}</p>
+              )}
+
+              {/* Save + Teach + Companion buttons */}
+              <div className="flex items-center gap-2 mt-2 flex-wrap">
+                <button onClick={() => saveItem('rescue', recipe.name, {
+                  name: recipe.name, description: recipe.description,
+                  ingredients: recipe.ingredients_used, instructions: recipe.instructions || recipe.solution_steps,
+                  explanation: recipe.explanation, tips: recipe.tips, preventive_tip: recipe.preventive_tip,
+                })} className={`${c.btnSec} px-3 py-1.5 rounded-lg text-xs font-bold min-h-[32px]`}>
+                  📌 Save
+                </button>
+                <button onClick={() => runTeach(
+                  `${recipe.name}: ${recipe.description}. ${recipe.explanation || ''}`,
+                  problemCategory
+                )} disabled={teachLoading}
+                  className={`${c.btnSec} px-3 py-1.5 rounded-lg text-xs font-bold min-h-[32px]`}>
+                  {teachLoading ? '⏳' : '🎓'} Teach Me Why
+                </button>
+                {(recipe.instructions || recipe.solution_steps)?.length > 1 && (
+                  <button onClick={() => enterCompanion(idx)}
+                    className={`${c.btnPrimary} px-3 py-1.5 rounded-lg text-xs font-bold min-h-[32px]`}>
+                    👨‍🍳 Cook with Guide
+                  </button>
+                )}
+              </div>
+            </div>
+          ))}
+
+          {/* Chaos alternative */}
+          {rescueResults.chaos_alternative && (
+            <div className={`${c.chaos} border rounded-xl p-5`}>
+              <p className="text-xs font-bold mb-1">🎲 Embrace the Chaos</p>
+              {rescueResults.chaos_alternative.new_dish_name && (
+                <p className="text-sm font-black mb-1">Your mistake became: {rescueResults.chaos_alternative.new_dish_name}</p>
+              )}
+              <p className="text-xs">{rescueResults.chaos_alternative.description || rescueResults.chaos_alternative}</p>
+              {rescueResults.chaos_alternative.instructions && (
+                <div className="mt-2 space-y-0.5">
+                  {rescueResults.chaos_alternative.instructions.map((step, i) => (
+                    <p key={i} className="text-xs">{i + 1}. {step}</p>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Unused + meal plan */}
+          {rescueResults.ingredients_not_used?.length > 0 && (
+            <div className={`${c.info} border rounded-xl p-4`}>
+              <p className="text-xs font-bold mb-1.5">Ingredients not used:</p>
+              <div className="flex flex-wrap gap-1">
+                {rescueResults.ingredients_not_used.map((ing, i) => (
+                  <span key={i} className={`px-2 py-0.5 rounded-full text-[10px] border ${c.info}`}>{ing}</span>
+                ))}
+              </div>
+            </div>
+          )}
+          {rescueResults.meal_plan_suggestion && (
+            <div className={`${c.success} border rounded-lg p-3`}>
+              <p className="text-xs"><strong>🍽️ Meal plan:</strong> {rescueResults.meal_plan_suggestion}</p>
+            </div>
+          )}
+
+          <ActionBar content={buildRescueText()} />
+
+          {/* Teach Me results */}
+          {teachResults && (
+            <div className={`${c.science} border rounded-xl p-5`}>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className={`text-sm font-black`}>{teachResults.lesson_emoji} {teachResults.lesson_title}</h3>
+                <button onClick={() => setTeachResults(null)} className={`text-xs ${c.textMuted}`}>✕</button>
+              </div>
+              <p className="text-xs mb-3">{teachResults.the_principle}</p>
+              {teachResults.the_rule && (
+                <div className={`${c.quoteBg} rounded-lg p-3 mb-3`}>
+                  <p className={`text-sm font-black ${c.accent}`}>📏 {teachResults.the_rule}</p>
+                </div>
+              )}
+              {teachResults.analogy && (
+                <p className={`text-xs ${c.textSec} mb-2`}>💡 Think of it like: {teachResults.analogy}</p>
+              )}
+              {teachResults.apply_it?.length > 0 && (
+                <div className="mb-2">
+                  <p className="text-[10px] font-bold uppercase mb-1">Also applies to:</p>
+                  {teachResults.apply_it.map((a, i) => (
+                    <p key={i} className="text-xs">• {a}</p>
+                  ))}
+                </div>
+              )}
+              {teachResults.common_myth && (
+                <div className={`${c.danger} border rounded-lg p-2 mb-2`}>
+                  <p className="text-[10px]"><strong>🚫 Myth:</strong> {teachResults.common_myth}</p>
+                </div>
+              )}
+              {teachResults.next_experiment && (
+                <p className={`text-[10px] ${c.textMuted}`}>🧪 Try next time: {teachResults.next_experiment}</p>
+              )}
+              <div className="flex items-center gap-2 mt-3">
+                <button onClick={() => saveItem('lesson', teachResults.lesson_title, {
+                  principle: teachResults.the_principle, rule: teachResults.the_rule,
+                  analogy: teachResults.analogy, apply_it: teachResults.apply_it,
+                })} className={`${c.btnSec} px-2.5 py-1 rounded-lg text-[10px] font-bold min-h-[28px]`}>
+                  📌 Save lesson
+                </button>
+                <CopyBtn content={buildTeachText()} label="Copy" />
+              </div>
+            </div>
+          )}
+
+          {/* Log a win prompt */}
+          <div className={`${c.card} border rounded-xl p-4`}>
+            <p className={`text-xs font-bold ${c.text} mb-2`}>🏆 Did it work? Log a win!</p>
+            <div className="flex items-center gap-2">
+              <input type="text" value={winText} onChange={e => setWinText(e.target.value)}
+                placeholder="e.g. The applesauce-for-eggs trick worked perfectly!"
+                className={`flex-1 px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
+              <button onClick={addWin} disabled={!winText.trim()}
+                className={`${c.btnPrimary} disabled:opacity-40 px-3 py-2 rounded-lg text-xs font-bold min-h-[36px]`}>🏆</button>
             </div>
           </div>
+
+          <button onClick={resetRescue}
+            className={`${c.btnSec} w-full py-2.5 rounded-lg text-xs font-bold min-h-[40px]`}>
+            🔄 New Problem
+          </button>
+        </div>
+      )}
+    </div>
+  );
+
+  // ════════════════════════════════════════════════════════════
+  // RENDER: QUICK SWAP
+  // ════════════════════════════════════════════════════════════
+  const renderSwap = () => (
+    <div className="space-y-4">
+      <div className={`${c.card} border rounded-xl p-5`}>
+        <div className={`mb-4 pb-3 border-b ${c.divider}`}>
+          <h2 className={`text-base font-black ${c.text}`}>🔄 Quick Substitution</h2>
+          <p className={`text-xs ${c.textMuted} mt-1`}>Fast lookup — what can replace this ingredient?</p>
+        </div>
+
+        <div className="mb-4">
+          <label className={`text-xs font-bold ${c.label} block mb-1`}>What do you need to swap? *</label>
+          <input type="text" value={swapIngredient} onChange={e => setSwapIngredient(e.target.value)}
+            placeholder="e.g. eggs, buttermilk, heavy cream..."
+            className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
+        </div>
+
+        {/* Common swaps */}
+        <div className="flex flex-wrap gap-1.5 mb-4">
+          {COMMON_SWAPS.map(s => (
+            <button key={s} onClick={() => setSwapIngredient(s)}
+              className={`px-2 py-1 rounded-lg text-[10px] font-medium border transition-colors min-h-[28px] ${
+                swapIngredient === s ? c.pillActive : c.pillInactive
+              }`}>{s}</button>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-2 gap-2 mb-5">
+          <div>
+            <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>Recipe context (optional)</label>
+            <input type="text" value={swapContext} onChange={e => setSwapContext(e.target.value)}
+              placeholder="e.g. baking a cake, making pasta..."
+              className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
+          </div>
+          <div>
+            <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>Dietary</label>
+            <input type="text" value={swapDiet} onChange={e => setSwapDiet(e.target.value)}
+              placeholder="Vegan, dairy-free..."
+              className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
+          </div>
+        </div>
+
+        <button onClick={runSwap} disabled={!swapIngredient.trim() || loading}
+          className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+          {loading ? <><span className="animate-spin inline-block">⏳</span> Looking up swaps...</> : <><span>🔄</span> Find Substitutes</>}
+        </button>
+      </div>
+
+      {/* Swap results */}
+      {swapResults && (
+        <div className="space-y-3">
+          <div className={`${c.card} border rounded-xl p-4`}>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-lg">🔄</span>
+              <h3 className={`text-sm font-black ${c.text}`}>Swaps for: {swapResults.ingredient}</h3>
+            </div>
+            <div className={`${c.accentBg} border rounded-lg p-2.5`}>
+              <p className="text-xs"><strong>Function:</strong> {swapResults.function_in_cooking}</p>
+            </div>
+          </div>
+
+          {swapResults.swaps?.map((swap, i) => {
+            const qb = getQualityBadge(swap.quality);
+            return (
+              <div key={i} className={`${c.card} border rounded-xl p-4`}>
+                <div className="flex items-center justify-between mb-2">
+                  <h4 className={`text-sm font-bold ${c.text}`}>{i + 1}. {swap.name}</h4>
+                  {qb && <span className={`text-[9px] font-black px-2 py-0.5 rounded ${qb.bg}`}>{swap.quality}</span>}
+                </div>
+                <div className={`${c.quoteBg} rounded-lg p-2.5 mb-2`}>
+                  <p className={`text-sm font-bold ${c.accent}`}>{swap.ratio}</p>
+                </div>
+                <p className={`text-xs ${c.textSec} mb-1`}>🔬 {swap.science}</p>
+                {swap.best_for && <p className={`text-[10px] ${c.successText}`}>✅ Best for: {swap.best_for}</p>}
+                {swap.avoid_in && <p className={`text-[10px] ${c.dangerText} mt-0.5`}>❌ Avoid in: {swap.avoid_in}</p>}
+                {swap.notes && <p className={`text-[10px] ${c.textMuted} mt-1`}>📝 {swap.notes}</p>}
+                <div className="flex items-center gap-2 mt-2">
+                  <button onClick={() => saveItem('swap', `${swapResults.ingredient} → ${swap.name}`, {
+                    ingredient: swapResults.ingredient, swap: swap.name,
+                    ratio: swap.ratio, quality: swap.quality, science: swap.science,
+                    best_for: swap.best_for, notes: swap.notes,
+                  })} className={`${c.btnSec} px-2.5 py-1 rounded-lg text-[10px] font-bold min-h-[28px]`}>
+                    📌 Save swap
+                  </button>
+                  <button onClick={() => runTeach(
+                    `Substituting ${swapResults.ingredient} with ${swap.name} (${swap.ratio}). ${swap.science || ''}`,
+                    'swap'
+                  )} disabled={teachLoading}
+                    className={`${c.btnSec} px-2.5 py-1 rounded-lg text-[10px] font-bold min-h-[28px]`}>
+                    {teachLoading ? '⏳' : '🎓'} Why?
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+
+          {swapResults.pro_tip && (
+            <div className={`${c.accentBg} border rounded-lg p-3`}>
+              <p className="text-xs"><strong>💡 Pro tip:</strong> {swapResults.pro_tip}</p>
+            </div>
+          )}
+          {swapResults.common_mistake && (
+            <div className={`${c.warning} border rounded-lg p-3`}>
+              <p className="text-xs"><strong>⚠️ Common mistake:</strong> {swapResults.common_mistake}</p>
+            </div>
+          )}
+
+          <ActionBar content={buildSwapText()} />
+
+          {/* Teach Me results (shared display) */}
+          {teachResults && (
+            <div className={`${c.science} border rounded-xl p-5`}>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className={`text-sm font-black`}>{teachResults.lesson_emoji} {teachResults.lesson_title}</h3>
+                <button onClick={() => setTeachResults(null)} className={`text-xs ${c.textMuted}`}>✕</button>
+              </div>
+              <p className="text-xs mb-3">{teachResults.the_principle}</p>
+              {teachResults.the_rule && (
+                <div className={`${c.quoteBg} rounded-lg p-3 mb-3`}>
+                  <p className={`text-sm font-black ${c.accent}`}>📏 {teachResults.the_rule}</p>
+                </div>
+              )}
+              {teachResults.analogy && (
+                <p className={`text-xs ${c.textSec} mb-2`}>💡 Think of it like: {teachResults.analogy}</p>
+              )}
+              {teachResults.apply_it?.length > 0 && (
+                <div className="mb-2">
+                  <p className="text-[10px] font-bold uppercase mb-1">Also applies to:</p>
+                  {teachResults.apply_it.map((a, i) => <p key={i} className="text-xs">• {a}</p>)}
+                </div>
+              )}
+              {teachResults.common_myth && (
+                <div className={`${c.danger} border rounded-lg p-2 mb-2`}>
+                  <p className="text-[10px]"><strong>🚫 Myth:</strong> {teachResults.common_myth}</p>
+                </div>
+              )}
+              {teachResults.next_experiment && (
+                <p className={`text-[10px] ${c.textMuted}`}>🧪 Try next time: {teachResults.next_experiment}</p>
+              )}
+              <div className="flex items-center gap-2 mt-3">
+                <button onClick={() => saveItem('lesson', teachResults.lesson_title, {
+                  principle: teachResults.the_principle, rule: teachResults.the_rule,
+                  analogy: teachResults.analogy, apply_it: teachResults.apply_it,
+                })} className={`${c.btnSec} px-2.5 py-1 rounded-lg text-[10px] font-bold min-h-[28px]`}>
+                  📌 Save lesson
+                </button>
+                <CopyBtn content={buildTeachText()} label="Copy" />
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+
+  // ════════════════════════════════════════════════════════════
+  // RENDER: SCALE
+  // ════════════════════════════════════════════════════════════
+  const renderScale = () => (
+    <div className="space-y-4">
+      <div className={`${c.card} border rounded-xl p-5`}>
+        <div className={`mb-4 pb-3 border-b ${c.divider}`}>
+          <h2 className={`text-base font-black ${c.text}`}>⚖️ Recipe Scaler</h2>
+          <p className={`text-xs ${c.textMuted} mt-1`}>Scale up or down with science — not everything scales linearly</p>
+        </div>
+
+        <div className="mb-4">
+          <label className={`text-xs font-bold ${c.label} block mb-1`}>Paste your recipe *</label>
+          <textarea value={scaleRecipe} onChange={e => setScaleRecipe(e.target.value)}
+            placeholder="Paste ingredients list and instructions here..."
+            rows={6} className={`w-full px-3 py-2.5 border rounded-lg text-sm resize-y ${c.input} outline-none focus:ring-2`} />
+        </div>
+
+        <div className="grid grid-cols-2 gap-3 mb-5">
+          <div>
+            <label className={`text-xs font-bold ${c.label} block mb-1`}>Original serves</label>
+            <input type="number" value={scaleOriginal} onChange={e => setScaleOriginal(e.target.value)}
+              min="1" max="100" className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
+          </div>
+          <div>
+            <label className={`text-xs font-bold ${c.label} block mb-1`}>I need it for *</label>
+            <input type="number" value={scaleTarget} onChange={e => setScaleTarget(e.target.value)}
+              placeholder="e.g. 8" min="1" max="200"
+              className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
+          </div>
+        </div>
+
+        {/* Quick scale buttons */}
+        {scaleOriginal && (
+          <div className="flex flex-wrap gap-1.5 mb-4">
+            {[0.5, 2, 3, 4].map(mult => (
+              <button key={mult} onClick={() => setScaleTarget(String(Math.round(parseFloat(scaleOriginal) * mult)))}
+                className={`${c.btnSec} px-3 py-1 rounded-lg text-xs font-bold min-h-[28px]`}>
+                {mult}x ({Math.round(parseFloat(scaleOriginal) * mult)})
+              </button>
+            ))}
+          </div>
+        )}
+
+        <button onClick={runScale} disabled={!scaleRecipe.trim() || !scaleTarget || loading}
+          className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+          {loading ? <><span className="animate-spin inline-block">⏳</span> Scaling...</> : <><span>⚖️</span> Scale Recipe</>}
+        </button>
+      </div>
+
+      {/* Scale results */}
+      {scaleResults && (
+        <div className="space-y-3">
+          <div className={`${c.card} border rounded-xl p-4`}>
+            <div className="flex items-center justify-between mb-3">
+              <h3 className={`text-sm font-black ${c.text}`}>⚖️ Scaled: {scaleResults.scale_factor}x</h3>
+              <span className={`text-xs ${c.textMuted}`}>{scaleResults.original_servings} → {scaleResults.target_servings} servings</span>
+            </div>
+
+            <div className="space-y-1.5">
+              {scaleResults.scaled_ingredients?.map((ing, i) => (
+                <div key={i} className={`flex items-start gap-2 p-2 rounded-lg ${c.quoteBg}`}>
+                  <div className="flex-1">
+                    <p className={`text-xs font-bold ${c.text}`}>{ing.scaled}</p>
+                    <p className={`text-[10px] ${c.textMuted}`}>was: {ing.original}</p>
+                  </div>
+                  {ing.note && (
+                    <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded flex-shrink-0 ${c.warning}`}>⚠️ {ing.note}</span>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {scaleResults.timing_changes?.length > 0 && (
+            <div className={`${c.warning} border rounded-lg p-3`}>
+              <p className="text-xs font-bold mb-1">⏱️ Timing changes:</p>
+              {scaleResults.timing_changes.map((t, i) => (
+                <p key={i} className="text-xs">• {t}</p>
+              ))}
+            </div>
+          )}
+
+          {scaleResults.equipment_notes?.length > 0 && (
+            <div className={`${c.info} border rounded-lg p-3`}>
+              <p className="text-xs font-bold mb-1">🍳 Equipment notes:</p>
+              {scaleResults.equipment_notes.map((n, i) => (
+                <p key={i} className="text-xs">• {n}</p>
+              ))}
+            </div>
+          )}
+
+          {scaleResults.warnings?.length > 0 && (
+            <div className={`${c.danger} border rounded-lg p-3`}>
+              <p className="text-xs font-bold mb-1">⚠️ Watch out:</p>
+              {scaleResults.warnings.map((w, i) => (
+                <p key={i} className="text-xs">• {w}</p>
+              ))}
+            </div>
+          )}
+
+          {scaleResults.pro_tip && (
+            <div className={`${c.accentBg} border rounded-lg p-3`}>
+              <p className="text-xs"><strong>💡</strong> {scaleResults.pro_tip}</p>
+            </div>
+          )}
+
+          <ActionBar content={buildScaleText()} />
+        </div>
+      )}
+    </div>
+  );
+
+  // ════════════════════════════════════════════════════════════
+  // RENDER: MULTI-SWAP
+  // ════════════════════════════════════════════════════════════
+  const renderMultiSwap = () => (
+    <div className="space-y-4">
+      <div className={`${c.card} border rounded-xl p-5`}>
+        <div className={`mb-4 pb-3 border-b ${c.divider}`}>
+          <h2 className={`text-base font-black ${c.text}`}>🔄🔄 Multi-Ingredient Swap</h2>
+          <p className={`text-xs ${c.textMuted} mt-1`}>Missing multiple ingredients? Swaps interact — this handles the compound effect.</p>
+        </div>
+
+        {multiSwapIngredients.map((ing, i) => (
+          <div key={i} className="flex items-center gap-2 mb-2">
+            <span className={`text-xs font-bold ${c.accent} w-5`}>{i + 1}.</span>
+            <input type="text" value={ing}
+              onChange={e => updateMultiSwapSlot(i, e.target.value)}
+              placeholder={`Missing ingredient ${i + 1}`}
+              className={`flex-1 px-3 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
+            {multiSwapIngredients.length > 2 && (
+              <button onClick={() => removeMultiSwapSlot(i)}
+                className={`text-xs ${c.dangerText} min-h-[28px]`}>✕</button>
+            )}
+          </div>
+        ))}
+
+        {multiSwapIngredients.length < 8 && (
+          <button onClick={addMultiSwapSlot}
+            className={`${c.btnSec} px-3 py-1.5 rounded-lg text-xs font-bold mb-4 min-h-[32px]`}>
+            + Add ingredient
+          </button>
+        )}
+
+        <div className="grid grid-cols-2 gap-2 mb-5">
+          <div>
+            <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>Recipe context</label>
+            <input type="text" value={multiSwapContext} onChange={e => setMultiSwapContext(e.target.value)}
+              placeholder="e.g. baking a cake, making pasta..."
+              className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
+          </div>
+          <div>
+            <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>Dietary</label>
+            <input type="text" value={multiSwapDiet} onChange={e => setMultiSwapDiet(e.target.value)}
+              placeholder="Vegan, dairy-free..."
+              className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
+          </div>
+        </div>
+
+        <button onClick={runMultiSwap}
+          disabled={multiSwapIngredients.filter(i => i.trim()).length < 2 || loading}
+          className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+          {loading ? <><span className="animate-spin inline-block">⏳</span> Analyzing interactions...</> : <><span>🔄</span> Find Combined Swaps</>}
+        </button>
+      </div>
+
+      {/* Multi-swap results */}
+      {multiSwapResults && (
+        <div className="space-y-3">
+          {/* Feasibility */}
+          <div className={`${
+            multiSwapResults.feasibility === 'doable' ? c.success :
+            multiSwapResults.feasibility === 'tricky' ? c.warning :
+            multiSwapResults.feasibility === 'risky' ? c.danger : c.danger
+          } border rounded-xl p-4`}>
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-xs font-bold">
+                {multiSwapResults.feasibility === 'doable' ? '✅' :
+                 multiSwapResults.feasibility === 'tricky' ? '⚠️' :
+                 multiSwapResults.feasibility === 'risky' ? '😬' : '🚫'} {(multiSwapResults.feasibility || '').toUpperCase()}
+              </span>
+              <span className={`text-[9px] font-black px-2 py-0.5 rounded ${c.accentBg}`}>{multiSwapResults.missing_count} swaps</span>
+            </div>
+            <p className="text-xs">{multiSwapResults.feasibility_note}</p>
+          </div>
+
+          {/* Combined impact */}
+          <div className={`${c.card} border rounded-xl p-4`}>
+            <p className="text-xs font-bold mb-1">💥 Combined Impact:</p>
+            <p className={`text-xs ${c.textSec}`}>{multiSwapResults.combined_impact}</p>
+            <p className={`text-xs ${c.accent} font-bold mt-2`}>🎯 Strategy: {multiSwapResults.strategy}</p>
+          </div>
+
+          {/* Individual swaps */}
+          {multiSwapResults.swaps?.map((swap, i) => {
+            const qb = getQualityBadge(swap.quality);
+            return (
+              <div key={i} className={`${c.card} border rounded-xl p-4`}>
+                <div className="flex items-center justify-between mb-2">
+                  <div>
+                    <span className={`text-xs ${c.textMuted}`}>{swap.original}</span>
+                    <span className={`text-xs ${c.text} mx-1.5`}>→</span>
+                    <span className={`text-xs font-bold ${c.text}`}>{swap.substitute}</span>
+                  </div>
+                  {qb && <span className={`text-[9px] font-black px-1.5 py-0.5 rounded ${qb.bg}`}>{swap.quality}</span>}
+                </div>
+                <div className={`${c.quoteBg} rounded-lg p-2 mb-2`}>
+                  <p className={`text-xs font-bold ${c.accent}`}>{swap.ratio}</p>
+                </div>
+                {swap.interaction_note && (
+                  <div className={`${c.warning} border rounded-lg p-2`}>
+                    <p className="text-[10px]">⚠️ <strong>Interaction:</strong> {swap.interaction_note}</p>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+
+          {/* Combined adjustments */}
+          {multiSwapResults.combined_adjustments?.length > 0 && (
+            <Section icon="🔧" title="Required adjustments" c={c} defaultOpen>
+              <div className="space-y-1">
+                {multiSwapResults.combined_adjustments.map((adj, i) => (
+                  <p key={i} className={`text-xs ${c.textSec}`}>• {adj}</p>
+                ))}
+              </div>
+            </Section>
+          )}
+
+          {/* Expected result */}
+          {multiSwapResults.expected_result && (
+            <div className={`${c.info} border rounded-lg p-3`}>
+              <p className="text-xs"><strong>🎯 Expected result:</strong> {multiSwapResults.expected_result}</p>
+            </div>
+          )}
+          {multiSwapResults.pro_tip && (
+            <div className={`${c.accentBg} border rounded-lg p-3`}>
+              <p className="text-xs"><strong>💡</strong> {multiSwapResults.pro_tip}</p>
+            </div>
+          )}
+
+          <ActionBar content={buildMultiSwapText()} />
+
+          <button onClick={() => saveItem('multi-swap',
+            multiSwapResults.swaps?.map(s => `${s.original}→${s.substitute}`).join(', ') || 'Multi-swap',
+            { swaps: multiSwapResults.swaps, strategy: multiSwapResults.strategy, expected: multiSwapResults.expected_result }
+          )} className={`${c.btnSec} px-3 py-1.5 rounded-lg text-xs font-bold min-h-[32px]`}>
+            📌 Save these swaps
+          </button>
+        </div>
+      )}
+    </div>
+  );
+
+  // ════════════════════════════════════════════════════════════
+  // RENDER: PRE-FLIGHT CHECK
+  // ════════════════════════════════════════════════════════════
+  const renderPreflight = () => (
+    <div className="space-y-4">
+      <div className={`${c.card} border rounded-xl p-5`}>
+        <div className={`mb-4 pb-3 border-b ${c.divider}`}>
+          <h2 className={`text-base font-black ${c.text}`}>✈️ Pre-Flight Check</h2>
+          <p className={`text-xs ${c.textMuted} mt-1`}>Catch problems before you start cooking</p>
+        </div>
+
+        <div className="mb-4">
+          <label className={`text-xs font-bold ${c.label} block mb-1`}>Paste your recipe *</label>
+          <textarea value={pfRecipe} onChange={e => setPfRecipe(e.target.value)}
+            placeholder="Paste the full recipe here (ingredients + instructions)..."
+            rows={5} className={`w-full px-3 py-2.5 border rounded-lg text-sm resize-y ${c.input} outline-none focus:ring-2`} />
+        </div>
+
+        <div className="mb-4">
+          <label className={`text-xs font-bold ${c.label} block mb-1`}>What ingredients do you actually have?</label>
+          <textarea value={pfIngredients} onChange={e => setPfIngredients(e.target.value)}
+            placeholder="List what's in your kitchen right now..." rows={2}
+            className={`w-full px-3 py-2 border rounded-lg text-sm resize-y ${c.input} outline-none focus:ring-2`} />
+        </div>
+
+        <div className="grid grid-cols-2 gap-2 mb-5">
+          <div>
+            <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>Equipment</label>
+            <select value={pfEquipment} onChange={e => setPfEquipment(e.target.value)}
+              className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input}`}>
+              <option value="standard kitchen">Standard kitchen</option>
+              <option value="stovetop only">Stovetop only</option>
+              <option value="microwave only">Microwave only</option>
+              <option value="minimal">Minimal equipment</option>
+            </select>
+          </div>
+          <div>
+            <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>Skill level</label>
+            <select value={pfSkill} onChange={e => setPfSkill(e.target.value)}
+              className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input}`}>
+              <option value="beginner">Beginner</option>
+              <option value="intermediate">Intermediate</option>
+              <option value="advanced">Advanced</option>
+            </select>
+          </div>
+        </div>
+
+        <button onClick={runPreflight} disabled={!pfRecipe.trim() || loading}
+          className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+          {loading ? <><span className="animate-spin inline-block">⏳</span> Checking...</> : <><span>✈️</span> Run Pre-Flight Check</>}
+        </button>
+      </div>
+
+      {/* Preflight results */}
+      {pfResults && (
+        <div className="space-y-3">
+          {/* Readiness verdict */}
+          <div className={`${
+            pfResults.readiness === 'READY' ? c.success :
+            pfResults.readiness === 'ALMOST' ? c.warning : c.danger
+          } border rounded-xl p-5 text-center`}>
+            <p className="text-3xl mb-1">{pfResults.readiness_emoji}</p>
+            <p className="text-lg font-black">{pfResults.readiness}</p>
+            <p className={`text-sm font-medium ${c.text} mt-1`}>{pfResults.recipe_name}</p>
+          </div>
+
+          {/* Ingredient check */}
+          {pfResults.ingredient_check?.length > 0 && (
+            <div className={`${c.card} border rounded-xl p-4`}>
+              <p className={`text-xs font-bold ${c.label} uppercase mb-2`}>Ingredient check</p>
+              <div className="space-y-1.5">
+                {pfResults.ingredient_check.map((ing, i) => (
+                  <div key={i} className={`flex items-start gap-2 p-2 rounded-lg ${
+                    ing.status === 'have' ? c.success : ing.status === 'missing' ? (ing.critical ? c.danger : c.warning) : c.quoteBg
+                  }`}>
+                    <span className="text-sm flex-shrink-0">
+                      {ing.status === 'have' ? '✅' : ing.status === 'missing' ? (ing.critical ? '🔴' : '🟡') : '❓'}
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <span className={`text-xs font-bold ${c.text}`}>{ing.ingredient}</span>
+                      {ing.critical && ing.status === 'missing' && (
+                        <span className={`text-[9px] font-black ml-1.5 ${c.dangerText}`}>CRITICAL</span>
+                      )}
+                      {ing.substitute && (
+                        <p className={`text-[10px] ${c.accent}`}>
+                          → {ing.substitute}{ing.sub_ratio ? ` (${ing.sub_ratio})` : ''}
+                          {ing.from_saved && <span className={`text-[9px] ${c.successText} ml-1`}>📌 from saved</span>}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Equipment + technique */}
+          {pfResults.equipment_check?.length > 0 && (
+            <Section icon="🍳" title="Equipment check" c={c}>
+              {pfResults.equipment_check.map((eq, i) => (
+                <div key={i} className={`flex items-center gap-2 p-2 rounded-lg ${eq.status === 'have' ? c.success : c.warning}`}>
+                  <span>{eq.status === 'have' ? '✅' : '⚠️'}</span>
+                  <span className="text-xs">{eq.item}</span>
+                  {eq.alternative && <span className={`text-[10px] ${c.accent}`}>→ {eq.alternative}</span>}
+                </div>
+              ))}
+            </Section>
+          )}
+
+          {pfResults.technique_warnings?.length > 0 && (
+            <Section icon="⚠️" title="Technique heads-up" c={c} defaultOpen>
+              {pfResults.technique_warnings.map((tw, i) => (
+                <div key={i} className={`${tw.difficulty === 'tricky' ? c.danger : tw.difficulty === 'moderate' ? c.warning : c.info} border rounded-lg p-2.5`}>
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <span className={`text-[9px] font-black px-1.5 py-0.5 rounded ${tw.difficulty === 'tricky' ? c.danger : c.warning}`}>{tw.difficulty}</span>
+                    <span className="text-xs font-bold">{tw.technique}</span>
+                  </div>
+                  <p className="text-[10px]">{tw.tip}</p>
+                </div>
+              ))}
+            </Section>
+          )}
+
+          {/* Time estimate */}
+          {pfResults.time_estimate && (
+            <div className={`${c.accentBg} border rounded-lg p-3`}>
+              <p className="text-xs"><strong>⏱️ Recipe says:</strong> {pfResults.time_estimate.recipe_says}</p>
+              <p className={`text-xs font-bold ${c.accent}`}>Realistically: {pfResults.time_estimate.realistic}</p>
+              {pfResults.time_estimate.note && <p className={`text-[10px] ${c.textMuted} mt-0.5`}>{pfResults.time_estimate.note}</p>}
+            </div>
+          )}
+
+          {pfResults.pro_tips?.length > 0 && (
+            <Section icon="💡" title="Pro tips" c={c}>
+              {pfResults.pro_tips.map((tip, i) => (
+                <p key={i} className={`text-xs ${c.textSec}`}>• {tip}</p>
+              ))}
+            </Section>
+          )}
+
+          {pfResults.go_no_go && (
+            <div className={`${c.card} border rounded-xl p-4 text-center`}>
+              <p className={`text-sm font-bold ${c.text}`}>🎯 {pfResults.go_no_go}</p>
+            </div>
+          )}
+
+          <ActionBar content={buildPreflightText()} />
+        </div>
+      )}
+    </div>
+  );
+
+  // ════════════════════════════════════════════════════════════
+  // RENDER: FLAVOR FIX
+  // ════════════════════════════════════════════════════════════
+  const renderFlavor = () => (
+    <div className="space-y-4">
+      <div className={`${c.card} border rounded-xl p-5`}>
+        <div className={`mb-4 pb-3 border-b ${c.divider}`}>
+          <h2 className={`text-base font-black ${c.text}`}>✨ Flavor Fix</h2>
+          <p className={`text-xs ${c.textMuted} mt-1`}>Not ruined, just boring? Let's make it sing.</p>
+        </div>
+
+        <div className="mb-4">
+          <label className={`text-xs font-bold ${c.label} block mb-1`}>What did you make? *</label>
+          <input type="text" value={ffDish} onChange={e => setFfDish(e.target.value)}
+            placeholder="e.g. chicken breast, pasta with tomato sauce, fried rice..."
+            className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
+        </div>
+
+        {/* Quick "what's wrong" buttons */}
+        <div className="flex flex-wrap gap-1.5 mb-4">
+          {['Tastes flat', 'Needs something', 'Too bland', 'Missing depth', 'Boring texture', 'One-note'].map(q => (
+            <button key={q} onClick={() => setFfWrong(q)}
+              className={`px-2.5 py-1 rounded-lg text-[10px] font-medium border min-h-[28px] ${
+                ffWrong === q ? c.pillActive : c.pillInactive
+              }`}>{q}</button>
+          ))}
+        </div>
+
+        <div className="mb-4">
+          <label className={`text-xs font-bold ${c.label} block mb-1`}>What's wrong with it?</label>
+          <input type="text" value={ffWrong} onChange={e => setFfWrong(e.target.value)}
+            placeholder="e.g. it's just... meh, needs more depth, texture is boring..."
+            className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
+        </div>
+
+        <div className="grid grid-cols-2 gap-2 mb-5">
+          <div>
+            <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>What's available</label>
+            <input type="text" value={ffIngredients} onChange={e => setFfIngredients(e.target.value)}
+              placeholder="Lemon, butter, hot sauce..."
+              className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
+          </div>
+          <div>
+            <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>Dietary</label>
+            <input type="text" value={ffDiet} onChange={e => setFfDiet(e.target.value)}
+              placeholder="Vegan, low-sodium..."
+              className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
+          </div>
+        </div>
+
+        <button onClick={runFlavorFix} disabled={!ffDish.trim() || loading}
+          className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+          {loading ? <><span className="animate-spin inline-block">⏳</span> Diagnosing flavor...</> : <><span>✨</span> Fix the Flavor</>}
+        </button>
+      </div>
+
+      {/* Flavor results */}
+      {ffResults && (
+        <div className="space-y-3">
+          <div className={`${c.accentBg} border rounded-xl p-5`}>
+            <p className="text-xs font-bold mb-1">🔍 Diagnosis:</p>
+            <p className={`text-sm font-bold ${c.text}`}>{ffResults.diagnosis}</p>
+            {ffResults.flavor_profile && (
+              <div className="mt-2">
+                <div className="flex flex-wrap gap-1.5 mb-1">
+                  {ffResults.flavor_profile.needs_more?.map((n, i) => (
+                    <span key={i} className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${c.pillActive}`}>{n}</span>
+                  ))}
+                </div>
+                <p className={`text-[10px] ${c.textSec}`}>{ffResults.flavor_profile.explanation}</p>
+              </div>
+            )}
+          </div>
+
+          {/* THE MOVE */}
+          {ffResults.the_move && (
+            <div className={`${c.success} border rounded-xl p-4`}>
+              <p className="text-xs font-bold mb-1">⭐ THE MOVE (do this first):</p>
+              <p className={`text-sm font-black`}>{ffResults.the_move}</p>
+            </div>
+          )}
+
+          {/* Quick fixes */}
+          {ffResults.quick_fixes?.map((fix, i) => (
+            <div key={i} className={`${c.card} border rounded-xl p-4`}>
+              <div className="flex items-center justify-between mb-1">
+                <span className={`text-xs font-bold ${c.text}`}>{i + 1}. {fix.fix}</span>
+                <span className={`text-[9px] font-black px-1.5 py-0.5 rounded ${
+                  fix.impact === 'high' ? c.success : fix.impact === 'medium' ? c.warning : c.info
+                }`}>{fix.impact} impact</span>
+              </div>
+              <p className={`text-xs ${c.accent} font-bold`}>{fix.amount} — add {fix.when}</p>
+              <p className={`text-[10px] ${c.textSec} mt-0.5`}>👨‍🍳 {fix.why}</p>
+            </div>
+          ))}
+
+          {ffResults.chef_trick && (
+            <div className={`${c.science} border rounded-lg p-3`}>
+              <p className="text-xs"><strong>👨‍🍳 Chef trick:</strong> {ffResults.chef_trick}</p>
+            </div>
+          )}
+          {ffResults.do_not && (
+            <div className={`${c.danger} border rounded-lg p-3`}>
+              <p className="text-xs"><strong>🚫 Don't do this:</strong> {ffResults.do_not}</p>
+            </div>
+          )}
+
+          <ActionBar content={buildFlavorText()} />
+        </div>
+      )}
+    </div>
+  );
+
+  // ════════════════════════════════════════════════════════════
+  // RENDER: WINS JOURNAL
+  // ════════════════════════════════════════════════════════════
+  const renderWins = () => (
+    <div className="space-y-4">
+      <div className={`${c.card} border rounded-xl p-5`}>
+        <div className={`mb-4 pb-3 border-b ${c.divider}`}>
+          <h2 className={`text-base font-black ${c.text}`}>🏆 Wins Journal</h2>
+          <p className={`text-xs ${c.textMuted} mt-1`}>Track your cooking victories — confidence comes from evidence</p>
+        </div>
+
+        <div className="mb-3">
+          <label className={`text-xs font-bold ${c.label} block mb-1`}>What went right?</label>
+          <input type="text" value={winText} onChange={e => setWinText(e.target.value)}
+            placeholder="e.g. Applesauce for eggs worked perfectly in brownies!"
+            className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
+        </div>
+
+        <div className="mb-4">
+          <label className={`text-xs font-bold ${c.label} block mb-1`}>
+            How well? <span className="text-base ml-1">{['😐', '🙂', '😊', '😄', '🤩'][winRating - 1]}</span>
+          </label>
+          <input type="range" min="1" max="5" value={winRating}
+            onChange={e => setWinRating(parseInt(e.target.value))}
+            className="w-full accent-orange-500" />
+          <div className="flex justify-between text-[9px]">
+            <span className={c.textMuted}>It worked</span>
+            <span className={c.textMuted}>Nailed it!</span>
+          </div>
+        </div>
+
+        <button onClick={addWin} disabled={!winText.trim()}
+          className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+          <span>🏆</span> Log Win
+        </button>
+      </div>
+
+      {/* Win stats */}
+      {wins.length > 0 && (
+        <div className={`${c.success} border rounded-xl p-4 text-center`}>
+          <p className={`text-3xl font-black`}>{wins.length}</p>
+          <p className="text-xs font-bold">Cooking wins logged</p>
+          {wins.length >= 5 && (
+            <p className={`text-[10px] ${c.textMuted} mt-1`}>
+              Avg rating: {(wins.reduce((a, w) => a + w.rating, 0) / wins.length).toFixed(1)}/5 —
+              {(wins.reduce((a, w) => a + w.rating, 0) / wins.length) >= 4 ? ' You\'re getting good at this! 🔥' : ' Keep experimenting!'}
+            </p>
+          )}
+        </div>
+      )}
+
+      {/* Win list */}
+      {wins.length > 0 ? (
+        <div className="space-y-2">
+          {wins.map(win => (
+            <div key={win.id} className={`${c.quoteBg} rounded-lg p-3`}>
+              <div className="flex items-start justify-between gap-2">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <span className="text-sm">{['😐', '🙂', '😊', '😄', '🤩'][win.rating - 1]}</span>
+                    <span className={`text-xs font-bold ${c.text}`}>{win.text}</span>
+                  </div>
+                  <p className={`text-[9px] ${c.textMuted}`}>{new Date(win.date).toLocaleDateString()}</p>
+                </div>
+                <button onClick={() => removeWin(win.id)}
+                  className={`text-xs ${c.dangerText} flex-shrink-0 min-h-[24px]`}>✕</button>
+              </div>
+            </div>
+          ))}
+          <button onClick={() => {
+            if (window.confirm('Clear all wins?')) {
+              setWins([]);
+              saveStore('rcs-wins', [], 50);
+            }
+          }} className={`text-xs ${c.dangerText} min-h-[28px]`}>🗑️ Clear all</button>
+        </div>
+      ) : (
+        <div className={`${c.card} border rounded-xl p-6 text-center`}>
+          <span className="text-3xl block mb-2">🏆</span>
+          <p className={`text-sm ${c.textMuted} mb-2`}>No wins logged yet.</p>
+          <p className={`text-xs ${c.textMuted}`}>Rescue a dish, try a substitution, fix a flavor — then come back and log the win.</p>
+        </div>
+      )}
+    </div>
+  );
+
+  // ════════════════════════════════════════════════════════════
+  // RENDER: KITCHEN COMPANION (overlay)
+  // ════════════════════════════════════════════════════════════
+  const renderCompanion = () => {
+    if (!companionMode || !rescueResults?.recipes?.[companionRecipe]) return null;
+    const recipe = rescueResults.recipes[companionRecipe];
+    const steps = recipe.instructions || recipe.solution_steps || [];
+    const currentStep = steps[companionStep] || '';
+    const timerKey = `${companionRecipe}-${companionStep}`;
+    const stepTime = parseTimeFromStep(currentStep);
+    const timer = activeTimers[timerKey];
+    const progress = steps.length > 0 ? ((companionStep + 1) / steps.length) * 100 : 0;
+
+    return (
+      <div className={`fixed inset-0 z-50 flex flex-col ${isDark ? 'bg-zinc-900' : 'bg-white'}`}>
+        {/* Header */}
+        <div className={`flex items-center justify-between px-4 py-3 border-b ${c.divider}`}>
+          <div className="flex-1 min-w-0">
+            <p className={`text-xs font-bold ${c.accent} truncate`}>{recipe.name}</p>
+            <p className={`text-[10px] ${c.textMuted}`}>Step {companionStep + 1} of {steps.length}</p>
+          </div>
+          <button onClick={exitCompanion}
+            className={`${c.btnSec} px-3 py-1.5 rounded-lg text-xs font-bold min-h-[36px]`}>
+            ✕ Exit Guide
+          </button>
+        </div>
+
+        {/* Progress bar */}
+        <div className={`h-1.5 ${isDark ? 'bg-zinc-800' : 'bg-slate-100'}`}>
+          <div className="h-full bg-orange-500 transition-all" style={{ width: `${progress}%` }} />
+        </div>
+
+        {/* Main step display */}
+        <div className="flex-1 flex flex-col items-center justify-center px-6 py-8">
+          <div className={`w-12 h-12 rounded-full flex items-center justify-center text-xl font-black mb-4 ${
+            isDark ? 'bg-orange-600 text-white' : 'bg-orange-100 text-orange-700'
+          }`}>{companionStep + 1}</div>
+
+          <p className={`text-lg font-bold ${c.text} text-center leading-relaxed max-w-lg`}>
+            {currentStep}
+          </p>
+
+          {/* Timer */}
+          {stepTime && (
+            <div className="mt-6 text-center">
+              {timer ? (
+                <div>
+                  <p className={`text-4xl font-black ${
+                    timer.done ? c.dangerText : timer.remaining < 30 ? c.warningText : c.successText
+                  }`}>
+                    {timer.done ? '🔔 Done!' : formatTimer(timer.remaining)}
+                  </p>
+                  <div className={`w-48 h-2 rounded-full overflow-hidden mt-2 mx-auto ${isDark ? 'bg-zinc-700' : 'bg-slate-200'}`}>
+                    <div className={`h-full rounded-full transition-all ${
+                      timer.done ? 'bg-red-500 animate-pulse' : timer.remaining < 30 ? 'bg-amber-500' : 'bg-emerald-500'
+                    }`} style={{ width: `${timer.total > 0 ? ((timer.total - timer.remaining) / timer.total) * 100 : 0}%` }} />
+                  </div>
+                  <button onClick={() => stopTimer(timerKey)}
+                    className={`${c.btnSec} px-4 py-2 rounded-lg text-xs font-bold mt-3 min-h-[36px]`}>
+                    Stop Timer
+                  </button>
+                </div>
+              ) : (
+                <button onClick={() => startTimer(timerKey, stepTime)}
+                  className={`${c.btnPrimary} px-6 py-3 rounded-xl text-sm font-bold min-h-[48px]`}>
+                  ⏱️ Start Timer ({formatTimer(stepTime)})
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Navigation */}
+        <div className={`flex items-center gap-3 px-4 py-4 border-t ${c.divider}`}>
+          <button onClick={() => setCompanionStep(Math.max(0, companionStep - 1))}
+            disabled={companionStep === 0}
+            className={`flex-1 ${c.btnSec} disabled:opacity-30 py-3 rounded-xl text-sm font-bold min-h-[48px]`}>
+            ← Back
+          </button>
+          {companionStep < steps.length - 1 ? (
+            <button onClick={() => { toggleStep(companionRecipe, companionStep); setCompanionStep(companionStep + 1); }}
+              className={`flex-1 ${c.btnPrimary} py-3 rounded-xl text-sm font-bold min-h-[48px]`}>
+              Done → Next
+            </button>
+          ) : (
+            <button onClick={() => { toggleStep(companionRecipe, companionStep); exitCompanion(); }}
+              className={`flex-1 bg-emerald-600 hover:bg-emerald-500 text-white py-3 rounded-xl text-sm font-bold min-h-[48px]`}>
+              🏆 Finished!
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  // ════════════════════════════════════════════════════════════
+  // RENDER: SAVED
+  // ════════════════════════════════════════════════════════════
+  const renderSaved = () => (
+    <div className="space-y-4">
+      <div className={`${c.card} border rounded-xl p-5`}>
+        <div className={`mb-4 pb-3 border-b ${c.divider}`}>
+          <h2 className={`text-base font-black ${c.text}`}>📌 Saved Solutions</h2>
+          <p className={`text-xs ${c.textMuted} mt-1`}>Your personal cooking cheat sheet</p>
+        </div>
+
+        {saved.length > 0 && (
+          <div className="flex gap-1 flex-wrap mb-3">
+            {[
+              { key: 'all', label: `All (${saved.length})` },
+              ...['rescue', 'swap', 'multi-swap', 'scale', 'lesson'].map(t => {
+                const count = saved.filter(s => s.type === t).length;
+                return count > 0 ? { key: t, label: `${t === 'rescue' ? '🍳' : t === 'swap' ? '🔄' : t === 'multi-swap' ? '🔄🔄' : t === 'scale' ? '⚖️' : '🎓'} ${count}` } : null;
+              }).filter(Boolean),
+            ].map(f => (
+              <button key={f.key} onClick={() => setSavedFilter(f.key)}
+                className={`px-2.5 py-1 rounded-lg text-[10px] font-bold border min-h-[28px] ${
+                  savedFilter === f.key ? c.pillActive : c.pillInactive
+                }`}>{f.label}</button>
+            ))}
+          </div>
+        )}
+
+        {/* Search saved */}
+        {saved.length > 3 && (
+          <div className="mb-3">
+            <input type="text" value={savedSearch} onChange={e => setSavedSearch(e.target.value)}
+              placeholder="🔍 Search saved solutions..."
+              className={`w-full px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
+          </div>
+        )}
+
+        {filteredSaved.length > 0 ? (
+          <div className="space-y-2">
+            {filteredSaved.map(item => (
+              <div key={item.id} className={`${c.quoteBg} rounded-lg p-3`}>
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-0.5">
+                      <span className={`text-[9px] font-black px-1.5 py-0.5 rounded ${c.accentBg}`}>{item.type}</span>
+                      <span className={`text-xs font-bold ${c.text} truncate`}>{item.title}</span>
+                    </div>
+                    {item.content?.ratio && (
+                      <p className={`text-xs ${c.accent} font-bold`}>{item.content.ratio}</p>
+                    )}
+                    {item.content?.description && (
+                      <p className={`text-[10px] ${c.textSec} truncate`}>{item.content.description}</p>
+                    )}
+                    {item.content?.science && (
+                      <p className={`text-[10px] ${c.textMuted} truncate`}>🔬 {item.content.science}</p>
+                    )}
+                    {item.content?.principle && (
+                      <p className={`text-[10px] ${c.textSec} truncate`}>💡 {item.content.principle}</p>
+                    )}
+                    {item.content?.rule && (
+                      <p className={`text-[10px] ${c.accent} font-bold truncate`}>📏 {item.content.rule}</p>
+                    )}
+                    <p className={`text-[9px] ${c.textMuted} mt-0.5`}>{new Date(item.date).toLocaleDateString()}</p>
+                  </div>
+                  <button onClick={() => removeSaved(item.id)}
+                    className={`text-xs ${c.dangerText} flex-shrink-0 min-h-[24px]`}>✕</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-6">
+            <span className="text-3xl block mb-2">📌</span>
+            <p className={`text-sm ${c.textMuted} mb-3`}>
+              {saved.length === 0
+                ? 'No saved solutions yet. Rescue a dish or look up a swap to start building your cheat sheet.'
+                : 'No items match this filter.'
+              }
+            </p>
+            {saved.length === 0 && (
+              <div className="flex gap-2 justify-center">
+                <button onClick={() => setView('rescue')} className={`${c.btnPrimary} px-4 py-2 rounded-lg text-xs font-bold min-h-[36px]`}>
+                  🍳 Rescue
+                </button>
+                <button onClick={() => setView('swap')} className={`${c.btnSec} px-4 py-2 rounded-lg text-xs font-bold min-h-[36px]`}>
+                  🔄 Quick Swap
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {saved.length > 0 && (
+          <button onClick={() => {
+            if (window.confirm('Clear all saved solutions?')) {
+              setSaved([]);
+              saveStore(SAVED_KEY, [], MAX_SAVED);
+            }
+          }} className={`text-xs ${c.dangerText} mt-3 min-h-[28px]`}>🗑️ Clear all saved</button>
         )}
       </div>
     </div>
   );
+
+  // ════════════════════════════════════════════════════════════
+  // RENDER: HISTORY
+  // ════════════════════════════════════════════════════════════
+  const renderHistory = () => (
+    <div className="space-y-4">
+      <div className={`${c.card} border rounded-xl p-5`}>
+        <div className="flex items-center justify-between mb-3">
+          <div>
+            <h2 className={`text-base font-black ${c.text}`}>📊 Rescue History</h2>
+            <p className={`text-xs ${c.textMuted} mt-1`}>Your cooking rescue track record</p>
+          </div>
+          {history.length > 0 && (
+            <button onClick={() => {
+              if (window.confirm('Clear all history?')) {
+                setHistory([]);
+                saveStore(HISTORY_KEY, [], MAX_HISTORY);
+              }
+            }} className={`text-xs ${c.dangerText} min-h-[28px]`}>🗑️ Clear</button>
+          )}
+        </div>
+
+        {/* Quick stats */}
+        {history.length > 0 && (
+          <div className="grid grid-cols-3 gap-2 mb-3">
+            <div className={`${c.accentBg} border rounded-lg p-3 text-center`}>
+              <p className={`text-2xl font-black ${c.accent}`}>{history.filter(h => h.type === 'rescue' || h.type === 'multi-swap').length}</p>
+              <p className={`text-[9px] ${c.textMuted}`}>Rescues</p>
+            </div>
+            <div className={`${c.success} border rounded-lg p-3 text-center`}>
+              <p className={`text-2xl font-black`}>{history.filter(h => h.type === 'swap').length}</p>
+              <p className={`text-[9px]`}>Swaps</p>
+            </div>
+            <div className={`${c.info} border rounded-lg p-3 text-center`}>
+              <p className={`text-2xl font-black`}>{history.filter(h => h.type === 'scale' || h.type === 'preflight' || h.type === 'flavor-fix').length}</p>
+              <p className={`text-[9px]`}>Other</p>
+            </div>
+          </div>
+        )}
+        {wins.length > 0 && (
+          <div className={`${c.success} border rounded-lg p-3 text-center mb-4`}>
+            <p className="text-xs font-bold">🏆 {wins.length} cooking win{wins.length !== 1 ? 's' : ''} logged</p>
+            <button onClick={() => setView('wins')} className={`text-[10px] underline mt-0.5 ${c.accent}`}>View journal</button>
+          </div>
+        )}
+
+        {/* Pattern insights */}
+        {patternInsights && (
+          <div className={`${c.card} border rounded-xl p-4 mb-4`}>
+            <p className={`text-xs font-bold ${c.label} uppercase mb-2`}>🧠 Your cooking patterns</p>
+            <div className="space-y-2">
+              {patternInsights.topCategory && (
+                <div className={`${c.warning} border rounded-lg p-2.5`}>
+                  <p className="text-xs">
+                    <strong>Most common issue:</strong> {patternInsights.categoryLabels[patternInsights.topCategory.name] || patternInsights.topCategory.name}
+                    {patternInsights.topCategory.count > 1 && ` (${patternInsights.topCategory.count} times)`}
+                  </p>
+                  <p className={`text-[10px] ${c.textMuted} mt-0.5`}>
+                    {patternInsights.topCategory.name === 'timing_issue' && 'Tip: Use a kitchen timer religiously. Set it for 2 minutes LESS than the recipe says.'}
+                    {patternInsights.topCategory.name === 'missing_ingredient' && 'Tip: Check all ingredients before you start cooking. The Quick Swap tool saves time in the moment.'}
+                    {patternInsights.topCategory.name === 'technique_failure' && 'Tip: Lower heat is almost always the answer. Most technique failures come from too-high temp.'}
+                    {patternInsights.topCategory.name === 'consistency' && 'Tip: Add thickeners/thinners gradually. You can always add more but can\'t take it back.'}
+                  </p>
+                </div>
+              )}
+              {patternInsights.topSwap && patternInsights.topSwap.count > 1 && (
+                <div className={`${c.accentBg} border rounded-lg p-2.5`}>
+                  <p className="text-xs">
+                    <strong>Most swapped:</strong> {patternInsights.topSwap.name} ({patternInsights.topSwap.count} times)
+                  </p>
+                  <p className={`text-[10px] ${c.textMuted} mt-0.5`}>Consider keeping a substitute on hand — it keeps coming up.</p>
+                </div>
+              )}
+              {patternInsights.successRate !== null && (
+                <div className={`${patternInsights.successRate >= 70 ? c.success : c.warning} border rounded-lg p-2.5`}>
+                  <p className="text-xs">
+                    <strong>Rescue success rate:</strong> {patternInsights.successRate}%
+                    {patternInsights.successRate >= 80 ? ' — you\'re getting good at this 💪' :
+                     patternInsights.successRate >= 50 ? ' — solid. Keep rescuing.' :
+                     ' — tough problems, but you\'re trying.'}
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {history.length > 0 ? (
+          <div className="space-y-2">
+            {history.map(entry => (
+              <div key={entry.id} className={`${c.quoteBg} rounded-lg p-3`}>
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-0.5">
+                      <span className={`text-[9px] font-black px-1.5 py-0.5 rounded ${c.accentBg}`}>{entry.type}</span>
+                      <span className={`text-xs font-bold ${c.text} truncate`}>{entry.title}</span>
+                    </div>
+                    <p className={`text-[10px] ${c.textMuted}`}>{new Date(entry.date).toLocaleDateString()}</p>
+                  </div>
+                  {entry.verdict && (
+                    <span className={`text-[10px] font-bold ${c.textSec} flex-shrink-0`}>{entry.verdict}</span>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-6">
+            <span className="text-3xl block mb-2">📊</span>
+            <p className={`text-sm ${c.textMuted} mb-3`}>No rescues yet. Go save dinner!</p>
+            <button onClick={() => setView('rescue')}
+              className={`${c.btnPrimary} px-4 py-2 rounded-lg text-xs font-bold min-h-[36px]`}>
+              🍳 First Rescue
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Cross refs */}
+      {history.length > 0 && (
+        <div className={`${c.card} border rounded-xl p-4`}>
+          <p className={`text-[10px] font-bold ${c.label} uppercase mb-2`}>Related tools</p>
+          <div className="flex flex-wrap gap-2">
+            {CROSS_REFS.map(ref => (
+              <a key={ref.id} href={`/?tool=${ref.id}`} target="_blank" rel="noopener noreferrer"
+                className={`${c.btnSec} px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 min-h-[32px]`}>
+                <span>{ref.icon}</span> {ref.label}
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
+  // ════════════════════════════════════════════════════════════
+  // MAIN RENDER
+  // ════════════════════════════════════════════════════════════
+  return (
+    <div className={`space-y-4 ${c.text}`}>
+      {renderNav()}
+
+      {error && (
+        <div className={`${c.danger} border rounded-lg p-4 flex items-start gap-3`}>
+          <span className="flex-shrink-0">⚠️</span>
+          <p className="text-sm">{error}</p>
+        </div>
+      )}
+
+      {view === 'rescue' && renderRescue()}
+      {view === 'preflight' && renderPreflight()}
+      {view === 'flavor' && renderFlavor()}
+      {view === 'swap' && renderSwap()}
+      {view === 'multiswap' && renderMultiSwap()}
+      {view === 'scale' && renderScale()}
+      {view === 'wins' && renderWins()}
+      {view === 'saved' && renderSaved()}
+      {view === 'history' && renderHistory()}
+
+      {/* Kitchen Companion overlay */}
+      {renderCompanion()}
+    </div>
+  );
 };
 
+RecipeChaosSolver.displayName = 'RecipeChaosSolver';
 export default RecipeChaosSolver;

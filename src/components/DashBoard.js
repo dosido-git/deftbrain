@@ -286,7 +286,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
         <div className="flex items-start gap-4">
           <div className="flex-shrink-0">
             <img 
-              src="/logo-l-r.png" 
+              src="/dBlr.png" 
               alt="DeftBrain.com" 
               className="h-32 w-auto block object-contain" 
             />

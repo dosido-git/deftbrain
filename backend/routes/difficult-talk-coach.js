@@ -13,6 +13,7 @@ router.post('/difficult-talk-coach', async (req, res) => {
       communicationStyle,
       resistanceLevel,
       goals,
+      fears,
       biggestFear,
       theirPerspective,
       previousAttempts,
@@ -38,6 +39,10 @@ router.post('/difficult-talk-coach', async (req, res) => {
         askForSomething: 'ask for something',
         endRelationship: 'end or step back from the relationship',
         apologize: 'deliver a genuine apology',
+        sayNo: 'say no to a request',
+        addressDisrespect: 'address disrespect or mistreatment',
+        pushBack: 'push back on an unreasonable demand',
+        declineNoExplain: 'decline without owing an explanation',
       };
       return goalMap[g] || g;
     }).join(', ');
@@ -54,6 +59,7 @@ COMMUNICATION STYLE PREFERENCE: ${communicationStyle || 'Direct'}
 EXPECTED RESISTANCE LEVEL: ${resistanceLevel || 50}/100
 GOALS: ${goalsList}
 BIGGEST FEAR: ${biggestFear || 'Not specified'}
+SPECIFIC FEARS: ${fears?.length > 0 ? fears.join(', ') : 'None selected'}
 THEIR LIKELY PERSPECTIVE: ${theirPerspective || 'Not specified'}
 PREVIOUS ATTEMPTS: ${previousAttempts || 'None — this is the first time raising it'}
 
@@ -94,6 +100,22 @@ Provide de-escalation strategies SPECIFIC to the likely defense mechanisms you i
 
 STEP 6 — PREPARATION PLAN
 Give a concrete preparation plan: what to do in the hour before, how to set up the conversation (timing, location, framing), and what to have ready.
+
+STEP 7 — VALIDATION & REALITY CHECK
+Write 2-3 sentences affirming that what the user is asking for is reasonable. Reference their specific situation. Then write a reality check: prepare them for the other person's likely reaction (especially connected to their stated fears). Normalize that reaction and remind them it doesn't mean they're wrong.
+
+STEP 8 — FIRMNESS-LEVEL MESSAGES
+Generate 3 complete, copy-paste ready messages at different firmness levels. These are DIFFERENT from the conversation approaches — approaches are strategic frameworks, these are complete standalone messages the user can send verbatim.
+- Gentle: Warm, acknowledges their perspective, clear about the need. Best for first attempts.
+- Balanced (RECOMMENDED): Direct, respectful, no apologies. No softening.
+- Firm: Unambiguous. Includes consequences if boundary isn't respected. Non-negotiable.
+CRITICAL: Remove ALL apologetic qualifiers from each message. Track what was removed in a "removes" array. Messages should be STATEMENTS not questions.
+
+STEP 9 — PUSHBACK SCRIPTS BY REACTION TYPE
+Generate standalone scripts organized by how the other person might react: guilt_trip, anger, negotiation, silent_treatment, deflection. Each script is 1-2 sentences the user can say verbatim regardless of which approach they chose. These restate the boundary without re-explaining or defending.
+
+STEP 10 — FOLLOW-UP GUIDANCE
+Write 2-3 sentences about what to do after the conversation: don't re-explain or soften if they push back, restate once then disengage, and any situation-specific advice.
 
 ═══════════════════════════════════════════════
 OUTPUT FORMAT — Return ONLY valid JSON
@@ -172,7 +194,47 @@ OUTPUT FORMAT — Return ONLY valid JSON
     "if_they_need_time": "What to do if they ask for space to process"
   },
 
-  "confidence_note": "A brief, honest, non-patronizing note of encouragement specific to this situation"
+  "confidence_note": "A brief, honest, non-patronizing note of encouragement specific to this situation",
+
+  "validation": "2-3 sentences affirming that what the user is asking for is reasonable. Be specific to their situation. Don't be generic — reference their actual scenario.",
+
+  "reality_check": "1-2 sentences preparing them for the other person's likely reaction, based on their fears. Normalize that reaction and remind them it doesn't make them wrong.",
+
+  "firmness_messages": [
+    {
+      "level": "gentle",
+      "label": "Gentle but Clear",
+      "text": "The actual message they can copy-paste. Warm but unambiguous.",
+      "what_this_does": "One sentence explaining the approach",
+      "removes": ["List of apologetic phrases this version removes", "e.g. 'I'm sorry but'", "'If it's not too much trouble'"]
+    },
+    {
+      "level": "balanced",
+      "label": "Balanced Assertiveness",
+      "text": "Direct, respectful, no apologies. This is the recommended default.",
+      "what_this_does": "One sentence explaining the approach",
+      "removes": ["Apologetic phrases removed from this version"]
+    },
+    {
+      "level": "firm",
+      "label": "Very Firm",
+      "text": "Unambiguous. Includes consequence if boundary isn't respected.",
+      "what_this_does": "One sentence explaining the approach",
+      "removes": ["All softening language removed"]
+    }
+  ],
+
+  "pushback_scripts": {
+    "guilt_trip": "If they guilt-trip you, say: '[exact script]'",
+    "anger": "If they get angry, say: '[exact script]'",
+    "negotiation": "If they try to negotiate, say: '[exact script]'",
+    "silent_treatment": "If they go silent, say: '[exact script]'",
+    "deflection": "If they deflect or change the subject, say: '[exact script]'"
+  },
+
+  "follow_up_guidance": "2-3 sentences about what to do after the conversation: don't re-explain or soften if they push back, restate once then disengage, and any situation-specific advice.",
+
+  "reassurance_badges": ["This is reasonable", "You're not being mean", "Their discomfort ≠ you're wrong"]
 }
 
 ═══════════════════════════════════════════════
@@ -183,15 +245,21 @@ CRITICAL RULES
 
 2. REALISTIC SCRIPTS: The opening lines and phrases should sound like things a real human would actually say in conversation — not therapy-speak, not corporate HR language. Natural, specific, authentic.
 
-3. ANTICIPATED RESPONSES: This is the most valuable section. Generate 5-8 per approach. Include the responses the user is AFRAID of (the ones connected to their stated fear), not just easy softballs.
+3. ANTICIPATED RESPONSES: This is the most valuable section. Generate 5-8 per approach. Include the responses the user is AFRAID of (the ones connected to their stated fears), not just easy softballs.
 
 4. EMOTIONAL HONESTY: If the user's situation is one where the conversation is likely to go badly no matter what, say so. If their goals are unrealistic, gently recalibrate. Don't promise good outcomes — promise the user is doing the right thing by having the conversation.
 
 5. NO GENERIC FILLER: Body language advice like "maintain eye contact" and "keep arms uncrossed" adds no value. Tell them something specific to their situation.
 
+6. FIRMNESS MESSAGES: These must be complete, standalone messages the user can literally copy-paste and send. They are different from the conversation approaches. Remove ALL apologetic qualifiers: "I'm sorry but", "If it's okay", "I hate to ask", "I don't want to be difficult", "Maybe", "Kind of". Track what was removed in the "removes" array.
+
+7. PUSHBACK SCRIPTS: Write response scripts for each reaction type. Each should be 1-2 sentences the user can say verbatim. Scripts should restate the boundary without re-explaining or defending.
+
+8. REASSURANCE BADGES: Generate 3 short affirmation phrases (5-8 words each) specific to this situation. These are small psychological anchors the user can refer back to.
+
 6. Return ONLY the JSON object. No markdown, no preamble.`;
 
-    console.log(`[DifficultTalkCoach] Topic: "${topic.substring(0, 50)}...", Relationship: ${relationship}, Resistance: ${resistanceLevel}`);
+    console.log(`[DifficultTalkCoach] Topic: "${topic.substring(0, 50)}...", Relationship: ${relationship}, Resistance: ${resistanceLevel}, Fears: ${fears?.length || 0}`);
 
     const systemPrompt = withLanguage(
       'You are an expert communication coach and conflict resolution specialist. Return ONLY valid JSON matching the exact schema requested. No markdown, no preamble.',
@@ -200,7 +268,7 @@ CRITICAL RULES
 
     const parsed = await callClaudeWithRetry(prompt, {
       label: 'DifficultTalkCoach',
-      max_tokens: 7000,
+      max_tokens: 10000,
       system: systemPrompt,
     });
 

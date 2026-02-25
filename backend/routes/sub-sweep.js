@@ -140,6 +140,128 @@ Analyze every subscription. Return ONLY valid JSON:
         return res.json(parsed);
       }
 
+      // ════════════════════════════════════════════════════════
+      // ACTION: OPTIMIZE — find plan upgrades/downgrades/bundles
+      // ════════════════════════════════════════════════════════
+      case 'optimize': {
+        const { subscriptions, currency, userLanguage } = req.body;
+        if (!subscriptions || !subscriptions.length) {
+          return res.status(400).json({ error: 'No subscriptions provided' });
+        }
+
+        const sym = currency || '$';
+        const subList = subscriptions.map((s, i) =>
+          `${i + 1}. ${s.name} — ${sym}${s.cost}/${s.cycle} — Plan: ${s.planTier || 'unknown'}`
+        ).join('\n');
+
+        const message = await anthropic.messages.create({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 2000,
+          system: withLanguage(`You are a subscription optimization expert. You know current pricing tiers, family/duo plans, student discounts, annual vs monthly pricing, and bundle deals for popular services. Be specific with real numbers. All amounts in ${sym}.`, userLanguage),
+          messages: [{
+            role: 'user',
+            content: `OPTIMIZE THESE SUBSCRIPTIONS:
+${subList}
+
+For each subscription, check for savings opportunities. Return ONLY valid JSON:
+{
+  "optimizations": [
+    {
+      "service": "Spotify",
+      "current_cost": 10.99,
+      "current_plan": "Individual Monthly",
+      "opportunities": [
+        {
+          "type": "annual_switch|family_plan|student_discount|bundle|downgrade|competitor_switch",
+          "description": "Switch to annual plan",
+          "new_cost": 9.17,
+          "savings_monthly": 1.82,
+          "savings_annual": 21.84,
+          "how": "Go to spotify.com/account → Manage Plan → Switch to Annual",
+          "caveat": "Billed as one payment of ${sym}109.99/year"
+        }
+      ]
+    }
+  ],
+  "bundle_opportunities": [
+    {
+      "services_involved": ["Hulu", "Disney+", "ESPN+"],
+      "bundle_name": "Disney Bundle",
+      "bundle_cost": 14.99,
+      "current_separate_cost": 38.97,
+      "savings_monthly": 23.98,
+      "how": "Sign up at disneyplus.com/bundle"
+    }
+  ],
+  "total_potential_savings_monthly": 25.50,
+  "total_potential_savings_annual": 306.00,
+  "top_move": "Your single biggest savings: switch X to annual billing — saves ${sym}Y/year"
+}`
+          }],
+        });
+
+        const text = message.content.find(b => b.type === 'text')?.text || '';
+        const cleaned = cleanJsonResponse(text);
+        const parsed = JSON.parse(cleaned);
+        return res.json(parsed);
+      }
+
+      // ════════════════════════════════════════════════════════
+      // ACTION: NEGOTIATE — retention scripts for a specific service
+      // ════════════════════════════════════════════════════════
+      case 'negotiate': {
+        const { serviceName, cost, cycle, currency, userLanguage } = req.body;
+        if (!serviceName?.trim()) {
+          return res.status(400).json({ error: 'Service name required' });
+        }
+
+        const sym = currency || '$';
+
+        const message = await anthropic.messages.create({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 1500,
+          system: withLanguage(`You are an expert in subscription retention negotiations. You know exactly what tactics each company uses to keep customers, what discounts they can offer, and the magic phrases that trigger better deals. Be specific — use real department names, real discount amounts, and real processes. All amounts in ${sym}.`, userLanguage),
+          messages: [{
+            role: 'user',
+            content: `RETENTION NEGOTIATION SCRIPT for: ${serviceName}
+Current cost: ${sym}${cost || '?'}/${cycle || 'monthly'}
+
+Generate a complete retention negotiation script. Return ONLY valid JSON:
+{
+  "service": "${serviceName}",
+  "contact_method": "How to reach retention dept (phone, chat, or both). Include actual phone numbers or paths if known.",
+  "best_time_to_call": "When retention reps have more authority to give discounts",
+  "opening_line": "Exact opening sentence to say",
+  "script_steps": [
+    {
+      "step": 1,
+      "you_say": "Exact words to say",
+      "they_will_say": "What the rep will likely respond with",
+      "your_response": "How to counter their response",
+      "tip": "Why this works"
+    }
+  ],
+  "known_offers": [
+    {
+      "offer": "50% off for 3 months",
+      "likelihood": "high|medium|low",
+      "should_accept": true,
+      "why": "This is their standard retention offer — take it"
+    }
+  ],
+  "magic_phrases": ["Specific phrases that trigger better deals or escalation to retention"],
+  "walk_away_threshold": "The best deal you can realistically expect. If they won't match this, cancel.",
+  "nuclear_option": "What to do if they refuse everything (social media, FCC complaint, chargeback, etc.)"
+}`
+          }],
+        });
+
+        const text = message.content.find(b => b.type === 'text')?.text || '';
+        const cleaned = cleanJsonResponse(text);
+        const parsed = JSON.parse(cleaned);
+        return res.json(parsed);
+      }
+
       default:
         return res.status(400).json({ error: `Unknown action: ${action}` });
     }

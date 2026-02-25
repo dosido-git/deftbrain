@@ -1,50 +1,7 @@
 import React, { useState, useCallback, useMemo } from 'react';
-import {
-  Loader2, AlertTriangle, Copy, Check, ChevronDown, ChevronUp,
-  Plus, Trash2, DollarSign, Scissors, BarChart3, Zap, ArrowRight,
-  Search, Sparkles, Calendar, ShieldCheck, RefreshCw, X,
-} from 'lucide-react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
-
-// ════════════════════════════════════════════════════════════
-// THEME
-// ════════════════════════════════════════════════════════════
-function useColors() {
-  const { theme } = useTheme();
-  const d = theme === 'dark';
-  return {
-    card: d ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-slate-200',
-    input: d
-      ? 'bg-zinc-900 border-zinc-600 text-zinc-50 placeholder:text-zinc-500 focus:border-indigo-500 focus:ring-indigo-500/20'
-      : 'bg-white border-slate-300 text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:ring-indigo-100',
-    text: d ? 'text-zinc-50' : 'text-slate-900',
-    textSec: d ? 'text-zinc-400' : 'text-slate-600',
-    textMuted: d ? 'text-zinc-500' : 'text-slate-500',
-    label: d ? 'text-zinc-300' : 'text-slate-700',
-    accent: d ? 'text-indigo-400' : 'text-indigo-600',
-    accentBg: d ? 'bg-indigo-900/30' : 'bg-indigo-100',
-    btnPrimary: d ? 'bg-indigo-600 hover:bg-indigo-500 text-white' : 'bg-indigo-600 hover:bg-indigo-700 text-white',
-    btnSec: d ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-slate-100 hover:bg-slate-200 text-slate-800',
-    btnDanger: d ? 'bg-red-900/30 hover:bg-red-900/50 text-red-300 border-red-700/50' : 'bg-red-50 hover:bg-red-100 text-red-700 border-red-200',
-    danger: d ? 'bg-red-900/20 border-red-700/50 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
-    dangerText: d ? 'text-red-400' : 'text-red-600',
-    success: d ? 'bg-emerald-900/20 border-emerald-700/50 text-emerald-200' : 'bg-emerald-50 border-emerald-200 text-emerald-800',
-    successText: d ? 'text-emerald-400' : 'text-emerald-600',
-    warning: d ? 'bg-amber-900/20 border-amber-700/50 text-amber-200' : 'bg-amber-50 border-amber-200 text-amber-800',
-    warningText: d ? 'text-amber-400' : 'text-amber-600',
-    info: d ? 'bg-blue-900/20 border-blue-700/50 text-blue-200' : 'bg-blue-50 border-blue-200 text-blue-800',
-    pillActive: d ? 'bg-indigo-600 border-indigo-500 text-white' : 'bg-indigo-600 border-indigo-600 text-white',
-    pillInactive: d ? 'bg-zinc-700 border-zinc-600 text-zinc-300 hover:border-zinc-500' : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300',
-    divider: d ? 'border-zinc-700' : 'border-slate-200',
-    quoteBg: d ? 'bg-zinc-900/60' : 'bg-slate-50',
-    // Donut colors
-    used: d ? '#6366f1' : '#4f46e5',
-    underused: d ? '#f59e0b' : '#d97706',
-    forgotten: d ? '#ef4444' : '#dc2626',
-    keepGreen: d ? '#10b981' : '#059669',
-  };
-}
+import { CopyBtn, ActionBar } from '../components/ActionButtons';
 
 // ════════════════════════════════════════════════════════════
 // CONSTANTS
@@ -61,6 +18,13 @@ const CYCLE_OPTIONS = [
   { value: 'monthly', label: 'Monthly' },
   { value: 'yearly', label: 'Yearly' },
   { value: 'weekly', label: 'Weekly' },
+];
+
+const STATUS_OPTIONS = [
+  { value: 'active', label: 'Active', emoji: '🟢' },
+  { value: 'cancelling', label: 'Cancelling', emoji: '🟡' },
+  { value: 'paused', label: 'Paused', emoji: '⏸️' },
+  { value: 'cancelled', label: 'Cancelled', emoji: '🔴' },
 ];
 
 const QUICK_ADD = [
@@ -80,6 +44,37 @@ const QUICK_ADD = [
 
 const CURRENCIES = ['$', '€', '£', '¥', '₹', 'R$', '₩', 'A$', 'C$', 'CHF', 'kr', 'zł'];
 
+const CATEGORIES = [
+  { value: 'streaming', label: 'Streaming', emoji: '📺' },
+  { value: 'music', label: 'Music', emoji: '🎵' },
+  { value: 'productivity', label: 'Productivity', emoji: '💻' },
+  { value: 'fitness', label: 'Fitness', emoji: '💪' },
+  { value: 'news', label: 'News / Reading', emoji: '📰' },
+  { value: 'cloud', label: 'Cloud / Storage', emoji: '☁️' },
+  { value: 'gaming', label: 'Gaming', emoji: '🎮' },
+  { value: 'food', label: 'Food / Delivery', emoji: '🍕' },
+  { value: 'finance', label: 'Finance', emoji: '💰' },
+  { value: 'other', label: 'Other', emoji: '📦' },
+];
+
+const catLabel = (v) => CATEGORIES.find(c => c.value === v)?.label || v;
+const catEmoji = (v) => CATEGORIES.find(c => c.value === v)?.emoji || '📦';
+
+const STORE_SUBS = 'ss-subs';
+const STORE_HISTORY = 'ss-history';
+const STORE_TRIALS = 'ss-trials';
+const STORE_BUDGETS = 'ss-budgets';
+const MAX_SUBS = 50;
+const MAX_HISTORY = 24;
+const MAX_TRIALS = 20;
+
+function loadStore(key) {
+  try { return JSON.parse(localStorage.getItem(key) || '[]'); } catch { return []; }
+}
+function saveStore(key, items, max) {
+  try { localStorage.setItem(key, JSON.stringify(items.slice(0, max))); } catch {}
+}
+
 function fm(amount, sym) {
   const n = Number(amount) || 0;
   const rounded = n % 1 === 0 ? n.toString() : n.toFixed(2);
@@ -94,9 +89,51 @@ function monthlyEquiv(cost, cycle) {
   return c;
 }
 
-let _nextId = 1;
+function detectCurrency() {
+  try {
+    const l = (navigator.language || 'en-US').toLowerCase();
+    const map = { 'en-us': '$', 'en-gb': '£', 'en-au': 'A$', 'en-ca': 'C$', 'en-in': '₹', 'pt-br': 'R$', 'de-ch': 'CHF', 'sv': 'kr', de: '€', fr: '€', es: '€', it: '€' };
+    return map[l] || map[l.split('-')[0]] || '$';
+  } catch { return '$'; }
+}
+
+let _nextId = Date.now();
 function newSub(overrides = {}) {
-  return { id: _nextId++, name: '', cost: '', cycle: 'monthly', usage: '', ...overrides };
+  return {
+    id: _nextId++, name: '', cost: '', cycle: 'monthly', usage: '', status: 'active',
+    cancelledDate: null, renewalDate: '', category: '', priceHistory: [],
+    shared: false, sharedWith: [], ...overrides,
+  };
+}
+
+function newTrial(overrides = {}) {
+  return {
+    id: _nextId++, name: '', endDate: '', cost: '', cycle: 'monthly',
+    usageCount: 0, verdict: '', ...overrides,
+  };
+}
+
+const CROSS_REFS = [
+  { id: 'BillRescue', icon: '🧾', label: 'Fight a specific bill' },
+  { id: 'BuyWise', icon: '🛒', label: 'Evaluate a purchase before subscribing' },
+];
+
+// ════════════════════════════════════════════════════════════
+// COLLAPSIBLE SECTION
+// ════════════════════════════════════════════════════════════
+function Section({ icon, title, badge, badgeColor, children, defaultOpen = false, c }) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div className={`${c.card} border rounded-xl overflow-hidden`}>
+      <button onClick={() => setOpen(!open)} className="w-full px-4 py-3 flex items-center gap-2 text-left min-h-[44px]">
+        <span>{icon}</span>
+        <span className={`text-xs font-bold flex-1 ${c.text}`}>{title}</span>
+        {badge && <span className={`text-[9px] font-black px-2 py-0.5 rounded ${badgeColor || c.badge}`}>{badge}</span>}
+        <span className={`text-xs ${c.muted}`}>{open ? '▲' : '▼'}</span>
+      </button>
+      {open && <div className={`px-4 pb-4 border-t ${c.divider} pt-3`}>{children}</div>}
+    </div>
+  );
 }
 
 // ════════════════════════════════════════════════════════════
@@ -104,61 +141,148 @@ function newSub(overrides = {}) {
 // ════════════════════════════════════════════════════════════
 const SubSweep = () => {
   const { callToolEndpoint, loading } = useClaudeAPI();
-  const c = useColors();
-  const { theme } = useTheme();
-  const isDark = theme === 'dark';
+  const { isDark } = useTheme();
 
-  // Currency
-  const [currency, setCurrency] = useState('$');
+  const c = {
+    card: isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-slate-200',
+    input: isDark
+      ? 'bg-zinc-900 border-zinc-600 text-zinc-50 placeholder:text-zinc-500 focus:border-indigo-500 focus:ring-indigo-500/20'
+      : 'bg-white border-slate-300 text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:ring-indigo-100',
+    text: isDark ? 'text-zinc-50' : 'text-slate-900',
+    muted: isDark ? 'text-zinc-400' : 'text-slate-500',
+    label: isDark ? 'text-zinc-300' : 'text-slate-700',
+    accent: isDark ? 'text-indigo-400' : 'text-indigo-600',
+    btnPrimary: isDark ? 'bg-indigo-600 hover:bg-indigo-500 text-white' : 'bg-indigo-600 hover:bg-indigo-700 text-white',
+    btnSec: isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-slate-100 hover:bg-slate-200 text-slate-800',
+    btnDanger: isDark ? 'bg-red-900/30 hover:bg-red-900/50 text-red-300 border-red-700/50' : 'bg-red-50 hover:bg-red-100 text-red-700 border-red-200',
+    danger: isDark ? 'bg-red-900/20 border-red-700/50 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
+    dangerText: isDark ? 'text-red-400' : 'text-red-600',
+    success: isDark ? 'bg-emerald-900/20 border-emerald-700/50 text-emerald-200' : 'bg-emerald-50 border-emerald-200 text-emerald-800',
+    successText: isDark ? 'text-emerald-400' : 'text-emerald-600',
+    warning: isDark ? 'bg-amber-900/20 border-amber-700/50 text-amber-200' : 'bg-amber-50 border-amber-200 text-amber-800',
+    warningText: isDark ? 'text-amber-400' : 'text-amber-600',
+    info: isDark ? 'bg-blue-900/20 border-blue-700/50 text-blue-200' : 'bg-blue-50 border-blue-200 text-blue-800',
+    pillActive: isDark ? 'bg-indigo-600 border-indigo-500 text-white' : 'bg-indigo-600 border-indigo-600 text-white',
+    pillInactive: isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-300 hover:border-zinc-500' : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300',
+    divider: isDark ? 'border-zinc-700' : 'border-slate-200',
+    quoteBg: isDark ? 'bg-zinc-900/60' : 'bg-slate-50',
+    badge: isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-slate-100 text-slate-600',
+    used: isDark ? '#6366f1' : '#4f46e5',
+    underused: isDark ? '#f59e0b' : '#d97706',
+    forgotten: isDark ? '#ef4444' : '#dc2626',
+  };
 
-  // Input mode
-  const [inputMode, setInputMode] = useState('manual'); // manual | scan
+  // ── View ──
+  const [view, setView] = useState('sweep');
+  const [error, setError] = useState('');
+
+  // ── Currency ──
+  const [currency, setCurrency] = useState(() => detectCurrency());
+
+  // ── Input mode ──
+  const [inputMode, setInputMode] = useState('manual');
   const [statementText, setStatementText] = useState('');
   const [scanning, setScanning] = useState(false);
 
-  // Subscriptions
-  const [subs, setSubs] = useState([newSub()]);
+  // ── Persistent subscription stack ──
+  const [subs, setSubs] = useState(() => {
+    const saved = loadStore(STORE_SUBS);
+    return saved.length > 0 ? saved : [newSub()];
+  });
 
-  // Results
+  // ── Spending history (monthly snapshots) ──
+  const [history, setHistory] = useState(() => loadStore(STORE_HISTORY));
+
+  // ── Results ──
   const [results, setResults] = useState(null);
-  const [error, setError] = useState('');
-
-  // What-If simulator
   const [cutList, setCutList] = useState({});
-
-  // UI
   const [expandedCards, setExpandedCards] = useState({});
-  const [copiedItems, setCopiedItems] = useState({});
   const [showQuickAdd, setShowQuickAdd] = useState(false);
 
-  // ──────────────────────────────────────────
-  // SUBSCRIPTION MANAGEMENT
-  // ──────────────────────────────────────────
-  const updateSub = useCallback((id, field, value) => {
-    setSubs(prev => prev.map(s => s.id === id ? { ...s, [field]: value } : s));
+  // ── Optimizer ──
+  const [optResults, setOptResults] = useState(null);
+
+  // ── Negotiate ──
+  const [negService, setNegService] = useState('');
+  const [negCost, setNegCost] = useState('');
+  const [negCycle, setNegCycle] = useState('monthly');
+  const [negResults, setNegResults] = useState(null);
+
+  // ── Trials ──
+  const [trials, setTrials] = useState(() => loadStore(STORE_TRIALS));
+  const [trialName, setTrialName] = useState('');
+  const [trialEnd, setTrialEnd] = useState('');
+  const [trialCost, setTrialCost] = useState('');
+  const [trialCycle, setTrialCycle] = useState('monthly');
+
+  // ── Category budgets ──
+  const [catBudgets, setCatBudgets] = useState(() => {
+    try { return JSON.parse(localStorage.getItem(STORE_BUDGETS) || '{}'); } catch { return {}; }
+  });
+
+  // ── Split member input ──
+  const [splitMember, setSplitMember] = useState('');
+
+  // ── Persist subs on change ──
+  const persistSubs = useCallback((updated) => {
+    setSubs(updated);
+    saveStore(STORE_SUBS, updated, MAX_SUBS);
   }, []);
+
+  const persistTrials = useCallback((updated) => {
+    setTrials(updated);
+    saveStore(STORE_TRIALS, updated, MAX_TRIALS);
+  }, []);
+
+  const persistBudgets = useCallback((updated) => {
+    setCatBudgets(updated);
+    try { localStorage.setItem(STORE_BUDGETS, JSON.stringify(updated)); } catch {}
+  }, []);
+
+  // ── Sub management ──
+  const updateSub = useCallback((id, field, value) => {
+    const updated = subs.map(s => {
+      if (s.id !== id) return s;
+      const u = { ...s, [field]: value };
+      // Auto-set cancelledDate
+      if (field === 'status' && value === 'cancelled' && !s.cancelledDate) {
+        u.cancelledDate = new Date().toISOString();
+      }
+      if (field === 'status' && value === 'active') {
+        u.cancelledDate = null;
+      }
+      // Track price changes
+      if (field === 'cost' && s.cost && value && Number(value) !== Number(s.cost)) {
+        const hist = [...(s.priceHistory || [])];
+        if (hist.length === 0 || hist[hist.length - 1].cost !== Number(s.cost)) {
+          hist.push({ cost: Number(s.cost), date: new Date().toISOString() });
+        }
+        u.priceHistory = hist.slice(-12);
+      }
+      return u;
+    });
+    persistSubs(updated);
+  }, [subs, persistSubs]);
 
   const addSub = useCallback(() => {
-    setSubs(prev => [...prev, newSub()]);
-  }, []);
+    persistSubs([...subs, newSub()]);
+  }, [subs, persistSubs]);
 
   const removeSub = useCallback((id) => {
-    setSubs(prev => prev.length > 1 ? prev.filter(s => s.id !== id) : prev);
-  }, []);
+    if (subs.length <= 1) return;
+    persistSubs(subs.filter(s => s.id !== id));
+  }, [subs, persistSubs]);
 
-  const quickAdd = useCallback((item) => {
-    setSubs(prev => {
-      const empty = prev.find(s => !s.name.trim());
-      if (empty) {
-        return prev.map(s => s.id === empty.id ? { ...s, name: item.name, cost: item.cost, cycle: item.cycle } : s);
-      }
-      return [...prev, newSub({ name: item.name, cost: item.cost, cycle: item.cycle })];
-    });
-  }, []);
+  const quickAddSub = useCallback((item) => {
+    const empty = subs.find(s => !s.name.trim());
+    if (empty) {
+      persistSubs(subs.map(s => s.id === empty.id ? { ...s, name: item.name, cost: item.cost, cycle: item.cycle } : s));
+    } else {
+      persistSubs([...subs, newSub({ name: item.name, cost: item.cost, cycle: item.cycle })]);
+    }
+  }, [subs, persistSubs]);
 
-  // ──────────────────────────────────────────
-  // STATEMENT SCANNER
-  // ──────────────────────────────────────────
+  // ── Statement scanner ──
   const scanStatement = useCallback(async () => {
     if (!statementText.trim() || statementText.trim().length < 30) {
       setError('Please paste at least a few lines from your statement.');
@@ -172,15 +296,12 @@ const SubSweep = () => {
         statement: statementText.trim(),
         currency,
       });
-      if (data.subscriptions && data.subscriptions.length > 0) {
+      if (data.subscriptions?.length > 0) {
         const parsed = data.subscriptions.map(s => newSub({
-          name: s.name,
-          cost: s.cost,
-          cycle: s.cycle || 'monthly',
-          usage: s.usage_guess || '',
+          name: s.name, cost: s.cost, cycle: s.cycle || 'monthly', usage: s.usage_guess || '',
         }));
-        setSubs(parsed);
-        setInputMode('manual'); // switch to manual view so they see the list
+        persistSubs(parsed);
+        setInputMode('manual');
       } else {
         setError('No recurring charges detected. Try pasting more lines or add manually.');
       }
@@ -188,16 +309,127 @@ const SubSweep = () => {
       setError(err.message || 'Failed to scan statement.');
     }
     setScanning(false);
-  }, [statementText, currency, callToolEndpoint]);
+  }, [statementText, currency, callToolEndpoint, persistSubs]);
 
-  // ──────────────────────────────────────────
-  // MAIN ANALYSIS
-  // ──────────────────────────────────────────
-  const validSubs = useMemo(() => subs.filter(s => s.name.trim() && Number(s.cost) > 0), [subs]);
+  // ── Computed values ──
+  const activeSubs = useMemo(() => subs.filter(s => s.status === 'active' || s.status === 'cancelling'), [subs]);
+  const validSubs = useMemo(() => activeSubs.filter(s => s.name.trim() && Number(s.cost) > 0), [activeSubs]);
+  const cancelledSubs = useMemo(() => subs.filter(s => s.status === 'cancelled' || s.status === 'paused'), [subs]);
 
+  const totalMonthly = useMemo(() => validSubs.reduce((sum, s) => sum + monthlyEquiv(s.cost, s.cycle), 0), [validSubs]);
+  const totalAnnual = totalMonthly * 12;
+
+  // ── Savings from cancelled subs ──
+  const cancelSavings = useMemo(() => {
+    return cancelledSubs.reduce((acc, s) => {
+      if (!s.cancelledDate || !s.cost) return acc;
+      const mo = monthlyEquiv(s.cost, s.cycle);
+      const days = Math.floor((Date.now() - new Date(s.cancelledDate).getTime()) / 86400000);
+      const saved = mo * (days / 30);
+      return acc + saved;
+    }, 0);
+  }, [cancelledSubs]);
+
+  // ── What-if simulator ──
+  const cutSavingsMonthly = useMemo(() => {
+    return validSubs.reduce((sum, s) => cutList[s.name] ? sum + monthlyEquiv(s.cost, s.cycle) : sum, 0);
+  }, [validSubs, cutList]);
+  const cutSavingsAnnual = cutSavingsMonthly * 12;
+  const cutCount = Object.values(cutList).filter(Boolean).length;
+
+  // ── Donut chart ──
+  const donutData = useMemo(() => {
+    if (!results?.breakdown) return [];
+    const cats = results.breakdown;
+    const total = (cats.used || 0) + (cats.underused || 0) + (cats.forgotten || 0);
+    if (total === 0) return [];
+    const segments = [];
+    let offset = 0;
+    if (cats.used > 0) segments.push({ pct: cats.used / total * 100, color: c.used, label: 'Used', amount: cats.used });
+    if (cats.underused > 0) segments.push({ pct: cats.underused / total * 100, color: c.underused, label: 'Underused', amount: cats.underused });
+    if (cats.forgotten > 0) segments.push({ pct: cats.forgotten / total * 100, color: c.forgotten, label: 'Forgotten', amount: cats.forgotten });
+    segments.forEach(seg => { seg.offset = offset; offset += seg.pct; });
+    return segments;
+  }, [results, c.used, c.underused, c.forgotten]);
+
+  // ── Renewal radar ──
+  const renewalAlerts = useMemo(() => {
+    const now = new Date();
+    return activeSubs
+      .filter(s => s.renewalDate)
+      .map(s => {
+        const rd = new Date(s.renewalDate);
+        const daysUntil = Math.ceil((rd - now) / 86400000);
+        return { ...s, daysUntil, renewalDateObj: rd };
+      })
+      .filter(s => s.daysUntil >= -7 && s.daysUntil <= 90) // past week to 90 days out
+      .sort((a, b) => a.daysUntil - b.daysUntil);
+  }, [activeSubs]);
+
+  // ── Price change alerts ──
+  const priceAlerts = useMemo(() => {
+    return subs.filter(s => {
+      const hist = s.priceHistory || [];
+      if (hist.length === 0 || !s.cost) return false;
+      const lastRecorded = hist[hist.length - 1].cost;
+      return Number(s.cost) > lastRecorded;
+    }).map(s => {
+      const prev = s.priceHistory[s.priceHistory.length - 1].cost;
+      const curr = Number(s.cost);
+      const pctIncrease = ((curr - prev) / prev * 100).toFixed(0);
+      return { ...s, prevCost: prev, pctIncrease };
+    });
+  }, [subs]);
+
+  // ── Category spending ──
+  const categorySpending = useMemo(() => {
+    const cats = {};
+    validSubs.forEach(s => {
+      const cat = s.category || 'other';
+      if (!cats[cat]) cats[cat] = { total: 0, count: 0, subs: [] };
+      const mo = monthlyEquiv(s.cost, s.cycle);
+      cats[cat].total += mo;
+      cats[cat].count++;
+      cats[cat].subs.push(s);
+    });
+    return cats;
+  }, [validSubs]);
+
+  // ── Trial countdown ──
+  const trialAlerts = useMemo(() => {
+    const now = new Date();
+    return trials
+      .filter(t => t.endDate)
+      .map(t => {
+        const end = new Date(t.endDate);
+        const daysLeft = Math.ceil((end - now) / 86400000);
+        return { ...t, daysLeft };
+      })
+      .sort((a, b) => a.daysLeft - b.daysLeft);
+  }, [trials]);
+
+  // ── Snapshot history for timeline ──
+  const takeSnapshot = useCallback(() => {
+    const now = new Date();
+    const key = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    const existing = history.findIndex(h => h.key === key);
+    const snap = { key, date: now.toISOString(), total: Math.round(totalMonthly * 100) / 100, count: validSubs.length };
+    let updated;
+    if (existing >= 0) {
+      updated = [...history];
+      updated[existing] = snap;
+    } else {
+      updated = [...history, snap];
+    }
+    updated.sort((a, b) => a.key.localeCompare(b.key));
+    setHistory(updated);
+    saveStore(STORE_HISTORY, updated, MAX_HISTORY);
+  }, [history, totalMonthly, validSubs.length]);
+
+  // ── Main analysis ──
   const runAnalysis = useCallback(async () => {
     if (validSubs.length === 0) {
-      setError('Add at least one subscription with a name and cost.');
+      setError('Add at least one active subscription with a name and cost.');
       return;
     }
     setError('');
@@ -209,23 +441,63 @@ const SubSweep = () => {
       const data = await callToolEndpoint('sub-sweep', {
         action: 'analyze',
         subscriptions: validSubs.map(s => ({
-          name: s.name,
-          cost: Number(s.cost),
-          cycle: s.cycle,
-          monthly_cost: monthlyEquiv(s.cost, s.cycle),
-          usage: s.usage || 'unknown',
+          name: s.name, cost: Number(s.cost), cycle: s.cycle,
+          monthly_cost: monthlyEquiv(s.cost, s.cycle), usage: s.usage || 'unknown',
         })),
         currency,
       });
       setResults(data);
+      takeSnapshot();
     } catch (err) {
       setError(err.message || 'Analysis failed.');
     }
+  }, [validSubs, currency, callToolEndpoint, takeSnapshot]);
+
+  // ── Optimize ──
+  const runOptimize = useCallback(async () => {
+    if (validSubs.length === 0) {
+      setError('Add at least one active subscription first.');
+      return;
+    }
+    setError('');
+    setOptResults(null);
+    try {
+      const data = await callToolEndpoint('sub-sweep', {
+        action: 'optimize',
+        subscriptions: validSubs.map(s => ({
+          name: s.name, cost: Number(s.cost), cycle: s.cycle,
+        })),
+        currency,
+      });
+      setOptResults(data);
+    } catch (err) {
+      setError(err.message || 'Optimization failed.');
+    }
   }, [validSubs, currency, callToolEndpoint]);
 
+  // ── Negotiate ──
+  const runNegotiate = useCallback(async () => {
+    if (!negService.trim()) return;
+    setError('');
+    setNegResults(null);
+    try {
+      const data = await callToolEndpoint('sub-sweep', {
+        action: 'negotiate',
+        serviceName: negService.trim(),
+        cost: negCost ? Number(negCost) : null,
+        cycle: negCycle,
+        currency,
+      });
+      setNegResults(data);
+    } catch (err) {
+      setError(err.message || 'Script generation failed.');
+    }
+  }, [negService, negCost, negCycle, currency, callToolEndpoint]);
+
+  // ── Reset ──
   const handleReset = useCallback(() => {
-    setSubs([newSub()]);
     setResults(null);
+    setOptResults(null);
     setError('');
     setCutList({});
     setExpandedCards({});
@@ -233,140 +505,117 @@ const SubSweep = () => {
     setInputMode('manual');
   }, []);
 
-  const copyText = useCallback((text, key) => {
-    navigator.clipboard?.writeText(text).then(() => {
-      setCopiedItems(p => ({ ...p, [key]: true }));
-      setTimeout(() => setCopiedItems(p => ({ ...p, [key]: false })), 2000);
-    }).catch(() => {});
-  }, []);
-
-  // ──────────────────────────────────────────
-  // WHAT-IF CALCULATIONS
-  // ──────────────────────────────────────────
-  const totalMonthly = useMemo(() => validSubs.reduce((sum, s) => sum + monthlyEquiv(s.cost, s.cycle), 0), [validSubs]);
-  const totalAnnual = totalMonthly * 12;
-
-  const cutSavingsMonthly = useMemo(() => {
-    return validSubs.reduce((sum, s) => {
-      if (cutList[s.name]) return sum + monthlyEquiv(s.cost, s.cycle);
-      return sum;
-    }, 0);
-  }, [validSubs, cutList]);
-  const cutSavingsAnnual = cutSavingsMonthly * 12;
-  const cutCount = Object.values(cutList).filter(Boolean).length;
-
-  // ──────────────────────────────────────────
-  // DONUT CHART (SVG)
-  // ──────────────────────────────────────────
-  const donutData = useMemo(() => {
-    if (!results?.breakdown) return [];
-    const cats = results.breakdown; // {used: X, underused: Y, forgotten: Z}
-    const total = (cats.used || 0) + (cats.underused || 0) + (cats.forgotten || 0);
-    if (total === 0) return [];
-    const segments = [];
-    let offset = 0;
-    if (cats.used > 0) { segments.push({ pct: cats.used / total * 100, color: c.used, label: 'Used', amount: cats.used }); }
-    if (cats.underused > 0) { segments.push({ pct: cats.underused / total * 100, color: c.underused, label: 'Underused', amount: cats.underused }); }
-    if (cats.forgotten > 0) { segments.push({ pct: cats.forgotten / total * 100, color: c.forgotten, label: 'Forgotten', amount: cats.forgotten }); }
-    segments.forEach(seg => { seg.offset = offset; offset += seg.pct; });
-    return segments;
-  }, [results, c.used, c.underused, c.forgotten]);
+  // ── Build copy text ──
+  const buildSummaryText = useCallback(() => {
+    let t = `SUBSWEEP AUDIT\n`;
+    t += `Active: ${validSubs.length} subs — ${fm(totalMonthly.toFixed(2), currency)}/mo (${fm(totalAnnual.toFixed(0), currency)}/yr)\n`;
+    if (cancelledSubs.length > 0) {
+      t += `Cancelled: ${cancelledSubs.length} — saved ${fm(cancelSavings.toFixed(0), currency)} so far\n`;
+    }
+    if (results) {
+      t += `\nWasted/mo: ${fm((results.wasted_monthly || 0).toFixed(2), currency)}\n`;
+      if (results.subscriptions) {
+        t += '\nVERDICTS:\n';
+        results.subscriptions.forEach(s => {
+          t += `${s.verdict === 'keep' ? '✓' : s.verdict === 'cancel' ? '✕' : '?'} ${s.name} — ${s.honesty || ''}\n`;
+        });
+      }
+      if (results.overall) t += `\nBottom line: ${results.overall}\n`;
+    }
+    t += '\n— Generated by DeftBrain · deftbrain.com';
+    return t;
+  }, [validSubs, totalMonthly, totalAnnual, cancelledSubs, cancelSavings, results, currency]);
 
   const isRunning = loading || scanning;
-  const canAnalyze = validSubs.length > 0 && !isRunning;
 
   // ════════════════════════════════════════════════════════════
-  // RENDER
+  // NAV
   // ════════════════════════════════════════════════════════════
-  return (
-    <div className={`space-y-6 ${c.text}`}>
+  const renderNav = () => (
+    <div className="flex flex-wrap gap-1.5 mb-5">
+      {[
+        { key: 'sweep', label: '🧹 Sweep' },
+        { key: 'radar', label: `🔔 Radar${renewalAlerts.filter(r => r.daysUntil <= 30).length ? ` (${renewalAlerts.filter(r => r.daysUntil <= 30).length})` : ''}` },
+        { key: 'optimize', label: '⚡ Optimize' },
+        { key: 'negotiate', label: '📞 Negotiate' },
+        { key: 'splits', label: '👥 Splits' },
+        { key: 'trials', label: `🆓 Trials${trialAlerts.filter(t => t.daysLeft <= 7 && t.daysLeft >= 0).length ? ` (${trialAlerts.filter(t => t.daysLeft <= 7 && t.daysLeft >= 0).length})` : ''}` },
+        { key: 'budgets', label: '📊 Budgets' },
+        { key: 'tracker', label: `📋 Tracker${cancelledSubs.length ? ` (${cancelledSubs.length})` : ''}` },
+        { key: 'timeline', label: '📈 Timeline' },
+      ].map(tab => (
+        <button key={tab.key} onClick={() => { setView(tab.key); setError(''); }}
+          className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors min-h-[32px] ${
+            view === tab.key ? c.pillActive : c.pillInactive
+          }`}>{tab.label}</button>
+      ))}
+    </div>
+  );
 
-      {/* ── HEADER ── */}
-      <div className={`${c.card} border rounded-xl p-6`}>
-        <div className={`mb-5 pb-4 border-b ${c.divider}`}>
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>SubSweep 🧹</h2>
-              <p className={`text-sm ${isDark ? 'text-zinc-400' : 'text-gray-500'}`}>Find what you're wasting and sweep it away</p>
-            </div>
-            <select
-              value={currency}
-              onChange={e => setCurrency(e.target.value)}
-              className={`py-1 px-2 border rounded-lg text-xs font-semibold ${c.input} outline-none`}
-            >
-              {CURRENCIES.map(cur => <option key={cur} value={cur}>{cur}</option>)}
-            </select>
+  // ════════════════════════════════════════════════════════════
+  // RENDER: SWEEP (main form + results)
+  // ════════════════════════════════════════════════════════════
+  const renderSweep = () => (
+    <div className="space-y-5">
+      <div className={`${c.card} border rounded-xl p-5`}>
+        {/* Currency selector */}
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h3 className={`text-sm font-bold ${c.text}`}>🧹 Subscription Sweep</h3>
+            <p className={`text-xs ${c.muted}`}>Add your subs, get the honest truth</p>
           </div>
+          <select value={currency} onChange={e => setCurrency(e.target.value)}
+            className={`py-1 px-2 border rounded-lg text-xs font-bold ${c.input} outline-none`}>
+            {CURRENCIES.map(cur => <option key={cur} value={cur}>{cur}</option>)}
+          </select>
         </div>
 
-        {/* ── INPUT MODE TABS ── */}
+        {/* Input mode tabs */}
         <div className="flex gap-2 mb-4">
-          <button
-            onClick={() => setInputMode('manual')}
-            className={`px-4 py-2 rounded-lg text-xs font-bold border transition-colors min-h-[36px] ${
-              inputMode === 'manual' ? c.pillActive : c.pillInactive}`}
-          >
-            Add Manually
+          <button onClick={() => setInputMode('manual')}
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors min-h-[32px] ${
+              inputMode === 'manual' ? c.pillActive : c.pillInactive}`}>
+            ✏️ Add Manually
           </button>
-          <button
-            onClick={() => setInputMode('scan')}
-            className={`px-4 py-2 rounded-lg text-xs font-bold border transition-colors min-h-[36px] ${
-              inputMode === 'scan' ? c.pillActive : c.pillInactive}`}
-          >
-            Scan Statement
+          <button onClick={() => setInputMode('scan')}
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors min-h-[32px] ${
+              inputMode === 'scan' ? c.pillActive : c.pillInactive}`}>
+            📄 Scan Statement
           </button>
         </div>
 
-        {/* ── SCAN MODE ── */}
+        {/* Scan mode */}
         {inputMode === 'scan' && (
           <div className="mb-4 space-y-3">
             <div>
-              <label className={`text-sm font-bold ${c.label} block mb-1.5`}>
-                Paste your bank or credit card statement
-              </label>
-              <textarea
-                value={statementText}
-                onChange={e => setStatementText(e.target.value)}
-                placeholder={"03/01 NETFLIX.COM          15.49\n03/01 SPOTIFY USA           11.99\n03/03 AMZN*Prime            14.99\n03/05 GOOGLE *YouTubePrem   13.99\n03/07 PLANET FITNESS        24.99\n..."}
-                className={`w-full p-4 border rounded-lg ${c.input} outline-none focus:ring-2 font-mono text-xs`}
-                rows={7}
-              />
-              <p className={`text-[10px] ${c.textMuted} mt-1`}>
-                We never store your data. The AI reads it once to find subscriptions, then forgets it.
-              </p>
+              <label className={`text-xs font-bold ${c.label} block mb-1.5`}>Paste your bank or credit card statement</label>
+              <textarea value={statementText} onChange={e => setStatementText(e.target.value)}
+                placeholder={"03/01 NETFLIX.COM          15.49\n03/01 SPOTIFY USA           11.99\n03/03 AMZN*Prime            14.99\n..."}
+                className={`w-full p-3 border rounded-lg ${c.input} outline-none focus:ring-2 font-mono text-xs`} rows={6} />
+              <p className={`text-[10px] ${c.muted} mt-1`}>We never store your data. The AI reads it once to find subscriptions, then forgets it.</p>
             </div>
-            <button
-              onClick={scanStatement}
-              disabled={!statementText.trim() || scanning}
-              className={`${c.btnPrimary} disabled:opacity-40 font-bold py-2.5 px-5 rounded-lg flex items-center gap-2 text-sm min-h-[44px]`}
-            >
-              {scanning ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
+            <button onClick={scanStatement} disabled={!statementText.trim() || scanning}
+              className={`${c.btnPrimary} disabled:opacity-40 font-bold py-2.5 px-5 rounded-lg flex items-center gap-2 text-xs min-h-[40px]`}>
+              {scanning ? <span className="animate-spin">⏳</span> : <span>🔍</span>}
               {scanning ? 'Scanning...' : 'Find Subscriptions'}
             </button>
           </div>
         )}
 
-        {/* ── MANUAL MODE ── */}
+        {/* Manual mode */}
         {inputMode === 'manual' && (
           <div className="space-y-3">
             {/* Quick add */}
             <div>
-              <button
-                onClick={() => setShowQuickAdd(p => !p)}
-                className={`text-xs font-bold ${c.accent} flex items-center gap-1`}
-              >
-                <Zap className="w-3 h-3" />
-                Quick add common services
-                {showQuickAdd ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+              <button onClick={() => setShowQuickAdd(p => !p)}
+                className={`text-xs font-bold ${c.accent} flex items-center gap-1 min-h-[28px]`}>
+                <span>⚡</span> Quick add common services <span>{showQuickAdd ? '▲' : '▼'}</span>
               </button>
               {showQuickAdd && (
                 <div className="flex flex-wrap gap-1.5 mt-2">
                   {QUICK_ADD.map(item => (
-                    <button
-                      key={item.name}
-                      onClick={() => quickAdd(item)}
-                      className={`px-2.5 py-1.5 rounded-lg text-[10px] font-bold border transition-colors min-h-[28px] ${c.pillInactive}`}
-                    >
+                    <button key={item.name} onClick={() => quickAddSub(item)}
+                      className={`px-2.5 py-1.5 rounded-lg text-[10px] font-bold border transition-colors min-h-[28px] ${c.pillInactive}`}>
                       {item.name}
                     </button>
                   ))}
@@ -374,102 +623,84 @@ const SubSweep = () => {
               )}
             </div>
 
-            {/* Subscription rows */}
+            {/* Sub rows */}
             <div className="space-y-2">
-              {subs.map((sub) => (
-                <div key={sub.id} className={`flex flex-wrap gap-2 p-3 rounded-lg border ${isDark ? 'border-zinc-700 bg-zinc-900/40' : 'border-slate-100 bg-slate-50/50'}`}>
-                  <input
-                    type="text"
-                    value={sub.name}
-                    onChange={e => updateSub(sub.id, 'name', e.target.value)}
-                    placeholder="Service name"
-                    className={`flex-1 min-w-[120px] px-3 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-1`}
-                  />
-                  <div className="flex items-center gap-1">
-                    <span className={`text-sm font-bold ${c.textMuted}`}>{currency}</span>
-                    <input
-                      type="number"
-                      value={sub.cost}
-                      onChange={e => updateSub(sub.id, 'cost', e.target.value)}
-                      placeholder="0.00"
-                      className={`w-20 px-2 py-2 border rounded-lg text-sm text-right ${c.input} outline-none focus:ring-1`}
-                    />
+              {subs.filter(s => s.status === 'active' || s.status === 'cancelling').map((sub) => (
+                <div key={sub.id} className={`p-3 rounded-lg border ${isDark ? 'border-zinc-700 bg-zinc-900/40' : 'border-slate-100 bg-slate-50/50'}`}>
+                  <div className="flex flex-wrap gap-2">
+                    <input type="text" value={sub.name} onChange={e => updateSub(sub.id, 'name', e.target.value)}
+                      placeholder="Service name"
+                      className={`flex-1 min-w-[120px] px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-1`} />
+                    <div className="flex items-center gap-1">
+                      <span className={`text-xs font-bold ${c.muted}`}>{currency}</span>
+                      <input type="number" value={sub.cost} onChange={e => updateSub(sub.id, 'cost', e.target.value)}
+                        placeholder="0.00"
+                        className={`w-20 px-2 py-2 border rounded-lg text-xs text-right ${c.input} outline-none focus:ring-1`} />
+                    </div>
+                    <select value={sub.cycle} onChange={e => updateSub(sub.id, 'cycle', e.target.value)}
+                      className={`px-2 py-2 border rounded-lg text-xs ${c.input} outline-none`}>
+                      {CYCLE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                    </select>
+                    <select value={sub.usage} onChange={e => updateSub(sub.id, 'usage', e.target.value)}
+                      className={`px-2 py-2 border rounded-lg text-xs ${c.input} outline-none`}>
+                      <option value="">How often?</option>
+                      {USAGE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.emoji} {o.label}</option>)}
+                    </select>
+                    <button onClick={() => removeSub(sub.id)} disabled={subs.length === 1}
+                      className={`px-2 py-2 rounded-lg ${c.btnDanger} border min-h-[36px] text-xs`}>
+                      🗑️
+                    </button>
                   </div>
-                  <select
-                    value={sub.cycle}
-                    onChange={e => updateSub(sub.id, 'cycle', e.target.value)}
-                    className={`px-2 py-2 border rounded-lg text-xs ${c.input} outline-none`}
-                  >
-                    {CYCLE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-                  </select>
-                  <select
-                    value={sub.usage}
-                    onChange={e => updateSub(sub.id, 'usage', e.target.value)}
-                    className={`px-2 py-2 border rounded-lg text-xs ${c.input} outline-none`}
-                  >
-                    <option value="">How often?</option>
-                    {USAGE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.emoji} {o.label}</option>)}
-                  </select>
-                  <button
-                    onClick={() => removeSub(sub.id)}
-                    className={`p-2 rounded-lg ${c.btnDanger} border min-h-[36px]`}
-                    disabled={subs.length === 1}
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    <select value={sub.category || ''} onChange={e => updateSub(sub.id, 'category', e.target.value)}
+                      className={`px-2 py-1 border rounded text-[10px] ${c.input} outline-none`}>
+                      <option value="">Category</option>
+                      {CATEGORIES.map(cat => <option key={cat.value} value={cat.value}>{cat.emoji} {cat.label}</option>)}
+                    </select>
+                    <input type="date" value={sub.renewalDate || ''} onChange={e => updateSub(sub.id, 'renewalDate', e.target.value)}
+                      title="Next renewal date"
+                      className={`px-2 py-1 border rounded text-[10px] ${c.input} outline-none`} />
+                    {sub.priceHistory?.length > 0 && (
+                      <span className={`text-[10px] px-1.5 py-0.5 rounded ${c.warning} font-bold`}>
+                        📈 was {fm(sub.priceHistory[sub.priceHistory.length - 1].cost, currency)}
+                      </span>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
 
-            <button onClick={addSub} className={`${c.btnSec} font-semibold py-2 px-4 rounded-lg flex items-center gap-1.5 text-xs min-h-[36px]`}>
-              <Plus className="w-3.5 h-3.5" /> Add another
+            <button onClick={addSub} className={`${c.btnSec} font-bold py-2 px-4 rounded-lg flex items-center gap-1.5 text-xs min-h-[36px]`}>
+              ➕ Add another
             </button>
           </div>
         )}
 
-        {/* ── ANALYZE BUTTON ── */}
+        {/* Analyze button */}
         <div className="flex gap-3 mt-5">
-          <button
-            onClick={runAnalysis}
-            disabled={!canAnalyze}
-            className={`flex-1 ${c.btnPrimary} disabled:opacity-40 disabled:cursor-not-allowed font-bold py-3 px-6 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}
-          >
-            {loading && !scanning ? (
-              <><Loader2 className="w-5 h-5 animate-spin" /> Analyzing...</>
-            ) : (
-              <><Scissors className="w-5 h-5" /> Analyze My Subscriptions</>
-            )}
+          <button onClick={runAnalysis} disabled={validSubs.length === 0 || isRunning}
+            className={`flex-1 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+            {loading && !scanning ? <><span className="animate-spin">⏳</span> Analyzing...</> : <><span>✂️</span> Analyze My Subscriptions</>}
           </button>
           {results && (
-            <button onClick={handleReset} className={`px-5 py-3 border-2 ${isDark ? 'border-zinc-600 text-zinc-300' : 'border-slate-300 text-slate-700'} font-semibold rounded-lg`}>
+            <button onClick={handleReset} className={`px-5 py-3 border-2 rounded-lg font-bold text-xs ${isDark ? 'border-zinc-600 text-zinc-300' : 'border-slate-300 text-slate-700'}`}>
               Reset
             </button>
           )}
         </div>
       </div>
 
-      {/* Error */}
-      {error && (
-        <div className={`${c.danger} border rounded-lg p-4 flex items-start gap-3`}>
-          <AlertTriangle className={`w-5 h-5 flex-shrink-0 mt-0.5 ${c.dangerText}`} />
-          <p className="text-sm">{error}</p>
-        </div>
-      )}
-
-      {/* ══════════════════════════════════════════════════════════ */}
-      {/* RESULTS                                                  */}
-      {/* ══════════════════════════════════════════════════════════ */}
+      {/* ── RESULTS ── */}
       {results && (
         <div className="space-y-5">
-
-          {/* ── SUMMARY CARDS ── */}
+          {/* Summary cards */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <div className={`${c.card} border rounded-xl p-4 text-center`}>
-              <p className={`text-[10px] font-bold uppercase ${c.textMuted}`}>Monthly</p>
+              <p className={`text-[10px] font-bold uppercase ${c.muted}`}>Monthly</p>
               <p className={`text-lg font-black ${c.text}`}>{fm(totalMonthly.toFixed(2), currency)}</p>
             </div>
             <div className={`${c.card} border rounded-xl p-4 text-center`}>
-              <p className={`text-[10px] font-bold uppercase ${c.textMuted}`}>Annual</p>
+              <p className={`text-[10px] font-bold uppercase ${c.muted}`}>Annual</p>
               <p className={`text-lg font-black ${c.text}`}>{fm(totalAnnual.toFixed(0), currency)}</p>
             </div>
             <div className={`border rounded-xl p-4 text-center ${c.warning}`}>
@@ -482,41 +713,32 @@ const SubSweep = () => {
             </div>
           </div>
 
-          {/* ── DONUT CHART + BREAKDOWN ── */}
+          {/* Donut chart */}
           {donutData.length > 0 && (
             <div className={`${c.card} border rounded-xl p-5`}>
               <h3 className={`text-sm font-bold ${c.text} flex items-center gap-2 mb-4`}>
-                <BarChart3 className={`w-4 h-4 ${c.accent}`} /> Where Your Money Goes
+                <span>📊</span> Where Your Money Goes
               </h3>
               <div className="flex items-center gap-6 flex-wrap">
-                {/* SVG Donut */}
                 <svg viewBox="0 0 100 100" className="w-32 h-32 flex-shrink-0 -rotate-90">
                   {donutData.map((seg, i) => {
-                    const circumference = Math.PI * 70; // r=35
+                    const circumference = Math.PI * 70;
                     const strokeLen = (seg.pct / 100) * circumference;
                     const gapLen = circumference - strokeLen;
                     const dashOffset = -(seg.offset / 100) * circumference;
                     return (
-                      <circle
-                        key={i}
-                        cx="50" cy="50" r="35"
-                        fill="none"
-                        stroke={seg.color}
-                        strokeWidth="12"
-                        strokeDasharray={`${strokeLen} ${gapLen}`}
-                        strokeDashoffset={dashOffset}
-                        strokeLinecap="round"
-                      />
+                      <circle key={i} cx="50" cy="50" r="35" fill="none" stroke={seg.color}
+                        strokeWidth="12" strokeDasharray={`${strokeLen} ${gapLen}`}
+                        strokeDashoffset={dashOffset} strokeLinecap="round" />
                     );
                   })}
                 </svg>
-                {/* Legend */}
                 <div className="space-y-2">
                   {donutData.map((seg, i) => (
                     <div key={i} className="flex items-center gap-2">
                       <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: seg.color }} />
                       <span className={`text-xs font-bold ${c.text}`}>{seg.label}</span>
-                      <span className={`text-xs ${c.textMuted}`}>{fm(seg.amount.toFixed(2), currency)}/mo ({Math.round(seg.pct)}%)</span>
+                      <span className={`text-xs ${c.muted}`}>{fm(seg.amount.toFixed(2), currency)}/mo ({Math.round(seg.pct)}%)</span>
                     </div>
                   ))}
                 </div>
@@ -524,12 +746,12 @@ const SubSweep = () => {
             </div>
           )}
 
-          {/* ── WHAT-IF SIMULATOR ── */}
+          {/* What-if simulator */}
           <div className={`${c.card} border rounded-xl p-5`}>
             <h3 className={`text-sm font-bold ${c.text} flex items-center gap-2 mb-1`}>
-              <Sparkles className={`w-4 h-4 ${c.accent}`} /> What If You Cut These?
+              <span>✨</span> What If You Cut These?
             </h3>
-            <p className={`text-[10px] ${c.textMuted} mb-3`}>Toggle subscriptions to see real-time savings</p>
+            <p className={`text-[10px] ${c.muted} mb-3`}>Toggle subscriptions to see real-time savings</p>
 
             <div className="space-y-1.5 mb-4">
               {validSubs.map(sub => {
@@ -541,34 +763,27 @@ const SubSweep = () => {
                   <label key={sub.id} className={`flex items-center gap-3 p-2.5 rounded-lg cursor-pointer transition-colors ${
                     checked ? (isDark ? 'bg-red-900/20' : 'bg-red-50') : (isDark ? 'hover:bg-zinc-700/50' : 'hover:bg-slate-50')
                   }`}>
-                    <input
-                      type="checkbox"
-                      checked={checked}
-                      onChange={() => setCutList(p => ({ ...p, [sub.name]: !p[sub.name] }))}
-                      className="sr-only"
-                    />
+                    <input type="checkbox" checked={checked}
+                      onChange={() => setCutList(p => ({ ...p, [sub.name]: !p[sub.name] }))} className="sr-only" />
                     <div className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
                       checked ? 'bg-red-500 border-red-500' : (isDark ? 'border-zinc-600' : 'border-slate-300')
                     }`}>
-                      {checked && <X className="w-3 h-3 text-white" />}
+                      {checked && <span className="text-white text-[10px]">✕</span>}
                     </div>
                     <span className={`text-sm flex-1 ${checked ? 'line-through opacity-60' : ''} ${c.text}`}>{sub.name}</span>
                     {verdict && (
                       <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${
-                        verdict === 'keep' ? c.success
-                          : verdict === 'cancel' ? c.danger
-                          : c.warning
+                        verdict === 'keep' ? c.success : verdict === 'cancel' ? c.danger : c.warning
                       }`}>
                         {verdict === 'keep' ? 'KEEP' : verdict === 'cancel' ? 'CUT' : 'MAYBE'}
                       </span>
                     )}
-                    <span className={`text-xs font-bold ${c.textMuted} whitespace-nowrap`}>{fm(mo.toFixed(2), currency)}/mo</span>
+                    <span className={`text-xs font-bold ${c.muted} whitespace-nowrap`}>{fm(mo.toFixed(2), currency)}/mo</span>
                   </label>
                 );
               })}
             </div>
 
-            {/* Savings display */}
             <div className={`rounded-xl p-4 text-center ${cutCount > 0 ? c.success : c.quoteBg} border ${c.divider}`}>
               {cutCount > 0 ? (
                 <>
@@ -576,34 +791,31 @@ const SubSweep = () => {
                   <p className={`text-xs ${isDark ? 'text-emerald-300' : 'text-emerald-700'} mt-1`}>
                     That's {fm(cutSavingsMonthly.toFixed(2), currency)}/month from {cutCount} subscription{cutCount !== 1 ? 's' : ''}
                   </p>
-                  {results.savings_equivalents && results.savings_equivalents.length > 0 && (
+                  {results.savings_equivalents?.length > 0 && (
                     <p className={`text-xs font-bold ${isDark ? 'text-emerald-200' : 'text-emerald-800'} mt-2`}>
                       ≈ {results.savings_equivalents[0]}
                     </p>
                   )}
                 </>
               ) : (
-                <p className={`text-sm ${c.textMuted}`}>Toggle subscriptions above to see how much you'd save</p>
+                <p className={`text-sm ${c.muted}`}>Toggle subscriptions above to see how much you'd save</p>
               )}
             </div>
           </div>
 
-          {/* ── PER-SUBSCRIPTION ANALYSIS ── */}
-          {results.subscriptions && results.subscriptions.length > 0 && (
+          {/* Per-subscription analysis */}
+          {results.subscriptions?.length > 0 && (
             <div className="space-y-3">
               <h3 className={`text-sm font-bold ${c.text} flex items-center gap-2`}>
-                <DollarSign className={`w-4 h-4 ${c.accent}`} /> Subscription-by-Subscription
+                <span>💰</span> Subscription-by-Subscription
               </h3>
               {results.subscriptions.map((sub, idx) => {
                 const expanded = !!expandedCards[idx];
-                const verdictColor = sub.verdict === 'keep' ? c.success
-                  : sub.verdict === 'cancel' ? c.danger : c.warning;
+                const verdictColor = sub.verdict === 'keep' ? c.success : sub.verdict === 'cancel' ? c.danger : c.warning;
                 return (
                   <div key={idx} className={`${c.card} border rounded-xl overflow-hidden`}>
-                    <button
-                      onClick={() => setExpandedCards(p => ({ ...p, [idx]: !p[idx] }))}
-                      className="w-full p-4 flex items-center justify-between text-left min-h-[44px]"
-                    >
+                    <button onClick={() => setExpandedCards(p => ({ ...p, [idx]: !p[idx] }))}
+                      className="w-full p-4 flex items-center justify-between text-left min-h-[44px]">
                       <div className="flex items-center gap-3">
                         <span className={`text-[9px] font-black px-2 py-1 rounded ${verdictColor}`}>
                           {sub.verdict === 'keep' ? '✓ KEEP' : sub.verdict === 'cancel' ? '✕ CUT' : '? MAYBE'}
@@ -613,86 +825,71 @@ const SubSweep = () => {
                       <div className="flex items-center gap-3">
                         {sub.cancellation_difficulty && (
                           <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded hidden sm:inline ${
-                            sub.cancellation_difficulty === 'easy' ? c.success
-                              : sub.cancellation_difficulty === 'hard' ? c.danger
-                              : c.warning
+                            sub.cancellation_difficulty === 'easy' ? c.success : sub.cancellation_difficulty === 'hard' ? c.danger : c.warning
                           }`}>
                             {sub.cancellation_difficulty === 'easy' ? '🟢 Easy' : sub.cancellation_difficulty === 'hard' ? '🔴 Hard' : '🟡 Medium'} cancel
                           </span>
                         )}
                         {sub.cost_per_use && (
-                          <span className={`text-[10px] font-bold ${c.textMuted} hidden sm:inline`}>
-                            {fm(sub.cost_per_use, currency)}/use
-                          </span>
+                          <span className={`text-[10px] font-bold ${c.muted} hidden sm:inline`}>{fm(sub.cost_per_use, currency)}/use</span>
                         )}
-                        {expanded ? <ChevronUp className={`w-4 h-4 ${c.textMuted}`} /> : <ChevronDown className={`w-4 h-4 ${c.textMuted}`} />}
+                        <span className={`text-xs ${c.muted}`}>{expanded ? '▲' : '▼'}</span>
                       </div>
                     </button>
                     {expanded && (
                       <div className={`px-4 pb-4 border-t ${c.divider} pt-3 space-y-3`}>
-                        {/* Honesty line */}
-                        {sub.honesty && (
-                          <p className={`text-sm ${c.textSec} italic`}>"{sub.honesty}"</p>
-                        )}
-                        {/* Cost per use */}
+                        {sub.honesty && <p className={`text-sm ${c.muted} italic`}>"{sub.honesty}"</p>}
                         {sub.cost_per_use && (
                           <div className={`${c.quoteBg} rounded-lg p-3`}>
-                            <p className={`text-xs font-bold ${c.warningText}`}>
-                              💰 Cost per use: {fm(sub.cost_per_use, currency)}
-                            </p>
-                            {sub.would_you_pay && (
-                              <p className={`text-[10px] ${c.textMuted} mt-1`}>{sub.would_you_pay}</p>
-                            )}
+                            <p className={`text-xs font-bold ${c.warningText}`}>💰 Cost per use: {fm(sub.cost_per_use, currency)}</p>
+                            {sub.would_you_pay && <p className={`text-[10px] ${c.muted} mt-1`}>{sub.would_you_pay}</p>}
                           </div>
                         )}
-                        {/* Free alternative */}
                         {sub.free_alternative && (
                           <div className={`${c.info} border rounded-lg p-3`}>
-                            <p className={`text-xs font-bold ${isDark ? 'text-blue-200' : 'text-blue-800'}`}>
-                              🔄 Free/cheaper alternative: {sub.free_alternative}
-                            </p>
+                            <p className={`text-xs font-bold ${isDark ? 'text-blue-200' : 'text-blue-800'}`}>🔄 Free/cheaper alternative: {sub.free_alternative}</p>
                           </div>
                         )}
-                        {/* Cancellation */}
                         {sub.cancellation_steps && (
                           <div>
                             <p className={`text-[10px] font-bold ${c.label} uppercase mb-1`}>How to cancel:</p>
-                            <p className={`text-xs ${c.textSec} leading-relaxed`}>{sub.cancellation_steps}</p>
+                            <p className={`text-xs ${c.muted} leading-relaxed`}>{sub.cancellation_steps}</p>
                             {sub.cancellation_script && (
-                              <div className="mt-2 flex items-start gap-2">
-                                <div className={`flex-1 ${c.quoteBg} rounded-lg p-3`}>
-                                  <p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>Cancellation message:</p>
-                                  <p className={`text-xs ${c.text}`}>{sub.cancellation_script}</p>
+                              <div className={`mt-2 ${c.quoteBg} rounded-lg p-3`}>
+                                <p className={`text-[10px] font-bold ${c.muted} mb-1`}>Cancellation message:</p>
+                                <p className={`text-xs ${c.text}`}>{sub.cancellation_script}</p>
+                                <div className="mt-2">
+                                  <CopyBtn content={sub.cancellation_script + '\n\n— Generated by DeftBrain · deftbrain.com'} label="Copy" />
                                 </div>
-                                <button
-                                  onClick={() => copyText(sub.cancellation_script, `cancel-${idx}`)}
-                                  className={`${c.btnSec} p-2 rounded-lg min-h-[32px]`}
-                                >
-                                  {copiedItems[`cancel-${idx}`] ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
-                                </button>
                               </div>
                             )}
                           </div>
                         )}
-                        {/* Seasonal note */}
                         {sub.seasonal_note && (
                           <div className={`${c.warning} border rounded-lg p-3 flex items-start gap-2`}>
-                            <Calendar className={`w-3.5 h-3.5 flex-shrink-0 mt-0.5 ${c.warningText}`} />
+                            <span className="flex-shrink-0 mt-0.5">📅</span>
                             <p className={`text-xs ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>{sub.seasonal_note}</p>
                           </div>
                         )}
-                        {/* Retention tactics */}
-                        {sub.retention_tactics && sub.retention_tactics.length > 0 && (
+                        {sub.retention_tactics?.length > 0 && (
                           <div className={`${c.success} border rounded-lg p-3`}>
                             <p className={`text-[10px] font-bold ${c.successText} uppercase mb-1.5 flex items-center gap-1`}>
-                              <ShieldCheck className="w-3 h-3" /> When you call to cancel, expect:
+                              🛡️ When you call to cancel, expect:
                             </p>
-                            <div className="space-y-1">
-                              {sub.retention_tactics.map((tactic, ti) => (
-                                <p key={ti} className={`text-xs ${isDark ? 'text-emerald-300' : 'text-emerald-700'}`}>• {tactic}</p>
-                              ))}
-                            </div>
+                            {sub.retention_tactics.map((tactic, ti) => (
+                              <p key={ti} className={`text-xs ${isDark ? 'text-emerald-300' : 'text-emerald-700'}`}>• {tactic}</p>
+                            ))}
                           </div>
+                        )}
+                        {/* Mark as cancelled */}
+                        {(sub.verdict === 'cancel' || sub.verdict === 'consider') && (
+                          <button onClick={() => {
+                            const match = subs.find(s => s.name === sub.name && s.status === 'active');
+                            if (match) updateSub(match.id, 'status', 'cancelled');
+                          }}
+                            className={`text-xs font-bold ${c.dangerText} underline min-h-[28px]`}>
+                            ✓ I cancelled this — mark as done
+                          </button>
                         )}
                       </div>
                     )}
@@ -702,11 +899,11 @@ const SubSweep = () => {
             </div>
           )}
 
-          {/* ── OVERALL RECOMMENDATION ── */}
+          {/* Overall */}
           {results.overall && (
             <div className={`${c.info} border rounded-xl p-5`}>
               <div className="flex items-start gap-3">
-                <ArrowRight className={`w-5 h-5 flex-shrink-0 mt-0.5 ${isDark ? 'text-blue-400' : 'text-blue-600'}`} />
+                <span className="text-lg flex-shrink-0">→</span>
                 <div>
                   <h3 className={`text-sm font-bold mb-1 ${isDark ? 'text-blue-200' : 'text-blue-800'}`}>Bottom Line</h3>
                   <p className={`text-sm ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>{results.overall}</p>
@@ -715,25 +912,1004 @@ const SubSweep = () => {
             </div>
           )}
 
-          {/* ── PERMISSION TO CANCEL ── */}
-          {results.permission_statements && results.permission_statements.length > 0 && (
+          {/* Permission */}
+          {results.permission_statements?.length > 0 && (
             <div className={`${c.success} border-2 rounded-xl p-5`}>
-              <h3 className={`text-sm font-bold ${c.successText} mb-3 flex items-center gap-2`}>
-                💚 Permission Granted
-              </h3>
-              <div className="space-y-2">
-                {results.permission_statements.map((perm, i) => (
-                  <p key={i} className={`text-sm ${isDark ? 'text-emerald-300' : 'text-emerald-700'}`}>{perm}</p>
+              <h3 className={`text-sm font-bold ${c.successText} mb-3`}>💚 Permission Granted</h3>
+              {results.permission_statements.map((perm, i) => (
+                <p key={i} className={`text-sm ${isDark ? 'text-emerald-300' : 'text-emerald-700'} mb-1`}>{perm}</p>
+              ))}
+            </div>
+          )}
+
+          <ActionBar content={buildSummaryText()} brandLine="— Generated by DeftBrain · deftbrain.com" />
+
+          <p className={`text-[10px] ${c.muted} text-center px-4`}>
+            Prices and cancellation steps may vary. Your subscription data is saved locally on your device only.
+          </p>
+        </div>
+      )}
+    </div>
+  );
+
+  // ════════════════════════════════════════════════════════════
+  // RENDER: OPTIMIZE
+  // ════════════════════════════════════════════════════════════
+  const renderOptimize = () => (
+    <div className="space-y-4">
+      <div className={`${c.card} border rounded-xl p-5`}>
+        <h3 className={`text-sm font-bold ${c.text} mb-1`}>⚡ Plan Optimizer</h3>
+        <p className={`text-xs ${c.muted} mb-4`}>Find annual discounts, family plans, student deals, and bundles for your current subs.</p>
+
+        {validSubs.length === 0 ? (
+          <div className="text-center py-6">
+            <p className="text-2xl mb-2">⚡</p>
+            <p className={`text-xs ${c.muted}`}>Add active subscriptions in the Sweep tab first.</p>
+            <button onClick={() => setView('sweep')} className={`${c.btnPrimary} px-4 py-2 rounded-lg text-xs font-bold mt-3 min-h-[36px]`}>🧹 Go to Sweep</button>
+          </div>
+        ) : (
+          <>
+            <div className={`${c.quoteBg} rounded-lg p-3 mb-4`}>
+              <p className={`text-[10px] font-bold ${c.label} uppercase mb-1.5`}>Your active subs</p>
+              {validSubs.map((s, i) => (
+                <p key={i} className="text-xs">{s.name} — {fm(s.cost, currency)}/{s.cycle}</p>
+              ))}
+            </div>
+            <button onClick={runOptimize} disabled={loading}
+              className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+              {loading ? <><span className="animate-spin">⏳</span> Optimizing...</> : <><span>⚡</span> Find Savings</>}
+            </button>
+          </>
+        )}
+      </div>
+
+      {optResults && (
+        <div className="space-y-4">
+          {/* Total potential */}
+          {optResults.total_potential_savings_annual > 0 && (
+            <div className={`${c.success} border-2 rounded-xl p-5 text-center`}>
+              <p className={`text-2xl font-black ${c.successText}`}>{fm((optResults.total_potential_savings_annual || 0).toFixed(0), currency)}/year</p>
+              <p className={`text-xs ${isDark ? 'text-emerald-300' : 'text-emerald-700'} mt-1`}>in potential optimization savings</p>
+              {optResults.top_move && <p className="text-xs font-bold mt-2">🏆 {optResults.top_move}</p>}
+            </div>
+          )}
+
+          {/* Per-service optimizations */}
+          {optResults.optimizations?.map((opt, idx) => (
+            opt.opportunities?.length > 0 && (
+              <Section key={idx} icon="💡" title={opt.service} badge={`${opt.opportunities.length} option${opt.opportunities.length !== 1 ? 's' : ''}`} defaultOpen c={c}>
+                <div className="space-y-3">
+                  {opt.current_plan && (
+                    <p className={`text-xs ${c.muted}`}>Current: {opt.current_plan} — {fm(opt.current_cost, currency)}/mo</p>
+                  )}
+                  {opt.opportunities.map((opp, oi) => (
+                    <div key={oi} className={`${c.quoteBg} rounded-lg p-3`}>
+                      <div className="flex items-start justify-between gap-2">
+                        <div>
+                          <p className="text-xs font-bold">{opp.description}</p>
+                          <p className={`text-[10px] ${c.muted} mt-0.5`}>{opp.type?.replace(/_/g, ' ')}</p>
+                        </div>
+                        {opp.savings_annual > 0 && (
+                          <span className={`text-xs font-black ${c.successText} whitespace-nowrap`}>-{fm(opp.savings_annual.toFixed(0), currency)}/yr</span>
+                        )}
+                      </div>
+                      {opp.how && <p className={`text-xs ${c.muted} mt-2`}>📋 {opp.how}</p>}
+                      {opp.caveat && <p className={`text-[10px] ${c.warningText} mt-1`}>⚠️ {opp.caveat}</p>}
+                    </div>
+                  ))}
+                </div>
+              </Section>
+            )
+          ))}
+
+          {/* Bundle opportunities */}
+          {optResults.bundle_opportunities?.length > 0 && (
+            <Section icon="📦" title="Bundle Deals" badge={`${optResults.bundle_opportunities.length}`} defaultOpen c={c}>
+              <div className="space-y-3">
+                {optResults.bundle_opportunities.map((b, i) => (
+                  <div key={i} className={`${c.success} border rounded-lg p-3`}>
+                    <p className="text-xs font-bold">{b.bundle_name}</p>
+                    <p className={`text-xs ${isDark ? 'text-emerald-300' : 'text-emerald-700'} mt-1`}>
+                      {b.services_involved?.join(' + ')} — {fm(b.bundle_cost, currency)}/mo instead of {fm(b.current_separate_cost, currency)}/mo
+                    </p>
+                    <p className={`text-xs font-black ${c.successText} mt-1`}>Saves {fm(b.savings_monthly, currency)}/mo</p>
+                    {b.how && <p className={`text-[10px] ${c.muted} mt-1`}>📋 {b.how}</p>}
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )}
+        </div>
+      )}
+    </div>
+  );
+
+  // ════════════════════════════════════════════════════════════
+  // RENDER: NEGOTIATE
+  // ════════════════════════════════════════════════════════════
+  const renderNegotiate = () => (
+    <div className="space-y-4">
+      <div className={`${c.card} border rounded-xl p-5`}>
+        <h3 className={`text-sm font-bold ${c.text} mb-1`}>📞 Retention Scripts</h3>
+        <p className={`text-xs ${c.muted} mb-4`}>Get a discount by threatening to cancel. Here's exactly what to say.</p>
+
+        <div className="space-y-3">
+          {/* Quick pick from existing subs */}
+          {validSubs.length > 0 && (
+            <div>
+              <p className={`text-[10px] font-bold ${c.label} uppercase mb-1.5`}>Pick from your subs</p>
+              <div className="flex flex-wrap gap-1.5">
+                {validSubs.map(s => (
+                  <button key={s.id} onClick={() => { setNegService(s.name); setNegCost(String(s.cost)); setNegCycle(s.cycle); }}
+                    className={`px-2.5 py-1.5 rounded-lg text-[10px] font-bold border transition-colors min-h-[28px] ${
+                      negService === s.name ? c.pillActive : c.pillInactive
+                    }`}>
+                    {s.name}
+                  </button>
                 ))}
               </div>
             </div>
           )}
 
-          <p className={`text-[10px] ${c.textMuted} text-center px-4`}>
-            Prices and cancellation steps may vary — always verify before cancelling. Your subscription data stays in this session only — nothing is saved, stored, or shared.
+          <div>
+            <label className={`text-xs font-bold ${c.label} block mb-1.5`}>Service name *</label>
+            <input value={negService} onChange={e => setNegService(e.target.value)}
+              placeholder="e.g. Netflix, Comcast, AT&T"
+              className={`w-full px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
+          </div>
+
+          <div className="flex gap-2">
+            <div className="flex-1">
+              <label className={`text-xs font-bold ${c.label} block mb-1.5`}>Current cost</label>
+              <input type="number" value={negCost} onChange={e => setNegCost(e.target.value)} placeholder="Optional"
+                className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
+            </div>
+            <div className="flex-1">
+              <label className={`text-xs font-bold ${c.label} block mb-1.5`}>Billing cycle</label>
+              <select value={negCycle} onChange={e => setNegCycle(e.target.value)}
+                className={`w-full py-1.5 px-2 border rounded-lg text-xs ${c.input}`}>
+                {CYCLE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+              </select>
+            </div>
+          </div>
+
+          <button onClick={runNegotiate} disabled={loading || !negService.trim()}
+            className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+            {loading ? <><span className="animate-spin">⏳</span> Generating script...</> : <><span>📞</span> Get Retention Script</>}
+          </button>
+        </div>
+      </div>
+
+      {negResults && (
+        <div className="space-y-4">
+          {/* Contact method */}
+          {negResults.contact_method && (
+            <div className={`${c.info} border rounded-xl p-4`}>
+              <p className={`text-[10px] font-bold ${c.label} uppercase mb-1`}>📞 How to reach retention</p>
+              <p className="text-xs">{negResults.contact_method}</p>
+              {negResults.best_time_to_call && (
+                <p className={`text-xs ${c.muted} mt-1`}>⏰ Best time: {negResults.best_time_to_call}</p>
+              )}
+            </div>
+          )}
+
+          {/* Opening line */}
+          {negResults.opening_line && (
+            <div className={`${c.card} border rounded-xl p-4`}>
+              <p className={`text-[10px] font-bold ${c.label} uppercase mb-1`}>Your opening line</p>
+              <p className="text-sm font-bold italic">"{negResults.opening_line}"</p>
+              <div className="mt-2">
+                <CopyBtn content={negResults.opening_line + '\n\n— Generated by DeftBrain · deftbrain.com'} label="Copy" />
+              </div>
+            </div>
+          )}
+
+          {/* Script steps */}
+          {negResults.script_steps?.length > 0 && (
+            <Section icon="📝" title="Full Script" defaultOpen c={c}>
+              <div className="space-y-4">
+                {negResults.script_steps.map((step, i) => (
+                  <div key={i} className="space-y-2">
+                    <p className={`text-[10px] font-bold ${c.accent}`}>Step {step.step || i + 1}</p>
+                    <div className={`${isDark ? 'bg-blue-900/20 border-blue-800' : 'bg-blue-50 border-blue-200'} border rounded-lg p-3`}>
+                      <p className={`text-[10px] font-bold ${c.label} mb-0.5`}>YOU SAY:</p>
+                      <p className="text-xs font-bold">"{step.you_say}"</p>
+                    </div>
+                    <div className={`${c.quoteBg} rounded-lg p-3`}>
+                      <p className={`text-[10px] font-bold ${c.label} mb-0.5`}>THEY'LL SAY:</p>
+                      <p className="text-xs italic">{step.they_will_say}</p>
+                    </div>
+                    <div className={`${isDark ? 'bg-green-900/20 border-green-800' : 'bg-green-50 border-green-200'} border rounded-lg p-3`}>
+                      <p className={`text-[10px] font-bold ${c.label} mb-0.5`}>YOUR RESPONSE:</p>
+                      <p className="text-xs font-bold">"{step.your_response}"</p>
+                    </div>
+                    {step.tip && <p className={`text-[10px] ${c.muted}`}>💡 {step.tip}</p>}
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )}
+
+          {/* Known offers */}
+          {negResults.known_offers?.length > 0 && (
+            <Section icon="🎁" title="Known Retention Offers" c={c}>
+              <div className="space-y-2">
+                {negResults.known_offers.map((offer, i) => (
+                  <div key={i} className={`${c.quoteBg} rounded-lg p-3`}>
+                    <div className="flex items-start justify-between gap-2">
+                      <p className="text-xs font-bold">{offer.offer}</p>
+                      <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${
+                        offer.should_accept ? c.success : c.warning
+                      }`}>
+                        {offer.should_accept ? '✓ ACCEPT' : '⏸ WAIT'}
+                      </span>
+                    </div>
+                    <p className={`text-[10px] ${c.muted} mt-0.5`}>Likelihood: {offer.likelihood} — {offer.why}</p>
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )}
+
+          {/* Magic phrases */}
+          {negResults.magic_phrases?.length > 0 && (
+            <div className={`${isDark ? 'bg-purple-900/20 border-purple-800' : 'bg-purple-50 border-purple-200'} border rounded-xl p-4`}>
+              <p className={`text-[10px] font-bold ${c.label} uppercase mb-2`}>🪄 Magic phrases</p>
+              {negResults.magic_phrases.map((p, i) => (
+                <p key={i} className="text-xs font-bold mb-1">• "{p}"</p>
+              ))}
+              <div className="mt-2">
+                <CopyBtn content={negResults.magic_phrases.join('\n') + '\n\n— Generated by DeftBrain · deftbrain.com'} label="Copy all phrases" />
+              </div>
+            </div>
+          )}
+
+          {/* Walk away + nuclear */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {negResults.walk_away_threshold && (
+              <div className={`${c.warning} border rounded-lg p-3`}>
+                <p className={`text-[10px] font-bold ${c.warningText} uppercase mb-1`}>🚶 Walk-away threshold</p>
+                <p className="text-xs">{negResults.walk_away_threshold}</p>
+              </div>
+            )}
+            {negResults.nuclear_option && (
+              <div className={`${c.danger} border rounded-lg p-3`}>
+                <p className={`text-[10px] font-bold ${c.dangerText} uppercase mb-1`}>☢️ Nuclear option</p>
+                <p className="text-xs">{negResults.nuclear_option}</p>
+              </div>
+            )}
+          </div>
+
+          {/* Full script copy */}
+          <ActionBar content={
+            `RETENTION SCRIPT — ${negResults.service || negService}\n\n` +
+            `Opening: "${negResults.opening_line || ''}"\n\n` +
+            (negResults.script_steps || []).map(s =>
+              `Step ${s.step}: You say: "${s.you_say}"\nThey say: "${s.they_will_say}"\nYou respond: "${s.your_response}"`
+            ).join('\n\n') +
+            (negResults.magic_phrases?.length ? `\n\nMagic phrases:\n${negResults.magic_phrases.map(p => `• "${p}"`).join('\n')}` : '') +
+            '\n\n— Generated by DeftBrain · deftbrain.com'
+          } brandLine="— Generated by DeftBrain · deftbrain.com" />
+        </div>
+      )}
+    </div>
+  );
+
+  // ════════════════════════════════════════════════════════════
+  // RENDER: TRACKER
+  // ════════════════════════════════════════════════════════════
+  const renderTracker = () => (
+    <div className="space-y-4">
+      {/* Savings hero */}
+      {cancelSavings > 0 && (
+        <div className={`${c.success} border-2 rounded-xl p-5 text-center`}>
+          <p className="text-3xl mb-1">🎉</p>
+          <p className={`text-3xl font-black ${c.successText}`}>{fm(cancelSavings.toFixed(0), currency)}</p>
+          <p className={`text-xs ${isDark ? 'text-emerald-300' : 'text-emerald-700'} mt-1`}>
+            saved since you started cancelling
           </p>
         </div>
       )}
+
+      {/* Status management */}
+      <div className={`${c.card} border rounded-xl p-5`}>
+        <h3 className={`text-sm font-bold ${c.text} mb-1`}>📋 Subscription Tracker</h3>
+        <p className={`text-xs ${c.muted} mb-4`}>Track status of every subscription. Cancelled subs accumulate savings over time.</p>
+
+        {subs.length === 0 ? (
+          <p className={`text-xs ${c.muted} text-center py-6`}>No subscriptions yet.</p>
+        ) : (
+          <div className="space-y-2">
+            {subs.map(sub => {
+              const mo = monthlyEquiv(sub.cost, sub.cycle);
+              const statusInfo = STATUS_OPTIONS.find(s => s.value === sub.status) || STATUS_OPTIONS[0];
+              const daysSinceCancelled = sub.cancelledDate
+                ? Math.floor((Date.now() - new Date(sub.cancelledDate).getTime()) / 86400000)
+                : 0;
+              const savedSoFar = sub.cancelledDate ? mo * (daysSinceCancelled / 30) : 0;
+
+              return (
+                <div key={sub.id} className={`flex flex-wrap items-center gap-2 px-3 py-2.5 rounded-lg border ${c.card} ${
+                  sub.status === 'cancelled' ? (isDark ? 'opacity-70' : 'opacity-80') : ''
+                }`}>
+                  <span className="text-sm">{statusInfo.emoji}</span>
+                  <span className={`text-xs font-bold flex-1 min-w-[80px] ${sub.status === 'cancelled' ? 'line-through' : ''} ${c.text}`}>
+                    {sub.name || '(unnamed)'}
+                  </span>
+                  {sub.cost && (
+                    <span className={`text-xs ${c.muted} whitespace-nowrap`}>{fm(mo.toFixed(2), currency)}/mo</span>
+                  )}
+                  {sub.status === 'cancelled' && savedSoFar > 0 && (
+                    <span className={`text-[10px] font-bold ${c.successText}`}>+{fm(savedSoFar.toFixed(0), currency)} saved</span>
+                  )}
+                  <select value={sub.status} onChange={e => updateSub(sub.id, 'status', e.target.value)}
+                    className={`px-2 py-1 border rounded text-[10px] font-bold ${c.input}`}>
+                    {STATUS_OPTIONS.map(s => <option key={s.value} value={s.value}>{s.emoji} {s.label}</option>)}
+                  </select>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        <div className="flex gap-2 mt-4">
+          <div className={`flex-1 text-center py-2 rounded-lg border ${c.card}`}>
+            <p className={`text-xs font-black ${c.text}`}>{activeSubs.length}</p>
+            <p className={`text-[10px] ${c.muted}`}>Active</p>
+          </div>
+          <div className={`flex-1 text-center py-2 rounded-lg border ${c.success}`}>
+            <p className={`text-xs font-black ${c.successText}`}>{cancelledSubs.filter(s => s.status === 'cancelled').length}</p>
+            <p className={`text-[10px] ${isDark ? 'text-emerald-300' : 'text-emerald-700'}`}>Cancelled</p>
+          </div>
+          <div className={`flex-1 text-center py-2 rounded-lg border ${c.warning}`}>
+            <p className={`text-xs font-black ${c.warningText}`}>{cancelledSubs.filter(s => s.status === 'paused').length}</p>
+            <p className={`text-[10px] ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>Paused</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  // ════════════════════════════════════════════════════════════
+  // RENDER: TIMELINE
+  // ════════════════════════════════════════════════════════════
+  const renderTimeline = () => {
+    const sortedHistory = [...history].sort((a, b) => a.key.localeCompare(b.key));
+    const maxTotal = Math.max(...sortedHistory.map(h => h.total), totalMonthly, 1);
+
+    return (
+      <div className="space-y-4">
+        <div className={`${c.card} border rounded-xl p-5`}>
+          <h3 className={`text-sm font-bold ${c.text} mb-1`}>📈 Spending Timeline</h3>
+          <p className={`text-xs ${c.muted} mb-4`}>
+            Monthly subscription total over time. Snapshots are taken each time you run an analysis.
+          </p>
+
+          {sortedHistory.length < 2 ? (
+            <div className="text-center py-8">
+              <p className="text-2xl mb-2">📈</p>
+              <p className={`text-xs ${c.muted} mb-1`}>Need at least 2 snapshots to show a trend.</p>
+              <p className={`text-[10px] ${c.muted}`}>Run an analysis now to take your first snapshot. Come back next month for a comparison.</p>
+              {sortedHistory.length === 0 && (
+                <button onClick={() => { takeSnapshot(); }} className={`${c.btnPrimary} px-4 py-2 rounded-lg text-xs font-bold mt-3 min-h-[36px]`}>
+                  📸 Take Snapshot Now
+                </button>
+              )}
+              {sortedHistory.length === 1 && (
+                <p className={`text-xs ${c.accent} font-bold mt-2`}>✓ 1 snapshot recorded ({sortedHistory[0].key})</p>
+              )}
+            </div>
+          ) : (
+            <>
+              {/* Bar chart */}
+              <div className="flex items-end gap-1" style={{ height: '160px' }}>
+                {sortedHistory.map((snap, i) => {
+                  const pct = (snap.total / maxTotal) * 100;
+                  const isLatest = i === sortedHistory.length - 1;
+                  const prev = i > 0 ? sortedHistory[i - 1].total : snap.total;
+                  const diff = snap.total - prev;
+                  return (
+                    <div key={snap.key} className="flex-1 flex flex-col items-center justify-end h-full">
+                      {/* Diff indicator */}
+                      {i > 0 && (
+                        <span className={`text-[8px] font-bold mb-0.5 ${diff > 0 ? c.dangerText : diff < 0 ? c.successText : c.muted}`}>
+                          {diff > 0 ? '+' : ''}{fm(diff.toFixed(0), currency)}
+                        </span>
+                      )}
+                      {/* Bar */}
+                      <div className={`w-full rounded-t transition-all ${isLatest
+                        ? (isDark ? 'bg-indigo-500' : 'bg-indigo-600')
+                        : (isDark ? 'bg-zinc-600' : 'bg-slate-300')
+                      }`}
+                        style={{ height: `${Math.max(pct, 5)}%` }}
+                        title={`${snap.key}: ${fm(snap.total, currency)}/mo`}
+                      />
+                      {/* Label */}
+                      <p className={`text-[8px] ${c.muted} mt-1 text-center`}>
+                        {snap.key.split('-')[1]}/{snap.key.split('-')[0].slice(2)}
+                      </p>
+                      <p className={`text-[9px] font-bold ${c.text}`}>{fm(snap.total.toFixed(0), currency)}</p>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Trend summary */}
+              {sortedHistory.length >= 2 && (() => {
+                const first = sortedHistory[0];
+                const last = sortedHistory[sortedHistory.length - 1];
+                const diff = last.total - first.total;
+                const pctChange = first.total > 0 ? ((diff / first.total) * 100).toFixed(0) : 0;
+                return (
+                  <div className={`mt-4 ${diff > 0 ? c.warning : diff < 0 ? c.success : c.info} border rounded-lg p-3 text-center`}>
+                    <p className="text-xs font-bold">
+                      {diff > 0
+                        ? `📈 Your subs increased by ${fm(Math.abs(diff).toFixed(0), currency)}/mo (${pctChange}%) since ${first.key}`
+                        : diff < 0
+                        ? `📉 You cut ${fm(Math.abs(diff).toFixed(0), currency)}/mo (${Math.abs(pctChange)}%) since ${first.key}! 🎉`
+                        : `➡️ Flat — no change since ${first.key}`
+                      }
+                    </p>
+                  </div>
+                );
+              })()}
+            </>
+          )}
+        </div>
+
+        {/* Manual snapshot */}
+        <div className={`${c.card} border rounded-xl p-4 flex items-center justify-between`}>
+          <div>
+            <p className={`text-xs font-bold ${c.text}`}>📸 Take a manual snapshot</p>
+            <p className={`text-[10px] ${c.muted}`}>Current: {fm(totalMonthly.toFixed(2), currency)}/mo ({validSubs.length} active subs)</p>
+          </div>
+          <button onClick={takeSnapshot} className={`${c.btnPrimary} px-4 py-2 rounded-lg text-xs font-bold min-h-[36px]`}>
+            📸 Snapshot
+          </button>
+        </div>
+
+        {/* History list */}
+        {sortedHistory.length > 0 && (
+          <div className={`${c.card} border rounded-xl p-4`}>
+            <div className="flex items-center justify-between mb-2">
+              <p className={`text-[10px] font-bold ${c.label} uppercase`}>Snapshot history</p>
+              <button onClick={() => {
+                if (window.confirm('Clear all timeline history?')) {
+                  setHistory([]);
+                  saveStore(STORE_HISTORY, [], MAX_HISTORY);
+                }
+              }} className={`text-[10px] ${c.dangerText} min-h-[24px]`}>🗑️ Clear</button>
+            </div>
+            {sortedHistory.map(snap => (
+              <div key={snap.key} className="flex items-center justify-between text-xs py-1">
+                <span className={c.muted}>{snap.key}</span>
+                <span className={`font-bold ${c.text}`}>{fm(snap.total, currency)}/mo</span>
+                <span className={c.muted}>{snap.count} subs</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // ════════════════════════════════════════════════════════════
+  // RENDER: RENEWAL RADAR
+  // ════════════════════════════════════════════════════════════
+  const renderRadar = () => {
+    const overdue = renewalAlerts.filter(r => r.daysUntil < 0);
+    const thisWeek = renewalAlerts.filter(r => r.daysUntil >= 0 && r.daysUntil <= 7);
+    const thisMonth = renewalAlerts.filter(r => r.daysUntil > 7 && r.daysUntil <= 30);
+    const later = renewalAlerts.filter(r => r.daysUntil > 30);
+
+    const formatDate = (d) => {
+      try { return new Date(d).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }); } catch { return d; }
+    };
+
+    const RenewalRow = ({ sub, urgent }) => {
+      const mo = monthlyEquiv(sub.cost, sub.cycle);
+      return (
+        <div className={`flex items-center gap-2 px-3 py-2 rounded-lg border ${c.card} text-xs`}>
+          <span>{catEmoji(sub.category)}</span>
+          <span className={`font-bold flex-1 ${c.text}`}>{sub.name}</span>
+          <span className={`font-bold ${urgent ? c.dangerText : c.muted}`}>
+            {sub.daysUntil < 0 ? `${Math.abs(sub.daysUntil)}d ago` : sub.daysUntil === 0 ? 'TODAY' : `${sub.daysUntil}d`}
+          </span>
+          <span className={c.muted}>{formatDate(sub.renewalDate)}</span>
+          <span className={`font-bold ${c.text}`}>
+            {sub.cycle === 'yearly' ? fm(sub.cost, currency) : fm(mo.toFixed(2), currency)}
+          </span>
+        </div>
+      );
+    };
+
+    return (
+      <div className="space-y-4">
+        <div className={`${c.card} border rounded-xl p-5`}>
+          <h3 className={`text-sm font-bold ${c.text} mb-1`}>🔔 Renewal Radar</h3>
+          <p className={`text-xs ${c.muted} mb-4`}>Never get surprise-charged again. Add renewal dates in the Sweep tab.</p>
+
+          {renewalAlerts.length === 0 ? (
+            <div className="text-center py-8">
+              <p className="text-2xl mb-2">🔔</p>
+              <p className={`text-xs ${c.muted}`}>No renewal dates set yet. Add dates to your subs in the Sweep tab.</p>
+              <button onClick={() => setView('sweep')} className={`${c.btnPrimary} px-4 py-2 rounded-lg text-xs font-bold mt-3 min-h-[36px]`}>🧹 Go to Sweep</button>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {overdue.length > 0 && (
+                <div>
+                  <p className={`text-[10px] font-bold ${c.dangerText} uppercase mb-2`}>🔴 Past due / recently charged</p>
+                  <div className="space-y-1.5">{overdue.map(s => <RenewalRow key={s.id} sub={s} urgent />)}</div>
+                </div>
+              )}
+              {thisWeek.length > 0 && (
+                <div>
+                  <p className={`text-[10px] font-bold ${c.warningText} uppercase mb-2`}>⚠️ This week</p>
+                  <div className="space-y-1.5">{thisWeek.map(s => <RenewalRow key={s.id} sub={s} urgent />)}</div>
+                </div>
+              )}
+              {thisMonth.length > 0 && (
+                <div>
+                  <p className={`text-[10px] font-bold ${c.label} uppercase mb-2`}>📅 This month</p>
+                  <div className="space-y-1.5">{thisMonth.map(s => <RenewalRow key={s.id} sub={s} />)}</div>
+                </div>
+              )}
+              {later.length > 0 && (
+                <div>
+                  <p className={`text-[10px] font-bold ${c.muted} uppercase mb-2`}>🗓️ Coming up (30-90 days)</p>
+                  <div className="space-y-1.5">{later.map(s => <RenewalRow key={s.id} sub={s} />)}</div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Price hike alerts */}
+        {priceAlerts.length > 0 && (
+          <div className={`${c.warning} border-2 rounded-xl p-5`}>
+            <h3 className={`text-sm font-bold ${c.warningText} mb-3`}>📈 Price Increases Detected</h3>
+            <div className="space-y-2">
+              {priceAlerts.map(s => (
+                <div key={s.id} className="flex items-center gap-2 text-xs">
+                  <span className="font-bold">{s.name}</span>
+                  <span className={c.muted}>{fm(s.prevCost, currency)} → {fm(s.cost, currency)}</span>
+                  <span className={`font-black ${c.dangerText}`}>+{s.pctIncrease}%</span>
+                  <button onClick={() => { setNegService(s.name); setNegCost(String(s.cost)); setView('negotiate'); }}
+                    className={`ml-auto text-[10px] font-bold ${c.accent} underline min-h-[24px]`}>
+                    📞 Negotiate
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Upcoming cost summary */}
+        {renewalAlerts.length > 0 && (
+          <div className={`${c.card} border rounded-xl p-4`}>
+            <p className={`text-[10px] font-bold ${c.label} uppercase mb-2`}>Next 30 days total</p>
+            <p className={`text-xl font-black ${c.text}`}>
+              {fm([...overdue, ...thisWeek, ...thisMonth].reduce((sum, s) => {
+                return sum + (s.cycle === 'yearly' ? Number(s.cost) : monthlyEquiv(s.cost, s.cycle));
+              }, 0).toFixed(2), currency)}
+            </p>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // ════════════════════════════════════════════════════════════
+  // RENDER: SPLITS
+  // ════════════════════════════════════════════════════════════
+  const renderSplits = () => {
+    const sharedSubs = subs.filter(s => s.shared && s.sharedWith?.length > 0 && s.status === 'active');
+
+    // Compute per-person totals
+    const personTotals = {};
+    sharedSubs.forEach(s => {
+      const mo = monthlyEquiv(s.cost, s.cycle);
+      const splitCount = (s.sharedWith?.length || 0) + 1; // +1 for the user
+      const perPerson = mo / splitCount;
+      s.sharedWith.forEach(name => {
+        if (!personTotals[name]) personTotals[name] = { total: 0, subs: [] };
+        personTotals[name].total += perPerson;
+        personTotals[name].subs.push({ name: s.name, share: perPerson });
+      });
+    });
+
+    return (
+      <div className="space-y-4">
+        <div className={`${c.card} border rounded-xl p-5`}>
+          <h3 className={`text-sm font-bold ${c.text} mb-1`}>👥 Split Calculator</h3>
+          <p className={`text-xs ${c.muted} mb-4`}>Track shared subscriptions and who owes what.</p>
+
+          {/* Mark subs as shared */}
+          <div className="space-y-2 mb-4">
+            <p className={`text-[10px] font-bold ${c.label} uppercase`}>Your active subscriptions</p>
+            {activeSubs.filter(s => s.name.trim()).map(sub => (
+              <div key={sub.id} className={`px-3 py-2 rounded-lg border ${c.card}`}>
+                <div className="flex items-center gap-2">
+                  <input type="checkbox" checked={!!sub.shared}
+                    onChange={() => updateSub(sub.id, 'shared', !sub.shared)}
+                    className="accent-indigo-500" />
+                  <span className={`text-xs font-bold flex-1 ${c.text}`}>{sub.name}</span>
+                  <span className={`text-xs ${c.muted}`}>{fm(monthlyEquiv(sub.cost, sub.cycle).toFixed(2), currency)}/mo</span>
+                </div>
+                {sub.shared && (
+                  <div className="mt-2 ml-6">
+                    <div className="flex flex-wrap gap-1 mb-1.5">
+                      {(sub.sharedWith || []).map((name, i) => (
+                        <span key={i} className={`text-[10px] px-2 py-0.5 rounded-full ${c.badge} font-bold flex items-center gap-1`}>
+                          {name}
+                          <button onClick={() => {
+                            const updated = (sub.sharedWith || []).filter((_, idx) => idx !== i);
+                            updateSub(sub.id, 'sharedWith', updated);
+                          }} className={`${c.dangerText} font-bold`}>✕</button>
+                        </span>
+                      ))}
+                    </div>
+                    <div className="flex gap-1">
+                      <input value={splitMember} onChange={e => setSplitMember(e.target.value)}
+                        placeholder="Add person"
+                        onKeyDown={e => {
+                          if (e.key === 'Enter' && splitMember.trim()) {
+                            updateSub(sub.id, 'sharedWith', [...(sub.sharedWith || []), splitMember.trim()]);
+                            setSplitMember('');
+                          }
+                        }}
+                        className={`flex-1 px-2 py-1 border rounded text-[10px] ${c.input} outline-none`} />
+                      <button onClick={() => {
+                        if (splitMember.trim()) {
+                          updateSub(sub.id, 'sharedWith', [...(sub.sharedWith || []), splitMember.trim()]);
+                          setSplitMember('');
+                        }
+                      }} className={`${c.btnPrimary} px-2 py-1 rounded text-[10px] font-bold min-h-[24px]`}>+</button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Per-person breakdown */}
+        {Object.keys(personTotals).length > 0 && (
+          <div className={`${c.card} border rounded-xl p-5`}>
+            <h3 className={`text-sm font-bold ${c.text} mb-3`}>💸 Who Owes What</h3>
+            <div className="space-y-3">
+              {Object.entries(personTotals).map(([name, data]) => (
+                <div key={name} className={`${c.quoteBg} rounded-lg p-3`}>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="text-sm font-bold">{name}</span>
+                    <span className={`text-sm font-black ${c.accent}`}>{fm(data.total.toFixed(2), currency)}/mo</span>
+                  </div>
+                  {data.subs.map((s, i) => (
+                    <p key={i} className={`text-[10px] ${c.muted}`}>• {s.name}: {fm(s.share.toFixed(2), currency)}/mo</p>
+                  ))}
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-4">
+              <CopyBtn label="Copy split summary" content={
+                `SUBSCRIPTION SPLITS\n\n` +
+                Object.entries(personTotals).map(([name, data]) =>
+                  `${name}: ${fm(data.total.toFixed(2), currency)}/mo\n` +
+                  data.subs.map(s => `  • ${s.name}: ${fm(s.share.toFixed(2), currency)}/mo`).join('\n')
+                ).join('\n\n') +
+                '\n\n— Generated by DeftBrain · deftbrain.com'
+              } />
+            </div>
+          </div>
+        )}
+
+        {/* Your share */}
+        {sharedSubs.length > 0 && (
+          <div className={`${c.success} border rounded-xl p-4 text-center`}>
+            <p className={`text-[10px] font-bold ${c.successText} uppercase mb-1`}>Your savings from sharing</p>
+            <p className={`text-lg font-black ${c.successText}`}>
+              {fm(sharedSubs.reduce((sum, s) => {
+                const mo = monthlyEquiv(s.cost, s.cycle);
+                const splitCount = (s.sharedWith?.length || 0) + 1;
+                return sum + (mo - mo / splitCount);
+              }, 0).toFixed(2), currency)}/mo
+            </p>
+            <p className={`text-[10px] ${isDark ? 'text-emerald-300' : 'text-emerald-700'}`}>
+              vs paying full price on {sharedSubs.length} shared sub{sharedSubs.length !== 1 ? 's' : ''}
+            </p>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // ════════════════════════════════════════════════════════════
+  // RENDER: FREE TRIAL TRACKER
+  // ════════════════════════════════════════════════════════════
+  const renderTrials = () => {
+    const addTrial = () => {
+      if (!trialName.trim() || !trialEnd) return;
+      const updated = [newTrial({ name: trialName.trim(), endDate: trialEnd, cost: trialCost, cycle: trialCycle }), ...trials];
+      persistTrials(updated);
+      setTrialName(''); setTrialEnd(''); setTrialCost(''); setTrialCycle('monthly');
+    };
+
+    const removeTrial = (id) => persistTrials(trials.filter(t => t.id !== id));
+
+    const updateTrialUsage = (id, delta) => {
+      persistTrials(trials.map(t => t.id === id ? { ...t, usageCount: Math.max(0, (t.usageCount || 0) + delta) } : t));
+    };
+
+    const convertToSub = (trial) => {
+      persistSubs([...subs, newSub({ name: trial.name, cost: trial.cost, cycle: trial.cycle })]);
+      removeTrial(trial.id);
+      setView('sweep');
+    };
+
+    return (
+      <div className="space-y-4">
+        <div className={`${c.card} border rounded-xl p-5`}>
+          <h3 className={`text-sm font-bold ${c.text} mb-1`}>🆓 Free Trial Tracker</h3>
+          <p className={`text-xs ${c.muted} mb-4`}>Track trials so you cancel before getting charged.</p>
+
+          <div className="space-y-3">
+            <div className="flex gap-2">
+              <input value={trialName} onChange={e => setTrialName(e.target.value)} placeholder="Service name"
+                className={`flex-1 px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-1`} />
+              <input type="date" value={trialEnd} onChange={e => setTrialEnd(e.target.value)}
+                className={`px-2 py-2 border rounded-lg text-xs ${c.input} outline-none`} />
+            </div>
+            <div className="flex gap-2">
+              <div className="flex items-center gap-1 flex-1">
+                <span className={`text-xs ${c.muted}`}>{currency}</span>
+                <input type="number" value={trialCost} onChange={e => setTrialCost(e.target.value)}
+                  placeholder="Cost after trial" className={`flex-1 px-2 py-2 border rounded-lg text-xs ${c.input} outline-none`} />
+              </div>
+              <select value={trialCycle} onChange={e => setTrialCycle(e.target.value)}
+                className={`px-2 py-2 border rounded-lg text-xs ${c.input}`}>
+                {CYCLE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+              </select>
+              <button onClick={addTrial} disabled={!trialName.trim() || !trialEnd}
+                className={`${c.btnPrimary} px-4 py-2 rounded-lg text-xs font-bold min-h-[36px] disabled:opacity-40`}>
+                ➕ Add
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Active trials */}
+        {trialAlerts.length > 0 && (
+          <div className="space-y-3">
+            {trialAlerts.map(trial => {
+              const expired = trial.daysLeft < 0;
+              const urgent = trial.daysLeft >= 0 && trial.daysLeft <= 3;
+              const mo = trial.cost ? monthlyEquiv(trial.cost, trial.cycle || 'monthly') : 0;
+              const costPerUse = trial.usageCount > 0 && mo > 0 ? mo / trial.usageCount : null;
+              const trialDays = trial.endDate ? Math.ceil((new Date(trial.endDate) - (new Date(trial.endDate).getTime() - 14 * 86400000)) / 86400000) : 14;
+
+              return (
+                <div key={trial.id} className={`${c.card} border rounded-xl p-4 ${
+                  expired ? 'opacity-60' : urgent ? (isDark ? 'border-red-700' : 'border-red-300') : ''
+                }`}>
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-sm">{expired ? '⏰' : urgent ? '🔴' : trial.daysLeft <= 7 ? '🟡' : '🟢'}</span>
+                    <span className={`text-sm font-bold flex-1 ${c.text}`}>{trial.name}</span>
+                    <span className={`text-xs font-black ${expired ? c.dangerText : urgent ? c.warningText : c.muted}`}>
+                      {expired ? `Expired ${Math.abs(trial.daysLeft)}d ago` : trial.daysLeft === 0 ? 'LAST DAY' : `${trial.daysLeft}d left`}
+                    </span>
+                  </div>
+
+                  {/* Progress bar */}
+                  {!expired && trial.daysLeft >= 0 && (
+                    <div className={`w-full h-2 rounded ${isDark ? 'bg-zinc-700' : 'bg-slate-200'} mb-2`}>
+                      <div className={`h-full rounded transition-all ${trial.daysLeft <= 3 ? 'bg-red-500' : trial.daysLeft <= 7 ? 'bg-amber-500' : 'bg-green-500'}`}
+                        style={{ width: `${Math.max(5, 100 - (trial.daysLeft / trialDays * 100))}%` }} />
+                    </div>
+                  )}
+
+                  <div className="flex items-center gap-3">
+                    {/* Usage counter */}
+                    <div className="flex items-center gap-1">
+                      <button onClick={() => updateTrialUsage(trial.id, -1)}
+                        className={`${c.btnSec} w-6 h-6 rounded text-xs font-bold flex items-center justify-center`}>−</button>
+                      <span className={`text-xs font-bold ${c.text} w-6 text-center`}>{trial.usageCount || 0}</span>
+                      <button onClick={() => updateTrialUsage(trial.id, 1)}
+                        className={`${c.btnSec} w-6 h-6 rounded text-xs font-bold flex items-center justify-center`}>+</button>
+                      <span className={`text-[10px] ${c.muted}`}>uses</span>
+                    </div>
+
+                    {costPerUse !== null && (
+                      <span className={`text-[10px] font-bold ${costPerUse > 10 ? c.dangerText : costPerUse > 5 ? c.warningText : c.successText}`}>
+                        {fm(costPerUse.toFixed(2), currency)}/use if you keep it
+                      </span>
+                    )}
+
+                    <div className="ml-auto flex gap-1">
+                      {!expired && (
+                        <button onClick={() => convertToSub(trial)}
+                          className={`text-[10px] font-bold ${c.accent} underline min-h-[24px]`}>Keep</button>
+                      )}
+                      <button onClick={() => removeTrial(trial.id)}
+                        className={`text-[10px] ${c.dangerText} min-h-[24px]`}>✕</button>
+                    </div>
+                  </div>
+
+                  {/* Verdict */}
+                  {!expired && trial.daysLeft <= 7 && (
+                    <div className={`mt-2 text-xs ${c.muted} italic`}>
+                      {trial.usageCount >= 5 ? `You've used this ${trial.usageCount} times — probably worth keeping.`
+                        : trial.usageCount >= 2 ? `${trial.usageCount} uses in the trial. That's ${costPerUse ? fm(costPerUse.toFixed(2), currency) + '/use' : 'marginal'} — think about it.`
+                        : trial.usageCount === 1 ? `Only used it once. Cancel unless you plan to use it more.`
+                        : `Zero uses and trial ends ${trial.daysLeft === 0 ? 'today' : `in ${trial.daysLeft} days`}. Cancel now.`
+                      }
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {trialAlerts.length === 0 && trials.length === 0 && (
+          <div className={`${c.info} border rounded-lg p-3 text-xs text-center`}>
+            💡 Pro tip: Add a trial the moment you sign up. Future you will thank present you.
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // ════════════════════════════════════════════════════════════
+  // RENDER: CATEGORY BUDGETS
+  // ════════════════════════════════════════════════════════════
+  const renderBudgets = () => {
+    const activeCats = Object.keys(categorySpending);
+
+    return (
+      <div className="space-y-4">
+        <div className={`${c.card} border rounded-xl p-5`}>
+          <h3 className={`text-sm font-bold ${c.text} mb-1`}>📊 Category Budgets</h3>
+          <p className={`text-xs ${c.muted} mb-4`}>Set spending limits by category. See where you're over budget.</p>
+
+          {/* Budget inputs */}
+          <div className="space-y-2 mb-4">
+            <p className={`text-[10px] font-bold ${c.label} uppercase`}>Set monthly limits</p>
+            {CATEGORIES.map(cat => {
+              const spending = categorySpending[cat.value];
+              const budget = catBudgets[cat.value] || '';
+              const over = spending && budget && spending.total > Number(budget);
+              return (
+                <div key={cat.value} className="flex items-center gap-2">
+                  <span className="text-sm w-6 text-center">{cat.emoji}</span>
+                  <span className={`text-xs flex-1 ${c.text}`}>{cat.label}</span>
+                  {spending && (
+                    <span className={`text-[10px] font-bold ${over ? c.dangerText : c.successText}`}>
+                      {fm(spending.total.toFixed(2), currency)}
+                    </span>
+                  )}
+                  <span className={`text-[10px] ${c.muted}`}>/</span>
+                  <div className="flex items-center gap-0.5">
+                    <span className={`text-[10px] ${c.muted}`}>{currency}</span>
+                    <input type="number" value={budget} onChange={e => {
+                      const updated = { ...catBudgets, [cat.value]: e.target.value };
+                      persistBudgets(updated);
+                    }}
+                      placeholder="—"
+                      className={`w-16 px-1.5 py-1 border rounded text-[10px] text-right ${c.input} outline-none ${
+                        over ? (isDark ? 'border-red-600' : 'border-red-400') : ''
+                      }`} />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Visual breakdown */}
+        {activeCats.length > 0 && (
+          <div className={`${c.card} border rounded-xl p-5`}>
+            <h3 className={`text-sm font-bold ${c.text} mb-3`}>Spending by Category</h3>
+            <div className="space-y-3">
+              {activeCats.sort((a, b) => categorySpending[b].total - categorySpending[a].total).map(cat => {
+                const data = categorySpending[cat];
+                const budget = Number(catBudgets[cat]) || 0;
+                const pct = budget > 0 ? Math.min((data.total / budget) * 100, 100) : 0;
+                const over = budget > 0 && data.total > budget;
+
+                return (
+                  <div key={cat}>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-xs font-bold">{catEmoji(cat)} {catLabel(cat)}</span>
+                      <span className={`text-xs font-bold ${over ? c.dangerText : c.text}`}>
+                        {fm(data.total.toFixed(2), currency)}
+                        {budget > 0 && <span className={c.muted}> / {fm(budget, currency)}</span>}
+                      </span>
+                    </div>
+                    {budget > 0 && (
+                      <div className={`w-full h-2 rounded ${isDark ? 'bg-zinc-700' : 'bg-slate-200'}`}>
+                        <div className={`h-full rounded transition-all ${over ? 'bg-red-500' : pct > 80 ? 'bg-amber-500' : 'bg-green-500'}`}
+                          style={{ width: `${pct}%` }} />
+                      </div>
+                    )}
+                    {over && (
+                      <p className={`text-[10px] ${c.dangerText} mt-0.5`}>
+                        ⚠️ Over by {fm((data.total - budget).toFixed(2), currency)} — worst value: {
+                          data.subs.sort((a, b) => monthlyEquiv(b.cost, b.cycle) - monthlyEquiv(a.cost, a.cycle))[0]?.name
+                        }
+                      </p>
+                    )}
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {data.subs.map(s => (
+                        <span key={s.id} className={`text-[9px] px-1.5 py-0.5 rounded ${c.badge}`}>
+                          {s.name} {fm(monthlyEquiv(s.cost, s.cycle).toFixed(2), currency)}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Uncategorized warning */}
+            {validSubs.some(s => !s.category) && (
+              <div className={`${c.warning} border rounded-lg p-3 mt-4`}>
+                <p className="text-xs">
+                  ⚠️ {validSubs.filter(s => !s.category).length} sub{validSubs.filter(s => !s.category).length !== 1 ? 's' : ''} uncategorized.
+                  Add categories in the Sweep tab for better budgeting.
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Total budget summary */}
+        {Object.values(catBudgets).some(v => Number(v) > 0) && (
+          <div className={`${c.card} border rounded-xl p-4`}>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className={`text-[10px] font-bold ${c.label} uppercase`}>Total budget</p>
+                <p className={`text-lg font-black ${c.text}`}>
+                  {fm(Object.values(catBudgets).reduce((sum, v) => sum + (Number(v) || 0), 0), currency)}/mo
+                </p>
+              </div>
+              <div className="text-right">
+                <p className={`text-[10px] font-bold ${c.label} uppercase`}>Total spending</p>
+                <p className={`text-lg font-black ${totalMonthly > Object.values(catBudgets).reduce((s, v) => s + (Number(v) || 0), 0) ? c.dangerText : c.successText}`}>
+                  {fm(totalMonthly.toFixed(2), currency)}/mo
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // ════════════════════════════════════════════════════════════
+  // MAIN RETURN
+  // ════════════════════════════════════════════════════════════
+  return (
+    <div className={`space-y-1 ${c.text}`}>
+      {renderNav()}
+
+      {error && (
+        <div className={`${c.danger} border rounded-lg p-3 flex items-start gap-2 mb-3`}>
+          <span className="flex-shrink-0">⚠️</span>
+          <p className="text-sm">{error}</p>
+        </div>
+      )}
+
+      {view === 'sweep' && renderSweep()}
+      {view === 'radar' && renderRadar()}
+      {view === 'optimize' && renderOptimize()}
+      {view === 'negotiate' && renderNegotiate()}
+      {view === 'splits' && renderSplits()}
+      {view === 'trials' && renderTrials()}
+      {view === 'budgets' && renderBudgets()}
+      {view === 'tracker' && renderTracker()}
+      {view === 'timeline' && renderTimeline()}
     </div>
   );
 };

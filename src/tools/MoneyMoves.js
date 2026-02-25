@@ -1,0 +1,2016 @@
+import React, { useState, useCallback, useMemo } from 'react';
+import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import { useTheme } from '../hooks/useTheme';
+import { CopyBtn, ActionBar } from '../components/ActionButtons';
+
+// ════════════════════════════════════════════════════════════
+// CONSTANTS
+// ════════════════════════════════════════════════════════════
+const CURRENCIES = [
+  { sym: '$', label: 'USD' }, { sym: '€', label: 'EUR' }, { sym: '£', label: 'GBP' },
+  { sym: '¥', label: 'JPY' }, { sym: 'A$', label: 'AUD' }, { sym: 'C$', label: 'CAD' },
+];
+
+const QUICK_SCENARIOS = [
+  { label: 'Friends want to split evenly but I ordered less', icon: '🍽️', category: 'social' },
+  { label: 'Invited to an expensive trip I can\'t afford', icon: '✈️', category: 'social' },
+  { label: 'Someone asked how much I make', icon: '💬', category: 'social' },
+  { label: 'Gift exchange with a higher budget than I can do', icon: '🎁', category: 'social' },
+  { label: 'Can\'t afford to go out this weekend', icon: '🌙', category: 'social' },
+  { label: 'Coworkers going to expensive lunch daily', icon: '🏢', category: 'social' },
+  { label: 'Partner and I disagree about spending', icon: '💑', category: 'relationship' },
+  { label: 'Family pressuring me to lend money', icon: '👨‍👩‍👧', category: 'family' },
+  { label: 'Wedding costs are spiraling', icon: '💒', category: 'life' },
+  { label: 'Unexpected medical bill', icon: '🏥', category: 'triage' },
+  { label: 'Car repair I can\'t afford', icon: '🚗', category: 'triage' },
+  { label: 'Rent is going up', icon: '🏠', category: 'triage' },
+];
+
+const BILL_TYPES = [
+  'Medical / Hospital', 'Dental', 'Car repair', 'Home repair', 'Tax bill',
+  'Parking / Traffic ticket', 'Tuition / Student loans', 'Utility bill',
+  'Insurance', 'Credit card', 'Rent increase', 'Legal fee', 'Other',
+];
+
+const RELATIONSHIP_TYPES = ['Close friends', 'Coworkers', 'Family', 'Partner', 'Acquaintances', 'Boss/Manager', 'Roommates'];
+
+const MONEY_TALK_TOPICS = [
+  { label: 'Splitting expenses fairly', icon: '➗' },
+  { label: 'Setting a budget together', icon: '📊' },
+  { label: 'Income difference in the relationship', icon: '⚖️' },
+  { label: 'One person spends too much', icon: '🛍️' },
+  { label: 'Saving for a shared goal', icon: '🏠' },
+  { label: 'Debt disclosure', icon: '📋' },
+  { label: 'Lending money to family', icon: '👨‍👩‍👧' },
+  { label: 'Roommate not paying their share', icon: '🚪' },
+];
+
+const STORAGE_KEY = 'mm-saved';
+const WINS_KEY = 'mm-wins';
+const MAX_SAVED = 20;
+const MAX_WINS = 30;
+
+function loadSaved() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch { return []; }
+}
+function saveMoves(items) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(items.slice(0, MAX_SAVED))); } catch {}
+}
+function loadWins() {
+  try { return JSON.parse(localStorage.getItem(WINS_KEY) || '[]'); } catch { return []; }
+}
+function saveWinsStore(items) {
+  try { localStorage.setItem(WINS_KEY, JSON.stringify(items.slice(0, MAX_WINS))); } catch {}
+}
+
+const CROSS_REFS = [
+  { id: 'BuyWise', icon: '🛒', label: 'Research before buying' },
+  { id: 'BillGuiltEraser', icon: '🧾', label: 'Erase bill guilt' },
+  { id: 'ConfrontationCoach', icon: '🥊', label: 'Navigate tough conversations' },
+];
+
+// ════════════════════════════════════════════════════════════
+// SECTION COMPONENT
+// ════════════════════════════════════════════════════════════
+function Section({ icon, title, badge, badgeClass, children, defaultOpen = false, c }) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div className={`${c.card} border rounded-xl overflow-hidden`}>
+      <button onClick={() => setOpen(p => !p)}
+        className="w-full p-4 flex items-center justify-between text-left min-h-[44px]">
+        <div className="flex items-center gap-2.5">
+          {icon && <span className="text-sm">{icon}</span>}
+          <h3 className={`text-sm font-bold ${c.text}`}>{title}</h3>
+          {badge && <span className={`text-[9px] font-black px-2 py-0.5 rounded ${badgeClass || c.accentBg}`}>{badge}</span>}
+        </div>
+        <span className={`text-xs ${c.textMuted}`}>{open ? '▲' : '▼'}</span>
+      </button>
+      {open && <div className={`px-4 pb-4 border-t ${c.divider} pt-3 space-y-3`}>{children}</div>}
+    </div>
+  );
+}
+
+// ════════════════════════════════════════════════════════════
+// COMPONENT
+// ════════════════════════════════════════════════════════════
+const MoneyMoves = () => {
+  const { callToolEndpoint, loading } = useClaudeAPI();
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
+
+  const c = {
+    card: isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-slate-200',
+    input: isDark
+      ? 'bg-zinc-900 border-zinc-600 text-zinc-50 placeholder:text-zinc-500 focus:border-emerald-500 focus:ring-emerald-500/20'
+      : 'bg-white border-slate-300 text-slate-900 placeholder:text-slate-400 focus:border-emerald-500 focus:ring-emerald-100',
+    text: isDark ? 'text-zinc-50' : 'text-slate-900',
+    textSec: isDark ? 'text-zinc-400' : 'text-slate-600',
+    textMuted: isDark ? 'text-zinc-500' : 'text-slate-500',
+    label: isDark ? 'text-zinc-300' : 'text-slate-700',
+    accent: isDark ? 'text-emerald-400' : 'text-emerald-600',
+    accentBg: isDark ? 'bg-emerald-900/30 border-emerald-700/50' : 'bg-emerald-50 border-emerald-200',
+    btnPrimary: isDark ? 'bg-emerald-600 hover:bg-emerald-500 text-white' : 'bg-emerald-600 hover:bg-emerald-700 text-white',
+    btnSec: isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-slate-100 hover:bg-slate-200 text-slate-800',
+    danger: isDark ? 'bg-red-900/20 border-red-700/50 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
+    dangerText: isDark ? 'text-red-400' : 'text-red-600',
+    success: isDark ? 'bg-emerald-900/20 border-emerald-700/50 text-emerald-200' : 'bg-emerald-50 border-emerald-200 text-emerald-800',
+    successText: isDark ? 'text-emerald-400' : 'text-emerald-600',
+    warning: isDark ? 'bg-amber-900/20 border-amber-700/50 text-amber-200' : 'bg-amber-50 border-amber-200 text-amber-800',
+    warningText: isDark ? 'text-amber-400' : 'text-amber-600',
+    info: isDark ? 'bg-blue-900/20 border-blue-700/50 text-blue-200' : 'bg-blue-50 border-blue-200 text-blue-800',
+    pillActive: isDark ? 'bg-emerald-600 border-emerald-500 text-white' : 'bg-emerald-600 border-emerald-600 text-white',
+    pillInactive: isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-300 hover:border-zinc-500' : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300',
+    divider: isDark ? 'border-zinc-700' : 'border-slate-200',
+    quoteBg: isDark ? 'bg-zinc-900/60' : 'bg-slate-50',
+    verdict: isDark ? 'bg-emerald-900/40 border-emerald-700/50' : 'bg-emerald-50 border-emerald-200',
+  };
+
+  const detectedCurrency = useMemo(() => {
+    try {
+      const locale = navigator.language || 'en-US';
+      const fmt = new Intl.NumberFormat(locale, { style: 'currency', currency: 'USD' });
+      const sym = fmt.formatToParts(0).find(p => p.type === 'currency')?.value;
+      return CURRENCIES.find(c => c.sym === sym)?.sym || '$';
+    } catch { return '$'; }
+  }, []);
+
+  // ── State ──
+  const [view, setView] = useState('quick');
+  const [currency, setCurrency] = useState(detectedCurrency);
+  const [error, setError] = useState('');
+
+  // Quick Move
+  const [situation, setSituation] = useState('');
+  const [context, setContext] = useState('');
+  const [quickResults, setQuickResults] = useState(null);
+
+  // Scripts
+  const [scriptScenario, setScriptScenario] = useState('');
+  const [scriptRelationship, setScriptRelationship] = useState('');
+  const [scriptTone, setScriptTone] = useState('');
+  const [scriptResults, setScriptResults] = useState(null);
+
+  // Triage
+  const [billType, setBillType] = useState('');
+  const [billAmount, setBillAmount] = useState('');
+  const [billDeadline, setBillDeadline] = useState('');
+  const [billCanPay, setBillCanPay] = useState('');
+  const [triageResults, setTriageResults] = useState(null);
+
+  // Guilt Check
+  const [guiltItem, setGuiltItem] = useState('');
+  const [guiltAmount, setGuiltAmount] = useState('');
+  const [guiltContext, setGuiltContext] = useState('');
+  const [guiltResults, setGuiltResults] = useState(null);
+
+  // Saved Moves
+  const [saved, setSaved] = useState(() => loadSaved());
+  const [savedFilter, setSavedFilter] = useState('all');
+
+  // Money Talk
+  const [talkTopic, setTalkTopic] = useState('');
+  const [talkRelationship, setTalkRelationship] = useState('Partner');
+  const [talkContext, setTalkContext] = useState('');
+  const [talkResults, setTalkResults] = useState(null);
+
+  // Pulse Check
+  const [pulseIncome, setPulseIncome] = useState('');
+  const [pulseRent, setPulseRent] = useState('');
+  const [pulseSpending, setPulseSpending] = useState('');
+  const [pulseConcerns, setPulseConcerns] = useState('');
+  const [pulseResults, setPulseResults] = useState(null);
+
+  // Follow-Up
+  const [fuSituation, setFuSituation] = useState('');
+  const [fuTheirResponse, setFuTheirResponse] = useState('');
+  const [fuWhatYouTried, setFuWhatYouTried] = useState('');
+  const [fuResults, setFuResults] = useState(null);
+
+  // Rehearsal
+  const [rehScenario, setRehScenario] = useState('');
+  const [rehRelationship, setRehRelationship] = useState('');
+  const [rehGoal, setRehGoal] = useState('');
+  const [rehResults, setRehResults] = useState(null);
+  const [rehStep, setRehStep] = useState(0); // flashcard index
+  const [rehMode, setRehMode] = useState('normal'); // 'normal' | 'hard'
+
+  // Simulator
+  const [simScenario, setSimScenario] = useState('');
+  const [simIncome, setSimIncome] = useState('');
+  const [simRent, setSimRent] = useState('');
+  const [simSavings, setSimSavings] = useState('');
+  const [simContext, setSimContext] = useState('');
+  const [simResults, setSimResults] = useState(null);
+
+  // Wins Journal
+  const [wins, setWins] = useState(() => loadWins());
+  const [winDescription, setWinDescription] = useState('');
+  const [winOutcome, setWinOutcome] = useState('');
+  const [winSaved, setWinSaved] = useState('');
+
+  // ── Save a move ──
+  const saveMove = useCallback((type, label, content) => {
+    const entry = { id: Date.now(), type, label, content, date: new Date().toISOString() };
+    const updated = [entry, ...saved].slice(0, MAX_SAVED);
+    setSaved(updated);
+    saveMoves(updated);
+  }, [saved]);
+
+  const deleteSaved = (id) => {
+    const updated = saved.filter(s => s.id !== id);
+    setSaved(updated);
+    saveMoves(updated);
+  };
+
+  // ── API: Quick Move ──
+  const runQuickMove = useCallback(async () => {
+    if (!situation.trim()) return;
+    setError('');
+    setQuickResults(null);
+    try {
+      const data = await callToolEndpoint('money-moves', {
+        situation: situation.trim(),
+        context: context.trim() || null,
+        currency,
+      });
+      setQuickResults(data);
+    } catch (err) {
+      setError(err.message || 'Failed');
+    }
+  }, [situation, context, currency, callToolEndpoint]);
+
+  // ── API: Scripts ──
+  const runScripts = useCallback(async () => {
+    if (!scriptScenario.trim()) return;
+    setError('');
+    setScriptResults(null);
+    try {
+      const data = await callToolEndpoint('money-moves/scripts', {
+        scenario: scriptScenario.trim(),
+        relationship: scriptRelationship || null,
+        tone: scriptTone || null,
+        currency,
+      });
+      setScriptResults(data);
+    } catch (err) {
+      setError(err.message || 'Failed');
+    }
+  }, [scriptScenario, scriptRelationship, scriptTone, currency, callToolEndpoint]);
+
+  // ── API: Triage ──
+  const runTriage = useCallback(async () => {
+    if (!billType.trim()) return;
+    setError('');
+    setTriageResults(null);
+    try {
+      const data = await callToolEndpoint('money-moves/triage', {
+        billType: billType.trim(),
+        amount: billAmount ? Number(billAmount) : null,
+        currency,
+        deadline: billDeadline.trim() || null,
+        canPay: billCanPay || null,
+      });
+      setTriageResults(data);
+    } catch (err) {
+      setError(err.message || 'Failed');
+    }
+  }, [billType, billAmount, currency, billDeadline, billCanPay, callToolEndpoint]);
+
+  // ── API: Guilt Check ──
+  const runGuiltCheck = useCallback(async () => {
+    if (!guiltItem.trim()) return;
+    setError('');
+    setGuiltResults(null);
+    try {
+      const data = await callToolEndpoint('money-moves/guilt', {
+        item: guiltItem.trim(),
+        amount: guiltAmount ? Number(guiltAmount) : null,
+        currency,
+        context: guiltContext.trim() || null,
+      });
+      setGuiltResults(data);
+    } catch (err) {
+      setError(err.message || 'Failed');
+    }
+  }, [guiltItem, guiltAmount, currency, guiltContext, callToolEndpoint]);
+
+  // ── API: Money Talk ──
+  const runMoneyTalk = useCallback(async () => {
+    if (!talkTopic.trim()) return;
+    setError('');
+    setTalkResults(null);
+    try {
+      const data = await callToolEndpoint('money-moves/money-talk', {
+        topic: talkTopic.trim(),
+        relationship: talkRelationship,
+        context: talkContext.trim() || null,
+        currency,
+      });
+      setTalkResults(data);
+    } catch (err) {
+      setError(err.message || 'Failed');
+    }
+  }, [talkTopic, talkRelationship, talkContext, currency, callToolEndpoint]);
+
+  // ── API: Pulse ──
+  const runPulse = useCallback(async () => {
+    setError('');
+    setPulseResults(null);
+    try {
+      const data = await callToolEndpoint('money-moves/pulse', {
+        income: pulseIncome ? Number(pulseIncome) : null,
+        rent: pulseRent ? Number(pulseRent) : null,
+        recentSpending: pulseSpending.trim() || null,
+        currency,
+        concerns: pulseConcerns.trim() || null,
+      });
+      setPulseResults(data);
+    } catch (err) {
+      setError(err.message || 'Failed');
+    }
+  }, [pulseIncome, pulseRent, pulseSpending, currency, pulseConcerns, callToolEndpoint]);
+
+  // ── API: Follow-Up ──
+  const runFollowUp = useCallback(async () => {
+    if (!fuSituation.trim() || !fuTheirResponse.trim()) return;
+    setError('');
+    setFuResults(null);
+    try {
+      const data = await callToolEndpoint('money-moves/followup', {
+        originalSituation: fuSituation.trim(),
+        theirResponse: fuTheirResponse.trim(),
+        whatYouTried: fuWhatYouTried.trim() || null,
+        currency,
+      });
+      setFuResults(data);
+    } catch (err) {
+      setError(err.message || 'Failed');
+    }
+  }, [fuSituation, fuTheirResponse, fuWhatYouTried, currency, callToolEndpoint]);
+
+  // ── API: Rehearsal ──
+  const runRehearsal = useCallback(async () => {
+    if (!rehScenario.trim()) return;
+    setError('');
+    setRehResults(null);
+    setRehStep(0);
+    setRehMode('normal');
+    try {
+      const data = await callToolEndpoint('money-moves/rehearsal', {
+        scenario: rehScenario.trim(),
+        relationship: rehRelationship || null,
+        yourGoal: rehGoal.trim() || null,
+        currency,
+      });
+      setRehResults(data);
+    } catch (err) {
+      setError(err.message || 'Failed');
+    }
+  }, [rehScenario, rehRelationship, rehGoal, currency, callToolEndpoint]);
+
+  // ── API: Simulator ──
+  const runSimulator = useCallback(async () => {
+    if (!simScenario.trim()) return;
+    setError('');
+    setSimResults(null);
+    try {
+      const data = await callToolEndpoint('money-moves/simulator', {
+        scenario: simScenario.trim(),
+        income: simIncome ? Number(simIncome) : null,
+        rent: simRent ? Number(simRent) : null,
+        savings: simSavings ? Number(simSavings) : null,
+        otherContext: simContext.trim() || null,
+        currency,
+      });
+      setSimResults(data);
+    } catch (err) {
+      setError(err.message || 'Failed');
+    }
+  }, [simScenario, simIncome, simRent, simSavings, simContext, currency, callToolEndpoint]);
+
+  // ── Wins helpers ──
+  const addWin = useCallback(() => {
+    if (!winDescription.trim()) return;
+    const entry = {
+      id: Date.now(),
+      date: new Date().toISOString(),
+      description: winDescription.trim(),
+      outcome: winOutcome.trim() || null,
+      saved: winSaved ? Number(winSaved) : null,
+    };
+    const updated = [entry, ...wins].slice(0, MAX_WINS);
+    setWins(updated);
+    saveWinsStore(updated);
+    setWinDescription('');
+    setWinOutcome('');
+    setWinSaved('');
+  }, [winDescription, winOutcome, winSaved, wins]);
+
+  const deleteWin = (id) => {
+    const updated = wins.filter(w => w.id !== id);
+    setWins(updated);
+    saveWinsStore(updated);
+  };
+
+  // ── Wins stats ──
+  const winsStats = useMemo(() => {
+    if (wins.length === 0) return null;
+    const totalSaved = wins.reduce((s, w) => s + (w.saved || 0), 0);
+    const conversationsHad = wins.length;
+    return { totalSaved, conversationsHad };
+  }, [wins]);
+
+  // ── Comfort Zone (mined from saved moves) ──
+  const comfortZone = useMemo(() => {
+    if (saved.length < 3) return null;
+
+    const typeCounts = {};
+    saved.forEach(s => { typeCounts[s.type] = (typeCounts[s.type] || 0) + 1; });
+
+    const allTypes = ['quick', 'script', 'rehearsal', 'triage', 'guilt', 'talk', 'followup', 'pulse', 'simulator'];
+    const typeLabels = {
+      quick: 'General money situations', script: 'Social scripts',
+      rehearsal: 'Conversation rehearsal', triage: 'Bill negotiation',
+      guilt: 'Purchase decisions', talk: 'Partner/family money talks',
+      followup: 'Negotiation follow-ups', pulse: 'Financial self-check',
+      simulator: 'Big decision simulation',
+    };
+
+    const used = allTypes.filter(t => typeCounts[t] > 0).map(t => ({
+      type: t, label: typeLabels[t], count: typeCounts[t],
+    }));
+    const unused = allTypes.filter(t => !typeCounts[t]).map(t => ({
+      type: t, label: typeLabels[t],
+    }));
+
+    // Identify strongest and weakest areas
+    const strongest = used.length > 0 ? used.sort((a, b) => b.count - a.count)[0] : null;
+
+    return { used, unused, strongest, totalMoves: saved.length };
+  }, [saved]);
+
+  // ── Emergency Card (top scripts from saved) ──
+  const emergencyCard = useMemo(() => {
+    if (saved.length === 0) return null;
+
+    // Pull up to 3 most recent items that have copy-able content
+    const scripts = saved.filter(s =>
+      s.content?.text || s.content?.what_to_say?.script ||
+      s.content?.escalation_script || s.content?.opening?.opener ||
+      s.content?.headline
+    ).slice(0, 3).map(s => {
+      let text = s.content?.text || s.content?.what_to_say?.script ||
+        s.content?.escalation_script || s.content?.opening?.opener || s.content?.headline || '';
+      return { label: s.label, type: s.type, text };
+    });
+
+    return scripts.length > 0 ? scripts : null;
+  }, [saved]);
+
+  // ── Verdict badge color ──
+  const verdictBadge = (v) => {
+    if (!v) return c.accentBg;
+    const s = v.toUpperCase();
+    if (s.includes('FINE') || s.includes('REASONABLE') || s.includes('LOW')) return c.success;
+    if (s.includes('PATTERN') || s.includes('URGENT') || s.includes('HIGH')) return c.danger;
+    return c.warning;
+  };
+
+  // ════════════════════════════════════════════════════════════
+  // NAV
+  // ════════════════════════════════════════════════════════════
+  const renderNav = () => (
+    <div className="flex gap-1 flex-wrap mb-4">
+      {[
+        { key: 'quick', label: '⚡ Quick Move' },
+        { key: 'scripts', label: '💬 Scripts' },
+        { key: 'rehearsal', label: '🎭 Rehearse' },
+        { key: 'talk', label: '💑 Money Talk' },
+        { key: 'triage', label: '🚨 Triage' },
+        { key: 'followup', label: '🔄 Follow-Up' },
+        { key: 'guilt', label: '😬 Guilt Check' },
+        { key: 'simulator', label: '🔮 Simulator' },
+        { key: 'pulse', label: '💓 Pulse' },
+        { key: 'wins', label: `🏆 Wins${wins.length ? ` (${wins.length})` : ''}` },
+        { key: 'saved', label: `💾 Saved${saved.length ? ` (${saved.length})` : ''}` },
+      ].map(t => (
+        <button key={t.key} onClick={() => setView(t.key)}
+          className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors min-h-[36px] ${
+            view === t.key ? c.pillActive : c.pillInactive
+          }`}>{t.label}</button>
+      ))}
+    </div>
+  );
+
+  // ════════════════════════════════════════════════════════════
+  // RENDER: QUICK MOVE
+  // ════════════════════════════════════════════════════════════
+  const renderQuick = () => (
+    <div className="space-y-4">
+      <div className={`${c.card} border rounded-xl p-5`}>
+        <div className={`mb-4 pb-3 border-b ${c.divider}`}>
+          <h2 className={`text-xl font-bold ${c.text}`}>
+            <span className="mr-2">💸</span>MoneyMoves
+          </h2>
+          <p className={`text-sm ${c.textSec}`}>What's the money situation? I'll tell you what to do.</p>
+        </div>
+
+        {/* Quick scenario pills */}
+        <div className="mb-4">
+          <p className={`text-[10px] font-bold ${c.label} uppercase mb-2`}>Common situations</p>
+          <div className="flex flex-wrap gap-1.5">
+            {QUICK_SCENARIOS.map((qs, i) => (
+              <button key={i} onClick={() => { setSituation(qs.label); }}
+                className={`${c.btnSec} px-2.5 py-1.5 rounded-lg text-[11px] font-medium min-h-[32px] flex items-center gap-1 ${
+                  situation === qs.label ? 'ring-2 ring-emerald-500' : ''
+                }`}>
+                <span>{qs.icon}</span> {qs.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="mb-4">
+          <label className={`text-sm font-bold ${c.label} block mb-1.5`}>Or describe your situation</label>
+          <textarea value={situation} onChange={e => setSituation(e.target.value)}
+            placeholder={"What's going on? Be as specific as you want."}
+            rows={3}
+            className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2 resize-none`} />
+        </div>
+
+        <div className="mb-4">
+          <label className={`text-sm font-bold ${c.label} block mb-1.5`}>
+            Extra context <span className={`font-normal ${c.textMuted}`}>(optional)</span>
+          </label>
+          <input type="text" value={context} onChange={e => setContext(e.target.value)}
+            placeholder={"e.g., I make $50k, have $2k in savings, live in NYC..."}
+            className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
+        </div>
+
+        <button onClick={runQuickMove} disabled={!situation.trim() || loading}
+          className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+          {loading ? <><span className="animate-spin inline-block">⏳</span> Finding your move...</> : <><span>⚡</span> What's My Move?</>}
+        </button>
+      </div>
+
+      {/* Quick Move Results */}
+      {quickResults && (
+        <div className="space-y-4">
+          {/* Headline */}
+          <div className={`${c.verdict} border-2 rounded-xl p-5`}>
+            <span className="text-3xl block mb-2 text-center">{quickResults.move_emoji || '💸'}</span>
+            <p className={`text-base font-black ${c.text} text-center`}>{quickResults.headline}</p>
+            {quickResults.reality_check && (
+              <p className={`text-xs ${c.textSec} text-center mt-2`}>{quickResults.reality_check}</p>
+            )}
+          </div>
+
+          {/* Immediate Steps */}
+          {quickResults.immediate_steps?.length > 0 && (
+            <Section icon="🎯" title="Your Moves" defaultOpen={true} c={c}>
+              <div className="space-y-2">
+                {quickResults.immediate_steps.map((step, i) => (
+                  <div key={i} className={`flex items-start gap-2 p-2.5 rounded-lg ${c.quoteBg}`}>
+                    <span className={`text-xs font-black ${c.accent} mt-0.5`}>{i + 1}</span>
+                    <p className={`text-xs ${c.textSec}`}>{step}</p>
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )}
+
+          {/* What to Say */}
+          {quickResults.what_to_say?.script && (
+            <Section icon="💬" title="What to Say" defaultOpen={true} c={c}>
+              <div className={`${c.accentBg} border rounded-lg p-3 mb-2`}>
+                <p className={`text-sm ${c.text} leading-relaxed`}>"{quickResults.what_to_say.script}"</p>
+              </div>
+              <CopyBtn content={`${quickResults.what_to_say.script}\n\n— Generated by DeftBrain · deftbrain.com`} label="Copy script" />
+              {quickResults.what_to_say.backup_script && (
+                <div className="mt-2">
+                  <p className={`text-[10px] font-bold ${c.label} uppercase mb-1`}>Softer version</p>
+                  <div className={`${c.quoteBg} rounded-lg p-3`}>
+                    <p className={`text-xs ${c.textSec}`}>"{quickResults.what_to_say.backup_script}"</p>
+                  </div>
+                  <CopyBtn content={`${quickResults.what_to_say.backup_script}\n\n— Generated by DeftBrain · deftbrain.com`} label="Copy" />
+                </div>
+              )}
+            </Section>
+          )}
+
+          {/* Reframe */}
+          {quickResults.reframe && (
+            <div className={`${c.info} border rounded-xl p-4`}>
+              <p className={`text-xs font-bold ${isDark ? 'text-blue-200' : 'text-blue-800'} mb-1`}>💡 Perspective</p>
+              <p className={`text-xs ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>{quickResults.reframe}</p>
+            </div>
+          )}
+
+          {/* What not to do */}
+          {quickResults.what_not_to_do && (
+            <div className={`${c.danger} border rounded-lg p-3`}>
+              <p className={`text-xs font-bold ${c.dangerText}`}>🚫 Don't: {quickResults.what_not_to_do}</p>
+            </div>
+          )}
+
+          {/* Longer term */}
+          {quickResults.longer_term && (
+            <Section icon="📅" title="Longer Term" c={c}>
+              <p className={`text-xs ${c.textSec}`}>{quickResults.longer_term}</p>
+            </Section>
+          )}
+
+          {/* Actions */}
+          <div className="flex gap-2 flex-wrap">
+            <button onClick={() => saveMove('quick', situation.slice(0, 40), quickResults)}
+              className={`${c.btnSec} px-3 py-1.5 rounded-lg text-xs font-bold min-h-[32px]`}>💾 Save this move</button>
+            <ActionBar
+              content={`${quickResults.move_emoji || '💸'} ${quickResults.headline}\n\n${quickResults.immediate_steps?.map((s, i) => `${i + 1}. ${s}`).join('\n') || ''}\n\n${quickResults.what_to_say?.script ? `💬 Script: "${quickResults.what_to_say.script}"` : ''}\n\n— Generated by DeftBrain · deftbrain.com`}
+              title="MoneyMoves"
+            />
+          </div>
+
+          {/* Cross refs */}
+          <div className={`${c.card} border rounded-xl p-4`}>
+            <p className={`text-[10px] font-bold ${c.label} uppercase mb-2`}>Related tools</p>
+            <div className="flex flex-wrap gap-2">
+              {CROSS_REFS.map(ref => (
+                <a key={ref.id} href={`/?tool=${ref.id}`} target="_blank" rel="noopener noreferrer"
+                  className={`${c.btnSec} px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 min-h-[32px]`}>
+                  <span>{ref.icon}</span> {ref.label}
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
+  // ════════════════════════════════════════════════════════════
+  // RENDER: SCRIPTS
+  // ════════════════════════════════════════════════════════════
+  const renderScripts = () => (
+    <div className="space-y-4">
+      <div className={`${c.card} border rounded-xl p-5`}>
+        <h2 className={`text-lg font-bold ${c.text} mb-1`}>💬 Social Scripts</h2>
+        <p className={`text-sm ${c.textSec} mb-4`}>Get ready-to-use words for money conversations</p>
+
+        <div className="mb-4">
+          <label className={`text-sm font-bold ${c.label} block mb-1.5`}>What's the scenario?</label>
+          <input type="text" value={scriptScenario} onChange={e => setScriptScenario(e.target.value)}
+            placeholder={"e.g., Declining a group dinner, asking to split separately, saying I can't afford the trip..."}
+            className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+          <div>
+            <label className={`text-xs font-bold ${c.label} block mb-1`}>Who's it with?</label>
+            <div className="flex flex-wrap gap-1.5">
+              {RELATIONSHIP_TYPES.map(r => (
+                <button key={r} onClick={() => setScriptRelationship(scriptRelationship === r ? '' : r)}
+                  className={`px-2 py-1 rounded text-[10px] font-bold border min-h-[28px] ${
+                    scriptRelationship === r ? c.pillActive : c.pillInactive
+                  }`}>{r}</button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <label className={`text-xs font-bold ${c.label} block mb-1`}>Tone preference</label>
+            <div className="flex flex-wrap gap-1.5">
+              {['Direct', 'Gentle', 'Humorous', 'Professional'].map(t => (
+                <button key={t} onClick={() => setScriptTone(scriptTone === t ? '' : t)}
+                  className={`px-2 py-1 rounded text-[10px] font-bold border min-h-[28px] ${
+                    scriptTone === t ? c.pillActive : c.pillInactive
+                  }`}>{t}</button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <button onClick={runScripts} disabled={!scriptScenario.trim() || loading}
+          className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+          {loading ? <><span className="animate-spin inline-block">⏳</span> Writing scripts...</> : <><span>💬</span> Generate Scripts</>}
+        </button>
+      </div>
+
+      {/* Script Results */}
+      {scriptResults && (
+        <div className="space-y-4">
+          {scriptResults.scripts?.map((script, i) => (
+            <div key={i} className={`${c.card} border rounded-xl p-4`}>
+              <div className="flex items-center justify-between mb-2">
+                <div>
+                  <span className={`text-xs font-black ${c.text}`}>{script.label}</span>
+                  <span className={`text-[10px] ${c.textMuted} ml-2`}>{script.style}</span>
+                </div>
+                <span className={`text-[9px] ${c.textMuted}`}>{script.best_for}</span>
+              </div>
+              <div className={`${c.accentBg} border rounded-lg p-3 mb-2`}>
+                <p className={`text-sm ${c.text} leading-relaxed`}>"{script.text}"</p>
+              </div>
+              <div className="flex gap-2">
+                <CopyBtn content={`${script.text}\n\n— Generated by DeftBrain · deftbrain.com`} label="Copy" />
+                <button onClick={() => saveMove('script', `${script.label}: ${scriptScenario.slice(0, 30)}`, script)}
+                  className={`text-xs font-bold ${c.accent} min-h-[28px]`}>💾 Save</button>
+              </div>
+            </div>
+          ))}
+
+          {/* Follow-ups */}
+          {scriptResults.follow_up_scripts && (
+            <Section icon="🔄" title="If They Push Back" defaultOpen={true} c={c}>
+              {scriptResults.follow_up_scripts.if_they_push_back && (
+                <div className="mb-2">
+                  <p className={`text-[10px] font-bold ${c.label} uppercase mb-1`}>If they don't accept</p>
+                  <div className={`${c.quoteBg} rounded-lg p-3`}>
+                    <p className={`text-xs ${c.textSec}`}>"{scriptResults.follow_up_scripts.if_they_push_back}"</p>
+                  </div>
+                  <CopyBtn content={`${scriptResults.follow_up_scripts.if_they_push_back}\n\n— Generated by DeftBrain · deftbrain.com`} label="Copy" />
+                </div>
+              )}
+              {scriptResults.follow_up_scripts.if_they_offer_to_pay && (
+                <div>
+                  <p className={`text-[10px] font-bold ${c.label} uppercase mb-1`}>If they offer to cover you</p>
+                  <div className={`${c.quoteBg} rounded-lg p-3`}>
+                    <p className={`text-xs ${c.textSec}`}>"{scriptResults.follow_up_scripts.if_they_offer_to_pay}"</p>
+                  </div>
+                </div>
+              )}
+            </Section>
+          )}
+
+          {scriptResults.pro_tip && (
+            <div className={`${c.info} border rounded-lg p-3`}>
+              <p className={`text-xs ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>💡 {scriptResults.pro_tip}</p>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+
+  // ════════════════════════════════════════════════════════════
+  // RENDER: TRIAGE
+  // ════════════════════════════════════════════════════════════
+  const renderTriage = () => (
+    <div className="space-y-4">
+      <div className={`${c.card} border rounded-xl p-5`}>
+        <h2 className={`text-lg font-bold ${c.text} mb-1`}>🚨 Bill Triage</h2>
+        <p className={`text-sm ${c.textSec} mb-4`}>Got hit with a bill? Here's what to do first.</p>
+
+        <div className="mb-4">
+          <label className={`text-sm font-bold ${c.label} block mb-1.5`}>What kind of bill?</label>
+          <div className="flex flex-wrap gap-1.5 mb-2">
+            {BILL_TYPES.map(bt => (
+              <button key={bt} onClick={() => setBillType(bt)}
+                className={`px-2.5 py-1.5 rounded-lg text-[11px] font-bold border min-h-[32px] ${
+                  billType === bt ? c.pillActive : c.pillInactive
+                }`}>{bt}</button>
+            ))}
+          </div>
+          <input type="text" value={billType} onChange={e => setBillType(e.target.value)}
+            placeholder="Or type your own..."
+            className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
+          <div>
+            <label className={`text-xs font-bold ${c.label} block mb-1`}>Amount</label>
+            <div className="flex items-center gap-1">
+              <span className={`text-xs font-bold ${c.textMuted}`}>{currency}</span>
+              <input type="number" value={billAmount} onChange={e => setBillAmount(e.target.value)}
+                placeholder="Amount"
+                className={`flex-1 px-2 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
+            </div>
+          </div>
+          <div>
+            <label className={`text-xs font-bold ${c.label} block mb-1`}>When's it due?</label>
+            <input type="text" value={billDeadline} onChange={e => setBillDeadline(e.target.value)}
+              placeholder="e.g., next week, 30 days"
+              className={`w-full px-2 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
+          </div>
+          <div>
+            <label className={`text-xs font-bold ${c.label} block mb-1`}>Can you pay now?</label>
+            <div className="flex gap-1.5">
+              {['Yes', 'Partially', 'No'].map(opt => (
+                <button key={opt} onClick={() => setBillCanPay(opt)}
+                  className={`flex-1 px-2 py-2 rounded-lg text-[10px] font-bold border min-h-[32px] ${
+                    billCanPay === opt ? c.pillActive : c.pillInactive
+                  }`}>{opt}</button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <button onClick={runTriage} disabled={!billType.trim() || loading}
+          className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+          {loading ? <><span className="animate-spin inline-block">⏳</span> Triaging...</> : <><span>🚨</span> Triage This Bill</>}
+        </button>
+      </div>
+
+      {/* Triage Results */}
+      {triageResults && (
+        <div className="space-y-4">
+          {/* Severity */}
+          <div className={`${verdictBadge(triageResults.severity)} border-2 rounded-xl p-5 text-center`}>
+            <span className="text-3xl block mb-2">{triageResults.severity_emoji || '🚨'}</span>
+            <p className={`text-lg font-black ${c.text}`}>{triageResults.severity}</p>
+            {triageResults.first_move && (
+              <p className={`text-sm font-bold ${c.accent} mt-2`}>First move: {triageResults.first_move}</p>
+            )}
+          </div>
+
+          {/* Action plan */}
+          {triageResults.action_plan?.length > 0 && (
+            <Section icon="📋" title="Action Plan" defaultOpen={true} c={c}>
+              <div className="space-y-3">
+                {triageResults.action_plan.map((step, i) => (
+                  <div key={i} className={`${c.quoteBg} rounded-lg p-3`}>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className={`text-xs font-bold ${c.text}`}>{step.step}</span>
+                      {step.when && <span className={`text-[9px] font-black px-1.5 py-0.5 rounded ${
+                        step.when === 'Today' ? c.danger : c.warning
+                      }`}>{step.when}</span>}
+                    </div>
+                    {step.what_to_say && (
+                      <div className={`${c.accentBg} border rounded p-2 mt-1 mb-1`}>
+                        <p className={`text-[11px] ${c.text}`}>💬 "{step.what_to_say}"</p>
+                      </div>
+                    )}
+                    {step.pro_tip && <p className={`text-[10px] ${c.accent}`}>💡 {step.pro_tip}</p>}
+                    {step.what_to_say && (
+                      <CopyBtn content={`${step.what_to_say}\n\n— Generated by DeftBrain · deftbrain.com`} label="Copy script" />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )}
+
+          {/* Negotiation scripts */}
+          {triageResults.negotiation_scripts && (
+            <Section icon="🤝" title="Negotiation Scripts" defaultOpen={true} c={c}>
+              {Object.entries(triageResults.negotiation_scripts).filter(([, v]) => v && v !== 'null').map(([key, script]) => (
+                <div key={key} className="mb-2">
+                  <p className={`text-[10px] font-bold ${c.label} uppercase mb-1`}>
+                    {key.replace(/_/g, ' ')}
+                  </p>
+                  <div className={`${c.accentBg} border rounded-lg p-3`}>
+                    <p className={`text-xs ${c.text}`}>"{script}"</p>
+                  </div>
+                  <CopyBtn content={`${script}\n\n— Generated by DeftBrain · deftbrain.com`} label="Copy" />
+                </div>
+              ))}
+            </Section>
+          )}
+
+          {/* Hidden options */}
+          {triageResults.hidden_options?.length > 0 && (
+            <Section icon="🔓" title="Options Most People Don't Know" c={c}>
+              {triageResults.hidden_options.map((opt, i) => (
+                <p key={i} className={`text-xs ${c.textSec}`}>→ {opt}</p>
+              ))}
+            </Section>
+          )}
+
+          {/* What NOT to do */}
+          {triageResults.what_NOT_to_do?.length > 0 && (
+            <div className={`${c.danger} border rounded-xl p-4`}>
+              <p className={`text-xs font-bold ${c.dangerText} mb-1`}>🚫 Don't</p>
+              {triageResults.what_NOT_to_do.map((d, i) => (
+                <p key={i} className={`text-xs`}>• {d}</p>
+              ))}
+            </div>
+          )}
+
+          {triageResults.perspective && (
+            <div className={`${c.info} border rounded-lg p-3`}>
+              <p className={`text-xs ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>💡 {triageResults.perspective}</p>
+            </div>
+          )}
+
+          <button onClick={() => saveMove('triage', `${billType} ${billAmount ? `${currency}${billAmount}` : ''}`, triageResults)}
+            className={`${c.btnSec} px-3 py-1.5 rounded-lg text-xs font-bold min-h-[32px]`}>💾 Save this triage</button>
+        </div>
+      )}
+    </div>
+  );
+
+  // ════════════════════════════════════════════════════════════
+  // RENDER: GUILT CHECK
+  // ════════════════════════════════════════════════════════════
+  const renderGuilt = () => (
+    <div className="space-y-4">
+      <div className={`${c.card} border rounded-xl p-5`}>
+        <h2 className={`text-lg font-bold ${c.text} mb-1`}>😬 Guilt Check</h2>
+        <p className={`text-sm ${c.textSec} mb-4`}>Bought something and feeling weird about it? Let's check.</p>
+
+        <div className="mb-4">
+          <label className={`text-sm font-bold ${c.label} block mb-1.5`}>What did you buy?</label>
+          <input type="text" value={guiltItem} onChange={e => setGuiltItem(e.target.value)}
+            placeholder={"e.g., concert tickets, new shoes, takeout for the 4th time this week..."}
+            className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+          <div>
+            <label className={`text-xs font-bold ${c.label} block mb-1`}>How much?</label>
+            <div className="flex items-center gap-1">
+              <span className={`text-xs font-bold ${c.textMuted}`}>{currency}</span>
+              <input type="number" value={guiltAmount} onChange={e => setGuiltAmount(e.target.value)}
+                placeholder="Amount"
+                className={`flex-1 px-2 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
+            </div>
+          </div>
+          <div>
+            <label className={`text-xs font-bold ${c.label} block mb-1`}>Context</label>
+            <input type="text" value={guiltContext} onChange={e => setGuiltContext(e.target.value)}
+              placeholder={"e.g., tight month, saved for it, impulse..."}
+              className={`w-full px-2 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
+          </div>
+        </div>
+
+        <button onClick={runGuiltCheck} disabled={!guiltItem.trim() || loading}
+          className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+          {loading ? <><span className="animate-spin inline-block">⏳</span> Checking...</> : <><span>😬</span> Was This Okay?</>}
+        </button>
+      </div>
+
+      {/* Guilt Results */}
+      {guiltResults && (
+        <div className="space-y-4">
+          {/* Verdict */}
+          <div className={`${verdictBadge(guiltResults.verdict)} border-2 rounded-xl p-5 text-center`}>
+            <span className="text-4xl block mb-2">{guiltResults.verdict_emoji || '🤔'}</span>
+            <p className={`text-lg font-black ${c.text}`}>{guiltResults.verdict}</p>
+          </div>
+
+          {/* Honest take */}
+          {guiltResults.honest_take && (
+            <div className={`${c.card} border rounded-xl p-4`}>
+              <p className={`text-sm ${c.textSec} leading-relaxed`}>{guiltResults.honest_take}</p>
+            </div>
+          )}
+
+          {/* Guilt source */}
+          {guiltResults.guilt_source && (
+            <div className={`${c.info} border rounded-lg p-3`}>
+              <p className={`text-xs font-bold ${isDark ? 'text-blue-200' : 'text-blue-800'} mb-1`}>🔍 Why you feel guilty</p>
+              <p className={`text-xs ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>{guiltResults.guilt_source}</p>
+            </div>
+          )}
+
+          {/* Reality check */}
+          {guiltResults.reality_check && (
+            <Section icon="📊" title="Reality Check" defaultOpen={true} c={c}>
+              {guiltResults.reality_check.what_others_spend && (
+                <div><p className={`text-[10px] font-bold ${c.label} uppercase`}>What others spend</p>
+                <p className={`text-xs ${c.textSec}`}>{guiltResults.reality_check.what_others_spend}</p></div>
+              )}
+              {guiltResults.reality_check.one_time_vs_pattern && (
+                <div><p className={`text-[10px] font-bold ${c.label} uppercase`}>One-time or pattern?</p>
+                <p className={`text-xs ${c.textSec}`}>{guiltResults.reality_check.one_time_vs_pattern}</p></div>
+              )}
+              {guiltResults.reality_check.opportunity_cost && (
+                <div><p className={`text-[10px] font-bold ${c.label} uppercase`}>Opportunity cost</p>
+                <p className={`text-xs ${c.textSec}`}>{guiltResults.reality_check.opportunity_cost}</p></div>
+              )}
+            </Section>
+          )}
+
+          {/* If it was fine / stretch */}
+          {guiltResults.if_it_was_fine && (
+            <div className={`${c.success} border rounded-xl p-4`}>
+              <p className={`text-xs font-bold ${c.successText} mb-1`}>✅ Let it go</p>
+              <p className={`text-xs ${isDark ? 'text-emerald-300' : 'text-emerald-700'}`}>{guiltResults.if_it_was_fine}</p>
+            </div>
+          )}
+          {guiltResults.if_it_was_a_stretch && (
+            <div className={`${c.warning} border rounded-xl p-4`}>
+              <p className={`text-xs font-bold ${c.warningText} mb-1`}>⚠️ Small correction</p>
+              <p className={`text-xs ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>{guiltResults.if_it_was_a_stretch}</p>
+            </div>
+          )}
+
+          {/* Rule of thumb */}
+          {guiltResults.rule_of_thumb && (
+            <div className={`${c.accentBg} border-2 rounded-xl p-4 text-center`}>
+              <p className={`text-[10px] font-bold ${c.label} uppercase mb-1`}>Your Rule</p>
+              <p className={`text-sm font-bold ${c.accent}`}>📐 {guiltResults.rule_of_thumb}</p>
+            </div>
+          )}
+
+          <button onClick={() => saveMove('guilt', `${guiltItem} ${guiltAmount ? `${currency}${guiltAmount}` : ''}`, guiltResults)}
+            className={`${c.btnSec} px-3 py-1.5 rounded-lg text-xs font-bold min-h-[32px]`}>💾 Save this check</button>
+        </div>
+      )}
+    </div>
+  );
+
+  // ════════════════════════════════════════════════════════════
+  // RENDER: MONEY TALK
+  // ════════════════════════════════════════════════════════════
+  const renderMoneyTalk = () => (
+    <div className="space-y-4">
+      <div className={`${c.card} border rounded-xl p-5`}>
+        <h2 className={`text-lg font-bold ${c.text} mb-1`}>💑 The Money Talk</h2>
+        <p className={`text-sm ${c.textSec} mb-4`}>Guided framework for difficult money conversations with people you care about</p>
+
+        <div className="mb-4">
+          <label className={`text-sm font-bold ${c.label} block mb-1.5`}>What do you need to talk about?</label>
+          <div className="flex flex-wrap gap-1.5 mb-2">
+            {MONEY_TALK_TOPICS.map((t, i) => (
+              <button key={i} onClick={() => setTalkTopic(t.label)}
+                className={`${c.btnSec} px-2.5 py-1.5 rounded-lg text-[11px] font-medium min-h-[32px] flex items-center gap-1 ${
+                  talkTopic === t.label ? 'ring-2 ring-emerald-500' : ''
+                }`}>
+                <span>{t.icon}</span> {t.label}
+              </button>
+            ))}
+          </div>
+          <input type="text" value={talkTopic} onChange={e => setTalkTopic(e.target.value)}
+            placeholder="Or describe the conversation you need to have..."
+            className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+          <div>
+            <label className={`text-xs font-bold ${c.label} block mb-1`}>Who with?</label>
+            <div className="flex flex-wrap gap-1.5">
+              {['Partner', 'Roommate', 'Spouse', 'Family member', 'Friend'].map(r => (
+                <button key={r} onClick={() => setTalkRelationship(r)}
+                  className={`px-2 py-1 rounded text-[10px] font-bold border min-h-[28px] ${
+                    talkRelationship === r ? c.pillActive : c.pillInactive
+                  }`}>{r}</button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <label className={`text-xs font-bold ${c.label} block mb-1`}>Context</label>
+            <input type="text" value={talkContext} onChange={e => setTalkContext(e.target.value)}
+              placeholder={"e.g., they earn 2x what I do, we've fought about this before..."}
+              className={`w-full px-2 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
+          </div>
+        </div>
+
+        <button onClick={runMoneyTalk} disabled={!talkTopic.trim() || loading}
+          className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+          {loading ? <><span className="animate-spin inline-block">⏳</span> Building framework...</> : <><span>💑</span> Build My Talk</>}
+        </button>
+      </div>
+
+      {talkResults && (
+        <div className="space-y-4">
+          {/* Name */}
+          <div className={`${c.verdict} border-2 rounded-xl p-5 text-center`}>
+            <span className="text-3xl block mb-2">💬</span>
+            <p className={`text-lg font-black ${c.text}`}>{talkResults.conversation_name}</p>
+          </div>
+
+          {/* Prep */}
+          {talkResults.prep_work && (
+            <Section icon="📋" title="Before You Start" defaultOpen={true} c={c}>
+              {talkResults.prep_work.before_you_start && <p className={`text-xs ${c.textSec}`}>📝 {talkResults.prep_work.before_you_start}</p>}
+              {talkResults.prep_work.best_timing && <p className={`text-xs ${c.textSec}`}>⏰ {talkResults.prep_work.best_timing}</p>}
+              {talkResults.prep_work.mindset && (
+                <div className={`${c.accentBg} border rounded-lg p-2 mt-1`}>
+                  <p className={`text-xs font-bold ${c.accent}`}>🧠 {talkResults.prep_work.mindset}</p>
+                </div>
+              )}
+            </Section>
+          )}
+
+          {/* Opening */}
+          {talkResults.opening && (
+            <Section icon="🎬" title="Your Opening" defaultOpen={true} c={c}>
+              {talkResults.opening.opener && (
+                <div className={`${c.accentBg} border rounded-lg p-3 mb-2`}>
+                  <p className={`text-sm ${c.text} leading-relaxed`}>"{talkResults.opening.opener}"</p>
+                </div>
+              )}
+              <CopyBtn content={`${talkResults.opening.opener}\n\n— Generated by DeftBrain · deftbrain.com`} label="Copy opener" />
+              {talkResults.opening.framing && <p className={`text-xs ${c.textSec} mt-2`}>💡 {talkResults.opening.framing}</p>}
+              {talkResults.opening.avoid_saying && (
+                <div className={`${c.danger} border rounded-lg p-2 mt-2`}>
+                  <p className={`text-[10px] font-bold ${c.dangerText}`}>🚫 Don't say: {talkResults.opening.avoid_saying}</p>
+                </div>
+              )}
+            </Section>
+          )}
+
+          {/* Talking Points */}
+          {talkResults.talking_points?.length > 0 && (
+            <Section icon="📌" title="Talking Points" defaultOpen={true} c={c}>
+              <div className="space-y-3">
+                {talkResults.talking_points.map((tp, i) => (
+                  <div key={i} className={`${c.quoteBg} rounded-lg p-3`}>
+                    <p className={`text-xs font-bold ${c.text} mb-1`}>{i + 1}. {tp.point}</p>
+                    {tp.how_to_say_it && (
+                      <div className={`${c.accentBg} border rounded p-2 mb-2`}>
+                        <p className={`text-[11px] ${c.text}`}>💬 "{tp.how_to_say_it}"</p>
+                      </div>
+                    )}
+                    {tp.if_they_get_defensive && (
+                      <p className={`text-[10px] ${c.warningText}`}>🛡️ If defensive: {tp.if_they_get_defensive}</p>
+                    )}
+                    {tp.goal && <p className={`text-[10px] ${c.successText}`}>🎯 Goal: {tp.goal}</p>}
+                    {tp.how_to_say_it && (
+                      <CopyBtn content={`${tp.how_to_say_it}\n\n— Generated by DeftBrain · deftbrain.com`} label="Copy" />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )}
+
+          {/* Tough moments */}
+          {talkResults.tough_moments && (
+            <Section icon="🔥" title="If It Gets Tough" c={c}>
+              {talkResults.tough_moments.if_they_shut_down && (
+                <div className="mb-2"><p className={`text-[10px] font-bold ${c.label} uppercase`}>If they shut down</p>
+                <p className={`text-xs ${c.textSec}`}>{talkResults.tough_moments.if_they_shut_down}</p></div>
+              )}
+              {talkResults.tough_moments.if_it_gets_heated && (
+                <div className="mb-2"><p className={`text-[10px] font-bold ${c.label} uppercase`}>If it gets heated</p>
+                <p className={`text-xs ${c.textSec}`}>{talkResults.tough_moments.if_it_gets_heated}</p></div>
+              )}
+              {talkResults.tough_moments.if_they_deflect && (
+                <div><p className={`text-[10px] font-bold ${c.label} uppercase`}>If they deflect</p>
+                <p className={`text-xs ${c.textSec}`}>{talkResults.tough_moments.if_they_deflect}</p></div>
+              )}
+            </Section>
+          )}
+
+          {/* Landing */}
+          {talkResults.landing_the_plane && (
+            <Section icon="✅" title="Landing the Conversation" defaultOpen={true} c={c}>
+              {talkResults.landing_the_plane.summary_phrase && (
+                <div className={`${c.accentBg} border rounded-lg p-3 mb-2`}>
+                  <p className={`text-sm ${c.text}`}>"{talkResults.landing_the_plane.summary_phrase}"</p>
+                </div>
+              )}
+              {talkResults.landing_the_plane.next_step && <p className={`text-xs ${c.successText}`}>🎯 Next step: {talkResults.landing_the_plane.next_step}</p>}
+              {talkResults.landing_the_plane.follow_up && <p className={`text-xs ${c.textSec}`}>📅 Follow-up: {talkResults.landing_the_plane.follow_up}</p>}
+            </Section>
+          )}
+
+          {talkResults.pro_tip && (
+            <div className={`${c.info} border rounded-lg p-3`}>
+              <p className={`text-xs ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>💡 {talkResults.pro_tip}</p>
+            </div>
+          )}
+
+          <button onClick={() => saveMove('talk', talkTopic.slice(0, 40), talkResults)}
+            className={`${c.btnSec} px-3 py-1.5 rounded-lg text-xs font-bold min-h-[32px]`}>💾 Save this framework</button>
+        </div>
+      )}
+    </div>
+  );
+
+  // ════════════════════════════════════════════════════════════
+  // RENDER: PULSE CHECK
+  // ════════════════════════════════════════════════════════════
+  const renderPulse = () => (
+    <div className="space-y-4">
+      <div className={`${c.card} border rounded-xl p-5`}>
+        <h2 className={`text-lg font-bold ${c.text} mb-1`}>💓 Financial Pulse Check</h2>
+        <p className={`text-sm ${c.textSec} mb-4`}>Quick honest read on where you stand. 30 seconds, no judgment.</p>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+          <div>
+            <label className={`text-xs font-bold ${c.label} block mb-1`}>Monthly income (approx)</label>
+            <div className="flex items-center gap-1">
+              <span className={`text-xs font-bold ${c.textMuted}`}>{currency}</span>
+              <input type="number" value={pulseIncome} onChange={e => setPulseIncome(e.target.value)}
+                placeholder="After taxes"
+                className={`flex-1 px-2 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
+            </div>
+          </div>
+          <div>
+            <label className={`text-xs font-bold ${c.label} block mb-1`}>Rent / housing</label>
+            <div className="flex items-center gap-1">
+              <span className={`text-xs font-bold ${c.textMuted}`}>{currency}</span>
+              <input type="number" value={pulseRent} onChange={e => setPulseRent(e.target.value)}
+                placeholder="Monthly"
+                className={`flex-1 px-2 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
+            </div>
+          </div>
+        </div>
+
+        <div className="mb-4">
+          <label className={`text-xs font-bold ${c.label} block mb-1`}>Any recent spending on your mind?</label>
+          <input type="text" value={pulseSpending} onChange={e => setPulseSpending(e.target.value)}
+            placeholder={"e.g., $200 on concert tickets, $500 car repair, eating out a lot..."}
+            className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
+        </div>
+
+        <div className="mb-5">
+          <label className={`text-xs font-bold ${c.label} block mb-1`}>What's worrying you?</label>
+          <input type="text" value={pulseConcerns} onChange={e => setPulseConcerns(e.target.value)}
+            placeholder={"e.g., no savings, rent going up, not sure if I'm okay..."}
+            className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
+        </div>
+
+        <button onClick={runPulse} disabled={loading}
+          className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+          {loading ? <><span className="animate-spin inline-block">⏳</span> Checking pulse...</> : <><span>💓</span> Check My Pulse</>}
+        </button>
+      </div>
+
+      {pulseResults && (
+        <div className="space-y-4">
+          {/* Verdict */}
+          <div className={`${verdictBadge(pulseResults.pulse_verdict)} border-2 rounded-xl p-5 text-center`}>
+            <span className="text-4xl block mb-2">{pulseResults.pulse_emoji || '💓'}</span>
+            <p className={`text-xl font-black ${c.text}`}>{pulseResults.pulse_verdict}</p>
+          </div>
+
+          {/* Honest read */}
+          {pulseResults.honest_read && (
+            <div className={`${c.card} border rounded-xl p-4`}>
+              <p className={`text-sm ${c.textSec} leading-relaxed`}>{pulseResults.honest_read}</p>
+            </div>
+          )}
+
+          {/* The math */}
+          {pulseResults.the_math && (
+            <Section icon="📊" title="The Numbers" defaultOpen={true} c={c}>
+              {pulseResults.the_math.housing_ratio && (
+                <div><p className={`text-[10px] font-bold ${c.label} uppercase`}>Housing ratio</p>
+                <p className={`text-xs ${c.textSec}`}>{pulseResults.the_math.housing_ratio}</p></div>
+              )}
+              {pulseResults.the_math.breathing_room && (
+                <div><p className={`text-[10px] font-bold ${c.label} uppercase`}>Breathing room</p>
+                <p className={`text-xs ${c.textSec}`}>{pulseResults.the_math.breathing_room}</p></div>
+              )}
+              {pulseResults.the_math.context && (
+                <div><p className={`text-[10px] font-bold ${c.label} uppercase`}>Context</p>
+                <p className={`text-xs ${c.textSec}`}>{pulseResults.the_math.context}</p></div>
+              )}
+            </Section>
+          )}
+
+          {/* Key items */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {pulseResults.biggest_risk && (
+              <div className={`${c.danger} border rounded-xl p-4`}>
+                <p className={`text-xs font-bold ${c.dangerText} mb-1`}>⚠️ Biggest risk</p>
+                <p className={`text-xs`}>{pulseResults.biggest_risk}</p>
+              </div>
+            )}
+            {pulseResults.what_youre_doing_right && (
+              <div className={`${c.success} border rounded-xl p-4`}>
+                <p className={`text-xs font-bold ${c.successText} mb-1`}>✅ Doing right</p>
+                <p className={`text-xs ${isDark ? 'text-emerald-300' : 'text-emerald-700'}`}>{pulseResults.what_youre_doing_right}</p>
+              </div>
+            )}
+          </div>
+
+          {/* One thing to do */}
+          {pulseResults.one_thing_to_do && (
+            <div className={`${c.accentBg} border-2 rounded-xl p-4 text-center`}>
+              <p className={`text-[10px] font-bold ${c.label} uppercase mb-1`}>If you do one thing</p>
+              <p className={`text-sm font-bold ${c.accent}`}>🎯 {pulseResults.one_thing_to_do}</p>
+            </div>
+          )}
+
+          {/* When to worry */}
+          {pulseResults.when_to_worry && (
+            <Section icon="🚩" title="When to Get Help" c={c}>
+              <p className={`text-xs ${c.textSec}`}>{pulseResults.when_to_worry}</p>
+              {pulseResults.free_resources?.length > 0 && (
+                <div className="mt-2">
+                  <p className={`text-[10px] font-bold ${c.label} uppercase mb-1`}>Free resources</p>
+                  {pulseResults.free_resources.map((r, i) => (
+                    <p key={i} className={`text-xs ${c.accent}`}>→ {r}</p>
+                  ))}
+                </div>
+              )}
+            </Section>
+          )}
+        </div>
+      )}
+    </div>
+  );
+
+  // ════════════════════════════════════════════════════════════
+  // RENDER: FOLLOW-UP
+  // ════════════════════════════════════════════════════════════
+  const renderFollowUp = () => (
+    <div className="space-y-4">
+      <div className={`${c.card} border rounded-xl p-5`}>
+        <h2 className={`text-lg font-bold ${c.text} mb-1`}>🔄 Follow-Up</h2>
+        <p className={`text-sm ${c.textSec} mb-4`}>They said no? Pushed back? Here's your next move.</p>
+
+        <div className="mb-4">
+          <label className={`text-sm font-bold ${c.label} block mb-1.5`}>What was the original situation?</label>
+          <input type="text" value={fuSituation} onChange={e => setFuSituation(e.target.value)}
+            placeholder={"e.g., asked hospital for payment plan, told friend I can't afford the trip..."}
+            className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
+        </div>
+
+        <div className="mb-4">
+          <label className={`text-sm font-bold ${c.label} block mb-1.5`}>What did they say?</label>
+          <textarea value={fuTheirResponse} onChange={e => setFuTheirResponse(e.target.value)}
+            placeholder={"What was their response? Be specific — their exact words help."}
+            rows={3}
+            className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2 resize-none`} />
+        </div>
+
+        <div className="mb-5">
+          <label className={`text-sm font-bold ${c.label} block mb-1.5`}>
+            What did you try? <span className={`font-normal ${c.textMuted}`}>(optional)</span>
+          </label>
+          <input type="text" value={fuWhatYouTried} onChange={e => setFuWhatYouTried(e.target.value)}
+            placeholder={"e.g., used the payment plan script, said I couldn't go..."}
+            className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
+        </div>
+
+        <button onClick={runFollowUp} disabled={!fuSituation.trim() || !fuTheirResponse.trim() || loading}
+          className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+          {loading ? <><span className="animate-spin inline-block">⏳</span> Planning next move...</> : <><span>🔄</span> What's My Next Move?</>}
+        </button>
+      </div>
+
+      {fuResults && (
+        <div className="space-y-4">
+          {/* Assessment */}
+          {fuResults.assessment && (
+            <div className={`${c.card} border rounded-xl p-4`}>
+              <p className={`text-xs font-bold ${c.text} mb-1`}>🔍 Reading the room</p>
+              <p className={`text-sm ${c.textSec}`}>{fuResults.assessment}</p>
+            </div>
+          )}
+
+          {/* Next move */}
+          {fuResults.next_move && (
+            <div className={`${c.verdict} border-2 rounded-xl p-5 text-center`}>
+              <span className="text-3xl block mb-2">🎯</span>
+              <p className={`text-base font-black ${c.text}`}>{fuResults.next_move}</p>
+            </div>
+          )}
+
+          {/* Scripts */}
+          {fuResults.escalation_script && (
+            <div className={`${c.card} border rounded-xl p-4`}>
+              <p className={`text-xs font-bold ${c.text} mb-1`}>💬 Escalation script</p>
+              <div className={`${c.accentBg} border rounded-lg p-3 mb-2`}>
+                <p className={`text-sm ${c.text} leading-relaxed`}>"{fuResults.escalation_script}"</p>
+              </div>
+              <CopyBtn content={`${fuResults.escalation_script}\n\n— Generated by DeftBrain · deftbrain.com`} label="Copy script" />
+            </div>
+          )}
+
+          {fuResults.soft_alternative && (
+            <div className={`${c.card} border rounded-xl p-4`}>
+              <p className={`text-xs font-bold ${c.text} mb-1`}>🤝 Compromise option</p>
+              <div className={`${c.quoteBg} rounded-lg p-3 mb-2`}>
+                <p className={`text-xs ${c.textSec}`}>"{fuResults.soft_alternative}"</p>
+              </div>
+              <CopyBtn content={`${fuResults.soft_alternative}\n\n— Generated by DeftBrain · deftbrain.com`} label="Copy" />
+            </div>
+          )}
+
+          {fuResults.nuclear_option && (
+            <Section icon="💣" title="Nuclear Option" c={c}>
+              <p className={`text-xs ${c.textSec}`}>{fuResults.nuclear_option}</p>
+            </Section>
+          )}
+
+          {fuResults.know_your_rights && fuResults.know_your_rights !== 'null' && (
+            <div className={`${c.info} border rounded-lg p-3`}>
+              <p className={`text-xs font-bold ${isDark ? 'text-blue-200' : 'text-blue-800'} mb-1`}>⚖️ Know your rights</p>
+              <p className={`text-xs ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>{fuResults.know_your_rights}</p>
+            </div>
+          )}
+
+          {fuResults.when_to_fold && (
+            <div className={`${c.warning} border rounded-lg p-3`}>
+              <p className={`text-xs font-bold ${c.warningText} mb-1`}>🏳️ When to fold</p>
+              <p className={`text-xs`}>{fuResults.when_to_fold}</p>
+            </div>
+          )}
+
+          {fuResults.pro_tip && (
+            <div className={`${c.accentBg} border rounded-lg p-3`}>
+              <p className={`text-xs font-bold ${c.accent}`}>💡 {fuResults.pro_tip}</p>
+            </div>
+          )}
+
+          <button onClick={() => saveMove('followup', fuSituation.slice(0, 40), fuResults)}
+            className={`${c.btnSec} px-3 py-1.5 rounded-lg text-xs font-bold min-h-[32px]`}>💾 Save this follow-up</button>
+        </div>
+      )}
+    </div>
+  );
+
+  // ════════════════════════════════════════════════════════════
+  // RENDER: REHEARSAL
+  // ════════════════════════════════════════════════════════════
+  const renderRehearsal = () => {
+    const exchanges = rehResults?.exchanges || [];
+    const hardExchanges = rehResults?.hard_mode || [];
+    const items = rehMode === 'hard' ? hardExchanges : exchanges;
+    const currentItem = items[rehStep];
+
+    return (
+      <div className="space-y-4">
+        <div className={`${c.card} border rounded-xl p-5`}>
+          <h2 className={`text-lg font-bold ${c.text} mb-1`}>🎭 Rehearsal Mode</h2>
+          <p className={`text-sm ${c.textSec} mb-4`}>Practice the conversation before you have it for real</p>
+
+          <div className="mb-4">
+            <label className={`text-sm font-bold ${c.label} block mb-1.5`}>What conversation do you need to rehearse?</label>
+            <input type="text" value={rehScenario} onChange={e => setRehScenario(e.target.value)}
+              placeholder={"e.g., asking for a raise, telling roommate about splitting rent differently..."}
+              className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+            <div>
+              <label className={`text-xs font-bold ${c.label} block mb-1`}>Who with?</label>
+              <input type="text" value={rehRelationship} onChange={e => setRehRelationship(e.target.value)}
+                placeholder="e.g., boss, partner, landlord..."
+                className={`w-full px-2 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
+            </div>
+            <div>
+              <label className={`text-xs font-bold ${c.label} block mb-1`}>Your goal</label>
+              <input type="text" value={rehGoal} onChange={e => setRehGoal(e.target.value)}
+                placeholder="e.g., get a 10% raise, split 60/40..."
+                className={`w-full px-2 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
+            </div>
+          </div>
+
+          <button onClick={runRehearsal} disabled={!rehScenario.trim() || loading}
+            className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+            {loading ? <><span className="animate-spin inline-block">⏳</span> Building rehearsal...</> : <><span>🎭</span> Generate Rehearsal</>}
+          </button>
+        </div>
+
+        {/* Rehearsal Results — Flashcard walkthrough */}
+        {rehResults && (
+          <div className="space-y-4">
+            {/* Header */}
+            <div className={`${c.verdict} border-2 rounded-xl p-4 text-center`}>
+              <p className={`text-lg font-black ${c.text}`}>🎭 {rehResults.rehearsal_name}</p>
+              {rehResults.context_note && <p className={`text-xs ${c.textSec} mt-1`}>{rehResults.context_note}</p>}
+            </div>
+
+            {/* Mode toggle */}
+            <div className="flex gap-2">
+              <button onClick={() => { setRehMode('normal'); setRehStep(0); }}
+                className={`flex-1 px-3 py-2 rounded-lg text-xs font-bold border min-h-[36px] ${rehMode === 'normal' ? c.pillActive : c.pillInactive}`}>
+                📝 Standard ({exchanges.length} exchanges)
+              </button>
+              {hardExchanges.length > 0 && (
+                <button onClick={() => { setRehMode('hard'); setRehStep(0); }}
+                  className={`flex-1 px-3 py-2 rounded-lg text-xs font-bold border min-h-[36px] ${rehMode === 'hard' ? c.pillActive : c.pillInactive}`}>
+                  🔥 Hard Mode ({hardExchanges.length})
+                </button>
+              )}
+            </div>
+
+            {/* Flashcard */}
+            {currentItem && (
+              <div className={`${c.card} border-2 rounded-xl overflow-hidden`}>
+                {/* Progress bar */}
+                <div className={`h-1.5 ${isDark ? 'bg-zinc-700' : 'bg-slate-200'}`}>
+                  <div className="h-full bg-emerald-500 transition-all" style={{ width: `${((rehStep + 1) / items.length) * 100}%` }} />
+                </div>
+
+                <div className="p-5">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className={`text-[10px] font-black ${c.accent}`}>
+                      {rehMode === 'hard' ? '🔥 HARD MODE' : '📝 STANDARD'} — {rehStep + 1}/{items.length}
+                    </span>
+                  </div>
+
+                  {/* You say */}
+                  <div className={`${c.success} border rounded-lg p-3 mb-3`}>
+                    <p className={`text-[10px] font-bold ${c.successText} uppercase mb-1`}>You say:</p>
+                    <p className={`text-sm ${isDark ? 'text-emerald-200' : 'text-emerald-900'} leading-relaxed`}>
+                      "{currentItem.you_say}"
+                    </p>
+                  </div>
+
+                  {/* They say */}
+                  <div className={`${isDark ? 'bg-zinc-700/50 border-zinc-600' : 'bg-slate-100 border-slate-200'} border rounded-lg p-3 mb-3`}>
+                    <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-1`}>
+                      {rehMode === 'hard' ? 'They push back:' : 'They might say:'}
+                    </p>
+                    <p className={`text-sm ${c.textSec} leading-relaxed`}>
+                      "{currentItem.they_might_say || currentItem.they_say}"
+                    </p>
+                  </div>
+
+                  {/* Coaching note */}
+                  {(currentItem.coaching_note || currentItem.why_this_works) && (
+                    <div className={`${c.info} border rounded-lg p-2`}>
+                      <p className={`text-[10px] ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>
+                        💡 {currentItem.coaching_note || currentItem.why_this_works}
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Navigation */}
+                <div className={`flex gap-2 px-5 pb-4`}>
+                  <button onClick={() => setRehStep(p => Math.max(0, p - 1))}
+                    disabled={rehStep === 0}
+                    className={`flex-1 ${c.btnSec} py-2 rounded-lg text-xs font-bold min-h-[36px] disabled:opacity-30`}>
+                    ← Back
+                  </button>
+                  <button onClick={() => setRehStep(p => Math.min(items.length - 1, p + 1))}
+                    disabled={rehStep >= items.length - 1}
+                    className={`flex-1 ${c.btnPrimary} py-2 rounded-lg text-xs font-bold min-h-[36px] disabled:opacity-30`}>
+                    Next →
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Confidence boosters */}
+            {rehResults.confidence_boosters?.length > 0 && (
+              <Section icon="💪" title="Confidence Boosters" c={c}>
+                {rehResults.confidence_boosters.map((b, i) => (
+                  <p key={i} className={`text-xs ${c.textSec}`}>✓ {b}</p>
+                ))}
+              </Section>
+            )}
+
+            {/* Right before */}
+            {rehResults.right_before && (
+              <div className={`${c.accentBg} border rounded-lg p-3`}>
+                <p className={`text-xs font-bold ${c.accent}`}>⏱️ 5 min before: {rehResults.right_before}</p>
+              </div>
+            )}
+
+            <div className="flex gap-2">
+              <button onClick={() => { setRehStep(0); }}
+                className={`${c.btnSec} px-3 py-1.5 rounded-lg text-xs font-bold min-h-[32px]`}>🔄 Restart</button>
+              <button onClick={() => saveMove('rehearsal', rehScenario.slice(0, 40), rehResults)}
+                className={`${c.btnSec} px-3 py-1.5 rounded-lg text-xs font-bold min-h-[32px]`}>💾 Save</button>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // ════════════════════════════════════════════════════════════
+  // RENDER: SIMULATOR
+  // ════════════════════════════════════════════════════════════
+  const SIMULATOR_PRESETS = [
+    'Asking for a raise', 'Moving to a more expensive city', 'Quitting to freelance',
+    'Going back to school', 'Buying a car', 'Taking unpaid leave', 'Starting a side business',
+  ];
+
+  const renderSimulator = () => (
+    <div className="space-y-4">
+      <div className={`${c.card} border rounded-xl p-5`}>
+        <h2 className={`text-lg font-bold ${c.text} mb-1`}>🔮 Scenario Simulator</h2>
+        <p className={`text-sm ${c.textSec} mb-4`}>Thinking about a big money decision? See what it actually looks like.</p>
+
+        <div className="mb-4">
+          <label className={`text-sm font-bold ${c.label} block mb-1.5`}>What are you considering?</label>
+          <div className="flex flex-wrap gap-1.5 mb-2">
+            {SIMULATOR_PRESETS.map((sp, i) => (
+              <button key={i} onClick={() => setSimScenario(sp)}
+                className={`${c.btnSec} px-2.5 py-1.5 rounded-lg text-[11px] font-medium min-h-[32px] ${
+                  simScenario === sp ? 'ring-2 ring-emerald-500' : ''
+                }`}>{sp}</button>
+            ))}
+          </div>
+          <input type="text" value={simScenario} onChange={e => setSimScenario(e.target.value)}
+            placeholder="Or describe your own scenario..."
+            className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
+          <div>
+            <label className={`text-xs font-bold ${c.label} block mb-1`}>Monthly income</label>
+            <div className="flex items-center gap-1">
+              <span className={`text-xs font-bold ${c.textMuted}`}>{currency}</span>
+              <input type="number" value={simIncome} onChange={e => setSimIncome(e.target.value)}
+                placeholder="After tax"
+                className={`flex-1 px-2 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
+            </div>
+          </div>
+          <div>
+            <label className={`text-xs font-bold ${c.label} block mb-1`}>Rent / housing</label>
+            <div className="flex items-center gap-1">
+              <span className={`text-xs font-bold ${c.textMuted}`}>{currency}</span>
+              <input type="number" value={simRent} onChange={e => setSimRent(e.target.value)}
+                placeholder="Monthly"
+                className={`flex-1 px-2 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
+            </div>
+          </div>
+          <div>
+            <label className={`text-xs font-bold ${c.label} block mb-1`}>Savings</label>
+            <div className="flex items-center gap-1">
+              <span className={`text-xs font-bold ${c.textMuted}`}>{currency}</span>
+              <input type="number" value={simSavings} onChange={e => setSimSavings(e.target.value)}
+                placeholder="Total"
+                className={`flex-1 px-2 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
+            </div>
+          </div>
+        </div>
+
+        <div className="mb-5">
+          <label className={`text-xs font-bold ${c.label} block mb-1`}>Other context</label>
+          <input type="text" value={simContext} onChange={e => setSimContext(e.target.value)}
+            placeholder={"e.g., partner's income, debt, dependents..."}
+            className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
+        </div>
+
+        <button onClick={runSimulator} disabled={!simScenario.trim() || loading}
+          className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+          {loading ? <><span className="animate-spin inline-block">⏳</span> Simulating...</> : <><span>🔮</span> Simulate This</>}
+        </button>
+      </div>
+
+      {simResults && (
+        <div className="space-y-4">
+          {/* Feasibility */}
+          <div className={`${verdictBadge(simResults.feasibility)} border-2 rounded-xl p-5 text-center`}>
+            <span className="text-4xl block mb-2">{simResults.feasibility_emoji || '🔮'}</span>
+            <p className={`text-xl font-black ${c.text}`}>{simResults.feasibility}</p>
+            {simResults.scenario_name && <p className={`text-xs ${c.textMuted} mt-1`}>{simResults.scenario_name}</p>}
+          </div>
+
+          {/* Honest take */}
+          {simResults.honest_take && (
+            <div className={`${c.card} border rounded-xl p-4`}>
+              <p className={`text-sm ${c.textSec} leading-relaxed`}>{simResults.honest_take}</p>
+            </div>
+          )}
+
+          {/* The math */}
+          {simResults.the_math && (
+            <Section icon="📊" title="The Math" defaultOpen={true} c={c}>
+              {simResults.the_math.monthly_impact && (
+                <div><p className={`text-[10px] font-bold ${c.label} uppercase`}>Monthly impact</p>
+                <p className={`text-xs ${c.textSec}`}>{simResults.the_math.monthly_impact}</p></div>
+              )}
+              {simResults.the_math.timeline && (
+                <div><p className={`text-[10px] font-bold ${c.label} uppercase`}>Timeline to stable</p>
+                <p className={`text-xs ${c.textSec}`}>{simResults.the_math.timeline}</p></div>
+              )}
+              {simResults.the_math.cushion_needed && (
+                <div><p className={`text-[10px] font-bold ${c.label} uppercase`}>Cushion needed</p>
+                <p className={`text-xs ${c.textSec}`}>{simResults.the_math.cushion_needed}</p></div>
+              )}
+            </Section>
+          )}
+
+          {/* Month by month */}
+          {simResults.month_by_month?.length > 0 && (
+            <Section icon="📅" title="Month by Month" defaultOpen={true} c={c}>
+              <div className="space-y-2">
+                {simResults.month_by_month.map((m, i) => (
+                  <div key={i} className={`${c.quoteBg} rounded-lg p-3`}>
+                    <p className={`text-xs font-bold ${c.text} mb-0.5`}>{m.month}</p>
+                    <p className={`text-xs ${c.textSec}`}>{m.what_happens}</p>
+                    {m.watch_for && <p className={`text-[10px] ${c.warningText} mt-1`}>⚠️ {m.watch_for}</p>}
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )}
+
+          {/* Make it work */}
+          {simResults.make_it_work?.length > 0 && (
+            <Section icon="🔧" title="How to Make It Work" defaultOpen={true} c={c}>
+              {simResults.make_it_work.map((m, i) => (
+                <p key={i} className={`text-xs ${c.textSec}`}>→ {m}</p>
+              ))}
+            </Section>
+          )}
+
+          {/* Deal breakers */}
+          {simResults.deal_breakers?.length > 0 && (
+            <div className={`${c.danger} border rounded-xl p-4`}>
+              <p className={`text-xs font-bold ${c.dangerText} mb-1`}>🚫 Deal Breakers</p>
+              {simResults.deal_breakers.map((d, i) => <p key={i} className="text-xs">• {d}</p>)}
+            </div>
+          )}
+
+          {/* Before you decide */}
+          {simResults.before_you_decide && (
+            <div className={`${c.info} border rounded-lg p-3`}>
+              <p className={`text-xs font-bold ${isDark ? 'text-blue-200' : 'text-blue-800'} mb-1`}>🔍 Before you decide</p>
+              <p className={`text-xs ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>{simResults.before_you_decide}</p>
+            </div>
+          )}
+
+          {/* Confidence verdict */}
+          {simResults.confidence_verdict && (
+            <div className={`${c.accentBg} border-2 rounded-xl p-4 text-center`}>
+              <p className={`text-sm font-bold ${c.accent}`}>🎯 {simResults.confidence_verdict}</p>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+
+  // ════════════════════════════════════════════════════════════
+  // RENDER: WINS JOURNAL
+  // ════════════════════════════════════════════════════════════
+  const renderWins = () => (
+    <div className="space-y-4">
+      <div className={`${c.card} border rounded-xl p-5`}>
+        <h2 className={`text-lg font-bold ${c.text} mb-1`}>🏆 Money Wins</h2>
+        <p className={`text-sm ${c.textSec} mb-4`}>Track conversations that went well and money you saved</p>
+
+        {/* Stats banner */}
+        {winsStats && (
+          <div className="grid grid-cols-2 gap-2 mb-4">
+            <div className={`${c.success} border rounded-lg p-3 text-center`}>
+              <p className={`text-xl font-black ${c.successText}`}>
+                {winsStats.totalSaved > 0 ? `${currency}${winsStats.totalSaved.toLocaleString()}` : '—'}
+              </p>
+              <p className={`text-[9px] ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>Total saved</p>
+            </div>
+            <div className={`${c.accentBg} border rounded-lg p-3 text-center`}>
+              <p className={`text-xl font-black ${c.accent}`}>{winsStats.conversationsHad}</p>
+              <p className={`text-[9px] ${c.textMuted}`}>Wins logged</p>
+            </div>
+          </div>
+        )}
+
+        {/* Add win form */}
+        <div className={`${c.quoteBg} rounded-lg p-3 mb-3`}>
+          <p className={`text-[10px] font-bold ${c.label} uppercase mb-2`}>Log a win</p>
+          <div className="space-y-2">
+            <input type="text" value={winDescription} onChange={e => setWinDescription(e.target.value)}
+              placeholder={"What did you do? e.g., negotiated hospital bill, told friends I couldn't go..."}
+              className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <input type="text" value={winOutcome} onChange={e => setWinOutcome(e.target.value)}
+                placeholder="What happened? e.g., they were fine with it"
+                className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
+              <div className="flex items-center gap-1">
+                <span className={`text-xs font-bold ${c.textMuted}`}>{currency}</span>
+                <input type="number" value={winSaved} onChange={e => setWinSaved(e.target.value)}
+                  placeholder="Saved (optional)"
+                  className={`flex-1 px-2 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
+              </div>
+            </div>
+            <button onClick={addWin} disabled={!winDescription.trim()}
+              className={`${c.btnPrimary} px-4 py-2 rounded-lg text-xs font-bold min-h-[36px] disabled:opacity-40`}>
+              🏆 Log Win
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Wins list */}
+      {wins.length > 0 ? (
+        <div className="space-y-2">
+          {wins.map(w => (
+            <div key={w.id} className={`${c.card} border rounded-xl p-4`}>
+              <div className="flex items-start justify-between gap-2">
+                <div className="flex-1 min-w-0">
+                  <p className={`text-xs font-bold ${c.text}`}>🏆 {w.description}</p>
+                  {w.outcome && <p className={`text-[10px] ${c.successText} mt-0.5`}>→ {w.outcome}</p>}
+                  <p className={`text-[10px] ${c.textMuted} mt-0.5`}>{new Date(w.date).toLocaleDateString()}</p>
+                </div>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  {w.saved > 0 && (
+                    <span className={`text-xs font-black ${c.successText}`}>{currency}{w.saved}</span>
+                  )}
+                  <button onClick={() => deleteWin(w.id)}
+                    className={`text-xs ${c.dangerText} min-h-[28px] px-1`}>✕</button>
+                </div>
+              </div>
+            </div>
+          ))}
+          <button onClick={() => { if (window.confirm('Clear all wins?')) { setWins([]); saveWinsStore([]); } }}
+            className={`text-xs ${c.dangerText} min-h-[28px]`}>🗑️ Clear all</button>
+        </div>
+      ) : (
+        <div className={`${c.card} border rounded-xl p-8 text-center`}>
+          <span className="text-3xl block mb-2">🏆</span>
+          <p className={`text-sm ${c.textMuted}`}>No wins yet. Use a script, handle a situation, then come back and log it!</p>
+        </div>
+      )}
+    </div>
+  );
+
+  // ════════════════════════════════════════════════════════════
+  // RENDER: SAVED (enhanced with filtering + comfort zone + emergency card)
+  // ════════════════════════════════════════════════════════════
+  const renderSaved = () => {
+    const types = [...new Set(saved.map(s => s.type))];
+    const filtered = savedFilter === 'all' ? saved : saved.filter(s => s.type === savedFilter);
+
+    const typeLabels = { quick: '⚡ Moves', script: '💬 Scripts', triage: '🚨 Triage', guilt: '😬 Guilt', talk: '💑 Talks', followup: '🔄 Follow-ups', pulse: '💓 Pulse', rehearsal: '🎭 Rehearsals', simulator: '🔮 Simulations' };
+
+    return (
+    <div className="space-y-4">
+      <div className={`${c.card} border rounded-xl p-5`}>
+        <div className="flex items-center justify-between mb-1">
+          <h2 className={`text-lg font-bold ${c.text}`}>💾 Saved Moves</h2>
+          {saved.length > 0 && (
+            <button onClick={() => { if (window.confirm('Clear all?')) { setSaved([]); saveMoves([]); } }}
+              className={`text-xs ${c.dangerText} min-h-[32px]`}>🗑️ Clear all</button>
+          )}
+        </div>
+        <p className={`text-sm ${c.textSec} mb-3`}>Scripts and moves you've saved for quick access</p>
+
+        {/* Filter tabs */}
+        {types.length > 1 && (
+          <div className="flex gap-1.5 flex-wrap">
+            <button onClick={() => setSavedFilter('all')}
+              className={`px-2 py-1 rounded text-[10px] font-bold border min-h-[28px] ${
+                savedFilter === 'all' ? c.pillActive : c.pillInactive
+              }`}>All ({saved.length})</button>
+            {types.map(t => (
+              <button key={t} onClick={() => setSavedFilter(t)}
+                className={`px-2 py-1 rounded text-[10px] font-bold border min-h-[28px] ${
+                  savedFilter === t ? c.pillActive : c.pillInactive
+                }`}>{typeLabels[t] || t} ({saved.filter(s => s.type === t).length})</button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Emergency Card */}
+      {emergencyCard && (
+        <div className={`${isDark ? 'bg-emerald-900/30 border-emerald-700' : 'bg-emerald-50 border-emerald-300'} border-2 rounded-xl p-4`}>
+          <div className="flex items-center gap-2 mb-3">
+            <span className="text-lg">🚀</span>
+            <div>
+              <p className={`text-sm font-bold ${c.text}`}>Emergency Card</p>
+              <p className={`text-[10px] ${c.textMuted}`}>Your top scripts, ready to copy</p>
+            </div>
+          </div>
+          <div className="space-y-2">
+            {emergencyCard.map((script, i) => (
+              <div key={i} className={`${c.card} border rounded-lg p-3`}>
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex-1 min-w-0">
+                    <span className={`text-[9px] font-black ${c.accent}`}>{script.type}</span>
+                    <p className={`text-xs font-bold ${c.text} truncate`}>{script.label}</p>
+                    <p className={`text-[11px] ${c.textSec} mt-0.5 line-clamp-2`}>"{script.text}"</p>
+                  </div>
+                  <CopyBtn content={`${script.text}\n\n— Generated by DeftBrain · deftbrain.com`} label="📋" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Comfort Zone */}
+      {comfortZone && (
+        <div className={`${c.card} border rounded-xl p-4`}>
+          <h3 className={`text-sm font-bold ${c.text} mb-1`}>🎯 Money Comfort Zone</h3>
+          <p className={`text-[10px] ${c.textMuted} mb-3`}>Based on {comfortZone.totalMoves} saved moves</p>
+
+          {comfortZone.used.length > 0 && (
+            <div className="mb-3">
+              <p className={`text-[10px] font-bold ${c.successText} uppercase mb-1.5`}>✅ You're handling</p>
+              <div className="flex flex-wrap gap-1.5">
+                {comfortZone.used.map((u, i) => (
+                  <span key={i} className={`${c.success} border px-2 py-1 rounded text-[10px] font-bold`}>
+                    {u.label} ×{u.count}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {comfortZone.unused.length > 0 && (
+            <div className="mb-3">
+              <p className={`text-[10px] font-bold ${c.warningText} uppercase mb-1.5`}>👀 Haven't tried yet</p>
+              <div className="flex flex-wrap gap-1.5">
+                {comfortZone.unused.map((u, i) => (
+                  <span key={i} className={`${c.warning} border px-2 py-1 rounded text-[10px]`}>
+                    {u.label}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {comfortZone.strongest && (
+            <div className={`${c.accentBg} border rounded-lg p-2 mt-2`}>
+              <p className={`text-[10px] font-bold ${c.accent}`}>
+                💪 Strongest area: {comfortZone.strongest.label} ({comfortZone.strongest.count} moves)
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {filtered.length === 0 ? (
+        <div className={`${c.card} border rounded-xl p-8 text-center`}>
+          <span className="text-3xl block mb-2">💾</span>
+          <p className={`text-sm ${c.textMuted}`}>{saved.length === 0 ? 'No saved moves yet. Use any tool and tap "Save" to build your playbook.' : 'No saved items in this category.'}</p>
+        </div>
+      ) : (
+        <div className="space-y-2">
+          {filtered.map(entry => (
+            <div key={entry.id} className={`${c.card} border rounded-xl p-4`}>
+              <div className="flex items-start justify-between gap-2">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className={`text-[9px] font-black px-1.5 py-0.5 rounded ${
+                      entry.type === 'script' ? c.accentBg : entry.type === 'triage' ? c.warning : entry.type === 'guilt' ? c.info : c.accentBg
+                    }`}>{entry.type}</span>
+                    <span className={`text-xs font-bold ${c.text} truncate`}>{entry.label}</span>
+                  </div>
+                  <p className={`text-[10px] ${c.textMuted}`}>{new Date(entry.date).toLocaleDateString()}</p>
+
+                  {/* Show key content based on type */}
+                  {entry.type === 'script' && entry.content?.text && (
+                    <div className={`${c.quoteBg} rounded-lg p-2 mt-2`}>
+                      <p className={`text-[11px] ${c.textSec}`}>"{entry.content.text}"</p>
+                    </div>
+                  )}
+                  {entry.type === 'quick' && entry.content?.headline && (
+                    <p className={`text-[11px] ${c.textSec} mt-1`}>{entry.content.headline}</p>
+                  )}
+                  {entry.type === 'triage' && entry.content?.first_move && (
+                    <p className={`text-[11px] ${c.textSec} mt-1`}>First move: {entry.content.first_move}</p>
+                  )}
+                  {entry.type === 'guilt' && entry.content?.verdict && (
+                    <p className={`text-[11px] ${c.textSec} mt-1`}>{entry.content.verdict_emoji} {entry.content.verdict}</p>
+                  )}
+                  {entry.type === 'talk' && entry.content?.conversation_name && (
+                    <p className={`text-[11px] ${c.textSec} mt-1`}>💬 {entry.content.conversation_name}</p>
+                  )}
+                  {entry.type === 'followup' && entry.content?.next_move && (
+                    <p className={`text-[11px] ${c.textSec} mt-1`}>🎯 {entry.content.next_move}</p>
+                  )}
+                  {entry.type === 'pulse' && entry.content?.pulse_verdict && (
+                    <p className={`text-[11px] ${c.textSec} mt-1`}>{entry.content.pulse_emoji} {entry.content.pulse_verdict}</p>
+                  )}
+                  {entry.type === 'rehearsal' && entry.content?.rehearsal_name && (
+                    <p className={`text-[11px] ${c.textSec} mt-1`}>🎭 {entry.content.rehearsal_name}</p>
+                  )}
+                  {entry.type === 'simulator' && entry.content?.feasibility && (
+                    <p className={`text-[11px] ${c.textSec} mt-1`}>{entry.content.feasibility_emoji} {entry.content.feasibility}</p>
+                  )}
+                </div>
+                <div className="flex gap-1.5 flex-shrink-0">
+                  {(entry.content?.text || entry.content?.escalation_script || entry.content?.opening?.opener) && (
+                    <CopyBtn content={`${entry.content?.text || entry.content?.escalation_script || entry.content?.opening?.opener}\n\n— Generated by DeftBrain · deftbrain.com`} label="📋" />
+                  )}
+                  <button onClick={() => deleteSaved(entry.id)}
+                    className={`text-xs ${c.dangerText} min-h-[28px] px-1`}>✕</button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+  };
+
+  // ════════════════════════════════════════════════════════════
+  // MAIN RENDER
+  // ════════════════════════════════════════════════════════════
+  return (
+    <div className={`space-y-4 ${c.text}`}>
+      {/* Currency selector (compact) */}
+      <div className="flex items-center justify-between">
+        {renderNav()}
+        <div className="flex items-center gap-1 flex-shrink-0">
+          {CURRENCIES.slice(0, 4).map(cur => (
+            <button key={cur.sym} onClick={() => setCurrency(cur.sym)}
+              className={`w-7 h-7 rounded text-[10px] font-bold ${
+                currency === cur.sym ? c.pillActive : c.pillInactive
+              }`}>{cur.sym}</button>
+          ))}
+        </div>
+      </div>
+
+      {error && (
+        <div className={`${c.danger} border rounded-lg p-4 flex items-start gap-3`}>
+          <span className="flex-shrink-0">⚠️</span>
+          <p className="text-sm">{error}</p>
+        </div>
+      )}
+
+      {view === 'quick' && renderQuick()}
+      {view === 'scripts' && renderScripts()}
+      {view === 'rehearsal' && renderRehearsal()}
+      {view === 'talk' && renderMoneyTalk()}
+      {view === 'triage' && renderTriage()}
+      {view === 'followup' && renderFollowUp()}
+      {view === 'guilt' && renderGuilt()}
+      {view === 'simulator' && renderSimulator()}
+      {view === 'pulse' && renderPulse()}
+      {view === 'wins' && renderWins()}
+      {view === 'saved' && renderSaved()}
+    </div>
+  );
+};
+
+MoneyMoves.displayName = 'MoneyMoves';
+export default MoneyMoves;

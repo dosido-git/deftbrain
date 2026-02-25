@@ -129,7 +129,7 @@ const ToolPageWrapper = ({ children, tool, toolId }) => {
             </p>
             <Link to="/" className="flex-shrink-0" title="Back to Dashboard">
               <img 
-                src="/logo-r-l-trsp.png" 
+                src="/dBrl.png" 
                 alt="DeftBrain" 
                 className="h-32 w-auto block object-contain"
               />

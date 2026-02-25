@@ -44,7 +44,7 @@ const GlobalHeader = ({ searchTerm, setSearchTerm, toolCount }) => {
         {/* LOGO */}
         <div className="flex items-end flex-shrink-0">
           <img 
-            src="/logo-nobg.png" 
+            src="/dB.png" 
             alt="DeftBrain.com" 
             onLoad={() => setLogoLoaded(true)}
             className={`w-auto block object-contain transition-all duration-300 ${

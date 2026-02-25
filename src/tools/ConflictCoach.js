@@ -246,9 +246,9 @@ const ConflictCoach = () => {
 
       {/* Warning Banner */}
       <div className={`${c.warning} border-l-4 rounded-r-lg p-5`}>
-        <div className="flex items-start gap-3"><span className="text-xl">⚠️</span>
+        <div className="flex items-start gap-3">
           <div>
-            <h3 className={`font-bold mb-1 ${c.text}`}>Conflict Coach</h3>
+            <h3 className={`font-bold mb-1 ${c.text}`}>Conflict Coach ⚠️</h3>
             <p className={`text-sm ${c.textSecondary}`}>Before you send that angry text... STOP. Includes mandatory cooling periods, manipulation detection, deep draft analysis, and goal clarification.</p>
             <p className={`text-xs ${c.textMuted} mt-1`}>NOT a replacement for therapy. For abusive situations, seek professional help.</p>
           </div>

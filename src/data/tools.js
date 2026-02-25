@@ -40,11 +40,168 @@ template:
         "",
         "",
         ""
-]}},
-**/
+]}},**/
 export const tools = [
 
-  {
+
+{
+  id: "HistoryToday",
+  title: "HistoryToday",
+  category: "Learning",
+  icon: "📰",
+  description: "Enter any current event, trend, or controversy. AI finds 2-3 structural historical parallels — not surface-level ('this is like Rome falling') but deep structural matches based on power dynamics, institutional behavior, and how similar situations actually played out. Each parallel includes what happened, how contemporaries understood it (and how they were wrong), what happened next, and specifically where the analogy breaks down. Dig deeper into any parallel for full timelines, turning points, echoing quotes, and information environment analysis. Get a counter-example showing when similar conditions led to a different outcome. Plus synthesis, predictions, and further reading.",
+  tagline: "Find the structural historical parallel — not the obvious one",
+  
+  guide: {
+    overview: "Most historical analogies are lazy: 'This is just like the fall of Rome.' HistoryToday goes deeper. It finds structural parallels — situations where the underlying mechanisms (regulatory capture, information asymmetry, institutional decay, public sentiment shifts) match the current moment. For each parallel, you get the full picture: what happened, how people at the time understood it, what they got wrong, what happened next, and crucially — where the analogy breaks down. That last part is the most valuable: every parallel is imperfect, and the differences predict what will be different this time. Dig Deeper expands any parallel into a full timeline with turning points, echoing quotes, and lessons. The Counter-Example finds a case where similar starting conditions produced a completely different outcome.",
+    
+    howToUse: [
+      "Describe any current event, trend, or controversy — be as specific or broad as you want",
+      "Optionally add a specific angle ('I'm interested in the labor dynamics' or 'What about the regulatory side?')",
+      "Hit Find Parallels to get 2-3 structural matches ranked by similarity",
+      "Each parallel shows structural mechanisms with Then/Now comparison cards",
+      "Read 'Where This Analogy Breaks Down' — it's the most important section",
+      "Hit Dig Deeper on any parallel for a full timeline, turning points, echoing quotes, and information environment",
+      "Hit Counter-Example to find a case where similar conditions went a different direction",
+      "The Synthesis section combines all parallels into a collective pattern and prediction",
+      "Copy any individual parallel or the full analysis"
+    ],
+    
+    example: {
+      scenario: "You want to understand the current wave of tech layoffs happening alongside record corporate profits.",
+      action: "Enter: 'Tech companies doing mass layoffs while reporting record profits'. Optional angle: 'Labor dynamics.'",
+      result: "Parallel 1: The Railroad Consolidation of the 1890s (82% match) — railroads laid off workers while posting record revenues during consolidation. Contemporary view: 'efficiency gains.' Actual cause: monopolistic extraction. What happened next: labor organizing, eventual antitrust. Breaks down because: tech workers are individually more mobile than railroad workers were. Parallel 2: British textile automation 1810s (67% match). Counter-example: Post-WWII corporate compact where record profits led to voluntary wage increases (different because of union density and Cold War pressure to prove capitalism works)."
+    },
+    
+    tips: [
+      "Specific events get better parallels than broad trends. 'Congress debating AI regulation' is better than 'AI is changing things.'",
+      "Use the angle field to steer toward what you care about — same event can parallel different things depending on the lens.",
+      "The 'Where It Breaks Down' section is where the real insight lives. Read it carefully.",
+      "Dig Deeper is worth it for the echoing quotes — hearing what people said 200 years ago that sounds like today's headlines.",
+      "The Counter-Example is the intellectual honesty check. If similar conditions sometimes produce different outcomes, you can't be certain of the prediction.",
+      "Try the same event with different angles to see multiple facets."
+    ],
+    
+    pitfalls: [
+      "History rhymes but doesn't repeat. These are analytical tools, not crystal balls.",
+      "The AI avoids the 5 most overused analogies (fall of Rome, Weimar, 1930s appeasement, dot-com bubble, Titanic) unless they're genuinely the best match.",
+      "Match scores are relative, not absolute. An 80% doesn't mean 80% certainty — it means the structural overlap is high compared to other candidates.",
+      "Further reading suggestions are real books/articles but check availability before purchasing."
+    ]
+  },
+  
+  keywords: [
+    "history", "historical", "parallel", "analogy", "current events", "politics",
+    "comparison", "what happened", "precedent", "pattern", "prediction",
+    "structural analysis", "counter-example", "timeline"
+  ],
+  
+  tags: ["Learning", "Analysis", "Current Events", "History"],
+  difficulty: "easy",
+},{
+  id: "BragSheetBuilder",
+  title: "Brag Sheet Builder",
+  category: "Productivity",
+  icon: "🏆",
+  description: "A complete career advancement system. Start with the Accomplishment Excavator if you can't remember what you did, or use the weekly Journal to log wins as they happen. Add accomplishments (be as humble as you want) and get before/after transformations with verb upgrades, imposter syndrome coaching, and a metrics excavator that finds hidden numbers. Then go deeper: Strength Radar scores your sheet across 6-8 dimensions and finds gaps. JD Tailoring rewrites your bullets using a specific job description's language with match scoring and gap detection. Interview Matrix maps accomplishments to behavioral questions and shows what's covered vs exposed. Voice Match rewrites everything to sound like you (not AI) based on a writing sample. Plus: STAR stories on demand from any accomplishment, inline tweak/reword per bullet, add accomplishments without resetting, resume bullets, LinkedIn about, performance review, and raise ammunition with dollar estimates and a meeting script.",
+  tagline: "Turn humble descriptions into a complete career advancement toolkit",
+  
+  guide: {
+    overview: "Most people chronically understate their work. This tool fixes that — and then takes it five steps further. The core loop: add accomplishments in your own words, get them transformed into power statements with verb upgrades, then answer metrics questions to replace estimates with real numbers. But the real power is what comes after. The Strength Radar scores your sheet against role expectations and finds gaps. JD Tailoring rewrites bullets to match a specific job posting's language. The Interview Matrix maps everything to likely behavioral questions. Voice Match rewrites outputs to sound like you, not AI. And the Accomplishment Journal lets you log wins weekly so you never have to remember six months of work at once.",
+    
+    howToUse: [
+      "Can't remember what you did? Hit the Memory Jogger button for role-specific prompting questions across 6 categories",
+      "Or use the Journal to log wins weekly — import them when you're ready to build",
+      "Enter your role, industry, level, tone (Bold / Balanced / Quietly Powerful), and purposes",
+      "Add accomplishments one at a time — be as vague as you want — and hit Build",
+      "In Before → After: tweak any bullet (Softer / Stronger / custom Reword) or generate a STAR story from it",
+      "In Upgrade: answer metrics questions to replace estimates with real numbers — multi-round",
+      "In Radar: see your sheet scored across 6-8 dimensions with gap suggestions",
+      "In Tailor: paste a job description to get match scoring, tailored bullets, cover letter opening, and gap alerts",
+      "In Interview: get 10-15 likely questions mapped to your accomplishments, with opening lines and gaps",
+      "In Voice: paste a writing sample to rewrite everything in your natural voice",
+      "In Raise: get business-value estimates and a meeting script — then use Difficult Talk Coach to practice the conversation"
+    ],
+    
+    example: {
+      scenario: "You are a mid-level product manager. You need to update your resume, apply for a specific job, and prepare for behavioral interviews.",
+      action: "Role: Product Manager, Industry: Tech, Level: Mid-level, Purposes: Resume + Interview. Add accomplishments: 'helped improve onboarding', 'worked on the new dashboard', 'did some data analysis'. Build, then use Tailor with the JD and Interview to prep.",
+      result: "Before/After: 'helped improve onboarding' → 'Redesigned user onboarding flow, reducing time-to-first-value by [35%]'. Metrics Excavator: 'What was the completion rate before vs after?' Radar: Technical Execution 80, Leadership 45 — gap found. Tailor (with JD): 78% match, 3 tailored bullets using JD keywords, 1 critical gap in 'data pipeline experience'. Interview: 12/15 questions covered, 'Tell me about a time you led under pressure' is a gap. Voice Match: rewrites all bullets to match your casual, I-focused writing style."
+    },
+    
+    tips: [
+      "Use the Journal between reviews. Even one sentence a week produces dramatically better brag sheets.",
+      "The Excavator is most powerful when you fill in role + industry first — questions get very specific.",
+      "After building, check Radar FIRST. It tells you where to dig for more accomplishments.",
+      "For job applications: Build → Tailor with JD → Interview tab → Voice Match. That's the complete pipeline.",
+      "Tweak buttons (Softer / Stronger / Reword) let you fine-tune without regenerating everything.",
+      "You can add accomplishments to existing results without starting over — hit Add More.",
+      "Voice Match works best with a 100+ word sample of casual professional writing."
+    ],
+    
+    pitfalls: [
+      "Don't inflate or lie. The tool reframes truthfully, and so should you.",
+      "Estimated metrics in [brackets] are starting points. Use the Upgrade tab to replace them with real numbers.",
+      "Tailor is for one JD at a time. For different applications, paste a different JD and re-tailor.",
+      "Voice Match needs a writing sample that represents how you actually write — not something polished by someone else."
+    ]
+  },
+  
+  keywords: [
+    "resume", "brag", "accomplishment", "achievement", "interview", "linkedin",
+    "performance review", "raise", "promotion", "career", "job", "hire",
+    "imposter syndrome", "bullet", "STAR", "power verb", "cover letter",
+    "job description", "behavioral interview", "voice", "writing style",
+    "strength assessment", "radar", "journal", "weekly log"
+  ],
+  
+  tags: ["Productivity", "Career", "Writing", "Confidence", "Interview Prep"],
+  difficulty: "easy",
+},{
+  id: "LayoverMaximizer",
+  title: "Layover Maximizer",
+  category: "Life",
+  icon: "✈️",
+  description: "Make the most of every layover — 9 tools for every stage of your connection. Get a YES/NO/RISKY verdict with exact time math. Step-by-step gate-to-gate directions. Live delay recalculation. Side-by-side layover comparison for booking decisions. Lounge finder matched to your cards. Context-aware packing lists. Offline-ready survival kits. Risk analysis with worst-case scenarios. Save your frequent airports.",
+  tagline: "Turn dead time into the best part of your trip",
+
+  guide: {
+    overview: "Layover Maximizer is your complete connection toolkit — 9 views covering every stage from booking to landing. Compare layovers before you book. Get a time-math-backed verdict when you have your itinerary. Navigate gate-to-gate transfers. Track delays in real time. Find lounges matched to your credit cards. Pack smart for your specific airport. Generate an offline survival kit. Assess worst-case risks. Save airports you fly through often.",
+
+    howToUse: [
+      "✈️ Plan: Enter airport, duration, passport, terminals → YES/NO/RISKY verdict with explore + stay plans",
+      "🚶 Gate-to-Gate: Enter arrival and departure gates → step-by-step transfer directions with time estimates",
+      "⏰ Delay Tracker: Enter delay minutes → see how your plan changes at 30/60/90/120min thresholds",
+      "⚖️ Compare: Enter 2-4 layover options → side-by-side comparison with scores and a winner",
+      "🛋️ Lounges: Airport + your credit cards → every lounge with access methods and worth-it verdicts",
+      "🎒 Packing: Context-aware grab list based on your specific layover — weather, currency, culture, phone",
+      "🧰 Survival Kit: WiFi password, emergency numbers, key phrases, currency, outlets — screenshot-ready",
+      "⚠️ Risk: What happens if you miss your connection — next flight, cost, hotel, rebooking",
+      "📌 Saved: Quick-access to airports you fly through often"
+    ],
+
+    example: {
+      scenario: "Booking a trip with two routing options: 4h Frankfurt or 6h Istanbul. You pick Istanbul, but your first flight gets delayed 50 minutes.",
+      action: "Compare FRA vs IST (⚖️). Book IST. Before the trip, generate a Survival Kit (🧰) and Packing List (🎒). At the airport, use Delay Tracker (⏰) to check if the 50min delay kills your explore plan.",
+      result: "Compare shows IST wins (86 vs 72) because you can visit the city visa-free. Packing list reminds you to grab cash and an umbrella. Delay tracker shows: 50min delay changes verdict from YES to RISKY — you have 1h40m of city time instead of 2h30m. Survival kit has the WiFi password and taxi scam warning ready."
+    },
+
+    tips: [
+      "Use Compare when booking — the layover can make or break a trip",
+      "Gate-to-Gate is useful on every connection, not just long layovers",
+      "Generate the Survival Kit before you fly — you might not have WiFi when you land",
+      "The Delay Tracker threshold scale shows exactly when to abandon your exploration plan",
+      "Save your hub airports — frequent flyers keep rediscovering the same places"
+    ],
+
+    pitfalls: [
+      "Immigration and security times are estimates — they vary by time of day and season",
+      "AI has general airport knowledge but may not reflect very recent terminal changes",
+      "Always verify visa requirements with official sources before leaving an airport in a foreign country",
+      "Lounge access policies change — confirm with the lounge before walking across the terminal"
+    ]
+  }
+},  {
     id: "TheFinalWord",
     title: "The Final Word",
     category: "Daily Life",
@@ -190,11 +347,15 @@ export const tools = [
     guide: {
       overview: "The Difficult Talk Coach helps you prepare for hard conversations by generating multiple strategic approaches with exact scripts, predicted pushback, and counter-responses. Whether you need to set a boundary, request a change, address conflict, or give feedback, you'll get concrete phrases to use, body language tips, and emotional regulation strategies. Perfect for preparing conversations with partners, family, friends, bosses, coworkers, or employees.",
       howToUse: [
-        "Describe the difficult conversation you need to have - be specific about what you need to discuss",
-        "Select your relationship to the person (Partner, Family, Friend, Boss, Coworker, Employee)",
-        "Choose your preferred communication style (Direct, Indirect, Collaborative, or Assertive)",
-        "Use the slider to indicate how much resistance you expect (from minimal pushback to major conflict)",
-        "Check all conversation goals that apply: set boundary, request change, address conflict, give feedback, or ask for something. Click 'Rehearse This Conversation' to get 3-4 strategic approaches with exact scripts, anticipated responses, emotional preparation techniques, and follow-up plans"
+        "Describe the conversation you need to have - the more specific you are, the better your strategy",
+        "Select who it's with, your goals (set boundary, say no, address disrespect, push back, request change, give feedback, etc.), their expected resistance level, and your communication style",
+        "Check any fears you have about the conversation (they'll get angry, guilt-trip you, cry, deny everything, etc.) and add custom fears in the text field",
+        "For a much stronger strategy: fill in their likely perspective and any previous attempts",
+        "Review the Situation Reading to understand their mindset and likely defense mechanisms",
+        "Study the Emotional Landmines - these are the moments that will derail you if you're not ready",
+        "Choose a conversation approach, practice the opening out loud, and review the anticipated responses",
+        "Switch to the Practice tab to run the conversation live â€” the AI responds in character with real-time coaching",
+        "After the real conversation, use the Debrief tab to process what happened and identify growth areas"
       ],
       example: {
         scenario: "You need to tell your boss that a coworker is taking credit for your work. You're afraid your boss will think you're being petty or a 'bad team player,' and the coworker has more seniority.",
@@ -1973,31 +2134,6 @@ export const tools = [
     "Requires internet connection for analysis"
   ]},
 {
-      id: "PDF-Fixer",
-    title: "PDF-Fixer",
-    category: "Academic",
-    icon: "📄",
-    description: "Flattens messed up Word docs into perfect, un-editable PDFs.",
-    tagline: "Turn messy Word docs into clean, perfect PDFs",
-    
-    guide: {
-      overview: "PDF-Fixer converts your Word documents into submission-ready PDFs that look exactly how you formatted them, with no shifting text, broken images, or formatting glitches. Essential for online submissions.",
-      
-      howToUse: [
-        "Upload your Word document (.docx)",
-        "Preview the PDF conversion",
-        "Check that formatting, images, and page breaks are correct",
-        "Download the flattened PDF",
-        "Submit to your professor/portal"
-      ],
-      
-      tips: [
-        "Always preview before downloading",
-        "Convert BEFORE the deadline in case you need fixes",
-        "Keep the original .docx file in case you need to edit"
-      ]
-   } },
-{
   id: "MeetingBSDetector",
   title: "Meeting BS Detector",
   category: "Productivity",
@@ -2042,148 +2178,136 @@ export const tools = [
   id: "RecipeChaosSolver",
   title: "Recipe Chaos Solver",
   category: "Daily Life",
-  icon: "👨‍🍳",
-  description: "Creates actual recipes from random ingredients you have. Not 'just throw it together' - real step-by-step recipes using ONLY listed ingredients. Handles dietary restrictions and skill levels. Prevents 'I have food but nothing to make' paralysis.",
-  tagline: "Turn random ingredients into an actual meal",
-  
+  icon: "🍳",
+  description: "Mid-cook crisis? Missing ingredients, burnt sauce, flat flavor? Get instant rescue solutions, smart substitutions (single or multi-ingredient), recipe scaling with non-linear adjustments, pre-flight readiness checks, flavor fix upgrades, 60-second cooking lessons, a wins journal, and a hands-free Kitchen Companion mode for flour-covered hands.",
+  tagline: "Your kitchen 911 — from crisis to confidence",
+
   guide: {
-    overview: "You have random ingredients but no coherent meal plan. This tool creates 2-3 actual recipes using ONLY what you have (no 'you'll also need...' except basic staples). Adapts to dietary restrictions and cooking skill. Solves the 'staring into fridge' problem.",
-    
+    overview: "Recipe Chaos Solver is your cooking emergency room AND your cooking coach. When something goes wrong mid-cook, get instant rescue solutions with science explanations. Before you start, run a Pre-Flight Check to catch problems early. When dinner's just boring, Flavor Fix diagnoses what's missing. Every rescue becomes a learning moment with Teach Me lessons, and your Wins Journal tracks your growing confidence. Kitchen Companion mode gives you hands-free step-by-step guidance while you cook.",
+
     howToUse: [
-      "List all available ingredients (be thorough)",
-      "Add dietary restrictions if any (vegetarian, allergies, etc.)",
-      "Set cooking skill level (beginner/intermediate/advanced)",
-      "Optionally add time constraint",
-      "Get 2-3 complete recipes with step-by-step instructions"
+      "🍳 Rescue: Paste a recipe or describe your problem, select a category, get rescue solutions with step-by-step instructions and science explanations",
+      "✈️ Pre-Flight: Paste a recipe + what you have → get a readiness report with ingredient checks, equipment warnings, technique heads-ups, and realistic time estimates",
+      "✨ Flavor Fix: Describe a dish that tastes flat → get a diagnosis of what's missing (acid, fat, salt, umami, heat, texture) with specific fixes ranked by impact",
+      "🔄 Quick Swap: Look up a single ingredient substitution with exact ratios, science, and best-for/avoid-in guidance",
+      "🔄🔄 Multi-Swap: Missing 2-8 ingredients? Get a compound analysis that accounts for interaction effects between substitutions",
+      "⚖️ Scale: Paste a recipe and change servings → AI-aware scaling that flags non-linear ingredients (spices, leavening, eggs) with timing and equipment adjustments",
+      "🎓 Teach Me: After any rescue or swap, tap 'Teach Me Why' for a 60-second lesson on the underlying cooking principle",
+      "👨‍🍳 Kitchen Companion: Full-screen hands-free mode with huge text, built-in timers, and big navigation buttons — designed for flour-covered hands",
+      "🏆 Wins Journal: Log cooking victories to build confidence. Track your rating trend over time.",
+      "📌 Saved: Build a personal cheat sheet of rescues, swaps, lessons, and scaling notes. Searchable when you have 4+ items."
     ],
-    
+
     example: {
-      scenario: "You have: chicken breast, rice, onion, bell pepper, garlic, soy sauce, eggs, and random spices. You're vegetarian guest is coming. You're a beginner cook with 45 minutes.",
-      action: "Input ingredients, set 'vegetarian' restriction, skill 'beginner', time '45 minutes'.",
-      result: "Recipe 1: Chicken Fried Rice (for you) - Uses chicken, rice, egg, onion, bell pepper, garlic, soy sauce. Steps: 1. Cook rice if not cooked. 2. Scramble egg, set aside. 3. Dice chicken, cook in pan with garlic. 4. Add diced peppers and onion. 5. Add rice, soy sauce, egg. Mix. 30 min total. Recipe 2: Veggie Fried Rice (for guest) - Same but skip chicken, double the vegetables. Both recipes use same ingredients, same technique, cook simultaneously. Missing staples: cooking oil (use butter if you have it, or just add water to prevent sticking). Ingredients not used: some spices (save for later)."
+      scenario: "You're making chocolate chip cookies but realize you're out of eggs AND butter. The recipe calls for 2 eggs and 1 cup butter. You have applesauce, coconut oil, and Greek yogurt available.",
+      action: "Go to Multi-Swap, add 'eggs' and 'butter' as missing ingredients, paste the recipe context, and note your available substitutes.",
+      result: "Feasibility: DOABLE. Combined impact analysis: Both subs affect moisture and binding — use coconut oil (¾ cup) for butter (adds slight coconut flavor, melts similarly) + ¼ cup applesauce per egg (adds moisture + binding). Combined technique: Chill dough 30 min longer since coconut oil is softer. Interaction warning: Both subs add moisture — reduce any liquid in recipe by 2 tbsp. Expected result: Slightly chewier cookies with subtle coconut undertone. Then tap 'Teach Me Why' to learn about the 3 jobs eggs do in baking."
     },
-    
+
     tips: [
-      "Be honest about ALL ingredients, even small amounts - they might be key",
-      "The tool works with limited ingredients - don't feel you need a full pantry",
-      "Recipes are designed for your stated skill level - beginners get simpler steps",
-      "If missing common staples (oil, salt), tool provides substitutions",
-      "Save unused ingredients list - helps you track what's expiring"
+      "Upload a photo of your recipe, your pantry, or even the disaster itself — the tool handles all three image types",
+      "Pre-Flight Check uses your saved swaps to suggest substitutes you've already tried and liked",
+      "Flavor Fix works best when you describe what's wrong ('flat', 'one-note', 'missing something') — not just the dish name",
+      "In Kitchen Companion mode, multiple timers can run simultaneously across different steps",
+      "The Wins Journal compounds with pattern insights in History — after 3+ rescues, you'll see your most common issues",
+      "Save lessons to your cheat sheet — they're searchable and build a personal cooking education over time"
     ],
-    
+
     pitfalls: [
-      "Don't expect gourmet meals from limited ingredients - these are practical, not fancy",
-      "If you list 3 ingredients, you'll get simple recipes (that's fine!)",
-      "Tool assumes basic cooking equipment (pan, pot, knife) - mention if you lack these"
+      "Multi-Swap with 5+ ingredients may return 'abandon ship' — that's honest, not broken. Some combos just don't work.",
+      "Flavor Fix is for boring food, not broken food — if something went wrong, use Rescue instead",
+      "Kitchen Companion mode is full-screen overlay — tap 'Exit Guide' to return to normal view",
+      "Pre-Flight's time estimates are realistic, not optimistic — plan accordingly"
     ]
   }
 },
-
 {
-  id: "BillGuiltEraser",
-  title: "Bill Guilt Eraser",
+  id: "BillRescue",
+  title: "Bill Rescue",
   category: "Money",
   icon: "🧾",
-  description: "Turns bill anxiety into a clear action plan. Paste your bill for an AI autopsy that flags overcharges. Get bill-type-specific phone scripts, payment plan proposals with negotiation math, escalation ladders, know-your-rights info, hardship letters, collections defense kits, and insider tricks billing departments don't volunteer. Starts with the smallest possible first step.",
-  tagline: "Turn bill anxiety into a clear action plan",
-  
-  guide: {
-    overview: "The real barrier to dealing with bills isn't information. It's shame and paralysis. This tool breaks through both: it starts with an absurdly small first step (put the bill face-up on your table), then builds to a complete tactical playbook. Paste your bill text for an AI autopsy that catches overcharges and duplicate fees. Get bill-type-specific phone scripts with magic phrases that unlock hardship programs, payment plan proposals with exact negotiation math, escalation ladders for when the first person says no, know-your-rights sections with legal protections you didn't know you had, ready-to-send hardship letters, and collections defense kits with debt validation letters. Every script is copy-paste ready.",
-    
-    howToUse: [
-      "Select bill type (medical, credit card, utilities, student loans, rent, auto, phone, insurance, taxes)",
-      "Enter the amount and what you can realistically afford per month",
-      "Select how late it is (current through to collections) and why it's hard",
-      "Paste the bill text if you have it for an AI autopsy of charges",
-      "Add any extra context (they keep calling me, I got a court notice, etc.)",
-      "Get your personalized action plan with scripts, letters, and programs",
-      "Use the copy buttons on any script or letter to use it immediately"
-    ],
-    
-    example: {
-      scenario: "You have a $2,400 medical bill from 4 months ago that just went to collections. You can afford $75/month. You're terrified to call.",
-      action: "Type: Medical, Amount: $2,400, Overdue: Collections, Reason: Too scared to deal with it, Can afford: $75/month",
-      result: "Shame-to-Action: 'Opening this tool is the hard part and you already did it. Your only step today: put the bill face-up on your kitchen table.' Bill Autopsy: Request itemized bill - medical bills have errors 30-80% of the time. Know Your Rights: Medical debt under a year old cannot be reported to credit bureaus. Collections Defense: Debt validation letter (ready to send) - collectors must prove they own the debt before you pay anything. Payment Plan: Offer $75/month, they'll counter at $100, accept under $90. Phone Script: opening line + magic phrase 'I'd like to speak with your financial hardship department.' Hardship Letter: Complete letter ready to email. What They Won't Tell You: Every nonprofit hospital is legally required to have a charity care program."
-    },
-    
-    tips: [
-      "Paste your bill text for the AI autopsy - it catches overcharges you'd never notice",
-      "The magic phrases are real: 'financial hardship' and 'charity care' unlock hidden programs",
-      "Medical bills are the most negotiable - never pay the first number",
-      "If it's in collections, send the debt validation letter BEFORE paying anything",
-      "The payment plan math works: offer low, they counter, you meet in the middle",
-      "Hardship letters are what financial counselors charge $200 to write - this one is free"
-    ],
-    
-    pitfalls: [
-      "Don't ignore collections - some have legal deadlines that affect your options",
-      "Don't agree to a payment plan you can't sustain - be honest about your budget",
-      "Don't give bank account info to a collector until the debt is validated in writing",
-      "Don't acknowledge a debt verbally on the phone if it's in collections - this can restart the statute of limitations"
-    ]
-  },
-  
-  keywords: [
-    "bill", "overdue", "debt", "medical", "collections", "payment plan", "negotiate",
-    "credit card", "utilities", "student loan", "rent", "hardship", "can't afford",
-    "scared", "anxiety", "money", "phone script", "help"
-  ],
-  
-  tags: ["Money", "Bills", "Anxiety", "Debt"],
-  difficulty: "easy",
-},
+  description: "Turn bill anxiety into a clear action plan with 9 tools: paste or photograph a bill for an AI autopsy, Quick Check any charge in 5 seconds, practice negotiation calls with an AI billing rep, generate 7 types of ready-to-send letters, triage multiple bills by priority, track plans, log call outcomes, view your bill calendar, and celebrate victories with a running savings total.",
+  tagline: "Your bill anxiety ends here",
 
-{
+  guide: {
+    overview: "Bill Rescue is your complete bill-fighting toolkit — 9 views that take you from 'I'm scared to open this' to 'I saved $1,670 this year.' Quick Check any charge instantly. Get full rescue plans with phone scripts, letters, and insider tips. Practice the actual call with an AI billing rep before you dial. Generate dispute letters, goodwill adjustments, insurance appeals, and more. Track everything: plans, call outcomes, follow-ups, and victories.",
+
+    howToUse: [
+      "🧾 Rescue: Full analysis — select bill type, enter details, get scripts, letters, rights, escalation ladder, and insider tips",
+      "⚡ Quick Check: Describe any charge → instant verdict: NORMAL, WORTH QUESTIONING, or DEFINITELY FIGHT THIS",
+      "📊 Triage: Enter 2-10 bills → priority ranking with budget allocation, danger zones, and quick wins",
+      "🎭 Rehearse: Practice the call — AI plays the billing rep (normal or hard mode), with coaching after every exchange",
+      "✉️ Letters: Generate 7 letter types: hardship, dispute, goodwill adjustment, insurance appeal, cease & desist, regulatory complaint, payment agreement",
+      "📋 Tracker: All saved plans with status updates (pending → in progress → resolved)",
+      "📞 Call Log: Record what happened — outcome, rep name, confirmation number, what was agreed, next follow-up",
+      "📅 Calendar: See overdue items, upcoming follow-ups, and total monthly obligations at a glance",
+      "🏆 Victories: Log every win with dollar amounts — running total of money saved, plus pattern insights after 3+ wins"
+    ],
+
+    example: {
+      scenario: "You have a $2,400 medical bill that's 60 days overdue. You lost your job and can afford $75/month. You think they overcharged you.",
+      action: "Quick Check the suspicious charge first (⚡). Then run full Rescue (🧾) with bill photo for autopsy. Practice the call in Rehearsal (🎭) on hard mode. Generate a hardship letter (✉️). Save the plan (📋) and track follow-ups (📅).",
+      result: "Quick Check flags a $340 duplicate facility fee. Rescue plan gives you the exact phone script with insider phrases. Rehearsal builds your confidence — you handle the hard-mode rep's pushback. Letter is ready to send. After the call, you log that they accepted $50/month and waived the late fees. Victory tracker shows you saved $640."
+    },
+
+    tips: [
+      "Start with Quick Check for any charge you're unsure about — it takes 5 seconds",
+      "Use Rehearsal on Hard Mode before big calls — if you can handle the worst-case rep, the real one feels easy",
+      "Save your plan BEFORE making the call so you can reference scripts during the conversation",
+      "Log victories immediately — watching your savings total grow builds the habit",
+      "The Letters tab covers 7 types — most people don't know they can request a goodwill adjustment to fix their credit"
+    ],
+
+    pitfalls: [
+      "This is general guidance, not legal or financial advice — programs and rights vary by location",
+      "If your debt is in collections, read the Collections Defense Kit BEFORE doing anything else",
+      "Never acknowledge a collections debt verbally until it's validated in writing",
+      "Making a partial payment on old debt can restart the statute of limitations — the tool warns about this"
+    ]
+  }
+},{
   id: "SubSweep",
   title: "SubSweep",
   category: "Money",
   icon: "🧹",
-  description: "Paste your bank statement and instantly see every subscription you're paying for — with brutal cost-per-use math, an interactive What-If simulator, free alternatives, and ready-to-send cancellation messages.",
+  description: "Your complete subscription management toolkit — 9 views. Audit every sub with honest verdicts and cost-per-use math. Get renewal date alerts before surprise charges. Detect price hikes automatically. Optimize plans with annual/family/bundle deals. Get retention scripts to negotiate discounts. Split shared subs and track who owes what. Monitor free trials with usage counters and cancel reminders. Set category budgets with over-limit alerts. Track cancellation savings over time with a spending timeline.",
   tagline: "Find what you're wasting and sweep it away",
-  
+
   guide: {
-    overview: "SubSweep is a subscription auditor that goes beyond listing what you pay. Paste a bank statement and it auto-detects subscriptions (even cryptic merchant names like 'AMZN*Prime'). Or add them manually with quick-add buttons. Then it calculates cost-per-use ('Your gym costs $37 per visit'), flags forgotten charges, suggests free alternatives, and gives you exact cancellation steps. The What-If simulator lets you toggle subscriptions on/off and watch savings update in real-time.",
-    
+    overview: "SubSweep manages your entire subscription life — from the moment you start a free trial to the day you cancel and track how much you've saved. 9 views cover auditing, renewals, optimization, negotiation, splits, trials, budgets, tracking, and trends. Your subscription list persists between sessions and gets smarter over time.",
+
     howToUse: [
-      "Choose 'Scan Statement' to paste bank/credit card text, or 'Add Manually' to enter subscriptions",
-      "For each subscription, set the billing cycle and how often you actually use it",
-      "Use quick-add buttons for common services like Netflix, Spotify, etc.",
-      "Click 'Analyze My Subscriptions' for the full audit",
-      "Review the donut chart to see where your money goes (used vs underused vs forgotten)",
-      "Use the What-If simulator — toggle subscriptions to see real-time annual savings",
-      "Expand each subscription card for cost-per-use, free alternatives, and cancellation steps",
-      "Copy cancellation messages directly from the tool"
+      "🧹 Sweep: Add subs manually or scan a statement. Set category + renewal date. Get verdicts, cost-per-use, and cancellation steps",
+      "🔔 Radar: See upcoming renewals (this week, this month, 90 days) plus price hike alerts with one-click negotiate links",
+      "⚡ Optimize: Find annual discounts, family plans, student deals, and bundle opportunities",
+      "📞 Negotiate: Service-specific retention scripts with step-by-step dialogue and magic phrases",
+      "👥 Splits: Mark subs as shared, add members, see per-person costs and a copy-ready 'who owes what' summary",
+      "🆓 Trials: Track free trials with end dates, usage counters, cost-per-use verdicts, and one-click convert to subscription",
+      "📊 Budgets: Set monthly limits per category (streaming, music, etc.). Visual budget bars with over-limit alerts",
+      "📋 Tracker: Status management (active/cancelling/paused/cancelled) with running savings since cancellation",
+      "📈 Timeline: Monthly spending bar chart with trend analysis — proof that subscription creep is real"
     ],
-    
+
     example: {
-      scenario: "You paste a credit card statement showing Netflix ($15.49), Spotify ($11.99), a gym ($40), Adobe CC ($59.99), and Headspace ($12.99). You use Netflix weekly, Spotify daily, the gym twice a month, haven't opened Adobe in 3 months, and forgot about Headspace.",
-      action: "Scan Statement finds all 5 charges. Set usage levels: Netflix=weekly, Spotify=daily, Gym=monthly, Adobe=rarely, Headspace=forgot I had it.",
-      result: "Total: $141.46/mo ($1,698/yr). Wasted: $72.98/mo. Donut chart: 17% used (Spotify), 40% underused (Netflix, Gym), 43% forgotten (Adobe, Headspace). Cost-per-use: Gym = $20/visit (twice a month), Adobe = infinite (zero use). Verdicts: Spotify=KEEP, Netflix=KEEP, Gym=CONSIDER (suggest pay-per-visit alternative), Adobe=CUT (alternative: Canva + DaVinci Resolve), Headspace=CUT (alternative: Insight Timer, free). What-If: cutting Adobe + Headspace = $875/yr — 'That's a weekend trip or 73 good coffees.' Cancellation steps and messages included for each."
+      scenario: "You have 10 subscriptions, share Netflix with roommates, just started a Paramount+ trial, and suspect your internet went up in price.",
+      action: "Add all 10 in Sweep with categories and renewal dates. Mark Netflix as shared in Splits, add roommate names. Add Paramount+ trial with end date. Update internet price — SubSweep detects the increase.",
+      result: "Radar shows 3 renewals this month totaling $87. Price Watch catches the $5/month internet hike and links to Negotiate. Splits calculates roommates owe you $8.33/month each. Trial tracker warns: 'Zero uses of Paramount+ and trial ends in 3 days — cancel now.' Budget view shows you're $12 over your streaming limit."
     },
-    
+
     tips: [
-      "The Statement Scanner catches subscriptions you've genuinely forgotten — that's where the biggest savings hide",
-      "Cost-per-use is the killer reframe: '$15/month' feels small, '$7.50 per episode' makes you reconsider",
-      "Use the What-If simulator before committing — sometimes seeing the annual number is all the motivation you need",
-      "The retention tip tells you what discount to expect when you call to cancel — don't accept the first offer",
-      "Seasonal subscriptions (sports streaming, pool service) should be paused, not cancelled"
+      "Set renewal dates on annual subs — that's where surprise charges happen",
+      "Update prices when they change — SubSweep tracks the history and alerts you to increases",
+      "Add trials the moment you sign up — tap the usage counter each time you use them",
+      "Set category budgets even if approximate — the visual bar makes overspending obvious",
+      "Run a fresh Sweep analysis each month to take a timeline snapshot"
     ],
-    
+
     pitfalls: [
-      "Be honest about usage — 'I might use it' doesn't count if you haven't in 2+ months",
-      "Statement scanning detects patterns but may miss annual charges — add those manually",
-      "Always verify cancellation steps — some services change their process"
+      "Prices and cancellation steps may vary — always verify on the service's website",
+      "Retention offers change frequently — scripts give the general approach, not guaranteed deals",
+      "Statement scanning works best with copy-pasted text, not screenshots"
     ]
-  },
-  
-  keywords: [
-    "subscription", "cancel", "waste", "money", "budget", "savings",
-    "recurring", "charges", "bank statement", "cost per use", "audit",
-    "netflix", "spotify", "streaming", "gym", "membership", "cut"
-  ],
-  
-  tags: ["Money", "Budgeting", "Subscriptions", "Savings"],
-  difficulty: "easy",
+  }
 },
 
 {
@@ -2269,60 +2393,6 @@ export const tools = [
     ]
   }
 },
-
-{
-  id: "ConfrontationCoach",
-  title: "Confrontation Coach",
-  category: "Communication",
-  icon: "🛡️",
-  description: "Generates firm but kind messages for conflict-averse people. Three firmness levels, pushback scripts, and validation that you have the right to say this.",
-  tagline: "Firm, kind words for things you need to say",
-  
-  guide: {
-    overview: "Confrontation Coach writes the exact words for you when you need to say no, set a boundary, address disrespect, or push back — but struggle to find the right phrasing. You describe the situation, and it generates three messages at different firmness levels (gentle, balanced, firm) that you can copy-paste directly. It removes apologetic qualifiers, validates your right to say this, and prepares you for pushback with ready-made responses.",
-    
-    howToUse: [
-      "Select what you need to do (say no, set boundary, address disrespect, etc.)",
-      "Describe the situation and what you need to communicate",
-      "Select the relationship and check any fears you have",
-      "Click 'Write My Message' to generate three firmness levels",
-      "Pick the level that fits — Balanced is recommended for most situations",
-      "Copy the message and send it",
-      "Expand 'If They Push Back' for ready-made responses to guilt trips, anger, or negotiation"
-    ],
-    
-    example: {
-      scenario: "A family member keeps making critical comments about your life choices — your career, your appearance, your relationship status. It happens every time you see them and you dread family gatherings because of it.",
-      action: "Select 'Set a Boundary', describe the situation, select 'Family member', check 'I'll damage the relationship' and 'They'll think I'm selfish'",
-      result: "Gentle: 'I know you care about me, and I appreciate that. But when my choices are criticized, it makes me want to share less with you. I'd love for us to enjoy our time together without going there.' Balanced: 'I need you to stop commenting on my career/relationship/appearance. These are my decisions. When you criticize them, it pushes me away.' Firm: 'My life choices are not up for discussion. If the comments continue, I'll start limiting how much time I spend at these gatherings.' Plus pushback scripts for guilt-tripping, 'I'm just trying to help', and 'You're too sensitive.'"
-    },
-    
-    tips: [
-      "The Balanced level works for 80% of situations — start there",
-      "Use Gentle for first-time conversations with people you care about",
-      "Use Firm when you've already tried and been ignored, or for serious boundary violations",
-      "You can copy any message directly and send it as-is — no editing needed",
-      "Check the pushback scripts BEFORE sending so you're prepared",
-      "Checking 'This is a recurring issue' and 'I've tried before' generates firmer messages"
-    ],
-    
-    pitfalls: [
-      "Don't soften the message after copying it — the tool already removed unnecessary apologies",
-      "Don't over-explain when you send it. The message is complete as written.",
-      "If it's a safety issue (abuse, harassment), seek professional support — this tool is for everyday boundaries"
-    ]
-  },
-  
-  keywords: [
-    "confrontation", "boundary", "say no", "assertive", "conflict",
-    "push back", "difficult conversation", "people pleaser", "boundaries",
-    "decline", "firmness", "assertiveness", "communication"
-  ],
-  
-  tags: ["Communication", "Boundaries", "Assertiveness", "Scripts"],
-  difficulty: "easy",
-},
-
 {
   id: "BragSheetBuilder",
   title: "Brag Sheet Builder",
