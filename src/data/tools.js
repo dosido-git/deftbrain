@@ -43,7 +43,445 @@ template:
 ]}},**/
 export const tools = [
 
+// DopamineMenuBuilder v6 — 5 modes (absorbs SpoonBudgeter, SocialBatteryForecaster, BurnoutBreadcrumbTracker, RoutineRuptureManager)
+// REPLACES the existing DopamineMenuBuilder block in tools.js
+{
+  id: 'DopamineMenuBuilder',
+  title: 'Dopamine Menu',
+  description: "Your complete energy management system — 5 modes in one tool. Recharge: build a personalized menu of activities that actually restore (not numb), with mood-aware suggestions, guided sequences, pattern tracking, and recharge debt monitoring. Budget: map today's tasks against available energy and see what actually fits — with explicit permission to drop what doesn't. Forecast: input your week's social and work events, get a battery drain prediction showing exactly when you'll hit empty, with recovery windows and polite decline scripts. Radar: 15-second daily check-in tracking sleep, mood, productivity, and social energy — spots burnout patterns by detecting when multiple signals decline simultaneously. Disruption: when life blows up your routine (sick day, travel, emergency), get a temporary adapted structure with keep/simplify/drop decisions and return-to-normal triggers.",
+  category: 'wellness',
+  emoji: '✨',
+  gradient: 'from-emerald-500 to-teal-500',
+  route: 'dopamine-menu-builder',
+  actions: [
+    'generate', 'just-do-this', 'build-menu', 'swap', 'rate-activity',
+    'energy-match', 'pattern-check', 'accountability-nudge', 'recharge-insights',
+    'build-sequence', 'schedule-checkin', 'debt-check',
+    'budget', 'forecast', 'decline-message', 'radar-checkin', 'radar-analyze', 'disruption'
+  ],
+  promptKeys: {
+    generate: ['energy', 'time_available', 'recent_activities', 'context', 'time_of_day', 'mood', 'environment', 'already_tried', 'curated_menu'],
+    'just-do-this': ['energy', 'mood', 'environment', 'time_of_day', 'curated_menu', 'already_tried'],
+    'build-menu': ['energy_range', 'interests', 'existing_menu', 'environment', 'shared'],
+    swap: ['rejected_activities', 'energy', 'time_available', 'reason', 'mood', 'environment', 'already_tried'],
+    'rate-activity': ['activity', 'rating', 'energy_before', 'energy_after', 'note', 'sensory_anchor', 'history'],
+    'energy-match': ['energy', 'time_available', 'curated_menu', 'recent_context', 'mood', 'environment'],
+    'pattern-check': ['activity_log'],
+    'accountability-nudge': ['activity', 'recipient_type', 'tone'],
+    'recharge-insights': ['activity_log', 'curated_menu'],
+    'build-sequence': ['energy', 'time_available', 'mood', 'environment', 'curated_menu'],
+    'schedule-checkin': ['checkin_time', 'current_energy', 'current_mood', 'current_activity', 'curated_menu'],
+    'debt-check': ['activity_log', 'recent_energies'],
+    budget: ['tasks', 'available_energy', 'mood'],
+    forecast: ['events', 'energy_type', 'current_battery', 'recharge_hours', 'activity_log'],
+    'decline-message': ['event_name', 'reason', 'relationship'],
+    'radar-checkin': ['sleep', 'mood', 'productivity', 'social_energy', 'physical_symptoms', 'checkin_history'],
+    'radar-analyze': ['checkin_log'],
+    disruption: ['disruption_type', 'normal_routine', 'constraints', 'critical_tasks', 'available_energy', 'duration_estimate'],
+  },
+  exampleScenario: `It's Tuesday. You open Dopamine Menu and see five modes across the top.
 
+RADAR: You tap your daily 15-second check-in — sleep 2/5, mood 3/5, productivity 2/5, social energy 4/5. The radar turns yellow: "Sleep and productivity have been declining together for 3 days. Your brain works worse when you sleep badly — this isn't a motivation problem, it's a sleep problem." It suggests: "Tonight, screens off by 9pm. That's the one intervention that matters right now."
+
+BUDGET: You switch to Budget and enter today's tasks: client call (4 energy), grocery run (3 energy), report draft (5 energy), gym (3 energy). At 6/10 energy, the tool does the math: total cost 15, available 6. "You're at 250% capacity. The client call and report are required — that's 9 energy on 6 available. You're already over. Everything else gets dropped today." It gives permission: "Skipping the gym when you slept 4 hours isn't laziness — it's math."
+
+RECHARGE: After the call, you're at 3/10. You tap "I can't even choose" — full-screen overlay: "Lie face down on the floor for 60 seconds. Don't do anything else." After that, the menu suggests activities matched to 3/10 energy, in-bed, evening. You save "rain sounds" to your personal menu and rate it 8/10.
+
+FORECAST: Looking at the week ahead — Wednesday networking (30 people, presenting), Thursday friend coffee, Friday hosting a dinner party. The forecast shows your battery draining to -5% by Wednesday night: "BURNOUT RISK. You cannot do Wednesday AND Friday without intervention. Recommendation: decline one." You tap "decline script" and get a warm message to send.
+
+DISRUPTION: Thursday you wake up sick. You switch to Disruption mode, tap "Sick day," set energy to 2/10, and list critical tasks (medication, feed cat, one email). The tool builds an adapted routine: Keep meds and cat. Simplify email to "one sentence reply." Drop everything else with explicit permission: "The dishes will wait. Dirty dishes don't hurt anyone." Return trigger: "When you can stand for 10 minutes without sitting down."
+
+Five modes, one energy profile, everything compounds.`,
+  features: [
+    'Zero-decision mode: "I can\'t even choose" — one tap, one activity, full-screen, no menu',
+    'Energy-matched menu: calibrated to exact energy level (1-10)',
+    'Mood-aware: adapts for stressed, sad, anxious, restless, overstimulated, bored, numb',
+    'Environment-filtered: only activities possible where you are (home, office, commuting, outdoors, in bed)',
+    'Time-of-day awareness: auto-adjusts for morning/afternoon/night',
+    'Recharge sequences: guided multi-step routines with transition cues and arc types',
+    'Saved routines: save and replay proven sequences',
+    'Recharge debt tracker: monitors energy trends, flags when you\'re running a deficit',
+    'Surprise Me: random pick from your proven menu with 10-minute commitment lock',
+    'Partner Menu: shared activities for two people with AI partner suggestions',
+    'Before/after energy chart: visual history of how activities shift your energy',
+    'Sensory anchors: associate specific songs, scents, or images with restorative activities',
+    'Personal curated menu: save and rate activities, tracks usage stats and avg ratings',
+    'Pattern detection: numbing traps, hidden gems, mood-specific patterns',
+    'Check-in scheduler: timer with pre-planned activity ready when it fires',
+    'Accountability nudge: casual invite messages for social activities',
+    'Recharge dashboard: stats and trends after 5+ sessions',
+    'Energy budgeting: map tasks against available energy with cost estimates',
+    'Priority triage: required/important/optional with honest capacity assessment',
+    'Permission engine: explicit permission to drop what doesn\'t fit — with reasoning',
+    'Weekly energy forecast: event-by-event battery drain prediction',
+    'Introvert/extrovert profile: adjusts all cost calculations to your energy type',
+    'Burnout risk warnings: flags days where battery drops below 20%',
+    'Recovery window planning: recommended recharge time between events',
+    'Decline message generator: warm, honest scripts for saying no',
+    'Daily 15-second check-in: tap 4 ratings + optional symptoms',
+    'Cross-signal detection: flags when multiple metrics decline simultaneously',
+    'Trend sparklines: visual history for sleep, mood, productivity, social energy',
+    'Full pattern analysis: unlocks after 5+ check-ins with metric trends and interventions',
+    'Persistent history: 90 days of check-in data builds your personal baseline',
+    'Keep/simplify/drop framework: clear decisions for every routine element',
+    'Survival schedule: minimal temporary structure that fits actual energy',
+    'Return-to-normal trigger: how to know when regular routine can resume',
+    'Explicit drop permissions: warm, specific permission for everything that can wait',
+  ],
+  relatedTools: ['BrainStateDeejay', 'HabitChain', 'BrainDumpStructurer'],
+},
+// BatchFlow
+{
+  id: 'BatchFlow',
+  title: 'BatchFlow',
+  description: 'Batch similar tasks by cognitive mode to minimize context switching and protect your focus. Includes weekly rhythms, A/B schedule comparison, time calibration, location-aware batching, resistance detection, and focus environment presets.',
+  category: 'productivity',
+  emoji: '⚡',
+  gradient: 'from-emerald-500 to-teal-500',
+  route: 'batch-flow',
+  actions: ['generate', 'quick-dump', 'rebatch', 'expand-batch', 'progress-update', 'share-plan', 'day-template', 'batch-insights', 'ab-compare', 'weekly-rhythm', 'resistance-check', 'time-calibrate', 'location-batch'],
+  promptKeys: {
+    generate: ['tasks', 'energy_curve', 'day_type', 'time_available', 'start_time', 'fixed_commitments', 'location_mode', 'pastBatches'],
+    'quick-dump': ['text', 'energy_curve', 'day_type', 'time_available'],
+    rebatch: ['batches', 'movedTask', 'fromBatch', 'toBatch', 'removedTasks', 'energy_curve'],
+    'expand-batch': ['batch', 'energy_level'],
+    'progress-update': ['completedBatches', 'remainingBatches', 'energy_level', 'time_remaining'],
+    'share-plan': ['batches', 'time_available', 'recipientType'],
+    'day-template': ['batches', 'templateName', 'day_type', 'energy_curve'],
+    'batch-insights': ['sessions'],
+    'ab-compare': ['tasks', 'energy_curve', 'time_available', 'fixed_commitments'],
+    'weekly-rhythm': ['recurring_tasks', 'energy_curve', 'typical_commitments', 'preferences'],
+    'resistance-check': ['deferred_tasks', 'sessions'],
+    'time-calibrate': ['time_data'],
+    'location-batch': ['tasks', 'home_base'],
+  },
+  exampleScenario: `You've got a messy day: write a blog post, email 3 clients, buy groceries, review a spreadsheet, call the dentist, organize your desk, and pick up dry cleaning. You're a morning person with a 2pm meeting.
+
+BatchFlow groups these into cognitive batches: Creative block (blog post) at 9am during peak focus. Social block (emails + dentist call) at 10:30. Analytical block (spreadsheet review) at 11:30. Then your 2pm meeting. Mechanical block (organize desk) at 3pm when energy dips. Physical block (groceries + dry cleaning) as a location-optimized errand loop at 4pm.
+
+Result: 12 context switches → 5. ~45 minutes saved. Each batch comes with a focus preset (notifications off, lo-fi music for creative; phone nearby for social) and a cognitive load heatmap showing your day's intensity curve.
+
+Want to compare approaches? A/B Compare generates Sprint Mode (done by 2pm, exhausted) vs Marathon Mode (steady through 5pm, energy left). Pick your pace.
+
+Over time, BatchFlow learns: "You underestimate creative tasks by 35% — padding accordingly." It flags stuck tasks you keep deferring and suggests fixes. Weekly Rhythm mode turns your recurring tasks into a sustainable week-level template.`,
+  features: [
+    'Batches tasks by 6 cognitive modes: Creative, Analytical, Social, Mechanical, Physical, Planning',
+    'Matches batch order to your energy curve (morning person, night owl, etc.)',
+    'Fixed commitments: schedule batches around meetings and appointments',
+    'Location-aware batching: groups errands by route efficiency',
+    'Focus environment presets: notifications, music, workspace setup per batch',
+    'Cognitive load heatmap: hour-by-hour visualization of your day',
+    'A/B Compare: Sprint (fast, intense) vs Marathon (steady, sustainable) schedules',
+    'Weekly Rhythm: recurring task patterns across the whole week',
+    'Resistance detector: flags repeatedly deferred tasks with diagnosis and fixes',
+    'Time calibration: tracks estimated vs actual duration, suggests adjustment factors',
+    'Brain dump mode: paste messy text, auto-extract and batch',
+    'Expand batch: step-by-step execution plan with exact first actions',
+    'Progress tracking: mid-day check-ins with reorder suggestions',
+    'Day templates: save and reuse successful batch patterns',
+    'Accountability sharing: generate messages for partners/friends/coworkers',
+    'Pattern insights: unlock after 3+ sessions — favorite modes, completion rates, trends',
+  ],
+  relatedTools: ['CrisisPrioritizer', 'BrainDumpStructurer', 'BrainStateDeejay'],
+},
+// ═══════════════════════════════════════════════════════════
+// LazyWorkoutAdapter v3
+// ═══════════════════════════════════════════════════════════
+  {
+    id: "LazyWorkoutAdapter",
+    title: "Lazy Workout Adapter",
+    category: "Life",
+    icon: "🧘",
+    description: "Low-barrier movement that meets you where you are — especially when you don't want to exercise. 13 AI endpoints across 9 modes: Right Now builds workouts from energy level, body complaints, AND what happened today (12 context triggers like 'bad sleep', 'long meeting', 'emotional day' that fundamentally change the workout). 2-Minute Floor for when even 5 minutes is too much. Body Relief targets specific problem areas. Environment Stack layers invisible micro-movements onto activities you're already doing (watching TV, cooking, phone calls). Sleep Prep is a pre-bed wind-down optimized for transition to sleep with progressive relaxation and breathing patterns. Recovery is first aid for your body after life events (post-flight, post-crying, post-migraine) addressing physical and emotional residue. My Week plans 7 days as a menu, not a mandate. Breathe mode offers box breathing, 4-7-8, and calm patterns with visual timer. Built-in follow-along timer, exercise swap with memory, movement streaks, invisible progression, saved presets, and a 'Not Today' button for guilt-free skips. History tracks energy shifts, and Prove It analyzes your own data to show whether movement actually helps YOU — with real numbers, not motivation.",
+    tagline: "Low-barrier movement that meets you where you are",
+
+    guide: {
+      overview: "LazyWorkoutAdapter is for the moment you know you should move but don't want to. Instead of pretending you have motivation, it starts from your actual energy, what happened today, and where your body hurts — then builds something you can realistically do right now. Context triggers ('bad sleep', 'emotional day', 'been in meetings') change the workout more meaningfully than an energy number alone. Environment Stack eliminates the idea that movement is separate from your day by weaving micro-movements into things you're already doing. Sleep Prep helps you wind down before bed with progressive relaxation. Recovery handles the aftermath of life events — post-flight, post-argument, post-migraine. After enough sessions, Prove It shows your own data back to you: does movement actually raise your energy? By how much? What type works best? Your data convinces you, not motivational quotes.",
+
+      howToUse: [
+        "⚡ Right Now: Set energy, tap what happened today (context triggers), tap where your body hurts, choose time and setting. Get a tailored workout with timer, swap, and easier fallbacks for every exercise",
+        "⏱️ 2-Minute Floor: Three movements, 40 seconds each. For those days where even 5 minutes is impossible. Still counts toward your streak",
+        "🎯 Body Relief: Pick what hurts, choose intensity, get targeted movements that feel like relief — with prevention tips",
+        "📚 Environment Stack: Tell it what you're about to do (TV, cooking, phone call) and get micro-movements to sprinkle throughout — 30-60 seconds each, often invisible to anyone watching",
+        "🌙 Sleep Prep: Set your stress level and time. Get a progressive wind-down routine that ends with eyes closed and a breathing pattern. The physical equivalent of dimming the lights",
+        "🩹 Recovery: Tell it what happened (long flight, bad day, panic attack, surgery) and how rough it was. Get a recovery protocol that addresses physical and emotional residue, starting with the most immediately soothing thing",
+        "📅 My Week: Rate your typical energy by day, get a 7-day movement menu with minimums and 'feeling it' options. Skip days guilt-free",
+        "🫁 Breathe: Box breathing, 4-7-8, or calm pattern with visual countdown. Sometimes the movement you need is just breathing",
+        "📊 History: 30-day calendar with streak, energy shift tracking. Insights after 5+ sessions. 'Prove It' after 7+ sessions shows real evidence from your own data",
+        "💾 Presets: Save favorite workouts for one-tap repeat. 'Not Today' button logs a skip without guilt — the data is actually useful for pattern analysis"
+      ],
+
+      example: {
+        scenario: "It's 9pm Tuesday. You had back-to-back meetings all day, your neck is killing you, energy is 3/10, and you need to be in bed in an hour. You've been using the tool for 2 weeks.",
+        action: "Open the tool — it nudges you: 'It's Tuesday evening. You usually do a 10-minute session around now. How about your usual neck relief?' You tap 'Let's go' but switch to Right Now, set energy to 3, tap 'long meeting' and 'screen marathon' as context triggers, tap 'stiff neck.' 8 minutes. The workout is entirely floor-based with neck-specific movements, all doable while watching TV. You swap one exercise you don't like — it's replaced and remembered. After, you switch to Sleep Prep with stress level 'high.' 5-minute wind-down ending with 4-7-8 breathing.",
+        result: "Two sessions logged (workout + sleep prep). Energy went from 3 to 5 after the workout. Streak: 9 days. The tool notes you consistently feel better after evening sessions. After another week, you check Prove It: your energy increases an average of 1.6 points after moving, and neck-targeted sessions help the most. That's not motivation — it's your own data."
+      },
+
+      tips: [
+        "Context triggers are the biggest upgrade — 'bad sleep' and 'been in meetings' produce fundamentally different workouts even at the same energy level",
+        "Environment Stack is for people who 'don't have time to exercise' — if you're watching TV for an hour, you have time for 6 invisible micro-movements",
+        "Use Sleep Prep every night for a week and notice the difference — it's the highest-retention mode because everyone goes to bed",
+        "Recovery mode isn't just for physical events — 'after a difficult conversation' and 'panic attack recovery' are valid inputs that address emotional residue",
+        "The 'Not Today' button is data, not failure — the tool uses skip patterns to find what's happening on days you don't move",
+        "Check Prove It after 2 weeks — seeing your own energy data is more convincing than any motivational content",
+        "Save your go-to workout as a preset for one-tap access on busy days",
+        "The breathing timer works standalone — use it in a meeting, before a presentation, or when you can't sleep"
+      ]
+    }
+  },
+  {
+    id: "JargonAssassin",
+    title: "Jargon Assassin",
+    category: "Life",
+    icon: "🗡️",
+    description: "Translate confusing documents into plain language — then actually do something about them. 11 AI endpoints across 6 modes: translate any legal, medical, financial, insurance, or government document at 4 reading levels (ELI5 through Professional) with instant danger scoring, enforceability flags, and a growing jargon glossary. Ask follow-up questions. Deep-dive any flagged section line-by-line. Compare two document versions to catch every change. Red-Line Markup generates specific suggested edits with negotiation strategy. Template Compare tells you whether your document is normal or aggressive vs. standard documents of its type. Action Plan turns understanding into ordered steps with deadlines. Explain To reframes the content for a specific person (your parent, roommate, teenager). Multi-Document Dossier cross-references related documents to find conflicts and gaps. Letter Generator writes professional responses that reference specific clauses. Saves translations with danger scores for reference.",
+    tagline: "Confusing documents → plain language → what to do about it",
+
+    guide: {
+      overview: "JargonAssassin is for the moment you're staring at a lease, medical consent form, insurance policy, or employment contract and thinking 'what does this actually mean for me?' Paste the document, pick your reading level, and get it translated with every red flag, deadline, and hidden catch identified. But translation is just the start — the tool completes the full arc from confusion to understanding to action. Red-Line tells you what to push back on with specific alternative language. Template Compare gives you a baseline for what's normal. Action Plan orders your next steps with deadlines pulled from the document. Letter Generator writes your response. And if you need to explain it to someone else — your parent, your roommate, your partner — the Explain To mode reframes everything for that specific person.",
+
+      howToUse: [
+        "📄 Translate: Paste any document, select type and reading level (ELI5 through Professional). Get plain translation, danger score, flagged sections with enforceability notes, glossary, and checklist",
+        "❓ Q&A: Ask anything about the translated document — 'Can I sublease?', 'What if I miss a payment?' Answers at your reading level with warnings if your question reveals a concern",
+        "🚩 Key Sections: View flagged sections (red flags, deadlines, decisions) with one-click deep-dive for line-by-line clause analysis including hidden catches",
+        "🗣️ Explain To: Enter who you're explaining to ('my 70-year-old mother', 'my business partner') and get the content reframed for their concerns, their language, and what they specifically need to know — plus advice on how to have the conversation",
+        "✏️ Red-Line: One-click generates specific edits to propose — what to change, what to add, what to remove — with priority ranking, alternative language, and a negotiation strategy for what to lead with and what to concede",
+        "📊 vs Normal: One-click compares your document against what's typical for this type — is your non-compete unusually broad? Is that late fee standard? Flags what's aggressive, what's missing, and what's actually better than usual",
+        "📋 Action Plan: Generates ordered steps with deadlines, quick wins you can do in 5 minutes, scripts for conversations, and consequences if you do nothing",
+        "🔀 Compare: Paste two versions of a document to see every meaningful change, what was removed (potentially concerning), and whether the revision is better or worse overall",
+        "📁 Dossier: Add 2+ related documents (lease + building rules, contract + handbook) and cross-reference them for conflicts, dependencies, and gaps between documents",
+        "✉️ Letter: Generate a professional response letter — dispute, negotiate, accept with conditions — that references specific clauses, with tone selection and send-via recommendation"
+      ],
+
+      example: {
+        scenario: "You receive a new apartment lease renewal. The rent went up, some terms changed, and there's a new clause about 'property access' that sounds invasive. You also need to explain the changes to your roommate who panics about everything.",
+        action: "Translate the full lease — danger score shows 'Caution' with the property access clause flagged as a red flag with enforceability concerns. Deep-dive that clause: it allows 24-hour access without notice for 'maintenance.' Hit Red-Line — it suggests changing to 48-hour written notice except for emergencies, with specific language to propose. Template Compare shows the rent increase is standard for your area but the access clause is unusually broad. Action Plan gives you 6 steps, starting with emailing the landlord about clause 4.2 (script included), deadline to respond by the 15th. Then use Explain To for 'my anxious roommate' — it reframes everything calmly, tells them what NOT to worry about, and suggests having the conversation over dinner.",
+        result: "Full translation with 3 red flags and 2 deadlines identified. Red-line with 4 suggested changes ranked by priority. Template comparison showing 8 clauses rated against standard leases. 6-step action plan with scripts and deadlines. A roommate-friendly explanation that reduces anxiety. All saved for reference."
+      },
+
+      tips: [
+        "Start with Translate, then use the one-click buttons (Red-Line, vs Normal, Action Plan) to unlock the full analysis — each builds on the translation",
+        "Red-Line + Action Plan together complete the arc: Red-Line tells you WHAT to push back on, Action Plan tells you HOW and WHEN",
+        "Template Compare is the sleeper feature — knowing what's 'normal' for your document type is often more valuable than the translation itself",
+        "Use Explain To when you need buy-in from someone else — it reframes for their concerns, not yours, and even tells you how to have the conversation",
+        "The Dossier mode is powerful for real-world situations where documents reference each other (lease + building rules, job offer + benefits package + handbook)",
+        "Letter Generator saves hours — but always review before sending, especially for legal or financial responses",
+        "Reading levels matter: ELI5 for 'I just need to know if this is safe,' Professional for 'I'm smart but not in this field'",
+        "Danger scores are instant gut-checks — if you see 🔴, read the flagged sections before doing anything else"
+      ]
+    }
+  },
+  {
+    id: "DebateMe",
+    title: "Debate Me",
+    category: "Thinking",
+    icon: "🥊",
+    description: "The complete intellectual sparring system. 8 modes with 13 AI endpoints. Full Debate: state any position and face the steelman — the strongest possible opposing case with real evidence and real thinkers, not strawmen. Multi-turn with concessions, fallacy flags, mid-debate coaching, source checks, and strategic concession buttons. 5 debate formats (Freeform, Lincoln-Douglas, Cross-Examination, Oxford, Socratic). 3 challenge levels adjustable mid-debate. Switch sides for perspective-taking. Post-debate scorecard with Audience Verdict (third-party persuasion judgment) and Argument Map (visual tree of claim/counter-claim structure with defended/abandoned branches). Devil's Advocate Prep drills you for real meetings with audience-specific objections and recovery strategies. Fallacy Gym trains you to spot logical fallacies with streak tracking and difficulty scaling. Rematch targets your documented blind spots from previous debates. Highlight Reel analyzes patterns across all your debates and assigns a Debater Type archetype. Quick Spar for single-round challenges. 12 topic starters. Full transcript saves with replay. Stats dashboard with trend analysis.",
+    tagline: "Find out how strong your position really is",
+
+    guide: {
+      overview: "DebateMe is a complete system for sharpening how you think. At its core: state any position and face the strongest possible counter-argument — not a caricature, but what a thoughtful, well-informed person who genuinely disagrees would actually say. Around that core: five structured debate formats (including Socratic method where the AI only asks questions), a coaching system that suggests angles without writing your arguments, source-checking for any claim, audience judgment that scores persuasiveness rather than correctness, and an argument map that visualizes the structure of your thinking. Outside of debates: Devil's Advocate Prep drills you for real-world meetings with audience-specific objections, and Fallacy Gym trains you to spot logical errors. Everything compounds — your debate log feeds a Highlight Reel that reveals persistent patterns, assigns a Debater Type, and prescribes specific exercises for your weaknesses.",
+
+      howToUse: [
+        "🥊 Full Debate: State position, pick format (Freeform/Lincoln-Douglas/Cross-Exam/Oxford/Socratic), set challenge level, go. Use 🤝 to concede strategically, 🧑‍🏫 for coaching angles, 🔍 to source-check claims, 🔄 to switch sides. Adjust difficulty mid-debate",
+        "📊 Scorecard + Extras: After 2+ exchanges, end for sharpness score, blind spots, fallacy analysis, coaching note. Then unlock Audience Verdict (who was more persuasive to an undecided observer?) and Argument Map (visual tree of your claims with defended/abandoned branches)",
+        "🎯 Devil's Advocate Prep: Enter your position, audience, context, and stakes. Get the 5 hardest questions they'll ask, with angles, landmines to avoid, openers, and worst-case recovery. Jump to a full practice debate from any prep",
+        "🧩 Fallacy Gym: Spot logical fallacies at easy/medium/hard difficulty. Streak tracking. Get specific feedback on why you were right or wrong. Builds the skill that makes you better in actual debates",
+        "🔁 Rematch: From your log, rematch any previous debate. The AI targets your documented blind spots and sets traps for your habitual fallacies. Forces genuine growth",
+        "🏆 Highlight Reel: After 3+ debates, generate a cross-debate analysis — your Debater Type archetype, persistent strengths and weaknesses, most common fallacy with exercises, growth trajectory, and suggested topics to stretch your weakest areas"
+      ],
+
+      example: {
+        scenario: "You need to defend switching to remote-first at Thursday's board meeting. The CEO is risk-averse and the company lost revenue last quarter.",
+        action: "Devil's Advocate Prep: enter your position, describe the board, note the revenue context, set stakes to 'career-defining.' Get drilled on the 5 hardest questions. Then jump to a full debate in Oxford format at Rigorous. Use Cross-Exam format for a round to practice answering tough questions. Mid-debate, source-check the productivity data you're citing. Hit Coach when stuck on the innovation objection. After 5 turns, switch sides to understand the board's perspective. End & Score.",
+        result: "Prep gave you the 'but what about our culture' question you hadn't prepared for, plus a landmine to avoid ('don't mention competitor layoffs'). Debate scorecard: 7/10, blind spot on junior employee development. Audience Verdict: you were slightly more persuasive but lost them during the cost analysis. Argument Map shows you built wide but not deep — lots of claims, thin evidence. Rematch available targeting those exact weaknesses. Highlight Reel across 8 debates: you're an 'Intuitive Framer' who relies too heavily on appeal to authority — exercise prescribed."
+      },
+
+      tips: [
+        "Devil's Advocate Prep before any important meeting, presentation, or difficult conversation — it's the highest-ROI mode",
+        "Try Socratic format at least once — being questioned without the AI asserting anything forces you to examine your own assumptions in a way nothing else does",
+        "Source Check your own claims, not just the AI's — discovering your own weak evidence mid-debate is better than discovering it in the real conversation",
+        "The Fallacy Gym streak is addictive and genuinely useful — try 5 minutes a day at increasing difficulty",
+        "Rematch is where real growth happens — same topic, but the AI remembers your blind spots and specifically targets them",
+        "Your Highlight Reel Debater Type is revealing — share it and challenge friends to find theirs",
+        "Cross-Exam format develops the hardest debate skill: asking questions that expose weaknesses without making assertions"
+      ]
+    }
+  },
+  {
+    id: "PaperDigest",
+    title: "Paper Digest",
+    category: "Learning",
+    icon: "📄",
+    description: "Translate academic papers into plain language — no PhD required. 5 modes with 5 AI endpoints: digest any paper into a one-sentence finding with methodology description, limitations, jargon decoded, and an honest 'so what' assessment. Media Check compares what the paper actually says to how headlines report it, catching exaggerations, causation-from-correlation claims, and missing context. Compare two papers on the same topic to see where they agree and diverge. 'Does This Apply to Me?' gives personalized relevance based on your situation. Jargon Decoder explains any scientific term with analogies, not textbook definitions. Auto-builds a personal jargon dictionary as you read. Saves digests for reference.",
+    tagline: "What this paper actually says — and whether what you read about it is true",
+
+    guide: {
+      overview: "PaperDigest is for the moment you see a headline like 'Scientists prove coffee cures everything' and think 'wait, does it really?' Instead of wading through dense abstracts, paste the paper text and get the actual finding in one sentence, what kind of study it was (described, not judged), what it proves vs. what people think it proves, and a warm honest take you'd hear from a smart friend over coffee. The Media Check is the killer feature — it compares what the paper says to what the headline claims and catches every type of distortion. Every term you encounter gets saved to a personal jargon dictionary that grows as you read.",
+
+      howToUse: [
+        "📄 Digest: Paste an abstract or paper text, optionally select the field. Get the finding in one sentence, methodology description, what it proves and doesn't, limitations, decoded jargon, and an honest 'so what' section with confidence level",
+        "📰 Media Check: Paste a headline (and article excerpt if you have it) plus the paper text. Get an accuracy rating, specific distortions identified by type (causation from correlation, cherry-picked results, etc.), what they got right, and what the headline should have said",
+        "⚖️ Compare: Paste text from two papers on a similar topic. See whether they agree, why they might differ, which to trust more for your specific question, and what's still unknown",
+        "🎯 For Me?: Describe a finding and your situation. Get a personalized assessment of whether it applies to you, whether you should change anything, the cost of waiting for more evidence, and whether to talk to a professional",
+        "🔤 Jargon: List terms you don't understand — get plain English explanations with analogies, examples, common misconceptions, and why each term matters. All terms auto-save to your personal dictionary"
+      ],
+
+      example: {
+        scenario: "You see a headline: 'New study proves intermittent fasting reverses aging.' You're 40, considering trying it, and your doctor mentioned it once. You found the actual paper's abstract.",
+        action: "Digest the abstract first — learn it was a 12-week study of 30 mice, not humans. Media Check the headline — catch 'proves' (it suggests), 'reverses aging' (it measured one biomarker), and 'fasting' (they used a specific 16:8 protocol). Then hit 'Does this apply to me?' with your age, health, and doctor's comment.",
+        result: "The digest explains it's an early mouse study showing a correlation with one aging marker. Media Check rates the headline 'Exaggerated' — three distortions identified. The relevance check says 'Too early to tell' for humans, but the 16:8 protocol is low-risk to try, and suggests asking your doctor specifically about your situation. Five new terms added to your jargon dictionary."
+      },
+
+      tips: [
+        "Start with Digest, then use the quick-action buttons to jump to Media Check or 'For Me?' — the paper text carries over automatically",
+        "The Media Check is the most unique feature — use it whenever a health or science headline feels too good (or too scary) to be true",
+        "Your jargon dictionary grows automatically across all modes. After a few papers, you'll start recognizing terms on your own",
+        "Compare mode is powerful when you've seen conflicting headlines — paste both abstracts to understand why studies on the same topic can reach different conclusions",
+        "The tool describes methodology rather than judging it — 'this was a small observational study' is useful information, not a verdict"
+      ]
+    }
+  },
+  {
+    id: "RoomReader",
+    title: "Room Reader",
+    category: "Social",
+    icon: "🧠",
+    description: "Social intelligence coach with 12 modes and 13 AI endpoints. Pre-Game event prep with starters, people maps, and worst-case saves. Quick Read for instant tap-and-go lines with refresh. Conversation Recovery for mid-conversation 'I just said something weird' emergencies with damage scoring. Person Prep for one specific person, plus a Recurring Person Tracker that logs interactions and generates fresh strategies from history. Group Dynamics for entering conversations and handling being ignored. Energy Match for bridging the gap when your energy doesn't match the room. Small Talk Ladder for progressing from surface-level to genuine connection. Culture Decoder for cross-cultural situations with etiquette, body language, and a key phrase. Signal Decoder for figuring out what someone meant. Follow-Up message drafter for the post-event text. Debrief that auto-builds a Playbook from wins. Social Autopsy for deep forensic analysis of interactions that went wrong. Persistent Playbook, Saved Game Plans with cheat sheet export, Tracked People with interaction histories.",
+    tagline: "Read the room before you walk in",
+
+    guide: {
+      overview: "Room Reader is your social intelligence coach — the clever friend who preps you before the party, rescues you mid-conversation, and debriefs you afterward. Every mode builds your persistent Playbook, which shapes future suggestions. Track recurring people across interactions. Save Game Plans to pull up on your phone at the event. The tool gets smarter the more you use it.",
+
+      howToUse: [
+        "Pre-Game: Pick an event, add details, get conversation starters, people map, body language, exits, and a pep talk. Save the plan to reference at the event",
+        "Quick Read: Tap a scenario + relationship, get one line instantly. Refresh for a new one. Your playbook shapes the style",
+        "Recovery: Just said something weird? Enter what you said, get a damage score (most things are a 3/10) and immediate saves",
+        "Person Prep: Strategy for one specific person. Track recurring people by logging what worked and what bombed after each interaction, then get fresh strategies from the history",
+        "Group Dynamics: Enter conversations, contribute without dominating, recover from being ignored",
+        "Energy Match: Your energy doesn't match the room? Get techniques to bridge up, bridge down, or own the mismatch",
+        "Small Talk Ladder: Learn exact transition phrases to go from 'nice weather' to genuine connection in 5 levels",
+        "Culture Decoder: Cross-cultural social situations with do/don't lists, body language norms, and a key phrase to learn",
+        "Signal Decoder: Someone said something confusing. Get the most likely read, overthinking check, and options",
+        "Follow-Up: Draft the right post-event text with timing and multiple styles",
+        "Debrief: Log wins (auto-added to Playbook) and reframe awkward moments. Get a next challenge",
+        "Social Autopsy: Deep forensic analysis of what went wrong. Separates your fault from not-your-fault. Adds lessons to Playbook"
+      ],
+
+      example: {
+        scenario: "You have a work dinner Thursday with your partner's Japanese clients. Your partner's difficult mother will be at family brunch Sunday. Last week's networking event was a disaster and you can't figure out why.",
+        action: "Culture Decoder: Japanese business dinner. Person Prep: partner's mother + track her as recurring. Social Autopsy: describe the networking event. Pre-Game: Thursday dinner with saved plan.",
+        result: "Culture guide with greeting norms, seating etiquette, a phrase in Japanese, and how to handle the toast. Person strategy for the mother based on what you know, with a 'track' button that logs each interaction so next time it suggests fresh topics based on history. Autopsy reveals the networking event wasn't your fault — the group dynamics were exclusionary — but suggests a positioning trick for next time (added to Playbook). Thursday's plan saved for phone reference."
+      },
+
+      tips: [
+        "Recovery mode is for RIGHT NOW — don't overthink the input, just type what you said and get a save. Most things are a 3/10",
+        "Track recurring people (in-laws, coworkers, neighbors) and log interactions. After 3-4 notes the fresh strategy becomes remarkably specific",
+        "The Small Talk Ladder is a skill builder — use it before events to practice transition phrases, not just when you're stuck",
+        "Social Autopsy is for when Debrief isn't enough. Use it when you genuinely can't figure out what went wrong. It's generous about what wasn't your fault",
+        "Copy the Cheat Sheet from saved plans — it's a phone-friendly summary of your full prep that you can pull up in the bathroom before rejoining the party"
+      ]
+    }
+  },
+    {
+    id: "FoodSwap",
+    title: "Food Swap",
+    category: "Health",
+    icon: "🔄",
+    description: "Find satisfying substitutions when dietary restrictions change your life. 10 modes with 17 AI endpoints: swap foods with closeness scores, restaurant ordering guides, pantry transitions with shopping lists, craving decoder, batch swaps, weekly meal plans, product label checker, social eating scripts, travel eating survival guides with printable language cards, and party menu planner for hosting guests with mixed restrictions. Supports multiple simultaneous constraints. Swap Journal tracks what you have tried with 1-10 ratings and generates a Swap Style personality analysis. Ingredient Dictionary auto-builds from label checks. Confidence Tracker follows your transition arc with milestone celebrations.",
+    tagline: "Keep eating what you love — just differently",
+
+    guide: {
+      overview: "FoodSwap is for the moment you get a new dietary restriction and think 'but I LOVE mac and cheese.' Instead of generic lists, it analyzes what you crave (texture, richness, comfort) and finds the closest match — specific brands, honest scores, pro tips. Select multiple constraints at once. Rate swaps to teach it your preferences. Log tries in the Swap Journal and unlock your Swap Style personality after 5 entries. Ingredient Dictionary auto-grows from label checks. Confidence Tracker meets you where you are in the transition. Travel mode gives you printable language cards. Party Planner handles hosting guests with conflicting restrictions.",
+
+      howToUse: [
+        "Pick ALL your constraints (multi-select, saved automatically). Then choose a mode: Swap, Eat Out, Pantry, Cravings, Batch, Meal Plan, Labels, Social, Travel, or Party Plan",
+        "Swap Mode: Describe a food, get ranked swaps. Rate them, star favorites, Try Another to regenerate, Deep Dive for brands, Full Recipe with steps. Log what you try in the Journal",
+        "Travel Mode: Enter a destination, get safe foods, printable language cards to show servers, convenience store tips, hidden dangers, packing list, and an emergency plan",
+        "Party Plan: List guests and their constraints, get a menu where most dishes work for everyone, a prep timeline, shopping list, and labeling strategy",
+        "Journal + Dictionary + Check-In: Log swap experiences to build your Swap Style profile. Dictionary auto-learns from Label Reader. Weekly check-ins track your transition confidence with milestones and challenges"
+      ],
+
+      example: {
+        scenario: "You are lactose intolerant and trying keto. You love mac and cheese, have a trip to Tokyo next month, and are hosting Thanksgiving for 8 people including a vegan cousin and a nut-free nephew.",
+        action: "Select Dairy-Free and Keto constraints. Swap mac and cheese. Travel mode: enter Tokyo. Party mode: add each guest with their restrictions. Log your mac and cheese experiment in the Journal.",
+        result: "Mac and cheese swap: cauliflower base + Violife cheddar + almond flour crust (82% match). Tokyo guide: printable allergy card in Japanese, safe convenience store brands at 7-Eleven, hidden dairy in dashi. Thanksgiving menu: 6 dishes that work for everyone plus 2 clearly-labeled options. Journal logs build your Swap Style personality over time."
+      },
+
+      tips: [
+        "Log every swap you try in the Journal — even failed ones. After 5 entries the Swap Style analysis reveals patterns like 'you prefer texture over flavor accuracy' that make every future suggestion smarter",
+        "Travel mode's printable language card is the most important thing to have on your phone abroad — copy it before you leave and screenshot it for offline use",
+        "The Ingredient Dictionary compounds over time — every Label Reader check auto-adds flagged ingredients. After a few weeks you will have a personalized cheat sheet for your specific constraints",
+        "Use the Confidence Check-In weekly during the first two months of a new restriction — it is timed to the known emotional arc (overwhelming → groove → autopilot → slip risk) and gives targeted support"
+      ]
+    }
+  },
+  // ── MoneyDiplomat ────────────────────────────────────────
+  {
+    id: "MoneyDiplomat",
+    title: "Money Diplomat",
+    category: "Daily Life",
+    icon: "💵",
+    description: "Navigate every awkward money situation with confidence. 18 scenario types covering tips, bill splits, Venmo requests, lending, dating, gifts, roommates, salary negotiation, inheritance, group travel, subscriptions, affordability checks, cultural money norms, charity, weddings, family, and coworker collections. Plus 5 bonus modes: instant tip/split calculator, debt tracker with AI nudge messages, conversation practice simulator, usage trends with charts, and a persistent profile so you never re-explain your budget or culture.",
+    tagline: "Win every awkward money moment",
+
+    guide: {
+      overview: "Money Diplomat handles the social side of money — the conversations, calculations, and etiquette nobody teaches you. Pick from 18 situation types (tipping, splitting, lending, dating, gifts, salary, inheritance, and more) and get tailored scripts, amounts, and strategies. Use Quick Math for instant tip/split calculations without AI. Track who owes you with They Owe Me and generate tactful nudge messages. Practice high-stakes money conversations in the simulator. Set your profile once (budget, culture, relationship status) and every response adapts automatically.",
+
+      howToUse: [
+        "⚙️ Set Profile first (optional but powerful): Enter your budget level, cultural background, relationship status, and country — this context auto-enriches every future request",
+        "🔥 Quick Math: For simple tip or split calculations, toggle Quick Math mode — enter bill amount, pick a tip percentage, set number of people, get instant results with no AI needed",
+        "🎯 Pick a Situation: Choose from 18 types (Tip, Split Bill, Venmo, Lending, Date, Gift, Salary, etc.), fill in the context fields, and get a tailored script with exact amounts and social strategy",
+        "🎭 Practice Mode: For high-stakes conversations (salary, lending, family money), open the simulator — the AI plays the other person in character while coaching your responses",
+        "📒 They Owe Me: Log debts, track who's paid, and generate culturally-aware nudge messages at the right escalation level — from gentle reminder to firm follow-up"
+      ],
+
+      example: {
+        scenario: "Your friend group is splitting a dinner bill, but two people only had salads while others ordered steak and cocktails. Someone suggests splitting evenly. You don't want to be 'that person' but it's a $40 difference.",
+        action: "Select 'Bill Splitter', enter the total bill, number of people, and describe the situation: 'Two people had $25 meals, others had $65+ with drinks. Someone wants to split evenly.' Click get advice.",
+        result: "You get a fair split calculation (itemized vs even, with the exact dollar difference), a ready-to-send group text that frames it positively ('Hey! Want to do a rough itemized split so nobody overpays? I can Venmo-request everyone their portion — easier than math at the table'), and a backup script if someone pushes back. The tone matches your profile's cultural context."
+      },
+
+      tips: [
+        "Set your profile once and forget it — every situation response will automatically factor in your budget comfort level and cultural norms without you re-explaining each time",
+        "Use Quick Math mode for the 60% of situations that just need fast arithmetic — save the AI-powered mode for socially complex scenarios where you need scripts and strategy",
+        "The Practice simulator is especially valuable before salary negotiations and family money conversations — rehearsing with AI builds real confidence for the actual conversation",
+        "Check Trends periodically to spot patterns — if you're constantly in 'lending' situations with the same person, the data makes it easier to set a boundary"
+      ]
+    }
+  },  {
+    id: "SkillGapMap",
+    title: "Skill Gap Map",
+    category: "Career",
+    icon: "🗺️",
+    description: "Map the exact gap between where you are and where you want to be — then close it. 22 tools covering every stage of a career transition: explore roles with day-in-the-life simulations, get a personalized skill gap analysis, build learning timelines, generate proof-of-skill project ideas, decode job postings, practice mock interviews with AI, audit your resume, find target companies, get weekly nudge assignments, and track your progress with milestone celebrations. Includes market pulse, salary economics, mentor matching, networking scripts, and skill adjacency sequencing.",
+    tagline: "Your GPS from current role to dream job",
+
+    guide: {
+      overview: "Skill Gap Map is a 22-feature career transition engine. Start by exploring roles or mapping your gap — then unlock a full pipeline: day-in-the-life reality checks, optimal learning sequences, salary economics, proof-of-skill projects, networking strategy with outreach drafts, resume audits, company targeting, job posting decoders, mock interviews with AI, market demand tracking, weekly assignments, milestone celebrations, and mentor matching. It remembers your progress across sessions and adapts as you grow.",
+
+      howToUse: [
+        "🔍 Explore Mode: Enter your interests to discover matching roles with difficulty ratings, salary ranges, and surprise suggestions — or skip straight to Map Mode if you know your target",
+        "🗺️ Map Mode: Enter your current role, target role, and existing skills → get a prioritized gap analysis with effort estimates, urgency ratings, and a visual progress tracker",
+        "📅 Unlock Depth: Click any skill gap for a deep dive (resources, projects, time estimates), then expand into Timeline, Proof Projects, Networking, Economics, and Resume Audit panels",
+        "🎯 Prepare: Use Job Posting Decoder to analyze real listings, Mock Interview for AI-powered practice rounds, and Company Targets to find where to apply",
+        "📈 Stay on Track: Check your progress tracker, trigger milestone celebrations, get weekly nudge assignments, and find your ideal mentor profile"
+      ],
+
+      example: {
+        scenario: "You're a marketing coordinator who wants to become a product manager. You have project management and analytics skills but no technical background.",
+        action: "Enter 'Marketing Coordinator' as current role, 'Product Manager' as target. List your skills (project management, analytics, stakeholder communication). Set 10 hours/week for learning. Click Map My Gap.",
+        result: "You get 6 prioritized skill gaps (SQL, wireframing, A/B testing, technical communication, roadmapping, user research) with effort bars and urgency ratings. Expand SQL for a deep dive with free courses and a portfolio project. Generate a 6-month timeline. Click Day in Life to see what a PM's Tuesday actually looks like. Decode a real PM job posting to see you're already 65% qualified. Run a mock interview round where the AI asks 'How would you prioritize these three features?' and coaches your answer."
+      },
+
+      tips: [
+        "Start with Explore Mode if you're unsure about your target — the surprise suggestions often surface roles you hadn't considered that match your existing strengths",
+        "Use Day in Life before committing to a career switch — the hour-by-hour schedule and frustration scenarios reveal whether you'd actually enjoy the daily reality",
+        "Run Job Posting Decoder on 3-5 real listings to calibrate which gaps matter most in the actual market versus theoretical skill lists",
+        "The Weekly Nudge gives you one specific assignment with a deliverable — treat it like homework to maintain momentum between big planning sessions"
+      ]
+    }
+  },
 {
   id: "HistoryToday",
   title: "HistoryToday",
@@ -415,7 +853,7 @@ export const tools = [
   }
 },
 {
-  id: 'PlainTalk',
+  id: "PlainTalk",
   title: 'PlainTalk — Document Analyst',
   category: 'Life & Lifestyle',
   icon: '🔍',
@@ -603,7 +1041,7 @@ export const tools = [
   }
 },
 {
-  id: 'BrainRoulette',
+  id: "BrainRoulette",
   title: 'Brain Roulette',
   category: 'Diversions',
   icon: '🎲',
@@ -699,7 +1137,7 @@ export const tools = [
       ]
     }},
 {
-  id: 'WardrobeChaosHelper',
+  id: "WardrobeChaosHelper",
   title: 'Wardrobe Chaos Helper',
   category: "Daily Life",
   icon: '👗👔',
@@ -742,7 +1180,7 @@ export const tools = [
 },
 // PlantRescue-metadata.js
 {
-  id: 'PlantRescue',
+  id: "PlantRescue",
   title: 'Plant Rescue',
   category: "Daily Life",
   icon: '🪴',
@@ -2394,60 +2832,6 @@ export const tools = [
   }
 },
 {
-  id: "BragSheetBuilder",
-  title: "Brag Sheet Builder",
-  category: "Productivity",
-  icon: "🏆",
-  description: "Add accomplishments one at a time (be as humble as you want) and get them transformed with before/after verb upgrades, per-accomplishment imposter syndrome coaching, a metrics excavator that finds hidden numbers, STAR interview stories, resume bullets, LinkedIn about sections, performance review self-assessments, and raise/promotion ammunition with dollar-value estimates and a meeting script.",
-  tagline: "Turn humble descriptions into powerful achievement statements",
-  
-  guide: {
-    overview: "Most people chronically understate their work. This tool fixes that. Add accomplishments one at a time in your own words, set your industry, career level, and what you need (resume, LinkedIn, interview, performance review, raise), and the AI transforms each one into a power statement with specific verb upgrades shown inline. It also digs for hidden metrics, builds STAR interview stories, generates resume bullets, writes a LinkedIn about section, drafts a performance review self-assessment, and creates raise/promotion ammunition with business-value dollar estimates and a meeting script. Each transformation includes a per-accomplishment imposter syndrome killer explaining why you deserve to claim it.",
-    
-    howToUse: [
-      "Enter your role title and years of experience (optional but helps calibrate)",
-      "Pick your industry (tech, finance, healthcare, etc.) for industry-specific power verbs",
-      "Pick your career level (student through executive) for appropriate framing",
-      "Select what you need: Resume, LinkedIn, Interview, Performance Review, Raise/Promotion",
-      "Add accomplishments one at a time (press Enter to add). Be as vague as you want.",
-      "Hit Build My Brag Sheet and get transformations with verb upgrades, STAR stories, formatted outputs",
-      "Use the Metrics Excavator questions to find hidden numbers and make your bullets even stronger",
-      "Copy any individual bullet, story, or section with one click"
-    ],
-    
-    example: {
-      scenario: "You are a mid-level product manager at a tech company. You need to update your resume and prepare for a raise conversation. Your accomplishments: 'helped improve onboarding', 'worked on the new dashboard', 'did some data analysis for quarterly reviews'.",
-      action: "Role: Product Manager, Industry: Tech, Level: Mid-level, Purposes: Resume + Raise. Add each accomplishment.",
-      result: "Transformation 1: 'helped improve onboarding' -> 'Redesigned user onboarding flow, reducing time-to-first-value by [35%] and improving Day-7 retention by [12 points]' (verb: helped -> redesigned). Imposter killer: 'If the onboarding got better and you were involved, you contributed to that improvement.' Metrics Excavator: 'What was the completion rate before vs after? Check your analytics tool.' STAR Story: S: Onboarding had a 40% drop-off... Resume bullet: Redesigned user onboarding flow... Raise: 'Improved onboarding reduced churn-related revenue loss by approximately $200K annually.'"
-    },
-    
-    tips: [
-      "Be as humble as you want in input. 'I kinda helped with a thing' is a perfectly valid starting point.",
-      "The verb upgrade pills show you exactly what changed: helped -> spearheaded, worked on -> delivered",
-      "The Metrics Excavator tells you WHERE to find numbers you probably already have access to",
-      "Select Raise/Promotion to get dollar-value estimates and a script for the actual meeting",
-      "The per-accomplishment imposter syndrome killer is the most important part. Read every one.",
-      "You can add more accomplishments and rebuild anytime — the tool works incrementally"
-    ],
-    
-    pitfalls: [
-      "Don't inflate or lie. The tool reframes truthfully, and so should you.",
-      "Estimated metrics in [brackets] are starting points. Replace with real numbers where possible.",
-      "Don't use the same bullets for every application. Tailor to each job description."
-    ]
-  },
-  
-  keywords: [
-    "resume", "brag", "accomplishment", "achievement", "interview", "linkedin",
-    "performance review", "raise", "promotion", "career", "job", "hire",
-    "imposter syndrome", "bullet", "STAR", "power verb"
-  ],
-  
-  tags: ["Productivity", "Career", "Writing", "Confidence"],
-  difficulty: "easy",
-},
-
-{
   id: "AwkwardSilenceFiller",
   title: "Awkward Silence Filler",
   category: "Communication",
@@ -2498,47 +2882,6 @@ export const tools = [
   
   tags: ["Communication", "Social", "Anxiety", "Conversation"],
   difficulty: "easy",
-},
-
-{
-  id: "LazyWorkoutAdapter",
-  title: "Lazy Workout Adapter",
-  category: "Health",
-  icon: "🏋️",
-  description: "Creates genuinely low-barrier workouts matched to current energy (1-10). Can do in pajamas, no equipment, during TV. Tiers: Survival (3-5min), Low energy (10-15min), Moderate, High. 'Something is better than nothing' philosophy. Permission to do easy version.",
-  tagline: "Real workouts matched to your actual energy level",
-  
-  guide: {
-    overview: "Traditional workouts assume high energy/motivation. This creates workouts that meet you where you are - if you're at 2/10 energy, you get a 2/10 workout. Can be done in current clothes, in your living room, even during TV. The goal is movement that's actually accessible.",
-    
-    howToUse: [
-      "Set current energy level (1-10 slider)",
-      "Add time available (often auto-suggested based on energy)",
-      "Note equipment if any (optional, defaults to none)",
-      "List physical limitations if relevant",
-      "Get adapted workout with exercises, modifications, and duration"
-    ],
-    
-    example: {
-      scenario: "Your energy is 2/10. You haven't exercised in months. You have 10 minutes and no equipment. You're in pajamas and don't want to leave your living room.",
-      action: "Energy: 2/10, Time: 10 minutes, Equipment: None, Context: In pajamas.",
-      result: "Realistic tier: Survival mode (3-5 min gentle movement). Workout: 'Pajama Gentle Movement Session' - Total 5 minutes. Exercise 1: Seated arm circles (30 seconds each direction) - Can do while sitting on couch. Why: Gets blood moving without standing. Easier version: Smaller circles. Exercise 2: Gentle neck rolls (1 min) - Releases tension. Can do during TV commercial. Exercise 3: Seated torso twists (1 min) - Stretches spine gently. Exercise 4: Standing march in place (2 min) - Only if you can stand; otherwise skip. Can do while watching TV. Easier: Just shift weight side to side. Barrier removal: No changing clothes needed (you're in pajamas), No leaving house, No equipment, Can do during TV show commercial breaks. Motivation reframe: 5 minutes of movement is infinitely better than 0. You don't need to earn rest by exercising hard - gentle movement is valuable. Permission: The easy version is the RIGHT version for your current capacity."
-    },
-    
-    tips: [
-      "Actually do the low-energy version - don't aspirationally pick higher tier then not do it",
-      "The 'can do while...' suggestions remove mental barriers (TV, work breaks)",
-      "Modifications are there to be used, not avoided - use the easier version",
-      "Track that you DID it, not how hard it was - consistency matters more than intensity",
-      "If even the lowest tier feels too hard, that's data that rest might be what you need"
-    ],
-    
-    pitfalls: [
-      "Don't judge yourself for needing the low-barrier version - meeting yourself where you are is wisdom",
-      "Don't use this as permanent substitute for medical advice if you have chronic fatigue",
-      "Don't skip rest days thinking you should do 'at least' this much - rest is also necessary"
-    ]
-  }
 },
 {
   id: "MicroAdventureMapper",
@@ -2632,426 +2975,203 @@ export const tools = [
   tags: ["Relationships", "Planning", "Budget", "Going Out"],
   difficulty: "easy",
 },
-{
-  title: "Executive Function Prosthetic",
-  id: "ExecutiveFunctionProsthetic",
-  category: "Mind & Energy",
-  icon: "🧩",
-  description: "External working memory for ADHD/executive dysfunction. Tracks what you were doing before interruptions, remembers why you went somewhere, holds multi-step sequences, prompts at critical transitions. 'What was I doing?' recovery.",
-  tagline: "External working memory for scattered brains",
-  
-  guide: {
-    overview: "ADHD and executive dysfunction cause working memory failures - you walk into a room and forget why, get interrupted and can't remember your task, or lose your place in sequences. This tool acts as external memory, tracking context and recovering lost threads.",
-    
-    howToUse: [
-      "Select query type: 'What was I doing?', 'Why did I come here?', 'What's next?', or 'Leaving house checklist'",
-      "Provide context about your current task or forgetting point",
-      "Get task recovery, location memory, or pre-loaded sequences",
-      "Use prompts to remember critical transition points"
-    ],
-    
-    example: {
-      scenario: "You were making breakfast, your phone rang, you answered it, and now you're standing in the kitchen with no idea what you were doing.",
-      action: "Select 'What was I doing?', input 'Making breakfast, then phone rang'.",
-      result: "Tool recovers: 'You were making breakfast. Steps completed: Got coffee grounds, filled kettle. Next step: Turn on kettle and wait for water to boil.' Gets you back on track instantly."
-    },
-    
-    tips: [
-      "Use 'Leaving house checklist' before every departure - prevents 'forgot my keys' moments",
-      "Set up morning routine sequences for consistent execution",
-      "When interrupted, immediately query 'What was I doing?' before the context fades",
-      "Use this proactively at transition points, not just when already lost",
-      "Voice queries work well when hands are full"
-    ],
-    
-    pitfalls: [
-      "Don't rely on this instead of treating underlying executive function - it's support, not cure",
-      "Won't help if you never encoded the memory in first place (total distraction)",
-      "Requires some initial context - can't recover what was never tracked"
-    ]
-  }
-},
+  {
+    id: "CrisisPrioritizer",
+    title: "Crisis Prioritizer",
+    category: "Productivity",
+    icon: "🚨",
+    description: "When everything feels urgent, this tool separates real urgency from anxiety urgency. Consequence-based triage ranks tasks by what actually breaks if you skip them. Brain dump mode extracts tasks from panicked thoughts. Time-block generator builds a concrete schedule. 'Only 2 of your 12 tasks actually need to happen today.'",
+    tagline: "Separate real urgency from anxiety urgency",
 
-{
-  id: "EmotionIdentifier",
-  title: "Emotion Identifier",
-  category: "Mind & Energy",
-  icon: "❤️",
-  description: "Translate body signals into emotion words. For alexithymia or emotional suppression - turns 'tight chest, restless' into 'You're feeling anxiety.' Maps physical sensations to specific emotions, builds emotional vocabulary, validates feelings.",
-  tagline: "Translate body signals into emotion words",
-  
-  guide: {
-    overview: "Many people (especially those with alexithymia, autism, or who learned to suppress emotions) can't identify what they're feeling beyond 'good/bad/stressed.' This tool maps physical sensations and contexts to specific emotion labels, helping you understand and name what's happening.",
-    
-    howToUse: [
-      "Describe physical sensations (tight chest, restless, heavy, etc.)",
-      "Add situational context (what's happening in your life)",
-      "Optionally note behaviors/urges you're experiencing",
-      "Get likely emotions with confidence scores and explanations",
-      "Learn what to do with each identified emotion"
-    ],
-    
-    example: {
-      scenario: "You notice your chest is tight, you're breathing shallow, you can't sit still, and you just got assigned a huge project with an impossible deadline. But you can't name what you're feeling.",
-      action: "Input physical sensations: 'tight chest, shallow breathing, restless', situation: 'huge project, impossible deadline'.",
-      result: "Tool identifies: Anxiety (90% confident). Explains: 'Tight chest + shallow breathing are classic anxiety signals. Your body is in fight-or-flight from the deadline pressure.' Validates: 'This is a normal response to overwhelming demands.' Suggests: Box breathing, breaking project into steps, talking to manager about timeline."
-    },
-    
-    tips: [
-      "Physical sensations are more reliable than trying to think your way to emotion names",
-      "Context matters - same physical sensation can mean different emotions in different situations",
-      "Use this regularly to build emotional vocabulary over time",
-      "The goal is eventually being able to identify emotions yourself",
-      "It's okay if emotions don't have clean labels - they can be complex/mixed"
-    ],
-    
-    pitfalls: [
-      "Don't dismiss your own interpretation if tool suggests something different - you know you best",
-      "Physical symptoms can also be medical - chronic tight chest needs doctor eval",
-      "Not a replacement for therapy if alexithymia is significantly impacting life"
-    ]
-  }
-},
-
-{
-  id: "CriticismBuffer",
-  title: "Criticism Buffer",
-  category: "Mind & Energy",
-  icon: "🛡️",
-  description: "Extract useful feedback while removing unnecessary cruelty. Separates actionable critique from personal attacks. For rejection-sensitive people - buffers harsh feedback into professional version, identifies what's actually useful vs what's just mean.",
-  tagline: "Extract useful feedback, filter out the cruelty",
-  
-  guide: {
-    overview: "Harsh feedback often mixes valid points with unnecessary cruelty. For rejection-sensitive people (especially those with ADHD/RSD), this makes it impossible to access the useful information without emotional damage. This tool separates signal from noise.",
-    
-    howToUse: [
-      "Paste the harsh feedback you received (email, review, comment, etc.)",
-      "Add context about who it's from if helpful",
-      "Get analysis: actionable vs personal attack vs tone problem",
-      "Read buffered professional rewrite with same content, no cruelty",
-      "Access action steps based on actual problems identified"
-    ],
-    
-    example: {
-      scenario: "Your boss emails: 'This report is completely unprofessional and frankly embarrassing. I can't believe you'd submit something so sloppy. The data is wrong, formatting is a mess, and it's clear you didn't even try. Do better.'",
-      action: "Paste that email into the tool.",
-      result: "Analysis: Mixed (valid critique + personal attacks). Actionable: Data errors need fixing, formatting needs work. Non-actionable attacks: 'embarrassing', 'didn't even try'. Buffered version: 'This report needs revision. Please correct the data errors on page 3 and standardize the formatting per our style guide.' Action steps: 1. Review data on page 3 for errors, 2. Apply standard formatting, 3. Request style guide if you don't have it. Reality check: The problems are real and fixable. The character attacks ('didn't even try') are about them, not you."
-    },
-    
-    tips: [
-      "Use this BEFORE responding to harsh feedback - prevents defensive reaction",
-      "The buffered version is safe to re-read when calm to absorb the actual critique",
-      "Action steps are concrete - focus on those, not the emotional content",
-      "If analysis shows 'mostly personal attacks, little actionable', consider the source",
-      "You can use the buffered version as a model for your response"
-    ],
-    
-    pitfalls: [
-      "Don't use this to avoid all criticism - growth requires hearing hard truths",
-      "If pattern shows someone is consistently cruel, that's a relationship problem to address",
-      "Tool identifies abuse patterns - take those seriously and consider escalating"
-    ]
-  }
-},
-{
-  id: "TransitionSoftener",
-  title: "Transition Softener",
-  category: "Mind & Energy",
-  icon: "🌊",
-  description: "Buffer rituals for switching between activities. 5-phase protocols (warning → closure → buffer → preparation → entry) for difficult transitions like work→home, focus→social, awake→sleep. Prevents jarring context switches.",
-  tagline: "Smooth the shift between tasks and activities",
-  
-  guide: {
-    overview: "Abrupt transitions are jarring because your brain is still in the previous mode. Autistic people and others sensitive to context changes benefit from structured rituals that ease the shift. This creates personalized transition protocols.",
-    
-    howToUse: [
-      "Specify what you're transitioning FROM and TO",
-      "Note time available and difficulty level",
-      "Get 5-phase protocol: warning, closure, buffer, preparation, entry",
-      "Follow the sequence to soften the transition",
-      "Adjust timing if you need faster/slower versions"
-    ],
-    
-    example: {
-      scenario: "You finish intense work at 5pm and need to be present with family by 5:30pm, but your mind keeps racing about work and you can't 'switch off.'",
-      action: "From: 'Intense work focus', To: 'Home/family time', Time: 30 minutes, Difficulty: High.",
-      result: "Phase 1 (4:30pm): Calendar alert 'Work ending in 30 min.' Phase 2 (4:45pm): Brain dump unfinished thoughts, make tomorrow list, close all work tabs, tidy desk (8 min). Phase 3 (5:00-5:10pm): Change clothes immediately (physical signal), decompress playlist during commute, 5-min walk outside, three deep breaths before entering. Phase 4 (5:10pm): Mental prep: 'Work is done. Family deserves present-you.' Shake out physical tension. Phase 5 (5:30pm): Before opening door: 3 breaths. First 5 minutes: Ask family about THEIR day (forces brain into social mode). Why this works: Your nervous system needs time to downshift gears. Each ritual signals 'we're moving to different state now.'"
-    },
-    
-    tips: [
-      "The warning phase prevents abrupt 'time to switch NOW' shock",
-      "Closure activities give permission to release the previous mode",
-      "Physical rituals (changing clothes, location change) are powerful transition signals",
-      "If struggling mid-week, Wednesday-Friday may need longer transitions (accumulated fatigue)",
-      "Customize buffer activities to what works for you (music, walking, breathing, etc.)"
-    ],
-    
-    pitfalls: [
-      "Don't skip phases thinking you can 'just switch' - that's why you need this tool",
-      "Minimum version is still 10-15 minutes - instant transitions don't work for sensitive systems",
-      "If you can't find time for transition, your schedule is overcommitted"
-    ]
-  }
-},
-{
-  id: "CrisisPrioritizer",
-  title: "Crisis Prioritizer",
-  category: "Productivity",
-  icon: "🚨",
-  description: "Ranks tasks by actual importance when everything feels urgent. Separates anxiety-driven urgency from real urgency. Consequence-based analysis shows what legitimately needs attention today vs guilt-free deferrals. 'Only 2 of 12 tasks are actually urgent.'",
-  tagline: "Separate real urgency from anxiety urgency",
-  
-  guide: {
-    overview: "Anxiety makes everything feel urgent when only 1-2 things actually are. This tool objectively analyzes deadlines, consequences, and anxiety vs reality to show what needs attention today and what can wait without real consequence.",
-    
-    howToUse: [
-      "List all tasks that feel urgent right now",
-      "Get objective priority ranking with actual urgency levels",
-      "See today's actual must-dos vs can absolutely wait",
-      "Read guilt-free deferral permissions",
-      "Focus only on the 1-3 legitimately urgent tasks"
-    ],
-    
-    example: {
-      scenario: "You have 12 tasks and all feel equally urgent: client proposal due today, prescription pickup, mom's text, cleaning apartment, organizing files, non-urgent emails, and 6 others. Everything feels like a crisis.",
-      action: "Input all 12 tasks.",
-      result: "Analysis: Out of 12 tasks, only 2 are actually urgent. #1 CRITICAL: Client proposal (due 5pm today, consequence: lose $20k contract). #2 CRITICAL: Prescription pickup (pharmacy closes 6pm, consequence: out of medication). #3 LOW: Mom's text (she texted 2 days ago, consequence: she might worry but no crisis). #4 OPTIONAL: Clean apartment (consequence: none, can wait until weekend). Reality check: Anxiety is making everything feel critical, but 10 of these can wait without real consequences. Today's actual must-dos: Proposal (2 hours) + Prescription (20 min). Permission to defer: Mom will understand if you text tomorrow. Cleaning does not need to happen today. Emails can wait 24-48 hours."
-    },
-    
-    tips: [
-      "Trust the consequence analysis over your anxiety's assessment",
-      "Actually defer the 'can wait' items - don't just deprioritize then do them anyway",
-      "Guilt-free deferral permissions are based on real consequences, not 'should's",
-      "If everything ranks as critical, you're overcommitted and need to renegotiate obligations",
-      "Use this when you feel overwhelmed by 'everything', not for calm planning"
-    ],
-    
-    pitfalls: [
-      "Don't add artificial urgency ('but I WANT it done today') - that's not the same as urgent",
-      "If someone else's poor planning created urgency for you, that's a boundary issue to address",
-      "Repeatedly ignoring 'can wait' tasks forever means they should be deleted, not deferred"
-    ]
-  }
-},
-
-{
-  id: "TaskSwitchingMinimizer",
-  title: "Task Switching Minimizer",
-  category: "Productivity",
-  icon: "🔀",
-  description: "Batch similar tasks to reduce context switching costs. Groups by type (communication, deep work, admin, physical), location, tools, energy level. Saves 45+ minutes by minimizing mental gear-shifting. ADHD-optimized batching.",
-  tagline: "Batch similar tasks to protect your focus",
-  
-  guide: {
-    overview: "Context switching costs 15-20 minutes of focus recovery each time. ADHD users pay even higher switching costs. This tool batches similar tasks together so you stay in the same cognitive mode, use the same tools, and minimize mental gear-shifting.",
-    
-    howToUse: [
-      "List all tasks from your to-do list",
-      "Add time available if relevant",
-      "Get batched schedule grouped by type/location/tools/energy",
-      "Execute batches in order to minimize switching",
-      "See time saved from reduced context switching"
-    ],
-    
-    example: {
-      scenario: "Your to-do has: email Sarah about project, write report section, call dentist, file expense report, grocery shopping, respond to 3 client emails, brainstorm presentation ideas, update spreadsheet, call insurance, vacuum apartment.",
-      action: "Input all tasks.",
-      result: "Before batching: 14 context switches. After batching: 5 batches = saves ~45 min. Batch 1 'Communication Block' (9am-10am): Call dentist, call insurance, email Sarah, respond to 3 client emails. Why batched: All communication, uses phone/email, social mode. Batch 2 'Deep Work' (10am-12pm): Write report section, brainstorm presentation. Why: Both require focused thinking, creative mode. Batch 3 'Admin' (1pm-2pm): File expense report, update spreadsheet. Why: Both use computer, detail-oriented, low creativity. Batch 4 'Physical Errands' (2pm-3pm): Grocery shopping, vacuum apartment. Why: Both physical, same location (home/errands). Time saved: 45 min from not switching between modes repeatedly."
-    },
-    
-    tips: [
-      "Don't interleave batches - do each batch completely before moving to next",
-      "Communication batch works best at specific times (morning for calls when you're fresh)",
-      "Deep work batch should be during your peak focus hours",
-      "Physical tasks batched together preserve momentum",
-      "If a task doesn't fit any batch, it might not be priority"
-    ],
-    
-    pitfalls: [
-      "Don't batch creative + admin together - they use opposite cognitive modes",
-      "Email can be batch or deep work - depends if you're just responding vs drafting important message",
-      "If batches are too long (3+ hours same type), you'll burn out - add breaks"
-    ]
-  }
-},
-
-{
-  id: "DopamineMenuBuilder",
-  title: "Dopamine Menu Builder",
-  category: "Mind & Energy",
-  icon: "🍭",
-  description: "Activities that actually restore vs numb. Matched to current energy and time. Distinguishes intentional pleasure (exercise, hobbies, connection) from numbing behaviors (scrolling feels like rest but drains). Depression/ADHD recovery support.",
-  tagline: "Activities that restore vs. activities that numb",
-  
-  guide: {
-    overview: "Not all rest is restorative. Scrolling social media feels like rest but often drains you. This tool suggests activities genuinely matched to your current energy that actually restore, plus identifies what to avoid because it feels easy but makes you worse.",
-    
-    howToUse: [
-      "Set current energy level (1-10 slider)",
-      "Add available time and recent activities",
-      "Get optimal restorative activities for your energy level",
-      "See lower-effort alternatives if needed",
-      "Note what to avoid (numbing behaviors that drain)"
-    ],
-    
-    example: {
-      scenario: "You're at energy 3/10, have 45 minutes, and have been scrolling social media a lot lately but feel worse after. You need actual rest but don't know what to do.",
-      action: "Energy: 3/10, Time: 45 min, Recent: 'Been scrolling social media, feel worse after'.",
-      result: "Optimal activities (medium effort, high restoration): 15-min walk outside (you've told us this helps you), cook simple favorite meal (satisfying + nourishing), call friend for chat (connection energizes you). Lower effort: Comfort show + hot tea (lower restoration but acceptable), listen to favorite album (mood lift). AVOID: Scrolling social media (feels like rest, actually draining based on your pattern), starting new show (decision fatigue). Why optimal works: Walk gives you nature + movement which your past data shows restores you. Intentional pleasure (chosen show, chosen music) is different from numbing (infinite scroll)."
-    },
-    
-    tips: [
-      "High restoration activities require effort but are worth it when you can manage",
-      "At very low energy (1-2), even optimal activities might be too much - use lower effort",
-      "Track what actually helps you feel better afterward, not what feels easiest in moment",
-      "Intentional pleasure (I choose this show I love) is restorative; numbing (infinite scroll) is not",
-      "If depressed, follow the recommendations even when nothing sounds appealing"
-    ],
-    
-    pitfalls: [
-      "Don't always choose lowest effort - you'll never restore, just maintain depletion",
-      "Avoid list isn't judgment - it's pattern recognition of what doesn't actually help you",
-      "If you can't do any optimal activities for weeks, that's depression and needs treatment"
-    ]
-  }
-},
+    guide: {
+      overview: "Anxiety inflates urgency. This tool objectively analyzes deadlines, consequences, and who's actually waiting to show what needs attention now vs what can safely wait. Three timeframes (today, this week, multi-week), brain dump extraction, time-blocked schedules, accountability sharing, task splitting, pattern tracking across sessions, and a panic-mode 'Just One Thing' button for when you can't process a full list.",
+      howToUse: [
+        "Pick a timeframe: Right Now (today's triage), This Week (day-by-day), or Few Weeks (sustained crisis plan)",
+        "Use Quick Start templates or enter tasks manually — add deadlines and who's waiting via the ℹ️ button",
+        "Too scattered to list tasks? Toggle Brain Dump mode and paste your stream of consciousness — AI extracts the tasks",
+        "Set your energy, emotional state, and preferred tone (Gentle / Direct / Tough Love)",
+        "Hit 'Prioritize' — after a brief breathing moment, see your reality check, anxiety audit, and ranked priorities",
+        "Use 'Build Schedule' for a concrete time-blocked plan, or 'Just One Thing' when you're paralyzed",
+        "Check off tasks as you go, then hit 'What's next?' for a fresh re-triage of what remains",
+        "Tap 🧩 on any task to split it into concrete sub-tasks, or 📨 to draft a delegation message",
+        "Share your plan with someone via the Accountability Snapshot for follow-through",
+        "Return later — the tool remembers past sessions, offers follow-up calibration, and spots patterns over time"
+      ],
+      example: {
+        scenario: "You're panicking with 8 tasks, low energy, and 3 hours before a meeting. You select 'Right Now', set energy to 'Running on fumes' and emotional state to 'Overwhelmed', and pick 'Direct' tone.",
+        action: "Enter all 8 tasks. Two have real deadlines. Hit Prioritize, then Build Schedule.",
+        result: "Reality check: Of 8 tasks, only 2 are time-sensitive today. Anxiety audit shows 4 tasks feel urgent due to guilt, not consequences. Time-blocked schedule: 9:00–9:25 reply to client (critical), 9:25–9:35 break, 9:35–10:15 prep meeting slides (important), 10:15–10:30 break. Remaining 6 tasks get guilt-free deferral permissions with specific reasoning. After finishing the first two, hit 'What's next?' — the tool says 'You can stop now. Everything else can wait until tomorrow.'"
+      },
+      tips: [
+        "The 'Just One Thing' panic button is there for your worst moments — it cuts through everything and gives you one clear action",
+        "Brain dump mode works great when you can't even organize your thoughts into a list",
+        "Use the voice selector to match what you need — Gentle when fragile, Tough Love when you need a push",
+        "After 3+ sessions, check Pattern Analysis to see if you consistently overrate urgency in certain areas",
+        "The Dashboard tracks your triage history — most people discover 60-70% of their 'urgent' tasks could always wait",
+        "Task splitting (🧩) is powerful for tasks that feel huge — they're usually 3-5 smaller tasks in disguise"
+      ]
+    }
+  },
 
 {
   id: "VirtualBodyDouble",
   title: "Virtual Body Double",
   category: "Productivity",
   icon: "👥",
-  description: "Gentle accountability presence for ADHD. Timed work sessions with check-in messages and completion celebration. Mimics body doubling effect (working near someone helps focus) without social pressure. Just witnessed effort, no judgment.",
-  tagline: "Gentle accountability for getting things done",
-  
-  guide: {
-    overview: "Body doubling - working near another person - helps ADHD brains focus through gentle accountability and presence. This provides that effect virtually through timed sessions with periodic check-ins and encouraging completion messages.",
-    
-    howToUse: [
-      "Specify what you're working on and for how long",
-      "Set check-in frequency (10-30 minutes)",
-      "Start session and work while tool provides gentle presence",
-      "Receive periodic 'still working?' check-ins",
-      "Get completion celebration when session ends"
-    ],
-    
-    example: {
-      scenario: "You need to write a report for 50 minutes but can't start because working alone feels impossible. You know you'd work fine if someone were just... there.",
-      action: "Task: 'Writing report', Duration: 50 minutes, Check-ins: Every 15 minutes.",
-      result: "Session starts: '0 min: Starting now. I'm here with you.' 15 min: 'Still working? Great. Keep going.' 30 min: 'Halfway there. You're doing it.' 45 min: 'Almost done. Last push.' 50 min: 'Done! You did the thing. 🎉' The gentle presence and periodic check-ins create just enough accountability to maintain focus without pressure."
-    },
-    
-    tips: [
-      "Set realistic session lengths - 25-50 min Pomodoros work better than 3-hour marathons",
-      "Check-in frequency should match your focus span (shorter if you drift easily)",
-      "Actually acknowledge the check-ins - they work because you feel witnessed",
-      "This works for any task, especially ones you've been avoiding",
-      "Combine with actual body doubling (video call with friend) for stronger effect"
-    ],
-    
-    pitfalls: [
-      "Don't ignore the check-ins - the accountability only works if you engage",
-      "If you habitually dismiss check-ins and don't work, you need different intervention",
-      "This provides presence, not motivation - if you can't even start, address that separately"
-    ]
-  }
-},
+  description: "A quiet coworking companion for solo tasks with 6 session modes that change how your buddy behaves. Choose Deep Work (silent library), Sprint (high-energy burst), Grind (trench warfare solidarity), Creative (non-linear explorer), Avoidance Buster (extra-gentle first steps), or Standard. AI task breakdown, live check-ins with sound chimes and notifications, ambient presence between check-ins, shareable accountability cards at session end, quick-start repeat, mood tracking, 'I'm stuck' with micro-steps, session logging with streaks, and AI-powered insights. Like a coffee shop for your focus — someone's there, no pressure.",
+  tagline: "A quiet coworking partner for solo tasks",
 
+  guide: {
+    overview: "Working near another person helps you focus — that's why coffee shops, libraries, and coworking spaces exist. Virtual Body Double recreates that effect digitally with a twist: you pick a session mode that changes your buddy's entire personality. Deep Work mode is a silent library companion. Sprint mode is a high-energy burst partner. Grind mode commiserates with dark humor. Creative mode never judges tangents. Avoidance Buster is extra-gentle for tasks you've been putting off. After each session, generate a shareable accountability card — a visual summary designed to screenshot and text to a friend.",
+
+    howToUse: [
+      "Choose a session mode — each one changes your buddy's personality, check-in style, and ambient messages",
+      "Enter your task — tap 'Split' to have AI break it into sub-tasks with time estimates",
+      "Set duration, check-in frequency, environment, and mood",
+      "Start the session — your buddy's greeting, tips, and presence all match the mode you chose",
+      "Respond to check-ins, check off sub-tasks, use 'I'm stuck' for concrete micro-steps",
+      "When done, generate an accountability card to screenshot or share with friends",
+      "Save and repeat — past sessions show mode icon and offer one-tap repeat"
+    ],
+
+    example: {
+      scenario: "You need to write a quarterly report but keep opening other tabs instead.",
+      action: "Mode: Avoidance Buster. Task: 'Write Q1 report'. Split into sub-tasks. Duration: 45 min.",
+      result: "Buddy (extra gentle): 'The fact that you opened this tool is already a win. First step: just open the doc. That's it.' Sub-tasks appear as a checklist. Check-ins are compassionate, not judgy. When you tap 'drifting', buddy says 'That's totally okay — what's the next small thing you can type?' At the end, you generate an accountability card: '🌱 Avoidance Conquered — 45 min on a task you'd been dodging for a week.' You text the card to a friend."
+    },
+
+    tips: [
+      "Match the mode to the task: Deep Work for writing, Sprint for email blitzes, Grind for data entry, Creative for brainstorming, Avoidance Buster for that thing you keep putting off",
+      "The accountability card is designed for screenshots — use it to build social momentum",
+      "25-45 minute sessions tend to work better than marathons. Start short, extend if you're in flow.",
+      "Invite a real friend to cowork using the built-in message generator"
+    ],
+
+    pitfalls: [
+      "Don't set 3-hour sessions hoping for a miracle. Start with 25 minutes and extend.",
+      "Don't ignore check-ins — the accountability only works if you engage",
+      "This provides presence and structure, not motivation. If the task is wrong, no timer will fix that."
+    ]
+  },
+
+  keywords: [
+    "body double", "coworking", "focus", "accountability", "timer",
+    "work session", "productivity", "pomodoro", "study buddy",
+    "focus buddy", "deep work", "sprint", "grind", "creative",
+    "avoidance", "session mode", "accountability card"
+  ],
+
+  tags: ["Productivity", "Focus", "Accountability"],
+  difficulty: "easy",
+},
 {
   id: "WaitingModeLiberator",
   title: "Waiting Mode Liberator",
   category: "Mind & Energy",
   icon: "⏳",
-  description: "Breaks ADHD 'waiting mode' paralysis before appointments. Calculates usable time, suggests time-appropriate tasks, provides explicit permission: '3.5 hours is enough for deep work.' Reclaims hours lost to appointment anxiety.",
-  tagline: "Break free when an upcoming event freezes your day",
-  
-  guide: {
-    overview: "ADHD users lose entire days to 'waiting mode' - paralyzed before appointments because 'I have something later.' This tool calculates actual usable time, subtracts prep buffer, and explicitly permits productive use of those hours.",
-    
-    howToUse: [
-      "Enter appointment time and current time",
-      "Add preparation needs (get ready time, travel time)",
-      "Get usable time blocks with task suggestions",
-      "Receive explicit permission to use this time",
-      "See preparation buffer timing"
-    ],
-    
-    example: {
-      scenario: "You have a doctor appointment at 2pm. It's 10:30am. You need 20 min to get ready and 15 min to drive. You're sitting there in waiting mode feeling like you can't start anything because 'appointment is later.'",
-      action: "Appointment: 2pm, Current: 10:30am, Prep: '20 min ready + 15 min drive'.",
-      result: "Time available: 3.5 hours (10:30am-2pm minus 35 min prep = 3 hours usable). Usable blocks: 10:30-12:00 (90 min): Deep work - write report section. 12:00-12:30: Lunch. 12:30-1:00: Quick tasks (emails, calls). 1:00-1:25: Prep and travel buffer. PERMISSION: You have 3 FULL HOURS before you need to leave. That's real time. Use it. Appointment prep starts at 1:00pm - you don't need to think about it before then."
-    },
-    
-    tips: [
-      "Actually use the time blocks - the permission statement is there for a reason",
-      "Buffer is conservative (35 min for 20+15) to prevent last-minute rushing",
-      "Deep work in first block when you're fresh, not scattered by appointment proximity",
-      "Set alarm for prep buffer start time so you can fully engage before then",
-      "If you still can't use the time, waiting mode might be anxiety needing separate treatment"
-    ],
-    
-    pitfalls: [
-      "Don't check the clock every 10 minutes 'making sure' - trust the buffer",
-      "If appointment is less than 90 min away, deep work won't work - do quick tasks",
-      "Prep buffer includes 'gather thoughts/materials' not just physical prep"
-    ]
-  }
-},
+  description: "Reclaims the hours around appointments that would otherwise be lost to 'I have a thing later so I can't start anything.' Add multiple events to map all your free windows. Set energy level for intensity-matched task blocks. 'Start With Me' walks you step-by-step from frozen to doing — a guided 60-second launch into any block with a built-in timer. Pre-appointment anxiety slider builds a history: after a few sessions, the tool proves your anxiety was lying ('Last 4 medical appointments: anxiety 8/10, reality 3/10'). Post-appointment debrief in 3 taps makes every session smarter. Pattern tracking reveals your triggers across sessions.",
+  tagline: "Break free when upcoming events freeze your day",
 
+  guide: {
+    overview: "You have a dentist at 2pm and a dinner at 7pm. It's 10am. You know you should do things, but you're frozen because 'I have stuff later.' This tool does the math you won't: you have 3 free hours across 2 windows, your first prep alarm is at 1:25pm, and until then the dentist doesn't exist. Tell the tool your actual tasks and energy level — it maps them to time blocks with intensity badges (Easy/Medium/Deep). Can't start? 'Start With Me' walks you through the first 60 seconds of any block: 'Open your laptop. Now open the document. Read the first sentence. Good — timer started.' After the appointment, a 3-tap debrief tracks whether your anxiety matched reality. Over time, the tool builds proof that your fears overestimate: 'Your medical appointment anxiety averages 8/10 but outcomes average 3/10.'",
+
+    howToUse: [
+      "Add events with time, type, prep, and travel. Tap + for multiple events.",
+      "Set energy level — AI adjusts task difficulty accordingly",
+      "Set anxiety level (1-10) — this builds your anxiety-vs-reality history",
+      "List what you'd do today without these events",
+      "AI maps tasks to free windows with intensity badges and starts a live countdown",
+      "'Start With Me' on any block walks you from frozen to doing in 60 seconds, then runs a block timer",
+      "'Just One Thing' for deep freezes — picks one absurdly small task",
+      "After your appointment, 3-tap debrief: Did you use the time? How was it? Any notes?",
+      "AI compares your anxiety to reality and spots patterns across sessions"
+    ],
+
+    example: {
+      scenario: "Dentist at 2pm, energy 2/5, anxiety 8/10. Tasks: answer emails, clean kitchen.",
+      action: "Event: 2pm Medical, 20m prep, 15m travel. Energy: Low. Anxiety: 8. Tasks entered.",
+      result: "Countdown: '3h 10m of free time.' All blocks tagged 🟢 Easy (matches low energy). Tap 'Start With Me' on first block → guided launch: '1. Open email app. 2. Find the easiest email. 3. Hit reply. 4. Type one sentence. Timer started: 25 minutes.' After dentist, debrief: 'Anxiety was 8/10 but the appointment was totally fine. Last 3 medical visits: anxiety averaged 7.5, reality averaged 'fine.' Your brain is overestimating by about 5 points.'"
+    },
+
+    tips: [
+      "'Start With Me' is the most important button. The gap between seeing the plan and doing the plan is where most tools fail — this one walks you across it.",
+      "Always do the debrief, even if you skip the blocks. The anxiety data compounds fast.",
+      "Be honest about energy. The tool adjusts. Lying to yourself gives you a plan you can't execute.",
+      "After 3+ debriefs for the same appointment type, check Patterns — the anxiety trend is eye-opening."
+    ],
+
+    pitfalls: [
+      "Don't skip the debrief — it's 3 taps and makes every future session better",
+      "If energy is 1-2, trust the easy blocks. Don't override and attempt deep work.",
+      "This helps with appointment-triggered paralysis, not general procrastination"
+    ]
+  },
+
+  keywords: [
+    "waiting mode", "appointment", "paralysis", "frozen", "before appointment",
+    "time before", "can't start", "reclaim time", "free time", "prep alarm",
+    "time blocks", "reframe", "one thing", "energy", "multiple appointments",
+    "calendar", "free windows", "anxiety", "debrief", "guided", "start with me"
+  ],
+
+  tags: ["Mind & Energy", "Productivity", "Time"],
+  difficulty: "easy",
+},
 {
   id: "BrainDumpStructurer",
   title: "Brain Dump Structurer",
-  category: "Productivity",
+  category: "Mind & Energy",
   icon: "🧠",
-  description: "Dump everything in your head — chaotic, unfiltered, stream of consciousness — and get back: one clear next step, actual tasks separated from worries, decisions that need making, things to tell someone, ideas worth capturing, stuff you can drop, things that aren't your problem, and feelings that deserve acknowledgment but aren't tasks. Includes an overwhelm meter showing how few actual tasks you have vs. how many were just noise.",
+  description: "Turns the chaotic contents of your overwhelmed brain into one clear next step — then helps you actually do it. Dump everything via typing, rapid-fire, or voice. AI sorts into 9 categories and shows the therapeutic truth: most of what feels like 47 urgent tasks is actually 8 real things and a lot of noise. 'Shrink the List' challenges every item — is it really urgent? Could a 3-minute version handle 80% of the stress? 'Map to My Day' converts your sorted list into a real schedule with breaks. Worry Excavator digs into anxieties to find hidden tasks buried inside. Reclassify anything the AI got wrong. Emergency mode gives you exactly 3 things when you can barely function. After multiple dumps, pattern analysis reveals your brain's inflation ratio.",
   tagline: "Everything in your head → one clear next step",
-  
+
   guide: {
-    overview: "When your brain is full of unsorted noise, every thought feels equally urgent. This tool breaks the illusion. Dump everything — don't organize, don't filter, don't punctuate — and the AI sorts it into 9 categories: one next step, action items, decisions needed, things to tell someone, worries (acknowledged but flagged as not-tasks), ideas to capture, things you can drop, things that aren't your problem, and feelings to acknowledge. The overwhelm meter is therapeutic: 'You dumped 47 thoughts. After sorting: 8 actual tasks and 39 things that are either feelings, not urgent, or not your problem.' Two input modes: free-text dump for stream of consciousness, or rapid-fire mode for one thought at a time.",
-    
+    overview: "Your head is full. Work tasks blurring into personal worries blurring into vague anxiety. This tool takes the whole mess — no structure required — and sorts it into clear buckets. The key insight: most people in overwhelm have far fewer actual tasks than they think. Then it goes further: Shrink the List negotiates your tasks shorter. Map to My Day turns the list into a schedule. Worry Excavator digs into anxieties to find hidden actionable tasks. Reclassify lets you fix anything the AI miscategorized. Emergency mode strips everything to just 3 things when you can barely function.",
+
     howToUse: [
-      "Pick a context if one fits (work overwhelm, anxiety spiral, 3am thoughts, life transition, etc.)",
-      "Choose input mode: Free Dump for stream of consciousness, or One at a Time for individual thoughts",
-      "Type everything. Don't organize. Don't filter. Sentence fragments are fine. Swear words are fine.",
-      "Hit Structure This and watch 47 swirling thoughts become 8 actual tasks",
-      "Start with the one thing in the Do First box — it's chosen to be small and unblocking",
-      "Check off action items as you go. Copy the full checklist to keep it somewhere visible.",
-      "Read the Worries section — each one gets a gentle, honest reframe",
-      "Read the Can Drop section — permission to let go, with reasons why"
+      "Choose context (optional) — work overwhelm, anxiety spiral, 3am thoughts, etc.",
+      "Pick input mode: type, rapid-fire, or voice (just talk into your phone)",
+      "Dump everything. Don't organize. Stream of consciousness.",
+      "If barely functioning, toggle Emergency Mode for just 3 things.",
+      "AI sorts into 9 categories with overwhelm meter. Check off your Do First.",
+      "Use Power Tools: Shrink the List (challenge every item), Map to My Day (build a schedule), Compare to Last Dump (see what resolved)",
+      "Dig deeper on any worry with the 🔍 button — AI finds hidden tasks.",
+      "Disagree with a category? Reclassify any item with the arrow buttons.",
+      "Re-dump carries unchecked items forward. Pattern analysis after 3+ dumps."
     ],
-    
+
     example: {
-      scenario: "Sunday night, brain racing: need to email Sarah, groceries, mom's birthday next week, car needs oil change, presentation Tuesday, feeling anxious about everything, forgot to call dentist, should I take that job offer, kitchen is a mess, haven't exercised in weeks, need to respond to Jake about Saturday, I feel like I'm failing at everything...",
-      action: "Context: Life chaos. Paste the whole stream into the dump box.",
-      result: "Overwhelm Meter: 'Your brain held 12 distinct thoughts. After sorting: 5 actual tasks, 1 decision, and 6 things that are feelings, not urgent, or can wait. That's less than half of what it felt like.' Do First: 'Email Sarah (5 min, clears mental space, unblocks project).' Actions: Email Sarah, Buy groceries, Prepare presentation, Call dentist, Respond to Jake. Decision: Should I take the job offer? (What you need: salary comparison and a gut check with someone you trust.) Tell Someone: Jake about Saturday. Worries: 'Feeling anxious about everything' → reframe: 'You have 5 concrete tasks, not infinite chaos. The anxiety is making 5 things feel like 50.' Can Drop: Kitchen mess (not urgent, won't matter tomorrow), Exercise guilt (beating yourself up isn't a task). Feelings: 'I feel like I'm failing' → 'You're not failing. You're overwhelmed, which is different. Failing people don't make lists.'"
+      scenario: "Sunday night brain spiral: dentist, work email, mom's birthday, overwhelmed, job offer decision, messy kitchen, groceries, electric bill, Sarah's text, no exercise...",
+      action: "Context: Life chaos. Free dump all of it.",
+      result: "Overwhelm meter: 22 thoughts → 6 real tasks. Shrink the List: 'Does the whole kitchen need cleaning? Wipe the counters — 3 minutes, 80% of the stress gone.' Map to My Day: 20-minute evening schedule with breaks. Worry Excavator on 'worried about job offer': hidden task found — 'Write a pro/con list for 10 minutes.' Dump Diff shows 3 items from last week resolved without noticing."
     },
-    
+
     tips: [
-      "The more chaotic the dump, the better. Don't pre-organize — that defeats the purpose.",
-      "Do the First Thing immediately. It's chosen to be small and to create momentum.",
-      "The Worries section is secretly the most valuable part. Most overwhelm is anxiety pretending to be tasks.",
-      "Use rapid-fire mode when you can't even form sentences. Just fragments.",
-      "Copy the checklist and put it somewhere visible. Your brain can stop holding it all.",
-      "Use this regularly, not just in crisis. Sunday evening dumps prevent Monday morning overwhelm."
+      "Voice mode is best when your hands are shaking or thoughts are racing fastest.",
+      "Emergency mode isn't failure — it's the right tool for acute overwhelm.",
+      "Shrink the List after every dump. Most people's lists can lose 30-50% of items.",
+      "The inflation ratio in Patterns is the big insight: most brains inflate to-do lists by 3-5x.",
+      "Reclassify freely — the AI's first sort is a starting point, not gospel."
     ],
-    
+
     pitfalls: [
-      "Don't skip the Do First step — making the list without starting creates list-anxiety",
-      "Don't treat the Worries section as tasks to solve. They're acknowledged, not assigned.",
-      "If the list is genuinely huge (20+ real tasks), that's a workload problem, not an organization problem"
+      "Don't pre-organize your dump. Raw chaos is the point.",
+      "If Shrink the List drops something you disagree with, that's fine — it's a negotiation, not an order.",
+      "This doesn't replace a task manager. It's for the moment of overwhelm when you can't think straight."
     ]
   },
-  
+
   keywords: [
-    "brain dump", "overwhelm", "organize", "thoughts", "chaos", "anxiety",
-    "tasks", "to do", "prioritize", "stress", "racing thoughts", "can't think",
-    "too much", "where to start", "scattered", "focus", "clarity", "structure"
+    "brain dump", "overwhelm", "structure", "organize", "thoughts", "tasks",
+    "anxiety", "sort", "chaos", "clarity", "next step", "prioritize",
+    "decisions", "worries", "feelings", "delegate", "action items",
+    "shrink", "schedule", "time map", "excavate", "emergency",
+    "voice", "reclassify", "carry forward", "patterns"
   ],
-  
-  tags: ["Productivity", "Anxiety", "Organization", "Mind & Energy"],
+
+  tags: ["Mind & Energy", "Productivity"],
   difficulty: "easy",
 },
-
 {
   id: "GentlePushGenerator",
   title: "Gentle Push Generator",
@@ -3296,46 +3416,63 @@ export const tools = [
   }
 },
 
+// SpiralStopper v2 — consolidated metadata
+// Absorbs: FreezeStateUnblocker, ShutdownRecoveryGuide
+// SpiralStopper v2 — 3 modes (absorbs FreezeStateUnblocker, ShutdownRecoveryGuide)
+// REPLACES the existing SpiralStopper block in tools.js
 {
-  id: "SpiralStopper",
-  title: "Spiral Stopper",
-  category: "Mind & Energy",
-  icon: "🌀",
-  description: "Detect anxiety spirals and cognitive distortions (catastrophizing, fortune-telling, all-or-nothing thinking) and get immediate reality checks, evidence against anxious predictions, and grounding exercises to break the spiral.",
-  tagline: "Catch anxiety spirals and thinking traps early",
-  
-  guide: {
-    overview: "Anxiety spirals happen when catastrophic thoughts feed on themselves. This tool identifies cognitive distortions in your anxious thoughts, provides evidence-based reality checks, and offers grounding exercises to interrupt the spiral. Not therapy - emergency intervention when you're spiraling.",
-    
-    howToUse: [
-      "Type out your anxious thoughts exactly as they are (don't filter)",
-      "Optionally add physical symptoms and what triggered this",
-      "Get analysis of which cognitive distortions are present",
-      "Review reality checks showing evidence against anxious predictions",
-      "Do one of the grounding exercises to break the spiral NOW"
-    ],
-    
-    example: {
-      scenario: "You sent an email with a typo and you're spiraling: 'My boss will think I'm incompetent → I'll get fired → I'll lose my apartment → I'll be homeless and it's all because of this one typo.'",
-      action: "Type those exact thoughts into the tool.",
-      result: "Detects catastrophizing (typo → homelessness chain) and fortune-telling ('I'll get fired'). Reality checks: (1) You've sent hundreds of emails with no issues, (2) Typos are common and human, (3) People don't get fired for typos. Grounding: 5-4-3-2-1 sensory exercise and box breathing. Compassionate reality: 'You sent an email with a typo. That's it. Everything else is anxiety's fictional narrative.'"
-    },
-    
-    tips: [
-      "Use this WHEN you're spiraling, not after - it's designed for emergency intervention",
-      "Actually do the grounding exercises - reading about them isn't enough",
-      "The reality checks are based on evidence, not just 'positive thinking' - trust them",
-      "If spiral detected, take the 'immediate action' seriously - step away from the trigger",
-      "Come back and re-read the reality check after grounding - your thoughts will be clearer"
-    ],
-    
-    pitfalls: [
-      "Don't use this as a replacement for therapy - it's first aid, not treatment",
-      "Don't dismiss the reality checks because 'but what if' - anxiety always has 'what ifs'",
-      "Don't skip the grounding exercises thinking you can just think your way out - spirals need physical interruption"
-    ]
-  }
+  id: 'SpiralStopper',
+  title: 'Spiral Stopper',
+  description: "Emergency intervention for three crisis states. Spiraling: dump your racing thoughts and get immediate grounding, cognitive distortion identification with evidence-based reality checks, and a compassionate anchor statement. Frozen: when you can't start, can't decide, can't move — get one micro-action at a time with clear completion signals and explicit permission to stop. Crashed: when you're completely spent, get a severity-matched recovery protocol with staged instructions, basics checklists, permission statements, and recovery signs. All three modes log episodes persistently, offer post-crisis debriefs, and unlock pattern analysis after 3+ episodes to build your personal intervention toolkit.",
+  category: 'wellness',
+  emoji: '🌀',
+  gradient: 'from-purple-500 to-emerald-500',
+  route: 'spiral-stopper',
+  actions: ['spiral', 'unfreeze', 'recover', 'reflect', 'patterns'],
+  promptKeys: {
+    spiral: ['thoughts', 'physical_symptoms', 'trigger', 'intensity', 'history'],
+    unfreeze: ['stuck_on', 'current_step', 'completed_steps', 'can_move'],
+    recover: ['crash_type', 'severity', 'duration', 'can_do'],
+    reflect: ['trigger', 'distortion', 'intensity_before', 'intensity_after', 'what_helped'],
+    patterns: ['episode_log'],
+  },
+  exampleScenario: `You open Spiral Stopper and see three big buttons: 🌀 Spiraling, ❄️ Frozen, 🔋 Crashed.
+
+SPIRALING: It's 11pm and you just remembered you sent an email with a typo to your boss. You tap Spiraling, dump all of it, set intensity to 4/5. First: "Put your phone face down. Press both palms flat on the surface in front of you." Then the breakdown: mind-reading + catastrophizing. Reality check with evidence. The anchor: "Your brain jumped from one typo to homelessness in 3 seconds. That's not analysis — that's catastrophizing."
+
+FROZEN: Next morning, you can't start a project. You tap Frozen. Step 1: "Stand up." Done. Step 2: "Walk to kitchen." Done. Step 3: "Drink water." Done. After 3 physical steps, it micro-steps toward the task. Each step has one action, one completion signal, and permission to stop.
+
+CRASHED: Friday, you've been running on empty for 2 weeks. You tap Crashed, Burnout, Severe. Staged protocol: Stage 1: "If water is within reach, drink some. Breathing is enough." Stage 2: "Text one person." Stage 3: "Eat anything. A cracker counts." Permissions and recovery signs included.
+
+After each episode, a quick debrief builds your personal toolkit over time.`,
+  features: [
+    'Thought dump: unfiltered text entry for racing thoughts',
+    'Cognitive distortion detection: catastrophizing, mind-reading, fortune-telling, all-or-nothing, overgeneralization, emotional reasoning, should statements',
+    'Evidence-based reality checks: counters with specific evidence, not generic reassurance',
+    'Immediate physical grounding: first action is always physical to interrupt the neural loop',
+    'Guided grounding exercise with step-by-step instructions',
+    'Compassionate anchor statement: the truth about what is actually happening',
+    'Intensity tracking (1-5) with before/after comparison',
+    'Pattern recognition from previous spiral history',
+    'One micro-action at a time: never more than one instruction',
+    'Physical-first progression: body movement before task steps',
+    'Clear completion signals for each step',
+    'Explicit permission to stop after every step',
+    'Gradual task approach: after 3+ physical steps, micro-steps toward the actual task',
+    'Five crash types: total exhaustion, emotional overload, burnout, overwhelm collapse, sensory overload',
+    'Severity matching: instructions scaled to actual capability',
+    'Staged recovery: progressive stages from survival to basic function',
+    'Permission statements: explicit permission to drop obligations',
+    'Recovery signs: how to know you are coming back',
+    'Episode logging: persistent history across all three modes (up to 100 episodes)',
+    'Post-crisis debrief: intensity comparison, what helped, reflection',
+    'Pattern analysis: unlocks after 3+ episodes with trigger patterns, improvement trends, personalized toolkit',
+    'Status timeline: color-coded episode history bar',
+    'Breathing prompt: shown before every crisis input',
+  ],
+  relatedTools: ['DopamineMenuBuilder', 'CrisisPrioritizer', 'BrainDumpStructurer'],
 },
+
 {
   id: "CaptionMagic",
   title: "Caption Magic",
