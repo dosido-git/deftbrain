@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import {X} from 'lucide-react';
+import BrandMark from './BrandMark';
 // ════════════════════════════════════════════════════════════
 // CATEGORY CONSOLIDATION
 // ════════════════════════════════════════════════════════════
@@ -283,18 +284,12 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
 
       {/* ═══════════ HEADER: LOGO + TAGLINE ═══════════ */}
       <header className="w-full py-3">
-        <div className="flex items-start gap-4">
-          <div className="flex-shrink-0">
-            <img 
-              src="/dBlr.png" 
-              alt="DeftBrain.com" 
-              className="h-32 w-auto block object-contain" 
-            />
-          </div>
-          <p className="text-[11px] font-black text-slate-400 uppercase tracking-[0.5em] leading-none pt-2">
-            Intelligence on Demand
-          </p>
-        </div>
+        <BrandMark
+          direction="left"
+          size="lg"
+          isDark={false}
+          showTagline={true}
+        />
       </header>
 
       {/* ═══════════ LAYOUT: SIDEBAR + CONTENT ═══════════ */}

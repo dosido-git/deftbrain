@@ -13,7 +13,7 @@
  */
 /**
 template:
-   {
+   {date: "",
     id: "",
     title: "",
     category: "Daily Life",
@@ -48,9 +48,11 @@ export const tools = [
 {
   id: 'DopamineMenuBuilder',
   title: 'Dopamine Menu',
+  Category: 'Wellness',
+  icon: '✨',
   description: "Your complete energy management system — 5 modes in one tool. Recharge: build a personalized menu of activities that actually restore (not numb), with mood-aware suggestions, guided sequences, pattern tracking, and recharge debt monitoring. Budget: map today's tasks against available energy and see what actually fits — with explicit permission to drop what doesn't. Forecast: input your week's social and work events, get a battery drain prediction showing exactly when you'll hit empty, with recovery windows and polite decline scripts. Radar: 15-second daily check-in tracking sleep, mood, productivity, and social energy — spots burnout patterns by detecting when multiple signals decline simultaneously. Disruption: when life blows up your routine (sick day, travel, emergency), get a temporary adapted structure with keep/simplify/drop decisions and return-to-normal triggers.",
+  tagline: 'Energy management — recharge, budget, forecast, track',
   category: 'wellness',
-  emoji: '✨',
   gradient: 'from-emerald-500 to-teal-500',
   route: 'dopamine-menu-builder',
   actions: [
@@ -134,10 +136,11 @@ Five modes, one energy profile, everything compounds.`,
 {
   id: 'BatchFlow',
   title: 'BatchFlow',
-  description: 'Batch similar tasks by cognitive mode to minimize context switching and protect your focus. Includes weekly rhythms, A/B schedule comparison, time calibration, location-aware batching, resistance detection, and focus environment presets.',
   category: 'productivity',
-  emoji: '⚡',
-  gradient: 'from-emerald-500 to-teal-500',
+  icon: '⚡',
+  description: 'Batch similar tasks by cognitive mode to minimize context switching and protect your focus. Includes weekly rhythms, A/B schedule comparison, time calibration, location-aware batching, resistance detection, and focus environment presets.',
+  tagline: "Batch similar tasks to protect your focus and minimize mental gear-shifting",
+    gradient: 'from-emerald-500 to-teal-500',
   route: 'batch-flow',
   actions: ['generate', 'quick-dump', 'rebatch', 'expand-batch', 'progress-update', 'share-plan', 'day-template', 'batch-insights', 'ab-compare', 'weekly-rhythm', 'resistance-check', 'time-calibrate', 'location-batch'],
   promptKeys: {
@@ -747,10 +750,10 @@ Over time, BatchFlow learns: "You underestimate creative tasks by 35% — paddin
     category: "Communication",
     icon: "💝",
     description: "Turn your feelings of gratitude into heartfelt, authentic thank-you messages — without the writing paralysis. Perfect for when you genuinely appreciate someone but freeze when trying to express it formally.",
+     tagline: "Helps you convert bullet points into polished thank yous.",
 
     guide: {
       overview: "The Gratitude Debt Clearer helps you convert bullet points of appreciation into polished thank-you messages. Instead of staring at a blank page wondering how to start, just list what you're grateful for and let AI craft 2-3 message options that sound like you, not a greeting card. Built specifically for people who feel gratitude deeply but struggle with the formality of expressing it in writing.",
-     tagline: "Helps you convert bullet points into polished thank you.",
      howToUse: [
         "Enter who you're thanking (name or description like 'the whole team')",
         "List what you're grateful for in bullet points or free-form. Be specific! The more details you give, the more personal your message will be.",
@@ -895,7 +898,7 @@ Over time, BatchFlow learns: "You underestimate creative tasks by 35% — paddin
     category: "productivity",
     icon: " 🎧",
     description: "Generate personalized soundscapes for concentration based on your task, environment, and sensory needs. Creates custom mixes of white/pink/brown noise, nature sounds, binaural beats, and ambient music. Get sound layering recipes with individual volume controls and specific personalized tips.",
-  tagline: "No tag yet.",
+  tagline: "Create personalized soundscapes to enhance your concentration.",
     guide: {
       overview: "The Focus Sound Architect generates custom soundscape recipes calibrated to your neurotype, task, environment, and auditory sensitivities. Instead of generic focus music, you get a personalized mix of sound elements with scientific explanations for why each helps your specific situation. Built with neurodivergent brains in mind - honors sensory sensitivities, provides consistency when needed, variety when needed, and always explains WHY.",
       howToUse: [
@@ -1982,132 +1985,6 @@ Over time, BatchFlow learns: "You underestimate creative tasks by 35% — paddin
     "Your judgment should override if you have additional context"
   ]
 },     
-  // FreezeStateUnblocker-metadata.js
-{
-  id: "FreezeStateUnblocker",
-  title: "Freeze State Unblocker",
-  category: "Mind & Energy",
-  icon: "❄️",
-  description: "Get unstuck when completely frozen by depression, anxiety paralysis, or task paralysis. Ultra-minimal interface - just click 'I'm stuck' and get one tiny physical action at a time. No decisions, no planning, no problem-solving. Just: stand up, drink water, look out window. Physical movement breaks the freeze. Permission to stop after any step. Zero judgment. For freeze states, shutdowns, and complete paralysis where even starting feels impossible.",
-  tagline: "Get unstuck when you're completely frozen",
-
-  guide: {
-    overview: "Freeze State Unblocker is for when you're completely stuck and can't start anything. Not 'I'm procrastinating' stuck - FROZEN stuck. Depression freeze. Anxiety freeze where even tiny decisions feel impossible. The tool removes ALL decision-making and gives you ONE ultra-specific micro-action at a time: 'Stand up.' That's it. You do it. Click 'I did it.' Get next action: 'Walk to kitchen.' Physical movement first - signals brain to shift states. No complex forms. No planning. No solving the whole problem. Just: click button, do tiny thing, click 'next.' Can stop after any step. Zero judgment. The goal isn't productivity - it's MOVEMENT. Break the freeze.",
-    
-    howToUse: [
-      "WHEN FROZEN: Click the single 'I'm stuck' button. That's the only decision you make.",
-      "OPTIONAL: If you can, type what you're stuck on ('laundry', 'email', 'leaving house'). If you can't, skip it. The tool works either way.",
-      "GET FIRST ACTION: See ONE micro-action. Example: 'Stand up from where you are sitting.' Nothing else. Just that.",
-      "DO IT: Stand up. That's all. You don't have to do anything else.",
-      "CLICK 'I DID IT': This advances to next micro-action.",
-      "REPEAT: Get next tiny action ('Walk to kitchen'), do it, click 'I did it.'",
-      "PHYSICAL FIRST: First 3-5 actions are physical movement (stand, walk, drink water, look outside) - breaks freeze state.",
-      "NO DECISIONS: Tool tells you exactly what to do. No choices. No planning.",
-      "PERMISSION TO STOP: After any step, you can be done. Tool explicitly gives permission. You moved - that matters.",
-      "IF STILL STUCK: Click 'Still stuck' and get EVEN SMALLER steps. Can't stand up? 'Wiggle your toes.' Can't do that? 'Blink three times.'"
-    ],
-    
-    example: {
-      scenario: "You've been sitting on the couch for 3 hours. You need to do laundry but can't move. Depression freeze. Even thinking about the steps (gather clothes, sort, go to laundry room, etc.) feels overwhelming and impossible. You can't start.",
-      action: "Click 'I'm stuck' button. Type 'laundry' in optional box (or leave blank). Click submit.",
-      result: "ACKNOWLEDGMENT: 'You're stuck and that's real. Let's just do one tiny thing. You don't have to do the laundry right now. Just this one thing.' FIRST ACTION: 'Stand up from where you are sitting. Time: 5 seconds. Why this helps: Physical movement signals your brain to shift states. You don't have to do anything else.' You stand up. Click 'I did it.' NEXT ACTION: 'Walk to the kitchen or bathroom. Completion signal: You moved to a different room.' You walk to kitchen. Click 'I did it.' NEXT ACTION: 'Get a glass of water and drink it. Completion signal: You drank some water.' You drink water. Click 'I did it.' NEXT ACTION: 'Look out a window for 30 seconds. Find a window. Look outside. Count to 30.' You look outside. Click 'I did it.' NEXT ACTION: 'Name 3 things you can see outside. Say them out loud or in your head.' You do it. Click 'I did it.' CHECK-IN: 'How are you feeling now? Better/Same/Worse?' [You pick 'Better'] RESPONSE: 'Great. The freeze is breaking. Here's the tiniest next thing for laundry: Walk toward where dirty clothes are. Don't pick them up. Don't think about sorting. Just walk toward them. Completion signal: You can see the dirty clothes.' You walk toward laundry pile. Click 'I did it.' NEXT: 'Pick up ONE item of clothing. Just one. You don't have to do more.' You pick up one shirt. Click 'I did it.' NEXT: 'You moved. You did something. You can stop now if you want - you broke the freeze. OR continue: Put that one item in laundry basket. Your choice.' PERMISSION: You can be done. You moved from complete freeze to picking up a shirt. That's real progress."
-    },
-    
-    tips: [
-      "USE WHEN COMPLETELY FROZEN - not when procrastinating. This is for paralysis, not motivation.",
-      "PHYSICAL ACTIONS FIRST - always start with movement (stand, walk, drink). Don't skip to task.",
-      "ONE THING AT A TIME - close your eyes between steps if needed. Just do the one thing.",
-      "DON'T PLAN AHEAD - don't think about step 5 while on step 1. Tool removes planning.",
-      "PERMISSION TO STOP - you can quit after ANY step. Tool explicitly allows this. No failure.",
-      "NO JUDGMENT - being stuck is not weakness. Depression is not laziness. Shutdown is real.",
-      "'I did it' button is crucial - clicking it gives dopamine hit, signals completion, allows next step.",
-      "IF ACTIONS TOO BIG - click 'Still stuck' for even smaller steps. 'Stand up' → 'Sit up straight' → 'Move one hand.'",
-      "GROUNDING ACTIONS HELP - 'name 3 things you see' reconnects you to present moment.",
-      "TASK-SPECIFIC STEPS come AFTER physical unsticking - first break freeze, then tiny task steps.",
-      "IT'S OKAY TO NOT FINISH - the goal is MOVEMENT, not completion. Moving from freeze = success."
-    ],
-    
-    pitfalls: [
-      "Don't skip physical movement steps - 'I'll just start the task' usually leads back to freeze. Do the standing/walking/water first.",
-      "Don't add your own steps - tool's job is to remove decisions. Trust the sequence even if seems weird.",
-      "Don't judge yourself for being stuck - shame reinforces freeze. Tool explicitly gives permission to struggle.",
-      "Don't use this for procrastination - this is for FREEZE states (executive dysfunction, depression paralysis, shutdown). Different from 'I don't feel like it.'",
-      "If you can't do a step, don't force it - click 'Still stuck' for smaller version. Can't stand? 'Shift your weight.' Can't drink water? 'Take one sip.'",
-      "Don't plan the whole task while doing micro-steps - defeats the purpose. Just do the one thing in front of you.",
-      "Don't use complex forms or settings - if tool asks for info you can't provide, skip it. The 'I'm stuck' button alone is enough.",
-      "Stopping after 3 steps isn't failure - you moved. That's the win. You don't owe anyone completion.",
-      "Don't wait until freeze is extreme - use tool at first sign of paralysis. Easier to break early freeze than deep freeze.",
-      "Multiple uses per day is fine - freeze can come back. Tool is available every time."
-    ]
-  }
-},
-// SocialBatteryForecaster-metadata.js
-{
-  id: "SocialBatteryForecaster",
-  title: "Social Battery Forecaster",
-  category: "Mind & Energy",
-  icon: "🔋",
-  description: "Predict when you'll need alone time based on upcoming social obligations. Input events (meetings, parties, dinners), get energy depletion forecast with battery visualization showing when you'll hit empty. AI calculates energy cost per event based on: group size, unfamiliarity, your role (hosting vs attending), can you leave early, masking requirements. Warns BEFORE burnout with recommended recovery slots. Includes permission statements ('It's okay to leave early', 'Declining now prevents canceling everything later'). Prevents social overcommitment by showing weekly capacity (e.g., 'You're at 85% capacity - be very selective'). Built for introverts, autistic individuals (masking exhausts), social anxiety, people who say yes then regret it. Treats social energy as limited resource requiring budget.",
-  tagline: "Predict when your social energy will run out",
-
-  guide: {
-    overview: "Social Battery Forecaster treats social energy like a phone battery that drains throughout the week and needs recharging. You input upcoming social events (work meetings, parties, dinners, family gatherings), and the tool predicts exactly when your social battery will hit critical levels. Each event has an energy cost calculated from: number of people, how well you know them, your role (hosting drains more than attending), noise level, whether you can leave early, masking requirements (for autistic/neurodivergent folks). The tool shows a visual battery draining across the week, warns 'Wednesday: BURNOUT RISK - 15% battery' BEFORE you crash, recommends recovery windows ('Monday evening: 3 hours alone time needed'), and gives permission statements ('It's okay to cancel Friday' or 'Declining now prevents canceling everything later'). Also shows weekly energy budget: if you're at 85% capacity committed, you only have 15% left - be very selective about new invites. Prevents the cycle: say yes to everything → get overwhelmed → cancel last minute → feel guilty.",
-    
-    howToUse: [
-      "ONE-TIME SETUP: Set your energy type on slider (extreme introvert to extrovert). Select recharge activities (alone time, nature, reading, sleep). Set minimum recharge hours needed between events.",
-      "ADD EVENTS: Click 'Add Event', enter upcoming social obligations. For each: name ('Team meeting', 'Sarah's birthday party'), date/time/duration, event type (work meeting, social gathering, family, 1-on-1, group, party, networking), number of people, your role (hosting/attending/presenting/observing), can you leave early (yes/no).",
-      "VIEW FORECAST: See battery visualization showing depletion across week. Monday starts 100%, meeting costs 15% (85% after), lunch costs 25% (60% after), by Monday evening you're at 35% - LOW ENERGY warning.",
-      "CHECK WARNINGS: Tool flags burnout risk dates in red. 'Wednesday: No recovery between Tuesday dinner and Wednesday event - battery at 15% - CANCEL or RESCHEDULE one event.'",
-      "RECOVERY PLAN: Tool recommends specific recharge windows. 'Tuesday night: Need 4 hours minimum alone time before Wednesday. Activities: Reading at home (based on your preferences). No social media, no calls.'",
-      "ENERGY BUDGETING: See weekly capacity bar. 'Weekly capacity: 100%. Already committed: 85%. Available for new events: 15%. Reality check: You're at 85% - be VERY selective about new commitments.'",
-      "PERMISSION STATEMENTS: Tool gives explicit permission. 'It's okay to: Leave the party early. Say no to Friday's event. Take Saturday completely off. Reframe: Declining now prevents canceling everything later.'",
-      "EVENT EVALUATOR: For new invites, click 'Should I go?' Input event details, tool calculates if you have capacity. 'Friday party costs 80%. You only have 15% available. Recommendation: DECLINE. You'll be at 15% battery by Friday - this will drain you completely.'",
-      "DECLINE MESSAGES: If tool recommends declining, click 'Generate decline message' for polite script. 'Thanks for the invite! I need to recharge this week. Rain check?'",
-      "TRACK ACTUAL: After events, log how drained you actually felt (1-10). Tool learns your patterns. 'Large parties drain you 20% more than predicted - adjusting future forecasts.'"
-    ],
-    
-    example: {
-      scenario: "You're an introvert. It's Monday. You have: Tuesday 10am team meeting (8 people, 1 hour), Tuesday 7pm dinner with 3 friends (2 hours, one friend you don't know well), Wednesday 6pm work networking event (30+ people, you're presenting, 2 hours), Thursday 12pm coffee with close friend (1 person, 1 hour), Friday 8pm birthday party (15 people, you're hosting, 4 hours). You currently feel at 90% energy. You recharge with alone time and need minimum 3 hours to recover.",
-      action: "Add all 5 events to Social Battery Forecaster with details. Set energy type to 'Introvert' (30% on slider). Set recharge: alone time, 3 hours minimum. Click 'Generate Forecast.'",
-      result: "ENERGY FORECAST: Monday: 90% start. Tuesday 10am: Team meeting costs 15% (8 people, familiar, attending not hosting) = 75% after. NO RECOVERY TIME (only 9 hours). Tuesday 7pm: Dinner costs 30% (unfamiliar person +10%, group of 3 +15%, restaurant setting +5%) = 45% after. ⚠️ WARNING: Low battery. RECOVERY NEEDED: Tuesday night, 4 hours minimum alone time. Wednesday 6pm: Networking event costs 50% (30+ people +20%, presenting +15%, unfamiliar people +10%, can't leave early +5%) = NEGATIVE 5% if you go without recovery. 🚨 BURNOUT RISK. Battery will be at -5% = COMPLETELY DRAINED. Thursday coffee: Would cost 10% but you'll be too depleted. Friday party: Would cost 60% (hosting +20%, 15 people +15%, 4 hours long +15%, unfamiliar guests +10%) but IMPOSSIBLE - you'll be in burnout. WARNINGS: Wednesday is CRITICAL. No recovery between Tuesday dinner and Wednesday event. Prediction: You'll hit 0% on Wednesday and cancel or perform poorly. Thursday and Friday are IMPOSSIBLE without intervention. RECOMMENDATIONS: (1) CANCEL Tuesday dinner OR Wednesday networking - you cannot do both. (2) If keeping both, schedule 5+ hours alone time Tuesday night (more than your minimum 3 hours due to severe depletion). (3) DECLINE Friday hosting - you will NOT have capacity. Suggest co-hosting instead. (4) Keep Thursday coffee - it's low-cost and with close friend (recharging, not draining). ENERGY BUDGETING: Weekly capacity 100%. Already committed: 165% (!!) You're OVERCOMMITTED by 65%. This is unsustainable. PERMISSION STATEMENTS: It's okay to: Cancel Tuesday dinner (your friends will understand). Decline the networking event (your career won't suffer from missing one event). Cancel Friday party hosting (birthdays can be rescheduled). Take the entire weekend off social obligations. REFRAME: Canceling one event now prevents canceling ALL events later from burnout. Protecting your energy IS self-care, not selfishness. RECOVERY PLAN: If you cancel Tuesday dinner: Tuesday night 3 hours alone time gets you to 70% for Wednesday (manageable). Wednesday night 4 hours alone gets you to 60% for Thursday. Post-Thursday 2 hours alone gets you to 70% for Friday. But Friday hosting STILL costs 60% leaving you at 10% for weekend - NOT recommended. Better plan: Cancel Tuesday dinner AND decline Friday hosting. Then: Tuesday night 3 hours alone → 70% Wednesday. Wednesday night 4 hours alone → 60% Thursday. Thursday is low-cost (50% after). Friday take fully OFF → recharge to 80%. Saturday recharged and available. DECLINE MESSAGE for Friday: 'I'm so honored you want me to host, but I'm hitting my social limits this week. Can we do something smaller/co-host/reschedule to next month when I have more energy? I want to be present, not drained.' SHOULD I GO analysis for Wednesday networking: Base cost 50%. Your current projected battery: 45%. After event: -5%. Recommendation: DO NOT GO. You're at capacity. Alternative: Can you attend for 30 minutes only? Reduces cost to 25% = 20% battery after (low but survivable). Or: SKIP this one. One networking event won't make or break your career, but burnout will."
-    },
-    
-    tips: [
-      "SET UP HONESTLY - if you're an extreme introvert, don't set slider to moderate because you 'should' be more social. Tool needs truth to help you.",
-      "COUNT MASKING ENERGY - if you're autistic/neurodivergent, any event where you mask (work meetings, unfamiliar people) costs MORE. Add 10-20% to base cost mentally.",
-      "SMALL GROUPS ≠ LESS DRAINING - 1-on-1 with someone you don't know well can drain MORE than group with close friends. Number of people isn't the only factor.",
-      "HOSTING DRAINS DOUBLE - you're managing space, food, conversations, cleanup. Hosting a 10-person party costs more than attending a 20-person party.",
-      "CAN'T LEAVE EARLY = HIGHER COST - being trapped at an event adds anxiety and drains faster. Events you can leave freely cost less.",
-      "RECOVERY BETWEEN EVENTS MATTERS - two events in one day with 6 hours between (for alone time) costs LESS than same events with only 2 hours between (no recharge).",
-      "RECHARGE TIME IS NON-NEGOTIABLE - tool says you need 3 hours alone? That's minimum. Don't try to get away with 1 hour. You'll crash harder.",
-      "WEEKENDS ARE FOR RECOVERY - if your week drains you to 20%, the ENTIRE weekend might be needed to recharge. Don't fill it with social obligations.",
-      "PREVENTIVE DECLINING > LAST-MINUTE CANCELING - saying no upfront when at capacity feels hard but is kinder than canceling the day-of when burned out.",
-      "CAPACITY IS WEEKLY, NOT DAILY - you might handle 3 events Monday but that leaves less capacity for Tuesday-Sunday. Think cumulative, not per-day.",
-      "ENERGY TYPE IS SPECTRUM - extreme introverts might need 48 hours alone after a big event. Moderate introverts might need 6 hours. Extroverts might need 2. Know your number.",
-      "CLOSE FRIENDS CAN RECHARGE - for some people, 1-on-1 time with best friend is RECHARGING not draining. Mark these events as 0% cost or even negative cost.",
-      "GUILT IS NOT A GOOD REASON - if you're only going because you feel guilty declining, and tool says you're at capacity, the guilt of canceling later will be WORSE.",
-      "WORK EVENTS COUNT - don't exclude work meetings from forecast thinking they 'don't count.' They drain energy too, sometimes more than social events (performing for boss/clients).",
-      "TRACK ACTUAL DEPLETION - tool learns over time. If it predicts party costs 40% but you felt 70% drained, log that. Future predictions will be more accurate."
-    ],
-    
-    pitfalls: [
-      "Don't ignore warnings - if tool says 'burnout risk Wednesday', that's not a suggestion. You WILL crash if you don't intervene.",
-      "Don't add events thinking 'I'll just power through' - you can't willpower your way through social depletion. It's like running on empty tank.",
-      "Don't set energy type higher than reality - saying you're an ambivert when you're an extreme introvert because you 'should be fine' will give wrong predictions and you'll crash.",
-      "Don't skip recovery time to 'fit in' one more event - recovery is non-negotiable. Skipping it compounds depletion.",
-      "Don't count work from home as recharging - even if alone, work drains energy. Recharge is NO obligations, just rest.",
-      "Don't use tool to justify overscheduling - if tool says you're at 85% capacity, that's a WARNING to slow down, not permission to add 15% more.",
-      "Don't decline tool's advice because friend will be disappointed - your friend will be MORE disappointed if you go and are miserable/leave early/crash.",
-      "Don't forget about back-to-back days - Friday night party + Saturday brunch + Sunday family dinner = three days straight with NO recovery. That's a crash waiting to happen.",
-      "Don't dismiss your own recharge needs as selfish - needing alone time is physiological, not moral failure. Tool gives permission because you need to hear it.",
-      "Don't add only 'big' events - daily small interactions (coffee runs, hallway chats, phone calls) add up. If you have 10 small interactions it can equal one big event.",
-      "Don't expect tool to make you extroverted - it's a forecaster, not a fixer. It helps you work within your energy limits, not expand them.",
-      "Don't use predicted battery % as permission to add more if high - if you're at 60% battery Wednesday, that's not 'room for more events,' that's already depleted from 100%.",
-      "Don't confuse social anxiety with introversion - anxiety makes you FEAR social situations. Introversion means they DRAIN you. Both are valid, but different. Tool works for both.",
-      "Don't forget to account for preparation/recovery time - a 2-hour party includes 1 hour getting ready + 2 hour event + 1 hour decompressing = 4 hours total commitment."
-    ]
-  }
-},
 // LeaseTrapDetector-metadata.js
 {
   id: "LeaseTrapDetector",
@@ -3213,169 +3090,6 @@ Over time, BatchFlow learns: "You underestimate creative tasks by 35% — paddin
   }
 },
 {
-  id: "BurnoutBreadcrumbTracker",
-  title: "Burnout Breadcrumb Tracker",
-  category: "Mind & Energy",
-  icon: "🔥",
-  description: "Spots patterns leading to burnout before crash. Multi-metric monitoring: sleep quality, task completion rate, irritability, social withdrawal, physical symptoms. Alerts early when intervention still possible. '7-10 days until crash if trajectory continues.'",
-  tagline: "Spot the warning signs before you hit the wall",
-  
-  guide: {
-    overview: "Burnout doesn't appear suddenly - it leaves breadcrumbs (declining sleep, dropping task completion, increasing irritability). This tool tracks multiple indicators to alert you while intervention is still possible, not after you've crashed.",
-    
-    howToUse: [
-      "Log daily metrics: sleep quality, mood, tasks completed %, social energy, symptoms",
-      "Add at least 5-7 days of data for pattern detection",
-      "Get burnout risk level and time until crash estimate",
-      "See specific indicators detected (what's declining)",
-      "Follow prioritized interventions before crash happens"
-    ],
-    
-    example: {
-      scenario: "Your logs show: Sleep declining from 7/10 to 4/10 over 2 weeks, task completion dropping from 90% to 50%, mood dropping, social energy low, increasing irritability, canceled 3 social plans this week.",
-      action: "Input all those daily logs.",
-      result: "Burnout risk: HIGH. Time until crash: 7-10 days if current trajectory continues. Indicators: Sleep quality declining (7→4), Task completion dropping (90%→50%), Irritability increasing, Social withdrawal (3 canceled plans). Interventions: CRITICAL: Sleep 9+ hours next 3 nights. HIGH: Cancel non-essential commitments this weekend. HIGH: Reduce work hours to 6/day this week. MEDIUM: Talk to manager about workload. Reality check: You're not 'being lazy' - your system is in decline. Preventing burnout NOW is easier than treating it after crash."
-    },
-    
-    tips: [
-      "Track honestly even on 'good' days - patterns emerge over time",
-      "Act on high/critical interventions immediately, not when 'you have time'",
-      "Compare to past burnouts if you've had them - your warning signs are consistent",
-      "If risk is critical, you're days away from crash - treat as emergency",
-      "Prevention is much easier than recovery - take warnings seriously"
-    ],
-    
-    pitfalls: [
-      "Don't ignore warnings thinking 'I just need to push through this week' - that's how you crash",
-      "If every week shows high risk, you're chronically overcommitted (needs systemic change)",
-      "Physical symptoms (headaches, stomach issues, insomnia) are real medical signals"
-    ]
-  }
-},
-
-{
-  id: "SpoonBudgeter",
-  title: "Spoon Budgeter",
-  category: "Mind & Energy",
-  icon: "🥄",
-  description: "Allocates daily energy (spoons) across tasks using spoon theory. Each task costs spoons. Shows at capacity/over capacity/have margin. Prevents overcommitment by making costs visible. Provides guilt-free permission: 'You don't have the spoons.'",
-  tagline: "Budget your daily energy across what matters",
-  
-  guide: {
-    overview: "Spoon theory: people with chronic illness/disability have limited daily energy ('spoons'). Each task costs spoons. Running out means forced shutdown. This tool budgets spoons across tasks to prevent overcommitment and validate 'I don't have the spoons.'",
-    
-    howToUse: [
-      "Set available spoons today (slider 1-20)",
-      "List tasks with spoon cost for each (1-10)",
-      "Mark priority: required/important/optional",
-      "Get budget analysis: at capacity/over/margin",
-      "Follow permission to decline optional tasks"
-    ],
-    
-    example: {
-      scenario: "You have 8 spoons today. Required tasks: Work meeting (3 spoons), Grocery shopping (4 spoons). Optional: Dinner with friends (5 spoons).",
-      action: "Input: 8 spoons, Meeting 3, Groceries 4, Dinner 5 (optional).",
-      result: "Available: 8. Required: 7 (meeting + groceries). Remaining: 1. Analysis: AT CAPACITY with required tasks only. Optional tasks possible: 0. Recommendation: Say no to dinner invitation (costs 5 spoons you don't have). Permission: You're not being lazy - you literally don't have the energy. Required tasks will use almost all spoons. Dinner would put you 4 spoons over budget = crash tomorrow."
-    },
-    
-    tips: [
-      "Be honest about spoon costs - don't minimize to make things 'fit'",
-      "Spoons vary daily based on sleep, health, stress - adjust accordingly",
-      "Required tasks are truly required (medication, work, pet care) - everything else negotiable",
-      "When at/over capacity, saying no isn't optional, it's necessary",
-      "Track patterns - if you're always over capacity, your baseline obligations are too high"
-    ],
-    
-    pitfalls: [
-      "Don't guilt yourself into spending spoons you don't have - that's how you crash",
-      "If someone pressures you after you've said you don't have spoons, that's their problem",
-      "Repeatedly borrowing tomorrow's spoons creates debt spiral - don't do it"
-    ]
-  }
-},
-
-{
-  id: "ShutdownRecoveryGuide",
-  title: "Shutdown Recovery Guide",
-  category: "Mind & Energy",
-  icon: "🔋",
-  description: "Ultra-simple recovery protocols when completely non-functional. Step-by-step survival instructions for autistic shutdown, burnout, depression episodes. Lowest-barrier steps: 'Stay where you are. Breathe. That's enough.' Permission-focused.",
-  tagline: "Step-by-step recovery when you're completely spent",
-  
-  guide: {
-    overview: "During shutdown (autistic shutdown, severe burnout, depression episode), even 'do self-care' is inaccessible. This provides lowest-barrier survival protocols with ultra-simple instructions and permission that basic survival is enough.",
-    
-    howToUse: [
-      "Select shutdown type (autistic/burnout/depression/overwhelm)",
-      "Set severity (mild/moderate/severe)",
-      "Note duration so far if relevant",
-      "Get phased protocol: Hour 1, Hours 2-4, Day 1, Days 2-3",
-      "Follow ultra-simple steps with permission statements"
-    ],
-    
-    example: {
-      scenario: "You're in severe autistic shutdown. Can barely move. Lying in bed. Can't process anything. Everything is too much.",
-      action: "Type: Autistic shutdown, Severity: Severe, Duration: Just started.",
-      result: "Hour 1: Stay where you are. Don't force yourself to move yet. If you can reach water, drink some. If not, it's okay. Breathe. That's enough for now. Hours 2-4: Drink water (any amount counts). Eat anything (crackers, banana, whatever requires zero prep). Use bathroom. That's all. Rest more. Day 1: Water every few hours. Eat 2-3 times (simple food okay). Sleep as much as needed. Cancel today's obligations (text: 'I'm unwell, can't make it'). Permission: Shutdown is a real neurological state, not laziness. Your body/brain forced this - you didn't choose it. Recovery takes time - don't rush it. Basic survival is enough right now. When to seek help: If shutdown lasts >48 hours with no improvement, if you can't eat/drink at all, if you feel unsafe."
-    },
-    
-    tips: [
-      "Actually follow the 'stay where you are' instruction - movement can worsen shutdown",
-      "Ultra-simple means ULTRA-SIMPLE - 'drink water' not 'make nutritious smoothie'",
-      "Permission statements aren't just nice words - shutdown is real and not your fault",
-      "If you can't do Hour 1 steps, you need immediate help (call someone trusted)",
-      "Recovery is gradual - expect 2-3 days minimum, possibly longer"
-    ],
-    
-    pitfalls: [
-      "Don't try to 'push through' shutdown - that makes it worse and longer",
-      "Don't compare to others' recovery speed - shutdown duration varies",
-      "If shutdowns are frequent (weekly/monthly), underlying issues need addressing"
-    ]
-  }
-},
-{
-  id: "RoutineRuptureManager",
-  title: "Routine Rupture Manager",
-  category: "Mind & Energy",
-  icon: "🔄",
-  description: "When life disrupts your routine (sick, travel, emergency), get adapted structure that maintains critical tasks while respecting your constraints. Prevents total system collapse for routine-dependent people.",
-  tagline: "Keep structure when life blows up your routine",
-  
-  guide: {
-    overview: "For routine-dependent people, disruptions cause chaos. This tool creates temporary replacement structures that maintain critical tasks (medication, meals, urgent work) while dropping optional ones. You get explicit instructions for altered circumstances instead of floundering.",
-    
-    howToUse: [
-      "Describe your normal daily routine",
-      "Select what's disrupting it (sick day, travel, schedule change, emergency)",
-      "Add any constraints (low energy, can't leave house, limited resources)",
-      "Specify critical tasks that must continue (medication, pet care, deadlines)",
-      "Get adapted routine with clear keep/drop/simplify instructions"
-    ],
-    
-    example: {
-      scenario: "You're home with flu. Normal routine is impossible but you can't just stop everything - you have pets, medication, and a work deadline.",
-      action: "Input normal routine, select 'sick day', add constraints ('very low energy', 'can't leave house'), specify critical tasks ('feed cat', 'take medication', 'check work email once').",
-      result: "Adapted routine that drops shower/exercise/cooking, simplifies meals to 'crackers/banana', keeps medication schedule, reduces work to one email check, and gives explicit permission that cleaning/etc can wait. Tells you when to resume normal routine."
-    },
-    
-    tips: [
-      "Be honest about constraints - the tool can only help if it knows your real limitations",
-      "Critical tasks are truly critical (health, safety, urgent obligations) - everything else can be dropped temporarily",
-      "Use permission statements when guilt tries to make you do more than you can",
-      "The adapted routine is temporary - your normal routine will return when you're able",
-      "When in doubt, survival mode is enough (water, medication, rest)"
-    ],
-    
-    pitfalls: [
-      "Don't try to maintain your full routine during a disruption - that's how you crash harder",
-      "Don't feel guilty about dropped tasks - they're dropped because they're genuinely optional right now",
-      "Don't rush back to normal routine too fast - gradual return prevents re-collapse"
-    ]
-  }
-},
-
-{
   id: "BrainStateDeejay",
   title: "Brain State Deejay",
   category: "Productivity",
@@ -3415,18 +3129,15 @@ Over time, BatchFlow learns: "You underestimate creative tasks by 35% — paddin
     ]
   }
 },
-
-// SpiralStopper v2 — consolidated metadata
-// Absorbs: FreezeStateUnblocker, ShutdownRecoveryGuide
 // SpiralStopper v2 — 3 modes (absorbs FreezeStateUnblocker, ShutdownRecoveryGuide)
-// REPLACES the existing SpiralStopper block in tools.js
 {
   id: 'SpiralStopper',
   title: 'Spiral Stopper',
   description: "Emergency intervention for three crisis states. Spiraling: dump your racing thoughts and get immediate grounding, cognitive distortion identification with evidence-based reality checks, and a compassionate anchor statement. Frozen: when you can't start, can't decide, can't move — get one micro-action at a time with clear completion signals and explicit permission to stop. Crashed: when you're completely spent, get a severity-matched recovery protocol with staged instructions, basics checklists, permission statements, and recovery signs. All three modes log episodes persistently, offer post-crisis debriefs, and unlock pattern analysis after 3+ episodes to build your personal intervention toolkit.",
   category: 'wellness',
-  emoji: '🌀',
-  gradient: 'from-purple-500 to-emerald-500',
+  icon: '🌀',
+  tagline: "Emergency intervention for spirals, freezes, and crashes",
+gradient: 'from-purple-500 to-emerald-500',
   route: 'spiral-stopper',
   actions: ['spiral', 'unfreeze', 'recover', 'reflect', 'patterns'],
   promptKeys: {
@@ -3472,7 +3183,6 @@ After each episode, a quick debrief builds your personal toolkit over time.`,
   ],
   relatedTools: ['DopamineMenuBuilder', 'CrisisPrioritizer', 'BrainDumpStructurer'],
 },
-
 {
   id: "CaptionMagic",
   title: "Caption Magic",
@@ -4496,37 +4206,6 @@ After each episode, a quick debrief builds your personal toolkit over time.`,
       ]
     }
   },
-  {
-    id: "DateNight",
-    title: "DateNight",
-    category: "Money",
-    icon: "💑",
-    description: "Generates a full date itinerary based exactly on your remaining budget.",
-    tagline: "A full date itinerary within your remaining budget",
-    
-    guide: {
-      overview: "DateNight creates complete date plans that fit your exact budget. Enter how much you can spend, your location, and preferences (dinner, activity, dessert) and get a detailed itinerary with specific restaurants and activities that total your budget amount.",
-      
-      howToUse: [
-        "Enter your total budget (e.g., $60)",
-        "Select date components (dinner, activity, dessert)",
-        "Add preferences (cuisine type, activity style)",
-        "Review the generated itinerary with specific venues",
-        "Book/reserve as needed",
-        "Execute the perfect date"
-      ],
-      
-      example: "$50 budget, Friday evening. DateNight suggests: (1) Dinner at Thai place: $28 for two. (2) Walk to free outdoor concert: $0. (3) Ice cream at local shop: $12. (4) Reserve $10 for parking/tips. Total: $50.",
-      
-      tips: [
-        "Include 10-15% buffer for tips and parking",
-        "Check if activities need advance reservations",
-        "Free/cheap activities (walks, parks, concerts) stretch your budget",
-        "Save successful dates to repeat with different people"
-      ]
-    }
-  },
-
   // ========================================================================
   // HEALTH
   // ========================================================================

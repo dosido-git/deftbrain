@@ -321,7 +321,7 @@ const BatchFlow = () => {
   // ═══ RENDER ═══
   return (
     <div className="max-w-4xl mx-auto space-y-5">
-      <div><h2 className={`text-2xl font-bold ${c.text}`}>⚡ BatchFlow</h2><p className={`text-sm ${c.tm}`}>Batch similar tasks to protect your focus and minimize mental gear-shifting</p></div>
+      <div><h2 className={`text-2xl font-bold ${c.text}`}>BatchFlow ⚡</h2><p className={`text-sm ${c.tm}`}>Batch similar tasks to protect your focus and minimize mental gear-shifting</p></div>
 
       {/* Nav */}
       <div className="flex flex-wrap gap-2">

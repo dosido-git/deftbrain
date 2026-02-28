@@ -222,7 +222,7 @@ const SpiralStopper = () => {
   return (
     <div className="max-w-xl mx-auto space-y-5">
       <div className="flex items-center justify-between">
-        <div><h2 className={`text-2xl font-bold ${c.text}`}>🌀 Spiral Stopper</h2><p className={`text-sm ${c.tm}`}>Emergency intervention for spirals, freezes, and crashes</p></div>
+        <div><h2 className={`text-2xl font-bold ${c.text}`}>Spiral Stopper 🌀</h2><p className={`text-sm ${c.tm}`}>Emergency intervention for spirals, freezes, and crashes</p></div>
         <div className="flex gap-2">
           {episodeLog.length > 0 && view !== 'history' && <button onClick={() => { setView('history'); setMode(null); }} className={`text-xs font-bold px-3 py-1.5 rounded-lg ${c.sec}`}>📊 {episodeLog.length}</button>}
           {(mode || view !== 'input') && <button onClick={resetAll} className={`text-xs font-bold px-3 py-1.5 rounded-lg ${c.sec}`}>🏠</button>}

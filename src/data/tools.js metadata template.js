@@ -1,4 +1,5 @@
     {
+    date: "",
     id: "",
     title: "",
     category: "",

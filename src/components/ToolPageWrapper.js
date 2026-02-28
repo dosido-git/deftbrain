@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { getToolById, tools } from '../data/tools';
 import { useTheme } from '../hooks/useTheme';
+import BrandMark from './BrandMark';
 
 const ToolPageWrapper = ({ children, tool, toolId }) => {
   const navigate = useNavigate();
@@ -123,18 +124,14 @@ const ToolPageWrapper = ({ children, tool, toolId }) => {
             <span className="inline-block text-sm group-hover:-translate-x-1 transition-transform">←</span>
             <span className="text-xs font-semibold uppercase tracking-wide">Dashboard</span>
           </button>
-          <div className="flex items-start gap-4">
-            <p className={`text-[10px] font-black uppercase tracking-[0.45em] leading-none pt-2 ${isDark ? 'text-zinc-500' : 'text-stone-400'}`}>
-              Intelligence on Demand
-            </p>
-            <Link to="/" className="flex-shrink-0" title="Back to Dashboard">
-              <img 
-                src="/dBrl.png" 
-                alt="DeftBrain" 
-                className="h-32 w-auto block object-contain"
-              />
-            </Link>
-          </div>
+          <Link to="/" title="Back to Dashboard">
+            <BrandMark
+              direction="right"
+              size="md"
+              isDark={isDark}
+              showTagline={true}
+            />
+          </Link>
         </div>
       </div>
 
