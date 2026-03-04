@@ -552,4 +552,114 @@ Review this haul as a whole. Return ONLY valid JSON:
   }
 });
 
+// ════════════════════════════════════════════════════════════
+// POST /buy-wise/quote — Service/Contractor Quote Check
+// ════════════════════════════════════════════════════════════
+router.post('/buy-wise/quote', async (req, res) => {
+  try {
+    const { service, amount, details, location, urgency, currency, userLanguage } = req.body;
+
+    if (!service || !service.trim()) {
+      return res.status(400).json({ error: 'Please describe the service you were quoted for' });
+    }
+
+    const sym = currency || '$';
+    const hasAmount = amount != null && amount > 0;
+
+    const systemPrompt = `${PERSONALITY}
+
+You are evaluating a service quote or contractor estimate. This is NOT a product purchase — it's a service: contractor work, professional services, medical procedures, freelancer rates, event vendors, tutoring, repairs, etc.
+
+YOUR JOB:
+- Assess whether the quoted price is fair for the service described
+- Identify which line items are negotiable and which aren't
+- Flag red flags in the quote structure
+- Provide specific questions to ask before signing
+- Give actionable negotiation strategies specific to this industry
+- Consider regional cost differences if location is provided
+- Use currency ${sym} for all amounts
+
+KEY PRINCIPLES:
+- Service pricing varies dramatically by region, season, and demand — acknowledge this
+- Some line items are negotiable, others aren't (materials vs labor markup)
+- "Getting 3 quotes" is always good advice but be more specific about WHERE to get them
+- Seasonal timing matters hugely for some services (HVAC in summer, roofers after storms)
+- Insurance, licensing, and warranty coverage are often more important than bottom-line price`;
+
+    const userPrompt = `SERVICE QUOTE CHECK:
+Service: ${service}
+${hasAmount ? `Quoted amount: ${sym}${amount}` : 'No amount specified — provide typical range'}
+${details ? `Quote details/line items: ${details}` : 'No details provided'}
+${location ? `Location: ${location}` : 'Location not specified'}
+Urgency: ${urgency === 'today' ? 'Emergency/urgent — they need this done ASAP' : urgency === 'this_week' ? 'Soon but not emergency' : 'Flexible timing — can shop around'}
+
+Return ONLY valid JSON:
+
+{
+  "verdict": "One bold sentence: is this a fair quote?",
+  "verdict_emoji": "Single emoji (✅ 🟡 🚩 ⚠️ 💰 etc.)",
+  "verdict_summary": "2-3 sentences explaining the assessment with key reasoning",
+
+  "fair_range": {
+    "range": "${sym}X - ${sym}Y typical range for this service",
+    "what_drives_cost": "What makes this service more or less expensive (specifics, not generalities)",
+    "regional_note": "How location affects pricing for this service, or null if not applicable"
+  },
+
+  "line_items": [
+    {
+      "item": "Line item or cost component name",
+      "amount": "${sym}X or null if not broken out",
+      "verdict": "fair | high | low | red_flag | info",
+      "note": "Why — one specific sentence"
+    }
+  ],
+
+  "negotiable": [
+    {
+      "item": "What can be negotiated",
+      "how_to_negotiate": "Specific tactic for THIS industry",
+      "typical_discount": "How much you can typically save, e.g. '10-15%' or '${sym}200-500'"
+    }
+  ] or [],
+
+  "red_flags": ["Specific warning signs in this quote. Empty array if clean."],
+
+  "questions_to_ask": [
+    "Exact question phrased as the customer would ask it — 5-8 questions"
+  ],
+
+  "timing_tip": "Is now a good or bad time to get this service done? Seasonal pricing patterns? null if not relevant.",
+
+  "competing_quotes": {
+    "how_many": "How many quotes to get and why",
+    "where_to_look": "Specific places to find competing providers for THIS service",
+    "script": "Exact words to say when calling for a competing quote — including how to mention you have another quote without being pushy"
+  },
+
+  "diy_option": "Could any part of this be done yourself to save money? Be honest — some things are dangerous or require licensing. null if DIY isn't realistic.",
+
+  "insurance_licensing": "What insurance, licensing, or certifications should this provider have? What to ask for. null if not applicable (e.g., tutoring).",
+
+  "bottom_line": "2-3 sentences: final recommendation. Be specific about what to do next."
+}`;
+
+    const message = await anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 3000,
+      system: withLanguage(systemPrompt, userLanguage),
+      messages: [{ role: 'user', content: userPrompt }],
+    });
+
+    const text = message.content.find(b => b.type === 'text')?.text || '';
+    const cleaned = cleanJsonResponse(text);
+    const parsed = JSON.parse(cleaned);
+    res.json(parsed);
+
+  } catch (error) {
+    console.error('BuyWise quote error:', error);
+    res.status(500).json({ error: error.message || 'Quote analysis failed' });
+  }
+});
+
 module.exports = router;

@@ -201,14 +201,23 @@ Return ONLY this JSON:
     // ════════════════════════════════════════
     } else if (mode === 'trivia') {
       const { category, difficulty, previousQuestions } = req.body;
-      const prevList = (previousQuestions?.length > 0)
-        ? `\nNO REPEATS: ${previousQuestions.slice(-10).join('; ')}`
+
+      const prevBlock = (previousQuestions?.length > 0)
+        ? `\n\nALREADY ASKED (DO NOT REPEAT OR REPHRASE ANY OF THESE — generate a COMPLETELY DIFFERENT question on a DIFFERENT sub-topic):\n${previousQuestions.slice(-15).map((q, i) => `${i + 1}. ${q}`).join('\n')}\n`
         : '';
 
       maxTokens = 500;
-      prompt = `Trivia question. ${category || 'General Knowledge'}, ${difficulty || 'medium'} difficulty.${prevList}
-4 multiple-choice options, one correct. Plausible wrong answers. Short explanation.
-JSON ONLY:
+      prompt = `You are a trivia host. Generate ONE original ${difficulty || 'medium'}-difficulty trivia question in the category: ${category || 'General Knowledge'}.
+${prevBlock}
+RULES:
+- 4 multiple-choice options with exactly ONE correct answer
+- Wrong answers must be plausible — not obviously silly
+- The question must be FACTUALLY VERIFIABLE with a single correct answer
+- Pick a SPECIFIC and INTERESTING sub-topic within the category
+- Keep the question concise (1-2 sentences max)
+- Explanation: 1 sentence why the answer is correct + 1 fun bonus fact
+
+Return ONLY this JSON — no other text:
 {"question":"...","options":["A","B","C","D"],"correct_index":0,"correct_answer":"...","explanation":"1 sentence why + 1 fun fact","difficulty_actual":"easy|medium|hard","category_label":"specific sub-category"}`;
 
     // ════════════════════════════════════════
@@ -570,13 +579,21 @@ router.post('/the-final-word/room/:code/next', async (req, res) => {
     room.players.forEach(p => { p.answered = false; });
 
     // Generate question via Claude
-    const prevList = room.previousQuestions.length > 0
-      ? `\nNO REPEATS: ${room.previousQuestions.slice(-10).join('; ')}`
+    const prevBlock = room.previousQuestions.length > 0
+      ? `\n\nALREADY ASKED (DO NOT REPEAT OR REPHRASE ANY OF THESE — generate a COMPLETELY DIFFERENT question on a DIFFERENT sub-topic):\n${room.previousQuestions.slice(-15).map((q, i) => `${i + 1}. ${q}`).join('\n')}\n`
       : '';
 
-    const prompt = `Trivia question. ${room.settings.category}, ${room.settings.difficulty} difficulty.${prevList}
-4 multiple-choice options, one correct. Plausible wrong answers. Short explanation.
-JSON ONLY:
+    const prompt = `You are a trivia host. Generate ONE original ${room.settings.difficulty}-difficulty trivia question in the category: ${room.settings.category}.
+${prevBlock}
+RULES:
+- 4 multiple-choice options with exactly ONE correct answer
+- Wrong answers must be plausible — not obviously silly
+- The question must be FACTUALLY VERIFIABLE with a single correct answer
+- Pick a SPECIFIC and INTERESTING sub-topic within the category
+- Keep the question concise (1-2 sentences max)
+- Explanation: 1 sentence why the answer is correct + 1 fun bonus fact
+
+Return ONLY this JSON — no other text:
 {"question":"...","options":["A","B","C","D"],"correct_index":0,"correct_answer":"...","explanation":"1 sentence why + 1 fun fact","difficulty_actual":"easy|medium|hard","category_label":"specific sub-category"}`;
 
     const message = await anthropic.messages.create({

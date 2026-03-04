@@ -2,9 +2,11 @@ const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
 
+// ════════════════════════════════════════════
+// MAIN ENDPOINT: Transform message
+// ════════════════════════════════════════════
 router.post('/velvet-hammer', async (req, res) => {
   try {
-    console.log('🔨 Velvet Hammer request received');
     const {
       harshMessage,
       relationship,
@@ -13,49 +15,11 @@ router.post('/velvet-hammer', async (req, res) => {
       powerDynamic,
       rageLevel,
       history,
-      refinementRequest,
-      selectedVersion,
-      originalVersion,
+      userLanguage,
     } = req.body;
 
     if (!harshMessage) return res.status(400).json({ error: 'Message required' });
 
-    // ─── REFINEMENT MODE ───
-    if (refinementRequest && selectedVersion && originalVersion) {
-      const refinePrompt = `You are a communication editing assistant. The user has already transformed an angry message into a professional version and now wants to adjust it.
-
-ORIGINAL PROFESSIONAL VERSION (style: ${selectedVersion}):
-"""
-${originalVersion}
-"""
-
-USER'S ADJUSTMENT REQUEST: "${refinementRequest}"
-
-COMMUNICATION CHANNEL: ${channel || 'Email'}
-RELATIONSHIP: ${relationship || 'Not specified'}
-
-Rewrite the professional version incorporating the user's requested changes. Keep the same overall style (${selectedVersion}) and professionalism level. Adapt formatting to the channel.
-
-OUTPUT (JSON only):
-{
-  "refined_message": "the adjusted version of the message"
-}
-
-Return ONLY valid JSON. No markdown, no preamble.`;
-
-      const refineResponse = await anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1500,
-        messages: [{ role: 'user', content: refinePrompt }],
-      });
-
-      const refineText = refineResponse.content.find(item => item.type === 'text')?.text || '';
-      const refineCleaned = cleanJsonResponse(refineText);
-      const refineParsed = JSON.parse(refineCleaned);
-      return res.json(refineParsed);
-    }
-
-    // ─── MAIN TRANSFORMATION ───
     const goalsText = goals && goals.length > 0 ? goals.join(', ') : 'Not specified';
     const powerText = {
       they_have_power: 'They have power over the sender (boss, landlord, authority figure)',
@@ -72,7 +36,7 @@ Return ONLY valid JSON. No markdown, no preamble.`;
       'Social Media': 'Format for public-facing social media. Brief, measured, high-road tone. Nothing that looks bad screenshot-ed. No subject line.',
     }[channel] || 'Format for email with a subject line.';
 
-    const prompt = `You are an expert communication strategist and emotional intelligence coach. Your job is to transform raw, emotionally charged messages into professional, effective communication while preserving the sender's legitimate concerns and core message.
+    const basePrompt = `You are an expert communication strategist and emotional intelligence coach. Your job is to transform raw, emotionally charged messages into professional, effective communication while preserving the sender's legitimate concerns and core message.
 
 CONTEXT:
 - Raw message: """${harshMessage}"""
@@ -179,8 +143,8 @@ OUTPUT FORMAT — Return ONLY valid JSON:
   ],
 
   "strategic_notes": {
-    "timing_advice": "When to send this message (e.g., 'Wait until tomorrow morning when emotions have cooled', 'Send within 24 hours while the issue is fresh')",
-    "escalation_warning": "If applicable: whether this situation may need escalation beyond a message (involve HR, get it in writing, loop in a manager). Set to null if not applicable.",
+    "timing_advice": "When to send this message",
+    "escalation_warning": "If applicable: whether this situation may need escalation beyond a message. Set to null if not applicable.",
     "follow_up": "What to do if they don't respond or respond poorly"
   },
 
@@ -201,23 +165,73 @@ Return ONLY the JSON object. No markdown fences, no preamble, no explanation out
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 4000,
-      messages: [{ role: 'user', content: prompt }],
+      messages: [{ role: 'user', content: withLanguage(basePrompt, userLanguage) }],
     });
 
     const textContent = message.content.find(item => item.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(textContent);
-    const parsed = JSON.parse(cleaned);
+    const parsed = JSON.parse(cleanJsonResponse(textContent));
     res.json(parsed);
+
   } catch (error) {
     console.error('Velvet Hammer error:', error);
-
-    if (error instanceof SyntaxError) {
-      console.error('JSON Parse Error — raw text may have been malformed');
-    }
-
     res.status(500).json({ error: error.message || 'Failed to transform message' });
   }
 });
 
+// ════════════════════════════════════════════
+// REFINE ENDPOINT: Adjust a specific version
+// ════════════════════════════════════════════
+router.post('/velvet-hammer/refine', async (req, res) => {
+  try {
+    const {
+      originalVersion,
+      selectedVersion,
+      refinementRequest,
+      channel,
+      relationship,
+      userLanguage,
+    } = req.body;
+
+    if (!originalVersion || !refinementRequest) {
+      return res.status(400).json({ error: 'Original version and refinement request required' });
+    }
+
+    const basePrompt = `You are a communication editing assistant. The user has already transformed an angry message into a professional version and now wants to adjust it.
+
+ORIGINAL PROFESSIONAL VERSION (style: ${selectedVersion || 'balanced'}):
+"""
+${originalVersion}
+"""
+
+USER'S ADJUSTMENT REQUEST: "${refinementRequest}"
+
+COMMUNICATION CHANNEL: ${channel || 'Email'}
+RELATIONSHIP: ${relationship || 'Not specified'}
+
+Rewrite the professional version incorporating the user's requested changes. Keep the same overall style (${selectedVersion || 'balanced'}) and professionalism level. Adapt formatting to the channel.
+
+OUTPUT (JSON only):
+{
+  "refined_message": "the adjusted version of the message",
+  "what_changed": "1-sentence summary of the adjustment"
+}
+
+Return ONLY valid JSON. No markdown, no preamble.`;
+
+    const message = await anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1500,
+      messages: [{ role: 'user', content: withLanguage(basePrompt, userLanguage) }],
+    });
+
+    const textContent = message.content.find(item => item.type === 'text')?.text || '';
+    const parsed = JSON.parse(cleanJsonResponse(textContent));
+    res.json(parsed);
+
+  } catch (error) {
+    console.error('Velvet Hammer refine error:', error);
+    res.status(500).json({ error: error.message || 'Failed to refine message' });
+  }
+});
 
 module.exports = router;

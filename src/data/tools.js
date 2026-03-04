@@ -43,10 +43,886 @@ template:
 ]}},**/
 export const tools = [
 
-// DopamineMenuBuilder v6 — 5 modes (absorbs SpoonBudgeter, SocialBatteryForecaster, BurnoutBreadcrumbTracker, RoutineRuptureManager)
-// REPLACES the existing DopamineMenuBuilder block in tools.js
+// TipOfTongue — tools.js metadata entry
 {
-  id: 'DopamineMenuBuilder',
+  id: "TipOfTongue",
+  title: "Tip of Tongue",
+  category: "Daily Life",
+  icon: "💭",
+  tagline: "Describe it from memory — I'll figure out what it is.",
+  description: "You know the thing — you can almost see it, taste it, hear it — but you can't name it. Describe whatever fragment you remember and AI cross-references sensory details, context, and vibes to identify it. Works for food, music, films, products, scents, colors, places, fabrics, and anything else. Refine mode narrows results based on your feedback.",
+
+  guide: {
+    overview: "TipOfTongue takes fragmentary, vibes-based descriptions and identifies what you're thinking of. Pick a category (food, music, film, product, scent, color, place, fabric, or other), describe what you remember however you can, and AI cross-references sensory details, time/place context, and elimination clues to find ranked matches. Each match includes why it fits, a memory trigger to confirm it, how to verify, and where to find it. If the first round is close but not right, refine mode uses your yes/no/close feedback to dramatically narrow the search.",
+    howToUse: [
+      "Pick a category — or leave it on 'other' and let the AI figure it out",
+      "Describe what you remember: sensory details, vibes, fragments, partial facts — anything helps",
+      "Optionally add 'it's NOT this' eliminators, time/place context, or extra clues",
+      "Review ranked matches — each shows confidence level, why it fits, and a memory trigger",
+      "If a match is close but not quite right, use refine mode to narrow down further"
+    ],
+    example: {
+      scenario: "You ate something incredible at a restaurant two years ago — it was a cold noodle dish, slightly sweet and nutty, with crispy things on top. Asian but you're not sure which cuisine.",
+      action: "Select 'Food', describe the memory. Add context: 'ate at a trendy restaurant in Brooklyn, summer 2023'.",
+      result: "Top match: Sichuan cold sesame noodles (liang mian) — confidence 75%. The nutty flavor is tahini/sesame paste, crispy things likely fried shallots or peanuts. Memory trigger: 'If the sauce was thick and clung to the noodles rather than pooling at the bottom, this is it.' How to find: Dan Dan Noodles at Xi'an Famous Foods, or recipe with 3 tbsp tahini + soy + chili oil + rice vinegar."
+    },
+    tips: [
+      "Sensory details are more useful than facts — 'it felt creamy and had a green label' beats 'I think it was organic'",
+      "The 'it's NOT this' field is powerful — eliminating wrong answers narrows the search fast",
+      "Time and place context helps enormously — 'heard on the radio in 2015' or 'bought at a farmers market'",
+      "If the first round gets close, use refine mode — marking matches as 'close' gives the AI the most signal"
+    ]
+  }
+},
+// MagicMouth — tools.js metadata entry
+{
+  id: "MagicMouth",
+  title: "Magic Mouth",
+  category: "Daily Life",
+  icon: "🗣️",
+  tagline: "The art of the ask.",
+  description: "Tell it what you want — a refund, an upgrade, a free donut, a waived fee, a table at a full restaurant. AI reads the situation, finds your best angle, writes the exact script, and coaches the delivery. Charm, not fraud.",
+
+  guide: {
+    overview: "Magic Mouth is for anyone who's ever watched a friend talk their way into something and thought 'how do they do that?' Describe what you want and the situation, and AI analyzes the power dynamics, identifies your strongest angle, writes a natural-sounding script (opener, the ask, what to say if they hesitate, and a graceful exit), and coaches delivery — tone, body language, and the mistakes that kill the ask. Includes a backup angle and a pro tip most people don't know.",
+    howToUse: [
+      "Describe what you want — be specific about the outcome you're after",
+      "Explain the situation — the more detail, the sharper the angle",
+      "Optionally add who you're asking and what you've already tried",
+      "Read the strategy, memorize the script, review the delivery notes",
+      "Go get what you came for"
+    ],
+    example: {
+      scenario: "You bought shoes that started peeling after one wear, but it's 2 weeks past the return window and you don't have the receipt.",
+      action: "Enter what you want (a refund) and the situation details.",
+      result: "AI identifies 'The Quality Angle' as your best shot — you're not returning shoes, you're reporting a defect. Gives you the exact script to use with the store manager, including what to say if they cite the return policy, and a pro tip about manufacturer warranty claims."
+    },
+    tips: [
+      "Specific situations get much better angles than vague ones",
+      "The 'Already tried' field is powerful — if you've been told no, AI adjusts the strategy",
+      "Delivery notes matter as much as the words — read them carefully",
+      "The backup angle is there for a reason — real conversations don't follow scripts perfectly"
+    ]
+  }
+},
+// NameThatFeeling — tools.js metadata entry
+{
+  id: "NameThatFeeling",
+  title: "Name That Feeling",
+  category: "Diversions",
+  icon: "🎭",
+  tagline: "There's a word for that. Let's find it.",
+  description: "Describe a feeling you can't quite name — that weird mix of emotions, the thing there should be a word for. AI finds the precise word, whether it's in English, German, Japanese, or any language that nailed it.",
+
+  guide: {
+    overview: "Name That Feeling is for the emotions that live between the words you know. Describe what you're feeling in whatever messy way you can, and AI finds the precise word for it — from common English terms you forgot to obscure words from other languages that captured the exact feeling. Because sometimes knowing the name for something makes it easier to carry.",
+    howToUse: [
+      "Describe the feeling in your own words — messy is fine",
+      "Be as specific as possible about the nuances (when it happens, what triggers it, what it's close to but not quite)",
+      "Read the word, its origin, and why it fits",
+      "Discover words from languages around the world that nailed feelings English missed",
+      "Share the perfect word with someone who's feeling the same thing"
+    ],
+    example: {
+      scenario: "You feel nostalgic for a time you never actually experienced — like missing the 1970s even though you were born in 1995.",
+      action: "Describe that feeling as best you can.",
+      result: "AI surfaces 'anemoia' — nostalgia for a time you've never known. It explains the origin, why it fits, and gives you related words like 'saudade' and 'sehnsucht' that live in the same emotional neighborhood."
+    },
+    tips: [
+      "The weirder and more specific your description, the better the match",
+      "If the first word doesn't quite fit, tell it why — it'll dig deeper",
+      "Some of the best emotion words come from German, Japanese, Portuguese, and Finnish",
+      "This is a surprisingly fun party game — describe a feeling and see who guesses closest"
+    ]
+  }
+},
+// WhatsMyVibe — tools.js metadata entry
+{
+  id: "WhatsMyVibe",
+  title: "What's My Vibe",
+  category: "Diversions",
+  icon: "✨",
+  tagline: "Find out what you actually sound like.",
+  description: "Paste your texts, emails, tweets, or messages. AI analyzes your personality and communication style — how you come across, your default tone, your verbal habits, and what people probably think when they read your messages.",
+
+  guide: {
+    overview: "What's My Vibe reads your actual writing — texts, emails, social posts, Slack messages — and tells you what you sound like to other people. Not what you intend, but how you land. It picks up on tone patterns, verbal habits, energy levels, and personality signals you probably don't notice yourself.",
+    howToUse: [
+      "Paste some of your writing — texts, emails, tweets, DMs, whatever feels like 'you'",
+      "The more variety, the better the read (mix of casual and professional helps)",
+      "Read the personality and tone analysis",
+      "Share it with friends and see if they agree",
+      "Try pasting writing from different contexts to see how your vibe shifts"
+    ],
+    example: {
+      scenario: "You're curious how you come across in your work Slack messages.",
+      action: "Paste a handful of recent Slack messages.",
+      result: "AI reveals your communication vibe: maybe you're 'The Warm Deflector' — friendly and encouraging on the surface but rarely commit to a strong opinion. Your verbal habits include softening every statement with 'I think' and ending with questions."
+    },
+    tips: [
+      "Paste at least a few messages for a meaningful read — one text isn't enough",
+      "Mixing casual and professional writing reveals how much your vibe shifts by context",
+      "The verbal habits section is often the most eye-opening part",
+      "This is a fun one to do side-by-side with a friend"
+    ]
+  }
+},
+// TheRunthrough — tools.js metadata entry
+{
+  id: "TheRunthrough",
+  title: "The Runthrough",
+  category: "Work",
+  icon: "🎙️",
+  tagline: "Presentation coach in your pocket.",
+  description: "Paste your presentation and pick a mode: Cut trims it to fit your time limit, Anticipate predicts the toughest Q&A and drafts answers, and Hook rewrites your opening, closing, and transitions to land harder.",
+
+  guide: {
+    overview: "The Runthrough is a 3-mode presentation coaching tool. Cut mode trims your content to fit a time limit while preserving the core message. Anticipate mode predicts the hardest questions your audience will ask and drafts strong answers with traps to avoid. Hook mode rewrites your opening, closing, and key transitions to grab attention and stick in memory.",
+    howToUse: [
+      "Paste your presentation text, speaker notes, or outline",
+      "Pick a mode: Cut (trim to time), Anticipate (predict Q&A), or Hook (rewrite open/close)",
+      "Set mode-specific options (time limit, audience type, or tone)",
+      "Review the results — copy individual sections or the full analysis",
+      "Run the same content through multiple modes for complete prep"
+    ],
+    example: {
+      scenario: "You have a 20-minute investor pitch that runs about 35 minutes.",
+      action: "Paste it in Cut mode, set the time limit to 20 minutes. Then run it through Anticipate mode with 'Investors' selected.",
+      result: "Cut mode trims it to 19 minutes, telling you exactly what was removed and why. Anticipate mode surfaces 6 tough questions investors will ask, with draft answers and traps to avoid."
+    },
+    tips: [
+      "Run all three modes on the same content for complete presentation prep",
+      "Cut mode works best with full text — outlines give less accurate time estimates",
+      "In Anticipate mode, adding stakes ('asking for $2M') produces sharper questions",
+      "Hook mode's energy arc note is great for rehearsing your delivery pace"
+    ]
+  }
+},
+// ContrastReport — tools.js metadata entry
+{
+  id: "ContrastReport",
+  title: "The Contrast Report",
+  category: "Daily Life",
+  icon: "🔮",
+  tagline: "Feel both futures before you choose.",
+  description: "Describe two paths you're considering. Instead of a pro/con list, AI writes a vivid 'day in the life' narrative for each path — a plausible Tuesday, set in your future. Your gut reacts before your brain does.",
+
+  guide: {
+    overview: "The Contrast Report replaces pro/con lists with emotional simulation. Describe two life paths you're weighing — stay vs. leave, job A vs. job B, city vs. suburbs — and AI writes a vivid, specific 'day in the life' for each future. Not fairy tales or horror stories. Plausible Tuesdays, with sensory detail, mundane moments, honest costs, and the small satisfactions that make a life. Finishes with what the AI noticed: which path carried more energy, what you'd be trading, and the real question underneath.",
+    howToUse: [
+      "Describe Path A — the first option you're considering",
+      "Describe Path B — the alternative",
+      "Optionally share something about yourself for more personal narratives",
+      "Choose a timeframe (1, 2, 5, or 10 years out)",
+      "Read both narratives and notice which one your body reacts to"
+    ],
+    example: {
+      scenario: "You're deciding whether to stay at your stable corporate job or quit to start your own business.",
+      action: "Enter both paths, add that you're 31 and love building things but value financial security, and set to 2 years.",
+      result: "Two vivid day-in-the-life narratives: one where you're two years into the corporate track, one where you're two years into the startup. Each includes a moment of genuine satisfaction and an honest cost. The 'what I noticed' section surfaces what you'd grieve either way."
+    },
+    tips: [
+      "The more context you give about yourself, the more personal and specific the narratives get",
+      "Pay attention to which narrative you read first, which you re-read, and which makes you feel something — that's data",
+      "Try different timeframes on the same decision — 1 year and 10 years tell very different stories",
+      "This isn't advice. It's a simulation. Your reaction to the narratives IS the answer."
+    ]
+  }
+},
+{
+  id: "ComebackCooker",
+  title: "Comeback Cooker",
+  category: "Diversions",
+  icon: "🍳",
+  tagline: "The perfect response you thought of 3 hours too late.",
+  description: "Describe the moment that's been living rent-free in your head. AI generates the perfect comebacks you wish you'd said — from surgical precision to unbothered royalty. Purely cathartic. No intent to send.",
+
+  guide: {
+    overview: "Comeback Cooker is for that moment playing on loop in your brain — the thing someone said, and the devastating response you only thought of hours later. Describe the situation, pick a mood (surgical, witty, petty, or dignified), and get 5 comebacks using different techniques, plus a high road option and a nuclear option kept safely in the fantasy drawer. Each comeback comes with delivery notes so you can rehearse the fantasy properly.",
+    howToUse: [
+      "Describe what happened — the more specific, the better the comebacks",
+      "Optionally include exactly what they said (exact words help a lot)",
+      "Pick your comeback mood: Surgical, Witty, Petty, or Dignified",
+      "Read the 5 comebacks — tap each for delivery notes",
+      "Check the high road option and dare to reveal the nuclear option"
+    ],
+    example: {
+      scenario: "Your coworker took credit for your idea in a meeting, saying 'I was actually the one who suggested that approach.'",
+      action: "Describe the situation, quote what they said, select 'Surgical' mood.",
+      result: "Five precision comebacks using different techniques — deadpan, reframe, rhetorical question — each with delivery notes. Plus a devastating high road response and a nuclear option labeled 'fantasy drawer only.'"
+    },
+    tips: [
+      "Exact quotes from the other person produce much sharper comebacks",
+      "Try the same situation with different moods — Surgical and Petty hit very differently",
+      "The delivery notes matter as much as the words themselves",
+      "The high road option often hits harder than any clever insult"
+    ]
+  }
+},
+// AlternatePath — tools.js metadata entry
+{
+  id: "AlternatePath",
+  title: "Alternate Path",
+  category: "Diversions",
+  icon: "🔀",
+  tagline: "What if history went differently?",
+  description: "Pick any historical event and change one detail. AI builds a plausible alternate timeline with cascading consequences — how one different moment reshapes everything that follows.",
+
+  guide: {
+    overview: "Alternate Path takes a real historical event, changes one key detail, and traces the ripple effects forward through a plausible alternate timeline. Each consequence cascades into the next, showing how one pivot point can reshape politics, culture, technology, and daily life in ways you wouldn't expect.",
+    howToUse: [
+      "Name a historical event or moment",
+      "Describe what you'd change about it",
+      "Read the alternate timeline as consequences cascade forward",
+      "Share your favorite 'what if' with friends",
+      "Try changing different details of the same event for wildly different outcomes"
+    ],
+    example: {
+      scenario: "You're curious what would have happened if the internet was never invented.",
+      action: "Enter 'What if the internet was never invented?'",
+      result: "AI traces cascading consequences — how communication, commerce, entertainment, politics, and daily life would look today without it, with each consequence logically building on the last."
+    },
+    tips: [
+      "Specific pivots produce richer timelines — 'What if Napoleon won at Waterloo' beats 'What if France was different'",
+      "Try small changes for surprising big consequences",
+      "Modern events work too — not just ancient history",
+      "The fun is in the unexpected second- and third-order effects"
+    ]
+  }
+},// ── PlotHole ──
+{
+  id: "ArgumentSimulator",
+  title: "Argument Simulator",
+  category: "Diversions",
+  icon: "⚔️",
+  tagline: "Drop a hot take. AI argues both sides.",
+  description: "Give any opinion and watch AI steelman the strongest possible case FOR and AGAINST it. Three intensity levels from civil debate to full rhetorical firepower. Includes a judge's verdict and a ready-made dinner party take.",
+
+  guide: {
+    overview: "Argument Simulator takes any opinion or hot take and constructs the most compelling steelmanned arguments for both sides. Choose your intensity — civil Oxford-style, heated dinner debate, or fully unhinged — and watch both cases get built with killer points, real evidence, and the uncomfortable truths each side doesn't want to admit. Finishes with a judge's verdict and a nuanced dinner party take you can steal.",
+    howToUse: [
+      "Type any opinion, hot take, or debatable statement",
+      "Pick an intensity level: Civil, Heated, or Unhinged",
+      "Hit 'Start the Argument' and read both sides",
+      "Expand each side for killer points, evidence, and uncomfortable truths",
+      "Reveal the judge's verdict and steal the dinner party take"
+    ],
+    example: {
+      scenario: "You're at dinner and someone says remote work is obviously better than office work.",
+      action: "Type 'Remote work is better than office work' and select Heated intensity.",
+      result: "AI builds a passionate case for each side with specific evidence, surfaces the uncomfortable truth both sides dodge, and gives you a nuanced take to drop at dessert."
+    },
+    tips: [
+      "Specific takes produce better arguments than vague ones — 'Cats are better than dogs' beats 'Pets are good'",
+      "Try the same topic at different intensities for completely different arguments",
+      "Use the random topic button when you just want to be entertained",
+      "The dinner party take is great for when you actually need to sound smart about the topic"
+    ]
+  }
+},
+{
+  id: "PlotHole",
+  title: "Plot Hole",
+  category: "Diversions",
+  icon: "🕳️",
+  tagline: "Find where the logic breaks in any movie, show, book, or game",
+  description: "Name any movie, show, book, or game — AI finds the logical inconsistencies, timeline problems, 'why didn't they just...' moments, and character decisions that make no sense. Each hole is rated by severity (Nitpick to Universe-Breaking) with a fan defense and a Reddit-style one-liner. Swiss Cheese Rating scores overall plot integrity. Two modes: Find Holes (full analysis) and Defend a Hole (build the strongest possible defense of a specific plot hole, courtroom-style).",
+
+  guide: {
+    overview: "PlotHole is a narrative logic analyst that finds exactly where stories break. Not vague complaints — specific scenes, character knowledge problems, and 'wait actually...' moments, each rated by how badly they damage the story.",
+    howToUse: [
+      "Pick media type (Movie, TV Show, Book, Game) and enter the title",
+      "Optionally add context like a specific season or scene",
+      "Hit 'Find Plot Holes' to get a full analysis with Swiss Cheese Rating",
+      "Click 'Defend this hole' on any result to switch to courtroom-style defense mode",
+      "In Defend mode, describe any plot hole and get the strongest possible counter-arguments"
+    ],
+    example: {
+      scenario: "You enter 'The Dark Knight' as a movie.",
+      action: "Hit Find Plot Holes.",
+      result: "Swiss Cheese Rating: 4/10. Holes include 'The Hospital Escape' (how did the Joker wire an entire hospital with explosives without anyone noticing — MAJOR), 'The Bus Getaway' (a school bus merges into traffic from a bank wall and nobody reports it — MINOR), and the ferry dilemma timing. Each comes with fan defenses and Reddit one-liners."
+    },
+    tips: [
+      "The 'Defend a Hole' mode is great for settling arguments with friends",
+      "Try it on movies you love — the 'Actually Clever' section highlights what the story does RIGHT",
+      "The Reddit one-liners are designed to be shareable"
+    ]
+  }
+},
+
+// ── FanTheory ──
+{
+  id: "FanTheory",
+  title: "Fan Theory",
+  category: "Diversions",
+  icon: "🧵",
+  tagline: "Wild but defensible fan theories about anything",
+  description: "Name any movie, show, book, or game — AI generates a wild but internally-consistent fan theory with cited evidence. Six theory directions: Surprise Me, Secret Villain, Shared Universe, Timeline Twist, Dead or Alive, and It's a Simulation. Each theory comes with evidence rated from Compelling to Pure Delusion, a Smoking Gun, counterarguments, and plausibility/mind-blown ratings. Second mode: Grade My Theory — paste your own fan theory and get an academic grade with strengths, weaknesses, and a Reddit performance prediction.",
+
+  guide: {
+    overview: "FanTheory generates conspiracy theories for fiction — the kind that make you go 'wait... actually?' Every theory cites specific plot details as evidence and is internally consistent, even when it's a stretch.",
+    howToUse: [
+      "Enter a title and pick a theory direction (or let it surprise you)",
+      "Hit 'Generate Theory' to get a full theory with evidence and ratings",
+      "Switch to 'Grade My Theory' to submit your own theory for academic grading",
+      "The Smoking Gun is the single strongest piece of evidence — the one that makes people pause"
+    ],
+    example: {
+      scenario: "Title: 'Toy Story'. Direction: Secret Villain.",
+      action: "Hit Generate Theory.",
+      result: "Theory: Andy's Mom is actually the true villain — she systematically downsizes the toys' living space across all four films, moving them from a house to smaller and smaller rooms. Evidence: she sells the house (Toy Story 3), repeatedly threatens yard sales, and never once acknowledges the toys' sentience despite clearly seeing them move. Plausibility: 3/10. Mind-blown: 7/10."
+    },
+    tips: [
+      "Hit 'Different Theory' to get a completely different angle on the same title",
+      "The Grade mode gives honest ratings — most theories are 2-4 plausibility and that's fine",
+      "Try grading famous fan theories to see how they hold up"
+    ]
+  }
+},
+// ── RoastMe ──
+{
+  id: "RoastMe",
+  title: "Roast Me",
+  category: "Diversions",
+  icon: "🔥",
+  tagline: "Paste anything — get a personalized comedy roast",
+  description: "Paste your resume, dating profile, LinkedIn bio, email, tweet, or any text and get a personalized comedy roast. Three heat levels: Gentle (playful teasing), Medium (Comedy Central energy), and Scorched Earth (no mercy, still funny). Every roast line targets SPECIFIC content you submitted — zero generic insults. AI detects content type automatically and targets the right things: buzzwords in resumes, clichés in dating profiles, humblebrags on LinkedIn. Includes a 'One Nice Thing' plus a screenshot-worthy 'Share Line' for maximum social media damage.",
+
+  guide: {
+    overview: "RoastMe is a comedy writer that reads your content and finds what's specifically, uniquely roastable about it. Not generic insults — targeted humor that lands because it's true.",
+    howToUse: [
+      "Select what you're submitting (resume, dating profile, LinkedIn, email, social media, or other)",
+      "Paste your content into the text box",
+      "Choose your heat level: Gentle, Medium, or Scorched",
+      "Hit 'Roast Me' and brace yourself",
+      "Copy the 'Share Line' to send to friends"
+    ],
+    example: {
+      scenario: "You paste your LinkedIn headline: 'Passionate thought leader | Synergy enthusiast | Making the world better one meeting at a time'",
+      action: "Set content type to LinkedIn, heat level to Medium, hit Roast Me.",
+      result: "Roast lines target 'passionate thought leader' (everyone who calls themselves a thought leader has never had an original thought), 'synergy enthusiast' (this is the saddest hobby since stamp collecting), and 'making the world better one meeting at a time' (meetings have never made anything better)."
+    },
+    tips: [
+      "Scorched Earth is funniest on content that takes itself too seriously",
+      "Try roasting the same content at different heat levels",
+      "Hit 'Roast Again' to get completely different lines on the same content"
+    ]
+  }
+},
+
+// ── TimeWarp ──
+{
+  id: "TimeWarp",
+  title: "Time Warp",
+  category: "Diversions",
+  icon: "⏰",
+  tagline: "Collide anything modern with any historical period",
+  description: "Pick any modern concept and any historical period — AI generates the collision. Six formats: Explain It, Review, News Report, Letter, Debate, and Ad. Every piece is historically accurate AND funny — includes real historical footnotes so you learn something while laughing.",
+
+  guide: {
+    overview: "Time Warp creates collisions between the modern and historical that are both genuinely funny and surprisingly educational. The AI knows enough real history to make the comedy specific.",
+    howToUse: [
+      "Pick a modern thing and a historical period, or use a Quick Combo",
+      "Choose your format: Explain It, Review, News Report, Letter, Debate, or Ad",
+      "Hit 'Warp It' and travel through time",
+      "Check the 'Actually True' footnotes — you'll learn real history"
+    ],
+    example: {
+      scenario: "Modern thing: Uber. Historical period: 1920s New York. Format: News Report.",
+      action: "Hit Warp It.",
+      result: "A period-authentic 1920s newspaper article about mysterious horseless carriages summoned by pocket devices, with quotes from concerned taxi medallion holders and footnotes explaining real 1930s taxi regulation history."
+    },
+    tips: [
+      "The more specific your modern thing, the funnier the result",
+      "Try the same combo in different formats",
+      "The 'Flip It' suggestion teases the reverse collision"
+    ]
+  }
+},
+
+// ── WrongAnswersOnly ──
+{
+  id: "WrongAnswersOnly",
+  title: "Wrong Answers Only",
+  category: "Diversions",
+  icon: "🙃",
+  tagline: "Ask anything — get a confidently, beautifully wrong answer",
+  description: "Ask any real question and get a beautifully structured, internally consistent, completely incorrect answer with full expert confidence. Fake studies, invented researchers, nonsense equations that look real. Three seriousness levels: Deadpan, Playful, Unhinged. Includes toggleable real answer for when you want to actually learn something.",
+
+  guide: {
+    overview: "Wrong Answers Only is the world's most confidently incorrect expert. Every answer is internally consistent, impressively structured, and completely, beautifully wrong.",
+    howToUse: [
+      "Type any real question or pick from Quick Questions",
+      "Choose a category and seriousness level",
+      "Hit 'Wrong Answers Only'",
+      "Toggle 'Show Real Answer' when you want the actual truth"
+    ],
+    example: {
+      scenario: "Question: 'Why is the sky blue?' Category: Science. Seriousness: Playful.",
+      action: "Hit Wrong Answers Only.",
+      result: "Confident answer about 'chromatic resonance particles' from ocean evaporation, fake Nature paper citation, and the 'common misconception' section dismissing Rayleigh scattering as amateur physics."
+    },
+    tips: [
+      "Simple, well-known questions get the funniest wrong answers",
+      "Deadpan mode fools friends who won't realize it's wrong at first",
+      "Try the same question in different categories for wildly different answers"
+    ]
+  }
+},
+// ════════════════════════════════════════════════════════════
+// SOCIAL ENERGY AUDIT — tools.js entry
+// ════════════════════════════════════════════════════════════
+{
+  id: "SocialEnergyAudit",
+  title: "Social Energy Audit",
+  category: "Mind & Energy",
+  icon: "⚡",
+  tagline: "See where your energy actually goes — and restructure your week around it",
+  description: "Log your social and professional interactions with energy-before/after ratings and performance levels (how much you had to be 'on'). The audit calculates your weekly energy budget, identifies your biggest drains and rechargers, finds patterns you can't see yourself, and gives specific restructuring suggestions. Six modes: Weekly Audit (full interaction log → energy score + drains + patterns + restructure plan), Week Planner (upcoming commitments → predicted energy costs per day + danger zones + schedule optimizations), Quick Check ('Should I say yes to this?' → instant verdict with decline script), Daily Check-In (30-second energy snapshot + drain/recharge tracking), Energy Forecast (predict your week's energy curve from templates + check-ins), and Energy Journal (week-over-week tracking with trend visualization, recurring pattern tracker, week comparison, and AI-designed Ideal Week after 3+ weeks of data). Templates let you save your typical week for faster logging. Performance level concept captures the hidden cost of being 'on' — the energy difference between being yourself vs. managing impressions.",
+
+  guide: {
+    overview: "Everyone has a limited energy budget. Some interactions cost more than others — and the expensive ones aren't always obvious. A 30-minute call where you're fully 'on' can drain more than a 3-hour dinner where you're relaxed. Social Energy Audit makes the invisible visible: log your interactions, rate your performance level and energy before/after, and the tool finds the patterns, calculates the costs, and helps you restructure your week so you're not running on empty by Thursday.",
+    howToUse: [
+      "Start with the Log tab — add your week's interactions using quick presets or custom entries",
+      "For each interaction: name it, set the category, choose duration, then rate Performance (1=natural, 10=full 'on' mode), Energy Before, and Energy After",
+      "Run the audit to see your energy score, top drains, rechargers, patterns, and restructuring suggestions",
+      "Use Quick Check ('Should I Say Yes?') before committing to new things — get an instant energy-aware verdict",
+      "Do a 30-second Daily Check-In to track energy over time — this feeds the Forecast and Ideal Week features",
+      "After 3+ weeks in the Journal, unlock your AI-designed Ideal Week with personal energy rules and your Golden Rule"
+    ],
+    example: {
+      scenario: "It's Wednesday and you're exhausted but can't figure out why — your week doesn't seem that busy.",
+      action: "Log Monday's team standup (perf 6, energy 7→5), Tuesday's client presentation (perf 9, energy 6→2), Tuesday evening networking event (perf 8, energy 3→1), and Wednesday's manager 1-on-1 (perf 7, energy 4→2). Run the audit.",
+      result: "The audit reveals: your Tuesday was a 'double high-performance day' — the presentation + networking cost you 8 energy points total because both required perf 8+. The pattern insight: 'Never stack two high-performance interactions on the same day. Your client presentation alone would leave you at 2/10 — the networking event pushed you into deficit.' Restructure suggestion: 'Move the networking event to Thursday, or attend for 30 minutes instead of 2 hours when it follows a presentation day.'"
+    },
+    tips: [
+      "Performance level is the secret weapon — a relaxed dinner with close friends (perf 2) costs way less than a work lunch with executives (perf 8) even at the same duration",
+      "Save your typical week as a template — then each week you just adjust energy ratings instead of re-entering everything",
+      "The Quick Check mode is great for in-the-moment decisions: 'Friend invited me to dinner but I'm at 3/10 energy'",
+      "Daily Check-Ins take 30 seconds but unlock powerful features: energy forecasts and your personal Ideal Week",
+      "After 3+ weeks in the Journal, the Ideal Week feature designs an optimized schedule based on YOUR actual data",
+      "Compare two weeks side-by-side to see what made a good week good and a bad week bad",
+      "The Recurring Pattern Tracker automatically finds situations that consistently drain or recharge you across weeks"
+    ]
+  }
+},
+// ════════════════════════════════════════════════════════════
+// SAY IT RIGHT — tools.js entry (REPLACES NameAnxietyDestroyer)
+// ════════════════════════════════════════════════════════════
+{
+  id: "SayItRight",
+  title: "Say It Right",
+  category: "Daily Life",
+  icon: "🗣️",
+  tagline: "Names, food, places, brands — never mispronounce anything again",
+  description: "Enter any word from any language and get a pronunciation guide calibrated to YOUR native language's sound system. Eight categories: Names (Siobhan, Nguyễn), Food/Drink (gnocchi, pho, Gewürztraminer), Places (Reykjavik, Worcestershire), Brands (Hermès, Givenchy), Music/Art (Chopin, Dvořák), Science (acetaminophen, Euler), Foreign Phrases (schadenfreude, coup de grâce), and Other. Each guide includes simplified phonetics with stress markers, IPA notation, syllable breakdown, 'sounds like' comparisons in your language, mouth/tongue positioning for tricky sounds, common mistakes with explanations, category-specific context (what the dish is, who the composer is, where the place is), a confidence script for when you're unsure, and a fun fact. Batch mode handles 2-10 words at once. Supports 18+ native languages.",
+
+  guide: {
+    overview: "Say It Right solves a universal problem: you encounter an unfamiliar word and don't know how to say it. Whether it's a coworker's name, a menu item, a city you're visiting, or a composer you're discussing — the tool maps the word's sounds to YOUR native language's sound system. The explanation changes depending on whether you speak English, Spanish, Mandarin, or Arabic, because the tricky sounds are different for each.",
+    howToUse: [
+      "Pick a category (Name, Food, Place, Brand, Music/Art, Science, Phrase, or Other)",
+      "Type the word you want to pronounce",
+      "Select your native language — this calibrates the phonetic guide to sounds YOU already know",
+      "Optionally add context (e.g., 'ordering at a French restaurant', 'introducing a new coworker')",
+      "Review the pronunciation guide: phonetic spelling, syllable breakdown, common mistakes, and context info",
+      "Use Batch mode to look up multiple words at once (great for restaurant menus or travel prep)"
+    ],
+    example: {
+      scenario: "You're going to an Italian restaurant tonight and want to order without embarrassing yourself.",
+      action: "Switch to Batch mode, select Food/Drink category, enter: Gnocchi, Bruschetta, Prosciutto, Chianti. Set native language to English (American).",
+      result: "Four pronunciation cards: Gnocchi = 'NYOH-kee' (not 'noh-chee' — the G is silent and the CH is a K sound), Bruschetta = 'broo-SKET-tah' (not 'broo-shetta' — the SCH is a hard SK in Italian), Prosciutto = 'pro-SHOO-toh' (the SCI makes a SH sound), Chianti = 'kee-AHN-tee' (the CH is a hard K). Each with the #1 mistake and a fun fact."
+    },
+    tips: [
+      "Your native language changes everything — a Spanish speaker needs different guidance than a Korean speaker for the same word",
+      "Category selection helps the AI provide the right context (cultural etiquette for names, ordering confidence for food, etc.)",
+      "Batch mode is perfect for travel prep or restaurant menus — do 5-10 words at once",
+      "The 'confidence script' gives you something natural to say when you're unsure — better than just guessing",
+      "History saves your lookups as clickable pills — great for reviewing before an event",
+      "The IPA notation is hidden by default but available if you read IPA"
+    ]
+  }
+},
+{
+  id: "TheDebrief",
+  title: "The Debrief",
+  category: "Work",
+  icon: "📋",
+  tagline: "Paste a meeting transcript — get decisions, actions, and follow-ups",
+  description: "Paste a meeting transcript from Zoom, Teams, Google Meet, or your own notes and get the actionable output without the filler. Three modes: Distill extracts decisions (with context and reversibility), action items (with owners, deadlines, priority, and dependency tracking), open questions, parking lot items, detected tensions, meeting health scores, and a ready-to-send follow-up email. Follow Up drafts a group email, individual nudges (with urgency and best channel), a boss-update summary, and calendar invites to schedule. Series analyzes 2-5 meetings from the same series to find recurring topics, accountability gaps, decisions that got revisited, productivity trends, and a suggested next agenda. Seven meeting types supported: general, standup, planning, retro, 1:1, client, brainstorm.",
+
+  guide: {
+    overview: "The Debrief is Recall's professional sibling — same core mechanic (long transcript → extract what matters), but purpose-built for meetings instead of lectures. Where lectures need concepts and testable material, meetings need decisions, owners, deadlines, and accountability. The tool distinguishes between 'someone said we should' (not a decision) and 'we agreed to' (a decision), flags action items with no owner or deadline, detects tensions, and grades meeting health. Series mode is the killer feature — paste your last 3 weekly standups and see which action items disappeared without resolution.",
+    howToUse: [
+      "Pick a mode: Distill (decisions & actions), Follow Up (draft messages), or Series (cross-meeting patterns)",
+      "Paste your transcript — from Zoom captions, Teams, Otter.ai, Google Meet, or typed notes",
+      "Select meeting type for better extraction (standup vs. planning vs. client meetings need different outputs)",
+      "Optionally add attendee names and context",
+      "Review results — Distill gives you the full meeting output, Follow Up gives you ready-to-send messages"
+    ],
+    example: {
+      scenario: "Your team just finished a 45-minute sprint planning meeting. Three decisions were made, several tasks assigned, and one disagreement was tabled for later.",
+      action: "Paste the Zoom transcript, select 'Planning', add attendee names.",
+      result: "Distill produces: 3 decisions (with who drove each), 7 action items (2 flagged as UNASSIGNED — nobody actually took ownership), 2 open questions (one deferred because the PM was absent), detected tension between engineering and design on the timeline, and a meeting health score of 65% efficiency. The ready-to-send follow-up email lists all action items with owners and deadlines."
+    },
+    tips: [
+      "Meeting type matters — a standup extraction focuses on blockers while a planning extraction focuses on ownership and timelines",
+      "UNASSIGNED action items are flagged in red — these are the ones that fall through the cracks if you don't fix them",
+      "The 'Tensions Detected' section is diplomatically worded but honest — use it to address things that got swept under the rug",
+      "Follow Up mode's 'Boss Update' is a 3-5 sentence upward summary — perfect for keeping your manager in the loop without forwarding the full transcript",
+      "Series mode catches the real meeting anti-patterns: topics that keep resurfacing, action items that 'disappeared', and decisions that get revisited",
+      "Individual nudges include urgency ratings and recommended channel (email vs. Slack vs. text) — send the urgent ones immediately"
+    ]
+  }
+},// ════════════════════════════════════════════════════════════
+// RECALL — tools.js entry
+// ════════════════════════════════════════════════════════════
+{
+  id: "Recall",
+  title: "Recall",
+  category: "Academic",
+  icon: "🧠",
+  tagline: "Paste a lecture transcript — get the signal without the noise",
+  description: "Paste a lecture transcript from Zoom, Teams, Otter.ai, or your own notes and get the 20% that matters. Four modes: Distill extracts ranked bullet points with testable tags and professor signals. Study Guide builds a structured review with memorize-vs-understand labels, mnemonics, and exam strategy. Test Prep generates practice questions (MC, short answer, essay, T/F, fill-in-blank) with hidden answers, wrong-answer explanations, and grading hints. Connect analyzes 2-5 lectures to find recurring themes, concept chains, and cumulative exam targets.",
+
+  guide: {
+    overview: "Recall solves the core lecture problem: 90 minutes of content where maybe 15 minutes is testable. Professors repeat the important stuff, signal it with emphasis phrases, and bury it in tangents and anecdotes. Recall detects those signals and extracts the material you'd highlight if you had perfect attention for the whole session. Four modes cover different study needs — from quick-reference bullets to full practice exams.",
+    howToUse: [
+      "Pick a mode: Distill (bullet points), Study Guide (structured review), Test Prep (practice questions), or Connect (cross-lecture themes)",
+      "Paste your transcript — from Zoom captions, Otter.ai, Google Meet, or your own typed notes",
+      "Optionally add subject and lecture topic for better context",
+      "Set mode-specific options: bullet count, priority type, exam format, question types, difficulty",
+      "Review results — each mode produces different output optimized for its study use case"
+    ],
+    example: {
+      scenario: "You have a 45-minute Biology lecture transcript on mitosis and meiosis from Zoom auto-captions. Midterm is next week.",
+      action: "Paste transcript, enter 'Biology 101' as subject and 'Mitosis & Meiosis' as topic. Start with Distill (10 bullets, balanced priority) for a quick overview, then switch to Test Prep (10 questions, multiple choice + short answer, mixed difficulty) to practice.",
+      result: "Distill produces 10 ranked points — #1 is the key difference between mitosis and meiosis (tagged as 'comparison, testable'), with professor signals flagging that the professor said 'make sure you know this' about chromosome pairing. Test Prep generates 10 questions including a tricky MC question where two answers sound similar but differ on haploid vs diploid, with a full explanation of why the wrong answers are wrong."
+    },
+    tips: [
+      "Auto-captions are fine — Recall handles imperfect transcription (typos, missed words) well",
+      "The 'Professor Signals' section catches phrases like 'this will be on the test', 'make sure you understand', or concepts repeated 3+ times",
+      "Distill bullet types (definition, process, cause/effect, etc.) tell you HOW to study each point",
+      "Test Prep's 'why wrong' explanations for multiple choice are often more educational than the right answer",
+      "Connect mode is powerful before cumulative exams — paste 3-5 lecture transcripts and it finds the themes that span all of them",
+      "Study Guide mnemonics won't always be clever, but they're personalized to the actual content"
+    ]
+  }
+},
+// ════════════════════════════════════════════════════════════
+// THE ALIBI — tools.js entry
+// ════════════════════════════════════════════════════════════
+{
+  id: "TheAlibi",
+  title: "The Alibi",
+  category: "Communication",
+  icon: "🎭",
+  tagline: "Frame your real story for any audience — honest but strategic",
+  description: "Resume gaps, career pivots, short job tenures, firings, frequent moves, dropouts, breakups — everyone has chapters that need careful framing. Tell us the real story, pick your audience (interviewer, landlord, date, in-laws, lender), and get 2-3 strategically different versions of how to tell it. Each version comes with the exact script, follow-up question prep with trap warnings, body language tips, and a nuclear option if the conversation goes sideways. Everything is truthful — you're choosing emphasis, not inventing fiction.",
+
+  guide: {
+    overview: "The Alibi takes your real, messy, complicated story and helps you tell it honestly but strategically to a specific audience. The same resume gap told to an interviewer emphasizes growth; told to a date, it emphasizes life experience; told to a lender, it emphasizes current stability. You get multiple versions with different strategic approaches — not just different tones — plus follow-up prep so your story holds up under gentle probing.",
+    howToUse: [
+      "Write out the real story — be as honest and detailed as possible (this stays between you and the tool)",
+      "Select who you're telling: job interviewer, landlord, date, in-laws, lender, coworker, or custom audience",
+      "Pick your preferred tone: professional, casual, warm, or confident",
+      "Add what you're worried they'll think and any extra context about the situation",
+      "Review 2-3 strategically different versions, each with scripts, risks, and best-use scenarios"
+    ],
+    example: {
+      scenario: "You left your last job after only 4 months. The company was chaotic, management was toxic, and they misrepresented the role. You're now interviewing for a senior position at a competitor.",
+      action: "Enter the full story, select 'Job Interviewer', set tone to 'Professional', add concern 'They'll think I'm a job hopper' and context 'Applying for senior role at competitor'.",
+      result: "Three versions: 'The Growth Story' (emphasizes what you learned about what you need in a workplace), 'The Standards Story' (frames it as knowing your worth and not settling), and 'Own It' (brief and confident, redirects to what you bring). Each includes a ready-to-use script, follow-up prep for 'Why so short?' and 'Were you fired?', delivery tips, and a redirect line if things get uncomfortable."
+    },
+    tips: [
+      "The messier and more honest your input, the better the framing — don't self-censor",
+      "Each version has a genuinely different strategic approach, not just different words for the same thing",
+      "Follow-up prep includes 'trap to avoid' warnings — things that sound natural but hurt your case",
+      "Body language tips are tailored to your specific situation and audience, not generic advice",
+      "Try the same story with different audiences to see how framing shifts — it's eye-opening"
+    ]
+  }
+},
+
+// ════════════════════════════════════════════════════════════
+// NOISE CANCELER — tools.js entry
+// ════════════════════════════════════════════════════════════
+{
+  id: "NoiseCanceler",
+  title: "Noise Canceler",
+  category: "Daily Life",
+  icon: "🔇",
+  tagline: "Paste any long document — we'll extract only what affects you",
+  description: "Insurance EOBs, HOA notices, school newsletters, corporate policy updates, lease amendments, benefits packets — you receive them, you skim them, you miss the one thing that mattered. Paste the full document and describe your situation ('renter, no kids, have a dog'), and Noise Canceler extracts ONLY what requires your action, costs you money, saves you money, or affects you personally. Not a summarizer — a personalized relevance filter.",
+
+  guide: {
+    overview: "Noise Canceler solves a specific problem: dense documents where 90% doesn't apply to you but the 10% that does is buried. It's not a summarizer (you don't need a shorter version of irrelevant info) and it's not a jargon translator. It's a relevance engine that cross-references the document against YOUR specific situation and pulls out only what matters.",
+    howToUse: [
+      "Paste the full text of the document you received",
+      "Select the document type (insurance, HOA, lease, policy update, etc.)",
+      "Describe your situation — the more specific, the better the filtering ('renter, no kids, have a dog, work from home')",
+      "Optionally add specific concerns ('Did they raise the rent?' or 'Am I covered for this?')",
+      "Review action items, cost changes, savings opportunities, and what you can safely ignore"
+    ],
+    example: {
+      scenario: "You received an 8-page HOA update email. You're a renter with no kids and a dog. You normally just delete these.",
+      action: "Paste the full text, select 'HOA/Condo Notice', enter 'Renter, no kids, have a dog, work from home, park in lot B'.",
+      result: "Noise Canceler finds: 1 action required (new pet registration form due by March 15 — $50 fine if missed), 1 cost item (parking lot B rates increasing $25/month starting April), 1 item to safely ignore (new playground hours — no kids). Flags a buried clause about package delivery changes that affects work-from-home residents. Notes that 6 of 8 pages are about owner-only assessments that don't affect renters at all."
+    },
+    tips: [
+      "More situation detail = better filtering. 'Single, 28, basic health plan' filters differently than just 'employee'",
+      "Action Required items show deadlines and consequences — these are the ones people miss and regret",
+      "'Buried but Important' specifically calls out things hidden in fine print or dense paragraphs",
+      "The 'Safely Ignore' section is genuinely useful — it gives you permission to stop reading",
+      "'Consult Professional' flags appear when the tool spots something that needs expert review, not just AI analysis"
+    ]
+  }
+},
+
+// ════════════════════════════════════════════════════════════
+// CONTEXT COLLAPSE — tools.js entry
+// ════════════════════════════════════════════════════════════
+{
+  id: "ContextCollapse",
+  title: "Context Collapse",
+  category: "Communication",
+  icon: "📢",
+  tagline: "See how different people will read the same message — before you send it",
+  description: "About to send a text, post something, or make an announcement that multiple people will see? Context Collapse previews how each audience interprets it. Your boss reads it as professional boundary-setting. Your coworker reads it as passive-aggressive. Your mom reads it as a cry for help. See the gaps between your intent and each audience's reading, get risk ratings per audience, and rewrite suggestions that thread the needle. The tool that prevents the social media post that gets you fired and the group chat message that starts a war.",
+
+  guide: {
+    overview: "Context Collapse is named after the communication phenomenon where a single message lands completely differently depending on who reads it. It's DecoderRing in reverse — instead of decoding what someone sent you, it previews how your message will be received by each audience before you send it. You define who will see it, and the tool shows you the emotional interpretation, risk level, key triggers, and likely reactions for each person or group.",
+    howToUse: [
+      "Paste the message you're about to send or post",
+      "Select the platform (text, email, group chat, social media, Slack, public post)",
+      "Add 2-6 audiences who will see this — with their relationship and any relevant context",
+      "Describe what you're TRYING to communicate",
+      "Review per-audience readings, risk levels, the intent-vs-reality gap, and rewrite suggestions"
+    ],
+    example: {
+      scenario: "You're posting in a group chat with coworkers and your manager: 'Just FYI, I've been handling the client reports solo for the past three weeks. Happy to keep going but wanted to flag it.'",
+      action: "Paste the message, select 'Group Chat', add audiences: 'My manager (she assigned the reports)', 'Jake (was supposed to help, didn't)', 'Rest of team (not involved)'. Intent: 'Get Jake to help without creating drama'.",
+      result: "Manager reads it as a professional heads-up with subtle accountability signal — safe. Jake reads it as public shaming — risky, he'll get defensive. Rest of team reads it as you positioning for credit — mild risk of seeming political. Biggest risk: Jake feels ambushed. Rewrite suggestions include a version that achieves the same goal via DM to manager instead, and a softer group version that doesn't name the duration."
+    },
+    tips: [
+      "Add relationship context for each audience — 'My boss (we had a disagreement last week)' changes the reading dramatically",
+      "The 'Key Trigger' field shows the exact word or phrase driving each audience's interpretation",
+      "Rewrite suggestions preserve your voice while fixing the gaps — they don't make you sound corporate",
+      "Platform notes flag things like screenshot risk, forwarding risk, and social media permanence",
+      "Use this before any announcement that goes to mixed audiences — it prevents 90% of 'that came out wrong' moments"
+    ]
+  }
+},
+{
+  id: "Bookmark",
+  title: "Bookmark",
+  category: "Daily Life",
+  icon: "🔖",
+  tagline: "Pick up where you left off — without spoilers",
+  description: "Abandoned a show, book, game, or sports season? Get a spoiler-free recap calibrated to exactly where you stopped. Character refreshers, active plot threads, vibe checks, and memory triggers that get you back in without ruining what's ahead. Sports mode flags must-watch games you missed and gives you conversation-ready talking points so nobody knows you fell off.",
+
+  guide: {
+    overview: "Bookmark solves the problem Google can't: getting caught up on something you abandoned without stumbling into spoilers. Wikis, Reddit threads, and search results are landmines. Bookmark gives you a precision recap — vivid enough to trigger your memory, careful enough to protect everything after your stopping point. Four modes cover TV shows, books, video games, and sports seasons.",
+    howToUse: [
+      "Pick your media type: Show, Book, Game, or Sports",
+      "Enter the title and exactly where you stopped (episode, chapter, story point, or date)",
+      "Add what you remember — even vague recollections help calibrate the recap",
+      "Set your spoiler level: Strict (nothing after your point), Moderate (vague hints okay), or Open",
+      "Ask specific questions if something's nagging you ('Who was the guy with the scar?')"
+    ],
+    example: {
+      scenario: "You stopped watching Succession after Season 2, Episode 7. You remember something about a shareholder meeting and Kendall trying to take over, but the details are fuzzy. Your friends keep referencing it and you want to catch up without restarting.",
+      action: "Select Show, enter 'Succession' and 'Season 2, Episode 7', add what you remember, set spoiler level to Strict.",
+      result: "Bookmark delivers a present-tense recap of the power struggle up to that point, a character-by-character refresher (who's allied with whom, what each person wants), active plot threads with their unresolved tensions, the exact last major scene to trigger your memory, and an honest 'worth continuing?' take. Zero information from after S2E7."
+    },
+    tips: [
+      "The 'What do you remember?' field dramatically improves accuracy — even wrong memories help calibrate",
+      "Sports mode's must-watch games with '🔒 Watch blind' tags let you catch up on storylines while preserving big moments",
+      "Conversation-ready talking points (sports mode) are designed to hold up in real fan discussions",
+      "Confidence indicators tell you when the model is less certain about exact episode-level details — useful for older or obscure titles",
+      "Use the 'specific questions' field for things like 'Did they make any trades?' or 'Is that character dead?' — answers respect your spoiler level"
+    ]
+  }
+},
+// ════════════════════════════════════════════════════════════
+// DECODER RING — tools.js entry
+// ════════════════════════════════════════════════════════════
+{
+  id: "DecoderRing",
+  title: "Decoder Ring",
+  category: "Communication",
+  icon: "🔍",
+  tagline: "Decode what they actually mean beneath what they said",
+  description: "Paste any confusing message — passive-aggressive email, vague text, corporate HR notice, cryptic DM — and get a layer-by-layer breakdown of the subtext, emotional undercurrent, what they actually want, red/green flags, and 3 response strategies with copyable examples.",
+
+  guide: {
+    overview: "Decoder Ring uses AI to analyze the pragmatics, subtext, and emotional undercurrent beneath any message. It identifies passive aggression, hedging, power moves, emotional bids, non-answers, and genuine warmth — then generates response strategies tailored to your situation.",
+    howToUse: [
+      "Paste the exact message you received — wording and tone matter",
+      "Select where it came from (text, email, Slack, dating app, etc.)",
+      "Choose your relationship to the sender for context",
+      "Add backstory if the message is ambiguous",
+      "Review the translation, emotional read, decoded layers, and response options"
+    ],
+    example: {
+      scenario: "You receive a text from your partner: 'Hey! So I was thinking about what you said and I totally get where you're coming from. I just think maybe we should take some time to think about things separately.'",
+      action: "Paste the message, select 'Text message' and 'Partner/Spouse', add context about a recent argument.",
+      result: "Decoder Ring identifies hedging + emotional distancing, reveals the subtext is a request for space without wanting to say it directly, flags the 'totally fine either way' as people-pleasing masking anxiety, and generates 3 responses: 'give space gracefully', 'ask directly what they need', and 'acknowledge and reconnect'."
+    },
+    tips: [
+      "Paste the EXACT wording — paraphrasing loses the tone cues AI analyzes",
+      "Adding relationship context dramatically improves accuracy for ambiguous messages",
+      "Confidence ratings help you know when to trust the read vs. take it with a grain of salt",
+      "Response strategies include risk assessments — check the downsides before sending"
+    ]
+  }
+},
+
+// ════════════════════════════════════════════════════════════
+// PLOT TWIST — tools.js entry
+// ════════════════════════════════════════════════════════════
+{
+  id: "PlotTwist",
+  title: "Plot Twist",
+  category: "Daily Life",
+  icon: "🔀",
+  tagline: "See every angle of a tough decision — then decide with clarity",
+  description: "Describe any decision you're stuck on and get it analyzed through 6 decision frameworks: pre-mortem, 10/10/10, opportunity cost, reversibility check, values alignment, and the real-question-beneath-the-question. Includes a comparison matrix, gut check reading, stuck pattern diagnosis, and exercises for when you're still frozen.",
+
+  guide: {
+    overview: "Plot Twist runs your decision through multiple thinking frameworks that therapists, strategists, and decision scientists use — but applied specifically to YOUR situation. It doesn't tell you what to decide. It shows you angles you're missing so the answer becomes obvious to you.",
+    howToUse: [
+      "Describe the decision and what's making it hard",
+      "Name your options (we'll add 'do nothing' automatically)",
+      "Select the values this decision touches",
+      "Tell us why you're stuck — this helps identify your blind spot",
+      "Review the framework analysis, comparison matrix, and gut check"
+    ],
+    example: {
+      scenario: "You got a job offer paying 40% more but requiring relocation. Current job is comfortable but stagnant. Partner is open to moving but not excited.",
+      action: "Describe the situation, add 'Take new job' and 'Stay' as options, select Career growth + Financial security + Family as values, pick 'fear of regret' as stuck reason.",
+      result: "Plot Twist reveals the real question ('Am I allowed to choose growth over comfort?'), identifies fear-of-regret as the stuck pattern, shows the new job scores higher on 10-year impact but lower on reversibility, provides a comparison matrix, and delivers a gut check based on how you described the situation."
+    },
+    tips: [
+      "The more context you provide, the sharper the gut check reading becomes",
+      "If you only have one option in mind, the tool automatically analyzes it against the status quo",
+      "The 'Still Stuck' exercises (coin flip test, future letter, smallest step) are genuinely effective — try them",
+      "Use the comparison matrix to have structured conversations with people you trust"
+    ]
+  }
+},
+
+// ════════════════════════════════════════════════════════════
+// MISE EN PLACE — tools.js entry
+// ════════════════════════════════════════════════════════════
+{
+  id: "MiseEnPlace",
+  title: "Mise en Place",
+  category: "Daily Life",
+  icon: "🍳",
+  tagline: "Turn whatever's in your kitchen into a meal — with a battle plan",
+  description: "List your ingredients or snap a photo of your fridge. AI builds a minute-by-minute cooking battle plan with parallel task sequencing, critical timing alerts, technique tips calibrated to your skill level, a quick shopping list, and a leftovers transformation strategy for tomorrow.",
+
+  guide: {
+    overview: "Mise en Place is a meal prep strategist, not a recipe finder. It solves the hard part of cooking at home: taking random ingredients and building an optimally sequenced plan that tells you what to do, when, and what to prep during downtime. Like having a sous chef in your ear.",
+    howToUse: [
+      "List what's in your fridge/pantry, or upload a photo",
+      "Set your time available, skill level, and dietary needs",
+      "Choose your meal type and available equipment",
+      "Get meal recommendations ranked by how well they use your ingredients",
+      "Follow the minute-by-minute battle plan with parallel tasks and timing alerts"
+    ],
+    example: {
+      scenario: "You have chicken thighs, rice, bell peppers, garlic, soy sauce, and some wilting spinach. You want dinner in 45 minutes and you're an intermediate cook.",
+      action: "List ingredients, set 45 minutes, intermediate skill, dinner, stovetop + oven.",
+      result: "Mise en Place recommends teriyaki chicken bowls, provides a timeline starting with rice (longest cook time), then searing chicken during the first 10 minutes while prepping vegetables as a parallel task. Checkpoints tell you when rice should be absorbing, when to flip chicken. Leftovers strategy: tomorrow's fried rice."
+    },
+    tips: [
+      "Fridge photos work surprisingly well — AI identifies ingredients visually",
+      "The parallel task suggestions are the real value — they cut total time significantly",
+      "Critical timing flags (⏰) are steps where you MUST pay attention or risk ruining the dish",
+      "Leftovers strategy prevents food waste by transforming extras into a different meal"
+    ]
+  }
+},
+
+// ════════════════════════════════════════════════════════════
+// GHOST WRITER — tools.js entry
+// ════════════════════════════════════════════════════════════
+{
+  id: "GhostWriter",
+  title: "Ghost Writer",
+  category: "Communication",
+  icon: "✍️",
+  tagline: "Turn rough notes into polished recommendation letters in seconds",
+  description: "Input who you're recommending, your relationship, their qualities, and a few rough bullet points. Get 3 letter versions (narrative, structured, concise) calibrated to the formality level and context. Each version highlights placeholders to personalize, power phrases to keep, and refinement options to dial in the tone.",
+
+  guide: {
+    overview: "Ghost Writer solves one of the most procrastinated writing tasks: recommendation letters. It takes your rough knowledge of someone and produces polished letters that sound like YOU wrote them thoughtfully, with specific anecdotes and persuasive structure that actually moves reviewers.",
+    howToUse: [
+      "Enter the person's name and your relationship to them",
+      "Select what they're applying for and the letter type",
+      "Pick their standout qualities from the list",
+      "Add specific examples or stories (even rough bullet points work)",
+      "Choose from 3 versions: Narrative (memorable), Structured (comprehensive), or Concise (quick)"
+    ],
+    example: {
+      scenario: "Your direct report Sarah is applying for a Senior PM role at Google. You've managed her for 2 years. She led the Q3 launch, mentored junior team members, and is exceptionally good at stakeholder communication.",
+      action: "Enter Sarah's name, your relationship, the role, select Leadership + Communication + Initiative, add bullet points about the Q3 launch and mentoring.",
+      result: "Ghost Writer generates 3 versions: a narrative letter opening with the Q3 launch story, a structured letter with sections on leadership/communication/initiative, and a concise LinkedIn recommendation. Each highlights [BRACKETS] where you should add specific details only you'd know."
+    },
+    tips: [
+      "Even vague bullet points ('she's great with clients') get turned into compelling examples",
+      "Placeholders in [BRACKETS] are flagged so you know exactly what to personalize",
+      "The Refine button lets you adjust tone, length, or add specific details after generation",
+      "Power Phrases section shows which lines carry the most persuasive weight — keep those"
+    ]
+  }
+},
+// ── CaptionMagic ──
+{
+  id: "CaptionMagic",
+  title: "Caption Magic",
+  category: "Communication",
+  icon: "📸",
+  description: "Turn any photo into engaging social media captions with AI vision. Upload or paste an image, pick your platform and tone, and get 3 distinct caption options with smart hashtags (categorized by reach), character counts, alt text, and engagement tips. Refine any caption with one tap, adapt your winner to every platform at once, remix the best parts of multiple captions, and build a personal brand voice profile that gets smarter over time. Supports Instagram, LinkedIn, Facebook, Twitter/X, TikTok, and Threads.",
+  tagline: "Turn any photo into engaging social media captions",
+
+  guide: {
+    overview: "Caption Magic uses AI vision to look at your actual photo and craft social media captions that sound like a real person, not a brand. Upload any image (drag-and-drop, paste, or describe it), choose your platform and tone, and get 3 distinct caption options with categorized hashtags (trending, niche, branded), character counts against platform limits, alt text, posting schedule recommendations, and engagement tips. Refine any caption instantly with 5 one-tap options. Adapt your winner to all platforms at once. Remix the best parts of multiple captions into a perfect hybrid. After 3+ uses, Caption Magic learns your brand voice and can auto-apply your preferred style. Track which captions perform best with built-in A/B testing insights.",
+
+    howToUse: [
+      "Upload, drag-and-drop, or paste an image — or describe what's in the photo if you don't have one handy",
+      "Select your platform (Instagram, LinkedIn, Facebook, Twitter/X, TikTok, Threads) — character limits adjust automatically",
+      "Choose 1-3 tones and a caption length (short/medium/long), optionally add context about the moment",
+      "Generate captions, then refine with one-tap: Less try-hard, More engaging, Shorter, Longer, or Professional",
+      "Use 'Adapt to all platforms' to instantly get versions for every network, or 'Remix' to blend your favorites"
+    ],
+
+    example: {
+      scenario: "You took a photo of your coffee mug on your desk with your laptop in the background — the millionth 'working from home' photo.",
+      action: "Upload the image, select Instagram, choose 'funny' and 'casual' tones with 'short' length, then generate captions.",
+      result: "You get 3 options with smart hashtags color-coded by category (🔥 trending, 🎯 niche, 🏷️ branded). One caption is perfect for Instagram, so you tap 'Adapt to all platforms' and instantly get versions for LinkedIn, Twitter, TikTok, Threads, and Facebook — each one native to its platform. You mark the witty option as 'This one won' to build your audience insights over time."
+    },
+
+    tips: [
+      "Mix tones for variety — combining 'funny' with 'reflective' often yields the most authentic-feeling options",
+      "After 3+ generations, your Brand Voice profile unlocks — toggle it on to auto-apply your preferred style",
+      "Use 'Adapt to all platforms' to cross-post efficiently — each version is rewritten for its platform, not just trimmed",
+      "The Remix feature is great for combining the opening of one caption with the tone of another",
+      "Mark winners with '📊 This one won' to build audience insights that improve your future captions"
+    ],
+
+    pitfalls: [
+      "Don't select too many tones at once — stick to 2-3 for focused quality rather than scattered results",
+      "Watch character counts: red means you're over the platform limit (especially Twitter's 280)",
+      "Image upload works best with clear, well-lit photos — very dark or blurry images may produce generic captions",
+      "The Remix feature needs at least 2 captions selected — it blends, not just picks one"
+    ]
+  }
+},
+// DopamineMenuBuilder v6 — 5 modes (absorbs SpoonBudgeter, SocialBatteryForecaster, BurnoutBreadcrumbTracker, RoutineRuptureManager)
+{
+  id: "DopamineMenuBuilder",
   title: 'Dopamine Menu',
   Category: 'Wellness',
   icon: '✨',
@@ -130,11 +1006,11 @@ Five modes, one energy profile, everything compounds.`,
     'Return-to-normal trigger: how to know when regular routine can resume',
     'Explicit drop permissions: warm, specific permission for everything that can wait',
   ],
-  relatedTools: ['BrainStateDeejay', 'HabitChain', 'BrainDumpStructurer'],
+  relatedTools: ['BrainStateDeejay', 'BrainDumpStructurer'],
 },
 // BatchFlow
 {
-  id: 'BatchFlow',
+  id: "BatchFlow",
   title: 'BatchFlow',
   category: 'productivity',
   icon: '⚡',
@@ -383,39 +1259,6 @@ Over time, BatchFlow learns: "You underestimate creative tasks by 35% — paddin
         "The Small Talk Ladder is a skill builder — use it before events to practice transition phrases, not just when you're stuck",
         "Social Autopsy is for when Debrief isn't enough. Use it when you genuinely can't figure out what went wrong. It's generous about what wasn't your fault",
         "Copy the Cheat Sheet from saved plans — it's a phone-friendly summary of your full prep that you can pull up in the bathroom before rejoining the party"
-      ]
-    }
-  },
-    {
-    id: "FoodSwap",
-    title: "Food Swap",
-    category: "Health",
-    icon: "🔄",
-    description: "Find satisfying substitutions when dietary restrictions change your life. 10 modes with 17 AI endpoints: swap foods with closeness scores, restaurant ordering guides, pantry transitions with shopping lists, craving decoder, batch swaps, weekly meal plans, product label checker, social eating scripts, travel eating survival guides with printable language cards, and party menu planner for hosting guests with mixed restrictions. Supports multiple simultaneous constraints. Swap Journal tracks what you have tried with 1-10 ratings and generates a Swap Style personality analysis. Ingredient Dictionary auto-builds from label checks. Confidence Tracker follows your transition arc with milestone celebrations.",
-    tagline: "Keep eating what you love — just differently",
-
-    guide: {
-      overview: "FoodSwap is for the moment you get a new dietary restriction and think 'but I LOVE mac and cheese.' Instead of generic lists, it analyzes what you crave (texture, richness, comfort) and finds the closest match — specific brands, honest scores, pro tips. Select multiple constraints at once. Rate swaps to teach it your preferences. Log tries in the Swap Journal and unlock your Swap Style personality after 5 entries. Ingredient Dictionary auto-grows from label checks. Confidence Tracker meets you where you are in the transition. Travel mode gives you printable language cards. Party Planner handles hosting guests with conflicting restrictions.",
-
-      howToUse: [
-        "Pick ALL your constraints (multi-select, saved automatically). Then choose a mode: Swap, Eat Out, Pantry, Cravings, Batch, Meal Plan, Labels, Social, Travel, or Party Plan",
-        "Swap Mode: Describe a food, get ranked swaps. Rate them, star favorites, Try Another to regenerate, Deep Dive for brands, Full Recipe with steps. Log what you try in the Journal",
-        "Travel Mode: Enter a destination, get safe foods, printable language cards to show servers, convenience store tips, hidden dangers, packing list, and an emergency plan",
-        "Party Plan: List guests and their constraints, get a menu where most dishes work for everyone, a prep timeline, shopping list, and labeling strategy",
-        "Journal + Dictionary + Check-In: Log swap experiences to build your Swap Style profile. Dictionary auto-learns from Label Reader. Weekly check-ins track your transition confidence with milestones and challenges"
-      ],
-
-      example: {
-        scenario: "You are lactose intolerant and trying keto. You love mac and cheese, have a trip to Tokyo next month, and are hosting Thanksgiving for 8 people including a vegan cousin and a nut-free nephew.",
-        action: "Select Dairy-Free and Keto constraints. Swap mac and cheese. Travel mode: enter Tokyo. Party mode: add each guest with their restrictions. Log your mac and cheese experiment in the Journal.",
-        result: "Mac and cheese swap: cauliflower base + Violife cheddar + almond flour crust (82% match). Tokyo guide: printable allergy card in Japanese, safe convenience store brands at 7-Eleven, hidden dairy in dashi. Thanksgiving menu: 6 dishes that work for everyone plus 2 clearly-labeled options. Journal logs build your Swap Style personality over time."
-      },
-
-      tips: [
-        "Log every swap you try in the Journal — even failed ones. After 5 entries the Swap Style analysis reveals patterns like 'you prefer texture over flavor accuracy' that make every future suggestion smarter",
-        "Travel mode's printable language card is the most important thing to have on your phone abroad — copy it before you leave and screenshot it for offline use",
-        "The Ingredient Dictionary compounds over time — every Label Reader check auto-adds flagged ingredients. After a few weeks you will have a personalized cheat sheet for your specific constraints",
-        "Use the Confidence Check-In weekly during the first two months of a new restriction — it is timed to the known emotional arc (overwhelming → groove → autopilot → slip risk) and gives targeted support"
       ]
     }
   },
@@ -2146,89 +2989,6 @@ Over time, BatchFlow learns: "You underestimate creative tasks by 35% — paddin
     ]
   }
 },
-// TimeVanishingExplainer-metadata.js
-{
-  id: "TimeVanishingExplainer",
-  title: "Time Vanishing Explainer",
-  category: "Productivity",
-  icon: "⏰",
-  description: "Understand where time actually went vs where you thought it went. Advanced features include automatic time tracking, meeting tax calculator, deep work vs shallow work analysis, economic impact analysis, peak productivity mapping, and realistic week planner. Built specifically for people with time blindness with non-judgmental, pattern-based insights.",
-  tagline: "See where your time actually went today",
-
-  guide: {
-    overview: "Time Vanishing Explainer is a comprehensive time analysis tool that goes beyond simple tracking. It analyzes your actual time usage patterns, identifies expensive time leaks (context switching costs money!), classifies work types (deep vs shallow), maps your peak productivity hours, calculates the economic cost of meetings, and generates realistic schedules based on YOUR patterns - not idealized productivity advice. Includes automatic tracking options, trend analysis, and always celebrates what you accomplished.",
-    
-    howToUse: [
-      "Choose input method: Manual log, paste calendar, upload CSV, or enable automatic tracking (browser extension/app integration)",
-      "Optional: Add your hourly rate for economic analysis (meeting cost calculator, context switching tax)",
-      "Select time period and comparison mode (this week vs last week, this month vs last month, or single period analysis)",
-      "Add perception if desired: 'I thought I spent X hours on Y' to see time blindness gaps",
-      "Click 'Analyze Time' to get comprehensive analysis with: time leaks, work type classification, economic impact, peak productivity hours, realistic capacity, and celebration",
-      "Use generated insights: Protect deep work blocks, schedule tasks during peak hours, batch admin work, add realistic buffers, decline expensive meetings",
-      "Generate Ideal Week template based on your actual patterns (not aspirational planning)",
-      "Track trends over time to see improvement and identify recurring patterns"
-    ],
-    
-    example: {
-      scenario: "You work remote and feel like you're always busy but never productive. You track one full week of time, including a 2-hour meeting with 8 people. Your hourly rate is $75. You want to compare this week to last week and see where time is vanishing.",
-      action: "Select 'This week', choose 'Compare to last week', paste your calendar entries for both weeks, enter hourly rate '$75', add perception 'I thought I did 6 hours of deep work per day'. Click Analyze.",
-      result: "Analysis shows: Total time: 40h. Deep work: 12h (30%), Shallow work: 15h (37.5%), Meetings: 8h (20%), Context switching: 5h (12.5%). Meeting tax: $1,200 for one 2h meeting ($75 × 8 people × 2h). Context switching cost: $375 lost. Peak productivity: 9-11am (protect this!). Comparison: Last week had 15h deep work vs this week 12h (-20%). Time blindness insight: 'You thought 6h deep work/day (30h/week) but actually 12h/week - you're overestimating by 2.5x'. Ideal week template generated: Block 9-11am daily for deep work (no meetings), batch email 2-3pm, meetings only Tues/Thurs afternoon, add 30min buffers. Celebration: 'You completed 15 major deliverables and handled 47 smaller tasks this week - significant accomplishment even though it took longer than expected.'"
-    },
-    
-    tips: [
-      "Enable automatic tracking for most accurate data - manual logs miss context switches and transition time",
-      "Add your hourly rate to see the true economic cost of meetings and interruptions - this makes time leaks visceral",
-      "Use the meeting tax calculator before accepting meeting invites - 'Is this 2-hour meeting worth $1,200 of company time?'",
-      "Protect your peak productivity hours (usually 9-11am) - schedule ZERO meetings during these blocks",
-      "Deep work blocks need 90+ minutes minimum - anything shorter gets eaten by context switching",
-      "Use the work type classification to identify if you're spending too much time in shallow work vs deep work",
-      "Compare weeks to identify trends - are you improving at time estimation? Getting better at protecting deep work?",
-      "The 'Ideal Week' template is based on YOUR actual patterns, not generic advice - actually use it!",
-      "Energy mapping shows when you're most effective - schedule hard tasks during peak energy, admin during low energy",
-      "Track for at least 2 weeks to see meaningful patterns - one week might be atypical"
-    ],
-    
-    pitfalls: [
-      "Don't skip the hourly rate input - without it, you miss the powerful economic analysis showing what time actually costs",
-      "Automatic tracking catches things manual logs miss - if available, use it instead of relying on memory",
-      "Don't ignore the meeting tax calculator - seeing '$1,200' makes declining unnecessary meetings much easier",
-      "The tool will tell you 'you can do 2 major tasks per day, not 5' - believe it and plan accordingly, don't keep overestimating",
-      "Protected deep work time means PROTECTED - no 'just this one meeting' exceptions or the pattern breaks",
-      "Comparison mode requires data from both periods - don't compare if you only tracked this week",
-      "Peak productivity hours are YOUR hours, not what productivity books say - if you're a night person, your peaks will be different"
-    ]
-  }
-},
-  {
-    id: "GradeGraveyard",
-    title: "Grade Graveyard",
-    category: "Academic",
-    icon: "💀",
-    description: "The community morgue for lethal courses. Search post-mortems and report academic casualties before you register.",
-    tagline: "Post-mortems and warnings for lethal courses",
-    
-    guide: {
-      overview: "GradeGraveyard is a student-curated database of the hardest courses at your school. Students share 'post-mortems' of brutal classes - what went wrong, how much time it took, and survival strategies. Think of it as your defensive intelligence before registration.",
-      
-      howToUse: [
-        "Search for a course you're considering (e.g., 'ORGO', 'Linear Algebra')",
-        "Read the 'mortality rate' (% of students who dropped or failed)",
-        "Review student post-mortems explaining the challenges",
-        "Check the recommended prep work and prerequisites",
-        "Submit your own post-mortem after completing a difficult course"
-      ],
-      
-      example: "Search 'Organic Chemistry' → See 34% drop rate → Read post-mortems revealing the course requires 20+ hrs/week → Decide to take it in a lighter semester instead of alongside 4 other hard classes.",
-      
-      tips: [
-        "Don't take multiple 'graveyard courses' in the same semester",
-        "Use post-mortems to find study groups and resources",
-        "Submit your own experience to help future students",
-        "Check if the professor changed - difficulty varies wildly"
-      ]
-    }
-  },
-  
   {
     id: "LeverageLogic",
     title: "Leverage Logic",
@@ -2258,196 +3018,6 @@ Over time, BatchFlow learns: "You underestimate creative tasks by 35% — paddin
       ]
     }
   },
-    {
-    id: "LiquidCourage",
-    title: "Liquid Courage",
-    category: "Communication",
-    icon: "🍸",
-    description: "The ultimate safety-first hydration and pacing logic. Real-world math for a better, safer night out.",
-    tagline: "Safety-first hydration and pacing math",
-    
-    guide: {
-      overview: "LiquidCourage calculates safe drinking pacing based on your weight, gender, time span, and food intake. It tells you exactly when to drink water, when to stop drinking alcohol, and tracks your estimated BAC to keep you safe and functional.",
-      
-      howToUse: [
-        "Input your weight, gender, and whether you've eaten",
-        "Set your event duration (e.g., 4 hours)",
-        "Enter each drink as you consume it",
-        "Follow the hydration schedule (drink water when app alerts)",
-        "Stop drinking when the app shows you're approaching your limit"
-      ],
-      
-      example: "150lb person, 8pm-12am party. App says: Max 4 drinks over 4 hours. Drink 1 glass of water between each drink. Stop drinking by 11pm to sober up by midnight. You follow it, have a great time, feel fine the next day.",
-      
-      tips: [
-        "Always eat before drinking - the app accounts for this",
-        "Set a 'must stop by' time if you're driving later",
-        "Water between drinks isn't optional - it prevents hangovers",
-        "Stronger drinks (shots) = count as 1.5x in the app",
-        "If you feel bad, stop immediately regardless of what the app says"
-      ],
-      
-      pitfalls: [
-        "Don't lie to the app about your drinks - it's for YOUR safety",
-        "Don't ignore the water alerts - dehydration makes everything worse",
-        "App is a guide, not a guarantee - everyone metabolizes differently"
-      ]
-    }
-  },
-{
-  id: "MoneyShameRemover",
-  title: "Money Shame Remover",
-  category: "Money",
-  icon: "💰",
-  description: "Reframes money situations without judgment. Separates systemic issues from personal responsibility. Validates financial struggles, provides practical solutions, teaches how to decline invites/ask for help without shame. 'This is economic structure, not personal failure.'",
-  tagline: "Reframe your money situation without judgment",
-  
-  guide: {
-    overview: "Financial shame prevents people from taking action and damages mental health. This tool reframes money struggles by separating systemic factors (wages, medical debt, student loans) from personal responsibility, provides shame-free solutions, and gives scripts for social situations.",
-    
-    howToUse: [
-      "Describe your money shame",
-      "Add context if relevant",
-      "Get systemic vs personal factor analysis",
-      "Receive shame removal reframe",
-      "Access practical solutions with resources",
-      "Learn scripts for social situations (declining invites, asking for help)"
-    ],
-    
-    example: {
-      scenario: "You feel ashamed that you can't afford to go to your friends' wedding destination weekend. They're all going and you have to decline because you can't afford $800 for travel/hotel/events. You feel like a bad friend and financial failure.",
-      action: "Money shame: 'Can't afford friends' wedding destination weekend, feel like bad friend'.",
-      result: "Shame removal: The truth: Destination weddings cost $500-1500+ per guest. That's a significant expense most people struggle with but don't talk about. This isn't about being a bad friend - it's about having different financial priorities/capacity. Why not failure: You're making responsible financial choices. Going into debt for a party isn't friendship - it's financial self-harm. Others feel same pressure but hide it. Systemic factors: Wage stagnation (median wage growth hasn't matched cost of living), Destination wedding trend (puts financial burden on guests), Social media pressure (makes this feel like personal failing when it's widespread). Personal factors: Your current budget priorities (rent, food, debt payments come first). Practical solutions: 1. Send generous card/small gift within budget ($30-50 shows thought without breaking bank). Script: 'I can't make the destination weekend but I'm so happy for you! Sending love and a gift.' 2. Offer alternative celebration: 'Can we celebrate when you're back? Dinner on me.' 3. Be honest if asked: 'Travel costs aren't in my budget right now, but I'll be thinking of you!' Social scripts: Declining: 'I can't swing the travel costs, but I'm so excited for you!' (Don't over-explain). Suggesting alternative: 'Want to do a local celebration when you're back?' Permission: Your budget is not a referendum on how much you care. Real friends understand financial constraints."
-    },
-    
-    tips: [
-      "Systemic factors section validates that many struggles aren't personal failure",
-      "Social scripts are brief and unapologetic - don't over-explain financial situations",
-      "Alternative celebrations show you care without the financial burden",
-      "Permission statements counter internalized shame messages",
-      "Practical solutions focus on what you CAN do, not what you can't"
-    ],
-    
-    pitfalls: [
-      "Don't go into debt to avoid money shame - that creates worse problems",
-      "Don't feel you must disclose full financial details - 'not in my budget' is complete answer",
-      "Don't isolate due to money shame - there are free/low-cost ways to maintain friendships"
-    ]
-  }
-},
-   // NameAnxietyDestroyer-metadata.js
-{ id: "NameAnxietyDestroyer",
-  title: "Name Anxiety Destroyer",
-  description: "Learn to pronounce any name from any language with confidence. Get phonetic guidance, cultural context, and respect-focused practice tips.",
-  tagline: "Learn any name with confidence and cultural respect",
-  category: "Communication",
-  icon: "📛",
-  gradient: "from-violet-500 to-purple-600",
-  featured: true,
-  guide: {
-    overview: "Name Anxiety Destroyer helps you learn correct pronunciation of names from any language or culture. Enter any name and receive detailed phonetic guidance, syllable breakdowns, cultural context, and respectful practice tips. The tool emphasizes cultural respect and builds confidence by framing pronunciation as a learning journey, not a test. Perfect for anyone who wants to honor people by getting their names right.",
-    
-    howToUse: [
-      "Enter the name exactly as written, including any special characters or accent marks (ñ, é, ü, etc.)",
-      "Add optional context like the person's cultural background or where they're from to get more accurate guidance",
-      "Select your native language to get pronunciation comparisons tailored to familiar sounds",
-      "Review the phonetic spelling, syllable breakdown, and stress patterns",
-      "Listen to browser audio (if available) and practice slowly",
-      "Study common mistakes to avoid and learn the cultural context around the name",
-      "Use the 'Ask for Help' script to respectfully request correction from the person",
-      "Save frequently-used names to your learned collection for quick reference"
-    ],
-    
-    example: {
-      scenario: "You're meeting a new colleague named Siobhan and want to pronounce her Irish name correctly",
-      action: "Enter 'Siobhan' and optionally add context 'Irish colleague'. Select 'English (American)' as your language",
-      result: "You learn it's pronounced 'shi-VAWN' (not 'see-oh-ban'), see the syllable breakdown (Shiv-awn), learn that the 'bh' in Irish makes a 'v' sound, and get cultural context about Irish naming conventions. You also get a respectful script for double-checking your pronunciation with Siobhan directly."
-    },
-    
-    tips: [
-      "Practice names 10 times before using them in conversation - muscle memory helps!",
-      "Focus on the stressed syllable first, then add the rest",
-      "Record yourself saying the name and listen back to check",
-      "Don't worry about perfection - sincere effort shows respect",
-      "When in doubt, politely ask the person to say their name and repeat it back",
-      "Save names you've learned so you can review before meetings",
-      "Pay attention to cultural context about name order (some cultures put family name first)",
-      "Some names have regional pronunciation variations - that's okay!",
-      "If a name has special characters (é, ñ, ü), they're pronunciation guides - use them!",
-      "Practice with the audio feature at slow speed multiple times"
-    ],
-    
-    pitfalls: [
-      "Don't say 'Your name is too hard' - instead say 'I want to make sure I say it correctly'",
-      "Don't anglicize names without permission (turning Xiaomei into 'Shawmay')",
-      "Don't assume nicknames are okay - always use the full name unless invited otherwise",
-      "Don't skip learning names from unfamiliar cultures - that's when it matters most",
-      "Don't be embarrassed to ask for correction - it shows you care",
-      "Don't practice just once - names need repetition to stick",
-      "Don't ignore the cultural context section - it helps you understand name usage",
-      "Don't assume all names from one region sound the same (Chinese has many dialects!)"
-    ],
-    
-    quickReference: {
-      "Best for": "Names from any language, especially unfamiliar ones",
-      "Audio": "Browser text-to-speech (quality varies)",
-      "Cultural contexts": "150+ languages and regions",
-      "Save names": "Yes, stored locally",
-      "Offline use": "No, requires API for analysis"
-    }
-  },
-  
-  keywords: [
-    "pronunciation",
-    "names",
-    "cultural respect",
-    "phonetic",
-    "linguistics",
-    "etiquette",
-    "international",
-    "languages",
-    "IPA",
-    "syllables",
-    "practice",
-    "confidence",
-    "communication",
-    "diversity",
-    "inclusion"
-  ],
-  
-  tags: ["Communication", "Cultural", "Learning", "Respect", "International"],
-  
-  difficulty: "easy",
-  
-  useCases: [
-    "Meeting international colleagues or classmates",
-    "Preparing for job interviews with diverse hiring panels",
-    "Customer service roles with diverse clientele",
-    "Teaching in multicultural classrooms",
-    "Healthcare providers meeting patients with unfamiliar names",
-    "Event hosts or emcees introducing speakers",
-    "Journalists or reporters interviewing diverse sources",
-    "Anyone who wants to show respect by getting names right"
-  ],
-  
-  benefits: [
-    "Reduces social anxiety around unfamiliar names",
-    "Shows cultural respect and awareness",
-    "Builds confidence in international communication",
-    "Provides linguistically accurate pronunciation guides",
-    "Teaches cultural context beyond just sounds",
-    "Encourages asking for help in respectful ways",
-    "Saves frequently-used names for quick reference",
-    "Helps avoid common anglicization mistakes"
-  ],
-  
-  limitations: [
-    "Audio quality depends on browser text-to-speech capabilities",
-    "Regional pronunciation variations may exist within cultures",
-    "Some tonal languages require hearing native pronunciation",
-    "Doesn't replace asking the person directly for their preference",
-    "Requires internet connection for analysis"
-  ]},
 {
   id: "MeetingBSDetector",
   title: "Meeting BS Detector",
@@ -2663,48 +3233,6 @@ Over time, BatchFlow learns: "You underestimate creative tasks by 35% — paddin
       "Don't apologize just because someone is upset - their feelings don't always mean you did wrong",
       "Don't skip apologies when you genuinely caused harm just because apologizing is uncomfortable",
       "Don't use apology to manipulate ('I'm so sorry' to avoid consequences)"
-    ]
-  }
-},
-
-{
-  id: "DoubleBookingDiplomat",
-  title: "Double-Booking Diplomat",
-  category: "Communication",
-  icon: "📅",
-  description: "Handles scheduling conflicts diplomatically. Analyzes which event to prioritize (professional obligations, first commitment, relationship importance). Provides honest/partial truth/white lie decline scripts. Includes reschedule options and 'if confronted' responses.",
-  tagline: "Handle scheduling conflicts without burning bridges",
-  
-  guide: {
-    overview: "You accidentally double-booked and need to decline one event without damaging the relationship. This tool weighs which to prioritize based on obligation type, relationship, and flexibility, then provides diplomatic scripts ranging from honest to tactful.",
-    
-    howToUse: [
-      "Describe both conflicting events",
-      "Optionally state your preference",
-      "Get analysis of which to prioritize and why",
-      "Receive multiple decline script options (honest/partial truth/reschedule)",
-      "Learn pros and cons of each approach",
-      "Get 'if confronted' scripts if they discover the conflict"
-    ],
-    
-    example: {
-      scenario: "You committed to your friend's birthday dinner (committed first). Then you accepted a work networking event the same night (could help your career). Both at 7pm Saturday.",
-      action: "Event 1: Friend's birthday dinner, Event 2: Work networking event.",
-      result: "Recommendation: Attend friend's birthday (first commitment + personal relationship). Decline: Work event. Strategy: Partial truth. Why: Friend committed first (fairness), birthday is once/year (can't reschedule), work event is fungible (network other times). Decline script options: 1. Honest conflict: 'I have a prior commitment I can't move. Will there be another networking event soon?' (Pro: honest, Con: they might ask what commitment). 2. Partial truth: 'I'm not available Saturday evening. Are there other events coming up?' (Pro: polite, true, no details needed). 3. If you want work event instead: Reschedule with friend: 'Something came up for work on Saturday. Can we celebrate Friday instead? Dinner on me.' If confronted (friend sees you posted about work event): 'I messed up. I should have been honest about the conflict instead of being vague. Your birthday was important and I prioritized work when I shouldn't have. I'm sorry.'"
-    },
-    
-    tips: [
-      "First commitment usually wins on fairness grounds",
-      "Professional obligations often (but not always) trump social ones",
-      "Can't-reschedule events (birthdays, weddings) win over recurring events",
-      "Honest approach is best for close relationships, partial truth for acquaintances",
-      "The reschedule option is often best of both worlds if timing allows"
-    ],
-    
-    pitfalls: [
-      "Don't lie if you might get caught - social media makes this risky",
-      "Don't double-book intentionally as strategy - it's disrespectful",
-      "Don't ghost - even 'I can't make it' is better than no-show"
     ]
   }
 },
@@ -3131,7 +3659,7 @@ Over time, BatchFlow learns: "You underestimate creative tasks by 35% — paddin
 },
 // SpiralStopper v2 — 3 modes (absorbs FreezeStateUnblocker, ShutdownRecoveryGuide)
 {
-  id: 'SpiralStopper',
+  id: "SpiralStopper",
   title: 'Spiral Stopper',
   description: "Emergency intervention for three crisis states. Spiraling: dump your racing thoughts and get immediate grounding, cognitive distortion identification with evidence-based reality checks, and a compassionate anchor statement. Frozen: when you can't start, can't decide, can't move — get one micro-action at a time with clear completion signals and explicit permission to stop. Crashed: when you're completely spent, get a severity-matched recovery protocol with staged instructions, basics checklists, permission statements, and recovery signs. All three modes log episodes persistently, offer post-crisis debriefs, and unlock pattern analysis after 3+ episodes to build your personal intervention toolkit.",
   category: 'wellness',
@@ -3183,41 +3711,6 @@ After each episode, a quick debrief builds your personal toolkit over time.`,
   ],
   relatedTools: ['DopamineMenuBuilder', 'CrisisPrioritizer', 'BrainDumpStructurer'],
 },
-{
-  id: "CaptionMagic",
-  title: "Caption Magic",
-  category: "Communication",
-  icon: "📸",
-  description: "Turn mundane photos into engaging social media captions. Upload any image and get 3-5 authentic caption options tailored to your platform and tone preferences.",
-  tagline: "Turn any photo into engaging social media captions",
-  
-  guide: {
-    overview: "The Social Proof Generator transforms ordinary photos into shareable social media content. Whether it's your coffee cup, desk setup, or another sunset pic, this tool crafts captions that acknowledge the mundane with charm. It analyzes your image, understands the platform you're posting to, and generates multiple caption options that feel authentic—not try-hard or overly enthusiastic.",
-    
-    howToUse: [
-      "Upload an image (or paste from clipboard) OR describe what's in your photo",
-      "Select your platform: Instagram, LinkedIn, Facebook, or Twitter/X",
-      "Choose 1-3 tones that match your vibe: funny, reflective, professional, casual, inspirational, or minimal",
-      "Add optional context about where/when the photo was taken",
-      "Click 'Generate Captions' and review 3-5 customized options with hashtags and character counts"
-    ],
-    
-    example: {
-      scenario: "You took a photo of your coffee mug on your desk with your laptop in the background—the millionth 'working from home' photo.",
-      action: "Upload the image, select Instagram, choose 'funny' and 'casual' tones, then generate captions.",
-      result: "You get options like: 'Fancy meeting you here ☕️ (day 847 of pretending my desk is an office)' with relevant hashtags, character count, and a 'why this works' explanation. If one caption feels too enthusiastic, click 'Make it less try-hard' to instantly tone it down."
-    },
-    tips: [
-      "Mix tones for variety—combining 'funny' with 'reflective' often yields the most authentic-feeling options",
-      "Use the 'Make it less try-hard' button if a caption feels forced or overly enthusiastic",
-      "The alt text suggestion helps make your posts accessible—copy it when posting",
-      "Platform matters: LinkedIn captions are more professional, Instagram more casual with emoji",
-      "Add context about the moment ('team retreat in Colorado') for more personalized captions"],
-   pitfalls:[ 
-      "Don't select too many tones at once—stick to 2-3 for focused, quality captions rather than scattered results",
-      "Watch character counts for your platform—Twitter has stricter limits than Instagram",
-      "The tool works best when you're honest about mundane photos rather than trying to oversell them—self-aware captions perform better than fake enthusiasm"
- ]}},
  {
   id: "VelvetHammer",
   title: "Velvet Hammer",
@@ -3258,384 +3751,39 @@ After each episode, a quick debrief builds your personal toolkit over time.`,
     ]
   }
 },
-    {
-    id: "RamenRatio",
-    title: "Ramen Ratio",
-    category: "Money",
-    icon: "🍜",
-    description: "See the true cost of purchases in units that matter to you.",
-    tagline: "See every purchase in meals, not dollars",
-    
-    guide: {
-      overview: "RamenRatio measures your financial security in 'days of food' rather than dollars. Every purchase is translated into 'X days of meals', making spending decisions visceral and survival-focused. This triggers loss aversion psychology - spending money feels like reducing your food supply.",
-      
-      howToUse: [
-        "Set your daily meal cost (how much you spend per day on food)",
-        "Enter your monthly income",
-        "View your 'food security' (how many days of meals you can afford)",
-        "Before any purchase, enter the amount to see how many days it costs",
-        "Watch your food security number - keep it above 90 days (3 months)"
-      ],
-      
-      example: {
-        scenario: "Alex has $1,200 and spends $3.50/day on food. That's 342 days of food security. He's considering buying $120 concert tickets.",
-        action: "Alex enters '$120 - Concert tickets' into RamenRatio.",
-        result: "The tool shows: '34 days of food security'. Alex sees his security would drop from 342 to 308 days. The concert is worth almost 5 weeks of food. He decides to buy the tickets because they're for his favorite band, but he's now aware of the real trade-off."
-      },
-      
-      tips: [
-        "Keep your food security above 90 days minimum (3 months safety net)",
-        "Calculate based on your cheapest sustainable meals, not restaurant prices",
-        "Use this for discretionary spending, not for actual food purchases",
-        "The 'days' metric is psychological - it's about awareness, not literal survival",
-        "Update your daily meal cost monthly as grocery prices change"
-      ],
-      
-      pitfalls: [
-        "Don't include rent/bills in daily meal cost - only actual food",
-        "Don't let the number stress you out - it's a tool for awareness, not anxiety",
-        "Don't feel guilty about necessary purchases that reduce your days"
-      ]
-    }
-  },
-    {
-    id: "ProfVibe",
-    title: "Prof Vibe",
-    category: "Academic",
-    icon: "🎓",
-    description: "AI sentiment analysis of professor reviews. Filter the ego from the education to see what a class is really like.",
-    tagline: "AI sentiment analysis of professor reviews",
-    
-    guide: {
-      overview: "ProfVibe uses AI to analyze thousands of professor reviews and extract genuine insights about teaching quality, workload, and grading fairness. It filters out emotional rants and focuses on actionable information to help you choose the right professor.",
-      
-      howToUse: [
-        "Search for your course or professor name",
-        "Review the AI-generated summary showing teaching style, difficulty level, and grading patterns",
-        "Check the sentiment breakdown (positive/negative/neutral)",
-        "Read key themes extracted from reviews",
-        "Compare multiple professors teaching the same course"
-      ],
-      
-      example: {
-        scenario: "You need to take ECON 101 and there are three professors available. You want someone who explains concepts clearly but isn't too easy.",
-        action: "Search 'ECON 101' in ProfVibe and compare the three professors' AI summaries.",
-        result: "Prof. Smith: 'Clear explanations, challenging exams, fair grading.' Prof. Jones: 'Disorganized lectures, easy tests.' Prof. Lee: 'Engaging style, moderate difficulty, helpful office hours.' You choose Prof. Lee for the best balance."
-      },
-      
-      tips: [
-        "Look for consistency in themes - if 50+ reviews mention 'unclear grading', it's probably true",
-        "Focus on recent reviews (last 2 years) - professors change over time",
-        "Don't avoid 'hard' professors if they're rated as good teachers",
-        "Compare teaching style to your learning style (visual vs. lecture vs. hands-on)"
-      ]
-    }
-  }, 
-  {
-    id: "WingMan",
-    title: "Wingman",
-    category: "Communication",
-    icon: "🦅",
-    description: "AI-generated icebreakers and social strategy. Never walk into a mixer or a career fair without a tactical plan.",
-    tagline: "AI-generated icebreakers and social strategy",
-    
-    guide: {
-      overview: "Wingman prepares you for social situations with AI-generated conversation starters, questions to ask, and follow-up strategies. Input the context (career fair, party, networking event) and get a tactical social plan.",
-      
-      howToUse: [
-        "Select the event type (career fair, party, networking, date, etc.)",
-        "Add context (industry, mutual friends, your goals)",
-        "Review AI-generated icebreakers and conversation topics",
-        "Get suggested questions to ask and topics to avoid",
-        "Practice the conversation flow before the event"
-      ],      
-      example: "Career fair tomorrow - you want to talk to Google recruiters. Wingman suggests: Opening: 'I saw your team launched [recent product] - what's it like working on that?' Follow-ups: Ask about internship timeline, team culture, skills they look for. Avoid: Asking about salary in first conversation.",
-      
-      tips: [
-        "Customize suggestions to sound like YOU - don't read them verbatim",
-        "Have 3-5 conversation starters ready, not just one",
-        "Ask follow-up questions based on their answers, don't just run through your list",
-        "After events, note what worked to train the AI for next time"
-      ]
-    }
-  },
-  
-  {
-    id: "HabitChain",
-    title: "Habit Chain",
-    category: "Productivity",
-    icon: "🔗",
-    description: "Visual momentum tracker for unbreakable streaks. Build the habits that actually move the needle.",
-    tagline: "Visual momentum tracker for unbreakable streaks",
-    
-    guide: {
-      overview: "HabitChain uses visual momentum psychology to make you never want to break your streak. Each day you complete your habit adds a link to the chain. Breaking the streak resets it to zero, creating strong motivation to maintain consistency.",
-      
-      howToUse: [
-        "Create a new habit you want to build (e.g., 'Study 1 hour daily')",
-        "Set the minimum completion criteria (what counts as 'done')",
-        "Mark each day complete when you finish",
-        "Watch your chain grow - each link represents a day of success",
-        "Don't break the chain - reset means starting from zero"
-      ],
-      
-      example: "You want to exercise daily. Set habit: 'Exercise 20 min'. Day 1: ✓. Day 2: ✓. Day 3: ✓. Chain = 3 days. On Day 4, you're tired but seeing that 3-day chain makes you do it anyway. Chain = 4 days. By Day 30, you won't break a 30-day chain.",
-      
-      tips: [
-        "Start with minimum viable completion (10 min, not 2 hours)",
-        "Track 1-3 habits max - too many chains dilute focus",
-        "Put it somewhere you'll see daily (home screen, bathroom mirror)",
-        "If you break a chain, analyze why and adjust the habit difficulty",
-        "Celebrate milestone numbers (7 days, 30 days, 100 days)"
-      ]
-    }
-  },
-  {
-    id: "CiteSight",
-    title: "CiteSight",
-    category: "Academic",
-    icon: "📑",
-    description: "Scan book barcodes to generate perfect citations in MLA/APA.",
-    tagline: "Scan barcodes, get perfect citations instantly",
-    
-    guide: {
-      overview: "CiteSight uses your phone camera to scan book ISBNs and automatically generates properly formatted citations in MLA, APA, Chicago, or any other style. No more manual typing or formatting errors.",
-      
-      howToUse: [
-        "Open the camera scanner",
-        "Point at the barcode on the back of the book",
-        "Wait for the green checkmark (book identified)",
-        "Select your citation style (MLA, APA, Chicago, etc.)",
-        "Copy the formatted citation to your clipboard"
-      ],
-      
-      example: "Writing a paper, need to cite 5 books. Scan each barcode (takes 5 seconds per book), select APA style, copy all citations. Paste into your bibliography. Done in 30 seconds instead of 15 minutes of manual formatting.",
-      
-      tips: [
-        "Scan the barcode, not the QR code",
-        "Good lighting helps - avoid glare and shadows",
-        "Save citations to 'favorites' for papers you're still writing",
-        "Can cite page numbers later by editing the citation"
-      ]
-    }
-  },
-  
-  {
-    id: "TheCurve",     
-    title: "The Curve",     
-    category: "Academic",     
-    icon: "📈",
-    description: "Standard GPA tracker and weighted average calculator.",
-    tagline: "Track your GPA with weighted grade calculations",
-    
-    guide: {
-      overview: "TheCurve helps you track your GPA in real-time and shows exactly what grades you need on remaining assignments to hit your target GPA. Enter your courses, credit hours, and current grades to see your cumulative and semester GPAs.",
-      
-      howToUse: [
-        "Add each course with credit hours and grading scale",
-        "Enter completed assignments and their weights",
-        "Set your target GPA (e.g., 3.5)",
-        "See what grades you need on remaining work to hit your target",
-        "Update as you get new grades to track progress"
-      ],
-      
-      tips: [
-        "Update after every major grade to stay accurate",
-        "Focus effort on classes where improvement is still possible",
-        "If you need a 105% to reach your target, pivot to damage control"
-      ]
-    }
-  },
-  
-  {
-    id: "GroupTherapy",
-    title: "GroupTherapy",
-    category: "Academic",
-    icon: "👋",
-    description: "Impartial AI project manager that assigns tasks and nags slackers.",
-    tagline: "AI project manager that assigns tasks and nags slackers",
-    
-    guide: {
-      overview: "GroupTherapy is an AI mediator for group projects. It distributes tasks fairly, tracks who's doing their share, and sends automated reminders to slackers. No more awkward confrontations about unequal workload.",
-      
-      howToUse: [
-        "Create a group and invite members",
-        "Input the project requirements and deadline",
-        "AI suggests fair task distribution based on skills and availability",
-        "Each person accepts their tasks",
-        "AI sends reminders and flags anyone falling behind"
-      ],
-      
-      tips: [
-        "Set task deadlines earlier than the final deadline for buffer time",
-        "Let the AI handle the nagging - keeps friendships intact",
-        "Review task completion percentages before grading each other"
-      ]
-    }
-  },
-  
-  {
-    id: "SourceCheck",
-    title: "SourceCheck",
-    category: "Academic",
-    icon: "🔍",
-    description: "Instant credibility analysis for websites and research sources.",
-    tagline: "Instant credibility analysis for any source",
-    
-    guide: {
-      overview: "SourceCheck analyzes websites and academic sources for credibility. It checks author credentials, publication reputation, citation count, bias indicators, and factual accuracy to help you determine if a source is trustworthy.",
-      
-      howToUse: [
-        "Paste the URL or enter the source details",
-        "Review the credibility score (0-100)",
-        "Read the breakdown: author expertise, publication quality, bias rating",
-        "See if the source is peer-reviewed or cited by credible sources",
-        "Decide whether to use it in your paper"
-      ],
-      
-      tips: [
-        "Score above 70 = generally safe to cite",
-        "Check bias rating even for credible sources",
-        "Wikipedia gets low score but its cited sources might be great"
-      ]
-    }
-  },
-  {
-    id: "Recall",
-    title: "Recall",
-    category: "Academic",
-    icon: "🧠",
-    description: "Transcribes 90-minute lectures into 10 key bullet points.",
-    tagline: "Turn 90-minute lectures into 10 key bullet points",
-    
-    guide: {
-      overview: "Recall records lectures and uses AI to extract the 10 most important points, cutting through tangents and repetition. Perfect for review sessions or when you missed a class.",
-      
-      howToUse: [
-        "Start recording at the beginning of lecture",
-        "Let it run for the entire class",
-        "After class, wait 2-3 minutes for AI processing",
-        "Review the 10 key bullet points",
-        "Click any point to jump to that timestamp in the audio"
-      ],
-      
-      tips: [
-        "Still take notes - this is for review/reinforcement",
-        "Professor says 'This will be on the test'? Recall will catch it",
-        "Listen to full audio for context on confusing topics"
-      ]
-    }
-  },
-  
-  {
-    id: "TheGap",
-    title: "The Gap",
-    category: "Academic",
-    icon: "📝",
-    description: "Links current confusing concepts back to the missing prerequisites.",
-    tagline: "Link confusing concepts back to missing prerequisites",
-    
-    guide: {
-      overview: "TheGap identifies knowledge gaps when you're struggling with a concept. Enter what you don't understand, and it traces back to show what prerequisite concept you're missing.",
-      
-      howToUse: [
-        "Enter the concept you're struggling with (e.g., 'chain rule in calculus')",
-        "TheGap shows the prerequisite chain",
-        "Click each prerequisite to get a quick refresher",
-        "Work backwards until you find where your understanding broke",
-        "Fill in the gaps before returning to current material"
-      ],
-      
-      example: "Struggling with integrals. TheGap shows: Integrals → Derivatives → Limits → Functions. You realize you never really understood limits. Watch a 5-min video on limits, suddenly integrals make sense.",
-      
-      tips: [
-        "Often the gap is 2-3 steps back, not the immediate prerequisite",
-        "Don't skip ahead until you fill the gap - it'll keep haunting you"
-      ]
-    }
-  },
-  
-  {
-    id: "FlashScan",
-    title: "FlashScan",
-    category: "Academic",
-    icon: "⚡",
-    description: "Converts photos of handwritten notes into digital flashcards.",
-    tagline: "Photos of handwritten notes become digital flashcards",
-    
-    guide: {
-      overview: "FlashScan uses OCR to read your handwritten notes and automatically creates digital flashcards. Take a photo of your notes, and it generates question/answer pairs for studying.",
-      
-      howToUse: [
-        "Take clear photos of your handwritten notes",
-        "Upload to FlashScan",
-        "AI extracts key concepts and creates Q&A pairs",
-        "Review and edit the generated flashcards",
-        "Study using spaced repetition"
-      ],
-      
-      tips: [
-        "Write clearly - messy handwriting reduces accuracy",
-        "Edit AI-generated cards - they're good but not perfect",
-        "Works best with structured notes (definitions, formulas, key points)"
-      ]
-    }
-  },
-  
-  {
-    id: "TheMirror",
-    title: "The Mirror",
-    category: "Academic",
-    icon: "🪞",
-    description: "AI interview coach that analyzes your speech and eye contact.",
-    tagline: "AI interview coach for speech and confidence",
-    
-    guide: {
-      overview: "TheMirror records mock interviews and uses AI to analyze your body language, eye contact, filler words (um, like, uh), speech pace, and confidence. Get feedback before your real interview.",
-      
-      howToUse: [
-        "Select interview type (technical, behavioral, case study)",
-        "Practice answering AI-generated questions on camera",
-        "Review the analysis: eye contact %, filler word count, pace",
-        "Watch playback with annotations showing issues",
-        "Practice again to improve weak areas"
-      ],
-      
-      tips: [
-        "Practice multiple times - first attempt is always rough",
-        "Focus on one issue per practice (fix filler words, then work on eye contact)",
-        "Real interviews are less scary after 10 practice sessions"
-      ]
-    }
-  },
-  
-  {
-    id: "WikiWeb",
-    title: "WikiWeb",
-    category: "Academic",
-    icon: "🌐",
-    description: "Visual node-graph of Wikipedia articles to see connections.",
-    tagline: "Visualize how Wikipedia topics connect",
-    
-    guide: {
-      overview: "WikiWeb creates an interactive graph showing how Wikipedia articles connect. Start with any topic and see related concepts, sub-topics, and prerequisite knowledge visually mapped.",
-      
-      howToUse: [
-        "Enter a Wikipedia topic",
-        "See the central node with connecting nodes for related articles",
-        "Click any node to expand and see its connections",
-        "Zoom in/out to explore the knowledge map",
-        "Use this to understand topic relationships and find research angles"
-      ],
-      
-      tips: [
-        "Great for seeing the 'big picture' of a subject",
-        "Find unexpected connections for unique paper angles",
-        "Trace from complex topics back to fundamentals"
-      ]
-    }
-  },
-  
+{
+  id: "TheGap",
+  title: "The Gap",
+  category: "Academic",
+  icon: "📝",
+  tagline: "Stuck on a concept? We'll find where your understanding broke.",
+  description: "Enter any concept you're struggling with and The Gap traces backwards through the prerequisite chain to find the exact point where your understanding broke. Most people try to re-learn the hard thing — the real fix is usually 2-3 steps back. Interactive prerequisite chain with gap-likelihood ratings, quick self-tests at each node, a focused refresher for the likely gap, a 3-step study plan with time estimates, and a Deep Dive mode with worked examples, practice problems, and common mistakes. Four gap types diagnosed: conceptual (don't get why), procedural (can't do the steps), definitional (don't know what it means), notational (symbols blocking you).",
+
+  guide: {
+    overview: "The Gap solves the #1 study mistake: when you're stuck on something, you try to re-read the hard material. But the problem is almost never the hard material itself — it's a prerequisite you're missing. Someone struggling with integrals usually has a limits gap. Someone struggling with limits usually has a functions gap. The Gap traces the dependency chain, diagnoses the gap type, and gives you a focused fix for the specific hole.",
+    howToUse: [
+      "Enter the concept you're stuck on — be specific ('integration by parts' not just 'calculus')",
+      "Add subject, your level (high school through grad), and what you DO understand to help calibrate",
+      "Review the prerequisite chain — each node has a quick self-test and gap-likelihood rating",
+      "Click any node and answer honestly: Can't answer / Unsure / Got it",
+      "Review the likely gap, its refresher, and the 3-step study plan",
+      "Use Deep Dive for worked examples and practice problems on the specific gap"
+    ],
+    example: {
+      scenario: "You're in Calculus II and can't understand integration by parts. You've watched three YouTube videos and it still doesn't click.",
+      action: "Enter 'Integration by parts', subject 'Calculus', level 'Undergrad', add 'I can do basic integrals but u-substitution was already shaky'.",
+      result: "The Gap builds a chain: Algebra → Functions → Limits → Derivatives → Product Rule → Integration by Parts. The likely gap is flagged at Product Rule (high likelihood) — you never internalized WHY the product rule works, so you can't reverse it into integration by parts. Quick refresher explains the connection, practice problems confirm the fix, and the forward connection shows exactly how understanding the product rule makes integration by parts click."
+    },
+    tips: [
+      "The 'What do you understand?' field is gold — it lets the tool skip prerequisites you already have",
+      "Gap types matter: a conceptual gap needs explanation, a procedural gap needs practice, a definitional gap just needs a definition",
+      "Quick tests at each node are honest diagnostics — don't skip them, they're how you find the real gap",
+      "The likely gap is usually 2-3 steps back from where you think the problem is",
+      "Deep Dive practice problems go easy → hard — if you nail the easy one, the gap is probably elsewhere",
+      "Works for any subject: STEM, humanities, social sciences, languages — anything with prerequisite knowledge"
+    ]
+  }
+},
   {
     id: "BuyWise",
     title: "Buy Wise",
@@ -3690,62 +3838,6 @@ After each episode, a quick debrief builds your personal toolkit over time.`,
     difficulty: "easy",
   },
   
-  {
-    id: "Presenter",
-    title: "Presenter",
-    category: "Academic",
-    icon: "🎤",
-    description: "Pacing tool that listens to your speech and tells you to slow down.",
-    tagline: "Real-time pacing coach for presentations",
-    
-    guide: {
-      overview: "Presenter uses real-time speech analysis to help you maintain good presentation pacing. It listens as you speak and vibrates/alerts when you're talking too fast, using filler words, or need to pause.",
-      
-      howToUse: [
-        "Set your presentation duration (e.g., 10 minutes)",
-        "Start Presenter and begin your presentation",
-        "Watch the real-time feedback: pace indicator, filler word counter",
-        "Feel haptic alerts when you speed up too much",
-        "Review the summary after: average pace, filler words, pauses"
-      ],
-      
-      tips: [
-        "Practice with Presenter 3-5 times before the real presentation",
-        "Pauses feel awkward to you but natural to audience",
-        "Aim for 120-150 words per minute"
-      ]
-    }
-  },
-  {
-    id: "FridgeAlchemy",
-    title: "Fridge Alchemy",
-    category: "Daily Life",
-    icon: "🧪",
-    description: "Generates creative meals from the random 2-8 ingredients left in your fridge. Honest about what's possible, playful about constraints. Snap a fridge photo or type what you have.",
-    tagline: "A meal from whatever's left in your fridge",
-    guide: {
-      overview: "FridgeAlchemy takes whatever random ingredients you have — even just 2 or 3 — and generates 2-3 creative recipes using ONLY those ingredients plus basic staples. Snap a fridge photo for AI ingredient detection, or just type what you've got. Each recipe comes with a vibe tag, honest rating, and a 'What if you had ONE more thing?' bonus suggestion.",
-      howToUse: [
-        "Type ingredients and press Enter (or comma) to add them as chips — or snap a photo of your fridge for AI detection",
-        "Toggle which kitchen staples you always have (salt, pepper, oil are checked by default)",
-        "Optionally set constraints: time limit, equipment, dietary needs, effort level",
-        "Hit 'Alchemize' to get 2-3 recipes with step-by-step instructions",
-        "Check off steps as you cook, refine recipes (spicier, different, microwave only), or copy to clipboard"
-      ],
-      example: {
-        scenario: "It's 9 PM. You have eggs, tortillas, and cheese. You're not going to the store.",
-        action: "Add eggs, tortillas, cheese. Hit Alchemize.",
-        result: "Recipe 1: Crispy Cheese Quesadilla with Egg (😌 Comfort classic, 10 min, Easy). Recipe 2: Egg & Cheese Tortilla Wrap (⚡ 5-minute save). Plus: 'If you also had an onion, you could make caramelized onion quesadillas or huevos rancheros.'"
-      },
-      tips: [
-        "The fridge photo scanner works best with good lighting — it identifies visible ingredients and adds them as chips you can edit",
-        "Don't forget to check off staples you actually have (butter, garlic, soy sauce) — they expand your options without counting as 'ingredients'",
-        "The 'one more thing' suggestion tells you the single highest-impact item to grab if you do make a quick store run",
-        "Use the refinement buttons to adjust recipes without starting over — 'Spicier', 'Different', or 'Microwave only'",
-        "2-3 ingredients = simple dishes, and that's fine. The tool is honest, not pretentious."
-      ]
-    }
-  },
 {
   id: "SafeWalk",
   title: "Safe Walk",
@@ -3789,32 +3881,6 @@ After each episode, a quick debrief builds your personal toolkit over time.`,
     ]
   }
 },
-  {
-    id: "ZenMode",
-    title: "ZenMode",
-    category: "Daily Life",
-    icon: "🧘",
-    description: "Batches notifications to deliver them only twice a day.",
-    tagline: "Batch your notifications to twice a day",
-    
-    guide: {
-      overview: "ZenMode holds all your non-urgent notifications and delivers them in two batches per day (you choose the times). Stop the constant dings and buzzes disrupting your focus.",
-      
-      howToUse: [
-        "Set your notification batch times (e.g., 12pm and 6pm)",
-        "Choose which apps to batch (can exclude texts/calls)",
-        "Enable ZenMode",
-        "Check notifications only at your scheduled times",
-        "Urgent contacts can always get through"
-      ],
-      
-      tips: [
-        "Add important contacts to 'always notify' list",
-        "Start with 2x daily, can reduce to 1x daily later",
-        "First few days feel weird, then you'll never go back"
-      ]
-    }
-  },
   {
   id: "RoommateCourt",
   title: "RoommateCourt",
@@ -3927,376 +3993,6 @@ After each episode, a quick debrief builds your personal toolkit over time.`,
       ]
     }
   },
-  
-  {
-    id: "Unsubscribe",
-    title: "Unsubscribe",
-    category: "Daily Life",
-    icon: "✂️",
-    description: "Finds the tiny unsubscribe link in emails and makes it a huge button.",
-    tagline: "Make tiny unsubscribe links impossible to miss",
-    
-    guide: {
-      overview: "Unsubscribe detects marketing emails and creates a prominent 'UNSUBSCRIBE NOW' button at the top. No more hunting for the tiny link in 8pt gray text at the bottom.",
-      
-      howToUse: [
-        "Install the browser extension or email plugin",
-        "Open any marketing email",
-        "See the big 'UNSUBSCRIBE' button at the top",
-        "Click once to unsubscribe",
-        "Email automatically moves to trash"
-      ],
-      
-      tips: [
-        "Unsubscribe from everything you don't actively read",
-        "If you haven't opened their emails in 30 days, unsubscribe",
-        "Can bulk-unsubscribe from multiple senders at once"
-      ]
-    }
-  },
-  // ========================================================================
-  // SOCIAL
-  // ========================================================================
-  {
-    id: "KidBot",
-    title: "KidBot",
-    category: "Communication",
-    icon: "🧒",
-    description: "Generates texts to your parents that sound like you, to keep them happy.",
-    tagline: "Generate texts to parents that sound like you",
-    
-    guide: {
-      overview: "KidBot learns your texting style and generates realistic messages to your parents. Keep them happy and worry-free with regular check-ins, without spending time crafting messages.",
-      
-      howToUse: [
-        "Let KidBot analyze your previous texts to parents",
-        "Set desired check-in frequency (daily, weekly)",
-        "Review and approve/edit suggested messages",
-        "Send directly or schedule for later",
-        "Respond to their replies normally"
-      ],
-      
-      tips: [
-        "Always review before sending - don't auto-send",
-        "Use for basic check-ins, not important conversations",
-        "Adjust formality to match your actual relationship",
-        "Mix in real messages too - don't become 100% automated"
-      ],
-      
-      pitfalls: [
-        "Don't use for serious topics or important news",
-        "Parents will notice if messages are too repetitive",
-        "Some parents prefer actual calls - know your audience"
-      ]
-    }
-  },
-  
-  {
-    id: "Impartial",
-    title: "Impartial",
-    category: "Communication",
-    icon: "⚖️",
-    description: "Fact-checker to instantly settle trivia arguments between friends.",
-    tagline: "Settle trivia arguments with instant fact-checks",
-    
-    guide: {
-      overview: "Impartial is an AI fact-checker that settles debates by finding credible sources. End the 'I'm pretty sure...' arguments with actual verified facts.",
-      
-      howToUse: [
-        "Type or speak the disputed claim",
-        "Wait 5 seconds for AI to search credible sources",
-        "Get the verdict: True, False, or Partially True",
-        "See the sources cited",
-        "Accept defeat gracefully or vindication graciously"
-      ],
-      
-      tips: [
-        "Works best for factual claims, not opinions",
-        "Check the sources if the answer seems wrong",
-        "Don't use to be 'that guy' who fact-checks everything"
-      ]
-    }
-  },
-  
-  {
-    id: "TheNetwork",
-    title: "The Network",
-    category: "Communication",
-    icon: "🤝",
-    description: "Connects you with alumni from your college in your dream job.",
-    tagline: "Connect with alumni in your dream career",
-    
-    guide: {
-      overview: "TheNetwork is a searchable database of alumni willing to give career advice. Find people who went to your school and now work in your target industry/company, then request informational interviews.",
-      
-      howToUse: [
-        "Enter your school and target industry/company",
-        "Browse alumni profiles with their current roles",
-        "Read their 'happy to discuss' topics",
-        "Send a connection request with your questions",
-        "Schedule a 15-30 minute call/coffee chat"
-      ],
-      
-      tips: [
-        "Lead with your school connection, not a job request",
-        "Ask about their path, not if they're hiring",
-        "Send thank-you notes after every conversation",
-        "Offer to help future students when you graduate"
-      ]
-    }
-  },
-  
-  {
-    id: "TheHub",
-    title: "The Hub",
-    category: "Communication",
-    icon: "🔌",
-    description: "Aggregates every campus event from flyers and Facebook into one map.",
-    tagline: "Every campus event in one searchable map",
-    
-    guide: {
-      overview: "TheHub consolidates all campus events from Facebook groups, flyers, department emails, and club announcements into one searchable calendar and map.",
-      
-      howToUse: [
-        "View today's events on the map or calendar",
-        "Filter by category (social, academic, free food, sports)",
-        "Set alerts for keywords (free food, study break, guest speaker)",
-        "RSVP directly through the app",
-        "Share events with friends"
-      ],
-      
-      tips: [
-        "Set free food alerts - never miss free pizza again",
-        "Check the 'happening now' tab for last-minute events",
-        "Submit events to help build the community"
-      ]
-    }
-  },
-
-  // ========================================================================
-  // FINANCE
-  // ========================================================================
-  {
-    id: "TheGhost",
-    title: "The Ghost",
-    category: "Money",
-    icon: "👻",
-    description: "Finds and cancels zombie subscription trials instantly.",
-    tagline: "Find and cancel zombie subscription trials",
-    
-    guide: {
-      overview: "TheGhost automatically detects subscription trials that are about to auto-renew and forgotten recurring charges. It monitors your bank/card transactions, identifies subscription patterns, and helps you cancel unwanted services before they charge you again.",
-      
-      howToUse: [
-        "Connect your bank account or credit card securely (read-only access)",
-        "TheGhost scans your transaction history for subscription patterns",
-        "Review detected subscriptions - active, upcoming renewals, and forgotten charges",
-        "Click 'Cancel' on any unwanted subscription",
-        "TheGhost handles the cancellation process automatically"
-      ],
-      
-      example: {
-        scenario: "Mike signed up for a 7-day free trial of a meditation app 6 days ago and forgot about it. The trial auto-renews tomorrow at $89.99/year.",
-        action: "TheGhost detects the upcoming charge, sends Mike an alert, and shows the subscription with a red 'RENEWS TOMORROW' badge.",
-        result: "Mike clicks 'Cancel Subscription'. TheGhost automatically navigates the cancellation flow and confirms the trial is canceled. Mike saves $89.99."
-      },
-      
-      tips: [
-        "Connect all cards you use for online purchases to catch everything",
-        "Check TheGhost weekly - new trials appear constantly",
-        "Set trial reminders 2 days before renewal to have time to decide",
-        "Use the 'Maybe Keep' list for subscriptions you want to evaluate",
-        "Annual subscriptions save money BUT only if you'll use them all year"
-      ],
-      
-      pitfalls: [
-        "Don't ignore 'upcoming renewal' alerts - they're time-sensitive",
-        "Don't cancel subscriptions you actually use regularly",
-        "Remember: 'Free trial' often means 'starts charging soon'"
-      ]
-    }
-  },
-  
-  {
-    id: "FairShare",
-    title: "FairShare",
-    category: "Money",
-    icon: "🍕",
-    description: "Scan receipts to split bills item-by-item with tax and tip included.",
-    tagline: "Split bills item-by-item with tax and tip",
-    
-    guide: {
-      overview: "FairShare uses AI to read restaurant receipts and split bills fairly by item. No more 'split evenly' where you overpay because someone ordered the expensive steak and three cocktails. Tax and tip are proportionally distributed based on what each person actually ordered.",
-      
-      howToUse: [
-        "Take a photo of the receipt after your meal",
-        "FairShare OCR reads all items, prices, tax, and tip automatically",
-        "Assign each item to the person who ordered it (tap item, select person)",
-        "Review the split - each person sees their subtotal, tax share, and tip share",
-        "Send payment requests via Venmo/CashApp or show them their amount"
-      ],
-      
-      example: {
-        scenario: "Four friends go to dinner. Sarah gets a $12 salad. Tom orders a $38 steak and $15 in drinks. Lisa and Mike each get $18 entrees. Bill total: $128 before tax/tip.",
-        action: "Sarah takes a receipt photo. FairShare reads it. She assigns items: Sarah→salad, Tom→steak+drinks, Lisa→entree, Mike→entree. Tax is $11.52, tip is $25.60.",
-        result: "FairShare calculates: Sarah pays $16.24, Tom pays $70.62, Lisa pays $24.16, Mike pays $24.16. Sarah saves $15.76 vs. splitting evenly ($32/person). Tom pays his fair share."
-      },
-      
-      tips: [
-        "Assign shared appetizers to 'Everyone' and FairShare divides them equally",
-        "For couples sharing meals, assign items to one person then manually split 50/50",
-        "Take the photo before the receipt gets crumpled or stained",
-        "Review the OCR - sometimes it misreads prices, you can edit them",
-        "Use the 'Favorite Groups' feature for regular friend groups"
-      ],
-      
-      pitfalls: [
-        "Don't forget to assign ALL items before finalizing - unassigned items default to split evenly",
-        "Don't split evenly 'to be nice' if you ordered way less - that's why FairShare exists",
-        "Make sure everyone agrees on tip percentage BEFORE splitting"
-      ],
-      
-      quickReference: {
-        "Photo clarity": "Good lighting, flat receipt",
-        "Edit mode": "Tap any price to manually correct",
-        "Tax/tip": "Auto-distributed proportionally",
-        "Venmo": "One-tap to send requests"
-      }
-    }
-  },
-  
-  {
-    id: "TheGig",
-    title: "The Gig",
-    category: "Money",
-    icon: "💼",
-    description: "Aggregates one-off cash jobs that pay today.",
-    tagline: "One-off cash jobs that pay today",
-    
-    guide: {
-      overview: "TheGig aggregates quick-pay gig opportunities from multiple platforms (TaskRabbit, Handy, Instawork, etc.) into one feed. AI ranks them by hourly rate, distance, and your skill match. Focus on gigs that pay same-day or next-day rather than waiting weeks for payment.",
-      
-      howToUse: [
-        "Set your location and available hours",
-        "Select your skills (moving, cleaning, handyman, delivery, etc.)",
-        "Set your minimum acceptable hourly rate",
-        "Review the ranked feed - highest value opportunities at top",
-        "Claim gigs directly through the app",
-        "Complete the work and get paid same/next day"
-      ],
-      
-      example: {
-        scenario: "Jordan needs $200 by tomorrow for rent. He has 6 hours free today. He's good at moving and handyman work.",
-        action: "Jordan opens TheGig, sets location, selects 'Moving' and 'Handyman' skills, sets minimum $30/hr. The AI shows: (1) Moving job: $45/hr, 3hrs, 2 miles away, pays today. (2) Furniture assembly: $35/hr, 2hrs, 5 miles, pays tomorrow.",
-        result: "Jordan claims the moving job (earns $135 in 3hrs). He still needs $65, so he claims a 2hr cleaning gig at $35/hr (earns $70). Total: $205 in 5 hours, paid same day. Rent covered."
-      },
-      
-      tips: [
-        "Early morning (6-8am) is when new gigs drop - check then first",
-        "Set alerts for high-paying gigs in your area",
-        "Your rating affects which gigs you can access - be professional",
-        "Bundle gigs in the same neighborhood to save travel time",
-        "Cash tip gigs (moving, cleaning) often pay more than posted rate"
-      ],
-      
-      pitfalls: [
-        "Don't claim gigs you can't complete on time - damages your rating",
-        "Don't accept gigs below your minimum - devalues your time",
-        "Avoid gigs with vague descriptions - often more work than advertised"
-      ]
-    }
-  },
-  // ========================================================================
-  // HEALTH
-  // ========================================================================
-  {
-    id: "SleepDebt",
-    title: "SleepDebt",
-    category: "Health",
-    icon: "😴",
-    description: "Calculates exactly how and when to nap to recover from an all-nighter.",
-    tagline: "Calculate exactly how and when to recover lost sleep",
-    
-    guide: {
-      overview: "SleepDebt tracks your sleep deficit and calculates optimal nap times and durations to recover without ruining your sleep schedule. Based on circadian rhythm science and sleep cycle research.",
-      
-      howToUse: [
-        "Enter how much you slept (or didn't) last night",
-        "SleepDebt calculates your deficit",
-        "See recommended nap times (when) and durations (how long)",
-        "Set alarms for suggested naps",
-        "Track recovery over multiple days"
-      ],
-      
-      example: "All-nighter for exam. Slept 0 hours. SleepDebt recommends: (1) 20-min power nap at 2pm. (2) 90-min nap at 5pm (full sleep cycle). (3) Normal bedtime at 10pm. You'll be recovered by tomorrow morning.",
-      
-      tips: [
-        "Never nap after 6pm or you'll mess up tonight's sleep",
-        "20-min naps prevent grogginess, 90-min naps complete a full cycle",
-        "Can't fully recover in one day - debt accumulates"
-      ]
-    }
-  },
-  {
-    id: "DrinkWater",
-    title: "DrinkWater",
-    category: "Health",
-    icon: "💧",
-    description: "Browser tab that makes pouring sounds to remind you to hydrate.",
-    tagline: "Gentle hydration reminders throughout your day",
-    
-    guide: {
-      overview: "DrinkWater is a simple browser tab that plays water pouring sounds every hour to remind you to drink water. Surprisingly effective at building the hydration habit.",
-      
-      howToUse: [
-        "Keep DrinkWater tab open while working",
-        "Every hour, hear water pouring sound",
-        "Drink a glass of water",
-        "Click 'Done' to reset timer",
-        "Track daily water intake"
-      ],
-      
-      tips: [
-        "Keep water bottle at desk so you actually drink when reminded",
-        "Aim for 8 glasses (64oz) per day",
-        "More if you exercise or drink coffee"
-      ]
-    }
-  },
-  {
-    id: "SymptomSolver",
-    title: "SymptomSolver",
-    category: "Health",
-    icon: "🩺",
-    description: "Filters WebMD panic to tell you if you actually need the ER.",
-    tagline: "Filter WebMD panic — do you actually need the ER?",
-    
-    guide: {
-      overview: "SymptomSolver takes your symptoms and gives you straight answers: (1) Go to ER now, (2) See doctor this week, (3) Self-care at home. Cuts through the WebMD 'you're dying' panic.",
-      
-      howToUse: [
-        "Enter your symptoms",
-        "Answer follow-up questions (severity, duration)",
-        "Get clear recommendation: ER, Doctor, or Home care",
-        "See specific actions to take",
-        "Track symptoms over time if doing home care"
-      ],
-      
-      example: "Headache + fever + stiff neck = 'Go to ER now - possible meningitis'. Headache + tired + stress = 'Self-care: rest, hydrate, OTC pain relief'.",
-      
-      tips: [
-        "Always err on side of caution - if it says ER, go",
-        "Track symptom progression to show doctor later",
-        "Not a replacement for actual medical advice"
-      ],
-      
-      pitfalls: [
-        "If you're having a medical emergency, call 911 - don't use an app",
-        "App can't examine you - doctor visit when recommended",
-        "Don't ignore worsening symptoms"
-      ]
-    }
-  }
 ];
 export const getToolById = (id) => {
   return tools.find(tool => tool.id === id);

@@ -1,8 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
-const rateLimit = require('../lib/rateLimiter');
-
+const { rateLimit, DEFAULT_LIMITS, DIVERSION_LIMITS } = require('../lib/rateLimiter');
 // ════════════════════════════════════════════════════════════
 // FINAL WISH v3 — Backend Route
 // Seven call types: parse-accounts, parse-financial,

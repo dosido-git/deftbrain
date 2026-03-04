@@ -1,0 +1,424 @@
+import React, { useState, useRef, useCallback, useEffect } from 'react';
+import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import { useTheme } from '../hooks/useTheme';
+import { usePersistentState } from '../hooks/usePersistentState';
+import { CopyBtn } from '../components/ActionButtons';
+
+// ════════════════════════════════════════════════════════════
+// THEME — Navy & Gold
+// ════════════════════════════════════════════════════════════
+const useColors = () => {
+  const { theme } = useTheme();
+  const d = theme === 'dark';
+  return {
+    card:        d ? 'bg-[#2a2623] border-[#3d3630]'  : 'bg-white border-[#e8e1d5]',
+    cardAlt:     d ? 'bg-[#332e2a] border-[#3d3630]'  : 'bg-[#faf8f5] border-[#e8e1d5]',
+    inset:       d ? 'bg-[#1a1816]'                    : 'bg-[#faf8f5]',
+    inputBg:     d ? 'bg-[#1a1816] border-[#3d3630] text-[#f0eeea] placeholder-[#8a8275] focus:border-[#4a6a8a] focus:ring-[#4a6a8a]/20'
+                    : 'bg-[#faf8f5] border-[#d5cab8] text-[#3d3935] placeholder-[#8a8275] focus:border-[#4a6a8a] focus:ring-[#4a6a8a]/20',
+    text:        d ? 'text-[#f0eeea]'  : 'text-[#3d3935]',
+    heading:     d ? 'text-[#f3efe8]'  : 'text-[#1e2a3a]',
+    textSec:     d ? 'text-[#c8c3b9]'  : 'text-[#5a544a]',
+    textMut:     d ? 'text-[#8a8275]'  : 'text-[#8a8275]',
+    label:       d ? 'text-[#c8c3b9]'  : 'text-[#5a544a]',
+    btn:         d ? 'bg-[#2c4a6e] hover:bg-[#4a6a8a] text-white' : 'bg-[#2c4a6e] hover:bg-[#1e3a58] text-white',
+    btnSec:      d ? 'bg-[#332e2a] hover:bg-[#3d3630] text-[#c8c3b9] border border-[#3d3630]' : 'bg-[#f3efe8] hover:bg-[#e8e1d5] text-[#5e5042] border border-[#d5cab8]',
+    btnGhost:    d ? 'text-[#8a8275] hover:text-[#f0eeea]' : 'text-[#8a8275] hover:text-[#3d3935]',
+    btnDis:      d ? 'bg-[#332e2a] text-[#5a544a] cursor-not-allowed' : 'bg-[#e8e1d5] text-[#8a8275] cursor-not-allowed',
+    pillActive:  d ? 'border-[#4a6a8a] bg-[#2c4a6e]/30 text-[#a8b9ce]' : 'border-[#2c4a6e] bg-[#d4dde8] text-[#1e3a58]',
+    pillInactive: d ? 'border-[#3d3630] text-[#8a8275] hover:border-[#5a544a]' : 'border-[#d5cab8] text-[#5a544a] hover:border-[#8a8275]',
+    badge:       d ? 'bg-[#2c4a6e]/30 text-[#a8b9ce]' : 'bg-[#d4dde8] text-[#1e3a58]',
+    tipBg:       d ? 'bg-[#c8872e]/10 border-[#c8872e]/30' : 'bg-[#f9edd8] border-[#c8872e]/30',
+    tipText:     d ? 'text-[#d9a04e]' : 'text-[#93541f]',
+    successBg:   d ? 'bg-[#5a8a5c]/10 border-[#5a8a5c]/30' : 'bg-[#e8f0e8] border-[#5a8a5c]/30',
+    successText: d ? 'text-[#7aba7c]' : 'text-[#3a6a3c]',
+    warnBg:      d ? 'bg-[#b54a3f]/10 border-[#b54a3f]/30' : 'bg-[#fceae8] border-[#e8a8a0]',
+    warnText:    d ? 'text-[#e88880]' : 'text-[#b54a3f]',
+    errBg:       d ? 'bg-[#b54a3f]/15 border-[#b54a3f]/40' : 'bg-[#fceae8] border-[#e8a8a0]',
+    errText:     d ? 'text-[#e88880]' : 'text-[#b54a3f]',
+    divider:     d ? 'border-[#3d3630]' : 'border-[#e8e1d5]',
+    histBg:      d ? 'bg-[#2c4a6e]/10 border-[#4a6a8a]/30' : 'bg-[#d4dde8]/30 border-[#2c4a6e]/15',
+    histCard:    d ? 'bg-[#2a2623] border-[#3d3630]' : 'bg-white border-[#e8e1d5]',
+    linkStyle:   d ? 'text-[#6e8aaa] hover:text-[#a8b9ce] underline' : 'text-[#2c4a6e] hover:text-[#1e3a58] underline',
+    // Version cards — safe/bold/middle
+    safeBg:      d ? 'bg-[#5a8a5c]/10 border-[#5a8a5c]/30' : 'bg-[#e8f0e8] border-[#5a8a5c]/30',
+    boldBg:      d ? 'bg-[#c8872e]/10 border-[#c8872e]/30' : 'bg-[#f9edd8] border-[#c8872e]/30',
+    midBg:       d ? 'bg-[#2c4a6e]/15 border-[#4a6a8a]/30' : 'bg-[#d4dde8]/30 border-[#2c4a6e]/15',
+  };
+};
+
+// ════════════════════════════════════════════════════════════
+// CONSTANTS
+// ════════════════════════════════════════════════════════════
+const AUDIENCES = [
+  { value: 'interviewer', label: '💼 Job Interviewer' },
+  { value: 'landlord', label: '🏠 Landlord' },
+  { value: 'date', label: '💕 Date' },
+  { value: 'in-laws', label: '👨‍👩‍👧 In-Laws / Partner\'s Family' },
+  { value: 'lender', label: '🏦 Lender / Bank' },
+  { value: 'coworker', label: '🤝 Coworker' },
+  { value: 'friend', label: '👋 Friend / Acquaintance' },
+  { value: 'networking', label: '📇 Networking Event' },
+  { value: 'custom', label: '✏️ Custom...' },
+];
+
+const TONES = [
+  { value: 'professional', label: '💼 Professional' },
+  { value: 'casual', label: '😊 Casual' },
+  { value: 'warm', label: '🤗 Warm' },
+  { value: 'confident', label: '💪 Confident' },
+];
+
+const EXAMPLES = [
+  { label: 'Resume gap', situation: 'I have a 2-year gap on my resume from 2021-2023. The truth is I was dealing with burnout and took time off to figure out what I wanted. I did some freelance work here and there but nothing consistent.', audience: 'interviewer' },
+  { label: 'Short job tenure', situation: 'I left my last job after only 4 months. The company was chaotic, management was toxic, and they misrepresented the role during interviews. I didn\'t want to stay and get stuck.', audience: 'interviewer' },
+  { label: 'Career pivot', situation: 'I was an accountant for 8 years and now I\'m trying to get into UX design. I took a bootcamp and have a few projects but no real experience. My career path looks random.', audience: 'interviewer' },
+  { label: 'Frequent moves', situation: 'I\'ve moved 5 times in 3 years. A mix of bad roommates, a breakup, one eviction (my roommate stopped paying rent), and a job relocation. It looks terrible on rental applications.', audience: 'landlord' },
+];
+
+// ════════════════════════════════════════════════════════════
+// MAIN COMPONENT
+// ════════════════════════════════════════════════════════════
+const TheAlibi = () => {
+  const { callToolEndpoint, loading } = useClaudeAPI();
+  const c = useColors();
+  const resultsRef = useRef(null);
+
+  const [history, setHistory] = usePersistentState('the-alibi-history', []);
+  const [showHistory, setShowHistory] = useState(false);
+
+  // Input
+  const [situation, setSituation] = useState('');
+  const [audience, setAudience] = useState('interviewer');
+  const [customAudience, setCustomAudience] = useState('');
+  const [tone, setTone] = useState('professional');
+  const [concerns, setConcerns] = useState('');
+  const [context, setContext] = useState('');
+
+  // Results
+  const [results, setResults] = useState(null);
+  const [error, setError] = useState('');
+  const [expandedVersion, setExpandedVersion] = useState(0);
+  const [showFollowups, setShowFollowups] = useState(true);
+  const [showMistakes, setShowMistakes] = useState(false);
+
+  useEffect(() => {
+    if (results && resultsRef.current) {
+      setTimeout(() => resultsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' }), 200);
+    }
+  }, [results]);
+
+  const frame = useCallback(async () => {
+    if (!situation.trim()) { setError('Tell us the real story'); return; }
+    setError(''); setResults(null);
+    try {
+      const data = await callToolEndpoint('the-alibi', {
+        situation: situation.trim(), audience,
+        customAudience: audience === 'custom' ? customAudience.trim() : null,
+        tone, concerns: concerns.trim() || null, context: context.trim() || null,
+      });
+      setResults(data);
+      const label = AUDIENCES.find(a => a.value === audience)?.label || audience;
+      const entry = { id: 'ali_' + Date.now(), date: new Date().toISOString(), audience: label, situation: situation.trim().substring(0, 60) + '...', results: data };
+      setHistory(prev => [entry, ...prev].slice(0, 20));
+    } catch (err) { setError(err.message || 'Failed to frame your story.'); }
+  }, [situation, audience, customAudience, tone, concerns, context, callToolEndpoint, setHistory]);
+
+  const handleReset = useCallback(() => {
+    setSituation(''); setConcerns(''); setContext(''); setCustomAudience('');
+    setResults(null); setError('');
+  }, []);
+
+  const loadExample = useCallback((ex) => {
+    setSituation(ex.situation); setAudience(ex.audience); setResults(null); setError('');
+  }, []);
+
+  const buildCopy = useCallback(() => {
+    if (!results) return '';
+    const lines = ['🎭 The Alibi — Your Story, Framed Right', ''];
+    if (results.reframe) lines.push('KEY INSIGHT: ' + results.reframe, '');
+    results.versions?.forEach((v, i) => {
+      lines.push('VERSION ' + (i + 1) + ': ' + v.label);
+      lines.push(v.script); lines.push('');
+    });
+    if (results.follow_up_prep?.length) {
+      lines.push('FOLLOW-UP PREP:');
+      results.follow_up_prep.forEach(f => lines.push('Q: ' + f.question, 'A: ' + f.answer, ''));
+    }
+    lines.push('— Generated by DeftBrain · deftbrain.com');
+    return lines.join('\n');
+  }, [results]);
+
+  const versionBg = (idx) => idx === 0 ? c.safeBg : idx === 1 ? c.midBg : c.boldBg;
+
+  // ══════════════════════════════════════════
+  // RENDER HELPERS
+  // ══════════════════════════════════════════
+  const Section = ({ title, emoji, open, onToggle, badge, children }) => (
+    <div className={c.card + ' border rounded-xl overflow-hidden'}>
+      <button onClick={onToggle} className="w-full flex items-center justify-between p-5 text-left hover:opacity-80">
+        <div className="flex items-center gap-3">
+          <span className="text-lg">{emoji}</span>
+          <span className={'text-base font-semibold ' + c.text}>{title}</span>
+          {badge && <span className={'text-xs px-2 py-0.5 rounded-full ' + c.badge}>{badge}</span>}
+        </div>
+        <span className={'text-xs ' + c.textMut}>{open ? '▲' : '▼'}</span>
+      </button>
+      {open && <div className={'px-5 pb-5 border-t ' + c.divider}>{children}</div>}
+    </div>
+  );
+
+  const Pill = ({ active, onClick, children }) => (
+    <button onClick={onClick}
+      className={'px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all ' + (active ? c.pillActive : c.pillInactive)}>
+      {active && <span className="mr-1">✓</span>}{children}
+    </button>
+  );
+
+  // ══════════════════════════════════════════
+  // INPUT
+  // ══════════════════════════════════════════
+  const renderInput = () => (
+    <div className="space-y-4">
+      <div className={c.card + ' border rounded-xl p-5'}>
+        <label className={'text-base font-bold ' + c.text + ' mb-1 block'}>🎭 What's the real story?</label>
+        <p className={'text-sm ' + c.textMut + ' mb-4'}>Be honest — the messier the truth, the better we can frame it. This stays between us.</p>
+        <textarea value={situation} onChange={e => setSituation(e.target.value)}
+          placeholder="e.g., I have a 2-year gap on my resume because I burned out and needed time off. I did some freelance stuff but nothing consistent..."
+          className={'w-full h-32 p-4 border-2 rounded-xl ' + c.inputBg + ' outline-none focus:ring-2 resize-none text-sm'} />
+      </div>
+
+      <div className={c.card + ' border rounded-xl p-5 space-y-4'}>
+        <div>
+          <label className={'text-xs font-bold ' + c.textSec + ' uppercase tracking-wide mb-2 block'}>👥 Who are you telling?</label>
+          <div className="flex flex-wrap gap-1.5">
+            {AUDIENCES.map(a => <Pill key={a.value} active={audience === a.value} onClick={() => setAudience(a.value)}>{a.label}</Pill>)}
+          </div>
+          {audience === 'custom' && (
+            <input type="text" value={customAudience} onChange={e => setCustomAudience(e.target.value)}
+              placeholder="Describe your audience..." className={'w-full mt-2 px-4 py-2.5 rounded-xl border text-sm ' + c.inputBg + ' outline-none'} />
+          )}
+        </div>
+        <div>
+          <label className={'text-xs font-bold ' + c.textSec + ' uppercase tracking-wide mb-2 block'}>🎯 Tone</label>
+          <div className="flex flex-wrap gap-1.5">
+            {TONES.map(t => <Pill key={t.value} active={tone === t.value} onClick={() => setTone(t.value)}>{t.label}</Pill>)}
+          </div>
+        </div>
+        <div>
+          <label className={'text-xs font-bold ' + c.textSec + ' uppercase tracking-wide mb-1 block'}>😰 What are you worried they'll think?</label>
+          <input type="text" value={concerns} onChange={e => setConcerns(e.target.value)}
+            placeholder="e.g., 'They'll think I'm unreliable', 'It looks like I was fired'"
+            className={'w-full px-4 py-2.5 rounded-xl border text-sm ' + c.inputBg + ' outline-none'} />
+        </div>
+        <div>
+          <label className={'text-xs font-bold ' + c.textSec + ' uppercase tracking-wide mb-1 block'}>📝 Extra context (optional)</label>
+          <input type="text" value={context} onChange={e => setContext(e.target.value)}
+            placeholder="e.g., 'applying for senior role', 'first date', 'mortgage application'"
+            className={'w-full px-4 py-2.5 rounded-xl border text-sm ' + c.inputBg + ' outline-none'} />
+        </div>
+      </div>
+
+      {/* Examples */}
+      <div className={'p-4 rounded-xl ' + c.inset}>
+        <p className={'text-xs font-bold ' + c.textMut + ' mb-2'}>💡 Try an example:</p>
+        <div className="flex flex-wrap gap-1.5">
+          {EXAMPLES.map((ex, i) => (
+            <button key={i} onClick={() => loadExample(ex)} className={'px-3 py-1.5 rounded-lg border text-xs font-semibold ' + c.pillInactive}>{ex.label}</button>
+          ))}
+        </div>
+      </div>
+
+      <button onClick={frame} disabled={loading || !situation.trim()}
+        className={'w-full py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all ' + (loading || !situation.trim() ? c.btnDis : c.btn)}>
+        {loading ? <><span className="animate-spin inline-block">⏳</span> Framing your story...</> : <><span>🎭</span> Frame My Story</>}
+      </button>
+    </div>
+  );
+
+  // ══════════════════════════════════════════
+  // RESULTS
+  // ══════════════════════════════════════════
+  const renderResults = () => {
+    if (!results) return null;
+    return (
+      <div ref={resultsRef} className="space-y-4 mt-4">
+        {/* Situation read */}
+        {results.situation_read && (
+          <div className={'p-5 rounded-2xl border-2 ' + c.tipBg}>
+            <p className={'text-sm ' + c.tipText}>{results.situation_read}</p>
+          </div>
+        )}
+
+        {/* Reframe */}
+        {results.reframe && (
+          <div className={c.card + ' border rounded-xl p-5'}>
+            <p className={'text-xs font-bold ' + c.textMut + ' uppercase mb-2'}>💡 The reframe</p>
+            <p className={'text-base font-bold ' + c.text}>{results.reframe}</p>
+          </div>
+        )}
+
+        {/* Versions */}
+        {results.versions?.map((v, idx) => (
+          <div key={idx} className={'p-5 rounded-xl border-2 ' + versionBg(idx)}>
+            <button onClick={() => setExpandedVersion(expandedVersion === idx ? -1 : idx)} className="w-full text-left">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <span className={'text-xs font-bold px-2 py-0.5 rounded-full ' + c.badge}>Version {idx + 1}</span>
+                  <span className={'text-sm font-bold ' + c.text}>{v.label}</span>
+                </div>
+                <span className={'text-xs ' + c.textMut}>{expandedVersion === idx ? '▲' : '▼'}</span>
+              </div>
+              <p className={'text-xs ' + c.textSec + ' italic'}>{v.strategy}</p>
+            </button>
+
+            {expandedVersion === idx && (
+              <div className="mt-4 space-y-3">
+                <div className={'p-4 rounded-xl ' + c.inset}>
+                  <p className={'text-xs font-bold ' + c.textMut + ' uppercase mb-2'}>📝 What to say</p>
+                  <p className={'text-sm leading-relaxed ' + c.text + ' italic'}>"{v.script}"</p>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className={'p-3 rounded-lg ' + c.successBg}>
+                    <p className={'text-[10px] font-bold ' + c.successText + ' uppercase mb-1'}>Best for</p>
+                    <p className={'text-xs ' + c.successText}>{v.when_to_use}</p>
+                  </div>
+                  <div className={'p-3 rounded-lg ' + c.warnBg}>
+                    <p className={'text-[10px] font-bold ' + c.warnText + ' uppercase mb-1'}>Risk</p>
+                    <p className={'text-xs ' + c.warnText}>{v.risk}</p>
+                  </div>
+                </div>
+                <CopyBtn content={v.script + '\n\n— Generated by DeftBrain · deftbrain.com'} label="Copy this version" />
+              </div>
+            )}
+          </div>
+        ))}
+
+        {/* Follow-up prep */}
+        {results.follow_up_prep?.length > 0 && (
+          <Section title="Follow-Up Questions" emoji="❓" open={showFollowups} onToggle={() => setShowFollowups(!showFollowups)} badge={results.follow_up_prep.length + ''}>
+            <div className="space-y-3 mt-4">
+              {results.follow_up_prep.map((f, idx) => (
+                <div key={idx} className={'p-4 rounded-xl border ' + c.cardAlt}>
+                  <p className={'text-xs font-bold ' + c.textMut + ' mb-1'}>Q: "{f.question}"</p>
+                  <p className={'text-sm ' + c.text + ' mb-2 italic'}>"{f.answer}"</p>
+                  {f.trap_to_avoid && (
+                    <div className={'p-2 rounded-lg ' + c.warnBg}>
+                      <p className={'text-[10px] font-bold ' + c.warnText}>🚩 Trap to avoid: {f.trap_to_avoid}</p>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </Section>
+        )}
+
+        {/* Body language */}
+        {results.body_language && (
+          <div className={c.card + ' border rounded-xl p-5'}>
+            <p className={'text-xs font-bold ' + c.textMut + ' uppercase mb-2'}>🎭 Delivery tips</p>
+            <p className={'text-sm ' + c.text}>{results.body_language}</p>
+          </div>
+        )}
+
+        {/* Common mistakes */}
+        {results.common_mistakes?.length > 0 && (
+          <Section title="Common Mistakes" emoji="🚫" open={showMistakes} onToggle={() => setShowMistakes(!showMistakes)}>
+            <div className="space-y-2 mt-4">
+              {results.common_mistakes.map((m, idx) => (
+                <div key={idx} className={'p-3 rounded-lg ' + c.warnBg}>
+                  <p className={'text-xs ' + c.warnText}>{m}</p>
+                </div>
+              ))}
+            </div>
+          </Section>
+        )}
+
+        {/* Confidence note */}
+        {results.confidence_note && (
+          <div className={'p-4 rounded-xl border ' + c.successBg}>
+            <p className={'text-xs font-bold ' + c.successText + ' mb-1'}>💚 Perspective check</p>
+            <p className={'text-sm ' + c.successText}>{results.confidence_note}</p>
+          </div>
+        )}
+
+        {/* Nuclear option */}
+        {results.nuclear_option && (
+          <div className={'p-4 rounded-xl ' + c.inset}>
+            <p className={'text-xs font-bold ' + c.textMut + ' mb-1'}>🚪 If it goes sideways</p>
+            <p className={'text-sm ' + c.text + ' italic'}>"{results.nuclear_option}"</p>
+          </div>
+        )}
+
+        <div className="flex gap-2">
+          <div className="flex-1"><CopyBtn content={buildCopy()} label="Copy All Versions" /></div>
+          <button onClick={handleReset} className={'flex-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 ' + c.btn}><span>🎭</span> New Story</button>
+        </div>
+
+        {/* Cross-refs */}
+        <div className={'p-4 rounded-2xl border ' + c.card}>
+          <p className={'text-xs font-bold ' + c.textMut + ' uppercase tracking-wide mb-2'}>🔗 Related Tools</p>
+          <div className={'space-y-1.5 text-xs ' + c.textSec}>
+            <p>Rehearsing for an interview? <a href="/VelvetHammer" target="_blank" rel="noopener noreferrer" className={c.linkStyle}>Velvet Hammer</a> crafts firm, diplomatic messages.</p>
+            <p>Need a recommendation letter? <a href="/GhostWriter" target="_blank" rel="noopener noreferrer" className={c.linkStyle}>Ghost Writer</a> builds compelling ones from scratch.</p>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // ══════════════════════════════════════════
+  // HISTORY
+  // ══════════════════════════════════════════
+  const renderHistory = () => {
+    if (history.length === 0) return null;
+    const formatDate = (iso) => { try { const d = new Date(iso); const diff = Math.floor((new Date() - d) / 86400000); return diff === 0 ? 'Today' : diff === 1 ? 'Yesterday' : diff < 7 ? diff + 'd ago' : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); } catch { return ''; } };
+    return (
+      <div className={'mt-6 p-4 rounded-2xl border ' + c.histBg}>
+        <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-left">
+          <span>🎭</span>
+          <span className={'text-sm font-bold ' + c.text + ' flex-1'}>Past Stories</span>
+          <span className={'text-xs ' + c.textMut}>{history.length}</span>
+          <span className={'text-xs ' + c.textMut}>{showHistory ? '▲' : '▼'}</span>
+        </button>
+        {showHistory && (
+          <div className="mt-3 space-y-2">
+            {history.map(entry => (
+              <div key={entry.id} className={'rounded-xl border ' + c.histCard + ' p-3 flex items-center gap-3'}>
+                <div className="flex-1 min-w-0">
+                  <div className={'text-sm font-semibold ' + c.text + ' truncate'}>{entry.situation}</div>
+                  <div className={'text-xs ' + c.textMut + ' mt-0.5'}>{formatDate(entry.date)} · {entry.audience}</div>
+                </div>
+                <button onClick={() => { setResults(entry.results); setShowHistory(false); }}
+                  className={'px-3 py-1.5 rounded-lg text-xs font-bold ' + c.btnSec}>View</button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  return (
+    <div>
+      <div className="flex items-center gap-3 mb-5">
+        <div>
+          <h2 className={'text-2xl font-bold ' + c.heading}>The Alibi <span className="text-xl">🎭</span></h2>
+          <p className={'text-sm ' + c.textMut}>Frame your story right — honest but strategic</p>
+        </div>
+      </div>
+      {!results && renderInput()}
+      {renderResults()}
+      {error && (
+        <div className={'mt-4 p-4 ' + c.errBg + ' border rounded-xl flex items-start gap-3'}>
+          <span className={'text-base ' + c.errText}>⚠️</span>
+          <p className={'text-sm ' + c.errText}>{error}</p>
+        </div>
+      )}
+      {renderHistory()}
+    </div>
+  );
+};
+
+TheAlibi.displayName = 'TheAlibi';
+export default TheAlibi;

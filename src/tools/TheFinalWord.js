@@ -1377,7 +1377,10 @@ const TheFinalWord = () => {
           <div className={`rounded-2xl overflow-hidden border-2 shadow-lg ${isDark ? 'border-purple-700/50 bg-zinc-800' : 'border-purple-300 bg-white'}`}>
             <div className={`px-6 py-4 ${isDark ? 'bg-purple-900/20' : 'bg-purple-50'} border-b ${c.border}`}>
               <div className="flex items-center justify-between mb-2">
-                <span className={`text-xs font-black uppercase tracking-widest ${isDark ? 'text-purple-400' : 'text-purple-600'}`}>{triviaQuestion.category_label || 'Trivia'}</span>
+                <div className="flex items-center gap-2">
+                  <span className={`text-xs font-black uppercase tracking-widest ${isDark ? 'text-purple-400' : 'text-purple-600'}`}>⚡ Trivia Night</span>
+                  <span className={`text-xs px-1.5 py-0.5 rounded ${isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-purple-100 text-purple-500'}`}>{triviaQuestion.category_label || 'General'}</span>
+                </div>
                 <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-slate-100 text-slate-600'}`}>Q{questionCount + (triviaRevealed ? 0 : 1)}/{roundLimit} · {triviaQuestion.difficulty_actual || triviaDifficulty}</span>
               </div>
               <div className={`h-1.5 rounded-full overflow-hidden ${isDark ? 'bg-zinc-700' : 'bg-slate-200'}`}>

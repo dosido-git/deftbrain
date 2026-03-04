@@ -1,0 +1,248 @@
+import React, { useState, useCallback } from 'react';
+import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import { useTheme } from '../hooks/useTheme';
+import { CopyBtn, ActionBar } from '../components/ActionButtons';
+
+// ════════════════════════════════════════════════════════════
+// CONSTANTS
+// ════════════════════════════════════════════════════════════
+const FORMATS = [
+  { value: 'explain', label: 'Explain It', icon: '🗣️', desc: 'Explain a modern thing to a historical person' },
+  { value: 'review', label: 'Review', icon: '⭐', desc: 'Period-authentic Yelp/Amazon review' },
+  { value: 'news', label: 'News Report', icon: '📰', desc: 'Breaking news from the past' },
+  { value: 'letter', label: 'Letter', icon: '✉️', desc: 'Personal letter describing the encounter' },
+  { value: 'debate', label: 'Debate', icon: '⚖️', desc: 'Public forum: adopt or reject?' },
+  { value: 'ad', label: 'Ad', icon: '📢', desc: 'Period advertisement selling it' },
+];
+
+const QUICK_COMBOS = [
+  { modern: 'TikTok', period: 'Victorian England', icon: '🎭' },
+  { modern: 'Uber', period: '1920s New York', icon: '🚕' },
+  { modern: 'Tinder', period: 'Medieval Europe', icon: '⚔️' },
+  { modern: 'a Roomba', period: 'Ancient Rome', icon: '🏛️' },
+  { modern: 'WiFi', period: 'the Wild West', icon: '🤠' },
+  { modern: 'Instagram', period: 'Renaissance Italy', icon: '🎨' },
+  { modern: 'Amazon Prime', period: 'the Silk Road era', icon: '🐪' },
+  { modern: 'podcasts', period: 'Ancient Greece', icon: '🏺' },
+];
+
+// ════════════════════════════════════════════════════════════
+// COMPONENT
+// ════════════════════════════════════════════════════════════
+const TimeWarp = () => {
+  const { callToolEndpoint, loading } = useClaudeAPI();
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
+
+  const c = {
+    card: isDark ? 'bg-[#1a1a2e] border-[#2a2a4a]' : 'bg-white border-[#d4d4d4]',
+    input: isDark
+      ? 'bg-[#0f0f1e] border-[#2a2a4a] text-[#e8e8e8] placeholder:text-[#555] focus:border-[#c8a951] focus:ring-[#c8a951]/20'
+      : 'bg-white border-[#ccc] text-[#1e3a5f] placeholder:text-[#999] focus:border-[#1e3a5f] focus:ring-[#1e3a5f]/20',
+    text: isDark ? 'text-[#e8e8e8]' : 'text-[#1e3a5f]',
+    textSec: isDark ? 'text-[#a0a0b8]' : 'text-[#4a6a8a]',
+    textMuted: isDark ? 'text-[#666680]' : 'text-[#8a8a8a]',
+    label: isDark ? 'text-[#c0c0d0]' : 'text-[#2a4a6a]',
+    accent: isDark ? 'text-[#c8a951]' : 'text-[#1e3a5f]',
+    accentBg: isDark ? 'bg-[#c8a951]/10 border-[#c8a951]/30' : 'bg-[#1e3a5f]/5 border-[#1e3a5f]/20',
+    btnPrimary: isDark ? 'bg-[#c8a951] hover:bg-[#d4b85c] text-[#1a1a2e]' : 'bg-[#1e3a5f] hover:bg-[#2a4a6f] text-white',
+    btnSec: isDark ? 'bg-[#2a2a4a] hover:bg-[#3a3a5a] text-[#e8e8e8]' : 'bg-[#f0f0f0] hover:bg-[#e0e0e0] text-[#1e3a5f]',
+    danger: isDark ? 'bg-[#3a1a1a] border-[#5a2a2a] text-[#f0a0a0]' : 'bg-[#fef2f2] border-[#e8c0c0] text-[#7a2a2a]',
+    pillActive: isDark ? 'bg-[#c8a951] border-[#c8a951] text-[#1a1a2e]' : 'bg-[#1e3a5f] border-[#1e3a5f] text-white',
+    pillInactive: isDark ? 'bg-[#2a2a4a] border-[#3a3a5a] text-[#c0c0d0] hover:border-[#4a4a6a]' : 'bg-white border-[#d4d4d4] text-[#4a6a8a] hover:border-[#aaa]',
+    quoteBg: isDark ? 'bg-[#0f0f1e]/60' : 'bg-[#f8f8f8]',
+    info: isDark ? 'bg-[#1a1a2e] border-[#2a2a5a] text-[#a0a0e0]' : 'bg-[#f0f4ff] border-[#c0c8e8] text-[#2a2a6a]',
+  };
+
+  // ── State ──
+  const [modernThing, setModernThing] = useState('');
+  const [historicalPeriod, setHistoricalPeriod] = useState('');
+  const [format, setFormat] = useState('explain');
+  const [results, setResults] = useState(null);
+  const [error, setError] = useState('');
+
+  // ── API ──
+  const runWarp = useCallback(async () => {
+    if (!modernThing.trim() && !historicalPeriod.trim()) return;
+    setError('');
+    setResults(null);
+    try {
+      const data = await callToolEndpoint('time-warp', {
+        modernThing: modernThing.trim(),
+        historicalPeriod: historicalPeriod.trim(),
+        format,
+      });
+      setResults(data);
+    } catch (err) {
+      setError(err.message || 'Time warp failed');
+    }
+  }, [modernThing, historicalPeriod, format, callToolEndpoint]);
+
+  const applyCombo = (combo) => {
+    setModernThing(combo.modern);
+    setHistoricalPeriod(combo.period);
+    setResults(null);
+  };
+
+  // ── Copy text builder ──
+  const buildFullText = useCallback(() => {
+    if (!results) return '';
+    const lines = [`⏰ TIME WARP: ${results.title || ''}`, ''];
+    if (results.era_context) lines.push(`📜 ${results.era_context}`, '');
+    if (results.main_content) lines.push(results.main_content, '');
+    if (results.historical_footnotes?.length) {
+      lines.push('📚 DID YOU KNOW:');
+      results.historical_footnotes.forEach(f => lines.push(`  • ${f}`));
+      lines.push('');
+    }
+    if (results.anachronism_alert) lines.push(`💥 ${results.anachronism_alert}`);
+    lines.push('\n— Generated by DeftBrain · deftbrain.com');
+    return lines.join('\n');
+  }, [results]);
+
+  // ════════════════════════════════════════════════════════════
+  // RENDER
+  // ════════════════════════════════════════════════════════════
+  return (
+    <div className={`space-y-4 ${c.text}`}>
+      {/* Input */}
+      <div className={`${c.card} border rounded-xl p-5`}>
+        <div className={`mb-4 pb-3 border-b ${isDark ? 'border-[#2a2a4a]' : 'border-[#e0e0e0]'}`}>
+          <h2 className={`text-xl font-bold ${c.text}`}>
+            <span className="mr-2">⏰</span>Time Warp
+          </h2>
+          <p className={`text-sm ${c.textSec}`}>Collide anything modern with any historical period</p>
+        </div>
+
+        {/* Quick combos */}
+        <div className="mb-4">
+          <label className={`text-[10px] font-bold ${c.label} uppercase block mb-2`}>Quick combos</label>
+          <div className="flex flex-wrap gap-1.5">
+            {QUICK_COMBOS.map((combo, i) => (
+              <button key={i} onClick={() => applyCombo(combo)}
+                className={`${c.btnSec} px-2.5 py-1.5 rounded-lg text-[11px] font-medium min-h-[32px] flex items-center gap-1`}>
+                <span>{combo.icon}</span> {combo.modern} × {combo.period}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Inputs */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+          <div>
+            <label className={`text-xs font-bold ${c.label} block mb-1.5`}>Modern thing</label>
+            <input type="text" value={modernThing} onChange={e => setModernThing(e.target.value)}
+              placeholder="e.g., TikTok, DoorDash, cryptocurrency..."
+              className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
+          </div>
+          <div>
+            <label className={`text-xs font-bold ${c.label} block mb-1.5`}>Historical period</label>
+            <input type="text" value={historicalPeriod} onChange={e => setHistoricalPeriod(e.target.value)}
+              placeholder="e.g., Ancient Rome, 1920s Paris, Medieval Japan..."
+              className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
+          </div>
+        </div>
+
+        {/* Format */}
+        <div className="mb-5">
+          <label className={`text-xs font-bold ${c.label} uppercase block mb-2`}>Format</label>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            {FORMATS.map(f => (
+              <button key={f.value} onClick={() => setFormat(f.value)}
+                className={`py-2.5 px-3 rounded-xl border text-left transition-colors min-h-[52px] ${
+                  format === f.value ? c.pillActive : c.pillInactive
+                }`}>
+                <span className="text-sm block">{f.icon} {f.label}</span>
+                <span className={`text-[9px] ${format === f.value ? 'opacity-80' : c.textMuted} block`}>{f.desc}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <button onClick={runWarp} disabled={(!modernThing.trim() && !historicalPeriod.trim()) || loading}
+          className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+          {loading
+            ? <><span className="animate-spin inline-block">⏳</span> Warping through time...</>
+            : <><span>⏰</span> Warp It</>}
+        </button>
+      </div>
+
+      {/* Error */}
+      {error && (
+        <div className={`${c.danger} border rounded-lg p-4 flex items-start gap-3`}>
+          <span>⚠️</span><p className="text-sm">{error}</p>
+        </div>
+      )}
+
+      {/* Results */}
+      {results && (
+        <div className="space-y-4">
+          <div className="flex justify-end">
+            <ActionBar content={buildFullText()} title="Time Warp" />
+          </div>
+
+          {/* Title + era context */}
+          {results.title && (
+            <div className={`${c.accentBg} border-2 rounded-xl p-5 text-center`}>
+              <span className="text-3xl block mb-2">⏰</span>
+              <p className={`text-lg font-black ${c.text}`}>{results.title}</p>
+              {results.era_context && (
+                <p className={`text-xs ${c.textMuted} mt-2 italic`}>📜 {results.era_context}</p>
+              )}
+            </div>
+          )}
+
+          {/* Main content */}
+          {results.main_content && (
+            <div className={`${c.card} border rounded-xl p-5`}>
+              <p className={`text-sm ${c.textSec} whitespace-pre-line leading-relaxed`}>{results.main_content}</p>
+            </div>
+          )}
+
+          {/* Historical footnotes */}
+          {results.historical_footnotes?.length > 0 && (
+            <div className={`${c.info} border rounded-xl p-4`}>
+              <p className={`text-[10px] font-bold uppercase mb-2`}>📚 Actually True</p>
+              <div className="space-y-1.5">
+                {results.historical_footnotes.map((f, i) => (
+                  <p key={i} className="text-xs">• {f}</p>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Anachronism alert + flip it */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {results.anachronism_alert && (
+              <div className={`${c.quoteBg} border ${isDark ? 'border-[#2a2a4a]' : 'border-[#d4d4d4]'} rounded-xl p-4`}>
+                <p className={`text-[10px] font-bold ${c.accent} uppercase mb-1`}>💥 Best Moment</p>
+                <p className={`text-xs ${c.textSec}`}>{results.anachronism_alert}</p>
+              </div>
+            )}
+            {results.flip_it && (
+              <div className={`${c.quoteBg} border ${isDark ? 'border-[#2a2a4a]' : 'border-[#d4d4d4]'} rounded-xl p-4`}>
+                <p className={`text-[10px] font-bold ${c.accent} uppercase mb-1`}>🔀 Flip It</p>
+                <p className={`text-xs ${c.textSec}`}>{results.flip_it}</p>
+              </div>
+            )}
+          </div>
+
+          {/* Warp again */}
+          <div className="flex gap-2">
+            <button onClick={runWarp} disabled={loading}
+              className={`flex-1 ${c.btnSec} font-bold py-3 rounded-lg min-h-[44px]`}>
+              🔄 Same Combo, Different Take
+            </button>
+            <button onClick={() => { setModernThing(''); setHistoricalPeriod(''); setResults(null); }}
+              className={`${c.btnSec} font-bold py-3 px-4 rounded-lg min-h-[44px]`}>
+              ⏰ New Warp
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+TimeWarp.displayName = 'TimeWarp';
+export default TimeWarp;

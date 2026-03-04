@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
+import { usePersistentState } from '../hooks/usePersistentState';
 import { CopyBtn, ActionBar } from '../components/ActionButtons';
 
 // ════════════════════════════════════════════════════════════
@@ -34,38 +35,12 @@ const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'
 
 const DURATION_OPTIONS = ['15 min', '30 min', '1 hour', '1.5 hours', '2 hours', '3+ hours', 'Half day', 'Full day'];
 
-const STORAGE_KEY = 'sea-journal';
-const TEMPLATE_KEY = 'sea-template';
 const MAX_WEEKS = 12;
-
-function loadJournal() {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch { return []; }
-}
-function saveJournal(items) {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(items.slice(0, MAX_WEEKS))); } catch {}
-}
-function loadTemplate() {
-  try { return JSON.parse(localStorage.getItem(TEMPLATE_KEY) || 'null'); } catch { return null; }
-}
-function saveTemplate(interactions) {
-  try { localStorage.setItem(TEMPLATE_KEY, JSON.stringify(interactions)); } catch {}
-}
-function clearTemplate() {
-  try { localStorage.removeItem(TEMPLATE_KEY); } catch {}
-}
-
-const CHECKIN_KEY = 'sea-checkins';
-function loadCheckins() {
-  try { return JSON.parse(localStorage.getItem(CHECKIN_KEY) || '[]'); } catch { return []; }
-}
-function saveCheckins(items) {
-  try { localStorage.setItem(CHECKIN_KEY, JSON.stringify(items.slice(0, 60))); } catch {} // ~2 months
-}
+const MAX_CHECKINS = 60;
 
 const CROSS_REFS = [
-  { id: 'BurnoutBreadcrumbTracker', icon: '🔥', label: 'Track burnout signs' },
+  { id: 'CrashPredictor', icon: '📉', label: 'Predict energy crashes' },
   { id: 'DopamineMenuBuilder', icon: '🧪', label: 'Build your recharge menu' },
-  { id: 'HabitChain', icon: '🔗', label: 'Build energy habits' },
   { id: 'BrainStateDeejay', icon: '🎧', label: 'Match music to energy' },
 ];
 
@@ -110,30 +85,30 @@ const SocialEnergyAudit = () => {
 
   // ── Theme ──
   const c = {
-    card: isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-slate-200',
+    card: isDark ? 'bg-[#1a1a2e] border-[#2a2a4a]' : 'bg-white border-[#d4d4d4]',
     input: isDark
-      ? 'bg-zinc-900 border-zinc-600 text-zinc-50 placeholder:text-zinc-500 focus:border-violet-500 focus:ring-violet-500/20'
-      : 'bg-white border-slate-300 text-slate-900 placeholder:text-slate-400 focus:border-violet-500 focus:ring-violet-100',
-    text: isDark ? 'text-zinc-50' : 'text-slate-900',
-    textSec: isDark ? 'text-zinc-400' : 'text-slate-600',
-    textMuted: isDark ? 'text-zinc-500' : 'text-slate-500',
-    label: isDark ? 'text-zinc-300' : 'text-slate-700',
-    accent: isDark ? 'text-violet-400' : 'text-violet-600',
-    accentBg: isDark ? 'bg-violet-900/30 border-violet-700/50' : 'bg-violet-50 border-violet-200',
-    btnPrimary: isDark ? 'bg-violet-600 hover:bg-violet-500 text-white' : 'bg-violet-600 hover:bg-violet-700 text-white',
-    btnSec: isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-slate-100 hover:bg-slate-200 text-slate-800',
-    danger: isDark ? 'bg-red-900/20 border-red-700/50 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
-    dangerText: isDark ? 'text-red-400' : 'text-red-600',
-    success: isDark ? 'bg-emerald-900/20 border-emerald-700/50 text-emerald-200' : 'bg-emerald-50 border-emerald-200 text-emerald-800',
-    successText: isDark ? 'text-emerald-400' : 'text-emerald-600',
-    warning: isDark ? 'bg-amber-900/20 border-amber-700/50 text-amber-200' : 'bg-amber-50 border-amber-200 text-amber-800',
-    warningText: isDark ? 'text-amber-400' : 'text-amber-600',
-    info: isDark ? 'bg-blue-900/20 border-blue-700/50 text-blue-200' : 'bg-blue-50 border-blue-200 text-blue-800',
-    pillActive: isDark ? 'bg-violet-600 border-violet-500 text-white' : 'bg-violet-600 border-violet-600 text-white',
-    pillInactive: isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-300 hover:border-zinc-500' : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300',
-    divider: isDark ? 'border-zinc-700' : 'border-slate-200',
-    quoteBg: isDark ? 'bg-zinc-900/60' : 'bg-slate-50',
-    verdict: isDark ? 'bg-violet-900/40 border-violet-700/50' : 'bg-violet-50 border-violet-200',
+      ? 'bg-[#0f0f1e] border-[#2a2a4a] text-[#e8e8e8] placeholder:text-[#555] focus:border-[#c8a951] focus:ring-[#c8a951]/20'
+      : 'bg-white border-[#ccc] text-[#1e3a5f] placeholder:text-[#999] focus:border-[#1e3a5f] focus:ring-[#1e3a5f]/20',
+    text: isDark ? 'text-[#e8e8e8]' : 'text-[#1e3a5f]',
+    textSec: isDark ? 'text-[#a0a0b8]' : 'text-[#4a6a8a]',
+    textMuted: isDark ? 'text-[#666680]' : 'text-[#8a8a8a]',
+    label: isDark ? 'text-[#c0c0d0]' : 'text-[#2a4a6a]',
+    accent: isDark ? 'text-[#c8a951]' : 'text-[#1e3a5f]',
+    accentBg: isDark ? 'bg-[#c8a951]/10 border-[#c8a951]/30' : 'bg-[#1e3a5f]/5 border-[#1e3a5f]/20',
+    btnPrimary: isDark ? 'bg-[#c8a951] hover:bg-[#d4b85c] text-[#1a1a2e]' : 'bg-[#1e3a5f] hover:bg-[#2a4a6f] text-white',
+    btnSec: isDark ? 'bg-[#2a2a4a] hover:bg-[#3a3a5a] text-[#e8e8e8]' : 'bg-[#f0f0f0] hover:bg-[#e0e0e0] text-[#1e3a5f]',
+    danger: isDark ? 'bg-[#3a1a1a] border-[#5a2a2a] text-[#f0a0a0]' : 'bg-[#fef2f2] border-[#e8c0c0] text-[#7a2a2a]',
+    dangerText: isDark ? 'text-[#f0a0a0]' : 'text-[#a03030]',
+    success: isDark ? 'bg-[#1a2e1a] border-[#2a4a2a] text-[#a0e0a0]' : 'bg-[#f0faf0] border-[#c0dcc0] text-[#2a5a2a]',
+    successText: isDark ? 'text-[#a0e0a0]' : 'text-[#2a7a2a]',
+    warning: isDark ? 'bg-[#2e2a1a] border-[#4a3a2a] text-[#e0c080]' : 'bg-[#fffbf0] border-[#dcc8a0] text-[#6a4a1a]',
+    warningText: isDark ? 'text-[#e0c080]' : 'text-[#8a6a20]',
+    info: isDark ? 'bg-[#1a1a2e] border-[#2a2a5a] text-[#a0a0e0]' : 'bg-[#f0f4ff] border-[#c0c8e8] text-[#2a2a6a]',
+    pillActive: isDark ? 'bg-[#c8a951] border-[#c8a951] text-[#1a1a2e]' : 'bg-[#1e3a5f] border-[#1e3a5f] text-white',
+    pillInactive: isDark ? 'bg-[#2a2a4a] border-[#3a3a5a] text-[#c0c0d0] hover:border-[#4a4a6a]' : 'bg-white border-[#d4d4d4] text-[#4a6a8a] hover:border-[#aaa]',
+    divider: isDark ? 'border-[#2a2a4a]' : 'border-[#e0e0e0]',
+    quoteBg: isDark ? 'bg-[#0f0f1e]/60' : 'bg-[#f8f8f8]',
+    verdict: isDark ? 'bg-[#c8a951]/10 border-[#c8a951]/30' : 'bg-[#1e3a5f]/5 border-[#1e3a5f]/20',
   };
 
   // ── Views ──
@@ -162,10 +137,10 @@ const SocialEnergyAudit = () => {
   const [rechargeResults, setRechargeResults] = useState(null);
 
   // ── Journal ──
-  const [journal, setJournal] = useState(() => loadJournal());
+  const [journal, setJournal] = usePersistentState('sea-journal', []);
 
   // ── Templates ──
-  const [savedTemplate, setSavedTemplate] = useState(() => loadTemplate());
+  const [savedTemplate, setSavedTemplate] = usePersistentState('sea-template', null);
 
   // ── Compare ──
   const [compareMode, setCompareMode] = useState(false);
@@ -182,7 +157,7 @@ const SocialEnergyAudit = () => {
   const [qcResults, setQcResults] = useState(null);
 
   // ── Daily Check-In ──
-  const [dailyCheckins, setDailyCheckins] = useState(() => loadCheckins());
+  const [dailyCheckins, setDailyCheckins] = usePersistentState('sea-checkins', []);
   const [ciEnergy, setCiEnergy] = useState(5);
   const [ciDrain, setCiDrain] = useState('');
   const [ciRecharge, setCiRecharge] = useState('');
@@ -220,7 +195,6 @@ const SocialEnergyAudit = () => {
       situation: i.situation, category: i.category,
       performance: i.performance, duration: i.duration,
     }));
-    saveTemplate(template);
     setSavedTemplate(template);
   };
 
@@ -232,7 +206,6 @@ const SocialEnergyAudit = () => {
   };
 
   const deleteTemplate = () => {
-    clearTemplate();
     setSavedTemplate(null);
   };
 
@@ -309,7 +282,6 @@ const SocialEnergyAudit = () => {
     };
     const updated = [entry, ...dailyCheckins].slice(0, 60);
     setDailyCheckins(updated);
-    saveCheckins(updated);
     setCiEnergy(5);
     setCiDrain('');
     setCiRecharge('');
@@ -454,7 +426,6 @@ const SocialEnergyAudit = () => {
         updated = [entry, ...journal].slice(0, MAX_WEEKS);
       }
       setJournal(updated);
-      saveJournal(updated);
     } catch (err) {
       setError(err.message || 'Audit failed');
     }
@@ -763,7 +734,7 @@ const SocialEnergyAudit = () => {
                       <input
                         type="range" min="1" max="10" value={int.performance}
                         onChange={e => updateInteraction(i, 'performance', Number(e.target.value))}
-                        className="w-full accent-violet-500"
+                        className="w-full accent-[#1e3a5f]"
                       />
                       <div className={`flex justify-between text-[8px] ${c.textMuted}`}>
                         <span>Natural</span><span>Full "on"</span>
@@ -777,7 +748,7 @@ const SocialEnergyAudit = () => {
                       <input
                         type="range" min="1" max="10" value={int.energyBefore}
                         onChange={e => updateInteraction(i, 'energyBefore', Number(e.target.value))}
-                        className="w-full accent-emerald-500"
+                        className="w-full accent-[#2a7a2a]"
                       />
                       <div className={`flex justify-between text-[8px] ${c.textMuted}`}>
                         <span>Empty</span><span>Full</span>
@@ -791,7 +762,7 @@ const SocialEnergyAudit = () => {
                       <input
                         type="range" min="1" max="10" value={int.energyAfter}
                         onChange={e => updateInteraction(i, 'energyAfter', Number(e.target.value))}
-                        className="w-full accent-red-500"
+                        className="w-full accent-[#a03030]"
                       />
                       <div className={`flex justify-between text-[8px] ${c.textMuted}`}>
                         <span>Empty</span><span>Full</span>
@@ -1034,7 +1005,7 @@ const SocialEnergyAudit = () => {
                   <span className={`text-[9px] ${c.textMuted}`}>Perf:</span>
                   <input type="range" min="1" max="10" value={u.performance}
                     onChange={e => updateUpcoming(i, 'performance', Number(e.target.value))}
-                    className="flex-1 accent-violet-500" />
+                    className="flex-1 accent-[#1e3a5f]" />
                   <span className={`text-[10px] font-bold ${u.performance >= 7 ? c.dangerText : c.successText} w-5`}>{u.performance}</span>
                 </div>
               </div>
@@ -1078,7 +1049,7 @@ const SocialEnergyAudit = () => {
                       <div className="flex items-center gap-2">
                         <span className={`text-xs font-bold`}>{day.predicted_cost}</span>
                         <span className={`text-[9px] font-black px-1.5 py-0.5 rounded ${
-                          day.risk === 'HIGH' ? 'bg-red-500 text-white' : day.risk === 'LOW' ? 'bg-emerald-500 text-white' : 'bg-amber-500 text-white'
+                          day.risk === 'HIGH' ? 'bg-[#a03030] text-white' : day.risk === 'LOW' ? 'bg-[#2a7a2a] text-white' : 'bg-[#8a6a20] text-white'
                         }`}>{day.risk}</span>
                       </div>
                     </div>
@@ -1108,8 +1079,8 @@ const SocialEnergyAudit = () => {
 
           {planResults.protection_plan && (
             <div className={`${c.info} border rounded-xl p-4`}>
-              <p className={`text-xs font-bold ${isDark ? 'text-blue-200' : 'text-blue-800'} mb-1`}>🛡️ Protect this time</p>
-              <p className={`text-xs ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>{planResults.protection_plan}</p>
+              <p className={`text-xs font-bold ${isDark ? 'text-[#a0a0e0]' : 'text-[#2a2a6a]'} mb-1`}>🛡️ Protect this time</p>
+              <p className={`text-xs ${isDark ? 'text-[#a0a0e0]' : 'text-[#2a4a8a]'}`}>{planResults.protection_plan}</p>
             </div>
           )}
         </div>
@@ -1135,7 +1106,7 @@ const SocialEnergyAudit = () => {
           </div>
           <input type="range" min="1" max="10" value={currentEnergy}
             onChange={e => setCurrentEnergy(Number(e.target.value))}
-            className="w-full accent-violet-500" />
+            className="w-full accent-[#1e3a5f]" />
           <div className={`flex justify-between text-[9px] ${c.textMuted}`}>
             <span>😵 Running on fumes</span><span>😐 Okay</span><span>⚡ Fully charged</span>
           </div>
@@ -1180,8 +1151,8 @@ const SocialEnergyAudit = () => {
               <h3 className={`text-sm font-bold ${c.text} mb-2`}>⚡ Right Now</h3>
               {rechargeResults.immediate.do_now && (
                 <div className={`${c.success} border rounded-lg p-3 mb-2`}>
-                  <p className={`text-xs font-bold ${isDark ? 'text-emerald-200' : 'text-emerald-800'}`}>Do this:</p>
-                  <p className={`text-xs ${isDark ? 'text-emerald-300' : 'text-emerald-700'}`}>{rechargeResults.immediate.do_now}</p>
+                  <p className={`text-xs font-bold ${c.successText}`}>Do this:</p>
+                  <p className={`text-xs ${c.successText}`}>{rechargeResults.immediate.do_now}</p>
                 </div>
               )}
               {rechargeResults.immediate.avoid && (
@@ -1257,7 +1228,7 @@ const SocialEnergyAudit = () => {
           </div>
           <input type="range" min="1" max="10" value={qcEnergy}
             onChange={e => setQcEnergy(Number(e.target.value))}
-            className="w-full accent-violet-500" />
+            className="w-full accent-[#1e3a5f]" />
         </div>
 
         <div className="mb-5">
@@ -1302,7 +1273,7 @@ const SocialEnergyAudit = () => {
             {qcResults.if_you_say_yes && (
               <div className={`${c.success} border rounded-xl p-4`}>
                 <p className={`text-xs font-bold ${c.successText} mb-1`}>✅ If you go</p>
-                <p className={`text-xs ${isDark ? 'text-emerald-300' : 'text-emerald-700'}`}>{qcResults.if_you_say_yes}</p>
+                <p className={`text-xs ${c.successText}`}>{qcResults.if_you_say_yes}</p>
               </div>
             )}
             {qcResults.if_you_say_no && (
@@ -1316,7 +1287,7 @@ const SocialEnergyAudit = () => {
 
           {qcResults.recovery_note && (
             <div className={`${c.info} border rounded-lg p-3`}>
-              <p className={`text-xs ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>🔋 {qcResults.recovery_note}</p>
+              <p className={`text-xs ${isDark ? 'text-[#a0a0e0]' : 'text-[#2a4a8a]'}`}>🔋 {qcResults.recovery_note}</p>
             </div>
           )}
 
@@ -1363,7 +1334,7 @@ const SocialEnergyAudit = () => {
             </div>
             <input type="range" min="1" max="10" value={ciEnergy}
               onChange={e => setCiEnergy(Number(e.target.value))}
-              className="w-full accent-violet-500" />
+              className="w-full accent-[#1e3a5f]" />
             <div className={`flex justify-between text-[9px] ${c.textMuted}`}>
               <span>😵 Empty</span><span>😐 Okay</span><span>⚡ Great</span>
             </div>
@@ -1441,7 +1412,7 @@ const SocialEnergyAudit = () => {
               ))}
             </div>
             {dailyCheckins.length > 0 && (
-              <button onClick={() => { if (window.confirm('Clear all check-ins?')) { setDailyCheckins([]); saveCheckins([]); } }}
+              <button onClick={() => { if (window.confirm('Clear all check-ins?')) { setDailyCheckins([]); } }}
                 className={`text-xs ${c.dangerText} min-h-[28px]`}>🗑️ Clear check-ins</button>
             )}
           </Section>
@@ -1495,10 +1466,10 @@ const SocialEnergyAudit = () => {
                 {forecastResults.predicted_curve.map((day, i) => (
                   <div key={i} className="flex items-center gap-2">
                     <span className={`text-[10px] font-bold w-12 ${c.text} flex-shrink-0`}>{day.day?.slice(0, 3)}</span>
-                    <div className={`flex-1 h-4 rounded-full ${isDark ? 'bg-zinc-700' : 'bg-slate-200'} overflow-hidden`}>
+                    <div className={`flex-1 h-4 rounded-full ${isDark ? 'bg-[#2a2a4a]' : 'bg-[#e0e0e0]'} overflow-hidden`}>
                       <div
                         className={`h-full rounded-full ${
-                          day.risk === 'HIGH' ? 'bg-red-500' : day.risk === 'LOW' ? 'bg-emerald-500' : 'bg-amber-500'
+                          day.risk === 'HIGH' ? 'bg-[#a03030]' : day.risk === 'LOW' ? 'bg-[#2a7a2a]' : 'bg-[#c8a951]'
                         }`}
                         style={{ width: `${(day.predicted_energy || 5) * 10}%` }}
                       />
@@ -1517,7 +1488,7 @@ const SocialEnergyAudit = () => {
             {forecastResults.best_day && (
               <div className={`${c.success} border rounded-lg p-3`}>
                 <p className={`text-[10px] font-bold ${c.successText} uppercase`}>Best day</p>
-                <p className={`text-xs ${isDark ? 'text-emerald-300' : 'text-emerald-700'}`}>{forecastResults.best_day}</p>
+                <p className={`text-xs ${c.successText}`}>{forecastResults.best_day}</p>
               </div>
             )}
             {forecastResults.worst_day && (
@@ -1545,7 +1516,7 @@ const SocialEnergyAudit = () => {
 
           {forecastResults.protect_this && (
             <div className={`${c.info} border rounded-lg p-3`}>
-              <p className={`text-xs font-bold ${isDark ? 'text-blue-200' : 'text-blue-800'}`}>🛡️ Protect: {forecastResults.protect_this}</p>
+              <p className={`text-xs font-bold ${isDark ? 'text-[#a0a0e0]' : 'text-[#2a2a6a]'}`}>🛡️ Protect: {forecastResults.protect_this}</p>
             </div>
           )}
         </div>
@@ -1574,7 +1545,7 @@ const SocialEnergyAudit = () => {
               </button>
             )}
             {journal.length > 0 && (
-              <button onClick={() => { if (window.confirm('Clear journal?')) { setJournal([]); saveJournal([]); } }}
+              <button onClick={() => { if (window.confirm('Clear journal?')) { setJournal([]); } }}
                 className={`text-xs ${c.dangerText} min-h-[32px]`}>🗑️</button>
             )}
           </div>
@@ -1636,10 +1607,10 @@ const SocialEnergyAudit = () => {
                 return (
                   <div key={entry.id} className="flex items-center gap-2">
                     <span className={`text-[9px] ${c.textMuted} w-16 truncate text-right flex-shrink-0`}>{entry.label?.split(' ').slice(-2).join(' ')}</span>
-                    <div className={`flex-1 h-3 rounded-full ${isDark ? 'bg-zinc-700' : 'bg-slate-200'} overflow-hidden`}>
+                    <div className={`flex-1 h-3 rounded-full ${isDark ? 'bg-[#2a2a4a]' : 'bg-[#e0e0e0]'} overflow-hidden`}>
                       <div
                         className={`h-full rounded-full transition-all ${
-                          pct >= 80 ? 'bg-red-500' : pct >= 60 ? 'bg-amber-500' : pct >= 40 ? 'bg-blue-500' : 'bg-emerald-500'
+                          pct >= 80 ? 'bg-[#a03030]' : pct >= 60 ? 'bg-[#c8a951]' : pct >= 40 ? 'bg-[#1e3a5f]' : 'bg-[#2a7a2a]'
                         }`}
                         style={{ width: `${pct}%` }}
                       />
@@ -1779,7 +1750,7 @@ const SocialEnergyAudit = () => {
               {idealWeekResults.biggest_change && (
                 <div className={`${c.success} border rounded-lg p-3`}>
                   <p className={`text-xs font-bold ${c.successText} mb-0.5`}>🎯 Biggest impact change</p>
-                  <p className={`text-xs ${isDark ? 'text-emerald-300' : 'text-emerald-700'}`}>{idealWeekResults.biggest_change}</p>
+                  <p className={`text-xs ${c.successText}`}>{idealWeekResults.biggest_change}</p>
                 </div>
               )}
 
@@ -1802,7 +1773,7 @@ const SocialEnergyAudit = () => {
       {/* Compare mode instructions */}
       {compareMode && !compareEntries && (
         <div className={`${c.info} border rounded-lg p-3`}>
-          <p className={`text-xs ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>
+          <p className={`text-xs ${isDark ? 'text-[#a0a0e0]' : 'text-[#2a4a8a]'}`}>
             ⚖️ Tap two weeks below to compare them side by side.
             {compareA ? ` First week selected — now pick the second.` : ''}
           </p>
@@ -1904,7 +1875,7 @@ const SocialEnergyAudit = () => {
                 }}
                 className={`${c.card} border rounded-xl p-4 transition-colors ${
                   compareMode ? 'cursor-pointer' : ''
-                } ${isSelected ? (isDark ? 'ring-2 ring-violet-500' : 'ring-2 ring-violet-400') : ''}`}
+                } ${isSelected ? (isDark ? 'ring-2 ring-[#c8a951]' : 'ring-2 ring-[#1e3a5f]') : ''}`}
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1 min-w-0">

@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
+import { usePersistentState } from '../hooks/usePersistentState';
 import { CopyBtn, PrintBtn, ShareBtn, ActionBar } from '../components/ActionButtons';
 
 // ════════════════════════════════════════════════════════════
@@ -52,24 +53,16 @@ const CALENDAR_CATEGORIES = [
 const MONTH_COLORS = { GREAT: 'emerald', GOOD: 'blue', AVERAGE: 'zinc', BAD: 'red' };
 
 const CROSS_REFS = [
-  { id: 'FakeReviewDetective', icon: '🔍', label: 'Check reviews with FakeReviewDetective' },
-  { id: 'LeverageLogic', icon: '🤝', label: 'Negotiate better with LeverageLogic' },
-  { id: 'BillGuiltEraser', icon: '💸', label: 'Feel good about spending with BillGuiltEraser' },
-  { id: 'CrashPredictor', icon: '📉', label: 'Check tech reliability with CrashPredictor' },
+  { id: 'FakeReviewDetective', icon: '🔍', label: 'Check reviews with Fake Review Detective' },
+  { id: 'PlotTwist', icon: '🔀', label: 'Struggling to decide? Plot Twist untangles choices' },
+  { id: 'BillGuiltEraser', icon: '💸', label: 'Feeling guilty? Bill Guilt Eraser helps' },
+  { id: 'RamenRatio', icon: '🍜', label: 'See cost in meals/hours with Ramen Ratio' },
 ];
 
 // ════════════════════════════════════════════════════════════
 // PERSISTENT STORAGE
 // ════════════════════════════════════════════════════════════
-const STORAGE_KEY = 'bw-history';
 const MAX_HISTORY = 20;
-
-function loadHistory() {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch { return []; }
-}
-function saveHistory(items) {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(items.slice(0, MAX_HISTORY))); } catch {}
-}
 
 // ════════════════════════════════════════════════════════════
 // SECTION COMPONENT
@@ -110,36 +103,36 @@ const BuyWise = () => {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
 
-  // ── Theme ──
+  // ── Theme — Navy & Gold ──
   const c = {
-    card: isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-slate-200',
-    input: isDark
-      ? 'bg-zinc-900 border-zinc-600 text-zinc-50 placeholder:text-zinc-500 focus:border-cyan-500 focus:ring-cyan-500/20'
-      : 'bg-white border-slate-300 text-slate-900 placeholder:text-slate-400 focus:border-cyan-500 focus:ring-cyan-100',
-    text: isDark ? 'text-zinc-50' : 'text-slate-900',
-    textSec: isDark ? 'text-zinc-400' : 'text-slate-600',
-    textMuted: isDark ? 'text-zinc-500' : 'text-slate-500',
-    label: isDark ? 'text-zinc-300' : 'text-slate-700',
-    accent: isDark ? 'text-cyan-400' : 'text-cyan-600',
-    accentBg: isDark ? 'bg-cyan-900/30 border-cyan-700/50' : 'bg-cyan-50 border-cyan-200',
-    btnPrimary: isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
-    btnSec: isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-slate-100 hover:bg-slate-200 text-slate-800',
-    danger: isDark ? 'bg-red-900/20 border-red-700/50 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
-    dangerText: isDark ? 'text-red-400' : 'text-red-600',
-    success: isDark ? 'bg-emerald-900/20 border-emerald-700/50 text-emerald-200' : 'bg-emerald-50 border-emerald-200 text-emerald-800',
-    successText: isDark ? 'text-emerald-400' : 'text-emerald-600',
-    warning: isDark ? 'bg-amber-900/20 border-amber-700/50 text-amber-200' : 'bg-amber-50 border-amber-200 text-amber-800',
-    warningText: isDark ? 'text-amber-400' : 'text-amber-600',
-    info: isDark ? 'bg-blue-900/20 border-blue-700/50 text-blue-200' : 'bg-blue-50 border-blue-200 text-blue-800',
-    pillActive: isDark ? 'bg-cyan-600 border-cyan-500 text-white' : 'bg-cyan-600 border-cyan-600 text-white',
-    pillInactive: isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-300 hover:border-zinc-500' : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300',
-    divider: isDark ? 'border-zinc-700' : 'border-slate-200',
-    quoteBg: isDark ? 'bg-zinc-900/60' : 'bg-slate-50',
-    verdict: isDark ? 'bg-cyan-900/40 border-cyan-700/50' : 'bg-cyan-50 border-cyan-200',
-    calGreat: isDark ? 'bg-emerald-900/30 border-emerald-700/50' : 'bg-emerald-50 border-emerald-200',
-    calGood: isDark ? 'bg-blue-900/30 border-blue-700/50' : 'bg-blue-50 border-blue-200',
-    calAvg: isDark ? 'bg-zinc-700 border-zinc-600' : 'bg-slate-50 border-slate-200',
-    calBad: isDark ? 'bg-red-900/30 border-red-700/50' : 'bg-red-50 border-red-200',
+    card:        isDark ? 'bg-[#2a2623] border-[#3d3630]'  : 'bg-white border-[#e8e1d5]',
+    input:       isDark ? 'bg-[#1a1816] border-[#3d3630] text-[#f0eeea] placeholder:text-[#8a8275] focus:border-[#4a6a8a] focus:ring-[#4a6a8a]/20'
+                        : 'bg-[#faf8f5] border-[#d5cab8] text-[#3d3935] placeholder:text-[#8a8275] focus:border-[#4a6a8a] focus:ring-[#4a6a8a]/20',
+    text:        isDark ? 'text-[#f0eeea]'  : 'text-[#3d3935]',
+    textSec:     isDark ? 'text-[#c8c3b9]'  : 'text-[#5a544a]',
+    textMuted:   isDark ? 'text-[#8a8275]'  : 'text-[#8a8275]',
+    label:       isDark ? 'text-[#c8c3b9]'  : 'text-[#5a544a]',
+    accent:      isDark ? 'text-[#d9a04e]'  : 'text-[#93541f]',
+    accentBg:    isDark ? 'bg-[#c8872e]/15 border-[#c8872e]/40' : 'bg-[#f9edd8] border-[#c8872e]/30',
+    btnPrimary:  isDark ? 'bg-[#2c4a6e] hover:bg-[#4a6a8a] text-white' : 'bg-[#2c4a6e] hover:bg-[#1e3a58] text-white',
+    btnSec:      isDark ? 'bg-[#332e2a] hover:bg-[#3d3630] text-[#c8c3b9]' : 'bg-[#f3efe8] hover:bg-[#e8e1d5] text-[#5e5042]',
+    danger:      isDark ? 'bg-[#b54a3f]/15 border-[#b54a3f]/40 text-[#e88880]' : 'bg-[#fceae8] border-[#e8a8a0] text-[#b54a3f]',
+    dangerText:  isDark ? 'text-[#e88880]' : 'text-[#b54a3f]',
+    success:     isDark ? 'bg-[#5a8a5c]/15 border-[#5a8a5c]/40 text-[#7aba7c]' : 'bg-[#e8f0e8] border-[#5a8a5c]/30 text-[#3a6a3c]',
+    successText: isDark ? 'text-[#7aba7c]' : 'text-[#3a6a3c]',
+    warning:     isDark ? 'bg-[#c8872e]/15 border-[#c8872e]/40 text-[#d9a04e]' : 'bg-[#f9edd8] border-[#c8872e]/30 text-[#93541f]',
+    warningText: isDark ? 'text-[#d9a04e]' : 'text-[#93541f]',
+    info:        isDark ? 'bg-[#2c4a6e]/15 border-[#4a6a8a]/30 text-[#a8b9ce]' : 'bg-[#d4dde8]/30 border-[#2c4a6e]/15 text-[#1e3a58]',
+    pillActive:  isDark ? 'bg-[#2c4a6e] border-[#4a6a8a] text-white' : 'bg-[#2c4a6e] border-[#1e3a58] text-white',
+    pillInactive: isDark ? 'bg-[#332e2a] border-[#3d3630] text-[#c8c3b9] hover:border-[#5a544a]' : 'bg-white border-[#d5cab8] text-[#5a544a] hover:border-[#8a8275]',
+    divider:     isDark ? 'border-[#3d3630]' : 'border-[#e8e1d5]',
+    quoteBg:     isDark ? 'bg-[#1a1816]/60' : 'bg-[#faf8f5]',
+    verdict:     isDark ? 'bg-[#c8872e]/15 border-[#c8872e]/40' : 'bg-[#f9edd8] border-[#c8872e]/30',
+    calGreat:    isDark ? 'bg-[#5a8a5c]/20 border-[#5a8a5c]/40' : 'bg-[#e8f0e8] border-[#5a8a5c]/30',
+    calGood:     isDark ? 'bg-[#2c4a6e]/20 border-[#4a6a8a]/30' : 'bg-[#d4dde8]/30 border-[#2c4a6e]/15',
+    calAvg:      isDark ? 'bg-[#332e2a] border-[#3d3630]' : 'bg-[#faf8f5] border-[#e8e1d5]',
+    calBad:      isDark ? 'bg-[#b54a3f]/15 border-[#b54a3f]/40' : 'bg-[#fceae8] border-[#e8a8a0]',
+    linkStyle:   isDark ? 'text-[#6e8aaa] hover:text-[#a8b9ce] underline' : 'text-[#2c4a6e] hover:text-[#1e3a58] underline',
   };
 
   // ── State: Views ──
@@ -181,7 +174,7 @@ const BuyWise = () => {
   const [calResults, setCalResults] = useState(null);
 
   // ── State: History ──
-  const [history, setHistory] = useState(() => loadHistory());
+  const [history, setHistory] = usePersistentState('bw-history', []);
 
   // ── State: Photo Mode ──
   const [photoResults, setPhotoResults] = useState(null);
@@ -202,6 +195,14 @@ const BuyWise = () => {
   const [ppuFrequency, setPpuFrequency] = useState(4); // times per month
   const [ppuLifespan, setPpuLifespan] = useState(3); // years
   const [showPpu, setShowPpu] = useState(false);
+
+  // ── State: Quote Check ──
+  const [quoteService, setQuoteService] = useState('');
+  const [quoteAmount, setQuoteAmount] = useState('');
+  const [quoteDetails, setQuoteDetails] = useState('');
+  const [quoteLocation, setQuoteLocation] = useState('');
+  const [quoteUrgency, setQuoteUrgency] = useState('flexible');
+  const [quoteResults, setQuoteResults] = useState(null);
 
   // ── State: Verdict Card ──
   const [showVerdictCard, setShowVerdictCard] = useState(false);
@@ -303,7 +304,6 @@ const BuyWise = () => {
       };
       const updated = [entry, ...history].slice(0, MAX_HISTORY);
       setHistory(updated);
-      saveHistory(updated);
     } catch (err) {
       setError(err.message || 'Analysis failed. Try again.');
     }
@@ -435,8 +435,26 @@ const BuyWise = () => {
   const updateHistoryEntry = useCallback((id, updates) => {
     const updated = history.map(h => h.id === id ? { ...h, ...updates } : h);
     setHistory(updated);
-    saveHistory(updated);
   }, [history]);
+
+  // ── API: Quote Check ──
+  const analyzeQuote = useCallback(async () => {
+    if (!quoteService.trim()) { setError('What service were you quoted for?'); return; }
+    setError(''); setQuoteResults(null);
+    try {
+      const data = await callToolEndpoint('buy-wise/quote', {
+        service: quoteService.trim(),
+        amount: quoteAmount ? Number(quoteAmount) : null,
+        details: quoteDetails.trim() || null,
+        location: quoteLocation.trim() || null,
+        urgency: quoteUrgency,
+        currency,
+      });
+      setQuoteResults(data);
+    } catch (err) {
+      setError(err.message || 'Quote analysis failed');
+    }
+  }, [quoteService, quoteAmount, quoteDetails, quoteLocation, quoteUrgency, currency, callToolEndpoint]);
 
   // ── Build full text for copy/print/share ──
   const buildFullText = useCallback(() => {
@@ -507,6 +525,7 @@ const BuyWise = () => {
         { key: 'form', label: '🔍 Research', show: true },
         { key: 'results', label: `${results?.verdict_emoji || '📋'} Results`, show: !!results },
         { key: 'walkthrough', label: '👣 Walkthrough', show: !!results },
+        { key: 'quote', label: '📋 Quote Check', show: true },
         { key: 'photo', label: '📸 Photo ID', show: true },
         { key: 'budget', label: '💰 Budget', show: true },
         { key: 'haul', label: '🛍️ Haul Review', show: true },
@@ -642,7 +661,7 @@ const BuyWise = () => {
           isImpulse ? c.warning : `border ${c.divider}`
         }`}>
           <div className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
-            isImpulse ? 'bg-amber-500 border-amber-500' : (isDark ? 'border-zinc-600' : 'border-slate-300')
+            isImpulse ? 'bg-[#c8872e] border-[#c8872e]' : (isDark ? 'border-[#3d3630]' : 'border-[#d5cab8]')
           }`}>
             {isImpulse && <span className="text-white text-xs">✓</span>}
           </div>
@@ -657,7 +676,7 @@ const BuyWise = () => {
           isGift ? c.accentBg : `border ${c.divider}`
         }`}>
           <div className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
-            isGift ? 'bg-cyan-500 border-cyan-500' : (isDark ? 'border-zinc-600' : 'border-slate-300')
+            isGift ? 'bg-[#2c4a6e] border-[#2c4a6e]' : (isDark ? 'border-[#3d3630]' : 'border-[#d5cab8]')
           }`}>
             {isGift && <span className="text-white text-xs">✓</span>}
           </div>
@@ -799,22 +818,22 @@ const BuyWise = () => {
           <div className={`${c.warning} border-2 rounded-xl p-5`}>
             <h3 className={`text-sm font-bold ${c.warningText} mb-2`}>⚡ Impulse Check</h3>
             {r.impulse_check.do_you_need_it && (
-              <p className={`text-sm ${isDark ? 'text-amber-300' : 'text-amber-700'} mb-2`}>
+              <p className={`text-sm ${isDark ? 'text-[#d9a04e]' : 'text-[#93541f]'} mb-2`}>
                 <strong>Do you need it?</strong> {r.impulse_check.do_you_need_it}
               </p>
             )}
             {r.impulse_check.what_else_could_you_do && (
-              <p className={`text-sm ${isDark ? 'text-amber-300' : 'text-amber-700'} mb-2`}>
+              <p className={`text-sm ${isDark ? 'text-[#d9a04e]' : 'text-[#93541f]'} mb-2`}>
                 <strong>What else is {price ? `${currency}${price}` : 'that money'}?</strong> {r.impulse_check.what_else_could_you_do}
               </p>
             )}
             {r.impulse_check.already_own_something && (
-              <p className={`text-sm ${isDark ? 'text-amber-300' : 'text-amber-700'} mb-2`}>
+              <p className={`text-sm ${isDark ? 'text-[#d9a04e]' : 'text-[#93541f]'} mb-2`}>
                 <strong>Already own something?</strong> {r.impulse_check.already_own_something}
               </p>
             )}
             {r.impulse_check.wait_recommendation && (
-              <div className={`mt-3 p-3 rounded-lg ${isDark ? 'bg-amber-900/30' : 'bg-amber-100'} flex items-center gap-2`}>
+              <div className={`mt-3 p-3 rounded-lg ${isDark ? 'bg-[#c8872e]/15' : 'bg-[#f9edd8]'} flex items-center gap-2`}>
                 <span>⏱️</span>
                 <p className={`text-xs font-bold ${c.warningText}`}>{r.impulse_check.wait_recommendation}</p>
               </div>
@@ -909,7 +928,7 @@ const BuyWise = () => {
             )}
             {r.cheaper_alternative.refurbished_tip && (
               <div className={`${c.success} border rounded-lg p-3`}>
-                <p className={`text-xs ${isDark ? 'text-emerald-300' : 'text-emerald-700'}`}>♻️ {r.cheaper_alternative.refurbished_tip}</p>
+                <p className={`text-xs ${isDark ? 'text-[#7aba7c]' : 'text-[#3a6a3c]'}`}>♻️ {r.cheaper_alternative.refurbished_tip}</p>
               </div>
             )}
           </Section>
@@ -967,7 +986,7 @@ const BuyWise = () => {
             {r.warranty_returns.return_tips && <p className={`text-xs ${c.textSec}`}>↩️ {r.warranty_returns.return_tips}</p>}
             {r.warranty_returns.credit_card_protection && (
               <div className={`${c.info} border rounded-lg p-3`}>
-                <p className={`text-xs ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>💳 {r.warranty_returns.credit_card_protection}</p>
+                <p className={`text-xs ${isDark ? 'text-[#a8b9ce]' : 'text-[#2c4a6e]'}`}>💳 {r.warranty_returns.credit_card_protection}</p>
               </div>
             )}
           </Section>
@@ -1002,7 +1021,7 @@ const BuyWise = () => {
             <p className={`text-sm ${c.textSec}`}>{r.regret_predictor.common_regrets}</p>
             {r.regret_predictor.usage_reality && (
               <div className={`${c.warning} border rounded-lg p-3`}>
-                <p className={`text-xs ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>📊 {r.regret_predictor.usage_reality}</p>
+                <p className={`text-xs ${isDark ? 'text-[#d9a04e]' : 'text-[#93541f]'}`}>📊 {r.regret_predictor.usage_reality}</p>
               </div>
             )}
             {r.regret_predictor.avoid_regret_tip && (
@@ -1105,8 +1124,8 @@ const BuyWise = () => {
             <div className="flex items-start gap-3">
               <span className={`text-xl flex-shrink-0`}>👍</span>
               <div>
-                <h3 className={`text-sm font-bold mb-1 ${isDark ? 'text-blue-200' : 'text-blue-800'}`}>Bottom Line</h3>
-                <p className={`text-sm ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>{r.bottom_line}</p>
+                <h3 className={`text-sm font-bold mb-1 ${isDark ? 'text-[#a8b9ce]' : 'text-[#1e3a58]'}`}>Bottom Line</h3>
+                <p className={`text-sm ${isDark ? 'text-[#a8b9ce]' : 'text-[#2c4a6e]'}`}>{r.bottom_line}</p>
               </div>
             </div>
           </div>
@@ -1198,7 +1217,7 @@ const BuyWise = () => {
                   <input
                     type="range" min="1" max="60" value={ppuFrequency}
                     onChange={e => setPpuFrequency(Number(e.target.value))}
-                    className="w-full accent-cyan-500"
+                    className="w-full accent-[#2c4a6e]"
                   />
                   <div className={`flex justify-between text-[9px] ${c.textMuted}`}>
                     <span>Once</span><span>Daily</span><span>Multiple/day</span>
@@ -1212,7 +1231,7 @@ const BuyWise = () => {
                   <input
                     type="range" min="1" max="15" value={ppuLifespan}
                     onChange={e => setPpuLifespan(Number(e.target.value))}
-                    className="w-full accent-cyan-500"
+                    className="w-full accent-[#2c4a6e]"
                   />
                   <div className={`flex justify-between text-[9px] ${c.textMuted}`}>
                     <span>1 year</span><span>5 years</span><span>15 years</span>
@@ -1262,7 +1281,7 @@ const BuyWise = () => {
                   <span className="text-4xl block mb-2">{r.verdict_emoji || '🧠'}</span>
                   <p className={`text-lg font-black ${c.text} mb-1`}>{product}</p>
                   {price && <p className={`text-sm font-bold ${c.accent}`}>{currency}{price}</p>}
-                  <div className={`my-3 h-px ${isDark ? 'bg-zinc-700' : 'bg-cyan-200'}`} />
+                  <div className={`my-3 h-px ${isDark ? 'bg-[#3d3630]' : 'bg-[#e8e1d5]'}`} />
                   <p className={`text-sm font-bold ${c.text} mb-1`}>{r.verdict}</p>
                   {r.fair_price?.verdict_badge && (
                     <span className={`inline-block text-[10px] font-black px-2 py-0.5 rounded mt-1 ${badgeColor(r.fair_price.verdict_badge)}`}>
@@ -1472,7 +1491,7 @@ const BuyWise = () => {
             <button
               key={i}
               onClick={() => setWalkStep(i)}
-              className={`w-2.5 h-2.5 rounded-full transition-colors ${i === walkStep ? 'bg-cyan-500' : isDark ? 'bg-zinc-600' : 'bg-slate-300'}`}
+              className={`w-2.5 h-2.5 rounded-full transition-colors ${i === walkStep ? 'bg-[#c8872e]' : isDark ? 'bg-[#3d3630]' : 'bg-[#d5cab8]'}`}
             />
           ))}
         </div>
@@ -1573,7 +1592,7 @@ const BuyWise = () => {
         <div className="space-y-4">
           {budgetResults.budget_verdict && (
             <div className={`${c.info} border rounded-xl p-4`}>
-              <p className={`text-sm ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>{budgetResults.budget_verdict}</p>
+              <p className={`text-sm ${isDark ? 'text-[#a8b9ce]' : 'text-[#2c4a6e]'}`}>{budgetResults.budget_verdict}</p>
             </div>
           )}
 
@@ -1642,7 +1661,7 @@ const BuyWise = () => {
           {/* Save more tip */}
           {budgetResults.save_more_tip && (
             <div className={`${c.success} border rounded-xl p-4`}>
-              <p className={`text-xs ${isDark ? 'text-emerald-300' : 'text-emerald-700'}`}>💡 {budgetResults.save_more_tip}</p>
+              <p className={`text-xs ${isDark ? 'text-[#7aba7c]' : 'text-[#3a6a3c]'}`}>💡 {budgetResults.save_more_tip}</p>
             </div>
           )}
         </div>
@@ -1685,13 +1704,13 @@ const BuyWise = () => {
             {calResults.best_month && (
               <div className={`${c.success} border rounded-xl p-4`}>
                 <p className={`text-[10px] font-bold ${c.successText} uppercase`}>Best time to buy</p>
-                <p className={`text-sm font-bold ${isDark ? 'text-emerald-200' : 'text-emerald-800'}`}>{calResults.best_month}</p>
+                <p className={`text-sm font-bold ${isDark ? 'text-[#7aba7c]' : 'text-[#3a6a3c]'}`}>{calResults.best_month}</p>
               </div>
             )}
             {calResults.worst_month && (
               <div className={`${c.danger} border rounded-xl p-4`}>
                 <p className={`text-[10px] font-bold ${c.dangerText} uppercase`}>Worst time to buy</p>
-                <p className={`text-sm font-bold ${isDark ? 'text-red-200' : 'text-red-800'}`}>{calResults.worst_month}</p>
+                <p className={`text-sm font-bold ${isDark ? 'text-[#e88880]' : 'text-[#b54a3f]'}`}>{calResults.worst_month}</p>
               </div>
             )}
           </div>
@@ -1706,10 +1725,10 @@ const BuyWise = () => {
                     <div className="flex items-center justify-between mb-1">
                       <span className={`text-xs font-bold ${c.text}`}>{m.month}</span>
                       <span className={`text-[9px] font-black px-1.5 py-0.5 rounded ${
-                        m.rating === 'GREAT' ? 'bg-emerald-500 text-white'
-                        : m.rating === 'GOOD' ? 'bg-blue-500 text-white'
-                        : m.rating === 'BAD' ? 'bg-red-500 text-white'
-                        : isDark ? 'bg-zinc-600 text-zinc-300' : 'bg-slate-300 text-slate-700'
+                        m.rating === 'GREAT' ? 'bg-[#5a8a5c] text-white'
+                        : m.rating === 'GOOD' ? 'bg-[#2c4a6e] text-white'
+                        : m.rating === 'BAD' ? 'bg-[#b54a3f] text-white'
+                        : isDark ? 'bg-[#3d3630] text-[#c8c3b9]' : 'bg-[#d5cab8] text-[#5a544a]'
                       }`}>{m.rating}</span>
                     </div>
                     <p className={`text-[10px] ${c.textSec} leading-tight`}>{m.events}</p>
@@ -1725,8 +1744,8 @@ const BuyWise = () => {
           {/* Price cycle */}
           {calResults.price_cycle && (
             <div className={`${c.info} border rounded-xl p-4`}>
-              <p className={`text-xs font-bold ${isDark ? 'text-blue-200' : 'text-blue-800'} mb-1`}>🔄 Price Cycle</p>
-              <p className={`text-xs ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>{calResults.price_cycle}</p>
+              <p className={`text-xs font-bold ${isDark ? 'text-[#a8b9ce]' : 'text-[#1e3a58]'} mb-1`}>🔄 Price Cycle</p>
+              <p className={`text-xs ${isDark ? 'text-[#a8b9ce]' : 'text-[#2c4a6e]'}`}>{calResults.price_cycle}</p>
             </div>
           )}
 
@@ -1759,7 +1778,7 @@ const BuyWise = () => {
           </div>
           {history.length > 0 && (
             <button
-              onClick={() => { if (window.confirm('Clear all history?')) { setHistory([]); saveHistory([]); } }}
+              onClick={() => { if (window.confirm('Clear all history?')) { setHistory([]); } }}
               className={`text-xs ${c.dangerText} min-h-[32px]`}
             >
               🗑️ Clear
@@ -1892,7 +1911,7 @@ const BuyWise = () => {
 
         <label className={`block cursor-pointer`}>
           <div className={`border-2 border-dashed rounded-xl p-8 text-center transition-colors ${
-            isDark ? 'border-zinc-600 hover:border-cyan-500' : 'border-slate-300 hover:border-cyan-500'
+            isDark ? 'border-[#3d3630] hover:border-[#4a6a8a]' : 'border-[#d5cab8] hover:border-[#2c4a6e]'
           }`}>
             {photoPreview ? (
               <img src={photoPreview} alt="Product" className="max-h-48 mx-auto rounded-lg mb-3" />
@@ -1967,7 +1986,7 @@ const BuyWise = () => {
               {/* Recommendation */}
               {photoResults.recommendation && (
                 <div className={`${c.info} border rounded-xl p-4`}>
-                  <p className={`text-xs ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>{photoResults.recommendation}</p>
+                  <p className={`text-xs ${isDark ? 'text-[#a8b9ce]' : 'text-[#2c4a6e]'}`}>{photoResults.recommendation}</p>
                 </div>
               )}
 
@@ -1986,7 +2005,7 @@ const BuyWise = () => {
             </>
           ) : (
             <div className={`${c.warning} border rounded-xl p-4`}>
-              <p className={`text-sm ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>
+              <p className={`text-sm ${isDark ? 'text-[#d9a04e]' : 'text-[#93541f]'}`}>
                 {photoResults.recommendation || "Couldn't identify this product. Try a clearer photo showing the brand name or label."}
               </p>
             </div>
@@ -2014,7 +2033,7 @@ const BuyWise = () => {
           <button
             onClick={() => setConvinceDirection('for')}
             className={`flex-1 py-2.5 rounded-lg text-sm font-bold border transition-colors min-h-[44px] ${
-              convinceDirection === 'for' ? c.success + ' border-emerald-500' : c.pillInactive
+              convinceDirection === 'for' ? c.success + ' border-[#5a8a5c]' : c.pillInactive
             }`}
           >
             👍 Case FOR buying
@@ -2022,7 +2041,7 @@ const BuyWise = () => {
           <button
             onClick={() => setConvinceDirection('against')}
             className={`flex-1 py-2.5 rounded-lg text-sm font-bold border transition-colors min-h-[44px] ${
-              convinceDirection === 'against' ? c.danger + ' border-red-500' : c.pillInactive
+              convinceDirection === 'against' ? c.danger + ' border-[#b54a3f]' : c.pillInactive
             }`}
           >
             👎 Case AGAINST
@@ -2095,8 +2114,8 @@ const BuyWise = () => {
 
           {convinceResults.compromise && (
             <div className={`${c.info} border rounded-xl p-4`}>
-              <p className={`text-xs font-bold ${isDark ? 'text-blue-200' : 'text-blue-800'} mb-1`}>🤝 Compromise option</p>
-              <p className={`text-xs ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>{convinceResults.compromise}</p>
+              <p className={`text-xs font-bold ${isDark ? 'text-[#a8b9ce]' : 'text-[#1e3a58]'} mb-1`}>🤝 Compromise option</p>
+              <p className={`text-xs ${isDark ? 'text-[#a8b9ce]' : 'text-[#2c4a6e]'}`}>{convinceResults.compromise}</p>
             </div>
           )}
 
@@ -2272,7 +2291,7 @@ const BuyWise = () => {
             <div className={`${c.warning} border rounded-xl p-4`}>
               <p className={`text-xs font-bold ${c.warningText} mb-1`}>🔄 Redundancies</p>
               {haulResults.redundancies.map((r, i) => (
-                <p key={i} className={`text-xs ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>{r}</p>
+                <p key={i} className={`text-xs ${isDark ? 'text-[#d9a04e]' : 'text-[#93541f]'}`}>{r}</p>
               ))}
             </div>
           )}
@@ -2280,9 +2299,9 @@ const BuyWise = () => {
           {/* Missing items */}
           {haulResults.missing?.length > 0 && haulResults.missing[0] && (
             <div className={`${c.info} border rounded-xl p-4`}>
-              <p className={`text-xs font-bold ${isDark ? 'text-blue-200' : 'text-blue-800'} mb-1`}>🤔 You might be missing</p>
+              <p className={`text-xs font-bold ${isDark ? 'text-[#a8b9ce]' : 'text-[#1e3a58]'} mb-1`}>🤔 You might be missing</p>
               {haulResults.missing.map((m, i) => (
-                <p key={i} className={`text-xs ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>→ {m}</p>
+                <p key={i} className={`text-xs ${isDark ? 'text-[#a8b9ce]' : 'text-[#2c4a6e]'}`}>→ {m}</p>
               ))}
             </div>
           )}
@@ -2311,9 +2330,212 @@ const BuyWise = () => {
           {/* Save tip */}
           {haulResults.save_tip && (
             <div className={`${c.success} border rounded-xl p-4`}>
-              <p className={`text-xs ${isDark ? 'text-emerald-300' : 'text-emerald-700'}`}>💡 {haulResults.save_tip}</p>
+              <p className={`text-xs ${isDark ? 'text-[#7aba7c]' : 'text-[#3a6a3c]'}`}>💡 {haulResults.save_tip}</p>
             </div>
           )}
+        </div>
+      )}
+    </div>
+  );
+
+  // ════════════════════════════════════════════════════════════
+  // RENDER: QUOTE CHECK
+  // ════════════════════════════════════════════════════════════
+  const renderQuote = () => (
+    <div className="space-y-4">
+      <div className={`${c.card} border rounded-xl p-5`}>
+        <h2 className={`text-lg font-bold ${c.text} mb-1 flex items-center gap-2`}>
+          <span>📋</span> Quote Check
+        </h2>
+        <p className={`text-sm ${c.textMuted} mb-5`}>
+          Got a quote from a contractor, vendor, or service provider? Find out if it's fair.
+        </p>
+
+        <div className="space-y-3">
+          <div>
+            <label className={`text-sm font-bold ${c.label} block mb-1.5`}>What service were you quoted for?</label>
+            <input type="text" value={quoteService} onChange={e => setQuoteService(e.target.value)}
+              placeholder="e.g., furnace replacement, wedding photographer, roof repair, math tutor..."
+              className={`w-full px-4 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className={`text-sm font-bold ${c.label} block mb-1.5`}>
+                Quote amount <span className={`font-normal ${c.textMuted}`}>(optional)</span>
+              </label>
+              <div className="flex items-center gap-1">
+                <span className={`text-sm font-bold ${c.textMuted}`}>{currency}</span>
+                <input type="number" value={quoteAmount} onChange={e => setQuoteAmount(e.target.value)}
+                  placeholder="0.00" className={`flex-1 px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
+              </div>
+            </div>
+            <div>
+              <label className={`text-sm font-bold ${c.label} block mb-1.5`}>
+                Location <span className={`font-normal ${c.textMuted}`}>(optional)</span>
+              </label>
+              <input type="text" value={quoteLocation} onChange={e => setQuoteLocation(e.target.value)}
+                placeholder="e.g., Boston area, rural Texas, NYC..."
+                className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
+            </div>
+          </div>
+
+          <div>
+            <label className={`text-sm font-bold ${c.label} block mb-1.5`}>
+              Quote details <span className={`font-normal ${c.textMuted}`}>(paste the line items or describe what's included)</span>
+            </label>
+            <textarea value={quoteDetails} onChange={e => setQuoteDetails(e.target.value)}
+              placeholder={"e.g., 'Includes removal of old unit, new Carrier 96% AFUE furnace, labor, permits, 10-year warranty'\nor paste the itemized quote..."}
+              className={`w-full h-24 px-4 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2 resize-none`} />
+          </div>
+
+          <div>
+            <label className={`text-sm font-bold ${c.label} block mb-1.5`}>How urgent?</label>
+            <div className="flex gap-1.5">
+              {URGENCY.map(u => (
+                <button key={u.value} onClick={() => setQuoteUrgency(u.value)}
+                  className={`flex-1 py-2 rounded-lg text-[11px] font-bold border transition-colors min-h-[36px] ${
+                    quoteUrgency === u.value ? c.pillActive : c.pillInactive}`}>
+                  {u.emoji} {u.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <button onClick={analyzeQuote} disabled={!quoteService.trim() || loading}
+          className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 mt-4 min-h-[48px]`}>
+          {loading ? <><span className="animate-spin inline-block">⏳</span> Analyzing quote...</> : <><span>📋</span> Check This Quote</>}
+        </button>
+      </div>
+
+      {quoteResults && (
+        <div className="space-y-4">
+          {/* Verdict */}
+          <div className={`${c.verdict} border-2 rounded-xl p-5`}>
+            <div className="flex items-start gap-3">
+              <span className="text-2xl">{quoteResults.verdict_emoji || '📋'}</span>
+              <div>
+                <h3 className={`text-base font-black ${c.text} mb-1`}>{quoteResults.verdict}</h3>
+                <p className={`text-sm ${c.textSec}`}>{quoteResults.verdict_summary}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Fair price range */}
+          {quoteResults.fair_range && (
+            <div className={`${c.card} border rounded-xl p-4`}>
+              <p className={`text-xs font-bold ${c.textMuted} uppercase mb-2`}>💲 Typical range for this service</p>
+              <p className={`text-base font-bold ${c.text} mb-1`}>{quoteResults.fair_range.range}</p>
+              <p className={`text-xs ${c.textSec}`}>{quoteResults.fair_range.what_drives_cost}</p>
+              {quoteResults.fair_range.regional_note && (
+                <p className={`text-xs ${c.textMuted} mt-1 italic`}>📍 {quoteResults.fair_range.regional_note}</p>
+              )}
+            </div>
+          )}
+
+          {/* Line item analysis */}
+          {quoteResults.line_items?.length > 0 && (
+            <Section icon="🔍" title="Line Item Breakdown" c={c} defaultOpen={true}>
+              <div className="space-y-2">
+                {quoteResults.line_items.map((item, i) => (
+                  <div key={i} className={`flex items-start gap-2 p-3 rounded-lg ${c.quoteBg}`}>
+                    <span className="text-sm flex-shrink-0 mt-0.5">
+                      {item.verdict === 'fair' ? '✅' : item.verdict === 'high' ? '⚠️' : item.verdict === 'red_flag' ? '🚩' : '📎'}
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className={`text-xs font-bold ${c.text}`}>{item.item}</span>
+                        {item.amount && <span className={`text-xs ${c.textMuted}`}>{item.amount}</span>}
+                        <span className={`text-[9px] font-black px-1.5 py-0.5 rounded ${
+                          item.verdict === 'fair' ? c.success : item.verdict === 'high' ? c.warning : item.verdict === 'red_flag' ? c.danger : c.accentBg
+                        }`}>{item.verdict === 'fair' ? 'FAIR' : item.verdict === 'high' ? 'HIGH' : item.verdict === 'red_flag' ? 'RED FLAG' : 'INFO'}</span>
+                      </div>
+                      <p className={`text-[11px] ${c.textSec} mt-0.5`}>{item.note}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )}
+
+          {/* Negotiable items */}
+          {quoteResults.negotiable?.length > 0 && (
+            <Section icon="🤝" title="What's Negotiable" c={c}>
+              <div className="space-y-2">
+                {quoteResults.negotiable.map((n, i) => (
+                  <div key={i} className={`p-3 rounded-lg ${c.quoteBg}`}>
+                    <p className={`text-xs font-bold ${c.text}`}>{n.item}</p>
+                    <p className={`text-[11px] ${c.textSec} mt-0.5`}>{n.how_to_negotiate}</p>
+                    {n.typical_discount && <p className={`text-[10px] ${c.accent} mt-0.5`}>💰 Typical savings: {n.typical_discount}</p>}
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )}
+
+          {/* Red flags */}
+          {quoteResults.red_flags?.length > 0 && (
+            <div className={`${c.danger} border rounded-xl p-4`}>
+              <p className={`text-xs font-bold mb-2`}>🚩 Red Flags</p>
+              {quoteResults.red_flags.map((f, i) => (
+                <p key={i} className={`text-xs mb-1`}>• {f}</p>
+              ))}
+            </div>
+          )}
+
+          {/* Questions to ask */}
+          {quoteResults.questions_to_ask?.length > 0 && (
+            <Section icon="❓" title="Questions to Ask Before Signing" c={c}>
+              <div className="space-y-1">
+                {quoteResults.questions_to_ask.map((q, i) => (
+                  <div key={i} className={`p-2 rounded-lg ${c.quoteBg}`}>
+                    <p className={`text-xs ${c.text}`}>"{q}"</p>
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )}
+
+          {/* Seasonal timing */}
+          {quoteResults.timing_tip && (
+            <div className={`${c.info} border rounded-xl p-4`}>
+              <p className={`text-xs font-bold mb-1`}>📅 Timing</p>
+              <p className={`text-xs`}>{quoteResults.timing_tip}</p>
+            </div>
+          )}
+
+          {/* Getting competing quotes */}
+          {quoteResults.competing_quotes && (
+            <div className={`${c.card} border rounded-xl p-4`}>
+              <p className={`text-xs font-bold ${c.textMuted} uppercase mb-2`}>📞 Getting competing quotes</p>
+              <p className={`text-xs ${c.textSec}`}>{quoteResults.competing_quotes.how_many}</p>
+              {quoteResults.competing_quotes.where_to_look && (
+                <p className={`text-xs ${c.accent} mt-1`}>→ {quoteResults.competing_quotes.where_to_look}</p>
+              )}
+              {quoteResults.competing_quotes.script && (
+                <div className="mt-2">
+                  <p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>What to say:</p>
+                  <div className={`p-2 rounded-lg ${c.quoteBg}`}>
+                    <p className={`text-xs ${c.text} italic`}>"{quoteResults.competing_quotes.script}"</p>
+                  </div>
+                  <div className="mt-2">
+                    <CopyBtn content={`${quoteResults.competing_quotes.script}\n\n— Generated by DeftBrain · deftbrain.com`} label="Copy script" />
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Bottom line */}
+          {quoteResults.bottom_line && (
+            <div className={`${c.success} border rounded-xl p-4`}>
+              <p className={`text-xs font-bold mb-1`}>👍 Bottom Line</p>
+              <p className={`text-xs`}>{quoteResults.bottom_line}</p>
+            </div>
+          )}
+
+          <ActionBar content={`📋 BuyWise Quote Check: ${quoteService}\n${quoteAmount ? `Quote: ${currency}${quoteAmount}\n` : ''}${quoteResults.verdict}\n${quoteResults.fair_range?.range ? `Typical range: ${quoteResults.fair_range.range}\n` : ''}${quoteResults.bottom_line || ''}\n\n— Generated by DeftBrain · deftbrain.com`} title={`Quote Check: ${quoteService}`} />
         </div>
       )}
     </div>
@@ -2337,6 +2559,7 @@ const BuyWise = () => {
       {view === 'form' && renderForm()}
       {view === 'results' && renderResults()}
       {view === 'walkthrough' && renderWalkthrough()}
+      {view === 'quote' && renderQuote()}
       {view === 'photo' && renderPhoto()}
       {view === 'budget' && renderBudget()}
       {view === 'haul' && renderHaul()}

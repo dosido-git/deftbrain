@@ -1,0 +1,289 @@
+import React, { useState, useCallback } from 'react';
+import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import { useTheme } from '../hooks/useTheme';
+import { CopyBtn, ActionBar } from '../components/ActionButtons';
+
+// ════════════════════════════════════════════════════════════
+// CONSTANTS
+// ════════════════════════════════════════════════════════════
+const STARTER_PROMPTS = [
+  'That feeling when you miss someone who\'s sitting right next to you',
+  'When a song perfectly matches your mood and it feels like the universe is paying attention',
+  'The sadness of finishing a really good book',
+  'Feeling homesick for a place you\'ve never been',
+  'The relief mixed with emptiness after a big deadline passes',
+  'When you\'re happy but also aware that this moment will end',
+  'That weird grief for the person you used to be',
+  'The urge to be alone combined with the fear of being lonely',
+];
+
+const LANGUAGE_FLAGS = {
+  'English': '🇬🇧', 'Japanese': '🇯🇵', 'German': '🇩🇪', 'Portuguese': '🇧🇷',
+  'Danish': '🇩🇰', 'Korean': '🇰🇷', 'Finnish': '🇫🇮', 'Welsh': '🏴',
+  'Swedish': '🇸🇪', 'French': '🇫🇷', 'Spanish': '🇪🇸', 'Italian': '🇮🇹',
+  'Norwegian': '🇳🇴', 'Czech': '🇨🇿', 'Arabic': '🇸🇦', 'Hindi': '🇮🇳',
+  'Greek': '🇬🇷', 'Russian': '🇷🇺', 'Turkish': '🇹🇷', 'Tagalog': '🇵🇭',
+};
+
+// ════════════════════════════════════════════════════════════
+// COMPONENT
+// ════════════════════════════════════════════════════════════
+const NameThatFeeling = () => {
+  const { callToolEndpoint, loading } = useClaudeAPI();
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
+
+  const c = {
+    card: isDark ? 'bg-[#1a1a2e] border-[#2a2a4a]' : 'bg-white border-[#d4d4d4]',
+    input: isDark
+      ? 'bg-[#0f0f1e] border-[#2a2a4a] text-[#e8e8e8] placeholder:text-[#555] focus:border-[#c8a951] focus:ring-[#c8a951]/20'
+      : 'bg-white border-[#ccc] text-[#1e3a5f] placeholder:text-[#999] focus:border-[#1e3a5f] focus:ring-[#1e3a5f]/20',
+    text: isDark ? 'text-[#e8e8e8]' : 'text-[#1e3a5f]',
+    textSec: isDark ? 'text-[#a0a0b8]' : 'text-[#4a6a8a]',
+    textMuted: isDark ? 'text-[#666680]' : 'text-[#8a8a8a]',
+    label: isDark ? 'text-[#c0c0d0]' : 'text-[#2a4a6a]',
+    accent: isDark ? 'text-[#c8a951]' : 'text-[#1e3a5f]',
+    accentBg: isDark ? 'bg-[#c8a951]/10 border-[#c8a951]/30' : 'bg-[#1e3a5f]/5 border-[#1e3a5f]/20',
+    btnPrimary: isDark ? 'bg-[#c8a951] hover:bg-[#d4b85c] text-[#1a1a2e]' : 'bg-[#1e3a5f] hover:bg-[#2a4a6f] text-white',
+    btnSec: isDark ? 'bg-[#2a2a4a] hover:bg-[#3a3a5a] text-[#e8e8e8]' : 'bg-[#f0f0f0] hover:bg-[#e0e0e0] text-[#1e3a5f]',
+    pillActive: isDark ? 'bg-[#c8a951] border-[#c8a951] text-[#1a1a2e]' : 'bg-[#1e3a5f] border-[#1e3a5f] text-white',
+    pillInactive: isDark ? 'bg-[#2a2a4a] border-[#3a3a5a] text-[#c0c0d0] hover:border-[#4a4a6a]' : 'bg-white border-[#d4d4d4] text-[#4a6a8a] hover:border-[#aaa]',
+    divider: isDark ? 'border-[#2a2a4a]' : 'border-[#e0e0e0]',
+    quoteBg: isDark ? 'bg-[#0f0f1e]/60' : 'bg-[#f8f8f8]',
+    warm: isDark ? 'bg-[#2e2a1a] border-[#c8a951]/30 text-[#e0c080]' : 'bg-[#fffbf0] border-[#c8a951]/30 text-[#4a3a1a]',
+    world: isDark ? 'bg-[#1a1a2e] border-[#2a2a5a] text-[#a0a0e0]' : 'bg-[#f0f4ff] border-[#c0c8e8] text-[#2a2a6a]',
+    poetic: isDark ? 'bg-[#2a1a2e] border-[#4a2a4a] text-[#d0a0d0]' : 'bg-[#faf0ff] border-[#d8c0e8] text-[#4a2a5a]',
+    hug: isDark ? 'bg-[#1a2e1a] border-[#2a4a2a] text-[#a0e0a0]' : 'bg-[#f0faf0] border-[#c0dcc0] text-[#2a5a2a]',
+    danger: isDark ? 'bg-[#3a1a1a] border-[#5a2a2a] text-[#f0a0a0]' : 'bg-[#fef2f2] border-[#e8c0c0] text-[#7a2a2a]',
+  };
+
+  // ── State ──
+  const [description, setDescription] = useState('');
+  const [context, setContext] = useState('');
+  const [results, setResults] = useState(null);
+  const [error, setError] = useState('');
+
+  // ── API ──
+  const runSearch = useCallback(async () => {
+    if (!description.trim()) return;
+    setError('');
+    setResults(null);
+    try {
+      const data = await callToolEndpoint('name-that-feeling', {
+        description: description.trim(),
+        context: context.trim() || undefined,
+      });
+      setResults(data);
+    } catch (err) {
+      setError(err.message || 'Search failed');
+    }
+  }, [description, context, callToolEndpoint]);
+
+  // ── Build text ──
+  const buildFullText = useCallback(() => {
+    if (!results) return '';
+    const lines = [`🎭 NameThatFeeling`, '', `"${description}"`, ''];
+    if (results.best_match) {
+      lines.push(`✨ BEST MATCH: ${results.best_match.word} (${results.best_match.language})`);
+      lines.push(results.best_match.definition, '');
+    }
+    if (results.from_other_languages?.length) {
+      lines.push('FROM OTHER LANGUAGES:');
+      results.from_other_languages.forEach(w => {
+        lines.push(`  ${LANGUAGE_FLAGS[w.language] || '🌍'} ${w.word} (${w.language}) — ${w.actual_meaning}`);
+      });
+      lines.push('');
+    }
+    if (results.the_poetic_name) lines.push(`🪶 "${results.the_poetic_name}"`);
+    lines.push('\n— Generated by DeftBrain · deftbrain.com');
+    return lines.join('\n');
+  }, [results, description]);
+
+  const getFlag = (lang) => LANGUAGE_FLAGS[lang] || '🌍';
+
+  // ════════════════════════════════════════════════════════════
+  // RENDER
+  // ════════════════════════════════════════════════════════════
+  return (
+    <div className={`space-y-4 ${c.text}`}>
+      {/* ── Input ── */}
+      <div className={`${c.card} border rounded-xl p-5`}>
+        <div className={`mb-4 pb-3 border-b ${c.divider}`}>
+          <h2 className={`text-xl font-bold ${c.text}`}>
+            <span className="mr-2">🎭</span>NameThatFeeling
+          </h2>
+          <p className={`text-sm ${c.textSec}`}>Describe a feeling you can't name — I'll find the word</p>
+        </div>
+
+        {/* Description */}
+        <div className="mb-3">
+          <label className={`text-sm font-bold ${c.label} block mb-1.5`}>What does it feel like?</label>
+          <textarea
+            value={description}
+            onChange={e => setDescription(e.target.value)}
+            placeholder="Describe the feeling as best you can — it doesn't have to be eloquent. Just honest."
+            rows={4}
+            className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2 resize-none`}
+          />
+        </div>
+
+        {/* Starters */}
+        <div className="mb-4">
+          <p className={`text-[10px] font-bold ${c.label} uppercase mb-1.5`}>Or try one of these</p>
+          <div className="flex flex-wrap gap-1.5">
+            {STARTER_PROMPTS.map((s, i) => (
+              <button
+                key={i}
+                onClick={() => setDescription(s)}
+                className={`${c.btnSec} px-2.5 py-1.5 rounded-lg text-[11px] font-medium min-h-[28px] text-left`}
+              >
+                {s.length > 50 ? s.slice(0, 50) + '...' : s}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Optional context */}
+        <details className={`mb-5 ${c.textSec}`}>
+          <summary className={`text-xs font-bold cursor-pointer ${c.accent} mb-2`}>➕ Add context</summary>
+          <input
+            type="text"
+            value={context}
+            onChange={e => setContext(e.target.value)}
+            placeholder="e.g., 'I feel this when...', 'It happens every Sunday...'"
+            className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2 mt-2`}
+          />
+        </details>
+
+        <button
+          onClick={runSearch}
+          disabled={!description.trim() || loading}
+          className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}
+        >
+          {loading
+            ? <><span className="animate-spin inline-block">⏳</span> Searching for the word...</>
+            : <><span>🎭</span> Name That Feeling</>}
+        </button>
+      </div>
+
+      {/* ── Error ── */}
+      {error && (
+        <div className={`${c.danger} border rounded-lg p-4 flex items-start gap-3`}>
+          <span className="flex-shrink-0">⚠️</span>
+          <p className="text-sm">{error}</p>
+        </div>
+      )}
+
+      {/* ── Results ── */}
+      {results && (
+        <div className="space-y-4">
+          <div className="flex justify-end">
+            <ActionBar content={buildFullText()} title="NameThatFeeling" />
+          </div>
+
+          {/* Best match */}
+          {results.best_match && (
+            <div className={`${c.warm} border-2 rounded-xl p-6 text-center`}>
+              <span className="text-3xl block mb-2">✨</span>
+              <p className={`text-[10px] font-bold uppercase mb-1 ${c.textMuted}`}>The word you're looking for</p>
+              <p className={`text-3xl font-black ${c.text} mb-1`}>{results.best_match.word}</p>
+              <p className={`text-xs ${c.textMuted} mb-3`}>
+                {getFlag(results.best_match.language)} {results.best_match.language}
+                {results.best_match.pronunciation && ` · ${results.best_match.pronunciation}`}
+              </p>
+              <p className={`text-sm max-w-md mx-auto mb-3`}>{results.best_match.definition}</p>
+              {results.best_match.why_this_fits && (
+                <p className={`text-xs ${c.textMuted} italic max-w-sm mx-auto`}>{results.best_match.why_this_fits}</p>
+              )}
+            </div>
+          )}
+
+          {/* Close matches */}
+          {results.close_matches?.length > 0 && (
+            <div className={`${c.card} border rounded-xl p-4`}>
+              <h3 className={`text-sm font-bold ${c.text} mb-3`}>🎯 Close Matches</h3>
+              <div className="space-y-2">
+                {results.close_matches.map((m, i) => (
+                  <div key={i} className={`${c.quoteBg} rounded-lg p-3`}>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className={`text-sm font-bold ${c.text}`}>{m.word}</span>
+                      <span className={`text-[9px] ${c.textMuted}`}>{getFlag(m.language)} {m.language}</span>
+                    </div>
+                    <p className={`text-xs ${c.textSec} mb-1`}>{m.definition}</p>
+                    {m.what_it_misses && (
+                      <p className={`text-[10px] ${c.textMuted} italic`}>Missing: {m.what_it_misses}</p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* From other languages */}
+          {results.from_other_languages?.length > 0 && (
+            <div className={`${c.card} border rounded-xl p-4`}>
+              <h3 className={`text-sm font-bold ${c.text} mb-3`}>🌍 Words Other Languages Have For This</h3>
+              <div className="space-y-3">
+                {results.from_other_languages.map((w, i) => (
+                  <div key={i} className={`${c.world} border rounded-lg p-4`}>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-lg">{getFlag(w.language)}</span>
+                      <span className={`text-lg font-black ${c.text}`}>{w.word}</span>
+                    </div>
+                    <p className={`text-[10px] ${c.textMuted} mb-1`}>
+                      {w.language} {w.pronunciation && `· ${w.pronunciation}`}
+                      {w.literal_meaning && ` · lit. "${w.literal_meaning}"`}
+                    </p>
+                    <p className={`text-sm mb-1.5`}>{w.actual_meaning}</p>
+                    {w.beauty_note && (
+                      <p className={`text-xs ${c.textMuted} italic`}>💎 {w.beauty_note}</p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* The poetic name */}
+          {results.the_poetic_name && (
+            <div className={`${c.poetic} border-2 rounded-xl p-5 text-center`}>
+              <span className="text-2xl block mb-2">🪶</span>
+              <p className={`text-[10px] font-bold uppercase mb-2`}>If no word exists, this is what it's called</p>
+              <p className={`text-lg font-bold italic`}>"{results.the_poetic_name}"</p>
+            </div>
+          )}
+
+          {/* You are not alone */}
+          {results.you_are_not_alone && (
+            <div className={`${c.hug} border-2 rounded-xl p-5 text-center`}>
+              <span className="text-2xl block mb-2">💚</span>
+              <p className={`text-sm`}>{results.you_are_not_alone}</p>
+            </div>
+          )}
+
+          {/* Share line */}
+          {results.share_line && (
+            <div className={`${c.card} border rounded-xl p-4 flex items-center justify-between gap-3`}>
+              <div>
+                <p className={`text-[10px] font-bold ${c.label} uppercase mb-1`}>📸 Share this word</p>
+                <p className={`text-sm font-bold ${c.text}`}>{results.share_line}</p>
+              </div>
+              <CopyBtn content={`${results.share_line}\n\n— Generated by DeftBrain · deftbrain.com`} label="Copy" />
+            </div>
+          )}
+
+          {/* Go again */}
+          <button
+            onClick={() => { setResults(null); setDescription(''); setContext(''); }}
+            className={`${c.btnSec} px-4 py-2 rounded-lg text-xs font-bold min-h-[36px]`}
+          >
+            🔄 Name another feeling
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+NameThatFeeling.displayName = 'NameThatFeeling';
+export default NameThatFeeling;

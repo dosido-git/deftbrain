@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
-const { rateLimit, DEFAULT_LIMITS } = require('../middleware/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 router.post('/conflict-coach', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   console.log('✅ Conflict Coach V3 endpoint called');

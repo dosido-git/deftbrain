@@ -1,8 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
-const rateLimit = require('../lib/rateLimiter');
-
+const { rateLimit, DEFAULT_LIMITS, DIVERSION_LIMITS } = require('../lib/rateLimiter');
 // ════════════════════════════════════════════════════════════
 // DECISION COACH v3 — Backend
 // v1: decide
