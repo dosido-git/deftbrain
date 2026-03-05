@@ -54,6 +54,15 @@ const LeaseTrapDetector = () => {
   const [renewalTraps, setRenewalTraps] = useState(null);
   const [renewalLoading, setRenewalLoading] = useState(false);
   const [showHighlights, setShowHighlights] = useState(false);
+
+  // Fine Point Finder state
+  const [ltdMode, setLtdMode] = useState('analyze'); // 'analyze' | 'missing'
+  const [missingContractText, setMissingContractText] = useState('');
+  const [missingContractType, setMissingContractType] = useState('');
+  const [missingRole, setMissingRole] = useState('');
+  const [missingConcerns, setMissingConcerns] = useState('');
+  const [missingResults, setMissingResults] = useState(null);
+  const [missingLoading, setMissingLoading] = useState(false);
   const [history, setHistory] = usePersistentState('ltd-history', []);
 
   const c = {
@@ -237,6 +246,22 @@ const LeaseTrapDetector = () => {
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
+  const handleFindMissing = async () => {
+    if (!missingContractText.trim()) { setError('Paste the contract text.'); return; }
+    setError(''); setMissingResults(null); setMissingLoading(true);
+    try {
+      const data = await callToolEndpoint('lease-trap-detector/missing', {
+        contractText: missingContractText.trim(),
+        contractType: missingContractType.trim() || leaseType || undefined,
+        yourRole: missingRole.trim() || undefined,
+        concerns: missingConcerns.trim() || undefined,
+        location: location.trim() || undefined,
+      });
+      setMissingResults(data);
+    } catch (err) { setError(err.message || 'Failed to find missing protections'); }
+    finally { setMissingLoading(false); }
+  };
+
   const amendableClauses = useMemo(() => {
     if (!results) return [];
     return [
@@ -259,7 +284,21 @@ const LeaseTrapDetector = () => {
           <p className={`text-base mt-2 ${c.textSec}`}>Find predatory clauses, hidden fees, and unenforceable terms</p>
         </div>
 
-        {!results && (
+        {/* Mode Toggle */}
+        {!results && !missingResults && (
+          <div className={`flex gap-2 p-1 rounded-xl mb-5 ${isDark ? 'bg-zinc-800' : 'bg-stone-100'}`}>
+            <button onClick={() => setLtdMode('analyze')}
+              className={`flex-1 py-2.5 rounded-lg text-sm font-bold transition-all ${ltdMode === 'analyze' ? c.btnPrimary : `${c.textSec} hover:${c.text}`}`}>
+              🔍 Find Problems
+            </button>
+            <button onClick={() => setLtdMode('missing')}
+              className={`flex-1 py-2.5 rounded-lg text-sm font-bold transition-all ${ltdMode === 'missing' ? c.btnPrimary : `${c.textSec} hover:${c.text}`}`}>
+              🏦 Find What's Missing
+            </button>
+          </div>
+        )}
+
+        {ltdMode === 'analyze' && !results && !missingResults && (
           <div className="space-y-5">
             <div className={`${c.card} border rounded-2xl p-5`}>
               <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textMuted}`}>How would you like to provide your lease?</p>
@@ -348,6 +387,150 @@ const LeaseTrapDetector = () => {
               </div>
             )}
             <p className={`text-center text-xs ${c.textMuted}`}>⚖️ General guidance, not legal advice. Consult a tenant rights attorney for specifics.</p>
+          </div>
+        )}
+
+        {/* ════════ FINE POINT FINDER ════════ */}
+        {ltdMode === 'missing' && !missingResults && !results && (
+          <div className="space-y-4">
+            <div className={`${c.card} border rounded-2xl p-5`}>
+              <div className={`p-3 rounded-xl mb-4 ${isDark ? 'bg-amber-900/20 border border-amber-800/40' : 'bg-amber-50 border border-amber-200'}`}>
+                <p className={`text-xs font-semibold ${isDark ? 'text-amber-300' : 'text-amber-800'}`}>🏦 This mode finds <strong>absent protections</strong> — what SHOULD be in this contract but isn't. For flagging bad clauses, use Find Problems mode.</p>
+              </div>
+              <div className="space-y-4">
+                <div>
+                  <label className={`block text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuted}`}>Paste your contract <span className="text-red-400">*</span></label>
+                  <textarea value={missingContractText} onChange={e => setMissingContractText(e.target.value)}
+                    placeholder="Paste your lease, freelance agreement, contractor proposal, employment offer, or any contract you're about to sign…"
+                    rows={10} className={`w-full p-4 border-2 rounded-xl text-sm resize-y focus:outline-none focus:ring-2 ${c.input}`} />
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div>
+                    <label className={`block text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuted}`}>Contract type</label>
+                    <input type="text" value={missingContractType} onChange={e => setMissingContractType(e.target.value)}
+                      placeholder="e.g. Residential lease, freelance…"
+                      className={`w-full p-2 border rounded-xl text-sm ${c.input}`} />
+                  </div>
+                  <div>
+                    <label className={`block text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuted}`}>Your role</label>
+                    <input type="text" value={missingRole} onChange={e => setMissingRole(e.target.value)}
+                      placeholder="Tenant, freelancer, buyer…"
+                      className={`w-full p-2 border rounded-xl text-sm ${c.input}`} />
+                  </div>
+                  <div>
+                    <label className={`block text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuted}`}>Location</label>
+                    <input type="text" value={location} onChange={e => setLocation(e.target.value)}
+                      placeholder="City, state"
+                      className={`w-full p-2 border rounded-xl text-sm ${c.input}`} />
+                  </div>
+                </div>
+                <div>
+                  <label className={`block text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuted}`}>Specific concerns (optional)</label>
+                  <input type="text" value={missingConcerns} onChange={e => setMissingConcerns(e.target.value)}
+                    placeholder="e.g. worried about exit terms, subletting, payment disputes…"
+                    className={`w-full p-2 border rounded-xl text-sm ${c.input}`} />
+                </div>
+                {error && <div className={`p-3 rounded-xl border ${c.danger}`}><span className="mr-1">⚠️</span> {error}</div>}
+                <button onClick={handleFindMissing} disabled={missingLoading || !missingContractText.trim()}
+                  className={`w-full py-4 rounded-xl font-black text-lg shadow-lg disabled:opacity-50 transition-all ${c.btnPrimary}`}>
+                  {missingLoading ? <><span className="animate-spin inline-block mr-2">⏳</span>Scanning…</> : <><span className="mr-2">🏦</span>Find What's Missing</>}
+                </button>
+                <p className={`text-center text-xs ${c.textMuted}`}>⚖️ General guidance, not legal advice. Consult an attorney for specifics.</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {missingResults && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <button onClick={() => { setMissingResults(null); setMissingContractText(''); setError(''); }}
+                className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnSecondary}`}>← New</button>
+              <p className={`text-sm ${c.textSec}`}>{missingResults.contract_summary}</p>
+            </div>
+
+            {/* Overall Assessment */}
+            {missingResults.overall_assessment && (
+              <div className={`${c.card} border rounded-2xl p-5`}>
+                <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuted}`}>📋 Overall Assessment</p>
+                <p className={`text-sm leading-relaxed ${c.textSec}`}>{missingResults.overall_assessment}</p>
+              </div>
+            )}
+
+            {/* Missing Protections */}
+            {missingResults.missing_protections?.length > 0 && (
+              <div className={`${c.card} border rounded-2xl p-5`}>
+                <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textMuted}`}>🔍 Missing Protections ({missingResults.missing_protections.length})</p>
+                <div className="space-y-3">
+                  {missingResults.missing_protections.map((p, i) => {
+                    const riskColor = p.risk_if_absent === 'high'
+                      ? (isDark ? 'bg-red-900/20 border-red-800/50 text-red-300' : 'bg-red-50 border-red-200 text-red-700')
+                      : p.risk_if_absent === 'medium'
+                      ? (isDark ? 'bg-amber-900/20 border-amber-800/50 text-amber-300' : 'bg-amber-50 border-amber-200 text-amber-700')
+                      : (isDark ? 'bg-emerald-900/20 border-emerald-800/50 text-emerald-300' : 'bg-emerald-50 border-emerald-200 text-emerald-700');
+                    const expanded = expandedSections[`miss-${i}`];
+                    return (
+                      <div key={i} className={`rounded-xl border overflow-hidden`}>
+                        <button onClick={() => toggle(`miss-${i}`)} className={`w-full p-4 text-left flex items-start justify-between gap-3 ${isDark ? 'bg-zinc-700/40 hover:bg-zinc-700/60' : 'bg-stone-50 hover:bg-stone-100'}`}>
+                          <div className="flex items-center gap-2 flex-1 min-w-0">
+                            <span className={`flex-shrink-0 text-xs font-bold px-2 py-0.5 rounded-full ${riskColor}`}>{p.risk_if_absent === 'high' ? '🔴 High' : p.risk_if_absent === 'medium' ? '🟡 Medium' : '🟢 Low'}</span>
+                            <span className={`text-sm font-bold ${c.text} truncate`}>{p.protection}</span>
+                          </div>
+                          <span className={`flex-shrink-0 text-sm ${c.textMuted}`}>{expanded ? '▲' : '▼'}</span>
+                        </button>
+                        {expanded && (
+                          <div className={`p-4 border-t space-y-3 ${isDark ? 'border-zinc-600 bg-zinc-800' : 'border-stone-200 bg-white'}`}>
+                            <p className={`text-sm ${c.textSec}`}><span className="font-semibold">Why it matters:</span> {p.why_it_matters}</p>
+                            <div className={`p-3 rounded-xl border ${isDark ? 'bg-zinc-700/30 border-zinc-600' : 'bg-stone-50 border-stone-200'}`}>
+                              <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuted}`}>Suggested language</p>
+                              <p className={`text-sm italic ${c.text}`}>"{p.what_it_should_say}"</p>
+                            </div>
+                            {p.how_common && <p className={`text-xs ${c.textMuted}`}>📊 {p.how_common}</p>}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Negotiation Priority */}
+            {missingResults.negotiation_priority && (
+              <div className={`${c.card} border rounded-2xl p-5`}>
+                <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textMuted}`}>🎯 Negotiation Priority</p>
+                {missingResults.negotiation_priority.must_haves?.length > 0 && (
+                  <div className="mb-3">
+                    <p className={`text-xs font-semibold uppercase ${isDark ? 'text-red-400' : 'text-red-600'} mb-1`}>Must haves</p>
+                    {missingResults.negotiation_priority.must_haves.map((m, i) => <p key={i} className={`text-sm ${c.textSec}`}>• {m}</p>)}
+                  </div>
+                )}
+                {missingResults.negotiation_priority.pick_your_battle && (
+                  <div className={`p-3 rounded-xl ${isDark ? 'bg-amber-900/20 border border-amber-800/40' : 'bg-amber-50 border border-amber-200'}`}>
+                    <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>⚡ If you can only push for one thing</p>
+                    <p className={`text-sm ${c.textSec}`}>{missingResults.negotiation_priority.pick_your_battle}</p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Questions to Ask */}
+            {missingResults.questions_to_ask_before_signing?.length > 0 && (
+              <div className={`${c.card} border rounded-2xl p-5`}>
+                <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textMuted}`}>❓ Questions to Ask Before Signing</p>
+                <div className="space-y-2">
+                  {missingResults.questions_to_ask_before_signing.map((q, i) => (
+                    <div key={i} className={`p-3 rounded-xl border ${isDark ? 'bg-zinc-700/30 border-zinc-600' : 'bg-stone-50 border-stone-200'}`}>
+                      <p className={`text-sm font-medium ${c.text}`}>"{q.question}"</p>
+                      <p className={`text-xs mt-1 ${c.textMuted}`}>{q.why}</p>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-3">
+                  <CopyBtn content={missingResults.questions_to_ask_before_signing.map(q => `• "${q.question}"\n  → ${q.why}`).join('\n\n') + BRANDING} label="Copy Questions" />
+                </div>
+              </div>
+            )}
           </div>
         )}
 

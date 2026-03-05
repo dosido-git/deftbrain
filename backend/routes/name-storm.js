@@ -860,4 +860,67 @@ Return ONLY valid JSON.`;
   }
 });
 
+// ════════════════════════════════════════════════════════════
+// POST /namestorm/quick — ThingNamer
+// Fast-path: describe a thing and its vibe → clever names
+// ════════════════════════════════════════════════════════════
+router.post('/namestorm/quick', async (req, res) => {
+  try {
+    const { whatIsIt, vibe, constraints, avoid, userLanguage } = req.body;
+    if (!whatIsIt?.trim()) return res.status(400).json({ error: 'Describe what needs a name.' });
+
+    const systemPrompt = `You are a naming expert who loves the weird, the clever, and the memorable. You know that most name generators produce the same 10 results anyone could think of. You go further.
+
+Your philosophy:
+- Clever beats obvious. Memorable beats safe. Specific beats generic.
+- The best names make people smile or say "that's perfect"
+- Consider: wordplay, portmanteaus, obscure references, unexpected juxtapositions, phonetic appeal, cultural resonance
+- Flag any names that have accidental meanings, awkward acronyms, or pronunciation problems
+- For informal naming (pets, WiFi, group chats, boats) — fun and personality beat brandability`;
+
+    const userPrompt = `THING NAMER — FAST NAMING
+
+WHAT NEEDS A NAME: "${whatIsIt.trim()}"
+${vibe?.trim() ? `VIBE/PERSONALITY: ${vibe.trim()}` : ''}
+${constraints?.trim() ? `CONSTRAINTS: ${constraints.trim()}` : ''}
+${avoid?.trim() ? `AVOID: ${avoid.trim()}` : ''}
+
+Generate 12–16 names across 3–4 creative directions. Go clever. Go specific. Don't give them the first 10 results from a name generator.
+
+Return ONLY valid JSON:
+{
+  "directions": [
+    {
+      "direction": "Short label for this creative angle (e.g., 'Wordplay', 'Pop culture riff', 'Descriptive twist', 'Unexpected reference')",
+      "names": [
+        {
+          "name": "The name",
+          "score": 75,
+          "note": "One sentence — why this one works, what the reference is, or why it fits",
+          "flag": "Any issue to know about (awkward acronym, unintended meaning, hard to pronounce) — null if none"
+        }
+      ]
+    }
+  ],
+  "top_pick": "The single name you'd put money on — and the 10-word pitch for it"
+}`;
+
+    const message = await anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 2000,
+      system: withLanguage(systemPrompt, userLanguage),
+      messages: [{ role: 'user', content: userPrompt }],
+    });
+
+    const text = message.content.find(b => b.type === 'text')?.text || '';
+    const cleaned = cleanJsonResponse(text);
+    const parsed = JSON.parse(cleaned);
+    res.json(parsed);
+
+  } catch (error) {
+    console.error('NameStorm quick error:', error);
+    res.status(500).json({ error: error.message || 'Failed to generate names' });
+  }
+});
+
 module.exports = router;

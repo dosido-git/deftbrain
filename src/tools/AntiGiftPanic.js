@@ -1,690 +1,486 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
-import { CopyBtn } from '../components/ActionButtons';
+import { CopyBtn, ActionBar } from '../components/ActionButtons';
 
+// ════════════════════════════════════════════════════════════
+// CONSTANTS
+// ════════════════════════════════════════════════════════════
+const OCCASIONS = [
+  { id: 'birthday',   label: 'Birthday',     icon: '🎂' },
+  { id: 'holiday',    label: 'Holiday',       icon: '🎄' },
+  { id: 'thankyou',   label: 'Thank You',     icon: '🙏' },
+  { id: 'wedding',    label: 'Wedding',       icon: '💍' },
+  { id: 'baby',       label: 'New Baby',      icon: '👶' },
+  { id: 'graduation', label: 'Graduation',    icon: '🎓' },
+  { id: 'housewarming', label: 'Housewarming', icon: '🏠' },
+  { id: 'justbecause', label: 'Just Because', icon: '💛' },
+  { id: 'apology',    label: 'Apology',       icon: '🕊️' },
+  { id: 'other',      label: 'Other',         icon: '🎁' },
+];
+
+const DEADLINES = [
+  { id: 'today',     label: 'Today (panic mode)' },
+  { id: 'tomorrow',  label: 'Tomorrow' },
+  { id: 'this-week', label: 'This week' },
+  { id: 'no-rush',   label: 'No rush' },
+];
+
+const EXAMPLES = [
+  'My mom, 60s, retired teacher, loves gardening and mystery novels. Practical person who says "don\'t get me anything" every year.',
+  'Best friend turning 30, loves craft beer and hiking. Already has everything. Budget is tight.',
+  'Boss who went above and beyond helping me this year. Professional but warm. Don\'t want it to seem like sucking up.',
+  'My partner\'s parents — meeting them for the first time at dinner this weekend. They live in a small apartment.',
+  'My 14-year-old nephew who I don\'t know that well. He\'s into gaming but I don\'t know which games.',
+  'Coworker\'s going-away party. We\'re friendly but not close. Office is doing a group card.',
+];
+
+// ════════════════════════════════════════════════════════════
+// COMPONENT
+// ════════════════════════════════════════════════════════════
 const AntiGiftPanic = () => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { theme } = useTheme();
   const isDark = theme === 'dark';
+  const resultsRef = useRef(null);
 
-  // Form state
-  const [age, setAge] = useState('');
-  const [interests, setInterests] = useState('');
-  const [occasion, setOccasion] = useState('Birthday');
-  const [occasionDate, setOccasionDate] = useState('');
-  const [budget, setBudget] = useState(100);
-  const [relationship, setRelationship] = useState('');
-  const [considerSustainability, setConsiderSustainability] = useState(false);
-
-  // Results state
-  const [results, setResults] = useState(null);
-  const [error, setError] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [savedFavorites, setSavedFavorites] = useState([]);
-  const [daysUntilOccasion, setDaysUntilOccasion] = useState(null);
-
-  const occasionOptions = [
-    'Birthday',
-    'Holiday',
-    'Anniversary',
-    'Thank You',
-    'Just Because',
-    'Graduation',
-    'Wedding',
-    'Baby Shower',
-    'Retirement',
-    'Other'
-  ];
-
-  // Calculate days until occasion
-  useEffect(() => {
-    if (occasionDate) {
-      const today = new Date();
-      const targetDate = new Date(occasionDate);
-      const diffTime = targetDate - today;
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      setDaysUntilOccasion(diffDays);
-    } else {
-      setDaysUntilOccasion(null);
-    }
-  }, [occasionDate]);
-
-  // Theme-aware colors
   const c = {
-    bg: isDark ? 'bg-zinc-900' : 'bg-gradient-to-br from-emerald-50 to-emerald-50',
-    card: isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-emerald-200',
-    cardAlt: isDark ? 'bg-zinc-700 border-zinc-600' : 'bg-emerald-50 border-emerald-200',
-    
-    input: isDark 
-      ? 'bg-zinc-900 border-zinc-700 text-zinc-50 placeholder:text-zinc-500 focus:border-emerald-500 focus:ring-emerald-500/20'
-      : 'bg-white border-emerald-300 text-emerald-900 placeholder:text-emerald-400 focus:border-emerald-600 focus:ring-emerald-100',
-    
-    text: isDark ? 'text-zinc-50' : 'text-emerald-900',
-    textSecondary: isDark ? 'text-zinc-400' : 'text-emerald-700',
-    textMuted: isDark ? 'text-zinc-500' : 'text-emerald-600',
-    label: isDark ? 'text-zinc-300' : 'text-emerald-800',
-    
-    accent: isDark ? 'text-emerald-400' : 'text-emerald-600',
-    
-    btnPrimary: isDark
-      ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
-      : 'bg-emerald-600 hover:bg-emerald-700 text-white',
-    btnSecondary: isDark
-      ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-50'
-      : 'bg-emerald-100 hover:bg-emerald-200 text-emerald-900',
-    btnOutline: isDark
-      ? 'border-zinc-600 hover:border-zinc-500 text-zinc-300'
-      : 'border-emerald-300 hover:border-emerald-400 text-emerald-700',
-    
-    infoBox: isDark
-      ? 'bg-blue-900/20 border-blue-700'
-      : 'bg-blue-50 border-blue-200',
-    successBox: isDark
-      ? 'bg-emerald-900/20 border-emerald-700'
-      : 'bg-emerald-50 border-emerald-200',
-    warningBox: isDark
-      ? 'bg-red-900/20 border-red-700'
-      : 'bg-red-50 border-red-200',
-    sustainBox: isDark
-      ? 'bg-emerald-900/20 border-emerald-700'
-      : 'bg-emerald-50 border-emerald-200',
+    card:         isDark ? 'bg-[#1a1a2e] border-[#2a2a4a]' : 'bg-white border-[#d4d4d4]',
+    cardAlt:      isDark ? 'bg-[#0f0f1e]/60'               : 'bg-[#f8f8f8]',
+    input:        isDark
+      ? 'bg-[#0f0f1e] border-[#2a2a4a] text-[#e8e8e8] placeholder:text-[#555] focus:border-[#c8a951] focus:ring-[#c8a951]/20'
+      : 'bg-white border-[#ccc] text-[#1e3a5f] placeholder:text-[#999] focus:border-[#1e3a5f] focus:ring-[#1e3a5f]/20',
+    text:         isDark ? 'text-[#e8e8e8]' : 'text-[#1e3a5f]',
+    textSec:      isDark ? 'text-[#a0a0b8]' : 'text-[#4a6a8a]',
+    textMuted:    isDark ? 'text-[#666680]' : 'text-[#8a8a8a]',
+    label:        isDark ? 'text-[#c0c0d0]' : 'text-[#2a4a6a]',
+    accent:       isDark ? 'text-[#c8a951]' : 'text-[#1e3a5f]',
+    accentBg:     isDark ? 'bg-[#c8a951]/10 border-[#c8a951]/30' : 'bg-[#1e3a5f]/5 border-[#1e3a5f]/20',
+    btnPrimary:   isDark ? 'bg-[#c8a951] hover:bg-[#d4b85c] text-[#1a1a2e]' : 'bg-[#1e3a5f] hover:bg-[#2a4a6f] text-white',
+    btnSec:       isDark ? 'bg-[#2a2a4a] hover:bg-[#3a3a5a] text-[#e8e8e8]' : 'bg-[#f0f0f0] hover:bg-[#e0e0e0] text-[#1e3a5f]',
+    chipActive:   isDark ? 'bg-[#c8a951] border-[#c8a951] text-[#1a1a2e]'    : 'bg-[#1e3a5f] border-[#1e3a5f] text-white',
+    chipInactive: isDark ? 'bg-[#2a2a4a] border-[#3a3a5a] text-[#c0c0d0] hover:border-[#4a4a6a]' : 'bg-white border-[#d4d4d4] text-[#4a6a8a] hover:border-[#aaa]',
+    divider:      isDark ? 'border-[#2a2a4a]' : 'border-[#e0e0e0]',
+    giftCard:     isDark ? 'bg-[#1e1e38] border-[#2a2a5a]' : 'bg-[#fafbff] border-[#d8dce8]',
+    warmBg:       isDark ? 'bg-[#2e2a1a] border-[#c8a951]/30' : 'bg-[#fffbf0] border-[#c8a951]/30',
+    greenBg:      isDark ? 'bg-[#1a2e1a] border-[#2a4a2a]'    : 'bg-[#f0faf0] border-[#c0dcc0]',
+    greenText:    isDark ? 'text-[#a0e0a0]' : 'text-[#2a5a2a]',
+    alertBg:      isDark ? 'bg-[#3a1a1a] border-[#5a2a2a]'    : 'bg-[#fef2f2] border-[#e8c0c0]',
+    alertText:    isDark ? 'text-[#f0a0a0]' : 'text-[#7a2a2a]',
+    wildcardBg:   isDark ? 'bg-[#2a1a2e] border-[#4a2a5a]'    : 'bg-[#f8f0ff] border-[#d8c0e8]',
+    wildcardText: isDark ? 'text-[#d0a0e0]' : 'text-[#5a2a6a]',
+    error:        isDark ? 'bg-[#3a1a1a] border-[#5a2a2a] text-[#f0a0a0]' : 'bg-[#fef2f2] border-[#e8c0c0] text-[#7a2a2a]',
   };
 
-  const handleGenerate = async () => {
-    if (!age || age < 1 || age > 120) {
-      setError('Please enter a valid age (1-120)');
-      return;
-    }
+  // ─── State ───
+  const [recipient, setRecipient] = useState('');
+  const [occasion, setOccasion] = useState('');
+  const [budget, setBudget] = useState('');
+  const [deadline, setDeadline] = useState('');
+  const [alreadyGiven, setAlreadyGiven] = useState('');
+  const [avoid, setAvoid] = useState('');
+  const [results, setResults] = useState(null);
+  const [error, setError] = useState('');
+  const [expandedPick, setExpandedPick] = useState(0);
+  const [showWildcard, setShowWildcard] = useState(false);
 
-    if (!interests.trim()) {
-      setError('Please enter some interests to help find the perfect gift');
-      return;
+  useEffect(() => {
+    if (results && resultsRef.current) {
+      setTimeout(() => resultsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' }), 250);
     }
+  }, [results]);
 
+  // ─── Handlers ───
+  const handleSubmit = async () => {
+    if (!recipient.trim()) return;
     setError('');
     setResults(null);
-    setSelectedCategory('all');
+    setExpandedPick(0);
+    setShowWildcard(false);
 
     try {
+      const occasionLabel = OCCASIONS.find(o => o.id === occasion)?.label || occasion || undefined;
+      const deadlineLabel = DEADLINES.find(d => d.id === deadline)?.label || deadline || undefined;
+
       const data = await callToolEndpoint('anti-gift-panic', {
-        age: parseInt(age),
-        interests: interests.trim(),
-        occasion,
-        occasionDate,
-        daysUntilOccasion,
-        budget,
-        relationship: relationship.trim(),
-        considerSustainability
+        recipient: recipient.trim(),
+        occasion: occasionLabel,
+        budget: budget.trim() || undefined,
+        deadline: deadlineLabel,
+        alreadyGiven: alreadyGiven.trim() || undefined,
+        avoid: avoid.trim() || undefined,
       });
       setResults(data);
     } catch (err) {
-      setError(err.message || 'Failed to generate gift recommendations. Please try again.');
+      setError(err.message || 'Gift search failed.');
     }
-  };
-
-  const handleRegenerateGift = async (index) => {
-    try {
-      const data = await callToolEndpoint('anti-gift-panic', {
-        age: parseInt(age),
-        interests: interests.trim(),
-        occasion,
-        occasionDate,
-        daysUntilOccasion,
-        budget,
-        relationship: relationship.trim(),
-        considerSustainability,
-        excludeProduct: results.gift_recommendations[index].product_name
-      });
-      
-      const updatedRecommendations = [...results.gift_recommendations];
-      updatedRecommendations[index] = data.gift_recommendations[0];
-      setResults({
-        ...results,
-        gift_recommendations: updatedRecommendations
-      });
-    } catch (err) {
-      setError('Failed to regenerate gift. Please try again.');
-    }
-  };
-
-  const toggleFavorite = (gift) => {
-    const isFavorite = savedFavorites.some(f => f.product_name === gift.product_name);
-    if (isFavorite) {
-      setSavedFavorites(savedFavorites.filter(f => f.product_name !== gift.product_name));
-    } else {
-      setSavedFavorites([...savedFavorites, gift]);
-    }
-  };
-
-  const isFavorite = (gift) => {
-    return savedFavorites.some(f => f.product_name === gift.product_name);
-  };
-
-  const getFilteredGifts = () => {
-    if (!results?.gift_recommendations) return [];
-    if (selectedCategory === 'all') return results.gift_recommendations;
-    return results.gift_recommendations.filter(gift => 
-      gift.category?.toLowerCase() === selectedCategory.toLowerCase()
-    );
-  };
-
-  const getUniqueCategories = () => {
-    if (!results?.gift_recommendations) return [];
-    const categories = results.gift_recommendations.map(g => g.category).filter(Boolean);
-    return ['all', ...new Set(categories)];
-  };
-
-  const getConfidenceColor = (score) => {
-    if (score >= 8) return isDark ? 'text-emerald-400' : 'text-emerald-600';
-    if (score >= 6) return isDark ? 'text-amber-400' : 'text-amber-600';
-    return isDark ? 'text-red-400' : 'text-red-600';
-  };
-
-  const getConfidenceLabel = (score) => {
-    if (score >= 8) return 'High Confidence';
-    if (score >= 6) return 'Good Match';
-    return 'Decent Option';
-  };
-
-  const getShippingUrgency = () => {
-    if (!daysUntilOccasion) return null;
-    if (daysUntilOccasion < 0) return { label: 'Past Due', color: 'text-red-500', urgent: true };
-    if (daysUntilOccasion <= 2) return { label: 'Express Shipping Required', color: 'text-red-500', urgent: true };
-    if (daysUntilOccasion <= 7) return { label: 'Order Soon', color: 'text-amber-500', urgent: true };
-    if (daysUntilOccasion <= 14) return { label: 'Good Time to Order', color: 'text-emerald-500', urgent: false };
-    return { label: 'Plenty of Time', color: 'text-emerald-500', urgent: false };
   };
 
   const handleReset = () => {
-    setAge('');
-    setInterests('');
-    setOccasion('Birthday');
-    setOccasionDate('');
-    setBudget(100);
-    setRelationship('');
-    setConsiderSustainability(false);
+    setRecipient('');
+    setOccasion('');
+    setBudget('');
+    setDeadline('');
+    setAlreadyGiven('');
+    setAvoid('');
     setResults(null);
     setError('');
-    setSelectedCategory('all');
-    setDaysUntilOccasion(null);
+    setShowWildcard(false);
   };
 
-return (
-  <div className={`min-h-screen ${c.bg} py-8 px-4`}>
-    <div className="max-w-4xl mx-auto space-y-6">
-      
-        {/* Header */}
-      <div className={`${c.card} border rounded-xl shadow-lg p-6 transition-colors duration-200`}>
-        <div className="flex items-center gap-3 mb-4">
-          <div className={`p-3 rounded-lg ${isDark ? 'bg-emerald-900/30' : 'bg-emerald-100'}`}>
-            <span className="text-2xl">🎁</span>
+  const loadExample = () => {
+    const ex = EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)];
+    setRecipient(ex);
+  };
+
+  // ─── Build text ───
+  const buildFullText = () => {
+    if (!results) return '';
+    const r = results;
+    let t = `🎁 ANTI-GIFT PANIC\n\n`;
+    if (r.situation_read) t += `${r.situation_read}\n\n`;
+
+    if (r.perfect_picks?.length) {
+      t += `━━ GIFT IDEAS ━━\n\n`;
+      r.perfect_picks.forEach((p, i) => {
+        t += `${i + 1}. ${p.gift} (${p.price_range})\n`;
+        t += `   Why: ${p.why_its_perfect}\n`;
+        t += `   Where: ${p.where_to_get}\n`;
+        if (p.presentation_tip) t += `   Tip: ${p.presentation_tip}\n`;
+        t += `   Card: "${p.card_message}"\n\n`;
+      });
+    }
+
+    if (r.the_wildcard) {
+      t += `━━ WILDCARD ━━\n`;
+      t += `${r.the_wildcard.gift} (${r.the_wildcard.price_range})\n`;
+      t += `${r.the_wildcard.why_its_perfect}\n`;
+      t += `Card: "${r.the_wildcard.card_message}"\n\n`;
+    }
+
+    if (r.if_deadline_is_now) {
+      t += `━━ LAST-MINUTE SAVE ━━\n`;
+      t += `${r.if_deadline_is_now.instant_option}\n`;
+      t += `${r.if_deadline_is_now.how}\n\n`;
+    }
+
+    if (r.never_do_this) t += `⚠️ Don't: ${r.never_do_this}\n\n`;
+
+    t += `— Generated by DeftBrain · deftbrain.com`;
+    return t;
+  };
+
+  // ════════════════════════════════════════════════════════════
+  // RENDER
+  // ════════════════════════════════════════════════════════════
+  return (
+    <div className={`space-y-4 ${c.text}`}>
+
+      {/* ── Input ── */}
+      {!results && (
+        <div className={`${c.card} border rounded-xl p-5`}>
+          <div className={`mb-4 pb-3 border-b ${c.divider}`}>
+            <h2 className={`text-xl font-bold ${c.text}`}>
+              <span className="mr-2">🎁</span>Anti-Gift Panic
+            </h2>
+            <p className={`text-sm ${c.textSec}`}>Tell me about the person. I'll find a gift that feels like you spent weeks thinking about it.</p>
           </div>
-          <div>
-            <h2 className={`text-2xl font-bold ${c.text}`}>Anti-Gift Panic 🎁</h2>
-            <p className={`text-sm ${c.textMuted}`}>Find the perfect gift without the paralysis</p>
-          </div>
-        </div>
-      </div>
 
-      {/* Input Form */}
-      <div className={`${c.card} border rounded-xl shadow-lg p-6 transition-colors duration-200`}>
-        
-
-
-      {/* Input Form */}
-      <div className={`${c.card} border rounded-xl shadow-lg p-6 transition-colors duration-200`}>
-          
-          {/* Age */}
-          <div>
-            <label htmlFor="age" className={`block text-sm font-medium ${c.label} mb-2`}>
-              Recipient's age
-            </label>
-            <input
-              id="age"
-              type="number"
-              min="1"
-              max="120"
-              value={age}
-              onChange={(e) => setAge(e.target.value)}
-              placeholder="e.g., 28"
-              className={`w-full p-3 border rounded-lg ${c.input} outline-none focus:ring-2 transition-colors duration-200`}
-            />
-          </div>
-
-          {/* Interests */}
-          <div>
-            <label htmlFor="interests" className={`block text-sm font-medium ${c.label} mb-2`}>
-              General interests
+          {/* Recipient */}
+          <div className="mb-4">
+            <label className={`text-sm font-bold ${c.label} block mb-1.5`}>
+              Who's this for?
             </label>
             <textarea
-              id="interests"
-              value={interests}
-              onChange={(e) => setInterests(e.target.value)}
-              placeholder="e.g., coffee enthusiast, sci-fi reader, minimalist aesthetic, yoga, sustainable living"
-              className={`w-full p-3 border rounded-lg ${c.input} outline-none focus:ring-2 transition-colors duration-200`}
-              rows={3}
+              value={recipient}
+              onChange={e => setRecipient(e.target.value)}
+              placeholder={"Describe the person — relationship, interests, personality, anything you know.\n\ne.g., My sister, 28, graphic designer, obsessed with her cat, into thrifting and true crime podcasts. Notoriously hard to shop for."}
+              rows={4}
+              maxLength={800}
+              className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2 resize-none`}
             />
-            <p className={`text-xs ${c.textMuted} mt-1`}>
-              The more specific, the better! Mention hobbies, values, aesthetic preferences, or things they talk about.
-            </p>
-          </div>
-
-          {/* Occasion, Date, and Relationship */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label htmlFor="occasion" className={`block text-sm font-medium ${c.label} mb-2`}>
-                Occasion
-              </label>
-              <select
-                id="occasion"
-                value={occasion}
-                onChange={(e) => setOccasion(e.target.value)}
-                className={`w-full p-3 border rounded-lg ${c.input} outline-none focus:ring-2 transition-colors duration-200`}
-              >
-                {occasionOptions.map(option => (
-                  <option key={option} value={option}>{option}</option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label htmlFor="occasion-date" className={`block text-sm font-medium ${c.label} mb-2 flex items-center gap-2`}>
-                <span>📅</span>
-                Occasion date (optional)
-              </label>
-              <input
-                id="occasion-date"
-                type="date"
-                value={occasionDate}
-                onChange={(e) => setOccasionDate(e.target.value)}
-                className={`w-full p-3 border rounded-lg ${c.input} outline-none focus:ring-2 transition-colors duration-200`}
-              />
-            </div>
-
-            <div>
-              <label htmlFor="relationship" className={`block text-sm font-medium ${c.label} mb-2`}>
-                Relationship
-              </label>
-              <input
-                id="relationship"
-                type="text"
-                value={relationship}
-                onChange={(e) => setRelationship(e.target.value)}
-                placeholder="e.g., mom, coworker"
-                className={`w-full p-3 border rounded-lg ${c.input} outline-none focus:ring-2 transition-colors duration-200`}
-              />
-            </div>
-          </div>
-
-          {/* Shipping Urgency Warning */}
-          {daysUntilOccasion !== null && (
-            <div className={`p-4 rounded-lg border-l-4 ${
-              getShippingUrgency().urgent 
-                ? c.warningBox 
-                : c.successBox
-            }`}>
-              <div className="flex items-center gap-2">
-                <span>🚚</span>
-                <div>
-                  <div className={`font-semibold ${getShippingUrgency().color}`}>
-                    {daysUntilOccasion} days until {occasion}
-                  </div>
-                  <div className={`text-sm ${c.textSecondary}`}>
-                    {getShippingUrgency().label} - {
-                      daysUntilOccasion <= 2 
-                        ? 'Consider express shipping or digital/experience gifts'
-                        : daysUntilOccasion <= 7
-                        ? 'Standard shipping should work, but order soon'
-                        : 'You have time to shop for the best deals'
-                    }
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Budget Slider */}
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <label htmlFor="budget" className={`block text-sm font-medium ${c.label}`}>
-                Budget
-              </label>
-              <span className={`text-lg font-bold ${c.accent}`}>
-                ${budget}
-              </span>
-            </div>
-            <input
-              id="budget"
-              type="range"
-              min="10"
-              max="500"
-              step="10"
-              value={budget}
-              onChange={(e) => setBudget(parseInt(e.target.value))}
-              className="w-full h-2 bg-emerald-200 rounded-lg appearance-none cursor-pointer accent-emerald-600"
-            />
-            <div className="flex justify-between text-xs mt-1">
-              <span className={c.textMuted}>$10</span>
-              <span className={c.textMuted}>$500</span>
-            </div>
-          </div>
-
-          {/* Sustainability Toggle */}
-          <div className={`p-4 rounded-lg ${c.sustainBox} border transition-colors duration-200`}>
-            <label className="flex items-start gap-3 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={considerSustainability}
-                onChange={(e) => setConsiderSustainability(e.target.checked)}
-                className="w-5 h-5 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500 mt-0.5"
-              />
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <span>🌿</span>
-                  <span className={`font-semibold ${c.text}`}>Prioritize sustainable & ethical options</span>
-                </div>
-                <p className={`text-xs ${c.textSecondary}`}>
-                  Favor eco-friendly, fair-trade, locally-made, or sustainable products when available. 
-                  May slightly limit options but supports ethical businesses.
-                </p>
-              </div>
-            </label>
-          </div>
-
-          {/* Generate Button */}
-          <div className="flex gap-3">
-            <button
-              onClick={handleGenerate}
-              disabled={loading}
-              className={`flex-1 ${c.btnPrimary} disabled:opacity-50 disabled:cursor-not-allowed font-medium py-3 px-6 rounded-lg transition-all duration-200 flex items-center justify-center gap-2`}
-            >
-              {loading ? (
-                <>
-                  <span className="animate-spin inline-block">⏳</span>
-                  Finding perfect gifts...
-                </>
-              ) : (
-                <>
-                  <span>🛍️</span>
-                  Find Gifts
-                </>
-              )}
-            </button>
-
-            {results && (
-              <button
-                onClick={handleReset}
-                className={`px-6 py-3 border-2 ${c.btnOutline} font-medium rounded-lg transition-all duration-200`}
-              >
-                New Search
+            <div className="flex justify-end mt-1">
+              <button onClick={loadExample} className={`text-[10px] ${c.textMuted} hover:underline`}>
+                🎲 Load example
               </button>
-            )}
+            </div>
           </div>
 
-          {/* Error Display */}
-          {error && (
-            <div className={`p-4 ${c.warningBox} border rounded-lg flex items-start gap-3 transition-colors duration-200`} role="alert">
-              <span className="flex-shrink-0 mt-0.5">⚠️</span>
-              <p className="text-sm">{error}</p>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Results */}
-      {results && (
-        <div className="space-y-6">
-          
-          {/* Budget Optimization Tip */}
-          {results.budget_optimization && (
-            <div className={`${c.infoBox} border-l-4 rounded-r-lg p-4 transition-colors duration-200`}>
-              <div className="flex items-start gap-3">
-                <span className="flex-shrink-0 mt-0.5">💰</span>
-                <div>
-                  <h3 className={`font-semibold mb-1 ${c.text}`}>Budget Optimization</h3>
-                  <p className={`text-sm ${c.textSecondary}`}>{results.budget_optimization}</p>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Gift Card Message */}
-          {results.gift_card_message && (
-            <div className={`${c.card} border rounded-xl p-6 transition-colors duration-200`}>
-              <div className="flex items-center justify-between mb-3">
-                <h3 className={`text-lg font-bold ${c.text} flex items-center gap-2`}>
-                  <span>💬</span>
-                  Suggested Gift Card Message
-                </h3>
-                <CopyBtn content={results.gift_card_message} label="Copy Message" />
-              </div>
-              <div className={`p-4 rounded-lg ${isDark ? 'bg-zinc-700' : 'bg-emerald-50'} border ${isDark ? 'border-zinc-600' : 'border-emerald-200'}`}>
-                <p className={`text-sm ${c.text} italic`}>"{results.gift_card_message}"</p>
-              </div>
-              <p className={`text-xs ${c.textMuted} mt-2`}>
-                Personalize this message to make it your own!
-              </p>
-            </div>
-          )}
-
-          {/* Tips & Timing */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {results.timing_advice && (
-              <div className={`${c.successBox} border-l-4 rounded-r-lg p-4 transition-colors duration-200`}>
-                <div className="flex items-start gap-3">
-                  <span className="flex-shrink-0 mt-0.5">⏰</span>
-                  <div>
-                    <h3 className={`font-semibold mb-1 ${c.text}`}>Timing Advice</h3>
-                    <p className={`text-sm ${c.textSecondary}`}>{results.timing_advice}</p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {results.gift_wrap_suggestion && (
-              <div className={`${c.successBox} border-l-4 rounded-r-lg p-4 transition-colors duration-200`}>
-                <div className="flex items-start gap-3">
-                  <span className="flex-shrink-0 mt-0.5">📦</span>
-                  <div>
-                    <h3 className={`font-semibold mb-1 ${c.text}`}>Gift Wrap Style</h3>
-                    <p className={`text-sm ${c.textSecondary}`}>{results.gift_wrap_suggestion}</p>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Shopping Tips */}
-          {results.shopping_tips && results.shopping_tips.length > 0 && (
-            <div className={`${c.infoBox} border-l-4 rounded-r-lg p-4 transition-colors duration-200`}>
-              <h3 className={`font-semibold mb-2 ${c.text}`}>💡 Shopping Tips</h3>
-              <ul className={`text-sm ${c.textSecondary} space-y-1`}>
-                {results.shopping_tips.map((tip, idx) => (
-                  <li key={idx}>• {tip}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {/* Sustainability Note */}
-          {considerSustainability && results.sustainability_note && (
-            <div className={`${c.sustainBox} border-l-4 rounded-r-lg p-4 transition-colors duration-200`}>
-              <div className="flex items-start gap-3">
-                <span className="flex-shrink-0 mt-0.5">🌿</span>
-                <div>
-                  <h3 className={`font-semibold mb-1 ${c.text}`}>Sustainable Choices</h3>
-                  <p className={`text-sm ${c.textSecondary}`}>{results.sustainability_note}</p>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Category Filter */}
-          {getUniqueCategories().length > 2 && (
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className={c.textMuted}>⚙️</span>
-              <span className={`text-sm font-medium ${c.label}`}>Filter:</span>
-              {getUniqueCategories().map(category => (
+          {/* Occasion */}
+          <div className="mb-4">
+            <label className={`text-[10px] font-bold ${c.label} uppercase block mb-2`}>Occasion</label>
+            <div className="flex flex-wrap gap-1.5">
+              {OCCASIONS.map(o => (
                 <button
-                  key={category}
-                  onClick={() => setSelectedCategory(category)}
-                  className={`px-3 py-1 rounded-full text-sm font-medium transition-all ${
-                    selectedCategory === category
-                      ? c.btnPrimary
-                      : c.btnSecondary
+                  key={o.id}
+                  onClick={() => setOccasion(occasion === o.id ? '' : o.id)}
+                  className={`px-2.5 py-1.5 rounded-lg text-xs font-medium border transition-colors min-h-[32px] flex items-center gap-1 ${
+                    occasion === o.id ? c.chipActive : c.chipInactive
                   }`}
                 >
-                  {category === 'all' ? 'All' : category}
+                  <span>{o.icon}</span> {o.label}
                 </button>
               ))}
             </div>
-          )}
-
-          {/* Gift Recommendations */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {getFilteredGifts().map((gift, idx) => (
-              <div key={idx} className={`${c.card} border rounded-xl shadow-sm p-5 transition-all duration-200 hover:shadow-lg`}>
-                
-                {/* Header with Category, Sustainable Badge, & Favorite */}
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    {gift.category && (
-                      <span className={`px-2 py-1 rounded text-xs font-semibold ${isDark ? 'bg-emerald-600 text-white' : 'bg-emerald-100 text-emerald-700'}`}>
-                        {gift.category}
-                      </span>
-                    )}
-                    {gift.is_sustainable && (
-                      <span className={`px-2 py-1 rounded text-xs font-semibold flex items-center gap-1 ${isDark ? 'bg-emerald-600 text-white' : 'bg-emerald-100 text-emerald-700'}`}>
-                        <span className="text-xs">🌿</span>
-                        Eco-Friendly
-                      </span>
-                    )}
-                  </div>
-                  <button
-                    onClick={() => toggleFavorite(gift)}
-                    className={`p-1 rounded transition-colors ${
-                      isFavorite(gift)
-                        ? 'text-emerald-500'
-                        : isDark ? 'text-zinc-500 hover:text-emerald-400' : 'text-gray-400 hover:text-emerald-500'
-                    }`}
-                    title={isFavorite(gift) ? 'Remove from favorites' : 'Add to favorites'}
-                  >
-                    <span className="text-lg">{isFavorite(gift) ? '❤️' : '🤍'}</span>
-                  </button>
-                </div>
-
-                {/* Product Name */}
-                <h3 className={`text-lg font-bold ${c.text} mb-3`}>
-                  {gift.product_name}
-                </h3>
-
-                {/* Why This Works */}
-                <div className="mb-4">
-                  <h4 className={`text-sm font-semibold ${c.label} mb-1`}>Why this works:</h4>
-                  <p className={`text-sm ${c.textSecondary}`}>{gift.why_this_works}</p>
-                </div>
-
-                {/* Personality Match */}
-                {gift.personality_match && (
-                  <div className="mb-4">
-                    <h4 className={`text-sm font-semibold ${c.label} mb-1`}>Personality match:</h4>
-                    <p className={`text-sm ${c.textSecondary}`}>{gift.personality_match}</p>
-                  </div>
-                )}
-
-                {/* Price and Confidence */}
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <div className={`text-xs ${c.textMuted}`}>Price</div>
-                    <div className={`text-lg font-bold ${c.accent}`}>{gift.price_range}</div>
-                  </div>
-                  <div className="text-right">
-                    <div className={`text-xs ${c.textMuted}`}>Confidence</div>
-                    <div className={`text-lg font-bold ${getConfidenceColor(gift.confidence_score)}`}>
-                      {gift.confidence_score}/10
-                    </div>
-                    <div className={`text-xs ${getConfidenceColor(gift.confidence_score)}`}>
-                      {getConfidenceLabel(gift.confidence_score)}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Action Buttons */}
-                <div className="space-y-2">
-                  
-                    <a href={gift.purchase_link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={`w-full ${c.btnPrimary} py-2 px-4 rounded-lg font-medium flex items-center justify-center gap-2 transition-all`}
-                  >
-                    <span>🔗</span>
-                    Search Product
-                  </a>
-
-                  <CopyBtn content={gift.product_name} label="Copy" />
-
-                  <button
-                    onClick={() => handleRegenerateGift(idx)}
-                    disabled={loading}
-                    className={`w-full ${c.btnSecondary} py-2 px-3 rounded-lg text-sm flex items-center justify-center gap-2 transition-all disabled:opacity-50`}
-                    title="Get another suggestion"
-                  >
-                    <span className={loading ? 'animate-spin inline-block' : ''}>🔄</span>
-                    Regenerate
-                  </button>
-                </div>
-
-                {/* Price Tracking Note */}
-                {gift.price_tracking_note && (
-                  <div className={`mt-3 p-2 rounded text-xs ${isDark ? 'bg-zinc-700' : 'bg-emerald-50'}`}>
-                    <p className={c.textMuted}>💡 {gift.price_tracking_note}</p>
-                  </div>
-                )}
-              </div>
-            ))}
           </div>
 
-          {/* Saved Favorites */}
-          {savedFavorites.length > 0 && (
-            <div className={`${c.cardAlt} border rounded-xl p-6 transition-colors duration-200`}>
-              <h3 className={`text-lg font-bold ${c.text} mb-4 flex items-center gap-2`}>
-                <span>❤️</span>
-                Saved Favorites ({savedFavorites.length})
-              </h3>
-              <div className="space-y-2">
-                {savedFavorites.map((gift, idx) => (
-                  <div key={idx} className={`flex items-center justify-between p-3 rounded-lg ${isDark ? 'bg-zinc-700' : 'bg-white'}`}>
-                    <div className="flex-1">
-                      <div className={`font-semibold ${c.text}`}>{gift.product_name}</div>
-                      <div className={`text-sm ${c.textMuted}`}>{gift.price_range}</div>
-                    </div>
-                    <button
-                      onClick={() => toggleFavorite(gift)}
-                      className={`text-emerald-500 hover:text-emerald-600 transition-colors text-sm`}
-                    >
-                      Remove
-                    </button>
-                  </div>
+          {/* Budget + Deadline row */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+            <div>
+              <label className={`text-[10px] font-bold ${c.label} uppercase block mb-1.5`}>Budget</label>
+              <input
+                type="text"
+                value={budget}
+                onChange={e => setBudget(e.target.value)}
+                placeholder="e.g., $25-50, under $100, any"
+                className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`}
+              />
+            </div>
+            <div>
+              <label className={`text-[10px] font-bold ${c.label} uppercase block mb-1.5`}>Deadline</label>
+              <div className="flex flex-wrap gap-1.5">
+                {DEADLINES.map(d => (
+                  <button
+                    key={d.id}
+                    onClick={() => setDeadline(deadline === d.id ? '' : d.id)}
+                    className={`px-2 py-1.5 rounded-lg text-[11px] font-medium border transition-colors ${
+                      deadline === d.id ? c.chipActive : c.chipInactive
+                    }`}
+                  >
+                    {d.label}
+                  </button>
                 ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Optional extras */}
+          <details className={`mb-5 ${c.textSec}`}>
+            <summary className={`text-xs font-bold cursor-pointer ${c.accent} mb-2`}>➕ Already tried / things to avoid</summary>
+            <div className="space-y-3 mt-3">
+              <div>
+                <label className={`text-xs ${c.label} block mb-1`}>Already given or considered</label>
+                <input
+                  type="text"
+                  value={alreadyGiven}
+                  onChange={e => setAlreadyGiven(e.target.value)}
+                  placeholder="e.g., Gave her a book last year, she already has an Ember mug"
+                  className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`}
+                />
+              </div>
+              <div>
+                <label className={`text-xs ${c.label} block mb-1`}>Definitely avoid</label>
+                <input
+                  type="text"
+                  value={avoid}
+                  onChange={e => setAvoid(e.target.value)}
+                  placeholder="e.g., No candles (she has too many), nothing too personal"
+                  className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`}
+                />
+              </div>
+            </div>
+          </details>
+
+          {/* Submit */}
+          <button
+            onClick={handleSubmit}
+            disabled={!recipient.trim() || loading}
+            className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}
+          >
+            {loading
+              ? <><span className="animate-spin inline-block">⏳</span> Finding the perfect gift...</>
+              : <><span>🎁</span> Find Gift Ideas</>}
+          </button>
+        </div>
+      )}
+
+      {/* ── Error ── */}
+      {error && (
+        <div className={`${c.error} border rounded-lg p-4 flex items-start gap-3`}>
+          <span className="flex-shrink-0">⚠️</span>
+          <p className="text-sm">{error}</p>
+        </div>
+      )}
+
+      {/* ── Results ── */}
+      {results && (
+        <div ref={resultsRef} className="space-y-4">
+
+          {/* Action bar */}
+          <div className="flex items-center justify-between">
+            <button onClick={handleReset} className={`${c.btnSec} px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5`}>
+              <span>←</span> New search
+            </button>
+            <ActionBar content={buildFullText()} title="Anti-Gift Panic" />
+          </div>
+
+          {/* Situation read */}
+          {results.situation_read && (
+            <div className={`${c.warmBg} border rounded-xl p-4`}>
+              <p className={`text-sm ${c.text} leading-relaxed`}>{results.situation_read}</p>
+            </div>
+          )}
+
+          {/* Perfect picks */}
+          {results.perfect_picks?.length > 0 && (
+            <div className="space-y-3">
+              <p className={`text-xs font-bold uppercase tracking-wider ${c.accent}`}>🎁 Gift ideas</p>
+              {results.perfect_picks.map((pick, i) => {
+                const isExpanded = expandedPick === i;
+                return (
+                  <div
+                    key={i}
+                    className={`${c.giftCard} border rounded-xl overflow-hidden transition-all duration-200 ${isExpanded ? 'ring-2 ring-[#c8a951]/30' : ''}`}
+                  >
+                    {/* Header — always visible */}
+                    <button
+                      onClick={() => setExpandedPick(isExpanded ? -1 : i)}
+                      className="w-full text-left px-5 py-4 flex items-start justify-between gap-3"
+                    >
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className={`text-xs font-bold ${c.textMuted}`}>#{i + 1}</span>
+                          <h3 className={`text-sm font-bold ${c.text} truncate`}>{pick.gift}</h3>
+                        </div>
+                        <p className={`text-xs ${c.textMuted}`}>{pick.price_range}</p>
+                      </div>
+                      <span className={`text-xs ${c.textMuted} flex-shrink-0 mt-1`}>
+                        {isExpanded ? '▲' : '▼'}
+                      </span>
+                    </button>
+
+                    {/* Expanded details */}
+                    {isExpanded && (
+                      <div className={`px-5 pb-5 space-y-3 border-t ${c.divider} pt-3`}>
+                        {/* Why it's perfect */}
+                        <div>
+                          <p className={`text-[10px] font-bold uppercase ${c.label} mb-1`}>Why it's perfect for them</p>
+                          <p className={`text-sm ${c.textSec} leading-relaxed`}>{pick.why_its_perfect}</p>
+                        </div>
+
+                        {/* Where to get */}
+                        <div>
+                          <p className={`text-[10px] font-bold uppercase ${c.label} mb-1`}>Where to get it</p>
+                          <p className={`text-sm ${c.text}`}>{pick.where_to_get}</p>
+                        </div>
+
+                        {/* Presentation tip */}
+                        {pick.presentation_tip && (
+                          <div className={`${c.cardAlt} rounded-lg p-3`}>
+                            <p className={`text-[10px] font-bold uppercase ${c.label} mb-1`}>✨ Presentation tip</p>
+                            <p className={`text-xs ${c.textSec}`}>{pick.presentation_tip}</p>
+                          </div>
+                        )}
+
+                        {/* Card message */}
+                        {pick.card_message && (
+                          <div className={`${c.warmBg} border rounded-lg p-4`}>
+                            <div className="flex items-center justify-between mb-2">
+                              <p className={`text-[10px] font-bold uppercase ${isDark ? 'text-[#c8a951]' : 'text-[#8a6a20]'}`}>
+                                ✉️ What to write in the card
+                              </p>
+                              <CopyBtn
+                                content={`${pick.card_message}\n\n— Generated by DeftBrain · deftbrain.com`}
+                                label="Copy"
+                              />
+                            </div>
+                            <p className={`text-sm italic ${c.text} leading-relaxed`} style={{ fontFamily: 'Georgia, serif' }}>
+                              "{pick.card_message}"
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Wildcard */}
+          {results.the_wildcard && (
+            <div>
+              {!showWildcard ? (
+                <button
+                  onClick={() => setShowWildcard(true)}
+                  className={`w-full ${c.btnSec} py-3 rounded-xl text-sm font-medium flex items-center justify-center gap-2`}
+                >
+                  <span>🃏</span> Show the wildcard option
+                </button>
+              ) : (
+                <div className={`${c.wildcardBg} border rounded-xl p-5`}>
+                  <p className={`text-xs font-bold uppercase tracking-wider ${c.wildcardText} mb-2 flex items-center gap-1.5`}>
+                    <span>🃏</span> The wildcard
+                  </p>
+                  <h3 className={`text-base font-bold ${c.text} mb-1`}>{results.the_wildcard.gift}</h3>
+                  <p className={`text-xs ${c.textMuted} mb-2`}>{results.the_wildcard.price_range}</p>
+                  <p className={`text-sm ${c.textSec} mb-3`}>{results.the_wildcard.why_its_perfect}</p>
+                  <p className={`text-xs ${c.text} mb-3`}>
+                    <span className={`font-bold ${c.label}`}>Where: </span>{results.the_wildcard.where_to_get}
+                  </p>
+                  {results.the_wildcard.card_message && (
+                    <div className={`${c.warmBg} border rounded-lg p-3`}>
+                      <div className="flex items-center justify-between mb-1">
+                        <p className={`text-[10px] font-bold uppercase ${isDark ? 'text-[#c8a951]' : 'text-[#8a6a20]'}`}>✉️ Card</p>
+                        <CopyBtn content={`${results.the_wildcard.card_message}\n\n— Generated by DeftBrain · deftbrain.com`} label="Copy" />
+                      </div>
+                      <p className={`text-sm italic ${c.text}`} style={{ fontFamily: 'Georgia, serif' }}>"{results.the_wildcard.card_message}"</p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Last-minute save */}
+          {results.if_deadline_is_now && (
+            <div className={`${c.greenBg} border rounded-xl p-4`}>
+              <p className={`text-xs font-bold uppercase tracking-wider ${c.greenText} mb-2 flex items-center gap-1.5`}>
+                <span>⏰</span> Last-minute save
+              </p>
+              <p className={`text-sm font-semibold ${c.text} mb-1`}>{results.if_deadline_is_now.instant_option}</p>
+              <p className={`text-xs ${c.textSec} mb-2`}>{results.if_deadline_is_now.how}</p>
+              {results.if_deadline_is_now.card_message && (
+                <div className="flex items-center gap-2 mt-2">
+                  <p className={`text-xs italic ${c.textMuted} flex-1`}>✉️ "{results.if_deadline_is_now.card_message}"</p>
+                  <CopyBtn content={`${results.if_deadline_is_now.card_message}\n\n— Generated by DeftBrain · deftbrain.com`} label="Copy" />
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Never do this */}
+          {results.never_do_this && (
+            <div className={`${c.alertBg} border rounded-xl p-4 flex items-start gap-3`}>
+              <span className="flex-shrink-0">⚠️</span>
+              <div>
+                <p className={`text-[10px] font-bold uppercase ${c.alertText} mb-1`}>Don't do this</p>
+                <p className={`text-sm ${c.alertText}`}>{results.never_do_this}</p>
               </div>
             </div>
           )}
 
-          {/* Privacy & Ethics Note */}
-          <div className={`${c.infoBox} border rounded-lg p-4 transition-colors duration-200`}>
-            <p className={`text-xs ${c.textSecondary}`}>
-              <strong>Privacy & Ethics:</strong> These recommendations are AI-generated based on your inputs. 
-              No personal data is stored. Purchase links are non-affiliated search terms. 
-              Always verify product details and prices before purchasing.
-              {considerSustainability && " Sustainable options prioritized where available."}
-            </p>
+          {/* Cross-refs */}
+          <div className={`${c.cardAlt} rounded-xl p-4`}>
+            <p className={`text-[10px] font-bold ${c.textMuted} uppercase tracking-wider mb-2`}>Related tools</p>
+            <div className="flex flex-wrap gap-2">
+              {[
+                { id: 'VelvetHammer', icon: '🔨', label: 'Write the card message differently' },
+                { id: 'MagicMouth', icon: '🪄', label: 'Negotiate a return' },
+                { id: 'BuyWise', icon: '🛒', label: 'Check if the gift is worth the price' },
+              ].map(ref => (
+                <a key={ref.id} href={`/tool/${ref.id}`} target="_blank" rel="noopener noreferrer"
+                  className={`${c.btnSec} px-3 py-1.5 rounded-lg text-xs transition-colors flex items-center gap-1.5`}>
+                  <span>{ref.icon}</span> {ref.label}
+                </a>
+              ))}
+            </div>
           </div>
         </div>
       )}
     </div>
-    </div>
   );
 };
 
+AntiGiftPanic.displayName = 'AntiGiftPanic';
 export default AntiGiftPanic;

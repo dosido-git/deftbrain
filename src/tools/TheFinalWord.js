@@ -163,6 +163,10 @@ const TheFinalWord = () => {
   const [shareId, setShareId] = useState(null);
   const [shareLoading, setShareLoading] = useState(false);
 
+  // Deep Dissect (FactOrFiction fold-in)
+  const [dissectMode, setDissectMode] = useState(false); // toggle within factcheck mode
+  const [dissectResult, setDissectResult] = useState(null);
+
   // Multiplayer
   const [mpMode, setMpMode] = useState(null); // 'host' | 'join' | 'lobby' | 'playing'
   const [roomCode, setRoomCode] = useState('');
@@ -306,6 +310,18 @@ const TheFinalWord = () => {
       trackStat(mode, data);
     } catch (err) {
       setError(err.message || 'Failed to get the verdict');
+    }
+  };
+
+  // ─── Deep Dissect Handler ───
+  const handleDissect = async () => {
+    if (!claim.trim()) return;
+    setError(''); setDissectResult(null);
+    try {
+      const data = await callToolEndpoint('the-final-word/dissect', { claim: claim.trim() });
+      setDissectResult(data);
+    } catch (err) {
+      setError(err.message || 'Failed to dissect claim');
     }
   };
 
@@ -581,7 +597,7 @@ const TheFinalWord = () => {
     setFollowUpText(''); setFollowUpResults([]);
     setShowAppeal(false); setAppealResult(null); setAppealEvidence('');
     setDevilsAdvocate(false); setDaResult(null); setDaPosition(''); setDaTopic('');
-    setShareId(null);
+    setShareId(null); setDissectResult(null);
   };
 
   const resetTrivia = () => {
@@ -976,8 +992,23 @@ const TheFinalWord = () => {
                   <textarea value={claim} onChange={(e) => setClaim(e.target.value)} placeholder="Humans only use 10% of their brains" rows={2} className={`flex-1 px-4 py-3 rounded-xl border-2 text-sm transition-all focus:outline-none focus:ring-2 resize-none ${c.input}`} />
                   <VoiceButton />
                 </div>
-                <button onClick={handleSubmit} disabled={loading || !claim.trim()} className={`w-full py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-40 ${c.btnPrimary}`}>
-                  {loading ? <span className="animate-spin inline-block">⏳</span> : <span>🛡️</span>} {loading ? 'Fact-checking...' : 'Check This Claim'}
+                {/* Mode toggle */}
+                <div className={`flex gap-2 p-1 rounded-xl ${isDark ? 'bg-zinc-700/50' : 'bg-slate-100'}`}>
+                  <button onClick={() => setDissectMode(false)}
+                    className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${!dissectMode ? c.btnPrimary : `${isDark ? 'text-zinc-400 hover:text-zinc-200' : 'text-slate-500 hover:text-slate-700'}`}`}>
+                    🛡️ Quick Ruling
+                  </button>
+                  <button onClick={() => setDissectMode(true)}
+                    className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${dissectMode ? c.btnPrimary : `${isDark ? 'text-zinc-400 hover:text-zinc-200' : 'text-slate-500 hover:text-slate-700'}`}`}>
+                    🔬 Deep Dissect
+                  </button>
+                </div>
+                {dissectMode && (
+                  <p className={`text-xs ${c.textMuted}`}>Breaks the claim into its components — each piece gets its own verdict and reasoning.</p>
+                )}
+                <button onClick={dissectMode ? handleDissect : handleSubmit} disabled={loading || !claim.trim()} className={`w-full py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-40 ${c.btnPrimary}`}>
+                  {loading ? <span className="animate-spin inline-block">⏳</span> : <span>{dissectMode ? '🔬' : '🛡️'}</span>}
+                  {loading ? (dissectMode ? 'Dissecting...' : 'Fact-checking...') : (dissectMode ? 'Dissect This Claim' : 'Check This Claim')}
                 </button>
               </div>
             )}
@@ -1325,6 +1356,116 @@ const TheFinalWord = () => {
             </div>
             <ShareLinkDisplay />
             <VerdictActions resetLabel="New Claim" />
+          </div>
+        )}
+
+        {/* ═══════ DEEP DISSECT RESULT ═══════ */}
+        {dissectResult && (
+          <div className={`rounded-2xl overflow-hidden border-2 shadow-lg ${isDark ? 'border-amber-700/50 bg-zinc-800' : 'border-amber-300 bg-white'}`}>
+
+            {/* Header — overall verdict */}
+            <div className={`px-6 py-5 text-center ${getRulingStyle(dissectResult.overall_verdict?.ruling)}`}>
+              <p className={`text-xs font-black uppercase tracking-widest mb-2 ${c.textMuted}`}>🔬 Deep Dissect — Overall</p>
+              <h2 className="text-2xl font-black tracking-tight">{dissectResult.overall_verdict?.ruling_display}</h2>
+              {dissectResult.overall_verdict?.one_line && (
+                <p className="text-sm mt-2 opacity-90">{dissectResult.overall_verdict.one_line}</p>
+              )}
+            </div>
+
+            <div className="px-6 py-4 space-y-4">
+
+              {/* Quick read */}
+              {dissectResult.quick_read && (
+                <p className={`text-sm leading-relaxed ${c.textSecondary}`}>{dissectResult.quick_read}</p>
+              )}
+
+              {/* Component verdicts */}
+              {dissectResult.components?.length > 0 && (
+                <div className="space-y-2">
+                  <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>Breaking It Down</p>
+                  {dissectResult.components.map((comp, i) => {
+                    const verdictColors = {
+                      true:            isDark ? 'border-l-emerald-500 bg-emerald-900/10' : 'border-l-emerald-500 bg-emerald-50',
+                      false:           isDark ? 'border-l-red-500 bg-red-900/10'         : 'border-l-red-500 bg-red-50',
+                      misleading:      isDark ? 'border-l-amber-500 bg-amber-900/10'     : 'border-l-amber-500 bg-amber-50',
+                      missing_context: isDark ? 'border-l-blue-500 bg-blue-900/10'       : 'border-l-blue-500 bg-blue-50',
+                      exaggerated:     isDark ? 'border-l-orange-500 bg-orange-900/10'   : 'border-l-orange-500 bg-orange-50',
+                      unverifiable:    isDark ? 'border-l-zinc-500 bg-zinc-700/30'       : 'border-l-slate-400 bg-slate-50',
+                      opinion:         isDark ? 'border-l-purple-500 bg-purple-900/10'   : 'border-l-purple-500 bg-purple-50',
+                    };
+                    const labelColors = {
+                      true:            isDark ? 'text-emerald-400' : 'text-emerald-700',
+                      false:           isDark ? 'text-red-400'     : 'text-red-700',
+                      misleading:      isDark ? 'text-amber-400'   : 'text-amber-700',
+                      missing_context: isDark ? 'text-blue-400'    : 'text-blue-700',
+                      exaggerated:     isDark ? 'text-orange-400'  : 'text-orange-700',
+                      unverifiable:    isDark ? 'text-zinc-400'    : 'text-slate-500',
+                      opinion:         isDark ? 'text-purple-400'  : 'text-purple-700',
+                    };
+                    const colorClass = verdictColors[comp.verdict] || verdictColors.unverifiable;
+                    const labelClass = labelColors[comp.verdict] || labelColors.unverifiable;
+                    return (
+                      <div key={i} className={`border-l-4 pl-4 pr-3 py-3 rounded-r-xl ${colorClass}`}>
+                        <div className="flex items-start justify-between gap-2 mb-1 flex-wrap">
+                          <p className={`text-xs font-black uppercase tracking-wide ${labelClass}`}>{comp.verdict_label}</p>
+                        </div>
+                        <p className={`text-sm font-semibold mb-1 ${c.text}`}>{comp.element}</p>
+                        <p className={`text-sm ${c.textSecondary}`}>{comp.reasoning}</p>
+                        {comp.matters_because && (
+                          <p className={`text-xs mt-1.5 italic ${c.textMuted}`}>Why it matters: {comp.matters_because}</p>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* What it gets right */}
+              {dissectResult.what_the_claim_gets_right && (
+                <div className={`p-3 rounded-xl border ${isDark ? 'bg-emerald-900/10 border-emerald-800/40' : 'bg-emerald-50 border-emerald-200'}`}>
+                  <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>✓ What It Gets Right</p>
+                  <p className={`text-sm ${c.textSecondary}`}>{dissectResult.what_the_claim_gets_right}</p>
+                </div>
+              )}
+
+              {/* What changes the picture */}
+              {dissectResult.what_changes_the_picture && (
+                <div className={`p-3 rounded-xl border ${c.cardAlt}`}>
+                  <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${c.accent}`}>🔍 What Changes the Picture</p>
+                  <p className={`text-sm ${c.textSecondary}`}>{dissectResult.what_changes_the_picture}</p>
+                </div>
+              )}
+
+              {/* How it spread */}
+              {dissectResult.how_it_spread && (
+                <div className={`p-3 rounded-xl ${isDark ? 'bg-purple-900/10 border border-purple-800/50' : 'bg-purple-50 border border-purple-200'}`}>
+                  <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${isDark ? 'text-purple-400' : 'text-purple-600'}`}>📡 Why This Spreads</p>
+                  <p className={`text-sm ${isDark ? 'text-purple-200' : 'text-purple-800'}`}>{dissectResult.how_it_spread}</p>
+                </div>
+              )}
+
+              {/* Accurate version */}
+              {dissectResult.the_accurate_version && (
+                <div className={`p-4 rounded-xl border-2 ${isDark ? 'border-amber-700/60 bg-amber-900/10' : 'border-amber-300 bg-amber-50'}`}>
+                  <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${isDark ? 'text-amber-400' : 'text-amber-700'}`}>✍️ The Accurate Version</p>
+                  <p className={`text-sm leading-relaxed italic ${c.text}`}>{dissectResult.the_accurate_version}</p>
+                  <div className="mt-3">
+                    <CopyBtn content={`🔬 DEEP DISSECT\n\nClaim: "${dissectResult.claim_as_stated}"\n\nOverall: ${dissectResult.overall_verdict?.ruling_display} — ${dissectResult.overall_verdict?.one_line}\n\nAccurate version: ${dissectResult.the_accurate_version}\n\n— Generated by DeftBrain · deftbrain.com`} label="Copy Report" />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className={`px-6 py-3 border-t flex items-center justify-between flex-wrap gap-2 ${c.border}`}>
+              <div className="flex gap-1.5">
+                <PrintBtn content={`🔬 DEEP DISSECT\n\n"${dissectResult.claim_as_stated}"\n\nOverall: ${dissectResult.overall_verdict?.ruling_display}\n${dissectResult.overall_verdict?.one_line}\n\n${dissectResult.components?.map(c => `${c.verdict_label}\n${c.element}\n${c.reasoning}`).join('\n\n')}\n\nAccurate version:\n${dissectResult.the_accurate_version}\n\n— Generated by DeftBrain · deftbrain.com`} title="Deep Dissect" />
+              </div>
+              <button onClick={() => { setDissectResult(null); setClaim(''); }}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${c.btnSecondary}`}>
+                <span>🔄</span> New Claim
+              </button>
+            </div>
           </div>
         )}
 

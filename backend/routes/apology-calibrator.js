@@ -769,4 +769,88 @@ Return ONLY valid JSON:
   }
 });
 
+// ════════════════════════════════════════════════════════════
+// POST /apology-calibrator/fix — ApologyFixer
+// Diagnoses why an apology didn't land and rebuilds it
+// ════════════════════════════════════════════════════════════
+router.post('/apology-calibrator/fix', async (req, res) => {
+  try {
+    const { whatYouSaid, theirReaction, relationship, context, userLanguage } = req.body;
+    if (!whatYouSaid?.trim()) return res.status(400).json({ error: 'Paste what you said when you apologized.' });
+    if (!theirReaction?.trim()) return res.status(400).json({ error: 'Describe how they reacted.' });
+
+    const systemPrompt = `${PERSONALITY}
+
+You are diagnosing a failed apology. Someone apologized and it made things worse, or the other person is still upset. Your job: find exactly what went wrong and rebuild the apology from scratch.
+
+Be surgical and honest. Most failed apologies have 1-2 specific problems. Name them precisely. Then build the fixed version — not a generic "good apology template," but a specific repair for THIS situation. The rebuilt apology should be noticeably different from the original in the ways that matter.`;
+
+    const userPrompt = `APOLOGY FIXER — DIAGNOSE AND REBUILD
+
+WHAT THEY SAID (the failed apology):
+"${whatYouSaid.trim()}"
+
+HOW THE OTHER PERSON REACTED:
+"${theirReaction.trim()}"
+
+${relationship ? `RELATIONSHIP: ${relationship}` : ''}
+${context ? `CONTEXT: ${context}` : ''}
+
+Diagnose what went wrong and rebuild it completely.
+
+Return ONLY valid JSON:
+{
+  "diagnosis": {
+    "summary": "One sentence — the core problem with this apology in plain language",
+    "problems": [
+      {
+        "type": "defensive | too_vague | blame_shift | over_explained | missing_ownership | conditional | minimized | premature_move_on | sorry_you_feel | too_short | weaponized_apology",
+        "label": "Human-readable label (e.g. 'Buried the apology in an excuse')",
+        "evidence": "The exact phrase or element from their apology that demonstrates this problem",
+        "why_it_landed_wrong": "Why this specific thing made the other person feel worse or unheard"
+      }
+    ],
+    "what_they_were_trying_to_do": "Charitable read — what they probably intended, even if it backfired",
+    "why_it_backfired": "The gap between their intention and how it was received"
+  },
+
+  "the_fix": {
+    "approach": "Brief note on what the rebuild prioritizes and why",
+    "rebuilt_apology": "The complete rewritten apology — ready to say or send. Natural voice. No filler. Addresses every problem identified above.",
+    "what_changed": [
+      {
+        "original_element": "What was in the original",
+        "replaced_with": "What's in the rebuild instead",
+        "why_better": "Why this version lands better"
+      }
+    ]
+  },
+
+  "delivery_note": {
+    "timing": "When to deliver this — right now, or wait?",
+    "medium": "In person, text, call, or written — what's right for this situation?",
+    "one_thing_not_to_do": "The single most important mistake to avoid this time"
+  },
+
+  "if_they_still_dont_accept_it": "What to say and do if this apology also doesn't land — sometimes the apology isn't what they need"
+}`;
+
+    const message = await anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 2500,
+      system: withLanguage(systemPrompt, userLanguage),
+      messages: [{ role: 'user', content: userPrompt }],
+    });
+
+    const text = message.content.find(b => b.type === 'text')?.text || '';
+    const cleaned = cleanJsonResponse(text);
+    const parsed = JSON.parse(cleaned);
+    res.json(parsed);
+
+  } catch (error) {
+    console.error('ApologyCalibrator fix error:', error);
+    res.status(500).json({ error: error.message || 'Fix generation failed' });
+  }
+});
+
 module.exports = router;

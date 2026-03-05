@@ -811,4 +811,82 @@ Return ONLY valid JSON.`, userLanguage);
   }
 });
 
+// ════════════════════════════════════════════════════════════
+// POST /lease-trap-detector/missing — FinePointFinder
+// Identifies protections ABSENT from a contract
+// ════════════════════════════════════════════════════════════
+router.post('/lease-trap-detector/missing', async (req, res) => {
+  try {
+    const { contractText, contractType, yourRole, concerns, location, userLanguage } = req.body;
+    if (!contractText?.trim()) return res.status(400).json({ error: 'Paste the contract text to analyze.' });
+
+    const systemPrompt = `You are a contract protection expert — specifically focused on what SHOULD be in agreements but usually isn't. Most contract review focuses on bad clauses. You focus on absent protections — the things tenants, employees, clients, and buyers don't know to ask for because they don't know they're supposed to be there.
+
+PHILOSOPHY:
+- Absence of protection is just as dangerous as a bad clause
+- Most people sign contracts that don't protect them not because the terms are hostile, but because standard protections were simply omitted
+- Your job: identify what's missing and explain why each missing piece matters
+- Be specific about what each missing clause should say
+- Prioritize by risk: some omissions are minor inconveniences, some are financial catastrophes waiting to happen`;
+
+    const userPrompt = `FINE POINT FINDER — WHAT'S MISSING FROM THIS CONTRACT
+
+CONTRACT TYPE: ${contractType || 'Unknown — infer from content'}
+YOUR ROLE: ${yourRole || 'The party signing / agreeing'}
+${location?.trim() ? `LOCATION: ${location.trim()} (relevant for jurisdiction-specific protections)` : ''}
+${concerns?.trim() ? `SPECIFIC CONCERNS: ${concerns.trim()}` : ''}
+
+CONTRACT TEXT:
+${contractText.trim().slice(0, 8000)}
+
+Identify what's absent — protections that should be here but aren't.
+
+Return ONLY valid JSON:
+{
+  "contract_summary": "One sentence — what type of contract this appears to be and what it covers",
+
+  "missing_protections": [
+    {
+      "protection": "Short name for the missing clause (e.g., 'Move-Out Inspection Notice Requirement')",
+      "category": "financial | liability | exit | timeline | dispute | privacy | performance | termination | other",
+      "risk_if_absent": "high | medium | low",
+      "why_it_matters": "What can go wrong without this protection — be specific and realistic",
+      "what_it_should_say": "The specific language or clause you'd want added — write it as you'd want to see it in the contract",
+      "how_common": "How standard is this protection — is its absence unusual or routine?"
+    }
+  ],
+
+  "questions_to_ask_before_signing": [
+    {
+      "question": "The exact question to ask the other party",
+      "why": "What information this gets you and why it matters"
+    }
+  ],
+
+  "negotiation_priority": {
+    "must_haves": ["The 2-3 most important missing protections to push for"],
+    "nice_to_haves": ["1-2 that would be good but aren't worth losing the deal over"],
+    "pick_your_battle": "If you can only negotiate one thing — which missing protection should it be, and why?"
+  },
+
+  "overall_assessment": "One honest paragraph — how protected is this person given what's present vs. absent? What's the biggest exposure?"
+}`;
+
+    const message = await anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 3000,
+      system: withLanguage(systemPrompt, userLanguage),
+      messages: [{ role: 'user', content: userPrompt }],
+    });
+
+    const raw = message.content.find(item => item.type === 'text')?.text || '';
+    const parsed = safeParseJSON(raw);
+    res.json(parsed);
+
+  } catch (error) {
+    console.error('[LeaseTrapDetector/missing] Error:', error);
+    res.status(500).json({ error: error.message || 'Failed to find missing protections' });
+  }
+});
+
 module.exports = router;

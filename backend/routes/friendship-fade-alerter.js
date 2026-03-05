@@ -277,4 +277,79 @@ Return ONLY valid JSON.`;
   }
 });
 
+// ════════════════════════════════════════════════════════════
+// POST /friendship-fade-alerter/reengage — NetworkNurse
+// Craft natural re-engagement messages for awkward silences
+// ════════════════════════════════════════════════════════════
+router.post('/friendship-fade-alerter/reengage', async (req, res) => {
+  try {
+    const { personName, relationship, howLong, lastContext, reason, userLanguage } = req.body;
+    if (!personName?.trim()) return res.status(400).json({ error: 'Who are you reaching out to?' });
+    if (!howLong?.trim()) return res.status(400).json({ error: 'How long has it been?' });
+
+    const systemPrompt = `You are a social reconnection expert — someone who understands the psychology of awkward silences and knows how to dissolve them naturally. 
+
+You know that most people WANT to hear from someone they've drifted from. The fear is almost always one-sided. Your job is to give people natural, specific, non-cringe re-engagement messages that feel like they came from a real person — not a template, not a therapy script.
+
+The golden rules:
+- Never acknowledge the gap explicitly unless it was clearly a falling-out
+- Lead with something specific to THEM, not to the silence
+- Don't make it weird. Don't explain yourself. Just reach out.
+- The best re-engagement message sounds like there was never an awkward silence at all
+- Short is almost always better. Long = effortful = obligation = pressure = silence
+- Give them an easy on-ramp — something they can respond to without committing to much`;
+
+    const userPrompt = `NETWORK NURSE — RE-ENGAGEMENT MESSAGES
+
+Person: ${personName.trim()}
+Relationship type: ${relationship || 'friend'}
+Silence duration: ${howLong.trim()}
+${lastContext?.trim() ? `Last context (what they last talked about or what was going on in their life): ${lastContext.trim()}` : ''}
+${reason?.trim() ? `Why the silence started: ${reason.trim()}` : ''}
+
+Write 3 re-engagement messages. Each should feel completely natural for a different approach.
+
+Return ONLY valid JSON:
+{
+  "situation_read": "One honest sentence about what this silence likely feels like from both sides",
+
+  "messages": [
+    {
+      "style": "casual | warm | practical",
+      "style_label": "What this approach prioritizes (e.g., 'Low pressure', 'Emotional warmth', 'Easy hook')",
+      "message": "The complete message — ready to send. Natural, specific, brief. Should not mention the silence or feel like an apology for reaching out.",
+      "why_it_works": "One sentence on why this approach dissolves the awkwardness",
+      "best_for": "When to use this version (e.g., 'If you want to keep it light', 'If you genuinely miss them', 'If you have a natural excuse')"
+    }
+  ],
+
+  "what_NOT_to_say": [
+    {
+      "phrase": "The type of line to avoid",
+      "why": "Why it makes things more awkward instead of less"
+    }
+  ],
+
+  "if_they_dont_respond": "What to do and what it probably means — be honest, not just reassuring",
+
+  "timing_tip": "Best time/channel to send this (text vs. DM vs. email, time of day, day of week)"
+}`;
+
+    const message = await anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 2000,
+      system: withLanguage(systemPrompt, userLanguage),
+      messages: [{ role: 'user', content: userPrompt }],
+    });
+
+    const raw = message.content.find(item => item.type === 'text')?.text || '';
+    const parsed = safeParseJSON(raw);
+    res.json(parsed);
+
+  } catch (error) {
+    console.error('[FriendshipFade/reengage] Error:', error);
+    res.status(500).json({ error: error.message || 'Failed to generate re-engagement messages' });
+  }
+});
+
 module.exports = router;

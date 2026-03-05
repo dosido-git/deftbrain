@@ -59,6 +59,11 @@ const FriendshipFadeAlerter = () => {
   const [digest, setDigest] = useState(null);
   const [digestLoading, setDigestLoading] = useState(false);
 
+  // ── Re-engage (NetworkNurse) ──
+  const [reengageForm, setReengageForm] = useState({ personName: '', relationship: '', howLong: '', lastContext: '', reason: '' });
+  const [reengageResults, setReengageResults] = useState(null);
+  const [reengageLoading, setReengageLoading] = useState(false);
+
   // ── Theme ──
   const c = {
     bg: isDark ? 'bg-zinc-900' : 'bg-slate-50',
@@ -316,6 +321,16 @@ const FriendshipFadeAlerter = () => {
     finally { setDigestLoading(false); }
   };
 
+  const handleReengage = async () => {
+    if (!reengageForm.personName.trim() || !reengageForm.howLong.trim()) return;
+    setReengageLoading(true); setReengageResults(null); setError('');
+    try {
+      const data = await callToolEndpoint('friendship-fade-alerter/reengage', reengageForm);
+      setReengageResults(data);
+    } catch (err) { setError(err.message || 'Failed to generate messages'); }
+    finally { setReengageLoading(false); }
+  };
+
   // ═══════════════════════════════════════
   // RENDER
   // ═══════════════════════════════════════
@@ -378,7 +393,7 @@ const FriendshipFadeAlerter = () => {
             )}
 
             {/* Action buttons */}
-            <div className="flex gap-3">
+            <div className="flex gap-3 flex-wrap">
               <button onClick={() => { resetForm(); setView('add'); }} className={`flex-1 py-3 rounded-xl font-bold ${c.btnPrimary}`}>
                 <span className="mr-2">➕</span> Add Person
               </button>
@@ -387,6 +402,10 @@ const FriendshipFadeAlerter = () => {
                   <span className="mr-2">⚡</span> Catch-up Sprint ({overduePeople.length})
                 </button>
               )}
+              <button onClick={() => { setReengageResults(null); setReengageForm({ personName: '', relationship: '', howLong: '', lastContext: '', reason: '' }); setView('reengage'); }}
+                className={`flex-1 py-3 rounded-xl font-bold ${c.btnSecondary}`}>
+                <span className="mr-2">🕸️</span> Re-engage
+              </button>
             </div>
 
             {/* Person cards */}
@@ -924,6 +943,121 @@ const FriendshipFadeAlerter = () => {
                 </div>
               );
             })()}
+          </div>
+        )}
+
+        {/* ════════ RE-ENGAGE ════════ */}
+        {view === 'reengage' && (
+          <div className="space-y-5">
+            <button onClick={() => { setView('dashboard'); setReengageResults(null); }} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnSecondary}`}>← Back</button>
+            <div className={`${c.card} border rounded-2xl p-5`}>
+              <h2 className={`text-xl font-black tracking-tight mb-1 ${c.text}`}>🕸️ Re-engage</h2>
+              <p className={`text-sm mb-5 ${c.textSec}`}>The silence got awkward. Get a natural message that dissolves it — without making it weirder.</p>
+
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className={`block text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuted}`}>Who is it? <span className="text-red-400">*</span></label>
+                    <input type="text" value={reengageForm.personName} onChange={e => setReengageForm(p => ({ ...p, personName: e.target.value }))}
+                      placeholder="Their name"
+                      className={`w-full p-3 border rounded-xl text-sm outline-none ${c.input}`} />
+                  </div>
+                  <div>
+                    <label className={`block text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuted}`}>Relationship</label>
+                    <select value={reengageForm.relationship} onChange={e => setReengageForm(p => ({ ...p, relationship: e.target.value }))}
+                      className={`w-full p-3 border rounded-xl text-sm outline-none ${c.input}`}>
+                      <option value="">Select…</option>
+                      {REL_TYPES.map(r => <option key={r.value} value={r.value}>{r.icon} {r.label}</option>)}
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className={`block text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuted}`}>How long has it been? <span className="text-red-400">*</span></label>
+                  <input type="text" value={reengageForm.howLong} onChange={e => setReengageForm(p => ({ ...p, howLong: e.target.value }))}
+                    placeholder="e.g. 4 months, almost a year, since last summer…"
+                    className={`w-full p-3 border rounded-xl text-sm outline-none ${c.input}`} />
+                </div>
+
+                <div>
+                  <label className={`block text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuted}`}>Last context <span className={`font-normal normal-case ${c.textMuted}`}>(optional but helpful)</span></label>
+                  <textarea value={reengageForm.lastContext} onChange={e => setReengageForm(p => ({ ...p, lastContext: e.target.value }))}
+                    placeholder="What were you last talking about? What was going on in their life? What do you know about them now?"
+                    rows={2}
+                    className={`w-full p-3 border rounded-xl text-sm outline-none resize-none ${c.input}`} />
+                </div>
+
+                <div>
+                  <label className={`block text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuted}`}>Why did the silence start? <span className={`font-normal normal-case ${c.textMuted}`}>(optional)</span></label>
+                  <input type="text" value={reengageForm.reason} onChange={e => setReengageForm(p => ({ ...p, reason: e.target.value }))}
+                    placeholder="Life got busy, slight awkwardness, moved away, nothing specific…"
+                    className={`w-full p-3 border rounded-xl text-sm outline-none ${c.input}`} />
+                </div>
+
+                <button onClick={handleReengage} disabled={reengageLoading || !reengageForm.personName.trim() || !reengageForm.howLong.trim()}
+                  className={`w-full py-3 rounded-xl font-bold disabled:opacity-50 ${c.btnPrimary}`}>
+                  {reengageLoading ? <><span className="animate-spin inline-block mr-2">⏳</span>Writing…</> : '🕸️ Write My Re-engagement Messages'}
+                </button>
+              </div>
+            </div>
+
+            {reengageResults && (
+              <div className="space-y-4">
+                {reengageResults.situation_read && (
+                  <div className={`${c.card} border rounded-2xl p-4`}>
+                    <p className={`text-sm italic ${c.textSec}`}>💡 {reengageResults.situation_read}</p>
+                  </div>
+                )}
+
+                {reengageResults.messages?.map((msg, i) => (
+                  <div key={i} className={`${c.card} border rounded-2xl p-5`}>
+                    <div className="flex items-center justify-between mb-1 flex-wrap gap-2">
+                      <span className={`text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${c.btnSecondary}`}>{msg.style_label}</span>
+                      <span className={`text-xs ${c.textMuted}`}>{msg.best_for}</span>
+                    </div>
+                    <p className={`text-sm leading-relaxed mt-3 p-3 rounded-xl ${isDark ? 'bg-zinc-700/50' : 'bg-stone-50'} ${c.text}`}>{msg.message}</p>
+                    <p className={`text-xs mt-2 ${c.textMuted}`}>{msg.why_it_works}</p>
+                    <div className="mt-3">
+                      <CopyBtn content={`${msg.message}${BRANDING}`} label="Copy Message" />
+                    </div>
+                  </div>
+                ))}
+
+                {reengageResults.what_NOT_to_say?.length > 0 && (
+                  <div className={`${c.card} border rounded-2xl p-4`}>
+                    <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textMuted}`}>🚫 Avoid These</p>
+                    <div className="space-y-2">
+                      {reengageResults.what_NOT_to_say.map((w, i) => (
+                        <div key={i} className={`p-2 rounded-xl text-sm border ${c.danger}`}>
+                          <p className="font-medium">"{w.phrase}"</p>
+                          <p className={`text-xs mt-0.5 ${c.textMuted}`}>{w.why}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {reengageResults.if_they_dont_respond && (
+                    <div className={`${c.card} border rounded-2xl p-4`}>
+                      <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuted}`}>📭 If They Don't Respond</p>
+                      <p className={`text-sm ${c.textSec}`}>{reengageResults.if_they_dont_respond}</p>
+                    </div>
+                  )}
+                  {reengageResults.timing_tip && (
+                    <div className={`${c.card} border rounded-2xl p-4`}>
+                      <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuted}`}>⏰ Timing Tip</p>
+                      <p className={`text-sm ${c.textSec}`}>{reengageResults.timing_tip}</p>
+                    </div>
+                  )}
+                </div>
+
+                <button onClick={() => { setReengageResults(null); setReengageForm({ personName: '', relationship: '', howLong: '', lastContext: '', reason: '' }); }}
+                  className={`w-full py-2.5 rounded-xl text-sm font-semibold ${c.btnSecondary}`}>
+                  🔄 Try Another
+                </button>
+              </div>
+            )}
           </div>
         )}
 

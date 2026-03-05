@@ -687,4 +687,81 @@ router.post('/the-final-word/room/:code/reveal', (req, res) => {
   }
 });
 
+// ════════════════════════════════════════
+// DEEP DISSECT — FactOrFiction fold-in
+// Break a claim into its component parts,
+// each with its own verdict + reasoning
+// ════════════════════════════════════════
+router.post('/the-final-word/dissect', async (req, res) => {
+  try {
+    const { claim, userLanguage } = req.body;
+    if (!claim?.trim()) return res.status(400).json({ error: 'Paste a claim to dissect.' });
+
+    const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+    const DATE_CONTEXT = `Today's date: ${new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}. `;
+
+    const systemPrompt = `${DATE_CONTEXT}You are THE FINAL WORD — a surgical fact-checker who doesn't just rule on claims, you dissect them. Your job: break a claim into its individual components and give each piece its own verdict with the reasoning shown.
+
+Most claims that go viral aren't completely true or completely false — they're a mixture. A statistic is cherry-picked. A real event is exaggerated. A true fact is stripped of context that reverses its meaning. A legitimate concern is attached to a false cause.
+
+Your job is to find every distinct factual element in the claim and evaluate each one separately. Show your work. Don't just say "misleading" — show exactly which part is misleading and why.
+
+RULES:
+- Identify 3–6 distinct factual elements (more if the claim is complex)
+- Each element needs its own verdict AND reasoning — not just a label
+- Be precise about what's missing context vs. what's outright wrong
+- The "accurate version" at the end should be something they could actually share
+- Don't hedge excessively — commit to verdicts`;
+
+    const userPrompt = `DEEP DISSECT THIS CLAIM:
+
+"${claim.trim()}"
+
+Break it into its component parts and evaluate each one.
+
+Return ONLY valid JSON:
+{
+  "claim_as_stated": "The claim exactly as submitted",
+  "quick_read": "One sentence — what kind of claim this is and what's most important to know about it upfront",
+  
+  "components": [
+    {
+      "element": "The specific factual sub-claim or element being evaluated",
+      "verdict": "true | false | misleading | missing_context | exaggerated | unverifiable | opinion",
+      "verdict_label": "TRUE ✓ | FALSE ✗ | MISLEADING | MISSING CONTEXT | EXAGGERATED | UNVERIFIABLE | OPINION",
+      "reasoning": "2-3 sentences explaining exactly why this verdict — show the evidence, not just the conclusion",
+      "matters_because": "One sentence on why this element is important to the overall claim (or null if minor)"
+    }
+  ],
+  
+  "what_the_claim_gets_right": "What's genuinely true in this claim — credit where it's due (or null)",
+  "what_changes_the_picture": "The missing context, omitted facts, or framing choices that most distort the overall impression",
+  "how_it_spread": "Why this claim is believable and how it circulates (or null if not a viral-style claim)",
+  "the_accurate_version": "A corrected version of the claim that someone could actually share — true to the spirit of what they were trying to say but accurate",
+  
+  "overall_verdict": {
+    "ruling": "true | mostly_true | mixed | mostly_false | false | misleading | opinion",
+    "ruling_display": "TRUE ✓ | MOSTLY TRUE | MIXED | MOSTLY FALSE | FALSE ✗ | MISLEADING | OPINION",
+    "one_line": "The verdict in one plain-English sentence"
+  }
+}`;
+
+    const message = await anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 2500,
+      system: withLanguage(systemPrompt, userLanguage),
+      messages: [{ role: 'user', content: userPrompt }],
+    });
+
+    const text = message.content.find(b => b.type === 'text')?.text || '';
+    const cleaned = cleanJsonResponse(text);
+    const parsed = JSON.parse(cleaned);
+    res.json(parsed);
+
+  } catch (error) {
+    console.error('TheFinalWord dissect error:', error);
+    res.status(500).json({ error: error.message || 'Failed to dissect claim' });
+  }
+});
+
 module.exports = router;

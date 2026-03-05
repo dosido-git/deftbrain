@@ -37,7 +37,7 @@ const NameStorm = () => {
   };
 
   // ─── Input State ───
-  const [mode, setMode] = useState('generate'); // 'generate' | 'blend'
+  const [mode, setMode] = useState('generate'); // 'generate' | 'blend' | 'quick'
   const [category, setCategory] = useState('');
   const [vibe, setVibe] = useState('');
   const [vibeChips, setVibeChips] = useState([]);
@@ -47,6 +47,13 @@ const NameStorm = () => {
   // ─── Blend Mode State ───
   const [seedWords, setSeedWords] = useState(['', '', '', '']);
   const [pairWithDomains, setPairWithDomains] = useState(false);
+
+  // ─── Quick Mode State (ThingNamer) ───
+  const [quickWhatIsIt, setQuickWhatIsIt] = useState('');
+  const [quickVibe, setQuickVibe] = useState('');
+  const [quickConstraints, setQuickConstraints] = useState('');
+  const [quickAvoid, setQuickAvoid] = useState('');
+  const [quickResults, setQuickResults] = useState(null);
 
   // ─── Results State ───
   const [results, setResults] = useState(null);
@@ -258,6 +265,20 @@ const NameStorm = () => {
   };
 
   const handleRegenerate = () => handleGenerate(true);
+
+  const handleQuick = async () => {
+    if (!quickWhatIsIt.trim()) return;
+    setError(''); setQuickResults(null);
+    try {
+      const data = await callToolEndpoint('namestorm/quick', {
+        whatIsIt: quickWhatIsIt.trim(),
+        vibe: quickVibe.trim() || undefined,
+        constraints: quickConstraints.trim() || undefined,
+        avoid: quickAvoid.trim() || undefined,
+      });
+      setQuickResults(data);
+    } catch (e) { setError(e.message || 'Failed to generate names.'); }
+  };
 
   const saveToHistory = (data, label) => {
     const topNames = data.top_picks?.map(p => p.name).slice(0, 5) || 
@@ -872,7 +893,7 @@ const NameStorm = () => {
       </div>
 
       {/* ═══════════════ INPUT VIEW ═══════════════ */}
-      {!results && (
+      {!results && !quickResults && (
         <div className="space-y-5">
 
           {/* Persistent Favorites Banner */}
@@ -899,7 +920,53 @@ const NameStorm = () => {
               className={`flex-1 py-3 px-4 rounded-xl border text-sm font-semibold transition-all flex items-center justify-center gap-2 ${c.tab(mode === 'blend')}`}>
               <span>✨</span> Blend <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${isDark ? 'bg-amber-900/50 text-amber-300 border border-amber-700' : 'bg-amber-100 text-amber-700 border border-amber-300'}`}>PRO</span>
             </button>
+            <button onClick={() => { setMode('quick'); setCategory(''); setResults(null); }}
+              className={`flex-1 py-3 px-4 rounded-xl border text-sm font-semibold transition-all flex items-center justify-center gap-2 ${c.tab(mode === 'quick')}`}>
+              <span>🏷️</span> Quick
+            </button>
           </div>
+
+          {/* ─── Quick Mode (ThingNamer) ─── */}
+          {mode === 'quick' && (
+            <div className={`${c.card} rounded-xl shadow-lg p-6 space-y-4`}>
+              <div>
+                <p className={`text-sm font-semibold ${c.text} mb-1`}>🏷️ What needs a name? <span className="text-red-500">*</span></p>
+                <textarea value={quickWhatIsIt} onChange={e => setQuickWhatIsIt(e.target.value)}
+                  placeholder="e.g. My new rescue dog — medium-sized, scruffy, total chaos gremlin but sweet… / A Wi-Fi network for my home office / A group chat for my 4 college friends who all became engineers / A small-batch hot sauce company"
+                  rows={3} maxLength={500}
+                  className={`w-full px-4 py-3 rounded-xl border text-sm resize-none outline-none ${c.input}`} />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <p className={`text-sm font-semibold ${c.text} mb-1`}>Vibe / personality <span className={`font-normal ${c.textMuted}`}>(optional)</span></p>
+                  <input type="text" value={quickVibe} onChange={e => setQuickVibe(e.target.value)}
+                    placeholder="e.g. funny, mysterious, wholesome, nerdy…"
+                    className={`w-full px-3 py-2 rounded-xl border text-sm outline-none ${c.input}`} />
+                </div>
+                <div>
+                  <p className={`text-sm font-semibold ${c.text} mb-1`}>Constraints <span className={`font-normal ${c.textMuted}`}>(optional)</span></p>
+                  <input type="text" value={quickConstraints} onChange={e => setQuickConstraints(e.target.value)}
+                    placeholder="e.g. short, one word, can't start with S…"
+                    className={`w-full px-3 py-2 rounded-xl border text-sm outline-none ${c.input}`} />
+                </div>
+              </div>
+              <div>
+                <p className={`text-sm font-semibold ${c.text} mb-1`}>What to avoid <span className={`font-normal ${c.textMuted}`}>(optional)</span></p>
+                <input type="text" value={quickAvoid} onChange={e => setQuickAvoid(e.target.value)}
+                  placeholder="e.g. anything too obvious, no food puns, no names ending in -ify…"
+                  className={`w-full px-3 py-2 rounded-xl border text-sm outline-none ${c.input}`} />
+              </div>
+              {error && <div className={`p-3 rounded-xl flex items-start gap-2 ${c.danger} border`}><span>⚠️</span><p className="text-sm">{error}</p></div>}
+              <button onClick={handleQuick} disabled={loading || !quickWhatIsIt.trim()}
+                className={`w-full py-4 px-6 rounded-xl font-semibold text-lg transition-all flex items-center justify-center gap-2 shadow-lg ${loading ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : c.btnPrimary}`}>
+                {loading ? <><span className="animate-spin inline-block">⏳</span> Thinking…</> : <><span>🏷️</span> Name It</>}
+              </button>
+            </div>
+          )}
+
+          {/* ─── Generate / Blend Mode Form ─── */}
+          {mode !== 'quick' && (
+          <div>
 
           {/* Generate Mode: Category */}
           {!isBlendMode && (
@@ -1137,8 +1204,11 @@ const NameStorm = () => {
           <p className={`text-xs text-center ${c.textMuted}`}>
             Have a name already? <a href="/NameAudit" className={`font-semibold underline ${isDark ? 'text-cyan-400 hover:text-cyan-300' : 'text-cyan-600 hover:text-cyan-700'}`}>NameAudit</a> stress-tests it across 12 dimensions.
           </p>
-        </div>
-      )}
+          </div>
+          )} {/* end mode !== quick wrapper */}
+          </div>
+          )} {/* end inner card wrapper */}
+      
 
       {/* ═══════════════ RESULTS VIEW ═══════════════ */}
       {results && (
@@ -1459,6 +1529,58 @@ const NameStorm = () => {
               ⚡ Domain and social availability checks are approximations based on DNS lookups and profile page checks. Confirm availability through official registrars before purchasing. Trademark analysis is informational — consult a trademark attorney for legal clearance.
             </p>
           </div>
+        </div>
+      )}
+      )}
+
+      {/* ═══════════════ QUICK RESULTS ═══════════════ */}
+      {quickResults && (
+        <div className="space-y-5">
+          <div className="flex items-center justify-between gap-3 flex-wrap">
+            <button onClick={() => { setQuickResults(null); setError(''); }}
+              className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnSecondary}`}>
+              ← Try Again
+            </button>
+            {quickResults.top_pick && (
+              <div className={`text-sm px-4 py-2 rounded-xl font-medium ${isDark ? 'bg-amber-900/30 text-amber-300' : 'bg-amber-50 text-amber-800'}`}>
+                ⭐ Top pick: <strong>{quickResults.top_pick.split(' — ')[0]}</strong>
+              </div>
+            )}
+          </div>
+
+          {quickResults.directions?.map((dir, di) => (
+            <div key={di} className={`${c.card} rounded-xl shadow-lg p-6`}>
+              <h3 className={`text-sm font-bold uppercase tracking-wider mb-4 ${c.textMuted}`}>{dir.direction}</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {dir.names?.map((nameObj, ni) => (
+                  <div key={ni} className={`p-4 rounded-xl border transition-all ${c.cardInner || (isDark ? 'bg-zinc-700/40 border-zinc-600' : 'bg-stone-50 border-stone-200')}`}>
+                    <div className="flex items-start justify-between gap-2 mb-1">
+                      <span className={`text-base font-bold ${c.text}`}>{nameObj.name}</span>
+                      {nameObj.score && (
+                        <span className={`flex-shrink-0 text-xs font-bold px-2 py-0.5 rounded-full ${nameObj.score >= 80 ? (isDark ? 'bg-emerald-900/50 text-emerald-300' : 'bg-emerald-100 text-emerald-700') : nameObj.score >= 60 ? (isDark ? 'bg-amber-900/50 text-amber-300' : 'bg-amber-100 text-amber-700') : (isDark ? 'bg-zinc-600 text-zinc-300' : 'bg-stone-200 text-stone-600')}`}>{nameObj.score}</span>
+                      )}
+                    </div>
+                    {nameObj.note && <p className={`text-xs mb-2 ${isDark ? 'text-zinc-400' : 'text-stone-500'}`}>{nameObj.note}</p>}
+                    {nameObj.flag && <p className={`text-xs px-2 py-1 rounded ${isDark ? 'bg-red-900/30 text-red-300' : 'bg-red-50 text-red-600'}`}>⚠️ {nameObj.flag}</p>}
+                    <div className="mt-2 flex gap-2">
+                      <button onClick={() => { const fav = { name: nameObj.name, source: quickWhatIsIt.slice(0, 40), date: new Date().toISOString() }; if (!favorites.find(f => f.name === nameObj.name)) setFavorites(prev => [fav, ...prev].slice(0, 50)); }}
+                        className={`text-xs px-2.5 py-1 rounded-lg ${isDark ? 'bg-zinc-600 hover:bg-zinc-500 text-zinc-200' : 'bg-stone-200 hover:bg-stone-300 text-stone-700'}`}>
+                        {favorites.find(f => f.name === nameObj.name) ? '★ Saved' : '☆ Save'}
+                      </button>
+                      <CopyBtn content={nameObj.name} label="Copy" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+
+          {quickResults.top_pick && (
+            <div className={`p-5 rounded-xl text-center ${isDark ? 'bg-amber-900/20 border border-amber-700/40' : 'bg-amber-50 border border-amber-200'}`}>
+              <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${isDark ? 'text-amber-400' : 'text-amber-700'}`}>⭐ Top Pick</p>
+              <p className={`text-lg font-black ${c.text}`}>{quickResults.top_pick}</p>
+            </div>
+          )}
         </div>
       )}
     </div>

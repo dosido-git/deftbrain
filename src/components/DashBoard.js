@@ -46,60 +46,7 @@ const CATEGORY_META = [
   { name: 'Diversions',      emoji: '🎲', color: '#e11d48' },
 ];
 
-// ════════════════════════════════════════════════════════════
-// SEARCH TAGS
-// ════════════════════════════════════════════════════════════
-const SEARCH_TAGS = {
-  ChoiceParalyzerHelper:    ['anxiety', 'decision', 'stuck', 'overwhelm', 'options', 'indecisive'],
-  ConfrontationAvoider:     ['anxiety', 'conflict', 'avoid', 'scared', 'uncomfortable', 'difficult conversation'],
-  HyperfocusInterrupter:    ['adhd', 'hyperfocus', 'time blind', 'lost track', 'obsessed'],
-  TaskAvalancheBreaker:     ['overwhelm', 'todo', 'too much', 'prioritize', 'anxiety', 'procrastination'],
-  MeetingBullshitDetector:  ['meeting', 'waste time', 'unnecessary', 'decline', 'calendar'],
-  RecipeChaosSolver:        ['cooking', 'food', 'recipe', 'kitchen', 'ingredients', 'dinner'],
-  LazyWorkoutAdapter:       ['exercise', 'workout', 'lazy', 'fitness', 'motivation', 'gym'],
-  PlantDeathPreventer:      ['plant', 'garden', 'water', 'dying', 'care', 'houseplant'],
-  BragSheetBuilder:         ['resume', 'achievements', 'career', 'promotion', 'accomplishments'],
-  ApologyCalibrator:        ['sorry', 'apology', 'apologize', 'mistake', 'forgiveness'],
-  AwkwardSilenceFiller:     ['conversation', 'awkward', 'small talk', 'social', 'anxiety'],
-  MicroAdventureMapper:     ['bored', 'adventure', 'explore', 'fun', 'weekend', 'activity'],
-  LeaseTrapDetector:        ['lease', 'rent', 'apartment', 'landlord', 'tenant', 'housing'],
-  ComplaintEscalationWriter:['complaint', 'customer service', 'escalate', 'refund', 'manager'],
-  VelvetHammer:             ['negotiate', 'persuade', 'firm', 'boundary', 'pushback', 'assertive'],
-  ConflictCoach:        ['text', 'argument', 'fight', 'respond', 'message', 'conflict'],
-  ReplyUrgencyTriager:      ['email', 'reply', 'urgent', 'inbox', 'prioritize', 'respond'],
-  GratitudeDebtClearer:     ['thank you', 'gratitude', 'owe', 'appreciate', 'thank'],
-  ReviewParanoiaHelper:     ['review', 'paranoid', 'feedback', 'rating', 'worried'],
-  AntiGiftPanic:            ['gift', 'present', 'birthday', 'holiday', 'shopping', 'what to buy'],
-  TheDeposit:               ['apartment', 'deposit', 'move in', 'landlord', 'damage', 'security deposit', 'rent', 'lease', 'walkthrough', 'condition report'],
-  ClosetChaosResolver:      ['clothes', 'outfit', 'closet', 'wardrobe', 'wear', 'fashion'],
-  PetWeirdnessDecoder:      ['pet', 'dog', 'cat', 'behavior', 'weird', 'animal'],
-  SpiralStopper:            ['anxiety', 'spiral', 'panic', 'worry', 'catastrophize'],
-  ZenMode:                  ['calm', 'relax', 'meditation', 'stress', 'breathe'],
-  SleepDebt:                ['sleep', 'tired', 'insomnia', 'rest', 'fatigue'],
-  Recall:                   ['memory', 'remember', 'study', 'review', 'retention'],
-  BrainRoulette:            ['random', 'interesting', 'curious', 'learn', 'discover', 'bored', 'fun'],
-  ArgumentSimulator:        ['debate', 'argue', 'opinion', 'hot take', 'perspective', 'fun'],
-  WhatsMyVibe:              ['vibe', 'tone', 'personality', 'writing', 'analysis', 'text', 'fun'],
-NameThatFeeling:            ['emotion', 'game', 'feelings', 'quiz', 'mood', 'fun'],
-'MiseEnPlace':              ['cooking', 'food', 'recipe', 'kitchen', 'ingredients', 'dinner', 'meal prep', 'fridge', 'meal', 'dietary', 'party', 'substitute', 'swap'],
-'DecoderRing':             ['message', 'subtext', 'passive aggressive', 'email', 'text', 'meaning', 'tone', 'communication', 'confusing'],
-'PlotTwist':               ['decision', 'stuck', 'choose', 'options', 'dilemma', 'career', 'choice', 'pros cons', 'values'],
-'GhostWriter':             ['recommendation', 'letter', 'reference', 'job', 'linkedin', 'writing', 'grad school', 'scholarship'],
-'Bookmark':                 ['show', 'book', 'game', 'sports', 'recap', 'spoiler', 'abandoned', 'catch up', 'tv', 'season', 'where was I'],
- 'TheAlibi':          ['resume gap', 'career pivot', 'fired', 'explain', 'story', 'interview', 'landlord', 'framing', 'narrative'],
- 'NoiseCanceler':     ['document', 'filter', 'insurance', 'hoa', 'lease', 'policy', 'relevant', 'eob', 'benefits', 'newsletter'],
- 'ContextCollapse':   ['message', 'audience', 'post', 'social media', 'group chat', 'interpret', 'misread', 'tone', 'send'],
- Recall:  ['lecture', 'transcript', 'notes', 'study', 'exam', 'bullet points', 'summary', 'review', 'test prep', 'flashcards', 'class'],
-TheGap:  ['stuck', 'concept', 'prerequisite', 'don\'t understand', 'confused', 'gap', 'knowledge', 'study', 'struggling', 'fundamentals'],
-TheDebrief:  ['meeting', 'transcript', 'notes', 'minutes', 'action items', 'decisions', 'follow up', 'standup', 'recap', 'agenda'],
-SayItRight:  ['pronounce', 'pronunciation', 'say', 'name', 'food', 'restaurant', 'brand', 'foreign', 'word', 'how to say'],
-SocialEnergyAudit: ['energy', 'social', 'tired', 'drained', 'exhausted', 'introvert', 'recharge', 'burnout', 'schedule', 'week', 'interactions', 'budget'],
-RoastMe:          ['roast', 'funny', 'comedy', 'humor', 'joke', 'resume', 'dating', 'linkedin', 'burn', 'fun'],
- TimeWarp:         ['history', 'time', 'historical', 'modern', 'funny', 'ancient', 'medieval', 'comedy', 'fun'],
- WrongAnswersOnly: ['wrong', 'funny', 'trivia', 'quiz', 'comedy', 'fake', 'humor', 'absurd', 'fun'],
-PlotHole:   ['plot', 'hole', 'movie', 'show', 'logic', 'mistake', 'continuity', 'film', 'fun'],
-FanTheory:  ['theory', 'fan', 'conspiracy', 'movie', 'show', 'plot', 'twist', 'evidence', 'fun'],
-};
+// Search tags are now stored in tools.js as tool.tags arrays.
 
 // ════════════════════════════════════════════════════════════
 // LOCALSTORAGE HELPERS
@@ -206,7 +153,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
       list = list.filter(t => {
         if (t.title.toLowerCase().includes(q)) return true;
         if (t.description.toLowerCase().includes(q)) return true;
-        const tags = SEARCH_TAGS[t.id] || [];
+        const tags = t.tags || [];
         if (tags.some(tag => tag.includes(q) || q.includes(tag))) return true;
         if (q.length >= 3 && fuzzyMatch(q, t.title)) return true;
         return false;
