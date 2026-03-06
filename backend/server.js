@@ -58,6 +58,28 @@ app.use('/api', (req, res, next) => {
   rateLimit(DEFAULT_LIMITS)(req, res, next);
 });
 
+// ── Case-insensitive tool route redirect ──
+// Builds a lowercase → canonical ID map from tools.js at startup.
+// Redirects /namestorm → /NameStorm, /PLANRESCUE → /PlantRescue, etc.
+// Only fires when the casing doesn't already match — no redirect loop.
+const toolsData = require('../src/data/tools');
+const toolIdMap = {};
+(toolsData.tools || toolsData.default || toolsData).forEach(t => {
+  if (t.id) toolIdMap[t.id.toLowerCase()] = t.id;
+});
+
+app.use((req, res, next) => {
+  // Only apply to non-API, non-static asset paths
+  if (req.path.startsWith('/api') || req.path.includes('.')) return next();
+  const slug = req.path.slice(1); // strip leading /
+  if (!slug) return next();       // skip homepage
+  const canonical = toolIdMap[slug.toLowerCase()];
+  if (canonical && canonical !== slug) {
+    return res.redirect(301, `/${canonical}`);
+  }
+  next();
+});
+
 // ── Startup diagnostics ──
 console.log('📁 Current directory:', __dirname);
 console.log('🔑 API Key loaded:', process.env.ANTHROPIC_API_KEY ? 'YES ✓' : 'NO ✗');
