@@ -1,0 +1,27 @@
+name: Syntax Check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  syntax-check:
+    name: Check route files for syntax errors
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Check all backend route files
+        run: |
+          echo "Checking backend routes..."
+          node --check backend/routes/*.js
+          echo "✅ All route files passed syntax check"
