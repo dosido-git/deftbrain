@@ -1,20 +1,45 @@
 {
-  "name": "backend",
+  "name": "deftbrain",
   "version": "1.0.0",
-  "main": "server.js",
-  "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js"
+  "private": true,
+  "engines": {
+    "node": ">=18.0.0"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.32.1",
-    "cors": "^2.8.5",
-    "dotenv": "^16.4.7",
-    "express": "^4.21.2",
-    "twemoji": "^14.0.2"
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^13.5.0",
+    "leaflet": "^1.9.4",
+    "lucide-react": "^0.563.0",
+    "multer": "^2.0.2",
+    "pdf-parse": "^2.4.5",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-leaflet": "^4.2.1",
+    "react-router-dom": "^7.13.0",
+    "react-scripts": "^5.0.1",
+    "recharts": "^3.7.0",
+    "twemoji": "^14.0.2",
+    "web-vitals": "^2.1.4"
   },
-  "devDependencies": {
-    "nodemon": "^3.1.9"
+  "scripts": {
+    "start": "cd backend && node server.js",
+    "build": "react-scripts build",
+    "postbuild": "node scripts/prerender.js",
+    "postinstall": "cd backend && npm install",
+    "prebuild": "node scripts/generate-sitemap.js || true",
+    "dev:frontend": "react-scripts start",
+    "dev:backend": "cd backend && nodemon server.js",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
   },
   "browserslist": {
     "production": [
@@ -27,5 +52,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "nodemon": "^3.1.14"
   }
 }

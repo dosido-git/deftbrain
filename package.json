@@ -55,7 +55,6 @@
   },
   "devDependencies": {
     "concurrently": "^8.2.2",
-    "nodemon": "^3.1.14",
-    "puppeteer": "^22.0.0"
+    "nodemon": "^3.1.14"
   }
 }
