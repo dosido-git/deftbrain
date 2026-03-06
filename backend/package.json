@@ -27,7 +27,6 @@
     "start": "cd backend && node server.js",
     "build": "react-scripts build",
     "postbuild": "node scripts/prerender.js",
-    "postinstall": "cd backend && npm install",
     "prebuild": "node scripts/generate-sitemap.js || true",
     "dev:frontend": "react-scripts start",
     "dev:backend": "cd backend && nodemon server.js",
