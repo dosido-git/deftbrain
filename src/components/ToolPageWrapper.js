@@ -200,7 +200,7 @@ const ToolPageWrapper = ({ children, tool, toolId }) => {
           <div className={`${colors.surfaceAlt} border ${colors.border} rounded-2xl overflow-hidden transition-colors duration-200`}>
             <div className="h-[200px] flex items-center justify-center">
               <span className={`text-[10px] font-mono uppercase tracking-widest ${colors.textMuted}`}>
-                Ad Space
+                reserved
               </span>
             </div>
           </div>

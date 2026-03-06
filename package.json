@@ -26,6 +26,7 @@
   "scripts": {
     "start": "cd backend && node server.js",
     "build": "react-scripts build",
+    "postbuild": "node scripts/prerender.js",
     "postinstall": "cd backend && npm install",
     "prebuild": "node scripts/generate-sitemap.js || true",
     "dev:frontend": "react-scripts start",
@@ -54,6 +55,7 @@
   },
   "devDependencies": {
     "concurrently": "^8.2.2",
-    "nodemon": "^3.1.14"
+    "nodemon": "^3.1.14",
+    "puppeteer": "^22.0.0"
   }
 }
