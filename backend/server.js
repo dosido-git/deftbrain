@@ -60,13 +60,21 @@ app.use('/api', (req, res, next) => {
 
 // ── Case-insensitive tool route redirect ──
 // Builds a lowercase → canonical ID map from tools.js at startup.
-// Redirects /namestorm → /NameStorm, /PLANRESCUE → /PlantRescue, etc.
-// Only fires when the casing doesn't already match — no redirect loop.
-const toolsData = require('../src/data/tools');
+// Uses regex to read IDs rather than require() since tools.js is an ES module.
+// Redirects /namestorm → /NameStorm, /plantrescue → /PlantRescue, etc.
+const fs = require('fs');
 const toolIdMap = {};
-(toolsData.tools || toolsData.default || toolsData).forEach(t => {
-  if (t.id) toolIdMap[t.id.toLowerCase()] = t.id;
-});
+try {
+  const toolsContent = fs.readFileSync(path.join(__dirname, '..', 'src', 'data', 'tools.js'), 'utf8');
+  const idRegex = /\bid:\s*['"]([^'"]+)['"]/g;
+  let m;
+  while ((m = idRegex.exec(toolsContent)) !== null) {
+    if (m[1]) toolIdMap[m[1].toLowerCase()] = m[1];
+  }
+  console.log(`Tool ID map loaded: ${Object.keys(toolIdMap).length} tools`);
+} catch (e) {
+  console.warn('Could not load tool ID map:', e.message);
+}
 
 app.use((req, res, next) => {
   // Only apply to non-API, non-static asset paths
