@@ -106,6 +106,8 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
         const parsed = await callClaudeWithRetry(prompt, {
+          model: 'claude-haiku-4-5-20251001',
+
           label: 'GPG-Generate',
           max_tokens: 1500,
         });
@@ -153,6 +155,8 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
         const parsed = await callClaudeWithRetry(prompt, {
+          model: 'claude-haiku-4-5-20251001',
+
           label: 'GPG-Regenerate',
           max_tokens: 600,
         });
@@ -198,6 +202,8 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
         const parsed = await callClaudeWithRetry(prompt, {
+          model: 'claude-haiku-4-5-20251001',
+
           label: 'GPG-Reflect',
           max_tokens: 600,
         });
@@ -255,6 +261,8 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
         const parsed = await callClaudeWithRetry(prompt, {
+          model: 'claude-haiku-4-5-20251001',
+
           label: 'GPG-Review',
           max_tokens: 1200,
         });
@@ -302,6 +310,8 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
         const parsed = await callClaudeWithRetry(prompt, {
+          model: 'claude-haiku-4-5-20251001',
+
           label: 'GPG-CourageCountdown',
           max_tokens: 600,
         });
@@ -358,6 +368,8 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
         const parsed = await callClaudeWithRetry(prompt, {
+          model: 'claude-haiku-4-5-20251001',
+
           label: 'GPG-EscalationLadder',
           max_tokens: 1000,
         });
@@ -407,6 +419,8 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
         const parsed = await callClaudeWithRetry(prompt, {
+          model: 'claude-haiku-4-5-20251001',
+
           label: 'GPG-FearInventory',
           max_tokens: 1000,
         });

@@ -61,7 +61,7 @@ Return ONLY valid JSON:
 Find 4-7 holes, ranked by severity. Mix severities.`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-haiku-4-5-20251001',
       max_tokens: 2500,
       system: withLanguage(PERSONALITY, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
@@ -117,7 +117,7 @@ Return ONLY valid JSON:
 Generate 3-5 defense arguments. At least one should be a genuine stretch played for laughs.`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-haiku-4-5-20251001',
       max_tokens: 2000,
       system: withLanguage(PERSONALITY, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],

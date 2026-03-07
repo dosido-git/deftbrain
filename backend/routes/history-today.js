@@ -87,6 +87,8 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-haiku-4-5-20251001',
+
       label: 'HistoryToday',
       max_tokens: 6000,
       system: systemPrompt,
@@ -173,6 +175,8 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-haiku-4-5-20251001',
+
       label: 'HistoryTodayDeeper',
       max_tokens: 5000,
       system: withLanguage('You are a narrative historian who brings the past to life with specificity and honesty. Return ONLY valid JSON. No markdown.', userLanguage),
@@ -232,6 +236,8 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-haiku-4-5-20251001',
+
       label: 'HistoryTodayCounter',
       max_tokens: 2500,
       system: withLanguage('You are a structural historian focused on why similar conditions sometimes produce different outcomes. Return ONLY valid JSON. No markdown.', userLanguage),

@@ -17,17 +17,12 @@ RULES:
 - Include sensory details: sounds, smells, light, temperature, textures
 - End each narrative mid-moment, not with a conclusion — life doesn't wrap up neatly`;
 
-router.post('/contrast-report', async (req, res) => {
-  try {
-    const { pathA, pathB, aboutYou, timeframe, userLanguage } = req.body;
-
-    if (!pathA?.trim() || !pathB?.trim()) {
-      return res.status(400).json({ error: 'Describe both paths you\'re considering.' });
-    }
-
-    const tf = timeframe || '2 years';
-
-    const userPrompt = `THE CONTRAST REPORT
+// ════════════════════════════════════════════
+// HELPER: Build user prompt (shared by both routes)
+// ════════════════════════════════════════════
+function buildPrompt({ pathA, pathB, aboutYou, timeframe }) {
+  const tf = timeframe || '2 years';
+  return `THE CONTRAST REPORT
 
 THE DECISION:
 Path A: "${pathA.trim()}"
@@ -62,12 +57,24 @@ Return ONLY valid JSON:
     "the_question_underneath": "The real question this decision is asking — often not what it appears. Usually something about identity, not logistics. One sentence."
   }
 }`;
+}
+
+// ════════════════════════════════════════════
+// ROUTE: Standard (non-streaming) — preserved as fallback
+// ════════════════════════════════════════════
+router.post('/contrast-report', async (req, res) => {
+  try {
+    const { pathA, pathB, aboutYou, timeframe, userLanguage } = req.body;
+
+    if (!pathA?.trim() || !pathB?.trim()) {
+      return res.status(400).json({ error: 'Describe both paths you\'re considering.' });
+    }
 
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 3000,
       system: withLanguage(PERSONALITY, userLanguage),
-      messages: [{ role: 'user', content: userPrompt }],
+      messages: [{ role: 'user', content: buildPrompt({ pathA, pathB, aboutYou, timeframe }) }],
     });
 
     const text = message.content.find(b => b.type === 'text')?.text || '';
@@ -78,6 +85,68 @@ Return ONLY valid JSON:
   } catch (error) {
     console.error('ContrastReport error:', error);
     res.status(500).json({ error: error.message || 'Failed to generate contrast report' });
+  }
+});
+
+// ════════════════════════════════════════════
+// ROUTE: Streaming — SSE endpoint
+// ════════════════════════════════════════════
+router.post('/contrast-report/stream', async (req, res) => {
+  const { pathA, pathB, aboutYou, timeframe, userLanguage } = req.body;
+
+  if (!pathA?.trim() || !pathB?.trim()) {
+    return res.status(400).json({ error: 'Describe both paths you\'re considering.' });
+  }
+
+  // SSE headers
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.setHeader('X-Accel-Buffering', 'no'); // disable nginx buffering if present
+  res.flushHeaders();
+
+  const sendEvent = (data) => {
+    res.write(`data: ${JSON.stringify(data)}\n\n`);
+  };
+
+  let accumulated = '';
+
+
+  try {
+    const stream = anthropic.messages.stream({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 3000,
+      system: withLanguage(PERSONALITY, userLanguage),
+      messages: [{ role: 'user', content: buildPrompt({ pathA, pathB, aboutYou, timeframe }) }],
+    });
+
+    stream.on('text', (chunk) => {
+      accumulated += chunk;
+      sendEvent({ chunk });
+    });
+
+    stream.on('error', (err) => {
+      console.error('ContrastReport stream error:', err);
+      sendEvent({ error: err.message || 'Stream failed' });
+      res.end();
+    });
+
+    stream.finalMessage()
+      .then(() => {
+        sendEvent({ done: true });
+        res.end();
+      })
+      .catch((err) => {
+        if (err?.name === 'APIUserAbortError') return;
+        console.error('ContrastReport finalMessage error:', err);
+        sendEvent({ error: err.message || 'Stream failed' });
+        res.end();
+      });
+
+  } catch (error) {
+    console.error('ContrastReport stream setup error:', error);
+    sendEvent({ error: error.message || 'Failed to start stream' });
+    res.end();
   }
 });
 

@@ -64,7 +64,7 @@ Return ONLY valid JSON:
 Provide 2-3 close_matches and 2-3 from_other_languages.`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-haiku-4-5-20251001',
       max_tokens: 2000,
       system: withLanguage(PERSONALITY, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],

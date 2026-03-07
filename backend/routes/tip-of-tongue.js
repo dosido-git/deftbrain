@@ -117,7 +117,7 @@ Identify what they're thinking of. Return ONLY valid JSON:
 Return 3-5 matches, ranked by confidence (highest first). If you're genuinely unsure, include fewer matches but with honest confidence levels — don't pad with low-confidence guesses.`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-haiku-4-5-20251001',
       max_tokens: 3000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
@@ -188,7 +188,7 @@ Based on their feedback, refine the identification. Return ONLY valid JSON:
 Return 2-4 refined matches.`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-haiku-4-5-20251001',
       max_tokens: 2000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],

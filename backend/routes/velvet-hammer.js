@@ -163,7 +163,7 @@ IMPORTANT RULES:
 Return ONLY the JSON object. No markdown fences, no preamble, no explanation outside the JSON.`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-haiku-4-5-20251001',
       max_tokens: 4000,
       messages: [{ role: 'user', content: withLanguage(basePrompt, userLanguage) }],
     });
@@ -219,7 +219,7 @@ OUTPUT (JSON only):
 Return ONLY valid JSON. No markdown, no preamble.`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-haiku-4-5-20251001',
       max_tokens: 1500,
       messages: [{ role: 'user', content: withLanguage(basePrompt, userLanguage) }],
     });

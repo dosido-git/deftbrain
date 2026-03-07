@@ -85,7 +85,7 @@ Return ONLY valid JSON (no markdown, no preamble, no code fences):
 CRITICAL: Be specific to their activity. Do NOT give generic advice. Reference what they were actually doing.`, userLanguage);
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-haiku-4-5-20251001',
       max_tokens: 2000,
       messages: [{ role: 'user', content: prompt }]
     });
@@ -183,7 +183,7 @@ RULES:
 - The share_snippet should be playful and specific, not generic.`, userLanguage);
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-haiku-4-5-20251001',
       max_tokens: 2000,
       messages: [{ role: 'user', content: prompt }]
     });
@@ -246,7 +246,7 @@ Return ONLY valid JSON (no markdown, no preamble, no code fences):
 CRITICAL: Be specific to their activity and session. Generic advice is useless. Reference what they were actually doing.`, userLanguage);
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-haiku-4-5-20251001',
       max_tokens: 1000,
       messages: [{ role: 'user', content: prompt }]
     });

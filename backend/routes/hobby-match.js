@@ -64,7 +64,7 @@ Find me hobbies I've never considered. Return ONLY valid JSON:
 Generate 5-6 hobby recommendations. At least 2 should be things most people have never heard of.`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-haiku-4-5-20251001',
       max_tokens: 3000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],

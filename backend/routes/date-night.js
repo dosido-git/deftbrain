@@ -165,6 +165,8 @@ ${RESPONSE_SCHEMA}
 All costs in ${sym}. dress_vibe per stop + overall_dress_code. plan_b per stop AND overall.`;
 
       const parsed = await callClaudeWithRetry(prompt, {
+        model: 'claude-haiku-4-5-20251001',
+
         label: 'DateNightGenerate', max_tokens: 3000,
         system: withLanguage(`${SYSTEM_PROMPT}\n\nAll costs in ${sym}.`, userLanguage)
       });
@@ -193,6 +195,8 @@ ${buildDietaryBlock(dietary)}${buildPreferenceBlock(preferences)}${buildPartnerB
 Return ONLY valid JSON: ${RESPONSE_SCHEMA}`;
 
       const parsed = await callClaudeWithRetry(prompt, {
+        model: 'claude-haiku-4-5-20251001',
+
         label: 'DateNightRegenerate', max_tokens: 3000,
         system: withLanguage(`${SYSTEM_PROMPT}\n\nAll costs in ${sym}.`, userLanguage)
       });
@@ -227,6 +231,8 @@ Return ONLY valid JSON:
 }`;
 
       const parsed = await callClaudeWithRetry(prompt, {
+        model: 'claude-haiku-4-5-20251001',
+
         label: 'DateNightSwap', max_tokens: 1000,
         system: withLanguage(`${SYSTEM_PROMPT}\n\nAll costs in ${sym}.`, userLanguage)
       });
@@ -261,6 +267,8 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
       const parsed = await callClaudeWithRetry(prompt, {
+        model: 'claude-haiku-4-5-20251001',
+
         label: 'DateNightRate', max_tokens: 800,
         system: withLanguage('Date feedback analyst. Warm, encouraging. Return ONLY valid JSON.', userLanguage)
       });
@@ -303,6 +311,8 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
         const parsed = await callClaudeWithRetry(prompt, {
+          model: 'claude-haiku-4-5-20251001',
+
           label: 'DateNightSurprise', max_tokens: 500,
           system: withLanguage('Charming friend who creates excitement about mystery dates. Return ONLY valid JSON.', userLanguage)
         });
@@ -321,6 +331,8 @@ Return ONLY valid JSON:
 { "message": "The text", "tone": "Tone used" }`, userLanguage);
 
       const parsed = await callClaudeWithRetry(prompt, {
+        model: 'claude-haiku-4-5-20251001',
+
         label: 'DateNightShare', max_tokens: 500,
         system: withLanguage('Charming invite writer. Match tone to date type. Return ONLY valid JSON.', userLanguage)
       });
@@ -346,6 +358,8 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
       const parsed = await callClaudeWithRetry(prompt, {
+        model: 'claude-haiku-4-5-20251001',
+
         label: 'DateNightSimilar', max_tokens: 1000,
         system: withLanguage(`${SYSTEM_PROMPT}\n\nAll costs in ${sym}.`, userLanguage)
       });
@@ -387,6 +401,8 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
       const parsed = await callClaudeWithRetry(prompt, {
+        model: 'claude-haiku-4-5-20251001',
+
         label: 'DateNightAnniversary', max_tokens: 3500,
         system: withLanguage(`${SYSTEM_PROMPT}\n\nAll costs in ${sym}. Special anniversary — bring warmth.`, userLanguage)
       });
@@ -428,6 +444,8 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
       const parsed = await callClaudeWithRetry(prompt, {
+        model: 'claude-haiku-4-5-20251001',
+
         label: 'DateNightJar', max_tokens: 3000,
         system: withLanguage(`${SYSTEM_PROMPT}\n\nAll budgets in ${sym}. Be creative — surprise them.`, userLanguage)
       });
@@ -471,6 +489,8 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
       const parsed = await callClaudeWithRetry(prompt, {
+        model: 'claude-haiku-4-5-20251001',
+
         label: 'DateNightRutDetect', max_tokens: 1000,
         system: withLanguage('Relationship pattern analyst. Encouraging, not judgmental. Return ONLY valid JSON.', userLanguage)
       });
@@ -511,6 +531,8 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
       const parsed = await callClaudeWithRetry(prompt, {
+        model: 'claude-haiku-4-5-20251001',
+
         label: 'DateNightChecklist', max_tokens: 1000,
         system: withLanguage('Pre-date preparation expert. Practical + thoughtful. Return ONLY valid JSON.', userLanguage)
       });

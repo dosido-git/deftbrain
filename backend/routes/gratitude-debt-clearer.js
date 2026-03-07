@@ -183,6 +183,7 @@ Generate 2-3 message versions with different approaches. Return ONLY valid JSON.
 
     const wrappedPrompt = withLanguage(prompt, userLanguage);
     const parsed = await callClaudeWithRetry(wrappedPrompt, {
+      model: 'claude-haiku-4-5-20251001',
       label: 'GratitudeDebtClearer',
       max_tokens: 2500,
     });
@@ -240,6 +241,7 @@ RULES:
 - Return ONLY JSON.`, userLanguage);
 
     const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-haiku-4-5-20251001',
       label: 'GratitudeSpecificity',
       max_tokens: 800,
     });
@@ -307,6 +309,7 @@ OUTPUT (JSON only):
 Return ONLY valid JSON.`, userLanguage);
 
     const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-haiku-4-5-20251001',
       label: 'GratitudeFollowUp',
       max_tokens: 1500,
     });

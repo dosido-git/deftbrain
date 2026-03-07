@@ -164,7 +164,7 @@ Return ONLY valid JSON:
 Keep common_mistakes to 2-3 entries. Keep dont_confuse_with to 0-2 entries. Keep regional_variants to 0-3 entries.`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-haiku-4-5-20251001',
       max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
@@ -223,7 +223,7 @@ For each word, return a concise pronunciation guide. Return ONLY valid JSON:
 }`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-haiku-4-5-20251001',
       max_tokens: 3000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],

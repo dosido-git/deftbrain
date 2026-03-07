@@ -53,7 +53,7 @@ Respond ONLY with valid JSON:
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
     console.log(`[SixDegrees] Chain | A: "${thingA}" → B: "${thingB}"`);
-    const msg = await anthropic.messages.create({ model: 'claude-sonnet-4-20250514', max_tokens: 2000, messages: [{ role: 'user', content: prompt }] });
+    const msg = await anthropic.messages.create({ model: 'claude-haiku-4-5-20251001', max_tokens: 2000, messages: [{ role: 'user', content: prompt }] });
     res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
   } catch (e) { console.error('SixDegrees chain:', e); res.status(500).json({ error: e.message || 'Chain broke!' }); }
 });
@@ -75,7 +75,7 @@ Respond ONLY with valid JSON:
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
-    const msg = await anthropic.messages.create({ model: 'claude-sonnet-4-20250514', max_tokens: 2000, messages: [{ role: 'user', content: prompt }] });
+    const msg = await anthropic.messages.create({ model: 'claude-haiku-4-5-20251001', max_tokens: 2000, messages: [{ role: 'user', content: prompt }] });
     res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
   } catch (e) { console.error('Flip:', e); res.status(500).json({ error: "Couldn't flip." }); }
 });
@@ -98,7 +98,7 @@ Respond ONLY with valid JSON:
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
-    const msg = await anthropic.messages.create({ model: 'claude-sonnet-4-20250514', max_tokens: 800, messages: [{ role: 'user', content: prompt }] });
+    const msg = await anthropic.messages.create({ model: 'claude-haiku-4-5-20251001', max_tokens: 800, messages: [{ role: 'user', content: prompt }] });
     res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
   } catch (e) { console.error('Surprise:', e); res.status(500).json({ error: "Couldn't suggest." }); }
 });
@@ -119,7 +119,7 @@ Respond ONLY with valid JSON:
 {"questions":["Q1?","Q2?","Q3?"]}
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
-    const msg = await anthropic.messages.create({ model: 'claude-sonnet-4-20250514', max_tokens: 400, messages: [{ role: 'user', content: prompt }] });
+    const msg = await anthropic.messages.create({ model: 'claude-haiku-4-5-20251001', max_tokens: 400, messages: [{ role: 'user', content: prompt }] });
     res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
   } catch (e) { console.error('Profile-prompt:', e); res.status(500).json({ error: "Couldn't generate." }); }
 });
@@ -163,7 +163,7 @@ Respond ONLY with valid JSON:
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
     console.log(`[SixDegrees] Challenge | ${constraint} | A:"${thingA}" → B:"${thingB}"`);
-    const msg = await anthropic.messages.create({ model: 'claude-sonnet-4-20250514', max_tokens: 2000, messages: [{ role: 'user', content: prompt }] });
+    const msg = await anthropic.messages.create({ model: 'claude-haiku-4-5-20251001', max_tokens: 2000, messages: [{ role: 'user', content: prompt }] });
     res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
   } catch (e) { console.error('Challenge:', e); res.status(500).json({ error: 'Challenge failed.' }); }
 });
@@ -203,7 +203,7 @@ Respond ONLY with valid JSON:
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
     console.log(`[SixDegrees] WhatIf | Removed step ${removedStep.step}`);
-    const msg = await anthropic.messages.create({ model: 'claude-sonnet-4-20250514', max_tokens: 2000, messages: [{ role: 'user', content: prompt }] });
+    const msg = await anthropic.messages.create({ model: 'claude-haiku-4-5-20251001', max_tokens: 2000, messages: [{ role: 'user', content: prompt }] });
     res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
   } catch (e) { console.error('WhatIf:', e); res.status(500).json({ error: "Couldn't explore what-if." }); }
 });
@@ -253,7 +253,7 @@ Respond ONLY with valid JSON:
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
     console.log(`[SixDegrees] Story | ${(chainHistory || []).length} chains | ${allNodes.size} nodes`);
-    const msg = await anthropic.messages.create({ model: 'claude-sonnet-4-20250514', max_tokens: 2500, messages: [{ role: 'user', content: prompt }] });
+    const msg = await anthropic.messages.create({ model: 'claude-haiku-4-5-20251001', max_tokens: 2500, messages: [{ role: 'user', content: prompt }] });
     res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
   } catch (e) { console.error('Story:', e); res.status(500).json({ error: "Couldn't write your story." }); }
 });
@@ -280,7 +280,7 @@ Respond ONLY with valid JSON:
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
-    const msg = await anthropic.messages.create({ model: 'claude-sonnet-4-20250514', max_tokens: 1200, messages: [{ role: 'user', content: prompt }] });
+    const msg = await anthropic.messages.create({ model: 'claude-haiku-4-5-20251001', max_tokens: 1200, messages: [{ role: 'user', content: prompt }] });
     res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
   } catch (e) { console.error('Tag:', e); res.status(500).json({ error: "Couldn't tag." }); }
 });
@@ -331,7 +331,7 @@ Respond with valid JSON:
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
     console.log(`[SixDegrees] ChainBetween | ${nameA} + ${nameB} | mode: ${mode}`);
-    const msg = await anthropic.messages.create({ model: 'claude-sonnet-4-20250514', max_tokens: 2500, messages: [{ role: 'user', content: prompt }] });
+    const msg = await anthropic.messages.create({ model: 'claude-haiku-4-5-20251001', max_tokens: 2500, messages: [{ role: 'user', content: prompt }] });
     res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
   } catch (e) { console.error('ChainBetween:', e); res.status(500).json({ error: "Couldn't find the connection." }); }
 });

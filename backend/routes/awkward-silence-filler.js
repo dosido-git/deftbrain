@@ -15,7 +15,7 @@ router.post('/awkward-silence-filler', async (req, res) => {
         const { context, relationship } = req.body;
 
         const message = await anthropic.messages.create({
-          model: 'claude-sonnet-4-20250514',
+          model: 'claude-haiku-4-5-20251001',
           max_tokens: 400,
           system: withLanguage(`You are an emergency conversation rescue bot. Give ONE natural conversation line for an awkward silence, then show exactly how the next 2 exchanges will flow. Not cheesy, not forced — something a real person would actually say.`, userLanguage),
           messages: [{
@@ -110,7 +110,7 @@ Generate conversation rescue material. Return ONLY valid JSON:
 Generate 5-6 conversation chains with a mix of risk levels. At least 2 should be low-risk.`;
 
         const message = await anthropic.messages.create({
-          model: 'claude-sonnet-4-20250514',
+          model: 'claude-haiku-4-5-20251001',
           max_tokens: 2500,
           system: withLanguage(systemPrompt, userLanguage),
           messages: [{ role: 'user', content: userPrompt }],

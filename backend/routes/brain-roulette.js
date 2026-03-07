@@ -77,7 +77,7 @@ CRITICAL: Return ONLY valid JSON. No preamble, no markdown fences.`;
     console.log(`[BrainRoulette] Spin | Interests: ${activeInterests.length ? activeInterests.join(', ') : 'SURPRISE'} | Depth: ${depth} | Seen: ${(seenTopics || []).length}`);
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-haiku-4-5-20251001',
       max_tokens: 1500,
       messages: [{ role: 'user', content: prompt }]
     });
@@ -124,7 +124,7 @@ CRITICAL: Return ONLY valid JSON. No preamble, no markdown fences.`;
     console.log(`[BrainRoulette] Go Deeper: "${threadLabel}" (from "${originalTitle}")`);
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-haiku-4-5-20251001',
       max_tokens: 1200,
       messages: [{ role: 'user', content: prompt }]
     });

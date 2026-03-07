@@ -164,6 +164,8 @@ Generate one transformation per accomplishment. Generate 2-4 metrics questions (
     console.log(`[BragSheetBuilder] Accomplishments: ${accomplishments.length}, Industry: ${industry}, Level: ${level}, Tone: ${tone || 'balanced'}, Purposes: ${purposes?.join(',')}`);
 
     const parsed = await callClaudeWithRetry(userPrompt, {
+      model: 'claude-haiku-4-5-20251001',
+
       label: 'BragSheetBuilder',
       max_tokens: 6000,
       system: withLanguage(systemPrompt, userLanguage),
@@ -264,6 +266,8 @@ Return ONLY valid JSON:
     console.log(`[BragSheetRefine] Answers: ${metricsAnswers.length}, Transformations: ${originalTransformations.length}`);
 
     const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-haiku-4-5-20251001',
+
       label: 'BragSheetRefine',
       max_tokens: 4000,
       system: withLanguage('You are an expert career coach upgrading accomplishment statements with real metrics. Return ONLY valid JSON. No markdown, no preamble.', userLanguage),
@@ -327,6 +331,8 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-haiku-4-5-20251001',
+
       label: 'BragSheetTweak',
       max_tokens: 1000,
       system: withLanguage('You are a professional accomplishment translator. Return ONLY valid JSON. No markdown.', userLanguage),
@@ -403,6 +409,8 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-haiku-4-5-20251001',
+
       label: 'BragSheetAddSingle',
       max_tokens: 1500,
       system: withLanguage('You are an expert accomplishment translator. Return ONLY valid JSON. No markdown.', userLanguage),
@@ -459,6 +467,8 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-haiku-4-5-20251001',
+
       label: 'BragSheetStar',
       max_tokens: 1500,
       system: withLanguage('You are an expert interview coach. Return ONLY valid JSON. No markdown.', userLanguage),
@@ -546,6 +556,8 @@ Return ONLY valid JSON:
 Generate 3-4 questions per category. Make them SPECIFIC to this person's role, industry, and level. A nurse gets different questions than a software engineer. A student gets different questions than a VP.`, userLanguage);
 
     const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-haiku-4-5-20251001',
+
       label: 'BragSheetExcavate',
       max_tokens: 4000,
       system: withLanguage('You are a career coach who specializes in helping people uncover hidden accomplishments. Return ONLY valid JSON. No markdown.', userLanguage),
@@ -646,6 +658,8 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-haiku-4-5-20251001',
+
       label: 'BragSheetTailor',
       max_tokens: 5000,
       system: withLanguage('You are an expert resume strategist and ATS optimization specialist. Return ONLY valid JSON. No markdown.', userLanguage),
@@ -722,6 +736,8 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-haiku-4-5-20251001',
+
       label: 'BragSheetRadar',
       max_tokens: 3000,
       system: withLanguage('You are a career assessment expert. Be honest — a 60 is not a bad score, it means there is room to improve. Return ONLY valid JSON. No markdown.', userLanguage),
@@ -806,6 +822,8 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-haiku-4-5-20251001',
+
       label: 'BragSheetInterviewMatrix',
       max_tokens: 5000,
       system: withLanguage('You are a senior interview coach at a top career consulting firm. Return ONLY valid JSON. No markdown.', userLanguage),
@@ -890,6 +908,8 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-haiku-4-5-20251001',
+
       label: 'BragSheetVoiceMatch',
       max_tokens: 5000,
       system: withLanguage('You are a ghostwriter who specializes in matching someone\'s natural voice while keeping professional accomplishment statements powerful. Return ONLY valid JSON. No markdown.', userLanguage),

@@ -206,7 +206,7 @@ RULES:
 10. Capsule suggestions should fill genuine gaps`, req);
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-haiku-4-5-20251001',
       max_tokens: 2000,
       messages: [{ role: 'user', content: prompt }]
     });
@@ -282,7 +282,7 @@ Return ONLY valid JSON:
 ONLY use items from the wardrobe.`, req);
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-haiku-4-5-20251001',
       max_tokens: 800,
       messages: [{ role: 'user', content: prompt }]
     });
@@ -383,7 +383,7 @@ RULES:
 6. Create one outfit plan entry per day`, req);
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-haiku-4-5-20251001',
       max_tokens: 2000,
       messages: [{ role: 'user', content: prompt }]
     });

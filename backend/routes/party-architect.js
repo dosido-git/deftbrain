@@ -96,7 +96,7 @@ Design the event. Return ONLY valid JSON:
 Generate 8-12 timeline entries and 2-3 mixing strategies.`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-haiku-4-5-20251001',
       max_tokens: 3000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],

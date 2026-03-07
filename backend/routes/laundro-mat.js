@@ -96,7 +96,7 @@ Only include care_symbols if a care label photo was provided. separate_these and
       });
 
       const message = await anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-haiku-4-5-20251001',
         max_tokens: 2500,
         system: withLanguage(SYSTEM_PROMPT, req.body.userLanguage),
         messages: [{ role: 'user', content: contentBlocks }]
@@ -129,7 +129,7 @@ Only include care_symbols if a care label photo was provided. separate_these and
       }
 
       const message = await anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-haiku-4-5-20251001',
         max_tokens: 1500,
         system: withLanguage(SYSTEM_PROMPT, req.body.userLanguage),
         messages: [{
@@ -222,7 +222,7 @@ Return JSON:
       });
 
       const message = await anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-haiku-4-5-20251001',
         max_tokens: 2000,
         system: withLanguage(SYSTEM_PROMPT, req.body.userLanguage),
         messages: [{ role: 'user', content: contentBlocks }]

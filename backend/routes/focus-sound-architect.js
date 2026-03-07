@@ -91,7 +91,7 @@ CRITICAL:
 - Keep it practical — this will be synthesized and played immediately`, userLanguage);
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-haiku-4-5-20251001',
       max_tokens: 2000,
       messages: [{ role: 'user', content: prompt }]
     });
@@ -190,7 +190,7 @@ CRITICAL:
 - Be specific in "why" — reference the user's actual task and preferences`, userLanguage);
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-haiku-4-5-20251001',
       max_tokens: 3000,
       messages: [{ role: 'user', content: prompt }]
     });
@@ -276,7 +276,7 @@ CRITICAL:
 - Keep the total soundscape balanced`, userLanguage);
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-haiku-4-5-20251001',
       max_tokens: 1000,
       messages: [{ role: 'user', content: prompt }]
     });

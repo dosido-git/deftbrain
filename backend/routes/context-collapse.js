@@ -105,7 +105,7 @@ Analyze how each audience will interpret this. Return ONLY valid JSON:
 Generate 1-2 rewrites that meaningfully improve the message for the most at-risk audiences while preserving the sender's intent and voice.`;
 
     const message_resp = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-haiku-4-5-20251001',
       max_tokens: 3500,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],

@@ -121,7 +121,7 @@ Return ONLY valid JSON matching this schema:
 ${RESPONSE_SCHEMA}`;
 
       const message = await anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-haiku-4-5-20251001',
         max_tokens: 3000,
         system: withLanguage(SYSTEM_PROMPT, req.body.userLanguage),
         messages: [{ role: 'user', content: prompt }]
@@ -168,7 +168,7 @@ Return ONLY valid JSON matching this schema:
 ${RESPONSE_SCHEMA}`;
 
       const message = await anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-haiku-4-5-20251001',
         max_tokens: 3000,
         system: withLanguage(SYSTEM_PROMPT, req.body.userLanguage),
         messages: [{ role: 'user', content: prompt }]
@@ -244,7 +244,7 @@ Return ONLY valid JSON with the replacement stop and updated transit:
 }`;
 
       const message = await anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-haiku-4-5-20251001',
         max_tokens: 1500,
         system: withLanguage(SYSTEM_PROMPT, req.body.userLanguage),
         messages: [{ role: 'user', content: prompt }]

@@ -80,7 +80,7 @@ Return ONLY valid JSON:
 Provide 3-4 perfect_picks. Each should feel genuinely different — not 4 variations of the same idea.`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-haiku-4-5-20251001',
       max_tokens: 3000,
       system: withLanguage(PERSONALITY, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],

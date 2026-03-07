@@ -59,7 +59,7 @@ Write the alternate-path simulation. Return ONLY valid JSON:
 Generate ${timeframe === 'five_years' ? '4-5' : timeframe === 'one_month' ? '2-3' : '3-4'} scenarios across the timeframe.`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-haiku-4-5-20251001',
       max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],

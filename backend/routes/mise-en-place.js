@@ -147,7 +147,7 @@ Return ONLY the JSON object. No markdown fences, no preamble.`;
     contentBlocks.push({ type: 'text', text: withLanguage(basePrompt, userLanguage) });
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-haiku-4-5-20251001',
       max_tokens: 4500,
       messages: [{ role: 'user', content: contentBlocks }],
     });
