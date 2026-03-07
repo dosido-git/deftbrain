@@ -17,11 +17,10 @@ template:
     id: "",
     title: "",
     tagline: "",
-    tags: [],
-    icon: "",
     categories: [],
+    icon: "",
+    tags: [],
     description: "",
-
     guide: {
       overview: "",
       howToUse: [

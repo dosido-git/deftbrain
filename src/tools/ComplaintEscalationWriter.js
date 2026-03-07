@@ -197,6 +197,12 @@ const ComplaintEscalationWriter = () => {
     return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   };
 
+  const getStreamStage = (text) => {
+    if (text.includes('"timeline"') || text.includes('"quick_tips"')) return 'Finishing';
+    if (text.includes('"escalation_stages"') || text.includes('"stage_1_direct"')) return 'Building campaign';
+    return 'Researching';
+  };
+
   // ── Handlers ──
   const handleSubmit = async () => {
     if (!company.trim() || !issue.trim()) { setError('Please provide company name and issue description'); return; }

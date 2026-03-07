@@ -76,6 +76,11 @@ const SAMPLE_TEXTS = [
 ];
 
 // ════════════════════════════════════════════════════════════
+// STREAMING PROGRESS
+// ════════════════════════════════════════════════════════════
+
+
+// ════════════════════════════════════════════════════════════
 // MAIN COMPONENT
 // ════════════════════════════════════════════════════════════
 
@@ -215,7 +220,6 @@ const PlainTalk = () => {
       });
       setResult(data);
       setActiveTab('overview');
-      // Auto-expand high-importance sections
       const autoExpand = {};
       (data.sections || []).forEach(s => { if (s.importance === 'high') autoExpand[s.id] = true; });
       setExpandedSections(autoExpand);
@@ -563,8 +567,27 @@ const PlainTalk = () => {
                   ? `${c.btnPrimary} shadow-indigo-200 dark:shadow-indigo-900/40`
                   : isDark ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed' : 'bg-stone-200 text-stone-400 cursor-not-allowed'
               }`}>
-              {loading ? '⏳ Analyzing your text…' : '🔍 Analyze & Translate'}
+              {loading
+                ? <><span className="animate-spin inline-block">⏳</span> Analyzing your text…</>
+                : '🔍 Analyze & Translate'}
             </button>
+
+            {/* Loading skeleton */}
+            {loading && (
+              <div className="space-y-3 pt-1">
+                {[1, 0.7, 0.85, 0.6].map((w, i) => (
+                  <div key={i} className={`h-4 rounded-full animate-pulse ${isDark ? 'bg-zinc-700' : 'bg-stone-200'}`}
+                    style={{ width: `${w * 100}%` }} />
+                ))}
+                <div className={`h-24 rounded-2xl animate-pulse mt-2 ${isDark ? 'bg-zinc-700' : 'bg-stone-200'}`} />
+                <div className="flex gap-2">
+                  {[0.4, 0.3, 0.3].map((w, i) => (
+                    <div key={i} className={`h-8 rounded-xl animate-pulse ${isDark ? 'bg-zinc-700' : 'bg-stone-200'}`}
+                      style={{ width: `${w * 100}%` }} />
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Compare entry */}
             <button onClick={() => { setResult({ _compareOnly: true }); setActiveTab('compare'); }}
@@ -602,10 +625,10 @@ const PlainTalk = () => {
                 <CopyBtn content={buildFullText()} label="Copy All" />
                 <PrintBtn content={buildFullText()} title="PlainTalk Analysis" label="Print" />
                 <button onClick={handleReset}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${
-                    isDark ? 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-700' : 'text-stone-500 hover:text-stone-700 hover:bg-stone-100'
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors ${
+                    isDark ? 'border-zinc-600 text-zinc-300 hover:border-indigo-500 hover:text-indigo-300' : 'border-stone-300 text-stone-600 hover:border-indigo-400 hover:text-indigo-600'
                   }`}>
-                  ✕ New Text
+                  <span>🔍</span> New Text
                 </button>
               </div>
             </div>
@@ -1363,6 +1386,12 @@ const PlainTalk = () => {
                 <p className="text-sm">{error}</p>
               </div>
             )}
+
+            {/* ─── ANALYZE NEW TEXT ─── */}
+            <button onClick={handleReset}
+              className={`w-full py-4 rounded-2xl font-bold text-base flex items-center justify-center gap-2 transition-all ${c.btnPrimary}`}>
+              <span>🔍</span> Analyze New Text
+            </button>
           </div>
         )}
       </div>

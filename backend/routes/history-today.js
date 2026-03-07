@@ -88,6 +88,7 @@ Return ONLY valid JSON:
 
     const parsed = await callClaudeWithRetry(prompt, {
       model: 'claude-haiku-4-5-20251001',
+//    model: 'claude-sonnet-4-20250514',
 
       label: 'HistoryToday',
       max_tokens: 6000,

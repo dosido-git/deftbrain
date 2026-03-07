@@ -4,6 +4,7 @@ import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { CopyBtn } from '../components/ActionButtons';
 
+
 // ════════════════════════════════════════════════════════════
 // THEME — Navy & Gold palette
 // ════════════════════════════════════════════════════════════
@@ -173,6 +174,8 @@ const VelvetHammer = () => {
   const [coolingSeconds, setCoolingSeconds] = useState(60);
   const [resultsRevealed, setResultsRevealed] = useState(false);
   const [pendingResults, setPendingResults] = useState(null);
+
+
 
   // ══════════════════════════════════════════
   // COOLING TIMER
@@ -498,23 +501,25 @@ const VelvetHammer = () => {
   // RENDER: Transform Button
   // ══════════════════════════════════════════
   const renderTransformButton = () => (
-    <div className="flex gap-3">
-      <button onClick={handleTransform}
-        disabled={loading || !harshMessage.trim()}
-        className={`flex-1 py-4 px-6 rounded-xl text-base font-bold flex items-center justify-center gap-3 transition-all
-          ${loading || !harshMessage.trim() ? c.btnDis : c.btn}`}>
-        {loading ? (
-          <><span className="animate-spin inline-block">⏳</span> Translating your rage into eloquence...</>
-        ) : (
-          <><span>✨</span> Transform Message</>
-        )}
-      </button>
-      {results && (
-        <button onClick={handleReset} className={`${c.btnOutline} px-4 rounded-xl`} title="Start over">
-          <span className="text-lg">🔄</span>
+    <>
+      <div className="flex gap-3">
+        <button onClick={handleTransform}
+          disabled={loading || !harshMessage.trim()}
+          className={`flex-1 py-4 px-6 rounded-xl text-base font-bold flex items-center justify-center gap-3 transition-all
+            ${loading || !harshMessage.trim() ? c.btnDis : c.btn}`}>
+          {loading ? (
+            <><span className="animate-spin inline-block">⏳</span> Translating your rage into eloquence...</>
+          ) : (
+            <><span>✨</span> Transform Message</>
+          )}
         </button>
-      )}
-    </div>
+        {results && (
+          <button onClick={handleReset} className={`${c.btnOutline} px-4 rounded-xl`} title="Start over">
+            <span className="text-lg">🔄</span>
+          </button>
+        )}
+      </div>
+    </>
   );
 
   // ══════════════════════════════════════════

@@ -350,19 +350,14 @@ const RentersDepositSaver = () => {
 
     try {
       const data = await callToolEndpoint('renters-deposit-saver', {
-        address: address.trim(),
-        unit: unit.trim(),
-        landlordName: landlordName.trim(),
-        landlordEmail: landlordEmail.trim(),
-        moveInDate,
-        location: locationString,
-        depositAmount: depositAmount.trim(),
-        checklist: checklistData,
+        address: address.trim(), unit: unit.trim(),
+        landlordName: landlordName.trim(), landlordEmail: landlordEmail.trim(),
+        moveInDate, location: locationString,
+        depositAmount: depositAmount.trim(), checklist: checklistData,
       });
       setResults(data);
       setStep(3);
     } catch (err) {
-      console.error('[RentersDepositSaver] Error:', err);
       setError(err.message || 'Failed to generate report. Please try again.');
     }
   };
@@ -986,7 +981,7 @@ pre{white-space:pre-wrap;word-wrap:break-word;font-family:inherit;margin:0}
             >
               {loading ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span className="animate-spin inline-block">⏳</span>
                   Generating Report…
                 </>
               ) : (

@@ -10,6 +10,7 @@ const ToolHead = ({ toolData }) => {
     title:         toolData.title,
     description:   toolData.description,
     canonicalPath: `/${toolData.id}`,
+    toolId:        toolData.id,
   });
   return null;
 };

@@ -86,6 +86,7 @@ const QUALITY_OPTIONS = [
 
 const VERSION_ICONS = { narrative: '📖', structured: '📋', concise: '⚡' };
 
+
 // ════════════════════════════════════════════════════════════
 // MAIN COMPONENT
 // ════════════════════════════════════════════════════════════

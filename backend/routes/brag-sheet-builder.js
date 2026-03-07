@@ -165,6 +165,7 @@ Generate one transformation per accomplishment. Generate 2-4 metrics questions (
 
     const parsed = await callClaudeWithRetry(userPrompt, {
       model: 'claude-haiku-4-5-20251001',
+//    model: 'claude-sonnet-4-20250514',
 
       label: 'BragSheetBuilder',
       max_tokens: 6000,
@@ -266,7 +267,8 @@ Return ONLY valid JSON:
     console.log(`[BragSheetRefine] Answers: ${metricsAnswers.length}, Transformations: ${originalTransformations.length}`);
 
     const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-haiku-4-5-20251001',
+      model: 'claude-
+      u-4-5-20251001',
 
       label: 'BragSheetRefine',
       max_tokens: 4000,
@@ -331,7 +333,8 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-haiku-4-5-20251001',
+      model: 'claude-sonnet-4-20250514',
+//      model: 'claude-haiku-4-5-20251001',
 
       label: 'BragSheetTweak',
       max_tokens: 1000,
