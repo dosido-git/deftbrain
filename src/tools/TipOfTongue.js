@@ -168,12 +168,6 @@ const TipOfTongue = () => {
     return lines.join('\n');
   }, [results, description, currentCat]);
 
-  const Pill = ({ active, onClick, children, className = '' }) => (
-    <button onClick={onClick} className={'px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all ' + (active ? c.pillActive : c.pillInactive) + ' ' + className}>
-      {active && <span className="mr-1">✓</span>}{children}
-    </button>
-  );
-
   // ══════════════════════════════════════════
   // INPUT
   // ══════════════════════════════════════════

@@ -485,8 +485,6 @@ const BillRescue = () => {
   // ── Bill Calendar data ──
   const calendarData = useMemo(() => {
     const now = new Date();
-    const currentMonth = now.getMonth();
-    const currentYear = now.getFullYear();
     const items = [];
 
     // From saved plans

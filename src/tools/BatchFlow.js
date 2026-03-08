@@ -296,7 +296,6 @@ const BatchFlow = () => {
 
   // ─── Shared components ───
   const Pill = ({ options, value, setter }) => <div className="flex flex-wrap gap-1.5">{options.map(o => <button key={o.v} onClick={() => setter(o.v === value ? '' : o.v)} className={`px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all ${c.chip(value === o.v)}`}>{o.l}{o.d && <span className={`block text-xs font-normal ${c.tm}`}>{o.d}</span>}</button>)}</div>;
-  const Section = ({ id, title, emoji, children, defaultOpen, badge }) => { const isOpen = expanded[id] !== undefined ? expanded[id] : defaultOpen; return <div className={`${c.card} rounded-xl shadow-lg p-5`}><button onClick={() => toggleExpand(id)} className={`w-full flex items-center justify-between ${c.text}`}><h3 className="font-bold text-sm flex items-center gap-2"><span>{emoji}</span> {title}{badge && <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${c.ok} border`}>{badge}</span>}</h3><span className="text-xs">{isOpen ? '▲' : '▼'}</span></button>{isOpen && <div className="mt-4">{children}</div>}</div>; };
 
   // ─── Heatmap Component ───
   const Heatmap = ({ data }) => {

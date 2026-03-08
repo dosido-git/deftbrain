@@ -599,7 +599,6 @@ const RoommateCourt = () => {
     const renderFairnessBar = (effortTotals) => {
       if (!effortTotals) return null;
       const names = Object.keys(effortTotals);
-      const maxEffort = Math.max(...Object.values(effortTotals), 1);
       const totalEffort = Object.values(effortTotals).reduce((s, v) => s + v, 0) || 1;
 
       return (

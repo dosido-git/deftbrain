@@ -153,14 +153,6 @@ const GentlePushGenerator = () => {
     }
     return streak;
   })();
-  const longestStreak = (() => {
-    let max = 0; let cur = 0;
-    for (const p of pushLog) {
-      if (p.attempted) { cur++; if (cur > max) max = cur; } else cur = 0;
-    }
-    return max;
-  })();
-
   // Domain badges (Bronze 5, Silver 15, Gold 30)
   const domainBadges = (() => {
     const counts = {};

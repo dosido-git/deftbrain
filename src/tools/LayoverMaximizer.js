@@ -46,11 +46,6 @@ function saveStore(key, items, max) {
   try { localStorage.setItem(key, JSON.stringify(items.slice(0, max))); } catch {}
 }
 
-const CROSS_REFS = [
-  { id: 'DateNight', icon: '🌙', label: 'Plan a date in the layover city' },
-  { id: 'FridgeAlchemy', icon: '🧪', label: 'Find food when options are limited' },
-];
-
 // ════════════════════════════════════════════════════════════
 // SECTION COMPONENT
 // ════════════════════════════════════════════════════════════

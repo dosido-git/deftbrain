@@ -220,7 +220,6 @@ const CrisisPrioritizer = () => {
   const filledTasks = tasks.filter(t => t.text.trim());
   const hoursOpts = timeframe === 'right_now' ? HOURS_NOW : HOURS_WEEK;
   const hasPendingFollowUp = lastSessionPending && !results;
-  const hasRollingPlan = rollingPlan && timeframe === 'few_weeks';
 
   // ─── Dashboard stats (computed frontend-side) ───
   const dashStats = useMemo(() => {
@@ -427,7 +426,6 @@ const CrisisPrioritizer = () => {
   const handleRollingUpdate = async () => {
     if (!rollingPlan) return;
     setRollingLoading(true);
-    const completedItems = Object.keys(checked).filter(k => checked[k] && k.startsWith('mw')).length;
     const completedList = [];
     (rollingPlan.multi_week_plan || []).forEach((w, wi) => {
       (w.must_dos || []).forEach((t, ti) => { if (checked[`mw${wi}-${ti}`]) completedList.push(t); });

@@ -402,12 +402,6 @@ const SENSITIVITIES = [
   { id: 'needLowBass', label: 'Need deep/low bass' },
 ];
 
-const FEEDBACK_OPTIONS = [
-  { id: 'too_busy', emoji: '🔊', label: 'Too busy' },
-  { id: 'just_right', emoji: '✅', label: 'Just right' },
-  { id: 'too_sparse', emoji: '🔈', label: 'Too sparse' },
-];
-
 const SMART_FEEDBACK_OPTIONS = [
   { id: 'too_busy', emoji: '🔊', label: 'Too busy' },
   { id: 'too_sparse', emoji: '🔈', label: 'Too sparse' },

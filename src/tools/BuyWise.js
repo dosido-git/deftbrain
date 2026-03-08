@@ -50,7 +50,6 @@ const CALENDAR_CATEGORIES = [
   'Clothing & shoes', 'Outdoor gear', 'Power tools', 'Gaming', 'Cameras', 'Cars',
 ];
 
-const MONTH_COLORS = { GREAT: 'emerald', GOOD: 'blue', AVERAGE: 'zinc', BAD: 'red' };
 
 const CROSS_REFS = [
   { id: 'FakeReviewDetective', icon: '🔍', label: 'Check reviews with Fake Review Detective' },
@@ -482,15 +481,6 @@ const BuyWise = () => {
   }, [results, product, price, currency]);
 
   // ── Reset ──
-  const handleReset = useCallback(() => {
-    setProduct(''); setPrice(''); setUrgency('flexible');
-    setIsImpulse(false); setIsGift(false); setGiftRecipient('');
-    setComparisons([{ product: '', price: '' }]);
-    setShowCompare(false); setPriority('budget'); setContext('');
-    setResults(null); setError(''); setFollowups([]);
-    setView('form');
-  }, []);
-
   // ── Re-research from history ──
   const reResearch = useCallback((entry) => {
     setProduct(entry.product);

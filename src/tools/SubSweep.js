@@ -113,11 +113,6 @@ function newTrial(overrides = {}) {
   };
 }
 
-const CROSS_REFS = [
-  { id: 'BillRescue', icon: '🧾', label: 'Fight a specific bill' },
-  { id: 'BuyWise', icon: '🛒', label: 'Evaluate a purchase before subscribing' },
-];
-
 // ════════════════════════════════════════════════════════════
 // COLLAPSIBLE SECTION
 // ════════════════════════════════════════════════════════════

@@ -32,7 +32,6 @@ const MoneyDiplomat = () => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { theme } = useTheme();
   const isDark = theme === 'dark';
-  const toolData = getToolById('MoneyDiplomat');
 
   // ─── State: Core ───
   const [activeType, setActiveType] = useState(null);

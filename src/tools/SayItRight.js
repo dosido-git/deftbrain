@@ -484,7 +484,6 @@ const SayItRight = () => {
   // ════════════════════════════════════════════════════════════
   const renderHistory = () => {
     if (history.length === 0) return null;
-    const formatDate = (iso) => { try { const d = new Date(iso); const diff = Math.floor((new Date() - d) / 86400000); return diff === 0 ? 'Today' : diff === 1 ? 'Yesterday' : diff < 7 ? diff + 'd ago' : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); } catch { return ''; } };
     return (
       <div className={'mt-6 p-4 rounded-2xl border ' + c.histBg}>
         <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-left">

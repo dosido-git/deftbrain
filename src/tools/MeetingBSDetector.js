@@ -15,7 +15,6 @@ const MESSAGE_TYPES = [
   { value: 'cancel_recurring', label: 'Propose cancelling recurring', icon: '☠️' },
 ];
 
-const ROLE_OPTIONS = ['I\'m the organizer', 'Attendee (peer)', 'Attendee (report to organizer)', 'Optional attendee'];
 
 const FREQUENCY_OPTIONS = ['Daily', 'Weekly', 'Biweekly', 'Monthly', 'Quarterly'];
 

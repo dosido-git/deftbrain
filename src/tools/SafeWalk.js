@@ -958,7 +958,6 @@ const SafeWalk = () => {
   // RENDER: WALKING TAB
   // ══════════════════════════════════════════
   const renderWalkingTab = () => {
-    const isActive = walkTimer?.running;
     const progress = walkTimer ? (walkTimer.totalSec - walkTimer.remainingSec) / walkTimer.totalSec : 0;
 
     return (

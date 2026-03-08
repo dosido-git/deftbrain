@@ -230,7 +230,6 @@ const DopamineMenuBuilder = () => {
     setShowCheckin(false); setCheckinResult(null); setJustDoResult(null);
     setSurpriseActivity(null); setSurpriseLock(null); setSurpriseRemaining(null);
   };
-  const fullReset = () => { reset(); setSessionSuggestions([]); setMood(''); setEnvironment(''); };
 
   const formatMs = (ms) => { if (!ms || ms <= 0) return '0:00'; const m = Math.floor(ms / 60000); const s = Math.floor((ms % 60000) / 1000); return `${m}:${String(s).padStart(2, '0')}`; };
 

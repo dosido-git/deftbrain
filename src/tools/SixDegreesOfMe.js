@@ -203,9 +203,6 @@ const SixDegreesOfMe = () => {
     return n;
   }, [profile]);
 
-  const profileFilledCategories = useMemo(() =>
-    PROFILE_CATEGORIES.filter(cat => profile[cat.id]?.length > 0).length, [profile]);
-
   const addProfileItem = (catId, value, target) => {
     const v = value.trim();
     if (!v) return;

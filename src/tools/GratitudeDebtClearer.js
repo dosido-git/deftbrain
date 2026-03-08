@@ -537,21 +537,6 @@ pre{white-space:pre-wrap;word-wrap:break-word;font-family:inherit;margin:0}
     w.onload = () => { w.focus(); w.print(); };
   };
 
-  const printAll = () => {
-    if (!results?.thank_you_messages) return;
-    const combined = results.thank_you_messages
-      .map((m, i) => `── ${m.version} (${m.tone}, ${m.length} words) ──\n\n${m.message_text}\n\nWhy this works: ${m.why_this_works}\nBest for: ${m.best_for}`)
-      .join('\n\n────────────────────────────────\n\n');
-    const extras = [];
-    if (results.delivery_suggestions) {
-      extras.push(`\n── Delivery Suggestions ──\nMethod: ${results.delivery_suggestions.method}\nTiming: ${results.delivery_suggestions.timing}${results.delivery_suggestions.additional_gesture ? '\nBonus idea: ' + results.delivery_suggestions.additional_gesture : ''}`);
-    }
-    if (results.personalization_tips?.length) {
-      extras.push(`\n── Personalization Tips ──\n${results.personalization_tips.map(t => '• ' + t).join('\n')}`);
-    }
-    printSection(`Thank You Messages for ${recipientName}`, combined + extras.join('\n'));
-  };
-
   const buildAllText = () => {
     if (!results?.thank_you_messages) return '';
     const combined = results.thank_you_messages

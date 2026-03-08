@@ -178,7 +178,6 @@ const LaundroMat = () => {
   const [notifPermission, setNotifPermission] = useState(typeof Notification !== 'undefined' ? Notification.permission : 'denied');
   const [showNotifBanner, setShowNotifBanner] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
-  const intervalRefs = useRef({});
   const alertFiredRefs = useRef({});
   const doneFiredRefs = useRef({});
   const repeatAlertRefs = useRef({});

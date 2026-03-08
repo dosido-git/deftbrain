@@ -76,7 +76,6 @@ const PetWeirdnessDecoder = () => {
   const mediaRecorderRef = useRef(null);
   const videoChunksRef = useRef([]);
   const recordingTimerRef = useRef(null);
-  const videoInputRef = useRef(null);
 
   // Persist
   useEffect(() => { save('petProfiles', petProfiles); }, [petProfiles]);

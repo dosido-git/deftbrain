@@ -952,8 +952,6 @@ const BrainRoulette = () => {
             <svg viewBox="0 0 500 260" className="w-full h-full">
               {/* Edges */}
               {graphData.edges.slice(0, 40).map((edge, i) => {
-                const n1 = graphData.nodes[edge.from];
-                const n2 = graphData.nodes[edge.to];
                 const x1 = 30 + (edge.from % 8) * 58; const y1 = 30 + Math.floor(edge.from / 8) * 55;
                 const x2 = 30 + (edge.to % 8) * 58; const y2 = 30 + Math.floor(edge.to / 8) * 55;
                 return <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke={c.d ? '#52525b' : '#e2e8f0'} strokeWidth="1" opacity="0.5" />;
