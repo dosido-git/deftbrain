@@ -146,6 +146,15 @@ app.get('/api/endpoints', (req, res) => {
 if (IS_PRODUCTION) {
   app.use(express.static(path.join(__dirname, '..', 'build')));
   app.get('*', (req, res) => {
+    // Strip leading slash and trailing slash, then look up canonical ID
+    const slug = req.path.replace(/^\/|\/$/g, '');
+    const canonical = slug ? toolIdMap[slug.toLowerCase()] : null;
+    if (canonical) {
+      const prerendered = path.join(__dirname, '..', 'build', canonical, 'index.html');
+      if (fs.existsSync(prerendered)) {
+        return res.sendFile(prerendered);
+      }
+    }
     res.sendFile(path.join(__dirname, '..', 'build', 'index.html'));
   });
 }
