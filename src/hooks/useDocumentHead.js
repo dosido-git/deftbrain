@@ -5,7 +5,7 @@
 import { useEffect } from 'react';
 
 const SITE_NAME = 'DeftBrain — Intelligence on Demand';
-const DEFAULT_DESCRIPTION = 'DeftBrain offers 70+ free AI-powered tools for productivity, communication, health, finance, and more. Get instant, intelligent help for real-life problems.';
+const DEFAULT_DESCRIPTION = 'DeftBrain offers more than 100 free AI-powered tools for productivity, communication, health, finance, and more. Get instant, intelligent help for real-life problems.';
 const BASE_URL = 'https://deftbrain.com';
 const DEFAULT_OG_IMAGE = `${BASE_URL}/og/default.png`; // 1200×630 fallback
 
