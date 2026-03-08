@@ -59,19 +59,27 @@ app.use('/api', (req, res, next) => {
 });
 
 // ── Case-insensitive tool route redirect ──
-// Builds a lowercase → canonical ID map from tools.js at startup.
-// Uses regex to read IDs rather than require() since tools.js is an ES module.
+// Reads canonical IDs from prerendered build/ subdirectories in production
+// (src/ is not deployed to Railway). Falls back to parsing tools.js in dev.
 // Redirects /namestorm → /NameStorm, /plantrescue → /PlantRescue, etc.
 const fs = require('fs');
 const toolIdMap = {};
 try {
-  const toolsContent = fs.readFileSync(path.join(__dirname, '..', 'src', 'data', 'tools.js'), 'utf8');
-  const idRegex = /\bid:\s*['"]([^'"]+)['"]/g;
-  let m;
-  while ((m = idRegex.exec(toolsContent)) !== null) {
-    if (m[1]) toolIdMap[m[1].toLowerCase()] = m[1];
+  const buildDir = path.join(__dirname, '..', 'build');
+  if (fs.existsSync(buildDir)) {
+    fs.readdirSync(buildDir, { withFileTypes: true })
+      .filter(d => d.isDirectory() && !d.name.startsWith('.'))
+      .forEach(d => { toolIdMap[d.name.toLowerCase()] = d.name; });
+    console.log(`Tool ID map loaded from build/: ${Object.keys(toolIdMap).length} tools`);
+  } else {
+    const toolsContent = fs.readFileSync(path.join(__dirname, '..', 'src', 'data', 'tools.js'), 'utf8');
+    const idRegex = /\bid:\s*['"]([^'"]*)['"]/g;
+    let m;
+    while ((m = idRegex.exec(toolsContent)) !== null) {
+      if (m[1]) toolIdMap[m[1].toLowerCase()] = m[1];
+    }
+    console.log(`Tool ID map loaded from tools.js: ${Object.keys(toolIdMap).length} tools`);
   }
-  console.log(`Tool ID map loaded: ${Object.keys(toolIdMap).length} tools`);
 } catch (e) {
   console.warn('Could not load tool ID map:', e.message);
 }
