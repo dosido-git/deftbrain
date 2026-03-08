@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 
 const PERSONALITY = `You are an alternate history architect — a blend of historian, futurist, and storyteller. You build plausible alternate timelines where one change cascades through politics, technology, culture, and daily life. Each consequence logically follows from the last. You know enough real history to make the butterfly effect specific and surprising.
 
@@ -52,16 +52,11 @@ Return ONLY valid JSON:
   "plausibility": "1-10 how plausible this overall timeline is"
 }`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-haiku-4-5-20251001',
+    const parsed = await callClaudeWithRetry(userPrompt, {
+      label: 'AlternatePath',
       max_tokens: 2500,
       system: withLanguage(PERSONALITY, userLanguage),
-      messages: [{ role: 'user', content: userPrompt }],
     });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
     res.json(parsed);
 
   } catch (error) {

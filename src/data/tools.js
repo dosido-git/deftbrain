@@ -17,10 +17,11 @@ template:
     id: "",
     title: "",
     tagline: "",
-    categories: [],
-    icon: "",
     tags: [],
+    icon: "",
+    categories: [],
     description: "",
+
     guide: {
       overview: "",
       howToUse: [
@@ -1113,12 +1114,12 @@ export const tools = [
 {
   modified: "",
   id: "AlternatePath",
-  title: "History Schmistory",
+  title: "Alternate Path",
   tagline: "What if history went differently?",
   tags: ['history', 'what if', 'alternate timeline', 'counterfactual', 'historical', 'thought experiment'],
-  icon: "🔀",
+  icon: "🌀",
   categories: ['Brain Games', 'What If?'],
-  description: "Pick any historical event and change one detail. AI builds a plausible alternate timeline with cascading consequences — how one different moment reshapes everything that follows.",
+  description: "Pick any moment in history and change one detail. Watch the consequences cascade — politics, technology, culture, daily life — all the way to today.",
   guide: {
     overview: "Alternate Path takes a real historical event, changes one key detail, and traces the ripple effects forward through a plausible alternate timeline. Each consequence cascades into the next, showing how one pivot point can reshape politics, culture, technology, and daily life in ways you wouldn't expect.",
     howToUse: [

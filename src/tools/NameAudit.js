@@ -298,8 +298,6 @@ const NameAudit = () => {
     };
     const gridLevels = [2, 4, 6, 8, 10];
     const dataPoints = entries.map(([, v], i) => getPoint(i, v));
-    const pathD = dataPoints.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x},${p.y}`).join(' ') + 'Z';
-
     return (
       <div className="flex justify-center">
         <svg width="240" height="240" viewBox="0 0 240 240">
@@ -441,8 +439,6 @@ const NameAudit = () => {
     const hasW = /w/.test(lower);
     const hasH = /h/.test(lower);
     const hasVowelClusters = /[aeiou]{2,}/.test(lower);
-    const hasSh = /sh/.test(lower);
-    const hasTz = /tz|ts/.test(lower);
     const len = lower.length;
     const isSimple = len <= 6 && !hasTh && !hasVowelClusters;
 
@@ -675,7 +671,6 @@ const NameAudit = () => {
   // ─── #4: Evolution Timeline Component ───
   const EvolutionTimeline = () => {
     if (evolutionTimeline.length < 2) return null;
-    const maxScore = Math.max(...evolutionTimeline.map(e => e.score || 0));
     return (
       <div className={`${c.card} rounded-xl shadow-lg p-6`}>
         <h3 className={`font-bold ${c.text} mb-3 flex items-center gap-2`}>
@@ -859,21 +854,6 @@ const NameAudit = () => {
         <span className={`text-xs font-bold ${scoreColor(score, max)} w-6 text-right`}>{score}/{max}</span>
       </div>
     );
-  };
-
-  // Map section IDs to section_scores keys
-  const sectionScoreKey = {
-    impression: 'first_impression',
-    phonetic: 'phonetics',
-    memorability: 'memorability',
-    radio: 'radio_test',
-    visual: 'visual',
-    language: 'global_safety',
-    abbreviation: 'abbreviations',
-    competitive: 'competitive',
-    seo: 'seo',
-    longevity: 'longevity',
-    emotion: 'emotional_resonance',
   };
 
   const buildFullText = () => {

@@ -1,7 +1,8 @@
 import React, { useState, useCallback } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
-import { CopyBtn, ActionBar } from '../components/ActionButtons';
+import { usePersistentState } from '../hooks/usePersistentState';
+import { ActionBar } from '../components/ActionButtons';
 
 const DEPTHS = [
   { value: 'quick', label: 'Quick', icon: '⚡', desc: '5 consequences, 50 years' },
@@ -24,30 +25,48 @@ const AlternatePath = () => {
   const isDark = theme === 'dark';
 
   const c = {
-    card: isDark ? 'bg-[#1a1a2e] border-[#2a2a4a]' : 'bg-white border-[#d4d4d4]',
-    input: isDark ? 'bg-[#0f0f1e] border-[#2a2a4a] text-[#e8e8e8] placeholder:text-[#555] focus:border-[#c8a951] focus:ring-[#c8a951]/20'
-      : 'bg-white border-[#ccc] text-[#1e3a5f] placeholder:text-[#999] focus:border-[#1e3a5f] focus:ring-[#1e3a5f]/20',
-    text: isDark ? 'text-[#e8e8e8]' : 'text-[#1e3a5f]',
-    textSec: isDark ? 'text-[#a0a0b8]' : 'text-[#4a6a8a]',
-    textMuted: isDark ? 'text-[#666680]' : 'text-[#8a8a8a]',
-    label: isDark ? 'text-[#c0c0d0]' : 'text-[#2a4a6a]',
-    accent: isDark ? 'text-[#c8a951]' : 'text-[#1e3a5f]',
-    accentBg: isDark ? 'bg-[#c8a951]/10 border-[#c8a951]/30' : 'bg-[#1e3a5f]/5 border-[#1e3a5f]/20',
-    btnPrimary: isDark ? 'bg-[#c8a951] hover:bg-[#d4b85c] text-[#1a1a2e]' : 'bg-[#1e3a5f] hover:bg-[#2a4a6f] text-white',
-    btnSec: isDark ? 'bg-[#2a2a4a] hover:bg-[#3a3a5a] text-[#e8e8e8]' : 'bg-[#f0f0f0] hover:bg-[#e0e0e0] text-[#1e3a5f]',
-    danger: isDark ? 'bg-[#3a1a1a] border-[#5a2a2a] text-[#f0a0a0]' : 'bg-[#fef2f2] border-[#e8c0c0] text-[#7a2a2a]',
-    pillActive: isDark ? 'bg-[#c8a951] border-[#c8a951] text-[#1a1a2e]' : 'bg-[#1e3a5f] border-[#1e3a5f] text-white',
-    pillInactive: isDark ? 'bg-[#2a2a4a] border-[#3a3a5a] text-[#c0c0d0] hover:border-[#4a4a6a]' : 'bg-white border-[#d4d4d4] text-[#4a6a8a] hover:border-[#aaa]',
-    quoteBg: isDark ? 'bg-[#0f0f1e]/60' : 'bg-[#f8f8f8]',
-    warning: isDark ? 'bg-[#2e2a1a] border-[#4a3a2a] text-[#e0c080]' : 'bg-[#fffbf0] border-[#dcc8a0] text-[#6a4a1a]',
-    success: isDark ? 'bg-[#1a2e1a] border-[#2a4a2a] text-[#a0e0a0]' : 'bg-[#f0faf0] border-[#c0dcc0] text-[#2a5a2a]',
+    card:          isDark ? 'bg-zinc-800' : 'bg-white',
+    cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
+    text:          isDark ? 'text-zinc-50' : 'text-gray-900',
+    textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
+    textMuted:     isDark ? 'text-zinc-500' : 'text-gray-400',
+    input:         isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
+                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-500/20',
+    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
+                          : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100'
+                          : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
+    border:        isDark ? 'border-zinc-700' : 'border-gray-200',
+    success:       isDark ? 'bg-green-900/20 border-green-700 text-green-200'
+                          : 'bg-green-50 border-green-300 text-green-800',
+    warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200'
+                          : 'bg-amber-50 border-amber-300 text-amber-800',
+    danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200'
+                          : 'bg-red-50 border-red-200 text-red-800',
+    accentBg:      isDark ? 'bg-cyan-900/20 border-cyan-700' : 'bg-cyan-50 border-cyan-200',
+    accent:        isDark ? 'text-cyan-400' : 'text-cyan-600',
+    pillActive:    isDark ? 'bg-cyan-600 border-cyan-600 text-white' : 'bg-cyan-600 border-cyan-600 text-white',
+    pillInactive:  isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-300 hover:border-zinc-500' : 'bg-white border-gray-200 text-gray-600 hover:border-gray-300',
   };
 
-  const [whatIf, setWhatIf] = useState('');
+  const linkStyle = isDark
+    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
+    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
+
+  const [whatIf, setWhatIf] = usePersistentState('alternatepath-whatif', '');
   const [yearOrContext, setYearOrContext] = useState('');
   const [depth, setDepth] = useState('quick');
-  const [results, setResults] = useState(null);
+  const [results, setResults] = usePersistentState('alternatepath-last', null);
+  const [history, setHistory] = usePersistentState('alternatepath-history', []);
   const [error, setError] = useState('');
+
+  const reset = useCallback(() => {
+    setWhatIf('');
+    setYearOrContext('');
+    setDepth('quick');
+    setResults(null);
+    setError('');
+  }, [setWhatIf, setResults]);
 
   const run = useCallback(async () => {
     if (!whatIf.trim()) return;
@@ -55,12 +74,19 @@ const AlternatePath = () => {
     try {
       const data = await callToolEndpoint('alternate-path', { whatIf: whatIf.trim(), yearOrContext: yearOrContext.trim(), depth });
       setResults(data);
+      const newEntry = {
+        id: Date.now(),
+        timestamp: new Date().toISOString(),
+        preview: whatIf.trim().slice(0, 40),
+        result: data,
+      };
+      setHistory(prev => [newEntry, ...(prev || [])].slice(0, 6));
     } catch (err) { setError(err.message || 'Timeline failed'); }
-  }, [whatIf, yearOrContext, depth, callToolEndpoint]);
+  }, [whatIf, yearOrContext, depth, callToolEndpoint, setResults, setHistory]);
 
   const buildFullText = useCallback(() => {
     if (!results) return '';
-    const lines = [`🔀 ALTERNATE PATH: ${results.divergence_point || whatIf}`, ''];
+    const lines = [`🌀 ALTERNATE PATH: ${results.divergence_point || whatIf}`, ''];
     if (results.real_history) lines.push(`📜 Real history: ${results.real_history}`, '');
     results.timeline?.forEach((t, i) => lines.push(`${i + 1}. [${t.year_range}] ${t.event}`));
     lines.push('');
@@ -72,24 +98,24 @@ const AlternatePath = () => {
 
   return (
     <div className={`space-y-4 ${c.text}`}>
-      <div className={`${c.card} border rounded-xl p-5`}>
-        <div className={`mb-4 pb-3 border-b ${isDark ? 'border-[#2a2a4a]' : 'border-[#e0e0e0]'}`}>
-          <h2 className={`text-xl font-bold`}><span className="mr-2">🔀</span>Alternate Path</h2>
-          <p className={`text-sm ${c.textSec}`}>What if history went differently? Watch the dominoes fall.</p>
+      <div className={`${c.card} border ${c.border} rounded-xl shadow-lg p-5`}>
+        <div className={`mb-4 pb-3 border-b ${c.border}`}>
+          <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}><span>🌀</span> Alternate Path</h2>
+          <p className={`text-sm ${c.textSecondary}`}>What if history went differently? Watch the dominoes fall.</p>
         </div>
 
         <div className="mb-3">
-          <label className={`text-[10px] font-bold ${c.label} uppercase block mb-2`}>Try one</label>
+          <label className={`text-[10px] font-bold ${c.textSecondary} uppercase block mb-2`}>Try one</label>
           <div className="flex flex-wrap gap-1.5">
             {QUICK_PROMPTS.map((q, i) => (
               <button key={i} onClick={() => { setWhatIf(q); setResults(null); }}
-                className={`${c.btnSec} px-2.5 py-1.5 rounded-lg text-[11px] font-medium min-h-[28px]`}>{q}</button>
+                className={`${c.btnSecondary} px-2.5 py-1.5 rounded-lg text-[11px] font-medium min-h-[28px]`}>{q}</button>
             ))}
           </div>
         </div>
 
         <div className="mb-3">
-          <label className={`text-xs font-bold ${c.label} block mb-1.5`}>What if...</label>
+          <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>What if... <span className="text-red-500">*</span></label>
           <input type="text" value={whatIf} onChange={e => setWhatIf(e.target.value)}
             placeholder="e.g., The internet was invented in 1920..."
             className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`}
@@ -97,14 +123,15 @@ const AlternatePath = () => {
         </div>
 
         <div className="mb-4">
-          <label className={`text-xs font-bold ${c.label} block mb-1.5`}>Year or context <span className={`font-normal ${c.textMuted}`}>(optional)</span></label>
+          <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Year or context <span className={`font-normal ${c.textMuted}`}>(optional)</span></label>
           <input type="text" value={yearOrContext} onChange={e => setYearOrContext(e.target.value)}
             placeholder="e.g., 1920, during WWI, instead of..."
-            className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
+            className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`}
+            onKeyDown={e => e.key === 'Enter' && whatIf.trim() && run()} />
         </div>
 
         <div className="mb-5">
-          <label className={`text-xs font-bold ${c.label} uppercase block mb-2`}>Depth</label>
+          <label className={`text-xs font-bold ${c.textSecondary} uppercase block mb-2`}>Depth</label>
           <div className="flex gap-2">
             {DEPTHS.map(d => (
               <button key={d.value} onClick={() => setDepth(d.value)}
@@ -116,9 +143,15 @@ const AlternatePath = () => {
           </div>
         </div>
 
+        <p className={`text-xs text-center ${c.textMuted} mb-3`}>
+          More of a fiction person?{' '}
+          <a href="/FanTheory" className={linkStyle}>Fan Theory</a>{' '}
+          builds theories about stories and films.
+        </p>
+
         <button onClick={run} disabled={!whatIf.trim() || loading}
           className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-          {loading ? <><span className="animate-spin inline-block">⏳</span> Rewriting history...</> : <><span>🔀</span> Explore Timeline</>}
+          {loading ? <><span className="animate-spin inline-block">⏳</span> Rewriting history...</> : <><span>🌀</span> Explore Timeline</>}
         </button>
       </div>
 
@@ -126,21 +159,23 @@ const AlternatePath = () => {
 
       {results && (
         <div className="space-y-4">
-          <div className="flex justify-end"><ActionBar content={buildFullText()} title="Alternate Path" /></div>
+          <div className="flex justify-end">
+            <ActionBar content={buildFullText()} title="Alternate Path" />
+          </div>
 
           <div className={`${c.accentBg} border-2 rounded-xl p-5 text-center`}>
-            <span className="text-3xl block mb-2">🔀</span>
+            <span className="text-3xl block mb-2">🌀</span>
             <p className={`text-lg font-black ${c.text} mb-2`}>{results.divergence_point}</p>
             {results.real_history && <p className={`text-xs ${c.textMuted} italic`}>📜 Reality: {results.real_history}</p>}
             {results.plausibility && <p className={`text-xs ${c.accent} mt-2`}>Plausibility: {results.plausibility}/10</p>}
           </div>
 
           {results.timeline?.length > 0 && (
-            <div className={`${c.card} border rounded-xl p-4`}>
+            <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
               <h3 className={`text-sm font-bold ${c.text} mb-3`}>📅 Timeline</h3>
               <div className="space-y-2">
                 {results.timeline.map((t, i) => (
-                  <div key={i} className={`${c.quoteBg} rounded-lg p-3 border-l-4 ${isDark ? 'border-[#c8a951]' : 'border-[#1e3a5f]'}`}>
+                  <div key={i} className={`${c.cardAlt} rounded-lg p-3 border-l-4 border-cyan-500`}>
                     <div className="flex items-start gap-2">
                       <span className={`text-xs font-black ${c.accent} whitespace-nowrap`}>{t.year_range}</span>
                       <div className="flex-1">
@@ -170,16 +205,56 @@ const AlternatePath = () => {
               </div>
             )}
             {results.butterfly_moment && (
-              <div className={`${c.quoteBg} border ${isDark ? 'border-[#2a2a4a]' : 'border-[#d4d4d4]'} rounded-xl p-4`}>
+              <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
                 <p className={`text-[10px] font-bold ${c.accent} uppercase mb-1`}>🦋 Butterfly Moment</p>
-                <p className={`text-xs ${c.textSec}`}>{results.butterfly_moment}</p>
+                <p className={`text-xs ${c.textSecondary}`}>{results.butterfly_moment}</p>
               </div>
             )}
           </div>
 
-          <button onClick={run} disabled={loading} className={`w-full ${c.btnSec} font-bold py-3 rounded-lg min-h-[44px]`}>
-            🔀 Different Timeline
-          </button>
+          <div className="flex gap-2">
+            <button onClick={run} disabled={loading}
+              className={`flex-1 ${c.btnSecondary} font-bold py-3 rounded-lg min-h-[44px]`}>
+              🌀 Different Timeline
+            </button>
+            <button onClick={reset}
+              className={`flex-1 ${c.btnSecondary} font-bold py-3 rounded-lg min-h-[44px]`}>
+              ↩ Start Over
+            </button>
+          </div>
+
+          <div className="space-y-1">
+            <p className={`text-xs text-center ${c.textMuted}`}>
+              Want to stress-test a belief this uncovered?{' '}
+              <a href="/BeliefStressTest" className={linkStyle}>Belief Stress Test</a>{' '}
+              finds the weakest assumptions.
+            </p>
+            {results.plausibility < 4 && (
+              <p className={`text-xs text-center ${c.textMuted}`}>
+                Low plausibility score?{' '}
+                <a href="/BrainRoulette" className={linkStyle}>Brain Roulette</a>{' '}
+                might spark a wilder but more grounded scenario.
+              </p>
+            )}
+          </div>
+        </div>
+      )}
+
+      {history?.length > 0 && (
+        <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+          <h3 className={`text-sm font-bold ${c.text} mb-3`}>🕐 Recent Timelines</h3>
+          <div className="space-y-1.5">
+            {history.map(entry => (
+              <button key={entry.id}
+                onClick={() => setResults(entry.result)}
+                className={`w-full text-left px-3 py-2 rounded-lg ${c.btnSecondary} text-xs flex items-center gap-2`}>
+                <span className={c.textMuted}>
+                  {new Date(entry.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
+                </span>
+                <span className={c.text}>{entry.preview}{entry.preview.length >= 40 ? '…' : ''}</span>
+              </button>
+            ))}
+          </div>
         </div>
       )}
     </div>

@@ -115,22 +115,24 @@ const ToolPageWrapper = ({ children, tool, toolId }) => {
     <div className={`min-h-screen ${colors.bg} ${colors.text} font-sans transition-colors duration-200`}>
       
       {/* ── Compact Logo Bar ── */}
-      <div className={`w-full px-6 py-4 ${colors.bg} sticky top-0 z-20 border-b ${colors.border}`}>
-        <div className="max-w-7xl mx-auto flex items-start justify-between gap-4">
+      <div className={`w-full px-3 sm:px-6 py-4 ${colors.bg} sticky top-0 z-20 border-b ${colors.border}`}>
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-2">
           <button 
             onClick={() => navigate('/')}
-            className={`flex items-center gap-1.5 ${colors.textMuted} ${colors.hoverAccent} transition-colors group self-end pb-2`}
+            className={`flex items-center gap-1.5 ${colors.textMuted} ${colors.hoverAccent} transition-colors group flex-shrink-0`}
           >
             <span className="inline-block text-sm group-hover:-translate-x-1 transition-transform">←</span>
             <span className="text-xs font-semibold uppercase tracking-wide">Dashboard</span>
           </button>
-          <Link to="/" title="Back to Dashboard">
-            <BrandMark
-              direction="right"
-              size="md"
-              isDark={isDark}
-              showTagline={true}
-            />
+          <Link to="/" title="Back to Dashboard" className="flex-shrink-0">
+            {/* Mobile: compact, no tagline */}
+            <div className="block sm:hidden">
+              <BrandMark direction="right" size="sm" isDark={isDark} showTagline={false} />
+            </div>
+            {/* Desktop: full size with tagline */}
+            <div className="hidden sm:block">
+              <BrandMark direction="right" size="md" isDark={isDark} showTagline={true} />
+            </div>
           </Link>
         </div>
       </div>
@@ -160,11 +162,12 @@ const ToolPageWrapper = ({ children, tool, toolId }) => {
           <div className="flex justify-end mb-2 gap-2 relative">
             <button
               onClick={handleBookmarkHint}
-              className={`p-2 rounded-lg transition-all ${colors.toggleBg} ${colors.toggleText}`}
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-lg transition-all ${colors.toggleBg} ${colors.toggleText}`}
               aria-label="Bookmark this tool"
               title="Bookmark this tool"
             >
               <span className="text-base leading-none">🔖</span>
+              <span className="text-xs font-medium">Bookmark</span>
             </button>
             {showBookmarkToast && (
               <div className={`absolute right-0 top-full mt-2 px-4 py-2.5 rounded-lg shadow-lg border text-sm font-medium whitespace-nowrap z-50 ${
@@ -179,11 +182,14 @@ const ToolPageWrapper = ({ children, tool, toolId }) => {
             )}
             <button
               onClick={toggleTheme}
-              className={`p-2 rounded-lg transition-all ${colors.toggleBg} ${colors.toggleText}`}
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-lg transition-all ${colors.toggleBg} ${colors.toggleText}`}
               aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}
               title={`Switch to ${isDark ? 'light' : 'dark'} mode`}
             >
-              {isDark ? <span className="text-base leading-none">☀️</span> : <span className="text-base leading-none">🌙</span>}
+              {isDark
+                ? <><span className="text-base leading-none">☀️</span><span className="text-xs font-medium">Light Mode</span></>
+                : <><span className="text-base leading-none">🌙</span><span className="text-xs font-medium">Dark Mode</span></>
+              }
             </button>
           </div>
 
