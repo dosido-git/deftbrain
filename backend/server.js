@@ -151,9 +151,11 @@ if (IS_PRODUCTION) {
     const canonical = slug ? toolIdMap[slug.toLowerCase()] : null;
     if (canonical) {
       const prerendered = path.join(__dirname, '..', 'build', canonical, 'index.html');
-      if (fs.existsSync(prerendered)) {
-        return res.sendFile(prerendered);
-      }
+      const exists = fs.existsSync(prerendered);
+      console.log(`[serve] slug="${slug}" canonical="${canonical}" exists=${exists}`);
+      if (exists) return res.sendFile(prerendered);
+    } else if (slug) {
+      console.log(`[serve] slug="${slug}" not in toolIdMap`);
     }
     res.sendFile(path.join(__dirname, '..', 'build', 'index.html'));
   });
