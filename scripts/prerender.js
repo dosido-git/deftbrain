@@ -171,8 +171,14 @@ function injectMeta(template, { id, title, description }) {
   ].join('\n    ');
 
   let html = template;
-  html = html.replace(/<title>[^<]*<\/title>/, '');
+
+  // Strip existing tags that we'll replace with tool-specific versions
+  html = html.replace(/<title>[^<]*<\/title>/gi, '');
   html = html.replace(/<meta\s+name="description"[^>]*>/gi, '');
+  html = html.replace(/<meta\s+name="author"[^>]*>/gi, '');
+  html = html.replace(/<meta\s+property="og:[^"]*"[^>]*>/gi, '');
+  html = html.replace(/<meta\s+name="twitter:[^"]*"[^>]*>/gi, '');
+  html = html.replace(/<link\s+rel="canonical"[^>]*>/gi, '');
   html = html.replace('</head>', `    ${metaBlock}\n  </head>`);
 
   return html;
