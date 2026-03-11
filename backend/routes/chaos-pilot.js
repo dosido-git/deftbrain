@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 
 const PERSONALITY = `You are a strategic disruption designer. You specialize in identifying invisible ruts — the patterns people fall into without realizing it — and designing single, specific, achievable interventions that break them.
 
@@ -60,16 +60,16 @@ Return ONLY valid JSON:
   "if_they_resist": "The exact thought they'll have that will make them skip it — and the one sentence that dismantles that excuse"
 }`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 1800,
-      system: withLanguage(PERSONALITY, userLanguage),
-      messages: [{ role: 'user', content: userPrompt }],
-    });
+    const parsed = await callClaudeWithRetry(
+      userPrompt,
+      {
+        system: withLanguage(PERSONALITY, userLanguage),
+        label: 'chaos-pilot',
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1800,
+      }
+    );
 
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
     res.json(parsed);
 
   } catch (error) {

@@ -1,23 +1,24 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
 // POST /context-collapse — How Will Different People Read This?
 // ════════════════════════════════════════════════════════════
-router.post('/context-collapse', async (req, res) => {
+router.post('/context-collapse', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const {
-      message,         // The message they're about to send/post
-      platform,        // 'text', 'email', 'social_media', 'group_chat', 'slack', 'public_post', 'announcement', 'other'
-      audiences,       // Array of { label, relationship, context } — who will see this
-      intent,          // What they're TRYING to communicate
-      concerns,        // Optional: what they're worried about
+      message,
+      platform,
+      audiences,
+      intent,
+      concerns,
       userLanguage,
     } = req.body;
 
     if (!message?.trim()) {
-      return res.status(400).json({ error: 'Paste the message you\'re about to send' });
+      return res.status(400).json({ error: "Paste the message you're about to send" });
     }
     if (!audiences?.length || !audiences.some(a => a.label?.trim())) {
       return res.status(400).json({ error: 'Add at least one audience — who will see this?' });
@@ -25,7 +26,8 @@ router.post('/context-collapse', async (req, res) => {
 
     const validAudiences = audiences.filter(a => a.label?.trim());
 
-    const systemPrompt = `You are a communication analyst specializing in "context collapse" — the phenomenon where a single message is interpreted completely differently by different audiences.
+    const systemPrompt = withLanguage(
+      `You are a communication analyst specializing in "context collapse" — the phenomenon where a single message is interpreted completely differently by different audiences.
 
 You help people preview how their message will land BEFORE they send it. You think like a therapist (understanding emotional subtext), a PR strategist (understanding public perception), and a linguist (understanding how words carry different weight in different relationships).
 
@@ -35,7 +37,11 @@ KEY PRINCIPLES:
 3. Pay attention to: tone markers (!, ..., capitalization, emoji), implicit assumptions, what's NOT said, and cultural/generational differences in communication style.
 4. The gap between intent and interpretation is where problems happen. Make this gap visible.
 5. When suggesting rewrites, preserve their voice — don't make them sound like a corporate PR department.
-6. Be honest about risks. If a message is genuinely problematic for an audience, say so clearly.`;
+6. Be honest about risks. If a message is genuinely problematic for an audience, say so clearly.
+
+Return only valid JSON.`,
+      userLanguage
+    );
 
     const audienceList = validAudiences.map((a, i) =>
       `Audience ${i + 1}: "${a.label}"${a.relationship ? ` (relationship: ${a.relationship})` : ''}${a.context ? ` — context: ${a.context}` : ''}`
@@ -78,7 +84,7 @@ Analyze how each audience will interpret this. Return ONLY valid JSON:
   },
 
   "verdict": {
-    "safe_to_send": true or false,
+    "safe_to_send": true,
     "verdict_label": "SEND AS IS | MINOR TWEAKS | REWRITE NEEDED | DON'T SEND",
     "summary": "1-2 sentences: overall assessment"
   },
@@ -104,17 +110,17 @@ Analyze how each audience will interpret this. Return ONLY valid JSON:
 
 Generate 1-2 rewrites that meaningfully improve the message for the most at-risk audiences while preserving the sender's intent and voice.`;
 
-    const message_resp = await anthropic.messages.create({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 3500,
-      system: withLanguage(systemPrompt, userLanguage),
-      messages: [{ role: 'user', content: userPrompt }],
-    });
+    const parsed = await callClaudeWithRetry(
+      userPrompt,
+      {
+        label: 'context-collapse',
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 3500,
+        system: systemPrompt,
+      }
+    );
 
-    const text = message_resp.content.find(b => b.type === 'text')?.text || '';
-    const parsed = JSON.parse(cleanJsonResponse(text));
     res.json(parsed);
-
   } catch (error) {
     console.error('Context Collapse error:', error);
     res.status(500).json({ error: error.message || 'Failed to analyze message' });

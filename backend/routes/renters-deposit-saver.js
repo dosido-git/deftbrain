@@ -250,3 +250,69 @@ CRITICAL RULES:
 });
 
 module.exports = router;
+
+// ═══════════════════════════════════════════════════════════════
+// STREAMING ROUTE — full report generation (Mode 2 only)
+// ═══════════════════════════════════════════════════════════════
+
+router.post('/renters-deposit-saver/stream', async (req, res) => {
+  const { address, unit, landlordName, landlordEmail, moveInDate, location, depositAmount, checklist } = req.body;
+
+  if (!address?.trim()) return res.status(400).json({ error: 'Property address is required' });
+  if (!moveInDate) return res.status(400).json({ error: 'Move-in date is required' });
+  if (!location?.trim()) return res.status(400).json({ error: 'Location is required for deposit law lookup' });
+  if (!checklist || !Array.isArray(checklist) || checklist.length === 0) return res.status(400).json({ error: 'At least one room checklist is required' });
+
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.flushHeaders();
+
+  const sendEvent = (data) => res.write(`data: ${JSON.stringify(data)}\n\n`);
+
+  try {
+    const checklistFormatted = checklist.map(room => {
+      const items = room.items.map(item => {
+        let line = `  - ${item.item}: ${item.condition.toUpperCase()}`;
+        if (item.notes) line += ` — "${item.notes}"`;
+        return line;
+      }).join('\n');
+      return `${room.room}:\n${items}`;
+    }).join('\n\n');
+
+    const fullAddress = unit ? `${address}, Unit ${unit}` : address;
+    const landlordDisplay = landlordName?.trim() || '[LANDLORD / PROPERTY MANAGER]';
+    const landlordEmailDisplay = landlordEmail?.trim() || '[LANDLORD EMAIL]';
+    const depositDisplay = depositAmount?.trim() || '[DEPOSIT AMOUNT]';
+
+    const prompt = `You are an expert tenant rights advocate and move-in documentation specialist. You are generating a complete move-in documentation package for a renter.
+
+Address: ${fullAddress}
+Move-In Date: ${moveInDate}
+Location / Jurisdiction: ${location}
+Security Deposit: ${depositDisplay}
+Landlord/Manager: ${landlordDisplay}
+Landlord Email: ${landlordEmailDisplay}
+
+MOVE-IN CONDITION CHECKLIST:
+${checklistFormatted}
+
+Generate a complete move-in documentation package. Return ONLY valid JSON with these keys: condition_report, landlord_letter, photo_shot_list, deposit_rights, move_out_tips — all as plain-text strings with newlines. Cite specific statutes for ${location}. No markdown formatting in the text values.`;
+
+    const stream = await anthropic.messages.stream({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 8000,
+      messages: [{ role: 'user', content: prompt }],
+    });
+
+    stream.on('text', (text) => sendEvent({ chunk: text }));
+    await stream.finalMessage();
+    sendEvent({ done: true });
+    res.end();
+
+  } catch (err) {
+    console.error('[RentersDepositSaver/stream] Error:', err);
+    sendEvent({ error: err.message || 'Stream failed' });
+    res.end();
+  }
+});

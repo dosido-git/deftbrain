@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
+import { usePersistentState } from '../hooks/usePersistentState';
 import { CopyBtn, ActionBar } from '../components/ActionButtons';
 
 const INTENSITY_OPTIONS = [
@@ -22,59 +23,46 @@ const EXAMPLE_TOPICS = [
   'Social media does more harm than good',
 ];
 
-const ArgumentSimulator = () => {
+const ArgumentSimulator = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { theme } = useTheme();
   const isDark = theme === 'dark';
   const resultsRef = useRef(null);
 
-  // ─── Colors: Navy & Gold ───
+  // ─── Colors ───
   const c = {
-    pageBg:       isDark ? 'bg-[#1a1816]'    : 'bg-[#faf8f5]',
-    card:         isDark ? 'bg-[#2a2623]'     : 'bg-white',
-    cardAlt:      isDark ? 'bg-[#332e2a]'     : 'bg-[#faf8f5]',
-    cardBorder:   isDark ? 'border-[#3d3630]' : 'border-[#e8e1d5]',
-    inputBg:      isDark ? 'bg-[#1a1816]'     : 'bg-[#faf8f5]',
-    inputBorder:  isDark ? 'border-[#3d3630]' : 'border-[#d5cab8]',
-    inputFocus:   isDark ? 'focus:border-[#4a6a8a] focus:ring-[#2c4a6e]/20'
-                         : 'focus:border-[#4a6a8a] focus:ring-[#2c4a6e]/12',
-    text:          isDark ? 'text-[#f0eeea]'  : 'text-[#3d3935]',
-    textSecondary: isDark ? 'text-[#c8c3b9]'  : 'text-[#5a544a]',
-    textMuted:     isDark ? 'text-[#8a8275]'  : 'text-[#8a8275]',
-    heading:       isDark ? 'text-[#f3efe8]'  : 'text-[#1e2a3a]',
-    btnPrimary:    isDark
-      ? 'bg-[#2c4a6e] hover:bg-[#4a6a8a] text-white'
-      : 'bg-[#2c4a6e] hover:bg-[#1e3a58] text-white',
-    btnSecondary:  isDark
-      ? 'bg-[#332e2a] hover:bg-[#3d3630] text-[#c8c3b9] border border-[#3d3630]'
-      : 'bg-[#f3efe8] hover:bg-[#e8e1d5] text-[#5e5042] border border-[#d5cab8]',
-    btnGold:       isDark
-      ? 'bg-[#b06d22] hover:bg-[#c8872e] text-white'
-      : 'bg-[#c8872e] hover:bg-[#b06d22] text-white',
-    chipActive:    isDark
-      ? 'bg-[#2c4a6e]/40 border-[#4a6a8a] text-[#a8b9ce]'
-      : 'bg-[#d4dde8] border-[#2c4a6e] text-[#1e3a58]',
-    chipInactive:  isDark
-      ? 'bg-[#2a2623] border-[#3d3630] text-[#8a8275] hover:border-[#5a544a]'
-      : 'bg-white border-[#e8e1d5] text-[#8a8275] hover:border-[#d5cab8]',
-    sideABg:       isDark ? 'bg-[#2c4a6e]/12' : 'bg-[#e8eef5]',
-    sideABorder:   isDark ? 'border-[#4a6a8a]' : 'border-[#b0c4d8]',
-    sideAAccent:   isDark ? 'text-[#a8b9ce]'   : 'text-[#2c4a6e]',
-    sideBBg:       isDark ? 'bg-[#b06d22]/10' : 'bg-[#fdf3e4]',
-    sideBBorder:   isDark ? 'border-[#b06d22]' : 'border-[#e0c49a]',
-    sideBAccent:   isDark ? 'text-[#d9a04e]'   : 'text-[#93541f]',
-    verdictBg:     isDark ? 'bg-[#332e2a]'     : 'bg-[#f3efe8]',
-    divider:       isDark ? 'border-[#3d3630]' : 'border-[#e8e1d5]',
-    badgePrimary:  isDark ? 'bg-[#2c4a6e]/30 text-[#a8b9ce]' : 'bg-[#d4dde8] text-[#1e3a58]',
-    badgeGold:     isDark ? 'bg-[#b06d22]/20 text-[#d9a04e]' : 'bg-[#f9edd8] text-[#93541f]',
-    error:         isDark ? 'bg-[#b54a3f]/15 border-[#b54a3f] text-[#e8a9a3]'
-                          : 'bg-[#fceae8] border-[#d4908a] text-[#8a3028]',
+    card:          isDark ? 'bg-zinc-800'      : 'bg-white',
+    cardAlt:       isDark ? 'bg-zinc-700/50'   : 'bg-slate-50',
+    text:          isDark ? 'text-zinc-50'     : 'text-gray-900',
+    textSecondary: isDark ? 'text-zinc-300'    : 'text-gray-600',
+    textMuted:     isDark ? 'text-zinc-500'    : 'text-gray-400',
+    input:         isDark
+      ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
+      : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-500/20',
+    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'    : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
+    border:        isDark ? 'border-zinc-700'  : 'border-gray-200',
+    error:         isDark ? 'bg-red-900/20 border-red-700 text-red-200'  : 'bg-red-50 border-red-200 text-red-800',
+    pillActive:    isDark ? 'bg-cyan-600 border-cyan-600 text-white'     : 'bg-cyan-600 border-cyan-600 text-white',
+    pillInactive:  isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-300 hover:border-zinc-500' : 'bg-white border-gray-200 text-gray-600 hover:border-gray-300',
+    sideABg:       isDark ? 'bg-blue-900/20'   : 'bg-blue-50',
+    sideABorder:   isDark ? 'border-blue-700'  : 'border-blue-200',
+    sideAAccent:   isDark ? 'text-blue-300'    : 'text-blue-700',
+    sideBBg:       isDark ? 'bg-amber-900/20'  : 'bg-amber-50',
+    sideBBorder:   isDark ? 'border-amber-700' : 'border-amber-200',
+    sideBAccent:   isDark ? 'text-amber-300'   : 'text-amber-700',
+    verdictBg:     isDark ? 'bg-zinc-700/50'   : 'bg-slate-50',
   };
 
+  const linkStyle = isDark
+    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
+    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
+
   // ─── State ───
-  const [hotTake, setHotTake] = useState('');
+  const [hotTake, setHotTake] = usePersistentState('argumentsimulator-hottake', '');
   const [intensity, setIntensity] = useState('heated');
-  const [results, setResults] = useState(null);
+  const [results, setResults] = usePersistentState('argumentsimulator-last', null);
+  const [history, setHistory] = usePersistentState('argumentsimulator-history', []);
   const [error, setError] = useState('');
   const [expandedSections, setExpandedSections] = useState({});
   const [showVerdict, setShowVerdict] = useState(false);
@@ -107,6 +95,12 @@ const ArgumentSimulator = () => {
         intensity,
       });
       setResults(res);
+      setHistory(prev => [{
+        id: Date.now(),
+        timestamp: new Date().toISOString(),
+        preview: hotTake.trim().slice(0, 45),
+        result: res,
+      }, ...(prev || [])].slice(0, 6));
     } catch (err) {
       setError(err.message || 'Debate failed. Try again.');
     }
@@ -198,7 +192,7 @@ const ArgumentSimulator = () => {
         </div>
 
         {/* Expandable details */}
-        <div className={`border-t ${isA ? (isDark ? 'border-[#4a6a8a]/30' : 'border-[#b0c4d8]/50') : (isDark ? 'border-[#b06d22]/20' : 'border-[#e0c49a]/50')}`}>
+        <div className={`border-t ${isA ? (isDark ? 'border-blue-700/30' : 'border-blue-200/60') : (isDark ? 'border-amber-700/20' : 'border-amber-200/50')}`}>
           <button
             onClick={() => toggleSection(detailsKey)}
             className="w-full px-5 py-3 flex items-center justify-between text-left transition-colors"
@@ -246,214 +240,235 @@ const ArgumentSimulator = () => {
 
   // ─── Render ───
   return (
-    <div className={`min-h-screen ${c.pageBg} transition-colors duration-200`}>
-      <div className="max-w-2xl mx-auto px-4 py-8 space-y-6">
+    <div className={`space-y-4 ${c.text}`}>
 
-        {/* ── Header ── */}
-        <div className="text-center space-y-2">
-          <div className="text-4xl">⚔️</div>
-          <h1 className={`text-2xl font-bold ${c.heading}`}>Argument Simulator</h1>
-          <p className={`text-sm ${c.textSecondary}`}>
-            Drop a hot take. AI argues both sides with full conviction.
-          </p>
+      {/* ── Input Card ── */}
+      <div className={`${c.card} border ${c.border} rounded-2xl p-5 shadow-sm space-y-5`}>
+
+        {/* Standard header */}
+        <div className={`pb-4 border-b ${c.border}`}>
+          <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
+            <span>{tool.icon}</span> Argument Simulator
+          </h2>
+          <p className={`text-sm ${c.textSecondary}`}>Drop a hot take. AI argues both sides with full conviction.</p>
         </div>
 
-        {/* ── Input Card ── */}
-        <div className={`${c.card} ${c.cardBorder} border rounded-2xl p-5 shadow-sm space-y-5`}>
-
-          {/* Hot take input */}
-          <div className="space-y-2">
-            <label className={`text-sm font-semibold ${c.text}`}>
-              <span className="mr-1.5">💬</span> Your hot take
-            </label>
-            <textarea
-              value={hotTake}
-              onChange={(e) => setHotTake(e.target.value)}
-              placeholder="e.g. Pineapple belongs on pizza..."
-              rows={2}
-              maxLength={300}
-              className={`w-full px-4 py-3 rounded-xl text-sm ${c.inputBg} ${c.inputBorder} ${c.inputFocus} border ${c.text} placeholder:${c.textMuted} resize-none outline-none transition-colors`}
-            />
-            <div className="flex items-center justify-between">
-              <button
-                onClick={handleRandomTopic}
-                className={`text-xs ${c.btnSecondary} px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5`}
-              >
-                <span>🎲</span> Random topic
-              </button>
-              <span className={`text-xs ${c.textMuted}`}>{hotTake.length}/300</span>
-            </div>
+        {/* Hot take input */}
+        <div className="space-y-2">
+          <label className={`text-sm font-semibold ${c.text}`}>
+            <span className="mr-1.5">💬</span> Your hot take
+          </label>
+          <textarea
+            value={hotTake}
+            onChange={(e) => setHotTake(e.target.value)}
+            onKeyDown={(e) => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) handleSubmit(); }}
+            placeholder="e.g. Pineapple belongs on pizza..."
+            rows={2}
+            maxLength={300}
+            className={`w-full px-4 py-3 rounded-xl text-sm ${c.input} outline-none focus:ring-2 resize-none`}
+          />
+          <div className="flex items-center justify-between">
+            <button
+              onClick={handleRandomTopic}
+              className={`text-xs ${c.btnSecondary} px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5`}
+            >
+              <span>🎲</span> Random topic
+            </button>
+            <span className={`text-xs ${c.textMuted}`}>{hotTake.length}/300</span>
           </div>
-
-          {/* Intensity selector */}
-          <div className="space-y-2">
-            <label className={`text-sm font-semibold ${c.text}`}>
-              <span className="mr-1.5">🎚️</span> Intensity
-            </label>
-            <div className="grid grid-cols-3 gap-2">
-              {INTENSITY_OPTIONS.map(opt => (
-                <button
-                  key={opt.id}
-                  onClick={() => setIntensity(opt.id)}
-                  className={`${intensity === opt.id ? c.chipActive : c.chipInactive} border rounded-xl px-3 py-3 text-center transition-all duration-150`}
-                >
-                  <span className="text-xl block mb-1">{opt.icon}</span>
-                  <p className="text-sm font-medium leading-tight">{opt.label}</p>
-                  <p className={`text-xs ${c.textMuted} leading-tight mt-0.5 hidden sm:block`}>{opt.desc}</p>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Submit */}
-          <button
-            onClick={handleSubmit}
-            disabled={loading || !hotTake.trim()}
-            className={`w-full ${c.btnGold} py-3 rounded-xl font-semibold text-sm shadow-md
-              disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-2`}
-          >
-            {loading ? (
-              <>
-                <span className="animate-spin inline-block">⏳</span>
-                Both sides loading their weapons...
-              </>
-            ) : (
-              <>
-                <span>⚔️</span> Start the Argument
-              </>
-            )}
-          </button>
         </div>
 
-        {/* ── Error ── */}
-        {error && (
-          <div className={`${c.error} border rounded-xl p-4 text-sm flex items-center gap-2`}>
-            <span>⚠️</span> {error}
-          </div>
-        )}
-
-        {/* ── Results ── */}
-        {results && (
-          <div ref={resultsRef} className="space-y-5">
-
-            {/* Topic banner */}
-            {results.topic_framed && (
-              <div className={`${c.cardAlt} ${c.cardBorder} border rounded-2xl p-4 text-center`}>
-                <p className={`text-xs font-semibold uppercase tracking-wider ${c.textMuted} mb-1`}>
-                  Tonight's debate
-                </p>
-                <p className={`text-lg font-bold ${c.heading} italic`}>
-                  "{results.topic_framed}"
-                </p>
-              </div>
-            )}
-
-            {/* Side A — FOR */}
-            <SideCard side={results.side_a} sideKey="a" emoji="👍" />
-
-            {/* VS divider */}
-            <div className="flex items-center gap-4 py-1">
-              <div className={`flex-1 border-t ${c.divider}`} />
-              <span className={`text-2xl font-black ${c.textMuted}`}>VS</span>
-              <div className={`flex-1 border-t ${c.divider}`} />
-            </div>
-
-            {/* Side B — AGAINST */}
-            <SideCard side={results.side_b} sideKey="b" emoji="👎" />
-
-            {/* Where they actually disagree */}
-            {results.where_they_actually_disagree && (
-              <div className={`${c.card} ${c.cardBorder} border rounded-2xl p-5`}>
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="text-lg">🔍</span>
-                  <h3 className={`font-bold ${c.heading}`}>Where They Actually Disagree</h3>
-                </div>
-                <p className={`text-sm ${c.textSecondary} leading-relaxed`}>
-                  {results.where_they_actually_disagree}
-                </p>
-              </div>
-            )}
-
-            {/* Verdict — hidden by default */}
-            {results.judge_verdict && (
-              <div className="space-y-3">
-                {!showVerdict ? (
-                  <button
-                    onClick={() => setShowVerdict(true)}
-                    className={`w-full ${c.btnPrimary} py-3 rounded-xl font-semibold text-sm shadow-md transition-all duration-200 flex items-center justify-center gap-2`}
-                  >
-                    <span>🏛️</span> Reveal the Judge's Verdict
-                  </button>
-                ) : (
-                  <div className={`${c.verdictBg} ${c.cardBorder} border rounded-2xl p-5 space-y-4`}>
-                    <div className="flex items-center gap-2">
-                      <span className="text-2xl">🏛️</span>
-                      <h3 className={`text-lg font-bold ${c.heading}`}>Judge's Verdict</h3>
-                    </div>
-                    <p className={`text-sm ${c.text} leading-relaxed`}>
-                      {results.judge_verdict}
-                    </p>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Dinner party take */}
-            {results.dinner_party_take && (
-              <div className={`${c.cardAlt} ${c.cardBorder} border rounded-2xl p-5`}>
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="text-lg">🍷</span>
-                  <h3 className={`font-bold ${c.heading}`}>The Dinner Party Take</h3>
-                </div>
-                <p className={`text-sm italic ${c.textSecondary} leading-relaxed`}>
-                  "{results.dinner_party_take}"
-                </p>
-                <p className={`text-xs ${c.textMuted} mt-2`}>
-                  — The nuanced take that makes you sound smart without alienating anyone
-                </p>
-              </div>
-            )}
-
-            {/* Actions */}
-            <div className="flex flex-wrap items-center gap-2">
-              <ActionBar
-                content={buildFullText()}
-                title={`Argument Simulator: ${hotTake}`}
-              />
+        {/* Intensity selector */}
+        <div className="space-y-2">
+          <label className={`text-sm font-semibold ${c.text}`}>
+            <span className="mr-1.5">🎚️</span> Intensity
+          </label>
+          <div className="grid grid-cols-3 gap-2">
+            {INTENSITY_OPTIONS.map(opt => (
               <button
-                onClick={handleReset}
-                className={`${c.btnSecondary} px-4 py-2 rounded-lg text-sm transition-colors flex items-center gap-1.5`}
+                key={opt.id}
+                onClick={() => setIntensity(opt.id)}
+                className={`${intensity === opt.id ? c.pillActive : c.pillInactive} border rounded-xl px-3 py-3 text-center transition-all duration-150`}
               >
-                <span>🔄</span> New Argument
+                <span className="text-xl block mb-1">{opt.icon}</span>
+                <p className="text-sm font-medium leading-tight">{opt.label}</p>
+                <p className={`text-xs ${c.textMuted} leading-tight mt-0.5 hidden sm:block`}>{opt.desc}</p>
               </button>
-            </div>
-
-            {/* Cross-references */}
-            <div className={`${c.cardAlt} ${c.cardBorder} border rounded-xl p-4 space-y-2`}>
-              <p className={`text-xs font-semibold ${c.textMuted} uppercase tracking-wider`}>
-                Keep the fun going
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {[
-                  { id: 'PlotTwist', icon: '🔄', label: 'See other perspectives' },
-                  { id: 'WrongAnswersOnly', icon: '🙃', label: 'Get wrong answers' },
-                  { id: 'RoastMe', icon: '🔥', label: 'Get roasted instead' },
-                ].map(ref => (
-                  <a
-                    key={ref.id}
-                    href={`/tool/${ref.id}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs transition-colors flex items-center gap-1.5`}
-                  >
-                    <span>{ref.icon}</span> {ref.label}
-                  </a>
-                ))}
-              </div>
-            </div>
+            ))}
           </div>
-        )}
+        </div>
+
+        {/* Pre-result cross-ref */}
+        <p className={`text-xs text-center ${c.textMuted}`}>
+          Want to test your own belief first?{' '}
+          <a href="/BeliefStressTest" className={linkStyle}>Belief Stress Test</a>{' '}
+          finds the weakest assumptions before you argue them.
+        </p>
+
+        {/* Submit */}
+        <button
+          onClick={handleSubmit}
+          disabled={loading || !hotTake.trim()}
+          className={`w-full ${c.btnPrimary} py-3 rounded-xl font-semibold text-sm shadow-md min-h-[48px]
+            disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-2`}
+        >
+          {loading ? (
+            <>
+              <span className="animate-spin inline-block">⚔️</span>
+              Both sides loading their weapons...
+            </>
+          ) : (
+            <>
+              <span>⚔️</span> Start the Argument
+            </>
+          )}
+        </button>
       </div>
+
+      {/* ── Error ── */}
+      {error && (
+        <div className={`${c.error} border rounded-xl p-4 text-sm flex items-center gap-2`}>
+          <span>⚠️</span> {error}
+        </div>
+      )}
+
+      {/* ── Results ── */}
+      {results && (
+        <div ref={resultsRef} className="space-y-5">
+
+          {/* Actions — top of results */}
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <button
+              onClick={handleReset}
+              className={`${c.btnSecondary} px-4 py-2 rounded-lg text-sm font-bold flex items-center min-h-[40px]`}
+            >
+              ↩ Start Over
+            </button>
+            <ActionBar
+              content={buildFullText()}
+              title={`Argument Simulator: ${hotTake}`}
+            />
+          </div>
+
+          {/* Topic banner */}
+          {results.topic_framed && (
+            <div className={`${c.cardAlt} border ${c.border} rounded-2xl p-4 text-center`}>
+              <p className={`text-xs font-semibold uppercase tracking-wider ${c.textMuted} mb-1`}>
+                Tonight's debate
+              </p>
+              <p className={`text-lg font-bold ${c.text} italic`}>
+                "{results.topic_framed}"
+              </p>
+            </div>
+          )}
+
+          {/* Side A — FOR */}
+          <SideCard side={results.side_a} sideKey="a" emoji="👍" />
+
+          {/* VS divider */}
+          <div className="flex items-center gap-4 py-1">
+            <div className={`flex-1 border-t ${c.border}`} />
+            <span className={`text-2xl font-black ${c.textMuted}`}>VS</span>
+            <div className={`flex-1 border-t ${c.border}`} />
+          </div>
+
+          {/* Side B — AGAINST */}
+          <SideCard side={results.side_b} sideKey="b" emoji="👎" />
+
+          {/* Where they actually disagree */}
+          {results.where_they_actually_disagree && (
+            <div className={`${c.card} border ${c.border} rounded-2xl p-5`}>
+              <div className="flex items-center gap-2 mb-3">
+                <span className="text-lg">🔍</span>
+                <h3 className={`font-bold ${c.text}`}>Where They Actually Disagree</h3>
+              </div>
+              <p className={`text-sm ${c.textSecondary} leading-relaxed`}>
+                {results.where_they_actually_disagree}
+              </p>
+            </div>
+          )}
+
+          {/* Verdict — hidden by default */}
+          {results.judge_verdict && (
+            <div className="space-y-3">
+              {!showVerdict ? (
+                <button
+                  onClick={() => setShowVerdict(true)}
+                  className={`w-full ${c.btnPrimary} py-3 rounded-xl font-semibold text-sm shadow-md transition-all duration-200 flex items-center justify-center gap-2`}
+                >
+                  <span>🏛️</span> Reveal the Judge's Verdict
+                </button>
+              ) : (
+                <div className={`${c.verdictBg} border ${c.border} rounded-2xl p-5 space-y-4`}>
+                  <div className="flex items-center gap-2">
+                    <span className="text-2xl">🏛️</span>
+                    <h3 className={`text-lg font-bold ${c.text}`}>Judge's Verdict</h3>
+                  </div>
+                  <p className={`text-sm ${c.text} leading-relaxed`}>
+                    {results.judge_verdict}
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Dinner party take */}
+          {results.dinner_party_take && (
+            <div className={`${c.cardAlt} border ${c.border} rounded-2xl p-5`}>
+              <div className="flex items-center gap-2 mb-3">
+                <span className="text-lg">🍷</span>
+                <h3 className={`font-bold ${c.text}`}>The Dinner Party Take</h3>
+              </div>
+              <p className={`text-sm italic ${c.textSecondary} leading-relaxed`}>
+                "{results.dinner_party_take}"
+              </p>
+              <p className={`text-xs ${c.textMuted} mt-2`}>
+                — The nuanced take that makes you sound smart without alienating anyone
+              </p>
+            </div>
+          )}
+
+          {/* Conditional cross-ref: unhinged intensity → Roast Me */}
+          {intensity === 'unhinged' && (
+            <p className={`text-xs text-center ${c.textMuted}`}>
+              Enjoyed the chaos?{' '}
+              <a href="/RoastMe" className={linkStyle}>Roast Me</a>{' '}
+              turns that energy on you — if you can handle it.
+            </p>
+          )}
+
+          {/* Post-result cross-refs */}
+          <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 space-y-2`}>
+            <p className={`text-xs font-semibold ${c.textMuted} uppercase tracking-wider`}>
+              Keep the fun going
+            </p>
+            <div className="flex flex-wrap gap-x-4 gap-y-1">
+              <a href="/PlotTwist" className={`text-xs ${linkStyle}`}>🔄 See other perspectives</a>
+              <a href="/WrongAnswersOnly" className={`text-xs ${linkStyle}`}>🙃 Get wrong answers</a>
+              <a href="/RoastMe" className={`text-xs ${linkStyle}`}>🔥 Get roasted instead</a>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── History ── */}
+      {history?.length > 0 && (
+        <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+          <h3 className={`text-sm font-bold ${c.text} mb-3`}>🕐 Recent Debates</h3>
+          <div className="space-y-1.5">
+            {history.map(entry => (
+              <button key={entry.id}
+                onClick={() => setResults(entry.result)}
+                className={`w-full text-left px-3 py-2 rounded-lg ${c.btnSecondary} text-xs flex items-center gap-2`}>
+                <span className={c.textMuted}>
+                  {new Date(entry.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
+                </span>
+                <span className={`${c.text} truncate`}>{entry.preview}{entry.preview.length >= 45 ? '…' : ''}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

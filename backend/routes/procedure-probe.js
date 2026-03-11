@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 
 // ════════════════════════════════════════════════════════════
-// POST /before-you-book — Be an Informed Patient
+// POST /procedure-probe — Procedure Probe
 // ════════════════════════════════════════════════════════════
-router.post('/before-you-book', async (req, res) => {
+router.post('/procedure-probe', async (req, res) => {
   try {
     const { procedure, quote, provider, insurance, concerns, urgency, userLanguage } = req.body;
 
@@ -86,21 +86,16 @@ Help me be an informed patient. Return ONLY valid JSON:
 
 Generate 6-8 questions to ask.`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+    const parsed = await callClaudeWithRetry(userPrompt, {
+      label: 'procedure-probe',
       max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage),
-      messages: [{ role: 'user', content: userPrompt }],
     });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
     return res.json(parsed);
 
   } catch (error) {
-    console.error('BeforeYouBook error:', error);
-    res.status(500).json({ error: error.message || 'Failed to generate patient guide' });
+    console.error('ProcedureProbe error:', error);
+    res.status(500).json({ error: error.message || 'Failed to generate procedure briefing' });
   }
 });
 

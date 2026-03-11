@@ -1,19 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 
 // ════════════════════════════════════════════════════════════
 // POST /cold-open-craft — Reach Out to Anyone
 // ════════════════════════════════════════════════════════════
-router.post('/cold-open-craft', async (req, res) => {
-  try {
-    const { who, why, channel, whatYouKnow, yourBackground, tone, userLanguage } = req.body;
 
-    if (!who?.trim() || !why?.trim()) {
-      return res.status(400).json({ error: 'Tell us who you\'re reaching out to and why.' });
-    }
-
-    const systemPrompt = `You are a cold outreach strategist — part copywriter, part social engineer, part empathy expert. You help people craft first messages to strangers that actually get responses.
+const systemPrompt = `You are a cold outreach strategist — part copywriter, part social engineer, part empathy expert. You help people craft first messages to strangers that actually get responses.
 
 YOUR PHILOSOPHY:
 1. The #1 reason cold messages fail: they're about the SENDER, not the RECIPIENT. Every opener must lead with value or genuine relevance to THEM.
@@ -29,6 +22,14 @@ BOLDNESS CALIBRATION:
 - safe: Polite, conventional, low risk of offense. Gets responses from 10-15%.
 - medium: More personal, slightly unexpected. Gets responses from 15-25%.
 - bold: Memorable, pattern-breaking, might raise eyebrows. Gets responses from 25-40% or gets ignored entirely.`;
+
+router.post('/cold-open-craft', async (req, res) => {
+  try {
+    const { who, why, channel, whatYouKnow, yourBackground, tone, userLanguage } = req.body;
+
+    if (!who?.trim() || !why?.trim()) {
+      return res.status(400).json({ error: 'Tell us who you\'re reaching out to and why.' });
+    }
 
     const userPrompt = `WHO I'M REACHING OUT TO: ${who}
 WHY: ${why}
@@ -69,16 +70,16 @@ Generate cold openers. Return ONLY valid JSON:
 
 Generate 3 openers: one safe, one medium, one bold.`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 2000,
-      system: withLanguage(systemPrompt, userLanguage),
-      messages: [{ role: 'user', content: userPrompt }],
-    });
+    const parsed = await callClaudeWithRetry(
+      userPrompt,
+      {
+        system: withLanguage(systemPrompt, userLanguage),
+        label: 'cold-open-craft',
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 2000,
+      }
+    );
 
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
     return res.json(parsed);
 
   } catch (error) {

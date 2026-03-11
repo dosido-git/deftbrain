@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useMemo, useRef } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
+import { usePersistentState } from '../hooks/usePersistentState';
 import { CopyBtn, ActionBar } from '../components/ActionButtons';
 
 // ════════════════════════════════════════════════════════════
@@ -81,11 +82,11 @@ function Section({ icon, title, badge, badgeColor, children, defaultOpen = false
         <div className="flex items-center gap-2.5">
           {icon && <span className="text-sm">{icon}</span>}
           <h3 className={`text-sm font-bold ${c.text}`}>{title}</h3>
-          {badge && <span className={`text-[9px] font-black px-2 py-0.5 rounded ${badgeColor || c.accentBg}`}>{badge}</span>}
+          {badge && <span className={`text-[9px] font-black px-2 py-0.5 rounded ${badgeColor || c.highlightBg}`}>{badge}</span>}
         </div>
         <span className={`text-xs ${c.textMuted}`}>{open ? '▲' : '▼'}</span>
       </button>
-      {open && <div className={`px-4 pb-4 border-t ${c.divider} pt-3 space-y-3`}>{children}</div>}
+      {open && <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-3`}>{children}</div>}
     </div>
   );
 }
@@ -131,46 +132,98 @@ function compressImageFile(file) {
 // ════════════════════════════════════════════════════════════
 // COMPONENT
 // ════════════════════════════════════════════════════════════
-const BillRescue = () => {
+const BillRescue = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
-  const { theme } = useTheme();
-  const isDark = theme === 'dark';
+  const { isDark } = useTheme();
   const billPhotoRef = useRef(null);
 
   const c = {
-    card: isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-slate-200',
-    input: isDark
-      ? 'bg-zinc-900 border-zinc-600 text-zinc-50 placeholder:text-zinc-500 focus:border-teal-500 focus:ring-teal-500/20'
-      : 'bg-white border-slate-300 text-slate-900 placeholder:text-slate-400 focus:border-teal-500 focus:ring-teal-100',
-    text: isDark ? 'text-zinc-50' : 'text-slate-900',
-    textSec: isDark ? 'text-zinc-400' : 'text-slate-600',
-    textMuted: isDark ? 'text-zinc-500' : 'text-slate-500',
-    label: isDark ? 'text-zinc-300' : 'text-slate-700',
-    accent: isDark ? 'text-teal-400' : 'text-teal-600',
-    accentBg: isDark ? 'bg-teal-900/30 border-teal-700/50' : 'bg-teal-50 border-teal-200',
-    btnPrimary: isDark ? 'bg-teal-600 hover:bg-teal-500 text-white' : 'bg-teal-600 hover:bg-teal-700 text-white',
-    btnSec: isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-slate-100 hover:bg-slate-200 text-slate-800',
-    danger: isDark ? 'bg-red-900/20 border-red-700/50 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
-    dangerText: isDark ? 'text-red-400' : 'text-red-600',
-    success: isDark ? 'bg-emerald-900/20 border-emerald-700/50 text-emerald-200' : 'bg-emerald-50 border-emerald-200 text-emerald-800',
-    successText: isDark ? 'text-emerald-400' : 'text-emerald-600',
-    warning: isDark ? 'bg-amber-900/20 border-amber-700/50 text-amber-200' : 'bg-amber-50 border-amber-200 text-amber-800',
-    warningText: isDark ? 'text-amber-400' : 'text-amber-600',
-    info: isDark ? 'bg-blue-900/20 border-blue-700/50 text-blue-200' : 'bg-blue-50 border-blue-200 text-blue-800',
-    purple: isDark ? 'bg-purple-900/20 border-purple-700/50 text-purple-200' : 'bg-purple-50 border-purple-200 text-purple-800',
-    pillActive: isDark ? 'bg-teal-600 border-teal-500 text-white' : 'bg-teal-600 border-teal-600 text-white',
-    pillInactive: isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-300 hover:border-zinc-500' : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300',
-    divider: isDark ? 'border-zinc-700' : 'border-slate-200',
-    quoteBg: isDark ? 'bg-zinc-900/60' : 'bg-slate-50',
-    dropzone: isDark ? 'border-zinc-600 bg-zinc-800/50 hover:border-teal-500' : 'border-slate-300 bg-slate-50 hover:border-teal-400',
+    // ── Standard keys ──
+    card:          isDark ? 'bg-zinc-800'    : 'bg-white',
+    cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
+    text:          isDark ? 'text-zinc-50'   : 'text-slate-900',
+    textSecondary: isDark ? 'text-zinc-400'  : 'text-slate-600',
+    textMuted:     isDark ? 'text-zinc-500'  : 'text-slate-500',
+    border:        isDark ? 'border-zinc-700' : 'border-slate-200',
+    input:         isDark
+      ? 'bg-zinc-900 border-zinc-600 text-zinc-50 placeholder:text-zinc-500 focus:border-cyan-500 focus:ring-cyan-500/20'
+      : 'bg-white border-slate-300 text-slate-900 placeholder:text-slate-400 focus:border-cyan-500 focus:ring-cyan-100',
+    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-slate-100 hover:bg-slate-200 text-slate-800',
+    danger:        isDark ? 'bg-red-900/20 border-red-700/50 text-red-200'          : 'bg-red-50 border-red-200 text-red-800',
+    success:       isDark ? 'bg-emerald-900/20 border-emerald-700/50 text-emerald-200' : 'bg-emerald-50 border-emerald-200 text-emerald-800',
+    warning:       isDark ? 'bg-amber-900/20 border-amber-700/50 text-amber-200'    : 'bg-amber-50 border-amber-200 text-amber-800',
+    // ── Tool-specific extras ──
+    // Standalone semantic text colors (for delete buttons, standalone labels — not inside combined boxes)
+    dangerFg:      isDark ? 'text-red-400'      : 'text-red-600',
+    successFg:     isDark ? 'text-emerald-400'  : 'text-emerald-600',
+    warningFg:     isDark ? 'text-amber-400'    : 'text-amber-700',
+    // Highlight accent (cyan — replaces banned teal)
+    highlightText: isDark ? 'text-cyan-400'  : 'text-cyan-600',
+    highlightBg:   isDark ? 'bg-cyan-900/30 border-cyan-700/50' : 'bg-cyan-50 border-cyan-200',
+    // Pill tabs
+    pillActive:    isDark ? 'bg-cyan-600 border-cyan-500 text-white' : 'bg-cyan-600 border-cyan-600 text-white',
+    pillInactive:  isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-300 hover:border-zinc-500' : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300',
+    // Neutral badge chip
+    badge:         isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-slate-100 text-slate-600',
+    // Quote / code background
+    quoteBg:       isDark ? 'bg-zinc-900/60' : 'bg-slate-50',
+    // File upload dropzone
+    dropzone:      isDark ? 'border-zinc-600 bg-zinc-800/50 hover:border-cyan-500' : 'border-slate-300 bg-slate-50 hover:border-cyan-400',
+    // Shame-to-action micro-step highlight box
+    microStepBg:   isDark ? 'bg-cyan-900/40' : 'bg-cyan-100',
+    // Action step left accent border
+    stepBorderL:   isDark ? 'border-cyan-500' : 'border-cyan-400',
+    // Escalation ladder number badge
+    escalationNum: isDark ? 'bg-cyan-700 text-cyan-100' : 'bg-cyan-100 text-cyan-700',
+    // Quick-check verdicts (replaces VERDICT_COLORS — yellow → amber)
+    verdictNormal:   isDark ? 'bg-green-900/40 border-green-700 text-green-300' : 'bg-green-50 border-green-300 text-green-800',
+    verdictQuestion: isDark ? 'bg-amber-900/40 border-amber-700 text-amber-300' : 'bg-amber-50 border-amber-300 text-amber-800',
+    verdictFight:    isDark ? 'bg-red-900/40 border-red-700 text-red-300'       : 'bg-red-50 border-red-300 text-red-800',
+    // Triage urgency rank bullets
+    urgencyNow:       'bg-red-600 text-white',
+    urgencyNegotiate: isDark ? 'bg-amber-700 text-amber-100' : 'bg-amber-100 text-amber-800',
+    urgencyDispute:   isDark ? 'bg-sky-800 text-sky-100'     : 'bg-sky-100 text-sky-800',
+    urgencyDefault:   isDark ? 'bg-emerald-700 text-emerald-100' : 'bg-emerald-100 text-emerald-800',
+    // Rehearsal chat bubbles (user was blue → cyan; rep was gray → zinc/slate)
+    chatUser:  isDark ? 'bg-cyan-900/40 border border-cyan-700' : 'bg-cyan-50 border border-cyan-200',
+    chatRep:   isDark ? 'bg-zinc-700 border border-zinc-600' : 'bg-slate-100 border border-slate-200',
+    coachBorder: isDark ? 'border-amber-700' : 'border-amber-400',
+    // Rehearsal resolution outcomes (partial was yellow → amber)
+    resolvedAccepted: isDark ? 'bg-green-900/40 text-green-300' : 'bg-green-100 text-green-700',
+    resolvedPartial:  isDark ? 'bg-amber-900/40 text-amber-300' : 'bg-amber-100 text-amber-700',
+    resolvedDenied:   isDark ? 'bg-red-900/40 text-red-300'     : 'bg-red-100 text-red-700',
+    // Rehearsal difficulty badge
+    hardModeBadge: isDark ? 'bg-red-900/40 text-red-300' : 'bg-red-100 text-red-700',
+    // Rehearsal coaching ratings (good was blue-500 → cyan; needs_work was yellow → amber)
+    coachRatingGreat:     isDark ? 'text-green-400' : 'text-green-600',
+    coachRatingGood:      isDark ? 'text-cyan-400'  : 'text-cyan-600',
+    coachRatingNeedsWork: isDark ? 'text-amber-400' : 'text-amber-600',
+    coachRatingTryAgain:  isDark ? 'text-red-400'   : 'text-red-600',
+    // Progress bar
+    progressTrack: isDark ? 'bg-zinc-700' : 'bg-slate-200',
+    // Calendar summary boxes (upcoming was blue → sky)
+    calendarOverdue:      isDark ? 'bg-red-900/20 border-red-800' : 'bg-red-50 border-red-200',
+    calendarUpcoming:     isDark ? 'bg-sky-900/20 border-sky-800' : 'bg-sky-50 border-sky-200',
+    calendarResolved:     isDark ? 'bg-green-900/20 border-green-800' : 'bg-green-50 border-green-200',
+    calendarOverdueAlert: isDark ? 'bg-red-900/30 border-red-800' : 'bg-red-50 border-red-300',
+    // Plan/log status pills (in_progress was blue → amber; pending neutral)
+    statusResolved:   isDark ? 'bg-emerald-900/40 text-emerald-300' : 'bg-emerald-100 text-emerald-700',
+    statusInProgress: isDark ? 'bg-amber-900/40 text-amber-300'     : 'bg-amber-100 text-amber-700',
+    statusPending:    isDark ? 'bg-zinc-700 text-zinc-400'           : 'bg-slate-100 text-slate-500',
   };
+
+  const linkStyle = isDark
+    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
+    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
 
   // ── View ──
   const [view, setView] = useState('rescue');
   const [error, setError] = useState('');
+  const [planSaved, setPlanSaved] = useState(false);
 
   // ── Rescue form ──
-  const [billType, setBillType] = useState('');
+  const [billType, setBillType] = usePersistentState('billrescue-bill-type', '');
   const [amount, setAmount] = useState('');
   const [currency, setCurrency] = useState(() => detectCurrency());
   const [overdueStatus, setOverdueStatus] = useState('');
@@ -181,7 +234,7 @@ const BillRescue = () => {
   const [billImagePreview, setBillImagePreview] = useState(null);
   const [billImageBase64, setBillImageBase64] = useState(null);
   const [compressingImage, setCompressingImage] = useState(false);
-  const [results, setResults] = useState(null);
+  const [results, setResults] = usePersistentState('billrescue-last-result', null);
 
   // ── Triage ──
   const [triageBills, setTriageBills] = useState([
@@ -302,11 +355,13 @@ const BillRescue = () => {
       reason,
       results,
       date: new Date().toISOString(),
-      status: 'pending', // pending | in_progress | resolved
+      status: 'pending',
     };
     const updated = [plan, ...savedPlans].slice(0, MAX_PLANS);
     setSavedPlans(updated);
     saveStore(STORE_PLANS, updated, MAX_PLANS);
+    setPlanSaved(true);
+    setTimeout(() => setPlanSaved(false), 2000);
   }, [results, billType, amount, currency, overdueStatus, reason, savedPlans]);
 
   const removePlan = useCallback((id) => {
@@ -661,22 +716,16 @@ const BillRescue = () => {
   const renderRescue = () => (
     <div className="space-y-4">
       <div className={`${c.card} border rounded-xl p-5`}>
-        <div className={`mb-4 pb-3 border-b ${c.divider}`}>
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className={`text-base font-black ${c.text}`}>🧾 Bill Rescue</h2>
-              <p className={`text-xs ${c.textMuted} mt-0.5`}>Turn bill anxiety into a clear action plan</p>
-            </div>
-            <select value={currency} onChange={e => setCurrency(e.target.value)}
-              className={`py-1 px-2 border rounded-lg text-xs font-bold ${c.input} outline-none`}>
-              {CURRENCIES.map(cur => <option key={cur} value={cur}>{cur}</option>)}
-            </select>
-          </div>
+        <div className="flex items-center justify-end mb-4">
+          <select value={currency} onChange={e => setCurrency(e.target.value)}
+            className={`py-1 px-2 border rounded-lg text-xs font-bold ${c.input} outline-none`}>
+            {CURRENCIES.map(cur => <option key={cur} value={cur}>{cur}</option>)}
+          </select>
         </div>
 
         {/* Bill type */}
         <div className="mb-4">
-          <label className={`text-xs font-bold ${c.label} block mb-1.5`}>What kind of bill? *</label>
+          <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>What kind of bill? *</label>
           <div className="flex flex-wrap gap-1.5">
             {BILL_TYPES.map(bt => (
               <button key={bt.value} onClick={() => setBillType(bt.value === billType ? '' : bt.value)}
@@ -710,7 +759,7 @@ const BillRescue = () => {
 
         {/* Overdue status */}
         <div className="mb-4">
-          <label className={`text-xs font-bold ${c.label} block mb-1.5`}>How late?</label>
+          <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>How late?</label>
           <div className="flex flex-wrap gap-1.5">
             {OVERDUE_STATUS.map(os => (
               <button key={os.value} onClick={() => setOverdueStatus(os.value === overdueStatus ? '' : os.value)}
@@ -724,7 +773,7 @@ const BillRescue = () => {
 
         {/* Reason */}
         <div className="mb-4">
-          <label className={`text-xs font-bold ${c.label} block mb-1.5`}>Why is this hard?</label>
+          <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Why is this hard?</label>
           <div className="flex flex-wrap gap-1.5">
             {REASONS.map(re => (
               <button key={re.value} onClick={() => setReason(re.value === reason ? '' : re.value)}
@@ -740,6 +789,7 @@ const BillRescue = () => {
         <div className="mb-3">
           <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>Anything else?</label>
           <input type="text" value={details} onChange={e => setDetails(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter' && billType && !loading) analyze(); }}
             placeholder="e.g., They keep calling, I got a court notice, I think they overcharged me..."
             className={`w-full px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
         </div>
@@ -761,27 +811,32 @@ const BillRescue = () => {
                 <img src={billImagePreview} alt="Bill" className="w-full h-16 object-cover rounded-lg border" />
                 <button onClick={() => { setBillImagePreview(null); setBillImageBase64(null); }}
                   className="absolute top-1 right-1 bg-red-600 text-white w-5 h-5 rounded-full text-[10px] flex items-center justify-center">✕</button>
-                <p className={`text-[9px] ${c.successText} mt-0.5`}>✅ Bill photo ready</p>
+                <p className={`text-[9px] ${c.successFg} mt-0.5`}>✅ Bill photo ready</p>
               </div>
             ) : (
               <button onClick={() => billPhotoRef.current?.click()} disabled={compressingImage}
                 className={`w-full h-16 border-2 border-dashed rounded-lg flex items-center justify-center text-xs ${c.dropzone}`}>
-                {compressingImage ? <span className="animate-spin inline-block">⏳</span> : '📷 Upload bill photo'}
+                {compressingImage ? <span className="animate-spin inline-block">{tool?.icon ?? '🧾'}</span> : '📷 Upload bill photo'}
               </button>
             )}
           </div>
         </div>
 
-        <p className={`text-[9px] ${c.textMuted} mb-3`}>Your data stays in this session only — nothing is saved to any server.</p>
+        <p className={`text-[9px] ${c.textMuted} mb-1`}>Your data stays in this session only — nothing is saved to any server.</p>
+        <p className={`text-[9px] ${c.textMuted} mb-3`}>
+          Juggling multiple overdue bills?{' '}
+          <button onClick={() => setView('triage')} className={linkStyle + ' text-[9px]'}>Triage mode</button>{' '}
+          ranks them by urgency and consequences.
+        </p>
 
         {/* Actions */}
         <div className="flex gap-2">
           <button onClick={analyze} disabled={loading || !billType}
             className={`flex-1 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-            {loading ? <><span className="animate-spin inline-block">⏳</span> Working on it...</> : <><span>🧾</span> Get My Action Plan</>}
+            {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🧾'}</span> Working on it...</> : <><span>🧾</span> Get My Action Plan</>}
           </button>
           {results && (
-            <button onClick={handleReset} className={`${c.btnSec} px-4 py-3 rounded-lg text-xs font-bold min-h-[48px]`}>
+            <button onClick={handleReset} className={`${c.btnSecondary} px-4 py-3 rounded-lg text-xs font-bold min-h-[48px]`}>
               🔄 New
             </button>
           )}
@@ -795,15 +850,15 @@ const BillRescue = () => {
           <div className="space-y-3">
             {/* Shame-to-action */}
             {r.shame_to_action && (
-              <div className={`${c.accentBg} border-2 rounded-xl p-5`}>
+              <div className={`${c.highlightBg} border-2 rounded-xl p-5`}>
                 <div className="flex items-start gap-3">
                   <span className="text-lg flex-shrink-0">💚</span>
                   <div>
                     <h3 className={`text-sm font-bold ${c.text} mb-1`}>First: Deep Breath</h3>
-                    <p className={`text-sm ${c.textSec}`}>{r.shame_to_action.reframe}</p>
+                    <p className={`text-sm ${c.textSecondary}`}>{r.shame_to_action.reframe}</p>
                     {r.shame_to_action.micro_step && (
-                      <div className={`mt-3 p-3 rounded-lg ${isDark ? 'bg-teal-900/40' : 'bg-teal-100'}`}>
-                        <p className={`text-xs font-bold ${c.accent}`}>📌 Your only step today: {r.shame_to_action.micro_step}</p>
+                      <div className={`mt-3 p-3 rounded-lg ${c.microStepBg}`}>
+                        <p className={`text-xs font-bold ${c.highlightText}`}>📌 Your only step today: {r.shame_to_action.micro_step}</p>
                       </div>
                     )}
                   </div>
@@ -817,25 +872,25 @@ const BillRescue = () => {
                 r.bill_autopsy.verdict?.toLowerCase().includes('overcharg') || r.bill_autopsy.verdict?.toLowerCase().includes('flag') ? c.danger
                 : r.bill_autopsy.verdict?.toLowerCase().includes('fair') ? c.success : c.warning
               } defaultOpen c={c}>
-                <p className={`text-sm ${c.textSec}`}>{r.bill_autopsy.analysis}</p>
+                <p className={`text-sm ${c.textSecondary}`}>{r.bill_autopsy.analysis}</p>
                 {r.bill_autopsy.total_potential_savings && (
                   <div className={`${c.success} border rounded-lg p-3 text-center`}>
-                    <p className={`text-xs font-bold ${c.successText}`}>💰 Potential savings: {r.bill_autopsy.total_potential_savings}</p>
+                    <p className={`text-xs font-bold ${c.successFg}`}>💰 Potential savings: {r.bill_autopsy.total_potential_savings}</p>
                   </div>
                 )}
                 {r.bill_autopsy.flagged_charges?.length > 0 && (
                   <div className="space-y-2">
-                    <p className={`text-[10px] font-bold ${c.dangerText} uppercase`}>Flagged charges:</p>
+                    <p className={`text-[10px] font-bold ${c.dangerFg} uppercase`}>Flagged charges:</p>
                     {r.bill_autopsy.flagged_charges.map((flag, i) => (
                       <div key={i} className={`${c.danger} border rounded-lg p-3`}>
-                        <p className={`text-xs font-bold ${c.dangerText}`}>{flag.charge}</p>
+                        <p className={`text-xs font-bold ${c.dangerFg}`}>{flag.charge}</p>
                         <p className="text-xs">{flag.issue}</p>
                       </div>
                     ))}
                   </div>
                 )}
                 {r.bill_autopsy.request_itemized && (
-                  <p className={`text-xs ${c.textSec}`}>💡 {r.bill_autopsy.request_itemized}</p>
+                  <p className={`text-xs ${c.textSecondary}`}>💡 {r.bill_autopsy.request_itemized}</p>
                 )}
               </Section>
             )}
@@ -845,7 +900,7 @@ const BillRescue = () => {
               <Section icon="⚖️" title="Know Your Rights" defaultOpen c={c}>
                 <div className="space-y-2">
                   {r.know_your_rights.map((right, i) => (
-                    <div key={i} className={`${c.info} border rounded-lg p-3`}>
+                    <div key={i} className={`${c.highlightBg} border rounded-lg p-3`}>
                       <p className="text-xs font-bold">{right.right}</p>
                       <p className="text-[10px] mt-1">{right.explanation}</p>
                     </div>
@@ -859,9 +914,9 @@ const BillRescue = () => {
               <Section icon="📋" title="Step-by-Step Action Plan" defaultOpen c={c}>
                 <div className="space-y-3">
                   {r.action_steps.map((step, i) => (
-                    <div key={i} className={`${c.quoteBg} rounded-lg p-4 border-l-4 ${isDark ? 'border-teal-500' : 'border-teal-400'}`}>
-                      <p className={`text-[10px] font-bold ${c.accent} uppercase mb-1`}>Step {i + 1}: {step.title}</p>
-                      <p className={`text-sm ${c.textSec} mb-2`}>{step.action}</p>
+                    <div key={i} className={`${c.quoteBg} rounded-lg p-4 border-l-4 ${c.stepBorderL}`}>
+                      <p className={`text-[10px] font-bold ${c.highlightText} uppercase mb-1`}>Step {i + 1}: {step.title}</p>
+                      <p className={`text-sm ${c.textSecondary} mb-2`}>{step.action}</p>
                       {step.script && (
                         <div className={`${c.card} border rounded-lg p-3`}>
                           <p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>Say this:</p>
@@ -881,10 +936,10 @@ const BillRescue = () => {
             {/* Payment plan */}
             {r.payment_plan && (
               <Section icon="💵" title="Payment Plan Proposal" c={c}>
-                <p className={`text-sm ${c.textSec}`}>{r.payment_plan.strategy}</p>
+                <p className={`text-sm ${c.textSecondary}`}>{r.payment_plan.strategy}</p>
                 {r.payment_plan.offer_amount && (
                   <div className={`${c.success} border rounded-lg p-3`}>
-                    <p className={`text-xs font-bold ${c.successText}`}>Offer: {r.payment_plan.offer_amount}</p>
+                    <p className={`text-xs font-bold ${c.successFg}`}>Offer: {r.payment_plan.offer_amount}</p>
                     {r.payment_plan.they_will_counter && (
                       <p className="text-[10px] mt-1">They'll counter: {r.payment_plan.they_will_counter}</p>
                     )}
@@ -908,14 +963,14 @@ const BillRescue = () => {
               <Section icon="📞" title="Phone Call Script" defaultOpen c={c}>
                 {r.phone_script.opening && (
                   <div className={`${c.quoteBg} rounded-lg p-3`}>
-                    <p className={`text-[10px] font-bold ${c.accent} mb-1`}>Opening:</p>
+                    <p className={`text-[10px] font-bold ${c.highlightText} mb-1`}>Opening:</p>
                     <p className={`text-xs ${c.text}`}>"{r.phone_script.opening}"</p>
                     <div className="mt-1.5"><CopyBtn content={r.phone_script.opening} label="Copy" /></div>
                   </div>
                 )}
                 {r.phone_script.key_phrases?.length > 0 && (
                   <div>
-                    <p className={`text-[10px] font-bold ${c.label} uppercase mb-1.5`}>Magic phrases:</p>
+                    <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-1.5`}>Magic phrases:</p>
                     {r.phone_script.key_phrases.map((phrase, i) => (
                       <div key={i} className="flex items-center gap-2 mb-1">
                         <p className={`flex-1 text-xs ${c.text}`}>• "{phrase}"</p>
@@ -926,7 +981,7 @@ const BillRescue = () => {
                 )}
                 {r.phone_script.if_they_say_no && (
                   <div className={`${c.warning} border rounded-lg p-3`}>
-                    <p className={`text-[10px] font-bold ${c.warningText} mb-1`}>If they say no:</p>
+                    <p className={`text-[10px] font-bold ${c.warningFg} mb-1`}>If they say no:</p>
                     <p className="text-xs">{r.phone_script.if_they_say_no}</p>
                   </div>
                 )}
@@ -940,11 +995,10 @@ const BillRescue = () => {
                 <div className="space-y-2">
                   {r.escalation_ladder.map((level, i) => (
                     <div key={i} className={`flex items-start gap-3 p-3 rounded-lg ${c.quoteBg}`}>
-                      <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-[10px] font-black ${
-                        isDark ? 'bg-teal-700 text-teal-100' : 'bg-teal-100 text-teal-700'}`}>{i + 1}</div>
+                      <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-[10px] font-black ${c.escalationNum}`}>{i + 1}</div>
                       <div>
                         <p className={`text-xs font-bold ${c.text}`}>{level.who}</p>
-                        <p className={`text-[10px] ${c.textSec}`}>{level.what_to_say}</p>
+                        <p className={`text-[10px] ${c.textSecondary}`}>{level.what_to_say}</p>
                       </div>
                     </div>
                   ))}
@@ -955,10 +1009,10 @@ const BillRescue = () => {
             {/* Collections defense */}
             {r.collections_defense && (
               <Section icon="🛡️" title="Collections Defense Kit" badge="IMPORTANT" badgeColor={c.danger} defaultOpen c={c}>
-                <p className={`text-sm ${c.textSec}`}>{r.collections_defense.overview}</p>
+                <p className={`text-sm ${c.textSecondary}`}>{r.collections_defense.overview}</p>
                 {r.collections_defense.validation_letter && (
                   <div>
-                    <p className={`text-[10px] font-bold ${c.label} uppercase mb-1`}>Debt Validation Letter (send first):</p>
+                    <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-1`}>Debt Validation Letter (send first):</p>
                     <div className={`${c.quoteBg} rounded-lg p-3 font-mono`}>
                       <p className={`text-xs ${c.text} whitespace-pre-wrap leading-relaxed`}>{r.collections_defense.validation_letter}</p>
                     </div>
@@ -967,15 +1021,15 @@ const BillRescue = () => {
                 )}
                 {r.collections_defense.what_to_say_on_phone && (
                   <div className={`${c.warning} border rounded-lg p-3`}>
-                    <p className={`text-[10px] font-bold ${c.warningText} mb-1`}>If they call you:</p>
+                    <p className={`text-[10px] font-bold ${c.warningFg} mb-1`}>If they call you:</p>
                     <p className="text-xs">"{r.collections_defense.what_to_say_on_phone}"</p>
                   </div>
                 )}
                 {r.collections_defense.never_do?.length > 0 && (
                   <div>
-                    <p className={`text-[10px] font-bold ${c.dangerText} uppercase mb-1`}>NEVER do:</p>
+                    <p className={`text-[10px] font-bold ${c.dangerFg} uppercase mb-1`}>NEVER do:</p>
                     {r.collections_defense.never_do.map((item, i) => (
-                      <p key={i} className={`text-xs ${c.textSec}`}>🚫 {item}</p>
+                      <p key={i} className={`text-xs ${c.textSecondary}`}>🚫 {item}</p>
                     ))}
                   </div>
                 )}
@@ -998,7 +1052,7 @@ const BillRescue = () => {
               <Section icon="🤫" title="What They Won't Tell You" c={c}>
                 <div className="space-y-2">
                   {r.what_they_wont_tell_you.map((secret, i) => (
-                    <div key={i} className={`${c.purple} border rounded-lg p-3`}>
+                    <div key={i} className={`${c.warning} border rounded-lg p-3`}>
                       <p className="text-xs">💡 {secret}</p>
                     </div>
                   ))}
@@ -1012,7 +1066,7 @@ const BillRescue = () => {
                 <div className="space-y-2">
                   {r.assistance_programs.map((prog, i) => (
                     <div key={i} className={`${c.success} border rounded-lg p-3`}>
-                      <p className={`text-xs font-bold ${c.successText}`}>{prog.program}</p>
+                      <p className={`text-xs font-bold ${c.successFg}`}>{prog.program}</p>
                       <p className="text-[10px] mt-1">Who qualifies: {prog.who_qualifies}</p>
                       <p className="text-[10px]">How to apply: {prog.how_to_apply}</p>
                     </div>
@@ -1024,7 +1078,7 @@ const BillRescue = () => {
             {/* Worst case */}
             {r.worst_case && (
               <Section icon="⚠️" title="Realistic Worst Case" c={c}>
-                <p className={`text-sm ${c.textSec}`}>{r.worst_case}</p>
+                <p className={`text-sm ${c.textSecondary}`}>{r.worst_case}</p>
                 {r.worst_case_reassurance && (
                   <p className={`text-xs ${c.textMuted} italic`}>💚 {r.worst_case_reassurance}</p>
                 )}
@@ -1036,17 +1090,17 @@ const BillRescue = () => {
               <Section icon="📅" title="After the Call" c={c}>
                 {r.follow_up.document_this && (
                   <div>
-                    <p className={`text-[10px] font-bold ${c.label} uppercase mb-1`}>Document immediately:</p>
-                    <p className={`text-xs ${c.textSec}`}>{r.follow_up.document_this}</p>
+                    <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-1`}>Document immediately:</p>
+                    <p className={`text-xs ${c.textSecondary}`}>{r.follow_up.document_this}</p>
                   </div>
                 )}
                 {r.follow_up.calendar_reminder && (
-                  <div className={`${c.info} border rounded-lg p-3`}>
+                  <div className={`${c.highlightBg} border rounded-lg p-3`}>
                     <p className="text-xs">📅 {r.follow_up.calendar_reminder}</p>
                   </div>
                 )}
                 {r.follow_up.if_they_dont_follow_through && (
-                  <p className={`text-xs ${c.textSec}`}>If they don't follow through: {r.follow_up.if_they_dont_follow_through}</p>
+                  <p className={`text-xs ${c.textSecondary}`}>If they don't follow through: {r.follow_up.if_they_dont_follow_through}</p>
                 )}
                 <button onClick={() => { setLogPlanId(null); setView('log'); }}
                   className={`${c.btnPrimary} px-4 py-2 rounded-lg text-xs font-bold min-h-[36px] w-full`}>
@@ -1064,12 +1118,19 @@ const BillRescue = () => {
 
             {/* Save + Copy All */}
             <div className="flex items-center gap-2">
-              <button onClick={savePlan}
-                className={`${c.btnPrimary} px-4 py-2.5 rounded-lg text-xs font-bold min-h-[40px]`}>
-                📌 Save Plan
+              <button onClick={savePlan} disabled={planSaved}
+                className={`${planSaved ? c.success + ' border' : c.btnPrimary} px-4 py-2.5 rounded-lg text-xs font-bold min-h-[40px] transition-colors`}>
+                {planSaved ? '✅ Saved to Tracker' : '📌 Save Plan'}
               </button>
               <ActionBar content={buildPlanText()} />
             </div>
+            {planSaved && (
+              <p className={`text-[10px] ${c.textMuted} text-center`}>
+                Find it in the{' '}
+                <button onClick={() => setView('tracker')} className={linkStyle + ' text-[10px]'}>📋 Tracker</button>
+                {' '}tab — update its status as you make progress.
+              </p>
+            )}
 
             <p className={`text-[9px] ${c.textMuted} text-center px-4`}>
               General guidance, not legal/financial advice. Programs and rights vary by location.
@@ -1078,13 +1139,19 @@ const BillRescue = () => {
             {/* Cross-refs */}
             <div className={`${c.card} border rounded-xl p-4`}>
               <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>Related tools</p>
-              <div className="flex flex-wrap gap-2">
-                {CROSS_REFS.map(ref => (
-                  <a key={ref.id} href={`/tool/${ref.id}`} target="_blank" rel="noopener noreferrer"
-                    className={`${c.quoteBg} border rounded-lg px-3 py-2 text-xs ${c.text} hover:opacity-80 min-h-[32px]`}>
-                    {ref.icon} {ref.label}
-                  </a>
-                ))}
+              <div className="space-y-1.5 text-xs">
+                <p className={c.textSecondary}>
+                  Want to practice this call before you dial?{' '}
+                  <a href="/MoneyMoves" className={linkStyle}>Money Moves</a>{' '}
+                  coaches you through tough money conversations.
+                </p>
+                {(overdueStatus === 'collections' || overdueStatus === '90_plus') && (
+                  <p className={c.textSecondary}>
+                    Feeling overwhelmed by multiple stressors at once?{' '}
+                    <a href="/CrisisPrioritizer" className={linkStyle}>Crisis Prioritizer</a>{' '}
+                    helps you decide what to tackle first.
+                  </p>
+                )}
               </div>
             </div>
           </div>
@@ -1099,7 +1166,7 @@ const BillRescue = () => {
   const renderTriage = () => (
     <div className="space-y-4">
       <div className={`${c.card} border rounded-xl p-5`}>
-        <div className={`mb-4 pb-3 border-b ${c.divider}`}>
+        <div className={`mb-4 pb-3 border-b ${c.border}`}>
           <h2 className={`text-base font-black ${c.text}`}>📊 Multi-Bill Triage</h2>
           <p className={`text-xs ${c.textMuted} mt-0.5`}>Got multiple bills? Find out which to tackle first.</p>
         </div>
@@ -1109,7 +1176,7 @@ const BillRescue = () => {
             <div className="flex items-center justify-between mb-2">
               <span className={`text-xs font-bold ${c.text}`}>Bill {idx + 1}</span>
               {triageBills.length > 2 && (
-                <button onClick={() => removeTriageBill(idx)} className={`text-xs ${c.dangerText} min-h-[24px]`}>✕</button>
+                <button onClick={() => removeTriageBill(idx)} className={`text-xs ${c.dangerFg} min-h-[24px]`}>✕</button>
               )}
             </div>
             <div className="grid grid-cols-3 gap-2">
@@ -1135,7 +1202,7 @@ const BillRescue = () => {
         ))}
 
         {triageBills.length < 10 && (
-          <button onClick={addTriageBill} className={`${c.btnSec} px-3 py-1.5 rounded-lg text-xs font-bold min-h-[32px] mb-3`}>
+          <button onClick={addTriageBill} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold min-h-[32px] mb-3`}>
             ➕ Add bill
           </button>
         )}
@@ -1152,7 +1219,7 @@ const BillRescue = () => {
 
         <button onClick={runTriage} disabled={loading || triageBills.filter(b => b.type).length < 2}
           className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-          {loading ? <><span className="animate-spin inline-block">⏳</span> Analyzing...</> : <><span>📊</span> Triage My Bills</>}
+          {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🧾'}</span> Analyzing...</> : <><span>📊</span> Triage My Bills</>}
         </button>
       </div>
 
@@ -1174,15 +1241,15 @@ const BillRescue = () => {
             {/* Priority order */}
             {r.priority_order?.length > 0 && (
               <div className="space-y-2">
-                <p className={`text-xs font-bold ${c.label} uppercase`}>Priority order:</p>
+                <p className={`text-xs font-bold ${c.textSecondary} uppercase`}>Priority order:</p>
                 {r.priority_order.map((bill, i) => (
                   <div key={i} className={`${c.card} border rounded-xl p-4`}>
                     <div className="flex items-start gap-3">
                       <div className={`w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-black ${
-                        bill.urgency === 'PAY NOW' ? 'bg-red-600 text-white' :
-                        bill.urgency === 'NEGOTIATE FIRST' ? (isDark ? 'bg-amber-700 text-amber-100' : 'bg-amber-100 text-amber-800') :
-                        bill.urgency === 'DISPUTE' ? (isDark ? 'bg-blue-700 text-blue-100' : 'bg-blue-100 text-blue-800') :
-                        isDark ? 'bg-emerald-700 text-emerald-100' : 'bg-emerald-100 text-emerald-800'
+                        bill.urgency === 'PAY NOW' ? c.urgencyNow :
+                        bill.urgency === 'NEGOTIATE FIRST' ? c.urgencyNegotiate :
+                        bill.urgency === 'DISPUTE' ? c.urgencyDispute :
+                        c.urgencyDefault
                       }`}>{bill.rank}</div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-0.5">
@@ -1190,11 +1257,11 @@ const BillRescue = () => {
                           <span className={`text-[9px] font-black px-1.5 py-0.5 rounded ${
                             bill.urgency === 'PAY NOW' ? c.danger :
                             bill.urgency === 'NEGOTIATE FIRST' ? c.warning :
-                            bill.urgency === 'DISPUTE' ? c.info : c.success
+                            bill.urgency === 'DISPUTE' ? c.highlightBg : c.success
                           }`}>{bill.urgency_emoji} {bill.urgency}</span>
                         </div>
-                        <p className={`text-[10px] ${c.textSec}`}>{bill.why}</p>
-                        <p className={`text-[10px] font-bold ${c.accent} mt-1`}>→ {bill.recommended_action}</p>
+                        <p className={`text-[10px] ${c.textSecondary}`}>{bill.why}</p>
+                        <p className={`text-[10px] font-bold ${c.highlightText} mt-1`}>→ {bill.recommended_action}</p>
                         {bill.allocate && <p className={`text-[10px] ${c.textMuted}`}>Budget: {bill.allocate}</p>}
                       </div>
                     </div>
@@ -1205,33 +1272,33 @@ const BillRescue = () => {
 
             {/* Budget plan */}
             {r.budget_plan && (
-              <div className={`${c.accentBg} border rounded-xl p-4`}>
-                <p className={`text-[10px] font-bold ${c.label} uppercase mb-2`}>Budget allocation</p>
+              <div className={`${c.highlightBg} border rounded-xl p-4`}>
+                <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-2`}>Budget allocation</p>
                 <div className="grid grid-cols-3 gap-2 text-center mb-2">
                   <div><p className={`text-xs font-bold ${c.text}`}>{r.budget_plan.total_monthly}</p><p className={`text-[9px] ${c.textMuted}`}>Budget</p></div>
-                  <div><p className={`text-xs font-bold ${c.accent}`}>{r.budget_plan.allocated}</p><p className={`text-[9px] ${c.textMuted}`}>To bills</p></div>
+                  <div><p className={`text-xs font-bold ${c.highlightText}`}>{r.budget_plan.allocated}</p><p className={`text-[9px] ${c.textMuted}`}>To bills</p></div>
                   <div><p className={`text-xs font-bold ${c.text}`}>{r.budget_plan.remaining}</p><p className={`text-[9px] ${c.textMuted}`}>Remaining</p></div>
                 </div>
-                {r.budget_plan.warning && <p className={`text-[10px] ${c.warningText}`}>⚠️ {r.budget_plan.warning}</p>}
+                {r.budget_plan.warning && <p className={`text-[10px] ${c.warningFg}`}>⚠️ {r.budget_plan.warning}</p>}
               </div>
             )}
 
             {/* Quick wins + Danger zones */}
             {r.quick_wins?.length > 0 && (
               <Section icon="⚡" title="Quick Wins" defaultOpen c={c}>
-                {r.quick_wins.map((w, i) => <p key={i} className={`text-xs ${c.textSec}`}>✅ {w}</p>)}
+                {r.quick_wins.map((w, i) => <p key={i} className={`text-xs ${c.textSecondary}`}>✅ {w}</p>)}
               </Section>
             )}
             {r.danger_zones?.length > 0 && (
               <Section icon="🚨" title="Danger Zones" defaultOpen c={c}>
-                {r.danger_zones.map((d, i) => <p key={i} className={`text-xs ${c.dangerText}`}>⚠️ {d}</p>)}
+                {r.danger_zones.map((d, i) => <p key={i} className={`text-xs ${c.dangerFg}`}>⚠️ {d}</p>)}
               </Section>
             )}
 
             {r.strategy && (
               <div className={`${c.card} border rounded-xl p-4`}>
-                <p className={`text-xs font-bold ${c.label} uppercase mb-1`}>Overall strategy</p>
-                <p className={`text-sm ${c.textSec}`}>{r.strategy}</p>
+                <p className={`text-xs font-bold ${c.textSecondary} uppercase mb-1`}>Overall strategy</p>
+                <p className={`text-sm ${c.textSecondary}`}>{r.strategy}</p>
               </div>
             )}
             {r.encouragement && (
@@ -1241,6 +1308,9 @@ const BillRescue = () => {
             )}
 
             <ActionBar content={buildTriageText()} />
+            <p className={`text-[9px] ${c.textMuted} text-center px-4`}>
+              General guidance, not legal/financial advice. Consult a financial counselor for complex situations.
+            </p>
           </div>
         );
       })()}
@@ -1253,7 +1323,7 @@ const BillRescue = () => {
   const renderTracker = () => (
     <div className="space-y-4">
       <div className={`${c.card} border rounded-xl p-5`}>
-        <div className={`mb-4 pb-3 border-b ${c.divider}`}>
+        <div className={`mb-4 pb-3 border-b ${c.border}`}>
           <h2 className={`text-base font-black ${c.text}`}>📋 Plan Tracker</h2>
           <p className={`text-xs ${c.textMuted} mt-0.5`}>Your saved rescue plans and their status</p>
         </div>
@@ -1261,7 +1331,7 @@ const BillRescue = () => {
         {/* Upcoming follow-ups */}
         {upcomingFollowUps.length > 0 && (
           <div className={`${c.warning} border rounded-xl p-3 mb-4`}>
-            <p className={`text-[10px] font-bold ${c.warningText} uppercase mb-1`}>Upcoming follow-ups</p>
+            <p className={`text-[10px] font-bold ${c.warningFg} uppercase mb-1`}>Upcoming follow-ups</p>
             {upcomingFollowUps.map((fu, i) => (
               <p key={i} className="text-xs">📅 {new Date(fu.nextFollowUp).toLocaleDateString()} — {fu.agreed || fu.notes || 'Follow up'}</p>
             ))}
@@ -1277,15 +1347,15 @@ const BillRescue = () => {
                     <div className="flex items-center gap-2 mb-0.5">
                       <span>{billTypeEmoji(plan.billType)}</span>
                       <span className={`text-xs font-bold ${c.text}`}>{billTypeLabel(plan.billType)}</span>
-                      {plan.amount && <span className={`text-xs ${c.accent}`}>{plan.currency}{plan.amount}</span>}
+                      {plan.amount && <span className={`text-xs ${c.highlightText}`}>{plan.currency}{plan.amount}</span>}
                       <span className={`text-[9px] font-black px-1.5 py-0.5 rounded ${
                         plan.status === 'resolved' ? c.success :
-                        plan.status === 'in_progress' ? c.warning : c.info
+                        plan.status === 'in_progress' ? c.warning : c.highlightBg
                       }`}>{plan.status === 'resolved' ? '✅ Resolved' : plan.status === 'in_progress' ? '🔄 In Progress' : '⏳ Pending'}</span>
                     </div>
                     <p className={`text-[9px] ${c.textMuted}`}>{new Date(plan.date).toLocaleDateString()}</p>
                     {plan.results?.shame_to_action?.micro_step && (
-                      <p className={`text-[10px] ${c.textSec} mt-0.5 truncate`}>📌 {plan.results.shame_to_action.micro_step}</p>
+                      <p className={`text-[10px] ${c.textSecondary} mt-0.5 truncate`}>📌 {plan.results.shame_to_action.micro_step}</p>
                     )}
                   </div>
                   <div className="flex items-center gap-1 flex-shrink-0">
@@ -1298,8 +1368,8 @@ const BillRescue = () => {
                       </select>
                     )}
                     <button onClick={() => { setLogPlanId(plan.id); setView('log'); }}
-                      className={`${c.btnSec} px-2 py-1 rounded text-[9px] font-bold min-h-[24px]`}>📞 Log</button>
-                    <button onClick={() => removePlan(plan.id)} className={`text-xs ${c.dangerText} min-h-[24px]`}>✕</button>
+                      className={`${c.btnSecondary} px-2 py-1 rounded text-[9px] font-bold min-h-[24px]`}>📞 Log</button>
+                    <button onClick={() => removePlan(plan.id)} className={`text-xs ${c.dangerFg} min-h-[24px]`}>✕</button>
                   </div>
                 </div>
               </div>
@@ -1309,7 +1379,7 @@ const BillRescue = () => {
                 setSavedPlans([]);
                 saveStore(STORE_PLANS, [], MAX_PLANS);
               }
-            }} className={`text-xs ${c.dangerText} min-h-[28px]`}>🗑️ Clear all</button>
+            }} className={`text-xs ${c.dangerFg} min-h-[28px]`}>🗑️ Clear all</button>
           </div>
         ) : (
           <div className="text-center py-6">
@@ -1331,14 +1401,14 @@ const BillRescue = () => {
   const renderCallLog = () => (
     <div className="space-y-4">
       <div className={`${c.card} border rounded-xl p-5`}>
-        <div className={`mb-4 pb-3 border-b ${c.divider}`}>
+        <div className={`mb-4 pb-3 border-b ${c.border}`}>
           <h2 className={`text-base font-black ${c.text}`}>📞 Call Log</h2>
           <p className={`text-xs ${c.textMuted} mt-0.5`}>Track what happened when you made the call</p>
         </div>
 
         {/* Log form */}
         <div className="mb-4">
-          <label className={`text-xs font-bold ${c.label} block mb-1.5`}>What happened?</label>
+          <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>What happened?</label>
           <div className="flex flex-wrap gap-1.5 mb-3">
             {[
               { value: 'accepted', label: '✅ They accepted my plan' },
@@ -1401,7 +1471,7 @@ const BillRescue = () => {
       {/* Past logs */}
       {callLogs.length > 0 && (
         <div className={`${c.card} border rounded-xl p-5`}>
-          <p className={`text-xs font-bold ${c.label} uppercase mb-3`}>Past calls ({callLogs.length})</p>
+          <p className={`text-xs font-bold ${c.textSecondary} uppercase mb-3`}>Past calls ({callLogs.length})</p>
           <div className="space-y-2">
             {callLogs.map(log => (
               <div key={log.id} className={`${c.quoteBg} rounded-lg p-3`}>
@@ -1412,17 +1482,17 @@ const BillRescue = () => {
                         log.outcome === 'accepted' || log.outcome === 'settled' ? c.success :
                         log.outcome === 'denied' ? c.danger : c.warning
                       }`}>{log.outcome}</span>
-                      {log.repName && <span className={`text-[10px] ${c.textSec}`}>with {log.repName}</span>}
+                      {log.repName && <span className={`text-[10px] ${c.textSecondary}`}>with {log.repName}</span>}
                     </div>
                     {log.agreed && <p className={`text-xs ${c.text}`}>🤝 {log.agreed}</p>}
-                    {log.confirmationNumber && <p className={`text-[10px] ${c.accent}`}># {log.confirmationNumber}</p>}
+                    {log.confirmationNumber && <p className={`text-[10px] ${c.highlightText}`}># {log.confirmationNumber}</p>}
                     {log.notes && <p className={`text-[10px] ${c.textMuted}`}>{log.notes}</p>}
                     <div className="flex items-center gap-3 mt-0.5">
                       <p className={`text-[9px] ${c.textMuted}`}>{new Date(log.date).toLocaleDateString()}</p>
-                      {log.nextFollowUp && <p className={`text-[9px] ${c.warningText}`}>📅 Follow up: {new Date(log.nextFollowUp).toLocaleDateString()}</p>}
+                      {log.nextFollowUp && <p className={`text-[9px] ${c.warningFg}`}>📅 Follow up: {new Date(log.nextFollowUp).toLocaleDateString()}</p>}
                     </div>
                   </div>
-                  <button onClick={() => removeLog(log.id)} className={`text-xs ${c.dangerText} flex-shrink-0 min-h-[24px]`}>✕</button>
+                  <button onClick={() => removeLog(log.id)} className={`text-xs ${c.dangerFg} flex-shrink-0 min-h-[24px]`}>✕</button>
                 </div>
               </div>
             ))}
@@ -1431,7 +1501,7 @@ const BillRescue = () => {
                 setCallLogs([]);
                 saveStore(STORE_LOGS, [], MAX_LOGS);
               }
-            }} className={`text-xs ${c.dangerText} min-h-[28px]`}>🗑️ Clear all</button>
+            }} className={`text-xs ${c.dangerFg} min-h-[28px]`}>🗑️ Clear all</button>
           </div>
         </div>
       )}
@@ -1442,27 +1512,30 @@ const BillRescue = () => {
   // RENDER: QUICK CHECK
   // ════════════════════════════════════════════════════════════
   const renderQuickCheck = () => {
-    const VERDICT_COLORS = {
-      'NORMAL': isDark ? 'bg-green-900/40 border-green-700 text-green-300' : 'bg-green-50 border-green-300 text-green-800',
-      'WORTH QUESTIONING': isDark ? 'bg-yellow-900/40 border-yellow-700 text-yellow-300' : 'bg-yellow-50 border-yellow-300 text-yellow-800',
-      'DEFINITELY FIGHT THIS': isDark ? 'bg-red-900/40 border-red-700 text-red-300' : 'bg-red-50 border-red-300 text-red-800',
+    const getVerdictClass = (verdict) => {
+      if (verdict === 'NORMAL') return c.verdictNormal;
+      if (verdict === 'WORTH QUESTIONING') return c.verdictQuestion;
+      if (verdict === 'DEFINITELY FIGHT THIS') return c.verdictFight;
+      return `${c.card} ${c.border}`;
     };
     return (
       <div className="space-y-4">
         <div className={`${c.card} border rounded-xl p-5`}>
           <h3 className={`text-sm font-bold ${c.text} mb-1`}>⚡ Quick Check</h3>
-          <p className={`text-xs ${c.muted} mb-4`}>Describe a charge. Get an instant verdict: fight it or forget it.</p>
+          <p className={`text-xs ${c.textMuted} mb-4`}>Describe a charge. Get an instant verdict: fight it or forget it.</p>
 
           <div className="space-y-3">
             <div>
-              <label className={`text-xs font-bold ${c.label} block mb-1.5`}>What's the charge? *</label>
-              <input value={qcCharge} onChange={e => setQcCharge(e.target.value)} placeholder='e.g. "Activation fee $35" or "Balance transfer fee"'
+              <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>What's the charge? *</label>
+              <input value={qcCharge} onChange={e => setQcCharge(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Enter' && qcCharge.trim() && !loading) runQuickCheck(); }}
+                placeholder='e.g. "Activation fee $35" or "Balance transfer fee"'
                 className={`w-full px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
             </div>
 
             <div className="flex gap-2">
               <div className="flex-1">
-                <label className={`text-xs font-bold ${c.label} block mb-1.5`}>Bill type</label>
+                <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Bill type</label>
                 <select value={qcType} onChange={e => setQcType(e.target.value)}
                   className={`w-full py-1.5 px-2 border rounded-lg text-xs ${c.input}`}>
                   <option value="">Any</option>
@@ -1470,7 +1543,7 @@ const BillRescue = () => {
                 </select>
               </div>
               <div className="flex-1">
-                <label className={`text-xs font-bold ${c.label} block mb-1.5`}>Amount</label>
+                <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Amount</label>
                 <input type="number" value={qcAmount} onChange={e => setQcAmount(e.target.value)} placeholder="Optional"
                   className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
               </div>
@@ -1478,14 +1551,14 @@ const BillRescue = () => {
 
             <button onClick={runQuickCheck} disabled={loading || !qcCharge.trim()}
               className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-              {loading ? <span className="animate-spin">⏳</span> : <span>⚡</span>}
+              {loading ? <span className="animate-spin">{tool?.icon ?? '🧾'}</span> : <span>⚡</span>}
               {loading ? 'Checking...' : 'Check This Charge'}
             </button>
           </div>
         </div>
 
         {qcResults && (
-          <div className={`border rounded-xl p-5 ${VERDICT_COLORS[qcResults.verdict] || c.card}`}>
+          <div className={`border rounded-xl p-5 ${getVerdictClass(qcResults.verdict)}`}>
             <div className="flex items-center gap-2 mb-3">
               <span className="text-2xl">{qcResults.verdict_emoji}</span>
               <span className="text-base font-black tracking-tight">{qcResults.verdict}</span>
@@ -1497,19 +1570,19 @@ const BillRescue = () => {
 
             {qcResults.typical_range && (
               <div className={`${c.card} border rounded-lg p-3 mb-3`}>
-                <p className={`text-[10px] font-bold ${c.label} uppercase mb-1`}>Typical range</p>
+                <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-1`}>Typical range</p>
                 <p className="text-xs">{qcResults.typical_range}</p>
               </div>
             )}
             {qcResults.best_phrase && (
               <div className={`${c.card} border rounded-lg p-3 mb-3`}>
-                <p className={`text-[10px] font-bold ${c.label} uppercase mb-1`}>Best phone phrase</p>
+                <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-1`}>Best phone phrase</p>
                 <p className="text-xs font-bold italic">"{qcResults.best_phrase}"</p>
                 <div className="mt-2"><CopyBtn content={qcResults.best_phrase + '\n\n— Generated by DeftBrain · deftbrain.com'} label="Copy phrase" /></div>
               </div>
             )}
             {qcResults.quick_tip && (
-              <p className={`text-xs ${c.muted}`}>💡 {qcResults.quick_tip}</p>
+              <p className={`text-xs ${c.textMuted}`}>💡 {qcResults.quick_tip}</p>
             )}
             {qcResults.potential_savings && (
               <p className="text-xs font-bold mt-2">💰 Potential savings: {currency}{qcResults.potential_savings}</p>
@@ -1524,24 +1597,30 @@ const BillRescue = () => {
   // RENDER: REHEARSAL
   // ════════════════════════════════════════════════════════════
   const renderRehearsal = () => {
-    const ratingColors = { great: 'text-green-500', good: 'text-blue-500', needs_work: 'text-yellow-500', try_again: 'text-red-500' };
+    const getRatingClass = (rating) => {
+      if (rating === 'great') return c.coachRatingGreat;
+      if (rating === 'good') return c.coachRatingGood;
+      if (rating === 'needs_work') return c.coachRatingNeedsWork;
+      if (rating === 'try_again') return c.coachRatingTryAgain;
+      return c.textMuted;
+    };
     return (
       <div className="space-y-4">
         <div className={`${c.card} border rounded-xl p-5`}>
           <h3 className={`text-sm font-bold ${c.text} mb-1`}>🎭 Negotiation Rehearsal</h3>
-          <p className={`text-xs ${c.muted} mb-4`}>Practice the call before you make it. AI plays the billing rep.</p>
+          <p className={`text-xs ${c.textMuted} mb-4`}>Practice the call before you make it. AI plays the billing rep.</p>
 
           {!rhActive ? (
             <div className="space-y-3">
               <div>
-                <label className={`text-xs font-bold ${c.label} block mb-1.5`}>What's the situation? *</label>
+                <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>What's the situation? *</label>
                 <textarea rows={3} value={rhSituation} onChange={e => setRhSituation(e.target.value)}
                   placeholder='e.g. "I have a $2,400 medical bill and I can only afford $100/month. I want to negotiate a payment plan."'
                   className={`w-full px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
               </div>
               <div className="flex gap-2">
                 <div className="flex-1">
-                  <label className={`text-xs font-bold ${c.label} block mb-1.5`}>Bill type</label>
+                  <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Bill type</label>
                   <select value={rhType} onChange={e => setRhType(e.target.value)}
                     className={`w-full py-1.5 px-2 border rounded-lg text-xs ${c.input}`}>
                     <option value="">Any</option>
@@ -1549,7 +1628,7 @@ const BillRescue = () => {
                   </select>
                 </div>
                 <div className="flex-1">
-                  <label className={`text-xs font-bold ${c.label} block mb-1.5`}>Difficulty</label>
+                  <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Difficulty</label>
                   <select value={rhDifficulty} onChange={e => setRhDifficulty(e.target.value)}
                     className={`w-full py-1.5 px-2 border rounded-lg text-xs ${c.input}`}>
                     <option value="normal">Normal</option>
@@ -1558,14 +1637,14 @@ const BillRescue = () => {
                 </div>
               </div>
               <div>
-                <label className={`text-xs font-bold ${c.label} block mb-1.5`}>Your opening line (optional)</label>
+                <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Your opening line (optional)</label>
                 <input value={rhMessage} onChange={e => setRhMessage(e.target.value)}
                   placeholder="e.g. Hi, I'm calling about my account..."
                   className={`w-full px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
               </div>
               <button onClick={startRehearsal} disabled={loading || !rhSituation.trim()}
                 className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-                {loading ? <span className="animate-spin">⏳</span> : <span>📞</span>}
+                {loading ? <span className="animate-spin">{tool?.icon ?? '🧾'}</span> : <span>📞</span>}
                 {loading ? 'Connecting...' : 'Start Practice Call'}
               </button>
             </div>
@@ -1573,10 +1652,10 @@ const BillRescue = () => {
             <div className="space-y-3">
               {/* Difficulty badge */}
               <div className="flex items-center justify-between">
-                <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${rhDifficulty === 'hard' ? (isDark ? 'bg-red-900/40 text-red-300' : 'bg-red-100 text-red-700') : c.badge}`}>
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${rhDifficulty === 'hard' ? c.hardModeBadge : c.badge}`}>
                   {rhDifficulty === 'hard' ? '🔥 HARD MODE' : '📞 NORMAL MODE'}
                 </span>
-                <button onClick={resetRehearsal} className={`text-xs ${c.muted} underline min-h-[28px]`}>End call</button>
+                <button onClick={resetRehearsal} className={`text-xs ${c.textMuted} underline min-h-[28px]`}>End call</button>
               </div>
 
               {/* Conversation */}
@@ -1585,29 +1664,29 @@ const BillRescue = () => {
                   <div key={i} className={`text-xs ${msg.role === 'user' ? 'text-right' : 'text-left'}`}>
                     {msg.role === 'user' ? (
                       <div className="inline-block">
-                        <span className={`text-[10px] font-bold ${c.label} block mb-0.5`}>You:</span>
-                        <div className={`inline-block px-3 py-2 rounded-lg ${isDark ? 'bg-blue-900/40 border border-blue-700' : 'bg-blue-50 border border-blue-200'}`}>
+                        <span className={`text-[10px] font-bold ${c.textSecondary} block mb-0.5`}>You:</span>
+                        <div className={`inline-block px-3 py-2 rounded-lg ${c.chatUser}`}>
                           {msg.content}
                         </div>
                       </div>
                     ) : msg.parsed ? (
                       <div className="space-y-2">
                         <div>
-                          <span className={`text-[10px] font-bold ${c.label} block mb-0.5`}>Rep ({msg.parsed.rep_tone || 'neutral'}):</span>
-                          <div className={`inline-block px-3 py-2 rounded-lg text-left ${isDark ? 'bg-gray-800 border border-gray-700' : 'bg-gray-100 border border-gray-200'}`}>
+                          <span className={`text-[10px] font-bold ${c.textSecondary} block mb-0.5`}>Rep ({msg.parsed.rep_tone || 'neutral'}):</span>
+                          <div className={`inline-block px-3 py-2 rounded-lg text-left ${c.chatRep}`}>
                             {msg.parsed.rep_response}
                           </div>
                         </div>
-                        <div className={`border-l-2 pl-2 ${isDark ? 'border-purple-700' : 'border-purple-300'}`}>
-                          <span className={`text-[10px] font-bold ${ratingColors[msg.parsed.coach_rating] || c.muted}`}>
+                        <div className={`border-l-2 pl-2 ${c.coachBorder}`}>
+                          <span className={`text-[10px] font-bold ${getRatingClass(msg.parsed.coach_rating)}`}>
                             🎯 Coach ({msg.parsed.coach_rating}):
                           </span>
-                          <p className={`text-xs ${c.muted}`}>{msg.parsed.coach_feedback}</p>
+                          <p className={`text-xs ${c.textMuted}`}>{msg.parsed.coach_feedback}</p>
                           {msg.parsed.coach_tip && <p className="text-xs font-bold mt-0.5">💡 Try: "{msg.parsed.coach_tip}"</p>}
                         </div>
                         {msg.parsed.negotiation_progress != null && (
                           <div className="flex items-center gap-2">
-                            <div className={`flex-1 h-1.5 rounded ${isDark ? 'bg-gray-700' : 'bg-gray-200'}`}>
+                          <div className={`flex-1 h-1.5 rounded ${c.progressTrack}`}>
                               <div className="h-full rounded bg-green-500 transition-all" style={{ width: `${msg.parsed.negotiation_progress}%` }} />
                             </div>
                             <span className="text-[10px] font-bold">{msg.parsed.negotiation_progress}%</span>
@@ -1615,9 +1694,9 @@ const BillRescue = () => {
                         )}
                         {msg.parsed.is_resolved && (
                           <div className={`px-3 py-2 rounded-lg text-xs font-bold ${
-                            msg.parsed.resolution === 'accepted' ? (isDark ? 'bg-green-900/40 text-green-300' : 'bg-green-100 text-green-700')
-                            : msg.parsed.resolution === 'partial' ? (isDark ? 'bg-yellow-900/40 text-yellow-300' : 'bg-yellow-100 text-yellow-700')
-                            : (isDark ? 'bg-red-900/40 text-red-300' : 'bg-red-100 text-red-700')
+                            msg.parsed.resolution === 'accepted' ? c.resolvedAccepted
+                            : msg.parsed.resolution === 'partial' ? c.resolvedPartial
+                            : c.resolvedDenied
                           }`}>
                             {msg.parsed.resolution === 'accepted' ? '✅ Success! The rep agreed.' : msg.parsed.resolution === 'partial' ? '🤝 Partial win — they made a counter offer.' : '❌ Denied. Try escalating or calling back.'}
                           </div>
@@ -1678,11 +1757,11 @@ const BillRescue = () => {
       <div className="space-y-4">
         <div className={`${c.card} border rounded-xl p-5`}>
           <h3 className={`text-sm font-bold ${c.text} mb-1`}>✉️ Letter Generator</h3>
-          <p className={`text-xs ${c.muted} mb-4`}>Ready-to-send letters for every situation. Pick a type, add your details.</p>
+          <p className={`text-xs ${c.textMuted} mb-4`}>Ready-to-send letters for every situation. Pick a type, add your details.</p>
 
           <div className="space-y-3">
             <div>
-              <label className={`text-xs font-bold ${c.label} block mb-1.5`}>Letter type *</label>
+              <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Letter type *</label>
               <div className="grid grid-cols-1 gap-1.5">
                 {LETTER_TYPES.map(lt => (
                   <button key={lt.value} onClick={() => setLtType(lt.value)}
@@ -1690,7 +1769,7 @@ const BillRescue = () => {
                       ltType === lt.value ? c.pillActive : c.pillInactive
                     }`}>
                     <span className="font-bold">{lt.emoji} {lt.label}</span>
-                    <span className={`ml-1.5 ${c.muted}`}>— {lt.desc}</span>
+                    <span className={`ml-1.5 ${c.textMuted}`}>— {lt.desc}</span>
                   </button>
                 ))}
               </div>
@@ -1698,7 +1777,7 @@ const BillRescue = () => {
 
             <div className="flex gap-2">
               <div className="flex-1">
-                <label className={`text-xs font-bold ${c.label} block mb-1.5`}>Bill type</label>
+                <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Bill type</label>
                 <select value={ltBillType} onChange={e => setLtBillType(e.target.value)}
                   className={`w-full py-1.5 px-2 border rounded-lg text-xs ${c.input}`}>
                   <option value="">Any</option>
@@ -1706,29 +1785,31 @@ const BillRescue = () => {
                 </select>
               </div>
               <div className="flex-1">
-                <label className={`text-xs font-bold ${c.label} block mb-1.5`}>Amount</label>
+                <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Amount</label>
                 <input type="number" value={ltAmount} onChange={e => setLtAmount(e.target.value)} placeholder="Optional"
                   className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
               </div>
             </div>
 
             <div>
-              <label className={`text-xs font-bold ${c.label} block mb-1.5`}>Your situation</label>
+              <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Your situation</label>
               <textarea rows={3} value={ltSituation} onChange={e => setLtSituation(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && ltType && !loading) generateLetter(); }}
                 placeholder="Briefly describe what happened and what you need..."
                 className={`w-full px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
             </div>
 
             <div>
-              <label className={`text-xs font-bold ${c.label} block mb-1.5`}>Additional context</label>
+              <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Additional context</label>
               <input value={ltContext} onChange={e => setLtContext(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Enter' && ltType && !loading) generateLetter(); }}
                 placeholder="Rep name, dates, reference numbers, etc."
                 className={`w-full px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
             </div>
 
             <button onClick={generateLetter} disabled={loading || !ltType}
               className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-              {loading ? <span className="animate-spin">⏳</span> : <span>✉️</span>}
+              {loading ? <span className="animate-spin">{tool?.icon ?? '🧾'}</span> : <span>✉️</span>}
               {loading ? 'Generating...' : 'Generate Letter'}
             </button>
           </div>
@@ -1738,12 +1819,14 @@ const BillRescue = () => {
           <div className={`${c.card} border rounded-xl p-5 space-y-4`}>
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-bold">{ltResults.letter_title}</h3>
-              <CopyBtn content={ltResults.letter_body + '\n\n— Generated by DeftBrain · deftbrain.com'} label="Copy letter" />
             </div>
 
+            {/* ActionBar at top of results — single source of Copy/Print/Share */}
+            <ActionBar content={ltResults.letter_body + '\n\n— Generated by DeftBrain · deftbrain.com'} />
+
             {ltResults.send_to && (
-              <div className={`${isDark ? 'bg-blue-900/30 border-blue-800' : 'bg-blue-50 border-blue-200'} border rounded-lg p-3`}>
-                <p className={`text-[10px] font-bold ${c.label} uppercase mb-1`}>Send to</p>
+              <div className={`${c.highlightBg} border rounded-lg p-3`}>
+                <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-1`}>Send to</p>
                 <p className="text-xs">{ltResults.send_to}</p>
                 {ltResults.send_via && <p className="text-xs mt-1">📨 Via: <strong>{ltResults.send_via}</strong></p>}
               </div>
@@ -1754,20 +1837,22 @@ const BillRescue = () => {
             </div>
 
             {ltResults.important_notes?.length > 0 && (
-              <div className={`${isDark ? 'bg-yellow-900/30 border-yellow-800' : 'bg-yellow-50 border-yellow-200'} border rounded-lg p-3`}>
-                <p className={`text-[10px] font-bold ${c.label} uppercase mb-1.5`}>⚠️ Before you send</p>
+              <div className={`${c.warning} border rounded-lg p-3`}>
+                <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-1.5`}>⚠️ Before you send</p>
                 {ltResults.important_notes.map((n, i) => <p key={i} className="text-xs mb-1">• {n}</p>)}
               </div>
             )}
 
             {ltResults.follow_up && (
               <div className={`${c.card} border rounded-lg p-3`}>
-                <p className={`text-[10px] font-bold ${c.label} uppercase mb-1`}>📅 After sending</p>
+                <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-1`}>📅 After sending</p>
                 <p className="text-xs">{ltResults.follow_up}</p>
               </div>
             )}
 
-            <ActionBar content={ltResults.letter_body + '\n\n— Generated by DeftBrain · deftbrain.com'} brandLine="— Generated by DeftBrain · deftbrain.com" />
+            <p className={`text-[9px] ${c.textMuted} text-center`}>
+              General guidance only — not legal advice. Consult a lawyer for complex disputes.
+            </p>
           </div>
         )}
       </div>
@@ -1796,41 +1881,41 @@ const BillRescue = () => {
       <div className="space-y-4">
         <div className={`${c.card} border rounded-xl p-5`}>
           <h3 className={`text-sm font-bold ${c.text} mb-1`}>📅 Bill Calendar</h3>
-          <p className={`text-xs ${c.muted} mb-4`}>Your saved plans and follow-ups at a glance.</p>
+          <p className={`text-xs ${c.textMuted} mb-4`}>Your saved plans and follow-ups at a glance.</p>
 
           {calendarData.length === 0 ? (
             <div className="text-center py-8">
               <p className="text-2xl mb-2">📅</p>
-              <p className={`text-xs ${c.muted}`}>No bills tracked yet. Use Rescue to analyze a bill, then save the plan.</p>
+              <p className={`text-xs ${c.textMuted}`}>No bills tracked yet. Use Rescue to analyze a bill, then save the plan.</p>
               <button onClick={() => setView('rescue')} className={`${c.btnPrimary} px-4 py-2 rounded-lg text-xs font-bold mt-3 min-h-[36px]`}>🧾 Rescue a Bill</button>
             </div>
           ) : (
             <div className="space-y-4">
               {/* Summary */}
               <div className="flex gap-3">
-                <div className={`flex-1 text-center py-3 rounded-lg border ${isDark ? 'bg-red-900/20 border-red-800' : 'bg-red-50 border-red-200'}`}>
+                <div className={`flex-1 text-center py-3 rounded-lg border ${c.calendarOverdue}`}>
                   <p className="text-lg font-black">{overdueItems.length}</p>
-                  <p className={`text-[10px] ${c.muted}`}>Overdue</p>
+                  <p className={`text-[10px] ${c.textMuted}`}>Overdue</p>
                 </div>
-                <div className={`flex-1 text-center py-3 rounded-lg border ${isDark ? 'bg-blue-900/20 border-blue-800' : 'bg-blue-50 border-blue-200'}`}>
+                <div className={`flex-1 text-center py-3 rounded-lg border ${c.calendarUpcoming}`}>
                   <p className="text-lg font-black">{upcomingItems.length}</p>
-                  <p className={`text-[10px] ${c.muted}`}>Upcoming</p>
+                  <p className={`text-[10px] ${c.textMuted}`}>Upcoming</p>
                 </div>
-                <div className={`flex-1 text-center py-3 rounded-lg border ${isDark ? 'bg-green-900/20 border-green-800' : 'bg-green-50 border-green-200'}`}>
+                <div className={`flex-1 text-center py-3 rounded-lg border ${c.calendarResolved}`}>
                   <p className="text-lg font-black">{savedPlans.filter(p => p.status === 'resolved').length}</p>
-                  <p className={`text-[10px] ${c.muted}`}>Resolved</p>
+                  <p className={`text-[10px] ${c.textMuted}`}>Resolved</p>
                 </div>
               </div>
 
               {/* Overdue alert */}
               {overdueItems.length > 0 && (
-                <div className={`${isDark ? 'bg-red-900/30 border-red-800' : 'bg-red-50 border-red-300'} border rounded-lg p-3`}>
+                <div className={`${c.calendarOverdueAlert} border rounded-lg p-3`}>
                   <p className="text-xs font-bold mb-2">🔴 Overdue / Needs Attention</p>
                   {overdueItems.map(it => (
                     <div key={it.id} className="flex items-center gap-2 text-xs mb-1.5">
                       <span>{it.type === 'followup' ? '📞' : '⚠️'}</span>
                       <span className="flex-1">{it.label}</span>
-                      <span className={`${c.muted} text-[10px]`}>{formatDate(it.date)}</span>
+                      <span className={`${c.textMuted} text-[10px]`}>{formatDate(it.date)}</span>
                     </div>
                   ))}
                 </div>
@@ -1839,16 +1924,16 @@ const BillRescue = () => {
               {/* Upcoming */}
               {upcomingItems.length > 0 && (
                 <div>
-                  <p className={`text-[10px] font-bold ${c.label} uppercase mb-2`}>Upcoming</p>
+                  <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-2`}>Upcoming</p>
                   <div className="space-y-1.5">
                     {upcomingItems.map(it => (
                       <div key={it.id} className={`${c.card} border rounded-lg px-3 py-2 flex items-center gap-2 text-xs`}>
                         <span>{it.type === 'followup' ? '📞' : '📄'}</span>
                         <span className="flex-1">{it.label}</span>
-                        <span className={`${c.muted} text-[10px]`}>{formatDate(it.date)}</span>
+                        <span className={`${c.textMuted} text-[10px]`}>{formatDate(it.date)}</span>
                         <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold ${
-                          it.status === 'resolved' ? (isDark ? 'bg-green-900/40 text-green-300' : 'bg-green-100 text-green-700')
-                          : it.status === 'in_progress' ? (isDark ? 'bg-blue-900/40 text-blue-300' : 'bg-blue-100 text-blue-700')
+                          it.status === 'resolved' ? c.statusResolved
+                          : it.status === 'in_progress' ? c.statusInProgress
                           : c.badge
                         }`}>{it.status}</span>
                       </div>
@@ -1863,11 +1948,11 @@ const BillRescue = () => {
         {/* Monthly total */}
         {savedPlans.length > 0 && (
           <div className={`${c.card} border rounded-xl p-4`}>
-            <p className={`text-[10px] font-bold ${c.label} uppercase mb-2`}>Monthly obligations</p>
+            <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-2`}>Monthly obligations</p>
             <p className="text-xl font-black">
               {currency}{savedPlans.reduce((sum, p) => sum + (Number(p.amount) || 0), 0).toLocaleString()}
             </p>
-            <p className={`text-xs ${c.muted} mt-1`}>Across {savedPlans.length} tracked bill{savedPlans.length !== 1 ? 's' : ''}</p>
+            <p className={`text-xs ${c.textMuted} mt-1`}>Across {savedPlans.length} tracked bill{savedPlans.length !== 1 ? 's' : ''}</p>
           </div>
         )}
       </div>
@@ -1905,9 +1990,9 @@ const BillRescue = () => {
         <div className={`${c.card} border rounded-xl p-5 text-center`}>
           <p className="text-3xl mb-1">🏆</p>
           <p className={`text-3xl font-black ${c.text}`}>{totalSaved > 0 ? `${currency}${totalSaved.toLocaleString()}` : victories.length > 0 ? `${victories.length} win${victories.length !== 1 ? 's' : ''}` : 'No wins yet'}</p>
-          <p className={`text-xs ${c.muted} mt-1`}>{totalSaved > 0 ? `saved across ${victories.length} win${victories.length !== 1 ? 's' : ''}` : 'Start fighting those bills!'}</p>
+          <p className={`text-xs ${c.textMuted} mt-1`}>{totalSaved > 0 ? `saved across ${victories.length} win${victories.length !== 1 ? 's' : ''}` : 'Start fighting those bills!'}</p>
           {topType && victories.length >= 3 && (
-            <p className={`text-xs mt-2 ${isDark ? 'text-purple-300' : 'text-purple-600'}`}>
+            <p className={`text-xs mt-2 ${c.highlightText}`}>
               ✨ Your best move: <strong>{typeLabel(topType)}</strong>
             </p>
           )}
@@ -1918,19 +2003,19 @@ const BillRescue = () => {
           <h3 className={`text-sm font-bold ${c.text} mb-3`}>Log a Win</h3>
           <div className="space-y-3">
             <div>
-              <label className={`text-xs font-bold ${c.label} block mb-1.5`}>What happened? *</label>
+              <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>What happened? *</label>
               <input value={vicText} onChange={e => setVicText(e.target.value)}
                 placeholder='e.g. "Got $35 late fee waived on electric bill"'
                 className={`w-full px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
             </div>
             <div className="flex gap-2">
               <div className="flex-1">
-                <label className={`text-xs font-bold ${c.label} block mb-1.5`}>Saved ({currency})</label>
+                <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Saved ({currency})</label>
                 <input type="number" value={vicAmount} onChange={e => setVicAmount(e.target.value)} placeholder="0"
                   className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
               </div>
               <div className="flex-1">
-                <label className={`text-xs font-bold ${c.label} block mb-1.5`}>Type</label>
+                <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Type</label>
                 <select value={vicType} onChange={e => setVicType(e.target.value)}
                   className={`w-full py-1.5 px-2 border rounded-lg text-xs ${c.input}`}>
                   <option value="">Pick one</option>
@@ -1948,7 +2033,7 @@ const BillRescue = () => {
         {/* Win list */}
         {victories.length > 0 && (
           <div className={`${c.card} border rounded-xl p-4`}>
-            <p className={`text-[10px] font-bold ${c.label} uppercase mb-3`}>Your victories</p>
+            <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-3`}>Your victories</p>
             <div className="space-y-2">
               {victories.map(v => (
                 <div key={v.id} className={`flex items-start gap-2 px-3 py-2 rounded-lg border ${c.card} text-xs`}>
@@ -1957,10 +2042,10 @@ const BillRescue = () => {
                     <p className="font-bold">{v.text}</p>
                     <div className="flex items-center gap-2 mt-0.5">
                       {v.amount > 0 && <span className="font-bold text-green-500">+{currency}{v.amount.toLocaleString()}</span>}
-                      <span className={c.muted}>{new Date(v.date).toLocaleDateString()}</span>
+                      <span className={c.textMuted}>{new Date(v.date).toLocaleDateString()}</span>
                     </div>
                   </div>
-                  <button onClick={() => removeVictory(v.id)} className={`${c.dangerText} text-[10px] min-h-[24px]`}>✕</button>
+                  <button onClick={() => removeVictory(v.id)} className={`${c.dangerFg} text-[10px] min-h-[24px]`}>✕</button>
                 </div>
               ))}
             </div>
@@ -1983,7 +2068,20 @@ const BillRescue = () => {
   // MAIN RETURN
   // ════════════════════════════════════════════════════════════
   return (
-    <div className={`space-y-1 ${c.text}`}>
+    <div className={`space-y-4 ${c.text}`}>
+      {/* ── Tool header ── */}
+      <div className={`${c.card} border ${c.border} rounded-xl p-5 mb-1`}>
+        <div className={`pb-3 border-b ${c.border}`}>
+          <div className="flex items-center gap-3">
+            <span className="text-3xl">{tool?.icon ?? '🧾'}</span>
+            <div>
+              <h2 className={`text-xl font-bold ${c.text}`}>{tool?.title ?? 'Bill Rescue'}</h2>
+              <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Turn bill anxiety into a clear action plan'}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {renderNav()}
 
       {error && (

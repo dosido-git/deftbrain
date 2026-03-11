@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { anthropic, callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const PERSONALITY = `You are a gifted narrative writer who specializes in making hypothetical futures feel viscerally real. You write in second person ("you"), present tense, with the specificity of lived experience — not the vagueness of a horoscope.
 
@@ -15,7 +16,9 @@ RULES:
 - Don't write fairy tales or horror stories. Write plausible Tuesdays.
 - The two narratives should feel like they were written by someone who genuinely lived both lives
 - Include sensory details: sounds, smells, light, temperature, textures
-- End each narrative mid-moment, not with a conclusion — life doesn't wrap up neatly`;
+- End each narrative mid-moment, not with a conclusion — life doesn't wrap up neatly
+
+Return only valid JSON.`;
 
 // ════════════════════════════════════════════
 // HELPER: Build user prompt (shared by both routes)
@@ -60,26 +63,26 @@ Return ONLY valid JSON:
 }
 
 // ════════════════════════════════════════════
-// ROUTE: Standard (non-streaming) — preserved as fallback
+// ROUTE: Standard (non-streaming) — fallback
 // ════════════════════════════════════════════
-router.post('/contrast-report', async (req, res) => {
+router.post('/contrast-report', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { pathA, pathB, aboutYou, timeframe, userLanguage } = req.body;
 
     if (!pathA?.trim() || !pathB?.trim()) {
-      return res.status(400).json({ error: 'Describe both paths you\'re considering.' });
+      return res.status(400).json({ error: "Describe both paths you're considering." });
     }
 
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 3000,
-      system: withLanguage(PERSONALITY, userLanguage),
-      messages: [{ role: 'user', content: buildPrompt({ pathA, pathB, aboutYou, timeframe }) }],
-    });
+    const parsed = await callClaudeWithRetry(
+      buildPrompt({ pathA, pathB, aboutYou, timeframe }),
+      {
+        label: 'contrast-report',
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 3000,
+        system: withLanguage(PERSONALITY, userLanguage),
+      }
+    );
 
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
     res.json(parsed);
 
   } catch (error) {
@@ -90,27 +93,26 @@ router.post('/contrast-report', async (req, res) => {
 
 // ════════════════════════════════════════════
 // ROUTE: Streaming — SSE endpoint
+// NOTE: Uses raw anthropic.messages.stream — streaming requires raw SSE API;
+// callClaudeWithRetry does not support streaming. This is the documented exception.
 // ════════════════════════════════════════════
-router.post('/contrast-report/stream', async (req, res) => {
+router.post('/contrast-report/stream', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   const { pathA, pathB, aboutYou, timeframe, userLanguage } = req.body;
 
   if (!pathA?.trim() || !pathB?.trim()) {
-    return res.status(400).json({ error: 'Describe both paths you\'re considering.' });
+    return res.status(400).json({ error: "Describe both paths you're considering." });
   }
 
   // SSE headers
   res.setHeader('Content-Type', 'text/event-stream');
   res.setHeader('Cache-Control', 'no-cache');
   res.setHeader('Connection', 'keep-alive');
-  res.setHeader('X-Accel-Buffering', 'no'); // disable nginx buffering if present
+  res.setHeader('X-Accel-Buffering', 'no');
   res.flushHeaders();
 
   const sendEvent = (data) => {
     res.write(`data: ${JSON.stringify(data)}\n\n`);
   };
-
-  let accumulated = '';
-
 
   try {
     const stream = anthropic.messages.stream({
@@ -121,7 +123,6 @@ router.post('/contrast-report/stream', async (req, res) => {
     });
 
     stream.on('text', (chunk) => {
-      accumulated += chunk;
       sendEvent({ chunk });
     });
 

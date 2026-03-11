@@ -130,7 +130,7 @@ Return ONLY the JSON object. No markdown fences, no preamble.`;
 
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
-      max_tokens: 6000,
+      max_tokens: 4500,
       messages: [{ role: 'user', content: withLanguage(basePrompt, userLanguage) }],
     });
 
@@ -178,7 +178,7 @@ OUTPUT (JSON only):
 Return ONLY valid JSON.`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-haiku-4-5-20251001',
+      model: 'claude-sonnet-4-20250514',
       max_tokens: 2000,
       messages: [{ role: 'user', content: withLanguage(basePrompt, userLanguage) }],
     });
@@ -194,3 +194,61 @@ Return ONLY valid JSON.`;
 });
 
 module.exports = router;
+
+// ═══════════════════════════════════════════════════════════════
+// STREAMING ROUTE — main letter generation
+// ═══════════════════════════════════════════════════════════════
+
+router.post('/ghost-writer/stream', async (req, res) => {
+  const { recipientName, yourRelationship, whatTheyreApplyingFor, letterType, qualities, anecdotes, duration, formalityLevel, additionalContext, userLanguage } = req.body;
+
+  if (!recipientName || !yourRelationship) return res.status(400).json({ error: 'We need to know who this is for and your relationship' });
+
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.flushHeaders();
+
+  const sendEvent = (data) => res.write(`data: ${JSON.stringify(data)}\n\n`);
+
+  try {
+    const qualitiesList = Array.isArray(qualities) && qualities.length > 0
+      ? qualities.join(', ')
+      : 'Not specified — infer from the relationship and context';
+
+    const anecdotesList = Array.isArray(anecdotes) && anecdotes.length > 0
+      ? anecdotes.map((a, i) => `  ${i + 1}. ${a}`).join('\n')
+      : 'None provided — generate plausible-sounding generalizations the writer can customize';
+
+    const prompt = withLanguage(`You are a professional writer who specializes in compelling recommendation letters.
+
+PERSON BEING RECOMMENDED: ${recipientName}
+YOUR RELATIONSHIP: ${yourRelationship}
+WHAT THEY'RE APPLYING FOR: ${whatTheyreApplyingFor || 'Not specified'}
+LETTER TYPE: ${letterType || 'professional recommendation'}
+HOW LONG YOU'VE KNOWN THEM: ${duration || 'Not specified'}
+FORMALITY LEVEL: ${formalityLevel || 'professional'}
+
+QUALITIES TO HIGHLIGHT: ${qualitiesList}
+SPECIFIC ANECDOTES: ${anecdotesList}
+ADDITIONAL CONTEXT: ${additionalContext || 'None'}
+
+Generate 3 letter versions (narrative, structured, concise) plus writing_tips, placeholders_to_fill, and power_phrases. Return ONLY valid JSON matching the full schema from the standard ghost-writer endpoint.`, userLanguage);
+
+    const stream = await anthropic.messages.stream({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 4500,
+      messages: [{ role: 'user', content: prompt }],
+    });
+
+    stream.on('text', (text) => sendEvent({ chunk: text }));
+    await stream.finalMessage();
+    sendEvent({ done: true });
+    res.end();
+
+  } catch (err) {
+    console.error('[GhostWriter/stream] Error:', err);
+    sendEvent({ error: err.message || 'Stream failed' });
+    res.end();
+  }
+});

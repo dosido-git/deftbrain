@@ -2,58 +2,7 @@ import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
-import { CopyBtn } from '../components/ActionButtons';
-
-// ════════════════════════════════════════════════════════════
-// THEME — Navy & Gold
-// ════════════════════════════════════════════════════════════
-const useColors = () => {
-  const { theme } = useTheme();
-  const d = theme === 'dark';
-  return {
-    d,
-    card:        d ? 'bg-[#2a2623] border-[#3d3630]'  : 'bg-white border-[#e8e1d5]',
-    cardAlt:     d ? 'bg-[#332e2a] border-[#3d3630]'  : 'bg-[#faf8f5] border-[#e8e1d5]',
-    inset:       d ? 'bg-[#1a1816]'                    : 'bg-[#faf8f5]',
-    inputBg:     d ? 'bg-[#1a1816] border-[#3d3630] text-[#f0eeea] placeholder-[#8a8275] focus:border-[#4a6a8a] focus:ring-[#4a6a8a]/20'
-                    : 'bg-[#faf8f5] border-[#d5cab8] text-[#3d3935] placeholder-[#8a8275] focus:border-[#4a6a8a] focus:ring-[#4a6a8a]/20',
-    text:        d ? 'text-[#f0eeea]'  : 'text-[#3d3935]',
-    heading:     d ? 'text-[#f3efe8]'  : 'text-[#1e2a3a]',
-    textSec:     d ? 'text-[#c8c3b9]'  : 'text-[#5a544a]',
-    textMut:     d ? 'text-[#8a8275]'  : 'text-[#8a8275]',
-    label:       d ? 'text-[#c8c3b9]'  : 'text-[#5a544a]',
-    border:      d ? 'border-[#3d3630]' : 'border-[#e8e1d5]',
-    divider:     d ? 'border-[#3d3630]' : 'border-[#e8e1d5]',
-    btn:         d ? 'bg-[#2c4a6e] hover:bg-[#4a6a8a] text-white' : 'bg-[#2c4a6e] hover:bg-[#1e3a58] text-white',
-    btnSec:      d ? 'bg-[#332e2a] hover:bg-[#3d3630] text-[#c8c3b9] border border-[#3d3630]'
-                    : 'bg-[#f3efe8] hover:bg-[#e8e1d5] text-[#5e5042] border border-[#d5cab8]',
-    btnGhost:    d ? 'text-[#8a8275] hover:text-[#f0eeea]' : 'text-[#8a8275] hover:text-[#3d3935]',
-    btnDis:      d ? 'bg-[#332e2a] text-[#5a544a] cursor-not-allowed' : 'bg-[#e8e1d5] text-[#8a8275] cursor-not-allowed',
-    pillActive:  d ? 'border-[#4a6a8a] bg-[#2c4a6e]/30 text-[#a8b9ce]' : 'border-[#2c4a6e] bg-[#d4dde8] text-[#1e3a58]',
-    pillInactive: d ? 'border-[#3d3630] text-[#8a8275] hover:border-[#5a544a]' : 'border-[#d5cab8] text-[#5a544a] hover:border-[#8a8275]',
-    badge:       d ? 'bg-[#2c4a6e]/30 text-[#a8b9ce]' : 'bg-[#d4dde8] text-[#1e3a58]',
-    tipBg:       d ? 'bg-[#c8872e]/10 border-[#c8872e]/30' : 'bg-[#f9edd8] border-[#c8872e]/30',
-    tipText:     d ? 'text-[#d9a04e]' : 'text-[#93541f]',
-    successBg:   d ? 'bg-[#5a8a5c]/10 border-[#5a8a5c]/30' : 'bg-[#e8f0e8] border-[#5a8a5c]/30',
-    successText: d ? 'text-[#7aba7c]' : 'text-[#3a6a3c]',
-    warnBg:      d ? 'bg-[#b54a3f]/10 border-[#b54a3f]/30' : 'bg-[#fceae8] border-[#e8a8a0]',
-    warnText:    d ? 'text-[#e88880]' : 'text-[#b54a3f]',
-    errBg:       d ? 'bg-[#b54a3f]/15 border-[#b54a3f]/40' : 'bg-[#fceae8] border-[#e8a8a0]',
-    errText:     d ? 'text-[#e88880]' : 'text-[#b54a3f]',
-    histBg:      d ? 'bg-[#2c4a6e]/10 border-[#4a6a8a]/30' : 'bg-[#d4dde8]/30 border-[#2c4a6e]/15',
-    histCard:    d ? 'bg-[#2a2623] border-[#3d3630]' : 'bg-white border-[#e8e1d5]',
-    histAccent:  d ? 'text-[#a8b9ce]' : 'text-[#2c4a6e]',
-    linkStyle:   d ? 'text-[#6e8aaa] hover:text-[#a8b9ce] underline' : 'text-[#2c4a6e] hover:text-[#1e3a58] underline',
-    modeActive:  d ? 'bg-[#2c4a6e] text-white border-[#4a6a8a]' : 'bg-[#2c4a6e] text-white border-[#1e3a58]',
-    modeInactive: d ? 'bg-[#2a2623] text-[#8a8275] border-[#3d3630] hover:text-[#c8c3b9]' : 'bg-white text-[#8a8275] border-[#e8e1d5] hover:text-[#5a544a]',
-    // Character cards
-    charCard:    d ? 'bg-[#332e2a] border-[#3d3630]' : 'bg-[#faf8f5] border-[#e8e1d5]',
-    // Thread cards
-    threadCard:  d ? 'bg-[#1a1816] border-[#3d3630]' : 'bg-white border-[#e8e1d5]',
-    // Sports must-watch
-    mustWatchBg: d ? 'bg-[#c8872e]/10 border-[#c8872e]/40' : 'bg-[#f9edd8] border-[#c8872e]/40',
-  };
-};
+import { CopyBtn, ActionBar } from '../components/ActionButtons';
 
 // ════════════════════════════════════════════════════════════
 // CONSTANTS
@@ -81,24 +30,70 @@ const EXAMPLES = {
 // ════════════════════════════════════════════════════════════
 // MAIN COMPONENT
 // ════════════════════════════════════════════════════════════
-const Bookmark = () => {
+const Bookmark = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
-  const c = useColors();
+  const { isDark } = useTheme();
   const resultsRef = useRef(null);
+
+  const c = {
+    // ── Standard keys ──
+    card:          isDark ? 'bg-zinc-800'                                                    : 'bg-white',
+    cardAlt:       isDark ? 'bg-zinc-700/50'                                                 : 'bg-slate-50',
+    inset:         isDark ? 'bg-zinc-900'                                                    : 'bg-slate-50',
+    input:         isDark
+      ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder:text-zinc-500 focus:border-cyan-500 focus:ring-cyan-500/20'
+      : 'bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-cyan-500 focus:ring-cyan-500/20',
+    text:          isDark ? 'text-zinc-50'    : 'text-gray-900',
+    textSecondary: isDark ? 'text-zinc-300'   : 'text-gray-600',
+    textMuted:     isDark ? 'text-zinc-500'   : 'text-gray-400',
+    border:        isDark ? 'border-zinc-700' : 'border-gray-200',
+    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'      : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100 border border-zinc-600'
+                          : 'bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300',
+    success:       isDark ? 'bg-emerald-900/20 border-emerald-700/40 text-emerald-300' : 'bg-emerald-50 border-emerald-200 text-emerald-800',
+    warning:       isDark ? 'bg-amber-900/20 border-amber-700/40 text-amber-300'      : 'bg-amber-50 border-amber-200 text-amber-800',
+    danger:        isDark ? 'bg-red-900/20 border-red-700/40 text-red-300'            : 'bg-red-50 border-red-200 text-red-800',
+    // ── Bookmark-specific keys ──
+    pillActive:    isDark ? 'border-cyan-500 bg-cyan-700/30 text-cyan-300'  : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillInactive:  isDark ? 'border-zinc-700 text-zinc-500 hover:border-zinc-500' : 'border-gray-300 text-gray-600 hover:border-gray-400',
+    badge:         isDark ? 'bg-zinc-700 text-zinc-300'                     : 'bg-slate-200 text-slate-700',
+    // Warm amber highlight — used for the result header card and tip/insight boxes
+    tip:           isDark ? 'bg-amber-900/20 border-amber-700/40 text-amber-300' : 'bg-amber-50 border-amber-200 text-amber-800',
+    tipFg:         isDark ? 'text-amber-400'  : 'text-amber-700',
+    successFg:     isDark ? 'text-emerald-400': 'text-emerald-700',
+    dangerFg:      isDark ? 'text-red-400'    : 'text-red-700',
+    // History panel
+    histBg:        isDark ? 'bg-zinc-700/20 border-zinc-600/30'             : 'bg-slate-100/60 border-slate-200',
+    histAccent:    isDark ? 'text-cyan-400'   : 'text-cyan-600',
+    // Media type selector
+    modeActive:    isDark ? 'bg-cyan-700 text-white border-cyan-500'        : 'bg-cyan-600 text-white border-cyan-700',
+    modeInactive:  isDark ? 'bg-zinc-800 text-zinc-500 border-zinc-700 hover:text-zinc-300' : 'bg-white text-gray-500 border-gray-200 hover:text-gray-700',
+    // Section cards
+    charCard:      isDark ? 'bg-zinc-700/50'  : 'bg-slate-50',
+    threadCard:    isDark ? 'bg-zinc-900'     : 'bg-white',
+    mustWatchBg:   isDark ? 'bg-amber-900/20 border-amber-700/40' : 'bg-amber-50 border-amber-200',
+    // Ghost/disabled — inline with standard secondary
+    btnGhost:      isDark ? 'text-zinc-500 hover:text-zinc-100'             : 'text-gray-400 hover:text-gray-800',
+    btnDisabled:   isDark ? 'bg-zinc-800 text-zinc-600 cursor-not-allowed'  : 'bg-gray-200 text-gray-400 cursor-not-allowed',
+  };
+
+  const linkStyle = isDark
+    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
+    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
 
   const [history, setHistory] = usePersistentState('bookmark-history', []);
   const [showHistory, setShowHistory] = useState(false);
 
   // Input
   const [mediaType, setMediaType] = useState('show');
-  const [title, setTitle] = useState('');
-  const [stoppedAt, setStoppedAt] = useState('');
+  const [title, setTitle] = usePersistentState('bookmark-title', '');
+  const [stoppedAt, setStoppedAt] = usePersistentState('bookmark-stopped-at', '');
   const [whatYouRemember, setWhatYouRemember] = useState('');
   const [spoilerLevel, setSpoilerLevel] = useState('strict');
   const [specificQuestions, setSpecificQuestions] = useState('');
 
   // Results
-  const [results, setResults] = useState(null);
+  const [results, setResults] = usePersistentState('bookmark-last-result', null);
   const [error, setError] = useState('');
 
   // Sections
@@ -179,16 +174,16 @@ const Bookmark = () => {
   // RENDER HELPERS
   // ══════════════════════════════════════════
   const Section = ({ title: t, emoji, open, onToggle, badge, children }) => (
-    <div className={c.card + ' border rounded-xl overflow-hidden'}>
+    <div className={c.card + ' ' + c.border + ' border rounded-xl overflow-hidden'}>
       <button onClick={onToggle} className="w-full flex items-center justify-between p-5 text-left hover:opacity-80">
         <div className="flex items-center gap-3">
           <span className="text-lg">{emoji}</span>
           <span className={'text-base font-semibold ' + c.text}>{t}</span>
           {badge && <span className={'text-xs px-2 py-0.5 rounded-full ' + c.badge}>{badge}</span>}
         </div>
-        <span className={'text-xs ' + c.textMut}>{open ? '▲' : '▼'}</span>
+        <span className={'text-xs ' + c.textMuted}>{open ? '▲' : '▼'}</span>
       </button>
-      {open && <div className={'px-5 pb-5 border-t ' + c.divider}>{children}</div>}
+      {open && <div className={'px-5 pb-5 border-t ' + c.border}>{children}</div>}
     </div>
   );
 
@@ -205,49 +200,52 @@ const Bookmark = () => {
           <button key={m.id} onClick={() => { setMediaType(m.id); setError(''); }}
             className={'py-3 px-2 rounded-xl border-2 text-center transition-all ' + (mediaType === m.id ? c.modeActive : c.modeInactive)}>
             <span className="text-sm font-bold block">{m.label}</span>
-            <span className={'text-[10px] block mt-0.5 ' + (mediaType === m.id ? 'text-white/70' : c.textMut)}>{m.desc}</span>
+            <span className={'text-[10px] block mt-0.5 ' + (mediaType === m.id ? 'text-white/70' : c.textMuted)}>{m.desc}</span>
           </button>
         ))}
       </div>
 
       {/* Main inputs */}
-      <div className={c.card + ' border rounded-xl p-5 space-y-3'}>
+      <div className={c.card + ' ' + c.border + ' border rounded-xl p-5 space-y-3'}>
         <div>
-          <label className={'text-xs font-bold ' + c.textSec + ' uppercase tracking-wide mb-1 block'}>
+          <label className={'text-xs font-bold ' + c.textSecondary + ' uppercase tracking-wide mb-1 block'}>
             {mediaType === 'sports' ? '🏟️ Team or league' : mt.label.split(' ')[0] + ' Title'}
           </label>
           <input type="text" value={title} onChange={e => setTitle(e.target.value)}
-            placeholder={mt.placeholder} className={'w-full px-4 py-3 border-2 rounded-xl ' + c.inputBg + ' outline-none focus:ring-2 text-base'} />
+            onKeyDown={e => { if (e.key === 'Enter' && title.trim() && stoppedAt.trim() && !loading) recall(); }}
+            placeholder={mt.placeholder} className={'w-full px-4 py-3 border-2 rounded-xl ' + c.input + ' outline-none focus:ring-2 text-base'} />
         </div>
         <div>
-          <label className={'text-xs font-bold ' + c.textSec + ' uppercase tracking-wide mb-1 block'}>
+          <label className={'text-xs font-bold ' + c.textSecondary + ' uppercase tracking-wide mb-1 block'}>
             {mediaType === 'sports' ? '📅 When did you stop following?' : '🔖 Where did you stop?'}
           </label>
           <input type="text" value={stoppedAt} onChange={e => setStoppedAt(e.target.value)}
-            placeholder={mt.stoppedPlaceholder} className={'w-full px-4 py-2.5 rounded-xl border text-sm ' + c.inputBg + ' outline-none'} />
+            onKeyDown={e => { if (e.key === 'Enter' && title.trim() && stoppedAt.trim() && !loading) recall(); }}
+            placeholder={mt.stoppedPlaceholder} className={'w-full px-4 py-2.5 rounded-xl border text-sm ' + c.input + ' outline-none'} />
         </div>
         <div>
-          <label className={'text-xs font-bold ' + c.textSec + ' uppercase tracking-wide mb-1 block'}>🧠 What do you remember? (optional)</label>
+          <label className={'text-xs font-bold ' + c.textSecondary + ' uppercase tracking-wide mb-1 block'}>🧠 What do you remember? (optional)</label>
           <input type="text" value={whatYouRemember} onChange={e => setWhatYouRemember(e.target.value)}
-            placeholder="Anything you recall — helps us calibrate the recap" className={'w-full px-4 py-2.5 rounded-xl border text-sm ' + c.inputBg + ' outline-none'} />
+            placeholder="Anything you recall — helps us calibrate the recap" className={'w-full px-4 py-2.5 rounded-xl border text-sm ' + c.input + ' outline-none'} />
         </div>
         <div>
-          <label className={'text-xs font-bold ' + c.textSec + ' uppercase tracking-wide mb-1 block'}>❓ Specific questions? (optional)</label>
+          <label className={'text-xs font-bold ' + c.textSecondary + ' uppercase tracking-wide mb-1 block'}>❓ Specific questions? (optional)</label>
           <input type="text" value={specificQuestions} onChange={e => setSpecificQuestions(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter' && title.trim() && stoppedAt.trim() && !loading) recall(); }}
             placeholder={mediaType === 'sports' ? 'e.g., "Did they make any trades?"' : 'e.g., "Who is the guy with the scar?"'}
-            className={'w-full px-4 py-2.5 rounded-xl border text-sm ' + c.inputBg + ' outline-none'} />
+            className={'w-full px-4 py-2.5 rounded-xl border text-sm ' + c.input + ' outline-none'} />
         </div>
       </div>
 
       {/* Spoiler level */}
-      <div className={c.card + ' border rounded-xl p-5'}>
-        <label className={'text-xs font-bold ' + c.textSec + ' uppercase tracking-wide mb-2 block'}>🛡️ Spoiler level</label>
+      <div className={c.card + ' ' + c.border + ' border rounded-xl p-5'}>
+        <label className={'text-xs font-bold ' + c.textSecondary + ' uppercase tracking-wide mb-2 block'}>🛡️ Spoiler level</label>
         <div className="grid grid-cols-3 gap-2">
           {SPOILER_LEVELS.map(s => (
             <button key={s.value} onClick={() => setSpoilerLevel(s.value)}
-              className={'p-3 rounded-xl border-2 text-left transition-all ' + (spoilerLevel === s.value ? c.pillActive + ' border-[#4a6a8a]' : c.card + ' hover:border-[#8a8275]')}>
-              <span className={'text-sm font-medium block ' + (spoilerLevel === s.value ? '' : c.textSec)}>{s.label}</span>
-              <span className={'text-[10px] ' + c.textMut}>{s.desc}</span>
+              className={'p-3 rounded-xl border-2 text-left transition-all ' + (spoilerLevel === s.value ? c.pillActive : c.card + ' ' + c.border + ' hover:border-gray-400')}>
+              <span className={'text-sm font-medium block ' + (spoilerLevel === s.value ? '' : c.textSecondary)}>{s.label}</span>
+              <span className={'text-[10px] ' + c.textMuted}>{s.desc}</span>
             </button>
           ))}
         </div>
@@ -255,11 +253,16 @@ const Bookmark = () => {
 
       <div className="flex gap-2">
         <button onClick={recall} disabled={loading || !title.trim() || !stoppedAt.trim()}
-          className={'flex-1 py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all ' + (loading || !title.trim() || !stoppedAt.trim() ? c.btnDis : c.btn)}>
-          {loading ? <><span className="animate-spin inline-block">⏳</span> Recalling...</> : <><span>🔖</span> Where Was I?</>}
+          className={'flex-1 py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all ' + (loading || !title.trim() || !stoppedAt.trim() ? c.btnDisabled : c.btnPrimary)}>
+          {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🔖'}</span> Recalling...</> : <><span>{tool?.icon ?? '🔖'}</span> Where Was I?</>}
         </button>
-        <button onClick={loadExample} className={'px-4 py-4 rounded-2xl text-xs font-bold ' + c.btnSec}>Try example</button>
+        <button onClick={loadExample} className={'px-4 py-4 rounded-2xl text-xs font-bold ' + c.btnSecondary}>Try example</button>
       </div>
+      <p className={'text-xs text-center ' + c.textMuted}>
+        Not sure if it's worth returning to?{' '}
+        <a href="/PlotTwist" className={linkStyle}>Plot Twist</a>{' '}
+        helps you decide before you dive back in.
+      </p>
     </div>
   );
 
@@ -274,39 +277,42 @@ const Bookmark = () => {
 
     return (
       <div ref={resultsRef} className="space-y-4 mt-4">
+        <div className="flex justify-end">
+          <ActionBar content={buildFullCopy()} />
+        </div>
         {/* Header */}
-        <div className={'p-5 rounded-2xl border-2 ' + c.tipBg}>
+        <div className={'p-5 rounded-2xl border-2 ' + c.tip}>
           <div className="flex items-center gap-2 mb-2">
             <span className="text-lg">{emoji}</span>
-            <span className={'text-sm font-bold ' + c.tipText}>{results.title}</span>
+            <span className={'text-sm font-bold ' + c.tipFg}>{results.title}</span>
             {results.confidence && results.confidence !== 'high' && (
               <span className={'text-xs px-2 py-0.5 rounded-full ' + c.badge}>⚠️ {results.confidence} confidence</span>
             )}
           </div>
-          <p className={'text-xs ' + c.tipText + ' mb-2'}>Stopped at: {results.stopped_at}</p>
-          {results.confidence_note && <p className={'text-xs ' + c.textMut + ' italic'}>{results.confidence_note}</p>}
+          <p className={'text-xs ' + c.tipFg + ' mb-2'}>Stopped at: {results.stopped_at}</p>
+          {results.confidence_note && <p className={'text-xs ' + c.textMuted + ' italic'}>{results.confidence_note}</p>}
         </div>
 
         {/* The story so far */}
         {results.the_story_so_far && (
-          <div className={c.card + ' border rounded-xl p-5'}>
-            <p className={'text-xs font-bold ' + c.textMut + ' uppercase mb-3'}>📖 {isSports ? 'The Season So Far' : 'The Story So Far'}</p>
+          <div className={c.card + ' ' + c.border + ' border rounded-xl p-5'}>
+            <p className={'text-xs font-bold ' + c.textMuted + ' uppercase mb-3'}>📖 {isSports ? 'The Season So Far' : 'The Story So Far'}</p>
             <p className={'text-sm leading-relaxed whitespace-pre-wrap ' + c.text}>{results.the_story_so_far}</p>
           </div>
         )}
 
         {/* Where you left off */}
         {results.where_you_left_off && (
-          <div className={'p-4 rounded-xl border ' + c.successBg}>
-            <p className={'text-xs font-bold ' + c.successText + ' mb-1'}>🎬 Last scene you saw</p>
-            <p className={'text-sm ' + c.successText + ' italic'}>{results.where_you_left_off}</p>
+          <div className={'p-4 rounded-xl border ' + c.success}>
+            <p className={'text-xs font-bold ' + c.successFg + ' mb-1'}>🎬 Last scene you saw</p>
+            <p className={'text-sm ' + c.successFg + ' italic'}>{results.where_you_left_off}</p>
           </div>
         )}
 
         {/* Vibe check */}
         {results.vibe_check && (
           <div className={'p-4 rounded-xl ' + c.inset}>
-            <p className={'text-xs font-bold ' + c.textMut + ' mb-1'}>🎭 Vibe check</p>
+            <p className={'text-xs font-bold ' + c.textMuted + ' mb-1'}>🎭 Vibe check</p>
             <p className={'text-sm ' + c.text}>{results.vibe_check}</p>
           </div>
         )}
@@ -316,11 +322,11 @@ const Bookmark = () => {
           <Section title="Characters" emoji="👥" open={showChars} onToggle={() => setShowChars(!showChars)} badge={results.characters.length + ''}>
             <div className="space-y-3 mt-4">
               {results.characters.map((ch, idx) => (
-                <div key={idx} className={'p-4 rounded-xl border ' + c.charCard}>
+                <div key={idx} className={'p-4 rounded-xl border ' + c.border + ' ' + c.charCard}>
                   <p className={'text-sm font-bold ' + c.text + ' mb-1'}>{ch.name}</p>
-                  <p className={'text-xs ' + c.textSec + ' mb-1'}>{ch.refresher}</p>
-                  {ch.relationships && <p className={'text-xs ' + c.textMut}>🔗 {ch.relationships}</p>}
-                  {ch.last_seen && <p className={'text-xs ' + c.textMut + ' mt-1'}>📍 Last seen: {ch.last_seen}</p>}
+                  <p className={'text-xs ' + c.textSecondary + ' mb-1'}>{ch.refresher}</p>
+                  {ch.relationships && <p className={'text-xs ' + c.textMuted}>🔗 {ch.relationships}</p>}
+                  {ch.last_seen && <p className={'text-xs ' + c.textMuted + ' mt-1'}>📍 Last seen: {ch.last_seen}</p>}
                 </div>
               ))}
             </div>
@@ -332,10 +338,10 @@ const Bookmark = () => {
           <Section title="Active Threads" emoji="🧵" open={showThreads} onToggle={() => setShowThreads(!showThreads)} badge={results.active_threads.length + ''}>
             <div className="space-y-3 mt-4">
               {results.active_threads.map((t, idx) => (
-                <div key={idx} className={'p-4 rounded-xl border ' + c.threadCard}>
+                <div key={idx} className={'p-4 rounded-xl border ' + c.border + ' ' + c.threadCard}>
                   <p className={'text-sm font-bold ' + c.text + ' mb-1'}>{t.thread}</p>
-                  <p className={'text-xs ' + c.textSec}>{t.status}</p>
-                  {t.tension && <p className={'text-xs ' + c.tipText + ' mt-1 italic'}>❓ {t.tension}</p>}
+                  <p className={'text-xs ' + c.textSecondary}>{t.status}</p>
+                  {t.tension && <p className={'text-xs ' + c.tipFg + ' mt-1 italic'}>❓ {t.tension}</p>}
                 </div>
               ))}
             </div>
@@ -344,26 +350,26 @@ const Bookmark = () => {
 
         {/* Game-specific: Gameplay refresh */}
         {isGame && results.gameplay_refresh && (
-          <div className={c.card + ' border rounded-xl p-5'}>
-            <p className={'text-xs font-bold ' + c.textMut + ' uppercase mb-3'}>🎮 Gameplay Refresh</p>
+          <div className={c.card + ' ' + c.border + ' border rounded-xl p-5'}>
+            <p className={'text-xs font-bold ' + c.textMuted + ' uppercase mb-3'}>🎮 Gameplay Refresh</p>
             {results.gameplay_refresh.mechanics_unlocked && <p className={'text-sm ' + c.text + ' mb-2'}>🔓 <strong>Unlocked:</strong> {results.gameplay_refresh.mechanics_unlocked}</p>}
             {results.gameplay_refresh.current_objective && <p className={'text-sm ' + c.text + ' mb-2'}>🎯 <strong>Objective:</strong> {results.gameplay_refresh.current_objective}</p>}
-            {results.gameplay_refresh.difficulty_note && <p className={'text-xs ' + c.textMut + ' italic'}>⚠️ {results.gameplay_refresh.difficulty_note}</p>}
+            {results.gameplay_refresh.difficulty_note && <p className={'text-xs ' + c.textMuted + ' italic'}>⚠️ {results.gameplay_refresh.difficulty_note}</p>}
           </div>
         )}
 
         {/* Book-specific: World building */}
         {results.world_building_refresh && (
-          <div className={c.card + ' border rounded-xl p-5'}>
-            <p className={'text-xs font-bold ' + c.textMut + ' uppercase mb-3'}>🌍 World Refresh</p>
+          <div className={c.card + ' ' + c.border + ' border rounded-xl p-5'}>
+            <p className={'text-xs font-bold ' + c.textMuted + ' uppercase mb-3'}>🌍 World Refresh</p>
             <p className={'text-sm ' + c.text}>{results.world_building_refresh}</p>
           </div>
         )}
 
         {/* Sports-specific: Standings */}
         {isSports && results.standings_context && (
-          <div className={c.card + ' border rounded-xl p-5'}>
-            <p className={'text-xs font-bold ' + c.textMut + ' uppercase mb-3'}>📊 Standings</p>
+          <div className={c.card + ' ' + c.border + ' border rounded-xl p-5'}>
+            <p className={'text-xs font-bold ' + c.textMuted + ' uppercase mb-3'}>📊 Standings</p>
             <p className={'text-sm ' + c.text}>{results.standings_context}</p>
           </div>
         )}
@@ -373,10 +379,10 @@ const Bookmark = () => {
           <Section title="Key Storylines" emoji="📰" open={showStorylines} onToggle={() => setShowStorylines(!showStorylines)} badge={results.key_storylines.length + ''}>
             <div className="space-y-3 mt-4">
               {results.key_storylines.map((s, idx) => (
-                <div key={idx} className={'p-4 rounded-xl border ' + c.threadCard}>
+                <div key={idx} className={'p-4 rounded-xl border ' + c.border + ' ' + c.threadCard}>
                   <p className={'text-sm font-bold ' + c.text + ' mb-1'}>{s.storyline}</p>
-                  <p className={'text-xs ' + c.textSec}>{s.what_happened}</p>
-                  {s.why_it_matters && <p className={'text-xs ' + c.tipText + ' mt-1'}>💡 {s.why_it_matters}</p>}
+                  <p className={'text-xs ' + c.textSecondary}>{s.what_happened}</p>
+                  {s.why_it_matters && <p className={'text-xs ' + c.tipFg + ' mt-1'}>💡 {s.why_it_matters}</p>}
                 </div>
               ))}
             </div>
@@ -390,7 +396,7 @@ const Bookmark = () => {
               {results.roster_changes.map((r, idx) => (
                 <div key={idx} className={'p-3 rounded-lg ' + c.inset}>
                   <p className={'text-sm font-semibold ' + c.text}>{r.change}</p>
-                  <p className={'text-xs ' + c.textMut}>{r.impact}</p>
+                  <p className={'text-xs ' + c.textMuted}>{r.impact}</p>
                 </div>
               ))}
             </div>
@@ -407,7 +413,7 @@ const Bookmark = () => {
                     <span className={'text-sm font-bold ' + c.text}>{g.game}</span>
                     {g.spoiler_level === 'outcome_unknown' && <span className={'text-[10px] px-2 py-0.5 rounded-full ' + c.badge}>🔒 Watch blind</span>}
                   </div>
-                  <p className={'text-xs ' + c.tipText}>{g.why}</p>
+                  <p className={'text-xs ' + c.tipFg}>{g.why}</p>
                 </div>
               ))}
             </div>
@@ -416,9 +422,9 @@ const Bookmark = () => {
 
         {/* Sports: Conversation ready */}
         {isSports && results.conversation_ready && (
-          <div className={'p-4 rounded-xl border ' + c.successBg}>
-            <p className={'text-xs font-bold ' + c.successText + ' mb-1'}>🗣️ Conversation-ready talking points</p>
-            <p className={'text-sm ' + c.successText}>{results.conversation_ready}</p>
+          <div className={'p-4 rounded-xl border ' + c.success}>
+            <p className={'text-xs font-bold ' + c.successFg + ' mb-1'}>🗣️ Conversation-ready talking points</p>
+            <p className={'text-sm ' + c.successFg}>{results.conversation_ready}</p>
           </div>
         )}
 
@@ -428,7 +434,7 @@ const Bookmark = () => {
             <div className="space-y-3 mt-4">
               {results.answers.map((a, idx) => (
                 <div key={idx} className={'p-4 rounded-xl border ' + c.cardAlt}>
-                  <p className={'text-xs font-bold ' + c.textMut + ' mb-1'}>Q: {a.question}</p>
+                  <p className={'text-xs font-bold ' + c.textMuted + ' mb-1'}>Q: {a.question}</p>
                   <p className={'text-sm ' + c.text}>{a.answer}</p>
                 </div>
               ))}
@@ -438,32 +444,41 @@ const Bookmark = () => {
 
         {/* Worth continuing */}
         {results.worth_continuing && (
-          <div className={'p-4 rounded-xl border ' + c.tipBg}>
-            <p className={'text-xs font-bold ' + c.tipText + ' mb-1'}>🤔 Worth continuing?</p>
-            <p className={'text-sm ' + c.tipText}>{results.worth_continuing}</p>
+          <div className={'p-4 rounded-xl border ' + c.tip}>
+            <p className={'text-xs font-bold ' + c.tipFg + ' mb-1'}>🤔 Worth continuing?</p>
+            <p className={'text-sm ' + c.tipFg}>{results.worth_continuing}</p>
           </div>
         )}
 
         {/* Re-entry tips */}
         {(results.reading_tip || results['re-entry_tip']) && (
           <div className={'p-4 rounded-xl ' + c.inset}>
-            <p className={'text-xs font-bold ' + c.textMut + ' mb-1'}>💡 Getting back in</p>
+            <p className={'text-xs font-bold ' + c.textMuted + ' mb-1'}>💡 Getting back in</p>
             <p className={'text-sm ' + c.text}>{results.reading_tip || results['re-entry_tip']}</p>
           </div>
         )}
 
         {/* Actions */}
         <div className="flex gap-2">
-          <div className="flex-1"><CopyBtn content={buildFullCopy()} label="Copy Recap" /></div>
-          <button onClick={handleReset} className={'flex-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 ' + c.btn}><span>🔖</span> New Bookmark</button>
+          <button onClick={handleReset} className={'flex-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 ' + c.btnSecondary}>
+            <span>{tool?.icon ?? '🔖'}</span> New Bookmark
+          </button>
+          <button onClick={recall} disabled={loading} className={'flex-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 ' + (loading ? c.btnDisabled : c.btnSecondary)}>
+            {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🔖'}</span> Recalling...</> : <><span>🔄</span> Refresh Recap</>}
+          </button>
         </div>
+        <p className={'text-[10px] text-center ' + c.textMuted}>
+          AI-generated — episode and chapter details may not be exact. Always verify spoiler-sensitive info before reading on.
+        </p>
 
         {/* Cross-references */}
-        <div className={'p-4 rounded-2xl border ' + c.card}>
-          <p className={'text-xs font-bold ' + c.textMut + ' uppercase tracking-wide mb-2'}>🔗 Related Tools</p>
-          <div className={'space-y-1.5 text-xs ' + c.textSec}>
-            <p>Trying to decide if something's worth finishing? <a href="/PlotTwist" target="_blank" rel="noopener noreferrer" className={c.linkStyle}>Plot Twist</a> untangles tough decisions.</p>
-            <p>Got a confusing message about a show? <a href="/DecoderRing" target="_blank" rel="noopener noreferrer" className={c.linkStyle}>Decoder Ring</a> decodes what people actually mean.</p>
+        <div className={'p-4 rounded-2xl border ' + c.border + ' ' + c.card}>
+          <p className={'text-xs font-bold ' + c.textMuted + ' uppercase tracking-wide mb-2'}>🔗 Related Tools</p>
+          <div className={'space-y-1.5 text-xs ' + c.textSecondary}>
+            {(results.media_type === 'show' || results.media_type === 'game') && (
+              <p>Trying to decide if it's worth finishing? <a href="/PlotTwist" className={linkStyle}>Plot Twist</a> untangles tough "should I quit or keep going" decisions.</p>
+            )}
+            <p>Got a cryptic message or reference about something you're watching? <a href="/DecoderRing" className={linkStyle}>Decoder Ring</a> decodes what people actually mean.</p>
           </div>
         </div>
       </div>
@@ -482,20 +497,20 @@ const Bookmark = () => {
         <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-left">
           <span className={'text-base ' + c.histAccent}>🔖</span>
           <span className={'text-sm font-bold ' + c.text + ' flex-1'}>Past Bookmarks</span>
-          <span className={'text-xs ' + c.textMut}>{history.length}</span>
-          <span className={'text-xs ' + c.textMut}>{showHistory ? '▲' : '▼'}</span>
+          <span className={'text-xs ' + c.textMuted}>{history.length}</span>
+          <span className={'text-xs ' + c.textMuted}>{showHistory ? '▲' : '▼'}</span>
         </button>
         {showHistory && (
           <div className="mt-3 space-y-2">
             {history.map(entry => (
-              <div key={entry.id} className={'rounded-xl border ' + c.histCard + ' p-3 flex items-center gap-3'}>
+              <div key={entry.id} className={'rounded-xl border ' + c.border + ' ' + c.card + ' p-3 flex items-center gap-3'}>
                 <span className="text-base">{typeEmoji[entry.type] || '🔖'}</span>
                 <div className="flex-1 min-w-0">
                   <div className={'text-sm font-semibold ' + c.text + ' truncate'}>{entry.title}</div>
-                  <div className={'text-xs ' + c.textMut + ' mt-0.5'}>{formatDate(entry.date)} · {entry.stoppedAt}</div>
+                  <div className={'text-xs ' + c.textMuted + ' mt-0.5'}>{formatDate(entry.date)} · {entry.stoppedAt}</div>
                 </div>
                 <button onClick={() => { setResults(entry.results); setShowHistory(false); }}
-                  className={'px-3 py-1.5 rounded-lg text-xs font-bold ' + c.btnSec}>View</button>
+                  className={'px-3 py-1.5 rounded-lg text-xs font-bold ' + c.btnSecondary}>View</button>
                 <button onClick={() => setHistory(prev => prev.filter(h => h.id !== entry.id))}
                   className={'px-2 py-1.5 rounded-lg text-xs ' + c.btnGhost + ' hover:text-red-500'}>🗑️</button>
               </div>
@@ -508,18 +523,23 @@ const Bookmark = () => {
 
   return (
     <div>
-      <div className="flex items-center gap-3 mb-5">
-        <div>
-          <h2 className={'text-2xl font-bold ' + c.heading}>Bookmark <span className="text-xl">🔖</span></h2>
-          <p className={'text-sm ' + c.textMut}>Pick up where you left off — spoiler-free recaps for shows, books, games, and sports</p>
+      <div className={`${c.card} border ${c.border} rounded-xl p-5 mb-5`}>
+        <div className={`pb-3 border-b ${c.border}`}>
+          <div className="flex items-center gap-3">
+            <span className="text-3xl">{tool?.icon ?? '🔖'}</span>
+            <div>
+              <h2 className={'text-xl font-bold ' + c.text}>{tool?.title ?? 'Bookmark'}</h2>
+              <p className={'text-sm ' + c.textSecondary}>{tool?.tagline ?? 'Pick up where you left off — without spoilers'}</p>
+            </div>
+          </div>
         </div>
       </div>
       {!results && renderInput()}
       {results && renderResults()}
       {error && (
-        <div className={'mt-4 p-4 ' + c.errBg + ' border rounded-xl flex items-start gap-3'}>
-          <span className={'text-base ' + c.errText}>⚠️</span>
-          <p className={'text-sm ' + c.errText}>{error}</p>
+        <div className={'mt-4 p-4 ' + c.danger + ' border rounded-xl flex items-start gap-3'}>
+          <span className={'text-base ' + c.dangerFg}>⚠️</span>
+          <p className={'text-sm ' + c.dangerFg}>{error}</p>
         </div>
       )}
       {renderHistory()}

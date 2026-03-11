@@ -1,20 +1,20 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 
+// ── Main playlist generation ──
 router.post('/brainstate-deejay', async (req, res) => {
-  try {
-    const { currentState, desiredState, taskContext, musicPreferences, sensitivities } = req.body;
+  const { currentState, desiredState, taskContext, musicPreferences, sensitivities, locale } = req.body;
 
-    if (!currentState || !desiredState) {
-      return res.status(400).json({ error: 'Current state and desired state are required' });
-    }
+  if (!currentState || !desiredState) {
+    return res.status(400).json({ error: 'Current state and desired state are required' });
+  }
 
-    const sensitivityList = Array.isArray(sensitivities) && sensitivities.length > 0
-      ? sensitivities.join(', ')
-      : 'None specified';
+  const sensitivityList = Array.isArray(sensitivities) && sensitivities.length > 0
+    ? sensitivities.join(', ')
+    : 'None specified';
 
-    const prompt = `You are a music therapy specialist who creates science-backed playlists for cognitive state transitions.
+  const prompt = withLanguage(`You are a music therapy specialist who creates science-backed playlists for cognitive state transitions.
 
 CURRENT STATE: ${currentState}
 DESIRED STATE: ${desiredState}
@@ -64,6 +64,7 @@ OUTPUT (JSON only):
     {
       "phase": "Transition In",
       "duration": "10-15 min",
+      "bpm_range": "60-80 BPM",
       "characteristics": "tempo, style, why",
       "genre_suggestions": ["genres that work"],
       "example_artists": ["artist examples"],
@@ -72,6 +73,7 @@ OUTPUT (JSON only):
     {
       "phase": "Main State",
       "duration": "30-60 min",
+      "bpm_range": "90-110 BPM",
       "characteristics": "what makes this effective",
       "genre_suggestions": ["genres"],
       "example_artists": ["artists"],
@@ -80,6 +82,7 @@ OUTPUT (JSON only):
     {
       "phase": "Maintenance",
       "duration": "ongoing",
+      "bpm_range": "80-100 BPM",
       "characteristics": "sustaining properties",
       "genre_suggestions": ["genres"],
       "spotify_search": "search terms"
@@ -105,41 +108,51 @@ OUTPUT (JSON only):
   "science_note": "Brief explanation of why this works"
 }
 
-CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
+CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`, locale);
 
-    const message = await anthropic.messages.create({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 2500,
-      messages: [{ role: 'user', content: prompt }]
-    });
-
-    const textContent = message.content.find(item => item.type === 'text')?.text || '';
-    
-    let jsonText = textContent.trim();
-    jsonText = jsonText.replace(/```json\n?/g, '').replace(/```\n?/g, '');
-    
-    const firstBrace = jsonText.indexOf('{');
-    if (firstBrace > 0) {
-      jsonText = jsonText.substring(firstBrace);
-    }
-    
-    const lastBrace = jsonText.lastIndexOf('}');
-    if (lastBrace !== -1 && lastBrace < jsonText.length - 1) {
-      jsonText = jsonText.substring(0, lastBrace + 1);
-    }
-    
-    jsonText = jsonText.trim();
-    const parsed = JSON.parse(jsonText);
+  try {
+    console.log(`[BrainstateDeejay] ${currentState} → ${desiredState} | Task: ${taskContext || 'none'}`);
+    const parsed = await callClaudeWithRetry(prompt);
     res.json(parsed);
-
   } catch (error) {
     console.error('Brainstate Deejay error:', error);
-    if (error instanceof SyntaxError) {
-      console.error('JSON Parse Error:', error.message);
-    }
-    res.status(500).json({ 
-      error: error.message || 'Failed to generate playlist' 
-    });
+    res.status(500).json({ error: error.message || 'Failed to generate playlist' });
+  }
+});
+
+// ── Playlist adjustment ──
+router.post('/brainstate-deejay/adjust', async (req, res) => {
+  const { currentState, desiredState, taskContext, musicPreferences, sensitivities, feedback, locale } = req.body;
+
+  if (!feedback) {
+    return res.status(400).json({ error: 'Feedback is required for adjustment' });
+  }
+
+  const sensitivityList = Array.isArray(sensitivities) && sensitivities.length > 0
+    ? sensitivities.join(', ')
+    : 'None specified';
+
+  const prompt = withLanguage(`You are a music therapy specialist adjusting an existing playlist recommendation.
+
+CURRENT STATE: ${currentState || 'Not specified'}
+DESIRED STATE: ${desiredState || 'Not specified'}
+TASK CONTEXT: ${taskContext || 'Not specified'}
+MUSIC PREFERENCES: ${musicPreferences || 'Not specified'}
+LISTENING SENSITIVITIES: ${sensitivityList}
+
+USER FEEDBACK ON PREVIOUS PLAYLIST: "${feedback}"
+
+Based on this feedback, generate an adjusted playlist that addresses the issue. Keep what was working; fix what wasn't.
+
+Return the same JSON structure as the original playlist, adjusted for the feedback. CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`, locale);
+
+  try {
+    console.log(`[BrainstateDeejay/adjust] ${currentState} → ${desiredState} | Feedback: ${feedback}`);
+    const parsed = await callClaudeWithRetry(prompt);
+    res.json(parsed);
+  } catch (error) {
+    console.error('Brainstate Deejay adjust error:', error);
+    res.status(500).json({ error: error.message || 'Failed to adjust playlist' });
   }
 });
 

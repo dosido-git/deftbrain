@@ -2,81 +2,7 @@ import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react'
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
-import { CopyBtn } from '../components/ActionButtons';
-
-// ════════════════════════════════════════════════════════════
-// THEME — Navy & Gold palette
-// ════════════════════════════════════════════════════════════
-const useColors = () => {
-  const { theme } = useTheme();
-  const d = theme === 'dark';
-  return {
-    d,
-    // Surfaces
-    card:        d ? 'bg-[#2a2623] border-[#3d3630]'  : 'bg-white border-[#e8e1d5]',
-    inset:       d ? 'bg-[#1a1816]'                    : 'bg-[#faf8f5]',
-    inputBg:     d ? 'bg-[#1a1816] border-[#3d3630] text-[#f0eeea] placeholder-[#8a8275] focus:border-[#4a6a8a]'
-                    : 'bg-[#faf8f5] border-[#d5cab8] text-[#3d3935] placeholder-[#8a8275] focus:border-[#4a6a8a]',
-    // Text
-    text:        d ? 'text-[#f0eeea]'  : 'text-[#3d3935]',
-    heading:     d ? 'text-[#f3efe8]'  : 'text-[#1e2a3a]',
-    textSec:     d ? 'text-[#c8c3b9]'  : 'text-[#5a544a]',
-    textMut:     d ? 'text-[#8a8275]'  : 'text-[#8a8275]',
-    label:       d ? 'text-[#c8c3b9]'  : 'text-[#5a544a]',
-    border:      d ? 'border-[#3d3630]' : 'border-[#e8e1d5]',
-    // Buttons
-    btn:         d ? 'bg-[#2c4a6e] hover:bg-[#4a6a8a] text-white' : 'bg-[#2c4a6e] hover:bg-[#1e3a58] text-white',
-    btnGold:     d ? 'bg-[#b06d22] hover:bg-[#c8872e] text-white' : 'bg-[#c8872e] hover:bg-[#b06d22] text-white',
-    btnSec:      d ? 'bg-[#332e2a] hover:bg-[#3d3630] text-[#c8c3b9] border border-[#3d3630]'
-                    : 'bg-[#f3efe8] hover:bg-[#e8e1d5] text-[#5e5042] border border-[#d5cab8]',
-    btnGhost:    d ? 'text-[#8a8275] hover:text-[#f0eeea]' : 'text-[#8a8275] hover:text-[#3d3935]',
-    btnDis:      d ? 'bg-[#332e2a] text-[#5a544a] cursor-not-allowed' : 'bg-[#e8e1d5] text-[#8a8275] cursor-not-allowed',
-    // Pills
-    pillActive:  d ? 'border-[#4a6a8a] bg-[#2c4a6e]/30 text-[#a8b9ce]' : 'border-[#2c4a6e] bg-[#d4dde8] text-[#1e3a58]',
-    pillInactive: d ? 'border-[#3d3630] text-[#8a8275] hover:border-[#5a544a]' : 'border-[#d5cab8] text-[#5a544a] hover:border-[#8a8275]',
-    // Result-specific
-    heroBg:      d ? 'bg-gradient-to-r from-[#1e2a3a] to-[#2c4a6e] border-[#4a6a8a]' : 'bg-gradient-to-r from-[#2c4a6e] to-[#4a6a8a] border-[#2c4a6e]',
-    heroText:    d ? 'text-[#f0eeea]' : 'text-white',
-    heroSub:     d ? 'text-[#a8b9ce]' : 'text-[#d4dde8]',
-    phaseBg:     d ? 'bg-[#2c4a6e]/15 border-[#4a6a8a]/30' : 'bg-[#d4dde8]/50 border-[#2c4a6e]/20',
-    phaseTitle:  d ? 'text-[#a8b9ce]' : 'text-[#1e3a58]',
-    phaseText:   d ? 'text-[#8aa4c0]' : 'text-[#2c4a6e]',
-    genrePill:   d ? 'bg-[#2c4a6e]/30 text-[#a8b9ce]' : 'bg-[#d4dde8] text-[#1e3a58]',
-    bpmBadge:    d ? 'bg-[#b06d22]/20 text-[#d9a04e]' : 'bg-[#f9edd8] text-[#93541f]',
-    spotifyBg:   d ? 'bg-[#1a3a2a] border-[#2a5a3a]' : 'bg-[#e8f5ee] border-[#b8d8c8]',
-    spotifyText: d ? 'text-[#4ade80]' : 'text-[#166534]',
-    trackBg:     d ? 'bg-[#332e2a] border-[#3d3630]' : 'bg-[#f3efe8] border-[#e8e1d5]',
-    trackText:   d ? 'text-[#c8c3b9]' : 'text-[#5a544a]',
-    audioBg:     d ? 'bg-[#1a2a3a] border-[#2a4a5a]' : 'bg-[#e6f0f5] border-[#b8d0e0]',
-    audioTitle:  d ? 'text-[#6eaacc]' : 'text-[#1e4a6e]',
-    audioText:   d ? 'text-[#8ab8d4]' : 'text-[#2c5a7e]',
-    altBg:       d ? 'bg-[#332e2a] border-[#3d3630]' : 'bg-[#faf8f5] border-[#e8e1d5]',
-    scienceBg:   d ? 'bg-[#332e2a] border-[#3d3630]' : 'bg-[#f3efe8] border-[#d5cab8]',
-    errBg:       d ? 'bg-[#b54a3f]/15 border-[#b54a3f]/40' : 'bg-[#fceae8] border-[#e8a8a0]',
-    errText:     d ? 'text-[#e88880]' : 'text-[#b54a3f]',
-    histBg:      d ? 'bg-[#2c4a6e]/10 border-[#4a6a8a]/30' : 'bg-[#d4dde8]/30 border-[#2c4a6e]/15',
-    histCard:    d ? 'bg-[#2a2623] border-[#3d3630]' : 'bg-white border-[#e8e1d5]',
-    histAccent:  d ? 'text-[#a8b9ce]' : 'text-[#2c4a6e]',
-    adjustBg:    d ? 'bg-[#c8872e]/10 border-[#c8872e]/30' : 'bg-[#f9edd8] border-[#c8872e]/30',
-    adjustText:  d ? 'text-[#d9a04e]' : 'text-[#93541f]',
-    timelineBg:  d ? 'bg-[#3d3630]' : 'bg-[#e8e1d5]',
-    timelineFill: d ? 'bg-[#4a6a8a]' : 'bg-[#2c4a6e]',
-    timelineGold: d ? 'bg-[#c8872e]' : 'bg-[#c8872e]',
-    presetBg:    d ? 'bg-[#2a2623] border-[#3d3630] hover:border-[#4a6a8a] hover:bg-[#332e2a]'
-                    : 'bg-white border-[#e8e1d5] hover:border-[#2c4a6e] hover:bg-[#faf8f5]',
-    presetActive: d ? 'text-[#d9a04e]' : 'text-[#c8872e]',
-    linkStyle:   d ? 'text-[#6e8aaa] hover:text-[#a8b9ce] underline' : 'text-[#2c4a6e] hover:text-[#1e3a58] underline',
-    // Breathing guide
-    breathRing:  d ? '#4a6a8a' : '#2c4a6e',
-    breathGlow:  d ? 'rgba(74,106,138,0.3)' : 'rgba(44,74,110,0.2)',
-    // Check-in / success
-    checkinBg:   d ? 'bg-[#2c4a6e]/20 border-[#4a6a8a]/50' : 'bg-[#d4dde8]/60 border-[#2c4a6e]/30',
-    checkinText: d ? 'text-[#a8b9ce]' : 'text-[#1e3a58]',
-    successBg:   d ? 'bg-[#5a8a5c]/15 border-[#5a8a5c]/40' : 'bg-[#e8f0e8] border-[#5a8a5c]/30',
-    successText: d ? 'text-[#7aba7c]' : 'text-[#3a6a3c]',
-    shareCopied: d ? 'text-[#7aba7c]' : 'text-[#3a6a3c]',
-  };
-};
+import { CopyBtn, ActionBar } from '../components/ActionButtons';
 
 // ════════════════════════════════════════════════════════════
 // CONSTANTS
@@ -187,9 +113,68 @@ const formatTimer = (secs) => {
 // ════════════════════════════════════════════════════════════
 // MAIN COMPONENT
 // ════════════════════════════════════════════════════════════
-const BrainstateDeejay = () => {
+const BrainstateDeejay = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
-  const c = useColors();
+  const { isDark } = useTheme();
+
+  // ─── Color config ───
+  const c = {
+    // ── Standard keys ──
+    card:          isDark ? 'bg-zinc-800'  : 'bg-white',
+    cardAlt:       isDark ? 'bg-zinc-700'  : 'bg-slate-50',
+    text:          isDark ? 'text-zinc-50' : 'text-slate-900',
+    textSecondary: isDark ? 'text-zinc-300': 'text-slate-600',
+    textMuted:     isDark ? 'text-zinc-500': 'text-slate-400',
+    input:         isDark
+      ? 'bg-zinc-900 border-zinc-700 text-zinc-50 placeholder:text-zinc-500 focus:border-cyan-500'
+      : 'bg-slate-50 border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-cyan-600',
+    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-slate-100 hover:bg-slate-200 text-slate-700',
+    border:        isDark ? 'border-zinc-700' : 'border-slate-200',
+    success:       isDark ? 'bg-emerald-900/30 border-emerald-700 text-emerald-300' : 'bg-emerald-50 border-emerald-200 text-emerald-800',
+    warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-300' : 'bg-amber-50 border-amber-200 text-amber-800',
+    danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-300' : 'bg-red-50 border-red-200 text-red-800',
+    // ── Tool-specific ──
+    btnGhost:      isDark ? 'text-zinc-400 hover:text-zinc-100' : 'text-slate-500 hover:text-slate-800',
+    btnDis:        'opacity-40 cursor-not-allowed',
+    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-300' : 'border-cyan-400 bg-cyan-100 text-cyan-700',
+    pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-slate-200 text-slate-500 hover:border-slate-400',
+    heroBg:        isDark ? 'bg-gradient-to-r from-zinc-800 to-cyan-900' : 'bg-gradient-to-r from-cyan-700 to-sky-600',
+    heroText:      'text-white',
+    heroSub:       isDark ? 'text-cyan-200' : 'text-cyan-100',
+    phaseBg:       isDark ? 'bg-cyan-900/15 border-cyan-700/30' : 'bg-cyan-50/50 border-cyan-200/50',
+    phaseTitle:    isDark ? 'text-cyan-300' : 'text-cyan-700',
+    phaseText:     isDark ? 'text-cyan-400' : 'text-cyan-600',
+    genrePill:     isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-100 text-cyan-700',
+    bpmBadge:      isDark ? 'bg-amber-900/20 text-amber-300' : 'bg-amber-50 text-amber-700',
+    spotifyBg:     isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-200',
+    spotifyText:   isDark ? 'text-emerald-400' : 'text-emerald-700',
+    trackBg:       isDark ? 'bg-zinc-700 border-zinc-600' : 'bg-slate-50 border-slate-100',
+    trackText:     isDark ? 'text-zinc-300' : 'text-slate-600',
+    audioBg:       isDark ? 'bg-sky-900/15 border-sky-700/30' : 'bg-sky-50 border-sky-200',
+    audioTitle:    isDark ? 'text-sky-300' : 'text-sky-700',
+    audioText:     isDark ? 'text-sky-400' : 'text-sky-600',
+    histBg:        isDark ? 'bg-cyan-900/10 border-cyan-700/30' : 'bg-cyan-50/30 border-cyan-200',
+    histAccent:    isDark ? 'text-cyan-400' : 'text-cyan-600',
+    timelineBg:    isDark ? 'bg-zinc-700' : 'bg-slate-100',
+    timelineFill:  isDark ? 'bg-cyan-600' : 'bg-cyan-500',
+    timelineGold:  isDark ? 'bg-amber-500' : 'bg-amber-400',
+    presetBg:      isDark
+      ? 'bg-zinc-800 border-zinc-700 hover:border-cyan-600 hover:bg-zinc-700'
+      : 'bg-white border-slate-200 hover:border-cyan-400 hover:bg-slate-50',
+    presetActive:  isDark ? 'text-cyan-400' : 'text-cyan-600',
+    presetRingActive:    isDark ? 'ring-2 ring-cyan-500/40' : 'ring-2 ring-cyan-400/50',
+    presetRingSuggested: isDark ? 'ring-1 ring-amber-500/40' : 'ring-1 ring-amber-400/50',
+    presetNowBadge:      isDark ? 'bg-amber-600 text-white' : 'bg-amber-500 text-white',
+    phaseActiveTab:      'bg-cyan-700 text-white',
+    // ── Raw CSS values for inline styles ──
+    breathRing:    isDark ? '#0891b2' : '#0e7490',
+    breathGlow:    isDark ? 'rgba(8,145,178,0.3)' : 'rgba(14,116,144,0.2)',
+  };
+
+  const linkStyle = isDark
+    ? 'font-semibold underline text-cyan-400 hover:text-cyan-300'
+    : 'font-semibold underline text-cyan-600 hover:text-cyan-700';
 
   // ── Persistent ──
   const [history, setHistory] = usePersistentState('brainstate-deejay-history', []);
@@ -209,7 +194,7 @@ const BrainstateDeejay = () => {
   const [showSensitivities, setShowSensitivities] = useState(false);
 
   // ── Results ──
-  const [results, setResults] = useState(null);
+  const [results, setResults] = usePersistentState('brainstate-deejay-results', null);
   const [showInputs, setShowInputs] = useState(true);
   const [error, setError] = useState('');
 
@@ -226,6 +211,7 @@ const BrainstateDeejay = () => {
   const [checkinDismissed, setCheckinDismissed] = useState([]);
   const [rated, setRated] = useState(false);
   const timerRef = useRef(null);
+  const resultsRef = useRef(null);
 
   // ── Breathing guide (#4) ──
   const [breathingActive, setBreathingActive] = useState(false);
@@ -287,6 +273,20 @@ const BrainstateDeejay = () => {
       }
     }
   }, [sessionElapsed, sessionActive, results, checkinDismissed]);
+
+  // ── Global Enter → generate (works after selecting pills, no input focused) ──
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key !== 'Enter') return;
+      const tag = document.activeElement?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+      if (loading || !currentState || !desiredState) return;
+      e.preventDefault();
+      generate();
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  });
 
   const startSession = useCallback(() => {
     setSessionActive(true);
@@ -417,12 +417,13 @@ const BrainstateDeejay = () => {
     const entry = {
       id: `dj_${Date.now()}`,
       date: new Date().toISOString(),
+      preview: `${from} → ${to}`.slice(0, 40),
       from, to,
       strategy: res.playlist_strategy?.approach || '',
       phases: (res.playlist || []).length,
       results: res,
     };
-    setHistory(prev => [entry, ...prev].slice(0, 30));
+    setHistory(prev => [entry, ...prev].slice(0, 6));
   }, [setHistory]);
 
   const removeFromHistory = useCallback((id) => {
@@ -533,8 +534,10 @@ const BrainstateDeejay = () => {
   const renderHeader = () => (
     <div className="flex items-center gap-3 mb-5">
       <div>
-        <h2 className={`text-2xl font-bold ${c.heading}`}>Brainstate Deejay <span className="text-xl">🎧</span></h2>
-        <p className={`text-sm ${c.textMut}`}>Science-backed playlists for cognitive state transitions</p>
+        <h2 className={`text-2xl font-bold ${c.text}`}>
+          <span>{tool?.icon ?? '🎧'}</span> {tool?.title ?? 'Brain State Deejay'}
+        </h2>
+        <p className={`text-sm ${c.textMuted}`}>{tool?.tagline ?? 'Science-backed playlists for your brain state'}</p>
       </div>
     </div>
   );
@@ -544,7 +547,7 @@ const BrainstateDeejay = () => {
   // ══════════════════════════════════════════
   const renderPresets = () => (
     <div className="mb-4">
-      <p className={`text-xs font-bold ${c.textMut} uppercase tracking-wide mb-2`}>⚡ Quick Start</p>
+      <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-2`}>⚡ Quick Start</p>
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
         {QUICK_PRESETS.map((preset, idx) => {
           const isActive = currentState === preset.from && desiredState === preset.to && task === preset.task;
@@ -552,9 +555,9 @@ const BrainstateDeejay = () => {
           return (
             <button key={preset.label}
               onClick={() => applyPreset(preset)}
-              className={`p-3 rounded-xl text-xs font-semibold text-left border transition-all relative ${c.presetBg} ${isActive ? 'ring-2 ring-[#2c4a6e]/40' : ''} ${isSuggested && !isActive ? 'ring-1 ring-[#c8872e]/40' : ''}`}>
+              className={`p-3 rounded-xl text-xs font-semibold text-left border transition-all relative ${c.presetBg} ${isActive ? c.presetRingActive : ''} ${isSuggested && !isActive ? c.presetRingSuggested : ''}`}>
               {isSuggested && !isActive && (
-                <span className={`absolute -top-1.5 -right-1.5 text-[9px] font-bold px-1.5 py-0.5 rounded-full ${c.d ? 'bg-[#b06d22] text-white' : 'bg-[#c8872e] text-white'}`}>
+                <span className={`absolute -top-1.5 -right-1.5 text-[9px] font-bold px-1.5 py-0.5 rounded-full ${c.presetNowBadge}`}>
                   Now
                 </span>
               )}
@@ -574,12 +577,12 @@ const BrainstateDeejay = () => {
     const combo = getWinningCombo(currentState, desiredState);
     if (!combo) return null;
     return (
-      <div className={`p-3 rounded-xl border ${c.successBg} mb-4`}>
+      <div className={`p-3 rounded-xl border ${c.success} mb-4`}>
         <div className="flex items-center gap-2 mb-1">
           <span className="text-sm">✨</span>
-          <span className={`text-xs font-bold ${c.successText}`}>This worked for you before</span>
+          <span className={`text-xs font-bold`}>This worked for you before</span>
         </div>
-        <p className={`text-xs ${c.successText}`}>
+        <p className={`text-xs`}>
           Strategy: "{combo.strategy}"{combo.genres.length > 0 ? ` · Genres: ${combo.genres.join(', ')}` : ''}
         </p>
       </div>
@@ -594,39 +597,39 @@ const BrainstateDeejay = () => {
       {renderPresets()}
       {renderWinningSuggestion()}
 
-      <div className={`p-5 rounded-2xl border ${c.card}`}>
-        <label className={`text-xs font-bold ${c.textSec} uppercase tracking-wide mb-2 block`}>😰 How do you feel right now?</label>
+      <div className={`p-5 rounded-2xl border ${c.border} ${c.card}`}>
+        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>😰 How do you feel right now?</label>
         {renderPills(CURRENT_STATES, currentState, setCurrentState)}
       </div>
 
-      <div className={`p-5 rounded-2xl border ${c.card}`}>
-        <label className={`text-xs font-bold ${c.textSec} uppercase tracking-wide mb-2 block`}>🎯 Where do you need to be?</label>
+      <div className={`p-5 rounded-2xl border ${c.border} ${c.card}`}>
+        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>🎯 Where do you need to be?</label>
         {renderPills(DESIRED_STATES, desiredState, setDesiredState)}
       </div>
 
-      <div className={`p-5 rounded-2xl border ${c.card}`}>
-        <label className={`text-xs font-bold ${c.textSec} uppercase tracking-wide mb-1 block`}>📋 What are you doing?</label>
-        <p className={`text-xs ${c.textMut} mb-2`}>Optional — helps tailor the playlist</p>
+      <div className={`p-5 rounded-2xl border ${c.border} ${c.card}`}>
+        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1 block`}>📋 What are you doing?</label>
+        <p className={`text-xs ${c.textMuted} mb-2`}>Optional — helps tailor the playlist</p>
         {renderPills(TASK_OPTIONS, task, setTask)}
       </div>
 
-      <div className={`p-5 rounded-2xl border ${c.card}`}>
-        <label className={`text-xs font-bold ${c.textSec} uppercase tracking-wide mb-1 block`}>🎵 Music preferences</label>
-        <p className={`text-xs ${c.textMut} mb-2`}>Pick up to 4 genres you enjoy</p>
+      <div className={`p-5 rounded-2xl border ${c.border} ${c.card}`}>
+        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1 block`}>🎵 Music preferences</label>
+        <p className={`text-xs ${c.textMuted} mb-2`}>Pick up to 4 genres you enjoy</p>
         {renderPills(GENRE_PREFS, genres, toggleGenre, true)}
         <input type="text" value={musicTaste} onChange={e => setMusicTaste(e.target.value)}
           placeholder="Artists you love, e.g. 'Tycho, Nils Frahm, Bonobo'..."
-          className={`w-full mt-3 px-4 py-2.5 rounded-xl border text-sm ${c.inputBg} outline-none`} />
+          className={`w-full mt-3 px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
       </div>
 
-      <div className={`p-5 rounded-2xl border ${c.card}`}>
+      <div className={`p-5 rounded-2xl border ${c.border} ${c.card}`}>
         <button onClick={() => setShowSensitivities(!showSensitivities)}
-          className={`flex items-center gap-2 text-xs font-bold ${c.textSec} uppercase tracking-wide`}>
+          className={`flex items-center gap-2 text-xs font-bold ${c.textSecondary} uppercase tracking-wide`}>
           <span className="text-xs">{showSensitivities ? '▲' : '▼'}</span>
           🧠 Listening sensitivities
           {sensitivities.length > 0 && <span className={`ml-1 px-1.5 py-0.5 rounded text-[10px] ${c.pillActive}`}>{sensitivities.length}</span>}
         </button>
-        <p className={`text-xs ${c.textMut} mt-1`}>Help us avoid sounds that don't work for you</p>
+        <p className={`text-xs ${c.textMuted} mt-1`}>Help us avoid sounds that don't work for you</p>
         {showSensitivities && (
           <div className="flex flex-wrap gap-1.5 mt-3">
             {SENSITIVITY_OPTIONS.map(opt => (
@@ -643,13 +646,16 @@ const BrainstateDeejay = () => {
       <button onClick={generate}
         disabled={loading || !currentState || !desiredState}
         className={`w-full py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all
-          ${loading || !currentState || !desiredState ? c.btnDis : c.btn}`}>
+          ${loading || !currentState || !desiredState ? c.btnDis : c.btnPrimary}`}>
         {loading ? (
-          <><span className="animate-spin inline-block">⏳</span> Creating your playlist...</>
+          <><span className="animate-spin inline-block">{tool?.icon ?? '🎧'}</span> Creating your playlist...</>
         ) : (
-          <><span>🎵</span> Generate Playlist</>
+          <><span>{tool?.icon ?? '🎧'}</span> Generate Playlist</>
         )}
       </button>
+      <p className={`text-center text-xs ${c.textMuted}`}>
+        Also tracking your energy levels? <a href="/SpoonBudgeter" className={linkStyle}>Spoon Budgeter</a> helps you allocate what you have.
+      </p>
     </div>
   );
 
@@ -672,18 +678,18 @@ const BrainstateDeejay = () => {
     const cycleSec = (60 / bpm) * 4;
 
     return (
-      <div className={`p-5 rounded-2xl border ${c.card}`}>
+      <div className={`p-5 rounded-2xl border ${c.border} ${c.card}`}>
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <span className="text-base">🫁</span>
             <h3 className={`text-sm font-bold ${c.text}`}>Breathing Guide</h3>
           </div>
           <button onClick={() => setBreathingActive(!breathingActive)}
-            className={`px-3 py-1 rounded-lg text-xs font-semibold ${breathingActive ? c.btnGold : c.btnSec}`}>
+            className={`px-3 py-1 rounded-lg text-xs font-semibold ${breathingActive ? c.btnPrimary : c.btnSecondary}`}>
             {breathingActive ? 'Pause' : 'Start'}
           </button>
         </div>
-        <p className={`text-xs ${c.textMut} mb-4`}>
+        <p className={`text-xs ${c.textMuted} mb-4`}>
           Breathe with the circle — synced to {bpm} BPM ({phases[activePhaseIdx]?.phase || 'Phase'})
         </p>
         <div className="flex justify-center">
@@ -712,7 +718,7 @@ const BrainstateDeejay = () => {
               }}
             />
             {breathingActive && (
-              <span className={`absolute text-[11px] font-bold ${c.textMut} pointer-events-none`}>Breathe</span>
+              <span className={`absolute text-[11px] font-bold ${c.textMuted} pointer-events-none`}>Breathe</span>
             )}
           </div>
         </div>
@@ -739,7 +745,7 @@ const BrainstateDeejay = () => {
     }
 
     return (
-      <div className={`p-4 rounded-2xl border ${c.card}`}>
+      <div className={`p-4 rounded-2xl border ${c.border} ${c.card}`}>
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
             <span className="text-base">{sessionActive ? '🔴' : '⏱️'}</span>
@@ -750,7 +756,7 @@ const BrainstateDeejay = () => {
               <span className={`text-sm font-mono font-bold ${c.text}`}>{formatTimer(sessionElapsed)}</span>
             )}
             <button onClick={sessionActive ? stopSession : startSession}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold ${sessionActive ? c.btnSec : c.btnGold}`}>
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold ${sessionActive ? c.btnSecondary : c.btnPrimary}`}>
               {sessionActive ? 'Stop' : 'Start Listening'}
             </button>
           </div>
@@ -760,8 +766,8 @@ const BrainstateDeejay = () => {
             {phases.map((phase, idx) => (
               <div key={idx} className={`flex-1 py-1.5 rounded text-center text-[10px] font-bold transition-all ${
                 idx === activePhaseIdx
-                  ? (c.d ? 'bg-[#4a6a8a] text-white' : 'bg-[#2c4a6e] text-white')
-                  : `${c.inset} ${c.textMut}`
+                  ? c.phaseActiveTab
+                  : `${c.cardAlt} ${c.textMuted}`
               }`}>
                 {phase.phase.replace('Transition ', '')}
               </div>
@@ -771,8 +777,8 @@ const BrainstateDeejay = () => {
 
         {/* Check-in prompt */}
         {showCheckin && (
-          <div className={`mt-3 p-3 rounded-xl border ${c.checkinBg}`}>
-            <p className={`text-xs font-bold ${c.checkinText} mb-2`}>
+          <div className={`mt-3 p-3 rounded-xl border ${c.success}`}>
+            <p className={`text-xs font-bold mb-2`}>
               🎵 Phase {checkinPhase + 1} starting — how's it going?
             </p>
             <div className="flex gap-2">
@@ -782,7 +788,7 @@ const BrainstateDeejay = () => {
                 { label: '👎 Not working', val: 'worse' },
               ].map(opt => (
                 <button key={opt.val} onClick={() => dismissCheckin(opt.val)}
-                  className={`flex-1 py-2 rounded-lg text-xs font-semibold ${c.btnSec}`}>
+                  className={`flex-1 py-2 rounded-lg text-xs font-semibold ${c.btnSecondary}`}>
                   {opt.label}
                 </button>
               ))}
@@ -800,8 +806,8 @@ const BrainstateDeejay = () => {
     const durations = phases.map(p => parseDuration(p.duration));
     const total = durations.reduce((a, b) => a + b, 0);
     return (
-      <div className={`p-4 rounded-2xl border ${c.card}`}>
-        <p className={`text-xs font-bold ${c.textMut} uppercase tracking-wide mb-3`}>🕐 Listening Arc</p>
+      <div className={`p-4 rounded-2xl border ${c.border} ${c.card}`}>
+        <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-3`}>🕐 Listening Arc</p>
         <div className={`flex rounded-full overflow-hidden h-3 ${c.timelineBg}`}>
           {phases.map((phase, idx) => (
             <div key={idx}
@@ -814,8 +820,8 @@ const BrainstateDeejay = () => {
         <div className="flex justify-between mt-2">
           {phases.map((phase, idx) => (
             <div key={idx} className="text-center" style={{ width: `${(durations[idx] / total) * 100}%` }}>
-              <p className={`text-[10px] font-bold ${c.textMut} truncate`}>{phase.phase}</p>
-              <p className={`text-[10px] ${c.textMut}`}>{phase.duration}</p>
+              <p className={`text-[10px] font-bold ${c.textMuted} truncate`}>{phase.phase}</p>
+              <p className={`text-[10px] ${c.textMuted}`}>{phase.duration}</p>
             </div>
           ))}
         </div>
@@ -835,7 +841,9 @@ const BrainstateDeejay = () => {
     const alts = results.alternative_playlists || [];
 
     return (
-      <div className="space-y-4">
+      <div className="space-y-4" ref={resultsRef}>
+        {/* ActionBar — anchored to resultsRef */}
+        <ActionBar content={buildCopyText()} copyLabel="Copy Playlist" printContent={buildCopyText()} printTitle="Brainstate Deejay Playlist" />
         <button onClick={() => setShowInputs(!showInputs)}
           className={`flex items-center gap-2 text-xs font-semibold ${c.btnGhost}`}>
           <span>{showInputs ? '▲' : '▼'}</span>
@@ -843,7 +851,7 @@ const BrainstateDeejay = () => {
         </button>
 
         {/* Hero */}
-        <div className={`rounded-2xl border-2 p-5 ${c.heroBg}`}>
+        <div className={`rounded-2xl border-2 p-5 ${c.border} ${c.heroBg}`}>
           <h3 className={`text-xl font-bold mb-2 ${c.heroText}`}>Your Playlist Strategy</h3>
           <div className="flex items-center gap-3 mb-3">
             <span className={`text-sm font-semibold ${c.heroSub}`}>{st.from}</span>
@@ -862,9 +870,9 @@ const BrainstateDeejay = () => {
 
         {/* Strategy */}
         {strategy.approach && (
-          <div className={`p-5 rounded-2xl border ${c.card}`}>
+          <div className={`p-5 rounded-2xl border ${c.border} ${c.card}`}>
             <h3 className={`text-sm font-bold mb-2 ${c.text}`}>🎶 {strategy.approach}</h3>
-            <p className={`text-sm ${c.textSec} mb-3`}>{strategy.why}</p>
+            <p className={`text-sm ${c.textSecondary} mb-3`}>{strategy.why}</p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               {['phase_1', 'phase_2', 'phase_3'].map((key, i) => strategy[key] && (
                 <div key={key} className={`p-3 rounded-xl border ${c.phaseBg}`}>
@@ -878,7 +886,7 @@ const BrainstateDeejay = () => {
 
         {/* Playlist Phases */}
         {phases.map((phase, idx) => (
-          <div key={idx} className={`p-5 rounded-2xl border ${c.card}`}>
+          <div key={idx} className={`p-5 rounded-2xl border ${c.border} ${c.card}`}>
             <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
               <h3 className={`text-sm font-bold ${c.text}`}>🎵 {phase.phase}</h3>
               <div className="flex items-center gap-2">
@@ -887,14 +895,14 @@ const BrainstateDeejay = () => {
                     {phase.bpm_range}
                   </span>
                 )}
-                {phase.duration && <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${c.inset} ${c.textMut}`}>{phase.duration}</span>}
+                {phase.duration && <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${c.cardAlt} ${c.textMuted}`}>{phase.duration}</span>}
               </div>
             </div>
-            <p className={`text-sm ${c.textSec} mb-3`}>{phase.characteristics}</p>
+            <p className={`text-sm ${c.textSecondary} mb-3`}>{phase.characteristics}</p>
 
             {phase.genre_suggestions?.length > 0 && (
               <div className="mb-3">
-                <div className={`text-xs font-semibold ${c.label} mb-1.5`}>Genres</div>
+                <div className={`text-xs font-semibold ${c.textSecondary} mb-1.5`}>Genres</div>
                 <div className="flex flex-wrap gap-1.5">
                   {phase.genre_suggestions.map((g, i) => (
                     <span key={i} className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${c.genrePill}`}>{g}</span>
@@ -905,19 +913,19 @@ const BrainstateDeejay = () => {
 
             {phase.example_artists?.length > 0 && (
               <div className="mb-3">
-                <div className={`text-xs font-semibold ${c.label} mb-1`}>Example Artists</div>
-                <p className={`text-xs ${c.textSec}`}>{phase.example_artists.join(', ')}</p>
+                <div className={`text-xs font-semibold ${c.textSecondary} mb-1`}>Example Artists</div>
+                <p className={`text-xs ${c.textSecondary}`}>{phase.example_artists.join(', ')}</p>
               </div>
             )}
 
             {/* Specific Tracks */}
             {phase.specific_tracks?.length > 0 && (
               <div className="mb-3">
-                <div className={`text-xs font-semibold ${c.label} mb-1.5`}>🎧 Tracks to Start With</div>
+                <div className={`text-xs font-semibold ${c.textSecondary} mb-1.5`}>🎧 Tracks to Start With</div>
                 <div className="space-y-1">
                   {phase.specific_tracks.map((track, i) => (
                     <div key={i} className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-xs ${c.trackBg}`}>
-                      <span className={c.textMut}>{i + 1}.</span>
+                      <span className={c.textMuted}>{i + 1}.</span>
                       <span className={`font-medium ${c.trackText}`}>{track}</span>
                     </div>
                   ))}
@@ -936,7 +944,7 @@ const BrainstateDeejay = () => {
                 )}
                 {phase.youtube_search && (
                   <a href={makeYouTubeUrl(phase.youtube_search)} target="_blank" rel="noopener noreferrer"
-                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-semibold ${c.altBg} ${c.textSec} hover:opacity-80 transition-opacity`}>
+                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-semibold ${c.cardAlt} ${c.textSecondary} hover:opacity-80 transition-opacity`}>
                     <span>▶️</span> YouTube Music
                   </a>
                 )}
@@ -962,14 +970,14 @@ const BrainstateDeejay = () => {
 
         {/* Alternatives */}
         {alts.length > 0 && (
-          <div className={`p-5 rounded-2xl border ${c.card}`}>
+          <div className={`p-5 rounded-2xl border ${c.border} ${c.card}`}>
             <h3 className={`text-sm font-bold mb-3 ${c.text}`}>🔄 If This Doesn't Feel Right</h3>
             <div className="space-y-2">
               {alts.map((alt, idx) => (
-                <div key={idx} className={`p-3 rounded-xl border ${c.altBg}`}>
+                <div key={idx} className={`p-3 rounded-xl border ${c.cardAlt}`}>
                   <div className={`text-xs font-bold mb-1 ${c.text}`}>{alt.name}</div>
-                  <p className={`text-xs ${c.textSec}`}><strong>Change:</strong> {alt.change}</p>
-                  <p className={`text-xs ${c.textMut}`}><strong>When:</strong> {alt.when}</p>
+                  <p className={`text-xs ${c.textSecondary}`}><strong>Change:</strong> {alt.change}</p>
+                  <p className={`text-xs ${c.textMuted}`}><strong>When:</strong> {alt.when}</p>
                 </div>
               ))}
             </div>
@@ -978,9 +986,9 @@ const BrainstateDeejay = () => {
 
         {/* Science */}
         {results.science_note && (
-          <div className={`p-5 rounded-2xl border ${c.scienceBg}`}>
+          <div className={`p-5 rounded-2xl border ${c.cardAlt}`}>
             <h3 className={`text-sm font-bold mb-2 ${c.text}`}>💡 Why This Works</h3>
-            <p className={`text-sm ${c.textSec}`}>{results.science_note}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{results.science_note}</p>
           </div>
         )}
 
@@ -992,33 +1000,29 @@ const BrainstateDeejay = () => {
           {/* Rate this playlist — What Worked Learning (#3) */}
           {!rated ? (
             <button onClick={markAsWinner}
-              className={`w-full py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 ${c.btnSec}`}>
+              className={`w-full py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 ${c.btnSecondary}`}>
               <span>👍</span> This playlist worked — remember it
             </button>
           ) : (
-            <div className={`py-3 rounded-xl text-xs font-bold text-center border ${c.successBg} ${c.successText}`}>
+            <div className={`py-3 rounded-xl text-xs font-bold text-center border ${c.success}`}>
               ✅ Saved! We'll suggest this combo next time.
             </div>
           )}
 
           {/* Copy Full / Copy Tracks (#2) */}
-          <div className="flex gap-2">
-            <div className="flex-1">
-              <CopyBtn content={buildCopyText()} label="Copy Full" />
-            </div>
-            <div className="flex-1">
-              <CopyBtn content={buildTrackList()} label="Copy Tracks" />
-            </div>
+          {/* Copy Tracks (#2) */}
+          <div className="flex gap-2 mt-1">
+            <CopyBtn content={buildTrackList()} label="📋 Copy Track List" />
           </div>
 
           {/* New Playlist / Share Settings (#6) */}
           <div className="flex gap-2">
             <button onClick={regenerate}
-              className={`flex-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 ${c.btn}`}>
+              className={`flex-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 ${c.btnPrimary}`}>
               <span>🔄</span> New Playlist
             </button>
             <button onClick={copyShareUrl}
-              className={`flex-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 ${shareCopied ? '' : c.btnSec} ${shareCopied ? c.successBg + ' border ' + c.successText : ''}`}>
+              className={`flex-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 border ${shareCopied ? c.success : c.btnSecondary}`}>
               {shareCopied ? <><span>✅</span> Link Copied!</> : <><span>📤</span> Share Settings</>}
             </button>
           </div>
@@ -1034,15 +1038,15 @@ const BrainstateDeejay = () => {
   // RENDER: Adjustment Panel
   // ══════════════════════════════════════════
   const renderAdjustPanel = () => (
-    <div className={`p-4 rounded-2xl border ${c.adjustBg}`}>
+    <div className={`p-4 rounded-2xl border ${c.warning}`}>
       <button onClick={() => setShowAdjust(!showAdjust)}
-        className={`flex items-center gap-2 text-xs font-bold ${c.adjustText} w-full text-left`}>
+        className={`flex items-center gap-2 text-xs font-bold  w-full text-left`}>
         <span>{showAdjust ? '▲' : '▼'}</span>
         <span>🎛️ This isn't quite right?</span>
       </button>
       {showAdjust && (
         <div className="mt-3 space-y-3">
-          <p className={`text-xs ${c.textMut}`}>Tell us what's off and we'll adjust without starting over</p>
+          <p className={`text-xs ${c.textMuted}`}>Tell us what's off and we'll adjust without starting over</p>
           <div className="flex flex-wrap gap-1.5">
             {ADJUSTMENT_OPTIONS.map(opt => (
               <button key={opt.value}
@@ -1056,14 +1060,14 @@ const BrainstateDeejay = () => {
           </div>
           <input type="text" value={adjustFeedback} onChange={e => setAdjustFeedback(e.target.value)}
             placeholder="Or describe what's not working..."
-            className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.inputBg} outline-none`} />
+            className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
           <button onClick={submitAdjustment}
             disabled={!adjustFeedback || adjusting}
             className={`w-full py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all ${
-              !adjustFeedback || adjusting ? c.btnDis : c.btnGold
+              !adjustFeedback || adjusting ? c.btnDis : c.btnPrimary
             }`}>
             {adjusting ? (
-              <><span className="animate-spin inline-block">⏳</span> Adjusting...</>
+              <><span className="animate-spin inline-block">{tool?.icon ?? '🎧'}</span> Adjusting...</>
             ) : (
               <><span>🎛️</span> Adjust Playlist</>
             )}
@@ -1077,13 +1081,15 @@ const BrainstateDeejay = () => {
   // RENDER: Cross-References
   // ══════════════════════════════════════════
   const renderCrossRefs = () => (
-    <div className={`p-4 rounded-2xl border ${c.card} mt-2`}>
-      <p className={`text-xs font-bold ${c.textMut} uppercase tracking-wide mb-2`}>🔗 Related Tools</p>
-      <div className={`space-y-1.5 text-xs ${c.textSec}`}>
-        <p>Need more than music? Build a full <a href="/DopamineMenuBuilder" target="_blank" rel="noopener noreferrer" className={c.linkStyle}>Dopamine Menu</a> of feel-good activities.</p>
-        <p>Want to track your energy patterns? <a href="/SpoonBudgeter" target="_blank" rel="noopener noreferrer" className={c.linkStyle}>Spoon Budgeter</a> helps allocate what you have.</p>
-        <p>Thoughts spiraling? <a href="/SpiralStopper" target="_blank" rel="noopener noreferrer" className={c.linkStyle}>Spiral Stopper</a> breaks the loop so you can think clearly.</p>
+    <div className={`p-4 rounded-2xl border ${c.border} ${c.card} mt-2`}>
+      <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-2`}>🔗 Related Tools</p>
+      <div className={`space-y-1.5 text-xs ${c.textSecondary}`}>
+        <p>Need more than music? Build a full <a href="/DopamineMenuBuilder" className={linkStyle}>Dopamine Menu</a> of feel-good activities.</p>
+        {(results?.state_transition?.from?.toLowerCase().includes('anxi') || results?.state_transition?.from?.toLowerCase().includes('stress') || results?.state_transition?.from?.toLowerCase().includes('overwhelm')) && (
+          <p>Thoughts spiraling too? <a href="/SpiralStopper" className={linkStyle}>Spiral Stopper</a> breaks the loop so you can think clearly.</p>
+        )}
       </div>
+      <p className={`text-[10px] ${c.textMuted} mt-3`}>AI-generated playlists — for reference only. Not a substitute for professional music therapy.</p>
     </div>
   );
 
@@ -1091,9 +1097,9 @@ const BrainstateDeejay = () => {
   // RENDER: Error
   // ══════════════════════════════════════════
   const renderError = () => error ? (
-    <div className={`mt-4 p-4 ${c.errBg} border rounded-xl flex items-start gap-3`}>
-      <span className={`text-base ${c.errText} flex-shrink-0`}>⚠️</span>
-      <p className={`text-sm ${c.errText}`}>{error}</p>
+    <div className={`mt-4 p-4 ${c.danger} border rounded-xl flex items-start gap-3`}>
+      <span className={`text-base flex-shrink-0`}>⚠️</span>
+      <p className={`text-sm`}>{error}</p>
     </div>
   ) : null;
 
@@ -1121,8 +1127,8 @@ const BrainstateDeejay = () => {
           className="w-full flex items-center gap-2 text-left">
           <span className={`text-base ${c.histAccent}`}>🎧</span>
           <span className={`text-sm font-bold ${c.text} flex-1`}>Past Playlists</span>
-          <span className={`text-xs ${c.textMut}`}>{history.length}</span>
-          <span className={`text-xs ${c.textMut}`}>{showHistory ? '▲' : '▼'}</span>
+          <span className={`text-xs ${c.textMuted}`}>{history.length}</span>
+          <span className={`text-xs ${c.textMuted}`}>{showHistory ? '▲' : '▼'}</span>
         </button>
 
         {showHistory && (
@@ -1130,25 +1136,25 @@ const BrainstateDeejay = () => {
             {history.map(entry => {
               const isExp = expandedHistId === entry.id;
               return (
-                <div key={entry.id} className={`rounded-xl border ${c.histCard} overflow-hidden`}>
+                <div key={entry.id} className={`rounded-xl border ${c.border} ${c.card} overflow-hidden`}>
                   <button onClick={() => setExpandedHistId(isExp ? null : entry.id)}
                     className="w-full flex items-center gap-3 p-3 text-left">
                     <div className="flex-1 min-w-0">
                       <div className={`text-sm font-semibold ${c.text} truncate`}>{entry.from} → {entry.to}</div>
-                      <div className={`text-xs ${c.textMut} mt-0.5`}>
+                      <div className={`text-xs ${c.textMuted} mt-0.5`}>
                         {formatDate(entry.date)} · {entry.strategy} · {entry.phases} phases
                       </div>
                     </div>
-                    <span className={`text-xs ${c.textMut} flex-shrink-0`}>{isExp ? '▲' : '▼'}</span>
+                    <span className={`text-xs ${c.textMuted} flex-shrink-0`}>{isExp ? '▲' : '▼'}</span>
                   </button>
                   {isExp && (
                     <div className={`px-3 pb-3 border-t ${c.border} flex gap-2`}>
                       <button onClick={() => loadFromHistory(entry)}
-                        className={`flex-1 mt-2 py-2 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 ${c.btn}`}>
+                        className={`flex-1 mt-2 py-2 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 ${c.btnPrimary}`}>
                         <span>🎵</span> View Again
                       </button>
                       <button onClick={() => removeFromHistory(entry.id)}
-                        className={`mt-2 px-3 py-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 ${c.btnSec} hover:text-red-500`}>
+                        className={`mt-2 px-3 py-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 ${c.btnSecondary} hover:text-red-500`}>
                         <span>🗑️</span>
                       </button>
                     </div>

@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react';
-import { CopyBtn } from '../components/ActionButtons';
+import { CopyBtn, ActionBar } from '../components/ActionButtons';
+import { usePersistentState } from '../hooks/usePersistentState';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 
@@ -24,48 +25,48 @@ const URGENCY_LEVELS = [
   { value: 'unsure', label: 'Not sure', emoji: '🤷' },
 ];
 
-const BeforeYouBook = () => {
+const ProcedureProbe = () => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { theme } = useTheme();
   const isDark = theme === 'dark';
 
+  // ─── Colors ───
   const c = {
-    pageBg:       isDark ? 'bg-[#1a1816]'    : 'bg-[#faf8f5]',
-    card:         isDark ? 'bg-[#2a2623]'     : 'bg-white',
-    cardAlt:      isDark ? 'bg-[#332e2a]'     : 'bg-[#faf8f5]',
-    cardBorder:   isDark ? 'border-[#3d3630]' : 'border-[#e8e1d5]',
-    inputBg:      isDark ? 'bg-[#1a1816]'     : 'bg-[#faf8f5]',
-    inputBorder:  isDark ? 'border-[#3d3630]' : 'border-[#d5cab8]',
-    inputFocus:   isDark ? 'focus:border-[#4a6a8a] focus:ring-[#2c4a6e]/20'
-                         : 'focus:border-[#4a6a8a] focus:ring-[#2c4a6e]/12',
-    text:          isDark ? 'text-[#f0eeea]'  : 'text-[#3d3935]',
-    textSecondary: isDark ? 'text-[#c8c3b9]'  : 'text-[#5a544a]',
-    textMuted:     isDark ? 'text-[#8a8275]'  : 'text-[#8a8275]',
-    heading:       isDark ? 'text-[#f3efe8]'  : 'text-[#1e2a3a]',
-    btnPrimary:    isDark ? 'bg-[#2c4a6e] hover:bg-[#4a6a8a] text-white' : 'bg-[#2c4a6e] hover:bg-[#1e3a58] text-white',
-    btnSecondary:  isDark ? 'bg-[#332e2a] hover:bg-[#3d3630] text-[#c8c3b9] border border-[#3d3630]' : 'bg-[#f3efe8] hover:bg-[#e8e1d5] text-[#5e5042] border border-[#d5cab8]',
-    btnGold:       isDark ? 'bg-[#b06d22] hover:bg-[#c8872e] text-white' : 'bg-[#c8872e] hover:bg-[#b06d22] text-white',
-    badgeNeutral:  isDark ? 'bg-[#3d3630] text-[#c8c3b9]' : 'bg-[#f3efe8] text-[#73614e]',
-    badgeGold:     isDark ? 'bg-[#b06d22]/20 text-[#d9a04e]' : 'bg-[#f9edd8] text-[#93541f]',
-    badgePrimary:  isDark ? 'bg-[#2c4a6e]/30 text-[#a8b9ce]' : 'bg-[#d4dde8] text-[#1e3a58]',
-    divider:       isDark ? 'border-[#3d3630]' : 'border-[#e8e1d5]',
-    link:          isDark ? 'text-[#6e8aaa] hover:text-[#a8b9ce]' : 'text-[#2c4a6e] hover:text-[#1e3a58]',
-    success:       isDark ? 'bg-[#5a8a5c]/15 border-[#5a8a5c]/30 text-[#8abf8c]' : 'bg-[#e8f0e8] border-[#5a8a5c]/20 text-[#3d6b3f]',
-    warning:       isDark ? 'bg-[#c8872e]/15 border-[#c8872e]/30 text-[#d9a04e]' : 'bg-[#fdf3e4] border-[#c8872e]/20 text-[#93541f]',
-    error:         isDark ? 'bg-[#b54a3f]/15 border-[#b54a3f]/30 text-[#e08a82]' : 'bg-[#fceae8] border-[#b54a3f]/20 text-[#8a3530]',
-    info:          isDark ? 'bg-[#4a7c94]/15 border-[#4a7c94]/30 text-[#7ab8d4]' : 'bg-[#e6f0f5] border-[#4a7c94]/20 text-[#3a6a7e]',
-    pillActive:    isDark ? 'bg-[#2c4a6e] border-[#4a6a8a] text-white' : 'bg-[#2c4a6e] border-[#2c4a6e] text-white',
-    pillInactive:  isDark ? 'bg-[#2a2623] border-[#3d3630] text-[#c8c3b9] hover:border-[#5a544a]' : 'bg-white border-[#e8e1d5] text-[#5a544a] hover:border-[#d5cab8]',
+    card:          isDark ? 'bg-zinc-800'      : 'bg-white',
+    cardAlt:       isDark ? 'bg-zinc-700/50'   : 'bg-slate-50',
+    text:          isDark ? 'text-zinc-50'     : 'text-gray-900',
+    textSecondary: isDark ? 'text-zinc-300'    : 'text-gray-600',
+    textMuted:     isDark ? 'text-zinc-500'    : 'text-gray-400',
+    input:         isDark
+      ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
+      : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-500/20',
+    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'    : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
+    border:        isDark ? 'border-zinc-700'  : 'border-gray-200',
+    success:       isDark ? 'bg-green-900/20 border-green-700 text-green-200'  : 'bg-green-50 border-green-200 text-green-800',
+    warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200'  : 'bg-amber-50 border-amber-200 text-amber-800',
+    error:         isDark ? 'bg-red-900/20 border-red-700 text-red-200'        : 'bg-red-50 border-red-200 text-red-800',
+    info:          isDark ? 'bg-blue-900/20 border-blue-700 text-blue-200'     : 'bg-blue-50 border-blue-200 text-blue-800',
+    badgeNeutral:  isDark ? 'bg-zinc-700 text-zinc-300'      : 'bg-gray-100 text-gray-600',
+    badgeGold:     isDark ? 'bg-amber-900/30 text-amber-300' : 'bg-amber-100 text-amber-700',
+    badgePrimary:  isDark ? 'bg-blue-900/30 text-blue-300'   : 'bg-blue-100 text-blue-700',
+    pillActive:    isDark ? 'bg-cyan-600 border-cyan-600 text-white'           : 'bg-cyan-600 border-cyan-600 text-white',
+    pillInactive:  isDark ? 'bg-zinc-800 border-zinc-600 text-zinc-300 hover:border-zinc-500' : 'bg-white border-gray-200 text-gray-600 hover:border-gray-300',
   };
 
+  const linkStyle = isDark
+    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
+    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
+
   // ─── State ───
-  const [procedure, setProcedure] = useState('');
+  const [procedure, setProcedure] = usePersistentState('procedureprobe-procedure', '');
   const [quote, setQuote] = useState('');
   const [provider, setProvider] = useState('');
   const [insurance, setInsurance] = useState('');
   const [concerns, setConcerns] = useState('');
   const [urgency, setUrgency] = useState('');
-  const [results, setResults] = useState(null);
+  const [results, setResults] = usePersistentState('procedureprobe-last', null);
+  const [history, setHistory] = usePersistentState('procedureprobe-history', []);
   const [error, setError] = useState('');
   const [expandedSections, setExpandedSections] = useState({ questions: true });
 
@@ -80,7 +81,7 @@ const BeforeYouBook = () => {
     setResults(null);
 
     try {
-      const data = await callToolEndpoint('before-you-book', {
+      const data = await callToolEndpoint('procedure-probe', {
         procedure: procedure.trim(),
         quote: quote.trim() || null,
         provider: provider || null,
@@ -89,6 +90,13 @@ const BeforeYouBook = () => {
         urgency: urgency || null,
       });
       setResults(data);
+
+      setHistory(prev => [{
+        id: Date.now(),
+        timestamp: new Date().toISOString(),
+        preview: procedure.trim().slice(0, 40),
+        result: data,
+      }, ...(prev || [])].slice(0, 6));
     } catch (err) {
       setError(err.message || 'Failed to generate patient guide.');
     }
@@ -104,7 +112,7 @@ const BeforeYouBook = () => {
   const buildFullText = useCallback(() => {
     if (!results) return '';
     const r = results;
-    let text = `🦷 BeforeYouBook: ${r.procedure_name}\n`;
+    let text = `🔬 Procedure Probe: ${r.procedure_name}\n`;
     if (r.plain_english) text += `\n${r.plain_english}\n`;
     if (r.is_this_standard) {
       text += `\nVerdict: ${r.is_this_standard.verdict}\n${r.is_this_standard.explanation}`;
@@ -136,10 +144,14 @@ const BeforeYouBook = () => {
   return (
     <div className={`space-y-6 ${c.text}`}>
 
-      {/* ── HEADER ── */}
-      <div className={`${c.card} border ${c.cardBorder} rounded-xl p-6`}>
-        <div className={`mb-5 pb-4 border-b ${c.divider}`}>
-          <h2 className={`text-2xl font-bold ${c.heading}`}>BeforeYouBook 🦷</h2>
+      {/* ── INPUT CARD ── */}
+      <div className={`${c.card} border ${c.border} rounded-xl p-6`}>
+
+        {/* Standard header */}
+        <div className={`mb-5 pb-4 border-b ${c.border}`}>
+          <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
+            <span>🔬</span> Procedure Probe
+          </h2>
           <p className={`text-sm ${c.textSecondary} mt-1`}>Be an informed patient before you say yes</p>
         </div>
 
@@ -150,8 +162,9 @@ const BeforeYouBook = () => {
             type="text"
             value={procedure}
             onChange={e => setProcedure(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter') generate(); }}
             placeholder="e.g., root canal, knee replacement, LASIK, wisdom teeth removal, MRI"
-            className={`w-full px-4 py-3 border rounded-xl text-sm ${c.inputBg} ${c.inputBorder} ${c.text} ${c.inputFocus} outline-none focus:ring-2`}
+            className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} outline-none focus:ring-2`}
           />
         </div>
 
@@ -182,8 +195,9 @@ const BeforeYouBook = () => {
             type="text"
             value={quote}
             onChange={e => setQuote(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter') generate(); }}
             placeholder="e.g., $2,500, $800 after insurance"
-            className={`w-full px-4 py-3 border rounded-xl text-sm ${c.inputBg} ${c.inputBorder} ${c.text} ${c.inputFocus} outline-none focus:ring-2`}
+            className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} outline-none focus:ring-2`}
           />
         </div>
 
@@ -196,8 +210,9 @@ const BeforeYouBook = () => {
             type="text"
             value={insurance}
             onChange={e => setInsurance(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter') generate(); }}
             placeholder="e.g., PPO, no dental insurance, high-deductible plan, Medicare"
-            className={`w-full px-4 py-3 border rounded-xl text-sm ${c.inputBg} ${c.inputBorder} ${c.text} ${c.inputFocus} outline-none focus:ring-2`}
+            className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} outline-none focus:ring-2`}
           />
         </div>
 
@@ -228,33 +243,41 @@ const BeforeYouBook = () => {
             type="text"
             value={concerns}
             onChange={e => setConcerns(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter') generate(); }}
             placeholder='e.g., "is this really necessary?", "afraid of pain", "seems expensive"'
-            className={`w-full px-4 py-3 border rounded-xl text-sm ${c.inputBg} ${c.inputBorder} ${c.text} ${c.inputFocus} outline-none focus:ring-2`}
+            className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} outline-none focus:ring-2`}
           />
         </div>
+
+        {/* Pre-result cross-ref */}
+        <p className={`text-xs text-center ${c.textMuted} mb-4`}>
+          Got a bill already?{' '}
+          <a href="/BillRescue" className={linkStyle}>Bill Rescue</a>{' '}
+          helps you fight unexpected medical charges.
+        </p>
 
         {/* Actions */}
         <div className="flex gap-3">
           <button
             onClick={generate}
             disabled={loading || !procedure.trim()}
-            className={`flex-1 ${c.btnGold} disabled:opacity-40 disabled:cursor-not-allowed font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-2 min-h-[48px] shadow-lg`}
+            className={`flex-1 ${c.btnPrimary} disabled:opacity-40 disabled:cursor-not-allowed font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-2 min-h-[48px] shadow-lg`}
           >
             {loading ? (
-              <><span className="animate-spin inline-block">⏳</span> Researching...</>
+              <><span className="animate-spin inline-block">🦷</span> Researching...</>
             ) : (
               <><span>🔍</span> Prepare Me</>
             )}
           </button>
           {results && (
-            <button onClick={handleReset} className={`px-5 py-3 ${c.btnSecondary} rounded-xl font-medium min-h-[48px]`}>
-              New Procedure
+            <button onClick={handleReset} className={`px-5 py-3 ${c.btnSecondary} rounded-xl font-bold min-h-[48px]`}>
+              ↩ Start Over
             </button>
           )}
         </div>
       </div>
 
-      {/* Error */}
+      {/* ── ERROR ── */}
       {error && (
         <div className={`${c.error} border rounded-xl p-4 flex items-start gap-3`}>
           <span className="flex-shrink-0 mt-0.5">⚠️</span>
@@ -262,19 +285,20 @@ const BeforeYouBook = () => {
         </div>
       )}
 
-      {/* ══════════════════════════════════════════════════════════ */}
+      {/* ════════════════════════════════════════════════════════ */}
       {/* RESULTS                                                  */}
-      {/* ══════════════════════════════════════════════════════════ */}
+      {/* ════════════════════════════════════════════════════════ */}
       {r && (
         <div className="space-y-4">
 
+          {/* ActionBar — top of results */}
           <div className="flex justify-end">
-            <CopyBtn content={buildFullText()} label="Copy All" />
+            <ActionBar content={buildFullText()} title="Procedure Probe" />
           </div>
 
           {/* ── PLAIN ENGLISH ── */}
           {r.plain_english && (
-            <div className={`${c.card} border ${c.cardBorder} rounded-xl p-5`}>
+            <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
               <p className={`text-xs font-bold ${c.textMuted} mb-1`}>In plain language:</p>
               <p className={`text-sm ${c.text} leading-relaxed`}>{r.plain_english}</p>
             </div>
@@ -293,7 +317,7 @@ const BeforeYouBook = () => {
 
           {/* ── IS THIS STANDARD ── */}
           {r.is_this_standard && (
-            <div className={`${c.card} border ${c.cardBorder} rounded-xl p-5`}>
+            <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
               <div className="flex items-center gap-2 mb-2">
                 <span className={`text-[9px] font-bold px-2.5 py-1 rounded-full ${
                   r.is_this_standard.verdict === 'Standard' ? c.success :
@@ -318,22 +342,22 @@ const BeforeYouBook = () => {
 
           {/* ── QUESTIONS TO ASK ── */}
           {r.questions_to_ask?.length > 0 && (
-            <div className={`${c.card} border ${c.cardBorder} rounded-xl overflow-hidden`}>
+            <div className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
               <button
                 onClick={() => toggleSection('questions')}
                 className="w-full p-4 flex items-center justify-between text-left min-h-[44px]"
               >
-                <h3 className={`text-sm font-bold ${c.heading} flex items-center gap-2`}>
+                <h3 className={`text-sm font-bold ${c.text} flex items-center gap-2`}>
                   <span>❓</span> Questions to Ask Your Provider
                   <span className={`text-[9px] px-2 py-0.5 rounded-full ${c.badgeGold}`}>{r.questions_to_ask.length}</span>
                 </h3>
                 <span className={c.textMuted}>{expandedSections.questions ? '▲' : '▼'}</span>
               </button>
               {expandedSections.questions && (
-                <div className={`px-4 pb-4 border-t ${c.divider} pt-3 space-y-3`}>
+                <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-3`}>
                   {r.questions_to_ask.map((q, i) => (
                     <div key={i} className={`${c.cardAlt} rounded-lg p-3`}>
-                      <p className={`text-xs font-bold ${c.heading} mb-1`}>"{q.question}"</p>
+                      <p className={`text-xs font-bold ${c.text} mb-1`}>"{q.question}"</p>
                       <p className={`text-xs ${c.textMuted} italic`}>{q.why_it_matters}</p>
                     </div>
                   ))}
@@ -344,12 +368,12 @@ const BeforeYouBook = () => {
 
           {/* ── COST PICTURE ── */}
           {r.cost_picture && (
-            <div className={`${c.card} border ${c.cardBorder} rounded-xl p-5`}>
-              <h3 className={`text-sm font-bold ${c.heading} mb-3 flex items-center gap-2`}><span>💰</span> Cost Picture</h3>
+            <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+              <h3 className={`text-sm font-bold ${c.text} mb-3 flex items-center gap-2`}><span>💰</span> Cost Picture</h3>
               <div className="grid grid-cols-3 gap-3 mb-3">
                 <div className={`${c.cardAlt} rounded-lg p-3 text-center`}>
                   <p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>Typical Range</p>
-                  <p className={`text-sm font-bold ${c.heading}`}>{r.cost_picture.typical_range}</p>
+                  <p className={`text-sm font-bold ${c.text}`}>{r.cost_picture.typical_range}</p>
                 </div>
                 <div className={`${c.cardAlt} rounded-lg p-3 text-center`}>
                   <p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>Insurance</p>
@@ -357,27 +381,27 @@ const BeforeYouBook = () => {
                 </div>
                 <div className={`${c.cardAlt} rounded-lg p-3 text-center`}>
                   <p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>Out of Pocket</p>
-                  <p className={`text-sm font-bold ${isDark ? 'text-[#d9a04e]' : 'text-[#93541f]'}`}>{r.cost_picture.out_of_pocket_estimate}</p>
+                  <p className={`text-sm font-bold ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>{r.cost_picture.out_of_pocket_estimate}</p>
                 </div>
               </div>
               {r.cost_picture.money_saving_tip && (
-                <p className={`text-xs ${isDark ? 'text-[#8abf8c]' : 'text-[#3d6b3f]'}`}>💡 {r.cost_picture.money_saving_tip}</p>
+                <p className={`text-xs ${isDark ? 'text-green-300' : 'text-green-700'}`}>💡 {r.cost_picture.money_saving_tip}</p>
               )}
             </div>
           )}
 
           {/* ── WHAT TO EXPECT ── */}
           {r.what_to_expect && (
-            <div className={`${c.card} border ${c.cardBorder} rounded-xl overflow-hidden`}>
+            <div className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
               <button
                 onClick={() => toggleSection('expect')}
                 className="w-full p-4 flex items-center justify-between text-left min-h-[44px]"
               >
-                <h3 className={`text-sm font-bold ${c.heading} flex items-center gap-2`}><span>📋</span> What to Expect</h3>
+                <h3 className={`text-sm font-bold ${c.text} flex items-center gap-2`}><span>📋</span> What to Expect</h3>
                 <span className={c.textMuted}>{expandedSections.expect ? '▲' : '▼'}</span>
               </button>
               {expandedSections.expect && (
-                <div className={`px-4 pb-4 border-t ${c.divider} pt-3 space-y-2`}>
+                <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-2`}>
                   {[
                     ['⏱️ Duration', r.what_to_expect.procedure_duration],
                     ['🔄 Recovery', r.what_to_expect.recovery_time],
@@ -397,8 +421,8 @@ const BeforeYouBook = () => {
 
           {/* ── RED FLAGS ── */}
           {r.red_flags?.length > 0 && (
-            <div className={`${c.card} border ${c.cardBorder} rounded-xl p-4`}>
-              <p className={`text-xs font-bold ${c.heading} mb-2`}>🚩 Red flags to watch for</p>
+            <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+              <p className={`text-xs font-bold ${c.text} mb-2`}>🚩 Red flags to watch for</p>
               <div className="space-y-1.5">
                 {r.red_flags.map((flag, i) => (
                   <p key={i} className={`text-xs ${c.textSecondary} leading-relaxed`}>• {flag}</p>
@@ -426,26 +450,49 @@ const BeforeYouBook = () => {
             </div>
           )}
 
+          {/* Conditional cross-ref: second opinion recommended */}
+          {r.second_opinion?.recommended && (
+            <p className={`text-xs text-center ${c.textMuted}`}>
+              Getting a second opinion?{' '}
+              <a href="/DoctorVisitTranslator" className={linkStyle}>Doctor Visit Translator</a>{' '}
+              helps you understand what the next doctor says too.
+            </p>
+          )}
+
           {/* ── DISCLAIMER ── */}
           <div className={`${c.info} border rounded-xl p-4 flex items-start gap-3`}>
             <span className="flex-shrink-0 mt-0.5">⚕️</span>
             <p className="text-xs leading-relaxed">This is educational information to help you have better conversations with your healthcare provider. It is not medical advice. Always discuss treatment decisions with your doctor or dentist.</p>
           </div>
 
-          {/* ── CROSS-REFERENCES ── */}
-          <div className={`${c.card} border ${c.cardBorder} rounded-xl p-4`}>
-            <p className={`text-xs font-bold ${c.text} mb-2`}>Related tools</p>
-            <div className="flex flex-wrap gap-2">
-              <a href="/DoctorVisitTranslator" target="_blank" rel="noopener noreferrer" className={`text-xs px-3 py-1.5 rounded-lg border ${c.pillInactive} no-underline`}>
-                🩺 Doctor Visit Translator
-              </a>
-              <a href="/BillRescue" target="_blank" rel="noopener noreferrer" className={`text-xs px-3 py-1.5 rounded-lg border ${c.pillInactive} no-underline`}>
-                🧾 Bill Rescue
-              </a>
-              <a href="/ComplaintEscalationWriter" target="_blank" rel="noopener noreferrer" className={`text-xs px-3 py-1.5 rounded-lg border ${c.pillInactive} no-underline`}>
-                📝 Complaint Escalation Writer
-              </a>
+          {/* Post-result cross-refs */}
+          <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 space-y-2`}>
+            <p className={`text-xs font-semibold ${c.textMuted} uppercase tracking-wider`}>Related tools</p>
+            <div className="flex flex-wrap gap-x-4 gap-y-1">
+              <a href="/DoctorVisitTranslator" className={`text-xs ${linkStyle}`}>🩺 Doctor Visit Translator</a>
+              <a href="/BillRescue" className={`text-xs ${linkStyle}`}>🧾 Bill Rescue</a>
+              <a href="/ComplaintEscalationWriter" className={`text-xs ${linkStyle}`}>📝 Complaint Escalation Writer</a>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── HISTORY ── */}
+      {history?.length > 0 && (
+        <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+          <h3 className={`text-sm font-bold ${c.text} mb-3`}>🕐 Recent Lookups</h3>
+          <div className="space-y-1.5">
+            {history.map(entry => (
+              <button key={entry.id}
+                onClick={() => setResults(entry.result)}
+                className={`w-full text-left px-3 py-2 rounded-lg ${c.btnSecondary} text-xs flex items-center gap-2`}
+              >
+                <span className={c.textMuted}>
+                  {new Date(entry.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
+                </span>
+                <span className={`${c.text} truncate`}>{entry.preview}{entry.preview?.length >= 40 ? '…' : ''}</span>
+              </button>
+            ))}
           </div>
         </div>
       )}
@@ -453,5 +500,5 @@ const BeforeYouBook = () => {
   );
 };
 
-BeforeYouBook.displayName = 'BeforeYouBook';
-export default BeforeYouBook;
+ProcedureProbe.displayName = 'ProcedureProbe';
+export default ProcedureProbe;

@@ -276,3 +276,52 @@ CRITICAL:
 });
 
 module.exports = router;
+
+// ═══════════════════════════════════════════════════════════════
+// STREAMING ROUTE — main analysis
+// ═══════════════════════════════════════════════════════════════
+
+router.post('/plaintalk/stream', async (req, res) => {
+  const { text, textType, focusQuestion, userLanguage } = req.body;
+
+  if (!text?.trim()) return res.status(400).json({ error: 'Text is required' });
+
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.flushHeaders();
+
+  const sendEvent = (data) => res.write(`data: ${JSON.stringify(data)}\n\n`);
+
+  try {
+    const trimmed = text.trim().slice(0, 15000);
+    const typeHint = textType && textType !== 'auto' ? `\nDOCUMENT TYPE (user-specified): ${textType}` : '';
+    const focusHint = focusQuestion ? `\nUSER'S SPECIFIC QUESTION: "${focusQuestion}"` : '';
+
+    const prompt = withLanguage(`You are PlainTalk, a universal text comprehension expert. Your job: take complex text and make it completely understandable.
+
+ANALYZE THIS TEXT:
+---
+${trimmed}
+---
+${typeHint}${focusHint}
+
+Auto-detect the document type if not specified. Produce a complete analysis. Return ONLY valid JSON matching the full schema from the standard plaintalk endpoint, including: detected_type, detected_type_label, confidence, reading_level, overview, sections, structure, specialist_suggestion, type_insights, full_translation, and jargon_glossary.`, userLanguage);
+
+    const stream = await anthropic.messages.stream({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 8000,
+      messages: [{ role: 'user', content: prompt }],
+    });
+
+    stream.on('text', (text) => sendEvent({ chunk: text }));
+    await stream.finalMessage();
+    sendEvent({ done: true });
+    res.end();
+
+  } catch (err) {
+    console.error('[PlainTalk/stream] Error:', err);
+    sendEvent({ error: err.message || 'Stream failed' });
+    res.end();
+  }
+});

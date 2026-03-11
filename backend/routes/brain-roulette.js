@@ -1,45 +1,29 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse } = require('../lib/claude');
-
-// ── Robust JSON parser ──
-function safeParseJSON(text) {
-  let cleaned = cleanJsonResponse(text);
-  // Strip trailing commas before } or ]
-  cleaned = cleaned.replace(/,(\s*[}\]])/g, '$1');
-  try {
-    return JSON.parse(cleaned);
-  } catch {
-    // Remove control characters and try again
-    cleaned = cleaned.replace(/[\x00-\x1F\x7F]/g, ' ');
-    try {
-      return JSON.parse(cleaned);
-    } catch {
-      // Last resort: fix unquoted keys
-      cleaned = cleaned.replace(/([{,]\s*)(\w+)\s*:/g, '$1"$2":');
-      return JSON.parse(cleaned);
-    }
-  }
-}
+const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ── Main spin ──
-router.post('/brain-roulette', async (req, res) => {
-  try {
-    const { interests, depth, seenTopics, isSurprise } = req.body;
+router.post('/brain-roulette', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+  const { interests, depth, seenTopics, isSurprise, customTopic, audienceLevel, locale } = req.body;
 
-    const today = new Date();
-    const dateStr = today.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-    const month = today.toLocaleDateString('en-US', { month: 'long' });
+  if (!depth) {
+    return res.status(400).json({ error: 'depth is required' });
+  }
 
-    const activeInterests = isSurprise ? [] : (interests || []);
+  const today = new Date();
+  const dateStr = today.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  const month = today.toLocaleDateString('en-US', { month: 'long' });
 
-    const depthInstruction = {
-      quick: 'Respond with a fascinating 2-3 sentence nugget. Punchy, surprising, memorable.',
-      medium: 'Respond with a compelling paragraph (4-6 sentences) that builds to a surprising twist or connection. Include one "wait, really?" moment.',
-      deep: 'Respond with a multi-section exploration (3-4 short sections with bold headers). Start with the hook, go deeper into the "why", then land on a surprising connection or implication. About 200-300 words total.',
-    }[depth] || 'Respond with a compelling paragraph (4-6 sentences) that builds to a surprising twist or connection.';
+  const activeInterests = isSurprise ? [] : (interests || []);
 
-    const prompt = `You are Brain Roulette — a brilliant, endlessly curious friend who always has the most fascinating thing to say at a dinner party. Your job is to generate a single captivating rabbit hole that the user can't stop thinking about.
+  const depthInstruction = {
+    quick: 'Respond with a fascinating 2-3 sentence nugget. Punchy, surprising, memorable.',
+    medium: 'Respond with a compelling paragraph (4-6 sentences) that builds to a surprising twist or connection. Include one "wait, really?" moment.',
+    deep: 'Respond with a multi-section exploration (3-4 short sections with bold headers). Start with the hook, go deeper into the "why", then land on a surprising connection or implication. About 200-300 words total.',
+  }[depth] || 'Respond with a compelling paragraph (4-6 sentences) that builds to a surprising twist or connection.';
+
+  const prompt = withLanguage(`You are Brain Roulette — a brilliant, endlessly curious friend who always has the most fascinating thing to say at a dinner party. Your job is to generate a single captivating rabbit hole that the user can't stop thinking about.
 
 TODAY'S DATE: ${dateStr}
 CURRENT MONTH: ${month}
@@ -47,8 +31,11 @@ CURRENT MONTH: ${month}
 ${activeInterests.length > 0
   ? `USER'S INTERESTS: ${activeInterests.join(', ')}
 IMPORTANT: Don't just pick ONE interest — find the unexpected INTERSECTION between 2+ of their interests. That's where the magic happens. For example, if they like "History" and "Food", don't just give a history fact or a food fact — find where they collide (e.g., the bizarre diet of Roman gladiators, or how spice trade shaped empires).`
-  : `The user wants a SURPRISE — pick any fascinating topic from any domain. Go wild.`}
+  : customTopic
+    ? `The user wants to explore: "${customTopic}". Find the most surprising, non-obvious angle on this topic.`
+    : `The user wants a SURPRISE — pick any fascinating topic from any domain. Go wild.`}
 
+AUDIENCE LEVEL: ${audienceLevel || 'curious'}
 DEPTH: ${depthInstruction}
 
 ALREADY COVERED TOPICS (do NOT repeat or closely resemble these):
@@ -70,45 +57,33 @@ Respond ONLY with valid JSON in this exact format:
     {"label": "Thread title", "prompt_hint": "What to explore"}
   ],
   "share_snippet": "A single punchy sentence version perfect for texting a friend"
-}
+}`, locale);
 
-CRITICAL: Return ONLY valid JSON. No preamble, no markdown fences.`;
-
+  try {
     console.log(`[BrainRoulette] Spin | Interests: ${activeInterests.length ? activeInterests.join(', ') : 'SURPRISE'} | Depth: ${depth} | Seen: ${(seenTopics || []).length}`);
-
-    const message = await anthropic.messages.create({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 1500,
-      messages: [{ role: 'user', content: prompt }]
-    });
-
-    const raw = message.content.find(item => item.type === 'text')?.text || '';
-    const parsed = safeParseJSON(raw);
+    const parsed = await callClaudeWithRetry(prompt);
     res.json(parsed);
-
   } catch (error) {
     console.error('Brain Roulette spin error:', error);
-    res.status(500).json({
-      error: error.message || 'The roulette wheel got stuck. Give it another spin!'
-    });
+    res.status(500).json({ error: error.message || 'The roulette wheel got stuck. Give it another spin!' });
   }
 });
 
 // ── Go Deeper ──
-router.post('/brain-roulette/deeper', async (req, res) => {
-  try {
-    const { originalTitle, originalHook, threadLabel, promptHint } = req.body;
+router.post('/brain-roulette/deeper', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+  const { originalTitle, originalHook, threadLabel, promptHint, audienceLevel, locale } = req.body;
 
-    if (!originalTitle || !threadLabel) {
-      return res.status(400).json({ error: 'Missing context for deeper exploration' });
-    }
+  if (!originalTitle || !threadLabel) {
+    return res.status(400).json({ error: 'originalTitle and threadLabel are required' });
+  }
 
-    const prompt = `You are Brain Roulette's "Go Deeper" mode. The user found something fascinating and wants more.
+  const prompt = withLanguage(`You are Brain Roulette's "Go Deeper" mode. The user found something fascinating and wants more.
 
 ORIGINAL TOPIC: "${originalTitle}"
 ORIGINAL CONTENT: "${originalHook}"
 THREAD THEY WANT TO EXPLORE: "${threadLabel}"
 HINT: ${promptHint || threadLabel}
+AUDIENCE LEVEL: ${audienceLevel || 'curious'}
 
 Give them a rich, engaging exploration of this specific thread. Write 150-250 words in a conversational, compelling style. Use bold text for key terms. End with one more surprising connection or implication they probably didn't see coming.
 
@@ -116,28 +91,308 @@ Respond ONLY with valid JSON:
 {
   "title": "Section title",
   "content": "The deeper exploration",
-  "mind_blown": "One final 'whoa' sentence"
-}
+  "mind_blown": "One final 'whoa' sentence",
+  "chain_threads": [
+    {"label": "Thread title", "prompt_hint": "What to explore"},
+    {"label": "Thread title", "prompt_hint": "What to explore"}
+  ]
+}`, locale);
 
-CRITICAL: Return ONLY valid JSON. No preamble, no markdown fences.`;
-
+  try {
     console.log(`[BrainRoulette] Go Deeper: "${threadLabel}" (from "${originalTitle}")`);
-
-    const message = await anthropic.messages.create({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 1200,
-      messages: [{ role: 'user', content: prompt }]
-    });
-
-    const raw = message.content.find(item => item.type === 'text')?.text || '';
-    const parsed = safeParseJSON(raw);
+    const parsed = await callClaudeWithRetry(prompt);
     res.json(parsed);
-
   } catch (error) {
     console.error('Brain Roulette deeper error:', error);
-    res.status(500).json({
-      error: error.message || "Couldn't dig deeper. Try again!"
-    });
+    res.status(500).json({ error: error.message || "Couldn't dig deeper. Try again!" });
+  }
+});
+
+// ── Extract Concepts (Spin From This) ──
+router.post('/brain-roulette/extract-concepts', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+  const { title, content, locale } = req.body;
+
+  if (!title || !content) {
+    return res.status(400).json({ error: 'title and content are required' });
+  }
+
+  const prompt = withLanguage(`You are Brain Roulette's concept extractor. The user just read a fascinating rabbit hole and wants to branch off into related ideas.
+
+TOPIC TITLE: "${title}"
+TOPIC CONTENT: "${content}"
+
+Extract 3-5 distinct spinnable concepts buried in this content. Each concept should be:
+- A specific, tangible idea (not a vague theme)
+- Different enough from the others that clicking it would lead somewhere genuinely new
+- Interesting enough to make someone think "oh I want to know more about THAT specifically"
+
+Respond ONLY with valid JSON:
+{
+  "concepts": [
+    {
+      "label": "Short concept name (2-4 words)",
+      "angle": "Why this is interesting — one sentence teaser",
+      "spin_prompt": "The exact topic string to feed into a new spin (specific enough to get a focused result)"
+    }
+  ]
+}`, locale);
+
+  try {
+    console.log(`[BrainRoulette] Extract Concepts from: "${title}"`);
+    const parsed = await callClaudeWithRetry(prompt);
+    res.json(parsed);
+  } catch (error) {
+    console.error('Brain Roulette extract-concepts error:', error);
+    res.status(500).json({ error: error.message || "Couldn't extract concepts. Try again!" });
+  }
+});
+
+// ── Chain Deeper ──
+router.post('/brain-roulette/chain-deeper', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+  const { originalTitle, chainHistory, threadLabel, promptHint, audienceLevel, locale } = req.body;
+
+  if (!originalTitle || !threadLabel) {
+    return res.status(400).json({ error: 'originalTitle and threadLabel are required' });
+  }
+
+  const historyText = (chainHistory || [])
+    .map((cr, i) => `[Depth ${i + 1}] ${cr.title}: ${cr.content}`)
+    .join('\n\n');
+
+  const prompt = withLanguage(`You are Brain Roulette's "Chain Deeper" mode. The user has been going deeper and deeper on a topic and wants to keep going.
+
+ORIGINAL TOPIC: "${originalTitle}"
+
+CHAIN SO FAR:
+${historyText || '(This is the first step deeper)'}
+
+NEXT THREAD TO EXPLORE: "${threadLabel}"
+HINT: ${promptHint || threadLabel}
+AUDIENCE LEVEL: ${audienceLevel || 'curious'}
+
+Continue the chain — build on what's been covered, go one level deeper still. Write 150-250 words in a conversational, compelling style. Don't recap what was already said. End with a genuinely surprising connection or implication.
+
+Respond ONLY with valid JSON:
+{
+  "title": "Section title (distinct from previous titles)",
+  "content": "The deeper exploration — builds on the chain, goes somewhere new",
+  "mind_blown": "One final 'whoa' sentence",
+  "chain_threads": [
+    {"label": "Next thread title (question format)", "prompt_hint": "What to explore"},
+    {"label": "Next thread title", "prompt_hint": "What to explore"}
+  ]
+}`, locale);
+
+  try {
+    console.log(`[BrainRoulette] Chain Deeper: "${threadLabel}" (chain length: ${(chainHistory || []).length})`);
+    const parsed = await callClaudeWithRetry(prompt);
+    res.json(parsed);
+  } catch (error) {
+    console.error('Brain Roulette chain-deeper error:', error);
+    res.status(500).json({ error: error.message || "Couldn't continue chain. Try again!" });
+  }
+});
+
+// ── Debate Mode ("Actually…") ──
+router.post('/brain-roulette/debate', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+  const { interests, seenTopics, audienceLevel, locale } = req.body;
+
+  const today = new Date();
+  const dateStr = today.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+  const prompt = withLanguage(`You are Brain Roulette's "Actually…" Debate Mode. Your job is to present a widely-held belief — then reveal the surprising truth.
+
+TODAY: ${dateStr}
+USER'S INTERESTS: ${(interests || []).length > 0 ? interests.join(', ') : 'general / anything'}
+ALREADY SEEN TOPICS: ${(seenTopics || []).slice(0, 20).join(', ') || 'None yet'}
+AUDIENCE LEVEL: ${audienceLevel || 'curious'}
+
+Pick a common belief that most people hold — ideally connected to the user's interests if possible, otherwise anything fascinating. The belief should be something people would confidently say "yeah of course that's true." Then reveal the nuanced, surprising reality.
+
+VERDICT OPTIONS (pick the most accurate):
+- "mostly_false" — the belief is substantially wrong
+- "misleading" — true in a narrow sense but deeply misleading in context
+- "its_complicated" — genuinely complex with truth on multiple sides
+- "surprisingly_true" — the belief is actually correct, but for weird/unexpected reasons
+
+Respond ONLY with valid JSON:
+{
+  "claim": "The commonly-held belief, stated as a confident assertion (1-2 sentences)",
+  "confidence_prompt": "A short question to the user like 'Think this is true?' or 'Would you bet on this?'",
+  "verdict": "mostly_false | misleading | its_complicated | surprisingly_true",
+  "reveal_title": "A punchy title for the reveal (5-8 words)",
+  "reveal": "The fascinating truth — 100-150 words, conversational, builds to a punchline",
+  "why_we_believe_it": "One sentence: why this myth is so persistent",
+  "mind_blown": "One final jaw-dropping implication or follow-on fact",
+  "share_snippet": "A one-sentence teaser perfect for texting a friend",
+  "topic_tag": "2-3 word tag for deduplication (e.g. 'gladiator vegetarian diet')"
+}`, locale);
+
+  try {
+    console.log(`[BrainRoulette] Debate | Interests: ${(interests || []).join(', ') || 'GENERAL'}`);
+    const parsed = await callClaudeWithRetry(prompt);
+    res.json(parsed);
+  } catch (error) {
+    console.error('Brain Roulette debate error:', error);
+    res.status(500).json({ error: error.message || 'Debate mode stumbled. Try again!' });
+  }
+});
+
+// ── Guided Journey (create 6-step plan) ──
+router.post('/brain-roulette/journey', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+  const { interests, customTheme, audienceLevel, locale } = req.body;
+
+  const prompt = withLanguage(`You are Brain Roulette's Guided Journey creator. Your job is to design a 6-step curated path where each discovery builds meaningfully on the last.
+
+USER'S INTERESTS: ${(interests || []).length > 0 ? interests.join(', ') : 'open / anything'}
+CUSTOM THEME: ${customTheme || 'None — choose a compelling theme based on their interests or go completely surprising'}
+AUDIENCE LEVEL: ${audienceLevel || 'curious'}
+
+Design a journey with a clear through-line — not 6 random facts, but 6 steps that tell a story or build an argument. Each step should make the next step feel inevitable and more exciting. The whole journey should feel like a satisfying intellectual arc.
+
+Respond ONLY with valid JSON:
+{
+  "title": "Journey title (6-10 words, intriguing)",
+  "description": "One sentence describing the arc of this journey",
+  "steps": [
+    {
+      "step_number": 1,
+      "title": "Step title (3-6 words)",
+      "teaser": "One sentence teaser that makes them want to click",
+      "prompt_hint": "What to explore in this step — used to generate the full content"
+    },
+    { "step_number": 2, "title": "...", "teaser": "...", "prompt_hint": "..." },
+    { "step_number": 3, "title": "...", "teaser": "...", "prompt_hint": "..." },
+    { "step_number": 4, "title": "...", "teaser": "...", "prompt_hint": "..." },
+    { "step_number": 5, "title": "...", "teaser": "...", "prompt_hint": "..." },
+    { "step_number": 6, "title": "...", "teaser": "...", "prompt_hint": "..." }
+  ]
+}`, locale);
+
+  try {
+    console.log(`[BrainRoulette] Journey | Theme: ${customTheme || 'AUTO'} | Interests: ${(interests || []).join(', ') || 'GENERAL'}`);
+    const parsed = await callClaudeWithRetry(prompt);
+    res.json(parsed);
+  } catch (error) {
+    console.error('Brain Roulette journey error:', error);
+    res.status(500).json({ error: error.message || "Couldn't create journey. Try again!" });
+  }
+});
+
+// ── Journey Step (generate content for one step) ──
+router.post('/brain-roulette/journey-step', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+  const { journeyTitle, stepNumber, stepTitle, promptHint, previousSteps, audienceLevel, locale } = req.body;
+
+  if (!journeyTitle || !stepTitle) {
+    return res.status(400).json({ error: 'journeyTitle and stepTitle are required' });
+  }
+
+  const prevText = (previousSteps || [])
+    .map(s => `Step ${s.step_number} — ${s.title}: ${s.content?.slice(0, 200)}…`)
+    .join('\n\n');
+
+  const prompt = withLanguage(`You are Brain Roulette's Guided Journey narrator. Generate the content for one step in a curated intellectual journey.
+
+JOURNEY: "${journeyTitle}"
+CURRENT STEP: ${stepNumber} — "${stepTitle}"
+WHAT TO COVER: ${promptHint || stepTitle}
+AUDIENCE LEVEL: ${audienceLevel || 'curious'}
+
+PREVIOUS STEPS COVERED:
+${prevText || 'This is step 1 — nothing covered yet.'}
+
+Write this step as a natural continuation of what came before. Build on the previous steps' ideas — reference them briefly if it adds power. 150-250 words, conversational and compelling. End with a hint of what's coming next.
+
+Respond ONLY with valid JSON:
+{
+  "title": "Step title (matches or refines the planned title)",
+  "content": "The step content — builds the journey arc",
+  "mind_blown": "One 'whoa' sentence specific to this step",
+  "concepts": [
+    {
+      "label": "Spinnable concept from this step (2-4 words)",
+      "angle": "Why this is interesting — one sentence",
+      "prompt_hint": "Topic string for a new spin"
+    }
+  ],
+  "next_hook": "One teaser sentence hinting at what's coming in the next step (omit on final step)"
+}`, locale);
+
+  try {
+    console.log(`[BrainRoulette] Journey Step ${stepNumber}: "${stepTitle}" (journey: "${journeyTitle}")`);
+    const parsed = await callClaudeWithRetry(prompt);
+    res.json(parsed);
+  } catch (error) {
+    console.error('Brain Roulette journey-step error:', error);
+    res.status(500).json({ error: error.message || "Couldn't load step. Try again!" });
+  }
+});
+
+// ── Daily Digest ──
+router.post('/brain-roulette/digest', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+  const { interests, seenTopics, audienceLevel, locale } = req.body;
+
+  const today = new Date();
+  const dateStr = today.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+  const month = today.toLocaleDateString('en-US', { month: 'long' });
+
+  const prompt = withLanguage(`You are Brain Roulette's Daily Digest curator. Generate exactly 3 fascinating discoveries for today.
+
+TODAY: ${dateStr}
+USER'S INTERESTS: ${(interests || []).length > 0 ? interests.join(', ') : 'open / anything goes'}
+ALREADY SEEN (avoid these): ${(seenTopics || []).slice(0, 20).join(', ') || 'None yet'}
+AUDIENCE LEVEL: ${audienceLevel || 'curious'}
+
+Generate 3 topics using these 3 types in this order:
+1. "today" — something connected to today's date, this day in history, or this time of year (${month})
+2. "mashup" — an unexpected intersection of 2+ of the user's interests (or any 2 domains if no interests)
+3. "wildcard" — completely surprising, from any domain, no constraints
+
+Each topic should be a proper rabbit hole — not a trivia fact, but something with depth and a "wait, really?" moment.
+
+Respond ONLY with valid JSON:
+{
+  "date": "${dateStr}",
+  "greeting": "A warm, one-sentence welcome for today's digest (vary it — don't always start with 'Welcome')",
+  "topics": [
+    {
+      "type": "today",
+      "emoji": "📅",
+      "title": "Topic title (5-8 words)",
+      "content": "The rabbit hole — 3-5 sentences, compelling and surprising",
+      "interest_connections": ["interest1", "interest2"],
+      "share_snippet": "One punchy sentence for sharing",
+      "topic_tag": "2-3 word dedup tag"
+    },
+    {
+      "type": "mashup",
+      "emoji": "🔀",
+      "title": "...",
+      "content": "...",
+      "interest_connections": ["..."],
+      "share_snippet": "...",
+      "topic_tag": "..."
+    },
+    {
+      "type": "wildcard",
+      "emoji": "🃏",
+      "title": "...",
+      "content": "...",
+      "interest_connections": [],
+      "share_snippet": "...",
+      "topic_tag": "..."
+    }
+  ],
+  "signoff": "A short, warm closing line (vary daily)"
+}`, locale);
+
+  try {
+    console.log(`[BrainRoulette] Digest | Interests: ${(interests || []).join(', ') || 'GENERAL'} | Date: ${dateStr}`);
+    const parsed = await callClaudeWithRetry(prompt);
+    res.json(parsed);
+  } catch (error) {
+    console.error('Brain Roulette digest error:', error);
+    res.status(500).json({ error: error.message || "Couldn't generate digest. Try again!" });
   }
 });
 

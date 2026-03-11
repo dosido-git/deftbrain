@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 
 const PERSONALITY = `You are a razor-sharp wit with perfect timing. You specialize in the comeback someone SHOULD have said — the one they thought of in the shower three hours later. You're clever, not cruel. Your comebacks are satisfying because they're smart, not because they're mean.
 
@@ -22,10 +22,10 @@ router.post('/comeback-cooker', async (req, res) => {
     }
 
     const moodMap = {
-      surgical:   'SURGICAL — Cold, precise, devastating. The kind of response that ends a conversation permanently.',
-      witty:      'WITTY — Quick, clever, makes everyone laugh. The comeback you\'d see in a movie.',
-      petty:      'PETTY — Unapologetically petty. Not trying to be the bigger person today.',
-      dignified:  'DIGNIFIED — Calm and composed but absolutely lethal. Unbothered energy that somehow hurts more.',
+      surgical:  'SURGICAL — Cold, precise, devastating. The kind of response that ends a conversation permanently.',
+      witty:     'WITTY — Quick, clever, makes everyone laugh. The comeback you\'d see in a movie.',
+      petty:     'PETTY — Unapologetically petty. Not trying to be the bigger person today.',
+      dignified: 'DIGNIFIED — Calm and composed but absolutely lethal. Unbothered energy that somehow hurts more.',
     };
 
     const userPrompt = `COMEBACK COOKER
@@ -60,16 +60,16 @@ Return ONLY valid JSON:
   }
 }`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 2000,
-      system: withLanguage(PERSONALITY, userLanguage),
-      messages: [{ role: 'user', content: userPrompt }],
-    });
+    const parsed = await callClaudeWithRetry(
+      userPrompt,
+      {
+        system: withLanguage(PERSONALITY, userLanguage),
+        label: 'comeback-cooker',
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 2000,
+      }
+    );
 
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
     res.json(parsed);
 
   } catch (error) {

@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react';
-import { CopyBtn } from '../components/ActionButtons';
+import { CopyBtn, ActionBar } from '../components/ActionButtons';
+import { usePersistentState } from '../hooks/usePersistentState';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 
@@ -42,50 +43,53 @@ const COMFORT_LEVELS = [
 // ════════════════════════════════════════════════════════════
 // COMPONENT
 // ════════════════════════════════════════════════════════════
-const AwkwardSilenceFiller = () => {
+const AwkwardSilenceFiller = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { theme } = useTheme();
   const isDark = theme === 'dark';
 
   // ─── Theme-aware colors ───
   const c = {
-    card: isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-slate-200',
-    input: isDark
-      ? 'bg-zinc-900 border-zinc-600 text-zinc-50 placeholder:text-zinc-500 focus:border-emerald-500 focus:ring-emerald-500/20'
-      : 'bg-white border-slate-300 text-slate-900 placeholder:text-slate-400 focus:border-emerald-500 focus:ring-emerald-100',
-    text: isDark ? 'text-zinc-50' : 'text-slate-900',
-    textSec: isDark ? 'text-zinc-400' : 'text-slate-600',
-    textMuted: isDark ? 'text-zinc-500' : 'text-slate-500',
-    label: isDark ? 'text-zinc-300' : 'text-slate-700',
-    accent: isDark ? 'text-emerald-400' : 'text-emerald-600',
-    accentBg: isDark ? 'bg-emerald-900/30 border-emerald-700/50' : 'bg-emerald-50 border-emerald-200',
-    btnPrimary: isDark ? 'bg-emerald-600 hover:bg-emerald-500 text-white' : 'bg-emerald-600 hover:bg-emerald-700 text-white',
-    btnPanic: isDark ? 'bg-red-600 hover:bg-red-500 text-white' : 'bg-red-600 hover:bg-red-700 text-white',
-    btnSec: isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-slate-100 hover:bg-slate-200 text-slate-800',
-    danger: isDark ? 'bg-red-900/20 border-red-700/50 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
-    dangerText: isDark ? 'text-red-400' : 'text-red-600',
-    success: isDark ? 'bg-emerald-900/20 border-emerald-700/50 text-emerald-200' : 'bg-emerald-50 border-emerald-200 text-emerald-800',
-    successText: isDark ? 'text-emerald-400' : 'text-emerald-600',
-    warning: isDark ? 'bg-amber-900/20 border-amber-700/50 text-amber-200' : 'bg-amber-50 border-amber-200 text-amber-800',
-    warningText: isDark ? 'text-amber-400' : 'text-amber-600',
-    info: isDark ? 'bg-blue-900/20 border-blue-700/50 text-blue-200' : 'bg-blue-50 border-blue-200 text-blue-800',
-    pillActive: isDark ? 'bg-emerald-600 border-emerald-500 text-white' : 'bg-emerald-600 border-emerald-600 text-white',
-    pillInactive: isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-300 hover:border-zinc-500' : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300',
-    divider: isDark ? 'border-zinc-700' : 'border-slate-200',
-    quoteBg: isDark ? 'bg-zinc-900/60' : 'bg-slate-50',
-    chainBg: isDark ? 'bg-zinc-900/40 border-zinc-700' : 'bg-emerald-50/50 border-emerald-100',
-    link: isDark ? 'text-emerald-400 hover:text-emerald-300' : 'text-emerald-600 hover:text-emerald-700',
+    card:          isDark ? 'bg-zinc-800'      : 'bg-white',
+    cardAlt:       isDark ? 'bg-zinc-700/50'   : 'bg-slate-50',
+    text:          isDark ? 'text-zinc-50'     : 'text-slate-900',
+    textSecondary: isDark ? 'text-zinc-400'    : 'text-slate-600',
+    textMuted:     isDark ? 'text-zinc-500'    : 'text-slate-500',
+    label:         isDark ? 'text-zinc-300'    : 'text-slate-700',
+    input:         isDark
+      ? 'bg-zinc-900 border-zinc-600 text-zinc-50 placeholder:text-zinc-500 focus:border-cyan-500 focus:ring-cyan-500/20'
+      : 'bg-white border-slate-300 text-slate-900 placeholder:text-slate-400 focus:border-cyan-500 focus:ring-cyan-500/20',
+    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'    : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnPanic:      isDark ? 'bg-red-600 hover:bg-red-500 text-white'      : 'bg-red-600 hover:bg-red-700 text-white',
+    btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-slate-100 hover:bg-slate-200 text-slate-800',
+    border:        isDark ? 'border-zinc-700'  : 'border-slate-200',
+    success:       isDark ? 'bg-emerald-900/20 border-emerald-700/50 text-emerald-200' : 'bg-emerald-50 border-emerald-200 text-emerald-800',
+    successText:   isDark ? 'text-emerald-400' : 'text-emerald-600',
+    warning:       isDark ? 'bg-amber-900/20 border-amber-700/50 text-amber-200'   : 'bg-amber-50 border-amber-200 text-amber-800',
+    danger:        isDark ? 'bg-red-900/20 border-red-700/50 text-red-200'         : 'bg-red-50 border-red-200 text-red-800',
+    info:          isDark ? 'bg-blue-900/20 border-blue-700/50 text-blue-200'      : 'bg-blue-50 border-blue-200 text-blue-800',
+    accent:        isDark ? 'text-emerald-400' : 'text-emerald-600',
+    accentBg:      isDark ? 'bg-emerald-900/30 border-emerald-700/50' : 'bg-emerald-50 border-emerald-200',
+    pillActive:    isDark ? 'bg-cyan-600 border-cyan-500 text-white'       : 'bg-cyan-600 border-cyan-600 text-white',
+    pillInactive:  isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-300 hover:border-zinc-500' : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300',
+    quoteBg:       isDark ? 'bg-zinc-900/60'   : 'bg-slate-50',
+    chainBg:       isDark ? 'bg-zinc-900/40 border-zinc-700' : 'bg-emerald-50/50 border-emerald-100',
   };
 
+  const linkStyle = isDark
+    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
+    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
+
   // ─── State ───
-  const [scenario, setScenario] = useState('');
-  const [customContext, setCustomContext] = useState('');
+  const [scenario, setScenario] = usePersistentState('awkwardsilencefiller-scenario', '');
+  const [customContext, setCustomContext] = usePersistentState('awkwardsilencefiller-context', '');
   const [relationship, setRelationship] = useState('');
   const [comfort, setComfort] = useState('nervous');
   const [landmines, setLandmines] = useState('');
 
-  const [results, setResults] = useState(null);
-  const [panicResult, setPanicResult] = useState(null);
+  const [results, setResults] = usePersistentState('awkwardsilencefiller-last', null);
+  const [panicResult, setPanicResult] = usePersistentState('awkwardsilencefiller-panic', null);
+  const [history, setHistory] = usePersistentState('awkwardsilencefiller-history', []);
   const [error, setError] = useState('');
   const [expandedSections, setExpandedSections] = useState({});
   const [panicLoading, setPanicLoading] = useState(false);
@@ -97,19 +101,23 @@ const AwkwardSilenceFiller = () => {
 
   const isRunning = loading || panicLoading;
 
+  // ─── Context helper (shared between panic + full) ───
+  const getContext = () =>
+    customContext.trim() ||
+    (scenario ? SCENARIOS.find(s => s.value === scenario)?.label : '') || '';
+
   // ─── Actions ───
   const generate = useCallback(async () => {
     setError('');
     setResults(null);
     setPanicResult(null);
 
-    const context = customContext.trim() ||
-      (scenario ? SCENARIOS.find(s => s.value === scenario)?.label : '') || '';
+    const context = getContext();
 
     try {
       const data = await callToolEndpoint('awkward-silence-filler', {
         action: 'full',
-        context,
+        context: context || 'general social situation',
         scenario,
         relationship: relationship || 'acquaintance',
         comfort: comfort || 'nervous',
@@ -117,6 +125,14 @@ const AwkwardSilenceFiller = () => {
       });
       setResults(data);
       setExpandedSections({});
+
+      const preview = (customContext.trim() || SCENARIOS.find(s => s.value === scenario)?.label || 'general situation').slice(0, 40);
+      setHistory(prev => [{
+        id: Date.now(),
+        timestamp: new Date().toISOString(),
+        preview,
+        result: data,
+      }, ...(prev || [])].slice(0, 6));
     } catch (err) {
       setError(err.message || 'Failed to generate. Try again.');
     }
@@ -127,8 +143,7 @@ const AwkwardSilenceFiller = () => {
     setError('');
     setPanicLoading(true);
 
-    const context = customContext.trim() ||
-      (scenario ? SCENARIOS.find(s => s.value === scenario)?.label : '') || '';
+    const context = getContext();
 
     try {
       const data = await callToolEndpoint('awkward-silence-filler', {
@@ -173,7 +188,7 @@ const AwkwardSilenceFiller = () => {
 
   const buildFullText = useCallback(() => {
     if (!results) return '';
-    let text = '🔇 Awkward Silence Filler Results\n';
+    let text = '💬 Awkward Silence Filler Results\n';
     if (results.silence_reframe) text += `\n${results.silence_reframe}\n`;
     if (results.read_the_room) text += `\nRead the Room: ${results.read_the_room}\n`;
     if (results.conversation_chains?.length) {
@@ -202,11 +217,15 @@ const AwkwardSilenceFiller = () => {
   return (
     <div className={`space-y-6 ${c.text}`}>
 
-      {/* ── HEADER ── */}
-      <div className={`${c.card} border rounded-xl p-6`}>
-        <div className={`mb-5 pb-4 border-b ${c.divider}`}>
-          <h2 className={`text-2xl font-bold ${c.text}`}>Awkward Silence Filler 💬</h2>
-          <p className={`text-sm ${c.textSec}`}>Context-smart things to say when conversation stalls</p>
+      {/* ── INPUT CARD ── */}
+      <div className={`${c.card} border ${c.border} rounded-xl p-6`}>
+
+        {/* Standard header */}
+        <div className={`mb-5 pb-4 border-b ${c.border}`}>
+          <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
+            <span>{tool.icon}</span> Awkward Silence Filler
+          </h2>
+          <p className={`text-sm ${c.textSecondary}`}>Context-smart things to say when conversation stalls</p>
         </div>
 
         {/* ── PANIC MODE BUTTON ── */}
@@ -217,7 +236,7 @@ const AwkwardSilenceFiller = () => {
             className={`w-full ${c.btnPanic} disabled:opacity-40 font-black py-3.5 px-6 rounded-xl flex items-center justify-center gap-2 text-base min-h-[52px] shadow-lg`}
           >
             {panicLoading ? (
-              <><span className="animate-spin inline-block">⏳</span> Hold on...</>
+              <><span className="animate-spin inline-block">💬</span> Hold on...</>
             ) : (
               <>🚨 I'M IN AN AWKWARD SILENCE RIGHT NOW</>
             )}
@@ -233,7 +252,7 @@ const AwkwardSilenceFiller = () => {
             {panicResult.they_say && (
               <div className={`${isDark ? 'bg-zinc-700/50' : 'bg-white/70'} rounded-lg p-3 mb-2`}>
                 <p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>They'll probably say:</p>
-                <p className={`text-xs ${c.textSec} italic`}>"{panicResult.they_say}"</p>
+                <p className={`text-xs ${c.textSecondary} italic`}>"{panicResult.they_say}"</p>
               </div>
             )}
             {panicResult.follow_up && (
@@ -280,6 +299,7 @@ const AwkwardSilenceFiller = () => {
             type="text"
             value={customContext}
             onChange={e => { setCustomContext(e.target.value); if (e.target.value.trim()) setScenario(''); }}
+            onKeyDown={e => { if (e.key === 'Enter') generate(); }}
             placeholder="e.g., Stuck at coworker's BBQ, don't know anyone else"
             className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`}
           />
@@ -331,12 +351,20 @@ const AwkwardSilenceFiller = () => {
             type="text"
             value={landmines}
             onChange={e => setLandmines(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter') generate(); }}
             placeholder='e.g., "politics, their divorce, my job search, kids"'
             className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`}
           />
         </div>
 
-        {/* ── ACTIONS ── */}
+        {/* Pre-result cross-ref */}
+        <p className={`text-xs text-center ${c.textMuted} mb-4`}>
+          Planning a date?{' '}
+          <a href="/DateNight" className={linkStyle}>Date Night Planner</a>{' '}
+          finds the perfect spot first.
+        </p>
+
+        {/* ── SUBMIT / RESET ── */}
         <div className="flex gap-3">
           <button
             onClick={generate}
@@ -344,7 +372,7 @@ const AwkwardSilenceFiller = () => {
             className={`flex-1 ${c.btnPrimary} disabled:opacity-40 disabled:cursor-not-allowed font-bold py-3 px-6 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}
           >
             {loading ? (
-              <><span className="animate-spin inline-block">⏳</span> Generating...</>
+              <><span className="animate-spin inline-block">💬</span> Generating...</>
             ) : (
               <><span>💬</span> Get Conversation Lines</>
             )}
@@ -354,32 +382,23 @@ const AwkwardSilenceFiller = () => {
               <button
                 onClick={refresh}
                 disabled={isRunning}
-                className={`px-4 py-3 ${c.btnSec} rounded-lg min-h-[48px]`}
+                className={`px-4 py-3 ${c.btnSecondary} rounded-lg min-h-[48px]`}
                 title="Different suggestions"
               >
                 <span className={isRunning ? 'animate-spin inline-block' : ''}>🔄</span>
               </button>
               <button
                 onClick={handleReset}
-                className={`px-4 py-3 border-2 ${isDark ? 'border-zinc-600 text-zinc-300' : 'border-slate-300 text-slate-700'} rounded-lg min-h-[48px]`}
+                className={`px-4 py-3 ${c.btnSecondary} rounded-lg font-bold min-h-[48px]`}
               >
-                New
+                ↩ Reset
               </button>
             </>
           )}
         </div>
-
-        {/* ── CROSS-REFERENCES (pre-result) ── */}
-        {!results && !panicResult && (
-          <div className={`mt-5 pt-4 border-t ${c.divider}`}>
-            <p className={`text-xs ${c.textMuted}`}>
-              💘 Planning a date? <a href="/DateNight" target="_blank" rel="noopener noreferrer" className={`underline ${c.link}`}>DateNight</a> finds the perfect spot first.
-            </p>
-          </div>
-        )}
       </div>
 
-      {/* Error */}
+      {/* ── ERROR ── */}
       {error && (
         <div className={`${c.danger} border rounded-lg p-4 flex items-start gap-3`}>
           <span className="flex-shrink-0 mt-0.5">⚠️</span>
@@ -387,15 +406,15 @@ const AwkwardSilenceFiller = () => {
         </div>
       )}
 
-      {/* ══════════════════════════════════════════════════════════ */}
+      {/* ════════════════════════════════════════════════════════ */}
       {/* RESULTS                                                  */}
-      {/* ══════════════════════════════════════════════════════════ */}
+      {/* ════════════════════════════════════════════════════════ */}
       {r && (
         <div className="space-y-4">
 
-          {/* ── COPY ALL ── */}
+          {/* ActionBar — top of results */}
           <div className="flex justify-end">
-            <CopyBtn content={buildFullText()} label="Copy All" />
+            <ActionBar content={buildFullText()} title="Awkward Silence Filler" />
           </div>
 
           {/* ── SILENCE REFRAME (prominent) ── */}
@@ -404,19 +423,19 @@ const AwkwardSilenceFiller = () => {
               <span className="flex-shrink-0 mt-0.5 text-lg">🔇</span>
               <div>
                 <h3 className={`text-sm font-bold ${c.text} mb-1`}>First: Is This Silence Actually a Problem?</h3>
-                <p className={`text-sm ${c.textSec}`}>{r.silence_reframe}</p>
+                <p className={`text-sm ${c.textSecondary}`}>{r.silence_reframe}</p>
               </div>
             </div>
           )}
 
           {/* ── READ THE ROOM ── */}
           {r.read_the_room && (
-            <div className={`${c.card} border rounded-xl p-4`}>
+            <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
               <div className="flex items-start gap-2.5">
                 <span className="flex-shrink-0 mt-0.5">👥</span>
                 <div>
                   <p className={`text-xs font-bold ${c.label} mb-1`}>Read the Room</p>
-                  <p className={`text-sm ${c.textSec}`}>{r.read_the_room}</p>
+                  <p className={`text-sm ${c.textSecondary}`}>{r.read_the_room}</p>
                 </div>
               </div>
             </div>
@@ -431,7 +450,7 @@ const AwkwardSilenceFiller = () => {
               {r.conversation_chains.map((chain, idx) => {
                 const expanded = expandedSections[`chain-${idx}`];
                 return (
-                  <div key={idx} className={`${c.card} border rounded-xl overflow-hidden`}>
+                  <div key={idx} className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
                     {/* Header */}
                     <div className="p-4">
                       <div className="flex items-start justify-between mb-1">
@@ -470,19 +489,16 @@ const AwkwardSilenceFiller = () => {
 
                     {/* EXPANDED CHAIN */}
                     {expanded && (chain.likely_response || chain.your_follow_up) && (
-                      <div className={`px-4 pb-4 border-t ${c.divider} pt-3 space-y-2`}>
-                        {/* Their likely response */}
+                      <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-2`}>
                         {chain.likely_response && (
                           <div className={`${isDark ? 'bg-zinc-700/50' : 'bg-gray-100'} rounded-lg p-3`}>
                             <p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>They'll probably say something like:</p>
-                            <p className={`text-xs ${c.textSec} italic`}>"{chain.likely_response}"</p>
+                            <p className={`text-xs ${c.textSecondary} italic`}>"{chain.likely_response}"</p>
                           </div>
                         )}
-                        {/* Arrow */}
                         <div className={`flex justify-center ${c.textMuted}`}>
                           <span>↓</span>
                         </div>
-                        {/* Your follow-up */}
                         {chain.your_follow_up && (
                           <div className="flex items-start gap-2">
                             <div className={`flex-1 ${c.chainBg} border rounded-lg p-3`}>
@@ -492,11 +508,9 @@ const AwkwardSilenceFiller = () => {
                             <CopyBtn content={`${chain.your_follow_up}${BRAND}`} label="Copy" />
                           </div>
                         )}
-                        {/* Where it goes */}
                         {chain.where_it_leads && (
                           <p className={`text-[10px] ${c.textMuted}`}>→ {chain.where_it_leads}</p>
                         )}
-                        {/* Copy full chain */}
                         <div className="pt-1">
                           <CopyBtn content={buildChainText(chain)} label="Copy full chain" />
                         </div>
@@ -510,7 +524,7 @@ const AwkwardSilenceFiller = () => {
 
           {/* ── BODY LANGUAGE ── */}
           {r.body_language && r.body_language.length > 0 && (
-            <div className={`${c.card} border rounded-xl overflow-hidden`}>
+            <div className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
               <button
                 onClick={() => toggleSection('body')}
                 className="w-full p-4 flex items-center justify-between text-left min-h-[44px]"
@@ -521,9 +535,9 @@ const AwkwardSilenceFiller = () => {
                 <span className={c.textMuted}>{expandedSections.body ? '▲' : '▼'}</span>
               </button>
               {expandedSections.body && (
-                <div className={`px-4 pb-4 border-t ${c.divider} pt-3 space-y-2`}>
+                <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-2`}>
                   {r.body_language.map((tip, i) => (
-                    <p key={i} className={`text-xs ${c.textSec}`}>• {tip}</p>
+                    <p key={i} className={`text-xs ${c.textSecondary}`}>• {tip}</p>
                   ))}
                 </div>
               )}
@@ -532,7 +546,7 @@ const AwkwardSilenceFiller = () => {
 
           {/* ── EXIT STRATEGIES ── */}
           {r.exit_strategies && r.exit_strategies.length > 0 && (
-            <div className={`${c.card} border rounded-xl overflow-hidden`}>
+            <div className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
               <button
                 onClick={() => toggleSection('exit')}
                 className="w-full p-4 flex items-center justify-between text-left min-h-[44px]"
@@ -543,7 +557,7 @@ const AwkwardSilenceFiller = () => {
                 <span className={c.textMuted}>{expandedSections.exit ? '▲' : '▼'}</span>
               </button>
               {expandedSections.exit && (
-                <div className={`px-4 pb-4 border-t ${c.divider} pt-3 space-y-3`}>
+                <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-3`}>
                   {r.exit_strategies.map((exit, i) => (
                     <div key={i} className="flex items-start gap-2">
                       <div className={`flex-1 ${c.quoteBg} rounded-lg p-3`}>
@@ -560,7 +574,7 @@ const AwkwardSilenceFiller = () => {
 
           {/* ── WHAT NOT TO SAY ── */}
           {r.what_not_to_say && r.what_not_to_say.length > 0 && (
-            <div className={`${c.card} border rounded-xl overflow-hidden`}>
+            <div className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
               <button
                 onClick={() => toggleSection('avoid')}
                 className="w-full p-4 flex items-center justify-between text-left min-h-[44px]"
@@ -571,9 +585,9 @@ const AwkwardSilenceFiller = () => {
                 <span className={c.textMuted}>{expandedSections.avoid ? '▲' : '▼'}</span>
               </button>
               {expandedSections.avoid && (
-                <div className={`px-4 pb-4 border-t ${c.divider} pt-3 space-y-2`}>
+                <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-2`}>
                   {r.what_not_to_say.map((item, i) => (
-                    <p key={i} className={`text-xs ${c.textSec}`}>⚠️ {item}</p>
+                    <p key={i} className={`text-xs ${c.textSecondary}`}>⚠️ {item}</p>
                   ))}
                 </div>
               )}
@@ -588,24 +602,47 @@ const AwkwardSilenceFiller = () => {
             </div>
           )}
 
+          {/* Conditional cross-ref: panicking comfort → Argument Simulator for practice */}
+          {comfort === 'panicking' && (
+            <p className={`text-xs text-center ${c.textMuted}`}>
+              Want to practice staying calm under pressure?{' '}
+              <a href="/ArgumentSimulator" className={linkStyle}>Argument Simulator</a>{' '}
+              lets you rehearse any conversation scenario.
+            </p>
+          )}
+
           <p className={`text-[10px] ${c.textMuted} text-center px-4`}>
             Every conversation is different. Use these as starting points, not scripts. It's okay to be quiet sometimes.
           </p>
 
-          {/* ── CROSS-REFERENCES (post-result) ── */}
-          <div className={`${c.card} border rounded-xl p-4`}>
-            <p className={`text-xs font-bold ${c.label} mb-2`}>You might also like</p>
-            <div className="flex flex-wrap gap-2">
-              <a href="/DateNight" target="_blank" rel="noopener noreferrer" className={`text-xs px-3 py-1.5 rounded-lg border ${c.pillInactive} no-underline`}>
-                💘 DateNight
-              </a>
-              <a href="/SayItRight" target="_blank" rel="noopener noreferrer" className={`text-xs px-3 py-1.5 rounded-lg border ${c.pillInactive} no-underline`}>
-                🗣️ Say It Right
-              </a>
-              <a href="/RoomReader" target="_blank" rel="noopener noreferrer" className={`text-xs px-3 py-1.5 rounded-lg border ${c.pillInactive} no-underline`}>
-                👀 Room Reader
-              </a>
+          {/* Post-result cross-refs */}
+          <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 space-y-2`}>
+            <p className={`text-xs font-semibold ${c.textMuted} uppercase tracking-wider`}>You might also like</p>
+            <div className="flex flex-wrap gap-x-4 gap-y-1">
+              <a href="/DateNight" className={`text-xs ${linkStyle}`}>💘 Date Night Planner</a>
+              <a href="/SayItRight" className={`text-xs ${linkStyle}`}>🗣️ Say It Right</a>
+              <a href="/RoomReader" className={`text-xs ${linkStyle}`}>👀 Room Reader</a>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── HISTORY ── */}
+      {history?.length > 0 && (
+        <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+          <h3 className={`text-sm font-bold ${c.text} mb-3`}>🕐 Recent Sessions</h3>
+          <div className="space-y-1.5">
+            {history.map(entry => (
+              <button key={entry.id}
+                onClick={() => setResults(entry.result)}
+                className={`w-full text-left px-3 py-2 rounded-lg ${c.btnSecondary} text-xs flex items-center gap-2`}
+              >
+                <span className={c.textMuted}>
+                  {new Date(entry.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
+                </span>
+                <span className={`${c.text} truncate`}>{entry.preview}{entry.preview?.length >= 40 ? '…' : ''}</span>
+              </button>
+            ))}
           </div>
         </div>
       )}

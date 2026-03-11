@@ -1,11 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
+
+// ═══════════════════════════════════════════════════════════════
+// MAIN ANALYSIS
+// ═══════════════════════════════════════════════════════════════
 
 router.post('/conflict-coach', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   console.log('✅ Conflict Coach V3 endpoint called');
-
   try {
     const { receivedMessage, relationship, emotionalState, goals, userDraft, actualGoal, isThread, personLabel, userLanguage } = req.body;
 
@@ -15,6 +18,11 @@ router.post('/conflict-coach', rateLimit(DEFAULT_LIMITS), async (req, res) => {
 
     const emotionsText = emotionalState?.length > 0 ? emotionalState.join(', ') : 'not specified';
     const goalsText = goals?.length > 0 ? goals.map(g => g.replace(/_/g, ' ')).join(', ') : 'respond thoughtfully';
+
+    const systemPrompt = withLanguage(
+      'You are an expert conflict resolution coach with deep knowledge of manipulation tactics, attachment theory, and de-escalation. Return only valid JSON.',
+      userLanguage
+    );
 
     const prompt = `Expert conflict resolution coach. Analyze this ${isThread ? 'conversation thread' : 'message'} and prevent reactive texting.
 
@@ -43,7 +51,7 @@ ${userDraft ? `DRAFT ANALYSIS: "${userDraft}"\nDetect: angry tone, sarcasm, pass
 RELATIONSHIP RULES:
 ${relationship === 'Partner' ? 'Partner: high stakes. Repair crucial. No "winning." Long-term health.' : ''}
 ${relationship === 'Ex' ? 'Ex: minimize contact. Gray rock. Ask: "Do I need to respond at all?"' : ''}
-${relationship === 'Family' ? 'Family: can\'t exit. Boundaries essential. Consider therapy for chronic patterns.' : ''}
+${relationship === 'Family' ? "Family: can't exit. Boundaries essential. Consider therapy for chronic patterns." : ''}
 ${relationship === 'Coworker' ? 'Coworker: professional. Document if needed. No personal attacks.' : ''}
 
 Return ONLY valid JSON:
@@ -66,7 +74,7 @@ Return ONLY valid JSON:
   ],
   "goal_reality_check": {
     "assessment": "...",
-    "will_this_message_achieve_it": true/false,
+    "will_this_message_achieve_it": true,
     "alternative_approach": "..."
   },
   "draft_analysis": {
@@ -85,7 +93,7 @@ Return ONLY valid JSON:
     }
   ],
   "apology_assessment": {
-    "is_apology_appropriate": true/false,
+    "is_apology_appropriate": true,
     "reasoning": "...",
     "suggested_apology": "..."
   },
@@ -94,11 +102,11 @@ Return ONLY valid JSON:
   "channel_landmines": ["This needs a phone call", "Wait for face-to-face"],
   "if_they_continue_escalating": {"script": "...", "then_what": "..."},
   "repair_strategy_later": "...",
-  "cooling_recommendation": {"mandatory_delay": true/false, "delay_time": "...", "why_delay": "..."}
+  "cooling_recommendation": {"mandatory_delay": true, "delay_time": "...", "why_delay": "..."}
 }
 
 RULES:
-1. manipulation_tactics: ALWAYS analyze incoming message. Return empty array [] only if genuinely no tactics detected.
+1. manipulation_tactics: ALWAYS analyze incoming message. Return [] only if genuinely no tactics detected.
 2. If draft provided, analyze BRUTALLY HONESTLY
 3. High emotions = recommend mandatory delay
 4. Generate 3-5 response strategies, all de-escalating
@@ -106,49 +114,36 @@ RULES:
 6. timing_landmines + channel_landmines: always include at least 1-2 each
 7. Protect the relationship over being "right"`;
 
-    const systemPrompt = withLanguage(
-      'You are an expert conflict resolution coach with deep knowledge of manipulation tactics, attachment theory, and de-escalation. Return only valid JSON.',
-      userLanguage
+    const parsed = await callClaudeWithRetry(
+      prompt,
+      {
+        label: 'conflict-coach',
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 3500,
+        system: systemPrompt,
+      }
     );
-
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 3500,
-      system: systemPrompt,
-      messages: [{ role: 'user', content: prompt }]
-    });
-
-    const textContent = message.content.find(item => item.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(textContent);
-
-    let parsed;
-    try {
-      parsed = JSON.parse(cleaned);
-    } catch {
-      let repaired = cleaned.replace(/,\s*}/g, '}').replace(/,\s*]/g, ']');
-      try { parsed = JSON.parse(repaired); }
-      catch { return res.status(500).json({ error: 'Failed to parse. Please try again.' }); }
-    }
 
     console.log('✅ V3 Analysis:', {
       temperature: parsed.message_analysis?.emotional_temperature,
       manipulationCount: parsed.manipulation_tactics?.length || 0,
       strategies: parsed.response_strategies?.length || 0,
-      landmines: parsed.what_NOT_to_say?.length || 0
+      landmines: parsed.what_NOT_to_say?.length || 0,
     });
 
     res.json(parsed);
-
   } catch (error) {
     console.error('❌ Conflict Coach V3 error:', error.message);
     res.status(500).json({ error: 'Failed to analyze. Please try again.' });
   }
 });
 
-// ── Follow-up coaching endpoint ──
+// ═══════════════════════════════════════════════════════════════
+// FOLLOW-UP COACHING
+// ═══════════════════════════════════════════════════════════════
+
 router.post('/conflict-coach/followup', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   console.log('✅ Conflict Coach Follow-Up called');
-
   try {
     const { question, originalAnalysis, relationship, receivedMessage, actualGoal, personLabel, userLanguage } = req.body;
 
@@ -180,31 +175,36 @@ Answer the follow-up based on full context. Be specific, practical, warm but hon
 - If they share a new response from the other person, analyze it for manipulation and suggest next steps.
 - If they ask about a specific scenario, give concrete advice.
 - If they're spiraling, help ground them.
-- Keep to 2-4 paragraphs. Stay de-escalating.`,
+- Keep to 2-4 paragraphs. Stay de-escalating.
+
+Return ONLY valid JSON: {"answer": "Your full coaching response here"}`,
       userLanguage
     );
 
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 800,
-      system: systemPrompt,
-      messages: [{ role: 'user', content: question.trim() }]
-    });
+    const parsed = await callClaudeWithRetry(
+      question.trim(),
+      {
+        label: 'conflict-coach-followup',
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 800,
+        system: systemPrompt,
+      }
+    );
 
-    const answer = message.content.find(item => item.type === 'text')?.text || 'No answer available.';
     console.log('✅ Follow-up answered');
-    res.json({ answer: answer.trim() });
-
+    res.json({ answer: parsed.answer || 'No answer available.' });
   } catch (error) {
     console.error('❌ Follow-up error:', error.message);
     res.status(500).json({ error: 'Failed to answer follow-up.' });
   }
 });
 
-// ── Tone adjustment endpoint ──
+// ═══════════════════════════════════════════════════════════════
+// TONE ADJUSTMENT
+// ═══════════════════════════════════════════════════════════════
+
 router.post('/conflict-coach/adjust-tone', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   console.log('✅ Conflict Coach Tone Adjust called');
-
   try {
     const { originalResponse, originalStrategy, toneLevel, relationship, receivedMessage, actualGoal, userLanguage } = req.body;
 
@@ -235,28 +235,18 @@ Return ONLY valid JSON:
       userLanguage
     );
 
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 500,
-      system: systemPrompt,
-      messages: [{ role: 'user', content: `Rewrite at tone level ${toneLevel}/100.` }]
-    });
-
-    const textContent = message.content.find(item => item.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(textContent);
-
-    let parsed;
-    try { parsed = JSON.parse(cleaned); }
-    catch {
-      const raw = textContent.trim().replace(/```json\n?/g, '').replace(/```\n?/g, '');
-      const f = raw.indexOf('{'); const l = raw.lastIndexOf('}');
-      if (f === -1 || l === -1) throw new Error('No JSON');
-      parsed = JSON.parse(raw.substring(f, l + 1));
-    }
+    const parsed = await callClaudeWithRetry(
+      `Rewrite at tone level ${toneLevel}/100.`,
+      {
+        label: 'conflict-coach-tone',
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 500,
+        system: systemPrompt,
+      }
+    );
 
     console.log('✅ Tone adjusted:', { toneLevel, length: parsed.adjusted_text?.length });
     res.json(parsed);
-
   } catch (error) {
     console.error('❌ Tone adjust error:', error.message);
     res.status(500).json({ error: 'Failed to adjust tone.' });

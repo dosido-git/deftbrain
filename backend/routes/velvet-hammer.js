@@ -235,3 +235,66 @@ Return ONLY valid JSON. No markdown, no preamble.`;
 });
 
 module.exports = router;
+
+// ═══════════════════════════════════════════════════════════════
+// STREAMING ROUTE — main message transformation
+// ═══════════════════════════════════════════════════════════════
+
+router.post('/velvet-hammer/stream', async (req, res) => {
+  const { harshMessage, relationship, channel, goals, powerDynamic, rageLevel, history, userLanguage } = req.body;
+
+  if (!harshMessage) return res.status(400).json({ error: 'Message required' });
+
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.flushHeaders();
+
+  const sendEvent = (data) => res.write(`data: ${JSON.stringify(data)}\n\n`);
+
+  try {
+    const goalsText = goals && goals.length > 0 ? goals.join(', ') : 'Not specified';
+    const powerText = {
+      they_have_power: 'They have power over the sender (boss, landlord, authority figure)',
+      equals: 'Sender and recipient are equals (peer, friend, neighbor)',
+      i_have_leverage: 'Sender has leverage (client, the recipient needs something from them)',
+    }[powerDynamic] || 'Not specified';
+
+    const channelInstructions = {
+      'Email': 'Format for email. Include a professional subject line.',
+      'Slack/Teams': 'Format for workplace chat. Concise and professional.',
+      'Text Message': 'Format for text/SMS. Keep short and conversational.',
+      'In-person script': 'Format as 3-4 talking point bullets with anticipated responses.',
+      'Letter/Formal': 'Format as a formal letter with clear paragraphs and subject line.',
+      'Social Media': 'Brief, measured, high-road tone. Nothing that looks bad screenshotted.',
+    }[channel] || 'Format for email with a subject line.';
+
+    const prompt = withLanguage(`You are an expert communication strategist. Transform this raw message into 3 professional versions (collaborative, balanced, firm) with emotional validation, concern extraction, fairness check, before/after comparisons, and strategic notes.
+
+Raw message: """${harshMessage}"""
+Relationship: ${relationship || 'Not specified'}
+Channel: ${channel || 'Email'} — ${channelInstructions}
+Goals: ${goalsText}
+Power dynamic: ${powerText}
+Anger level: ${rageLevel || 3}/5
+Context: ${history || 'None'}
+
+Return ONLY valid JSON matching the full schema from the standard velvet-hammer endpoint.`, userLanguage);
+
+    const stream = await anthropic.messages.stream({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 4000,
+      messages: [{ role: 'user', content: prompt }],
+    });
+
+    stream.on('text', (text) => sendEvent({ chunk: text }));
+    await stream.finalMessage();
+    sendEvent({ done: true });
+    res.end();
+
+  } catch (err) {
+    console.error('[VelvetHammer/stream] Error:', err);
+    sendEvent({ error: err.message || 'Stream failed' });
+    res.end();
+  }
+});

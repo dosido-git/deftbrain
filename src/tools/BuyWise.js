@@ -51,12 +51,6 @@ const CALENDAR_CATEGORIES = [
 ];
 
 
-const CROSS_REFS = [
-  { id: 'FakeReviewDetective', icon: '🔍', label: 'Check reviews with Fake Review Detective' },
-  { id: 'PlotTwist', icon: '🔀', label: 'Struggling to decide? Plot Twist untangles choices' },
-  { id: 'BillGuiltEraser', icon: '💸', label: 'Feeling guilty? Bill Guilt Eraser helps' },
-  { id: 'RamenRatio', icon: '🍜', label: 'See cost in meals/hours with Ramen Ratio' },
-];
 
 // ════════════════════════════════════════════════════════════
 // PERSISTENT STORAGE
@@ -69,7 +63,7 @@ const MAX_HISTORY = 20;
 function Section({ icon, title, badge, badgeClass, children, defaultOpen = false, c }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <div className={`${c.card} border rounded-xl overflow-hidden`}>
+    <div className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
       <button
         onClick={() => setOpen(p => !p)}
         className="w-full p-4 flex items-center justify-between text-left min-h-[44px]"
@@ -78,7 +72,7 @@ function Section({ icon, title, badge, badgeClass, children, defaultOpen = false
           {icon && <span className="text-sm">{icon}</span>}
           <h3 className={`text-sm font-bold ${c.text}`}>{title}</h3>
           {badge && (
-            <span className={`text-[9px] font-black px-2 py-0.5 rounded ${badgeClass || c.accentBg}`}>
+            <span className={`text-[9px] font-black px-2 py-0.5 rounded ${badgeClass || c.highlightBg}`}>
               {badge}
             </span>
           )}
@@ -86,7 +80,7 @@ function Section({ icon, title, badge, badgeClass, children, defaultOpen = false
         <span className={`text-xs ${c.textMuted}`}>{open ? '▲' : '▼'}</span>
       </button>
       {open && (
-        <div className={`px-4 pb-4 border-t ${c.divider} pt-3 space-y-3`}>
+        <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-3`}>
           {children}
         </div>
       )}
@@ -97,49 +91,80 @@ function Section({ icon, title, badge, badgeClass, children, defaultOpen = false
 // ════════════════════════════════════════════════════════════
 // COMPONENT
 // ════════════════════════════════════════════════════════════
-const BuyWise = () => {
+const BuyWise = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
-  const { theme } = useTheme();
-  const isDark = theme === 'dark';
+  const { isDark } = useTheme();
 
-  // ── Theme — Navy & Gold ──
+  // ── Theme ──
   const c = {
-    card:        isDark ? 'bg-[#2a2623] border-[#3d3630]'  : 'bg-white border-[#e8e1d5]',
-    input:       isDark ? 'bg-[#1a1816] border-[#3d3630] text-[#f0eeea] placeholder:text-[#8a8275] focus:border-[#4a6a8a] focus:ring-[#4a6a8a]/20'
-                        : 'bg-[#faf8f5] border-[#d5cab8] text-[#3d3935] placeholder:text-[#8a8275] focus:border-[#4a6a8a] focus:ring-[#4a6a8a]/20',
-    text:        isDark ? 'text-[#f0eeea]'  : 'text-[#3d3935]',
-    textSec:     isDark ? 'text-[#c8c3b9]'  : 'text-[#5a544a]',
-    textMuted:   isDark ? 'text-[#8a8275]'  : 'text-[#8a8275]',
-    label:       isDark ? 'text-[#c8c3b9]'  : 'text-[#5a544a]',
-    accent:      isDark ? 'text-[#d9a04e]'  : 'text-[#93541f]',
-    accentBg:    isDark ? 'bg-[#c8872e]/15 border-[#c8872e]/40' : 'bg-[#f9edd8] border-[#c8872e]/30',
-    btnPrimary:  isDark ? 'bg-[#2c4a6e] hover:bg-[#4a6a8a] text-white' : 'bg-[#2c4a6e] hover:bg-[#1e3a58] text-white',
-    btnSec:      isDark ? 'bg-[#332e2a] hover:bg-[#3d3630] text-[#c8c3b9]' : 'bg-[#f3efe8] hover:bg-[#e8e1d5] text-[#5e5042]',
-    danger:      isDark ? 'bg-[#b54a3f]/15 border-[#b54a3f]/40 text-[#e88880]' : 'bg-[#fceae8] border-[#e8a8a0] text-[#b54a3f]',
-    dangerText:  isDark ? 'text-[#e88880]' : 'text-[#b54a3f]',
-    success:     isDark ? 'bg-[#5a8a5c]/15 border-[#5a8a5c]/40 text-[#7aba7c]' : 'bg-[#e8f0e8] border-[#5a8a5c]/30 text-[#3a6a3c]',
-    successText: isDark ? 'text-[#7aba7c]' : 'text-[#3a6a3c]',
-    warning:     isDark ? 'bg-[#c8872e]/15 border-[#c8872e]/40 text-[#d9a04e]' : 'bg-[#f9edd8] border-[#c8872e]/30 text-[#93541f]',
-    warningText: isDark ? 'text-[#d9a04e]' : 'text-[#93541f]',
-    info:        isDark ? 'bg-[#2c4a6e]/15 border-[#4a6a8a]/30 text-[#a8b9ce]' : 'bg-[#d4dde8]/30 border-[#2c4a6e]/15 text-[#1e3a58]',
-    pillActive:  isDark ? 'bg-[#2c4a6e] border-[#4a6a8a] text-white' : 'bg-[#2c4a6e] border-[#1e3a58] text-white',
-    pillInactive: isDark ? 'bg-[#332e2a] border-[#3d3630] text-[#c8c3b9] hover:border-[#5a544a]' : 'bg-white border-[#d5cab8] text-[#5a544a] hover:border-[#8a8275]',
-    divider:     isDark ? 'border-[#3d3630]' : 'border-[#e8e1d5]',
-    quoteBg:     isDark ? 'bg-[#1a1816]/60' : 'bg-[#faf8f5]',
-    verdict:     isDark ? 'bg-[#c8872e]/15 border-[#c8872e]/40' : 'bg-[#f9edd8] border-[#c8872e]/30',
-    calGreat:    isDark ? 'bg-[#5a8a5c]/20 border-[#5a8a5c]/40' : 'bg-[#e8f0e8] border-[#5a8a5c]/30',
-    calGood:     isDark ? 'bg-[#2c4a6e]/20 border-[#4a6a8a]/30' : 'bg-[#d4dde8]/30 border-[#2c4a6e]/15',
-    calAvg:      isDark ? 'bg-[#332e2a] border-[#3d3630]' : 'bg-[#faf8f5] border-[#e8e1d5]',
-    calBad:      isDark ? 'bg-[#b54a3f]/15 border-[#b54a3f]/40' : 'bg-[#fceae8] border-[#e8a8a0]',
-    linkStyle:   isDark ? 'text-[#6e8aaa] hover:text-[#a8b9ce] underline' : 'text-[#2c4a6e] hover:text-[#1e3a58] underline',
+    card:          isDark ? 'bg-zinc-800'       : 'bg-white',
+    cardAlt:       isDark ? 'bg-zinc-700/50'    : 'bg-slate-50',
+    text:          isDark ? 'text-zinc-50'      : 'text-gray-900',
+    textSecondary: isDark ? 'text-zinc-300'     : 'text-gray-600',
+    textMuted:     isDark ? 'text-zinc-500'     : 'text-gray-400',
+    input:         isDark
+      ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500'
+      : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-600',
+    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
+                          : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100'
+                          : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
+    border:        isDark ? 'border-zinc-700'   : 'border-gray-200',
+    success:       isDark ? 'bg-green-900/20 border-green-700 text-green-200'
+                          : 'bg-green-50 border-green-300 text-green-800',
+    warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200'
+                          : 'bg-amber-50 border-amber-300 text-amber-800',
+    danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200'
+                          : 'bg-red-50 border-red-200 text-red-800',
+    // Tool-specific UI states
+    textCyan:      isDark ? 'text-cyan-400'     : 'text-cyan-600',
+    highlightBg:   isDark ? 'bg-cyan-900/20 border-cyan-700/40 text-cyan-300'
+                          : 'bg-cyan-50 border-cyan-200 text-cyan-700',
+    highlight:     isDark ? 'bg-sky-900/20 border-sky-700 text-sky-200'
+                          : 'bg-sky-50 border-sky-200 text-sky-800',
+    verdict:       isDark ? 'bg-cyan-900/20 border-cyan-700/40'
+                          : 'bg-cyan-50 border-cyan-200',
+    pillActive:    isDark ? 'bg-cyan-600 border-cyan-500 text-white'
+                          : 'bg-cyan-600 border-cyan-700 text-white',
+    pillInactive:  isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-300 hover:border-zinc-500'
+                          : 'bg-white border-gray-300 text-gray-600 hover:border-gray-400',
+    quoteBg:       isDark ? 'bg-zinc-900/60'    : 'bg-slate-50',
+    // Calendar month colors
+    calGreat:      isDark ? 'bg-green-900/20 border-green-700/40'  : 'bg-green-50 border-green-300',
+    calGood:       isDark ? 'bg-sky-900/20 border-sky-700/40'      : 'bg-sky-50 border-sky-200',
+    calAvg:        isDark ? 'bg-zinc-800 border-zinc-700'          : 'bg-slate-50 border-gray-200',
+    calBad:        isDark ? 'bg-red-900/20 border-red-700/40'      : 'bg-red-50 border-red-200',
+    // Misc helpers
+    hrLine:        isDark ? 'bg-zinc-700'       : 'bg-gray-200',
+    dotInactive:   isDark ? 'bg-zinc-700'       : 'bg-gray-300',
+    dotActive:     isDark ? 'bg-cyan-500'       : 'bg-cyan-600',
+    calBadgeAvg:   isDark ? 'bg-zinc-700 text-zinc-300'            : 'bg-gray-300 text-gray-700',
+    calBadgeGood:  isDark ? 'bg-sky-700 text-white'                : 'bg-sky-600 text-white',
+    calBadgeGreat: isDark ? 'bg-green-700 text-white'              : 'bg-green-600 text-white',
+    calBadgeBad:   isDark ? 'bg-red-700 text-white'                : 'bg-red-600 text-white',
+    checkImpulse:  'bg-amber-500 border-amber-500',
+    checkGift:     'bg-cyan-600 border-cyan-600',
+    checkBorder:   isDark ? 'border-zinc-600'   : 'border-gray-300',
+    convinceFor:   isDark ? 'border-green-600'  : 'border-green-500',
+    convinceAgst:  isDark ? 'border-red-600'    : 'border-red-500',
+    verdictCardBg: isDark
+      ? 'from-slate-800 to-slate-900 border-slate-600'
+      : 'from-cyan-50 to-sky-100 border-sky-200',
+    // Standalone text semantics (not splits of combined status keys)
+    textDanger:    isDark ? 'text-red-400'      : 'text-red-600',
+    textOk:        isDark ? 'text-green-400'    : 'text-green-700',
+    textCaution:   isDark ? 'text-amber-400'    : 'text-amber-700',
   };
+  const linkStyle = isDark
+    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
+    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
 
   // ── State: Views ──
   const [view, setView] = useState('form'); // form | results | walkthrough | history | budget | calendar
   const [walkStep, setWalkStep] = useState(0);
 
   // ── State: Form inputs ──
-  const [product, setProduct] = useState('');
+  const [product, setProduct] = usePersistentState('bw-product', '');
   const [price, setPrice] = useState('');
   const [currency, setCurrency] = useState(() => detectCurrency());
   const [urgency, setUrgency] = useState('flexible');
@@ -154,7 +179,7 @@ const BuyWise = () => {
   const [comparisons, setComparisons] = useState([{ product: '', price: '' }]);
 
   // ── State: Results ──
-  const [results, setResults] = useState(null);
+  const [results, setResults] = usePersistentState('bw-results', null);
   const [error, setError] = useState('');
 
   // ── State: Follow-up ──
@@ -234,6 +259,24 @@ const BuyWise = () => {
 
   const canAnalyze = product.trim().length > 0 && !loading;
 
+  // ── Refs ──
+  const resultsRef = React.useRef(null);
+
+  // ── Keyboard: Enter submits from pill-only contexts ──
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key !== 'Enter') return;
+      const tag = document.activeElement?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      if (view === 'form' && canAnalyze) { e.preventDefault(); analyze(); }
+      else if (view === 'budget' && budgetAmount && budgetCategory && !loading) { e.preventDefault(); analyzeBudget(); }
+      else if (view === 'calendar' && calCategory && !loading) { e.preventDefault(); loadCalendar(); }
+      else if (view === 'quote' && quoteService.trim() && !loading) { e.preventDefault(); analyzeQuote(); }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  });
+
   // ── Walkthrough sections ──
   const walkSections = useMemo(() => {
     if (!results) return [];
@@ -297,6 +340,7 @@ const BuyWise = () => {
         verdict: data.verdict,
         verdict_emoji: data.verdict_emoji || '🧠',
         category: data.product_category || 'other',
+        preview: `${product.trim()}${price ? ` · ${currency}${price}` : ''}`.slice(0, 40),
         date: new Date().toISOString(),
         bought: null, // for decision journal
         satisfaction: null,
@@ -480,7 +524,6 @@ const BuyWise = () => {
     return lines.filter(l => l !== undefined).join('\n');
   }, [results, product, price, currency]);
 
-  // ── Reset ──
   // ── Re-research from history ──
   const reResearch = useCallback((entry) => {
     setProduct(entry.product);
@@ -488,6 +531,16 @@ const BuyWise = () => {
     setCurrency(entry.currency || currency);
     setView('form');
   }, [currency]);
+
+  // ── Reset ──
+  const reset = useCallback(() => {
+    setProduct('');
+    setPrice('');
+    setResults(null);
+    setFollowups([]);
+    setError('');
+    setView('form');
+  }, []);
 
   // ── History stats ──
   const historyStats = useMemo(() => {
@@ -537,7 +590,7 @@ const BuyWise = () => {
 
   // Badge color helper
   const badgeColor = (badge) => {
-    if (!badge) return c.accentBg;
+    if (!badge) return c.highlightBg;
     const b = badge.toLowerCase();
     if (b.includes('good') || b.includes('fair') || b.includes('buy') || b.includes('great')) return c.success;
     if (b.includes('high') || b.includes('over') || b.includes('bad') || b.includes('wait')) return c.danger;
@@ -556,14 +609,14 @@ const BuyWise = () => {
   // RENDER: FORM
   // ════════════════════════════════════════════════════════════
   const renderForm = () => (
-    <div className={`${c.card} border rounded-xl p-5 sm:p-6`}>
-      <div className={`mb-5 pb-4 border-b ${c.divider}`}>
+    <div className={`${c.card} border ${c.border} rounded-xl p-5 sm:p-6`}>
+      <div className={`mb-5 pb-4 border-b ${c.border}`}>
         <div className="flex items-center justify-between gap-3">
           <div>
-            <h2 className={`text-xl sm:text-2xl font-bold ${c.text}`}>
-              <span className="mr-2">🧠</span>BuyWise
+            <h2 className={`text-xl sm:text-2xl font-bold ${c.text} flex items-center gap-2`}>
+              <span>{tool?.icon || '🧠'}</span>{tool?.title || 'Buy Wise'}
             </h2>
-            <p className={`text-sm ${c.textSec}`}>The research you'd do if you had an hour — done in seconds</p>
+            <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline || "The research you'd do if you had an hour — done in seconds"}</p>
           </div>
           <select
             value={currency}
@@ -577,7 +630,7 @@ const BuyWise = () => {
 
       {/* Product */}
       <div className="mb-4">
-        <label className={`text-sm font-bold ${c.label} block mb-1.5`}>What are you buying?</label>
+        <label className={`text-sm font-bold ${c.textSecondary} block mb-1.5`}>What are you buying? <span className={c.textMuted}>*</span></label>
         <div className="relative">
           <span className={`absolute left-3 top-1/2 -translate-y-1/2 text-sm`}>🛒</span>
           <input
@@ -594,7 +647,7 @@ const BuyWise = () => {
       {/* Price + Urgency */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
         <div>
-          <label className={`text-sm font-bold ${c.label} block mb-1.5`}>
+          <label className={`text-sm font-bold ${c.textSecondary} block mb-1.5`}>
             Price you've seen <span className={`font-normal ${c.textMuted}`}>(optional)</span>
           </label>
           <div className="flex items-center gap-1">
@@ -609,7 +662,7 @@ const BuyWise = () => {
           </div>
         </div>
         <div>
-          <label className={`text-sm font-bold ${c.label} block mb-1.5`}>How soon?</label>
+          <label className={`text-sm font-bold ${c.textSecondary} block mb-1.5`}>How soon?</label>
           <div className="flex gap-1.5">
             {URGENCY.map(u => (
               <button
@@ -628,7 +681,7 @@ const BuyWise = () => {
 
       {/* Priority */}
       <div className="mb-4">
-        <label className={`text-sm font-bold ${c.label} block mb-1.5`}>What matters most?</label>
+        <label className={`text-sm font-bold ${c.textSecondary} block mb-1.5`}>What matters most?</label>
         <div className="flex flex-wrap gap-1.5">
           {PRIORITIES.map(p => (
             <button
@@ -647,11 +700,14 @@ const BuyWise = () => {
       {/* Toggles row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
         {/* Impulse */}
-        <label className={`flex items-center gap-3 cursor-pointer p-3 rounded-lg border transition-colors ${
-          isImpulse ? c.warning : `border ${c.divider}`
-        }`}>
+        <button
+          onClick={() => setIsImpulse(p => !p)}
+          className={`flex items-center gap-3 cursor-pointer p-3 rounded-lg border transition-colors text-left min-h-[44px] ${
+            isImpulse ? c.warning : `${c.card} border ${c.border}`
+          }`}
+        >
           <div className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
-            isImpulse ? 'bg-[#c8872e] border-[#c8872e]' : (isDark ? 'border-[#3d3630]' : 'border-[#d5cab8]')
+            isImpulse ? c.checkImpulse : c.checkBorder
           }`}>
             {isImpulse && <span className="text-white text-xs">✓</span>}
           </div>
@@ -659,14 +715,17 @@ const BuyWise = () => {
             <span className={`text-sm font-bold ${c.text}`}>⚡ Impulse buy</span>
             <p className={`text-[10px] ${c.textMuted}`}>I'll be extra honest</p>
           </div>
-        </label>
+        </button>
 
         {/* Gift */}
-        <label className={`flex items-center gap-3 cursor-pointer p-3 rounded-lg border transition-colors ${
-          isGift ? c.accentBg : `border ${c.divider}`
-        }`}>
+        <button
+          onClick={() => setIsGift(p => !p)}
+          className={`flex items-center gap-3 cursor-pointer p-3 rounded-lg border transition-colors text-left min-h-[44px] ${
+            isGift ? c.highlightBg : `${c.card} border ${c.border}`
+          }`}
+        >
           <div className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
-            isGift ? 'bg-[#2c4a6e] border-[#2c4a6e]' : (isDark ? 'border-[#3d3630]' : 'border-[#d5cab8]')
+            isGift ? c.checkGift : c.checkBorder
           }`}>
             {isGift && <span className="text-white text-xs">✓</span>}
           </div>
@@ -674,13 +733,13 @@ const BuyWise = () => {
             <span className={`text-sm font-bold ${c.text}`}>🎁 This is a gift</span>
             <p className={`text-[10px] ${c.textMuted}`}>Gift-specific analysis</p>
           </div>
-        </label>
+        </button>
       </div>
 
       {/* Gift recipient */}
       {isGift && (
         <div className="mb-4">
-          <label className={`text-sm font-bold ${c.label} block mb-1.5`}>
+          <label className={`text-sm font-bold ${c.textSecondary} block mb-1.5`}>
             Who is it for? <span className={`font-normal ${c.textMuted}`}>(optional — helps tailor advice)</span>
           </label>
           <input
@@ -695,7 +754,7 @@ const BuyWise = () => {
 
       {/* Comparison */}
       <div className="mb-4">
-        <button onClick={() => setShowCompare(p => !p)} className={`text-xs font-bold ${c.accent} flex items-center gap-1 min-h-[32px]`}>
+        <button onClick={() => setShowCompare(p => !p)} className={`text-xs font-bold ${c.textCyan} flex items-center gap-1 min-h-[32px]`}>
           <span>⚖️</span>
           {showCompare ? 'Remove comparison' : 'Compare with another product'}
         </button>
@@ -721,12 +780,12 @@ const BuyWise = () => {
                   />
                 </div>
                 {comparisons.length > 1 && (
-                  <button onClick={() => removeComparison(i)} className={`text-sm ${c.dangerText} min-h-[32px] px-2`}>✕</button>
+                  <button onClick={() => removeComparison(i)} className={`text-sm ${c.textDanger} min-h-[32px] px-2`}>✕</button>
                 )}
               </div>
             ))}
             {comparisons.length < 3 && (
-              <button onClick={addComparison} className={`text-xs font-bold ${c.accent} min-h-[32px]`}>
+              <button onClick={addComparison} className={`text-xs font-bold ${c.textCyan} min-h-[32px]`}>
                 ➕ Add another
               </button>
             )}
@@ -736,7 +795,7 @@ const BuyWise = () => {
 
       {/* Extra context */}
       <div className="mb-5">
-        <label className={`text-sm font-bold ${c.label} block mb-1.5`}>
+        <label className={`text-sm font-bold ${c.textSecondary} block mb-1.5`}>
           Anything else? <span className={`font-normal ${c.textMuted}`}>(optional)</span>
         </label>
         <input
@@ -756,17 +815,22 @@ const BuyWise = () => {
           className={`flex-1 ${c.btnPrimary} disabled:opacity-40 disabled:cursor-not-allowed font-bold py-3 px-6 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}
         >
           {loading ? (
-            <><span className="animate-spin inline-block">⏳</span> Researching...</>
+            <><span className="animate-spin inline-block">{tool?.icon ?? '🧠'}</span> Researching...</>
           ) : (
-            <><span>🔍</span> Research This Purchase</>
+            <><span>{tool?.icon ?? '🧠'}</span> Research This Purchase</>
           )}
         </button>
         {results && (
-          <button onClick={() => setView('results')} className={`${c.btnSec} px-4 py-3 rounded-lg font-bold text-sm min-h-[48px]`}>
+          <button onClick={() => setView('results')} className={`${c.btnSecondary} px-4 py-3 rounded-lg font-bold text-sm min-h-[48px]`}>
             View Results
           </button>
         )}
       </div>
+
+      {/* Pre-result cross-ref */}
+      <p className={`text-xs ${c.textMuted} mt-3`}>
+        💡 Spot fake reviews first? Try <a href="/FakeReviewDetective" className={linkStyle}>Fake Review Detective</a>
+      </p>
     </div>
   );
 
@@ -778,12 +842,15 @@ const BuyWise = () => {
     const r = results;
 
     return (
-      <div className="space-y-4">
+      <div className="space-y-4" ref={resultsRef}>
         {/* Action bar */}
         <div className="flex items-center justify-between flex-wrap gap-2">
-          <button onClick={() => setView('form')} className={`text-xs font-bold ${c.accent} min-h-[32px]`}>← Back to form</button>
+          <div className="flex gap-2 items-center">
+            <button onClick={() => setView('form')} className={`text-xs font-bold ${c.textCyan} min-h-[32px]`}>← Back to form</button>
+            <button onClick={reset} className={`text-xs font-bold ${c.textDanger} min-h-[32px]`}>↺ Start Over</button>
+          </div>
           <div className="flex gap-2 flex-wrap">
-            <button onClick={() => { setView('walkthrough'); setWalkStep(0); }} className={`${c.btnSec} px-3 py-1.5 rounded-lg text-xs font-bold min-h-[32px]`}>
+            <button onClick={() => { setView('walkthrough'); setWalkStep(0); }} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold min-h-[32px]`}>
               👣 Walkthrough
             </button>
             <ActionBar content={buildFullText()} title={`BuyWise: ${product}`} />
@@ -797,7 +864,7 @@ const BuyWise = () => {
               <span className="text-2xl flex-shrink-0">{r.verdict_emoji || '🧠'}</span>
               <div>
                 <h3 className={`text-base font-black ${c.text} mb-1`}>{r.verdict}</h3>
-                <p className={`text-sm ${c.textSec}`}>{r.verdict_summary}</p>
+                <p className={`text-sm ${c.textSecondary}`}>{r.verdict_summary}</p>
               </div>
             </div>
           </div>
@@ -806,26 +873,26 @@ const BuyWise = () => {
         {/* Impulse Check */}
         {r.impulse_check && (
           <div className={`${c.warning} border-2 rounded-xl p-5`}>
-            <h3 className={`text-sm font-bold ${c.warningText} mb-2`}>⚡ Impulse Check</h3>
+            <h3 className={`text-sm font-bold mb-2`}>⚡ Impulse Check</h3>
             {r.impulse_check.do_you_need_it && (
-              <p className={`text-sm ${isDark ? 'text-[#d9a04e]' : 'text-[#93541f]'} mb-2`}>
+              <p className={`text-sm mb-2`}>
                 <strong>Do you need it?</strong> {r.impulse_check.do_you_need_it}
               </p>
             )}
             {r.impulse_check.what_else_could_you_do && (
-              <p className={`text-sm ${isDark ? 'text-[#d9a04e]' : 'text-[#93541f]'} mb-2`}>
+              <p className={`text-sm mb-2`}>
                 <strong>What else is {price ? `${currency}${price}` : 'that money'}?</strong> {r.impulse_check.what_else_could_you_do}
               </p>
             )}
             {r.impulse_check.already_own_something && (
-              <p className={`text-sm ${isDark ? 'text-[#d9a04e]' : 'text-[#93541f]'} mb-2`}>
+              <p className={`text-sm mb-2`}>
                 <strong>Already own something?</strong> {r.impulse_check.already_own_something}
               </p>
             )}
             {r.impulse_check.wait_recommendation && (
-              <div className={`mt-3 p-3 rounded-lg ${isDark ? 'bg-[#c8872e]/15' : 'bg-[#f9edd8]'} flex items-center gap-2`}>
+              <div className={`mt-3 p-3 rounded-lg ${c.quoteBg} flex items-center gap-2`}>
                 <span>⏱️</span>
-                <p className={`text-xs font-bold ${c.warningText}`}>{r.impulse_check.wait_recommendation}</p>
+                <p className={`text-xs font-bold`}>{r.impulse_check.wait_recommendation}</p>
               </div>
             )}
           </div>
@@ -835,15 +902,15 @@ const BuyWise = () => {
         {r.gift_analysis && (
           <Section icon="🎁" title="Gift Analysis" defaultOpen={true} c={c}>
             <div className="space-y-2">
-              {r.gift_analysis.wow_factor && <p className={`text-sm ${c.textSec}`}><strong className={c.text}>Wow Factor:</strong> {r.gift_analysis.wow_factor}</p>}
-              {r.gift_analysis.practical_vs_fun && <p className={`text-sm ${c.textSec}`}><strong className={c.text}>Type:</strong> {r.gift_analysis.practical_vs_fun}</p>}
-              {r.gift_analysis.perceived_value && <p className={`text-sm ${c.textSec}`}><strong className={c.text}>Perceived Value:</strong> {r.gift_analysis.perceived_value}</p>}
+              {r.gift_analysis.wow_factor && <p className={`text-sm ${c.textSecondary}`}><strong className={c.text}>Wow Factor:</strong> {r.gift_analysis.wow_factor}</p>}
+              {r.gift_analysis.practical_vs_fun && <p className={`text-sm ${c.textSecondary}`}><strong className={c.text}>Type:</strong> {r.gift_analysis.practical_vs_fun}</p>}
+              {r.gift_analysis.perceived_value && <p className={`text-sm ${c.textSecondary}`}><strong className={c.text}>Perceived Value:</strong> {r.gift_analysis.perceived_value}</p>}
               {r.gift_analysis.risk_level && (
                 <div className={`${r.gift_analysis.risk_level.includes('HIGH') ? c.danger : r.gift_analysis.risk_level.includes('LOW') ? c.success : c.warning} border rounded-lg p-3`}>
                   <p className={`text-xs font-bold`}>Risk: {r.gift_analysis.risk_level}</p>
                 </div>
               )}
-              {r.gift_analysis.alternatives_at_price && <p className={`text-sm ${c.textSec}`}><strong className={c.text}>Alternatives:</strong> {r.gift_analysis.alternatives_at_price}</p>}
+              {r.gift_analysis.alternatives_at_price && <p className={`text-sm ${c.textSecondary}`}><strong className={c.text}>Alternatives:</strong> {r.gift_analysis.alternatives_at_price}</p>}
               {r.gift_analysis.presentation_tip && <p className={`text-xs ${c.textMuted}`}>🎀 {r.gift_analysis.presentation_tip}</p>}
             </div>
           </Section>
@@ -852,14 +919,14 @@ const BuyWise = () => {
         {/* Fair Price */}
         {r.fair_price && (
           <Section icon="💲" title="Is This Price Fair?" badge={r.fair_price.verdict_badge} badgeClass={badgeColor(r.fair_price.verdict_badge)} defaultOpen={true} c={c}>
-            <p className={`text-sm ${c.textSec}`}>{r.fair_price.analysis}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{r.fair_price.analysis}</p>
             {r.fair_price.typical_range && (
               <div className={`${c.quoteBg} rounded-lg p-3`}>
                 <p className={`text-xs font-bold ${c.text}`}>Typical range: {r.fair_price.typical_range}</p>
               </div>
             )}
             {r.fair_price.where_to_find_cheaper && (
-              <p className={`text-xs ${c.textSec}`}>💡 {r.fair_price.where_to_find_cheaper}</p>
+              <p className={`text-xs ${c.textSecondary}`}>💡 {r.fair_price.where_to_find_cheaper}</p>
             )}
           </Section>
         )}
@@ -867,10 +934,10 @@ const BuyWise = () => {
         {/* Timing */}
         {r.timing && (
           <Section icon="📅" title="Buy Now or Wait?" badge={r.timing.verdict_badge} badgeClass={badgeColor(r.timing.verdict_badge)} c={c}>
-            <p className={`text-sm ${c.textSec}`}>{r.timing.analysis}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{r.timing.analysis}</p>
             {r.timing.next_sale && (
               <div className={`${c.success} border rounded-lg p-3`}>
-                <p className={`text-xs font-bold ${c.successText}`}>📅 Next likely sale: {r.timing.next_sale}</p>
+                <p className={`text-xs font-bold`}>📅 Next likely sale: {r.timing.next_sale}</p>
               </div>
             )}
             {r.timing.price_cycle_note && <p className={`text-xs ${c.textMuted}`}>{r.timing.price_cycle_note}</p>}
@@ -880,7 +947,7 @@ const BuyWise = () => {
         {/* Total Cost */}
         {r.total_cost && (
           <Section icon="📊" title="Total Cost of Ownership" c={c}>
-            <p className={`text-sm ${c.textSec}`}>{r.total_cost.summary}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{r.total_cost.summary}</p>
             {r.total_cost.breakdown?.length > 0 && (
               <div className="space-y-1.5">
                 {r.total_cost.breakdown.map((item, i) => (
@@ -890,9 +957,9 @@ const BuyWise = () => {
                   </div>
                 ))}
                 {r.total_cost.year_1_total && (
-                  <div className={`flex justify-between items-center p-2.5 rounded-lg ${c.accentBg} border`}>
+                  <div className={`flex justify-between items-center p-2.5 rounded-lg ${c.highlightBg} border`}>
                     <span className={`text-xs font-bold ${c.text}`}>Year 1 Total</span>
-                    <span className={`text-sm font-black ${c.accent}`}>{r.total_cost.year_1_total}</span>
+                    <span className={`text-sm font-black ${c.textCyan}`}>{r.total_cost.year_1_total}</span>
                   </div>
                 )}
                 {r.total_cost.year_5_total && (
@@ -904,7 +971,7 @@ const BuyWise = () => {
               </div>
             )}
             {r.total_cost.price_per_use && (
-              <p className={`text-xs ${c.accent} font-bold`}>📐 {r.total_cost.price_per_use}</p>
+              <p className={`text-xs ${c.textCyan} font-bold`}>📐 {r.total_cost.price_per_use}</p>
             )}
           </Section>
         )}
@@ -912,13 +979,13 @@ const BuyWise = () => {
         {/* Cheaper Alternative */}
         {r.cheaper_alternative && (
           <Section icon="✨" title="The Cheaper Version" c={c}>
-            <p className={`text-sm ${c.textSec}`}>{r.cheaper_alternative.suggestion}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{r.cheaper_alternative.suggestion}</p>
             {r.cheaper_alternative.tradeoffs && (
               <p className={`text-xs ${c.textMuted}`}>⚖️ Tradeoffs: {r.cheaper_alternative.tradeoffs}</p>
             )}
             {r.cheaper_alternative.refurbished_tip && (
               <div className={`${c.success} border rounded-lg p-3`}>
-                <p className={`text-xs ${isDark ? 'text-[#7aba7c]' : 'text-[#3a6a3c]'}`}>♻️ {r.cheaper_alternative.refurbished_tip}</p>
+                <p className={`text-xs`}>♻️ {r.cheaper_alternative.refurbished_tip}</p>
               </div>
             )}
           </Section>
@@ -929,17 +996,17 @@ const BuyWise = () => {
           <Section icon="♻️" title="Used & Refurbished Guide" c={c}>
             {r.used_refurb_deep_dive.where_to_buy_used?.length > 0 && (
               <div>
-                <p className={`text-[10px] font-bold ${c.label} uppercase mb-1`}>Where to buy used:</p>
+                <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-1`}>Where to buy used:</p>
                 {r.used_refurb_deep_dive.where_to_buy_used.map((p, i) => (
-                  <p key={i} className={`text-xs ${c.textSec}`}>→ {p}</p>
+                  <p key={i} className={`text-xs ${c.textSecondary}`}>→ {p}</p>
                 ))}
               </div>
             )}
             {r.used_refurb_deep_dive.what_to_inspect?.length > 0 && (
               <div>
-                <p className={`text-[10px] font-bold ${c.label} uppercase mb-1`}>What to inspect:</p>
+                <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-1`}>What to inspect:</p>
                 {r.used_refurb_deep_dive.what_to_inspect.map((p, i) => (
-                  <p key={i} className={`text-xs ${c.textSec}`}>✓ {p}</p>
+                  <p key={i} className={`text-xs ${c.textSecondary}`}>✓ {p}</p>
                 ))}
               </div>
             )}
@@ -949,14 +1016,14 @@ const BuyWise = () => {
               </div>
             )}
             {r.used_refurb_deep_dive.risk_assessment && (
-              <p className={`text-xs ${c.textSec}`}>⚠️ {r.used_refurb_deep_dive.risk_assessment}</p>
+              <p className={`text-xs ${c.textSecondary}`}>⚠️ {r.used_refurb_deep_dive.risk_assessment}</p>
             )}
             {r.used_refurb_deep_dive.platform_trust?.length > 0 && (
               <div className="space-y-1">
-                <p className={`text-[10px] font-bold ${c.label} uppercase`}>Platform trust:</p>
+                <p className={`text-[10px] font-bold ${c.textSecondary} uppercase`}>Platform trust:</p>
                 {r.used_refurb_deep_dive.platform_trust.map((pt, i) => (
-                  <div key={i} className={`flex items-center gap-2 text-xs ${c.textSec}`}>
-                    <span className={`font-bold ${pt.trust === 'HIGH' ? c.successText : pt.trust === 'LOW' ? c.dangerText : c.warningText}`}>
+                  <div key={i} className={`flex items-center gap-2 text-xs ${c.textSecondary}`}>
+                    <span className={`font-bold ${pt.trust === 'HIGH' ? c.textOk : pt.trust === 'LOW' ? c.textDanger : c.textCaution}`}>
                       {pt.trust}
                     </span>
                     <span>{pt.name}</span>
@@ -971,12 +1038,12 @@ const BuyWise = () => {
         {/* Warranty & Returns */}
         {r.warranty_returns && (
           <Section icon="🛡️" title="Warranty & Returns" c={c}>
-            {r.warranty_returns.typical_warranty && <p className={`text-sm ${c.textSec}`}>{r.warranty_returns.typical_warranty}</p>}
-            {r.warranty_returns.extended_worth_it && <p className={`text-xs ${c.textSec}`}>📋 {r.warranty_returns.extended_worth_it}</p>}
-            {r.warranty_returns.return_tips && <p className={`text-xs ${c.textSec}`}>↩️ {r.warranty_returns.return_tips}</p>}
+            {r.warranty_returns.typical_warranty && <p className={`text-sm ${c.textSecondary}`}>{r.warranty_returns.typical_warranty}</p>}
+            {r.warranty_returns.extended_worth_it && <p className={`text-xs ${c.textSecondary}`}>📋 {r.warranty_returns.extended_worth_it}</p>}
+            {r.warranty_returns.return_tips && <p className={`text-xs ${c.textSecondary}`}>↩️ {r.warranty_returns.return_tips}</p>}
             {r.warranty_returns.credit_card_protection && (
-              <div className={`${c.info} border rounded-lg p-3`}>
-                <p className={`text-xs ${isDark ? 'text-[#a8b9ce]' : 'text-[#2c4a6e]'}`}>💳 {r.warranty_returns.credit_card_protection}</p>
+              <div className={`${c.highlight} border rounded-lg p-3`}>
+                <p className={`text-xs`}>💳 {r.warranty_returns.credit_card_protection}</p>
               </div>
             )}
           </Section>
@@ -985,22 +1052,22 @@ const BuyWise = () => {
         {/* Buy vs Subscribe */}
         {r.buy_vs_subscribe && (
           <Section icon="🔄" title="Buy vs Subscribe vs Rent" c={c}>
-            <p className={`text-sm ${c.textSec}`}>{r.buy_vs_subscribe.analysis}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{r.buy_vs_subscribe.analysis}</p>
             {r.buy_vs_subscribe.breakeven && (
               <div className={`${c.quoteBg} rounded-lg p-3`}>
                 <p className={`text-xs font-bold ${c.text}`}>⏱️ {r.buy_vs_subscribe.breakeven}</p>
               </div>
             )}
             {r.buy_vs_subscribe.recommendation && (
-              <p className={`text-xs font-bold ${c.accent}`}>→ {r.buy_vs_subscribe.recommendation}</p>
+              <p className={`text-xs font-bold ${c.textCyan}`}>→ {r.buy_vs_subscribe.recommendation}</p>
             )}
           </Section>
         )}
 
         {/* Quality Tier */}
         {r.quality_tier && (
-          <Section icon="🏷️" title="Quality Tier Advice" badge={r.quality_tier.recommended_tier} badgeClass={c.accentBg} c={c}>
-            <p className={`text-sm ${c.textSec}`}>{r.quality_tier.analysis}</p>
+          <Section icon="🏷️" title="Quality Tier Advice" badge={r.quality_tier.recommended_tier} badgeClass={c.highlightBg} c={c}>
+            <p className={`text-sm ${c.textSecondary}`}>{r.quality_tier.analysis}</p>
             {r.quality_tier.spend_vs_save && <p className={`text-xs ${c.textMuted}`}>{r.quality_tier.spend_vs_save}</p>}
           </Section>
         )}
@@ -1008,14 +1075,14 @@ const BuyWise = () => {
         {/* Regret Predictor */}
         {r.regret_predictor && (
           <Section icon="⚠️" title="Regret Predictor" c={c}>
-            <p className={`text-sm ${c.textSec}`}>{r.regret_predictor.common_regrets}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{r.regret_predictor.common_regrets}</p>
             {r.regret_predictor.usage_reality && (
               <div className={`${c.warning} border rounded-lg p-3`}>
-                <p className={`text-xs ${isDark ? 'text-[#d9a04e]' : 'text-[#93541f]'}`}>📊 {r.regret_predictor.usage_reality}</p>
+                <p className={`text-xs`}>📊 {r.regret_predictor.usage_reality}</p>
               </div>
             )}
             {r.regret_predictor.avoid_regret_tip && (
-              <p className={`text-xs ${c.textSec}`}>✓ {r.regret_predictor.avoid_regret_tip}</p>
+              <p className={`text-xs ${c.textSecondary}`}>✓ {r.regret_predictor.avoid_regret_tip}</p>
             )}
           </Section>
         )}
@@ -1025,7 +1092,7 @@ const BuyWise = () => {
           <Section icon="🚩" title="Watch Out For" c={c}>
             <div className="space-y-2">
               {r.watch_out.map((item, i) => (
-                <p key={i} className={`text-xs ${c.textSec}`}>⚠️ {item}</p>
+                <p key={i} className={`text-xs ${c.textSecondary}`}>⚠️ {item}</p>
               ))}
             </div>
           </Section>
@@ -1034,7 +1101,7 @@ const BuyWise = () => {
         {/* Negotiation */}
         {r.negotiation && (
           <Section icon="⚡" title="Negotiation Playbook" c={c}>
-            <p className={`text-sm ${c.textSec}`}>{r.negotiation.context}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{r.negotiation.context}</p>
             {r.negotiation.script && (
               <div className={`${c.quoteBg} rounded-lg p-3`}>
                 <p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>Say this:</p>
@@ -1046,9 +1113,9 @@ const BuyWise = () => {
             )}
             {r.negotiation.leverage_points?.length > 0 && (
               <div className="space-y-1">
-                <p className={`text-[10px] font-bold ${c.label} uppercase`}>Your leverage:</p>
+                <p className={`text-[10px] font-bold ${c.textSecondary} uppercase`}>Your leverage:</p>
                 {r.negotiation.leverage_points.map((lp, i) => (
-                  <p key={i} className={`text-xs ${c.textSec}`}>• {lp}</p>
+                  <p key={i} className={`text-xs ${c.textSecondary}`}>• {lp}</p>
                 ))}
               </div>
             )}
@@ -1058,10 +1125,10 @@ const BuyWise = () => {
         {/* Comparison */}
         {r.comparison && (
           <Section icon="⚖️" title="Comparison" badge={r.comparison.winner} badgeClass={c.success} defaultOpen={true} c={c}>
-            <p className={`text-sm ${c.textSec}`}>{r.comparison.analysis}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{r.comparison.analysis}</p>
             {r.comparison.for_your_priority && (
-              <div className={`${c.accentBg} border rounded-lg p-3`}>
-                <p className={`text-xs font-bold ${c.accent}`}>Based on your priority ({priority}): {r.comparison.for_your_priority}</p>
+              <div className={`${c.highlightBg} border rounded-lg p-3`}>
+                <p className={`text-xs font-bold ${c.textCyan}`}>Based on your priority ({priority}): {r.comparison.for_your_priority}</p>
               </div>
             )}
             {r.comparison.products?.length > 0 && (
@@ -1069,8 +1136,8 @@ const BuyWise = () => {
                 {r.comparison.products.map((prod, i) => (
                   <div key={i} className={`${c.quoteBg} rounded-lg p-3`}>
                     <p className={`text-xs font-bold ${c.text} mb-1`}>{prod.name}</p>
-                    {prod.pros?.map((p, j) => <p key={`p${j}`} className={`text-[11px] ${c.successText}`}>+ {p}</p>)}
-                    {prod.cons?.map((cn, j) => <p key={`c${j}`} className={`text-[11px] ${c.dangerText}`}>− {cn}</p>)}
+                    {prod.pros?.map((p, j) => <p key={`p${j}`} className={`text-[11px] ${c.textOk}`}>+ {p}</p>)}
+                    {prod.cons?.map((cn, j) => <p key={`c${j}`} className={`text-[11px] ${c.textDanger}`}>− {cn}</p>)}
                   </div>
                 ))}
               </div>
@@ -1079,12 +1146,12 @@ const BuyWise = () => {
             {!r.comparison.products && r.comparison.pros_a && (
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <p className={`text-[10px] font-bold ${c.successText} uppercase mb-1`}>{product}</p>
-                  {r.comparison.pros_a.map((p, i) => <p key={i} className={`text-[11px] ${c.textSec}`}>+ {p}</p>)}
+                  <p className={`text-[10px] font-bold ${c.textOk} uppercase mb-1`}>{product}</p>
+                  {r.comparison.pros_a.map((p, i) => <p key={i} className={`text-[11px] ${c.textSecondary}`}>+ {p}</p>)}
                 </div>
                 <div>
-                  <p className={`text-[10px] font-bold ${c.successText} uppercase mb-1`}>{comparisons[0]?.product}</p>
-                  {r.comparison.pros_b?.map((p, i) => <p key={i} className={`text-[11px] ${c.textSec}`}>+ {p}</p>)}
+                  <p className={`text-[10px] font-bold ${c.textOk} uppercase mb-1`}>{comparisons[0]?.product}</p>
+                  {r.comparison.pros_b?.map((p, i) => <p key={i} className={`text-[11px] ${c.textSecondary}`}>+ {p}</p>)}
                 </div>
               </div>
             )}
@@ -1097,7 +1164,7 @@ const BuyWise = () => {
             <div className="space-y-2">
               {r.where_to_buy.map((rec, i) => (
                 <div key={i} className={`flex items-start gap-2 p-2.5 rounded-lg ${c.quoteBg}`}>
-                  <span className={`text-xs mt-0.5 ${c.accent}`}>→</span>
+                  <span className={`text-xs mt-0.5 ${c.textCyan}`}>→</span>
                   <div>
                     <p className={`text-xs font-bold ${c.text}`}>{rec.platform}</p>
                     <p className={`text-[10px] ${c.textMuted}`}>{rec.why}</p>
@@ -1110,12 +1177,12 @@ const BuyWise = () => {
 
         {/* Bottom Line */}
         {r.bottom_line && (
-          <div className={`${c.info} border-2 rounded-xl p-5`}>
+          <div className={`${c.highlight} border-2 rounded-xl p-5`}>
             <div className="flex items-start gap-3">
               <span className={`text-xl flex-shrink-0`}>👍</span>
               <div>
-                <h3 className={`text-sm font-bold mb-1 ${isDark ? 'text-[#a8b9ce]' : 'text-[#1e3a58]'}`}>Bottom Line</h3>
-                <p className={`text-sm ${isDark ? 'text-[#a8b9ce]' : 'text-[#2c4a6e]'}`}>{r.bottom_line}</p>
+                <h3 className={`text-sm font-bold mb-1`}>Bottom Line</h3>
+                <p className={`text-sm ${c.textSecondary}`}>{r.bottom_line}</p>
               </div>
             </div>
           </div>
@@ -1123,7 +1190,7 @@ const BuyWise = () => {
 
         {/* Follow-Up Questions */}
         {(r.followup_questions?.length > 0 || followups.length > 0) && (
-          <div className={`${c.card} border rounded-xl p-4`}>
+          <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
             <h3 className={`text-sm font-bold ${c.text} mb-3`}>🤔 Want to Know More?</h3>
 
             {/* Suggested questions */}
@@ -1134,7 +1201,7 @@ const BuyWise = () => {
                     key={i}
                     onClick={() => askFollowup(q)}
                     disabled={followupLoading}
-                    className={`${c.btnSec} px-3 py-2 rounded-lg text-xs font-medium text-left min-h-[36px] disabled:opacity-50`}
+                    className={`${c.btnSecondary} px-3 py-2 rounded-lg text-xs font-medium text-left min-h-[36px] disabled:opacity-50`}
                   >
                     {q}
                   </button>
@@ -1157,7 +1224,7 @@ const BuyWise = () => {
                 disabled={!customQuestion.trim() || followupLoading}
                 className={`${c.btnPrimary} px-4 py-2 rounded-lg text-xs font-bold min-h-[36px] disabled:opacity-40`}
               >
-                {followupLoading ? <span className="animate-spin inline-block">⏳</span> : 'Ask'}
+                {followupLoading ? <span className="animate-spin inline-block">{tool?.icon ?? '🧠'}</span> : 'Ask'}
               </button>
             </div>
 
@@ -1166,9 +1233,9 @@ const BuyWise = () => {
               <div className="mt-3 space-y-3">
                 {followups.map((fu, i) => (
                   <div key={i} className={`${c.quoteBg} rounded-lg p-3 space-y-2`}>
-                    <p className={`text-xs font-bold ${c.accent}`}>Q: {fu.question}</p>
+                    <p className={`text-xs font-bold ${c.textCyan}`}>Q: {fu.question}</p>
                     {fu.key_takeaway && <p className={`text-sm font-bold ${c.text}`}>{fu.key_takeaway}</p>}
-                    {fu.answer && <p className={`text-xs ${c.textSec} leading-relaxed`}>{fu.answer}</p>}
+                    {fu.answer && <p className={`text-xs ${c.textSecondary} leading-relaxed`}>{fu.answer}</p>}
                     {fu.sources_to_check?.length > 0 && (
                       <p className={`text-[10px] ${c.textMuted}`}>📚 Check: {fu.sources_to_check.join(', ')}</p>
                     )}
@@ -1181,7 +1248,7 @@ const BuyWise = () => {
 
         {/* Price-Per-Use Calculator */}
         {price && (
-          <div className={`${c.card} border rounded-xl overflow-hidden`}>
+          <div className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
             <button
               onClick={() => setShowPpu(p => !p)}
               className="w-full p-4 flex items-center justify-between text-left min-h-[44px]"
@@ -1198,16 +1265,16 @@ const BuyWise = () => {
               <span className={`text-xs ${c.textMuted}`}>{showPpu ? '▲' : '▼'}</span>
             </button>
             {showPpu && (
-              <div className={`px-4 pb-4 border-t ${c.divider} pt-3 space-y-4`}>
+              <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-4`}>
                 <div>
                   <div className="flex items-center justify-between mb-1">
-                    <label className={`text-xs font-bold ${c.label}`}>How often will you use it?</label>
-                    <span className={`text-xs font-bold ${c.accent}`}>{ppuFrequency}× / month</span>
+                    <label className={`text-xs font-bold ${c.textSecondary}`}>How often will you use it?</label>
+                    <span className={`text-xs font-bold ${c.textCyan}`}>{ppuFrequency}× / month</span>
                   </div>
                   <input
                     type="range" min="1" max="60" value={ppuFrequency}
                     onChange={e => setPpuFrequency(Number(e.target.value))}
-                    className="w-full accent-[#2c4a6e]"
+                    className="w-full accent-cyan-600"
                   />
                   <div className={`flex justify-between text-[9px] ${c.textMuted}`}>
                     <span>Once</span><span>Daily</span><span>Multiple/day</span>
@@ -1215,13 +1282,13 @@ const BuyWise = () => {
                 </div>
                 <div>
                   <div className="flex items-center justify-between mb-1">
-                    <label className={`text-xs font-bold ${c.label}`}>How long will you keep it?</label>
-                    <span className={`text-xs font-bold ${c.accent}`}>{ppuLifespan} year{ppuLifespan !== 1 ? 's' : ''}</span>
+                    <label className={`text-xs font-bold ${c.textSecondary}`}>How long will you keep it?</label>
+                    <span className={`text-xs font-bold ${c.textCyan}`}>{ppuLifespan} year{ppuLifespan !== 1 ? 's' : ''}</span>
                   </div>
                   <input
                     type="range" min="1" max="15" value={ppuLifespan}
                     onChange={e => setPpuLifespan(Number(e.target.value))}
-                    className="w-full accent-[#2c4a6e]"
+                    className="w-full accent-cyan-600"
                   />
                   <div className={`flex justify-between text-[9px] ${c.textMuted}`}>
                     <span>1 year</span><span>5 years</span><span>15 years</span>
@@ -1230,7 +1297,7 @@ const BuyWise = () => {
                 {pricePerUse && (
                   <div className={`${Number(pricePerUse) < 1 ? c.success : Number(pricePerUse) > 10 ? c.danger : c.warning} border-2 rounded-xl p-4 text-center`}>
                     <p className={`text-3xl font-black ${c.text}`}>{currency}{pricePerUse}</p>
-                    <p className={`text-xs ${c.textSec}`}>per use over {ppuLifespan} year{ppuLifespan !== 1 ? 's' : ''}</p>
+                    <p className={`text-xs ${c.textSecondary}`}>per use over {ppuLifespan} year{ppuLifespan !== 1 ? 's' : ''}</p>
                     <p className={`text-[10px] ${c.textMuted} mt-1`}>
                       {ppuFrequency * 12 * ppuLifespan} total uses · {currency}{price} ÷ {ppuFrequency * 12 * ppuLifespan}
                     </p>
@@ -1243,7 +1310,7 @@ const BuyWise = () => {
 
         {/* Verdict Card (shareable) */}
         {r.verdict && (
-          <div className={`${c.card} border rounded-xl overflow-hidden`}>
+          <div className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
             <button
               onClick={() => setShowVerdictCard(p => !p)}
               className="w-full p-4 flex items-center justify-between text-left min-h-[44px]"
@@ -1251,27 +1318,21 @@ const BuyWise = () => {
               <div className="flex items-center gap-2.5">
                 <span className="text-sm">🃏</span>
                 <h3 className={`text-sm font-bold ${c.text}`}>Verdict Card</h3>
-                <span className={`text-[9px] font-medium px-2 py-0.5 rounded ${c.accentBg}`}>Shareable</span>
+                <span className={`text-[9px] font-medium px-2 py-0.5 rounded ${c.highlightBg}`}>Shareable</span>
               </div>
               <span className={`text-xs ${c.textMuted}`}>{showVerdictCard ? '▲' : '▼'}</span>
             </button>
             {showVerdictCard && (
-              <div className={`px-4 pb-4 border-t ${c.divider} pt-3`}>
+              <div className={`px-4 pb-4 border-t ${c.border} pt-3`}>
                 {/* Card preview */}
                 <div
-                  className="rounded-xl p-6 text-center mx-auto max-w-sm"
-                  style={{
-                    background: isDark
-                      ? 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)'
-                      : 'linear-gradient(135deg, #ecfeff 0%, #e0f2fe 100%)',
-                    border: isDark ? '2px solid #334155' : '2px solid #bae6fd',
-                  }}
+                  className={`bg-gradient-to-br ${c.verdictCardBg} border-2 rounded-xl p-6 text-center mx-auto max-w-sm`}
                   id="verdict-card"
                 >
                   <span className="text-4xl block mb-2">{r.verdict_emoji || '🧠'}</span>
                   <p className={`text-lg font-black ${c.text} mb-1`}>{product}</p>
-                  {price && <p className={`text-sm font-bold ${c.accent}`}>{currency}{price}</p>}
-                  <div className={`my-3 h-px ${isDark ? 'bg-[#3d3630]' : 'bg-[#e8e1d5]'}`} />
+                  {price && <p className={`text-sm font-bold ${c.textCyan}`}>{currency}{price}</p>}
+                  <div className={`my-3 h-px ${c.hrLine}`} />
                   <p className={`text-sm font-bold ${c.text} mb-1`}>{r.verdict}</p>
                   {r.fair_price?.verdict_badge && (
                     <span className={`inline-block text-[10px] font-black px-2 py-0.5 rounded mt-1 ${badgeColor(r.fair_price.verdict_badge)}`}>
@@ -1297,18 +1358,18 @@ const BuyWise = () => {
 
         {/* Convince My Partner — quick launch from results */}
         {r.verdict && product.trim() && (
-          <div className={`${c.card} border rounded-xl p-4`}>
-            <p className={`text-[10px] font-bold ${c.label} uppercase mb-2`}>Need backup?</p>
+          <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+            <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-2`}>Need backup?</p>
             <div className="flex gap-2 flex-wrap">
               <button
                 onClick={() => { setConvinceDirection('for'); setView('convince'); }}
-                className={`${c.btnSec} px-3 py-2 rounded-lg text-xs font-bold min-h-[36px] flex items-center gap-1.5`}
+                className={`${c.btnSecondary} px-3 py-2 rounded-lg text-xs font-bold min-h-[36px] flex items-center gap-1.5`}
               >
                 <span>👍</span> Convince partner TO buy
               </button>
               <button
                 onClick={() => { setConvinceDirection('against'); setView('convince'); }}
-                className={`${c.btnSec} px-3 py-2 rounded-lg text-xs font-bold min-h-[36px] flex items-center gap-1.5`}
+                className={`${c.btnSecondary} px-3 py-2 rounded-lg text-xs font-bold min-h-[36px] flex items-center gap-1.5`}
               >
                 <span>👎</span> Convince partner NOT to buy
               </button>
@@ -1317,20 +1378,21 @@ const BuyWise = () => {
         )}
 
         {/* Cross References */}
-        <div className={`${c.card} border rounded-xl p-4`}>
-          <p className={`text-[10px] font-bold ${c.label} uppercase mb-2`}>Related tools</p>
-          <div className="flex flex-wrap gap-2">
-            {CROSS_REFS.map(ref => (
-              <a
-                key={ref.id}
-                href={`/?tool=${ref.id}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`${c.btnSec} px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 min-h-[32px]`}
-              >
-                <span>{ref.icon}</span> {ref.label}
+        <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+          <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-2`}>Related tools</p>
+          <div className="flex flex-wrap gap-x-4 gap-y-1">
+            <a href="/FakeReviewDetective" className={linkStyle}>
+              🔍 Fake Review Detective
+            </a>
+            {r.impulse_check ? (
+              <a href="/DecisionCoach" className={linkStyle}>
+                🎯 Unsure? Try Decision Coach
               </a>
-            ))}
+            ) : (
+              <a href="/DecisionCoach" className={linkStyle}>
+                🎯 Decision Coach
+              </a>
+            )}
           </div>
         </div>
 
@@ -1357,87 +1419,87 @@ const BuyWise = () => {
           <div className="text-center py-4">
             <span className="text-5xl block mb-4">{r.verdict_emoji || '🧠'}</span>
             <h3 className={`text-lg font-black ${c.text} mb-2`}>{r.verdict}</h3>
-            <p className={`text-sm ${c.textSec}`}>{r.verdict_summary}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{r.verdict_summary}</p>
           </div>
         );
         case 'impulse': return (
           <div className="space-y-3">
-            {r.impulse_check.do_you_need_it && <p className={`text-sm ${c.textSec}`}><strong className={c.text}>Need it?</strong> {r.impulse_check.do_you_need_it}</p>}
-            {r.impulse_check.what_else_could_you_do && <p className={`text-sm ${c.textSec}`}><strong className={c.text}>Opportunity cost:</strong> {r.impulse_check.what_else_could_you_do}</p>}
-            {r.impulse_check.wait_recommendation && <p className={`text-sm font-bold ${c.warningText}`}>{r.impulse_check.wait_recommendation}</p>}
+            {r.impulse_check.do_you_need_it && <p className={`text-sm ${c.textSecondary}`}><strong className={c.text}>Need it?</strong> {r.impulse_check.do_you_need_it}</p>}
+            {r.impulse_check.what_else_could_you_do && <p className={`text-sm ${c.textSecondary}`}><strong className={c.text}>Opportunity cost:</strong> {r.impulse_check.what_else_could_you_do}</p>}
+            {r.impulse_check.wait_recommendation && <p className={`text-sm font-bold ${c.textCaution}`}>{r.impulse_check.wait_recommendation}</p>}
           </div>
         );
         case 'gift': return (
           <div className="space-y-2">
-            {r.gift_analysis.wow_factor && <p className={`text-sm ${c.textSec}`}><strong className={c.text}>Wow Factor:</strong> {r.gift_analysis.wow_factor}</p>}
-            {r.gift_analysis.risk_level && <p className={`text-sm ${c.textSec}`}><strong className={c.text}>Risk:</strong> {r.gift_analysis.risk_level}</p>}
-            {r.gift_analysis.presentation_tip && <p className={`text-sm ${c.textSec}`}>🎀 {r.gift_analysis.presentation_tip}</p>}
+            {r.gift_analysis.wow_factor && <p className={`text-sm ${c.textSecondary}`}><strong className={c.text}>Wow Factor:</strong> {r.gift_analysis.wow_factor}</p>}
+            {r.gift_analysis.risk_level && <p className={`text-sm ${c.textSecondary}`}><strong className={c.text}>Risk:</strong> {r.gift_analysis.risk_level}</p>}
+            {r.gift_analysis.presentation_tip && <p className={`text-sm ${c.textSecondary}`}>🎀 {r.gift_analysis.presentation_tip}</p>}
           </div>
         );
         case 'fair_price': return (
           <div className="space-y-2">
             <div className={`inline-block px-3 py-1 rounded-full text-xs font-black ${badgeColor(r.fair_price.verdict_badge)}`}>{r.fair_price.verdict_badge}</div>
-            <p className={`text-sm ${c.textSec}`}>{r.fair_price.analysis}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{r.fair_price.analysis}</p>
             {r.fair_price.typical_range && <p className={`text-sm font-bold ${c.text}`}>{r.fair_price.typical_range}</p>}
           </div>
         );
         case 'timing': return (
           <div className="space-y-2">
             <div className={`inline-block px-3 py-1 rounded-full text-xs font-black ${badgeColor(r.timing.verdict_badge)}`}>{r.timing.verdict_badge}</div>
-            <p className={`text-sm ${c.textSec}`}>{r.timing.analysis}</p>
-            {r.timing.next_sale && <p className={`text-sm font-bold ${c.successText}`}>📅 {r.timing.next_sale}</p>}
+            <p className={`text-sm ${c.textSecondary}`}>{r.timing.analysis}</p>
+            {r.timing.next_sale && <p className={`text-sm font-bold ${c.textOk}`}>📅 {r.timing.next_sale}</p>}
           </div>
         );
         case 'total_cost': return (
           <div className="space-y-2">
-            <p className={`text-sm ${c.textSec}`}>{r.total_cost.summary}</p>
-            {r.total_cost.year_1_total && <p className={`text-lg font-black ${c.accent}`}>{r.total_cost.year_1_total}</p>}
+            <p className={`text-sm ${c.textSecondary}`}>{r.total_cost.summary}</p>
+            {r.total_cost.year_1_total && <p className={`text-lg font-black ${c.textCyan}`}>{r.total_cost.year_1_total}</p>}
           </div>
         );
         case 'cheaper': return (
           <div className="space-y-2">
-            <p className={`text-sm ${c.textSec}`}>{r.cheaper_alternative.suggestion}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{r.cheaper_alternative.suggestion}</p>
             {r.cheaper_alternative.tradeoffs && <p className={`text-xs ${c.textMuted}`}>⚖️ {r.cheaper_alternative.tradeoffs}</p>}
           </div>
         );
         case 'used': return (
           <div className="space-y-2">
-            <p className={`text-sm ${c.textSec}`}>{r.used_refurb_deep_dive.risk_assessment}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{r.used_refurb_deep_dive.risk_assessment}</p>
             {r.used_refurb_deep_dive.typical_used_price && <p className={`text-sm font-bold ${c.text}`}>Used: {r.used_refurb_deep_dive.typical_used_price}</p>}
           </div>
         );
         case 'warranty': return (
           <div className="space-y-2">
-            {r.warranty_returns.typical_warranty && <p className={`text-sm ${c.textSec}`}>{r.warranty_returns.typical_warranty}</p>}
-            {r.warranty_returns.extended_worth_it && <p className={`text-xs ${c.textSec}`}>{r.warranty_returns.extended_worth_it}</p>}
+            {r.warranty_returns.typical_warranty && <p className={`text-sm ${c.textSecondary}`}>{r.warranty_returns.typical_warranty}</p>}
+            {r.warranty_returns.extended_worth_it && <p className={`text-xs ${c.textSecondary}`}>{r.warranty_returns.extended_worth_it}</p>}
           </div>
         );
         case 'subscribe': return (
           <div className="space-y-2">
-            <p className={`text-sm ${c.textSec}`}>{r.buy_vs_subscribe.analysis}</p>
-            {r.buy_vs_subscribe.recommendation && <p className={`text-sm font-bold ${c.accent}`}>→ {r.buy_vs_subscribe.recommendation}</p>}
+            <p className={`text-sm ${c.textSecondary}`}>{r.buy_vs_subscribe.analysis}</p>
+            {r.buy_vs_subscribe.recommendation && <p className={`text-sm font-bold ${c.textCyan}`}>→ {r.buy_vs_subscribe.recommendation}</p>}
           </div>
         );
         case 'quality': return (
           <div className="space-y-2">
-            <div className={`inline-block px-3 py-1 rounded-full text-xs font-black ${c.accentBg}`}>{r.quality_tier.recommended_tier}</div>
-            <p className={`text-sm ${c.textSec}`}>{r.quality_tier.analysis}</p>
+            <div className={`inline-block px-3 py-1 rounded-full text-xs font-black ${c.highlightBg}`}>{r.quality_tier.recommended_tier}</div>
+            <p className={`text-sm ${c.textSecondary}`}>{r.quality_tier.analysis}</p>
           </div>
         );
         case 'regret': return (
           <div className="space-y-2">
-            <p className={`text-sm ${c.textSec}`}>{r.regret_predictor.common_regrets}</p>
-            {r.regret_predictor.usage_reality && <p className={`text-xs ${c.warningText}`}>📊 {r.regret_predictor.usage_reality}</p>}
+            <p className={`text-sm ${c.textSecondary}`}>{r.regret_predictor.common_regrets}</p>
+            {r.regret_predictor.usage_reality && <p className={`text-xs ${c.textCaution}`}>📊 {r.regret_predictor.usage_reality}</p>}
           </div>
         );
         case 'watchout': return (
           <div className="space-y-2">
-            {r.watch_out.map((item, i) => <p key={i} className={`text-sm ${c.textSec}`}>⚠️ {item}</p>)}
+            {r.watch_out.map((item, i) => <p key={i} className={`text-sm ${c.textSecondary}`}>⚠️ {item}</p>)}
           </div>
         );
         case 'negotiation': return (
           <div className="space-y-2">
-            <p className={`text-sm ${c.textSec}`}>{r.negotiation.context}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{r.negotiation.context}</p>
             {r.negotiation.script && (
               <div className={`${c.quoteBg} rounded-lg p-3`}>
                 <p className={`text-xs ${c.text}`}>{r.negotiation.script}</p>
@@ -1448,7 +1510,7 @@ const BuyWise = () => {
         case 'comparison': return (
           <div className="space-y-2">
             <p className={`text-sm font-bold ${c.text}`}>Winner: {r.comparison.winner}</p>
-            <p className={`text-sm ${c.textSec}`}>{r.comparison.for_your_priority || r.comparison.analysis}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{r.comparison.for_your_priority || r.comparison.analysis}</p>
           </div>
         );
         case 'where': return (
@@ -1473,7 +1535,7 @@ const BuyWise = () => {
 
     return (
       <div className="space-y-4">
-        <button onClick={() => setView('results')} className={`text-xs font-bold ${c.accent} min-h-[32px]`}>← All results</button>
+        <button onClick={() => setView('results')} className={`text-xs font-bold ${c.textCyan} min-h-[32px]`}>← All results</button>
 
         {/* Progress dots */}
         <div className="flex justify-center gap-1.5 flex-wrap">
@@ -1481,13 +1543,13 @@ const BuyWise = () => {
             <button
               key={i}
               onClick={() => setWalkStep(i)}
-              className={`w-2.5 h-2.5 rounded-full transition-colors ${i === walkStep ? 'bg-[#c8872e]' : isDark ? 'bg-[#3d3630]' : 'bg-[#d5cab8]'}`}
+              className={`w-2.5 h-2.5 rounded-full transition-colors ${i === walkStep ? c.dotActive : c.dotInactive}`}
             />
           ))}
         </div>
 
         {/* Card */}
-        <div className={`${c.card} border rounded-xl p-6 min-h-[200px]`}>
+        <div className={`${c.card} border ${c.border} rounded-xl p-6 min-h-[200px]`}>
           <div className="flex items-center gap-2 mb-4">
             <span className="text-lg">{currentSection.icon}</span>
             <h3 className={`text-base font-bold ${c.text}`}>{currentSection.title}</h3>
@@ -1501,7 +1563,7 @@ const BuyWise = () => {
           <button
             onClick={() => setWalkStep(p => Math.max(0, p - 1))}
             disabled={walkStep === 0}
-            className={`flex-1 ${c.btnSec} py-3 rounded-lg font-bold text-sm min-h-[44px] disabled:opacity-30`}
+            className={`flex-1 ${c.btnSecondary} py-3 rounded-lg font-bold text-sm min-h-[44px] disabled:opacity-30`}
           >
             ← Back
           </button>
@@ -1524,13 +1586,13 @@ const BuyWise = () => {
   // ════════════════════════════════════════════════════════════
   const renderBudget = () => (
     <div className="space-y-4">
-      <div className={`${c.card} border rounded-xl p-5`}>
+      <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
         <h2 className={`text-lg font-bold ${c.text} mb-1`}>💰 Budget Mode</h2>
-        <p className={`text-sm ${c.textSec} mb-4`}>Tell me your budget and I'll find the best option</p>
+        <p className={`text-sm ${c.textSecondary} mb-4`}>Tell me your budget and I'll find the best option</p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
           <div>
-            <label className={`text-sm font-bold ${c.label} block mb-1.5`}>Budget</label>
+            <label className={`text-sm font-bold ${c.textSecondary} block mb-1.5`}>Budget</label>
             <div className="flex items-center gap-1">
               <span className={`text-sm font-bold ${c.textMuted}`}>{currency}</span>
               <input
@@ -1543,7 +1605,7 @@ const BuyWise = () => {
             </div>
           </div>
           <div>
-            <label className={`text-sm font-bold ${c.label} block mb-1.5`}>Category</label>
+            <label className={`text-sm font-bold ${c.textSecondary} block mb-1.5`}>Category</label>
             <select
               value={budgetCategory}
               onChange={e => setBudgetCategory(e.target.value)}
@@ -1556,7 +1618,7 @@ const BuyWise = () => {
         </div>
 
         <div className="mb-4">
-          <label className={`text-sm font-bold ${c.label} block mb-1.5`}>
+          <label className={`text-sm font-bold ${c.textSecondary} block mb-1.5`}>
             What do you need it for? <span className={`font-normal ${c.textMuted}`}>(optional)</span>
           </label>
           <input
@@ -1573,7 +1635,7 @@ const BuyWise = () => {
           disabled={!budgetAmount || !budgetCategory || loading}
           className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}
         >
-          {loading ? <><span className="animate-spin inline-block">⏳</span> Finding best options...</> : <><span>💰</span> Find Best in Budget</>}
+          {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🧠'}</span> Finding best options...</> : <><span>{tool?.icon ?? '🧠'}</span> Find Best in Budget</>}
         </button>
       </div>
 
@@ -1581,8 +1643,8 @@ const BuyWise = () => {
       {budgetResults && (
         <div className="space-y-4">
           {budgetResults.budget_verdict && (
-            <div className={`${c.info} border rounded-xl p-4`}>
-              <p className={`text-sm ${isDark ? 'text-[#a8b9ce]' : 'text-[#2c4a6e]'}`}>{budgetResults.budget_verdict}</p>
+            <div className={`${c.highlight} border rounded-xl p-4`}>
+              <p className={`text-sm ${c.textSecondary}`}>{budgetResults.budget_verdict}</p>
             </div>
           )}
 
@@ -1594,13 +1656,13 @@ const BuyWise = () => {
                 <h3 className={`text-base font-black ${c.text}`}>Top Pick</h3>
               </div>
               <p className={`text-sm font-bold ${c.text}`}>{budgetResults.top_pick.product}</p>
-              <p className={`text-sm font-bold ${c.accent} mb-1`}>{budgetResults.top_pick.price}</p>
-              <p className={`text-xs ${c.textSec}`}>{budgetResults.top_pick.why}</p>
+              <p className={`text-sm font-bold ${c.textCyan} mb-1`}>{budgetResults.top_pick.price}</p>
+              <p className={`text-xs ${c.textSecondary}`}>{budgetResults.top_pick.why}</p>
               {budgetResults.top_pick.where && <p className={`text-xs ${c.textMuted} mt-1`}>🛒 {budgetResults.top_pick.where}</p>}
               <div className="mt-2">
                 <button
                   onClick={() => { setProduct(budgetResults.top_pick.product); setView('form'); }}
-                  className={`${c.btnSec} px-3 py-1.5 rounded-lg text-xs font-bold min-h-[32px]`}
+                  className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold min-h-[32px]`}
                 >
                   🔍 Full research on this
                 </button>
@@ -1610,20 +1672,20 @@ const BuyWise = () => {
 
           {/* Runner Up */}
           {budgetResults.runner_up && (
-            <div className={`${c.card} border rounded-xl p-4`}>
+            <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
               <div className="flex items-center gap-2 mb-2">
                 <span>🥈</span>
                 <h3 className={`text-sm font-bold ${c.text}`}>Runner Up</h3>
               </div>
               <p className={`text-sm font-bold ${c.text}`}>{budgetResults.runner_up.product}</p>
-              <p className={`text-xs font-bold ${c.accent}`}>{budgetResults.runner_up.price}</p>
-              <p className={`text-xs ${c.textSec} mt-1`}>{budgetResults.runner_up.why}</p>
+              <p className={`text-xs font-bold ${c.textCyan}`}>{budgetResults.runner_up.price}</p>
+              <p className={`text-xs ${c.textSecondary} mt-1`}>{budgetResults.runner_up.why}</p>
             </div>
           )}
 
           {/* Stretch Pick */}
           {budgetResults.stretch_pick && (
-            <div className={`${c.card} border rounded-xl p-4`}>
+            <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
               <div className="flex items-center gap-2 mb-2">
                 <span>🔼</span>
                 <h3 className={`text-sm font-bold ${c.text}`}>Worth Stretching?</h3>
@@ -1635,8 +1697,8 @@ const BuyWise = () => {
                 </span>
               </div>
               <p className={`text-sm font-bold ${c.text}`}>{budgetResults.stretch_pick.product}</p>
-              <p className={`text-xs font-bold ${c.accent}`}>{budgetResults.stretch_pick.price}</p>
-              <p className={`text-xs ${c.textSec} mt-1`}>{budgetResults.stretch_pick.why}</p>
+              <p className={`text-xs font-bold ${c.textCyan}`}>{budgetResults.stretch_pick.price}</p>
+              <p className={`text-xs ${c.textSecondary} mt-1`}>{budgetResults.stretch_pick.why}</p>
             </div>
           )}
 
@@ -1651,9 +1713,10 @@ const BuyWise = () => {
           {/* Save more tip */}
           {budgetResults.save_more_tip && (
             <div className={`${c.success} border rounded-xl p-4`}>
-              <p className={`text-xs ${isDark ? 'text-[#7aba7c]' : 'text-[#3a6a3c]'}`}>💡 {budgetResults.save_more_tip}</p>
+              <p className={`text-xs`}>💡 {budgetResults.save_more_tip}</p>
             </div>
           )}
+          <ActionBar content={`💰 BuyWise Budget: ${budgetCategory || product}\n${budgetResults.budget_verdict || ''}\n${budgetResults.top_pick ? `Top Pick: ${budgetResults.top_pick.product} — ${budgetResults.top_pick.price}\n${budgetResults.top_pick.why}` : ''}\n\n— Generated by DeftBrain · deftbrain.com`} title={`Budget Pick: ${budgetCategory || product}`} />
         </div>
       )}
     </div>
@@ -1664,9 +1727,9 @@ const BuyWise = () => {
   // ════════════════════════════════════════════════════════════
   const renderCalendar = () => (
     <div className="space-y-4">
-      <div className={`${c.card} border rounded-xl p-5`}>
+      <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
         <h2 className={`text-lg font-bold ${c.text} mb-1`}>📅 Deal Season Calendar</h2>
-        <p className={`text-sm ${c.textSec} mb-4`}>Best and worst times to buy, by category</p>
+        <p className={`text-sm ${c.textSecondary} mb-4`}>Best and worst times to buy, by category</p>
 
         <div className="flex gap-2 mb-4">
           <select
@@ -1682,7 +1745,7 @@ const BuyWise = () => {
             disabled={!calCategory || loading}
             className={`${c.btnPrimary} px-5 py-2.5 rounded-lg text-sm font-bold min-h-[44px] disabled:opacity-40`}
           >
-            {loading ? <span className="animate-spin inline-block">⏳</span> : '📅 Generate'}
+            {loading ? <span className="animate-spin inline-block">{tool?.icon ?? '🧠'}</span> : '📅 Generate'}
           </button>
         </div>
       </div>
@@ -1693,21 +1756,21 @@ const BuyWise = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {calResults.best_month && (
               <div className={`${c.success} border rounded-xl p-4`}>
-                <p className={`text-[10px] font-bold ${c.successText} uppercase`}>Best time to buy</p>
-                <p className={`text-sm font-bold ${isDark ? 'text-[#7aba7c]' : 'text-[#3a6a3c]'}`}>{calResults.best_month}</p>
+                <p className={`text-[10px] font-bold uppercase`}>Best time to buy</p>
+                <p className={`text-sm font-bold`}>{calResults.best_month}</p>
               </div>
             )}
             {calResults.worst_month && (
               <div className={`${c.danger} border rounded-xl p-4`}>
-                <p className={`text-[10px] font-bold ${c.dangerText} uppercase`}>Worst time to buy</p>
-                <p className={`text-sm font-bold ${isDark ? 'text-[#e88880]' : 'text-[#b54a3f]'}`}>{calResults.worst_month}</p>
+                <p className={`text-[10px] font-bold uppercase`}>Worst time to buy</p>
+                <p className={`text-sm font-bold`}>{calResults.worst_month}</p>
               </div>
             )}
           </div>
 
           {/* Month grid */}
           {calResults.calendar?.length > 0 && (
-            <div className={`${c.card} border rounded-xl p-4`}>
+            <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
               <h3 className={`text-sm font-bold ${c.text} mb-3`}>Month by Month</h3>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                 {calResults.calendar.map((m, i) => (
@@ -1715,15 +1778,15 @@ const BuyWise = () => {
                     <div className="flex items-center justify-between mb-1">
                       <span className={`text-xs font-bold ${c.text}`}>{m.month}</span>
                       <span className={`text-[9px] font-black px-1.5 py-0.5 rounded ${
-                        m.rating === 'GREAT' ? 'bg-[#5a8a5c] text-white'
-                        : m.rating === 'GOOD' ? 'bg-[#2c4a6e] text-white'
-                        : m.rating === 'BAD' ? 'bg-[#b54a3f] text-white'
-                        : isDark ? 'bg-[#3d3630] text-[#c8c3b9]' : 'bg-[#d5cab8] text-[#5a544a]'
+                        m.rating === 'GREAT' ? c.calBadgeGreat
+                        : m.rating === 'GOOD' ? c.calBadgeGood
+                        : m.rating === 'BAD' ? c.calBadgeBad
+                        : c.calBadgeAvg
                       }`}>{m.rating}</span>
                     </div>
-                    <p className={`text-[10px] ${c.textSec} leading-tight`}>{m.events}</p>
+                    <p className={`text-[10px] ${c.textSecondary} leading-tight`}>{m.events}</p>
                     {m.typical_discount && (
-                      <p className={`text-[10px] font-bold ${c.accent} mt-1`}>{m.typical_discount}</p>
+                      <p className={`text-[10px] font-bold ${c.textCyan} mt-1`}>{m.typical_discount}</p>
                     )}
                   </div>
                 ))}
@@ -1733,23 +1796,24 @@ const BuyWise = () => {
 
           {/* Price cycle */}
           {calResults.price_cycle && (
-            <div className={`${c.info} border rounded-xl p-4`}>
-              <p className={`text-xs font-bold ${isDark ? 'text-[#a8b9ce]' : 'text-[#1e3a58]'} mb-1`}>🔄 Price Cycle</p>
-              <p className={`text-xs ${isDark ? 'text-[#a8b9ce]' : 'text-[#2c4a6e]'}`}>{calResults.price_cycle}</p>
+            <div className={`${c.highlight} border rounded-xl p-4`}>
+              <p className={`text-xs font-bold mb-1`}>🔄 Price Cycle</p>
+              <p className={`text-xs`}>{calResults.price_cycle}</p>
             </div>
           )}
 
           {/* Pro tips */}
           {calResults.pro_tips?.length > 0 && (
-            <div className={`${c.card} border rounded-xl p-4`}>
+            <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
               <h3 className={`text-sm font-bold ${c.text} mb-2`}>💡 Insider Tips</h3>
               <div className="space-y-2">
                 {calResults.pro_tips.map((tip, i) => (
-                  <p key={i} className={`text-xs ${c.textSec}`}>→ {tip}</p>
+                  <p key={i} className={`text-xs ${c.textSecondary}`}>→ {tip}</p>
                 ))}
               </div>
             </div>
           )}
+          <ActionBar content={`📅 BuyWise Deal Calendar: ${calCategory}\n${calResults.best_months?.length ? `Best months: ${calResults.best_months.join(', ')}` : ''}\n${calResults.worst_months?.length ? `Avoid: ${calResults.worst_months.join(', ')}` : ''}\n${calResults.pro_tips?.length ? '\nTips:\n' + calResults.pro_tips.map(t => `• ${t}`).join('\n') : ''}\n\n— Generated by DeftBrain · deftbrain.com`} title={`Deal Calendar: ${calCategory}`} />
         </div>
       )}
     </div>
@@ -1760,16 +1824,16 @@ const BuyWise = () => {
   // ════════════════════════════════════════════════════════════
   const renderHistory = () => (
     <div className="space-y-4">
-      <div className={`${c.card} border rounded-xl p-5`}>
+      <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
         <div className="flex items-center justify-between mb-3">
           <div>
             <h2 className={`text-lg font-bold ${c.text}`}>📜 Purchase History</h2>
-            <p className={`text-sm ${c.textSec}`}>Your past research and decision journal</p>
+            <p className={`text-sm ${c.textSecondary}`}>Your past research and decision journal</p>
           </div>
           {history.length > 0 && (
             <button
               onClick={() => { if (window.confirm('Clear all history?')) { setHistory([]); } }}
-              className={`text-xs ${c.dangerText} min-h-[32px]`}
+              className={`text-xs ${c.textDanger} min-h-[32px]`}
             >
               🗑️ Clear
             </button>
@@ -1784,16 +1848,16 @@ const BuyWise = () => {
               <p className={`text-[10px] ${c.textMuted}`}>Researched</p>
             </div>
             <div className={`${c.quoteBg} rounded-lg p-3 text-center`}>
-              <p className={`text-lg font-black ${c.successText}`}>{historyStats.bought}</p>
+              <p className={`text-lg font-black ${c.textOk}`}>{historyStats.bought}</p>
               <p className={`text-[10px] ${c.textMuted}`}>Bought</p>
             </div>
             <div className={`${c.quoteBg} rounded-lg p-3 text-center`}>
-              <p className={`text-lg font-black ${c.warningText}`}>{historyStats.skipped}</p>
+              <p className={`text-lg font-black ${c.textCaution}`}>{historyStats.skipped}</p>
               <p className={`text-[10px] ${c.textMuted}`}>Skipped</p>
             </div>
             {historyStats.satisfiedRate !== null && (
               <div className={`${c.quoteBg} rounded-lg p-3 text-center`}>
-                <p className={`text-lg font-black ${c.accent}`}>{historyStats.satisfiedRate}%</p>
+                <p className={`text-lg font-black ${c.textCyan}`}>{historyStats.satisfiedRate}%</p>
                 <p className={`text-[10px] ${c.textMuted}`}>Happy</p>
               </div>
             )}
@@ -1802,14 +1866,14 @@ const BuyWise = () => {
       </div>
 
       {history.length === 0 ? (
-        <div className={`${c.card} border rounded-xl p-8 text-center`}>
+        <div className={`${c.card} border ${c.border} rounded-xl p-8 text-center`}>
           <span className="text-3xl block mb-2">📋</span>
           <p className={`text-sm ${c.textMuted}`}>No purchase research yet. Start researching!</p>
         </div>
       ) : (
         <div className="space-y-2">
           {history.map(entry => (
-            <div key={entry.id} className={`${c.card} border rounded-xl p-4`}>
+            <div key={entry.id} className={`${c.card} border ${c.border} rounded-xl p-4`}>
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-2 flex-1 min-w-0">
                   <span className="text-lg flex-shrink-0">{entry.verdict_emoji}</span>
@@ -1819,13 +1883,13 @@ const BuyWise = () => {
                       {new Date(entry.date).toLocaleDateString()}
                       {entry.price ? ` · ${entry.currency || currency}${entry.price}` : ''}
                     </p>
-                    {entry.verdict && <p className={`text-xs ${c.textSec} mt-0.5 line-clamp-1`}>{entry.verdict}</p>}
+                    {entry.verdict && <p className={`text-xs ${c.textSecondary} mt-0.5 line-clamp-1`}>{entry.verdict}</p>}
                   </div>
                 </div>
                 <div className="flex gap-1 flex-shrink-0">
                   <button
                     onClick={() => reResearch(entry)}
-                    className={`${c.btnSec} px-2 py-1 rounded text-[10px] font-bold min-h-[28px]`}
+                    className={`${c.btnSecondary} px-2 py-1 rounded text-[10px] font-bold min-h-[28px]`}
                     title="Re-research"
                   >
                     🔄
@@ -1835,32 +1899,32 @@ const BuyWise = () => {
 
               {/* Decision journal */}
               {entry.bought === null ? (
-                <div className={`mt-3 pt-3 border-t ${c.divider}`}>
-                  <p className={`text-[10px] font-bold ${c.label} mb-1.5`}>Did you buy it?</p>
+                <div className={`mt-3 pt-3 border-t ${c.border}`}>
+                  <p className={`text-[10px] font-bold ${c.textSecondary} mb-1.5`}>Did you buy it?</p>
                   <div className="flex gap-2">
                     <button
                       onClick={() => updateHistoryEntry(entry.id, { bought: true })}
-                      className={`${c.btnSec} px-3 py-1.5 rounded-lg text-xs font-bold min-h-[32px]`}
+                      className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold min-h-[32px]`}
                     >
                       ✅ Yes
                     </button>
                     <button
                       onClick={() => updateHistoryEntry(entry.id, { bought: false })}
-                      className={`${c.btnSec} px-3 py-1.5 rounded-lg text-xs font-bold min-h-[32px]`}
+                      className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold min-h-[32px]`}
                     >
                       ❌ No
                     </button>
                   </div>
                 </div>
               ) : entry.bought === true && entry.satisfaction === null ? (
-                <div className={`mt-3 pt-3 border-t ${c.divider}`}>
-                  <p className={`text-[10px] font-bold ${c.label} mb-1.5`}>How happy are you? (1-5)</p>
+                <div className={`mt-3 pt-3 border-t ${c.border}`}>
+                  <p className={`text-[10px] font-bold ${c.textSecondary} mb-1.5`}>How happy are you? (1-5)</p>
                   <div className="flex gap-1.5">
                     {[1, 2, 3, 4, 5].map(n => (
                       <button
                         key={n}
                         onClick={() => updateHistoryEntry(entry.id, { satisfaction: n })}
-                        className={`${c.btnSec} w-9 h-9 rounded-lg text-sm font-bold`}
+                        className={`${c.btnSecondary} w-9 h-9 rounded-lg text-sm font-bold`}
                       >
                         {n <= 2 ? '😞' : n === 3 ? '😐' : '😊'}
                       </button>
@@ -1871,7 +1935,7 @@ const BuyWise = () => {
                 <div className={`mt-2 flex items-center gap-2`}>
                   {entry.bought ? (
                     <>
-                      <span className={`text-[10px] font-bold ${c.successText}`}>✅ Bought</span>
+                      <span className={`text-[10px] font-bold ${c.textOk}`}>✅ Bought</span>
                       {entry.satisfaction && (
                         <span className={`text-[10px] ${c.textMuted}`}>
                           · {entry.satisfaction >= 4 ? '😊 Happy' : entry.satisfaction <= 2 ? '😞 Regret' : '😐 Okay'}
@@ -1895,14 +1959,12 @@ const BuyWise = () => {
   // ════════════════════════════════════════════════════════════
   const renderPhoto = () => (
     <div className="space-y-4">
-      <div className={`${c.card} border rounded-xl p-5`}>
+      <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
         <h2 className={`text-lg font-bold ${c.text} mb-1`}>📸 Photo ID</h2>
-        <p className={`text-sm ${c.textSec} mb-4`}>Snap a photo of any product — I'll identify it and tell you what it's worth</p>
+        <p className={`text-sm ${c.textSecondary} mb-4`}>Snap a photo of any product — I'll identify it and tell you what it's worth</p>
 
         <label className={`block cursor-pointer`}>
-          <div className={`border-2 border-dashed rounded-xl p-8 text-center transition-colors ${
-            isDark ? 'border-[#3d3630] hover:border-[#4a6a8a]' : 'border-[#d5cab8] hover:border-[#2c4a6e]'
-          }`}>
+          <div className={`border-2 border-dashed rounded-xl p-8 text-center transition-colors ${c.checkBorder} hover:border-cyan-500`}>
             {photoPreview ? (
               <img src={photoPreview} alt="Product" className="max-h-48 mx-auto rounded-lg mb-3" />
             ) : (
@@ -1914,8 +1976,8 @@ const BuyWise = () => {
             )}
             {loading && (
               <div className="flex items-center justify-center gap-2 mt-2">
-                <span className="animate-spin inline-block">⏳</span>
-                <span className={`text-sm ${c.textSec}`}>Identifying product...</span>
+                <span className="animate-spin inline-block">{tool?.icon ?? '🧠'}</span>
+                <span className={`text-sm ${c.textSecondary}`}>Identifying product...</span>
               </div>
             )}
           </div>
@@ -1931,7 +1993,7 @@ const BuyWise = () => {
         {photoPreview && !loading && (
           <button
             onClick={() => { setPhotoPreview(null); setPhotoResults(null); }}
-            className={`mt-3 text-xs font-bold ${c.accent} min-h-[32px]`}
+            className={`mt-3 text-xs font-bold ${c.textCyan} min-h-[32px]`}
           >
             🔄 Try another photo
           </button>
@@ -1953,20 +2015,20 @@ const BuyWise = () => {
                     {photoResults.confidence} confidence
                   </span>
                 </div>
-                {photoResults.condition && <p className={`text-xs ${c.textSec} mb-1`}>Condition: {photoResults.condition}</p>}
+                {photoResults.condition && <p className={`text-xs ${c.textSecondary} mb-1`}>Condition: {photoResults.condition}</p>}
                 {photoResults.estimated_value && (
                   <div className={`${c.quoteBg} rounded-lg p-3 my-2`}>
-                    <p className={`text-sm font-black ${c.accent}`}>{photoResults.estimated_value}</p>
+                    <p className={`text-sm font-black ${c.textCyan}`}>{photoResults.estimated_value}</p>
                     <p className={`text-[10px] ${c.textMuted}`}>Estimated market value</p>
                   </div>
                 )}
-                {photoResults.quick_verdict && <p className={`text-sm ${c.textSec}`}>{photoResults.quick_verdict}</p>}
+                {photoResults.quick_verdict && <p className={`text-sm ${c.textSecondary}`}>{photoResults.quick_verdict}</p>}
               </div>
 
               {/* Red flags */}
               {photoResults.red_flags?.length > 0 && photoResults.red_flags[0] && (
                 <div className={`${c.danger} border rounded-xl p-4`}>
-                  <p className={`text-xs font-bold mb-1 ${c.dangerText}`}>🚩 Red Flags</p>
+                  <p className={`text-xs font-bold mb-1`}>🚩 Red Flags</p>
                   {photoResults.red_flags.map((flag, i) => (
                     <p key={i} className={`text-xs`}>⚠️ {flag}</p>
                   ))}
@@ -1975,8 +2037,8 @@ const BuyWise = () => {
 
               {/* Recommendation */}
               {photoResults.recommendation && (
-                <div className={`${c.info} border rounded-xl p-4`}>
-                  <p className={`text-xs ${isDark ? 'text-[#a8b9ce]' : 'text-[#2c4a6e]'}`}>{photoResults.recommendation}</p>
+                <div className={`${c.highlight} border rounded-xl p-4`}>
+                  <p className={`text-xs`}>{photoResults.recommendation}</p>
                 </div>
               )}
 
@@ -1995,7 +2057,7 @@ const BuyWise = () => {
             </>
           ) : (
             <div className={`${c.warning} border rounded-xl p-4`}>
-              <p className={`text-sm ${isDark ? 'text-[#d9a04e]' : 'text-[#93541f]'}`}>
+              <p className={`text-sm`}>
                 {photoResults.recommendation || "Couldn't identify this product. Try a clearer photo showing the brand name or label."}
               </p>
             </div>
@@ -2010,9 +2072,9 @@ const BuyWise = () => {
   // ════════════════════════════════════════════════════════════
   const renderConvince = () => (
     <div className="space-y-4">
-      <div className={`${c.card} border rounded-xl p-5`}>
+      <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
         <h2 className={`text-lg font-bold ${c.text} mb-1`}>💬 Convince My Partner</h2>
-        <p className={`text-sm ${c.textSec} mb-4`}>
+        <p className={`text-sm ${c.textSecondary} mb-4`}>
           {product.trim()
             ? `Build the case ${convinceDirection === 'for' ? 'for' : 'against'} buying: ${product}`
             : 'Generate a persuasive (but honest) argument to share'}
@@ -2023,7 +2085,7 @@ const BuyWise = () => {
           <button
             onClick={() => setConvinceDirection('for')}
             className={`flex-1 py-2.5 rounded-lg text-sm font-bold border transition-colors min-h-[44px] ${
-              convinceDirection === 'for' ? c.success + ' border-[#5a8a5c]' : c.pillInactive
+              convinceDirection === 'for' ? `${c.success} ${c.convinceFor}` : c.pillInactive
             }`}
           >
             👍 Case FOR buying
@@ -2031,7 +2093,7 @@ const BuyWise = () => {
           <button
             onClick={() => setConvinceDirection('against')}
             className={`flex-1 py-2.5 rounded-lg text-sm font-bold border transition-colors min-h-[44px] ${
-              convinceDirection === 'against' ? c.danger + ' border-[#b54a3f]' : c.pillInactive
+              convinceDirection === 'against' ? `${c.danger} ${c.convinceAgst}` : c.pillInactive
             }`}
           >
             👎 Case AGAINST
@@ -2040,7 +2102,7 @@ const BuyWise = () => {
 
         {!product.trim() && (
           <div className="mb-4">
-            <label className={`text-sm font-bold ${c.label} block mb-1.5`}>What product?</label>
+            <label className={`text-sm font-bold ${c.textSecondary} block mb-1.5`}>What product?</label>
             <input
               type="text"
               value={product}
@@ -2052,7 +2114,7 @@ const BuyWise = () => {
         )}
 
         <div className="mb-4">
-          <label className={`text-sm font-bold ${c.label} block mb-1.5`}>
+          <label className={`text-sm font-bold ${c.textSecondary} block mb-1.5`}>
             Context <span className={`font-normal ${c.textMuted}`}>(optional — helps tailor the argument)</span>
           </label>
           <input
@@ -2070,8 +2132,8 @@ const BuyWise = () => {
           className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}
         >
           {loading
-            ? <><span className="animate-spin inline-block">⏳</span> Building your case...</>
-            : <><span>💬</span> Generate Argument</>}
+            ? <><span className="animate-spin inline-block">{tool?.icon ?? '🧠'}</span> Building your case...</>
+            : <><span>{tool?.icon ?? '🧠'}</span> Generate Argument</>}
         </button>
       </div>
 
@@ -2085,34 +2147,34 @@ const BuyWise = () => {
 
           {/* Arguments */}
           <Section icon="🧮" title="The Practical Case" defaultOpen={true} c={c}>
-            <p className={`text-sm ${c.textSec}`}>{convinceResults.practical_case}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{convinceResults.practical_case}</p>
           </Section>
 
           <Section icon="❤️" title="The Emotional Case" defaultOpen={true} c={c}>
-            <p className={`text-sm ${c.textSec}`}>{convinceResults.emotional_case}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{convinceResults.emotional_case}</p>
           </Section>
 
           <Section icon="💰" title="The Financial Case" defaultOpen={true} c={c}>
-            <p className={`text-sm ${c.textSec}`}>{convinceResults.financial_case}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{convinceResults.financial_case}</p>
           </Section>
 
           {convinceResults.counter_argument && (
             <Section icon="⚖️" title="Anticipating Pushback" c={c}>
-              <p className={`text-sm ${c.textSec}`}>{convinceResults.counter_argument}</p>
+              <p className={`text-sm ${c.textSecondary}`}>{convinceResults.counter_argument}</p>
             </Section>
           )}
 
           {convinceResults.compromise && (
-            <div className={`${c.info} border rounded-xl p-4`}>
-              <p className={`text-xs font-bold ${isDark ? 'text-[#a8b9ce]' : 'text-[#1e3a58]'} mb-1`}>🤝 Compromise option</p>
-              <p className={`text-xs ${isDark ? 'text-[#a8b9ce]' : 'text-[#2c4a6e]'}`}>{convinceResults.compromise}</p>
+            <div className={`${c.highlight} border rounded-xl p-4`}>
+              <p className={`text-xs font-bold mb-1`}>🤝 Compromise option</p>
+              <p className={`text-xs`}>{convinceResults.compromise}</p>
             </div>
           )}
 
           {/* One-liner to text */}
           {convinceResults.one_liner && (
-            <div className={`${c.card} border rounded-xl p-4`}>
-              <p className={`text-[10px] font-bold ${c.label} uppercase mb-2`}>The one-liner to text them</p>
+            <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+              <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-2`}>The one-liner to text them</p>
               <div className={`${c.quoteBg} rounded-lg p-3 mb-2`}>
                 <p className={`text-sm ${c.text} leading-relaxed`}>{convinceResults.one_liner}</p>
               </div>
@@ -2124,9 +2186,9 @@ const BuyWise = () => {
           )}
 
           {/* Copy full argument */}
-          <CopyBtn
+          <ActionBar
             content={`${convinceResults.headline}\n\n🧮 Practical: ${convinceResults.practical_case}\n\n❤️ Emotional: ${convinceResults.emotional_case}\n\n💰 Financial: ${convinceResults.financial_case}\n\n🤝 Compromise: ${convinceResults.compromise || 'N/A'}\n\n— Generated by DeftBrain · deftbrain.com`}
-            label="Copy full argument"
+            title={`Convince: ${product}`}
           />
         </div>
       )}
@@ -2138,9 +2200,9 @@ const BuyWise = () => {
   // ════════════════════════════════════════════════════════════
   const renderHaul = () => (
     <div className="space-y-4">
-      <div className={`${c.card} border rounded-xl p-5`}>
+      <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
         <h2 className={`text-lg font-bold ${c.text} mb-1`}>🛍️ Haul Review</h2>
-        <p className={`text-sm ${c.textSec} mb-4`}>Add everything you're planning to buy — I'll review the whole list</p>
+        <p className={`text-sm ${c.textSecondary} mb-4`}>Add everything you're planning to buy — I'll review the whole list</p>
 
         {/* Items */}
         <div className="space-y-2 mb-4">
@@ -2165,7 +2227,7 @@ const BuyWise = () => {
                 />
               </div>
               {haulItems.length > 1 && (
-                <button onClick={() => removeHaulItem(i)} className={`text-sm ${c.dangerText} min-h-[32px] px-1`}>✕</button>
+                <button onClick={() => removeHaulItem(i)} className={`text-sm ${c.textDanger} min-h-[32px] px-1`}>✕</button>
               )}
             </div>
           ))}
@@ -2173,7 +2235,7 @@ const BuyWise = () => {
 
         <div className="flex gap-2 mb-4">
           {haulItems.length < 15 && (
-            <button onClick={addHaulItem} className={`text-xs font-bold ${c.accent} min-h-[32px]`}>
+            <button onClick={addHaulItem} className={`text-xs font-bold ${c.textCyan} min-h-[32px]`}>
               ➕ Add item
             </button>
           )}
@@ -2185,7 +2247,7 @@ const BuyWise = () => {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
           <div>
-            <label className={`text-sm font-bold ${c.label} block mb-1.5`}>
+            <label className={`text-sm font-bold ${c.textSecondary} block mb-1.5`}>
               Budget <span className={`font-normal ${c.textMuted}`}>(optional)</span>
             </label>
             <div className="flex items-center gap-1">
@@ -2200,7 +2262,7 @@ const BuyWise = () => {
             </div>
           </div>
           <div>
-            <label className={`text-sm font-bold ${c.label} block mb-1.5`}>
+            <label className={`text-sm font-bold ${c.textSecondary} block mb-1.5`}>
               Occasion <span className={`font-normal ${c.textMuted}`}>(optional)</span>
             </label>
             <input
@@ -2219,8 +2281,8 @@ const BuyWise = () => {
           className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}
         >
           {loading
-            ? <><span className="animate-spin inline-block">⏳</span> Reviewing your haul...</>
-            : <><span>🛍️</span> Review My Haul</>}
+            ? <><span className="animate-spin inline-block">{tool?.icon ?? '🧠'}</span> Reviewing your haul...</>
+            : <><span>{tool?.icon ?? '🧠'}</span> Review My Haul</>}
         </button>
       </div>
 
@@ -2234,7 +2296,7 @@ const BuyWise = () => {
               <div>
                 <h3 className={`text-base font-black ${c.text} mb-1`}>{haulResults.haul_verdict}</h3>
                 {haulResults.total_estimated && (
-                  <p className={`text-sm font-bold ${c.accent}`}>Total: {haulResults.total_estimated}</p>
+                  <p className={`text-sm font-bold ${c.textCyan}`}>Total: {haulResults.total_estimated}</p>
                 )}
               </div>
             </div>
@@ -2242,7 +2304,7 @@ const BuyWise = () => {
 
           {/* Item-by-item verdicts */}
           {haulResults.items?.length > 0 && (
-            <div className={`${c.card} border rounded-xl p-4`}>
+            <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
               <h3 className={`text-sm font-bold ${c.text} mb-3`}>Item Verdicts</h3>
               <div className="space-y-2">
                 {haulResults.items.map((item, i) => (
@@ -2259,14 +2321,14 @@ const BuyWise = () => {
                           : c.warning
                         }`}>{item.verdict}</span>
                       </div>
-                      <p className={`text-[11px] ${c.textSec} mt-0.5`}>{item.note}</p>
+                      <p className={`text-[11px] ${c.textSecondary} mt-0.5`}>{item.note}</p>
                       {item.better_alternative && item.better_alternative !== 'null' && (
-                        <p className={`text-[10px] ${c.accent} mt-0.5`}>→ Better: {item.better_alternative}</p>
+                        <p className={`text-[10px] ${c.textCyan} mt-0.5`}>→ Better: {item.better_alternative}</p>
                       )}
                     </div>
                     <button
                       onClick={() => { setProduct(item.name); setView('form'); }}
-                      className={`${c.btnSec} px-2 py-1 rounded text-[9px] font-bold flex-shrink-0 min-h-[24px]`}
+                      className={`${c.btnSecondary} px-2 py-1 rounded text-[9px] font-bold flex-shrink-0 min-h-[24px]`}
                     >
                       🔍
                     </button>
@@ -2279,19 +2341,19 @@ const BuyWise = () => {
           {/* Redundancies */}
           {haulResults.redundancies?.length > 0 && haulResults.redundancies[0] && (
             <div className={`${c.warning} border rounded-xl p-4`}>
-              <p className={`text-xs font-bold ${c.warningText} mb-1`}>🔄 Redundancies</p>
+              <p className={`text-xs font-bold mb-1`}>🔄 Redundancies</p>
               {haulResults.redundancies.map((r, i) => (
-                <p key={i} className={`text-xs ${isDark ? 'text-[#d9a04e]' : 'text-[#93541f]'}`}>{r}</p>
+                <p key={i} className={`text-xs`}>{r}</p>
               ))}
             </div>
           )}
 
           {/* Missing items */}
           {haulResults.missing?.length > 0 && haulResults.missing[0] && (
-            <div className={`${c.info} border rounded-xl p-4`}>
-              <p className={`text-xs font-bold ${isDark ? 'text-[#a8b9ce]' : 'text-[#1e3a58]'} mb-1`}>🤔 You might be missing</p>
+            <div className={`${c.highlight} border rounded-xl p-4`}>
+              <p className={`text-xs font-bold mb-1`}>🤔 You might be missing</p>
               {haulResults.missing.map((m, i) => (
-                <p key={i} className={`text-xs ${isDark ? 'text-[#a8b9ce]' : 'text-[#2c4a6e]'}`}>→ {m}</p>
+                <p key={i} className={`text-xs`}>→ {m}</p>
               ))}
             </div>
           )}
@@ -2301,9 +2363,9 @@ const BuyWise = () => {
             <Section icon="📋" title="If You Can Only Buy Some" c={c}>
               <div className="space-y-1">
                 {haulResults.priority_order.map((item, i) => (
-                  <div key={i} className={`flex items-center gap-2 p-2 rounded-lg ${i === 0 ? c.accentBg : c.quoteBg}`}>
-                    <span className={`text-xs font-black ${i === 0 ? c.accent : c.textMuted} w-5 text-center`}>#{i + 1}</span>
-                    <span className={`text-xs ${i === 0 ? `font-bold ${c.text}` : c.textSec}`}>{item}</span>
+                  <div key={i} className={`flex items-center gap-2 p-2 rounded-lg ${i === 0 ? c.highlightBg : c.quoteBg}`}>
+                    <span className={`text-xs font-black ${i === 0 ? c.textCyan : c.textMuted} w-5 text-center`}>#{i + 1}</span>
+                    <span className={`text-xs ${i === 0 ? `font-bold ${c.text}` : c.textSecondary}`}>{item}</span>
                   </div>
                 ))}
               </div>
@@ -2312,17 +2374,18 @@ const BuyWise = () => {
 
           {/* Budget note */}
           {haulResults.budget_note && (
-            <div className={`${c.card} border rounded-xl p-4`}>
-              <p className={`text-xs ${c.textSec}`}>💰 {haulResults.budget_note}</p>
+            <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+              <p className={`text-xs ${c.textSecondary}`}>💰 {haulResults.budget_note}</p>
             </div>
           )}
 
           {/* Save tip */}
           {haulResults.save_tip && (
             <div className={`${c.success} border rounded-xl p-4`}>
-              <p className={`text-xs ${isDark ? 'text-[#7aba7c]' : 'text-[#3a6a3c]'}`}>💡 {haulResults.save_tip}</p>
+              <p className={`text-xs`}>💡 {haulResults.save_tip}</p>
             </div>
           )}
+          <ActionBar content={`🛍️ BuyWise Haul Review\n${haulResults.overall_verdict || ''}\n${haulResults.budget_note ? `\n💰 ${haulResults.budget_note}` : ''}\n${haulResults.save_tip ? `\n💡 ${haulResults.save_tip}` : ''}\n\n— Generated by DeftBrain · deftbrain.com`} title="Haul Review" />
         </div>
       )}
     </div>
@@ -2333,7 +2396,7 @@ const BuyWise = () => {
   // ════════════════════════════════════════════════════════════
   const renderQuote = () => (
     <div className="space-y-4">
-      <div className={`${c.card} border rounded-xl p-5`}>
+      <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
         <h2 className={`text-lg font-bold ${c.text} mb-1 flex items-center gap-2`}>
           <span>📋</span> Quote Check
         </h2>
@@ -2343,7 +2406,7 @@ const BuyWise = () => {
 
         <div className="space-y-3">
           <div>
-            <label className={`text-sm font-bold ${c.label} block mb-1.5`}>What service were you quoted for?</label>
+            <label className={`text-sm font-bold ${c.textSecondary} block mb-1.5`}>What service were you quoted for?</label>
             <input type="text" value={quoteService} onChange={e => setQuoteService(e.target.value)}
               placeholder="e.g., furnace replacement, wedding photographer, roof repair, math tutor..."
               className={`w-full px-4 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
@@ -2351,7 +2414,7 @@ const BuyWise = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className={`text-sm font-bold ${c.label} block mb-1.5`}>
+              <label className={`text-sm font-bold ${c.textSecondary} block mb-1.5`}>
                 Quote amount <span className={`font-normal ${c.textMuted}`}>(optional)</span>
               </label>
               <div className="flex items-center gap-1">
@@ -2361,7 +2424,7 @@ const BuyWise = () => {
               </div>
             </div>
             <div>
-              <label className={`text-sm font-bold ${c.label} block mb-1.5`}>
+              <label className={`text-sm font-bold ${c.textSecondary} block mb-1.5`}>
                 Location <span className={`font-normal ${c.textMuted}`}>(optional)</span>
               </label>
               <input type="text" value={quoteLocation} onChange={e => setQuoteLocation(e.target.value)}
@@ -2371,7 +2434,7 @@ const BuyWise = () => {
           </div>
 
           <div>
-            <label className={`text-sm font-bold ${c.label} block mb-1.5`}>
+            <label className={`text-sm font-bold ${c.textSecondary} block mb-1.5`}>
               Quote details <span className={`font-normal ${c.textMuted}`}>(paste the line items or describe what's included)</span>
             </label>
             <textarea value={quoteDetails} onChange={e => setQuoteDetails(e.target.value)}
@@ -2380,7 +2443,7 @@ const BuyWise = () => {
           </div>
 
           <div>
-            <label className={`text-sm font-bold ${c.label} block mb-1.5`}>How urgent?</label>
+            <label className={`text-sm font-bold ${c.textSecondary} block mb-1.5`}>How urgent?</label>
             <div className="flex gap-1.5">
               {URGENCY.map(u => (
                 <button key={u.value} onClick={() => setQuoteUrgency(u.value)}
@@ -2395,7 +2458,7 @@ const BuyWise = () => {
 
         <button onClick={analyzeQuote} disabled={!quoteService.trim() || loading}
           className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 mt-4 min-h-[48px]`}>
-          {loading ? <><span className="animate-spin inline-block">⏳</span> Analyzing quote...</> : <><span>📋</span> Check This Quote</>}
+          {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🧠'}</span> Analyzing quote...</> : <><span>{tool?.icon ?? '🧠'}</span> Check This Quote</>}
         </button>
       </div>
 
@@ -2407,17 +2470,17 @@ const BuyWise = () => {
               <span className="text-2xl">{quoteResults.verdict_emoji || '📋'}</span>
               <div>
                 <h3 className={`text-base font-black ${c.text} mb-1`}>{quoteResults.verdict}</h3>
-                <p className={`text-sm ${c.textSec}`}>{quoteResults.verdict_summary}</p>
+                <p className={`text-sm ${c.textSecondary}`}>{quoteResults.verdict_summary}</p>
               </div>
             </div>
           </div>
 
           {/* Fair price range */}
           {quoteResults.fair_range && (
-            <div className={`${c.card} border rounded-xl p-4`}>
+            <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
               <p className={`text-xs font-bold ${c.textMuted} uppercase mb-2`}>💲 Typical range for this service</p>
               <p className={`text-base font-bold ${c.text} mb-1`}>{quoteResults.fair_range.range}</p>
-              <p className={`text-xs ${c.textSec}`}>{quoteResults.fair_range.what_drives_cost}</p>
+              <p className={`text-xs ${c.textSecondary}`}>{quoteResults.fair_range.what_drives_cost}</p>
               {quoteResults.fair_range.regional_note && (
                 <p className={`text-xs ${c.textMuted} mt-1 italic`}>📍 {quoteResults.fair_range.regional_note}</p>
               )}
@@ -2438,10 +2501,10 @@ const BuyWise = () => {
                         <span className={`text-xs font-bold ${c.text}`}>{item.item}</span>
                         {item.amount && <span className={`text-xs ${c.textMuted}`}>{item.amount}</span>}
                         <span className={`text-[9px] font-black px-1.5 py-0.5 rounded ${
-                          item.verdict === 'fair' ? c.success : item.verdict === 'high' ? c.warning : item.verdict === 'red_flag' ? c.danger : c.accentBg
+                          item.verdict === 'fair' ? c.success : item.verdict === 'high' ? c.warning : item.verdict === 'red_flag' ? c.danger : c.highlightBg
                         }`}>{item.verdict === 'fair' ? 'FAIR' : item.verdict === 'high' ? 'HIGH' : item.verdict === 'red_flag' ? 'RED FLAG' : 'INFO'}</span>
                       </div>
-                      <p className={`text-[11px] ${c.textSec} mt-0.5`}>{item.note}</p>
+                      <p className={`text-[11px] ${c.textSecondary} mt-0.5`}>{item.note}</p>
                     </div>
                   </div>
                 ))}
@@ -2456,8 +2519,8 @@ const BuyWise = () => {
                 {quoteResults.negotiable.map((n, i) => (
                   <div key={i} className={`p-3 rounded-lg ${c.quoteBg}`}>
                     <p className={`text-xs font-bold ${c.text}`}>{n.item}</p>
-                    <p className={`text-[11px] ${c.textSec} mt-0.5`}>{n.how_to_negotiate}</p>
-                    {n.typical_discount && <p className={`text-[10px] ${c.accent} mt-0.5`}>💰 Typical savings: {n.typical_discount}</p>}
+                    <p className={`text-[11px] ${c.textSecondary} mt-0.5`}>{n.how_to_negotiate}</p>
+                    {n.typical_discount && <p className={`text-[10px] ${c.textCyan} mt-0.5`}>💰 Typical savings: {n.typical_discount}</p>}
                   </div>
                 ))}
               </div>
@@ -2489,7 +2552,7 @@ const BuyWise = () => {
 
           {/* Seasonal timing */}
           {quoteResults.timing_tip && (
-            <div className={`${c.info} border rounded-xl p-4`}>
+            <div className={`${c.highlight} border rounded-xl p-4`}>
               <p className={`text-xs font-bold mb-1`}>📅 Timing</p>
               <p className={`text-xs`}>{quoteResults.timing_tip}</p>
             </div>
@@ -2497,11 +2560,11 @@ const BuyWise = () => {
 
           {/* Getting competing quotes */}
           {quoteResults.competing_quotes && (
-            <div className={`${c.card} border rounded-xl p-4`}>
+            <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
               <p className={`text-xs font-bold ${c.textMuted} uppercase mb-2`}>📞 Getting competing quotes</p>
-              <p className={`text-xs ${c.textSec}`}>{quoteResults.competing_quotes.how_many}</p>
+              <p className={`text-xs ${c.textSecondary}`}>{quoteResults.competing_quotes.how_many}</p>
               {quoteResults.competing_quotes.where_to_look && (
-                <p className={`text-xs ${c.accent} mt-1`}>→ {quoteResults.competing_quotes.where_to_look}</p>
+                <p className={`text-xs ${c.textCyan} mt-1`}>→ {quoteResults.competing_quotes.where_to_look}</p>
               )}
               {quoteResults.competing_quotes.script && (
                 <div className="mt-2">

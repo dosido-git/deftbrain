@@ -1,25 +1,21 @@
 import React, { lazy, Suspense } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { tools } from '../data/tools'; 
-import ToolPageWrapper from './ToolPageWrapper';
+import ToolPageWrapper from './ToolPageWrapper'; 
 import { useDocumentHead } from '../hooks/useDocumentHead';
-
-// ── Inner component so hooks always run after toolData is resolved ──
-const ToolHead = ({ toolData }) => {
-  useDocumentHead({
-    title:         toolData.title,
-    description:   toolData.description,
-    canonicalPath: `/${toolData.id}`,
-    toolId:        toolData.id,
-  });
-  return null;
-};
 
 const ToolRenderer = ({ college }) => {
   const { toolId } = useParams();
   const navigate = useNavigate();
   
   const toolData = tools.find(i => i.id === toolId);
+
+  useDocumentHead({
+    title: toolData?.title,
+    description: toolData?.description,
+    canonicalPath: toolId ? `/${toolId}` : undefined,
+    toolId: toolId,
+  });
 
   const ToolComponent = lazy(() => 
     import(`../tools/${toolId}.js`).catch(() => ({
@@ -40,6 +36,7 @@ const ToolRenderer = ({ college }) => {
             <p className="text-blue-600 font-mono text-xs tracking-[.4em] uppercase font-bold">Unauthorized Asset Path</p>
             <p className="text-slate-400 text-sm mt-2">The requested tool could not be located in the database.</p>
           </div>
+          
           <button 
             onClick={() => navigate('/')}
             className="w-full py-4 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-widest hover:bg-blue-600 transition-colors shadow-lg shadow-slate-200"
@@ -52,22 +49,19 @@ const ToolRenderer = ({ college }) => {
   }
 
   return (
-    <>
-      <ToolHead toolData={toolData} />
-      <ToolPageWrapper 
-        tool={toolData}
-        toolId={toolId}
-      >
-        <Suspense fallback={
-          <div className="p-20 flex flex-col items-center justify-center space-y-4">
-            <div className="h-8 w-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
-            <p className="text-blue-600 font-mono text-[10px] tracking-widest uppercase">Decrypting Asset...</p>
-          </div>
-        }>
-          <ToolComponent college={college} />
-        </Suspense>
-      </ToolPageWrapper>
-    </>
+    <ToolPageWrapper 
+      tool={toolData}
+      toolId={toolId}
+    >
+      <Suspense fallback={
+        <div className="p-20 flex flex-col items-center justify-center space-y-4">
+          <div className="h-8 w-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
+          <p className="text-blue-600 font-mono text-[10px] tracking-widest uppercase">Decrypting Asset...</p>
+        </div>
+      }>
+        <ToolComponent college={college} />
+      </Suspense>
+    </ToolPageWrapper>
   );
 };
 

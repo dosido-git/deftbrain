@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { anthropic, callClaudeWithRetry, cleanJsonResponse, withLanguage } = require('../lib/claude');
 
 // ════════════════════════════════════════════════════════════
 // SHARED
@@ -173,16 +173,11 @@ Return ONLY valid JSON with ALL applicable sections. Set sections to null if the
   "bottom_line": "2-3 sentences. The friend-level honest summary. End with a clear action step."
 }`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+    const parsed = await callClaudeWithRetry(userPrompt, {
+      label: 'buy-wise',
       max_tokens: 4000,
       system: withLanguage(systemPrompt, userLanguage),
-      messages: [{ role: 'user', content: userPrompt }],
     });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
     res.json(parsed);
 
   } catch (error) {
@@ -239,16 +234,11 @@ Recommend the best option(s) within this budget. Return ONLY valid JSON:
   "save_more_tip": "How to stretch the budget further (refurb, older model, sales, etc.)"
 }`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+    const parsed = await callClaudeWithRetry(userPrompt, {
+      label: 'buy-wise-budget',
       max_tokens: 2000,
       system: withLanguage(systemPrompt, userLanguage),
-      messages: [{ role: 'user', content: userPrompt }],
     });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
     res.json(parsed);
 
   } catch (error) {
@@ -287,16 +277,11 @@ Answer thoroughly. Return ONLY valid JSON:
   "sources_to_check": ["1-2 specific places they can verify this info (YouTube channel, subreddit, review site, etc.)"]
 }`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+    const parsed = await callClaudeWithRetry(userPrompt, {
+      label: 'buy-wise-followup',
       max_tokens: 1500,
       system: withLanguage(systemPrompt, userLanguage),
-      messages: [{ role: 'user', content: userPrompt }],
     });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
     res.json(parsed);
 
   } catch (error) {
@@ -346,16 +331,11 @@ When is the best time to buy ${category}? Map out the full year. Return ONLY val
 
 Include all 12 months in the calendar array.`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+    const parsed = await callClaudeWithRetry(userPrompt, {
+      label: 'buy-wise-calendar',
       max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage),
-      messages: [{ role: 'user', content: userPrompt }],
     });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
     res.json(parsed);
 
   } catch (error) {
@@ -468,16 +448,11 @@ Return ONLY valid JSON:
   "one_liner": "The single most persuasive sentence to close with — something they can text."
 }`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+    const parsed = await callClaudeWithRetry(userPrompt, {
+      label: 'buy-wise-convince',
       max_tokens: 1500,
       system: withLanguage(systemPrompt, userLanguage),
-      messages: [{ role: 'user', content: userPrompt }],
     });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
     res.json(parsed);
 
   } catch (error) {
@@ -534,16 +509,11 @@ Review this haul as a whole. Return ONLY valid JSON:
   "save_tip": "One specific way to reduce the total spend without losing value"
 }`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+    const parsed = await callClaudeWithRetry(userPrompt, {
+      label: 'buy-wise-haul',
       max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage),
-      messages: [{ role: 'user', content: userPrompt }],
     });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
     res.json(parsed);
 
   } catch (error) {
@@ -644,16 +614,11 @@ Return ONLY valid JSON:
   "bottom_line": "2-3 sentences: final recommendation. Be specific about what to do next."
 }`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+    const parsed = await callClaudeWithRetry(userPrompt, {
+      label: 'buy-wise-quote',
       max_tokens: 3000,
       system: withLanguage(systemPrompt, userLanguage),
-      messages: [{ role: 'user', content: userPrompt }],
     });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
     res.json(parsed);
 
   } catch (error) {

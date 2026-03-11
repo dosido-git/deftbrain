@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { anthropic, callClaudeWithRetry, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
 // SHARED: Bill-type-specific knowledge injections
@@ -90,7 +91,7 @@ RULES:
 // ════════════════════════════════════════════════════════════
 // POST /bill-rescue — Main bill analysis (renamed from bill-guilt-eraser)
 // ════════════════════════════════════════════════════════════
-router.post('/bill-rescue', async (req, res) => {
+router.post('/bill-rescue', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const {
       billType, amount, currency, overdueStatus, reason,
@@ -230,6 +231,9 @@ Return ONLY valid JSON with ALL applicable sections:
 
     userContent.push({ type: 'text', text: userPrompt });
 
+    // NOTE: Uses anthropic.messages.create directly (not callClaudeWithRetry) because
+    // the bill image path requires a multipart content array (image + text blocks).
+    // callClaudeWithRetry accepts a string prompt only. Refactor when lib supports multipart.
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 4000,
@@ -251,7 +255,7 @@ Return ONLY valid JSON with ALL applicable sections:
 // ════════════════════════════════════════════════════════════
 // POST /bill-rescue/triage — Multi-bill priority analysis
 // ════════════════════════════════════════════════════════════
-router.post('/bill-rescue/triage', async (req, res) => {
+router.post('/bill-rescue/triage', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { bills, totalMonthlyBudget, currency, userLanguage } = req.body;
 
@@ -260,12 +264,6 @@ router.post('/bill-rescue/triage', async (req, res) => {
     }
 
     const sym = currency || '$';
-
-    const systemPrompt = `${PERSONALITY}
-
-You are triaging multiple bills. Your job is to create a clear priority order that prevents the worst consequences while maximizing the user's limited budget. Think like a financial triage nurse: what's bleeding out, what can wait, what can be negotiated down.
-
-All amounts in ${sym}.`;
 
     const billSummary = bills.map((b, i) =>
       `${i + 1}. ${b.type} — ${sym}${b.amount || '?'} — ${b.overdue || 'unknown'} late${b.note ? ` — ${b.note}` : ''}`
@@ -305,17 +303,18 @@ Return ONLY valid JSON:
   "encouragement": "Warm, honest encouragement. They came here with multiple bills — that takes courage."
 }`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 2500,
-      system: withLanguage(systemPrompt, userLanguage),
-      messages: [{ role: 'user', content: userPrompt }],
-    });
+    const triageSystem = `${PERSONALITY}
 
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
-    res.json(parsed);
+You are triaging multiple bills. Your job is to create a clear priority order that prevents the worst consequences while maximizing the user's limited budget. Think like a financial triage nurse: what's bleeding out, what can wait, what can be negotiated down.
+
+All amounts in ${sym}.`;
+
+    const result = await callClaudeWithRetry(userPrompt, {
+      label: 'bill-rescue/triage',
+      max_tokens: 2500,
+      system: withLanguage(triageSystem, userLanguage),
+    });
+    return res.json(result);
 
   } catch (error) {
     console.error('BillRescue triage error:', error);
@@ -326,7 +325,7 @@ Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /bill-rescue/quick-check — Should I fight this bill?
 // ════════════════════════════════════════════════════════════
-router.post('/bill-rescue/quick-check', async (req, res) => {
+router.post('/bill-rescue/quick-check', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { billType, charge, amount, currency, userLanguage } = req.body;
 
@@ -362,17 +361,12 @@ Return ONLY valid JSON:
   "potential_savings": "Estimated ${sym} savings if they fight it. null if normal."
 }`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+    const result = await callClaudeWithRetry(userPrompt, {
+      label: 'bill-rescue/quick-check',
       max_tokens: 800,
       system: withLanguage(systemPrompt, userLanguage),
-      messages: [{ role: 'user', content: userPrompt }],
     });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
-    res.json(parsed);
+    return res.json(result);
 
   } catch (error) {
     console.error('BillRescue quick-check error:', error);
@@ -383,7 +377,7 @@ Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /bill-rescue/rehearse — Practice the negotiation call
 // ════════════════════════════════════════════════════════════
-router.post('/bill-rescue/rehearse', async (req, res) => {
+router.post('/bill-rescue/rehearse', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { billType, situation, userMessage, conversationHistory, difficulty, currency, userLanguage } = req.body;
 
@@ -446,6 +440,8 @@ Return ONLY valid JSON.`
       });
     }
 
+    // NOTE: Uses anthropic.messages.create directly (not callClaudeWithRetry) because
+    // rehearsal requires a multi-turn conversation history array, not a single string prompt.
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 1000,
@@ -467,7 +463,7 @@ Return ONLY valid JSON.`
 // ════════════════════════════════════════════════════════════
 // POST /bill-rescue/letter — Generate specific letter types
 // ════════════════════════════════════════════════════════════
-router.post('/bill-rescue/letter', async (req, res) => {
+router.post('/bill-rescue/letter', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { letterType, billType, amount, currency, situation, additionalContext, userLanguage } = req.body;
 
@@ -515,17 +511,12 @@ Return ONLY valid JSON:
   "follow_up": "What to do after sending — timeline for response, what to do if no response"
 }`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+    const result = await callClaudeWithRetry(userPrompt, {
+      label: 'bill-rescue/letter',
       max_tokens: 2000,
       system: withLanguage(systemPrompt, userLanguage),
-      messages: [{ role: 'user', content: userPrompt }],
     });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
-    res.json(parsed);
+    return res.json(result);
 
   } catch (error) {
     console.error('BillRescue letter error:', error);

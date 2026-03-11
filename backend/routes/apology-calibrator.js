@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 
 const PERSONALITY = `You are an apology calibration expert — part therapist, part communication coach. You help people navigate the full spectrum: from "you're apologizing way too much" to "this needs a serious repair effort." You're warm but direct. You never shame people for getting it wrong — most people were never taught how to apologize well.
 
@@ -81,16 +81,11 @@ Return ONLY valid JSON:
   }
 }`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+    const parsed = await callClaudeWithRetry(userPrompt, {
+      label: 'apology-calibrator',
       max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage),
-      messages: [{ role: 'user', content: userPrompt }],
     });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
     res.json(parsed);
 
   } catch (error) {
@@ -144,16 +139,11 @@ Return ONLY valid JSON:
   "delivery_note": "One tip about how to deliver this (text vs call vs in person, timing, etc.)"
 }`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+    const parsed = await callClaudeWithRetry(userPrompt, {
+      label: 'apology-calibrator/detect',
       max_tokens: 2000,
       system: withLanguage(systemPrompt, userLanguage),
-      messages: [{ role: 'user', content: userPrompt }],
     });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
     res.json(parsed);
 
   } catch (error) {
@@ -214,16 +204,11 @@ Return ONLY valid JSON:
   "common_mistake": "The #1 mistake people make when delivering this type of apology"
 }`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+    const parsed = await callClaudeWithRetry(userPrompt, {
+      label: 'apology-calibrator/delivery',
       max_tokens: 2000,
       system: withLanguage(systemPrompt, userLanguage),
-      messages: [{ role: 'user', content: userPrompt }],
     });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
     res.json(parsed);
 
   } catch (error) {
@@ -284,16 +269,11 @@ Return ONLY valid JSON:
   "one_thing_to_practice": "The single most impactful thing they could practice this week"
 }`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+    const parsed = await callClaudeWithRetry(userPrompt, {
+      label: 'apology-calibrator/audit',
       max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage),
-      messages: [{ role: 'user', content: userPrompt }],
     });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
     res.json(parsed);
 
   } catch (error) {
@@ -351,16 +331,11 @@ Return ONLY valid JSON:
   ]
 }`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+    const parsed = await callClaudeWithRetry(userPrompt, {
+      label: 'apology-calibrator/cultural',
       max_tokens: 2000,
       system: withLanguage(systemPrompt, userLanguage),
-      messages: [{ role: 'user', content: userPrompt }],
     });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
     res.json(parsed);
 
   } catch (error) {
@@ -420,16 +395,11 @@ Return ONLY valid JSON:
   "emotional_validation": "Acknowledge how receiving a non-apology or bad apology feels — validate without catastrophizing"
 }`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+    const parsed = await callClaudeWithRetry(userPrompt, {
+      label: 'apology-calibrator/decode',
       max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage),
-      messages: [{ role: 'user', content: userPrompt }],
     });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
     res.json(parsed);
 
   } catch (error) {
@@ -510,16 +480,11 @@ Return ONLY valid JSON:
   "final_verdict": null
 }`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+    const parsed = await callClaudeWithRetry(userPrompt, {
+      label: 'apology-calibrator/practice',
       max_tokens: 1500,
       system: withLanguage(systemPrompt, userLanguage),
-      messages: [{ role: 'user', content: userPrompt }],
     });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
     res.json(parsed);
 
   } catch (error) {
@@ -593,16 +558,11 @@ Return ONLY valid JSON:
   "one_thing_to_sit_with": "A reflective question or insight to help them process — not advice, just something to think about"
 }`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+    const parsed = await callClaudeWithRetry(userPrompt, {
+      label: 'apology-calibrator/forgive',
       max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage),
-      messages: [{ role: 'user', content: userPrompt }],
     });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
     res.json(parsed);
 
   } catch (error) {
@@ -674,16 +634,11 @@ Return ONLY valid JSON:
   "daily_practice": "One small daily action that compounds over time"
 }`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+    const parsed = await callClaudeWithRetry(userPrompt, {
+      label: 'apology-calibrator/roadmap',
       max_tokens: 3000,
       system: withLanguage(systemPrompt, userLanguage),
-      messages: [{ role: 'user', content: userPrompt }],
     });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
     res.json(parsed);
 
   } catch (error) {
@@ -751,16 +706,11 @@ Return ONLY valid JSON:
   "final_check": "One question to ask yourself before sending — the gut-check that makes sure this is ready"
 }`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+    const parsed = await callClaudeWithRetry(userPrompt, {
+      label: 'apology-calibrator/letter',
       max_tokens: 3000,
       system: withLanguage(systemPrompt, userLanguage),
-      messages: [{ role: 'user', content: userPrompt }],
     });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
     res.json(parsed);
 
   } catch (error) {
@@ -835,16 +785,11 @@ Return ONLY valid JSON:
   "if_they_still_dont_accept_it": "What to say and do if this apology also doesn't land — sometimes the apology isn't what they need"
 }`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+    const parsed = await callClaudeWithRetry(userPrompt, {
+      label: 'apology-calibrator/fix',
       max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage),
-      messages: [{ role: 'user', content: userPrompt }],
     });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
     res.json(parsed);
 
   } catch (error) {

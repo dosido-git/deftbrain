@@ -28,87 +28,129 @@ const INPUT_MODES = [
 
 // ─── Category display config ───
 const CATEGORY_CONFIG = {
-  do_first:        { icon: '🎯', label: 'Do This First',       color: 'red' },
-  actions:         { icon: '✅', label: 'Action Items',         color: 'emerald' },
-  decisions:       { icon: '🤔', label: 'Decisions Needed',     color: 'amber' },
-  tell_someone:    { icon: '💬', label: 'Tell Someone',         color: 'blue' },
-  worries:         { icon: '☁️', label: 'Worries (Not Tasks)',  color: 'purple' },
-  ideas:           { icon: '💡', label: 'Ideas to Capture',     color: 'yellow' },
-  can_drop:        { icon: '🗑️', label: 'Can Drop',            color: 'zinc' },
-  not_your_problem: { icon: '👥', label: 'Not Your Problem',    color: 'orange' },
-  feelings:        { icon: '💗', label: 'Feelings to Acknowledge', color: 'rose' },
+  do_first:        { icon: '🎯', label: 'Do This First',          color: 'red' },
+  actions:         { icon: '✅', label: 'Action Items',            color: 'emerald' },
+  decisions:       { icon: '🤔', label: 'Decisions Needed',        color: 'amber' },
+  tell_someone:    { icon: '💬', label: 'Tell Someone',            color: 'sky' },
+  worries:         { icon: '☁️', label: 'Worries (Not Tasks)',     color: 'slate' },
+  ideas:           { icon: '💡', label: 'Ideas to Capture',        color: 'cyan' },
+  can_drop:        { icon: '🗑️', label: 'Can Drop',               color: 'zinc' },
+  not_your_problem: { icon: '👥', label: 'Not Your Problem',       color: 'amber' },
+  feelings:        { icon: '💗', label: 'Feelings to Acknowledge', color: 'green' },
 };
 
-const BrainDumpStructurer = () => {
+const BrainDumpStructurer = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
-  const { theme } = useTheme();
-  const isDark = theme === 'dark';
+  const { isDark } = useTheme();
   const textRef = useRef(null);
 
   // ─── Color config ───
   const c = {
-    bg: isDark ? 'bg-zinc-900' : 'bg-gradient-to-br from-violet-50 via-fuchsia-50 to-purple-50',
-    card: isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-gray-100',
-    cardHover: isDark ? 'hover:bg-zinc-750' : 'hover:bg-gray-50',
-    text: isDark ? 'text-zinc-50' : 'text-gray-900',
-    textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
-    textMuted: isDark ? 'text-zinc-400' : 'text-gray-500',
-    input: isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder-zinc-400' : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400',
-    accent: isDark ? 'bg-violet-600' : 'bg-violet-500',
-    accentHover: isDark ? 'hover:bg-violet-500' : 'hover:bg-violet-600',
-    accentText: 'text-white',
-    accentLight: isDark ? 'bg-violet-900/40 border-violet-700' : 'bg-violet-50 border-violet-200',
-    accentLightText: isDark ? 'text-violet-300' : 'text-violet-800',
-    success: isDark ? 'bg-emerald-900/40 border-emerald-700' : 'bg-emerald-50 border-emerald-200',
-    successText: isDark ? 'text-emerald-300' : 'text-emerald-800',
-    warning: isDark ? 'bg-amber-900/40 border-amber-700' : 'bg-amber-50 border-amber-200',
-    warningText: isDark ? 'text-amber-300' : 'text-amber-800',
-    error: isDark ? 'bg-red-900/30 border-red-700' : 'bg-red-50 border-red-200',
-    errorText: isDark ? 'text-red-300' : 'text-red-800',
-    tag: isDark ? 'bg-zinc-700 text-zinc-200' : 'bg-gray-100 text-gray-700',
-    tagActive: isDark ? 'bg-violet-600 text-white' : 'bg-violet-500 text-white',
-    divider: isDark ? 'border-zinc-700' : 'border-gray-200',
-    blockBg: isDark ? 'bg-zinc-700/50' : 'bg-gray-50',
-    dumpBg: isDark ? 'bg-zinc-900 border-zinc-600' : 'bg-gray-50 border-gray-200',
-    hero: isDark ? 'bg-gradient-to-br from-violet-900/60 to-fuchsia-900/60 border-violet-600' : 'bg-gradient-to-br from-violet-100 to-fuchsia-100 border-violet-300',
-    heroText: isDark ? 'text-violet-200' : 'text-violet-900',
-    heroAccent: isDark ? 'text-violet-300' : 'text-violet-700',
-    launch: isDark ? 'bg-gradient-to-br from-sky-900/60 to-indigo-900/60 border-sky-600' : 'bg-gradient-to-br from-sky-50 to-indigo-50 border-sky-300',
-    launchText: isDark ? 'text-sky-200' : 'text-sky-900',
-    launchAccent: isDark ? 'text-sky-300' : 'text-sky-700',
+    // ── Standard keys ──
+    card:          isDark ? 'bg-zinc-800' : 'bg-white',
+    cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
+    text:          isDark ? 'text-zinc-50' : 'text-slate-900',
+    textSecondary: isDark ? 'text-zinc-300' : 'text-slate-600',
+    textMuted:     isDark ? 'text-zinc-500' : 'text-slate-400',
+    input:         isDark
+      ? 'bg-zinc-900 border-zinc-700 text-zinc-50 placeholder:text-zinc-500 focus:border-cyan-500'
+      : 'bg-slate-50 border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-cyan-600',
+    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnSecondary:  isDark ? 'bg-zinc-700 text-zinc-200 hover:bg-zinc-600' : 'bg-slate-100 text-slate-700 hover:bg-slate-200',
+    border:        isDark ? 'border-zinc-700' : 'border-gray-200',
+    success:       isDark ? 'bg-emerald-900/40 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-200 text-emerald-800',
+    warning:       isDark ? 'bg-amber-900/40 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-200 text-amber-800',
+    danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
+    // ── Extended keys ──
+    cardHover:     isDark ? 'hover:bg-zinc-700' : 'hover:bg-gray-50',
+    pillActive:    'bg-cyan-600 text-white',
+    blockBg:       isDark ? 'bg-zinc-700/50' : 'bg-gray-50',
+    dumpBg:        isDark ? 'bg-zinc-900 border-zinc-600' : 'bg-gray-50 border-gray-200',
+    accentLight:   isDark ? 'bg-cyan-900/40 border-cyan-700' : 'bg-cyan-50 border-cyan-200',
+    accentLightText: isDark ? 'text-cyan-300' : 'text-cyan-800',
+    hero:          isDark ? 'bg-gradient-to-br from-cyan-900/60 to-sky-900/60 border-cyan-600' : 'bg-gradient-to-br from-cyan-50 to-sky-100 border-cyan-300',
+    heroText:      isDark ? 'text-cyan-200' : 'text-cyan-900',
+    heroAccent:    isDark ? 'text-cyan-300' : 'text-cyan-700',
+    launch:        isDark ? 'bg-gradient-to-br from-sky-900/60 to-slate-800/60 border-sky-600' : 'bg-gradient-to-br from-sky-50 to-slate-100 border-sky-300',
+    launchText:    isDark ? 'text-sky-200' : 'text-sky-900',
+    launchAccent:  isDark ? 'text-sky-300' : 'text-sky-700',
+    // ── State-specific keys ──
+    progressBarBg:        isDark ? 'bg-zinc-700' : 'bg-gray-200',
+    checkboxChecked:      isDark ? 'bg-cyan-600 border-cyan-600' : 'bg-cyan-600 border-cyan-600',
+    checkboxUnchecked:    isDark ? 'border-zinc-500' : 'border-gray-300',
+    excavatorResultBg:    isDark ? 'bg-amber-900/20 border-amber-700/50' : 'bg-amber-50 border-amber-200',
+    excavatorResultTitle: isDark ? 'text-amber-300' : 'text-amber-600',
+    moveToActionsBtn:     isDark ? 'bg-emerald-700 text-emerald-100' : 'bg-emerald-200 text-emerald-800',
+    worryPermissionText:  isDark ? 'text-amber-300' : 'text-amber-700',
+    emergencyModeActive:  isDark ? 'bg-red-900/40 border-red-600 text-red-300' : 'bg-red-50 border-red-300 text-red-700',
+    launchBtn:            isDark ? 'bg-sky-600 hover:bg-sky-500 text-white' : 'bg-sky-500 hover:bg-sky-600 text-white',
+    startWithMeBtn:       isDark ? 'bg-sky-800/50 text-sky-300 hover:bg-sky-800/70' : 'bg-sky-50 text-sky-700 hover:bg-sky-100',
+    stepDotDone:          isDark ? 'bg-sky-400' : 'bg-sky-500',
+    stepDotActive:        isDark ? 'bg-sky-400 animate-pulse' : 'bg-sky-500 animate-pulse',
+    stepDotInactive:      isDark ? 'bg-zinc-600' : 'bg-gray-300',
+    doFirstDoneCard:      isDark ? 'bg-emerald-900/30 border-emerald-700' : 'bg-emerald-50 border-emerald-300',
+    doFirstActiveCard:    isDark ? 'bg-cyan-900/30 border-cyan-600' : 'bg-cyan-50 border-cyan-300',
+    doFirstCheckDone:     isDark ? 'bg-emerald-600 border-emerald-600' : 'bg-emerald-500 border-emerald-500',
+    doFirstCheckActive:   'border-cyan-400',
+    doFirstDoneLabel:     isDark ? 'text-emerald-400' : 'text-emerald-600',
+    doFirstActiveLabel:   isDark ? 'text-cyan-300' : 'text-cyan-600',
+    nextUpLabel:          isDark ? 'text-cyan-300' : 'text-cyan-600',
+    allDoneText:          isDark ? 'text-emerald-300' : 'text-emerald-600',
+    emergencyTaskCard:    isDark ? 'bg-emerald-900/30 border-emerald-700' : 'bg-emerald-50 border-emerald-300',
+    emergencyTaskLabel:   isDark ? 'text-emerald-400' : 'text-emerald-600',
+    emergencyReleaseCard: isDark ? 'bg-sky-900/30 border-sky-700' : 'bg-sky-50 border-sky-300',
+    emergencyReleaseLabel:isDark ? 'text-sky-300' : 'text-sky-600',
+    emergencyPermission:  isDark ? 'text-sky-300' : 'text-sky-700',
+    shrinkBorder:         isDark ? 'border-amber-600' : 'border-amber-300',
+    timeMapBorder:        isDark ? 'border-sky-600' : 'border-sky-300',
+    timeMapBtn:           isDark ? 'bg-sky-600 hover:bg-sky-500 text-white' : 'bg-sky-500 hover:bg-sky-600 text-white',
+    dumpDiffBorder:       isDark ? 'border-sky-600' : 'border-sky-300',
+    // ── Shrink verdict border-left accents ──
+    verdictKeep:   'border-l-emerald-500',
+    verdictShrink: 'border-l-amber-500',
+    verdictBatch:  'border-l-sky-500',
+    verdictDefer:  isDark ? 'border-l-slate-400' : 'border-l-slate-500',
+    verdictDrop:   'border-l-red-500',
+    // ── Time-map schedule slot backgrounds ──
+    scheduleBreak:         isDark ? 'bg-emerald-900/30 border-emerald-700' : 'bg-emerald-50 border-emerald-200',
+    scheduleBuffer:        isDark ? 'bg-zinc-700/30 border-zinc-600' : 'bg-gray-50 border-gray-200',
+    scheduleCommunication: isDark ? 'bg-sky-900/30 border-sky-700' : 'bg-sky-50 border-sky-200',
   };
+
+  const linkStyle = isDark
+    ? 'font-medium text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
+    : 'font-medium text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
 
   // Category color helper
   const catColors = (color) => {
     const map = {
-      red:     { bg: isDark ? 'bg-red-900/30 border-red-700' : 'bg-red-50 border-red-200', text: isDark ? 'text-red-300' : 'text-red-800' },
+      red:     { bg: isDark ? 'bg-red-900/30 border-red-700'     : 'bg-red-50 border-red-200',     text: isDark ? 'text-red-300'     : 'text-red-800' },
       emerald: { bg: isDark ? 'bg-emerald-900/30 border-emerald-700' : 'bg-emerald-50 border-emerald-200', text: isDark ? 'text-emerald-300' : 'text-emerald-800' },
-      amber:   { bg: isDark ? 'bg-amber-900/30 border-amber-700' : 'bg-amber-50 border-amber-200', text: isDark ? 'text-amber-300' : 'text-amber-800' },
-      blue:    { bg: isDark ? 'bg-blue-900/30 border-blue-700' : 'bg-blue-50 border-blue-200', text: isDark ? 'text-blue-300' : 'text-blue-800' },
-      purple:  { bg: isDark ? 'bg-purple-900/30 border-purple-700' : 'bg-purple-50 border-purple-200', text: isDark ? 'text-purple-300' : 'text-purple-800' },
-      yellow:  { bg: isDark ? 'bg-yellow-900/30 border-yellow-700' : 'bg-yellow-50 border-yellow-200', text: isDark ? 'text-yellow-300' : 'text-yellow-800' },
-      zinc:    { bg: isDark ? 'bg-zinc-700/50 border-zinc-600' : 'bg-gray-100 border-gray-300', text: isDark ? 'text-zinc-300' : 'text-gray-700' },
-      orange:  { bg: isDark ? 'bg-orange-900/30 border-orange-700' : 'bg-orange-50 border-orange-200', text: isDark ? 'text-orange-300' : 'text-orange-800' },
-      rose:    { bg: isDark ? 'bg-rose-900/30 border-rose-700' : 'bg-rose-50 border-rose-200', text: isDark ? 'text-rose-300' : 'text-rose-800' },
+      amber:   { bg: isDark ? 'bg-amber-900/30 border-amber-700'  : 'bg-amber-50 border-amber-200', text: isDark ? 'text-amber-300'   : 'text-amber-800' },
+      sky:     { bg: isDark ? 'bg-sky-900/30 border-sky-700'      : 'bg-sky-50 border-sky-200',     text: isDark ? 'text-sky-300'     : 'text-sky-800' },
+      slate:   { bg: isDark ? 'bg-slate-700/50 border-slate-600'  : 'bg-slate-100 border-slate-300', text: isDark ? 'text-slate-300'  : 'text-slate-600' },
+      cyan:    { bg: isDark ? 'bg-cyan-900/30 border-cyan-700'    : 'bg-cyan-50 border-cyan-200',   text: isDark ? 'text-cyan-300'    : 'text-cyan-800' },
+      zinc:    { bg: isDark ? 'bg-zinc-700/50 border-zinc-600'    : 'bg-slate-100 border-slate-300', text: isDark ? 'text-zinc-300'   : 'text-slate-700' },
+      green:   { bg: isDark ? 'bg-green-900/30 border-green-700'  : 'bg-green-50 border-green-200', text: isDark ? 'text-green-300'   : 'text-green-800' },
     };
-    return map[color] || map.purple;
+    return map[color] || map.slate;
   };
 
   // ─── State: View ───
   // setup | results | launching | insights
-  const [view, setView] = useState('setup');
+  const [view, setView] = usePersistentState('bds-view', 'setup');
   const [error, setError] = useState('');
 
   // ─── State: Input ───
-  const [inputMode, setInputMode] = useState('freetext');
-  const [freeText, setFreeText] = useState('');
-  const [rapidThoughts, setRapidThoughts] = useState([]);
+  const [inputMode, setInputMode] = usePersistentState('bds-input-mode', 'freetext');
+  const [freeText, setFreeText] = usePersistentState('bds-free-text', '');
+  const [rapidThoughts, setRapidThoughts] = usePersistentState('bds-rapid-thoughts', []);
   const [currentRapid, setCurrentRapid] = useState('');
-  const [context, setContext] = useState('');
+  const [context, setContext] = usePersistentState('bds-context', '');
 
   // ─── State: Results ───
-  const [results, setResults] = useState(null);
-  const [checkedItems, setCheckedItems] = useState({});
+  const [results, setResults] = usePersistentState('bds-results', null);
+  const [checkedItems, setCheckedItems] = usePersistentState('bds-checked-items', {});
   const [doFirstDone, setDoFirstDone] = useState(false);
   const [expandedSections, setExpandedSections] = useState({});
 
@@ -317,7 +359,7 @@ const BrainDumpStructurer = () => {
     setExcavateData({}); setDumpDiffData(null);
 
     try {
-      const data = await callToolEndpoint('brain-dump-structurer', {
+      const data = await callToolEndpoint('brain-dump-buddy', {
         action: 'structure',
         rawThoughts: dump,
         context: context || null,
@@ -333,7 +375,7 @@ const BrainDumpStructurer = () => {
   const handleStartWithMe = async () => {
     if (!results?.do_first) return;
     try {
-      const data = await callToolEndpoint('brain-dump-structurer', {
+      const data = await callToolEndpoint('brain-dump-buddy', {
         action: 'start-with-me',
         task: results.do_first.task,
         timeEstimate: results.do_first.time_estimate,
@@ -349,7 +391,7 @@ const BrainDumpStructurer = () => {
   const handleReview = async () => {
     if (dumpLog.length < 3) { setError('Need at least 3 dumps for patterns.'); return; }
     try {
-      const data = await callToolEndpoint('brain-dump-structurer', { action: 'review', dumpLog: dumpLog.slice(0, 15) });
+      const data = await callToolEndpoint('brain-dump-buddy', { action: 'review', dumpLog: dumpLog.slice(0, 15) });
       setReviewData(data); setView('insights');
     } catch (err) { setError('Couldn\'t analyze dumps.'); }
   };
@@ -358,7 +400,7 @@ const BrainDumpStructurer = () => {
   const handleShrink = async () => {
     if (!results) return;
     try {
-      const data = await callToolEndpoint('brain-dump-structurer', {
+      const data = await callToolEndpoint('brain-dump-buddy', {
         action: 'shrink',
         actions: results.actions,
         decisions: results.decisions,
@@ -373,7 +415,7 @@ const BrainDumpStructurer = () => {
   const handleTimeMap = async () => {
     if (!results || !timeMapAvailable) { setError('How much time do you have?'); return; }
     try {
-      const data = await callToolEndpoint('brain-dump-structurer', {
+      const data = await callToolEndpoint('brain-dump-buddy', {
         action: 'time-map',
         actions: results.actions,
         tell_someone: results.tell_someone,
@@ -390,7 +432,7 @@ const BrainDumpStructurer = () => {
   const handleExcavate = async (worryText, idx) => {
     setExcavatingIdx(idx);
     try {
-      const data = await callToolEndpoint('brain-dump-structurer', {
+      const data = await callToolEndpoint('brain-dump-buddy', {
         action: 'excavate',
         worry: worryText,
         context: context || null,
@@ -404,7 +446,7 @@ const BrainDumpStructurer = () => {
   const handleDumpDiff = async () => {
     if (!results || !previousDumpResults) return;
     try {
-      const data = await callToolEndpoint('brain-dump-structurer', {
+      const data = await callToolEndpoint('brain-dump-buddy', {
         action: 'dump-diff',
         currentDump: { actions: results.actions, decisions: results.decisions, tell_someone: results.tell_someone, worries: results.worries, do_first: results.do_first },
         previousDump: previousDumpResults,
@@ -545,7 +587,7 @@ const BrainDumpStructurer = () => {
     const isActionable = key === 'actions' || key === 'tell_someone';
 
     return (
-      <div key={key} className={`${c.card} border rounded-xl overflow-hidden`}>
+      <div key={key} className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
         <button onClick={() => toggleSection(key)} className="w-full p-4 flex items-center justify-between text-left">
           <div className="flex items-center gap-2.5">
             <span>{config.icon}</span>
@@ -555,7 +597,7 @@ const BrainDumpStructurer = () => {
           <span className={`text-xs ${c.textMuted}`}>{isOpen ? '▲' : '▼'}</span>
         </button>
         {isOpen && (
-          <div className={`px-4 pb-4 border-t ${c.divider} pt-3 space-y-2`}>
+          <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-2`}>
             {items.map((item, i) => {
               const isString = typeof item === 'string';
               const text = isString ? item : (item.task || item.decision || item.what || item.feeling || item.thought || item.idea || item.reason || JSON.stringify(item));
@@ -569,7 +611,7 @@ const BrainDumpStructurer = () => {
                     {isActionable && (
                       <button onClick={() => setCheckedItems(prev => ({ ...prev, [checkKey]: !prev[checkKey] }))}
                         className={`mt-0.5 w-4 h-4 rounded border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
-                          checked ? (isDark ? 'bg-violet-600 border-violet-600' : 'bg-violet-500 border-violet-500') : (isDark ? 'border-zinc-500' : 'border-gray-300')
+                          checked ? c.checkboxChecked : c.checkboxUnchecked
                         }`}>
                         {checked && <span className="text-white text-[8px]">✓</span>}
                       </button>
@@ -595,10 +637,10 @@ const BrainDumpStructurer = () => {
                       )}
                       {/* v3: Reclassify buttons */}
                       <div className="flex items-center gap-1 mt-1.5 flex-wrap">
-                        {key !== 'actions' && <button onClick={() => reclassifyItem(key, i, 'actions')} className={`text-[9px] px-1.5 py-0.5 rounded ${c.tag} opacity-60 hover:opacity-100`}>→ ✅</button>}
-                        {key !== 'worries' && <button onClick={() => reclassifyItem(key, i, 'worries')} className={`text-[9px] px-1.5 py-0.5 rounded ${c.tag} opacity-60 hover:opacity-100`}>→ ☁️</button>}
-                        {key !== 'can_drop' && <button onClick={() => reclassifyItem(key, i, 'can_drop')} className={`text-[9px] px-1.5 py-0.5 rounded ${c.tag} opacity-60 hover:opacity-100`}>→ 🗑️</button>}
-                        {key !== 'feelings' && <button onClick={() => reclassifyItem(key, i, 'feelings')} className={`text-[9px] px-1.5 py-0.5 rounded ${c.tag} opacity-60 hover:opacity-100`}>→ 💗</button>}
+                        {key !== 'actions' && <button onClick={() => reclassifyItem(key, i, 'actions')} className={`text-[9px] px-1.5 py-0.5 rounded ${c.btnSecondary} opacity-60 hover:opacity-100`}>→ ✅</button>}
+                        {key !== 'worries' && <button onClick={() => reclassifyItem(key, i, 'worries')} className={`text-[9px] px-1.5 py-0.5 rounded ${c.btnSecondary} opacity-60 hover:opacity-100`}>→ ☁️</button>}
+                        {key !== 'can_drop' && <button onClick={() => reclassifyItem(key, i, 'can_drop')} className={`text-[9px] px-1.5 py-0.5 rounded ${c.btnSecondary} opacity-60 hover:opacity-100`}>→ 🗑️</button>}
+                        {key !== 'feelings' && <button onClick={() => reclassifyItem(key, i, 'feelings')} className={`text-[9px] px-1.5 py-0.5 rounded ${c.btnSecondary} opacity-60 hover:opacity-100`}>→ 💗</button>}
                       </div>
                     </div>
                     <div className="flex flex-col gap-1 flex-shrink-0">
@@ -606,16 +648,16 @@ const BrainDumpStructurer = () => {
                       {/* v3: Excavate button for worries */}
                       {key === 'worries' && !excavateData[i] && (
                         <button onClick={() => handleExcavate(text, i)} disabled={excavatingIdx === i}
-                          className={`text-[10px] px-2 py-1 rounded-lg ${c.tag} hover:opacity-80`}>
-                          {excavatingIdx === i ? '⏳' : '🔍'}
+                          className={`text-[10px] px-2 py-1 rounded-lg ${c.btnSecondary} hover:opacity-80`}>
+                          {excavatingIdx === i ? <span className="animate-spin inline-block">🧠</span> : '🔍'}
                         </button>
                       )}
                     </div>
                   </div>
                   {/* v3: Inline excavation results */}
                   {key === 'worries' && excavateData[i] && (
-                    <div className={`mt-2 p-3 rounded-lg border ${isDark ? 'bg-purple-900/20 border-purple-700/50' : 'bg-purple-50 border-purple-200'}`}>
-                      <p className={`text-[10px] font-bold uppercase mb-1 ${isDark ? 'text-purple-300' : 'text-purple-600'}`}>🔍 Underneath</p>
+                    <div className={`mt-2 p-3 rounded-lg border ${c.excavatorResultBg}`}>
+                      <p className={`text-[10px] font-bold uppercase mb-1 ${c.excavatorResultTitle}`}>🔍 Underneath</p>
                       <p className={`text-xs ${c.text} mb-2`}>{excavateData[i].whats_underneath}</p>
                       {excavateData[i].likelihood && (
                         <p className={`text-[10px] ${c.textMuted} mb-1`}>{excavateData[i].likelihood.assessment} — {excavateData[i].likelihood.reality_check}</p>
@@ -625,17 +667,17 @@ const BrainDumpStructurer = () => {
                       )}
                       {excavateData[i].hidden_task?.found && excavateData[i].hidden_task.task && (
                         <div className={`mt-2 p-2 rounded-lg ${c.success} border`}>
-                          <p className={`text-[10px] font-bold ${c.successText}`}>🎯 Hidden task found:</p>
-                          <p className={`text-xs font-medium ${c.successText}`}>{excavateData[i].hidden_task.task}</p>
-                          {excavateData[i].hidden_task.time_estimate && <span className={`text-[10px] ${c.successText}`}>~{excavateData[i].hidden_task.time_estimate}</span>}
+                          <p className={`text-[10px] font-bold`}>🎯 Hidden task found:</p>
+                          <p className={`text-xs font-medium`}>{excavateData[i].hidden_task.task}</p>
+                          {excavateData[i].hidden_task.time_estimate && <span className={`text-[10px]`}>~{excavateData[i].hidden_task.time_estimate}</span>}
                           <button onClick={() => { reclassifyItem('worries', i, 'actions'); setExcavateData(prev => { const n = { ...prev }; delete n[i]; return n; }); }}
-                            className={`block mt-1 text-[10px] px-2 py-0.5 rounded ${isDark ? 'bg-emerald-700 text-emerald-100' : 'bg-emerald-200 text-emerald-800'}`}>
+                            className={`block mt-1 text-[10px] px-2 py-0.5 rounded ${c.moveToActionsBtn}`}>
                             Move to Actions ✅
                           </button>
                         </div>
                       )}
                       {(!excavateData[i].hidden_task?.found || !excavateData[i].hidden_task?.task) && excavateData[i].if_just_a_worry && (
-                        <p className={`text-xs italic ${isDark ? 'text-purple-300' : 'text-purple-700'} mt-1`}>{excavateData[i].if_just_a_worry}</p>
+                        <p className={`text-xs italic ${c.worryPermissionText} mt-1`}>{excavateData[i].if_just_a_worry}</p>
                       )}
                       {excavateData[i].one_thing && (
                         <p className={`text-xs font-medium ${c.text} mt-2`}>→ {excavateData[i].one_thing}</p>
@@ -656,21 +698,27 @@ const BrainDumpStructurer = () => {
   // ══════════════════════════════════════════════════
   if (view === 'setup') {
     return (
-      <div className={`min-h-screen ${c.bg} py-6 px-4`}>
+      <div className="py-6 px-4">
         <div className="max-w-xl mx-auto space-y-5">
 
           {/* Header */}
-          <div className="text-center mb-2">
-            <span className="text-4xl">🧠</span>
-            <h1 className={`text-2xl font-bold ${c.text} mt-2`}>Brain Dump Structurer</h1>
-            <p className={`${c.textSecondary} text-sm mt-1`}>Everything in your head → one clear next step</p>
+          <div className={`${c.card} border ${c.border} rounded-2xl p-5`}>
+            <div className={`pb-3 mb-4 border-b ${c.border}`}>
+              <div className="flex items-center gap-3">
+                <span className="text-3xl">{tool?.icon ?? '🧠'}</span>
+                <div>
+                  <h1 className={`text-xl font-bold ${c.text}`}>{tool?.title ?? 'Brain Dump Buddy'}</h1>
+                  <p className={`${c.textSecondary} text-sm`}>{tool?.tagline ?? 'Everything in your head → one clear next step'}</p>
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* Status bar */}
-          <div className={`${c.card} border rounded-xl p-4`}>
+          {/* Status bar — only shown after first dump */}
+          {dumpLog.length > 0 && (
+          <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
             <div className="flex items-center justify-between flex-wrap gap-2">
               <div>
-                {dumpLog.length > 0 && (
                   <span className={`text-sm font-medium ${c.text}`}>
                     <span>📊</span> {dumpLog.length} dump{dumpLog.length !== 1 ? 's' : ''}
                     {dumpLog.length >= 3 && (
@@ -679,26 +727,26 @@ const BrainDumpStructurer = () => {
                       </span>
                     )}
                   </span>
-                )}
               </div>
               <div className="flex items-center gap-2">
                 {dumpLog.length >= 3 && (
-                  <button onClick={handleReview} disabled={loading} className={`text-xs px-3 py-1.5 rounded-lg font-medium ${c.tagActive}`}><span>📈</span> Patterns</button>
+                  <button onClick={handleReview} disabled={loading} className={`text-xs px-3 py-1.5 rounded-lg font-medium ${c.pillActive}`}><span>📈</span> Patterns</button>
                 )}
-                {dumpLog.length > 0 && <button onClick={() => setDumpLog([])} className={`text-xs px-2.5 py-1.5 rounded-lg ${c.tag}`}>🗑️</button>}
+                <button onClick={() => setDumpLog([])} className={`text-xs px-2.5 py-1.5 rounded-lg ${c.btnSecondary}`}>🗑️</button>
               </div>
             </div>
           </div>
+          )}
 
           {/* Context */}
-          <div className={`${c.card} border rounded-xl p-5 space-y-3`}>
+          <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-3`}>
             <label className={`block text-sm font-semibold ${c.text}`}>
               What's going on? <span className={`font-normal ${c.textMuted}`}>(optional)</span>
             </label>
             <div className="flex flex-wrap gap-1.5">
               {CONTEXTS.map(ctx => (
                 <button key={ctx.value} onClick={() => setContext(context === ctx.value ? '' : ctx.value)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${context === ctx.value ? c.tagActive : c.tag}`}>
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${context === ctx.value ? c.pillActive : c.btnSecondary}`}>
                   <span>{ctx.icon}</span> {ctx.label}
                 </button>
               ))}
@@ -712,7 +760,7 @@ const BrainDumpStructurer = () => {
               return (
                 <button key={m.value} onClick={() => { if (!isVoiceUnsupported) setInputMode(m.value); if (isListening) toggleVoice(); }}
                   disabled={isVoiceUnsupported}
-                  className={`flex-1 py-2.5 rounded-xl text-center transition-all ${inputMode === m.value ? c.tagActive : c.tag} ${isVoiceUnsupported ? 'opacity-30 cursor-not-allowed' : ''}`}>
+                  className={`flex-1 py-2.5 rounded-xl text-center transition-all ${inputMode === m.value ? c.pillActive : c.btnSecondary} ${isVoiceUnsupported ? 'opacity-30 cursor-not-allowed' : ''}`}>
                   <span className="block text-xs font-medium">{m.icon} {m.label}</span>
                   <span className={`block text-[10px] mt-0.5 ${inputMode === m.value ? 'text-white/70' : c.textMuted}`}>{isVoiceUnsupported ? 'Not supported' : m.desc}</span>
                 </button>
@@ -722,10 +770,11 @@ const BrainDumpStructurer = () => {
 
           {/* Free text input */}
           {inputMode === 'freetext' && (
-            <div className={`${c.card} border rounded-xl p-5`}>
+            <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
               <textarea ref={textRef} value={freeText} onChange={e => setFreeText(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); handleStructure(); } }}
                 placeholder={"Just start typing. Don't organize. Don't filter.\n\nneed to call dentist mom's birthday is coming up did I send that email the car needs an oil change I'm worried about the presentation should I take that job offer groceries the kitchen is a mess I feel overwhelmed..."}
-                className={`w-full p-4 border-2 rounded-xl text-sm ${c.dumpBg} ${c.text} outline-none focus:ring-2 focus:ring-violet-400 resize-none leading-relaxed`}
+                className={`w-full p-4 border-2 rounded-xl text-sm ${c.dumpBg} ${c.text} outline-none focus:ring-2 focus:ring-cyan-400 resize-none leading-relaxed`}
                 style={{ minHeight: '160px' }} />
               {/* Interim voice text */}
               {isListening && voiceInterim && (
@@ -733,10 +782,10 @@ const BrainDumpStructurer = () => {
               )}
               <div className="flex items-center justify-between mt-1.5">
                 <div className="flex items-center gap-2">
-                  <p className={`text-[10px] ${c.textMuted}`}>No structure needed. Stream of consciousness is perfect.</p>
+                  <p className={`text-[10px] ${c.textMuted}`}>No structure needed. Stream of consciousness is perfect. Cmd+Enter to structure.</p>
                   {voiceSupported && (
                     <button onClick={toggleVoice}
-                      className={`text-xs px-2 py-1 rounded-lg transition-all ${isListening ? 'bg-red-500 text-white animate-pulse' : c.tag}`}
+                      className={`text-xs px-2 py-1 rounded-lg transition-all ${isListening ? 'bg-red-500 text-white animate-pulse' : c.btnSecondary}`}
                       title={isListening ? 'Stop listening' : 'Dictate'}>
                       {isListening ? '🔴 Stop' : '🎙️'}
                     </button>
@@ -749,7 +798,7 @@ const BrainDumpStructurer = () => {
 
           {/* Rapid fire input */}
           {inputMode === 'rapid' && (
-            <div className={`${c.card} border rounded-xl p-5 space-y-3`}>
+            <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-3`}>
               {rapidThoughts.length > 0 && (
                 <div className="space-y-1.5 max-h-60 overflow-y-auto">
                   {rapidThoughts.map((t, idx) => (
@@ -763,19 +812,32 @@ const BrainDumpStructurer = () => {
               )}
               <div className="flex gap-2">
                 <input type="text" value={currentRapid} onChange={e => setCurrentRapid(e.target.value)}
-                  onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); addRapidThought(); } }}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+                      e.preventDefault();
+                      if (currentRapid.trim()) addRapidThought();
+                      handleStructure();
+                    } else if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      if (currentRapid.trim()) {
+                        addRapidThought();
+                      } else if (rapidThoughts.length > 0) {
+                        handleStructure();
+                      }
+                    }
+                  }}
                   placeholder={rapidThoughts.length === 0 ? "Type one thought, press Enter. Repeat." : "Next thought..."}
-                  className={`flex-1 p-2.5 rounded-lg border ${c.input} focus:ring-2 focus:ring-violet-400 outline-none text-sm`}
+                  className={`flex-1 p-2.5 rounded-lg border ${c.input} focus:ring-2 focus:ring-cyan-400 outline-none text-sm`}
                   autoFocus />
                 <button onClick={addRapidThought} disabled={!currentRapid.trim()}
-                  className={`${c.accent} ${c.accentHover} ${c.accentText} disabled:opacity-30 px-4 rounded-lg font-bold`}>➕</button>
+                  className={`${c.btnPrimary} disabled:opacity-30 px-4 rounded-lg font-bold`}>➕</button>
               </div>
               <div className="flex justify-between">
                 <div className="flex items-center gap-2">
-                  <p className={`text-[10px] ${c.textMuted}`}>Press Enter after each thought.</p>
+                  <p className={`text-[10px] ${c.textMuted}`}>Enter adds · Cmd+Enter structures</p>
                   {voiceSupported && (
                     <button onClick={toggleVoice}
-                      className={`text-xs px-2 py-1 rounded-lg transition-all ${isListening ? 'bg-red-500 text-white animate-pulse' : c.tag}`}
+                      className={`text-xs px-2 py-1 rounded-lg transition-all ${isListening ? 'bg-red-500 text-white animate-pulse' : c.btnSecondary}`}
                       title={isListening ? 'Stop listening' : 'Dictate'}>
                       {isListening ? '🔴 Stop' : '🎙️'}
                     </button>
@@ -792,14 +854,14 @@ const BrainDumpStructurer = () => {
 
           {/* Voice dump mode */}
           {inputMode === 'voice' && (
-            <div className={`${c.card} border rounded-xl p-5 space-y-4`}>
+            <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-4`}>
               {/* Mic button */}
               <div className="text-center">
                 <button onClick={toggleVoice}
                   className={`w-20 h-20 rounded-full mx-auto flex items-center justify-center text-3xl transition-all shadow-lg ${
                     isListening
                       ? 'bg-red-500 text-white animate-pulse shadow-red-500/30'
-                      : (isDark ? 'bg-violet-600 hover:bg-violet-500 text-white' : 'bg-violet-500 hover:bg-violet-600 text-white')
+                      : (c.btnPrimary)
                   }`}>
                   {isListening ? '⏹️' : '🎙️'}
                 </button>
@@ -834,7 +896,7 @@ const BrainDumpStructurer = () => {
               {/* Edit toggle — let them clean up before structuring */}
               {freeText.trim() && !isListening && (
                 <button onClick={() => setInputMode('freetext')}
-                  className={`w-full py-2 rounded-lg text-xs ${c.tag} font-medium`}>
+                  className={`w-full py-2 rounded-lg text-xs ${c.btnSecondary} font-medium`}>
                   ✏️ Edit transcript before structuring
                 </button>
               )}
@@ -845,38 +907,36 @@ const BrainDumpStructurer = () => {
           <button onClick={() => setEmergencyMode(!emergencyMode)}
             className={`w-full py-3 rounded-xl text-sm font-medium transition-all border ${
               emergencyMode
-                ? (isDark ? 'bg-red-900/40 border-red-600 text-red-300' : 'bg-red-50 border-red-300 text-red-700')
-                : c.tag
+                ? (c.emergencyModeActive)
+                : c.btnSecondary
             }`}>
             {emergencyMode ? '🆘 Emergency Mode ON — just 3 things' : '🆘 I can barely function right now'}
           </button>
 
           {/* Structure button */}
           <button onClick={handleStructure} disabled={loading || !hasDump}
-            className={`w-full py-4 rounded-xl font-bold text-lg ${c.accent} ${c.accentHover} ${c.accentText} disabled:opacity-40 transition-all shadow-lg`}>
-            {loading ? <span><span className="animate-spin inline-block">⏳</span> Sorting your brain...</span> : <span><span>🧠</span> Structure This</span>}
+            className={`w-full py-4 rounded-xl font-bold text-lg ${c.btnPrimary} disabled:opacity-40 transition-all shadow-lg`}>
+            {loading ? <span><span className="animate-spin inline-block">🧠</span> Sorting your brain...</span> : <span><span>🧠</span> Structure This</span>}
           </button>
 
-          {error && <div className={`${c.error} border rounded-xl p-4`}><p className={`text-sm ${c.errorText}`}><span>⚠️</span> {error}</p></div>}
+          {error && <div className={`${c.danger} border rounded-xl p-4`}><p className={`text-sm`}><span>⚠️</span> {error}</p></div>}
 
           {/* Cross-references */}
-          <div className={`${c.card} border rounded-xl p-4`}>
+          <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
             <p className={`text-xs font-medium ${c.textMuted} mb-2`}>Related tools</p>
-            <div className="flex flex-wrap gap-2">
-              {[
-                { id: 'CrisisPrioritizer', icon: '🚨', label: 'Crisis Prioritizer' },
-                { id: 'VirtualBodyDouble', icon: '👥', label: 'Virtual Body Double' },
-                { id: 'WaitingModeLiberator', icon: '⏳', label: 'Waiting Mode Liberator' },
-              ].map(t => (
-                <a key={t.id} href={`/${t.id}`} target="_blank" rel="noopener noreferrer"
-                  className={`text-xs px-3 py-1.5 rounded-lg ${c.tag} ${c.cardHover} transition-colors`}><span>{t.icon}</span> {t.label}</a>
-              ))}
-            </div>
+            <p className={`text-xs ${c.textSecondary}`}>
+              Completely overwhelmed?{' '}
+              <a href="/CrisisPrioritizer" className={linkStyle}>Crisis Prioritizer</a>{' '}
+              cuts to the 3 things that matter right now.
+              Need someone to work beside you?{' '}
+              <a href="/VirtualBodyDouble" className={linkStyle}>Virtual Body Double</a>{' '}
+              keeps you on task.
+            </p>
           </div>
 
           {/* Recent dumps */}
           {dumpLog.length > 0 && (
-            <div className={`${c.card} border rounded-xl p-5`}>
+            <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
               <h3 className={`text-sm font-bold ${c.text} mb-3`}><span>🕐</span> Recent Dumps</h3>
               <div className="space-y-2">
                 {dumpLog.slice(0, 5).map(d => (
@@ -913,7 +973,7 @@ const BrainDumpStructurer = () => {
     const allDone = launchStep >= steps.length;
 
     return (
-      <div className={`min-h-screen ${c.bg} py-6 px-4`}>
+      <div className="py-6 px-4">
         <div className="max-w-xl mx-auto space-y-5">
 
           <div className={`${c.launch} border-2 rounded-2xl p-6 text-center shadow-lg`}>
@@ -923,7 +983,7 @@ const BrainDumpStructurer = () => {
                 <span className="text-3xl block mb-3">{currentStepData?.emoji || '👉'}</span>
                 <p className={`text-lg font-medium ${c.launchText}`}>{currentStepData?.instruction}</p>
                 <button onClick={() => setLaunchStep(launchStep + 1)}
-                  className={`mt-4 px-6 py-2.5 rounded-xl font-bold ${isDark ? 'bg-sky-600 hover:bg-sky-500' : 'bg-sky-500 hover:bg-sky-600'} text-white transition-all`}>
+                  className={`mt-4 px-6 py-2.5 rounded-xl font-bold ${c.launchBtn} text-white transition-all`}>
                   {launchStep + 1 >= steps.length ? '🎉 Done!' : '✅ Done — Next'}
                 </button>
               </>
@@ -942,16 +1002,16 @@ const BrainDumpStructurer = () => {
             <div className="flex justify-center gap-2">
               {steps.map((_, i) => (
                 <div key={i} className={`w-3 h-3 rounded-full transition-all ${
-                  i < launchStep ? (isDark ? 'bg-sky-400' : 'bg-sky-500')
-                    : i === launchStep && isGuiding ? (isDark ? 'bg-sky-400 animate-pulse' : 'bg-sky-500 animate-pulse')
-                    : (isDark ? 'bg-zinc-600' : 'bg-gray-300')
+                  i < launchStep ? (c.stepDotDone)
+                    : i === launchStep && isGuiding ? (c.stepDotActive)
+                    : (c.stepDotInactive)
                 }`} />
               ))}
             </div>
           )}
 
           <button onClick={() => { if (allDone) { setDoFirstDone(true); } setView('results'); }}
-            className={`w-full py-3 rounded-xl text-sm font-medium border ${c.tag}`}>
+            className={`w-full py-3 rounded-xl text-sm font-medium border ${c.btnSecondary}`}>
             ← Back to sorted dump
           </button>
         </div>
@@ -965,7 +1025,7 @@ const BrainDumpStructurer = () => {
   if (view === 'results' && results?.mode === 'emergency') {
     const e = results;
     return (
-      <div className={`min-h-screen ${c.bg} py-6 px-4`}>
+      <div className="py-6 px-4">
         <div className="max-w-xl mx-auto space-y-6">
           <div className="text-center"><span className="text-4xl">🆘</span></div>
 
@@ -977,8 +1037,8 @@ const BrainDumpStructurer = () => {
 
           {/* One task */}
           {e.one_task && (
-            <div className={`border-2 rounded-xl p-6 ${isDark ? 'bg-emerald-900/30 border-emerald-700' : 'bg-emerald-50 border-emerald-300'}`}>
-              <p className={`text-[10px] font-bold uppercase mb-2 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>🎯 One thing to do</p>
+            <div className={`border-2 rounded-xl p-6 ${c.doFirstDoneCard}`}>
+              <p className={`text-[10px] font-bold uppercase mb-2 ${c.doFirstDoneLabel}`}>🎯 One thing to do</p>
               <p className={`text-xl font-bold ${c.text}`}>{e.one_task.task}</p>
               {e.one_task.time_estimate && <span className={`inline-block mt-2 text-xs font-medium px-2.5 py-1 rounded-lg ${c.success} border`}>~{e.one_task.time_estimate}</span>}
               {e.one_task.why && <p className={`text-xs ${c.textSecondary} mt-2`}>{e.one_task.why}</p>}
@@ -987,10 +1047,10 @@ const BrainDumpStructurer = () => {
 
           {/* One release */}
           {e.one_release && (
-            <div className={`border-2 rounded-xl p-6 ${isDark ? 'bg-purple-900/30 border-purple-700' : 'bg-purple-50 border-purple-300'}`}>
-              <p className={`text-[10px] font-bold uppercase mb-2 ${isDark ? 'text-purple-400' : 'text-purple-600'}`}>☁️ Let this go</p>
+            <div className={`border-2 rounded-xl p-6 ${c.emergencyReleaseCard}`}>
+              <p className={`text-[10px] font-bold uppercase mb-2 ${c.emergencyReleaseLabel}`}>☁️ Let this go</p>
               <p className={`text-lg font-medium ${c.text}`}>{e.one_release.thought}</p>
-              <p className={`text-sm ${isDark ? 'text-purple-300' : 'text-purple-700'} mt-2 italic`}>{e.one_release.permission}</p>
+              <p className={`text-sm ${c.worryPermissionText} mt-2 italic`}>{e.one_release.permission}</p>
             </div>
           )}
 
@@ -1003,11 +1063,11 @@ const BrainDumpStructurer = () => {
 
           <div className="flex gap-3">
             <button onClick={() => { setEmergencyMode(false); setResults(null); setView('setup'); }}
-              className={`flex-1 py-3 rounded-xl font-medium text-sm ${c.tag}`}>
+              className={`flex-1 py-3 rounded-xl font-medium text-sm ${c.btnSecondary}`}>
               🔄 Try full sort instead
             </button>
             <button onClick={handleReset}
-              className={`flex-1 py-3 rounded-xl font-medium text-sm ${c.tag}`}>
+              className={`flex-1 py-3 rounded-xl font-medium text-sm ${c.btnSecondary}`}>
               ✨ Done
             </button>
           </div>
@@ -1024,7 +1084,7 @@ const BrainDumpStructurer = () => {
     const { done, total } = getProgress();
 
     return (
-      <div className={`min-h-screen ${c.bg} py-6 px-4`}>
+      <div className="py-6 px-4">
         <div className="max-w-xl mx-auto space-y-5">
 
           {/* Breathe */}
@@ -1036,7 +1096,7 @@ const BrainDumpStructurer = () => {
 
           {/* Overwhelm meter */}
           {r.overwhelm_meter && (
-            <div className={`${c.card} border rounded-xl p-5`}>
+            <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
               <div className="flex items-center gap-2.5 mb-3">
                 <span>✨</span>
                 <h3 className={`text-sm font-bold ${c.text}`}>Your Brain Sorted</h3>
@@ -1061,30 +1121,35 @@ const BrainDumpStructurer = () => {
           {/* Progress bar */}
           {total > 0 && (
             <div className="flex items-center gap-3 px-1">
-              <div className={`flex-1 h-2 rounded-full ${isDark ? 'bg-zinc-700' : 'bg-gray-200'} overflow-hidden`}>
-                <div className="h-full rounded-full transition-all duration-500 bg-violet-500" style={{ width: `${(done / total) * 100}%` }} />
+              <div className={`flex-1 h-2 rounded-full ${c.progressBarBg} overflow-hidden`}>
+                <div className="h-full rounded-full transition-all duration-500 bg-cyan-500" style={{ width: `${(done / total) * 100}%` }} />
               </div>
               <span className={`text-[10px] font-bold ${c.textMuted}`}>{done}/{total} done</span>
             </div>
           )}
 
+          {/* Action buttons — top of results */}
+          <div className="flex justify-end">
+            <ActionBar content={buildSummaryText()} copyLabel="Copy All" printContent={buildSummaryText()} printTitle="Brain Dump — Structured" />
+          </div>
+
           {/* Do First */}
           {r.do_first && (
             <div className={`border-2 rounded-xl p-5 transition-all ${doFirstDone
-              ? (isDark ? 'bg-emerald-900/30 border-emerald-700' : 'bg-emerald-50 border-emerald-300')
-              : (isDark ? 'bg-violet-900/30 border-violet-600' : 'bg-violet-50 border-violet-300')
+              ? (c.doFirstDoneCard)
+              : (c.doFirstActiveCard)
             }`}>
               <div className="flex items-start gap-3">
                 <button onClick={() => setDoFirstDone(p => !p)}
                   className={`mt-1 w-6 h-6 rounded-lg border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
                     doFirstDone
-                      ? (isDark ? 'bg-emerald-600 border-emerald-600' : 'bg-emerald-500 border-emerald-500')
-                      : (isDark ? 'border-violet-400' : 'border-violet-400')
+                      ? (c.doFirstCheckDone)
+                      : (c.doFirstCheckActive)
                   }`}>{doFirstDone && <span className="text-white text-xs">✓</span>}</button>
                 <div className="flex-1">
                   <p className={`text-[10px] font-bold uppercase mb-1 ${doFirstDone
-                    ? (isDark ? 'text-emerald-400' : 'text-emerald-600')
-                    : (isDark ? 'text-violet-300' : 'text-violet-600')
+                    ? (c.doFirstDoneLabel)
+                    : (c.doFirstActiveLabel)
                   }`}>{doFirstDone ? 'Done!' : 'Your one next step'}</p>
                   <p className={`text-lg font-bold ${c.text} ${doFirstDone ? 'line-through opacity-50' : ''}`}>{r.do_first.task}</p>
                   {!doFirstDone && r.do_first.why_this_first && <p className={`text-xs ${c.textSecondary} mt-1`}>{r.do_first.why_this_first}</p>}
@@ -1095,13 +1160,13 @@ const BrainDumpStructurer = () => {
                   {doFirstDone && (() => {
                     const next = getNextAction();
                     return next ? (
-                      <div className={`mt-3 pt-3 border-t ${c.divider}`}>
-                        <p className={`text-[10px] font-bold uppercase ${isDark ? 'text-violet-300' : 'text-violet-600'} mb-0.5`}>Next up</p>
+                      <div className={`mt-3 pt-3 border-t ${c.border}`}>
+                        <p className={`text-[10px] font-bold uppercase ${c.doFirstActiveLabel} mb-0.5`}>Next up</p>
                         <p className={`text-sm font-medium ${c.text}`}>{next.task || next}</p>
                         {next.time_estimate && <span className={`inline-block mt-1 text-[10px] font-bold px-2 py-0.5 rounded ${c.accentLight} border`}>~{next.time_estimate}</span>}
                       </div>
                     ) : (
-                      <p className={`mt-2 text-xs font-medium ${isDark ? 'text-emerald-300' : 'text-emerald-600'}`}>All action items done ✨</p>
+                      <p className={`mt-2 text-xs font-medium ${c.allDoneText}`}>All action items done ✨</p>
                     );
                   })()}
                 </div>
@@ -1110,8 +1175,8 @@ const BrainDumpStructurer = () => {
               {/* Start With Me button (v2) */}
               {!doFirstDone && (
                 <button onClick={handleStartWithMe} disabled={loading}
-                  className={`mt-3 w-full py-2.5 rounded-lg text-xs font-medium ${isDark ? 'bg-sky-800/50 text-sky-300 hover:bg-sky-800/70' : 'bg-sky-50 text-sky-700 hover:bg-sky-100'} transition-all`}>
-                  {loading ? <span className="animate-spin inline-block">⏳</span> : <span>🚀</span>} Can't start? Launch with me
+                  className={`mt-3 w-full py-2.5 rounded-lg text-xs font-medium ${c.startWithMeBtn} transition-all`}>
+                  {loading ? <span className="animate-spin inline-block">🧠</span> : <span>🚀</span>} Can't start? Launch with me
                 </button>
               )}
             </div>
@@ -1129,7 +1194,7 @@ const BrainDumpStructurer = () => {
 
           {/* Dependencies */}
           {r.dependencies?.length > 0 && (
-            <div className={`${c.card} border rounded-xl p-5`}>
+            <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
               <h3 className={`text-sm font-bold ${c.text} mb-3`}><span>🔗</span> Dependencies</h3>
               <div className="space-y-2">
                 {r.dependencies.map((dep, i) => (
@@ -1146,26 +1211,26 @@ const BrainDumpStructurer = () => {
           {/* Closing */}
           {r.closing && (
             <div className={`${c.success} border rounded-xl p-4 text-center`}>
-              <p className={`text-sm font-medium ${c.successText}`}>{r.closing}</p>
+              <p className={`text-sm font-medium`}>{r.closing}</p>
             </div>
           )}
 
           {/* ── POWER TOOLS (v3) ── */}
-          <div className={`${c.card} border rounded-xl p-4`}>
+          <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
             <p className={`text-[10px] font-bold uppercase ${c.textMuted} mb-3`}>⚡ Power tools</p>
             <div className="flex flex-wrap gap-2">
               <button onClick={handleShrink} disabled={loading || showShrink}
-                className={`text-xs px-3 py-2 rounded-lg font-medium transition-all ${showShrink ? c.tagActive : c.tag}`}>
-                {loading && !showShrink ? '⏳' : '✂️'} Shrink the list
+                className={`text-xs px-3 py-2 rounded-lg font-medium transition-all ${showShrink ? c.pillActive : c.btnSecondary}`}>
+                {loading && !showShrink ? <span className="animate-spin inline-block">🧠</span> : '✂️'} Shrink the list
               </button>
               <button onClick={() => setShowTimeMap(!showTimeMap)}
-                className={`text-xs px-3 py-2 rounded-lg font-medium transition-all ${showTimeMap ? c.tagActive : c.tag}`}>
+                className={`text-xs px-3 py-2 rounded-lg font-medium transition-all ${showTimeMap ? c.pillActive : c.btnSecondary}`}>
                 🗓️ Map to my day
               </button>
               {previousDumpResults && (
                 <button onClick={handleDumpDiff} disabled={loading || !!dumpDiffData}
-                  className={`text-xs px-3 py-2 rounded-lg font-medium transition-all ${dumpDiffData ? c.tagActive : c.tag}`}>
-                  {loading && !dumpDiffData ? '⏳' : '📊'} Compare to last dump
+                  className={`text-xs px-3 py-2 rounded-lg font-medium transition-all ${dumpDiffData ? c.pillActive : c.btnSecondary}`}>
+                  {loading && !dumpDiffData ? <span className="animate-spin inline-block">🧠</span> : '📊'} Compare to last dump
                 </button>
               )}
             </div>
@@ -1173,7 +1238,7 @@ const BrainDumpStructurer = () => {
 
           {/* ── SHRINK RESULTS (v3) ── */}
           {showShrink && shrinkData && (
-            <div className={`${c.card} border-2 rounded-xl p-5 space-y-3 ${isDark ? 'border-amber-600' : 'border-amber-300'}`}>
+            <div className={`${c.card} border-2 rounded-xl p-5 space-y-3 ${c.shrinkBorder}`}>
               <div className="flex items-center justify-between">
                 <h3 className={`text-sm font-bold ${c.text}`}>✂️ Shrink the List</h3>
                 <button onClick={() => setShowShrink(false)} className={`text-xs ${c.textMuted}`}>✕</button>
@@ -1181,12 +1246,12 @@ const BrainDumpStructurer = () => {
               {shrinkData.intro && <p className={`text-sm ${c.textSecondary}`}>{shrinkData.intro}</p>}
               <div className="space-y-2">
                 {shrinkData.challenges?.map((ch, i) => {
-                  const verdictColors = {
-                    keep: isDark ? 'border-l-emerald-500' : 'border-l-emerald-400',
-                    shrink: isDark ? 'border-l-amber-500' : 'border-l-amber-400',
-                    batch: isDark ? 'border-l-blue-500' : 'border-l-blue-400',
-                    defer: isDark ? 'border-l-purple-500' : 'border-l-purple-400',
-                    drop: isDark ? 'border-l-red-500' : 'border-l-red-400',
+                const verdictColors = {
+                    keep:   c.verdictKeep,
+                    shrink: c.verdictShrink,
+                    batch:  c.verdictBatch,
+                    defer:  c.verdictDefer,
+                    drop:   c.verdictDrop,
                   };
                   const verdictEmoji = { keep: '✅', shrink: '📐', batch: '🔗', defer: '⏰', drop: '🗑️' };
                   return (
@@ -1206,7 +1271,7 @@ const BrainDumpStructurer = () => {
               </div>
               {shrinkData.summary && (
                 <div className={`${c.warning} border rounded-lg p-3 text-center`}>
-                  <p className={`text-xs font-medium ${c.warningText}`}>
+                  <p className={`text-xs font-medium`}>
                     {shrinkData.original_count} items → {shrinkData.summary.new_count} items · {shrinkData.summary.time_saved} saved
                   </p>
                 </div>
@@ -1217,7 +1282,7 @@ const BrainDumpStructurer = () => {
 
           {/* ── TIME MAP INPUT + RESULTS (v3) ── */}
           {showTimeMap && (
-            <div className={`${c.card} border-2 rounded-xl p-5 space-y-3 ${isDark ? 'border-sky-600' : 'border-sky-300'}`}>
+            <div className={`${c.card} border-2 rounded-xl p-5 space-y-3 ${c.timeMapBorder}`}>
               <div className="flex items-center justify-between">
                 <h3 className={`text-sm font-bold ${c.text}`}>🗓️ Map to My Day</h3>
                 <button onClick={() => setShowTimeMap(false)} className={`text-xs ${c.textMuted}`}>✕</button>
@@ -1237,8 +1302,8 @@ const BrainDumpStructurer = () => {
                       className={`w-full p-2.5 rounded-lg border ${c.input} text-sm`} />
                   </div>
                   <button onClick={handleTimeMap} disabled={loading || !timeMapAvailable}
-                    className={`w-full py-2.5 rounded-lg font-medium text-sm ${isDark ? 'bg-sky-600 hover:bg-sky-500' : 'bg-sky-500 hover:bg-sky-600'} text-white disabled:opacity-40`}>
-                    {loading ? '⏳ Building...' : '🗓️ Build My Schedule'}
+                    className={`w-full py-2.5 rounded-lg font-medium text-sm ${c.launchBtn} text-white disabled:opacity-40`}>
+                    {loading ? <><span className="animate-spin inline-block">🧠</span> Building...</> : '🗓️ Build My Schedule'}
                   </button>
                 </div>
               )}
@@ -1246,10 +1311,10 @@ const BrainDumpStructurer = () => {
                 <div className="space-y-2">
                   {timeMapData.schedule?.map((slot, i) => {
                     const typeStyles = {
-                      break: isDark ? 'bg-emerald-900/30 border-emerald-700' : 'bg-emerald-50 border-emerald-200',
-                      buffer: isDark ? 'bg-zinc-700/30 border-zinc-600' : 'bg-gray-50 border-gray-200',
-                      communication: isDark ? 'bg-blue-900/30 border-blue-700' : 'bg-blue-50 border-blue-200',
-                      task: c.blockBg,
+                      break:         c.scheduleBreak,
+                      buffer:        c.scheduleBuffer,
+                      communication: c.scheduleCommunication,
+                      task:          c.blockBg,
                     };
                     return (
                       <div key={i} className={`flex items-start gap-3 p-3 rounded-lg border ${typeStyles[slot.type] || c.blockBg}`}>
@@ -1268,9 +1333,9 @@ const BrainDumpStructurer = () => {
                   })}
                   {timeMapData.deferred?.length > 0 && (
                     <div className={`${c.warning} border rounded-lg p-3`}>
-                      <p className={`text-[10px] font-bold ${c.warningText} mb-1`}>⏰ Deferred</p>
+                      <p className={`text-[10px] font-bold mb-1`}>⏰ Deferred</p>
                       {timeMapData.deferred.map((d, i) => (
-                        <p key={i} className={`text-xs ${c.warningText}`}>{d.task} — {d.reason}</p>
+                        <p key={i} className={`text-xs`}>{d.task} — {d.reason}</p>
                       ))}
                     </div>
                   )}
@@ -1280,7 +1345,7 @@ const BrainDumpStructurer = () => {
                   </div>
                   {timeMapData.closing && <p className={`text-xs ${c.textSecondary} text-center italic`}>{timeMapData.closing}</p>}
                   <button onClick={() => { setTimeMapData(null); setTimeMapAvailable(''); setTimeMapStart(''); }}
-                    className={`w-full py-2 rounded-lg text-xs ${c.tag}`}>↩️ Rebuild schedule</button>
+                    className={`w-full py-2 rounded-lg text-xs ${c.btnSecondary}`}>↩️ Rebuild schedule</button>
                 </div>
               )}
             </div>
@@ -1288,14 +1353,14 @@ const BrainDumpStructurer = () => {
 
           {/* ── DUMP DIFF RESULTS (v3) ── */}
           {dumpDiffData && (
-            <div className={`${c.card} border-2 rounded-xl p-5 space-y-3 ${isDark ? 'border-indigo-600' : 'border-indigo-300'}`}>
+            <div className={`${c.card} border-2 rounded-xl p-5 space-y-3 ${c.dumpDiffBorder}`}>
               <div className="flex items-center justify-between">
                 <h3 className={`text-sm font-bold ${c.text}`}>📊 Since Last Dump</h3>
                 <button onClick={() => setDumpDiffData(null)} className={`text-xs ${c.textMuted}`}>✕</button>
               </div>
               {dumpDiffData.celebration && (
                 <div className={`${c.success} border rounded-lg p-3`}>
-                  <p className={`text-xs ${c.successText}`}>🎉 {dumpDiffData.celebration}</p>
+                  <p className={`text-xs`}>🎉 {dumpDiffData.celebration}</p>
                 </div>
               )}
               {dumpDiffData.resolved?.length > 0 && (
@@ -1338,22 +1403,30 @@ const BrainDumpStructurer = () => {
           )}
 
           {/* Actions */}
-          <ActionBar copyContent={buildSummaryText()} copyLabel="Copy All" printContent={buildSummaryText()} printTitle="Brain Dump — Structured" />
-
           <div className="flex gap-3">
             <button onClick={handleReDump}
-              className={`flex-1 py-3.5 rounded-xl font-bold ${c.accent} ${c.accentHover} ${c.accentText}`}>
+              className={`flex-1 py-3.5 rounded-xl font-bold ${c.btnPrimary}`}>
               <span>🔄</span> Re-dump (carry forward)
             </button>
             <button onClick={handleReset}
-              className={`flex-1 py-3.5 rounded-xl font-bold border ${c.tag}`}>
+              className={`flex-1 py-3.5 rounded-xl font-bold border ${c.btnSecondary}`}>
               <span>✨</span> Fresh Start
             </button>
           </div>
 
           <p className={`text-[10px] ${c.textMuted} text-center`}>Thoughts are processed live — nothing stored on servers.</p>
 
-          {error && <div className={`${c.error} border rounded-xl p-4`}><p className={`text-sm ${c.errorText}`}><span>⚠️</span> {error}</p></div>}
+          <p className={`text-[10px] ${c.textMuted} text-center`}>AI-generated — review before acting on any suggestions.</p>
+
+          {results?.worries?.length > 2 && (
+            <p className={`text-xs text-center ${c.textMuted}`}>
+              Lots of worries?{' '}
+              <a href="/WaitingModeLiberator" className={linkStyle}>Waiting Mode Liberator</a>{' '}
+              helps when you're stuck waiting on others.
+            </p>
+          )}
+
+          {error && <div className={`${c.danger} border rounded-xl p-4`}><p className={`text-sm`}><span>⚠️</span> {error}</p></div>}
         </div>
       </div>
     );
@@ -1364,16 +1437,16 @@ const BrainDumpStructurer = () => {
   // ══════════════════════════════════════════════════
   if (view === 'insights') {
     return (
-      <div className={`min-h-screen ${c.bg} py-6 px-4`}>
+      <div className="py-6 px-4">
         <div className="max-w-xl mx-auto space-y-5">
           <div className="flex items-center justify-between">
             <h2 className={`text-xl font-bold ${c.text}`}><span>📈</span> Brain Dump Patterns</h2>
-            <button onClick={() => setView('setup')} className={`text-sm px-3 py-1.5 rounded-lg ${c.tag}`}>← Back</button>
+            <button onClick={() => setView('setup')} className={`text-sm px-3 py-1.5 rounded-lg ${c.btnSecondary}`}>← Back</button>
           </div>
 
           {reviewData ? (
             <>
-              <div className={`${c.card} border rounded-xl p-5`}>
+              <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
                 <div className="grid grid-cols-3 gap-4 text-center">
                   <div><p className={`text-2xl font-bold ${c.text}`}>{reviewData.total_dumps}</p><p className={`text-xs ${c.textMuted}`}>dumps</p></div>
                   <div><p className={`text-2xl font-bold ${c.text}`}>{reviewData.avg_thoughts || '—'}</p><p className={`text-xs ${c.textMuted}`}>avg thoughts</p></div>
@@ -1390,14 +1463,14 @@ const BrainDumpStructurer = () => {
               )}
 
               {reviewData.dominant_category && (
-                <div className={`${c.card} border rounded-xl p-5`}>
+                <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
                   <h3 className={`text-sm font-bold ${c.text} mb-2`}><span>📊</span> What Fills Your Head</h3>
                   <p className={`text-sm ${c.textSecondary}`}>{reviewData.dominant_category.observation}</p>
                 </div>
               )}
 
               {reviewData.context_patterns && (
-                <div className={`${c.card} border rounded-xl p-5`}>
+                <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
                   <h3 className={`text-sm font-bold ${c.text} mb-2`}><span>🔍</span> When You Dump</h3>
                   <p className={`text-sm ${c.textSecondary}`}>Most common: {reviewData.context_patterns.most_common}</p>
                   {reviewData.context_patterns.observation && <p className={`text-sm ${c.textSecondary} mt-1`}>{reviewData.context_patterns.observation}</p>}
@@ -1413,13 +1486,13 @@ const BrainDumpStructurer = () => {
               )}
 
               {reviewData.trend && (
-                <div className={`${c.card} border rounded-xl p-4`}>
+                <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
                   <p className={`text-sm ${c.textSecondary}`}><span>📈</span> {reviewData.trend}</p>
                 </div>
               )}
 
               {reviewData.recommendations?.length > 0 && (
-                <div className={`${c.card} border rounded-xl p-5`}>
+                <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
                   <h3 className={`text-sm font-bold ${c.text} mb-3`}><span>💡</span> Recommendations</h3>
                   <div className="space-y-3">
                     {reviewData.recommendations.map((r, i) => (
@@ -1434,13 +1507,13 @@ const BrainDumpStructurer = () => {
 
               {reviewData.encouragement && (
                 <div className={`${c.success} border rounded-xl p-4`}>
-                  <p className={`text-sm ${c.successText}`}><span>💚</span> {reviewData.encouragement}</p>
+                  <p className={`text-sm`}><span>💚</span> {reviewData.encouragement}</p>
                 </div>
               )}
             </>
           ) : (
-            <div className={`${c.card} border rounded-xl p-8 text-center`}>
-              <span className="animate-spin inline-block text-2xl">⏳</span>
+            <div className={`${c.card} border ${c.border} rounded-xl p-8 text-center`}>
+              <span className="animate-spin inline-block text-2xl">🧠</span>
               <p className={`text-sm ${c.textMuted} mt-2`}>Analyzing your dumps...</p>
             </div>
           )}

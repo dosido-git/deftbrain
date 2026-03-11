@@ -240,7 +240,7 @@ export const tools = [
   id: "ChaosPilot",
   title: "Chaos Pilot",
   tagline: "One calculated disruption. Not random — strategically chaotic.",
-  tags: ['stuck', 'rut', 'routine', 'bored', 'stagnant', 'change', 'habit', 'shake up', 'motivation', 'growth', 'pattern'],
+  tags: ['stuck', 'rut', 'routine', 'bored', 'stagnant', 'change', 'habit', 'shake up', 'motivation', 'growth', 'pattern', 'disruption', 'intervention', 'novelty', 'life change', 'burnout', 'monotony'],
   icon: "🎰",
   categories: ['What If?', 'Veer'],
   description: "Diagnoses the invisible rut you're stuck in — the behavioral pattern producing stagnation — and designs one specific, strategically uncomfortable disruption to break it. Not random novelty. One surgical intervention with exact timing, a full instruction, and a pre-empted excuse for when you want to skip it.",
@@ -337,8 +337,8 @@ export const tools = [
   title: "Belief Stress Test",
   tagline: "Your guiding beliefs, pressure-tested. Where they hold. Where they break.",
   tags: ['belief', 'critical thinking', 'philosophy', 'assumptions', 'test', 'logic', 'values', 'worldview', 'self-awareness', 'bias', 'edge case'],
-  icon: "🧪",
-  categories: ['Brain Games', 'Me'],
+  icon: "🔬",
+  categories: ['Go Deep', 'Brain Games', 'Me'],
   description: "Pressure-tests the guiding beliefs you live by across multiple dimensions: historical counterexamples, logical edge cases, cultural variations, empirical exceptions. Finds where the belief holds, where it breaks, the psychological function it serves, and the more precise version that actually survives scrutiny.",
   guide: {
       overview: "BeliefStressTest runs your operating beliefs through a battery of tests — not to destroy them, but to find where they're actually true versus where they're a useful simplification that misleads in specific situations. The output is a calibrated upgrade.",
@@ -494,12 +494,12 @@ export const tools = [
 {
   modified: "",
   id: "AnalogyEngine",
-  title: "AnalogyEngine",
+  title: "Analogy Engine",
   tagline: "Explain anything to anyone — using their world.",
-  tags: ['explain', 'analogy', 'understand', 'teach', 'simplify', 'metaphor', 'learning'],
-  icon: "🔬",
-  categories: ['Go Deep!'],
-  description: "Need to explain blockchain to your grandmother? Compound interest to a teenager? Describe the concept and who you're explaining it to, and AnalogyEngine generates 3-5 analogies tailored specifically to their interests and experience. Each analogy includes where it breaks down, accuracy ratings, and teaching tips.",
+  tags: ['explain', 'analogy', 'understand', 'teach', 'simplify', 'metaphor', 'learning', 'teaching', 'communication', 'explanation', 'concept', 'audience', 'clarity'],
+  icon: "💡",
+  categories: ['Go Deep!', 'Discourse'],
+  description: "Describe a concept and who you're explaining it to — and Analogy Engine generates tailored analogies using their world. Each one includes why it works, where it breaks down, accuracy ratings, and a teaching tip for delivery.",
   guide: {
     overview: "AnalogyEngine creates analogies so tailored that complex ideas become instantly obvious. Tell it what you need to explain and who the audience is — especially their interests and world — and it generates multiple analogies that use concepts your audience already understands. Every analogy shows its accuracy, memorability, where it breaks down, and how to deliver it.",
     howToUse: [
@@ -528,7 +528,7 @@ export const tools = [
   id: "ColdOpenCraft",
   title: "Cold Open Craft",
   tagline: "First messages that actually get responses.",
-  tags: ['cold email', 'first message', 'reach out', 'introduction', 'outreach', 'networking'],
+  tags: ['cold email', 'first message', 'reach out', 'introduction', 'outreach', 'networking', 'linkedin', 'dm', 'twitter', 'instagram', 'pitch', 'mentor', 'collaboration', 'job', 'stranger', 'follow up', 'cold outreach'],
   icon: "📬",
   categories: ['The Office', 'Discourse'],
   description: "Reaching out to someone you don't know — for networking, a job, a collaboration, or a favor? Describe who and why, and ColdOpenCraft generates 3 openers ranked by boldness (safe, balanced, bold), explains the psychology behind each, includes a follow-up plan, and warns you what NOT to say. Channel-specific for email, LinkedIn, DM, or in-person.",
@@ -655,15 +655,15 @@ export const tools = [
 
 {
   modified: "",
-  id: "BeforeYouBook",
-  title: "BeforeYouBook",
+  id: "ProcedureProbe",
+  title: "Procedure Probe",
   tagline: "Be an informed patient before you say yes.",
-  tags: ['doctor', 'dentist', 'procedure', 'medical', 'appointment', 'health', 'informed patient'],
-  icon: "🦷",
-  categories: ['Body'],
+  tags: ['doctor', 'dentist', 'procedure', 'medical', 'appointment', 'health', 'informed patient', 'surgery', 'root canal', 'insurance', 'second opinion', 'cost', 'questions to ask'],
+  icon: "🔬",
+  categories: ['Body', 'Money'],
   description: "A doctor or dentist just recommended a procedure. Before you schedule, get the briefing: is this standard for your situation? What questions should you ask? What does it typically cost, and what does insurance cover? What are the red flags? What's recovery really like? Empowers you to be an informed patient — not medical advice, but medical literacy.",
   guide: {
-    overview: "BeforeYouBook helps you understand what you're agreeing to before a medical or dental procedure. It explains the procedure in plain language, tells you whether it's standard for your situation, generates the exact questions to ask your provider, breaks down typical costs and insurance coverage, flags red flags to watch for, and gives you an honest picture of recovery.",
+    overview: "Procedure Probe helps you understand what you're agreeing to before a medical or dental procedure. It explains the procedure in plain language, tells you whether it's standard for your situation, generates the exact questions to ask your provider, breaks down typical costs and insurance coverage, flags red flags to watch for, and gives you an honest picture of recovery.",
     howToUse: [
       "Enter the procedure or treatment that was recommended",
       "Pick the provider type — dentist, surgeon, etc.",
@@ -815,15 +815,15 @@ export const tools = [
 
 {
   modified: "",
-  id: "AntiGiftPanic",
-  title: "Anti-Gift Panic",
-  tagline: "Tell me about the person. I'll find a gift that feels like you spent weeks on it.",
-  tags: ['gift', 'present', 'birthday', 'holiday', 'shopping', 'what to buy'],
+  id: "Giftology",
+  title: "Giftology",
+  tagline: "The perfect gift for the hardest person to shop for.",
+  tags: ['gift', 'present', 'birthday', 'holiday', 'shopping', 'what to buy', 'last minute', 'thoughtful', 'personalized', 'thank you', 'wedding', 'graduation', 'card message'],
   icon: "🎁",
-  categories: ['Humans'],
+  categories: ['Humans', 'Loot'],
   description: "Describe whoever you're shopping for — relationship, interests, personality, constraints — and AI finds specific, personal gift ideas that feel thoughtful, not algorithmic. Every suggestion includes why it works for THIS person, where to get it, a presentation tip, and what to write in the card. Includes a wildcard option and a last-minute save if you need something today.",
   guide: {
-    overview: "Anti-Gift Panic connects scattered things you know about a person into gift ideas that feel like you paid attention. The AI moment isn't 'here are popular gifts' — it's the reasoning chain from a specific detail about them to a specific gift that proves you notice things. Every pick includes a card message that makes even a simple gift feel intentional. Wildcard option for something unexpected, last-minute save for panic mode.",
+    overview: "Giftology connects scattered things you know about a person into gift ideas that feel like you paid attention. The AI moment isn't 'here are popular gifts' — it's the reasoning chain from a specific detail about them to a specific gift that proves you notice things. Every pick includes a card message that makes even a simple gift feel intentional. Wildcard option for something unexpected, last-minute save for panic mode.",
     howToUse: [
       "Describe the recipient — relationship, interests, personality, quirks, anything you know",
       "Pick an occasion, set a budget and deadline (all optional but help focus results)",
@@ -850,7 +850,7 @@ export const tools = [
   id: "AwkwardSilenceFiller",
   title: "Awkward Silence Filler",
   tagline: "Context-appropriate conversation rescues on demand",
-  tags: ['conversation', 'awkward', 'small talk', 'social', 'anxiety', 'party'],
+  tags: ['conversation', 'awkward', 'small talk', 'social', 'silence', 'chat', 'date', 'networking', 'ice breaker', 'what to say', 'first date', 'elevator', 'coworker'],
   icon: "💬",
   categories: ['Discourse', 'Humans'],
   description: "Context-appropriate conversation fillers for awkward silences. 5-7 safe options from environmental observations to light questions. Matched to setting (work/party/date/family). Includes body language tips, exit strategies, and what NOT to say.",
@@ -1052,7 +1052,7 @@ export const tools = [
   id: "ContrastReport",
   title: "The Contrast Report",
   tagline: "Feel both futures before you choose.",
-  tags: ['decision', 'compare', 'two paths', 'choose', 'future', 'alternative', 'scenario'],
+  tags: ['decision', 'compare', 'two paths', 'choose', 'future', 'alternative', 'scenario', 'narrative', 'day in the life', 'gut feeling', 'life choice', 'career', 'simulation', 'vivid'],
   icon: "🔮",
   categories: ['Veer'],
   description: "Describe two paths you're considering. Instead of a pro/con list, AI writes a vivid 'day in the life' narrative for each path — a plausible Tuesday, set in your future. Your gut reacts before your brain does.",
@@ -1084,9 +1084,9 @@ export const tools = [
   id: "ComebackCooker",
   title: "Comeback Cooker",
   tagline: "The perfect response you thought of 3 hours too late.",
-  tags: ['comeback', 'response', 'argument', 'regret', 'witty', 'what to say', 'rehearse'],
+  tags: ['comeback', 'response', 'argument', 'regret', 'witty', 'what to say', 'rehearse', 'roast', 'cathartic', 'insult', 'bully', 'revenge', 'conflict', 'clap back', 'petty'],
   icon: "🍳",
-  categories: ['Discourse'],
+  categories: ['Discourse', 'Humans'],
   description: "Describe the moment that's been living rent-free in your head. AI generates the perfect comebacks you wish you'd said — from surgical precision to unbothered royalty. Purely cathartic. No intent to send.",
   guide: {
     overview: "Comeback Cooker is for that moment playing on loop in your brain — the thing someone said, and the devastating response you only thought of hours later. Describe the situation, pick a mood (surgical, witty, petty, or dignified), and get 5 comebacks using different techniques, plus a high road option and a nuclear option kept safely in the fantasy drawer. Each comeback comes with delivery notes so you can rehearse the fantasy properly.",
@@ -1118,7 +1118,7 @@ export const tools = [
   tagline: "What if history went differently?",
   tags: ['history', 'what if', 'alternate timeline', 'counterfactual', 'historical', 'thought experiment'],
   icon: "🌀",
-  categories: ['Brain Games', 'What If?'],
+  categories: ['What If?', 'Veer'],
   description: "Pick any moment in history and change one detail. Watch the consequences cascade — politics, technology, culture, daily life — all the way to today.",
   guide: {
     overview: "Alternate Path takes a real historical event, changes one key detail, and traces the ripple effects forward through a plausible alternate timeline. Each consequence cascades into the next, showing how one pivot point can reshape politics, culture, technology, and daily life in ways you wouldn't expect.",
@@ -1148,7 +1148,7 @@ export const tools = [
   id: "ArgumentSimulator",
   title: "Argument Simulator",
   tagline: "Drop a hot take. AI argues both sides.",
-  tags: ['debate', 'argue', 'opinion', 'hot take', 'perspective', 'fun'],
+  tags: ['debate', 'argue', 'opinion', 'hot take', 'perspective', 'steelman', 'both sides', 'rhetoric', 'critical thinking', 'devil\'s advocate', 'dinner party', 'fun', 'persuasion'],
   icon: "⚔️",
   categories: ['Brain Games', 'What If?'],
   description: "Give any opinion and watch AI steelman the strongest possible case FOR and AGAINST it. Three intensity levels from civil debate to full rhetorical firepower. Includes a judge's verdict and a ready-made dinner party take.",
@@ -1537,7 +1537,7 @@ export const tools = [
   id: "ContextCollapse",
   title: "Context Collapse",
   tagline: "See how different people will read the same message — before you send it",
-  tags: ['message', 'audience', 'post', 'social media', 'group chat', 'interpret', 'misread', 'tone', 'send'],
+  tags: ['message', 'audience', 'post', 'social media', 'group chat', 'interpret', 'misread', 'tone', 'send', 'communication', 'misunderstanding', 'context', 'email', 'slack', 'public', 'preview', 'perception'],
   icon: "📢",
   categories: ['Read the Room'],
   description: "About to send a text, post something, or make an announcement that multiple people will see? Context Collapse previews how each audience interprets it. Your boss reads it as professional boundary-setting. Your coworker reads it as passive-aggressive. Your mom reads it as a cry for help. See the gaps between your intent and each audience's reading, get risk ratings per audience, and rewrite suggestions that thread the needle. The tool that prevents the social media post that gets you fired and the group chat message that starts a war.",
@@ -1570,10 +1570,10 @@ export const tools = [
   id: "Bookmark",
   title: "Bookmark",
   tagline: "Pick up where you left off — without spoilers",
-  tags: ['show', 'book', 'game', 'sports', 'recap', 'spoiler', 'abandoned', 'catch up', 'tv', 'season'],
+  tags: ['show', 'book', 'game', 'sports', 'recap', 'spoiler', 'abandoned', 'catch up', 'catch-up', 'tv', 'season', 'remember', 'forgotten', 'series', 'chapter', 'binge', 'rewatch', 'pick up', 'return', 'summary', 'plot', 'characters', 'episode', 'where was i'],
   icon: "🔖",
-  categories: ['Out & About', 'Detour'],
-  description: "Abandoned a show, book, game, or sports season? Get a spoiler-free recap calibrated to exactly where you stopped. Character refreshers, active plot threads, vibe checks, and memory triggers that get you back in without ruining what's ahead. Sports mode flags must-watch games you missed and gives you conversation-ready talking points so nobody knows you fell off.",
+  categories: ['Pursuits', 'Detour'],
+  description: "Abandoned a show, book, game, or sports season? Get a spoiler-free recap calibrated to exactly where you stopped — character refreshers, active plot threads, vibe checks, and must-watch game flags.",
   guide: {
     overview: "Bookmark solves the problem Google can't: getting caught up on something you abandoned without stumbling into spoilers. Wikis, Reddit threads, and search results are landmines. Bookmark gives you a precision recap — vivid enough to trigger your memory, careful enough to protect everything after your stopping point. Four modes cover TV shows, books, video games, and sports seasons.",
     howToUse: [
@@ -1731,9 +1731,9 @@ export const tools = [
   id: "CaptionMagic",
   title: "Caption Magic",
   tagline: "Turn any photo into engaging social media captions",
-  tags: ['caption', 'social media', 'photo', 'instagram', 'hashtag', 'post', 'content'],
+  tags: ['caption', 'social media', 'photo', 'instagram', 'linkedin', 'twitter', 'tiktok', 'facebook', 'threads', 'hashtag', 'post', 'content', 'brand voice', 'alt text'],
   icon: "📸",
-  categories: ['What If?'],
+  categories: ['Pursuits', 'What If?'],
   description: "Turn any photo into engaging social media captions with AI vision. Upload or paste an image, pick your platform and tone, and get 3 distinct caption options with smart hashtags (categorized by reach), character counts, alt text, and engagement tips. Refine any caption with one tap, adapt your winner to every platform at once, remix the best parts of multiple captions, and build a personal brand voice profile that gets smarter over time. Supports Instagram, LinkedIn, Facebook, Twitter/X, TikTok, and Threads.",
   guide: {
     overview: "Caption Magic uses AI vision to look at your actual photo and craft social media captions that sound like a real person, not a brand. Upload any image (drag-and-drop, paste, or describe it), choose your platform and tone, and get 3 distinct caption options with categorized hashtags (trending, niche, branded), character counts against platform limits, alt text, posting schedule recommendations, and engagement tips. Refine any caption instantly with 5 one-tap options. Adapt your winner to all platforms at once. Remix the best parts of multiple captions into a perfect hybrid. After 3+ uses, Caption Magic learns your brand voice and can auto-apply your preferred style. Track which captions perform best with built-in A/B testing insights.",
@@ -1783,12 +1783,38 @@ export const tools = [
 {
   modified: "",
   id: "BatchFlow",
-  title: 'BatchFlow',
+  title: 'Batch Flow',
   tagline: "Batch similar tasks to protect your focus and minimize mental gear-shifting",
-  tags: ['batch', 'tasks', 'focus', 'productivity', 'context switching', 'schedule', 'cognitive'],
+  tags: ['batch', 'tasks', 'focus', 'productivity', 'context switching', 'schedule', 'cognitive', 'todo', 'time management', 'deep work', 'flow state', 'energy', 'batching'],
   icon: '⚡',
-  categories: ['The Office', 'Do It!'],
-  description: 'Batch similar tasks by cognitive mode to minimize context switching and protect your focus. Includes weekly rhythms, A/B schedule comparison, time calibration, location-aware batching, resistance detection, and focus environment presets.'
+  categories: ['Do It!', 'The Office!'],
+  description: 'Batch similar tasks by cognitive mode to minimize context switching and protect your focus. Includes weekly rhythms, A/B schedule comparison, time calibration, location-aware batching, resistance detection, and focus environment presets.',
+  guide: {
+    overview: "BatchFlow groups your tasks by how your brain needs to work — not just by topic or deadline. Every time you switch between creative thinking, analytical work, social communication, or physical tasks, your brain pays a recovery tax of 15–25 minutes. BatchFlow eliminates unnecessary switches by sorting your tasks into coherent batches, scheduling them around your energy curve and fixed commitments, and giving you a ready-to-execute plan. Add your tasks, tell it what kind of day you're having and when your energy peaks, and get a complete batched schedule — with focus environment tips, break suggestions, and time estimates — in seconds.",
+    howToUse: [
+      "List everything on your plate — don't filter or prioritize yet, just dump it all in",
+      "Or use 'Paste List' to drop in a raw to-do list and let BatchFlow extract and structure it for you",
+      "Set your energy pattern (Morning Person, Night Owl, etc.) so high-focus batches land at your peak",
+      "Pick your day type — Maker Day, Meetings Day, Admin Day — to shape how batches are sequenced",
+      "Add fixed commitments (meetings, pickups) so BatchFlow works around them, not over them",
+      "Hit 'Batch My Tasks' — or use 'Compare' to see a Sprint vs Marathon version side-by-side",
+      "In the results, tick off tasks as you go, use '🔍 Expand' for step-by-step breakdowns, and hit 'What's next?' to recalibrate mid-day",
+      "Use 'Log time' after each batch to build time calibration data — after a few sessions it'll predict your durations accurately"
+    ],
+    example: {
+      scenario: "It's Monday morning. You have 11 tasks: 3 emails to write, a spreadsheet to update, 2 calls to make, a report to draft, groceries, a form to file, a meeting at 2pm, and a design review.",
+      action: "Enter all 11 tasks, set energy to 'Morning Person', day type to 'Mixed Bag', add the 2pm meeting as a fixed commitment. Hit Batch.",
+      result: "BatchFlow groups them into 4 batches: a 9–11am Creative batch (report + design review), an 11am–noon Social batch (calls + emails), a 1–2pm Mechanical batch (spreadsheet + form, before the meeting), and an afternoon Physical batch (groceries after the meeting). Each batch includes a focus preset, estimated duration, and a break suggestion. Context switches drop from 10 to 3."
+    },
+    tips: [
+      "The 'Paste List' mode is fastest — just dump your notes app or inbox and BatchFlow will extract tasks automatically",
+      "Use 'Compare' (Sprint vs Marathon) when you're unsure how hard to push — it shows two different pacing strategies for the same tasks",
+      "Add even vague time estimates ('~30 min') to the task detail field — it makes batch durations much more accurate",
+      "The 'Weekly Rhythm' feature is worth setting up once — it gives you a repeatable weekly batching pattern for recurring tasks",
+      "If the same tasks keep getting deferred across sessions, the '⚠️ Stuck tasks' analysis will diagnose why and suggest a fix",
+      "After 3+ sessions, 'Insights' shows your actual batching patterns — which modes you favor, your real completion rate, and where you lose the most time"
+    ]
+  }
 },
 
 {
@@ -2120,10 +2146,11 @@ export const tools = [
   id: "BragSheetBuilder",
   title: "Brag Sheet Builder",
   tagline: "Turn humble descriptions into a complete career advancement toolkit",
-  tags: ['resume', 'achievements', 'career', 'promotion', 'accomplishments', 'interview'],
+  tags: ['resume', 'achievements', 'career', 'promotion', 'accomplishments', 'interview', 'linkedin', 'performance review', 'raise', 'salary negotiation', 'job search', 'brag sheet', 'bullets', 'cv', 'job application', 'cover letter', 'behavioral interview', 'confidence', 'work history', 'wins', 'strengths', 'star stories', 'voice match'],
   icon: "🏆",
-  categories: ['Pursuits'],
-  description: "A complete career advancement system. Start with the Accomplishment Excavator if you can't remember what you did, or use the weekly Journal to log wins as they happen. Add accomplishments (be as humble as you want) and get before/after transformations with verb upgrades, imposter syndrome coaching, and a metrics excavator that finds hidden numbers. Then go deeper: Strength Radar scores your sheet across 6-8 dimensions and finds gaps. JD Tailoring rewrites your bullets using a specific job description's language with match scoring and gap detection. Interview Matrix maps accomplishments to behavioral questions and shows what's covered vs exposed. Voice Match rewrites everything to sound like you (not AI) based on a writing sample. Plus: STAR stories on demand from any accomplishment, inline tweak/reword per bullet, add accomplishments without resetting, resume bullets, LinkedIn about, performance review, and raise ammunition with dollar estimates and a meeting script.",
+  categories: ['The Grind', 'The Office', 'Me', 'Humans'],
+  description: "Transforms humble work descriptions into polished achievement statements, then goes further with Strength Radar scoring, JD tailoring, Interview Prep Matrix, Voice Match, raise ammunition, and a meeting script.",
+  crossRefs: ['DifficultTalkCoach', 'ColdOpenCraft'],
   guide: {
     overview: "Most people chronically understate their work. This tool fixes that — and then takes it five steps further. The core loop: add accomplishments in your own words, get them transformed into power statements with verb upgrades, then answer metrics questions to replace estimates with real numbers. But the real power is what comes after. The Strength Radar scores your sheet against role expectations and finds gaps. JD Tailoring rewrites bullets to match a specific job posting's language. The Interview Matrix maps everything to likely behavioral questions. Voice Match rewrites outputs to sound like you, not AI. And the Accomplishment Journal lets you log wins weekly so you never have to remember six months of work at once.",
     
@@ -2404,7 +2431,7 @@ export const tools = [
   id: "ComplaintEscalationWriter",
   title: "Complaint Escalation Writer",
   tagline: "Full escalation campaigns that companies can't ignore",
-  tags: ['complaint', 'customer service', 'escalate', 'refund', 'manager', 'dispute'],
+  tags: ['complaint', 'customer service', 'escalate', 'refund', 'manager', 'dispute', 'letter', 'consumer rights', 'legal', 'chargeback', 'negotiate', 'advocate', 'rights', 'BBB', 'FTC', 'regulate', 'company', 'billing'],
   icon: "📧",
   categories: ['Loot', 'Discourse'],
   description: "Builds a complete multi-stage escalation campaign when a company won't make things right. Identifies your legal leverage, writes ready-to-send letters for every stage — from direct complaint to regulatory filing to executive escalation to public pressure to chargeback — with specific laws cited, evidence coaching, and a tactical timeline. Not just a letter writer — a full consumer advocacy strategy.",
@@ -2637,11 +2664,11 @@ export const tools = [
 },
 
 {
-  modified: "",
+  modified: "2026-03-10",
   id: "BrainRoulette",
   title: 'Brain Roulette',
   tagline: 'Personalized rabbit holes you can\'t resist',
-  tags: ['random', 'interesting', 'curious', 'learn', 'discover', 'bored', 'fun'],
+  tags: ['random', 'interesting', 'curious', 'learn', 'discover', 'bored', 'fun', 'trivia', 'facts', 'knowledge', 'rabbit hole', 'explore', 'learning', 'curiosity', 'deep dive', 'debate', 'digest', 'daily', 'discovery', 'interests', 'spin', 'mind expanding', 'education'],
   icon: '🎲',
   categories: ['Brain Games', 'Detour'],
   description: 'Spin for fascinating rabbit holes tuned to YOUR interests. AI finds the surprising intersections between topics you love — the kind of stuff you can\'t stop thinking about.',
@@ -2672,9 +2699,10 @@ export const tools = [
       "Selecting just one interest gives decent results, but 2-3 interests create much better cross-connections",
       "If you get a dud, just spin again — the randomness means occasional misses",
       "Deep Dive mode takes a bit longer to generate but is worth the wait",
-      "Time blindness warning: this tool is deliberately addictive — set a timer if you need to!"
+      "This tool is deliberately addictive — set a timer if you need to!"
     ]
-  }
+  },
+  crossRefs: ['BeliefStressTest', 'SixDegreesOfMe', 'DecisionCoach'],
 },
 
 {
@@ -2711,13 +2739,14 @@ export const tools = [
 },
 
 {
-  modified: "",
+  modified: "2026-03-08",
   id: "BikeMedic",
   title: "Bike Medic",
   tagline: "A trailside mechanic in your pocket",
-  tags: ['bike', 'bicycle', 'repair', 'maintenance', 'cycling', 'fix', 'mechanic'],
+  tags: ['bike', 'bicycle', 'repair', 'maintenance', 'cycling', 'fix', 'mechanic', 'flat', 'tire', 'brakes', 'shifting', 'gears', 'derailleur', 'chain', 'wheel', 'spoke', 'noise', 'trailside', 'DIY'],
   icon: "🚲",
   categories: ['The Grind'],
+  crossRefs: ['BuyWise', 'DecisionCoach'],
   description: "AI-enhanced bicycle troubleshooting with interactive step-by-step fixes, animated visual demos, and expert follow-up when standard repairs don't work.",
   guide: {
       overview: "Bike Medic walks you through diagnosing and fixing common bicycle problems with animated visual demos, interactive step tracking, and AI-powered deeper diagnosis when standard fixes fail. Set up your bike profile to skip irrelevant questions and get tailored advice.",
@@ -2836,7 +2865,7 @@ export const tools = [
   id: "ConflictCoach",
   title: "Conflict Coach",
   tagline: "Stop, breathe, and craft the right response",
-  tags: ['text', 'argument', 'fight', 'respond', 'message', 'conflict'],
+  tags: ['text', 'argument', 'fight', 'respond', 'message', 'conflict', 'communication', 'de-escalate', 'anger', 'manipulation', 'gaslighting', 'passive aggressive', 'relationship', 'boundaries', 'texting'],
   icon: "📱",
   categories: ['Discourse', 'Humans'],
   description: "Received a tense message? Don't respond reactively. Get de-escalating response suggestions, emotional analysis, and thoughtful strategies. Prevents regrettable texts.",
@@ -3570,9 +3599,9 @@ export const tools = [
   id: "BillRescue",
   title: "Bill Rescue",
   tagline: "Your bill anxiety ends here",
-  tags: ['bill', 'medical bill', 'negotiate', 'reduce', 'lower', 'financial'],
+  tags: ['bill', 'medical bill', 'negotiate', 'reduce', 'lower', 'financial', 'debt', 'collections', 'late fee', 'overdue', 'dispute', 'hardship', 'credit', 'waive', 'fight', 'utilities', 'medical', 'rent', 'insurance', 'phone', 'collections', 'scripts', 'letters'],
   icon: "🧾",
-  categories: ['Loot'],
+  categories: ['Loot', 'The Grind'],
   description: "Turn bill anxiety into a clear action plan with 9 tools: paste or photograph a bill for an AI autopsy, Quick Check any charge in 5 seconds, practice negotiation calls with an AI billing rep, generate 7 types of ready-to-send letters, triage multiple bills by priority, track plans, log call outcomes, view your bill calendar, and celebrate victories with a running savings total.",
   guide: {
     overview: "Bill Rescue is your complete bill-fighting toolkit — 9 views that take you from 'I'm scared to open this' to 'I saved $1,670 this year.' Quick Check any charge instantly. Get full rescue plans with phone scripts, letters, and insider tips. Practice the actual call with an AI billing rep before you dial. Generate dispute letters, goodwill adjustments, insurance appeals, and more. Track everything: plans, call outcomes, follow-ups, and victories.",
@@ -3609,7 +3638,8 @@ export const tools = [
       "Never acknowledge a collections debt verbally until it's validated in writing",
       "Making a partial payment on old debt can restart the statute of limitations — the tool warns about this"
     ]
-  }
+  },
+  crossRefs: ['MoneyMoves', 'CrisisPrioritizer'],
 },
 
 {
@@ -3663,9 +3693,9 @@ export const tools = [
   id: "ApologyCalibrator",
   title: "Apology Calibrator",
   tagline: "Match your apology to the actual harm caused",
-  tags: ['sorry', 'apology', 'apologize', 'mistake', 'forgiveness', 'conflict'],
-  icon: "🙏",
-  categories: ['Discourse'],
+  tags: ['sorry', 'apology', 'apologize', 'mistake', 'forgiveness', 'conflict', 'over-apologizing', 'repair', 'relationship', 'accountability', 'letter', 'cultural', 'communication'],
+  icon: "⚖️",
+  categories: ['Humans', 'Discourse'],
   description: "Calibrates apology level to actual harm caused. 5 levels: no apology needed, brief acknowledgment, simple apology, full accountability apology, major repair. Stops over-apologizing for existing and under-apologizing for real harm. Templates for each level.",
   guide: {
     overview: "Many people over-apologize for minor things ('sorry to bother you' for legitimate questions) or under-apologize for genuine harm. This tool analyzes actual harm vs your responsibility to determine appropriate apology level (1-5) and provides calibrated templates.",
@@ -3917,13 +3947,13 @@ export const tools = [
 
 {
   modified: "",
-  id: "BrainDumpStructurer",
-  title: "Brain Dump Structurer",
+  id: "BrainDumpBuddy",
+  title: "Brain Dump Buddy",
   tagline: "Everything in your head → one clear next step",
-  tags: ['brain dump', 'overwhelm', 'organize thoughts', 'clarity', 'tasks', 'next step'],
+  tags: ['brain dump', 'overwhelm', 'organize thoughts', 'clarity', 'tasks', 'next step', 'anxiety', 'racing thoughts', 'stressed', 'too much to do', 'prioritize', 'clear head', 'task sorting', 'worry', 'chaos', '3am thoughts', 'can\'t focus', 'voice input', 'emergency mode', 'to-do list', 'mental load', 'structure thoughts', 'productive'],
   icon: "🧠",
   categories: ['Me', 'Do It!'],
-  description: "Turns the chaotic contents of your overwhelmed brain into one clear next step — then helps you actually do it. Dump everything via typing, rapid-fire, or voice. AI sorts into 9 categories and shows the therapeutic truth: most of what feels like 47 urgent tasks is actually 8 real things and a lot of noise. 'Shrink the List' challenges every item — is it really urgent? Could a 3-minute version handle 80% of the stress? 'Map to My Day' converts your sorted list into a real schedule with breaks. Worry Excavator digs into anxieties to find hidden tasks buried inside. Reclassify anything the AI got wrong. Emergency mode gives you exactly 3 things when you can barely function. After multiple dumps, pattern analysis reveals your brain's inflation ratio.",
+  description: "Dump everything swirling in your head — typed, rapid-fire, or voice — and AI sorts the chaos into action items, decisions, worries, and things you can drop. Most overwhelm turns out to be 8 real tasks hiding under a lot of noise.",
   guide: {
     overview: "Your head is full. Work tasks blurring into personal worries blurring into vague anxiety. This tool takes the whole mess — no structure required — and sorts it into clear buckets. The key insight: most people in overwhelm have far fewer actual tasks than they think. Then it goes further: Shrink the List negotiates your tasks shorter. Map to My Day turns the list into a schedule. Worry Excavator digs into anxieties to find hidden actionable tasks. Reclassify lets you fix anything the AI miscategorized. Emergency mode strips everything to just 3 things when you can barely function.",
 
@@ -3958,7 +3988,13 @@ export const tools = [
       "If Shrink the List drops something you disagree with, that's fine — it's a negotiation, not an order.",
       "This doesn't replace a task manager. It's for the moment of overwhelm when you can't think straight."
     ]
-  }
+  },
+  crossRefs: [
+    { id: 'CrisisPrioritizer', reason: 'When you\'re completely overwhelmed — cuts to the 3 things that matter most right now' },
+    { id: 'VirtualBodyDouble', reason: 'Once you know what to do, need someone to work beside you and keep you on track' },
+    { id: 'WaitingModeLiberator', reason: 'When many worries are about things blocked waiting on others' },
+    { id: 'ChaosPilot', reason: 'For urgent situations where you need to decide what to do right now' },
+  ]
 },
 
 {
@@ -4007,40 +4043,40 @@ export const tools = [
   modified: "",
   id: "BrainStateDeejay",
   title: "Brain State Deejay",
-  tagline: "Science-backed playlists for your current brain state",
-  tags: ['music', 'playlist', 'focus', 'mood', 'brain', 'concentration', 'songs', 'study'],
+  tagline: "Science-backed playlists for your brain state",
+  tags: ['music', 'playlist', 'focus', 'mood', 'brain', 'concentration', 'songs', 'study', 'calm', 'energy', 'anxiety', 'stress', 'relaxation', 'productivity', 'ambient', 'lofi', 'spotify', 'bpm', 'tempo', 'headphones', 'transition', 'work', 'meditation', 'flow state'],
   icon: "🎧",
-  categories: ['Energy'],
-  description: "Get science-backed music playlists personalized to your current brain state and desired transition. Goes beyond generic 'focus music' with tempo, complexity, and neurodivergent considerations (ADHD stimulation needs, autism sensory sensitivities).",
+  categories: ['Energy', 'Me'],
+  description: "Get science-backed music playlists tailored to your current brain state and where you need to be. Goes beyond generic 'focus music' with tempo, complexity, and sensory preference tuning.",
   guide: {
-    overview: "Music affects cognitive states through tempo, complexity, and familiarity. This tool creates progressive playlists that transition you from anxious to calm, scattered to focused, or low-energy to motivated. Considers ADHD needs (stimulation without distraction) and autism needs (predictability, no surprises).",
-    
+    overview: "Music affects cognitive states through tempo, complexity, and familiarity. This tool creates progressive playlists that transition you from anxious to calm, scattered to focused, or low-energy to motivated. Considers sensory sensitivities like sudden sounds, vocal distraction, bass sensitivity, and need for predictable patterns.",
+
     howToUse: [
       "Select your current state (anxious, scattered, low energy, overwhelmed, foggy)",
       "Select your desired state (focused, calm, energized, creative, grounded)",
-      "Optionally add task context, music preferences, neurodivergent profile",
-      "Get 3-phase playlist strategy with specific genres and search terms",
-      "Search recommendations on Spotify/Apple Music and start your transition"
+      "Optionally add task context and music preferences",
+      "Expand Listening Sensitivities to flag sounds or patterns that don't work for you",
+      "Get a 3-phase playlist strategy with specific genres, artists, and Spotify search terms"
     ],
-    
+
     example: {
-      scenario: "You're scattered and can't focus on writing a report. You have ADHD and need auditory stimulation but lyrics distract you.",
-      action: "Select 'Scattered/Unfocused' → 'Focused/Productive', add 'Writing report', note 'ADHD - need stimulation, no lyrics'.",
-      result: "3-phase playlist: (1) Familiar upbeat songs (10 min) to engage dopamine, (2) Lo-fi instrumental at 90-95 BPM (60 min) for sustained focus without distraction, (3) Minimal ambient (30 min) to maintain flow. Includes Spotify search terms and alternatives if too/not enough stimulation."
+      scenario: "You're scattered and can't focus on writing a report. You need auditory stimulation but lyrics pull your attention away.",
+      action: "Select 'Scattered/Unfocused' → 'Focused', add 'Writing report', check 'Vocals are distracting'.",
+      result: "3-phase playlist: (1) Familiar upbeat instrumentals (10 min) to build momentum, (2) Lo-fi or post-rock at 90-95 BPM (60 min) for sustained focus, (3) Minimal ambient (30 min) to maintain flow without effort. Includes Spotify search terms and alternatives if the energy level is off."
     },
-    
+
     tips: [
-      "Start the playlist BEFORE starting work - music helps transition your brain state",
-      "Let the phases play through - don't shuffle, the progression is intentional",
-      "If you need MORE stimulation (ADHD restlessness), use the alternative playlist suggestions",
-      "If you're overwhelmed by the music, switch to the 'too stimulating' alternative (often just brown noise)",
-      "Headphones recommended for better focus cue and isolation"
+      "Start the playlist BEFORE starting work — music helps prime your brain for the transition",
+      "Let the phases play through in order; don't shuffle, the progression is intentional",
+      "Use the 'Not quite right?' panel to adjust without starting over",
+      "If you find yourself noticing the music, that's a signal to switch to a lower-complexity phase",
+      "Headphones help isolate you from competing sounds and strengthen the focus cue"
     ],
-    
+
     pitfalls: [
-      "Don't use new/unfamiliar music for focus work - cognitive load of processing new music distracts",
-      "Don't use lyrical music for verbal tasks (writing, reading) - language processing interferes",
-      "Don't ignore the 'too much/too little stimulation' signals - adjust playlist accordingly"
+      "Don't use unfamiliar music for deep work — processing new songs competes with your thinking",
+      "Don't use lyrical music for verbal tasks like writing or reading — language processing interferes",
+      "Don't ignore 'too much/too little stimulation' signals — the Adjust panel can fix this quickly"
     ]
   }
 },
@@ -4138,9 +4174,9 @@ export const tools = [
   id: "BuyWise",
   title: "Buy Wise",
   tagline: "The research you'd do if you had an hour — done in seconds",
-  tags: ['buy', 'purchase', 'worth it', 'price', 'research', 'shopping', 'impulse', 'regret'],
+  tags: ['buy', 'purchase', 'worth it', 'price', 'research', 'shopping', 'impulse', 'regret', 'gift', 'compare', 'budget', 'negotiate', 'deal', 'overpaying'],
   icon: "🧠",
-  categories: ['Loot', 'Veer'],
+  categories: ['Loot', 'Do It', 'Veer'],
   description: "Pre-purchase research assistant. Enter what you're buying and get fair price analysis, timing advice, total cost of ownership, cheaper alternatives, regret predictions, negotiation scripts, and an impulse check. Like having a knowledgeable friend who stops you from overpaying.",
   guide: {
       overview: "BuyWise gives you everything you'd learn from an hour of research in seconds. Enter any product, and it tells you if the price is fair, whether to buy now or wait, the true total cost of ownership (including consumables and maintenance), cheaper alternatives that do 90% of the job, common buyer regrets, where to buy, and negotiation scripts when haggling is realistic. Comparison mode lets you evaluate two products side by side weighted by your priorities. The impulse check is an honest gut-check for purchases you're not sure about.",

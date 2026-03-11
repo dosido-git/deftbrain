@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { anthropic, callClaudeWithRetry, cleanJsonResponse, withLanguage } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
@@ -48,9 +48,7 @@ router.post('/bike-medic', rateLimit(DEFAULT_LIMITS), async (req, res) => {
         ? `\nRECENT RIDES: ${recentRides.map(r => `${r.distance}mi (${r.conditions})`).join(', ')}`
         : '';
 
-      const seasonalPrompt = withLanguage(`${MECHANIC_PERSONA}
-
-You are generating a SEASONAL MAINTENANCE CHECKLIST for a cyclist.
+      const seasonalUserPrompt = `You are generating a SEASONAL MAINTENANCE CHECKLIST for a cyclist.
 
 CURRENT SEASON: ${season}
 BIKE: ${bikeProfile.name || bikeProfile.bikeType || 'unknown'} — type: ${bikeProfile.bikeType || '?'}, brakes: ${bikeProfile.brakeType || '?'}, shifting: ${bikeProfile.shiftType || '?'}, tires: ${bikeProfile.tireSetup || '?'}
@@ -79,16 +77,14 @@ Return ONLY valid JSON:
 
 Available fix_ref IDs: fix_noise_chainlube, fix_chain_worn, fix_disc_pad_worn, fix_disc_squeal, fix_tubeless_refresh, fix_ghost_shift, fix_headset_loose, fix_headset_gritty, fix_bb_creak, fix_noise_creak, fix_true_wheel, fix_hub_play, fix_clipless, fix_rim_weak
 
-Generate 6-10 tasks, ordered by priority. Be specific to the bike and season.`, req);
+Generate 6-10 tasks, ordered by priority. Be specific to the bike and season.`;
 
-      const message = await anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
+      const parsed = await callClaudeWithRetry(seasonalUserPrompt, {
+        label: 'bike-medic/seasonal',
         max_tokens: 1500,
-        messages: [{ role: 'user', content: seasonalPrompt }]
+        system: withLanguage(MECHANIC_PERSONA, req.body.userLanguage),
       });
-
-      const text = message.content.find(i => i.type === 'text')?.text || '';
-      return res.json(JSON.parse(cleanJsonResponse(text)));
+      return res.json(parsed);
     }
 
     // ── TYPE 3: Symptom Routing ──
@@ -97,9 +93,7 @@ Generate 6-10 tasks, ordered by priority. Be specific to the bike and season.`, 
         return res.status(400).json({ error: 'Describe the problem in a few words' });
       }
 
-      const routePrompt = withLanguage(`${MECHANIC_PERSONA}
-
-AVAILABLE PROBLEM CATEGORIES: flat (flat tire / puncture), chain (dropped chain / chain issues), brakes (brake problems), shifting (shifting / derailleur), headset (wobbly handlebars / steering), noise (strange noises), pedals (pedal/crank/bottom bracket), wheel (wheel problems / spokes / hub), tubeless (tubeless tire setup issues), suspension (fork/shock issues)
+      const routeUserPrompt = `AVAILABLE PROBLEM CATEGORIES: flat (flat tire / puncture), chain (dropped chain / chain issues), brakes (brake problems), shifting (shifting / derailleur), headset (wobbly handlebars / steering), noise (strange noises), pedals (pedal/crank/bottom bracket), wheel (wheel problems / spokes / hub), tubeless (tubeless tire setup issues), suspension (fork/shock issues)
 
 RIDER SAYS: "${symptom.trim()}"
 ${bikeProfile ? `RIDER'S BIKE: ${bikeProfile.bikeType || 'unknown'} with ${bikeProfile.brakeType || 'unknown'} brakes, ${bikeProfile.shiftType || 'unknown'} shifting, ${bikeProfile.tireSetup || 'unknown'} tires` : ''}
@@ -113,16 +107,14 @@ Return ONLY valid JSON:
   "reasoning": "One sentence explaining why this category fits",
   "alternative_categories": ["second_best", "third_best"],
   "suggested_first_question": "A good diagnostic question to ask the rider"
-}`, req);
+}`;
 
-      const message = await anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
+      const parsed = await callClaudeWithRetry(routeUserPrompt, {
+        label: 'bike-medic/route',
         max_tokens: 500,
-        messages: [{ role: 'user', content: routePrompt }]
+        system: withLanguage(MECHANIC_PERSONA, req.body.userLanguage),
       });
-
-      const text = message.content.find(i => i.type === 'text')?.text || '';
-      return res.json(JSON.parse(cleanJsonResponse(text)));
+      return res.json(parsed);
     }
 
     // ── Validation for Types 1 & 2 ──
@@ -209,6 +201,10 @@ Return ONLY valid JSON:
 Return ONLY valid JSON. No markdown, no explanation outside the JSON.`, req);
     }
 
+    // ── Types 1 & 2: Freeform Diagnosis + Post-Fix Follow-up ──
+    // NOTE: These use anthropic.messages.create directly (not callClaudeWithRetry) because
+    // the photo attachment path requires a multipart content array (image + text blocks).
+    // callClaudeWithRetry accepts a string prompt only. Refactor once lib supports multipart.
     const messageContent = buildMessageContent(prompt, photo);
 
     const message = await anthropic.messages.create({

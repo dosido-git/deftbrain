@@ -1,44 +1,10 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
-import { CopyBtn, PrintBtn } from '../components/ActionButtons';
+import { usePersistentState } from '../hooks/usePersistentState';
+import { ActionBar, CopyBtn, PrintBtn, ShareBtn } from '../components/ActionButtons';
 import { compressImage } from '../utils/imageCompression';
 
-// ════════════════════════════════════════════════════════════
-// THEME HELPER
-// ════════════════════════════════════════════════════════════
-const useColors = () => {
-  const { theme } = useTheme();
-  const d = theme === 'dark';
-  return {
-    d,
-    bg: d ? 'bg-zinc-900' : 'bg-white',
-    bgCard: d ? 'bg-zinc-800' : 'bg-white',
-    bgInset: d ? 'bg-zinc-700' : 'bg-stone-100',
-    bgHover: d ? 'hover:bg-zinc-700' : 'hover:bg-stone-50',
-    text: d ? 'text-zinc-50' : 'text-stone-900',
-    textSec: d ? 'text-zinc-400' : 'text-stone-600',
-    textMut: d ? 'text-zinc-500' : 'text-stone-400',
-    border: d ? 'border-zinc-700' : 'border-stone-200',
-    borderHover: d ? 'hover:border-zinc-500' : 'hover:border-stone-400',
-    accent: d ? 'text-[#D4AF37]' : 'text-amber-600',
-    input: d ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder-zinc-500 focus:border-zinc-400' : 'bg-white border-stone-200 text-stone-900 placeholder-stone-400 focus:border-stone-500',
-    severityBg: (sev) => sev === 'critical' ? (d ? 'bg-red-900/40 text-red-300' : 'bg-red-100 text-red-700') : sev === 'moderate' ? (d ? 'bg-amber-900/40 text-amber-300' : 'bg-amber-100 text-amber-700') : (d ? 'bg-green-900/40 text-green-300' : 'bg-green-100 text-green-700'),
-    safe: (s) => s ? (d ? 'bg-green-900/40 text-green-300' : 'bg-green-100 text-green-700') : (d ? 'bg-red-900/40 text-red-300' : 'bg-red-100 text-red-700'),
-    tipBg: d ? 'bg-amber-900/30 border-amber-700' : 'bg-amber-50 border-amber-200',
-    tipText: d ? 'text-amber-200' : 'text-amber-900',
-    shopBg: d ? 'bg-blue-900/30 border-l-4 border-blue-500' : 'bg-blue-50 border-l-4 border-blue-400',
-    shopText: d ? 'text-blue-200' : 'text-blue-900',
-    errBg: d ? 'bg-red-900/30 border-red-700' : 'bg-red-50 border-red-200',
-    errText: d ? 'text-red-300' : 'text-red-800',
-    successBg: d ? 'bg-green-900/30 border-green-700' : 'bg-green-50 border-green-200',
-    btn: d ? 'bg-zinc-100 hover:bg-white text-zinc-900' : 'bg-stone-800 hover:bg-stone-900 text-white',
-    btnDis: d ? 'bg-zinc-700 text-zinc-500' : 'bg-stone-300 text-stone-500',
-    btnGhost: d ? 'text-zinc-400 hover:text-zinc-100' : 'text-stone-500 hover:text-stone-800',
-    tag: d ? 'bg-zinc-700 text-zinc-300' : 'bg-stone-100 text-stone-600',
-    tagAmber: d ? 'bg-amber-900/40 text-amber-300 border-amber-700' : 'bg-amber-50 text-amber-800 border-amber-200',
-  };
-};
 
 // ════════════════════════════════════════════════════════════
 // TOAST SYSTEM
@@ -831,10 +797,83 @@ const saveLS = (key, val) => { try { localStorage.setItem(key, JSON.stringify(va
 // ════════════════════════════════════════════════════════════
 // MAIN COMPONENT
 // ════════════════════════════════════════════════════════════
-const BikeMedic = () => {
+const BikeMedic = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
-  const c = useColors();
-  const linkStyle = `${c.d ? 'text-[#D4AF37] hover:text-amber-300' : 'text-amber-700 hover:text-amber-900'} underline underline-offset-2 font-semibold`;
+  const { isDark } = useTheme();
+
+  const c = {
+    // ── Standard keys ──
+    card:          isDark ? 'bg-zinc-800'     : 'bg-white',
+    cardAlt:       isDark ? 'bg-zinc-700/50'  : 'bg-stone-100',
+    text:          isDark ? 'text-zinc-50'    : 'text-stone-900',
+    textSecondary: isDark ? 'text-zinc-300'   : 'text-stone-600',
+    textMuted:     isDark ? 'text-zinc-500'   : 'text-stone-400',
+    border:        isDark ? 'border-zinc-700' : 'border-stone-200',
+    input:         isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder-zinc-500 focus:border-zinc-400'
+                          : 'bg-white border-stone-200 text-stone-900 placeholder-stone-400 focus:border-stone-500',
+    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
+                          : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100'
+                          : 'bg-slate-100 hover:bg-slate-200 text-slate-700',
+    success:       isDark ? 'bg-green-900/30 border-green-700 text-green-200'
+                          : 'bg-green-50 border-green-200 text-green-800',
+    warning:       isDark ? 'bg-amber-900/30 border-amber-700 text-amber-200'
+                          : 'bg-amber-50 border-amber-200 text-amber-900',
+    danger:        isDark ? 'bg-red-900/30 border-red-700 text-red-300'
+                          : 'bg-red-50 border-red-200 text-red-800',
+    // ── Tool-specific extras (all dark-mode aware) ──
+    bgHover:       isDark ? 'hover:bg-zinc-700'      : 'hover:bg-stone-50',
+    borderHover:   isDark ? 'hover:border-zinc-500'  : 'hover:border-stone-400',
+    btnDis:        isDark ? 'bg-zinc-700 text-zinc-500' : 'bg-stone-300 text-stone-500',
+    btnGhost:      isDark ? 'text-zinc-400 hover:text-zinc-100' : 'text-stone-500 hover:text-stone-800',
+    btnSuccess:    'bg-green-500 hover:bg-green-600 text-white',
+    tag:           isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-stone-100 text-stone-600',
+    tagAmber:      isDark ? 'bg-amber-900/40 text-amber-300 border-amber-700' : 'bg-amber-50 text-amber-800 border-amber-200',
+    // Amber semantic states
+    amberText:     isDark ? 'text-amber-400' : 'text-amber-600',
+    amberLabel:    isDark ? 'text-amber-300' : 'text-amber-800',
+    amberBadge:    isDark ? 'bg-amber-900/60 text-amber-300' : 'bg-amber-200 text-amber-800',
+    amberBanner:   isDark ? 'border-amber-700 bg-amber-900/20' : 'border-amber-200 bg-amber-50',
+    amberLink:     isDark ? 'text-amber-400 hover:underline' : 'text-amber-700 hover:underline',
+    // Active/selected bike profile
+    activeBikeBorder: isDark ? 'border-amber-400 bg-amber-400/10' : 'border-amber-400 bg-amber-50',
+    profileSelected:  isDark ? 'border-amber-400 bg-amber-400/20 text-amber-400' : 'border-amber-500 bg-amber-50 text-amber-700',
+    // Green semantic states
+    greenBanner:   isDark ? 'border-green-700 bg-green-900/20' : 'border-green-200 bg-green-50',
+    greenText:     isDark ? 'text-green-300' : 'text-green-700',
+    greenPill:     isDark ? 'bg-green-900/40 text-green-300' : 'bg-green-100 text-green-700',
+    greenInline:   isDark ? 'text-green-400' : 'text-green-600',
+    // Red semantic state
+    redPill:       isDark ? 'bg-red-900/40 text-red-300' : 'bg-red-100 text-red-700',
+    // Checkbox/step checked state (green, mode-independent)
+    checkboxChecked: 'bg-green-500 border-green-500 text-white',
+    // Shop visit callout (replaces banned blue c.info)
+    shopVisit:     isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-200 text-amber-800',
+    // Step list
+    stepDivide:    isDark ? 'divide-zinc-700' : 'divide-stone-100',
+    stepActive:    isDark ? 'bg-zinc-700/50' : 'bg-amber-50/60',
+    // Nav icon badges (mode-independent)
+    navBadgeAmber: 'bg-amber-500 text-white',
+    navBadgeZinc:  'bg-zinc-500 text-white',
+    // Priority/severity functions
+    priorityPill: (p) => p === 'high'
+      ? (isDark ? 'bg-red-900/40 text-red-300'    : 'bg-red-100 text-red-700')
+      : p === 'medium'
+      ? (isDark ? 'bg-amber-900/40 text-amber-300' : 'bg-amber-100 text-amber-700')
+      : (isDark ? 'bg-zinc-700 text-zinc-300'      : 'bg-stone-100 text-stone-600'),
+    severityBg: (sev) => sev === 'critical'
+      ? (isDark ? 'bg-red-900/40 text-red-300'    : 'bg-red-100 text-red-700')
+      : sev === 'moderate'
+      ? (isDark ? 'bg-amber-900/40 text-amber-300' : 'bg-amber-100 text-amber-700')
+      : (isDark ? 'bg-green-900/40 text-green-300' : 'bg-green-100 text-green-700'),
+    safe: (s) => s
+      ? (isDark ? 'bg-green-900/40 text-green-300' : 'bg-green-100 text-green-700')
+      : (isDark ? 'bg-red-900/40 text-red-300'    : 'bg-red-100 text-red-700'),
+  };
+
+  const linkStyle = isDark
+    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
+    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
 
   // Core state
   const [selectedProblem, setSelectedProblem] = useState(null);
@@ -847,8 +886,8 @@ const BikeMedic = () => {
   const [fixResolved, setFixResolved] = useState(null);
 
   // AI state
-  const [customProblem, setCustomProblem] = useState('');
-  const [aiDiagnosis, setAiDiagnosis] = useState(null);
+  const [customProblem, setCustomProblem] = usePersistentState('bikemedic-custom-problem', '');
+  const [aiDiagnosis, setAiDiagnosis] = usePersistentState('bikemedic-last-diagnosis', null);
   const [aiError, setAiError] = useState('');
   const [showAskMechanic, setShowAskMechanic] = useState(false);
   const [followUpText, setFollowUpText] = useState('');
@@ -1250,7 +1289,7 @@ const BikeMedic = () => {
           <span>←</span> Back
         </button>
       ) : <div />}
-      <button onClick={reset} className={`flex items-center gap-2 ${c.textMut} text-sm font-semibold transition-colors hover:opacity-80`}>
+      <button onClick={reset} className={`flex items-center gap-2 ${c.textMuted} text-sm font-semibold transition-colors hover:opacity-80`}>
         <span>🔄</span> Start Over
       </button>
     </div>
@@ -1260,7 +1299,7 @@ const BikeMedic = () => {
     if (!bikeProfile) return null;
     const labels = [bikeProfile.bikeType, bikeProfile.brakeType?.replace('_', ' '), bikeProfile.shiftType, bikeProfile.tireSetup].filter(Boolean);
     return (
-      <div className={`flex items-center gap-2 mb-4 p-2 rounded-lg ${c.bgInset} text-xs ${c.textSec} overflow-x-auto`}>
+      <div className={`flex items-center gap-2 mb-4 p-2 rounded-lg ${c.cardAlt} text-xs ${c.textSecondary} overflow-x-auto`}>
         <span className="font-semibold flex-shrink-0">🚲 {bikeProfile.name || 'My Bike'}:</span>
         {labels.map((l, i) => <span key={i} className={`${c.tag} px-2 py-0.5 rounded-md capitalize whitespace-nowrap`}>{l}</span>)}
         {bikeProfile.totalMiles > 0 && <span className={`${c.tag} px-2 py-0.5 rounded-md whitespace-nowrap`}>{Math.round(bikeProfile.totalMiles)} mi</span>}
@@ -1276,14 +1315,14 @@ const BikeMedic = () => {
 
   const renderLoadingState = () => (
     <div className="flex flex-col items-center justify-center py-12 gap-4">
-      <span className="text-4xl animate-spin inline-block" style={{ animationDuration: '3s' }}>🔧</span>
-      <p className={`text-sm font-semibold ${c.textSec} animate-pulse`}>{MECHANIC_THINKING[thinkingMsg]}</p>
+      <span className="text-4xl animate-spin inline-block" style={{ animationDuration: '3s' }}>{tool?.icon ?? '🚲'}</span>
+      <p className={`text-sm font-semibold ${c.textSecondary} animate-pulse`}>{MECHANIC_THINKING[thinkingMsg]}</p>
     </div>
   );
 
   const renderAIDiagnosis = (data) => (
     <div className="space-y-4 mt-6">
-      <div className={`${c.bgCard} rounded-xl border-2 ${c.border} p-6`}>
+      <div className={`${c.card} rounded-xl border-2 ${c.border} p-6`}>
         <h3 className={`text-xl font-bold ${c.text} mb-1`}>{data.diagnosis}</h3>
         <div className="flex flex-wrap items-center gap-2 mb-4">
           <span className={`text-xs font-bold uppercase px-2 py-1 rounded-full ${c.severityBg(data.severity)}`}>{data.severity}</span>
@@ -1291,32 +1330,37 @@ const BikeMedic = () => {
           {data.difficulty && <span className={`text-xs font-bold px-2 py-1 rounded-full ${c.tag}`}>{data.difficulty}</span>}
           {data.time_estimate && <span className={`text-xs font-bold px-2 py-1 rounded-full ${c.tag}`}>{data.time_estimate}</span>}
         </div>
-        <p className={`${c.textSec} text-sm mb-4`}>{data.explanation}</p>
+        <p className={`${c.textSecondary} text-sm mb-4`}>{data.explanation}</p>
         {data.likely_causes && (<div className="mb-4"><h4 className={`font-bold ${c.text} text-sm mb-2`}>Likely causes:</h4><ol className="space-y-2">
-          {data.likely_causes.map((cause, i) => <li key={i} className="flex gap-3 text-sm"><span className={`flex-shrink-0 w-6 h-6 rounded-full ${c.tag} flex items-center justify-center text-xs font-bold`}>{i+1}</span><span className={c.textSec}>{cause}</span></li>)}
+          {data.likely_causes.map((cause, i) => <li key={i} className="flex gap-3 text-sm"><span className={`flex-shrink-0 w-6 h-6 rounded-full ${c.tag} flex items-center justify-center text-xs font-bold`}>{i+1}</span><span className={c.textSecondary}>{cause}</span></li>)}
         </ol></div>)}
         {data.fix_steps && (<div className="mb-4"><h4 className={`font-bold ${c.text} text-sm mb-2`}>How to fix:</h4><ol className="space-y-2">
-          {data.fix_steps.map((step, i) => <li key={i} className="flex gap-3 text-sm"><span className={`flex-shrink-0 w-6 h-6 rounded-full ${c.tagAmber} border flex items-center justify-center text-xs font-bold`}>{i+1}</span><span className={c.textSec}>{step}</span></li>)}
+          {data.fix_steps.map((step, i) => <li key={i} className="flex gap-3 text-sm"><span className={`flex-shrink-0 w-6 h-6 rounded-full ${c.tagAmber} border flex items-center justify-center text-xs font-bold`}>{i+1}</span><span className={c.textSecondary}>{step}</span></li>)}
         </ol></div>)}
         {data.tools_needed?.length > 0 && (<div className="flex flex-wrap gap-2 mb-4">
-          <span className={`text-xs font-bold ${c.textMut} uppercase mr-1 self-center`}>Tools:</span>
+          <span className={`text-xs font-bold ${c.textMuted} uppercase mr-1 self-center`}>Tools:</span>
           {data.tools_needed.map((t, i) => <span key={i} className={`text-xs ${c.tag} px-2 py-1 rounded-lg font-medium`}>{t}</span>)}
         </div>)}
-        {data.pro_tip && (<div className={`${c.tipBg} border-2 rounded-xl p-4 mb-4`}><p className={`${c.tipText} text-sm`}><span className="font-black text-xs uppercase block mb-1">🔧 Pro Tip</span>{data.pro_tip}</p></div>)}
+        {data.pro_tip && (<div className={`${c.warning} border-2 rounded-xl p-4 mb-4`}><p className="text-sm"><span className="font-black text-xs uppercase block mb-1">🔧 Pro Tip</span>{data.pro_tip}</p></div>)}
         {data.next_steps?.length > 0 && (<div className="mb-4"><h4 className={`font-bold ${c.text} text-sm mb-2`}>Next steps:</h4><ol className="space-y-1">
-          {data.next_steps.map((ns, i) => <li key={i} className={`text-sm ${c.textSec} flex gap-2`}><span style={{ color: accent }}>→</span><span>{ns}</span></li>)}
+          {data.next_steps.map((ns, i) => <li key={i} className={`text-sm ${c.textSecondary} flex gap-2`}><span style={{ color: accent }}>→</span><span>{ns}</span></li>)}
         </ol></div>)}
-        {data.prevention && (<div className={`text-xs ${c.textMut} mt-3 p-3 rounded-lg ${c.bgInset}`}><strong>Prevention:</strong> {data.prevention}</div>)}
-        {data.shop_visit && (<div className={`mt-4 ${c.shopBg} rounded-r-xl p-4`}><p className={`${c.shopText} text-sm`}><strong>When to go to a shop:</strong> {data.shop_visit}</p></div>)}
-        {/* Copy AI diagnosis */}
-        <div className="flex gap-2 mt-4">
-          <CopyBtn content={`${data.diagnosis}\n\n${data.explanation}\n\nSteps:\n${(data.fix_steps||[]).map((s,i)=>`${i+1}. ${s}`).join('\n')}\n\n${data.pro_tip ? `Pro Tip: ${data.pro_tip}` : ''}\n\n— Generated by DeftBrain · deftbrain.com`} label="Copy Diagnosis" />
+        {data.prevention && (<div className={`text-xs ${c.textMuted} mt-3 p-3 rounded-lg ${c.cardAlt}`}><strong>Prevention:</strong> {data.prevention}</div>)}
+        {data.shop_visit && (<div className={`mt-4 ${c.shopVisit} border border-l-4 rounded-r-xl p-4`}><p className="text-sm"><strong>When to go to a shop:</strong> {data.shop_visit}</p></div>)}
+        {/* Action buttons */}
+        <div className="mt-4">
+          <ActionBar
+            content={`${data.diagnosis}\n\n${data.explanation}\n\nSteps:\n${(data.fix_steps||[]).map((s,i)=>`${i+1}. ${s}`).join('\n')}\n\n${data.pro_tip ? `Pro Tip: ${data.pro_tip}` : ''}\n\n— Generated by DeftBrain · deftbrain.com`}
+            printContent={`<div style="font-family:system-ui;max-width:600px;margin:auto;padding:20px"><h1>🔧 ${data.diagnosis}</h1><p>${data.explanation}</p><ol>${(data.fix_steps||[]).map(s=>`<li style="margin-bottom:8px">${s}</li>`).join('')}</ol>${data.pro_tip?`<p><strong>Pro Tip:</strong> ${data.pro_tip}</p>`:''}<p style="font-size:12px;color:#999;margin-top:20px;border-top:1px solid #ddd;padding-top:8px">Generated by DeftBrain Bike Medic · deftbrain.com</p></div>`}
+            title="Bike Mechanic Diagnosis"
+          />
         </div>
         {/* Cross-refs */}
-        <div className={`mt-4 pt-3 border-t ${c.border} text-xs ${c.textMut}`}>
+        <div className={`mt-4 pt-3 border-t ${c.border} text-xs ${c.textMuted}`}>
           {data.shop_visit && <>Need help deciding DIY vs shop? Try <a href="/DecisionCoach" target="_blank" rel="noopener noreferrer" className={linkStyle}>Decision Coach</a>. </>}
           {data.parts_cost && <>Checking part value? <a href="/BuyWise" target="_blank" rel="noopener noreferrer" className={linkStyle}>BuyWise</a> can help.</>}
         </div>
+        <p className={`mt-3 text-xs ${c.textMuted} border-t ${c.border} pt-2`}>⚠️ AI-generated diagnosis — always verify safety-critical repairs with a qualified mechanic before riding.</p>
       </div>
     </div>
   );
@@ -1343,11 +1387,11 @@ const BikeMedic = () => {
         {garage.length > 0 && !editingBikeId && (
           <div className="space-y-3 mb-6">
             {garage.map(bike => (
-              <div key={bike.id} className={`flex items-center gap-3 p-4 rounded-xl border-2 ${bike.id === activeBikeId ? (c.d ? 'border-[#D4AF37] bg-[#D4AF37]/10' : 'border-amber-400 bg-amber-50') : c.border} ${c.bgCard}`}>
+              <div key={bike.id} className={`flex items-center gap-3 p-4 rounded-xl border-2 ${bike.id === activeBikeId ? c.activeBikeBorder : c.border} ${c.card}`}>
                 <span className="text-2xl">🚲</span>
                 <div className="flex-1 min-w-0">
                   <div className={`text-sm font-bold ${c.text}`}>{bike.name || bike.bikeType}</div>
-                  <div className={`text-xs ${c.textMut} flex flex-wrap gap-1 mt-0.5`}>
+                  <div className={`text-xs ${c.textMuted} flex flex-wrap gap-1 mt-0.5`}>
                     {[bike.bikeType, bike.brakeType?.replace('_', ' '), bike.shiftType].filter(Boolean).map((l, i) => (
                       <span key={i} className="capitalize">{l}{i < 2 ? ' ·' : ''}</span>
                     ))}
@@ -1357,13 +1401,13 @@ const BikeMedic = () => {
                 {bike.id !== activeBikeId && (
                   <button onClick={() => setActiveBikeId(bike.id)} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.tag} ${c.bgHover}`}>Set Active</button>
                 )}
-                {bike.id === activeBikeId && <span className={`text-xs font-bold ${c.d ? 'text-[#D4AF37]' : 'text-amber-600'}`}>ACTIVE</span>}
-                <button onClick={() => { setEditingBikeId(bike.id); setTempProfile(bike); }} className={`text-xs ${c.textMut} hover:underline`}>Edit</button>
-                <button onClick={() => { if (window.confirm(`Remove ${bike.name || 'this bike'}?`)) removeBike(bike.id); }} className={`text-xs ${c.textMut} hover:text-red-500`}>🗑️</button>
+                {bike.id === activeBikeId && <span className={`text-xs font-bold ${c.amberText}`}>ACTIVE</span>}
+                <button onClick={() => { setEditingBikeId(bike.id); setTempProfile(bike); }} className={`text-xs ${c.textMuted} hover:underline`}>Edit</button>
+                <button onClick={() => { if (window.confirm(`Remove ${bike.name || 'this bike'}?`)) removeBike(bike.id); }} className={`text-xs ${c.textMuted} hover:text-red-500`}>🗑️</button>
               </div>
             ))}
             <button onClick={() => { setEditingBikeId(null); setTempProfile({}); }}
-              className={`w-full p-3 rounded-xl border-2 border-dashed ${c.border} ${c.textSec} text-sm font-semibold ${c.bgHover} transition-colors`}>
+              className={`w-full p-3 rounded-xl border-2 border-dashed ${c.border} ${c.textSecondary} text-sm font-semibold ${c.bgHover} transition-colors`}>
               ➕ Add Another Bike
             </button>
           </div>
@@ -1371,27 +1415,27 @@ const BikeMedic = () => {
 
         {/* Bike editor form */}
         {(isEditing || editingBikeId) && (
-          <div className={`${c.bgCard} rounded-xl border-2 ${c.border} p-6`}>
+          <div className={`${c.card} rounded-xl border-2 ${c.border} p-6`}>
             <h4 className={`text-sm font-bold ${c.text} mb-4`}>{editingBikeId ? 'Edit Bike' : 'Add New Bike'}</h4>
             <div className="mb-5">
-              <label className={`text-xs font-bold ${c.textSec} uppercase tracking-wide mb-2 block`}>Bike Name</label>
+              <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>Bike Name</label>
               <input value={tempProfile.name || ''} onChange={e => setTempProfile(prev => ({ ...prev, name: e.target.value }))}
                 placeholder="e.g., Trek Domane, Daily Commuter..."
                 className={`w-full px-3 py-2 border-2 rounded-lg text-sm outline-none ${c.input}`} />
             </div>
             {Object.entries(opts).map(([key, options]) => (
               <div key={key} className="mb-5">
-                <label className={`text-xs font-bold ${c.textSec} uppercase tracking-wide mb-2 block`}>{labels[key]}</label>
+                <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>{labels[key]}</label>
                 <div className="flex flex-wrap gap-2">
                   {options.map(o => (
                     <button key={o.v} onClick={() => setTempProfile(prev => ({ ...prev, [key]: prev[key] === o.v ? undefined : o.v }))}
-                      className={`px-3 py-2 rounded-lg text-sm font-semibold border-2 transition-all ${tempProfile[key] === o.v ? (c.d ? 'border-[#D4AF37] bg-[#D4AF37]/20 text-[#D4AF37]' : 'border-amber-500 bg-amber-50 text-amber-700') : `${c.border} ${c.textSec} ${c.bgHover}`}`}>{o.l}</button>
+                      className={`px-3 py-2 rounded-lg text-sm font-semibold border-2 transition-all ${tempProfile[key] === o.v ? c.profileSelected : `${c.border} ${c.textSecondary} ${c.bgHover}`}`}>{o.l}</button>
                   ))}
                 </div>
               </div>
             ))}
             <div className="flex gap-3 mt-6">
-              <button onClick={() => saveBike(tempProfile)} className={`flex-1 py-3 rounded-xl font-bold text-sm ${c.btn}`}>{editingBikeId ? 'Update Bike' : 'Add Bike'}</button>
+              <button onClick={() => saveBike(tempProfile)} className={`flex-1 py-3 rounded-xl font-bold text-sm ${c.btnPrimary}`}>{editingBikeId ? 'Update Bike' : 'Add Bike'}</button>
               <button onClick={() => { setShowProfileSetup(garage.length > 0 ? true : false); setEditingBikeId(null); if (garage.length === 0) setShowProfileSetup(false); }}
                 className={`px-6 py-3 rounded-xl font-bold text-sm ${c.btnGhost} border-2 ${c.border}`}>Cancel</button>
             </div>
@@ -1410,24 +1454,24 @@ const BikeMedic = () => {
         {toast && <Toast message={toast} onClose={() => setToast(null)} />}
         {renderNavBar()}
         <h3 className={`text-lg font-bold ${c.text} mb-2`}>🧰 My Toolbox</h3>
-        <p className={`text-sm ${c.textMut} mb-5`}>Mark the tools you own. We'll tell you if you're ready for each fix.</p>
+        <p className={`text-sm ${c.textMuted} mb-5`}>Mark the tools you own. We'll tell you if you're ready for each fix.</p>
         <div className="space-y-2 mb-6">
           {ALL_TOOLS.map(tool => {
             const owned = myTools.includes(tool);
             return (
               <button key={tool} onClick={() => setMyTools(prev => owned ? prev.filter(t => t !== tool) : [...prev, tool])}
-                className={`w-full flex items-center gap-3 p-3 rounded-xl border-2 text-left text-sm transition-all ${owned ? (c.d ? 'border-green-700 bg-green-900/20' : 'border-green-200 bg-green-50') : `${c.border} ${c.bgCard}`}`}>
-                <span className={`w-6 h-6 rounded-md border-2 flex items-center justify-center flex-shrink-0 ${owned ? 'bg-green-500 border-green-500 text-white' : c.border}`}>
+                className={`w-full flex items-center gap-3 p-3 rounded-xl border-2 text-left text-sm transition-all ${owned ? c.greenBanner : `${c.border} ${c.card}`}`}>
+                <span className={`w-6 h-6 rounded-md border-2 flex items-center justify-center flex-shrink-0 ${owned ? c.checkboxChecked : c.border}`}>
                   {owned && <span className="text-xs">✓</span>}
                 </span>
-                <span className={owned ? c.text : c.textSec}>{tool}</span>
+                <span className={owned ? c.text : c.textSecondary}>{tool}</span>
               </button>
             );
           })}
         </div>
-        <div className={`text-center text-xs ${c.textMut}`}>{myTools.length} of {ALL_TOOLS.length} tools owned</div>
+        <div className={`text-center text-xs ${c.textMuted}`}>{myTools.length} of {ALL_TOOLS.length} tools owned</div>
         {myTools.length > 0 && (
-          <button onClick={() => { setMyTools([]); showToast('Toolbox cleared'); }} className={`mt-3 text-xs ${c.textMut} hover:text-red-500 block mx-auto`}>Clear all</button>
+          <button onClick={() => { setMyTools([]); showToast('Toolbox cleared'); }} className={`mt-3 text-xs ${c.textMuted} hover:text-red-500 block mx-auto`}>Clear all</button>
         )}
       </div>
     );
@@ -1442,31 +1486,31 @@ const BikeMedic = () => {
         {toast && <Toast message={toast} onClose={() => setToast(null)} />}
         {renderNavBar()}
         {renderBikeProfileBar()}
-        <div className={`${c.bgCard} rounded-xl border-2 ${c.border} p-6 mb-6`}>
+        <div className={`${c.card} rounded-xl border-2 ${c.border} p-6 mb-6`}>
           <div className="flex items-center gap-3 mb-4">
             <span className="text-xl">🌦️</span>
             <h3 className={`text-lg font-bold ${c.text}`}>Seasonal Maintenance Wizard</h3>
           </div>
-          <p className={`${c.textSec} text-sm mb-4`}>AI-powered checklist based on your bike, season, and riding conditions.</p>
-          {!bikeProfile && <p className={`text-sm ${c.textMut} p-4 text-center`}>Add a bike in your garage first to get personalized advice.</p>}
+          <p className={`${c.textSecondary} text-sm mb-4`}>AI-powered checklist based on your bike, season, and riding conditions.</p>
+          {!bikeProfile && <p className={`text-sm ${c.textMuted} p-4 text-center`}>Add a bike in your garage first to get personalized advice.</p>}
           {bikeProfile && !seasonalResult && !loading && (
-            <button onClick={runSeasonalWizard} className={`w-full py-3 rounded-xl font-bold text-sm ${c.btn}`}>🌦️ Generate Seasonal Checklist</button>
+            <button onClick={runSeasonalWizard} className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary}`}>🌦️ Generate Seasonal Checklist</button>
           )}
           {loading && renderLoadingState()}
-          {aiError && !loading && <div className={`p-4 ${c.errBg} border rounded-xl text-sm ${c.errText}`}>{aiError}</div>}
+          {aiError && !loading && <div className={`p-4 ${c.danger} border rounded-xl text-sm`}>{aiError}</div>}
         </div>
         {seasonalResult && !loading && (
-          <div className={`${c.bgCard} rounded-xl border-2 ${c.border} p-6`}>
+          <div className={`${c.card} rounded-xl border-2 ${c.border} p-6`}>
             <h4 className={`text-sm font-bold ${c.text} mb-1`}>{seasonalResult.title || 'Seasonal Checklist'}</h4>
-            <p className={`text-xs ${c.textMut} mb-4`}>{seasonalResult.summary}</p>
+            <p className={`text-xs ${c.textMuted} mb-4`}>{seasonalResult.summary}</p>
             {seasonalResult.tasks?.map((task, i) => (
               <div key={i} className={`flex items-start gap-3 p-3 mb-2 rounded-xl border ${c.border}`}>
-                <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${task.priority === 'high' ? (c.d ? 'bg-red-900/40 text-red-300' : 'bg-red-100 text-red-700') : task.priority === 'medium' ? (c.d ? 'bg-amber-900/40 text-amber-300' : 'bg-amber-100 text-amber-700') : c.tag}`}>{task.priority}</span>
+                <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${c.priorityPill(task.priority)}`}>{task.priority}</span>
                 <div className="flex-1">
                   <div className={`text-sm font-semibold ${c.text}`}>{task.task}</div>
-                  <div className={`text-xs ${c.textMut} mt-0.5`}>{task.reason}</div>
+                  <div className={`text-xs ${c.textMuted} mt-0.5`}>{task.reason}</div>
                   {task.fix_ref && FIXES[task.fix_ref] && (
-                    <button onClick={() => { setShowSeasonalWizard(false); startFixDirect(task.fix_ref); }} className={`text-xs ${c.d ? 'text-[#D4AF37]' : 'text-amber-700'} hover:underline mt-1`}>View guide →</button>
+                    <button onClick={() => { setShowSeasonalWizard(false); startFixDirect(task.fix_ref); }} className={`text-xs ${c.amberLink} mt-1`}>View guide →</button>
                   )}
                 </div>
               </div>
@@ -1495,20 +1539,20 @@ const BikeMedic = () => {
 
         {/* DIY Savings Tracker */}
         {repairHistory.length > 0 && (
-          <div className={`mb-6 p-5 rounded-xl border-2 ${c.d ? 'border-green-700 bg-green-900/20' : 'border-green-200 bg-green-50'} text-center`}>
+          <div className={`mb-6 p-5 rounded-xl border-2 ${c.greenBanner} text-center`}>
             <span className="text-3xl block mb-1">💰</span>
-            <div className={`text-2xl font-black ${c.d ? 'text-green-300' : 'text-green-700'}`}>${totalSaved}</div>
-            <div className={`text-xs ${c.textMut} mt-1`}>saved by DIY across {repairHistory.length} repair{repairHistory.length !== 1 ? 's' : ''}</div>
+            <div className={`text-2xl font-black ${c.greenText}`}>${totalSaved}</div>
+            <div className={`text-xs ${c.textMuted} mt-1`}>saved by DIY across {repairHistory.length} repair{repairHistory.length !== 1 ? 's' : ''}</div>
           </div>
         )}
 
         {/* Ride Logger inline */}
         {activeBikeId && (
-          <div className={`mb-6 p-4 rounded-xl border-2 ${c.border} ${c.bgCard}`}>
+          <div className={`mb-6 p-4 rounded-xl border-2 ${c.border} ${c.card}`}>
             <div className="flex items-center gap-2 mb-3">
               <span>🚴</span>
               <span className={`text-sm font-bold ${c.text}`}>Log a Ride</span>
-              <span className={`text-xs ${c.textMut} ml-auto`}>{bikeRides.length} rides · {Math.round(getBikeMiles(activeBikeId))} mi total</span>
+              <span className={`text-xs ${c.textMuted} ml-auto`}>{bikeRides.length} rides · {Math.round(getBikeMiles(activeBikeId))} mi total</span>
             </div>
             <div className="flex gap-2 items-end">
               <div className="flex-1">
@@ -1523,10 +1567,10 @@ const BikeMedic = () => {
                 <option value="snow">❄️ Snow</option>
               </select>
               <button onClick={logRide} disabled={!rideDistance || parseFloat(rideDistance) <= 0}
-                className={`px-4 py-2 rounded-lg font-bold text-sm ${!rideDistance || parseFloat(rideDistance) <= 0 ? c.btnDis : c.btn}`}>Log</button>
+                className={`px-4 py-2 rounded-lg font-bold text-sm ${!rideDistance || parseFloat(rideDistance) <= 0 ? c.btnDis : c.btnPrimary}`}>Log</button>
             </div>
             {bikeRides.length > 0 && (
-              <div className={`mt-3 max-h-24 overflow-y-auto text-xs ${c.textMut} space-y-1`}>
+              <div className={`mt-3 max-h-24 overflow-y-auto text-xs ${c.textMuted} space-y-1`}>
                 {bikeRides.slice(0, 5).map(r => (
                   <div key={r.id} className="flex justify-between">
                     <span>{new Date(r.date).toLocaleDateString()}</span>
@@ -1541,16 +1585,16 @@ const BikeMedic = () => {
         {/* Favorites */}
         {favorites.length > 0 && (
           <div className="mb-6">
-            <h4 className={`text-sm font-bold ${c.textSec} uppercase tracking-wide mb-3`}>⭐ Saved Fixes</h4>
+            <h4 className={`text-sm font-bold ${c.textSecondary} uppercase tracking-wide mb-3`}>⭐ Saved Fixes</h4>
             <div className="space-y-2">
               {favorites.map(fId => {
                 const f = FIXES[fId];
                 if (!f) return null;
                 return (
-                  <div key={fId} className={`flex items-center gap-3 p-3 rounded-xl border-2 ${c.border} ${c.bgCard}`}>
+                  <div key={fId} className={`flex items-center gap-3 p-3 rounded-xl border-2 ${c.border} ${c.card}`}>
                     <button onClick={() => startFixDirect(fId)} className={`flex-1 text-left text-sm font-semibold ${c.text} hover:underline`}>{f.title}</button>
                     <span className={`text-xs ${c.tag} px-2 py-0.5 rounded`}>{f.difficulty}</span>
-                    <button onClick={() => toggleFavorite(fId)} className="text-amber-500 hover:text-amber-600">⭐</button>
+                    <button onClick={() => toggleFavorite(fId)} className={c.amberText}>⭐</button>
                   </div>
                 );
               })}
@@ -1560,9 +1604,9 @@ const BikeMedic = () => {
 
         {/* Maintenance Schedule (mileage-aware) */}
         <div className="mb-6">
-          <h4 className={`text-sm font-bold ${c.textSec} uppercase tracking-wide mb-3`}>🗓️ Maintenance Schedule</h4>
+          <h4 className={`text-sm font-bold ${c.textSecondary} uppercase tracking-wide mb-3`}>🗓️ Maintenance Schedule</h4>
           {!activeBikeId ? (
-            <p className={`text-sm ${c.textMut} p-4 text-center`}>Add a bike to track maintenance.</p>
+            <p className={`text-sm ${c.textMuted} p-4 text-center`}>Add a bike to track maintenance.</p>
           ) : (
             <div className="space-y-2">
               {Object.entries(MAINT_SCHEDULE).filter(([id]) => {
@@ -1577,19 +1621,19 @@ const BikeMedic = () => {
                 const milesOverdue = milesSince !== null && task.intervalMiles && milesSince >= task.intervalMiles;
                 const overdue = timeOverdue || milesOverdue;
                 return (
-                  <div key={taskId} className={`flex items-center gap-3 p-3 rounded-xl border-2 ${overdue ? (c.d ? 'border-amber-700 bg-amber-900/20' : 'border-amber-200 bg-amber-50') : c.border} ${c.bgCard}`}>
+                  <div key={taskId} className={`flex items-center gap-3 p-3 rounded-xl border-2 ${overdue ? c.amberBanner : c.border} ${c.card}`}>
                     <span className="text-lg">{task.icon}</span>
                     <div className="flex-1 min-w-0">
                       <div className={`text-sm font-semibold ${c.text}`}>{task.label}</div>
-                      <div className={`text-xs ${c.textMut}`}>
+                      <div className={`text-xs ${c.textMuted}`}>
                         {lastDone ? `${daysSince}d ago` : 'Never done'}
                         {milesSince !== null && <> · {Math.round(milesSince)} mi</>}
                         {' · every '}{task.intervalDays}d{task.intervalMiles ? ` / ${task.intervalMiles} mi` : ''}
                       </div>
                     </div>
-                    {overdue && <span className="text-xs font-bold text-amber-500">DUE</span>}
-                    <button onClick={() => markMaintDone(taskId)} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btn}`}>✅ Done</button>
-                    {task.fixRef && <button onClick={() => startFixDirect(task.fixRef)} className={`text-xs ${c.textMut} hover:underline`}>Guide →</button>}
+                    {overdue && <span className={`text-xs font-bold ${c.amberText}`}>DUE</span>}
+                    <button onClick={() => markMaintDone(taskId)} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnPrimary}`}>✅ Done</button>
+                    {task.fixRef && <button onClick={() => startFixDirect(task.fixRef)} className={`text-xs ${c.textMuted} hover:underline`}>Guide →</button>}
                   </div>
                 );
               })}
@@ -1599,27 +1643,27 @@ const BikeMedic = () => {
 
         {/* Repair History */}
         <div>
-          <h4 className={`text-sm font-bold ${c.textSec} uppercase tracking-wide mb-3`}>📋 Repair History</h4>
+          <h4 className={`text-sm font-bold ${c.textSecondary} uppercase tracking-wide mb-3`}>📋 Repair History</h4>
           {repairHistory.length === 0 ? (
-            <p className={`text-sm ${c.textMut} p-4 text-center`}>No repairs logged yet. Complete a fix and tap "Log Repair" to start tracking.</p>
+            <p className={`text-sm ${c.textMuted} p-4 text-center`}>No repairs logged yet. Complete a fix and tap "Log Repair" to start tracking.</p>
           ) : (
             <div className="space-y-2">
               {repairHistory.slice(0, 20).map(entry => (
-                <div key={entry.id} className={`flex items-center gap-3 p-3 rounded-xl border ${c.border} ${c.bgCard}`}>
+                <div key={entry.id} className={`flex items-center gap-3 p-3 rounded-xl border ${c.border} ${c.card}`}>
                   <div className="flex-1 min-w-0">
                     <button onClick={() => startFixDirect(entry.fixId)} className={`text-sm font-semibold ${c.text} hover:underline truncate block`}>{entry.title}</button>
-                    <div className={`text-xs ${c.textMut}`}>
+                    <div className={`text-xs ${c.textMuted}`}>
                       {new Date(entry.date).toLocaleDateString()}
-                      {entry.shopCost > 0 && <span className={c.d ? ' text-green-400' : ' text-green-600'}> · saved ~${entry.shopCost}</span>}
+                      {entry.shopCost > 0 && <span className={c.greenInline}> · saved ~${entry.shopCost}</span>}
                     </div>
                   </div>
                 </div>
               ))}
-              {repairHistory.length > 20 && <p className={`text-xs ${c.textMut} text-center`}>Showing 20 of {repairHistory.length}</p>}
+              {repairHistory.length > 20 && <p className={`text-xs ${c.textMuted} text-center`}>Showing 20 of {repairHistory.length}</p>}
             </div>
           )}
           {repairHistory.length > 0 && (
-            <button onClick={() => { setRepairHistory([]); showToast('History cleared'); }} className={`mt-3 text-xs ${c.textMut} hover:text-red-500`}>Clear history</button>
+            <button onClick={() => { setRepairHistory([]); showToast('History cleared'); }} className={`mt-3 text-xs ${c.textMuted} hover:text-red-500`}>Clear history</button>
           )}
         </div>
       </div>
@@ -1636,17 +1680,17 @@ const BikeMedic = () => {
       <div className={c.text}>
         {renderNavBar()}
         {renderBikeProfileBar()}
-        <div className={`${c.bgCard} rounded-xl border-2 ${c.border} p-6`}>
+        <div className={`${c.card} rounded-xl border-2 ${c.border} p-6`}>
           <h3 className={`text-lg font-bold ${c.text} mb-1`}>{check.icon} {check.title}</h3>
-          <p className={`text-sm ${c.textSec} mb-5`}>Tap to check off. Hit the ⚠️ to troubleshoot any issue.</p>
+          <p className={`text-sm ${c.textSecondary} mb-5`}>Tap to check off. Hit the ⚠️ to troubleshoot any issue.</p>
           <div className="space-y-3">
             {check.items.map((item, i) => (
-              <div key={i} className={`flex items-start gap-3 p-3 rounded-xl border-2 transition-all ${checkedItems[i] ? (c.d ? 'border-green-700 bg-green-900/20' : 'border-green-200 bg-green-50') : c.border}`}>
+              <div key={i} className={`flex items-start gap-3 p-3 rounded-xl border-2 transition-all ${checkedItems[i] ? c.greenBanner : c.border}`}>
                 <button onClick={() => setCheckedItems(prev => ({ ...prev, [i]: !prev[i] }))}
-                  className={`flex-shrink-0 w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all mt-0.5 ${checkedItems[i] ? 'bg-green-500 border-green-500 text-white' : c.border}`}>
+                  className={`flex-shrink-0 w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all mt-0.5 ${checkedItems[i] ? c.checkboxChecked : c.border}`}>
                   {checkedItems[i] && <span className="text-xs">✓</span>}
                 </button>
-                <span className={`flex-1 text-sm ${checkedItems[i] ? c.textMut + ' line-through' : c.text}`}>{item.text}</span>
+                <span className={`flex-1 text-sm ${checkedItems[i] ? c.textMuted + ' line-through' : c.text}`}>{item.text}</span>
                 {item.problem && (
                   <button onClick={() => { setActiveQuickCheck(null); setCheckedItems({}); startProblem(item.problem); }}
                     className={`flex-shrink-0 p-1.5 rounded-lg ${c.bgHover} transition-colors`} title="Troubleshoot">
@@ -1656,7 +1700,7 @@ const BikeMedic = () => {
               </div>
             ))}
           </div>
-          <div className={`mt-4 text-center text-xs ${c.textMut}`}>{numChecked} / {check.items.length} checked</div>
+          <div className={`mt-4 text-center text-xs ${c.textMuted}`}>{numChecked} / {check.items.length} checked</div>
         </div>
       </div>
     );
@@ -1671,15 +1715,15 @@ const BikeMedic = () => {
         {toast && <Toast message={toast} onClose={() => setToast(null)} />}
 
         {/* Tool Header */}
-        <div className="flex items-center gap-3 mb-6">
-          <div className="flex-1">
-            <h2 className={`text-2xl font-bold ${c.text}`}>Bike Medic 🚲</h2>
-            <p className={`text-sm ${c.textMut}`}>Your trailside mechanic in your pocket</p>
-          </div>
+        <div className={`mb-6 pb-4 border-b ${c.border}`}>
+          <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
+            <span>{tool?.icon ?? '🚲'}</span> Bike Medic
+          </h2>
+          <p className={`text-sm ${c.textSecondary}`}>Your trailside mechanic in your pocket</p>
         </div>
 
         {/* Cross-refs pre-result */}
-        <div className={`mb-4 text-xs ${c.textMut}`}>
+        <div className={`mb-4 text-xs ${c.textMuted}`}>
           Need parts for a fix? <a href="/BuyWise" target="_blank" rel="noopener noreferrer" className={linkStyle}>BuyWise</a> checks if it's worth the money.
         </div>
 
@@ -1687,20 +1731,20 @@ const BikeMedic = () => {
 
         {/* Maintenance alerts */}
         {maintAlerts.length > 0 && (
-          <div className={`mb-5 p-4 rounded-xl border-2 ${c.d ? 'border-amber-700 bg-amber-900/20' : 'border-amber-200 bg-amber-50'}`}>
+          <div className={`mb-5 p-4 rounded-xl border-2 ${c.amberBanner}`}>
             <div className="flex items-center gap-2 mb-2">
               <span>🗓️</span>
-              <span className={`text-sm font-bold ${c.d ? 'text-amber-300' : 'text-amber-800'}`}>Maintenance Due</span>
-              <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${c.d ? 'bg-amber-900/60 text-amber-300' : 'bg-amber-200 text-amber-800'}`}>{maintAlerts.length}</span>
+              <span className={`text-sm font-bold ${c.amberLabel}`}>Maintenance Due</span>
+              <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${c.amberBadge}`}>{maintAlerts.length}</span>
             </div>
             <div className="flex flex-wrap gap-2">
               {maintAlerts.slice(0, 3).map(a => (
                 <button key={a.taskId} onClick={() => { if (a.fixRef) startFixDirect(a.fixRef); else markMaintDone(a.taskId); }}
-                  className={`text-xs font-semibold px-2 py-1 rounded-lg ${a.overdue ? 'bg-red-100 text-red-700' : c.tag} hover:opacity-80`}>
+                  className={`text-xs font-semibold px-2 py-1 rounded-lg ${a.overdue ? c.redPill : c.tag} hover:opacity-80`}>
                   {a.icon} {a.label}
                 </button>
               ))}
-              {maintAlerts.length > 3 && <button onClick={() => setShowHistory(true)} className={`text-xs ${c.textMut} hover:underline`}>+{maintAlerts.length - 3} more</button>}
+              {maintAlerts.length > 3 && <button onClick={() => setShowHistory(true)} className={`text-xs ${c.textMuted} hover:underline`}>+{maintAlerts.length - 3} more</button>}
             </div>
           </div>
         )}
@@ -1708,50 +1752,50 @@ const BikeMedic = () => {
         {/* Mode tabs + feature buttons */}
         <div className="flex items-center gap-2 mb-5 flex-wrap">
           <button onClick={() => setViewMode('problems')}
-            className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${viewMode === 'problems' ? c.btn : `${c.border} border ${c.textSec} ${c.bgHover}`}`}>
+            className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${viewMode === 'problems' ? c.btnPrimary : `${c.border} border ${c.textSecondary} ${c.bgHover}`}`}>
             🔧 Diagnose
           </button>
           <button onClick={() => setViewMode('quickcheck')}
-            className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${viewMode === 'quickcheck' ? c.btn : `${c.border} border ${c.textSec} ${c.bgHover}`}`}>
+            className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${viewMode === 'quickcheck' ? c.btnPrimary : `${c.border} border ${c.textSecondary} ${c.bgHover}`}`}>
             ✅ Quick Checks
           </button>
           <div className="flex-1" />
-          <button onClick={() => setShowSeasonalWizard(true)} className={`p-2 rounded-lg ${c.bgHover} ${c.textSec} transition-colors`} title="Seasonal maintenance">
+          <button onClick={() => setShowSeasonalWizard(true)} className={`p-2 rounded-lg ${c.bgHover} ${c.textSecondary} transition-colors`} title="Seasonal maintenance">
             <span>🌦️</span>
           </button>
-          <button onClick={() => setShowToolbox(true)} className={`p-2 rounded-lg ${c.bgHover} ${c.textSec} transition-colors relative`} title="My toolbox">
+          <button onClick={() => setShowToolbox(true)} className={`p-2 rounded-lg ${c.bgHover} ${c.textSecondary} transition-colors relative`} title="My toolbox">
             <span>🧰</span>
-            {myTools.length > 0 && <span className="absolute -top-1 -right-1 w-4 h-4 bg-blue-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">{myTools.length}</span>}
+            {myTools.length > 0 && <span className={`absolute -top-1 -right-1 w-4 h-4 ${c.navBadgeZinc} text-[10px] font-bold rounded-full flex items-center justify-center`}>{myTools.length}</span>}
           </button>
-          <button onClick={() => setShowHistory(true)} className={`p-2 rounded-lg ${c.bgHover} ${c.textSec} transition-colors relative`} title="Hub: history, rides, maintenance">
+          <button onClick={() => setShowHistory(true)} className={`p-2 rounded-lg ${c.bgHover} ${c.textSecondary} transition-colors relative`} title="Hub: history, rides, maintenance">
             <span>📋</span>
-            {maintAlerts.length > 0 && <span className="absolute -top-1 -right-1 w-4 h-4 bg-amber-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">{maintAlerts.length}</span>}
+            {maintAlerts.length > 0 && <span className={`absolute -top-1 -right-1 w-4 h-4 ${c.navBadgeAmber} text-[10px] font-bold rounded-full flex items-center justify-center`}>{maintAlerts.length}</span>}
           </button>
-          <button onClick={() => setShowProfileSetup(true)} className={`p-2 rounded-lg ${c.bgHover} ${c.textSec} transition-colors relative`} title="Garage">
+          <button onClick={() => setShowProfileSetup(true)} className={`p-2 rounded-lg ${c.bgHover} ${c.textSecondary} transition-colors relative`} title="Garage">
             <span>🏠</span>
-            {garage.length > 0 && <span className="absolute -top-1 -right-1 w-4 h-4 bg-zinc-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">{garage.length}</span>}
+            {garage.length > 0 && <span className={`absolute -top-1 -right-1 w-4 h-4 ${c.navBadgeZinc} text-[10px] font-bold rounded-full flex items-center justify-center`}>{garage.length}</span>}
           </button>
         </div>
 
         {/* Savings banner */}
         {getTotalSavings() > 0 && (
-          <div className={`mb-4 flex items-center gap-3 p-3 rounded-xl ${c.d ? 'bg-green-900/20 border border-green-800' : 'bg-green-50 border border-green-200'}`}>
+          <div className={`mb-4 flex items-center gap-3 p-3 rounded-xl border ${c.greenBanner}`}>
             <span>💰</span>
-            <span className={`text-sm font-bold ${c.d ? 'text-green-300' : 'text-green-700'}`}>${getTotalSavings()} saved by DIY</span>
-            <button onClick={() => setShowHistory(true)} className={`ml-auto text-xs ${c.textMut} hover:underline`}>Details →</button>
+            <span className={`text-sm font-bold ${c.greenText}`}>${getTotalSavings()} saved by DIY</span>
+            <button onClick={() => setShowHistory(true)} className={`ml-auto text-xs ${c.textMuted} hover:underline`}>Details →</button>
           </div>
         )}
 
         {viewMode === 'quickcheck' ? (
           <div>
-            <p className={`${c.textSec} mb-4 text-sm`}>Run a targeted checklist for your situation.</p>
+            <p className={`${c.textSecondary} mb-4 text-sm`}>Run a targeted checklist for your situation.</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {Object.entries(QUICK_CHECKS).map(([key, check]) => (
                 <button key={key} onClick={() => { setActiveQuickCheck(key); setCheckedItems({}); }}
-                  className={`group flex items-center gap-3 p-4 rounded-xl border-2 ${c.border} ${c.borderHover} ${c.bgCard} ${c.bgHover} transition-all text-left`}>
+                  className={`group flex items-center gap-3 p-4 rounded-xl border-2 ${c.border} ${c.borderHover} ${c.card} ${c.bgHover} transition-all text-left`}>
                   <span className="text-2xl">{check.icon}</span>
-                  <div><span className={`text-sm font-bold ${c.text}`}>{check.title}</span><span className={`block text-xs ${c.textMut}`}>{check.items.length} items</span></div>
-                  <span className={`ml-auto ${c.textMut} group-hover:translate-x-1 transition-transform`}>→</span>
+                  <div><span className={`text-sm font-bold ${c.text}`}>{check.title}</span><span className={`block text-xs ${c.textMuted}`}>{check.items.length} items</span></div>
+                  <span className={`ml-auto ${c.textMuted} group-hover:translate-x-1 transition-transform`}>→</span>
                 </button>
               ))}
             </div>
@@ -1761,7 +1805,7 @@ const BikeMedic = () => {
             {/* Favorites quick access */}
             {favorites.length > 0 && (
               <div className="mb-5">
-                <div className={`text-xs font-bold ${c.textMut} uppercase tracking-wide mb-2`}>⭐ Quick Access</div>
+                <div className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-2`}>⭐ Quick Access</div>
                 <div className="flex flex-wrap gap-2">
                   {favorites.slice(0, 5).map(fId => {
                     const f = FIXES[fId]; if (!f) return null;
@@ -1772,36 +1816,37 @@ const BikeMedic = () => {
             )}
 
             {/* AI Symptom interpreter */}
-            <div className={`mb-5 p-4 rounded-xl border-2 ${c.border} ${c.bgCard}`}>
+            <div className={`mb-5 p-4 rounded-xl border-2 ${c.border} ${c.card}`}>
               <button onClick={() => setShowInterpreter(!showInterpreter)} className="w-full flex items-center gap-3 text-left">
                 <span className={`text-lg flex-shrink-0`}>🔍</span>
-                <div className="flex-1"><span className={`text-sm font-bold ${c.text}`}>Describe what's happening</span><span className={`block text-xs ${c.textMut}`}>AI suggests the right category</span></div>
-                <span className={`${c.textMut} transition-transform ${showInterpreter ? 'rotate-180' : ''}`}>▼</span>
+                <div className="flex-1"><span className={`text-sm font-bold ${c.text}`}>Describe what's happening</span><span className={`block text-xs ${c.textMuted}`}>AI suggests the right category</span></div>
+                <span className={`${c.textMuted} transition-transform ${showInterpreter ? 'rotate-180' : ''}`}>▼</span>
               </button>
               {showInterpreter && (
                 <div className="mt-4">
                   <textarea value={symptomText} onChange={e => setSymptomText(e.target.value)}
+                    onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && symptomText.trim().length >= 10 && !loading) routeSymptom(); }}
                     placeholder="e.g., 'Ticking from the front when I go over bumps, handlebars feel loose...'"
                     className={`w-full h-24 p-3 border-2 rounded-xl text-sm resize-none outline-none ${c.input}`} />
                   <button onClick={routeSymptom} disabled={loading || symptomText.trim().length < 10}
-                    className={`mt-3 w-full py-2.5 rounded-xl font-bold text-sm transition-colors ${loading || symptomText.trim().length < 10 ? c.btnDis : c.btn}`}>
-                    {loading ? <span className="flex items-center justify-center gap-2"><span className="animate-spin inline-block">⏳</span> Analyzing...</span> : 'Analyze Symptom'}
+                    className={`mt-3 w-full py-2.5 rounded-xl font-bold text-sm transition-colors ${loading || symptomText.trim().length < 10 ? c.btnDis : c.btnPrimary}`}>
+                    {loading ? <span className="flex items-center justify-center gap-2"><span className="animate-spin inline-block">{tool?.icon ?? '🚲'}</span> Analyzing...</span> : 'Analyze Symptom'}
                   </button>
                   {aiRoute && (
-                    <div className={`mt-4 p-4 rounded-xl ${c.bgInset}`}>
+                    <div className={`mt-4 p-4 rounded-xl ${c.cardAlt}`}>
                       <div className="flex items-center gap-2 mb-2">
                         <span>✨</span>
                         <span className={`text-sm font-bold ${c.text}`}>AI Recommendation</span>
-                        <span className={`text-xs ${c.textMut} ml-auto`}>{Math.round((aiRoute.confidence || 0) * 100)}%</span>
+                        <span className={`text-xs ${c.textMuted} ml-auto`}>{Math.round((aiRoute.confidence || 0) * 100)}%</span>
                       </div>
-                      <p className={`text-sm ${c.textSec} mb-3`}>{aiRoute.reasoning}</p>
+                      <p className={`text-sm ${c.textSecondary} mb-3`}>{aiRoute.reasoning}</p>
                       <button onClick={() => { const p = PROBLEMS.find(x => x.id === aiRoute.recommended_category); if (p) { setShowInterpreter(false); setAiRoute(null); startProblem(aiRoute.recommended_category); } }}
-                        className={`w-full py-2.5 rounded-xl font-bold text-sm ${c.btn}`}>
+                        className={`w-full py-2.5 rounded-xl font-bold text-sm ${c.btnPrimary}`}>
                         Start: {PROBLEMS.find(p => p.id === aiRoute.recommended_category)?.label || aiRoute.recommended_category}
                       </button>
                       {aiRoute.alternative_categories?.length > 0 && (
                         <div className="mt-2 flex gap-2 flex-wrap">
-                          <span className={`text-xs ${c.textMut}`}>Also:</span>
+                          <span className={`text-xs ${c.textMuted}`}>Also:</span>
                           {aiRoute.alternative_categories.map(alt => { const p = PROBLEMS.find(x => x.id === alt); return p ? (
                             <button key={alt} onClick={() => { setShowInterpreter(false); setAiRoute(null); startProblem(alt); }}
                               className={`text-xs ${c.tag} px-2 py-1 rounded-md hover:opacity-80`}>{p.icon} {p.label}</button>
@@ -1814,16 +1859,37 @@ const BikeMedic = () => {
               )}
             </div>
 
-            <p className={`${c.textSec} mb-4 text-sm`}>Or select the problem:</p>
+            <p className={`${c.textSecondary} mb-4 text-sm`}>Or select the problem:</p>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
               {PROBLEMS.map(p => (
                 <button key={p.id} onClick={() => startProblem(p.id)}
-                  className={`group relative flex flex-col items-center gap-2 p-5 rounded-2xl border-2 ${c.border} ${c.borderHover} ${c.bgCard} ${c.bgHover} transition-all text-center min-h-[88px]`}>
+                  className={`group relative flex flex-col items-center gap-2 p-5 rounded-2xl border-2 ${c.border} ${c.borderHover} ${c.card} ${c.bgHover} transition-all text-center min-h-[88px]`}>
                   <span className="text-3xl">{p.icon}</span>
                   <span className={`text-sm font-bold ${c.text} leading-tight`}>{p.label}</span>
                   <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 group-hover:w-3/4 h-[3px] rounded-full transition-all duration-200" style={{ backgroundColor: p.color }} />
                 </button>
               ))}
+            </div>
+
+            {/* Direct free-text input */}
+            <div className={`mt-5 p-4 rounded-xl border-2 ${c.border} ${c.card}`}>
+              <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-2`}>🔧 Something different? Describe it directly</p>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={customProblem}
+                  onChange={e => setCustomProblem(e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter' && customProblem.trim()) { setShowAskMechanic(true); askMechanic(); } }}
+                  placeholder="e.g., 'Creaking from bottom bracket when climbing...'"
+                  className={`flex-1 px-3 py-2 border-2 rounded-lg text-sm outline-none ${c.input}`}
+                />
+                <button
+                  onClick={() => { setShowAskMechanic(true); if (customProblem.trim()) askMechanic(); }}
+                  disabled={!customProblem.trim()}
+                  className={`px-4 py-2 rounded-lg font-bold text-sm flex-shrink-0 ${!customProblem.trim() ? c.btnDis : c.btnPrimary}`}>
+                  Ask
+                </button>
+              </div>
             </div>
           </div>
         )}
@@ -1840,40 +1906,41 @@ const BikeMedic = () => {
         {toast && <Toast message={toast} onClose={() => setToast(null)} />}
         {renderNavBar()}
         {renderBikeProfileBar()}
-        <div className={`${c.bgCard} rounded-xl border-2 ${c.border} p-6 mb-6`}>
+        <div className={`${c.card} rounded-xl border-2 ${c.border} p-6 mb-6`}>
           <div className="flex items-center gap-3 mb-4">
             <span className="text-xl">💬</span>
             <h3 className={`text-lg font-bold ${c.text}`}>Ask the Mechanic</h3>
           </div>
-          <p className={`${c.textSec} text-sm mb-4`}>Describe the problem — what you see, hear, or feel. Attach a photo for visual diagnosis.</p>
+          <p className={`${c.textSecondary} text-sm mb-4`}>Describe the problem — what you see, hear, or feel. Attach a photo for visual diagnosis.</p>
           <textarea value={customProblem} onChange={(e) => setCustomProblem(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && customProblem.trim() && !loading) askMechanic(); }}
             placeholder="e.g., 'Rear wheel grinds when going uphill and shifting to easier gear. Started after heavy rain.'"
             className={`w-full h-32 p-4 border-2 rounded-xl outline-none resize-none text-sm ${c.input}`} />
 
           {/* Photo upload */}
           <div className="flex items-center gap-3 mt-3">
             <input ref={photoRef} type="file" accept="image/*" capture="environment" onChange={handlePhotoUpload} className="hidden" />
-            <button onClick={() => photoRef.current?.click()} className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold border-2 ${c.border} ${c.textSec} ${c.bgHover} transition-colors`}>
+            <button onClick={() => photoRef.current?.click()} className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold border-2 ${c.border} ${c.textSecondary} ${c.bgHover} transition-colors`}>
               <span>📸</span> {photoData ? 'Change Photo' : 'Attach Photo'}
             </button>
             {photoData && (
               <div className="flex items-center gap-2">
                 <img src={photoData} alt="Attached" className="w-10 h-10 rounded-lg object-cover border" />
-                <button onClick={() => setPhotoData(null)} className={`text-xs ${c.textMut} hover:text-red-500`}>✕ Remove</button>
+                <button onClick={() => setPhotoData(null)} className={`text-xs ${c.textMuted} hover:text-red-500`}>✕ Remove</button>
               </div>
             )}
           </div>
 
           <button onClick={askMechanic} disabled={loading || !customProblem.trim()}
-            className={`mt-4 w-full font-bold py-3 px-6 rounded-xl transition-colors flex items-center justify-center gap-2 ${loading || !customProblem.trim() ? c.btnDis : c.btn}`}>
+            className={`mt-4 w-full font-bold py-3 px-6 rounded-xl transition-colors flex items-center justify-center gap-2 ${loading || !customProblem.trim() ? c.btnDis : c.btnPrimary}`}>
             {loading ? null : <><span>🔧</span> Diagnose My Bike</>}
           </button>
           {loading && renderLoadingState()}
           {aiError && !loading && (
-            <div className={`mt-4 p-4 ${c.errBg} border rounded-xl flex items-start gap-3`}>
-              <span className="text-red-500 flex-shrink-0 mt-0.5">⚠️</span>
-              <div><p className={`${c.errText} text-sm`}>{aiError}</p>
-                <button onClick={reset} className="text-sm font-semibold text-amber-600 hover:underline mt-2">← Try static tree instead</button>
+            <div className={`mt-4 p-4 ${c.danger} border rounded-xl flex items-start gap-3`}>
+              <span className="flex-shrink-0 mt-0.5">⚠️</span>
+              <div><p className="text-sm">{aiError}</p>
+                <button onClick={reset} className={`text-sm font-semibold ${linkStyle} mt-2`}>← Try static tree instead</button>
               </div>
             </div>
           )}
@@ -1896,18 +1963,18 @@ const BikeMedic = () => {
 
         {/* Resolved celebration */}
         {fixResolved === 'yes' && (
-          <div className={`mb-6 p-6 rounded-xl ${c.successBg} border-2 text-center`}>
+          <div className={`mb-6 p-6 rounded-xl ${c.success} border-2 text-center`}>
             <span className="text-4xl block mb-2">🎉</span>
-            <p className={`text-lg font-bold ${c.d ? 'text-green-300' : 'text-green-800'}`}>Fixed!</p>
-            <p className={`text-sm ${c.textSec} mt-1`}>Nice work — you just saved a trip to the shop.</p>
+            <p className={`text-lg font-bold ${c.greenText}`}>Fixed!</p>
+            <p className={`text-sm ${c.textSecondary} mt-1`}>Nice work — you just saved a trip to the shop.</p>
             {SHOP_COSTS[currentFix] > 0 && (
-              <div className={`mt-3 inline-block px-4 py-2 rounded-xl ${c.d ? 'bg-green-900/40' : 'bg-green-100'}`}>
-                <span className={`text-lg font-black ${c.d ? 'text-green-300' : 'text-green-700'}`}>💰 ~${SHOP_COSTS[currentFix]} saved</span>
-                {getTotalSavings() > 0 && <div className={`text-xs ${c.textMut} mt-0.5`}>Lifetime total: ${getTotalSavings() + SHOP_COSTS[currentFix]}</div>}
+              <div className={`mt-3 inline-block px-4 py-2 rounded-xl ${c.greenPill}`}>
+                <span className={`text-lg font-black ${c.greenText}`}>💰 ~${SHOP_COSTS[currentFix]} saved</span>
+                {getTotalSavings() > 0 && <div className={`text-xs ${c.textMuted} mt-0.5`}>Lifetime total: ${getTotalSavings() + SHOP_COSTS[currentFix]}</div>}
               </div>
             )}
             <div className="flex justify-center gap-3 mt-4">
-              <button onClick={() => { logRepair(currentFix, fix.title); }} className={`px-5 py-2 rounded-xl font-bold text-sm ${c.btn}`}>📋 Log Repair</button>
+              <button onClick={() => { logRepair(currentFix, fix.title); }} className={`px-5 py-2 rounded-xl font-bold text-sm ${c.btnPrimary}`}>📋 Log Repair</button>
               <button onClick={reset} className={`px-5 py-2 rounded-xl font-bold text-sm ${c.btnGhost} border-2 ${c.border}`}>Back to Home</button>
             </div>
           </div>
@@ -1937,16 +2004,19 @@ const BikeMedic = () => {
                   <span className={`flex items-center gap-1.5 text-xs font-bold ${c.tag} px-3 py-1.5 rounded-lg`}><span>⏱️</span> {fix.time}</span>
                 </div>
                 <div className="flex flex-wrap gap-1.5">
-                  <span className={`text-xs font-bold ${c.textMut} uppercase self-center mr-1`}>Tools:</span>
+                  <span className={`text-xs font-bold ${c.textMuted} uppercase self-center mr-1`}>Tools:</span>
                   {fix.tools.map((t, i) => <span key={i} className={`text-xs ${c.tagAmber} border px-2 py-1 rounded-lg font-medium`}>{t}</span>)}
                 </div>
               </div>
             </div>
 
-            {/* Copy/Print actions */}
-            <div className="flex gap-2 mb-4">
-              <CopyBtn content={buildFixText()} label="Copy Steps" />
-              <PrintBtn content={buildFixPrintHtml()} label="Print" />
+            {/* Action buttons */}
+            <div className="mb-4">
+              <ActionBar
+                content={buildFixText()}
+                printContent={buildFixPrintHtml()}
+                title={fix.title}
+              />
             </div>
 
             {/* Toolbox readiness check */}
@@ -1954,21 +2024,21 @@ const BikeMedic = () => {
               const readiness = getToolReadiness(fix.tools);
               if (!readiness) return null;
               return (
-                <div className={`mb-4 p-3 rounded-xl border-2 ${readiness.ready ? (c.d ? 'border-green-700 bg-green-900/20' : 'border-green-200 bg-green-50') : (c.d ? 'border-amber-700 bg-amber-900/20' : 'border-amber-200 bg-amber-50')}`}>
+                <div className={`mb-4 p-3 rounded-xl border-2 ${readiness.ready ? c.greenBanner : c.amberBanner}`}>
                   <div className="flex items-center gap-2 mb-1">
                     <span>{readiness.ready ? '✅' : '⚠️'}</span>
-                    <span className={`text-xs font-bold ${readiness.ready ? (c.d ? 'text-green-300' : 'text-green-700') : (c.d ? 'text-amber-300' : 'text-amber-700')}`}>
+                    <span className={`text-xs font-bold ${readiness.ready ? c.greenText : c.amberLabel}`}>
                       {readiness.ready ? 'You have all the tools!' : `Missing ${readiness.missing.length} tool${readiness.missing.length > 1 ? 's' : ''}`}
                     </span>
                   </div>
                   {readiness.missing.length > 0 && (
                     <div className="flex flex-wrap gap-1 mt-1">
-                      {readiness.missing.map((t, i) => <span key={i} className={`text-xs px-2 py-0.5 rounded ${c.d ? 'bg-red-900/40 text-red-300' : 'bg-red-100 text-red-700'}`}>❌ {t}</span>)}
+                      {readiness.missing.map((t, i) => <span key={i} className={`text-xs px-2 py-0.5 rounded ${c.redPill}`}>❌ {t}</span>)}
                     </div>
                   )}
                   {readiness.have.length > 0 && (
                     <div className="flex flex-wrap gap-1 mt-1">
-                      {readiness.have.map((t, i) => <span key={i} className={`text-xs px-2 py-0.5 rounded ${c.d ? 'bg-green-900/40 text-green-300' : 'bg-green-100 text-green-700'}`}>✅ {t}</span>)}
+                      {readiness.have.map((t, i) => <span key={i} className={`text-xs px-2 py-0.5 rounded ${c.greenPill}`}>✅ {t}</span>)}
                     </div>
                   )}
                 </div>
@@ -1978,31 +2048,31 @@ const BikeMedic = () => {
             {/* Progress bar */}
             <div className="mb-4">
               <div className="flex items-center justify-between mb-1">
-                <span className={`text-xs font-bold ${c.textMut} uppercase`}>Progress</span>
-                <span className={`text-xs font-bold ${c.textSec}`}>{doneSteps} / {totalSteps}</span>
+                <span className={`text-xs font-bold ${c.textMuted} uppercase`}>Progress</span>
+                <span className={`text-xs font-bold ${c.textSecondary}`}>{doneSteps} / {totalSteps}</span>
               </div>
-              <div className={`h-2 rounded-full ${c.bgInset} overflow-hidden`}>
+              <div className={`h-2 rounded-full ${c.cardAlt} overflow-hidden`}>
                 <div className="h-full rounded-full transition-all duration-300" style={{ width: `${progress}%`, backgroundColor: accent }} />
               </div>
             </div>
 
             {/* Steps with checkboxes */}
-            <div className={`${c.bgCard} rounded-xl border-2 ${c.border} overflow-hidden mb-6`}>
-              <div className={`p-4 border-b ${c.border} ${c.bgInset}`}>
-                <h4 className={`text-sm font-bold ${c.textSec} uppercase tracking-wide`}>Step-by-Step</h4>
+            <div className={`${c.card} rounded-xl border-2 ${c.border} overflow-hidden mb-6`}>
+              <div className={`p-4 border-b ${c.border} ${c.cardAlt}`}>
+                <h4 className={`text-sm font-bold ${c.textSecondary} uppercase tracking-wide`}>Step-by-Step</h4>
               </div>
-              <ol className={`divide-y ${c.d ? 'divide-zinc-700' : 'divide-stone-100'}`}>
+              <ol className={`divide-y ${c.stepDivide}`}>
                 {fix.steps.map((step, idx) => {
                   const done = !!completedSteps[idx];
                   const isActive = idx === activeStep && !done;
                   return (
-                    <li key={idx} className={`flex gap-4 p-4 transition-all cursor-pointer ${isActive ? (c.d ? 'bg-zinc-700/50' : 'bg-amber-50/60') : ''} ${c.bgHover} ${done ? 'opacity-60' : ''}`}
+                    <li key={idx} className={`flex gap-4 p-4 transition-all cursor-pointer ${isActive ? c.stepActive : ''} ${c.bgHover} ${done ? 'opacity-60' : ''}`}
                       onClick={() => toggleStep(idx)}>
-                      <div className={`flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold border-2 transition-all ${done ? 'bg-green-500 border-green-500 text-white' : 'text-white border-transparent'}`}
+                      <div className={`flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold border-2 transition-all ${done ? c.checkboxChecked : 'text-white border-transparent'}`}
                         style={!done ? { backgroundColor: accent } : {}}>
                         {done ? '✓' : idx + 1}
                       </div>
-                      <span className={`text-sm leading-relaxed pt-0.5 flex-1 ${done ? 'line-through' : ''} ${isActive ? `font-semibold ${c.text}` : c.textSec}`}>{step}</span>
+                      <span className={`text-sm leading-relaxed pt-0.5 flex-1 ${done ? 'line-through' : ''} ${isActive ? `font-semibold ${c.text}` : c.textSecondary}`}>{step}</span>
                     </li>
                   );
                 })}
@@ -2011,15 +2081,15 @@ const BikeMedic = () => {
 
             {/* Pro tip */}
             {fix.pro_tip && (
-              <div className={`${c.tipBg} border-2 rounded-xl p-5 mb-6`}>
-                <p className={`${c.tipText} text-sm`}><span className="font-black text-xs uppercase block mb-1">🔧 Mechanic's Tip</span>{fix.pro_tip}</p>
+              <div className={`${c.warning} border-2 rounded-xl p-5 mb-6`}>
+                <p className="text-sm"><span className="font-black text-xs uppercase block mb-1">🔧 Mechanic's Tip</span>{fix.pro_tip}</p>
               </div>
             )}
 
             {/* Parts reference */}
             {fix.parts?.length > 0 && (
               <div className="mb-6">
-                <button onClick={() => setShowParts(!showParts)} className={`w-full flex items-center gap-2 p-3 rounded-xl ${c.bgInset} ${c.textSec} text-sm font-semibold transition-colors`}>
+                <button onClick={() => setShowParts(!showParts)} className={`w-full flex items-center gap-2 p-3 rounded-xl ${c.cardAlt} ${c.textSecondary} text-sm font-semibold transition-colors`}>
                   <span>🛒</span> Parts & Shopping List
                   <span className="ml-auto">{showParts ? '▲' : '▼'}</span>
                 </button>
@@ -2028,12 +2098,12 @@ const BikeMedic = () => {
                     {fix.parts.map((part, i) => (
                       <div key={i} className={`p-4 ${i > 0 ? `border-t ${c.border}` : ''}`}>
                         <div className={`font-semibold text-sm ${c.text}`}>{part.name}</div>
-                        {part.example && <div className={`text-xs ${c.textMut} mt-0.5`}>e.g., {part.example}</div>}
+                        {part.example && <div className={`text-xs ${c.textMuted} mt-0.5`}>e.g., {part.example}</div>}
                         {part.price && <div className="text-xs font-bold mt-1" style={{ color: accent }}>{part.price}</div>}
                       </div>
                     ))}
                     {/* Cross-ref */}
-                    <div className={`p-3 border-t ${c.border} text-xs ${c.textMut}`}>
+                    <div className={`p-3 border-t ${c.border} text-xs ${c.textMuted}`}>
                       Worth buying? <a href="/BuyWise" target="_blank" rel="noopener noreferrer" className={linkStyle}>BuyWise</a> breaks it down.
                     </div>
                   </div>
@@ -2043,14 +2113,14 @@ const BikeMedic = () => {
 
             {/* Did this fix it? */}
             {progress >= 50 && fixResolved === null && (
-              <div className={`p-5 rounded-xl border-2 ${c.border} ${c.bgCard} text-center mb-6`}>
+              <div className={`p-5 rounded-xl border-2 ${c.border} ${c.card} text-center mb-6`}>
                 <p className={`font-bold text-sm ${c.text} mb-3`}>Did this fix the problem?</p>
                 <div className="flex justify-center gap-3">
-                  <button onClick={() => setFixResolved('yes')} className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-green-500 hover:bg-green-600 text-white font-bold text-sm transition-colors">
+                  <button onClick={() => setFixResolved('yes')} className={`flex items-center gap-2 px-5 py-2.5 rounded-xl ${c.btnSuccess} font-bold text-sm transition-colors`}>
                     <span>👍</span> Fixed!
                   </button>
                   <button onClick={() => { setFixResolved('no'); setShowFollowUp(true); }}
-                    className={`flex items-center gap-2 px-5 py-2.5 rounded-xl border-2 ${c.border} ${c.textSec} font-bold text-sm ${c.bgHover} transition-colors`}>
+                    className={`flex items-center gap-2 px-5 py-2.5 rounded-xl border-2 ${c.border} ${c.textSecondary} font-bold text-sm ${c.bgHover} transition-colors`}>
                     <span>👎</span> Still broken
                   </button>
                 </div>
@@ -2059,27 +2129,39 @@ const BikeMedic = () => {
 
             {/* Follow-up AI form */}
             {showFollowUp && (
-              <div className={`p-5 rounded-xl border-2 ${c.border} ${c.bgCard} mb-6`}>
+              <div className={`p-5 rounded-xl border-2 ${c.border} ${c.card} mb-6`}>
                 <div className="flex items-center gap-2 mb-3">
-                  <span className={c.accent}>✨</span>
+                  <span className={c.amberText}>✨</span>
                   <h4 className={`font-bold text-sm ${c.text}`}>Still stuck? Tell us what's happening now</h4>
                 </div>
-                <p className={`text-xs ${c.textMut} mb-3`}>You tried "{fix.title}". We'll dig deeper into less common causes.</p>
+                <p className={`text-xs ${c.textMuted} mb-3`}>You tried "{fix.title}". We'll dig deeper into less common causes.</p>
                 <textarea value={followUpText} onChange={e => setFollowUpText(e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && followUpText.trim() && !loading) askFollowUp(); }}
                   placeholder="e.g., 'Re-centered caliper 3 times but disc still rubs on inboard side...'"
                   className={`w-full h-24 p-3 border-2 rounded-xl text-sm outline-none resize-none ${c.input}`} />
                 <button onClick={askFollowUp} disabled={loading || !followUpText.trim()}
-                  className={`mt-3 w-full py-2.5 rounded-xl font-bold text-sm transition-colors ${loading || !followUpText.trim() ? c.btnDis : c.btn}`}>
-                  {loading ? <span className="flex items-center justify-center gap-2"><span className="animate-spin inline-block">⏳</span> Analyzing...</span> : 'Get Deeper Diagnosis'}
+                  className={`mt-3 w-full py-2.5 rounded-xl font-bold text-sm transition-colors ${loading || !followUpText.trim() ? c.btnDis : c.btnPrimary}`}>
+                  {loading ? <span className="flex items-center justify-center gap-2"><span className="animate-spin inline-block">{tool?.icon ?? '🚲'}</span> Analyzing...</span> : 'Get Deeper Diagnosis'}
                 </button>
                 {/* Shop handoff */}
                 <div className={`mt-3 pt-3 border-t ${c.border} flex gap-2`}>
                   <CopyBtn content={buildShopHandoff()} label="📤 Copy Shop Summary" />
                   <PrintBtn content={buildShopHandoffHtml()} label="🖨️ Print for Shop" />
                 </div>
-                <p className={`text-xs ${c.textMut} mt-2`}>Taking it to a shop? Copy or print a diagnostic summary so they know what you've already tried.</p>
+                <p className={`text-xs ${c.textMuted} mt-2`}>Taking it to a shop? Copy or print a diagnostic summary so they know what you've already tried.</p>
               </div>
             )}
+
+            {/* Cross-refs + disclaimer */}
+            <div className={`mt-6 pt-4 border-t ${c.border} space-y-2 text-xs ${c.textMuted}`}>
+              {fix.difficulty === 'shop-only' && (
+                <p>Not sure whether to DIY this one? <a href="/DecisionCoach" target="_blank" rel="noopener noreferrer" className={linkStyle}>Decision Coach</a> helps you think it through.</p>
+              )}
+              {fix.parts?.length > 0 && (
+                <p>Checking whether parts are worth the cost? <a href="/BuyWise" target="_blank" rel="noopener noreferrer" className={linkStyle}>BuyWise</a> can help you decide.</p>
+              )}
+              <p className={`pt-2 border-t ${c.border}`}>⚠️ Safety-critical repairs (brakes, wheels, headset) should be verified by a professional mechanic before riding.</p>
+            </div>
           </>
         )}
       </div>
@@ -2095,23 +2177,23 @@ const BikeMedic = () => {
         {toast && <Toast message={toast} onClose={() => setToast(null)} />}
         {renderNavBar()}
         {renderBikeProfileBar()}
-        <div className={`flex items-center gap-2 mb-6 text-xs ${c.textMut} font-medium`}>
+        <div className={`flex items-center gap-2 mb-6 text-xs ${c.textMuted} font-medium`}>
           <span style={{ color: accent }} className="font-bold">{activeProblem?.icon} {activeProblem?.label}</span>
           <span>→</span>
           <span>Step {treePath.length}</span>
         </div>
-        <div className={`${c.bgCard} rounded-xl border-2 ${c.border} p-6`}>
+        <div className={`${c.card} rounded-xl border-2 ${c.border} p-6`}>
           <h3 className={`text-lg font-bold ${c.text} mb-5`}>{currentNode.question}</h3>
           <div className="space-y-3">
             {currentNode.options.map((opt, idx) => (
               <button key={idx} onClick={() => selectOption(opt)}
-                className={`w-full flex items-center gap-4 p-4 rounded-xl border-2 ${c.border} ${c.borderHover} ${c.bgCard} ${c.bgHover} transition-all text-left group`}>
+                className={`w-full flex items-center gap-4 p-4 rounded-xl border-2 ${c.border} ${c.borderHover} ${c.card} ${c.bgHover} transition-all text-left group`}>
                 <span className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 transition-colors"
                   style={{ borderColor: accent, color: accent }}>
                   {String.fromCharCode(65 + idx)}
                 </span>
                 <span className={`flex-1 text-sm font-medium ${c.text}`}>{opt.label}</span>
-                <span className={`${c.textMut} group-hover:translate-x-1 transition-transform`}>→</span>
+                <span className={`${c.textMuted} group-hover:translate-x-1 transition-transform`}>→</span>
               </button>
             ))}
           </div>
@@ -2119,7 +2201,7 @@ const BikeMedic = () => {
         {/* Quick AI escape hatch */}
         <div className="mt-4 text-center">
           <button onClick={() => { setShowAskMechanic(true); setCustomProblem(`I have a ${activeProblem?.label?.toLowerCase() || 'bike'} problem: `); }}
-            className={`text-xs ${c.textMut} hover:${c.accent} transition-colors underline underline-offset-2`}>
+            className={`text-xs ${c.btnGhost} transition-colors underline underline-offset-2`}>
             None of these match? Ask the AI mechanic →
           </button>
         </div>
@@ -2128,7 +2210,7 @@ const BikeMedic = () => {
   }
 
   // Fallback
-  return <div className={c.textSec}>Loading...</div>;
+  return <div className={c.textSecondary}>Loading...</div>;
 };
 
 BikeMedic.displayName = 'BikeMedic';

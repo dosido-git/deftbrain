@@ -125,9 +125,9 @@ const ToolPageWrapper = ({ children, tool, toolId }) => {
             <span className="text-xs font-semibold uppercase tracking-wide">Dashboard</span>
           </button>
           <Link to="/" title="Back to Dashboard" className="flex-shrink-0">
-            {/* Mobile: compact, no tagline */}
+            {/* Mobile: compact with tagline at tighter tracking */}
             <div className="block sm:hidden">
-              <BrandMark direction="right" size="sm" isDark={isDark} showTagline={false} />
+              <BrandMark direction="right" size="sm" isDark={isDark} showTagline={true} />
             </div>
             {/* Desktop: full size with tagline */}
             <div className="hidden sm:block">
@@ -145,7 +145,7 @@ const ToolPageWrapper = ({ children, tool, toolId }) => {
           <header className={`${colors.bg} pb-2 space-y-2`}>
             <div className={`flex items-center gap-3 ${colors.accent} mb-2 pt-4`}>
               <span className={`text-[10px] font-medium uppercase tracking-widest border ${colors.accentBorder} px-3 py-1 rounded-full`}>
-                {detectedTool?.category || "General"}
+                {detectedTool?.categories?.[0] || "General"}
               </span>
             </div>
             

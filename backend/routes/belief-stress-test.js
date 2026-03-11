@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 
 const PERSONALITY = `You are a belief systems analyst. You stress-test the guiding beliefs people live by — the operating principles, mental models, and life rules they've accumulated.
 
@@ -68,16 +68,11 @@ Return ONLY valid JSON:
   }
 }`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+    const parsed = await callClaudeWithRetry(userPrompt, {
+      label: 'belief-stress-test',
       max_tokens: 2500,
       system: withLanguage(PERSONALITY, userLanguage),
-      messages: [{ role: 'user', content: userPrompt }],
     });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
     res.json(parsed);
 
   } catch (error) {

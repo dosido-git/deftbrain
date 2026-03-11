@@ -44,9 +44,9 @@ const CULTURES = [
 ];
 
 const CROSS_REFS = [
-  { tool: 'confrontation-coach', label: 'Confrontation Coach', icon: '🥊', why: 'When the apology leads to a harder conversation' },
-  { tool: 'criticism-buffer', label: 'Criticism Buffer', icon: '🛡️', why: 'When you need to receive criticism gracefully' },
-  { tool: 'emotion-identifier', label: 'Emotion Identifier', icon: '🎭', why: 'Not sure what you are feeling? Start here' },
+  { tool: 'ConflictCoach', label: 'Conflict Coach', icon: '🥊', why: 'When the apology leads to a harder conversation' },
+  { tool: 'DifficultTalkCoach', label: 'Difficult Talk Coach', icon: '💬', why: 'Prepare for the harder conversation ahead' },
+  { tool: 'VelvetHammer', label: 'Velvet Hammer', icon: '🪶', why: 'Craft words that land without causing damage' },
 ];
 
 const LETTER_TONES = ['Vulnerable', 'Direct', 'Formal', 'Brief', 'Heartfelt'];
@@ -60,25 +60,25 @@ const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 
 // ════════════════════════════════════════════════════════════
 // Component
 // ════════════════════════════════════════════════════════════
-const ApologyCalibrator = () => {
+const ApologyCalibrator = ({ tool }) => {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
   const { callToolEndpoint, loading } = useClaudeAPI();
 
   // ── Color config ──
   const c = {
-    bg: isDark ? 'bg-zinc-950' : 'bg-gradient-to-br from-emerald-50 to-teal-50',
+    bg: isDark ? 'bg-zinc-950' : 'bg-slate-50',
     card: isDark ? 'bg-zinc-800 border border-zinc-700' : 'bg-white shadow-lg',
     cardInner: isDark ? 'bg-zinc-750 border border-zinc-600' : 'bg-gray-50 border border-gray-200',
     text: isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted: isDark ? 'text-zinc-400' : 'text-gray-500',
     input: isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-50 placeholder-zinc-400' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400',
-    inputFocus: isDark ? 'focus:border-emerald-400 focus:ring-emerald-400/30' : 'focus:border-emerald-500 focus:ring-emerald-200',
-    btnPrimary: isDark ? 'bg-emerald-600 hover:bg-emerald-500 text-white' : 'bg-emerald-600 hover:bg-emerald-700 text-white',
+    inputFocus: isDark ? 'focus:border-cyan-500 focus:ring-cyan-500/20' : 'focus:border-cyan-500 focus:ring-cyan-500/20',
+    btnPrimary: isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
     btnSecondary: isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     btnDanger: isDark ? 'bg-red-700 hover:bg-red-600 text-white' : 'bg-red-100 hover:bg-red-200 text-red-700',
-    tabActive: isDark ? 'bg-emerald-600 text-white' : 'bg-emerald-600 text-white',
+    tabActive: isDark ? 'bg-cyan-600 text-white' : 'bg-cyan-600 text-white',
     tabInactive: isDark ? 'bg-zinc-700 text-zinc-300 hover:bg-zinc-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200',
     badge: isDark ? 'bg-zinc-700 text-zinc-200' : 'bg-gray-100 text-gray-700',
     error: isDark ? 'bg-red-900/40 border-red-700 text-red-300' : 'bg-red-50 border-red-200 text-red-800',
@@ -96,8 +96,12 @@ const ApologyCalibrator = () => {
     purpleBg: isDark ? 'bg-purple-900/30 border-purple-600' : 'bg-purple-50 border-purple-200',
     indigoBg: isDark ? 'bg-indigo-900/30 border-indigo-600' : 'bg-indigo-50 border-indigo-200',
     amberBg: isDark ? 'bg-amber-900/30 border-amber-600' : 'bg-amber-50 border-amber-200',
-    divider: isDark ? 'border-zinc-700' : 'border-gray-200',
+    border: isDark ? 'border-zinc-700' : 'border-gray-200',
   };
+
+  const linkStyle = isDark
+    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
+    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
 
   const levelColor = (lvl) => c[`level${lvl}`] || c.level3;
 
@@ -106,8 +110,10 @@ const ApologyCalibrator = () => {
   const [error, setError] = useState('');
 
   // Calibrate
-  const [calForm, setCalForm] = useState({ whatHappened: '', relationship: '', situation: '' });
-  const [calResults, setCalResults] = useState(null);
+  const [calWhatHappened, setCalWhatHappened] = usePersistentState('apologycalibrator-input', '');
+  const [calForm, setCalForm] = useState({ whatHappened: calWhatHappened, relationship: '', situation: '' });
+  const [calResults, setCalResults] = usePersistentState('apologycalibrator-last', null);
+  const [calHistory, setCalHistory] = usePersistentState('apologycalibrator-history', []);
 
   // Detect
   const [detectForm, setDetectForm] = useState({ draft: '', context: '' });
@@ -174,6 +180,14 @@ const ApologyCalibrator = () => {
     try {
       const data = await callToolEndpoint('apology-calibrator', calForm);
       setCalResults(data);
+      setCalWhatHappened(calForm.whatHappened);
+      const newEntry = {
+        id: Date.now(),
+        timestamp: new Date().toISOString(),
+        preview: calForm.whatHappened.trim().slice(0, 40),
+        result: data,
+      };
+      setCalHistory(prev => [newEntry, ...prev].slice(0, 6));
     } catch (e) { setError(e.message || 'Calibration failed.'); }
   };
 
@@ -515,10 +529,35 @@ const ApologyCalibrator = () => {
     return t + BRAND;
   };
 
+  const buildFixText = () => {
+    if (!fixResults) return '';
+    const r = fixResults;
+    let t = `APOLOGY FIX — DIAGNOSIS & REBUILD\n\n`;
+    if (r.diagnosis?.summary) t += `DIAGNOSIS: ${r.diagnosis.summary}\n\n`;
+    if (r.diagnosis?.problems?.length) {
+      t += `PROBLEMS FOUND\n`;
+      r.diagnosis.problems.forEach(p => {
+        t += `• ${p.label || p.type}: ${p.why_it_landed_wrong}\n`;
+        if (p.evidence) t += `  Evidence: "${p.evidence}"\n`;
+      });
+      t += '\n';
+    }
+    if (r.the_fix?.rebuilt_apology) {
+      t += `REBUILT APOLOGY\n${r.the_fix.rebuilt_apology}\n\n`;
+    }
+    if (r.delivery_note) {
+      t += `DELIVERY\n`;
+      if (r.delivery_note.timing) t += `Timing: ${r.delivery_note.timing}\n`;
+      if (r.delivery_note.medium) t += `Medium: ${r.delivery_note.medium}\n`;
+      if (r.delivery_note.one_thing_not_to_do) t += `Avoid: ${r.delivery_note.one_thing_not_to_do}\n`;
+    }
+    return t + BRAND;
+  };
+
   // ════════════════════════════════════════════════════════════
   // Shared UI pieces
   // ════════════════════════════════════════════════════════════
-  const Spinner = () => <span className="animate-spin inline-block mr-2">⏳</span>;
+  const Spinner = () => <span className="animate-spin inline-block mr-2">⚖️</span>;
 
   const ErrorBanner = () => error ? (
     <div className={`mt-4 p-4 rounded-lg border flex items-start gap-3 ${c.error}`}>
@@ -557,6 +596,12 @@ const ApologyCalibrator = () => {
     <div className="space-y-6">
       {/* Form */}
       <div className={`rounded-xl p-6 ${c.card}`}>
+        <div className={`mb-4 pb-3 border-b ${c.border}`}>
+          <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
+            <span>{tool.icon}</span> Apology Calibrator
+          </h2>
+          <p className={`text-sm ${c.textSecondary}`}>Get the right level — not too much, not too little.</p>
+        </div>
         <label className={`block text-lg font-semibold mb-3 ${c.text}`}>What happened?</label>
         <textarea value={calForm.whatHappened} onChange={e => setCalForm(p => ({ ...p, whatHappened: e.target.value }))}
           placeholder="Describe the situation that might need an apology..."
@@ -574,9 +619,14 @@ const ApologyCalibrator = () => {
         </div>
 
         <button onClick={handleCalibrate} disabled={loading || !calForm.whatHappened.trim()}
-          className={`w-full mt-5 font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50 ${c.btnPrimary}`}>
+          className={`w-full mt-5 font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50 min-h-[48px] ${c.btnPrimary}`}>
           {loading ? <><Spinner />Calibrating...</> : <><span>⚖️</span> Calibrate Apology</>}
         </button>
+        <p className={`text-xs text-center mt-3 ${c.textMuted}`}>
+          Got a draft already?{' '}
+          <a href="#" onClick={e => { e.preventDefault(); setView('detect'); }} className={linkStyle}>Sorry-Not-Sorry Detector</a>{' '}
+          will flag every problem before you send it.
+        </p>
         <ErrorBanner />
       </div>
 
@@ -734,7 +784,41 @@ const ApologyCalibrator = () => {
             </SectionCard>
           )}
 
-          <ActionBar content={buildCalibrateText()} title="Apology Calibration" />
+          {/* Conditional cross-ref: high level → roadmap */}
+          {calResults.appropriate_apology_level >= 4 && (
+            <p className={`text-xs text-center ${c.textMuted}`}>
+              Major repair needed?{' '}
+              <a href="#" onClick={e => { e.preventDefault(); setView('roadmap'); }} className={linkStyle}>Relationship Repair Roadmap</a>{' '}
+              builds a step-by-step recovery plan.
+            </p>
+          )}
+
+          <div className="flex justify-between items-center flex-wrap gap-2">
+            <button onClick={() => { setCalResults(null); setCalForm({ whatHappened: '', relationship: '', situation: '' }); setError(''); }}
+              className={`px-4 py-2 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
+              🔄 Start Over
+            </button>
+            <ActionBar content={buildCalibrateText()} title="Apology Calibration" />
+          </div>
+        </div>
+      )}
+
+      {/* History panel */}
+      {calHistory.length > 0 && (
+        <div className={`${c.card} rounded-xl border ${c.border} p-4`}>
+          <h3 className={`text-sm font-bold ${c.text} mb-3`}>🕐 Recent Calibrations</h3>
+          <div className="space-y-1.5">
+            {calHistory.map(entry => (
+              <button key={entry.id}
+                onClick={() => setCalResults(entry.result)}
+                className={`w-full text-left px-3 py-2 rounded-lg ${c.btnSecondary} text-xs`}>
+                <span className={c.textMuted}>
+                  {new Date(entry.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
+                </span>
+                <span className={`ml-2 ${c.text}`}>{entry.preview}…</span>
+              </button>
+            ))}
+          </div>
         </div>
       )}
     </div>
@@ -760,7 +844,7 @@ const ApologyCalibrator = () => {
           className={`w-full p-3 border rounded-lg outline-none ${c.input} ${c.inputFocus}`} />
 
         <button onClick={handleDetect} disabled={loading || !detectForm.draft.trim()}
-          className={`w-full mt-5 font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50 ${c.btnPrimary}`}>
+          className={`w-full mt-5 font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50 min-h-[48px] ${c.btnPrimary}`}>
           {loading ? <><Spinner />Analyzing...</> : <><span>🔍</span> Analyze My Apology</>}
         </button>
         <ErrorBanner />
@@ -849,7 +933,13 @@ const ApologyCalibrator = () => {
             </div>
           )}
 
-          <ActionBar content={buildDetectText()} title="Apology Analysis" />
+          <div className="flex justify-between items-center flex-wrap gap-2">
+            <button onClick={() => { setDetectResults(null); setDetectForm({ draft: '', context: '' }); setError(''); }}
+              className={`px-4 py-2 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
+              🔄 Start Over
+            </button>
+            <ActionBar content={buildDetectText()} title="Apology Analysis" />
+          </div>
         </div>
       )}
     </div>
@@ -879,7 +969,7 @@ const ApologyCalibrator = () => {
           className={`w-full h-20 p-3 border rounded-lg outline-none resize-none ${c.input} ${c.inputFocus}`} />
 
         <button onClick={handleDelivery} disabled={loading || !delForm.whatHappened.trim()}
-          className={`w-full mt-5 font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50 ${c.btnPrimary}`}>
+          className={`w-full mt-5 font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50 min-h-[48px] ${c.btnPrimary}`}>
           {loading ? <><Spinner />Planning...</> : <><span>🎯</span> Build Delivery Plan</>}
         </button>
         <ErrorBanner />
@@ -1010,7 +1100,13 @@ const ApologyCalibrator = () => {
             </div>
           )}
 
-          <ActionBar content={buildDeliveryText()} title="Delivery Plan" />
+          <div className="flex justify-between items-center flex-wrap gap-2">
+            <button onClick={() => { setDelResults(null); setDelForm({ whatHappened: '', relationship: '', apologyText: '' }); setError(''); }}
+              className={`px-4 py-2 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
+              🔄 Start Over
+            </button>
+            <ActionBar content={buildDeliveryText()} title="Delivery Plan" />
+          </div>
         </div>
       )}
     </div>
@@ -1064,7 +1160,7 @@ const ApologyCalibrator = () => {
         )}
 
         <button onClick={handleAudit} disabled={loading || auditSituations.length < 2}
-          className={`w-full mt-5 font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50 ${c.btnPrimary}`}>
+          className={`w-full mt-5 font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50 min-h-[48px] ${c.btnPrimary}`}>
           {loading ? <><Spinner />Analyzing pattern...</> : <><span>📊</span> Analyze My Pattern ({auditSituations.length} situations)</>}
         </button>
         {auditSituations.length < 2 && auditSituations.length > 0 && (
@@ -1162,7 +1258,13 @@ const ApologyCalibrator = () => {
             </div>
           )}
 
-          <ActionBar content={buildAuditText()} title="Apology Audit" />
+          <div className="flex justify-between items-center flex-wrap gap-2">
+            <button onClick={() => { setAuditResults(null); setError(''); }}
+              className={`px-4 py-2 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
+              🔄 Start Over
+            </button>
+            <ActionBar content={buildAuditText()} title="Apology Audit" />
+          </div>
         </div>
       )}
     </div>
@@ -1208,7 +1310,7 @@ const ApologyCalibrator = () => {
         </div>
 
         <button onClick={handleCultural} disabled={loading || !culForm.whatHappened.trim() || !culForm.culture.trim()}
-          className={`w-full mt-5 font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50 ${c.btnPrimary}`}>
+          className={`w-full mt-5 font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50 min-h-[48px] ${c.btnPrimary}`}>
           {loading ? <><Spinner />Calibrating...</> : <><span>🌍</span> Calibrate for Culture</>}
         </button>
         <ErrorBanner />
@@ -1299,7 +1401,13 @@ const ApologyCalibrator = () => {
             </SectionCard>
           )}
 
-          <ActionBar content={buildCulturalText()} title="Cultural Calibration" />
+          <div className="flex justify-between items-center flex-wrap gap-2">
+            <button onClick={() => { setCulResults(null); setCulForm({ whatHappened: '', culture: '', relationship: '', setting: '' }); setError(''); }}
+              className={`px-4 py-2 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
+              🔄 Start Over
+            </button>
+            <ActionBar content={buildCulturalText()} title="Cultural Calibration" />
+          </div>
         </div>
       )}
     </div>
@@ -1329,7 +1437,7 @@ const ApologyCalibrator = () => {
           className={`w-full p-3 border rounded-lg outline-none ${c.input} ${c.inputFocus}`} />
 
         <button onClick={handleDecode} disabled={loading || !decodeForm.theirWords.trim()}
-          className={`w-full mt-5 font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50 ${c.btnPrimary}`}>
+          className={`w-full mt-5 font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50 min-h-[48px] ${c.btnPrimary}`}>
           {loading ? <><Spinner />Decoding...</> : <><span>🧐</span> Decode Their Apology</>}
         </button>
         <ErrorBanner />
@@ -1448,7 +1556,13 @@ const ApologyCalibrator = () => {
             </button>
           </div>
 
-          <ActionBar content={buildDecodeText()} title="Apology Decoder" />
+          <div className="flex justify-between items-center flex-wrap gap-2">
+            <button onClick={() => { setDecodeResults(null); setDecodeForm({ theirWords: '', context: '', relationship: '' }); setError(''); }}
+              className={`px-4 py-2 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
+              🔄 Start Over
+            </button>
+            <ActionBar content={buildDecodeText()} title="Apology Decoder" />
+          </div>
         </div>
       )}
     </div>
@@ -1491,7 +1605,7 @@ const ApologyCalibrator = () => {
             </div>
 
             <button onClick={handlePracticeStart} disabled={loading || !practiceForm.situation.trim()}
-              className={`w-full mt-5 font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50 ${c.btnPrimary}`}>
+              className={`w-full mt-5 font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50 min-h-[48px] ${c.btnPrimary}`}>
               {loading ? <><Spinner />Setting the scene...</> : <><span>🎭</span> Start Practice</>}
             </button>
           </>
@@ -1626,7 +1740,7 @@ const ApologyCalibrator = () => {
           className={`w-full p-3 border rounded-lg outline-none ${c.input} ${c.inputFocus}`} />
 
         <button onClick={handleForgive} disabled={loading || !forgiveForm.whatTheyDid.trim()}
-          className={`w-full mt-5 font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50 ${c.btnPrimary}`}>
+          className={`w-full mt-5 font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50 min-h-[48px] ${c.btnPrimary}`}>
           {loading ? <><Spinner />Navigating...</> : <><span>💜</span> Navigate This</>}
         </button>
         <ErrorBanner />
@@ -1738,7 +1852,13 @@ const ApologyCalibrator = () => {
             </div>
           )}
 
-          <ActionBar content={buildForgiveText()} title="Forgiveness Navigator" />
+          <div className="flex justify-between items-center flex-wrap gap-2">
+            <button onClick={() => { setForgiveResults(null); setForgiveForm({ whatTheyDid: '', theirApology: '', relationship: '', howYouFeel: '' }); setError(''); }}
+              className={`px-4 py-2 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
+              🔄 Start Over
+            </button>
+            <ActionBar content={buildForgiveText()} title="Forgiveness Navigator" />
+          </div>
         </div>
       )}
     </div>
@@ -1773,7 +1893,7 @@ const ApologyCalibrator = () => {
           className={`w-full p-3 border rounded-lg outline-none ${c.input} ${c.inputFocus}`} />
 
         <button onClick={handleRoadmap} disabled={loading || !roadmapForm.whatHappened.trim()}
-          className={`w-full mt-5 font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50 ${c.btnPrimary}`}>
+          className={`w-full mt-5 font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50 min-h-[48px] ${c.btnPrimary}`}>
           {loading ? <><Spinner />Building roadmap...</> : <><span>🗺️</span> Build Repair Roadmap</>}
         </button>
         <ErrorBanner />
@@ -1911,7 +2031,13 @@ const ApologyCalibrator = () => {
             </button>
           </div>
 
-          <ActionBar content={buildRoadmapText()} title="Repair Roadmap" />
+          <div className="flex justify-between items-center flex-wrap gap-2">
+            <button onClick={() => { setRoadmapResults(null); setRoadmapForm({ whatHappened: '', relationship: '', currentState: '', effortSoFar: '' }); setError(''); }}
+              className={`px-4 py-2 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
+              🔄 Start Over
+            </button>
+            <ActionBar content={buildRoadmapText()} title="Repair Roadmap" />
+          </div>
         </div>
       )}
     </div>
@@ -1953,7 +2079,7 @@ const ApologyCalibrator = () => {
           className={`w-full p-3 border rounded-lg outline-none ${c.input} ${c.inputFocus}`} />
 
         <button onClick={handleLetter} disabled={loading || !letterForm.whatHappened.trim()}
-          className={`w-full mt-5 font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50 ${c.btnPrimary}`}>
+          className={`w-full mt-5 font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50 min-h-[48px] ${c.btnPrimary}`}>
           {loading ? <><Spinner />Building letter...</> : <><span>✉️</span> Build My Letter</>}
         </button>
         <ErrorBanner />
@@ -2039,7 +2165,13 @@ const ApologyCalibrator = () => {
             </div>
           )}
 
-          <ActionBar content={buildLetterText()} title="Apology Letter" />
+          <div className="flex justify-between items-center flex-wrap gap-2">
+            <button onClick={() => { setLetterResults(null); setLetterForm({ whatHappened: '', relationship: '', tone: '', additionalContext: '' }); setError(''); }}
+              className={`px-4 py-2 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
+              🔄 Start Over
+            </button>
+            <ActionBar content={buildLetterText()} title="Apology Letter" />
+          </div>
         </div>
       )}
     </div>
@@ -2086,13 +2218,13 @@ const ApologyCalibrator = () => {
 
         <div className="space-y-4">
           <div>
-            <label className={`block text-sm font-medium mb-1 ${c.textSecondary}`}>What you said when you apologized <span className="text-red-400">*</span></label>
+            <label className={`block text-sm font-medium mb-1 ${c.textSecondary}`}>What you said when you apologized <span className="text-zinc-400">*</span></label>
             <textarea value={fixForm.whatYouSaid} onChange={e => setFixForm(p => ({ ...p, whatYouSaid: e.target.value }))}
               placeholder="Paste the exact words you used — text, email, or what you said out loud…"
               className={`w-full h-28 p-3 border rounded-lg outline-none resize-none text-sm ${c.input} ${c.inputFocus}`} />
           </div>
           <div>
-            <label className={`block text-sm font-medium mb-1 ${c.textSecondary}`}>How they reacted <span className="text-red-400">*</span></label>
+            <label className={`block text-sm font-medium mb-1 ${c.textSecondary}`}>How they reacted <span className="text-zinc-400">*</span></label>
             <textarea value={fixForm.theirReaction} onChange={e => setFixForm(p => ({ ...p, theirReaction: e.target.value }))}
               placeholder="Still upset? Got angry? Went silent? Said 'fine' but clearly isn't? Describe what happened after…"
               className={`w-full h-20 p-3 border rounded-lg outline-none resize-none text-sm ${c.input} ${c.inputFocus}`} />
@@ -2115,8 +2247,8 @@ const ApologyCalibrator = () => {
           </div>
           {error && <div className={`p-3 rounded-lg border text-sm ${c.error}`}><span className="mr-1">⚠️</span>{error}</div>}
           <button onClick={handleFix} disabled={loading || !fixForm.whatYouSaid.trim() || !fixForm.theirReaction.trim()}
-            className={`w-full py-3 rounded-lg font-semibold disabled:opacity-50 ${c.btnPrimary}`}>
-            {loading ? <span className="animate-spin inline-block mr-2">⏳</span> : <span className="mr-2">🔁</span>}
+            className={`w-full py-3 rounded-lg font-semibold disabled:opacity-50 min-h-[48px] ${c.btnPrimary}`}>
+            {loading ? <span className="animate-spin inline-block mr-2">⚖️</span> : <span className="mr-2">🔁</span>}
             Diagnose & Fix
           </button>
         </div>
@@ -2205,9 +2337,11 @@ const ApologyCalibrator = () => {
           <div className="flex justify-center">
             <button onClick={() => { setFixResults(null); setFixForm({ whatYouSaid: '', theirReaction: '', relationship: '', context: '' }); }}
               className={`px-5 py-2 rounded-lg text-sm ${c.btnSecondary}`}>
-              🔁 Try Another
+              🔁 Start Over
             </button>
           </div>
+
+          <ActionBar content={buildFixText()} title="Apology Fix" />
         </div>
       )}
     </div>
@@ -2331,7 +2465,7 @@ const ApologyCalibrator = () => {
 
               {/* Follow-ups */}
               {r.followUps?.length > 0 && (
-                <div className={`mt-3 border-t pt-3 space-y-2 ${c.divider}`}>
+                <div className={`mt-3 border-t pt-3 space-y-2 ${c.border}`}>
                   <p className={`text-xs font-medium ${c.textMuted}`}>Follow-ups:</p>
                   {r.followUps.map(fu => (
                     <div key={fu.id} className={`text-sm flex gap-2 ${c.textSecondary}`}>
@@ -2396,11 +2530,11 @@ const ApologyCalibrator = () => {
           <h3 className={`text-sm font-semibold mb-3 ${c.textMuted}`}>Related Tools</h3>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {CROSS_REFS.map(ref => (
-              <a key={ref.tool} href={`/tool/${ref.tool}`} target="_blank" rel="noopener noreferrer"
+              <a key={ref.tool} href={`/${ref.tool}`}
                 className={`rounded-lg p-3 border transition-colors ${c.cardInner} hover:opacity-80`}>
                 <div className="flex items-center gap-2">
                   <span>{ref.icon}</span>
-                  <span className={`text-sm font-medium ${c.text}`}>{ref.label}</span>
+                  <a href={`/${ref.tool}`} className={`text-sm font-medium ${linkStyle}`}>{ref.label}</a>
                 </div>
                 <p className={`text-xs mt-1 ${c.textMuted}`}>{ref.why}</p>
               </a>
@@ -2411,5 +2545,7 @@ const ApologyCalibrator = () => {
     </div>
   );
 };
+
+ApologyCalibrator.displayName = 'ApologyCalibrator';
 
 export default ApologyCalibrator;

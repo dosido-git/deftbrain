@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 
 const PERSONALITY = `You are the friend who always gives impossibly thoughtful gifts — the ones that make people say "how did you KNOW?" You understand that great gifts aren't about price. They're about proving you pay attention. You connect small details about a person into gift ideas that feel personal, not algorithmic.
 
@@ -15,7 +15,7 @@ RULES:
 - Never suggest gift cards unless specifically asked — they're the opposite of thoughtful
 - Read the relationship dynamics: a gift for your boss is different from a gift for your best friend`;
 
-router.post('/anti-gift-panic', async (req, res) => {
+router.post('/giftology', async (req, res) => {
   try {
     const {
       recipient,        // Who they are, what you know about them
@@ -79,20 +79,15 @@ Return ONLY valid JSON:
 
 Provide 3-4 perfect_picks. Each should feel genuinely different — not 4 variations of the same idea.`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-haiku-4-5-20251001',
+    const parsed = await callClaudeWithRetry(userPrompt, {
+      label: 'giftology',
       max_tokens: 3000,
       system: withLanguage(PERSONALITY, userLanguage),
-      messages: [{ role: 'user', content: userPrompt }],
     });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
     res.json(parsed);
 
   } catch (error) {
-    console.error('AntiGiftPanic error:', error);
+    console.error('Giftology error:', error);
     res.status(500).json({ error: error.message || 'Gift search failed.' });
   }
 });

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 
 const PERSONALITY = `You are a world-class debate coach who can argue any position brilliantly. You steelman both sides — finding the STRONGEST version of each argument, not a strawman. You understand that most interesting debates have genuine merit on both sides, and the fun is seeing how far each side can go. You're intellectually honest, sharp, and occasionally funny.
 
@@ -55,16 +55,11 @@ Return ONLY valid JSON:
   "dinner_party_take": "The nuanced take you'd give at a dinner party to sound smart without alienating anyone — 1-2 sentences"
 }`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+    const parsed = await callClaudeWithRetry(userPrompt, {
+      label: 'argument-simulator',
       max_tokens: 2000,
       system: withLanguage(PERSONALITY, userLanguage),
-      messages: [{ role: 'user', content: userPrompt }],
     });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
     res.json(parsed);
 
   } catch (error) {

@@ -19,7 +19,7 @@ const QUICK_PROMPTS = [
   'Humans could fly',
 ];
 
-const AlternatePath = () => {
+const AlternatePath = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { theme } = useTheme();
   const isDark = theme === 'dark';
@@ -100,7 +100,7 @@ const AlternatePath = () => {
     <div className={`space-y-4 ${c.text}`}>
       <div className={`${c.card} border ${c.border} rounded-xl shadow-lg p-5`}>
         <div className={`mb-4 pb-3 border-b ${c.border}`}>
-          <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}><span>🌀</span> Alternate Path</h2>
+          <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}><span>{tool.icon}</span> Alternate Path</h2>
           <p className={`text-sm ${c.textSecondary}`}>What if history went differently? Watch the dominoes fall.</p>
         </div>
 
@@ -115,7 +115,7 @@ const AlternatePath = () => {
         </div>
 
         <div className="mb-3">
-          <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>What if... <span className="text-red-500">*</span></label>
+          <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>What if... <span className="text-zinc-400">*</span></label>
           <input type="text" value={whatIf} onChange={e => setWhatIf(e.target.value)}
             placeholder="e.g., The internet was invented in 1920..."
             className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`}
@@ -151,7 +151,7 @@ const AlternatePath = () => {
 
         <button onClick={run} disabled={!whatIf.trim() || loading}
           className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-          {loading ? <><span className="animate-spin inline-block">⏳</span> Rewriting history...</> : <><span>🌀</span> Explore Timeline</>}
+          {loading ? <><span className="animate-spin inline-block">🌀</span> Rewriting history...</> : <><span>🌀</span> Explore Timeline</>}
         </button>
       </div>
 

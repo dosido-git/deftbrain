@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 
 // ════════════════════════════════════════════
 // MAIN ENDPOINT: Spoiler-free recap
@@ -241,16 +241,12 @@ KEY RULES:
 4. For the "worth continuing" field, be honest. Don't oversell. A genuine "it's uneven but has great moments" is more trustworthy than "you HAVE to keep going!"
 5. Write "the_story_so_far" in present tense, as if narrating where things stand right now at the stopping point.`;
 
-    const message = await anthropic.messages.create({
-      model: (mediaType === 'sports' || mediaType === 'show') ? 'claude-sonnet-4-6' : 'claude-haiku-4-5-20251001',
+    const result = await callClaudeWithRetry(prompt, {
+      label: 'bookmark',
       max_tokens: 4000,
       system: withLanguage(systemPrompt, userLanguage),
-      messages: [{ role: 'user', content: prompt }],
     });
-
-    const textContent = message.content.find(item => item.type === 'text')?.text || '';
-    const parsed = JSON.parse(cleanJsonResponse(textContent));
-    res.json(parsed);
+    res.json(result);
 
   } catch (error) {
     console.error('Bookmark error:', error);

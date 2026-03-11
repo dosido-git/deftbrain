@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 
 // ════════════════════════════════════════════════════════════
 // SHARED: Log processing helper
@@ -267,7 +267,7 @@ Return ONLY this JSON structure (NO markdown):
     }
   },
 
-  "poor_self_awareness_support": {
+  "poor_interoception_support": {
     "objective_data": "Summary of their actual numbers vs what they might feel",
     "biometric_data": "Biometric summary if available, or what it would show",
     "trust_the_data": "Direct statement about what the data shows",
@@ -287,15 +287,15 @@ ${ANALYSIS_PRINCIPLES}
 
 Return ONLY the JSON object.`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 5000,
-      system: withLanguage(PERSONALITY, userLanguage),
-      messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const parsed = JSON.parse(cleanJsonResponse(text));
+    const parsed = await callClaudeWithRetry(
+      userPrompt,
+      {
+        label: 'crash-predictor-analyze',
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 5000,
+        system: withLanguage(PERSONALITY, userLanguage),
+      }
+    );
 
     if (!parsed.burnout_risk_assessment) {
       throw new Error('Invalid response structure');
@@ -391,15 +391,15 @@ Return ONLY this JSON (NO markdown):
 
 Be SPECIFIC with numbers and dates. Don't speculate — only report patterns supported by the data.`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 3000,
-      system: withLanguage('You are a data analyst specializing in personal health pattern recognition.', userLanguage),
-      messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const parsed = JSON.parse(cleanJsonResponse(text));
+    const parsed = await callClaudeWithRetry(
+      userPrompt,
+      {
+        label: 'crash-predictor-patterns',
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 3000,
+        system: withLanguage('You are a data analyst specializing in personal health pattern recognition.', userLanguage),
+      }
+    );
     res.json(parsed);
 
   } catch (error) {

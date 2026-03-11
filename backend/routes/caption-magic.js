@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { anthropic, callClaudeWithRetry, cleanJsonResponse, withLanguage } = require('../lib/claude');
 
 // ── Helper: extract base64 and media type from data URL ──
 function parseDataUrl(dataUrl) {
@@ -175,14 +175,11 @@ Return ONLY a JSON object:
 
 CRITICAL: Return ONLY valid JSON.`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-haiku-4-5-20251001',
+    const parsed = await callClaudeWithRetry(withLanguage(basePrompt, userLanguage), {
+      label: 'caption-magic-revise',
       max_tokens: 800,
-      messages: [{ role: 'user', content: withLanguage(basePrompt, userLanguage) }],
     });
-
-    const textContent = message.content.find(item => item.type === 'text')?.text || '';
-    res.json(JSON.parse(cleanJsonResponse(textContent)));
+    res.json(parsed);
 
   } catch (error) {
     console.error('CaptionMagic revise error:', error);
@@ -246,14 +243,11 @@ OUTPUT (JSON only):
 
 CRITICAL: Return ONLY valid JSON.`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-haiku-4-5-20251001',
+    const parsed = await callClaudeWithRetry(withLanguage(basePrompt, userLanguage), {
+      label: 'caption-magic-adapt',
       max_tokens: 2000,
-      messages: [{ role: 'user', content: withLanguage(basePrompt, userLanguage) }],
     });
-
-    const textContent = message.content.find(item => item.type === 'text')?.text || '';
-    res.json(JSON.parse(cleanJsonResponse(textContent)));
+    res.json(parsed);
 
   } catch (error) {
     console.error('CaptionMagic adapt error:', error);
@@ -308,14 +302,11 @@ OUTPUT (JSON only):
 
 CRITICAL: Return ONLY valid JSON.`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-haiku-4-5-20251001',
+    const parsed = await callClaudeWithRetry(withLanguage(basePrompt, userLanguage), {
+      label: 'caption-magic-remix',
       max_tokens: 1000,
-      messages: [{ role: 'user', content: withLanguage(basePrompt, userLanguage) }],
     });
-
-    const textContent = message.content.find(item => item.type === 'text')?.text || '';
-    res.json(JSON.parse(cleanJsonResponse(textContent)));
+    res.json(parsed);
 
   } catch (error) {
     console.error('CaptionMagic remix error:', error);
