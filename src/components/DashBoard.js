@@ -1,7 +1,7 @@
 // src/components/DashBoard.jsx
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { X } from 'lucide-react';
+
 import BrandMark from './BrandMark';
 
 // ════════════════════════════════════════════════════════════
@@ -42,7 +42,7 @@ const CATEGORY_META = [
   { name: 'Discourse',     emoji: '🗣️ ', sub: 'say it well!'           },
   { name: 'Read the Room', emoji: '👁️',  sub: 'subtext · tone · decoding'    },
   { name: 'Go Deep!',      emoji: '🔬', sub: 'research · learning · knowledge'},
-  { name: 'Brain Games',   emoji: '🧩', sub: 'curiosity · play · intellect'  },
+  { name: 'Diversions',   emoji: '🧩', sub: 'curiosity · play · intellect'  },
   { name: 'Me',            emoji: '🪞', sub: 'self · reflection · growth'    },
   { name: 'What If?',      emoji: '✨', sub: 'imagination · creativity'      },
   { name: 'Veer',          emoji: '🧭', sub: 'decisions · direction · choices'},
@@ -79,6 +79,7 @@ const LEGACY_MAP = {
   'Work':                  ['The Office'],
   'Creative':              ['What If?'],
   'Thinking':              ['Brain Games'],
+  'Brain Games':           ['Diversions'],
   'wellness':              ['Energy'],
   'Intercourse':           ['Discourse'],
 };
@@ -279,7 +280,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
               <button onClick={() => setSearchTerm('')}
                       className="p-1 rounded-lg transition-colors"
                       style={{ color: CLR.warm500 }}>
-                <X className="w-3.5 h-3.5" />
+                <span className="w-3.5 h-3.5 flex items-center justify-center text-xs">✕</span>
               </button>
             ) : (
               <kbd className="hidden sm:flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold"

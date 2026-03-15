@@ -128,12 +128,14 @@ const BrainRoulette = ({ tool }) => {
     savedBtnInactive:isDark ? 'bg-zinc-700 text-zinc-300 hover:bg-zinc-600' : 'bg-slate-50 text-slate-500 hover:bg-slate-100',
     savedInner:      isDark ? 'bg-zinc-800' : 'bg-white',
     // ── SVG/inline-style raw hex values ──
-    divideColor:   isDark ? '#3f3f46' : '#e7e5e4',
-    graphEdge:     isDark ? '#52525b' : '#e2e8f0',
-    graphSaved:    isDark ? '#0891b2' : '#0e7490',
-    graphUnsaved:  isDark ? '#71717a' : '#94a3b8',
-    graphText:     isDark ? '#a1a1aa' : '#64748b',
+    divideColor:   isDark ? 'rgb(63,63,70)' : 'rgb(231,229,228)',
+    graphEdge:     isDark ? 'rgb(82,82,91)' : 'rgb(226,232,240)',
+    graphSaved:    isDark ? 'rgb(8,145,178)' : 'rgb(14,116,144)',
+    graphUnsaved:  isDark ? 'rgb(113,113,122)' : 'rgb(148,163,184)',
+    graphText:     isDark ? 'rgb(161,161,170)' : 'rgb(100,116,139)',
   };
+
+  const deleteHover = isDark ? 'hover:text-red-400' : 'hover:text-red-600';
 
   const linkStyle = isDark
     ? 'font-semibold underline text-cyan-400 hover:text-cyan-300'
@@ -308,9 +310,9 @@ const BrainRoulette = ({ tool }) => {
         audienceLevel, locale: navigator.language || 'en',
       });
       setResult(parsed);
-      setSeenTopics(prev => [parsed.topic_tag, ...prev].slice(0, 200));
+      setSeenTopics(prev => [parsed.topic_tag, ...prev].slice(0, 6));
       setCustomTopic(''); bumpDailySpins();
-      setHistory(prev => [{ ...parsed, preview: parsed.title?.slice(0, 40) ?? '', spunAt: new Date().toISOString(), interests: activeInterestLabels, depth, audienceLevel }, ...prev].slice(0, 200));
+      setHistory(prev => [{ ...parsed, preview: parsed.title?.slice(0, 40) ?? '', spunAt: new Date().toISOString(), interests: activeInterestLabels, depth, audienceLevel }, ...prev].slice(0, 6));
     } catch (err) {
       setError(err.message?.includes('Daily limit') || err.message?.includes('Too many') ? err.message : 'The roulette wheel got stuck!');
     } finally { setIsSpinning(false); }
@@ -331,9 +333,9 @@ const BrainRoulette = ({ tool }) => {
         audienceLevel, locale: navigator.language || 'en',
       }).then(parsed => {
         setResult(parsed);
-        setSeenTopics(prev => [parsed.topic_tag, ...prev].slice(0, 200));
+        setSeenTopics(prev => [parsed.topic_tag, ...prev].slice(0, 6));
         bumpDailySpins();
-        setHistory(prev => [{ ...parsed, preview: parsed.title?.slice(0, 40) ?? '', spunAt: new Date().toISOString(), interests: activeInterestLabels, depth, audienceLevel }, ...prev].slice(0, 200));
+        setHistory(prev => [{ ...parsed, preview: parsed.title?.slice(0, 40) ?? '', spunAt: new Date().toISOString(), interests: activeInterestLabels, depth, audienceLevel }, ...prev].slice(0, 6));
       }).catch(() => setError('Spin failed.')).finally(() => setIsSpinning(false));
     }, 50);
   };
@@ -380,7 +382,7 @@ const BrainRoulette = ({ tool }) => {
         audienceLevel, locale: navigator.language || 'en',
       });
       setDebateResult(parsed);
-      setSeenTopics(prev => [parsed.topic_tag, ...prev].slice(0, 200));
+      setSeenTopics(prev => [parsed.topic_tag, ...prev].slice(0, 6));
       bumpDailySpins();
     } catch { setError('Debate mode stumbled.'); }
   };
@@ -447,7 +449,7 @@ const BrainRoulette = ({ tool }) => {
         audienceLevel, locale: navigator.language || 'en',
       });
       setDigest(parsed);
-      parsed.topics?.forEach(t => setSeenTopics(prev => [t.topic_tag, ...prev].slice(0, 200)));
+      parsed.topics?.forEach(t => setSeenTopics(prev => [t.topic_tag, ...prev].slice(0, 6)));
       bumpDailySpins();
     } catch { setError("Couldn't generate digest."); }
   };
@@ -598,7 +600,7 @@ const BrainRoulette = ({ tool }) => {
         <h3 className={`text-sm font-bold ${c.text} mb-2`}>🎭 "Actually…" Debate Mode</h3>
         <p className={`text-xs ${c.textMuted} mb-4`}>We'll present a common belief. You commit — then we reveal the truth.</p>
         {!debateResult && (
-          <button onClick={handleDebate} disabled={!canSpin}
+          <button onClick={handleDebate} disabled={loading || !canSpin}
             className={`px-6 py-3 rounded-xl text-sm font-bold ${canSpin ? c.btnPrimary : c.btnDis}`}>
             {loading ? <span><span className="animate-spin inline-block">{tool?.icon ?? '🎲'}</span> Generating...</span> : '🎭 Challenge Me'}
           </button>
@@ -916,7 +918,7 @@ const BrainRoulette = ({ tool }) => {
                       </div>
                     </div>
                   </button>
-                  <button onClick={e => { e.stopPropagation(); removeSavedItem(item.topic_tag); }} className={`absolute top-3 right-3 text-xs opacity-0 group-hover:opacity-100 ${c.btnGhost} hover:text-red-500`}>🗑️</button>
+                  <button onClick={e => { e.stopPropagation(); removeSavedItem(item.topic_tag); }} className={`absolute top-3 right-3 text-xs opacity-0 group-hover:opacity-100 ${c.btnGhost} ${deleteHover}`}>🗑️</button>
                   {isExp && (
                     <div className={`px-4 pb-4 border-t ${c.border}`}>
                       <p className={`text-sm leading-relaxed whitespace-pre-line mt-3 ${c.textSecondary}`}>{item.hook}</p>
@@ -932,7 +934,7 @@ const BrainRoulette = ({ tool }) => {
               );
             })}
           </div>
-          {savedItems.length > 1 && <button onClick={() => { if (window.confirm('Clear all?')) setSavedItems([]); }} className={`w-full mt-3 text-center text-xs font-semibold ${c.btnGhost} hover:text-red-500 py-1.5`}>Clear all</button>}
+          {savedItems.length > 1 && <button onClick={() => { if (window.confirm('Clear all?')) setSavedItems([]); }} className={`w-full mt-3 text-center text-xs font-semibold ${c.btnGhost} ${deleteHover} py-1.5`}>Clear all</button>}
         </>
       )}
     </div>
@@ -1048,13 +1050,18 @@ const BrainRoulette = ({ tool }) => {
           </div>
         )}
       </div>
-      {history.length > 0 && <button onClick={() => { if (window.confirm('Clear history?')) setHistory([]); }} className={`w-full mt-3 text-center text-xs font-semibold ${c.btnGhost} hover:text-red-500 py-1.5`}>Clear history</button>}
+      {history.length > 0 && <button onClick={() => { if (window.confirm('Clear history?')) setHistory([]); }} className={`w-full mt-3 text-center text-xs font-semibold ${c.btnGhost} ${deleteHover} py-1.5`}>Clear history</button>}
     </div>
   );
 
   // ══════════════════════════════════════════
   // MAIN RENDER
   // ══════════════════════════════════════════
+  const handleReset = () => {
+    setError('');
+    setResult(null);
+  };
+
   return (
     <div className={c.text}>
       <div className={`${c.card} border ${c.border} rounded-2xl p-5 mb-5`}>
@@ -1254,6 +1261,14 @@ const BrainRoulette = ({ tool }) => {
           </div>
         </>
       )}
+        <div className={`mt-6 pt-4 border-t text-sm ${c.border} ${c.textMuted}`}>
+          <p className="mb-2 font-medium">You might also like:</p>
+          <div className="flex flex-wrap gap-2">
+            {[{slug:'fact-check',label:'🔍 Fact Check'},{slug:'debate-me',label:'⚔️ Debate Me'},{slug:'belief-stress-test',label:'🧪 Belief Stress Test'}].map(({slug,label})=>(
+              <a key={slug} href={`/tool/${slug}`} className={linkStyle}>{label}</a>
+            ))}
+          </div>
+        </div>
     </div>
   );
 };

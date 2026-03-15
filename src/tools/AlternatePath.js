@@ -21,8 +21,7 @@ const QUICK_PROMPTS = [
 
 const AlternatePath = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
-  const { theme } = useTheme();
-  const isDark = theme === 'dark';
+  const { isDark } = useTheme();
 
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
@@ -43,8 +42,7 @@ const AlternatePath = ({ tool }) => {
                           : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200'
                           : 'bg-red-50 border-red-200 text-red-800',
-    accentBg:      isDark ? 'bg-cyan-900/20 border-cyan-700' : 'bg-cyan-50 border-cyan-200',
-    accent:        isDark ? 'text-cyan-400' : 'text-cyan-600',
+    warningBox:      isDark ? 'bg-cyan-900/20 border-cyan-700' : 'bg-cyan-50 border-cyan-200',
     pillActive:    isDark ? 'bg-cyan-600 border-cyan-600 text-white' : 'bg-cyan-600 border-cyan-600 text-white',
     pillInactive:  isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-300 hover:border-zinc-500' : 'bg-white border-gray-200 text-gray-600 hover:border-gray-300',
   };
@@ -77,7 +75,7 @@ const AlternatePath = ({ tool }) => {
       const newEntry = {
         id: Date.now(),
         timestamp: new Date().toISOString(),
-        preview: whatIf.trim().slice(0, 40),
+        preview: whatIf.trim().slice(0, 6),
         result: data,
       };
       setHistory(prev => [newEntry, ...(prev || [])].slice(0, 6));
@@ -101,21 +99,21 @@ const AlternatePath = ({ tool }) => {
       <div className={`${c.card} border ${c.border} rounded-xl shadow-lg p-5`}>
         <div className={`mb-4 pb-3 border-b ${c.border}`}>
           <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}><span>{tool.icon}</span> Alternate Path</h2>
-          <p className={`text-sm ${c.textSecondary}`}>What if history went differently? Watch the dominoes fall.</p>
+          <p className={`text-sm ${c.textSecondaryondary}`}>What if history went differently? Watch the dominoes fall.</p>
         </div>
 
         <div className="mb-3">
-          <label className={`text-[10px] font-bold ${c.textSecondary} uppercase block mb-2`}>Try one</label>
+          <label className={`text-[10px] font-bold ${c.textSecondaryondary} uppercase block mb-2`}>Try one</label>
           <div className="flex flex-wrap gap-1.5">
             {QUICK_PROMPTS.map((q, i) => (
               <button key={i} onClick={() => { setWhatIf(q); setResults(null); }}
-                className={`${c.btnSecondary} px-2.5 py-1.5 rounded-lg text-[11px] font-medium min-h-[28px]`}>{q}</button>
+                className={`${c.btnPrimarySecondaryondary} px-2.5 py-1.5 rounded-lg text-[11px] font-medium min-h-[28px]`}>{q}</button>
             ))}
           </div>
         </div>
 
         <div className="mb-3">
-          <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>What if... <span className="text-zinc-400">*</span></label>
+          <label className={`text-xs font-bold ${c.textSecondaryondary} block mb-1.5`}>What if... <span className="text-zinc-400">*</span></label>
           <input type="text" value={whatIf} onChange={e => setWhatIf(e.target.value)}
             placeholder="e.g., The internet was invented in 1920..."
             className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`}
@@ -123,7 +121,7 @@ const AlternatePath = ({ tool }) => {
         </div>
 
         <div className="mb-4">
-          <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Year or context <span className={`font-normal ${c.textMuted}`}>(optional)</span></label>
+          <label className={`text-xs font-bold ${c.textSecondaryondary} block mb-1.5`}>Year or context <span className={`font-normal ${c.textMuteded}`}>(optional)</span></label>
           <input type="text" value={yearOrContext} onChange={e => setYearOrContext(e.target.value)}
             placeholder="e.g., 1920, during WWI, instead of..."
             className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`}
@@ -131,27 +129,27 @@ const AlternatePath = ({ tool }) => {
         </div>
 
         <div className="mb-5">
-          <label className={`text-xs font-bold ${c.textSecondary} uppercase block mb-2`}>Depth</label>
+          <label className={`text-xs font-bold ${c.textSecondaryondary} uppercase block mb-2`}>Depth</label>
           <div className="flex gap-2">
             {DEPTHS.map(d => (
               <button key={d.value} onClick={() => setDepth(d.value)}
                 className={`flex-1 py-2.5 rounded-xl border text-center min-h-[52px] transition-colors ${depth === d.value ? c.pillActive : c.pillInactive}`}>
                 <span className="text-sm block">{d.icon} {d.label}</span>
-                <span className={`text-[9px] block ${depth === d.value ? 'opacity-80' : c.textMuted}`}>{d.desc}</span>
+                <span className={`text-[9px] block ${depth === d.value ? 'opacity-80' : c.textMuteded}`}>{d.desc}</span>
               </button>
             ))}
           </div>
         </div>
 
-        <p className={`text-xs text-center ${c.textMuted} mb-3`}>
+        <p className={`text-xs text-center ${c.textMuteded} mb-3`}>
           More of a fiction person?{' '}
           <a href="/FanTheory" className={linkStyle}>Fan Theory</a>{' '}
           builds theories about stories and films.
         </p>
 
         <button onClick={run} disabled={!whatIf.trim() || loading}
-          className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-          {loading ? <><span className="animate-spin inline-block">🌀</span> Rewriting history...</> : <><span>🌀</span> Explore Timeline</>}
+          className={`w-full ${c.btnPrimaryPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+          {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '⚙️'}</span> Rewriting history...</> : <><span>🌀</span> Explore Timeline</>}
         </button>
       </div>
 
@@ -163,11 +161,11 @@ const AlternatePath = ({ tool }) => {
             <ActionBar content={buildFullText()} title="Alternate Path" />
           </div>
 
-          <div className={`${c.accentBg} border-2 rounded-xl p-5 text-center`}>
+          <div className={`${c.cardAltBg} border-2 rounded-xl p-5 text-center`}>
             <span className="text-3xl block mb-2">🌀</span>
             <p className={`text-lg font-black ${c.text} mb-2`}>{results.divergence_point}</p>
-            {results.real_history && <p className={`text-xs ${c.textMuted} italic`}>📜 Reality: {results.real_history}</p>}
-            {results.plausibility && <p className={`text-xs ${c.accent} mt-2`}>Plausibility: {results.plausibility}/10</p>}
+            {results.real_history && <p className={`text-xs ${c.textMuteded} italic`}>📜 Reality: {results.real_history}</p>}
+            {results.plausibility && <p className={`text-xs ${c.cardAlt} mt-2`}>Plausibility: {results.plausibility}/10</p>}
           </div>
 
           {results.timeline?.length > 0 && (
@@ -177,11 +175,11 @@ const AlternatePath = ({ tool }) => {
                 {results.timeline.map((t, i) => (
                   <div key={i} className={`${c.cardAlt} rounded-lg p-3 border-l-4 border-cyan-500`}>
                     <div className="flex items-start gap-2">
-                      <span className={`text-xs font-black ${c.accent} whitespace-nowrap`}>{t.year_range}</span>
+                      <span className={`text-xs font-black ${c.cardAlt} whitespace-nowrap`}>{t.year_range}</span>
                       <div className="flex-1">
                         <p className={`text-xs font-medium ${c.text}`}>{t.event}</p>
-                        <p className={`text-[10px] ${c.textMuted} mt-1`}>↳ {t.because}</p>
-                        {t.real_world_contrast && <p className={`text-[10px] ${c.textMuted} italic mt-1`}>Reality: {t.real_world_contrast}</p>}
+                        <p className={`text-[10px] ${c.textMuteded} mt-1`}>↳ {t.because}</p>
+                        {t.real_world_contrast && <p className={`text-[10px] ${c.textMuteded} italic mt-1`}>Reality: {t.real_world_contrast}</p>}
                       </div>
                     </div>
                   </div>
@@ -206,31 +204,31 @@ const AlternatePath = ({ tool }) => {
             )}
             {results.butterfly_moment && (
               <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-                <p className={`text-[10px] font-bold ${c.accent} uppercase mb-1`}>🦋 Butterfly Moment</p>
-                <p className={`text-xs ${c.textSecondary}`}>{results.butterfly_moment}</p>
+                <p className={`text-[10px] font-bold ${c.cardAlt} uppercase mb-1`}>🦋 Butterfly Moment</p>
+                <p className={`text-xs ${c.textSecondaryondary}`}>{results.butterfly_moment}</p>
               </div>
             )}
           </div>
 
           <div className="flex gap-2">
             <button onClick={run} disabled={loading}
-              className={`flex-1 ${c.btnSecondary} font-bold py-3 rounded-lg min-h-[44px]`}>
+              className={`flex-1 ${c.btnPrimarySecondaryondary} font-bold py-3 rounded-lg min-h-[44px]`}>
               🌀 Different Timeline
             </button>
             <button onClick={reset}
-              className={`flex-1 ${c.btnSecondary} font-bold py-3 rounded-lg min-h-[44px]`}>
+              className={`flex-1 ${c.btnPrimarySecondaryondary} font-bold py-3 rounded-lg min-h-[44px]`}>
               ↩ Start Over
             </button>
           </div>
 
           <div className="space-y-1">
-            <p className={`text-xs text-center ${c.textMuted}`}>
+            <p className={`text-xs text-center ${c.textMuteded}`}>
               Want to stress-test a belief this uncovered?{' '}
               <a href="/BeliefStressTest" className={linkStyle}>Belief Stress Test</a>{' '}
               finds the weakest assumptions.
             </p>
             {results.plausibility < 4 && (
-              <p className={`text-xs text-center ${c.textMuted}`}>
+              <p className={`text-xs text-center ${c.textMuteded}`}>
                 Low plausibility score?{' '}
                 <a href="/BrainRoulette" className={linkStyle}>Brain Roulette</a>{' '}
                 might spark a wilder but more grounded scenario.
@@ -247,8 +245,8 @@ const AlternatePath = ({ tool }) => {
             {history.map(entry => (
               <button key={entry.id}
                 onClick={() => setResults(entry.result)}
-                className={`w-full text-left px-3 py-2 rounded-lg ${c.btnSecondary} text-xs flex items-center gap-2`}>
-                <span className={c.textMuted}>
+                className={`w-full text-left px-3 py-2 rounded-lg ${c.btnPrimarySecondaryondary} text-xs flex items-center gap-2`}>
+                <span className={c.textMuteded}>
                   {new Date(entry.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
                 </span>
                 <span className={c.text}>{entry.preview}{entry.preview.length >= 40 ? '…' : ''}</span>
@@ -257,6 +255,14 @@ const AlternatePath = ({ tool }) => {
           </div>
         </div>
       )}
+        <div className={`mt-6 pt-4 border-t text-sm ${c.border} ${c.textMuteded}`}>
+          <p className="mb-2 font-medium">You might also like:</p>
+          <div className="flex flex-wrap gap-2">
+            {[{slug:'what-if-machine',label:'🌀 What If Machine'},{slug:'fan-theory',label:'🎬 Fan Theory'},{slug:'future-proof',label:'🔭 Future Proof'}].map(({slug,label})=>(
+              <a key={slug} href={`/tool/${slug}`} className={linkStyle}>{label}</a>
+            ))}
+          </div>
+        </div>
     </div>
   );
 };

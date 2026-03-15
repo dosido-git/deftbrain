@@ -28,29 +28,34 @@ const ColdOpenCraft = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { isDark } = useTheme();
 
-  const c = {
-    card:          isDark ? 'bg-zinc-800'        : 'bg-white',
-    cardAlt:       isDark ? 'bg-zinc-700/50'     : 'bg-slate-50',
-    text:          isDark ? 'text-zinc-50'       : 'text-slate-900',
-    textSecondary: isDark ? 'text-zinc-300'      : 'text-slate-600',
-    textMuted:     isDark ? 'text-zinc-500'      : 'text-slate-400',
-    input:         isDark
-      ? 'bg-zinc-900 border-zinc-700 text-zinc-50 placeholder:text-zinc-500 focus:border-cyan-500'
-      : 'bg-slate-50 border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
-    btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-slate-100 hover:bg-slate-200 text-slate-700',
-    border:        isDark ? 'border-zinc-700'    : 'border-slate-200',
-    success:       isDark ? 'bg-emerald-900/30 border-emerald-700 text-emerald-300' : 'bg-emerald-50 border-emerald-200 text-emerald-800',
-    warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-300'       : 'bg-amber-50 border-amber-200 text-amber-800',
-    danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-300'             : 'bg-red-50 border-red-200 text-red-800',
-    // Tool-specific: boldness / channel pill states
-    pillActive:    isDark ? 'bg-cyan-600 border-cyan-500 text-white'                         : 'bg-cyan-600 border-cyan-700 text-white',
-    pillInactive:  isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-300 hover:border-zinc-500' : 'bg-white border-slate-200 text-slate-600 hover:border-slate-400',
-  };
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
     : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
+
+  const c = {
+    card:          isDark ? 'bg-zinc-800' : 'bg-white',
+    cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    text:          isDark ? 'text-zinc-50' : 'text-gray-900',
+    textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
+    textMuted:     isDark ? 'text-zinc-500' : 'text-gray-400',
+    labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
+    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
+    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
+    border:        isDark ? 'border-zinc-700' : 'border-gray-200',
+    success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
+    warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
+    danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
+    infoBox:       isDark ? 'bg-sky-900/20 border-sky-700 text-sky-200' : 'bg-sky-50 border-sky-200 text-sky-800',
+    successBox:    isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-300',
+    successTxt:    isDark ? 'text-emerald-300' : 'text-emerald-800',
+    warningBox:    isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
+    warningTxt:    isDark ? 'text-amber-300' : 'text-amber-800',
+    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
+  };
 
   // ── Persisted state ──
   const [who,             setWho]             = usePersistentState('cold-open-craft-who', '');
@@ -151,11 +156,11 @@ const ColdOpenCraft = ({ tool }) => {
           <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
             <span>{tool?.icon ?? '📬'}</span>{tool?.title ?? 'Cold Open Craft'}
           </h2>
-          <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'First messages that actually get responses.'}</p>
+          <p className={`text-sm ${c.textSecondaryondary}`}>{tool?.tagline ?? 'First messages that actually get responses.'}</p>
         </div>
 
         {/* Pre-result cross-ref */}
-        <p className={`text-xs text-center ${c.textMuted} mb-4`}>
+        <p className={`text-xs text-center ${c.textMuteded} mb-4`}>
           Need to frame your story first?{' '}
           <a href="/TheAlibi" className={linkStyle}>The Alibi</a> sharpens your narrative before you reach out.
         </p>
@@ -164,7 +169,7 @@ const ColdOpenCraft = ({ tool }) => {
           {/* Who */}
           <div>
             <label className={`text-sm font-bold ${c.text} block mb-1.5`}>
-              Who are you reaching out to? <span className={c.textMuted}>*</span>
+              Who are you reaching out to? <span className={c.textMuteded}>*</span>
             </label>
             <input
               type="text"
@@ -178,7 +183,7 @@ const ColdOpenCraft = ({ tool }) => {
           {/* Why */}
           <div>
             <label className={`text-sm font-bold ${c.text} block mb-1.5`}>
-              Why are you reaching out? <span className={c.textMuted}>*</span>
+              Why are you reaching out? <span className={c.textMuteded}>*</span>
             </label>
             <textarea
               value={why}
@@ -187,7 +192,7 @@ const ColdOpenCraft = ({ tool }) => {
               rows={2}
               className={`w-full px-4 py-3 border rounded-xl text-sm focus:outline-none transition-colors resize-none ${c.input}`}
             />
-            <p className={`text-xs ${c.textMuted} mt-1`}>Ctrl+Enter to generate</p>
+            <p className={`text-xs ${c.textMuteded} mt-1`}>Ctrl+Enter to generate</p>
           </div>
 
           {/* Channel */}
@@ -212,7 +217,7 @@ const ColdOpenCraft = ({ tool }) => {
           <div>
             <label className={`text-sm font-bold ${c.text} block mb-1.5`}>
               What do you know about them?{' '}
-              <span className={`font-normal ${c.textMuted}`}>(optional — massively improves results)</span>
+              <span className={`font-normal ${c.textMuteded}`}>(optional — massively improves results)</span>
             </label>
             <input
               type="text"
@@ -226,7 +231,7 @@ const ColdOpenCraft = ({ tool }) => {
           {/* Your background */}
           <div>
             <label className={`text-sm font-bold ${c.text} block mb-1.5`}>
-              Your background <span className={`font-normal ${c.textMuted}`}>(optional)</span>
+              Your background <span className={`font-normal ${c.textMuteded}`}>(optional)</span>
             </label>
             <input
               type="text"
@@ -251,7 +256,7 @@ const ColdOpenCraft = ({ tool }) => {
                 >
                   <span className="text-base">{t.emoji}</span>
                   <span>{t.label}</span>
-                  <span className={`font-normal text-[9px] ${tone === t.value ? 'opacity-80' : c.textMuted}`}>{t.desc}</span>
+                  <span className={`font-normal text-[9px] ${tone === t.value ? 'opacity-80' : c.textMuteded}`}>{t.desc}</span>
                 </button>
               ))}
             </div>
@@ -286,9 +291,9 @@ const ColdOpenCraft = ({ tool }) => {
               <button
                 key={entry.id}
                 onClick={() => setResults(entry.result)}
-                className={`w-full text-left px-3 py-2 rounded-lg ${c.btnSecondary} text-xs`}
+                className={`w-full text-left px-3 py-2 rounded-lg ${c.btnSecondaryondary} text-xs`}
               >
-                <span className={c.textMuted}>
+                <span className={c.textMuteded}>
                   {new Date(entry.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
                 </span>
                 <span className={`ml-2 ${c.text}`}>{entry.preview}…</span>
@@ -309,7 +314,7 @@ const ColdOpenCraft = ({ tool }) => {
             <ActionBar content={buildFullText()} title={`Cold Open Craft: ${who}`} />
             <button
               onClick={handleReset}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${c.btnSecondary}`}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${c.btnSecondaryondary}`}
             >
               ↺ Start Over
             </button>
@@ -318,15 +323,15 @@ const ColdOpenCraft = ({ tool }) => {
           {/* Situation read */}
           {r.situation_read && (
             <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-              <p className={`text-xs font-bold uppercase tracking-wide ${c.textMuted} mb-2`}>🎯 Situation Read</p>
-              <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{r.situation_read}</p>
+              <p className={`text-xs font-bold uppercase tracking-wide ${c.textMuteded} mb-2`}>🎯 Situation Read</p>
+              <p className={`text-sm ${c.textSecondaryondary} leading-relaxed`}>{r.situation_read}</p>
             </div>
           )}
 
           {/* Subject line */}
           {r.subject_line && (
             <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-              <p className={`text-[10px] font-bold ${c.textMuted} mb-0.5`}>Subject line</p>
+              <p className={`text-[10px] font-bold ${c.textMuteded} mb-0.5`}>Subject line</p>
               <p className={`text-sm font-bold ${c.text}`}>{r.subject_line}</p>
             </div>
           )}
@@ -359,12 +364,12 @@ const ColdOpenCraft = ({ tool }) => {
                     </div>
 
                     {opener.why_it_works && (
-                      <p className={`text-xs ${c.textSecondary} mb-1`}>
+                      <p className={`text-xs ${c.textSecondaryondary} mb-1`}>
                         <span className="font-bold">Why it works:</span> {opener.why_it_works}
                       </p>
                     )}
                     {opener.best_if && (
-                      <p className={`text-xs ${c.textMuted} italic`}>Best if: {opener.best_if}</p>
+                      <p className={`text-xs ${c.textMuteded} italic`}>Best if: {opener.best_if}</p>
                     )}
                   </div>
                 </div>
@@ -378,7 +383,7 @@ const ColdOpenCraft = ({ tool }) => {
               <p className={`text-xs font-bold ${c.text} mb-2`}>🚫 What NOT to say</p>
               <div className="space-y-1.5">
                 {r.what_not_to_say.map((item, i) => (
-                  <p key={i} className={`text-xs ${c.textSecondary} leading-relaxed`}>• {item}</p>
+                  <p key={i} className={`text-xs ${c.textSecondaryondary} leading-relaxed`}>• {item}</p>
                 ))}
               </div>
             </div>
@@ -390,18 +395,18 @@ const ColdOpenCraft = ({ tool }) => {
               <p className={`text-xs font-bold ${c.text} mb-3`}>📅 Follow-up plan</p>
               <div className="space-y-3">
                 <div>
-                  <p className={`text-[10px] font-bold ${c.textMuted} mb-0.5`}>When to follow up</p>
-                  <p className={`text-xs ${c.textSecondary}`}>{r.follow_up_plan.when}</p>
+                  <p className={`text-[10px] font-bold ${c.textMuteded} mb-0.5`}>When to follow up</p>
+                  <p className={`text-xs ${c.textSecondaryondary}`}>{r.follow_up_plan.when}</p>
                 </div>
                 {r.follow_up_plan.message && (
                   <div className={`${c.cardAlt} rounded-lg p-3`}>
-                    <p className={`text-[10px] font-bold ${c.textMuted} mb-0.5`}>Follow-up message</p>
+                    <p className={`text-[10px] font-bold ${c.textMuteded} mb-0.5`}>Follow-up message</p>
                     <p className={`text-xs ${c.text}`}>{r.follow_up_plan.message}</p>
                   </div>
                 )}
                 <div>
-                  <p className={`text-[10px] font-bold ${c.textMuted} mb-0.5`}>When to stop</p>
-                  <p className={`text-xs ${c.textSecondary}`}>{r.follow_up_plan.when_to_stop}</p>
+                  <p className={`text-[10px] font-bold ${c.textMuteded} mb-0.5`}>When to stop</p>
+                  <p className={`text-xs ${c.textSecondaryondary}`}>{r.follow_up_plan.when_to_stop}</p>
                 </div>
               </div>
             </div>
@@ -420,13 +425,13 @@ const ColdOpenCraft = ({ tool }) => {
 
           {/* Cross-refs — post-result */}
           <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 space-y-2`}>
-            <p className={`text-xs ${c.textMuted} text-center`}>
+            <p className={`text-xs ${c.textMuteded} text-center`}>
               Need help with follow-up tone?{' '}
               <a href="/VelvetHammer" className={linkStyle}>Velvet Hammer</a>{' '}
               gets the message right when stakes are high.
             </p>
             {(r.openers?.some(o => o.boldness === 'bold') || yourBackground) && (
-              <p className={`text-xs ${c.textMuted} text-center`}>
+              <p className={`text-xs ${c.textMuteded} text-center`}>
                 Turn your wins into a credibility hook:{' '}
                 <a href="/BragSheetBuilder" className={linkStyle}>Brag Sheet Builder</a>{' '}
                 gives you polished, copy-ready highlights.
@@ -435,7 +440,7 @@ const ColdOpenCraft = ({ tool }) => {
           </div>
 
           {/* AI disclaimer */}
-          <p className={`text-xs text-center ${c.textMuted}`}>
+          <p className={`text-xs text-center ${c.textMuteded}`}>
             AI-generated — review all messages before sending.
           </p>
 

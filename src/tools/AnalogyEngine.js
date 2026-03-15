@@ -23,8 +23,7 @@ const EXAMPLE_PAIRS = [
 
 const AnalogyEngine = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
-  const { theme } = useTheme();
-  const isDark = theme === 'dark';
+  const { isDark } = useTheme();
 
   const c = {
     card:          isDark ? 'bg-zinc-800'       : 'bg-white',
@@ -45,15 +44,10 @@ const AnalogyEngine = ({ tool }) => {
                           : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200'
                           : 'bg-red-50 border-red-200 text-red-800',
-    info:          isDark ? 'bg-blue-900/20 border-blue-700 text-blue-200'
-                          : 'bg-blue-50 border-blue-200 text-blue-800',
     pillActive:    isDark ? 'bg-cyan-600 border-cyan-600 text-white'
                           : 'bg-cyan-600 border-cyan-600 text-white',
     pillInactive:  isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-300 hover:border-zinc-500'
                           : 'bg-white border-gray-200 text-gray-600 hover:border-gray-300',
-    accent:        isDark ? 'text-cyan-400'     : 'text-cyan-600',
-    badgePrimary:  isDark ? 'bg-blue-900/30 text-blue-200' : 'bg-blue-50 text-blue-800',
-    badgeGold:     isDark ? 'bg-amber-900/20 text-amber-300' : 'bg-amber-50 text-amber-700',
   };
 
   const linkStyle = isDark
@@ -89,7 +83,7 @@ const AnalogyEngine = ({ tool }) => {
       const newEntry = {
         id: Date.now(),
         timestamp: new Date().toISOString(),
-        preview: c.trim().slice(0, 40),
+        preview: c.trim().slice(0, 6),
         result: data,
       };
       setHistory(prev => [newEntry, ...(prev || [])].slice(0, 6));
@@ -138,13 +132,13 @@ const AnalogyEngine = ({ tool }) => {
       {/* ── HEADER ── */}
       <div className={`${c.card} border ${c.border} rounded-xl shadow-lg p-5`}>
         <div className={`mb-4 pb-3 border-b ${c.border}`}>
-          <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}><span>{tool.icon}</span> Analogy Engine</h2>
-          <p className={`text-sm ${c.textSecondary} mt-1`}>Explain anything to anyone — using their world</p>
+          <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}><span>{tool?.icon}</span> Analogy Engine</h2>
+          <p className={`text-sm ${c.textSecondaryondary} mt-1`}>Explain anything to anyone — using their world</p>
         </div>
 
         {/* Concept */}
         <div className="mb-4">
-          <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>What do you need to explain? <span className="text-zinc-400">*</span></label>
+          <label className={`text-xs font-bold ${c.textSecondaryondary} block mb-1.5`}>What do you need to explain? <span className="text-zinc-400">*</span></label>
           <input
             type="text"
             value={concept}
@@ -157,7 +151,7 @@ const AnalogyEngine = ({ tool }) => {
 
         {/* Audience */}
         <div className="mb-4">
-          <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Who are you explaining it to?</label>
+          <label className={`text-xs font-bold ${c.textSecondaryondary} block mb-1.5`}>Who are you explaining it to?</label>
           <input
             type="text"
             value={audience}
@@ -169,8 +163,8 @@ const AnalogyEngine = ({ tool }) => {
         </div>
 
         <div className="mb-4">
-          <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>
-            Their interests or world <span className={`font-normal ${c.textMuted}`}>(optional — makes analogies way better)</span>
+          <label className={`text-xs font-bold ${c.textSecondaryondary} block mb-1.5`}>
+            Their interests or world <span className={`font-normal ${c.textMuteded}`}>(optional — makes analogies way better)</span>
           </label>
           <input
             type="text"
@@ -183,7 +177,7 @@ const AnalogyEngine = ({ tool }) => {
         </div>
 
         <div className="mb-4">
-          <label className={`text-xs font-bold ${c.textSecondary} uppercase block mb-2`}>How deep?</label>
+          <label className={`text-xs font-bold ${c.textSecondaryondary} uppercase block mb-2`}>How deep?</label>
           <div className="flex gap-2">
             {DEPTH_LEVELS.map(d => (
               <button
@@ -203,7 +197,7 @@ const AnalogyEngine = ({ tool }) => {
         {/* Examples */}
         {!results && (
           <div className="mb-5">
-            <p className={`text-xs font-bold ${c.textMuted} mb-2`}>Try one:</p>
+            <p className={`text-xs font-bold ${c.textMuteded} mb-2`}>Try one:</p>
             <div className="flex flex-wrap gap-1.5">
               {EXAMPLE_PAIRS.map(ex => (
                 <button
@@ -219,7 +213,7 @@ const AnalogyEngine = ({ tool }) => {
           </div>
         )}
 
-        <p className={`text-xs text-center ${c.textMuted} mb-3`}>
+        <p className={`text-xs text-center ${c.textMuteded} mb-3`}>
           Need to simplify language too?{' '}
           <a href="/PlainTalk" className={linkStyle}>Plain Talk</a>{' '}
           strips jargon from any text.
@@ -229,15 +223,15 @@ const AnalogyEngine = ({ tool }) => {
           <button
             onClick={() => generate()}
             disabled={loading || !concept.trim()}
-            className={`flex-1 ${c.btnPrimary} disabled:opacity-40 disabled:cursor-not-allowed font-bold py-3 px-6 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}
+            className={`flex-1 ${c.btnPrimaryPrimary} disabled:opacity-40 disabled:cursor-not-allowed font-bold py-3 px-6 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}
           >
             {loading
-              ? <><span className="animate-spin inline-block">💡</span> Crafting analogies...</>
+              ? <><span className="animate-spin inline-block">{tool?.icon ?? '⚙️'}</span> Crafting analogies...</>
               : <><span>💡</span> Generate Analogies</>
             }
           </button>
           {results && (
-            <button onClick={handleReset} className={`px-5 py-3 ${c.btnSecondary} rounded-lg font-medium min-h-[48px]`}>
+            <button onClick={handleReset} className={`px-5 py-3 ${c.btnPrimarySecondaryondary} rounded-lg font-medium min-h-[48px]`}>
               ↩ Start Over
             </button>
           )}
@@ -265,7 +259,7 @@ const AnalogyEngine = ({ tool }) => {
           {/* ── ONE LINER ── */}
           {r.one_liner && (
             <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-              <p className={`text-xs font-bold ${c.textMuted} mb-1`}>In one sentence:</p>
+              <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>In one sentence:</p>
               <p className={`text-base font-bold ${c.text} leading-relaxed`}>{r.one_liner}</p>
             </div>
           )}
@@ -282,12 +276,12 @@ const AnalogyEngine = ({ tool }) => {
                       <div>
                         <h4 className={`text-sm font-bold ${c.text}`}>{analogy.title}</h4>
                         <div className="flex gap-1.5 mt-1">
-                          <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${c.badgePrimary}`}>{analogy.type}</span>
+                          <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${c.success}`}>{analogy.type}</span>
                           {analogy.accuracy === 'high' && (
                             <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full border ${c.success}`}>✅ High accuracy</span>
                           )}
                           {analogy.memorability === 'high' && (
-                            <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${c.badgeGold}`}>⭐ Memorable</span>
+                            <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${c.warning}`}>⭐ Memorable</span>
                           )}
                         </div>
                       </div>
@@ -297,12 +291,12 @@ const AnalogyEngine = ({ tool }) => {
                       <p className={`text-sm ${c.text} leading-relaxed`}>{analogy.analogy}</p>
                     </div>
                     {analogy.why_it_works && (
-                      <p className={`text-xs ${c.textSecondary} mb-2`}>
+                      <p className={`text-xs ${c.textSecondaryondary} mb-2`}>
                         <span className="font-bold">Why it works:</span> {analogy.why_it_works}
                       </p>
                     )}
                     {analogy.where_it_breaks && (
-                      <p className={`text-xs ${c.textMuted} italic`}>⚠️ Limit: {analogy.where_it_breaks}</p>
+                      <p className={`text-xs ${c.textMuteded} italic`}>⚠️ Limit: {analogy.where_it_breaks}</p>
                     )}
                   </div>
                 </div>
@@ -325,7 +319,7 @@ const AnalogyEngine = ({ tool }) => {
               <p className={`text-xs font-bold ${c.text} mb-2`}>🚫 Common misconceptions</p>
               <div className="space-y-2">
                 {r.common_misconceptions.map((m, i) => (
-                  <p key={i} className={`text-xs ${c.textSecondary} leading-relaxed`}>• {m}</p>
+                  <p key={i} className={`text-xs ${c.textSecondaryondary} leading-relaxed`}>• {m}</p>
                 ))}
               </div>
             </div>
@@ -334,25 +328,25 @@ const AnalogyEngine = ({ tool }) => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {r.go_deeper && (
               <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-                <p className={`text-xs font-bold ${c.textMuted} mb-1`}>📚 Go deeper</p>
-                <p className={`text-xs ${c.textSecondary} leading-relaxed`}>{r.go_deeper}</p>
+                <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>📚 Go deeper</p>
+                <p className={`text-xs ${c.textSecondaryondary} leading-relaxed`}>{r.go_deeper}</p>
               </div>
             )}
             {r.teaching_tip && (
               <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-                <p className={`text-xs font-bold ${c.textMuted} mb-1`}>🎓 Teaching tip</p>
-                <p className={`text-xs ${c.textSecondary} leading-relaxed`}>{r.teaching_tip}</p>
+                <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>🎓 Teaching tip</p>
+                <p className={`text-xs ${c.textSecondaryondary} leading-relaxed`}>{r.teaching_tip}</p>
               </div>
             )}
           </div>
 
-          <p className={`text-xs text-center ${c.textMuted}`}>
+          <p className={`text-xs text-center ${c.textMuteded}`}>
             Want to strip the jargon from your explanation?{' '}
             <a href="/JargonAssassin" className={linkStyle}>Jargon Assassin</a>{' '}
             clears out the noise.
           </p>
           {r.analogies?.length > 0 && r.analogies[0]?.accuracy === 'medium' && (
-            <p className={`text-xs text-center ${c.textMuted}`}>
+            <p className={`text-xs text-center ${c.textMuteded}`}>
               Accuracy concerns?{' '}
               <a href="/BeliefStressTest" className={linkStyle}>Belief Stress Test</a>{' '}
               finds the weakest assumptions in any explanation.
@@ -368,8 +362,8 @@ const AnalogyEngine = ({ tool }) => {
             {history.map(entry => (
               <button key={entry.id}
                 onClick={() => setResults(entry.result)}
-                className={`w-full text-left px-3 py-2 rounded-lg ${c.btnSecondary} text-xs flex items-center gap-2`}>
-                <span className={c.textMuted}>
+                className={`w-full text-left px-3 py-2 rounded-lg ${c.btnPrimarySecondaryondary} text-xs flex items-center gap-2`}>
+                <span className={c.textMuteded}>
                   {new Date(entry.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
                 </span>
                 <span className={c.text}>{entry.preview}{entry.preview.length >= 40 ? '…' : ''}</span>
@@ -378,6 +372,14 @@ const AnalogyEngine = ({ tool }) => {
           </div>
         </div>
       )}
+        <div className={`mt-6 pt-4 border-t text-sm ${c.border} ${c.textMuted}`}>
+          <p className="mb-2 font-medium">You might also like:</p>
+          <div className="flex flex-wrap gap-2">
+            {[{slug:'brain-roulette',label:'🎲 Brain Roulette'},{slug:'plain-talk',label:'💬 Plain Talk'},{slug:'jargon-assassin',label:'🗡️ Jargon Assassin'}].map(({slug,label})=>(
+              <a key={slug} href={`/tool/${slug}`} className={linkStyle}>{label}</a>
+            ))}
+          </div>
+        </div>
     </div>
   );
 };

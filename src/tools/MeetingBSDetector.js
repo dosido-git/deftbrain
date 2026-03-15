@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect} from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { CopyBtn, ActionBar } from '../components/ActionButtons';
@@ -54,6 +54,8 @@ const CROSS_REFS = [
 // ════════════════════════════════════════════════════════════
 function Section({ icon, title, badge, children, defaultOpen = false, c }) {
   const [open, setOpen] = useState(defaultOpen);
+
+
   return (
     <div className={`${c.card} border rounded-xl overflow-hidden`}>
       <button onClick={() => setOpen(p => !p)}
@@ -61,11 +63,11 @@ function Section({ icon, title, badge, children, defaultOpen = false, c }) {
         <div className="flex items-center gap-2.5">
           {icon && <span className="text-sm">{icon}</span>}
           <h3 className={`text-sm font-bold ${c.text}`}>{title}</h3>
-          {badge && <span className={`text-[9px] font-black px-2 py-0.5 rounded ${c.accentBg}`}>{badge}</span>}
+          {badge && <span className={`text-[9px] font-black px-2 py-0.5 rounded ${c.cardAlt}`}>{badge}</span>}
         </div>
-        <span className={`text-xs ${c.textMuted}`}>{open ? '▲' : '▼'}</span>
+        <span className={`text-xs ${c.textMuteded}`}>{open ? '▲' : '▼'}</span>
       </button>
-      {open && <div className={`px-4 pb-4 border-t ${c.divider} pt-3 space-y-3`}>{children}</div>}
+      {open && <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-3`}>{children}</div>}
     </div>
   );
 }
@@ -73,36 +75,34 @@ function Section({ icon, title, badge, children, defaultOpen = false, c }) {
 // ════════════════════════════════════════════════════════════
 // COMPONENT
 // ════════════════════════════════════════════════════════════
-const MeetingBSDetector = () => {
+const MeetingBSDetector = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
-  const { theme } = useTheme();
-  const isDark = theme === 'dark';
+  const { isDark } = useTheme();
 
-  const c = {
-    card: isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-slate-200',
+  const linkStyle = isDark
+    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
+    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
+
+    const c = {
+    card:          isDark ? 'bg-zinc-800' : 'bg-white',
     input: isDark
-      ? 'bg-zinc-900 border-zinc-600 text-zinc-50 placeholder:text-zinc-500 focus:border-indigo-500 focus:ring-indigo-500/20'
-      : 'bg-white border-slate-300 text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:ring-indigo-100',
+      ? 'bg-zinc-900 border-zinc-600 text-zinc-50 placeholder:text-zinc-500 focus:border-cyan-500 focus:ring-indigo-500/20'
+      : 'bg-white border-slate-300 text-slate-900 placeholder:text-slate-400 focus:border-cyan-500 focus:ring-indigo-100',
     text: isDark ? 'text-zinc-50' : 'text-slate-900',
-    textSec: isDark ? 'text-zinc-400' : 'text-slate-600',
     textMuted: isDark ? 'text-zinc-500' : 'text-slate-500',
     label: isDark ? 'text-zinc-300' : 'text-slate-700',
-    accent: isDark ? 'text-indigo-400' : 'text-indigo-600',
-    accentBg: isDark ? 'bg-indigo-900/30 border-indigo-700/50' : 'bg-indigo-50 border-indigo-200',
-    btnPrimary: isDark ? 'bg-indigo-600 hover:bg-indigo-500 text-white' : 'bg-indigo-600 hover:bg-indigo-700 text-white',
-    btnSec: isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-slate-100 hover:bg-slate-200 text-slate-800',
+    btnPrimary: isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
     danger: isDark ? 'bg-red-900/20 border-red-700/50 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
-    dangerText: isDark ? 'text-red-400' : 'text-red-600',
     success: isDark ? 'bg-emerald-900/20 border-emerald-700/50 text-emerald-200' : 'bg-emerald-50 border-emerald-200 text-emerald-800',
-    successText: isDark ? 'text-emerald-400' : 'text-emerald-600',
     warning: isDark ? 'bg-amber-900/20 border-amber-700/50 text-amber-200' : 'bg-amber-50 border-amber-200 text-amber-800',
-    warningText: isDark ? 'text-amber-400' : 'text-amber-600',
-    info: isDark ? 'bg-blue-900/20 border-blue-700/50 text-blue-200' : 'bg-blue-50 border-blue-200 text-blue-800',
-    pillActive: isDark ? 'bg-indigo-600 border-indigo-500 text-white' : 'bg-indigo-600 border-indigo-600 text-white',
+    pillActive: isDark ? 'bg-cyan-600 border-cyan-500 text-white' : 'bg-cyan-600 border-cyan-600 text-white',
     pillInactive: isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-300 hover:border-zinc-500' : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300',
-    divider: isDark ? 'border-zinc-700' : 'border-slate-200',
     quoteBg: isDark ? 'bg-zinc-900/60' : 'bg-slate-50',
-    verdict: isDark ? 'bg-indigo-900/40 border-indigo-700/50' : 'bg-indigo-50 border-indigo-200',
+    verdict: isDark ? 'bg-cyan-900/40 border-cyan-700/50' : 'bg-cyan-50 border-cyan-200',
+    cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
+    textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
+    btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
+    border:        isDark ? 'border-zinc-700' : 'border-gray-200',
   };
 
   // ── State ──
@@ -194,6 +194,7 @@ const MeetingBSDetector = () => {
       id: Date.now(), type, title: title.slice(0, 60),
       verdict, hoursSaved: hoursSaved || 0,
       date: new Date().toISOString(),
+      preview: title.slice(0, 40),
     };
     const updated = [entry, ...history].slice(0, MAX_HISTORY);
     setHistory(updated);
@@ -222,7 +223,7 @@ const MeetingBSDetector = () => {
         attendees: attendees ? parseInt(attendees) : null,
       });
       setAnalyzeResults(data);
-      addToHistory('analyze', meetingText.slice(0, 60), data.verdict, data.time_cost?.could_save_hours);
+      addToHistory('analyze', meetingText.slice(0, 6), data.verdict, data.time_cost?.could_save_hours);
     } catch (err) {
       setError(err.message || 'Analysis failed');
     }
@@ -434,7 +435,7 @@ const MeetingBSDetector = () => {
 
   // ── Verdict helpers ──
   const verdictColor = (v) => {
-    if (!v) return c.accentBg;
+    if (!v) return c.cardAlt;
     const s = v.toUpperCase();
     if (s.includes('JUSTIFIED') || s.includes('KEEP') || s.includes('HEALTHY')) return c.success;
     if (s.includes('EMAIL') || s.includes('CANCEL') || s.includes('KILL') || s.includes('HELL') || s.includes('OVERLOADED')) return c.danger;
@@ -518,9 +519,9 @@ const MeetingBSDetector = () => {
   const renderAnalyze = () => (
     <div className="space-y-4">
       <div className={`${c.card} border rounded-xl p-5`}>
-        <div className={`mb-4 pb-3 border-b ${c.divider}`}>
+        <div className={`mb-4 pb-3 border-b ${c.border}`}>
           <h2 className={`text-xl font-bold ${c.text}`}><span className="mr-2">🔍</span>Meeting BS Detector</h2>
-          <p className={`text-sm ${c.textSec}`}>Paste a meeting invite — I'll tell you if it's worth your time</p>
+          <p className={`text-sm ${c.textSecondary}`}>Paste a meeting invite — I'll tell you if it's worth your time</p>
         </div>
 
         <div className="mb-4">
@@ -547,8 +548,8 @@ const MeetingBSDetector = () => {
         </div>
 
         <button onClick={runAnalyze} disabled={!meetingText.trim() || loading}
-          className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-          {loading ? <><span className="animate-spin inline-block">⏳</span> Analyzing...</> : <><span>🔍</span> Detect BS</>}
+          className={`w-full ${c.btnPrimaryPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+          {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '⚙️'}</span> Analyzing...</> : <><span>🔍</span> Detect BS</>}
         </button>
       </div>
 
@@ -557,16 +558,16 @@ const MeetingBSDetector = () => {
           <div className={`${verdictColor(analyzeResults.verdict)} border-2 rounded-xl p-5 text-center`}>
             <span className="text-4xl block mb-2">{analyzeResults.verdict_emoji || '📊'}</span>
             <p className={`text-xl font-black ${c.text}`}>{analyzeResults.verdict}</p>
-            {analyzeResults.one_liner && <p className={`text-sm ${c.textSec} mt-2`}>{analyzeResults.one_liner}</p>}
+            {analyzeResults.one_liner && <p className={`text-sm ${c.textSecondary} mt-2`}>{analyzeResults.one_liner}</p>}
             {analyzeResults.confidence && (
-              <p className={`text-[10px] ${c.textMuted} mt-1`}>{analyzeResults.confidence}% confidence · Quality: {analyzeResults.quality_score}/10</p>
+              <p className={`text-[10px] ${c.textMuteded} mt-1`}>{analyzeResults.confidence}% confidence · Quality: {analyzeResults.quality_score}/10</p>
             )}
           </div>
 
           {analyzeResults.reasoning?.length > 0 && (
             <Section icon="📋" title="Reasoning" defaultOpen={true} c={c}>
               {analyzeResults.reasoning.map((r, i) => (
-                <p key={i} className={`text-xs ${c.textSec}`}>• {r}</p>
+                <p key={i} className={`text-xs ${c.textSecondary}`}>• {r}</p>
               ))}
             </Section>
           )}
@@ -575,13 +576,13 @@ const MeetingBSDetector = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {analyzeResults.red_flags?.length > 0 && (
                 <div className={`${c.danger} border rounded-xl p-4`}>
-                  <p className={`text-xs font-bold ${c.dangerText} mb-1`}>🚩 Red Flags</p>
+                  <p className={`text-xs font-bold ${c.danger} mb-1`}>🚩 Red Flags</p>
                   {analyzeResults.red_flags.map((f, i) => <p key={i} className="text-xs">• {f}</p>)}
                 </div>
               )}
               {analyzeResults.green_flags?.length > 0 && (
                 <div className={`${c.success} border rounded-xl p-4`}>
-                  <p className={`text-xs font-bold ${c.successText} mb-1`}>✅ Green Flags</p>
+                  <p className={`text-xs font-bold ${c.success} mb-1`}>✅ Green Flags</p>
                   {analyzeResults.green_flags.map((f, i) => <p key={i} className={`text-xs ${isDark ? 'text-emerald-300' : 'text-emerald-700'}`}>• {f}</p>)}
                 </div>
               )}
@@ -599,27 +600,27 @@ const MeetingBSDetector = () => {
                   { label: 'Could save', value: `${analyzeResults.time_cost.could_save_hours}h`, highlight: true },
                 ].map((item, i) => (
                   <div key={i} className={`${item.highlight ? c.success : c.quoteBg} rounded-lg p-3 text-center border`}>
-                    <p className={`text-lg font-black ${item.highlight ? c.successText : c.text}`}>{item.value}</p>
-                    <p className={`text-[9px] ${c.textMuted}`}>{item.label}</p>
+                    <p className={`text-lg font-black ${item.highlight ? c.success : c.text}`}>{item.value}</p>
+                    <p className={`text-[9px] ${c.textMuteded}`}>{item.label}</p>
                   </div>
                 ))}
               </div>
               {analyzeResults.time_cost.annual_cost_if_recurring && (
-                <p className={`text-[10px] ${c.warningText} mt-2`}>📅 {analyzeResults.time_cost.annual_cost_if_recurring}</p>
+                <p className={`text-[10px] ${c.warning} mt-2`}>📅 {analyzeResults.time_cost.annual_cost_if_recurring}</p>
               )}
             </div>
           )}
 
           {analyzeResults.optimal_format && (
-            <div className={`${c.accentBg} border rounded-lg p-3`}>
-              <p className={`text-xs font-bold ${c.accent}`}>💡 Optimal format: {analyzeResults.optimal_format}</p>
+            <div className={`${c.cardAlt} border rounded-lg p-3`}>
+              <p className={`text-xs font-bold ${c.textSecondaryondary}`}>💡 Optimal format: {analyzeResults.optimal_format}</p>
             </div>
           )}
 
           {analyzeResults.alternative && (
-            <div className={`${c.info} border rounded-xl p-4`}>
-              <p className={`text-xs font-bold ${isDark ? 'text-blue-200' : 'text-blue-800'} mb-1`}>📧 Instead, try:</p>
-              <p className={`text-xs ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>{analyzeResults.alternative}</p>
+            <div className={`${c.cardAlt} border rounded-xl p-4`}>
+              <p className={`text-xs font-bold ${isDark ? 'text-sky-200' : 'text-sky-800'} mb-1`}>📧 Instead, try:</p>
+              <p className={`text-xs ${isDark ? 'text-sky-300' : 'text-sky-700'}`}>{analyzeResults.alternative}</p>
             </div>
           )}
 
@@ -627,7 +628,7 @@ const MeetingBSDetector = () => {
             <div className={`${c.card} border rounded-xl p-4`}>
               <p className={`text-xs font-bold ${c.text} mb-2`}>✉️ Decline message</p>
               <div className={`${c.quoteBg} rounded-lg p-3 mb-2`}>
-                <p className={`text-xs ${c.textSec} whitespace-pre-wrap`}>{analyzeResults.decline_message}</p>
+                <p className={`text-xs ${c.textSecondary} whitespace-pre-wrap`}>{analyzeResults.decline_message}</p>
               </div>
               <CopyBtn content={`${analyzeResults.decline_message}\n\n— Generated by DeftBrain · deftbrain.com`} label="Copy decline" />
             </div>
@@ -635,7 +636,7 @@ const MeetingBSDetector = () => {
 
           {analyzeResults.rescue_tips?.length > 0 && (
             <Section icon="🔧" title="If You MUST Attend" c={c}>
-              {analyzeResults.rescue_tips.map((t, i) => <p key={i} className={`text-xs ${c.textSec}`}>→ {t}</p>)}
+              {analyzeResults.rescue_tips.map((t, i) => <p key={i} className={`text-xs ${c.textSecondary}`}>→ {t}</p>)}
             </Section>
           )}
 
@@ -652,13 +653,13 @@ const MeetingBSDetector = () => {
     <div className="space-y-4">
       <div className={`${c.card} border rounded-xl p-5`}>
         <h2 className={`text-lg font-bold ${c.text} mb-1`}>📅 Weekly Calendar Audit</h2>
-        <p className={`text-sm ${c.textSec} mb-4`}>Add your meetings — I'll rank them all and tell you what to cut</p>
+        <p className={`text-sm ${c.textSecondary} mb-4`}>Add your meetings — I'll rank them all and tell you what to cut</p>
 
         <div className="space-y-3 mb-4">
           {calMeetings.map((m, i) => (
             <div key={i} className={`${c.quoteBg} rounded-lg p-3`}>
               <div className="flex items-start gap-2">
-                <span className={`text-xs font-black ${c.accent} mt-2`}>{i + 1}</span>
+                <span className={`text-xs font-black ${c.textSecondaryondary} mt-2`}>{i + 1}</span>
                 <div className="flex-1 space-y-2">
                   <input type="text" value={m.title} onChange={e => updateCalMeeting(i, 'title', e.target.value)}
                     placeholder="Meeting name"
@@ -672,7 +673,7 @@ const MeetingBSDetector = () => {
                     </select>
                     <input type="number" value={m.attendees} onChange={e => updateCalMeeting(i, 'attendees', e.target.value)}
                       placeholder="# people" className={`w-20 px-2 py-1 border rounded text-[11px] ${c.input}`} />
-                    <label className={`flex items-center gap-1 text-[11px] ${c.textSec}`}>
+                    <label className={`flex items-center gap-1 text-[11px] ${c.textSecondary}`}>
                       <input type="checkbox" checked={m.recurring} onChange={e => updateCalMeeting(i, 'recurring', e.target.checked)} />
                       Recurring
                     </label>
@@ -682,18 +683,18 @@ const MeetingBSDetector = () => {
                     className={`w-full px-2 py-1 border rounded text-[11px] ${c.input}`} />
                 </div>
                 {calMeetings.length > 1 && (
-                  <button onClick={() => removeCalMeeting(i)} className={`text-sm ${c.dangerText} min-h-[28px]`}>✕</button>
+                  <button onClick={() => removeCalMeeting(i)} className={`text-sm ${c.danger} min-h-[28px]`}>✕</button>
                 )}
               </div>
             </div>
           ))}
         </div>
 
-        <button onClick={addCalMeeting} className={`text-xs font-bold ${c.accent} mb-4 min-h-[32px]`}>➕ Add meeting</button>
+        <button onClick={addCalMeeting} className={`text-xs font-bold ${c.textSecondaryondary} mb-4 min-h-[32px]`}>➕ Add meeting</button>
 
         <button onClick={runCalendar} disabled={!calMeetings.some(m => m.title.trim()) || loading}
-          className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-          {loading ? <><span className="animate-spin inline-block">⏳</span> Auditing week...</> : <><span>📅</span> Audit My Week</>}
+          className={`w-full ${c.btnPrimaryPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+          {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '⚙️'}</span> Auditing week...</> : <><span>📅</span> Audit My Week</>}
         </button>
       </div>
 
@@ -702,20 +703,20 @@ const MeetingBSDetector = () => {
           <div className={`${verdictColor(calResults.week_verdict)} border-2 rounded-xl p-5 text-center`}>
             <span className="text-4xl block mb-2">{calResults.week_emoji || '📅'}</span>
             <p className={`text-xl font-black ${c.text}`}>{calResults.week_verdict}</p>
-            {calResults.one_liner && <p className={`text-sm ${c.textSec} mt-2`}>{calResults.one_liner}</p>}
+            {calResults.one_liner && <p className={`text-sm ${c.textSecondary} mt-2`}>{calResults.one_liner}</p>}
           </div>
 
           <div className="grid grid-cols-3 gap-2">
             <div className={`${c.quoteBg} rounded-lg p-3 text-center border`}>
               <p className={`text-lg font-black ${c.text}`}>{calResults.total_meeting_hours}h</p>
-              <p className={`text-[9px] ${c.textMuted}`}>Meeting hours</p>
+              <p className={`text-[9px] ${c.textMuteded}`}>Meeting hours</p>
             </div>
             <div className={`${c.quoteBg} rounded-lg p-3 text-center border`}>
               <p className={`text-lg font-black ${c.text}`}>{calResults.total_person_hours}h</p>
-              <p className={`text-[9px] ${c.textMuted}`}>Person-hours</p>
+              <p className={`text-[9px] ${c.textMuteded}`}>Person-hours</p>
             </div>
             <div className={`${c.success} rounded-lg p-3 text-center border`}>
-              <p className={`text-lg font-black ${c.successText}`}>{calResults.potential_savings_hours}h</p>
+              <p className={`text-lg font-black ${c.success}`}>{calResults.potential_savings_hours}h</p>
               <p className={`text-[9px] ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>Could save</p>
             </div>
           </div>
@@ -728,22 +729,22 @@ const MeetingBSDetector = () => {
                     <span className={`text-xs font-bold ${c.text}`}>{m.verdict_emoji || '📊'} {m.title}</span>
                     <span className={`text-[9px] font-black px-2 py-0.5 rounded ${verdictColor(m.verdict)}`}>{m.verdict}</span>
                   </div>
-                  <p className={`text-[10px] ${c.textSec}`}>{m.reason}</p>
-                  {m.time_cost && <p className={`text-[9px] ${c.textMuted}`}>⏱️ {m.time_cost}</p>}
+                  <p className={`text-[10px] ${c.textSecondary}`}>{m.reason}</p>
+                  {m.time_cost && <p className={`text-[9px] ${c.textMuteded}`}>⏱️ {m.time_cost}</p>}
                 </div>
               ))}
             </div>
           )}
 
           {calResults.weekly_advice && (
-            <div className={`${c.accentBg} border rounded-lg p-3`}>
-              <p className={`text-xs font-bold ${c.accent}`}>💡 {calResults.weekly_advice}</p>
+            <div className={`${c.cardAlt} border rounded-lg p-3`}>
+              <p className={`text-xs font-bold ${c.textSecondaryondary}`}>💡 {calResults.weekly_advice}</p>
             </div>
           )}
 
           {calResults.meeting_free_blocks && (
-            <div className={`${c.info} border rounded-lg p-3`}>
-              <p className={`text-xs ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>🛡️ Protect: {calResults.meeting_free_blocks}</p>
+            <div className={`${c.cardAlt} border rounded-lg p-3`}>
+              <p className={`text-xs ${isDark ? 'text-sky-300' : 'text-sky-700'}`}>🛡️ Protect: {calResults.meeting_free_blocks}</p>
             </div>
           )}
         </div>
@@ -758,7 +759,7 @@ const MeetingBSDetector = () => {
     <div className="space-y-4">
       <div className={`${isDark ? 'bg-red-900/20 border-red-700' : 'bg-red-50 border-red-300'} border-2 rounded-xl p-5`}>
         <h2 className={`text-lg font-bold ${c.text} mb-1`}>🚨 Live Rescue</h2>
-        <p className={`text-sm ${c.textSec} mb-4`}>You're IN the meeting and it's going sideways? I've got you.</p>
+        <p className={`text-sm ${c.textSecondary} mb-4`}>You're IN the meeting and it's going sideways? I've got you.</p>
 
         <div className="mb-4">
           <label className={`text-sm font-bold ${c.label} block mb-1.5`}>What's happening right now?</label>
@@ -790,7 +791,7 @@ const MeetingBSDetector = () => {
 
         <button onClick={runLive} disabled={!liveWhat.trim() || loading}
           className={`w-full bg-red-600 hover:bg-red-500 text-white disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-          {loading ? <><span className="animate-spin inline-block">⏳</span> Getting help...</> : <><span>🚨</span> Rescue Me NOW</>}
+          {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '⚙️'}</span> Getting help...</> : <><span>🚨</span> Rescue Me NOW</>}
         </button>
       </div>
 
@@ -799,17 +800,17 @@ const MeetingBSDetector = () => {
           <div className={`${
             liveResults.urgency === 'REDIRECT NOW' ? c.danger
             : liveResults.urgency === 'WRAP IT UP' ? c.warning
-            : c.info
+            : c.cardAlt
           } border-2 rounded-xl p-5 text-center`}>
             <span className="text-3xl block mb-2">{liveResults.urgency_emoji || '🚨'}</span>
             <p className={`text-lg font-black ${c.text}`}>{liveResults.urgency}</p>
-            {liveResults.situation_read && <p className={`text-xs ${c.textSec} mt-2`}>{liveResults.situation_read}</p>}
+            {liveResults.situation_read && <p className={`text-xs ${c.textSecondary} mt-2`}>{liveResults.situation_read}</p>}
           </div>
 
           {/* Say This NOW */}
           {liveResults.say_this_now && (
             <div className={`${c.success} border-2 rounded-xl p-4`}>
-              <p className={`text-[10px] font-bold ${c.successText} uppercase mb-1`}>Say this right now</p>
+              <p className={`text-[10px] font-bold ${c.success} uppercase mb-1`}>Say this right now</p>
               <p className={`text-sm ${isDark ? 'text-emerald-200' : 'text-emerald-900'} leading-relaxed font-bold`}>
                 "{liveResults.say_this_now}"
               </p>
@@ -820,7 +821,7 @@ const MeetingBSDetector = () => {
           {liveResults.say_this_softer && (
             <div className={`${c.card} border rounded-xl p-4`}>
               <p className={`text-[10px] font-bold ${c.label} uppercase mb-1`}>Softer version</p>
-              <p className={`text-xs ${c.textSec}`}>"{liveResults.say_this_softer}"</p>
+              <p className={`text-xs ${c.textSecondary}`}>"{liveResults.say_this_softer}"</p>
               <CopyBtn content={`${liveResults.say_this_softer}\n\n— Generated by DeftBrain · deftbrain.com`} label="Copy" />
             </div>
           )}
@@ -828,27 +829,27 @@ const MeetingBSDetector = () => {
           {liveResults.if_youre_not_the_lead && (
             <div className={`${c.card} border rounded-xl p-4`}>
               <p className={`text-[10px] font-bold ${c.label} uppercase mb-1`}>If you're not leading</p>
-              <p className={`text-xs ${c.textSec}`}>"{liveResults.if_youre_not_the_lead}"</p>
+              <p className={`text-xs ${c.textSecondary}`}>"{liveResults.if_youre_not_the_lead}"</p>
             </div>
           )}
 
           {liveResults.escape_hatch && (
             <div className={`${c.warning} border rounded-xl p-4`}>
-              <p className={`text-xs font-bold ${c.warningText} mb-1`}>🚪 Escape hatch</p>
+              <p className={`text-xs font-bold ${c.warning} mb-1`}>🚪 Escape hatch</p>
               <p className={`text-xs`}>"{liveResults.escape_hatch}"</p>
               <CopyBtn content={`${liveResults.escape_hatch}\n\n— Generated by DeftBrain · deftbrain.com`} label="Copy" />
             </div>
           )}
 
           {liveResults.salvage_plan && (
-            <div className={`${c.info} border rounded-lg p-3`}>
-              <p className={`text-xs ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>🔧 Salvage: {liveResults.salvage_plan}</p>
+            <div className={`${c.cardAlt} border rounded-lg p-3`}>
+              <p className={`text-xs ${isDark ? 'text-sky-300' : 'text-sky-700'}`}>🔧 Salvage: {liveResults.salvage_plan}</p>
             </div>
           )}
 
           {liveResults.post_meeting_move && (
-            <div className={`${c.accentBg} border rounded-lg p-3`}>
-              <p className={`text-xs font-bold ${c.accent}`}>📤 After: {liveResults.post_meeting_move}</p>
+            <div className={`${c.cardAlt} border rounded-lg p-3`}>
+              <p className={`text-xs font-bold ${c.textSecondaryondary}`}>📤 After: {liveResults.post_meeting_move}</p>
             </div>
           )}
         </div>
@@ -863,7 +864,7 @@ const MeetingBSDetector = () => {
     <div className="space-y-4">
       <div className={`${c.card} border rounded-xl p-5`}>
         <h2 className={`text-lg font-bold ${c.text} mb-1`}>🧟 Recurring Meeting Audit</h2>
-        <p className={`text-sm ${c.textSec} mb-4`}>Is this meeting still earning its spot on the calendar?</p>
+        <p className={`text-sm ${c.textSecondary} mb-4`}>Is this meeting still earning its spot on the calendar?</p>
 
         <div className="mb-4">
           <label className={`text-sm font-bold ${c.label} block mb-1.5`}>Meeting name</label>
@@ -913,8 +914,8 @@ const MeetingBSDetector = () => {
         </div>
 
         <button onClick={runRecurring} disabled={!recName.trim() || loading}
-          className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-          {loading ? <><span className="animate-spin inline-block">⏳</span> Auditing...</> : <><span>🧟</span> Audit This Recurring</>}
+          className={`w-full ${c.btnPrimaryPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+          {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '⚙️'}</span> Auditing...</> : <><span>🧟</span> Audit This Recurring</>}
         </button>
       </div>
 
@@ -924,29 +925,29 @@ const MeetingBSDetector = () => {
             <span className="text-4xl block mb-2">{recResults.verdict_emoji || '🧟'}</span>
             <p className={`text-xl font-black ${c.text}`}>{recResults.verdict}</p>
             {recResults.zombie_score && (
-              <p className={`text-xs ${c.textMuted} mt-1`}>Zombie score: {recResults.zombie_score}/10 — {recResults.zombie_label}</p>
+              <p className={`text-xs ${c.textMuteded} mt-1`}>Zombie score: {recResults.zombie_score}/10 — {recResults.zombie_label}</p>
             )}
           </div>
 
           {recResults.honest_take && (
             <div className={`${c.card} border rounded-xl p-4`}>
-              <p className={`text-sm ${c.textSec} leading-relaxed`}>{recResults.honest_take}</p>
+              <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{recResults.honest_take}</p>
             </div>
           )}
 
           {recResults.annual_cost && (
             <div className={`${c.danger} border rounded-xl p-4`}>
-              <p className={`text-xs font-bold ${c.dangerText} mb-2`}>💸 Annual Cost</p>
+              <p className={`text-xs font-bold ${c.danger} mb-2`}>💸 Annual Cost</p>
               <p className={`text-2xl font-black ${c.text} text-center`}>{recResults.annual_cost.total_person_hours_per_year}h/year</p>
               {recResults.annual_cost.equivalent && (
-                <p className={`text-xs ${c.textSec} text-center mt-1`}>{recResults.annual_cost.equivalent}</p>
+                <p className={`text-xs ${c.textSecondary} text-center mt-1`}>{recResults.annual_cost.equivalent}</p>
               )}
             </div>
           )}
 
           {recResults.the_drift && (
             <div className={`${c.warning} border rounded-lg p-3`}>
-              <p className={`text-xs font-bold ${c.warningText} mb-1`}>📉 The Drift</p>
+              <p className={`text-xs font-bold ${c.warning} mb-1`}>📉 The Drift</p>
               <p className={`text-xs`}>{recResults.the_drift}</p>
             </div>
           )}
@@ -956,7 +957,7 @@ const MeetingBSDetector = () => {
               {Object.entries(recResults.restructure_plan).filter(([, v]) => v).map(([key, val]) => (
                 <div key={key}>
                   <p className={`text-[10px] font-bold ${c.label} uppercase`}>{key.replace(/_/g, ' ')}</p>
-                  <p className={`text-xs ${c.textSec}`}>{val}</p>
+                  <p className={`text-xs ${c.textSecondary}`}>{val}</p>
                 </div>
               ))}
             </Section>
@@ -966,15 +967,15 @@ const MeetingBSDetector = () => {
             <div className={`${c.card} border rounded-xl p-4`}>
               <p className={`text-xs font-bold ${c.text} mb-2`}>✉️ Proposal email</p>
               <div className={`${c.quoteBg} rounded-lg p-3 mb-2`}>
-                <p className={`text-xs ${c.textSec} whitespace-pre-wrap`}>{recResults.kill_email}</p>
+                <p className={`text-xs ${c.textSecondary} whitespace-pre-wrap`}>{recResults.kill_email}</p>
               </div>
               <CopyBtn content={`${recResults.kill_email}\n\n— Generated by DeftBrain · deftbrain.com`} label="Copy email" />
             </div>
           )}
 
           {recResults.keep_if && (
-            <div className={`${c.info} border rounded-lg p-3`}>
-              <p className={`text-xs ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>✅ Keep if: {recResults.keep_if}</p>
+            <div className={`${c.cardAlt} border rounded-lg p-3`}>
+              <p className={`text-xs ${isDark ? 'text-sky-300' : 'text-sky-700'}`}>✅ Keep if: {recResults.keep_if}</p>
             </div>
           )}
         </div>
@@ -989,14 +990,14 @@ const MeetingBSDetector = () => {
     <div className="space-y-4">
       <div className={`${c.card} border rounded-xl p-5`}>
         <h2 className={`text-lg font-bold ${c.text} mb-1`}>✉️ Meeting Messages</h2>
-        <p className={`text-sm ${c.textSec} mb-4`}>Ready-to-send emails for every meeting situation</p>
+        <p className={`text-sm ${c.textSecondary} mb-4`}>Ready-to-send emails for every meeting situation</p>
 
         <div className="mb-4">
           <label className={`text-xs font-bold ${c.label} block mb-1.5`}>What do you need to say?</label>
           <div className="flex flex-wrap gap-1.5">
             {MESSAGE_TYPES.map(mt => (
               <button key={mt.value} onClick={() => setMsgType(mt.value)}
-                className={`${c.btnSec} px-2.5 py-1.5 rounded-lg text-[11px] font-medium min-h-[32px] flex items-center gap-1 ${
+                className={`${c.btnPrimarySecondary} px-2.5 py-1.5 rounded-lg text-[11px] font-medium min-h-[32px] flex items-center gap-1 ${
                   msgType === mt.value ? 'ring-2 ring-indigo-500' : ''
                 }`}>
                 <span>{mt.icon}</span> {mt.label}
@@ -1033,8 +1034,8 @@ const MeetingBSDetector = () => {
         </div>
 
         <button onClick={runMessages} disabled={!msgMeeting.trim() || loading}
-          className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-          {loading ? <><span className="animate-spin inline-block">⏳</span> Writing...</> : <><span>✉️</span> Generate Messages</>}
+          className={`w-full ${c.btnPrimaryPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+          {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '⚙️'}</span> Writing...</> : <><span>✉️</span> Generate Messages</>}
         </button>
       </div>
 
@@ -1045,23 +1046,23 @@ const MeetingBSDetector = () => {
               <div className="flex items-center justify-between mb-2">
                 <div>
                   <span className={`text-xs font-black ${c.text}`}>{v.label}</span>
-                  <span className={`text-[10px] ${c.textMuted} ml-2`}>{v.tone}</span>
+                  <span className={`text-[10px] ${c.textMuteded} ml-2`}>{v.tone}</span>
                 </div>
-                <span className={`text-[9px] ${c.textMuted}`}>{v.best_for}</span>
+                <span className={`text-[9px] ${c.textMuteded}`}>{v.best_for}</span>
               </div>
               {v.subject && (
-                <p className={`text-[10px] font-bold ${c.accent} mb-1`}>Subject: {v.subject}</p>
+                <p className={`text-[10px] font-bold ${c.textSecondaryondary} mb-1`}>Subject: {v.subject}</p>
               )}
               <div className={`${c.quoteBg} rounded-lg p-3 mb-2`}>
-                <p className={`text-xs ${c.textSec} whitespace-pre-wrap leading-relaxed`}>{v.body}</p>
+                <p className={`text-xs ${c.textSecondary} whitespace-pre-wrap leading-relaxed`}>{v.body}</p>
               </div>
               <CopyBtn content={`${v.subject ? `Subject: ${v.subject}\n\n` : ''}${v.body}\n\n— Generated by DeftBrain · deftbrain.com`} label="Copy" />
             </div>
           ))}
 
           {msgResults.pro_tip && (
-            <div className={`${c.info} border rounded-lg p-3`}>
-              <p className={`text-xs ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>💡 {msgResults.pro_tip}</p>
+            <div className={`${c.cardAlt} border rounded-lg p-3`}>
+              <p className={`text-xs ${isDark ? 'text-sky-300' : 'text-sky-700'}`}>💡 {msgResults.pro_tip}</p>
             </div>
           )}
         </div>
@@ -1075,9 +1076,9 @@ const MeetingBSDetector = () => {
   const renderAgenda = () => (
     <div className="space-y-4">
       <div className={`${c.card} border rounded-xl p-5`}>
-        <div className={`mb-4 pb-3 border-b ${c.divider}`}>
+        <div className={`mb-4 pb-3 border-b ${c.border}`}>
           <h2 className={`text-base font-black ${c.text}`}>📋 Agenda Builder</h2>
-          <p className={`text-xs ${c.textMuted} mt-1`}>Turn bad meetings into focused, time-boxed ones</p>
+          <p className={`text-xs ${c.textMuteded} mt-1`}>Turn bad meetings into focused, time-boxed ones</p>
         </div>
 
         <div className="mb-4">
@@ -1120,8 +1121,8 @@ const MeetingBSDetector = () => {
         </div>
 
         <button onClick={runAgenda} disabled={!agTopic.trim() || loading}
-          className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-          {loading ? <><span className="animate-spin inline-block">⏳</span> Building agenda...</> : <><span>📋</span> Build Agenda</>}
+          className={`w-full ${c.btnPrimaryPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+          {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '⚙️'}</span> Building agenda...</> : <><span>📋</span> Build Agenda</>}
         </button>
       </div>
 
@@ -1131,15 +1132,15 @@ const MeetingBSDetector = () => {
           <div className={`${c.card} border rounded-xl p-5`}>
             <div className="flex items-center justify-between mb-3">
               <h3 className={`text-sm font-black ${c.text}`}>{agResults.meeting_title || 'Your Agenda'}</h3>
-              <span className={`text-xs ${c.textMuted}`}>{agResults.duration}</span>
+              <span className={`text-xs ${c.textMuteded}`}>{agResults.duration}</span>
             </div>
 
             {/* Pre-work */}
             {agResults.pre_work && (
-              <div className={`${c.info} border rounded-lg p-3 mb-3`}>
+              <div className={`${c.cardAlt} border rounded-lg p-3 mb-3`}>
                 <p className="text-xs font-bold mb-1">📚 Pre-work (send {agResults.pre_work.when_to_send})</p>
                 <p className="text-xs">{agResults.pre_work.what_to_send}</p>
-                {agResults.pre_work.read_time && <p className={`text-[10px] ${c.textMuted} mt-1`}>~{agResults.pre_work.read_time} to read</p>}
+                {agResults.pre_work.read_time && <p className={`text-[10px] ${c.textMuteded} mt-1`}>~{agResults.pre_work.read_time} to read</p>}
               </div>
             )}
 
@@ -1159,13 +1160,13 @@ const MeetingBSDetector = () => {
             {agResults.agenda_blocks?.map((block, i) => (
               <div key={i} className={`${c.card} border rounded-lg p-3 mb-2`}>
                 <div className="flex items-center gap-2 mb-1">
-                  <span className={`text-[9px] font-black px-1.5 py-0.5 rounded ${c.accentBg}`}>{block.time}</span>
+                  <span className={`text-[9px] font-black px-1.5 py-0.5 rounded ${c.cardAlt}`}>{block.time}</span>
                   <span className={`text-xs font-bold ${c.text}`}>{block.title}</span>
                 </div>
-                <p className={`text-xs ${c.textSec}`}>{block.description}</p>
+                <p className={`text-xs ${c.textSecondary}`}>{block.description}</p>
                 <div className="flex items-center gap-3 mt-1">
-                  <span className={`text-[10px] ${c.textMuted}`}>👤 {block.owner}</span>
-                  {block.output && <span className={`text-[10px] ${c.textMuted}`}>→ {block.output}</span>}
+                  <span className={`text-[10px] ${c.textMuteded}`}>👤 {block.owner}</span>
+                  {block.output && <span className={`text-[10px] ${c.textMuteded}`}>→ {block.output}</span>}
                 </div>
               </div>
             ))}
@@ -1179,7 +1180,7 @@ const MeetingBSDetector = () => {
             )}
 
             {agResults.decision_method && (
-              <p className={`text-xs ${c.textSec} mt-2`}>🗳️ <strong>Decision method:</strong> {agResults.decision_method}</p>
+              <p className={`text-xs ${c.textSecondary} mt-2`}>🗳️ <strong>Decision method:</strong> {agResults.decision_method}</p>
             )}
           </div>
 
@@ -1215,9 +1216,9 @@ const MeetingBSDetector = () => {
   const renderScorecard = () => (
     <div className="space-y-4">
       <div className={`${c.card} border rounded-xl p-5`}>
-        <div className={`mb-4 pb-3 border-b ${c.divider}`}>
+        <div className={`mb-4 pb-3 border-b ${c.border}`}>
           <h2 className={`text-base font-black ${c.text}`}>⭐ Rate a Meeting</h2>
-          <p className={`text-xs ${c.textMuted} mt-1`}>10-second post-meeting check-in. Build data that reveals patterns.</p>
+          <p className={`text-xs ${c.textMuteded} mt-1`}>10-second post-meeting check-in. Build data that reveals patterns.</p>
         </div>
 
         <div className="mb-4">
@@ -1233,14 +1234,14 @@ const MeetingBSDetector = () => {
             How productive was it? <span className="text-base ml-1">
               {['😩', '😕', '😐', '🙂', '🤩'][scScore - 1]}
             </span>
-            <span className={`ml-1 ${c.textMuted} font-normal`}>({scScore}/5)</span>
+            <span className={`ml-1 ${c.textMuteded} font-normal`}>({scScore}/5)</span>
           </label>
           <input type="range" min="1" max="5" value={scScore}
             onChange={e => setScScore(parseInt(e.target.value))}
             className="w-full accent-indigo-600" />
           <div className="flex justify-between text-[9px] mt-0.5">
-            <span className={c.textMuted}>Total waste</span>
-            <span className={c.textMuted}>Highly productive</span>
+            <span className={c.textMuteded}>Total waste</span>
+            <span className={c.textMuteded}>Highly productive</span>
           </div>
         </div>
 
@@ -1269,7 +1270,7 @@ const MeetingBSDetector = () => {
         </div>
 
         <button onClick={addScorecard} disabled={!scName.trim()}
-          className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+          className={`w-full ${c.btnPrimaryPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
           <span>⭐</span> Log Rating
         </button>
       </div>
@@ -1299,7 +1300,7 @@ const MeetingBSDetector = () => {
 
           {scorecards.length >= 5 && (
             <div className={`${c.quoteBg} rounded-lg p-3 mt-3`}>
-              <p className={`text-xs ${c.textSec} text-center`}>
+              <p className={`text-xs ${c.textSecondary} text-center`}>
                 {scorecardStats.avgScore < 2.5
                   ? `Your meetings average ${scorecardStats.avgScore.toFixed(1)}/5. Only ${scorecardStats.decisionPct}% produce decisions. Time for a culture report →`
                   : scorecardStats.shorterPct > 60
@@ -1311,7 +1312,7 @@ const MeetingBSDetector = () => {
               </p>
               {scorecards.length >= 5 && (
                 <button onClick={() => setView('report')}
-                  className={`${c.btnSec} px-3 py-1.5 rounded-lg text-xs font-bold mt-2 mx-auto block min-h-[32px]`}>
+                  className={`${c.btnPrimarySecondary} px-3 py-1.5 rounded-lg text-xs font-bold mt-2 mx-auto block min-h-[32px]`}>
                   📈 Generate Culture Report
                 </button>
               )}
@@ -1330,9 +1331,9 @@ const MeetingBSDetector = () => {
                 setScorecards([]);
                 saveScorecards([]);
               }
-            }} className={`text-xs ${c.dangerText} min-h-[32px]`}>🗑️ Clear</button>
+            }} className={`text-xs ${c.danger} min-h-[32px]`}>🗑️ Clear</button>
           </div>
-          {scorecards.slice(0, 10).map(card => (
+          {scorecards.slice(0, 6).map(card => (
             <div key={card.id} className={`${c.card} border rounded-xl p-3`}>
               <div className="flex items-start justify-between gap-2">
                 <div className="flex-1 min-w-0">
@@ -1344,15 +1345,15 @@ const MeetingBSDetector = () => {
                     }`}>{card.score}/5</span>
                   </div>
                   <div className="flex items-center gap-2 mt-1">
-                    {card.decisionMade && <span className={`text-[9px] ${c.successText}`}>✅ Decision</span>}
-                    {card.couldBeShorter && <span className={`text-[9px] ${c.warningText}`}>⏱️ Too long</span>}
-                    {!card.allNeeded && <span className={`text-[9px] ${c.dangerText}`}>👥 Wrong people</span>}
+                    {card.decisionMade && <span className={`text-[9px] ${c.success}`}>✅ Decision</span>}
+                    {card.couldBeShorter && <span className={`text-[9px] ${c.warning}`}>⏱️ Too long</span>}
+                    {!card.allNeeded && <span className={`text-[9px] ${c.danger}`}>👥 Wrong people</span>}
                   </div>
-                  {card.notes && <p className={`text-[10px] ${c.textMuted} mt-1 truncate`}>{card.notes}</p>}
+                  {card.notes && <p className={`text-[10px] ${c.textMuteded} mt-1 truncate`}>{card.notes}</p>}
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
-                  <span className={`text-[10px] ${c.textMuted}`}>{new Date(card.date).toLocaleDateString()}</span>
-                  <button onClick={() => removeScorecard(card.id)} className={`text-xs ${c.dangerText} min-h-[24px]`}>✕</button>
+                  <span className={`text-[10px] ${c.textMuteded}`}>{new Date(card.date).toLocaleDateString()}</span>
+                  <button onClick={() => removeScorecard(card.id)} className={`text-xs ${c.danger} min-h-[24px]`}>✕</button>
                 </div>
               </div>
             </div>
@@ -1368,9 +1369,9 @@ const MeetingBSDetector = () => {
   const renderFocus = () => (
     <div className="space-y-4">
       <div className={`${c.card} border rounded-xl p-5`}>
-        <div className={`mb-4 pb-3 border-b ${c.divider}`}>
+        <div className={`mb-4 pb-3 border-b ${c.border}`}>
           <h2 className={`text-base font-black ${c.text}`}>🎯 Focus Time Calculator</h2>
-          <p className={`text-xs ${c.textMuted} mt-1`}>How much uninterrupted work time do you actually have?</p>
+          <p className={`text-xs ${c.textMuteded} mt-1`}>How much uninterrupted work time do you actually have?</p>
         </div>
 
         <div className="mb-4">
@@ -1392,7 +1393,7 @@ const MeetingBSDetector = () => {
               min="0" max="16" step="0.5"
               placeholder="0"
               className={`flex-1 px-3 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
-            <span className={`text-xs ${c.textMuted} w-16`}>{focusStats.days[i]?.focusHrs.toFixed(1)}h free</span>
+            <span className={`text-xs ${c.textMuteded} w-16`}>{focusStats.days[i]?.focusHrs.toFixed(1)}h free</span>
           </div>
         ))}
       </div>
@@ -1411,7 +1412,7 @@ const MeetingBSDetector = () => {
               <div key={i}>
                 <div className="flex items-center justify-between mb-0.5">
                   <span className={`text-[10px] font-bold ${c.text} w-16`}>{day.day.slice(0, 3)}</span>
-                  <span className={`text-[10px] ${c.textMuted}`}>{day.focusHrs.toFixed(1)}h focus | {day.mtgHrs.toFixed(1)}h meetings</span>
+                  <span className={`text-[10px] ${c.textMuteded}`}>{day.focusHrs.toFixed(1)}h focus | {day.mtgHrs.toFixed(1)}h meetings</span>
                 </div>
                 <div className="flex h-3 rounded-full overflow-hidden">
                   <div className={`${isDark ? 'bg-emerald-600' : 'bg-emerald-400'} transition-all`} style={{ width: `${focusPct}%` }} />
@@ -1423,11 +1424,11 @@ const MeetingBSDetector = () => {
           <div className="flex items-center gap-4 mt-1">
             <div className="flex items-center gap-1">
               <div className={`w-2.5 h-2.5 rounded ${isDark ? 'bg-emerald-600' : 'bg-emerald-400'}`} />
-              <span className={`text-[9px] ${c.textMuted}`}>Focus time</span>
+              <span className={`text-[9px] ${c.textMuteded}`}>Focus time</span>
             </div>
             <div className="flex items-center gap-1">
               <div className={`w-2.5 h-2.5 rounded ${isDark ? 'bg-red-600' : 'bg-red-400'}`} />
-              <span className={`text-[9px] ${c.textMuted}`}>Meetings</span>
+              <span className={`text-[9px] ${c.textMuteded}`}>Meetings</span>
             </div>
           </div>
         </div>
@@ -1438,8 +1439,8 @@ const MeetingBSDetector = () => {
             <p className="text-2xl font-black">{focusStats.totalFocus.toFixed(1)}h</p>
             <p className="text-[9px]">Total focus time</p>
           </div>
-          <div className={`${c.accentBg} border rounded-lg p-3 text-center`}>
-            <p className={`text-2xl font-black ${c.accent}`}>{focusStats.totalMtg.toFixed(1)}h</p>
+          <div className={`${c.cardAlt} border rounded-lg p-3 text-center`}>
+            <p className={`text-2xl font-black ${c.textSecondaryondary}`}>{focusStats.totalMtg.toFixed(1)}h</p>
             <p className="text-[9px]">In meetings</p>
           </div>
           <div className={`${focusStats.mtgPct > 50 ? c.danger : focusStats.mtgPct > 30 ? c.warning : c.success} border rounded-lg p-3 text-center`}>
@@ -1451,25 +1452,25 @@ const MeetingBSDetector = () => {
         {/* Insights */}
         <div className={`${c.quoteBg} rounded-lg p-3 space-y-2`}>
           {focusStats.bestDay && focusStats.bestDay.focusHrs > 0 && (
-            <p className={`text-xs ${c.textSec}`}>
+            <p className={`text-xs ${c.textSecondary}`}>
               🏆 <strong>{focusStats.bestDay.day}</strong> is your best day — {focusStats.bestDay.focusHrs.toFixed(1)}h of focus time. Schedule your hardest work here.
             </p>
           )}
           {focusStats.worstDay && focusStats.worstDay.mtgHrs > 0 && (
-            <p className={`text-xs ${c.textSec}`}>
+            <p className={`text-xs ${c.textSecondary}`}>
               🔴 <strong>{focusStats.worstDay.day}</strong> is your worst — only {focusStats.worstDay.focusHrs.toFixed(1)}h free. Consider moving or cutting meetings here.
             </p>
           )}
           {focusStats.mtgPct > 50 ? (
-            <p className={`text-xs font-bold ${c.dangerText}`}>
+            <p className={`text-xs font-bold ${c.danger}`}>
               ⚠️ Over half your week is meetings. Deep work is nearly impossible. Time to audit aggressively.
             </p>
           ) : focusStats.mtgPct > 30 ? (
-            <p className={`text-xs ${c.warningText}`}>
+            <p className={`text-xs ${c.warning}`}>
               Your meeting load is above average. Look for 2-3 meetings you can cut or shorten.
             </p>
           ) : focusStats.totalMtg > 0 ? (
-            <p className={`text-xs ${c.successText}`}>
+            <p className={`text-xs ${c.success}`}>
               Your meeting load is manageable. Protect this balance — it's rare.
             </p>
           ) : null}
@@ -1484,9 +1485,9 @@ const MeetingBSDetector = () => {
   const renderReport = () => (
     <div className="space-y-4">
       <div className={`${c.card} border rounded-xl p-5`}>
-        <div className={`mb-4 pb-3 border-b ${c.divider}`}>
+        <div className={`mb-4 pb-3 border-b ${c.border}`}>
           <h2 className={`text-base font-black ${c.text}`}>📈 Meeting Culture Report</h2>
-          <p className={`text-xs ${c.textMuted} mt-1`}>
+          <p className={`text-xs ${c.textMuteded} mt-1`}>
             {scorecards.length >= 5 && history.length >= 3
               ? `Based on ${scorecards.length} ratings + ${history.length} analyses — your data is ready.`
               : `Need data: ${scorecards.length < 5 ? `rate ${5 - scorecards.length} more meetings` : '✅ ratings ready'}${scorecards.length < 5 && history.length < 3 ? ' and ' : ''}${history.length < 3 ? `analyze ${3 - history.length} more meetings` : ''} for best results.`
@@ -1504,8 +1505,8 @@ const MeetingBSDetector = () => {
             </div>
 
             <button onClick={runReport} disabled={loading}
-              className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-              {loading ? <><span className="animate-spin inline-block">⏳</span> Generating report...</> : <><span>📈</span> Generate Report</>}
+              className={`w-full ${c.btnPrimaryPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+              {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '⚙️'}</span> Generating report...</> : <><span>📈</span> Generate Report</>}
             </button>
           </>
         )}
@@ -1513,8 +1514,8 @@ const MeetingBSDetector = () => {
         {scorecards.length === 0 && history.length === 0 && (
           <div className="text-center py-4">
             <span className="text-3xl block mb-2">📊</span>
-            <p className={`text-sm ${c.textMuted} mb-3`}>Rate some meetings first — that's the data this report is built on.</p>
-            <button onClick={() => setView('scorecard')} className={`${c.btnPrimary} px-4 py-2 rounded-lg text-xs font-bold min-h-[36px]`}>
+            <p className={`text-sm ${c.textMuteded} mb-3`}>Rate some meetings first — that's the data this report is built on.</p>
+            <button onClick={() => setView('scorecard')} className={`${c.btnPrimaryPrimary} px-4 py-2 rounded-lg text-xs font-bold min-h-[36px]`}>
               ⭐ Rate a Meeting
             </button>
           </div>
@@ -1528,12 +1529,12 @@ const MeetingBSDetector = () => {
           <div className={`${c.card} border rounded-xl p-5 text-center`}>
             <p className="text-4xl mb-1">{reportResults.headline_emoji || '📊'}</p>
             <p className={`text-3xl font-black ${
-              reportResults.grade === 'A' ? c.successText :
-              reportResults.grade === 'B' ? c.accent :
-              reportResults.grade === 'C' ? c.warningText : c.dangerText
+              reportResults.grade === 'A' ? c.success :
+              reportResults.grade === 'B' ? c.textSecondaryondary :
+              reportResults.grade === 'C' ? c.warning : c.danger
             }`}>{reportResults.grade}</p>
             <p className={`text-sm font-bold ${c.text} mt-1`}>{reportResults.grade_label}</p>
-            <p className={`text-xs ${c.textMuted} mt-1`}>{reportResults.period}</p>
+            <p className={`text-xs ${c.textMuteded} mt-1`}>{reportResults.period}</p>
           </div>
 
           {/* Headline stat */}
@@ -1562,8 +1563,8 @@ const MeetingBSDetector = () => {
             <div className={`${c.card} border rounded-xl p-4`}>
               <p className={`text-xs font-bold ${c.label} uppercase mb-2`}>Time breakdown</p>
               <div className="grid grid-cols-2 gap-2">
-                <div className={`${c.accentBg} border rounded-lg p-3 text-center`}>
-                  <p className={`text-xl font-black ${c.accent}`}>{reportResults.time_analysis.meeting_hours_per_week}h</p>
+                <div className={`${c.cardAlt} border rounded-lg p-3 text-center`}>
+                  <p className={`text-xl font-black ${c.textSecondaryondary}`}>{reportResults.time_analysis.meeting_hours_per_week}h</p>
                   <p className="text-[9px]">Meeting hrs/week</p>
                 </div>
                 <div className={`${c.success} border rounded-lg p-3 text-center`}>
@@ -1572,7 +1573,7 @@ const MeetingBSDetector = () => {
                 </div>
               </div>
               {reportResults.time_analysis.maker_time_ratio && (
-                <p className={`text-xs ${c.textSec} mt-2 text-center`}>⚖️ {reportResults.time_analysis.maker_time_ratio}</p>
+                <p className={`text-xs ${c.textSecondary} mt-2 text-center`}>⚖️ {reportResults.time_analysis.maker_time_ratio}</p>
               )}
             </div>
           )}
@@ -1597,7 +1598,7 @@ const MeetingBSDetector = () => {
               <div className="space-y-2">
                 {reportResults.recommendations.map((rec, i) => (
                   <div key={i} className={`${c.quoteBg} rounded-lg p-3`}>
-                    <p className={`text-xs ${c.textSec}`}>{i + 1}. {rec}</p>
+                    <p className={`text-xs ${c.textSecondary}`}>{i + 1}. {rec}</p>
                   </div>
                 ))}
               </div>
@@ -1606,7 +1607,7 @@ const MeetingBSDetector = () => {
 
           {/* Share summary */}
           {reportResults.share_summary && (
-            <div className={`${c.info} border rounded-lg p-3`}>
+            <div className={`${c.cardAlt} border rounded-lg p-3`}>
               <p className="text-xs font-bold mb-1">📱 Share-ready summary:</p>
               <p className="text-xs italic">"{reportResults.share_summary}"</p>
             </div>
@@ -1624,9 +1625,9 @@ const MeetingBSDetector = () => {
   const renderTeam = () => (
     <div className="space-y-4">
       <div className={`${c.card} border rounded-xl p-5`}>
-        <div className={`mb-4 pb-3 border-b ${c.divider}`}>
+        <div className={`mb-4 pb-3 border-b ${c.border}`}>
           <h2 className={`text-base font-black ${c.text}`}>👥 Team Meeting Health</h2>
-          <p className={`text-xs ${c.textMuted} mt-1`}>Analyze your team's total meeting load — find where to cut</p>
+          <p className={`text-xs ${c.textMuteded} mt-1`}>Analyze your team's total meeting load — find where to cut</p>
         </div>
 
         <div className="grid grid-cols-2 gap-3 mb-4">
@@ -1648,9 +1649,9 @@ const MeetingBSDetector = () => {
         {teamMeetings.map((m, i) => (
           <div key={i} className={`${c.quoteBg} rounded-lg p-3 mb-2`}>
             <div className="flex items-center gap-2 mb-2">
-              <span className={`text-xs font-bold ${c.accent}`}>#{i + 1}</span>
+              <span className={`text-xs font-bold ${c.textSecondaryondary}`}>#{i + 1}</span>
               {teamMeetings.length > 1 && (
-                <button onClick={() => removeTeamMeeting(i)} className={`ml-auto text-xs ${c.dangerText} min-h-[24px]`}>✕</button>
+                <button onClick={() => removeTeamMeeting(i)} className={`ml-auto text-xs ${c.danger} min-h-[24px]`}>✕</button>
               )}
             </div>
             <div className="grid grid-cols-2 gap-2 mb-2">
@@ -1679,14 +1680,14 @@ const MeetingBSDetector = () => {
 
         {teamMeetings.length < 15 && (
           <button onClick={addTeamMeeting}
-            className={`${c.btnSec} w-full py-2 rounded-lg text-xs font-bold mb-4 min-h-[36px]`}>
+            className={`${c.btnPrimarySecondary} w-full py-2 rounded-lg text-xs font-bold mb-4 min-h-[36px]`}>
             + Add Meeting
           </button>
         )}
 
         <button onClick={runTeam} disabled={!teamMeetings.some(m => m.title.trim()) || loading}
-          className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-          {loading ? <><span className="animate-spin inline-block">⏳</span> Analyzing team...</> : <><span>👥</span> Analyze Team</>}
+          className={`w-full ${c.btnPrimaryPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+          {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '⚙️'}</span> Analyzing team...</> : <><span>👥</span> Analyze Team</>}
         </button>
       </div>
 
@@ -1697,14 +1698,14 @@ const MeetingBSDetector = () => {
           <div className={`${verdictColor(teamResults.team_verdict)} border rounded-xl p-5 text-center`}>
             <p className="text-3xl mb-1">{teamResults.team_emoji}</p>
             <p className="text-lg font-black">{teamResults.team_verdict}</p>
-            <p className={`text-xs ${c.textSec} mt-1`}>{teamResults.headline}</p>
+            <p className={`text-xs ${c.textSecondary} mt-1`}>{teamResults.headline}</p>
           </div>
 
           {/* Team stats */}
           {teamResults.team_stats && (
             <div className="grid grid-cols-2 gap-2">
-              <div className={`${c.accentBg} border rounded-lg p-3 text-center`}>
-                <p className={`text-2xl font-black ${c.accent}`}>{teamResults.team_stats.total_team_meeting_hours_per_week}h</p>
+              <div className={`${c.cardAlt} border rounded-lg p-3 text-center`}>
+                <p className={`text-2xl font-black ${c.textSecondaryondary}`}>{teamResults.team_stats.total_team_meeting_hours_per_week}h</p>
                 <p className="text-[9px]">Team mtg hrs/week</p>
               </div>
               <div className={`${c.card} border rounded-lg p-3 text-center`}>
@@ -1735,10 +1736,10 @@ const MeetingBSDetector = () => {
                     }`}>{m.team_impact}</span>
                     <div className="flex-1 min-w-0">
                       <p className={`text-xs font-bold ${c.text} truncate`}>{m.title}</p>
-                      <p className={`text-[10px] ${c.textMuted}`}>{m.recommendation}</p>
+                      <p className={`text-[10px] ${c.textMuteded}`}>{m.recommendation}</p>
                     </div>
                     {m.team_hours_saved_if_fixed > 0 && (
-                      <span className={`text-[10px] font-bold ${c.successText} flex-shrink-0`}>+{m.team_hours_saved_if_fixed}h</span>
+                      <span className={`text-[10px] font-bold ${c.success} flex-shrink-0`}>+{m.team_hours_saved_if_fixed}h</span>
                     )}
                   </div>
                 ))}
@@ -1764,7 +1765,7 @@ const MeetingBSDetector = () => {
             <Section icon="🔄" title="Meeting overlaps" c={c}>
               <div className="space-y-1">
                 {teamResults.overlaps.map((o, i) => (
-                  <p key={i} className={`text-xs ${c.textSec}`}>• {o}</p>
+                  <p key={i} className={`text-xs ${c.textSecondary}`}>• {o}</p>
                 ))}
               </div>
             </Section>
@@ -1774,7 +1775,7 @@ const MeetingBSDetector = () => {
             <Section icon="🔗" title="Consolidation opportunities" c={c}>
               <div className="space-y-1">
                 {teamResults.consolidation_opportunities.map((o, i) => (
-                  <p key={i} className={`text-xs ${c.textSec}`}>• {o}</p>
+                  <p key={i} className={`text-xs ${c.textSecondary}`}>• {o}</p>
                 ))}
               </div>
             </Section>
@@ -1785,7 +1786,7 @@ const MeetingBSDetector = () => {
             <Section icon="🎤" title="Say this to your team" c={c}>
               <div className="space-y-2">
                 {teamResults.manager_talking_points.map((tp, i) => (
-                  <div key={i} className={`${c.info} border rounded-lg p-3`}>
+                  <div key={i} className={`${c.cardAlt} border rounded-lg p-3`}>
                     <p className="text-xs">"{tp}"</p>
                   </div>
                 ))}
@@ -1796,7 +1797,7 @@ const MeetingBSDetector = () => {
 
           {teamResults.team_maker_time && (
             <div className={`${c.quoteBg} rounded-lg p-3`}>
-              <p className={`text-xs ${c.textSec}`}>🎯 <strong>Team focus time:</strong> {teamResults.team_maker_time}</p>
+              <p className={`text-xs ${c.textSecondary}`}>🎯 <strong>Team focus time:</strong> {teamResults.team_maker_time}</p>
             </div>
           )}
 
@@ -1811,7 +1812,7 @@ const MeetingBSDetector = () => {
         <div className="flex items-center justify-between mb-3">
           <div>
             <h2 className={`text-lg font-bold ${c.text}`}>📊 Meeting Stats</h2>
-            <p className={`text-sm ${c.textSec}`}>Your meeting analysis track record</p>
+            <p className={`text-sm ${c.textSecondary}`}>Your meeting analysis track record</p>
           </div>
           {history.length > 0 && (
             <button onClick={() => {
@@ -1821,29 +1822,29 @@ const MeetingBSDetector = () => {
                 setStats({ totalAnalyzed: 0, hoursSaved: 0, meetingsKilled: 0, weeklyData: [] });
                 saveStatsStore({ totalAnalyzed: 0, hoursSaved: 0, meetingsKilled: 0, weeklyData: [] });
               }
-            }} className={`text-xs ${c.dangerText} min-h-[32px]`}>🗑️ Clear</button>
+            }} className={`text-xs ${c.danger} min-h-[32px]`}>🗑️ Clear</button>
           )}
         </div>
 
         {/* Stats cards */}
         <div className="grid grid-cols-3 gap-2 mb-4">
-          <div className={`${c.accentBg} rounded-lg p-3 text-center border`}>
-            <p className={`text-2xl font-black ${c.accent}`}>{stats.totalAnalyzed}</p>
-            <p className={`text-[9px] ${c.textMuted}`}>Meetings analyzed</p>
+          <div className={`${c.cardAlt} rounded-lg p-3 text-center border`}>
+            <p className={`text-2xl font-black ${c.textSecondaryondary}`}>{stats.totalAnalyzed}</p>
+            <p className={`text-[9px] ${c.textMuteded}`}>Meetings analyzed</p>
           </div>
           <div className={`${c.success} rounded-lg p-3 text-center border`}>
-            <p className={`text-2xl font-black ${c.successText}`}>{stats.hoursSaved.toFixed(1)}h</p>
+            <p className={`text-2xl font-black ${c.success}`}>{stats.hoursSaved.toFixed(1)}h</p>
             <p className={`text-[9px] ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>Hours saved</p>
           </div>
           <div className={`${c.danger} rounded-lg p-3 text-center border`}>
-            <p className={`text-2xl font-black ${c.dangerText}`}>{stats.meetingsKilled}</p>
+            <p className={`text-2xl font-black ${c.danger}`}>{stats.meetingsKilled}</p>
             <p className={`text-[9px]`}>Meetings killed</p>
           </div>
         </div>
 
         {stats.totalAnalyzed > 0 && (
           <div className={`${c.quoteBg} rounded-lg p-3`}>
-            <p className={`text-xs ${c.textSec} text-center`}>
+            <p className={`text-xs ${c.textSecondary} text-center`}>
               {stats.meetingsKilled > 0
                 ? `You've identified ${Math.round((stats.meetingsKilled / stats.totalAnalyzed) * 100)}% of analyzed meetings as unnecessary — and saved ${stats.hoursSaved.toFixed(1)} hours so far.`
                 : `${stats.totalAnalyzed} meetings analyzed so far. Keep going — the patterns will emerge.`
@@ -1862,10 +1863,10 @@ const MeetingBSDetector = () => {
               <div className="flex items-start justify-between gap-2">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-0.5">
-                    <span className={`text-[9px] font-black px-1.5 py-0.5 rounded ${c.accentBg}`}>{entry.type}</span>
+                    <span className={`text-[9px] font-black px-1.5 py-0.5 rounded ${c.cardAlt}`}>{entry.type}</span>
                     <span className={`text-xs font-bold ${c.text} truncate`}>{entry.title}</span>
                   </div>
-                  <p className={`text-[10px] ${c.textMuted}`}>{new Date(entry.date).toLocaleDateString()}</p>
+                  <p className={`text-[10px] ${c.textMuteded}`}>{new Date(entry.date).toLocaleDateString()}</p>
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
                   {entry.verdict && (
@@ -1874,7 +1875,7 @@ const MeetingBSDetector = () => {
                     </span>
                   )}
                   {entry.hoursSaved > 0 && (
-                    <span className={`text-[10px] font-bold ${c.successText}`}>+{entry.hoursSaved}h</span>
+                    <span className={`text-[10px] font-bold ${c.success}`}>+{entry.hoursSaved}h</span>
                   )}
                 </div>
               </div>
@@ -1884,8 +1885,8 @@ const MeetingBSDetector = () => {
       ) : (
         <div className={`${c.card} border rounded-xl p-8 text-center`}>
           <span className="text-3xl block mb-2">📊</span>
-          <p className={`text-sm ${c.textMuted}`}>No meetings analyzed yet. Start detecting BS!</p>
-          <button onClick={() => setView('analyze')} className={`${c.btnPrimary} px-4 py-2 rounded-lg text-xs font-bold mt-3 min-h-[36px]`}>
+          <p className={`text-sm ${c.textMuteded}`}>No meetings analyzed yet. Start detecting BS!</p>
+          <button onClick={() => setView('analyze')} className={`${c.btnPrimaryPrimary} px-4 py-2 rounded-lg text-xs font-bold mt-3 min-h-[36px]`}>
             🔍 Analyze First Meeting
           </button>
         </div>
@@ -1898,7 +1899,7 @@ const MeetingBSDetector = () => {
           <div className="flex flex-wrap gap-2">
             {CROSS_REFS.map(ref => (
               <a key={ref.id} href={`/?tool=${ref.id}`} target="_blank" rel="noopener noreferrer"
-                className={`${c.btnSec} px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 min-h-[32px]`}>
+                className={`${c.btnPrimarySecondary} px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 min-h-[32px]`}>
                 <span>{ref.icon}</span> {ref.label}
               </a>
             ))}
@@ -1911,6 +1912,7 @@ const MeetingBSDetector = () => {
   // ════════════════════════════════════════════════════════════
   // MAIN RENDER
   // ════════════════════════════════════════════════════════════
+  const handleReset = () => { setAnalyzeResults(null); setCalResults(null); setLiveResults(null); setRecResults(null); setMsgResults(null); setAgResults(null); setReportResults(null); setTeamResults(null); setError(''); };
   return (
     <div className={`space-y-4 ${c.text}`}>
       {renderNav()}
@@ -1933,6 +1935,14 @@ const MeetingBSDetector = () => {
       {view === 'report' && renderReport()}
       {view === 'team' && renderTeam()}
       {view === 'stats' && renderStats()}
+        <div className={`mt-6 pt-4 border-t text-sm ${c.border} ${c.textMuted}`}>
+          <p className="mb-2 font-medium">You might also like:</p>
+          <div className="flex flex-wrap gap-2">
+            {[{slug:'heckler-prep',label:'😤 Heckler Prep'},{slug:'jargon-assassin',label:'🗡️ Jargon Assassin'},{slug:'pre-mortem',label:'💀 Pre-Mortem'}].map(({slug,label})=>(
+              <a key={slug} href={`/tool/${slug}`} className={linkStyle}>{label}</a>
+            ))}
+          </div>
+        </div>
     </div>
   );
 };

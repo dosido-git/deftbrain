@@ -2,8 +2,7 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
-import { getToolById } from '../data/tools';
-import { CopyBtn } from '../components/ActionButtons';
+import { CopyBtn, ActionBar } from '../components/ActionButtons';
 
 // ════════════════════════════════════════════════════════════
 // WEB AUDIO SYNTHESIS ENGINE
@@ -442,11 +441,9 @@ const fmt = (totalSeconds) => {
 // MAIN COMPONENT
 // ════════════════════════════════════════════════════════════
 
-const FocusSoundArchitect = () => {
-  const { theme } = useTheme();
-  const isDark = theme === 'dark';
+const FocusSoundArchitect = ({ tool }) => {
+  const { isDark } = useTheme();
   const { callToolEndpoint, loading } = useClaudeAPI();
-  const toolData = getToolById('FocusSoundArchitect');
 
   // ── Form state ──
   const [task, setTask] = useState('deep_work');
@@ -456,8 +453,9 @@ const FocusSoundArchitect = () => {
   const [energyGoal, setEnergyGoal] = useState(50);
 
   // ── Results ──
-  const [recipe, setRecipe] = useState(null);
+  const [recipe, setRecipe] = usePersistentState('fsa-recipe', null);
   const [error, setError] = useState('');
+  const resultsRef = React.useRef(null);
   const [showTips, setShowTips] = useState(false);
 
   // ── Audio state ──
@@ -525,14 +523,24 @@ const FocusSoundArchitect = () => {
 
   // ── Theme ──
   const c = {
-    card: isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-stone-200',
-    text: isDark ? 'text-zinc-50' : 'text-gray-900',
-    textSec: isDark ? 'text-zinc-300' : 'text-gray-600',
-    textMuted: isDark ? 'text-zinc-500' : 'text-gray-500',
-    input: isDark
-      ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder:text-zinc-500 focus:border-violet-500 focus:ring-violet-500/20'
-      : 'bg-white border-stone-300 text-gray-900 placeholder:text-stone-400 focus:border-violet-500 focus:ring-violet-500/20',
+    card:          isDark ? 'bg-zinc-800' : 'bg-white',
+    border:        isDark ? 'border-zinc-700' : 'border-gray-200',
+    text:          isDark ? 'text-zinc-50' : 'text-gray-900',
+    textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
+    textMuted:     isDark ? 'text-zinc-500' : 'text-gray-500',
+    input:         isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder:text-zinc-500 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-cyan-500 focus:ring-cyan-500/20',
+    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
+    cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
+    success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
+    warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
+    danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
+    deleteHover: isDark ? 'hover:text-red-400' : 'hover:text-red-600',
   };
+
+  const linkStyle = isDark
+    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
+    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
 
   // ── Timer tick ──
   useEffect(() => {
@@ -602,9 +610,10 @@ const FocusSoundArchitect = () => {
       layers: (recipe.layers || []).map(l => ({ type: l.type, volume: l.volume })),
       durationMin: timerStartedAt ? Math.round((Date.now() - timerStartedAt) / 60000) : 0,
       scene: activeScene?.id || null,
+      preview: (recipe.soundscape_name || 'Session').slice(0, 40),
     };
     if (entry.durationMin >= 1) {
-      setListeningHistory(prev => [entry, ...prev].slice(0, 50));
+      setListeningHistory(prev => [entry, ...prev].slice(0, 6));
     }
   }, [recipe, isPlaying, timerStartedAt, activeScene, setListeningHistory]);
 
@@ -1206,6 +1215,7 @@ const FocusSoundArchitect = () => {
         feedback: feedback,
       });
       setRecipe(data);
+      setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
     } catch (err) {
       setError(err.message || 'Failed to generate soundscape.');
     }
@@ -1229,7 +1239,7 @@ const FocusSoundArchitect = () => {
   const saveSoundscape = () => {
     if (!recipe || !saveName.trim()) return;
     const entry = { id: Date.now(), name: saveName.trim(), recipe: { ...recipe }, createdAt: new Date().toISOString() };
-    setSavedScapes(prev => [entry, ...prev].slice(0, 20));
+    setSavedScapes(prev => [entry, ...prev].slice(0, 6));
     setSaveName('');
     setShowSaveInput(false);
   };
@@ -1267,8 +1277,8 @@ const FocusSoundArchitect = () => {
       {/* ── Header ── */}
       <div className="flex items-center gap-3 mb-5">
         <div>
-          <h2 className={`text-2xl font-bold ${c.text}`}>{toolData?.title || 'Focus Sound Architect'} 🎵</h2>
-          <p className={`text-sm ${c.textMuted}`}>{toolData?.tagline || 'AI-designed soundscapes that actually play'}</p>
+          <h2 className={`text-2xl font-bold ${c.text}`}>{tool?.icon ?? '🎵'} {tool?.title || 'Focus Sound Architect'}</h2>
+          <p className={`text-sm ${c.textMuteded}`}>{tool?.tagline || 'AI-designed soundscapes that actually play'}</p>
         </div>
       </div>
 
@@ -1279,15 +1289,15 @@ const FocusSoundArchitect = () => {
         <div className="space-y-4">
 
           {/* Quick-start presets */}
-          <div className={`${c.card} border rounded-2xl shadow-lg p-5`}>
+          <div className={`${c.card} ${c.border} border rounded-2xl shadow-lg p-5`}>
             <label className={`block text-sm font-bold ${c.text} mb-1`}>⚡ Quick Start</label>
-            <p className={`text-xs ${c.textMuted} mb-3`}>One tap to start — customize after</p>
+            <p className={`text-xs ${c.textMuteded} mb-3`}>One tap to start — customize after</p>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {QUICK_PRESETS.map(p => (
                 <button key={p.id} onClick={() => loadPreset(p)}
-                  className={`p-3 rounded-xl border text-left transition-all ${isDark ? 'border-zinc-600 hover:border-violet-500 hover:bg-violet-900/20' : 'border-stone-200 hover:border-violet-400 hover:bg-violet-50'}`}>
+                  className={`p-3 rounded-xl border text-left transition-all ${isDark ? 'border-zinc-600 hover:border-cyan-500 hover:bg-cyan-900/20' : 'border-zinc-200 hover:border-cyan-400 hover:bg-cyan-50'}`}>
                   <div className={`text-sm font-bold ${c.text}`}>{p.name}</div>
-                  <div className={`text-xs ${c.textMuted} mt-0.5`}>{p.description}</div>
+                  <div className={`text-xs ${c.textMuteded} mt-0.5`}>{p.description}</div>
                 </button>
               ))}
             </div>
@@ -1295,7 +1305,7 @@ const FocusSoundArchitect = () => {
 
           {/* Saved soundscapes */}
           {savedScapes.length > 0 && (
-            <div className={`${c.card} border rounded-2xl shadow-lg p-5`}>
+            <div className={`${c.card} ${c.border} border rounded-2xl shadow-lg p-5`}>
               <button onClick={() => setShowSaved(!showSaved)}
                 className={`flex items-center gap-2 w-full text-sm font-bold ${c.text}`}>
                 💾 My Soundscapes ({savedScapes.length})
@@ -1304,14 +1314,14 @@ const FocusSoundArchitect = () => {
               {showSaved && (
                 <div className="mt-3 space-y-2">
                   {savedScapes.map(s => (
-                    <div key={s.id} className={`flex items-center gap-3 p-3 rounded-xl ${isDark ? 'bg-zinc-700/50' : 'bg-stone-50'}`}>
+                    <div key={s.id} className={`flex items-center gap-3 p-3 rounded-xl ${isDark ? 'bg-zinc-700/50' : 'bg-zinc-50'}`}>
                       <button onClick={() => loadSaved(s)} className="flex-1 text-left">
                         <p className={`text-sm font-bold ${c.text}`}>{s.name}</p>
-                        <p className={`text-xs ${c.textMuted}`}>
+                        <p className={`text-xs ${c.textMuteded}`}>
                           {s.recipe.layers?.length || 0} layers · {new Date(s.createdAt).toLocaleDateString()}
                         </p>
                       </button>
-                      <button onClick={() => deleteSaved(s.id)} className={`text-xs ${c.textMuted} hover:text-red-400`}>🗑️</button>
+                      <button onClick={() => deleteSaved(s.id)} className={`text-xs ${c.textMuteded} ${c.deleteHover}`}>🗑️</button>
                     </div>
                   ))}
                 </div>
@@ -1320,22 +1330,22 @@ const FocusSoundArchitect = () => {
           )}
 
           {/* 🎬 Scene Timeline Selector */}
-          <div className={`${c.card} border rounded-2xl shadow-lg p-5`}>
+          <div className={`${c.card} ${c.border} border rounded-2xl shadow-lg p-5`}>
             <label className={`block text-sm font-bold ${c.text} mb-1`}>🎬 Evolving Scenes</label>
-            <p className={`text-xs ${c.textMuted} mb-3`}>Sound evolves through phases — perfect for long sessions</p>
+            <p className={`text-xs ${c.textMuteded} mb-3`}>Sound evolves through phases — perfect for long sessions</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {SCENE_PRESETS.map(scene => (
                 <button key={scene.id} onClick={() => startScene(scene)}
-                  className={`p-3 rounded-xl border text-left transition-all ${isDark ? 'border-zinc-600 hover:border-violet-500 hover:bg-violet-900/20' : 'border-stone-200 hover:border-violet-400 hover:bg-violet-50'}`}>
+                  className={`p-3 rounded-xl border text-left transition-all ${isDark ? 'border-zinc-600 hover:border-cyan-500 hover:bg-cyan-900/20' : 'border-zinc-200 hover:border-cyan-400 hover:bg-cyan-50'}`}>
                   <div className={`text-sm font-bold ${c.text}`}>{scene.name}</div>
-                  <div className={`text-xs ${c.textMuted} mt-0.5`}>{scene.desc}</div>
+                  <div className={`text-xs ${c.textMuteded} mt-0.5`}>{scene.desc}</div>
                   <div className="flex items-center gap-1 mt-1.5">
                     {scene.phases.map((ph, i) => (
                       <React.Fragment key={i}>
-                        <span className={`text-[10px] px-1.5 py-0.5 rounded ${isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-stone-100 text-stone-500'}`}>
+                        <span className={`text-[10px] px-1.5 py-0.5 rounded ${isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-zinc-100 text-zinc-500'}`}>
                           {ph.name} ({ph.durationMin}m)
                         </span>
-                        {i < scene.phases.length - 1 && <span className={`text-[10px] ${c.textMuted}`}>→</span>}
+                        {i < scene.phases.length - 1 && <span className={`text-[10px] ${c.textMuteded}`}>→</span>}
                       </React.Fragment>
                     ))}
                   </div>
@@ -1344,32 +1354,32 @@ const FocusSoundArchitect = () => {
             </div>
 
             {/* AI Scene Generator */}
-            <div className={`mt-3 pt-3 border-t ${isDark ? 'border-zinc-700' : 'border-stone-200'}`}>
+            <div className={`mt-3 pt-3 border-t ${isDark ? 'border-zinc-700' : 'border-zinc-200'}`}>
               {!showAISceneForm ? (
                 <button onClick={() => setShowAISceneForm(true)}
                   className={`w-full flex items-center justify-center gap-2 p-3 rounded-xl border-2 border-dashed transition-all text-sm font-bold ${
-                    isDark ? 'border-violet-700 text-violet-400 hover:border-violet-500 hover:bg-violet-900/20' : 'border-violet-300 text-violet-600 hover:border-violet-400 hover:bg-violet-50'
+                    isDark ? 'border-cyan-700 text-cyan-400 hover:border-cyan-500 hover:bg-cyan-900/20' : 'border-cyan-300 text-cyan-600 hover:border-cyan-400 hover:bg-cyan-50'
                   }`}>
                   🤖 Design Custom AI Scene
                 </button>
               ) : (
-                <div className={`p-4 rounded-xl border ${isDark ? 'bg-violet-900/20 border-violet-700/50' : 'bg-violet-50 border-violet-200'}`}>
+                <div className={`p-4 rounded-xl border ${isDark ? 'bg-cyan-900/20 border-cyan-700/50' : 'bg-cyan-50 border-cyan-200'}`}>
                   <div className="flex items-center justify-between mb-3">
-                    <p className={`text-sm font-bold ${isDark ? 'text-violet-300' : 'text-violet-700'}`}>🤖 AI Scene Designer</p>
-                    <button onClick={() => setShowAISceneForm(false)} className={`text-xs ${c.textMuted}`}>✕</button>
+                    <p className={`text-sm font-bold ${isDark ? 'text-cyan-300' : 'text-cyan-700'}`}>🤖 AI Scene Designer</p>
+                    <button onClick={() => setShowAISceneForm(false)} className={`text-xs ${c.textMuteded}`}>✕</button>
                   </div>
-                  <p className={`text-xs ${c.textSec} mb-3`}>
+                  <p className={`text-xs ${c.textSecondaryondary} mb-3`}>
                     Uses your task, environment & preferences below to design a custom evolving soundscape
                   </p>
                   <div className="mb-3">
-                    <label className={`text-xs font-bold ${c.textSec} mb-1.5 block`}>Session duration</label>
+                    <label className={`text-xs font-bold ${c.textSecondaryondary} mb-1.5 block`}>Session duration</label>
                     <div className="flex flex-wrap gap-1.5">
                       {AI_SCENE_DURATIONS.map(d => (
                         <button key={d.min} onClick={() => setAiSceneDuration(d.min)}
                           className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${
                             aiSceneDuration === d.min
-                              ? isDark ? 'border-violet-500 bg-violet-900/40 text-violet-300' : 'border-violet-400 bg-violet-100 text-violet-700'
-                              : isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-stone-200 text-stone-500 hover:border-stone-300'
+                              ? isDark ? 'border-cyan-500 bg-cyan-900/40 text-cyan-300' : 'border-cyan-400 bg-cyan-100 text-cyan-700'
+                              : isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-zinc-200 text-zinc-500 hover:border-zinc-300'
                           }`}>
                           {d.label}
                         </button>
@@ -1379,13 +1389,13 @@ const FocusSoundArchitect = () => {
                   <button onClick={handleGenerateAIScene} disabled={aiSceneLoading || soundPrefs.length === 0}
                     className={`w-full px-4 py-2.5 rounded-xl text-sm font-bold transition-all ${
                       soundPrefs.length > 0
-                        ? 'bg-violet-600 hover:bg-violet-700 text-white'
-                        : isDark ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed' : 'bg-stone-200 text-stone-400 cursor-not-allowed'
+                        ? 'bg-cyan-600 hover:bg-cyan-700 text-white'
+                        : isDark ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed' : 'bg-zinc-200 text-zinc-400 cursor-not-allowed'
                     }`}>
-                    {aiSceneLoading ? '⏳ AI is designing your scene…' : `✨ Generate ${aiSceneDuration}m Scene`}
+                    {aiSceneLoading ? <><span className='animate-spin inline-block mr-1'>{tool?.icon ?? '🎵'}</span>Designing scene…</> : <>✨ Generate {aiSceneDuration}m Scene</>}
                   </button>
                   {soundPrefs.length === 0 && (
-                    <p className={`text-[10px] ${c.textMuted} mt-1.5`}>↓ Select sound preferences below first</p>
+                    <p className={`text-[10px] ${c.textMuteded} mt-1.5`}>↓ Select sound preferences below first</p>
                   )}
                 </div>
               )}
@@ -1394,30 +1404,30 @@ const FocusSoundArchitect = () => {
 
           {/* 📊 Listening History */}
           {listeningStats && (
-            <div className={`${c.card} border rounded-2xl shadow-lg p-5`}>
+            <div className={`${c.card} ${c.border} border rounded-2xl shadow-lg p-5`}>
               <h4 className={`text-sm font-bold ${c.text} mb-3`}>📊 Listening Stats</h4>
               <div className="grid grid-cols-3 gap-3 mb-3">
-                <div className={`text-center p-2.5 rounded-xl ${isDark ? 'bg-zinc-700/50' : 'bg-stone-50'}`}>
+                <div className={`text-center p-2.5 rounded-xl ${isDark ? 'bg-zinc-700/50' : 'bg-zinc-50'}`}>
                   <div className={`text-xl font-bold ${c.text}`}>{listeningStats.totalSessions}</div>
-                  <div className={`text-[10px] ${c.textMuted}`}>sessions</div>
+                  <div className={`text-[10px] ${c.textMuteded}`}>sessions</div>
                 </div>
-                <div className={`text-center p-2.5 rounded-xl ${isDark ? 'bg-zinc-700/50' : 'bg-stone-50'}`}>
+                <div className={`text-center p-2.5 rounded-xl ${isDark ? 'bg-zinc-700/50' : 'bg-zinc-50'}`}>
                   <div className={`text-xl font-bold ${c.text}`}>{Math.round(listeningStats.totalMin / 60)}h</div>
-                  <div className={`text-[10px] ${c.textMuted}`}>listened</div>
+                  <div className={`text-[10px] ${c.textMuteded}`}>listened</div>
                 </div>
-                <div className={`text-center p-2.5 rounded-xl ${isDark ? 'bg-zinc-700/50' : 'bg-stone-50'}`}>
+                <div className={`text-center p-2.5 rounded-xl ${isDark ? 'bg-zinc-700/50' : 'bg-zinc-50'}`}>
                   <div className="flex items-center justify-center gap-1">
                     {listeningStats.topLayers.slice(0, 2).map(([type]) => (
                       <span key={type} className="text-sm">{LAYER_TYPES[type]?.emoji || '🔊'}</span>
                     ))}
                   </div>
-                  <div className={`text-[10px] ${c.textMuted}`}>top sounds</div>
+                  <div className={`text-[10px] ${c.textMuteded}`}>top sounds</div>
                 </div>
               </div>
               {listeningHistory.length > 0 && (
                 <div className="space-y-1.5 max-h-40 overflow-y-auto">
-                  {listeningHistory.slice(0, 8).map(h => (
-                    <div key={h.id} className={`flex items-center gap-2 p-2 rounded-lg ${isDark ? 'bg-zinc-700/30' : 'bg-stone-50/80'}`}>
+                  {listeningHistory.slice(0, 6).map(h => (
+                    <div key={h.id} className={`flex items-center gap-2 p-2 rounded-lg ${isDark ? 'bg-zinc-700/30' : 'bg-zinc-50/80'}`}>
                       <div className="flex items-center gap-0.5">
                         {(h.layers || []).slice(0, 3).map((l, i) => (
                           <span key={i} className="text-xs">{LAYER_TYPES[l.type]?.emoji || '🔊'}</span>
@@ -1426,8 +1436,8 @@ const FocusSoundArchitect = () => {
                       <div className="flex-1 min-w-0">
                         <p className={`text-xs font-bold truncate ${c.text}`}>{h.name}</p>
                       </div>
-                      <span className={`text-[10px] ${c.textMuted}`}>{h.durationMin}m</span>
-                      <span className={`text-[10px] ${c.textMuted}`}>{new Date(h.date).toLocaleDateString()}</span>
+                      <span className={`text-[10px] ${c.textMuteded}`}>{h.durationMin}m</span>
+                      <span className={`text-[10px] ${c.textMuteded}`}>{new Date(h.date).toLocaleDateString()}</span>
                     </div>
                   ))}
                 </div>
@@ -1437,33 +1447,33 @@ const FocusSoundArchitect = () => {
 
           {/* 🎯 FocusPocus × Sound Correlation */}
           {focusCorrelation && (
-            <div className={`${c.card} border rounded-2xl shadow-lg p-5`}>
+            <div className={`${c.card} ${c.border} border rounded-2xl shadow-lg p-5`}>
               <h4 className={`text-sm font-bold ${c.text} mb-3`}>🎯 Sound × Focus Score</h4>
-              <p className={`text-xs ${c.textSec} mb-3`}>
+              <p className={`text-xs ${c.textSecondaryondary} mb-3`}>
                 How your soundscapes correlate with focus performance (from {focusCorrelation.totalMatches} matched sessions)
               </p>
               <div className="grid grid-cols-2 gap-3 mb-3">
-                <div className={`text-center p-2.5 rounded-xl ${isDark ? 'bg-zinc-700/50' : 'bg-stone-50'}`}>
+                <div className={`text-center p-2.5 rounded-xl ${isDark ? 'bg-zinc-700/50' : 'bg-zinc-50'}`}>
                   <div className={`text-xl font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>{focusCorrelation.avgScore}</div>
-                  <div className={`text-[10px] ${c.textMuted}`}>avg focus score</div>
+                  <div className={`text-[10px] ${c.textMuteded}`}>avg focus score</div>
                 </div>
                 {focusCorrelation.bestSoundscape && (
-                  <div className={`text-center p-2.5 rounded-xl ${isDark ? 'bg-violet-900/20' : 'bg-violet-50'}`}>
-                    <div className={`text-sm font-bold truncate ${isDark ? 'text-violet-300' : 'text-violet-700'}`}>{focusCorrelation.bestSoundscape.soundscape}</div>
-                    <div className={`text-[10px] ${c.textMuted}`}>best: score {focusCorrelation.bestSoundscape.focusScore}</div>
+                  <div className={`text-center p-2.5 rounded-xl ${isDark ? 'bg-cyan-900/20' : 'bg-cyan-50'}`}>
+                    <div className={`text-sm font-bold truncate ${isDark ? 'text-cyan-300' : 'text-cyan-700'}`}>{focusCorrelation.bestSoundscape.soundscape}</div>
+                    <div className={`text-[10px] ${c.textMuteded}`}>best: score {focusCorrelation.bestSoundscape.focusScore}</div>
                   </div>
                 )}
               </div>
               {focusCorrelation.layerAvgs.length > 0 && (
                 <div>
-                  <p className={`text-xs font-bold ${c.textSec} mb-2`}>Best-performing sounds</p>
+                  <p className={`text-xs font-bold ${c.textSecondaryondary} mb-2`}>Best-performing sounds</p>
                   <div className="space-y-1">
                     {focusCorrelation.layerAvgs.map(la => (
-                      <div key={la.type} className={`flex items-center gap-2 p-2 rounded-lg ${isDark ? 'bg-zinc-700/30' : 'bg-stone-50/80'}`}>
+                      <div key={la.type} className={`flex items-center gap-2 p-2 rounded-lg ${isDark ? 'bg-zinc-700/30' : 'bg-zinc-50/80'}`}>
                         <span className="text-sm">{LAYER_TYPES[la.type]?.emoji || '🔊'}</span>
                         <span className={`text-xs font-bold flex-1 ${c.text}`}>{LAYER_TYPES[la.type]?.label || la.type}</span>
                         <span className={`text-xs font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>{la.avgScore} avg</span>
-                        <span className={`text-[10px] ${c.textMuted}`}>{la.count}×</span>
+                        <span className={`text-[10px] ${c.textMuteded}`}>{la.count}×</span>
                       </div>
                     ))}
                   </div>
@@ -1473,21 +1483,21 @@ const FocusSoundArchitect = () => {
           )}
 
           {/* Task */}
-          <div className={`${c.card} border rounded-2xl shadow-lg p-5`}>
+          <div className={`${c.card} ${c.border} border rounded-2xl shadow-lg p-5`}>
             <label className={`block text-sm font-bold ${c.text} mb-1`}>What are you doing?</label>
-            <p className={`text-xs ${c.textMuted} mb-3`}>Pick one</p>
+            <p className={`text-xs ${c.textMuteded} mb-3`}>Pick one</p>
             <div className="flex flex-wrap gap-2">
               {TASKS.map(t => (
                 <button key={t.id} onClick={() => setTask(t.id)}
                   className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold border transition-all ${
                     task === t.id
-                      ? isDark ? 'border-violet-500 bg-violet-900/40 text-violet-300' : 'border-violet-400 bg-violet-50 text-violet-700'
-                      : isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-stone-200 text-stone-500 hover:border-stone-400'
+                      ? isDark ? 'border-cyan-500 bg-cyan-900/40 text-cyan-300' : 'border-cyan-400 bg-cyan-50 text-cyan-700'
+                      : isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-zinc-200 text-zinc-500 hover:border-zinc-400'
                   }`}>
                   <span className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
-                    task === t.id ? isDark ? 'border-violet-400' : 'border-violet-500' : isDark ? 'border-zinc-500' : 'border-stone-300'
+                    task === t.id ? isDark ? 'border-cyan-400' : 'border-cyan-500' : isDark ? 'border-zinc-500' : 'border-zinc-300'
                   }`}>
-                    {task === t.id && <span className={`w-1.5 h-1.5 rounded-full ${isDark ? 'bg-violet-400' : 'bg-violet-500'}`} />}
+                    {task === t.id && <span className={`w-1.5 h-1.5 rounded-full ${isDark ? 'bg-cyan-400' : 'bg-cyan-500'}`} />}
                   </span>
                   <span>{t.emoji}</span> {t.label}
                 </button>
@@ -1496,16 +1506,16 @@ const FocusSoundArchitect = () => {
           </div>
 
           {/* Environment */}
-          <div className={`${c.card} border rounded-2xl shadow-lg p-5`}>
+          <div className={`${c.card} ${c.border} border rounded-2xl shadow-lg p-5`}>
             <label className={`block text-sm font-bold ${c.text} mb-1`}>Where are you?</label>
-            <p className={`text-xs ${c.textMuted} mb-3`}>Helps calibrate masking intensity</p>
+            <p className={`text-xs ${c.textMuteded} mb-3`}>Helps calibrate masking intensity</p>
             <div className="flex flex-wrap gap-2">
               {ENVIRONMENTS.map(e => (
                 <button key={e.id} onClick={() => toggleMulti(environments, setEnvironments, e.id)}
                   className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-semibold border transition-all ${
                     environments.includes(e.id)
-                      ? isDark ? 'border-violet-500 bg-violet-900/40 text-violet-300' : 'border-violet-400 bg-violet-50 text-violet-700'
-                      : isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-stone-200 text-stone-500 hover:border-stone-400'
+                      ? isDark ? 'border-cyan-500 bg-cyan-900/40 text-cyan-300' : 'border-cyan-400 bg-cyan-50 text-cyan-700'
+                      : isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-zinc-200 text-zinc-500 hover:border-zinc-400'
                   }`}>
                   <span>{e.emoji}</span> {e.label}
                 </button>
@@ -1514,16 +1524,16 @@ const FocusSoundArchitect = () => {
           </div>
 
           {/* Sound preferences */}
-          <div className={`${c.card} border rounded-2xl shadow-lg p-5`}>
+          <div className={`${c.card} ${c.border} border rounded-2xl shadow-lg p-5`}>
             <label className={`block text-sm font-bold ${c.text} mb-1`}>Sound preferences</label>
-            <p className={`text-xs ${c.textMuted} mb-3`}>Select sounds you like — AI picks the best combination</p>
+            <p className={`text-xs ${c.textMuteded} mb-3`}>Select sounds you like — AI picks the best combination</p>
             <div className="flex flex-wrap gap-2">
               {SOUND_PREFS.map(s => (
                 <button key={s.id} onClick={() => toggleMulti(soundPrefs, setSoundPrefs, s.id)}
                   className={`px-3 py-2 rounded-xl text-sm font-semibold border transition-all ${
                     soundPrefs.includes(s.id)
-                      ? isDark ? 'border-violet-500 bg-violet-900/40 text-violet-300' : 'border-violet-400 bg-violet-50 text-violet-700'
-                      : isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-stone-200 text-stone-500 hover:border-stone-400'
+                      ? isDark ? 'border-cyan-500 bg-cyan-900/40 text-cyan-300' : 'border-cyan-400 bg-cyan-50 text-cyan-700'
+                      : isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-zinc-200 text-zinc-500 hover:border-zinc-400'
                   }`}>
                   {s.label}
                 </button>
@@ -1532,20 +1542,20 @@ const FocusSoundArchitect = () => {
           </div>
 
           {/* Energy + Sensitivities */}
-          <div className={`${c.card} border rounded-2xl shadow-lg p-5`}>
+          <div className={`${c.card} ${c.border} border rounded-2xl shadow-lg p-5`}>
             <div className="mb-5">
               <label className={`block text-sm font-bold ${c.text} mb-2`}>
-                Energy goal: <span className={isDark ? 'text-violet-400' : 'text-violet-600'}>{energyLabel}</span>
+                Energy goal: <span className={isDark ? 'text-cyan-400' : 'text-cyan-600'}>{energyLabel}</span>
               </label>
               <input type="range" min="0" max="100" value={energyGoal}
                 onChange={e => setEnergyGoal(Number(e.target.value))}
-                className="w-full h-2 rounded-lg appearance-none cursor-pointer accent-violet-600" />
-              <div className={`flex justify-between text-[10px] ${c.textMuted} mt-1`}>
+                className="w-full h-2 rounded-lg appearance-none cursor-pointer accent-cyan-600" />
+              <div className={`flex justify-between text-[10px] ${c.textMuteded} mt-1`}>
                 <span>🧘 Very Calm</span><span>⚡ Energized</span>
               </div>
             </div>
             <button onClick={() => document.getElementById('fsa-sens')?.classList.toggle('hidden')}
-              className={`flex items-center gap-1.5 text-xs font-bold ${c.textSec}`}>
+              className={`flex items-center gap-1.5 text-xs font-bold ${c.textSecondaryondary}`}>
               ▼ Sensitivities (optional)
             </button>
             <div id="fsa-sens" className="hidden mt-3 flex flex-wrap gap-2">
@@ -1554,7 +1564,7 @@ const FocusSoundArchitect = () => {
                   className={`px-3 py-2 rounded-xl text-xs font-semibold border transition-all ${
                     sensitivities.includes(s.id)
                       ? isDark ? 'border-amber-500 bg-amber-900/30 text-amber-300' : 'border-amber-400 bg-amber-50 text-amber-700'
-                      : isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-stone-200 text-stone-500 hover:border-stone-400'
+                      : isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-zinc-200 text-zinc-500 hover:border-zinc-400'
                   }`}>
                   {s.label}
                 </button>
@@ -1563,31 +1573,31 @@ const FocusSoundArchitect = () => {
           </div>
 
           {/* Session timer */}
-          <div className={`${c.card} border rounded-2xl shadow-lg p-5`}>
+          <div className={`${c.card} ${c.border} border rounded-2xl shadow-lg p-5`}>
             <label className={`block text-sm font-bold ${c.text} mb-2`}>⏱️ Session Timer</label>
             <div className="flex flex-wrap gap-2">
               {TIMER_PRESETS.map(tp => (
                 <button key={tp.min} onClick={() => setTimerMin(tp.min)}
                   className={`px-3 py-2 rounded-xl text-xs font-bold border transition-all ${
                     timerMin === tp.min
-                      ? isDark ? 'border-violet-500 bg-violet-900/40 text-violet-300' : 'border-violet-400 bg-violet-50 text-violet-700'
-                      : isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-stone-200 text-stone-500 hover:border-stone-400'
+                      ? isDark ? 'border-cyan-500 bg-cyan-900/40 text-cyan-300' : 'border-cyan-400 bg-cyan-50 text-cyan-700'
+                      : isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-zinc-200 text-zinc-500 hover:border-zinc-400'
                   }`}>
                   {tp.label}
                 </button>
               ))}
             </div>
-            {timerMin > 0 && <p className={`text-xs ${c.textMuted} mt-2`}>Fades out over 2 min, then stops automatically</p>}
+            {timerMin > 0 && <p className={`text-xs ${c.textMuteded} mt-2`}>Fades out over 2 min, then stops automatically</p>}
           </div>
 
           {/* Generate */}
           <button onClick={handleGenerate} disabled={loading || soundPrefs.length === 0}
             className={`w-full flex items-center justify-center gap-3 px-6 py-4 rounded-2xl font-bold text-lg transition-all shadow-lg ${
               soundPrefs.length > 0
-                ? 'bg-violet-600 hover:bg-violet-700 text-white shadow-violet-200 dark:shadow-violet-900/40'
-                : isDark ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed' : 'bg-stone-200 text-stone-400 cursor-not-allowed'
+                ? 'bg-cyan-600 hover:bg-cyan-700 text-white shadow-cyan-200 dark:shadow-cyan-900/40'
+                : isDark ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed' : 'bg-zinc-200 text-zinc-400 cursor-not-allowed'
             }`}>
-            {loading ? <>⏳ Designing your soundscape…</> : <>✨ Design My Soundscape</>}
+            {loading ? <><span className='animate-spin inline-block mr-1'>{tool?.icon ?? '🎵'}</span>Designing…</> : <>✨ Design My Soundscape</>}
           </button>
 
           {error && (
@@ -1603,22 +1613,22 @@ const FocusSoundArchitect = () => {
       {/* PLAYER + RECIPE                                     */}
       {/* ═══════════════════════════════════════════════════ */}
       {recipe && (
-        <div className="space-y-4">
+        <div ref={resultsRef} className="space-y-4">
 
           {/* Transport bar */}
-          <div className={`${c.card} border rounded-2xl shadow-lg p-5 ${!isPlaying ? (isDark ? 'ring-2 ring-violet-500/40' : 'ring-2 ring-violet-300') : ''}`}>
+          <div className={`${c.card} ${c.border} border rounded-2xl shadow-lg p-5 ${!isPlaying ? (isDark ? 'ring-2 ring-cyan-500/40' : 'ring-2 ring-cyan-300') : ''}`}>
             <div className="flex items-center gap-4 mb-4">
               <button onClick={togglePlayPause}
                 className={`w-14 h-14 rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-lg transition-all ${
                   isPlaying
                     ? 'bg-red-500 hover:bg-red-600 shadow-red-200 dark:shadow-red-900/40'
-                    : 'bg-violet-600 hover:bg-violet-700 shadow-violet-200 dark:shadow-violet-900/40 animate-pulse'
+                    : 'bg-cyan-600 hover:bg-cyan-700 shadow-cyan-200 dark:shadow-cyan-900/40 animate-pulse'
                 }`}>
                 {isPlaying ? '⏹' : '▶️'}
               </button>
               <div className="flex-1">
                 <h3 className={`text-lg font-bold ${c.text}`}>{recipe.soundscape_name || 'Your Soundscape'}</h3>
-                <p className={`text-xs ${c.textSec}`}>
+                <p className={`text-xs ${c.textSecondaryondary}`}>
                   {isPlaying
                     ? timerRemainingSec !== null
                       ? `Playing · ${fmt(timerRemainingSec)} remaining`
@@ -1628,17 +1638,17 @@ const FocusSoundArchitect = () => {
               </div>
               {isPlaying && (
                 <button onClick={() => setIsMuted(!isMuted)}
-                  className={`p-2 rounded-lg transition-colors text-lg ${isDark ? 'hover:bg-zinc-700' : 'hover:bg-stone-100'}`}>
+                  className={`p-2 rounded-lg transition-colors text-lg ${isDark ? 'hover:bg-zinc-700' : 'hover:bg-zinc-100'}`}>
                   {isMuted ? '🔇' : '🔊'}
                 </button>
               )}
             </div>
             <div className="flex items-center gap-3">
-              <span className={`text-xs font-bold w-16 ${c.textMuted}`}>Master</span>
+              <span className={`text-xs font-bold w-16 ${c.textMuteded}`}>Master</span>
               <input type="range" min="0" max="100" value={masterVolume}
                 onChange={e => setMasterVolume(Number(e.target.value))}
-                className="flex-1 h-2 rounded-lg appearance-none cursor-pointer accent-violet-600" />
-              <span className={`text-xs font-mono w-8 text-right ${c.textMuted}`}>{masterVolume}</span>
+                className="flex-1 h-2 rounded-lg appearance-none cursor-pointer accent-cyan-600" />
+              <span className={`text-xs font-mono w-8 text-right ${c.textMuteded}`}>{masterVolume}</span>
             </div>
 
             {/* Adaptive + Share controls */}
@@ -1647,12 +1657,12 @@ const FocusSoundArchitect = () => {
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
                   adaptiveMode
                     ? isDark ? 'bg-emerald-900/30 text-emerald-300 border border-emerald-700' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                    : isDark ? 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-700' : 'text-stone-500 hover:text-stone-700 hover:bg-stone-100'
+                    : isDark ? 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-700' : 'text-zinc-500 hover:text-zinc-700 hover:bg-zinc-100'
                 }`}>
                 🎙️ {adaptiveMode ? 'Adaptive On' : 'Adaptive Volume'}
               </button>
               <button onClick={generateShareUrl}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${isDark ? 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-700' : 'text-stone-500 hover:text-stone-700 hover:bg-stone-100'}`}>
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${isDark ? 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-700' : 'text-zinc-500 hover:text-zinc-700 hover:bg-zinc-100'}`}>
                 🔗 Share
               </button>
               {Object.values(mutedLayers).some(v => v) && (
@@ -1665,10 +1675,10 @@ const FocusSoundArchitect = () => {
 
             {/* Share URL display */}
             {showShareUrl && shareUrl && (
-              <div className={`mt-3 p-3 rounded-xl border ${isDark ? 'bg-zinc-700/50 border-zinc-600' : 'bg-stone-50 border-stone-200'}`}>
+              <div className={`mt-3 p-3 rounded-xl border ${isDark ? 'bg-zinc-700/50 border-zinc-600' : 'bg-zinc-50 border-zinc-200'}`}>
                 <div className="flex items-center justify-between mb-1">
                   <p className={`text-xs font-bold ${c.text}`}>🔗 Shareable Link</p>
-                  <button onClick={() => setShowShareUrl(false)} className={`text-xs ${c.textMuted}`}>✕</button>
+                  <button onClick={() => setShowShareUrl(false)} className={`text-xs ${c.textMuteded}`}>✕</button>
                 </div>
                 <div className="flex items-center gap-2">
                   <input type="text" readOnly value={shareUrl}
@@ -1676,8 +1686,9 @@ const FocusSoundArchitect = () => {
                     onClick={e => e.target.select()}
                   />
                   <CopyBtn content={shareUrl} label="Copy" />
+            <ActionBar copyContent={shareUrl} copyLabel="Copy" />
                 </div>
-                <p className={`text-[10px] ${c.textMuted} mt-1`}>Anyone with this link can load your soundscape</p>
+                <p className={`text-[10px] ${c.textMuteded} mt-1`}>Anyone with this link can load your soundscape</p>
               </div>
             )}
 
@@ -1691,7 +1702,7 @@ const FocusSoundArchitect = () => {
 
           {/* Scene progress */}
           {activeScene && sceneProgress && (
-            <div className={`${c.card} border rounded-2xl shadow-lg p-5`}>
+            <div className={`${c.card} ${c.border} border rounded-2xl shadow-lg p-5`}>
               <div className="flex items-center justify-between mb-2">
                 <h4 className={`text-sm font-bold ${c.text} flex items-center gap-2`}>
                   🎬 {activeScene.name}
@@ -1703,8 +1714,8 @@ const FocusSoundArchitect = () => {
               </div>
 
               {/* Overall progress bar */}
-              <div className={`w-full h-2 rounded-full overflow-hidden mb-3 ${isDark ? 'bg-zinc-700' : 'bg-stone-200'}`}>
-                <div className="h-full rounded-full bg-violet-500 transition-all duration-1000"
+              <div className={`w-full h-2 rounded-full overflow-hidden mb-3 ${isDark ? 'bg-zinc-700' : 'bg-zinc-200'}`}>
+                <div className="h-full rounded-full bg-cyan-500 transition-all duration-1000"
                   style={{ width: `${sceneProgress.overallProgress * 100}%` }} />
               </div>
 
@@ -1716,18 +1727,18 @@ const FocusSoundArchitect = () => {
                   return (
                     <div key={i} className={`flex-1 p-2 rounded-lg text-center transition-all ${
                       isActive
-                        ? isDark ? 'bg-violet-900/40 border border-violet-600' : 'bg-violet-50 border border-violet-300'
+                        ? isDark ? 'bg-cyan-900/40 border border-cyan-600' : 'bg-cyan-50 border border-cyan-300'
                         : isDone
                           ? isDark ? 'bg-emerald-900/20 border border-emerald-800/40' : 'bg-emerald-50 border border-emerald-200'
-                          : isDark ? 'bg-zinc-700/30 border border-zinc-700' : 'bg-stone-50 border border-stone-200'
+                          : isDark ? 'bg-zinc-700/30 border border-zinc-700' : 'bg-zinc-50 border border-zinc-200'
                     }`}>
-                      <p className={`text-[10px] font-bold ${isActive ? (isDark ? 'text-violet-300' : 'text-violet-700') : isDone ? (isDark ? 'text-emerald-400' : 'text-emerald-600') : c.textMuted}`}>
+                      <p className={`text-[10px] font-bold ${isActive ? (isDark ? 'text-cyan-300' : 'text-cyan-700') : isDone ? (isDark ? 'text-emerald-400' : 'text-emerald-600') : c.textMuteded}`}>
                         {isDone ? '✅' : isActive ? '▶' : ''} {phase.name}
                       </p>
-                      <p className={`text-[9px] ${c.textMuted}`}>{phase.durationMin}m</p>
+                      <p className={`text-[9px] ${c.textMuteded}`}>{phase.durationMin}m</p>
                       {isActive && (
-                        <div className={`mt-1 w-full h-1 rounded-full overflow-hidden ${isDark ? 'bg-zinc-600' : 'bg-stone-200'}`}>
-                          <div className="h-full rounded-full bg-violet-400 transition-all duration-1000"
+                        <div className={`mt-1 w-full h-1 rounded-full overflow-hidden ${isDark ? 'bg-zinc-600' : 'bg-zinc-200'}`}>
+                          <div className="h-full rounded-full bg-cyan-400 transition-all duration-1000"
                             style={{ width: `${sceneProgress.phaseProgress * 100}%` }} />
                         </div>
                       )}
@@ -1736,16 +1747,16 @@ const FocusSoundArchitect = () => {
                 })}
               </div>
 
-              <p className={`text-xs ${c.textSec} text-center`}>
+              <p className={`text-xs ${c.textSecondaryondary} text-center`}>
                 Phase: {sceneProgress.phaseName} · {fmt(sceneProgress.phaseRemainingSec)} remaining
               </p>
             </div>
           )}
 
           {/* Layer mixer */}
-          <div className={`${c.card} border rounded-2xl shadow-lg p-5`}>
+          <div className={`${c.card} ${c.border} border rounded-2xl shadow-lg p-5`}>
             <h4 className={`text-sm font-bold ${c.text} mb-4 flex items-center gap-2`}>
-              <span className={isDark ? 'text-violet-400' : 'text-violet-600'}>🎧</span> Layer Mixer
+              <span className={isDark ? 'text-cyan-400' : 'text-cyan-600'}>🎧</span> Layer Mixer
               {recipe.layers?.some(l => l.type === 'binaural') && (
                 <span className={`text-xs px-2 py-0.5 rounded-full ${isDark ? 'bg-amber-900/30 text-amber-300' : 'bg-amber-50 text-amber-700'}`}>
                   🎧 Use headphones for binaural
@@ -1758,54 +1769,54 @@ const FocusSoundArchitect = () => {
                 if (!typeDef) return null;
                 const vol = layerVolumes[idx] ?? layerDef.volume ?? 50;
                 return (
-                  <div key={idx} className={`p-3 rounded-xl border transition-opacity ${mutedLayers[idx] ? 'opacity-50' : ''} ${isDark ? 'bg-zinc-700/50 border-zinc-600' : 'bg-stone-50 border-stone-200'}`}>
+                  <div key={idx} className={`p-3 rounded-xl border transition-opacity ${mutedLayers[idx] ? 'opacity-50' : ''} ${isDark ? 'bg-zinc-700/50 border-zinc-600' : 'bg-zinc-50 border-zinc-200'}`}>
                     <div className="flex items-center gap-3 mb-2">
                       <span className="text-lg">{typeDef.emoji}</span>
                       <div className="flex-1 min-w-0">
                         <span className={`text-sm font-bold ${c.text}`}>{layerDef.label || typeDef.label}</span>
                         {layerDef.type === 'binaural' && layerDef.hz && (
-                          <span className={`text-xs ml-2 ${c.textMuted}`}>{layerDef.hz}Hz · {layerDef.base_hz || 200}Hz</span>
+                          <span className={`text-xs ml-2 ${c.textMuteded}`}>{layerDef.hz}Hz · {layerDef.base_hz || 200}Hz</span>
                         )}
                       </div>
                       {/* Mute / Solo / EQ / Remove */}
                       <button onClick={() => toggleLayerMute(idx)} title={mutedLayers[idx] ? 'Unmute' : 'Mute'}
-                        className={`p-1 rounded text-xs transition-colors ${mutedLayers[idx] ? (isDark ? 'text-red-400' : 'text-red-500') : (isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-stone-400 hover:text-stone-600')}`}>
+                        className={`p-1 rounded text-xs transition-colors ${mutedLayers[idx] ? (isDark ? 'text-red-400' : 'text-red-500') : (isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-zinc-400 hover:text-zinc-600')}`}>
                         {mutedLayers[idx] ? '🔇' : '🔊'}
                       </button>
                       <button onClick={() => soloLayer(idx)} title="Solo"
-                        className={`p-1 rounded text-[10px] font-bold transition-colors ${isDark ? 'text-zinc-500 hover:text-amber-400' : 'text-stone-400 hover:text-amber-600'}`}>
+                        className={`p-1 rounded text-[10px] font-bold transition-colors ${isDark ? 'text-zinc-500 hover:text-amber-400' : 'text-zinc-400 hover:text-amber-600'}`}>
                         S
                       </button>
                       <button onClick={() => setShowEQ(showEQ === idx ? null : idx)} title="EQ"
-                        className={`p-1 rounded text-[10px] font-bold transition-colors ${showEQ === idx ? (isDark ? 'text-violet-400' : 'text-violet-600') : (isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-stone-400 hover:text-stone-600')}`}>
+                        className={`p-1 rounded text-[10px] font-bold transition-colors ${showEQ === idx ? (isDark ? 'text-cyan-400' : 'text-cyan-600') : (isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-zinc-400 hover:text-zinc-600')}`}>
                         EQ
                       </button>
-                      <span className={`text-xs font-mono w-8 text-right ${c.textMuted}`}>{vol}</span>
+                      <span className={`text-xs font-mono w-8 text-right ${c.textMuteded}`}>{vol}</span>
                       {(recipe.layers || []).length > 1 && (
                         <button onClick={() => removeLayerFromRecipe(idx)}
                           title="Remove layer"
-                          className={`p-1 rounded-lg text-xs transition-colors ${isDark ? 'text-zinc-500 hover:text-red-400 hover:bg-red-900/20' : 'text-stone-400 hover:text-red-500 hover:bg-red-50'}`}>
+                          className={`p-1 rounded-lg text-xs transition-colors ${isDark ? 'text-zinc-500 ${c.deleteHover} hover:bg-red-900/20' : 'text-zinc-400 ${c.deleteHover} hover:bg-red-50'}`}>
                           ✕
                         </button>
                       )}
                     </div>
                     <input type="range" min="0" max="100" value={vol}
                       onChange={e => handleLayerVolume(idx, Number(e.target.value))}
-                      className="w-full h-1.5 rounded-lg appearance-none cursor-pointer accent-violet-600" />
+                      className="w-full h-1.5 rounded-lg appearance-none cursor-pointer accent-cyan-600" />
 
                     {/* Per-layer EQ (3-band) */}
                     {showEQ === idx && (
-                      <div className={`mt-3 pt-3 border-t space-y-2 ${isDark ? 'border-zinc-600' : 'border-stone-200'}`}>
-                        <p className={`text-[10px] font-bold ${c.textMuted}`}>🎚️ EQ</p>
+                      <div className={`mt-3 pt-3 border-t space-y-2 ${isDark ? 'border-zinc-600' : 'border-zinc-200'}`}>
+                        <p className={`text-[10px] font-bold ${c.textMuteded}`}>🎚️ EQ</p>
                         {EQ_BANDS.map(band => {
                           const val = layerEQs[idx]?.[band.id] || 0;
                           return (
                             <div key={band.id} className="flex items-center gap-2">
-                              <span className={`text-[10px] font-bold w-12 ${c.textMuted}`}>{band.emoji} {band.label}</span>
+                              <span className={`text-[10px] font-bold w-12 ${c.textMuteded}`}>{band.emoji} {band.label}</span>
                               <input type="range" min="-12" max="12" step="1" value={val}
                                 onChange={e => updateLayerEQ(idx, band.id, Number(e.target.value))}
-                                className="flex-1 h-1 rounded-lg appearance-none cursor-pointer accent-violet-500" />
-                              <span className={`text-[10px] font-mono w-8 text-right ${val > 0 ? (isDark ? 'text-emerald-400' : 'text-emerald-600') : val < 0 ? (isDark ? 'text-red-400' : 'text-red-500') : c.textMuted}`}>
+                                className="flex-1 h-1 rounded-lg appearance-none cursor-pointer accent-cyan-500" />
+                              <span className={`text-[10px] font-mono w-8 text-right ${val > 0 ? (isDark ? 'text-emerald-400' : 'text-emerald-600') : val < 0 ? (isDark ? 'text-red-400' : 'text-red-500') : c.textMuteded}`}>
                                 {val > 0 ? '+' : ''}{val}dB
                               </span>
                             </div>
@@ -1814,13 +1825,13 @@ const FocusSoundArchitect = () => {
                         <button onClick={() => {
                           updateLayerEQ(idx, 'bass', 0); updateLayerEQ(idx, 'mid', 0); updateLayerEQ(idx, 'treble', 0);
                         }}
-                          className={`text-[10px] font-bold ${c.textMuted} hover:${c.text}`}>
+                          className={`text-[10px] font-bold ${c.textMuteded} hover:${c.text}`}>
                           Reset EQ
                         </button>
                       </div>
                     )}
 
-                    {layerDef.why && !showEQ && <p className={`text-xs ${c.textMuted} mt-2 leading-relaxed`}>{layerDef.why}</p>}
+                    {layerDef.why && !showEQ && <p className={`text-xs ${c.textMuteded} mt-2 leading-relaxed`}>{layerDef.why}</p>}
                   </div>
                 );
               })}
@@ -1832,21 +1843,21 @@ const FocusSoundArchitect = () => {
                 {!showAddLayer ? (
                   <button onClick={() => setShowAddLayer(true)}
                     className={`w-full flex items-center justify-center gap-2 p-3 rounded-xl border-2 border-dashed transition-all text-sm font-bold ${
-                      isDark ? 'border-zinc-600 text-zinc-400 hover:border-violet-500 hover:text-violet-300' : 'border-stone-300 text-stone-500 hover:border-violet-400 hover:text-violet-600'
+                      isDark ? 'border-zinc-600 text-zinc-400 hover:border-cyan-500 hover:text-cyan-300' : 'border-zinc-300 text-zinc-500 hover:border-cyan-400 hover:text-cyan-600'
                     }`}>
                     ➕ Add Layer
                   </button>
                 ) : (
-                  <div className={`p-3 rounded-xl border ${isDark ? 'bg-zinc-700/30 border-zinc-600' : 'bg-stone-50 border-stone-200'}`}>
+                  <div className={`p-3 rounded-xl border ${isDark ? 'bg-zinc-700/30 border-zinc-600' : 'bg-zinc-50 border-zinc-200'}`}>
                     <div className="flex items-center justify-between mb-2">
                       <p className={`text-xs font-bold ${c.text}`}>Choose a sound layer</p>
-                      <button onClick={() => setShowAddLayer(false)} className={`text-xs ${c.textMuted}`}>✕</button>
+                      <button onClick={() => setShowAddLayer(false)} className={`text-xs ${c.textMuteded}`}>✕</button>
                     </div>
                     <div className="flex flex-wrap gap-1.5">
                       {ADDABLE_LAYERS.filter(al => !(recipe.layers || []).some(l => l.type === al.type && al.type !== 'binaural')).map(al => (
                         <button key={al.type} onClick={() => addLayerToRecipe(al)}
                           className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold border transition-all ${
-                            isDark ? 'border-zinc-600 text-zinc-300 hover:border-violet-500 hover:bg-violet-900/20' : 'border-stone-200 text-stone-600 hover:border-violet-400 hover:bg-violet-50'
+                            isDark ? 'border-zinc-600 text-zinc-300 hover:border-cyan-500 hover:bg-cyan-900/20' : 'border-zinc-200 text-zinc-600 hover:border-cyan-400 hover:bg-cyan-50'
                           }`}>
                           <span>{al.emoji}</span> {al.label}
                         </button>
@@ -1859,8 +1870,8 @@ const FocusSoundArchitect = () => {
           </div>
 
           {/* Smart Feedback */}
-          <div className={`${c.card} border rounded-2xl shadow-lg p-5`}>
-            <p className={`text-xs font-bold ${c.textMuted} mb-2`}>🎛️ How does it sound? (AI adjusts live)</p>
+          <div className={`${c.card} ${c.border} border rounded-2xl shadow-lg p-5`}>
+            <p className={`text-xs font-bold ${c.textMuteded} mb-2`}>🎛️ How does it sound? (AI adjusts live)</p>
             <div className="flex flex-wrap gap-1.5">
               {SMART_FEEDBACK_OPTIONS.map(f => (
                 <button key={f.id}
@@ -1868,30 +1879,30 @@ const FocusSoundArchitect = () => {
                   disabled={smartAdjustLoading}
                   className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold border transition-all ${
                     feedback === f.id
-                      ? isDark ? 'border-violet-500 bg-violet-900/40 text-violet-300' : 'border-violet-400 bg-violet-50 text-violet-700'
-                      : isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-stone-200 text-stone-500 hover:border-stone-400'
+                      ? isDark ? 'border-cyan-500 bg-cyan-900/40 text-cyan-300' : 'border-cyan-400 bg-cyan-50 text-cyan-700'
+                      : isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-zinc-200 text-zinc-500 hover:border-zinc-400'
                   }`}>
-                  {smartAdjustLoading && feedback === f.id ? '⏳' : f.emoji} {f.label}
+                  {smartAdjustLoading && feedback === f.id ? tool?.icon ?? '🎵' : f.emoji} {f.label}
                 </button>
               ))}
             </div>
             {smartAdjustLoading && (
-              <p className={`text-xs ${isDark ? 'text-violet-400' : 'text-violet-600'} mt-2`}>
+              <p className={`text-xs ${isDark ? 'text-cyan-400' : 'text-cyan-600'} mt-2`}>
                 🤖 AI is analyzing and adjusting volumes…
               </p>
             )}
             <div className="flex items-center gap-2 mt-3 pt-3 border-t" style={{ borderColor: isDark ? '#3f3f46' : '#e7e5e4' }}>
               <button onClick={handleGenerate} disabled={loading}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-colors ${isDark ? 'bg-zinc-700 text-zinc-300 hover:bg-zinc-600' : 'bg-stone-100 text-stone-600 hover:bg-stone-200'}`}>
-                {loading ? '⏳' : '🔄'} Full Regenerate
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-colors ${isDark ? 'bg-zinc-700 text-zinc-300 hover:bg-zinc-600' : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'}`}>
+                {loading ? tool?.icon ?? '🎵' : '🔄'} Full Regenerate
               </button>
-              <span className={`text-[10px] ${c.textMuted}`}>Starts over with new AI recipe</span>
+              <span className={`text-[10px] ${c.textMuteded}`}>Starts over with new AI recipe</span>
             </div>
           </div>
 
           {/* Binaural programs shortcut */}
-          <div className={`${c.card} border rounded-2xl shadow-lg p-5`}>
-            <p className={`text-xs font-bold ${c.textMuted} mb-2`}>🧠 Binaural Programs</p>
+          <div className={`${c.card} ${c.border} border rounded-2xl shadow-lg p-5`}>
+            <p className={`text-xs font-bold ${c.textMuteded} mb-2`}>🧠 Binaural Programs</p>
             <div className="flex flex-wrap gap-2">
               {BINAURAL_PROGRAMS.map(bp => (
                 <button key={bp.id} onClick={() => {
@@ -1907,19 +1918,19 @@ const FocusSoundArchitect = () => {
                 }}
                   className={`px-3 py-2 rounded-xl text-xs font-bold border transition-all ${
                     recipe.layers?.find(l => l.type === 'binaural' && l.hz === bp.hz)
-                      ? isDark ? 'border-violet-500 bg-violet-900/40 text-violet-300' : 'border-violet-400 bg-violet-50 text-violet-700'
-                      : isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-stone-200 text-stone-500 hover:border-stone-400'
+                      ? isDark ? 'border-cyan-500 bg-cyan-900/40 text-cyan-300' : 'border-cyan-400 bg-cyan-50 text-cyan-700'
+                      : isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-zinc-200 text-zinc-500 hover:border-zinc-400'
                   }`}>
                   {bp.emoji} {bp.label}
                 </button>
               ))}
             </div>
-            <p className={`text-xs ${c.textMuted} mt-2`}>🎧 Headphones required for binaural effect</p>
+            <p className={`text-xs ${c.textMuteded} mt-2`}>🎧 Headphones required for binaural effect</p>
           </div>
 
           {/* Tips & Adjustments */}
           {(recipe.usage_tips || recipe.adjustment_guide) && (
-            <div className={`${c.card} border rounded-2xl shadow-lg p-5`}>
+            <div className={`${c.card} ${c.border} border rounded-2xl shadow-lg p-5`}>
               <button onClick={() => setShowTips(!showTips)}
                 className={`flex items-center gap-2 w-full text-sm font-bold ${c.text}`}>
                 <span className={isDark ? 'text-amber-400' : 'text-amber-600'}>💡</span> Tips & Adjustments
@@ -1928,29 +1939,29 @@ const FocusSoundArchitect = () => {
               {showTips && (
                 <div className="mt-4 space-y-3">
                   {recipe.usage_tips?.map((tip, i) => (
-                    <div key={i} className={`flex items-start gap-2 text-sm ${c.textSec}`}>
-                      <span className={isDark ? 'text-violet-400' : 'text-violet-600'}>•</span>
+                    <div key={i} className={`flex items-start gap-2 text-sm ${c.textSecondaryondary}`}>
+                      <span className={isDark ? 'text-cyan-400' : 'text-cyan-600'}>•</span>
                       <span>{tip}</span>
                     </div>
                   ))}
                   {recipe.adjustment_guide && (
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-3">
                       {recipe.adjustment_guide.if_too_distracting && (
-                        <div className={`p-3 rounded-xl border text-xs ${isDark ? 'bg-zinc-700/50 border-zinc-600' : 'bg-stone-50 border-stone-200'}`}>
+                        <div className={`p-3 rounded-xl border text-xs ${isDark ? 'bg-zinc-700/50 border-zinc-600' : 'bg-zinc-50 border-zinc-200'}`}>
                           <span className={`font-bold block mb-1 ${isDark ? 'text-amber-400' : 'text-amber-600'}`}>Too distracting?</span>
-                          <span className={c.textSec}>{recipe.adjustment_guide.if_too_distracting}</span>
+                          <span className={c.textSecondaryondary}>{recipe.adjustment_guide.if_too_distracting}</span>
                         </div>
                       )}
                       {recipe.adjustment_guide.if_not_enough && (
-                        <div className={`p-3 rounded-xl border text-xs ${isDark ? 'bg-zinc-700/50 border-zinc-600' : 'bg-stone-50 border-stone-200'}`}>
+                        <div className={`p-3 rounded-xl border text-xs ${isDark ? 'bg-zinc-700/50 border-zinc-600' : 'bg-zinc-50 border-zinc-200'}`}>
                           <span className={`font-bold block mb-1 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>Not enough?</span>
-                          <span className={c.textSec}>{recipe.adjustment_guide.if_not_enough}</span>
+                          <span className={c.textSecondaryondary}>{recipe.adjustment_guide.if_not_enough}</span>
                         </div>
                       )}
                       {recipe.adjustment_guide.after_30_minutes && (
-                        <div className={`p-3 rounded-xl border text-xs ${isDark ? 'bg-zinc-700/50 border-zinc-600' : 'bg-stone-50 border-stone-200'}`}>
-                          <span className={`font-bold block mb-1 ${isDark ? 'text-violet-400' : 'text-violet-600'}`}>After 30 min</span>
-                          <span className={c.textSec}>{recipe.adjustment_guide.after_30_minutes}</span>
+                        <div className={`p-3 rounded-xl border text-xs ${isDark ? 'bg-zinc-700/50 border-zinc-600' : 'bg-zinc-50 border-zinc-200'}`}>
+                          <span className={`font-bold block mb-1 ${isDark ? 'text-cyan-400' : 'text-cyan-600'}`}>After 30 min</span>
+                          <span className={c.textSecondaryondary}>{recipe.adjustment_guide.after_30_minutes}</span>
                         </div>
                       )}
                     </div>
@@ -1965,7 +1976,7 @@ const FocusSoundArchitect = () => {
             {/* Save */}
             {!showSaveInput ? (
               <button onClick={() => setShowSaveInput(true)}
-                className={`flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-bold transition-colors ${isDark ? 'bg-zinc-700 text-zinc-300 hover:bg-zinc-600' : 'bg-stone-100 text-gray-600 hover:bg-stone-200'}`}>
+                className={`flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-bold transition-colors ${isDark ? 'bg-zinc-700 text-zinc-300 hover:bg-zinc-600' : 'bg-zinc-100 text-gray-600 hover:bg-zinc-200'}`}>
                 💾 Save
               </button>
             ) : (
@@ -1977,18 +1988,18 @@ const FocusSoundArchitect = () => {
                   autoFocus
                 />
                 <button onClick={saveSoundscape} disabled={!saveName.trim()}
-                  className="px-3 py-2 rounded-xl text-sm font-bold bg-violet-600 hover:bg-violet-700 text-white transition-colors">
+                  className="px-3 py-2 rounded-xl text-sm font-bold bg-cyan-600 hover:bg-cyan-700 text-white transition-colors">
                   ✓
                 </button>
                 <button onClick={() => { setShowSaveInput(false); setSaveName(''); }}
-                  className={`text-sm ${c.textMuted}`}>✕</button>
+                  className={`text-sm ${c.textMuteded}`}>✕</button>
               </div>
             )}
 
             <CopyBtn content={recipeText} label="Copy" />
 
             <button onClick={handleReset}
-              className={`flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-bold transition-colors ${isDark ? 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-700' : 'text-gray-500 hover:text-gray-700 hover:bg-stone-100'}`}>
+              className={`flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-bold transition-colors ${isDark ? 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-700' : 'text-gray-500 hover:text-gray-700 hover:bg-zinc-100'}`}>
               Start Over
             </button>
           </div>
@@ -2001,8 +2012,8 @@ const FocusSoundArchitect = () => {
           )}
 
           {/* Cross-references */}
-          <div className={`${c.card} border rounded-2xl p-4`}>
-            <p className={`text-xs font-bold ${c.textMuted} mb-2`}>🔗 Related tools</p>
+          <div className={`${c.card} ${c.border} border rounded-2xl p-4`}>
+            <p className={`text-xs font-bold ${c.textMuteded} mb-2`}>🔗 Related tools</p>
             <div className="flex flex-wrap gap-2">
               {[
                 { name: 'Focus Pocus', slug: 'FocusPocus', emoji: '🎩' },
@@ -2010,7 +2021,7 @@ const FocusSoundArchitect = () => {
                 { name: 'Task Avalanche Breaker', slug: 'TaskAvalancheBreaker', emoji: '🏔️' },
               ].map(t => (
                 <a key={t.slug} href={`/${t.slug}`} target="_blank" rel="noopener noreferrer"
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${isDark ? 'bg-zinc-700 text-zinc-300 hover:bg-zinc-600' : 'bg-stone-100 text-stone-600 hover:bg-stone-200'}`}>
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${isDark ? 'bg-zinc-700 text-zinc-300 hover:bg-zinc-600' : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'}`}>
                   {t.emoji} {t.name}
                 </a>
               ))}
@@ -2018,6 +2029,14 @@ const FocusSoundArchitect = () => {
           </div>
         </div>
       )}
+        <div className={`mt-6 pt-4 border-t text-sm ${c.border} ${c.textMuted}`}>
+          <p className="mb-2 font-medium">You might also like:</p>
+          <div className="flex flex-wrap gap-2">
+            {[{slug:'focus-pocus',label:'🎯 Focus Pocus'},{slug:'brain-state-deejay',label:'🎵 Brain State Deejay'},{slug:'virtual-body-double',label:'👥 Virtual Body Double'}].map(({slug,label})=>(
+              <a key={slug} href={`/tool/${slug}`} className={linkStyle}>{label}</a>
+            ))}
+          </div>
+        </div>
     </div>
   );
 };

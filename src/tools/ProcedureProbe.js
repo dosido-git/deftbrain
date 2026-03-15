@@ -20,15 +20,14 @@ const PROVIDER_TYPES = [
 
 const URGENCY_LEVELS = [
   { value: 'emergency', label: 'Urgent', emoji: '🚨' },
-  { value: 'soon', label: 'Within weeks', emoji: '⏳' },
+  { value: 'soon', label: 'Within weeks', emoji: '🕐 ' },
   { value: 'elective', label: 'Elective / can wait', emoji: '📅' },
   { value: 'unsure', label: 'Not sure', emoji: '🤷' },
 ];
 
-const ProcedureProbe = () => {
+const ProcedureProbe = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
-  const { theme } = useTheme();
-  const isDark = theme === 'dark';
+  const { isDark } = useTheme();
 
   // ─── Colors ───
   const c = {
@@ -40,18 +39,15 @@ const ProcedureProbe = () => {
     input:         isDark
       ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
       : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-500/20',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'    : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700'  : 'border-gray-200',
     success:       isDark ? 'bg-green-900/20 border-green-700 text-green-200'  : 'bg-green-50 border-green-200 text-green-800',
     warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200'  : 'bg-amber-50 border-amber-200 text-amber-800',
-    error:         isDark ? 'bg-red-900/20 border-red-700 text-red-200'        : 'bg-red-50 border-red-200 text-red-800',
-    info:          isDark ? 'bg-blue-900/20 border-blue-700 text-blue-200'     : 'bg-blue-50 border-blue-200 text-blue-800',
     badgeNeutral:  isDark ? 'bg-zinc-700 text-zinc-300'      : 'bg-gray-100 text-gray-600',
-    badgeGold:     isDark ? 'bg-amber-900/30 text-amber-300' : 'bg-amber-100 text-amber-700',
-    badgePrimary:  isDark ? 'bg-blue-900/30 text-blue-300'   : 'bg-blue-100 text-blue-700',
     pillActive:    isDark ? 'bg-cyan-600 border-cyan-600 text-white'           : 'bg-cyan-600 border-cyan-600 text-white',
     pillInactive:  isDark ? 'bg-zinc-800 border-zinc-600 text-zinc-300 hover:border-zinc-500' : 'bg-white border-gray-200 text-gray-600 hover:border-gray-300',
+    danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
   };
 
   const linkStyle = isDark
@@ -94,7 +90,7 @@ const ProcedureProbe = () => {
       setHistory(prev => [{
         id: Date.now(),
         timestamp: new Date().toISOString(),
-        preview: procedure.trim().slice(0, 40),
+        preview: procedure.trim().slice(0, 6),
         result: data,
       }, ...(prev || [])].slice(0, 6));
     } catch (err) {
@@ -152,7 +148,7 @@ const ProcedureProbe = () => {
           <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
             <span>🔬</span> Procedure Probe
           </h2>
-          <p className={`text-sm ${c.textSecondary} mt-1`}>Be an informed patient before you say yes</p>
+          <p className={`text-sm ${c.textSecondaryondary} mt-1`}>Be an informed patient before you say yes</p>
         </div>
 
         {/* Procedure */}
@@ -189,7 +185,7 @@ const ProcedureProbe = () => {
         {/* Quote */}
         <div className="mb-4">
           <label className={`text-sm font-bold ${c.text} block mb-1.5`}>
-            Quoted price <span className={`font-normal ${c.textMuted}`}>(optional)</span>
+            Quoted price <span className={`font-normal ${c.textMuteded}`}>(optional)</span>
           </label>
           <input
             type="text"
@@ -204,7 +200,7 @@ const ProcedureProbe = () => {
         {/* Insurance */}
         <div className="mb-4">
           <label className={`text-sm font-bold ${c.text} block mb-1.5`}>
-            Insurance situation <span className={`font-normal ${c.textMuted}`}>(optional)</span>
+            Insurance situation <span className={`font-normal ${c.textMuteded}`}>(optional)</span>
           </label>
           <input
             type="text"
@@ -237,7 +233,7 @@ const ProcedureProbe = () => {
         {/* Concerns */}
         <div className="mb-5">
           <label className={`text-sm font-bold ${c.text} block mb-1.5`}>
-            Your concerns <span className={`font-normal ${c.textMuted}`}>(optional)</span>
+            Your concerns <span className={`font-normal ${c.textMuteded}`}>(optional)</span>
           </label>
           <input
             type="text"
@@ -250,7 +246,7 @@ const ProcedureProbe = () => {
         </div>
 
         {/* Pre-result cross-ref */}
-        <p className={`text-xs text-center ${c.textMuted} mb-4`}>
+        <p className={`text-xs text-center ${c.textMuteded} mb-4`}>
           Got a bill already?{' '}
           <a href="/BillRescue" className={linkStyle}>Bill Rescue</a>{' '}
           helps you fight unexpected medical charges.
@@ -261,16 +257,16 @@ const ProcedureProbe = () => {
           <button
             onClick={generate}
             disabled={loading || !procedure.trim()}
-            className={`flex-1 ${c.btnPrimary} disabled:opacity-40 disabled:cursor-not-allowed font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-2 min-h-[48px] shadow-lg`}
+            className={`flex-1 ${c.btnPrimaryPrimary} disabled:opacity-40 disabled:cursor-not-allowed font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-2 min-h-[48px] shadow-lg`}
           >
             {loading ? (
-              <><span className="animate-spin inline-block">🦷</span> Researching...</>
+              <><span className="animate-spin inline-block">{tool?.icon ?? '⚙️'}</span> Researching...</>
             ) : (
               <><span>🔍</span> Prepare Me</>
             )}
           </button>
           {results && (
-            <button onClick={handleReset} className={`px-5 py-3 ${c.btnSecondary} rounded-xl font-bold min-h-[48px]`}>
+            <button onClick={handleReset} className={`px-5 py-3 ${c.btnPrimarySecondaryondary} rounded-xl font-bold min-h-[48px]`}>
               ↩ Start Over
             </button>
           )}
@@ -279,7 +275,7 @@ const ProcedureProbe = () => {
 
       {/* ── ERROR ── */}
       {error && (
-        <div className={`${c.error} border rounded-xl p-4 flex items-start gap-3`}>
+        <div className={`${c.danger} border rounded-xl p-4 flex items-start gap-3`}>
           <span className="flex-shrink-0 mt-0.5">⚠️</span>
           <p className="text-sm">{error}</p>
         </div>
@@ -299,14 +295,14 @@ const ProcedureProbe = () => {
           {/* ── PLAIN ENGLISH ── */}
           {r.plain_english && (
             <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-              <p className={`text-xs font-bold ${c.textMuted} mb-1`}>In plain language:</p>
+              <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>In plain language:</p>
               <p className={`text-sm ${c.text} leading-relaxed`}>{r.plain_english}</p>
             </div>
           )}
 
           {/* ── URGENCY CHECK ── */}
           {r.urgency_check && (
-            <div className={`${r.urgency_check.time_sensitive ? c.warning : c.info} border rounded-xl p-4 flex items-start gap-3`}>
+            <div className={`${r.urgency_check.time_sensitive ? c.warning : c.cardAlt} border rounded-xl p-4 flex items-start gap-3`}>
               <span className="flex-shrink-0 mt-0.5">{r.urgency_check.time_sensitive ? '⏰' : 'ℹ️'}</span>
               <div>
                 <p className="text-xs font-bold mb-1">{r.urgency_check.time_sensitive ? 'Time-sensitive' : 'Not urgent'}</p>
@@ -321,18 +317,18 @@ const ProcedureProbe = () => {
               <div className="flex items-center gap-2 mb-2">
                 <span className={`text-[9px] font-bold px-2.5 py-1 rounded-full ${
                   r.is_this_standard.verdict === 'Standard' ? c.success :
-                  r.is_this_standard.verdict.includes('second opinion') ? c.warning : c.badgePrimary
+                  r.is_this_standard.verdict.includes('second opinion') ? c.warning : c.success
                 } border`}>
                   {r.is_this_standard.verdict}
                 </span>
               </div>
-              <p className={`text-sm ${c.textSecondary} leading-relaxed mb-3`}>{r.is_this_standard.explanation}</p>
+              <p className={`text-sm ${c.textSecondaryondary} leading-relaxed mb-3`}>{r.is_this_standard.explanation}</p>
               {r.is_this_standard.alternatives?.length > 0 && (
                 <div>
-                  <p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>Alternatives to discuss:</p>
+                  <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>Alternatives to discuss:</p>
                   <div className="space-y-1">
                     {r.is_this_standard.alternatives.map((alt, i) => (
-                      <p key={i} className={`text-xs ${c.textSecondary}`}>• {alt}</p>
+                      <p key={i} className={`text-xs ${c.textSecondaryondary}`}>• {alt}</p>
                     ))}
                   </div>
                 </div>
@@ -349,16 +345,16 @@ const ProcedureProbe = () => {
               >
                 <h3 className={`text-sm font-bold ${c.text} flex items-center gap-2`}>
                   <span>❓</span> Questions to Ask Your Provider
-                  <span className={`text-[9px] px-2 py-0.5 rounded-full ${c.badgeGold}`}>{r.questions_to_ask.length}</span>
+                  <span className={`text-[9px] px-2 py-0.5 rounded-full ${c.warning}`}>{r.questions_to_ask.length}</span>
                 </h3>
-                <span className={c.textMuted}>{expandedSections.questions ? '▲' : '▼'}</span>
+                <span className={c.textMuteded}>{expandedSections.questions ? '▲' : '▼'}</span>
               </button>
               {expandedSections.questions && (
                 <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-3`}>
                   {r.questions_to_ask.map((q, i) => (
                     <div key={i} className={`${c.cardAlt} rounded-lg p-3`}>
                       <p className={`text-xs font-bold ${c.text} mb-1`}>"{q.question}"</p>
-                      <p className={`text-xs ${c.textMuted} italic`}>{q.why_it_matters}</p>
+                      <p className={`text-xs ${c.textMuteded} italic`}>{q.why_it_matters}</p>
                     </div>
                   ))}
                 </div>
@@ -372,15 +368,15 @@ const ProcedureProbe = () => {
               <h3 className={`text-sm font-bold ${c.text} mb-3 flex items-center gap-2`}><span>💰</span> Cost Picture</h3>
               <div className="grid grid-cols-3 gap-3 mb-3">
                 <div className={`${c.cardAlt} rounded-lg p-3 text-center`}>
-                  <p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>Typical Range</p>
+                  <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>Typical Range</p>
                   <p className={`text-sm font-bold ${c.text}`}>{r.cost_picture.typical_range}</p>
                 </div>
                 <div className={`${c.cardAlt} rounded-lg p-3 text-center`}>
-                  <p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>Insurance</p>
-                  <p className={`text-xs font-medium ${c.textSecondary}`}>{r.cost_picture.insurance_typically}</p>
+                  <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>Insurance</p>
+                  <p className={`text-xs font-medium ${c.textSecondaryondary}`}>{r.cost_picture.insurance_typically}</p>
                 </div>
                 <div className={`${c.cardAlt} rounded-lg p-3 text-center`}>
-                  <p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>Out of Pocket</p>
+                  <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>Out of Pocket</p>
                   <p className={`text-sm font-bold ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>{r.cost_picture.out_of_pocket_estimate}</p>
                 </div>
               </div>
@@ -398,7 +394,7 @@ const ProcedureProbe = () => {
                 className="w-full p-4 flex items-center justify-between text-left min-h-[44px]"
               >
                 <h3 className={`text-sm font-bold ${c.text} flex items-center gap-2`}><span>📋</span> What to Expect</h3>
-                <span className={c.textMuted}>{expandedSections.expect ? '▲' : '▼'}</span>
+                <span className={c.textMuteded}>{expandedSections.expect ? '▲' : '▼'}</span>
               </button>
               {expandedSections.expect && (
                 <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-2`}>
@@ -411,7 +407,7 @@ const ProcedureProbe = () => {
                   ].filter(([, v]) => v).map(([label, value], i) => (
                     <div key={i} className="flex gap-2">
                       <p className={`text-xs font-bold ${c.text} w-32 flex-shrink-0`}>{label}</p>
-                      <p className={`text-xs ${c.textSecondary}`}>{value}</p>
+                      <p className={`text-xs ${c.textSecondaryondary}`}>{value}</p>
                     </div>
                   ))}
                 </div>
@@ -425,7 +421,7 @@ const ProcedureProbe = () => {
               <p className={`text-xs font-bold ${c.text} mb-2`}>🚩 Red flags to watch for</p>
               <div className="space-y-1.5">
                 {r.red_flags.map((flag, i) => (
-                  <p key={i} className={`text-xs ${c.textSecondary} leading-relaxed`}>• {flag}</p>
+                  <p key={i} className={`text-xs ${c.textSecondaryondary} leading-relaxed`}>• {flag}</p>
                 ))}
               </div>
             </div>
@@ -452,7 +448,7 @@ const ProcedureProbe = () => {
 
           {/* Conditional cross-ref: second opinion recommended */}
           {r.second_opinion?.recommended && (
-            <p className={`text-xs text-center ${c.textMuted}`}>
+            <p className={`text-xs text-center ${c.textMuteded}`}>
               Getting a second opinion?{' '}
               <a href="/DoctorVisitTranslator" className={linkStyle}>Doctor Visit Translator</a>{' '}
               helps you understand what the next doctor says too.
@@ -460,14 +456,14 @@ const ProcedureProbe = () => {
           )}
 
           {/* ── DISCLAIMER ── */}
-          <div className={`${c.info} border rounded-xl p-4 flex items-start gap-3`}>
+          <div className={`${c.cardAlt} border rounded-xl p-4 flex items-start gap-3`}>
             <span className="flex-shrink-0 mt-0.5">⚕️</span>
             <p className="text-xs leading-relaxed">This is educational information to help you have better conversations with your healthcare provider. It is not medical advice. Always discuss treatment decisions with your doctor or dentist.</p>
           </div>
 
           {/* Post-result cross-refs */}
           <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 space-y-2`}>
-            <p className={`text-xs font-semibold ${c.textMuted} uppercase tracking-wider`}>Related tools</p>
+            <p className={`text-xs font-semibold ${c.textMuteded} uppercase tracking-wider`}>Related tools</p>
             <div className="flex flex-wrap gap-x-4 gap-y-1">
               <a href="/DoctorVisitTranslator" className={`text-xs ${linkStyle}`}>🩺 Doctor Visit Translator</a>
               <a href="/BillRescue" className={`text-xs ${linkStyle}`}>🧾 Bill Rescue</a>
@@ -485,9 +481,9 @@ const ProcedureProbe = () => {
             {history.map(entry => (
               <button key={entry.id}
                 onClick={() => setResults(entry.result)}
-                className={`w-full text-left px-3 py-2 rounded-lg ${c.btnSecondary} text-xs flex items-center gap-2`}
+                className={`w-full text-left px-3 py-2 rounded-lg ${c.btnPrimarySecondaryondary} text-xs flex items-center gap-2`}
               >
-                <span className={c.textMuted}>
+                <span className={c.textMuteded}>
                   {new Date(entry.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
                 </span>
                 <span className={`${c.text} truncate`}>{entry.preview}{entry.preview?.length >= 40 ? '…' : ''}</span>
@@ -496,6 +492,14 @@ const ProcedureProbe = () => {
           </div>
         </div>
       )}
+        <div className={`mt-6 pt-4 border-t text-sm ${c.border} ${c.textMuted}`}>
+          <p className="mb-2 font-medium">You might also like:</p>
+          <div className="flex flex-wrap gap-2">
+            {[{slug:'doctor-visit-translator',label:'🩺 Doctor Visit'},{slug:'complaint-escalation-writer',label:'📝 Complaint Writer'},{slug:'final-wish',label:'📜 Final Wish'}].map(({slug,label})=>(
+              <a key={slug} href={`/tool/${slug}`} className={linkStyle}>{label}</a>
+            ))}
+          </div>
+        </div>
     </div>
   );
 };

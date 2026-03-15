@@ -3,14 +3,11 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
-import { getToolById } from '../data/tools';
-import { CopyBtn, ShareBtn, PrintBtn, ActionBar } from '../components/ActionButtons';
+import { CopyBtn, ActionBar } from '../components/ActionButtons';
 
-const DifficultTalkCoach = () => {
+const DifficultTalkCoach = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
-  const { theme } = useTheme();
-  const isDark = theme === 'dark';
-  const toolData = getToolById('DifficultTalkCoach');
+  const { isDark } = useTheme();
   const chatEndRef = useRef(null);
 
   // ─── Theme ───
@@ -20,29 +17,33 @@ const DifficultTalkCoach = () => {
     text: isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted: isDark ? 'text-zinc-500' : 'text-gray-400',
-    label: isDark ? 'text-zinc-200' : 'text-gray-800',
-    input: isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder-zinc-400' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400',
-    btnPrimary: isDark ? 'bg-violet-600 hover:bg-violet-500 text-white' : 'bg-violet-600 hover:bg-violet-700 text-white',
+    input: isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:ring-cyan-500 focus:border-cyan-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:ring-cyan-500 focus:border-cyan-500',
+    btnPrimary: isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
     btnSecondary: isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border: isDark ? 'border-zinc-700' : 'border-gray-200',
-    chip: (active) => active
-      ? (isDark ? 'bg-violet-900/40 border-violet-500 text-violet-200' : 'bg-violet-100 border-violet-500 text-violet-800')
-      : (isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-200 text-gray-600 hover:border-gray-300'),
-    tab: (active) => active
-      ? (isDark ? 'border-violet-500 text-violet-300' : 'border-violet-600 text-violet-700')
-      : (isDark ? 'border-transparent text-zinc-500 hover:text-zinc-300' : 'border-transparent text-gray-400 hover:text-gray-600'),
     success: isDark ? 'bg-green-900/20 border-green-700 text-green-200' : 'bg-green-50 border-green-300 text-green-800',
     warning: isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
     danger: isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
-    info: isDark ? 'bg-blue-900/20 border-blue-700 text-blue-200' : 'bg-blue-50 border-blue-200 text-blue-800',
-    purple: isDark ? 'bg-purple-900/20 border-purple-700 text-purple-200' : 'bg-purple-50 border-purple-200 text-purple-800',
-    simUser: isDark ? 'bg-violet-900/30 border-violet-700' : 'bg-violet-50 border-violet-200',
+    // Bespoke tool-specific keys
+    chipActive: isDark ? 'bg-cyan-900/40 border-cyan-500 text-cyan-200' : 'bg-cyan-50 border-cyan-500 text-cyan-800',
+    chipInactive: isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-200 text-gray-600 hover:border-gray-300',
+    tabActive: isDark ? 'border-cyan-500 text-cyan-300' : 'border-cyan-600 text-cyan-700',
+    tabInactive: isDark ? 'border-transparent text-zinc-500 hover:text-zinc-300' : 'border-transparent text-gray-400 hover:text-gray-600',
+    highlight: isDark ? 'bg-cyan-900/20 border-cyan-700 text-cyan-200' : 'bg-cyan-50 border-cyan-200 text-cyan-800',
+    simUser: isDark ? 'bg-cyan-900/30 border-cyan-700' : 'bg-cyan-50 border-cyan-200',
     simThem: isDark ? 'bg-zinc-700 border-zinc-600' : 'bg-gray-100 border-gray-200',
     simCoach: isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-200',
   };
 
+  const chip = (active) => active ? c.chipActive : c.chipInactive;
+  const tab = (active) => active ? c.tabActive : c.tabInactive;
+
+  const linkStyle = isDark
+    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
+    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
+
   // ─── Input State ───
-  const [topic, setTopic] = useState('');
+  const [topic, setTopic] = usePersistentState('dtc-topic', '');
   const [relationship, setRelationship] = useState('');
   const [communicationStyle, setCommunicationStyle] = useState('Direct');
   const [resistanceLevel, setResistanceLevel] = useState(50);
@@ -53,7 +54,8 @@ const DifficultTalkCoach = () => {
   const [previousAttempts, setPreviousAttempts] = useState('');
 
   // ─── Results State ───
-  const [results, setResults] = useState(null);
+  const [results, setResults] = usePersistentState('dtc-results', null);
+  const resultsRef = useRef(null);
   const [error, setError] = useState('');
   const [activeTab, setActiveTab] = useState('prepare');
   const [expandedSections, setExpandedSections] = useState({});
@@ -128,7 +130,7 @@ const DifficultTalkCoach = () => {
     { min: 0, max: 20, label: 'Very receptive', color: isDark ? 'text-green-400' : 'text-green-600' },
     { min: 21, max: 40, label: 'Somewhat open', color: isDark ? 'text-emerald-400' : 'text-emerald-600' },
     { min: 41, max: 60, label: 'Defensive', color: isDark ? 'text-amber-400' : 'text-amber-600' },
-    { min: 61, max: 80, label: 'Very resistant', color: isDark ? 'text-orange-400' : 'text-orange-600' },
+    { min: 61, max: 80, label: 'Very resistant', color: isDark ? 'text-amber-500' : 'text-amber-700' },
     { min: 81, max: 100, label: 'Hostile / Shutdown', color: isDark ? 'text-red-400' : 'text-red-600' },
   ];
 
@@ -171,11 +173,13 @@ const DifficultTalkCoach = () => {
       // Save to history
       setStrategyHistory(prev => [{
         id: Date.now().toString(),
-        topic: topic.trim().slice(0, 120),
+        topic: topic.trim().slice(0, 60),
         relationship,
         date: new Date().toISOString(),
         approachCount: data.conversation_approaches?.length || 0,
-      }, ...prev].slice(0, 15));
+        preview: topic.trim().slice(0, 40),
+      }, ...prev].slice(0, 6));
+      setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
     } catch (err) {
       setError(err.message || 'Failed to generate strategy. Please try again.');
     }
@@ -361,14 +365,14 @@ const DifficultTalkCoach = () => {
       `"${approach.script.opening}"`,
       '',
       '✅ PHRASES TO REACH FOR',
-      ...approach.script.specific_phrases.slice(0, 4).map(p => `• "${p}"`),
+      ...approach.script.specific_phrases.slice(0, 6).map(p => `• "${p}"`),
       '',
     ];
     if (approach.what_NOT_to_say?.length > 0) {
-      lines.push('🚫 DON\'T SAY', ...approach.what_NOT_to_say.slice(0, 3).map(i => `• ${i}`), '');
+      lines.push('🚫 DON\'T SAY', ...approach.what_NOT_to_say.slice(0, 6).map(i => `• ${i}`), '');
     }
     if (results.deescalation_toolkit?.tension_lowering_phrases?.length > 0) {
-      lines.push('🛡️ IF THEY GET DEFENSIVE', ...results.deescalation_toolkit.tension_lowering_phrases.slice(0, 2).map(p => `• "${p}"`), '');
+      lines.push('🛡️ IF THEY GET DEFENSIVE', ...results.deescalation_toolkit.tension_lowering_phrases.slice(0, 6).map(p => `• "${p}"`), '');
     }
     lines.push('🏁 CLOSING LINE', `"${approach.script.closing}"`, '');
     if (results.deescalation_toolkit?.exit_protocol) {
@@ -398,7 +402,7 @@ const DifficultTalkCoach = () => {
           width: 18px;
           height: 18px;
           border-radius: 50%;
-          background: #7c3aed;
+          background: rgb(124,58,237);
           cursor: pointer;
           border: 2px solid white;
           box-shadow: 0 1px 3px rgba(0,0,0,0.3);
@@ -408,7 +412,7 @@ const DifficultTalkCoach = () => {
           width: 18px;
           height: 18px;
           border-radius: 50%;
-          background: #7c3aed;
+          background: rgb(124,58,237);
           cursor: pointer;
           border: 2px solid white;
           box-shadow: 0 1px 3px rgba(0,0,0,0.3);
@@ -417,8 +421,8 @@ const DifficultTalkCoach = () => {
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
         <div>
-          <h2 className={`text-2xl font-bold ${c.text}`}>{toolData?.title || 'Difficult Talk Coach'} {toolData?.icon || '🎭'}</h2>
-          <p className={`text-sm ${c.textMuted}`}>{toolData?.tagline || 'Rehearse hard conversations before they happen'}</p>
+          <h2 className={`text-2xl font-bold ${c.text}`}><span className="mr-2">{tool?.icon ?? '🗣️'}</span>{tool?.title || 'Difficult Talk Coach'}</h2>
+          <p className={`text-sm ${c.textMuted}`}>{tool?.tagline || 'Practice hard conversations before they happen'}</p>
         </div>
         {strategyHistory.length > 0 && !results && (
           <button onClick={() => toggleSection('history')} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
@@ -461,7 +465,7 @@ const DifficultTalkCoach = () => {
               onChange={(e) => setTopic(e.target.value)}
               placeholder="Describe the conversation you need to have. Be specific — the more context you give, the better your scripts will be."
               rows={4}
-              className={`w-full p-4 border rounded-xl outline-none text-sm resize-y focus:ring-2 focus:ring-violet-300 ${c.input}`}
+              className={`w-full p-4 border rounded-xl outline-none text-sm resize-y focus:ring-2 focus:ring-cyan-500 ${c.input}`}
             />
           </div>
 
@@ -471,7 +475,7 @@ const DifficultTalkCoach = () => {
             <div className="flex flex-wrap gap-2">
               {relationships.map(r => (
                 <button key={r.value} onClick={() => setRelationship(r.value)}
-                  className={`px-3 py-2 rounded-lg border text-sm font-medium transition-all ${c.chip(relationship === r.value)}`}>
+                  className={`px-3 py-2 rounded-lg border text-sm font-medium transition-all ${chip(relationship === r.value)}`}>
                   {r.icon} {r.value}
                 </button>
               ))}
@@ -484,7 +488,7 @@ const DifficultTalkCoach = () => {
             <div className="flex flex-wrap gap-2">
               {goalOptions.map(g => (
                 <button key={g.key} onClick={() => toggleGoal(g.key)}
-                  className={`px-3 py-2 rounded-lg border text-sm font-medium transition-all ${c.chip(goals.includes(g.key))}`}>
+                  className={`px-3 py-2 rounded-lg border text-sm font-medium transition-all ${chip(goals.includes(g.key))}`}>
                   {g.icon} {g.label}
                 </button>
               ))}
@@ -502,7 +506,7 @@ const DifficultTalkCoach = () => {
                 style={{
                   WebkitAppearance: 'none',
                   appearance: 'none',
-                  background: `linear-gradient(to right, #7c3aed ${resistanceLevel}%, ${isDark ? '#3f3f46' : '#e2e8f0'} ${resistanceLevel}%)`,
+                  background: `linear-gradient(to right, rgb(124,58,237) ${resistanceLevel}%, ${isDark ? '#3f3f46' : '#e2e8f0'} ${resistanceLevel}%)`,
                   borderRadius: '8px',
                 }} />
               <div className={`flex justify-between text-xs ${c.textMuted} mt-1`}>
@@ -514,7 +518,7 @@ const DifficultTalkCoach = () => {
               <div className="flex gap-2">
                 {['Direct', 'Indirect', 'Collaborative', 'Assertive'].map(s => (
                   <button key={s} onClick={() => setCommunicationStyle(s)}
-                    className={`px-3 py-1.5 rounded-lg border text-sm font-medium transition-all ${c.chip(communicationStyle === s)}`}>
+                    className={`px-3 py-1.5 rounded-lg border text-sm font-medium transition-all ${chip(communicationStyle === s)}`}>
                     {s}
                   </button>
                 ))}
@@ -526,30 +530,30 @@ const DifficultTalkCoach = () => {
           <div className={`${c.card} rounded-xl shadow-lg p-6 space-y-4`}>
             <p className={`text-xs font-bold uppercase tracking-wide ${c.textMuted}`}>Optional — but makes your strategy much better</p>
             <div>
-              <label className={`block text-sm font-semibold ${c.label} mb-2`}>What are you worried will happen?</label>
+              <label className={`block text-sm font-semibold ${c.textSecondary} mb-2`}>What are you worried will happen?</label>
               <div className="flex flex-wrap gap-2 mb-3">
                 {FEARS.map(fear => (
                   <button key={fear.id} onClick={() => toggleFear(fear.id)}
-                    className={`px-3 py-2 rounded-lg border text-xs font-semibold transition-all ${c.chip(fears.includes(fear.id))}`}>
+                    className={`px-3 py-2 rounded-lg border text-xs font-semibold transition-all ${chip(fears.includes(fear.id))}`}>
                     {fear.label}
                   </button>
                 ))}
               </div>
               <input type="text" value={biggestFear} onChange={(e) => setBiggestFear(e.target.value)}
                 placeholder="Anything else you're worried about? e.g., 'They'll bring up something I did years ago'"
-                className={`w-full p-3 border rounded-xl outline-none text-sm focus:ring-2 focus:ring-violet-300 ${c.input}`} />
+                className={`w-full p-3 border rounded-xl outline-none text-sm focus:ring-2 focus:ring-cyan-500 ${c.input}`} />
             </div>
             <div>
-              <label className={`block text-sm font-semibold ${c.label} mb-1`}>What's their side of this?</label>
+              <label className={`block text-sm font-semibold ${c.textSecondary} mb-1`}>What's their side of this?</label>
               <input type="text" value={theirPerspective} onChange={(e) => setTheirPerspective(e.target.value)}
                 placeholder="e.g., 'They think they're being helpful', 'They don't realize it bothers me'"
-                className={`w-full p-3 border rounded-xl outline-none text-sm focus:ring-2 focus:ring-violet-300 ${c.input}`} />
+                className={`w-full p-3 border rounded-xl outline-none text-sm focus:ring-2 focus:ring-cyan-500 ${c.input}`} />
             </div>
             <div>
-              <label className={`block text-sm font-semibold ${c.label} mb-1`}>Have you tried raising this before?</label>
+              <label className={`block text-sm font-semibold ${c.textSecondary} mb-1`}>Have you tried raising this before?</label>
               <input type="text" value={previousAttempts} onChange={(e) => setPreviousAttempts(e.target.value)}
                 placeholder="e.g., 'Hinted once but backed down', 'Argued about it twice, nothing changed'"
-                className={`w-full p-3 border rounded-xl outline-none text-sm focus:ring-2 focus:ring-violet-300 ${c.input}`} />
+                className={`w-full p-3 border rounded-xl outline-none text-sm focus:ring-2 focus:ring-cyan-500 ${c.input}`} />
             </div>
           </div>
 
@@ -558,8 +562,8 @@ const DifficultTalkCoach = () => {
             className={`w-full py-4 px-6 rounded-xl font-semibold text-lg transition-all flex items-center justify-center gap-2 shadow-lg ${
               loading ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : c.btnPrimary
             }`}>
-            {loading ? (<><span className="inline-block animate-spin text-lg">⏳</span> Building your strategy...</>)
-              : (<><span className="text-lg">🧠</span> Build Conversation Strategy</>)}
+            {loading ? (<><span className="inline-block animate-spin">{tool?.icon ?? '🗣️'}</span> Building your strategy...</>)
+              : (<><span className="text-lg">{tool?.icon ?? '🗣️'}</span> Build Conversation Strategy</>)}
           </button>
 
           {error && (
@@ -572,7 +576,7 @@ const DifficultTalkCoach = () => {
 
       {/* ═══════════════ RESULTS VIEW ═══════════════ */}
       {results && (
-        <div className="space-y-5">
+        <div ref={resultsRef} className="space-y-5">
 
           {/* Controls */}
           <div className={`${c.card} rounded-xl shadow-lg p-4 flex items-center justify-between flex-wrap gap-3`}>
@@ -583,7 +587,7 @@ const DifficultTalkCoach = () => {
                 title={`Conversation Strategy — ${topic.substring(0, 40)}`}
                 copyLabel="Copy All"
               />
-              <button onClick={reset} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${isDark ? 'bg-violet-900/30 text-violet-300 hover:bg-violet-800/40' : 'bg-violet-50 text-violet-700 hover:bg-violet-100'}`}>
+              <button onClick={reset} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
                 <span className="text-sm">🔄</span> New Conversation
               </button>
             </div>
@@ -598,7 +602,7 @@ const DifficultTalkCoach = () => {
               { key: 'debrief', label: '💗 Debrief' },
             ].map(tab => (
               <button key={tab.key} onClick={() => setActiveTab(tab.key)}
-                className={`flex items-center gap-1.5 px-5 py-3 text-sm font-semibold border-b-2 transition-all whitespace-nowrap ${c.tab(activeTab === tab.key)}`}>
+                className={`flex items-center gap-1.5 px-5 py-3 text-sm font-semibold border-b-2 transition-all whitespace-nowrap ${tab(activeTab === tab.key)}`}>
                 {tab.label}
               </button>
             ))}
@@ -625,14 +629,14 @@ const DifficultTalkCoach = () => {
 
               {/* Reality Check */}
               {results.reality_check && (
-                <div className={`${c.info} border rounded-xl p-5`}>
+                <div className={`${c.highlight} border rounded-xl p-5`}>
                   <div className="flex items-start gap-3">
                     <span className="text-xl flex-shrink-0 mt-0.5">🛡️</span>
                     <div>
-                      <h3 className={`text-sm font-bold mb-1 ${isDark ? 'text-blue-200' : 'text-blue-800'}`}>
+                      <h3 className={`text-sm font-bold mb-1 ${isDark ? 'text-cyan-200' : 'text-cyan-800'}`}>
                         Expect This — It Doesn't Mean You're Wrong
                       </h3>
-                      <p className={`text-sm ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>{results.reality_check}</p>
+                      <p className={`text-sm ${isDark ? 'text-cyan-300' : 'text-cyan-700'}`}>{results.reality_check}</p>
                     </div>
                   </div>
                 </div>
@@ -640,7 +644,7 @@ const DifficultTalkCoach = () => {
 
               {/* Situation Reading */}
               {results.situation_reading && (
-                <div className={`${c.card} rounded-xl shadow-lg p-6 border-l-4 ${isDark ? 'border-violet-500' : 'border-violet-400'}`}>
+                <div className={`${c.card} rounded-xl shadow-lg p-6 border-l-4 ${isDark ? 'border-cyan-500' : 'border-cyan-400'}`}>
                   <h3 className={`font-bold ${c.text} mb-3 flex items-center gap-2`}>
                     <span className="text-lg">👁️</span> Situation Reading
                   </h3>
@@ -718,7 +722,7 @@ const DifficultTalkCoach = () => {
                   <div className="flex gap-2 mb-5 overflow-x-auto pb-1">
                     {results.conversation_approaches.map((a, idx) => (
                       <button key={idx} onClick={() => setExpandedApproach(idx)}
-                        className={`px-3 py-2 rounded-lg border text-sm font-semibold whitespace-nowrap transition-all ${c.chip(expandedApproach === idx)}`}>
+                        className={`px-3 py-2 rounded-lg border text-sm font-semibold whitespace-nowrap transition-all ${chip(expandedApproach === idx)}`}>
                         {a.approach_name}
                       </button>
                     ))}
@@ -734,8 +738,8 @@ const DifficultTalkCoach = () => {
                         </div>
 
                         {/* Opening */}
-                        <div className={`p-4 rounded-xl ${isDark ? 'bg-violet-900/20 border-violet-700' : 'bg-violet-50 border-violet-200'} border`}>
-                          <p className={`text-xs font-bold ${isDark ? 'text-violet-400' : 'text-violet-600'} mb-2`}>OPENING — Say this first</p>
+                        <div className={`p-4 rounded-xl ${isDark ? 'bg-cyan-900/20 border-cyan-700' : 'bg-cyan-50 border-cyan-200'} border`}>
+                          <p className={`text-xs font-bold ${isDark ? 'text-cyan-400' : 'text-cyan-600'} mb-2`}>OPENING — Say this first</p>
                           <p className={`text-sm ${c.text} leading-relaxed font-medium`}>"{approach.script.opening}"</p>
                         </div>
 
@@ -744,7 +748,7 @@ const DifficultTalkCoach = () => {
                           <p className={`text-xs font-bold ${c.textMuted} mb-2`}>MAIN POINTS — Cover these in order</p>
                           {approach.script.main_points.map((point, i) => (
                             <div key={i} className={`flex items-start gap-3 mb-2`}>
-                              <span className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${isDark ? 'bg-violet-900/30 text-violet-300' : 'bg-violet-100 text-violet-700'}`}>{i + 1}</span>
+                              <span className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-100 text-cyan-700'}`}>{i + 1}</span>
                               <p className={`text-sm ${c.textSecondary} pt-0.5`}>{point}</p>
                             </div>
                           ))}
@@ -813,9 +817,9 @@ const DifficultTalkCoach = () => {
                   <div className="space-y-4">
                     {results.firmness_messages.map((msg, idx) => {
                       const levelConfig = {
-                        gentle: { bg: isDark ? 'bg-sky-900/20 border-sky-700' : 'bg-sky-50 border-sky-200', accent: isDark ? 'text-sky-400' : 'text-sky-600', emoji: '🌊' },
-                        balanced: { bg: isDark ? 'bg-teal-900/20 border-teal-700' : 'bg-teal-50 border-teal-200', accent: isDark ? 'text-teal-400' : 'text-teal-600', emoji: '⚖️' },
-                        firm: { bg: isDark ? 'bg-orange-900/20 border-orange-700' : 'bg-orange-50 border-orange-200', accent: isDark ? 'text-orange-400' : 'text-orange-600', emoji: '🪨' },
+                        gentle: { bg: isDark ? 'bg-cyan-900/20 border-cyan-700' : 'bg-cyan-50 border-cyan-200', accent: isDark ? 'text-cyan-400' : 'text-cyan-600', emoji: '🌊' },
+                        balanced: { bg: isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-200', accent: isDark ? 'text-emerald-400' : 'text-emerald-600', emoji: '⚖️' },
+                        firm: { bg: isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-200', accent: isDark ? 'text-amber-400' : 'text-amber-600', emoji: '🪨' },
                       };
                       const lc = levelConfig[msg.level] || levelConfig.balanced;
                       const isRecommended = msg.level === 'balanced';
@@ -826,7 +830,7 @@ const DifficultTalkCoach = () => {
                               <span className="text-lg">{lc.emoji}</span>
                               <h4 className={`text-sm font-bold ${lc.accent}`}>{msg.label}</h4>
                               {isRecommended && (
-                                <span className={`text-[9px] font-black uppercase px-1.5 py-0.5 rounded ${isDark ? 'bg-violet-600 text-white' : 'bg-violet-600 text-white'}`}>
+                                <span className={`text-[9px] font-black uppercase px-1.5 py-0.5 rounded ${isDark ? 'bg-cyan-600 text-white' : 'bg-cyan-600 text-white'}`}>
                                   Recommended
                                 </span>
                               )}
@@ -945,7 +949,7 @@ const DifficultTalkCoach = () => {
                   {expandedSections.deescalation && (
                     <div className="space-y-3 mt-4">
                       {results.deescalation_toolkit.for_their_likely_defense && (
-                        <div className={`p-4 rounded-lg ${c.info} border`}>
+                        <div className={`p-4 rounded-lg ${c.highlight} border`}>
                           <p className="text-xs font-bold mb-1">FOR THEIR LIKELY DEFENSE</p>
                           <p className="text-sm">{results.deescalation_toolkit.for_their_likely_defense}</p>
                         </div>
@@ -1009,7 +1013,7 @@ const DifficultTalkCoach = () => {
                         </div>
                       )}
                       {results.preparation_plan.mindset_anchor && (
-                        <div className={`p-4 rounded-lg ${c.purple} border text-center`}>
+                        <div className={`p-4 rounded-lg ${c.highlight} border text-center`}>
                           <p className="text-xs font-bold mb-2">🧘 MINDSET ANCHOR</p>
                           <p className="text-lg font-medium italic">"{results.preparation_plan.mindset_anchor}"</p>
                         </div>
@@ -1021,7 +1025,7 @@ const DifficultTalkCoach = () => {
 
               {/* Confidence Note */}
               {results.confidence_note && (
-                <div className={`p-5 rounded-xl ${c.purple} border text-center`}>
+                <div className={`p-5 rounded-xl ${c.highlight} border text-center`}>
                   <p className="text-sm font-medium">{results.confidence_note}</p>
                 </div>
               )}
@@ -1046,8 +1050,8 @@ const DifficultTalkCoach = () => {
                       </div>
                     )}
                     {results.follow_up_plan.if_they_need_time && (
-                      <div className={`p-3 rounded-lg ${c.info} border`}>
-                        <p className="text-xs font-bold mb-1">⏳ IF THEY NEED TIME</p>
+                      <div className={`p-3 rounded-lg ${c.highlight} border`}>
+                        <p className="text-xs font-bold mb-1">🕐 IF THEY NEED TIME</p>
                         <p className="text-sm">{results.follow_up_plan.if_they_need_time}</p>
                       </div>
                     )}
@@ -1067,15 +1071,20 @@ const DifficultTalkCoach = () => {
               )}
 
               {/* Cross-references */}
-              <div className={`flex flex-col sm:flex-row gap-2 mt-2`}>
-                <p className={`text-xs text-center sm:text-left ${c.textMuted}`}>
-                  Need to say it firmly but diplomatically? <a href="/VelvetHammer" target="_blank" rel="noopener noreferrer" className={`font-semibold ${isDark ? 'text-cyan-400 hover:text-cyan-300' : 'text-cyan-600 hover:text-cyan-700'}`}>Velvet Hammer</a> crafts the words.
-                </p>
-                <p className={`text-xs text-center sm:text-left ${c.textMuted}`}>
-                  If the conversation calls for an apology, <a href="/ApologyCalibrator" target="_blank" rel="noopener noreferrer" className={`font-semibold ${isDark ? 'text-cyan-400 hover:text-cyan-300' : 'text-cyan-600 hover:text-cyan-700'}`}>Apology Calibrator</a> helps you get the tone right.
+              <div className={`p-4 rounded-2xl border ${c.border} ${isDark ? 'bg-zinc-800/60' : 'bg-slate-50'} mt-2`}>
+                <p className={`text-xs ${c.textMuted}`}>
+                  💡 Need diplomatic words?{' '}<a href="/VelvetHammer" target="_blank" rel="noopener noreferrer" className={linkStyle}>Velvet Hammer</a>{' '}
+                  crafts the message. Conversation calls for an apology?{' '}<a href="/ApologyCalibrator" target="_blank" rel="noopener noreferrer" className={linkStyle}>Apology Calibrator</a>{' '}
+                  gets the tone right. Ongoing friction?{' '}<a href="/ConflictCoach" target="_blank" rel="noopener noreferrer" className={linkStyle}>Conflict Coach</a>{' '}
+                  maps the dynamic.
                 </p>
               </div>
             </div>
+          )}
+
+          {/* AI disclaimer */}
+          {activeTab === 'prepare' && (
+            <p className={`text-xs ${c.textMuted} text-center`}>AI-generated strategies — adapt them to your voice and situation.</p>
           )}
 
           {/* ══════ TAB: QUICK REFERENCE CARD ══════ */}
@@ -1107,15 +1116,15 @@ const DifficultTalkCoach = () => {
                   return (
                     <div className="space-y-4">
                       {/* Approach name */}
-                      <div className={`text-center py-2 px-4 rounded-lg ${isDark ? 'bg-violet-900/30 border-violet-700' : 'bg-violet-50 border-violet-200'} border`}>
-                        <p className={`text-xs font-bold uppercase tracking-wide ${isDark ? 'text-violet-400' : 'text-violet-600'}`}>
+                      <div className={`text-center py-2 px-4 rounded-lg ${isDark ? 'bg-cyan-900/30 border-cyan-700' : 'bg-cyan-50 border-cyan-200'} border`}>
+                        <p className={`text-xs font-bold uppercase tracking-wide ${isDark ? 'text-cyan-400' : 'text-cyan-600'}`}>
                           Using: {approach.approach_name}
                         </p>
                       </div>
 
                       {/* Opening Line */}
-                      <div className={`p-4 rounded-xl ${isDark ? 'bg-violet-900/20 border-violet-700' : 'bg-violet-50 border-violet-200'} border`}>
-                        <p className={`text-xs font-bold ${isDark ? 'text-violet-400' : 'text-violet-600'} mb-2`}>🎤 YOUR OPENING LINE</p>
+                      <div className={`p-4 rounded-xl ${isDark ? 'bg-cyan-900/20 border-cyan-700' : 'bg-cyan-50 border-cyan-200'} border`}>
+                        <p className={`text-xs font-bold ${isDark ? 'text-cyan-400' : 'text-cyan-600'} mb-2`}>🎤 YOUR OPENING LINE</p>
                         <p className={`text-base ${c.text} font-medium leading-relaxed`}>"{approach.script.opening}"</p>
                       </div>
 
@@ -1123,7 +1132,7 @@ const DifficultTalkCoach = () => {
                       <div className={`p-4 rounded-lg ${c.success} border`}>
                         <p className="text-xs font-bold mb-2">✅ PHRASES TO REACH FOR</p>
                         <div className="space-y-1.5">
-                          {approach.script.specific_phrases.slice(0, 4).map((phrase, i) => (
+                          {approach.script.specific_phrases.slice(0, 6).map((phrase, i) => (
                             <p key={i} className="text-sm">• "{phrase}"</p>
                           ))}
                         </div>
@@ -1134,7 +1143,7 @@ const DifficultTalkCoach = () => {
                         <div className={`p-4 rounded-lg ${c.danger} border`}>
                           <p className="text-xs font-bold mb-2">🚫 DON'T SAY</p>
                           <div className="space-y-1.5">
-                            {approach.what_NOT_to_say.slice(0, 3).map((item, i) => (
+                            {approach.what_NOT_to_say.slice(0, 6).map((item, i) => (
                               <p key={i} className="text-sm">• {item}</p>
                             ))}
                           </div>
@@ -1143,9 +1152,9 @@ const DifficultTalkCoach = () => {
 
                       {/* If They Get Defensive */}
                       {results.deescalation_toolkit && (
-                        <div className={`p-4 rounded-lg ${c.info} border`}>
+                        <div className={`p-4 rounded-lg ${c.highlight} border`}>
                           <p className="text-xs font-bold mb-2">🛡️ IF THEY GET DEFENSIVE</p>
-                          {results.deescalation_toolkit.tension_lowering_phrases?.slice(0, 2).map((p, i) => (
+                          {results.deescalation_toolkit.tension_lowering_phrases?.slice(0, 6).map((p, i) => (
                             <p key={i} className="text-sm mb-1">• "{p}"</p>
                           ))}
                           {results.deescalation_toolkit.if_they_shut_down && (
@@ -1169,7 +1178,7 @@ const DifficultTalkCoach = () => {
 
                       {/* Mindset Anchor */}
                       {results.preparation_plan?.mindset_anchor && (
-                        <div className={`p-4 rounded-xl ${c.purple} border text-center`}>
+                        <div className={`p-4 rounded-xl ${c.highlight} border text-center`}>
                           <p className="text-xs font-bold mb-2">🧘 REMEMBER</p>
                           <p className="text-lg font-medium italic">"{results.preparation_plan.mindset_anchor}"</p>
                         </div>
@@ -1181,7 +1190,7 @@ const DifficultTalkCoach = () => {
                           <p className={`text-xs ${c.textMuted}`}>Switch approach:</p>
                           {results.conversation_approaches.map((a, idx) => (
                             <button key={idx} onClick={() => setExpandedApproach(idx)}
-                              className={`px-2.5 py-1 rounded-lg border text-xs font-semibold transition-all ${c.chip(expandedApproach === idx)}`}>
+                              className={`px-2.5 py-1 rounded-lg border text-xs font-semibold transition-all ${chip(expandedApproach === idx)}`}>
                               {a.approach_name}
                             </button>
                           ))}
@@ -1220,7 +1229,7 @@ const DifficultTalkCoach = () => {
                       className="w-full h-1.5 rounded-lg cursor-pointer"
                       style={{
                         WebkitAppearance: 'none', appearance: 'none',
-                        background: `linear-gradient(to right, #7c3aed ${practiceResistance ?? resistanceLevel}%, ${isDark ? '#3f3f46' : '#e2e8f0'} ${practiceResistance ?? resistanceLevel}%)`,
+                        background: `linear-gradient(to right, rgb(124,58,237) ${practiceResistance ?? resistanceLevel}%, ${isDark ? '#3f3f46' : '#e2e8f0'} ${practiceResistance ?? resistanceLevel}%)`,
                         borderRadius: '8px',
                       }} />
                   </div>
@@ -1262,7 +1271,7 @@ const DifficultTalkCoach = () => {
                         {results?.conversation_approaches?.[expandedApproach]?.script?.opening && (
                           <button
                             onClick={() => setSimInput(results.conversation_approaches[expandedApproach].script.opening)}
-                            className={`mt-3 text-xs ${isDark ? 'text-violet-400 hover:text-violet-300' : 'text-violet-600 hover:text-violet-700'} underline underline-offset-2`}
+                            className={`mt-3 text-xs ${isDark ? 'text-cyan-400 hover:text-cyan-300' : 'text-cyan-600 hover:text-cyan-700'} underline underline-offset-2`}
                           >
                             Use your prepared opening from "{results.conversation_approaches[expandedApproach].approach_name}"
                           </button>
@@ -1275,7 +1284,7 @@ const DifficultTalkCoach = () => {
                         {msg.role === 'user' && (
                           <div className="flex justify-end">
                             <div className={`max-w-[80%] p-3 rounded-xl ${c.simUser} border`}>
-                              <p className={`text-xs font-bold ${isDark ? 'text-violet-400' : 'text-violet-600'} mb-1`}>YOU</p>
+                              <p className={`text-xs font-bold ${isDark ? 'text-cyan-400' : 'text-cyan-600'} mb-1`}>YOU</p>
                               <p className={`text-sm ${c.text}`}>{msg.content}</p>
                             </div>
                           </div>
@@ -1297,7 +1306,7 @@ const DifficultTalkCoach = () => {
                                 <p className={`text-sm ${c.text}`}>{msg.content}</p>
                                 {msg._corrected && <p className={`text-[10px] ${c.textMuted} mt-1`}>✏️ Corrected by you</p>}
                                 {msg.technique_used && msg.technique_used !== 'none detected' && (
-                                  <p className={`text-[10px] ${isDark ? 'text-violet-400' : 'text-violet-600'} mt-1`}>🎯 {msg.technique_used}</p>
+                                  <p className={`text-[10px] ${isDark ? 'text-cyan-400' : 'text-cyan-600'} mt-1`}>🎯 {msg.technique_used}</p>
                                 )}
                               </div>
                             </div>
@@ -1344,7 +1353,7 @@ const DifficultTalkCoach = () => {
                     {simLoading && (
                       <div className="flex justify-start">
                         <div className={`p-3 rounded-xl ${c.simThem} border`}>
-                          <span className={`inline-block animate-spin text-base ${c.textMuted}`}>⏳</span>
+                          <span className={`inline-block animate-spin ${c.textMuted}`}>{tool?.icon ?? '🗣️'}</span>
                         </div>
                       </div>
                     )}
@@ -1359,7 +1368,7 @@ const DifficultTalkCoach = () => {
                       onChange={(e) => setSimInput(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && handleSimSend()}
                       placeholder="Type what you'd say..."
-                      className={`flex-1 p-2.5 border rounded-lg outline-none text-sm focus:ring-2 focus:ring-violet-300 ${c.input}`}
+                      className={`flex-1 p-2.5 border rounded-lg outline-none text-sm focus:ring-2 focus:ring-cyan-500 ${c.input}`}
                     />
                     <button onClick={handleSimSend} disabled={!simInput.trim() || simLoading}
                       className={`px-4 py-2 rounded-lg font-medium text-sm transition-all ${c.btnPrimary} disabled:opacity-40`}>
@@ -1377,7 +1386,7 @@ const DifficultTalkCoach = () => {
                     {simMessages.filter(m => m.role === 'them').length >= 2 && !practiceSummary && (
                       <button onClick={handlePracticeSummary} disabled={summaryLoading}
                         className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-bold ${c.btnPrimary}`}>
-                        {summaryLoading ? (<><span className="inline-block animate-spin">⏳</span> Scoring…</>) : (<><span>📊</span> End Practice & Get Score</>)}
+                        {summaryLoading ? (<><span className="inline-block animate-spin">{tool?.icon ?? '🗣️'}</span> Scoring…</>) : (<><span>📊</span> End Practice & Get Score</>)}
                       </button>
                     )}
                     {simMessages.filter(m => m.role === 'them').length >= 2 && (
@@ -1549,7 +1558,7 @@ const DifficultTalkCoach = () => {
                           <p className="text-sm">{practiceSummary.retry_suggestions.higher_difficulty}</p>
                         </div>
                         {practiceSummary.retry_suggestions.specific_moment && (
-                          <div className={`p-3 rounded-lg ${c.info} border`}>
+                          <div className={`p-3 rounded-lg ${c.highlight} border`}>
                             <p className="text-xs font-bold mb-1">🎯 REDO THIS MOMENT</p>
                             <p className="text-sm">{practiceSummary.retry_suggestions.specific_moment}</p>
                           </div>
@@ -1609,11 +1618,11 @@ const DifficultTalkCoach = () => {
                 {simMessages.length >= 2 && (
                   <div className="flex gap-2 mb-4">
                     <button onClick={() => setDebriefMode('real')}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${c.chip(debriefMode === 'real')}`}>
+                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${chip(debriefMode === 'real')}`}>
                       💬 Real Conversation
                     </button>
                     <button onClick={() => setDebriefMode('practice')}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${c.chip(debriefMode === 'practice')}`}>
+                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${chip(debriefMode === 'practice')}`}>
                       ▶️ Practice Session ({simMessages.filter(m => m.role === 'user').length} exchanges)
                     </button>
                   </div>
@@ -1633,7 +1642,7 @@ const DifficultTalkCoach = () => {
                     />
                     <button onClick={handleDebrief} disabled={debriefLoading || !howItWent.trim()}
                       className={`mt-3 px-6 py-2.5 rounded-lg font-semibold text-sm transition-all ${c.btnPrimary} disabled:opacity-40 flex items-center gap-2`}>
-                      {debriefLoading ? (<><span className="inline-block animate-spin text-base">⏳</span> Analyzing...</>) : (<><span className="text-base">✅</span> Get Debrief</>)}
+                      {debriefLoading ? (<><span className="inline-block animate-spin">{tool?.icon ?? '🗣️'}</span> Analyzing...</>) : (<><span className="text-base">✅</span> Get Debrief</>)}
                     </button>
                   </>
                 ) : (
@@ -1642,8 +1651,8 @@ const DifficultTalkCoach = () => {
                       Get structured feedback on your practice session ({simMessages.filter(m => m.role === 'user').length} exchanges at {practiceResistance ?? resistanceLevel}% resistance).
                     </p>
                     <div className={`p-3 rounded-lg ${c.cardAlt} mb-3 max-h-32 overflow-y-auto`}>
-                      {simMessages.filter(m => m.role === 'user').slice(0, 5).map((m, i) => (
-                        <p key={i} className={`text-xs ${c.textSecondary} mb-1`}>You: "{m.content.slice(0, 80)}{m.content.length > 80 ? '…' : ''}"</p>
+                      {simMessages.filter(m => m.role === 'user').slice(0, 6).map((m, i) => (
+                        <p key={i} className={`text-xs ${c.textSecondary} mb-1`}>You: "{m.content.slice(0, 6)}{m.content.length > 80 ? '…' : ''}"</p>
                       ))}
                       {simMessages.filter(m => m.role === 'user').length > 5 && (
                         <p className={`text-xs ${c.textMuted}`}>+{simMessages.filter(m => m.role === 'user').length - 5} more exchanges…</p>
@@ -1651,7 +1660,7 @@ const DifficultTalkCoach = () => {
                     </div>
                     <button onClick={handleDebriefPractice} disabled={debriefLoading}
                       className={`px-6 py-2.5 rounded-lg font-semibold text-sm transition-all ${c.btnPrimary} disabled:opacity-40 flex items-center gap-2`}>
-                      {debriefLoading ? (<><span className="inline-block animate-spin text-base">⏳</span> Analyzing...</>) : (<><span className="text-base">✅</span> Debrief Practice Session</>)}
+                      {debriefLoading ? (<><span className="inline-block animate-spin">{tool?.icon ?? '🗣️'}</span> Analyzing...</>) : (<><span className="text-base">✅</span> Debrief Practice Session</>)}
                     </button>
                   </>
                 )}
@@ -1716,7 +1725,7 @@ const DifficultTalkCoach = () => {
                   )}
 
                   {debriefResults.emotional_processing && (
-                    <div className={`p-5 rounded-xl ${c.purple} border text-center`}>
+                    <div className={`p-5 rounded-xl ${c.highlight} border text-center`}>
                       <p className="text-sm font-medium">{debriefResults.emotional_processing}</p>
                     </div>
                   )}
@@ -1756,4 +1765,5 @@ const DifficultTalkCoach = () => {
 };
 
 DifficultTalkCoach.displayName = 'DifficultTalkCoach';
+
 export default DifficultTalkCoach;

@@ -42,33 +42,51 @@ const STARTERS = [
   { cat: '🏛️', t: 'Voting should be mandatory' },
 ];
 
-const DebateMe = () => {
+const DebateMe = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
-  const { theme } = useTheme();
-  const isDark = theme === 'dark';
+  
+  const { isDark } = useTheme();
+
+  useEffect(() => {
+    const handler = (e) => {
+      const tag = document.activeElement?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !loading) handleOpen();
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [loading]);
   const bottomRef = useRef(null);
+  const resultsRef = useRef(null);
+
+
+  const linkStyle = isDark
+    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
+    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
 
   const c = {
-    card: isDark ? 'bg-zinc-800' : 'bg-white', cardAlt: isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    text: isDark ? 'text-zinc-50' : 'text-gray-900', ts: isDark ? 'text-zinc-300' : 'text-gray-600',
-    tm: isDark ? 'text-zinc-500' : 'text-gray-400', label: isDark ? 'text-zinc-200' : 'text-gray-800',
-    input: isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder-zinc-400' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400',
-    pri: isDark ? 'bg-orange-600 hover:bg-orange-500 text-white' : 'bg-orange-600 hover:bg-orange-700 text-white',
-    sec: isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
-    on: isDark ? 'bg-orange-600 text-white' : 'bg-orange-600 text-white',
-    off: isDark ? 'bg-zinc-700 text-zinc-300 hover:bg-zinc-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200',
-    border: isDark ? 'border-zinc-700' : 'border-gray-200',
-    uBub: isDark ? 'bg-orange-900/30 border-orange-700' : 'bg-orange-50 border-orange-200',
-    aBub: isDark ? 'bg-zinc-700 border-zinc-600' : 'bg-white border-gray-200',
-    cBub: isDark ? 'bg-blue-900/20 border-blue-700' : 'bg-blue-50 border-blue-200',
-    ok: isDark ? 'bg-green-900/20 border-green-700 text-green-200' : 'bg-green-50 border-green-300 text-green-800',
-    warn: isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
-    bad: isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
-    info: isDark ? 'bg-blue-900/20 border-blue-700 text-blue-200' : 'bg-blue-50 border-blue-200 text-blue-800',
-    acc: isDark ? 'bg-orange-900/20 border-orange-700' : 'bg-orange-50 border-orange-200',
-    at: isDark ? 'text-orange-300' : 'text-orange-700',
-    purp: isDark ? 'bg-purple-900/20 border-purple-700 text-purple-200' : 'bg-purple-50 border-purple-200 text-purple-800',
-  };
+    card:          isDark ? 'bg-zinc-800' : 'bg-white',
+    cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    text:          isDark ? 'text-zinc-50' : 'text-gray-900',
+    textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
+    textMuted:     isDark ? 'text-zinc-500' : 'text-gray-400',
+    labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
+    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
+    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
+    border:        isDark ? 'border-zinc-700' : 'border-gray-200',
+    success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
+    warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
+    danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
+    infoBox:       isDark ? 'bg-sky-900/20 border-sky-700 text-sky-200' : 'bg-sky-50 border-sky-200 text-sky-800',
+    successBox:    isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-300',
+    successTxt:    isDark ? 'text-emerald-300' : 'text-emerald-800',
+    warningBox:    isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
+    warningTxt:    isDark ? 'text-amber-300' : 'text-amber-800',
+    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
+  };;
 
   // ─── Core State ───
   const [mode, setMode] = useState('setup');
@@ -120,11 +138,12 @@ const DebateMe = () => {
   const [highlightData, setHighlightData] = useState(null);
 
   // Persistent
-  const [debateLog, setDebateLog] = usePersistentState('debate-me-log', []);
+  const [history, setHistory] = usePersistentState('debate-me-history', []);
   const [showLog, setShowLog] = useState(false);
   const [replayIndex, setReplayIndex] = useState(null);
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [debateHistory, loading, showCoach]);
+  useEffect(() => { if (scorecardData) resultsRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [scorecardData]);
 
   // ═══ HELPERS ═══
   const now = () => new Date().toISOString();
@@ -133,19 +152,19 @@ const DebateMe = () => {
   const wc = userInput.trim().split(/\s+/).filter(Boolean).length;
 
   const computeStats = () => {
-    if (!debateLog.length) return null;
-    const sc = debateLog.filter(d => d.sharpness).map(d => Number(d.sharpness));
+    if (!history.length) return null;
+    const sc = history.filter(d => d.sharpness).map(d => Number(d.sharpness));
     const avg = sc.length ? (sc.reduce((a, b) => a + b, 0) / sc.length).toFixed(1) : '—';
     const best = sc.length ? Math.max(...sc) : '—';
-    const tot = debateLog.reduce((a, d) => a + (d.turns || 0), 0);
-    const sw = debateLog.filter(d => d.switched).length;
-    const lc = {}; debateLog.forEach(d => { lc[d.level] = (lc[d.level] || 0) + 1; });
+    const tot = history.reduce((a, d) => a + (d.turns || 0), 0);
+    const sw = history.filter(d => d.switched).length;
+    const lc = {}; history.forEach(d => { lc[d.level] = (lc[d.level] || 0) + 1; });
     const tl = Object.entries(lc).sort((a, b) => b[1] - a[1])[0];
-    const fc = {}; debateLog.forEach(d => { d.fallacies?.forEach(f => { fc[f] = (fc[f] || 0) + 1; }); });
+    const fc = {}; history.forEach(d => { d.fallacies?.forEach(f => { fc[f] = (fc[f] || 0) + 1; }); });
     const tf = Object.entries(fc).sort((a, b) => b[1] - a[1])[0];
     let trend = null;
     if (sc.length >= 6) { const e = sc.slice(-3).reduce((a, b) => a + b, 0) / 3; const r = sc.slice(0, 3).reduce((a, b) => a + b, 0) / 3; trend = { early: e.toFixed(1), recent: r.toFixed(1), dir: r > e ? 'up' : r < e ? 'down' : 'flat' }; }
-    return { total: debateLog.length, avg, best, tot, sw, tl, tf, trend };
+    return { total: history.length, avg, best, tot, sw, tl, tf, trend };
   };
 
   // ═══ CORE HANDLERS ═══
@@ -230,7 +249,7 @@ const DebateMe = () => {
     if (data) {
       setScorecardData(data); setMode('scorecard');
       const fn = data.fallacies_used?.map(f => f.type) || [];
-      setDebateLog(prev => [{ position, userSide, aiSide, coreTension, level, format, turns: turnCount, switched: hasSwitched, sharpness: data.overall?.thinking_sharpness, summary: data.overall?.assessment, coachingNote: data.coaching_note, fallacies: fn, history: debateHistory, scorecard: data, timestamp: now() }, ...prev].slice(0, 30));
+      setHistory(prev => [{ preview: position.slice(0, 40), position, userSide, aiSide, coreTension, level, format, turns: turnCount, switched: hasSwitched, sharpness: data.overall?.thinking_sharpness, summary: data.overall?.assessment, coachingNote: data.coaching_note, fallacies: fn, history: debateHistory, scorecard: data, timestamp: now() }, ...prev].slice(0, 6));
     }
   };
 
@@ -271,9 +290,9 @@ const DebateMe = () => {
   };
 
   const handleHighlightReel = async () => {
-    if (debateLog.length < 3) { setError('Need 3+ scored debates.'); return; }
+    if (history.length < 3) { setError('Need 3+ scored debates.'); return; }
     setError('');
-    const data = await callToolEndpoint('debate-highlight-reel', { debates: debateLog.map(d => ({ userSide: d.userSide, aiSide: d.aiSide, sharpness: d.sharpness, level: d.level, turns: d.turns, switched: d.switched, summary: d.summary, coachingNote: d.coachingNote, fallacies: d.fallacies })) });
+    const data = await callToolEndpoint('debate-highlight-reel', { debates: history.map(d => ({ userSide: d.userSide, aiSide: d.aiSide, sharpness: d.sharpness, level: d.level, turns: d.turns, switched: d.switched, summary: d.summary, coachingNote: d.coachingNote, fallacies: d.fallacies })) });
     if (data) setHighlightData(data);
   };
 
@@ -283,6 +302,7 @@ const DebateMe = () => {
     setCoachData(null); setShowCoach(false); setSourceData(null); setShowSource(false);
     setUserInput(''); setTurnCount(0); setHasSwitched(false); setError(''); setReplayIndex(null);
   };
+  const handleReset = startNew;
 
   // ═══ TEXT BUILDER ═══
   const buildText = (h = debateHistory, sc = scorecardData) => {
@@ -294,7 +314,7 @@ const DebateMe = () => {
 
   // ═══ TURN COMPONENT ═══
   const Turn = ({ turn }) => {
-    if (turn.speaker === 'system') return <div className="text-center py-2"><span className={`text-xs font-bold ${c.at} px-3 py-1 rounded-full ${c.acc} border`}>{turn.text}</span></div>;
+    if (turn.speaker === 'system') return <div className="text-center py-2"><span className={`text-xs font-bold ${c.orangeText} px-3 py-1 rounded-full ${c.accentCard} border`}>{turn.text}</span></div>;
     const time = turn.timestamp ? new Date(turn.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
     const isU = turn.speaker === 'user';
     return (
@@ -302,16 +322,16 @@ const DebateMe = () => {
         <div className="flex items-center gap-2 flex-wrap">
           <span className="text-sm">{isU ? '🗣️' : '🥊'}</span>
           <span className={`text-xs font-bold ${c.text}`}>{isU ? 'You' : 'Opponent'}</span>
-          <span className={`text-xs ${c.tm}`}>— {turn.side}</span>
-          {time && <span className={`text-xs ${c.tm} ml-auto`}>{time}</span>}
-          {turn.meta?.isConcession && <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-green-900/40 text-green-200' : 'bg-green-100 text-green-700'}`}>🤝</span>}
+          <span className={`text-xs ${c.textMuteded}`}>— {turn.side}</span>
+          {time && <span className={`text-xs ${c.textMuteded} ml-auto`}>{time}</span>}
+          {turn.meta?.isConcession && <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${c.greenBadge}`}>🤝</span>}
         </div>
-        <p className={`text-sm ${c.ts} whitespace-pre-line`}>{turn.text}</p>
-        {turn.meta?.concessions?.length > 0 && <div className={`${c.ok} border rounded-lg p-2`}><p className="text-xs font-bold">✅ Conceded:</p>{turn.meta.concessions.map((x, j) => <p key={j} className="text-xs">• {x}</p>)}</div>}
-        {turn.meta?.fallacies?.length > 0 && <div className={`${c.warn} border rounded-lg p-2`}><p className="text-xs font-bold">⚠️ Fallacy:</p>{turn.meta.fallacies.map((f, j) => <div key={j} className="mt-1"><p className="text-xs"><strong>{f.type}:</strong> {f.in_text}</p><p className="text-xs">{f.suggestion}</p></div>)}</div>}
-        {turn.meta?.question && <div className={`${c.acc} border rounded-lg p-3`}><p className={`text-xs font-bold ${c.at}`}>❓ {turn.meta.question}</p></div>}
-        {turn.meta?.challenges?.length > 0 && <div className={`${c.cardAlt} rounded-lg p-3 space-y-1`}><p className={`text-xs font-bold ${c.text}`}>Challenges:</p>{turn.meta.challenges.map((ch, j) => <p key={j} className={`text-xs ${c.ts}`}>• <strong>{ch.type}:</strong> {ch.point}</p>)}</div>}
-        {turn.meta?.newAngles?.length > 0 && <div className={`${c.info} border rounded-lg p-2`}><p className="text-xs font-bold">🆕 Missed:</p>{turn.meta.newAngles.map((a, j) => <p key={j} className="text-xs">• {a}</p>)}</div>}
+        <p className={`text-sm ${c.textSecondaryondary} whitespace-pre-line`}>{turn.text}</p>
+        {turn.meta?.concessions?.length > 0 && <div className={`${c.success} border rounded-lg p-2`}><p className="text-xs font-bold">✅ Conceded:</p>{turn.meta.concessions.map((x, j) => <p key={j} className="text-xs">• {x}</p>)}</div>}
+        {turn.meta?.fallacies?.length > 0 && <div className={`${c.warning} border rounded-lg p-2`}><p className="text-xs font-bold">⚠️ Fallacy:</p>{turn.meta.fallacies.map((f, j) => <div key={j} className="mt-1"><p className="text-xs"><strong>{f.type}:</strong> {f.in_text}</p><p className="text-xs">{f.suggestion}</p></div>)}</div>}
+        {turn.meta?.question && <div className={`${c.accentCard} border rounded-lg p-3`}><p className={`text-xs font-bold ${c.orangeText}`}>❓ {turn.meta.question}</p></div>}
+        {turn.meta?.challenges?.length > 0 && <div className={`${c.cardAlt} rounded-lg p-3 space-y-1`}><p className={`text-xs font-bold ${c.text}`}>Challenges:</p>{turn.meta.challenges.map((ch, j) => <p key={j} className={`text-xs ${c.textSecondaryondary}`}>• <strong>{ch.type}:</strong> {ch.point}</p>)}</div>}
+        {turn.meta?.newAngles?.length > 0 && <div className={`${c.infoCard} border rounded-lg p-2`}><p className="text-xs font-bold">🆕 Missed:</p>{turn.meta.newAngles.map((a, j) => <p key={j} className="text-xs">• {a}</p>)}</div>}
       </div>
     );
   };
@@ -322,12 +342,12 @@ const DebateMe = () => {
       <p className="text-xs font-bold">{label}</p>
       <p className={`text-sm font-medium ${c.text}`}>{tree.main_claim}</p>
       {tree.branches?.map((b, i) => (
-        <div key={i} className={`${c.cardAlt} rounded-lg p-3 space-y-1 ml-3 border-l-2 ${b.status === 'defended' ? 'border-green-500' : b.status === 'abandoned' ? 'border-red-400' : b.status === 'strengthened' ? 'border-blue-500' : 'border-amber-400'}`}>
-          <div className="flex items-center gap-2"><span className={`text-xs font-bold px-1.5 py-0.5 rounded ${b.status === 'defended' ? (isDark ? 'bg-green-900/40 text-green-200' : 'bg-green-100 text-green-700') : b.status === 'abandoned' ? (isDark ? 'bg-red-900/40 text-red-200' : 'bg-red-100 text-red-700') : (isDark ? 'bg-amber-900/40 text-amber-200' : 'bg-amber-100 text-amber-700')}`}>{b.status}</span></div>
+        <div key={i} className={`${c.cardAlt} rounded-lg p-3 space-y-1 ml-3 border-l-2 ${b.status === 'defended' ? 'border-green-500' : b.status === 'abandoned' ? 'border-red-400' : b.status === 'strengthened' ? 'border-sky-500' : 'border-amber-400'}`}>
+          <div className="flex items-center gap-2"><span className={`text-xs font-bold px-1.5 py-0.5 rounded ${b.status === 'defended' ? c.greenBadge : b.status === 'abandoned' ? c.redBadge : c.amberBadge}`}>{b.status}</span></div>
           <p className={`text-sm ${c.text}`}>{b.argument}</p>
-          {b.evidence && b.evidence !== 'none' && <p className={`text-xs ${c.ts}`}>📊 {b.evidence}</p>}
-          {b.attacked_by && <p className={`text-xs ${c.tm}`}>⚔️ {b.attacked_by}</p>}
-          {b.sub_branches?.map((sb, j) => <p key={j} className={`text-xs ${c.ts} ml-3`}>↳ {sb.argument} <span className={`font-bold ${sb.status === 'defended' ? 'text-green-500' : 'text-amber-500'}`}>({sb.status})</span></p>)}
+          {b.evidence && b.evidence !== 'none' && <p className={`text-xs ${c.textSecondaryondary}`}>📊 {b.evidence}</p>}
+          {b.attacked_by && <p className={`text-xs ${c.textMuteded}`}>⚔️ {b.attacked_by}</p>}
+          {b.sub_branches?.map((sb, j) => <p key={j} className={`text-xs ${c.textSecondaryondary} ml-3`}>↳ {sb.argument} <span className={`font-bold ${sb.status === 'defended' ? 'text-green-500' : 'text-amber-500'}`}>({sb.status})</span></p>)}
         </div>
       ))}
     </div>
@@ -337,12 +357,13 @@ const DebateMe = () => {
   const Tab = ({ id, icon, label, count }) => <button onClick={() => { setMode(id); setError(''); }} className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${mode === id ? c.on : c.off}`}><span className="mr-1">{icon}</span> {label}{count ? ` (${count})` : ''}</button>;
 
   // ═══ RENDER ═══
+
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Header */}
       <div>
-        <h1 className={`text-2xl font-bold ${c.text}`}>Debate Me 🥊</h1>
-        <p className={`text-sm ${c.textSecondary} mt-1`}>Sharpen your thinking by arguing against the strongest opposing case</p>
+        <h2 className={`text-2xl font-bold ${c.text}`}><span className="mr-2">{tool?.icon ?? '🥊'}</span>Debate Me</h2>
+        <p className={`text-sm ${c.textSecondaryondary} mt-1`}>Sharpen your thinking by arguing against the strongest opposing case</p>
       </div>
 
       {/* Tabs */}
@@ -353,22 +374,22 @@ const DebateMe = () => {
         <Tab id="fallacy" icon="🧩" label="Fallacy Gym" />
         {(mode === 'debate' || debateHistory.length > 0) && <Tab id="debate" icon="💬" label={`Debate (${turnCount})`} />}
         <Tab id="stats" icon="📈" label="Stats" />
-        <button onClick={() => setShowLog(!showLog)} className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${showLog ? c.on : c.off}`}><span className="mr-1">📜</span> Log{debateLog.length ? ` (${debateLog.length})` : ''}</button>
+        <button onClick={() => setShowLog(!showLog)} className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${showLog ? c.on : c.off}`}><span className="mr-1">📜</span> Log{history.length ? ` (${history.length})` : ''}</button>
       </div>
 
       {/* ─── Log Panel ─── */}
       {showLog && <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-3`}>
-        <div className="flex items-center justify-between"><h3 className={`font-bold ${c.text}`}>📜 Debate Log</h3>{debateLog.length > 0 && <button onClick={() => setDebateLog([])} className={`text-xs ${c.tm}`}>Clear</button>}</div>
-        {debateLog.length === 0 ? <p className={`text-sm ${c.tm}`}>Complete a debate to start your log.</p> : debateLog.map((d, i) => (
+        <div className="flex items-center justify-between"><h3 className={`font-bold ${c.text}`}>📜 Debate Log</h3>{history.length > 0 && <button onClick={() => setHistory([])} className={`text-xs ${c.textMuteded}`}>Clear</button>}</div>
+        {history.length === 0 ? <p className={`text-sm ${c.textMuteded}`}>Complete a debate to start your log.</p> : history.map((d, i) => (
           <div key={i} className={`${c.cardAlt} rounded-lg p-3`}>
-            <div className="flex items-center justify-between"><p className={`text-sm font-bold ${c.text}`}>{d.userSide}</p><span className={`text-xs font-bold ${c.at}`}>{d.sharpness}/10</span></div>
-            <p className={`text-xs ${c.ts}`}>vs {d.aiSide} · {d.turns}t · {LEVELS.find(l => l.id === d.level)?.icon} {d.level}{d.format !== 'freeform' ? ` · ${d.format}` : ''}{d.switched ? ' · 🔄' : ''}</p>
-            <p className={`text-xs ${c.tm} mt-1`}>{d.summary?.substring(0, 100)}...</p>
+            <div className="flex items-center justify-between"><p className={`text-sm font-bold ${c.text}`}>{d.userSide}</p><span className={`text-xs font-bold ${c.orangeText}`}>{d.sharpness}/10</span></div>
+            <p className={`text-xs ${c.textSecondaryondary}`}>vs {d.aiSide} · {d.turns}t · {LEVELS.find(l => l.id === d.level)?.icon} {d.level}{d.format !== 'freeform' ? ` · ${d.format}` : ''}{d.switched ? ' · 🔄' : ''}</p>
+            <p className={`text-xs ${c.textMuteded} mt-1`}>{d.summary?.substring(0, 100)}...</p>
             <div className="flex gap-2 mt-2 flex-wrap">
-              <span className={`text-xs ${c.tm}`}>{new Date(d.timestamp).toLocaleDateString()}</span>
-              {d.history && <button onClick={() => { setReplayIndex(i); setMode('replay'); }} className={`text-xs ${c.at} font-bold`}>📖 Replay</button>}
-              <button onClick={() => handleRematch(d)} disabled={loading} className={`text-xs ${c.at} font-bold`}>🔁 Rematch</button>
-              <button onClick={() => setDebateLog(prev => prev.filter((_, idx) => idx !== i))} className={`text-xs ${c.tm} ml-auto`}>🗑️</button>
+              <span className={`text-xs ${c.textMuteded}`}>{new Date(d.timestamp).toLocaleDateString()}</span>
+              {d.history && <button onClick={() => { setReplayIndex(i); setMode('replay'); }} className={`text-xs ${c.orangeText} font-bold`}>📖 Replay</button>}
+              <button onClick={() => handleRematch(d)} disabled={loading} className={`text-xs ${c.orangeText} font-bold`}>🔁 Rematch</button>
+              <button onClick={() => setHistory(prev => prev.filter((_, idx) => idx !== i))} className={`text-xs ${c.textMuteded} ml-auto`}>🗑️</button>
             </div>
           </div>
         ))}
@@ -376,34 +397,34 @@ const DebateMe = () => {
 
       {/* ═══ SETUP ═══ */}
       {mode === 'setup' && <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-5`}>
-        <div><h3 className={`font-bold text-lg ${c.text}`}>🥊 What's your position?</h3><p className={`text-sm ${c.tm} mt-1`}>State what you believe. We'll build the strongest case against it.</p></div>
+        <div><h3 className={`font-bold text-lg ${c.text}`}>🥊 What's your position?</h3><p className={`text-sm ${c.textMuteded} mt-1`}>State what you believe. We'll build the strongest case against it.</p></div>
         <textarea value={position} onChange={e => setPosition(e.target.value)} placeholder="e.g., 'Remote work is better for knowledge workers'" rows={3} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
-        <div><button onClick={() => setShowStarters(!showStarters)} className={`text-xs font-bold ${c.at}`}>{showStarters ? '▲ Hide' : '💡 Try one of these'}</button>
-          {showStarters && <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">{STARTERS.map((s, i) => <button key={i} onClick={() => { setPosition(s.t); setShowStarters(false); }} className={`text-left p-2 rounded-lg text-xs ${c.cardAlt} border ${c.border} hover:border-orange-400`}>{s.cat} {s.t}</button>)}</div>}
+        <div><button onClick={() => setShowStarters(!showStarters)} className={`text-xs font-bold ${c.orangeText}`}>{showStarters ? '▲ Hide' : '💡 Try one of these'}</button>
+          {showStarters && <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">{STARTERS.map((s, i) => <button key={i} onClick={() => { setPosition(s.t); setShowStarters(false); }} className={`text-left p-2 rounded-lg text-xs ${c.cardAlt} border ${c.border} hover:border-amber-400`}>{s.cat} {s.t}</button>)}</div>}
         </div>
         <input value={topic} onChange={e => setTopic(e.target.value)} placeholder="Topic area (optional)" className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
-        <div><p className={`text-xs font-bold ${c.label} mb-2`}>Category</p><div className="flex flex-wrap gap-1.5">{CATEGORIES.map(cat => <button key={cat.id} onClick={() => setCategory(cat.id === category ? '' : cat.id)} className={`px-2.5 py-1.5 rounded-lg text-xs font-medium border ${category === cat.id ? c.on : `${c.off} ${c.border}`}`}>{cat.icon} {cat.label}</button>)}</div></div>
-        <div><p className={`text-xs font-bold ${c.label} mb-2`}>Format</p><div className="grid grid-cols-2 sm:grid-cols-5 gap-2">{FORMATS.map(f => <button key={f.id} onClick={() => setFormat(f.id)} className={`p-2 rounded-xl border text-center ${format === f.id ? `${c.acc} border-orange-500` : `${c.cardAlt} ${c.border}`}`}><span className="text-lg">{f.icon}</span><p className={`text-xs font-bold ${c.text} mt-0.5`}>{f.label}</p><p className={`text-xs ${c.tm}`}>{f.desc}</p></button>)}</div></div>
-        <div><p className={`text-xs font-bold ${c.label} mb-2`}>Challenge</p><div className="grid grid-cols-3 gap-2">{LEVELS.map(lv => <button key={lv.id} onClick={() => setLevel(lv.id)} className={`p-2.5 rounded-xl border text-left ${level === lv.id ? `${c.acc} border-orange-500` : `${c.cardAlt} ${c.border}`}`}><span className="text-lg">{lv.icon}</span> <span className={`text-sm font-bold ${c.text}`}>{lv.label}</span><p className={`text-xs ${c.tm}`}>{lv.desc}</p></button>)}</div></div>
-        <button onClick={handleOpen} disabled={loading} className={`w-full py-3 rounded-xl font-bold text-sm ${c.pri} disabled:opacity-50`}>{loading ? '⏳ Preparing...' : '🥊 Start Debate'}</button>
+        <div><p className={`text-xs font-bold ${c.formLabel} mb-2`}>Category</p><div className="flex flex-wrap gap-1.5">{CATEGORIES.map(cat => <button key={cat.id} onClick={() => setCategory(cat.id === category ? '' : cat.id)} className={`px-2.5 py-1.5 rounded-lg text-xs font-medium border ${category === cat.id ? c.on : `${c.off} ${c.border}`}`}>{cat.icon} {cat.label}</button>)}</div></div>
+        <div><p className={`text-xs font-bold ${c.formLabel} mb-2`}>Format</p><div className="grid grid-cols-2 sm:grid-cols-5 gap-2">{FORMATS.map(f => <button key={f.id} onClick={() => setFormat(f.id)} className={`p-2 rounded-xl border text-center ${format === f.id ? `${c.accentCard} border-amber-500` : `${c.cardAlt} ${c.border}`}`}><span className="text-lg">{f.icon}</span><p className={`text-xs font-bold ${c.text} mt-0.5`}>{f.label}</p><p className={`text-xs ${c.textMuteded}`}>{f.desc}</p></button>)}</div></div>
+        <div><p className={`text-xs font-bold ${c.formLabel} mb-2`}>Challenge</p><div className="grid grid-cols-3 gap-2">{LEVELS.map(lv => <button key={lv.id} onClick={() => setLevel(lv.id)} className={`p-2.5 rounded-xl border text-left ${level === lv.id ? `${c.accentCard} border-amber-500` : `${c.cardAlt} ${c.border}`}`}><span className="text-lg">{lv.icon}</span> <span className={`text-sm font-bold ${c.text}`}>{lv.label}</span><p className={`text-xs ${c.textMuteded}`}>{lv.desc}</p></button>)}</div></div>
+        <button onClick={handleOpen} disabled={loading} className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-50`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🥊'}</span> Preparing...</> : <><span>{tool?.icon ?? '🥊'}</span> Start Debate</>}</button>
       </div>}
 
       {/* ═══ DEBATE ═══ */}
       {mode === 'debate' && <div className="space-y-4">
-        <div className={`${c.acc} border rounded-xl p-4`}>
+        <div className={`${c.accentCard} border rounded-xl p-4`}>
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
               <div className="flex items-center gap-2 flex-wrap">
-                <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-orange-900/40 text-orange-200' : 'bg-orange-100 text-orange-700'}`}>You: {cUS}</span>
-                <span className={`text-xs ${c.tm}`}>vs</span>
-                <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-zinc-600 text-zinc-200' : 'bg-gray-200 text-gray-700'}`}>AI: {cAS}</span>
-                {format !== 'freeform' && <span className={`text-xs px-2 py-0.5 rounded-full ${c.info} border`}>{FORMATS.find(f => f.id === format)?.icon} {format}</span>}
+                <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${c.userBadge}`}>You: {cUS}</span>
+                <span className={`text-xs ${c.textMuteded}`}>vs</span>
+                <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${c.neutralBadge}`}>AI: {cAS}</span>
+                {format !== 'freeform' && <span className={`text-xs px-2 py-0.5 rounded-full ${c.infoCard} border`}>{FORMATS.find(f => f.id === format)?.icon} {format}</span>}
               </div>
-              {coreTension && <p className={`text-xs ${c.tm} mt-1`}>{coreTension}</p>}
+              {coreTension && <p className={`text-xs ${c.textMuteded} mt-1`}>{coreTension}</p>}
             </div>
             <div className="flex items-center gap-2">
-              <span className={`text-xs font-bold ${c.at}`}>{turnCount}t</span>
-              <div className="flex gap-0.5">{LEVELS.map(lv => <button key={lv.id} onClick={() => setLevel(lv.id)} title={lv.label} className={`w-7 h-7 rounded-lg text-sm flex items-center justify-center ${level === lv.id ? (isDark ? 'bg-orange-600' : 'bg-orange-500 text-white') : (isDark ? 'bg-zinc-700' : 'bg-gray-100')}`}>{lv.icon}</button>)}</div>
+              <span className={`text-xs font-bold ${c.orangeText}`}>{turnCount}t</span>
+              <div className="flex gap-0.5">{LEVELS.map(lv => <button key={lv.id} onClick={() => setLevel(lv.id)} title={lv.label} className={`w-7 h-7 rounded-lg text-sm flex items-center justify-center ${level === lv.id ? c.levelOn : c.levelOff}`}>{lv.icon}</button>)}</div>
             </div>
           </div>
         </div>
@@ -411,26 +432,26 @@ const DebateMe = () => {
         {debateHistory.map((turn, i) => <Turn key={i} turn={turn} />)}
 
         {/* Coach */}
-        {showCoach && coachData && <div className={`${c.cBub} border rounded-xl p-4 space-y-3`}>
-          <div className="flex items-center gap-2"><span>🧑‍🏫</span><span className={`text-xs font-bold ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>Coach</span><button onClick={() => setShowCoach(false)} className={`text-xs ${c.tm} ml-auto`}>✕</button></div>
-          {coachData.encouragement && <p className={`text-sm ${c.ts} italic`}>{coachData.encouragement}</p>}
-          {coachData.angles?.map((a, i) => <div key={i} className={`${c.cardAlt} rounded-lg p-3`}><p className={`text-sm font-medium ${c.text}`}>→ {a.approach}</p><p className={`text-xs ${c.ts}`}>{a.why_effective}</p><p className={`text-xs ${c.at} italic`}>Start: "{a.example_opener}..."</p></div>)}
-          {coachData.opponent_weakness && <div className={`${c.ok} border rounded-lg p-2`}><p className="text-xs">🎯 <strong>Weakness:</strong> {coachData.opponent_weakness}</p></div>}
-          {coachData.strategic_concession && <div className={`${c.info} border rounded-lg p-2`}><p className="text-xs">🤝 <strong>Concede:</strong> {coachData.strategic_concession}</p></div>}
-          {coachData.evidence_hint && <p className={`text-xs ${c.tm}`}>📚 {coachData.evidence_hint}</p>}
+        {showCoach && coachData && <div className={`${c.coachBub} border rounded-xl p-4 space-y-3`}>
+          <div className="flex items-center gap-2"><span>🧑‍🏫</span><span className={`text-xs font-bold ${c.coachLabel}`}>Coach</span><button onClick={() => setShowCoach(false)} className={`text-xs ${c.textMuteded} ml-auto`}>✕</button></div>
+          {coachData.encouragement && <p className={`text-sm ${c.textSecondaryondary} italic`}>{coachData.encouragement}</p>}
+          {coachData.angles?.map((a, i) => <div key={i} className={`${c.cardAlt} rounded-lg p-3`}><p className={`text-sm font-medium ${c.text}`}>→ {a.approach}</p><p className={`text-xs ${c.textSecondaryondary}`}>{a.why_effective}</p><p className={`text-xs ${c.orangeText} italic`}>Start: "{a.example_opener}..."</p></div>)}
+          {coachData.opponent_weakness && <div className={`${c.success} border rounded-lg p-2`}><p className="text-xs">🎯 <strong>Weakness:</strong> {coachData.opponent_weakness}</p></div>}
+          {coachData.strategic_concession && <div className={`${c.infoCard} border rounded-lg p-2`}><p className="text-xs">🤝 <strong>Concede:</strong> {coachData.strategic_concession}</p></div>}
+          {coachData.evidence_hint && <p className={`text-xs ${c.textMuteded}`}>📚 {coachData.evidence_hint}</p>}
         </div>}
 
         {/* Source Check */}
         {showSource && <div className={`${c.card} border ${c.border} rounded-xl p-4 space-y-3`}>
-          <div className="flex items-center justify-between"><span className={`text-xs font-bold ${c.text}`}>🔍 Source Check</span><button onClick={() => { setShowSource(false); setSourceData(null); }} className={`text-xs ${c.tm}`}>✕</button></div>
-          <div className="flex gap-2"><input value={sourceText} onChange={e => setSourceText(e.target.value)} placeholder="Paste a claim to fact-check..." className={`flex-1 px-3 py-2 rounded-lg border text-sm ${c.input}`} /><button onClick={handleSourceCheck} disabled={loading} className={`px-3 py-2 rounded-lg text-xs font-bold ${c.pri} disabled:opacity-50`}>Check</button></div>
+          <div className="flex items-center justify-between"><span className={`text-xs font-bold ${c.text}`}>🔍 Source Check</span><button onClick={() => { setShowSource(false); setSourceData(null); }} className={`text-xs ${c.textMuteded}`}>✕</button></div>
+          <div className="flex gap-2"><input value={sourceText} onChange={e => setSourceText(e.target.value)} placeholder="Paste a claim to fact-check..." className={`flex-1 px-3 py-2 rounded-lg border text-sm ${c.input}`} /><button onClick={handleSourceCheck} disabled={loading} className={`px-3 py-2 rounded-lg text-xs font-bold ${c.btnPrimary} disabled:opacity-50`}>Check</button></div>
           {sourceData && <div className="space-y-2">
-            <div className={`${({ 'Well-supported': c.ok, 'Partially supported': c.info, 'Plausible but unproven': c.warn, 'Misleading': c.bad, 'Unsupported': c.bad })[sourceData.evidence_rating?.score] || c.warn} border rounded-lg p-3`}>
+            <div className={`${({ 'Well-supported': c.success, 'Partially supported': c.infoCard, 'Plausible but unproven': c.warning, 'Misleading': c.danger, 'Unsupported': c.danger })[sourceData.evidence_rating?.score] || c.warning} border rounded-lg p-3`}>
               <p className="text-sm font-bold">{sourceData.evidence_rating?.emoji} {sourceData.evidence_rating?.score}</p>
               <p className="text-xs mt-1">{sourceData.assessment}</p>
             </div>
-            {sourceData.the_leap && <p className={`text-xs ${c.ts}`}>⚠️ Leap: {sourceData.the_leap}</p>}
-            {sourceData.stronger_version && <p className={`text-xs ${c.ts}`}>💪 Stronger: {sourceData.stronger_version}</p>}
+            {sourceData.the_leap && <p className={`text-xs ${c.textSecondaryondary}`}>⚠️ Leap: {sourceData.the_leap}</p>}
+            {sourceData.stronger_version && <p className={`text-xs ${c.textSecondaryondary}`}>💪 Stronger: {sourceData.stronger_version}</p>}
           </div>}
         </div>}
 
@@ -438,79 +459,80 @@ const DebateMe = () => {
 
         {/* Input */}
         <div className={`${c.card} border ${c.border} rounded-xl p-4 space-y-3`}>
-          <div className="relative"><textarea value={userInput} onChange={e => setUserInput(e.target.value)} placeholder="Your response..." rows={4} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) handleRespond(); }} />{userInput.trim() && <span className={`absolute bottom-2 right-2 text-xs ${c.tm}`}>{wc}w</span>}</div>
+          <div className="relative"><textarea value={userInput} onChange={e => setUserInput(e.target.value)} placeholder="Your response..." rows={4} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) handleRespond(); }} />{userInput.trim() && <span className={`absolute bottom-2 right-2 text-xs ${c.textMuteded}`}>{wc}w</span>}</div>
           <div className="flex flex-wrap gap-1.5">
-            <button onClick={handleRespond} disabled={loading || !userInput.trim()} className={`flex-1 py-2.5 rounded-xl font-bold text-sm ${c.pri} disabled:opacity-50`}>{loading ? '⏳' : '💬 Respond'}</button>
-            <button onClick={handleConcede} disabled={loading} className={`px-3 py-2 rounded-lg text-xs font-bold ${c.sec} border ${c.border}`} title="Concede">🤝</button>
-            <button onClick={handleCoach} disabled={loading} className={`px-3 py-2 rounded-lg text-xs font-bold ${c.sec} border ${c.border}`} title="Coach">🧑‍🏫</button>
-            <button onClick={() => { setShowSource(!showSource); setSourceData(null); }} className={`px-3 py-2 rounded-lg text-xs font-bold ${c.sec} border ${c.border}`} title="Source check">🔍</button>
-            <button onClick={handleSwitch} disabled={loading} className={`px-3 py-2 rounded-lg text-xs font-bold ${c.sec} border ${c.border}`} title="Switch">🔄</button>
-            <button onClick={handleScorecard} disabled={loading || debateHistory.length < 4} className={`px-3 py-2 rounded-lg text-xs font-bold ${c.sec} border ${c.border}`} title="End & Score">📊</button>
+            <button onClick={handleRespond} disabled={loading || !userInput.trim()} className={`flex-1 py-2.5 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-50`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🥊'}</span> Responding...</> : '💬 Respond'}</button>
+            <button onClick={handleConcede} disabled={loading} className={`px-3 py-2 rounded-lg text-xs font-bold ${c.btnSecondaryondary} border ${c.border}`} title="Concede">🤝</button>
+            <button onClick={handleCoach} disabled={loading} className={`px-3 py-2 rounded-lg text-xs font-bold ${c.btnSecondaryondary} border ${c.border}`} title="Coach">🧑‍🏫</button>
+            <button onClick={() => { setShowSource(!showSource); setSourceData(null); }} className={`px-3 py-2 rounded-lg text-xs font-bold ${c.btnSecondaryondary} border ${c.border}`} title="Source check">🔍</button>
+            <button onClick={handleSwitch} disabled={loading} className={`px-3 py-2 rounded-lg text-xs font-bold ${c.btnSecondaryondary} border ${c.border}`} title="Switch">🔄</button>
+            <button onClick={handleScorecard} disabled={loading || debateHistory.length < 4} className={`px-3 py-2 rounded-lg text-xs font-bold ${c.btnSecondaryondary} border ${c.border}`} title="End & Score">📊</button>
           </div>
-          <p className={`text-xs ${c.tm} text-center`}>⌘+Enter respond · 🤝 Concede · 🧑‍🏫 Coach · 🔍 Source check · 🔄 Switch · 📊 End</p>
+          <p className={`text-xs ${c.textMuteded} text-center`}>⌘+Enter respond · 🤝 Concede · 🧑‍🏫 Coach · 🔍 Source check · 🔄 Switch · 📊 End</p>
         </div>
       </div>}
 
       {/* ═══ SCORECARD ═══ */}
-      {mode === 'scorecard' && scorecardData && (() => { const s = scorecardData; return <div className="space-y-4">
-        <div className={`${c.acc} border rounded-xl p-5`}>
-          <div className="flex items-center justify-between mb-3"><h3 className={`font-bold text-lg ${c.text}`}>📊 Scorecard</h3><span className={`text-2xl font-black ${c.at}`}>{s.overall?.thinking_sharpness}/10</span></div>
-          <p className={`text-sm ${c.ts}`}>{s.overall?.assessment}</p>
-          {s.overall?.growth_moment && <p className={`text-sm ${c.at} mt-2`}>🌱 {s.overall.growth_moment}</p>}
+      {mode === 'scorecard' && scorecardData && (() => { const s = scorecardData; return <div ref={resultsRef} className="space-y-4">
+        <ActionBar content={buildText()} title={`DebateMe: ${userSide} vs ${aiSide}`} />
+        <div className={`${c.accentCard} border rounded-xl p-5`}>
+          <div className="flex items-center justify-between mb-3"><h3 className={`font-bold text-lg ${c.text}`}>📊 Scorecard</h3><span className={`text-2xl font-black ${c.orangeText}`}>{s.overall?.thinking_sharpness}/10</span></div>
+          <p className={`text-sm ${c.textSecondaryondary}`}>{s.overall?.assessment}</p>
+          {s.overall?.growth_moment && <p className={`text-sm ${c.orangeText} mt-2`}>🌱 {s.overall.growth_moment}</p>}
         </div>
-        {s.strengths?.length > 0 && <div className={`${c.ok} border rounded-xl p-5 space-y-2`}><h3 className="font-bold text-sm">💪 Strengths</h3>{s.strengths.map((x, i) => <div key={i}><p className="text-sm font-medium">• {x.argument}</p><p className="text-xs">{x.why_effective}</p></div>)}</div>}
-        {s.blind_spots?.length > 0 && <div className={`${c.warn} border rounded-xl p-5 space-y-2`}><h3 className="font-bold text-sm">🔍 Blind Spots</h3>{s.blind_spots.map((x, i) => <div key={i}><p className="text-sm font-medium">• {x.area}</p><p className="text-xs">{x.the_gap}</p><p className={`text-xs font-medium ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>→ {x.how_to_strengthen}</p></div>)}</div>}
-        {s.fallacies_used?.length > 0 && <div className={`${c.bad} border rounded-xl p-5 space-y-2`}><h3 className="font-bold text-sm">⚠️ Fallacies</h3>{s.fallacies_used.map((f, i) => <div key={i}><p className="text-sm"><strong>{f.type}:</strong> {f.instance}</p><p className="text-xs">Fix: {f.fix}</p></div>)}</div>}
-        {s.best_exchange && <div className={`${c.info} border rounded-xl p-4`}><p className="text-sm">⭐ <strong>Best exchange:</strong> {s.best_exchange.turn} — {s.best_exchange.why}</p></div>}
-        {s.position_evolved && <div className={`${c.purp} border rounded-xl p-4`}><p className="text-sm">🔄 {s.position_evolved}</p></div>}
-        {s.coaching_note && <div className={`${c.card} border-2 ${isDark ? 'border-orange-700' : 'border-orange-300'} rounded-xl p-5`}><p className={`text-xs font-bold ${c.at} mb-1`}>🎯 Coach's Note</p><p className={`text-sm ${c.text}`}>{s.coaching_note}</p></div>}
-        {s.next_debate_suggestion && <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}><p className={`text-sm ${c.ts}`}>💡 <strong>Next:</strong> {s.next_debate_suggestion}</p></div>}
+        {s.strengths?.length > 0 && <div className={`${c.success} border rounded-xl p-5 space-y-2`}><h3 className="font-bold text-sm">💪 Strengths</h3>{s.strengths.map((x, i) => <div key={i}><p className="text-sm font-medium">• {x.argument}</p><p className="text-xs">{x.why_effective}</p></div>)}</div>}
+        {s.blind_spots?.length > 0 && <div className={`${c.warning} border rounded-xl p-5 space-y-2`}><h3 className="font-bold text-sm">🔍 Blind Spots</h3>{s.blind_spots.map((x, i) => <div key={i}><p className="text-sm font-medium">• {x.area}</p><p className="text-xs">{x.the_gap}</p><p className={`text-xs font-medium ${c.amberText}`}>→ {x.how_to_strengthen}</p></div>)}</div>}
+        {s.fallacies_used?.length > 0 && <div className={`${c.danger} border rounded-xl p-5 space-y-2`}><h3 className="font-bold text-sm">⚠️ Fallacies</h3>{s.fallacies_used.map((f, i) => <div key={i}><p className="text-sm"><strong>{f.type}:</strong> {f.instance}</p><p className="text-xs">Fix: {f.fix}</p></div>)}</div>}
+        {s.best_exchange && <div className={`${c.infoCard} border rounded-xl p-4`}><p className="text-sm">⭐ <strong>Best exchange:</strong> {s.best_exchange.turn} — {s.best_exchange.why}</p></div>}
+        {s.position_evolved && <div className={`${c.highlightCard} border rounded-xl p-4`}><p className="text-sm">🔄 {s.position_evolved}</p></div>}
+        {s.coaching_note && <div className={`${c.card} border-2 ${c.orangeBorder2} rounded-xl p-5`}><p className={`text-xs font-bold ${c.orangeText} mb-1`}>🎯 Coach's Note</p><p className={`text-sm ${c.text}`}>{s.coaching_note}</p></div>}
+        {s.next_debate_suggestion && <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}><p className={`text-sm ${c.textSecondaryondary}`}>💡 <strong>Next:</strong> {s.next_debate_suggestion}</p></div>}
 
         {/* Post-scorecard actions: Audience + Arg Map */}
         <div className="flex flex-wrap gap-2">
-          <button onClick={handleAudience} disabled={loading} className={`flex-1 py-2.5 rounded-xl font-bold text-xs ${c.sec} border ${c.border} disabled:opacity-50`}>{audienceData ? '✅ Audience Judged' : loading ? '⏳' : '👥 Audience Verdict'}</button>
-          <button onClick={handleArgMap} disabled={loading} className={`flex-1 py-2.5 rounded-xl font-bold text-xs ${c.sec} border ${c.border} disabled:opacity-50`}>{argMapData ? '✅ Map Built' : loading ? '⏳' : '🗺️ Argument Map'}</button>
+          <button onClick={handleAudience} disabled={loading} className={`flex-1 py-2.5 rounded-xl font-bold text-xs ${c.btnSecondaryondary} border ${c.border} disabled:opacity-50`}>{audienceData ? '✅ Audience Judged' : loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🥊'}</span></> : '👥 Audience Verdict'}</button>
+          <button onClick={handleArgMap} disabled={loading} className={`flex-1 py-2.5 rounded-xl font-bold text-xs ${c.btnSecondaryondary} border ${c.border} disabled:opacity-50`}>{argMapData ? '✅ Map Built' : loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🥊'}</span></> : '🗺️ Argument Map'}</button>
         </div>
 
         {/* Audience */}
         {audienceData && <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-3`}>
           <h3 className={`font-bold ${c.text}`}>👥 Audience Verdict</h3>
-          {audienceData.verdict && <div className={`${audienceData.verdict.more_persuasive === 'Side A' ? c.ok : audienceData.verdict.more_persuasive === 'Side B' ? c.warn : c.info} border rounded-lg p-4`}>
+          {audienceData.verdict && <div className={`${audienceData.verdict.more_persuasive === 'Side A' ? c.success : audienceData.verdict.more_persuasive === 'Side B' ? c.warning : c.infoCard} border rounded-lg p-4`}>
             <p className="text-lg font-bold">{audienceData.verdict.more_persuasive === 'Side A' ? '🏆 You won the audience' : audienceData.verdict.more_persuasive === 'Side B' ? '🥈 AI was more persuasive' : '🤝 Too close to call'}</p>
             <p className="text-xs mt-1">{audienceData.verdict.confidence} · {audienceData.verdict.reason}</p>
           </div>}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {audienceData.side_a_review && <div className={`${c.cardAlt} rounded-lg p-3`}><p className={`text-xs font-bold ${c.text}`}>You ({audienceData.side_a_review.persuasion_score}/10)</p><p className={`text-xs ${c.ts}`}>Best: {audienceData.side_a_review.most_compelling_moment}</p><p className={`text-xs ${c.tm}`}>Lost them: {audienceData.side_a_review.least_compelling_moment}</p></div>}
-            {audienceData.side_b_review && <div className={`${c.cardAlt} rounded-lg p-3`}><p className={`text-xs font-bold ${c.text}`}>AI ({audienceData.side_b_review.persuasion_score}/10)</p><p className={`text-xs ${c.ts}`}>Best: {audienceData.side_b_review.most_compelling_moment}</p><p className={`text-xs ${c.tm}`}>Lost them: {audienceData.side_b_review.least_compelling_moment}</p></div>}
+            {audienceData.side_a_review && <div className={`${c.cardAlt} rounded-lg p-3`}><p className={`text-xs font-bold ${c.text}`}>You ({audienceData.side_a_review.persuasion_score}/10)</p><p className={`text-xs ${c.textSecondaryondary}`}>Best: {audienceData.side_a_review.most_compelling_moment}</p><p className={`text-xs ${c.textMuteded}`}>Lost them: {audienceData.side_a_review.least_compelling_moment}</p></div>}
+            {audienceData.side_b_review && <div className={`${c.cardAlt} rounded-lg p-3`}><p className={`text-xs font-bold ${c.text}`}>AI ({audienceData.side_b_review.persuasion_score}/10)</p><p className={`text-xs ${c.textSecondaryondary}`}>Best: {audienceData.side_b_review.most_compelling_moment}</p><p className={`text-xs ${c.textMuteded}`}>Lost them: {audienceData.side_b_review.least_compelling_moment}</p></div>}
           </div>
-          {audienceData.what_would_have_convinced_me && <div className={`${c.info} border rounded-lg p-3`}><p className="text-xs">💡 <strong>Missing argument:</strong> {audienceData.what_would_have_convinced_me}</p></div>}
-          {audienceData.emotional_vs_logical && <p className={`text-xs ${c.ts}`}>🎭 {audienceData.emotional_vs_logical}</p>}
+          {audienceData.what_would_have_convinced_me && <div className={`${c.infoCard} border rounded-lg p-3`}><p className="text-xs">💡 <strong>Missing argument:</strong> {audienceData.what_would_have_convinced_me}</p></div>}
+          {audienceData.emotional_vs_logical && <p className={`text-xs ${c.textSecondaryondary}`}>🎭 {audienceData.emotional_vs_logical}</p>}
         </div>}
 
         {/* Argument Map */}
         {argMapData && <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-4`}>
           <h3 className={`font-bold ${c.text}`}>🗺️ Argument Map</h3>
-          <ArgTree tree={argMapData.user_tree} label="🗣️ Your Arguments" color={c.acc} />
+          <ArgTree tree={argMapData.user_tree} label="🗣️ Your Arguments" color={c.accentCard} />
           <ArgTree tree={argMapData.ai_tree} label="🥊 Opponent's Arguments" color={c.cardAlt} />
-          {argMapData.undefended_branches?.length > 0 && <div className={`${c.warn} border rounded-lg p-3`}><p className="text-xs font-bold">🚧 Undefended:</p>{argMapData.undefended_branches.map((u, i) => <p key={i} className="text-xs">• {u}</p>)}</div>}
-          {argMapData.strongest_chain && <div className={`${c.ok} border rounded-lg p-3`}><p className="text-xs">💪 <strong>Strongest chain:</strong> {argMapData.strongest_chain}</p></div>}
-          {argMapData.weakest_chain && <div className={`${c.bad} border rounded-lg p-3`}><p className="text-xs">⚠️ <strong>Weakest chain:</strong> {argMapData.weakest_chain}</p></div>}
-          {argMapData.structural_note && <p className={`text-xs ${c.ts}`}>📐 {argMapData.structural_note}</p>}
+          {argMapData.undefended_branches?.length > 0 && <div className={`${c.warning} border rounded-lg p-3`}><p className="text-xs font-bold">🚧 Undefended:</p>{argMapData.undefended_branches.map((u, i) => <p key={i} className="text-xs">• {u}</p>)}</div>}
+          {argMapData.strongest_chain && <div className={`${c.success} border rounded-lg p-3`}><p className="text-xs">💪 <strong>Strongest chain:</strong> {argMapData.strongest_chain}</p></div>}
+          {argMapData.weakest_chain && <div className={`${c.danger} border rounded-lg p-3`}><p className="text-xs">⚠️ <strong>Weakest chain:</strong> {argMapData.weakest_chain}</p></div>}
+          {argMapData.structural_note && <p className={`text-xs ${c.textSecondaryondary}`}>📐 {argMapData.structural_note}</p>}
         </div>}
 
         <div className="flex flex-wrap gap-2">
-          <button onClick={startNew} className={`flex-1 py-2.5 rounded-xl font-bold text-sm ${c.pri}`}>🥊 New Debate</button>
-          <button onClick={() => setMode('debate')} className={`px-4 py-2.5 rounded-xl font-bold text-xs ${c.sec} border ${c.border}`}>💬 Review</button>
+          <button onClick={startNew} className={`flex-1 py-2.5 rounded-xl font-bold text-sm ${c.btnPrimary}`}><span>{tool?.icon ?? '🥊'}</span> New Debate</button>
+          <button onClick={() => setMode('debate')} className={`px-4 py-2.5 rounded-xl font-bold text-xs ${c.btnSecondaryondary} border ${c.border}`}>💬 Review</button>
         </div>
-        <ActionBar content={buildText()} title={`DebateMe: ${userSide} vs ${aiSide}`} />
+        <p className={`text-xs ${c.textMuteded} text-center`}>AI can make mistakes — verify key arguments independently.</p>
       </div>; })()}
 
       {/* ═══ REPLAY ═══ */}
-      {mode === 'replay' && replayIndex !== null && debateLog[replayIndex] && (() => { const d = debateLog[replayIndex]; return <div className="space-y-4">
-        <div className={`${c.acc} border rounded-xl p-4`}><div className="flex items-center justify-between"><div><h3 className={`font-bold ${c.text}`}>📖 {d.userSide} vs {d.aiSide}</h3><p className={`text-xs ${c.tm}`}>{new Date(d.timestamp).toLocaleDateString()} · {d.turns}t · {LEVELS.find(l => l.id === d.level)?.icon}{d.format !== 'freeform' ? ` · ${d.format}` : ''}</p></div><span className={`text-xl font-black ${c.at}`}>{d.sharpness}/10</span></div></div>
+      {mode === 'replay' && replayIndex !== null && history[replayIndex] && (() => { const d = history[replayIndex]; return <div className="space-y-4">
+        <div className={`${c.accentCard} border rounded-xl p-4`}><div className="flex items-center justify-between"><div><h3 className={`font-bold ${c.text}`}>📖 {d.userSide} vs {d.aiSide}</h3><p className={`text-xs ${c.textMuteded}`}>{new Date(d.timestamp).toLocaleDateString()} · {d.turns}t · {LEVELS.find(l => l.id === d.level)?.icon}{d.format !== 'freeform' ? ` · ${d.format}` : ''}</p></div><span className={`text-xl font-black ${c.orangeText}`}>{d.sharpness}/10</span></div></div>
         {d.history?.map((turn, i) => <Turn key={i} turn={turn} />)}
-        {d.scorecard && <div className={`${c.card} border-2 ${isDark ? 'border-orange-700' : 'border-orange-300'} rounded-xl p-5`}><h3 className={`font-bold ${c.text} mb-2`}>📊 Scorecard</h3><p className={`text-sm ${c.ts}`}>{d.scorecard.overall?.assessment}</p>{d.scorecard.coaching_note && <p className={`text-sm ${c.at} mt-2`}>🎯 {d.scorecard.coaching_note}</p>}</div>}
-        <div className="flex gap-2"><button onClick={startNew} className={`flex-1 py-2.5 rounded-xl font-bold text-sm ${c.pri}`}>🥊 New</button><button onClick={() => handleRematch(d)} disabled={loading} className={`px-4 py-2.5 rounded-xl font-bold text-xs ${c.sec} border ${c.border}`}>🔁 Rematch</button><CopyBtn content={buildText(d.history, d.scorecard)} label="Copy" /></div>
+        {d.scorecard && <div className={`${c.card} border-2 ${c.orangeBorder2} rounded-xl p-5`}><h3 className={`font-bold ${c.text} mb-2`}>📊 Scorecard</h3><p className={`text-sm ${c.textSecondaryondary}`}>{d.scorecard.overall?.assessment}</p>{d.scorecard.coaching_note && <p className={`text-sm ${c.orangeText} mt-2`}>🎯 {d.scorecard.coaching_note}</p>}</div>}
+        <div className="flex gap-2"><button onClick={startNew} className={`flex-1 py-2.5 rounded-xl font-bold text-sm ${c.btnPrimary}`}>🥊 New</button><button onClick={() => handleRematch(d)} disabled={loading} className={`px-4 py-2.5 rounded-xl font-bold text-xs ${c.btnSecondaryondary} border ${c.border}`}>🔁 Rematch</button><CopyBtn content={buildText(d.history, d.scorecard)} label="Copy" /></div>
       </div>; })()}
 
       {/* ═══ QUICK SPAR ═══ */}
@@ -519,75 +541,75 @@ const DebateMe = () => {
           <h3 className={`font-bold ${c.text}`}>⚡ Quick Spar</h3>
           <div className="flex gap-2">{LEVELS.map(lv => <button key={lv.id} onClick={() => setLevel(lv.id)} className={`px-3 py-1.5 rounded-lg text-xs font-medium ${level === lv.id ? c.on : c.off}`}>{lv.icon} {lv.label}</button>)}</div>
           <textarea value={quickPosition} onChange={e => setQuickPosition(e.target.value)} placeholder="Your position..." rows={3} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
-          <div className="flex flex-wrap gap-1.5">{STARTERS.slice(0, 6).map((s, i) => <button key={i} onClick={() => setQuickPosition(s.t)} className={`text-xs px-2 py-1 rounded-lg ${c.sec} border ${c.border}`}>{s.cat} {s.t.substring(0, 30)}...</button>)}</div>
-          <button onClick={handleQuick} disabled={loading} className={`w-full py-3 rounded-xl font-bold text-sm ${c.pri} disabled:opacity-50`}>{loading ? '⏳' : '⚡ Challenge Me'}</button>
+          <div className="flex flex-wrap gap-1.5">{STARTERS.slice(0, 6).map((s, i) => <button key={i} onClick={() => setQuickPosition(s.t)} className={`text-xs px-2 py-1 rounded-lg ${c.btnSecondaryondary} border ${c.border}`}>{s.cat} {s.t.substring(0, 30)}...</button>)}</div>
+          <button onClick={handleQuick} disabled={loading} className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-50`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🥊'}</span> Challenging...</> : '⚡ Challenge Me'}</button>
         </div>
         {quickData && <div className="space-y-4">
-          {quickData.strength_acknowledged && <div className={`${c.ok} border rounded-xl p-4`}><p className="text-sm">✅ {quickData.strength_acknowledged}</p></div>}
-          <div className={`${c.card} border ${c.border} rounded-xl p-5`}><div className="flex items-center gap-2 mb-3"><span className="text-lg">🥊</span><span className={`text-xs font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-zinc-600 text-zinc-200' : 'bg-gray-200 text-gray-700'}`}>{quickData.steelman_label}</span></div><p className={`text-sm ${c.ts} whitespace-pre-line`}>{quickData.counter}</p></div>
-          {quickData.the_question && <div className={`${c.acc} border rounded-xl p-4`}><p className={`text-sm font-bold ${c.at}`}>❓ {quickData.the_question}</p></div>}
-          {quickData.go_deeper && <button onClick={() => { setPosition(quickPosition); setMode('setup'); }} className={`w-full py-2 rounded-xl text-xs font-bold ${c.sec} border ${c.border}`}>🥊 Full debate → {quickData.go_deeper?.substring(0, 60)}</button>}
+          {quickData.strength_acknowledged && <div className={`${c.success} border rounded-xl p-4`}><p className="text-sm">✅ {quickData.strength_acknowledged}</p></div>}
+          <div className={`${c.card} border ${c.border} rounded-xl p-5`}><div className="flex items-center gap-2 mb-3"><span className="text-lg">🥊</span><span className={`text-xs font-bold px-2 py-0.5 rounded-full ${c.neutralBadge}`}>{quickData.steelman_label}</span></div><p className={`text-sm ${c.textSecondaryondary} whitespace-pre-line`}>{quickData.counter}</p></div>
+          {quickData.the_question && <div className={`${c.accentCard} border rounded-xl p-4`}><p className={`text-sm font-bold ${c.orangeText}`}>❓ {quickData.the_question}</p></div>}
+          {quickData.go_deeper && <button onClick={() => { setPosition(quickPosition); setMode('setup'); }} className={`w-full py-2 rounded-xl text-xs font-bold ${c.btnSecondaryondary} border ${c.border}`}>🥊 Full debate → {quickData.go_deeper?.substring(0, 60)}</button>}
         </div>}
       </>}
 
       {/* ═══ PREP MODE ═══ */}
       {mode === 'prep' && <>
         <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-4`}>
-          <div><h3 className={`font-bold ${c.text}`}>🎯 Devil's Advocate Prep</h3><p className={`text-sm ${c.tm}`}>Real meeting Thursday? Need to defend a position? We'll simulate your audience and drill you on the hardest questions.</p></div>
+          <div><h3 className={`font-bold ${c.text}`}>🎯 Devil's Advocate Prep</h3><p className={`text-sm ${c.textMuteded}`}>Real meeting Thursday? Need to defend a position? We'll simulate your audience and drill you on the hardest questions.</p></div>
           <textarea value={prepPosition} onChange={e => setPrepPosition(e.target.value)} placeholder="The position you need to defend (e.g., 'We should switch to remote-first')" rows={2} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
           <input value={prepAudience} onChange={e => setPrepAudience(e.target.value)} placeholder="Who you're presenting to (e.g., 'conservative CEO and board of directors')" className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
           <input value={prepContext} onChange={e => setPrepContext(e.target.value)} placeholder="Context (e.g., 'company lost revenue last quarter, they're risk-averse')" className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
-          <div><p className={`text-xs font-bold ${c.label} mb-2`}>Stakes</p><div className="flex gap-2">{['low', 'moderate', 'high', 'career-defining'].map(s => <button key={s} onClick={() => setPrepStakes(s)} className={`px-3 py-1.5 rounded-lg text-xs font-medium ${prepStakes === s ? c.on : c.off}`}>{s}</button>)}</div></div>
-          <button onClick={handlePrep} disabled={loading} className={`w-full py-3 rounded-xl font-bold text-sm ${c.pri} disabled:opacity-50`}>{loading ? '⏳ Simulating audience...' : '🎯 Prep Me'}</button>
+          <div><p className={`text-xs font-bold ${c.formLabel} mb-2`}>Stakes</p><div className="flex gap-2">{['low', 'moderate', 'high', 'career-defining'].map(s => <button key={s} onClick={() => setPrepStakes(s)} className={`px-3 py-1.5 rounded-lg text-xs font-medium ${prepStakes === s ? c.on : c.off}`}>{s}</button>)}</div></div>
+          <button onClick={handlePrep} disabled={loading} className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-50`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🥊'}</span> Simulating...</> : '🎯 Prep Me'}</button>
         </div>
         {prepData && <div className="space-y-4">
-          {prepData.audience_profile && <div className={`${c.info} border rounded-xl p-4`}><p className="text-xs font-bold">👥 Audience Profile</p><p className={`text-sm ${isDark ? 'text-blue-200' : 'text-blue-800'} mt-1`}>{prepData.audience_profile}</p></div>}
-          {prepData.opening_strategy && <div className={`${c.ok} border rounded-xl p-4`}><p className="text-xs font-bold">🎬 Opening Strategy</p><p className="text-sm mt-1">{prepData.opening_strategy}</p></div>}
-          {prepData.concede_early && <div className={`${c.warn} border rounded-xl p-4`}><p className="text-xs font-bold">🤝 Concede Early</p><p className="text-sm mt-1">{prepData.concede_early}</p></div>}
+          {prepData.audience_profile && <div className={`${c.infoCard} border rounded-xl p-4`}><p className="text-xs font-bold">👥 Audience Profile</p><p className={`text-sm ${c.coachLabel} mt-1`}>{prepData.audience_profile}</p></div>}
+          {prepData.opening_strategy && <div className={`${c.success} border rounded-xl p-4`}><p className="text-xs font-bold">🎬 Opening Strategy</p><p className="text-sm mt-1">{prepData.opening_strategy}</p></div>}
+          {prepData.concede_early && <div className={`${c.warning} border rounded-xl p-4`}><p className="text-xs font-bold">🤝 Concede Early</p><p className="text-sm mt-1">{prepData.concede_early}</p></div>}
           <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-3`}><h3 className={`font-bold ${c.text}`}>🔥 The 5 Hardest Questions</h3>
             {prepData.hard_questions?.map((q, i) => <div key={i} className={`${c.cardAlt} rounded-lg p-4 space-y-2`}>
               <p className={`text-sm font-bold ${c.text}`}>{i + 1}. {q.question}</p>
-              <p className={`text-xs ${c.ts}`}>Why hard: {q.why_hard}</p>
-              <p className={`text-xs ${c.at}`}>→ {q.angle}</p>
-              <p className={`text-xs ${c.bad} border rounded p-2`}>🚫 Don't say: {q.landmine}</p>
-              <p className={`text-xs ${c.ok} border rounded p-2`}>✅ Start with: "{q.opener}"</p>
+              <p className={`text-xs ${c.textSecondaryondary}`}>Why hard: {q.why_hard}</p>
+              <p className={`text-xs ${c.orangeText}`}>→ {q.angle}</p>
+              <p className={`text-xs ${c.danger} border rounded p-2`}>🚫 Don't say: {q.landmine}</p>
+              <p className={`text-xs ${c.success} border rounded p-2`}>✅ Start with: "{q.opener}"</p>
             </div>)}
           </div>
-          {prepData.closing_move && <div className={`${c.purp} border rounded-xl p-4`}><p className="text-xs font-bold">🎯 Closing Move</p><p className="text-sm mt-1">{prepData.closing_move}</p></div>}
-          {prepData.body_language_note && <p className={`text-xs ${c.ts}`}>🤸 {prepData.body_language_note}</p>}
-          {prepData.worst_case && <div className={`${c.bad} border rounded-xl p-4`}><p className="text-xs font-bold">💥 Worst Case</p><p className="text-sm mt-1">{prepData.worst_case.scenario}</p><p className={`text-xs ${c.at} mt-1`}>Recovery: {prepData.worst_case.recovery}</p></div>}
-          <button onClick={() => { setPosition(prepPosition); setMode('setup'); }} className={`w-full py-2 rounded-xl text-xs font-bold ${c.sec} border ${c.border}`}>🥊 Practice in a full debate →</button>
+          {prepData.closing_move && <div className={`${c.highlightCard} border rounded-xl p-4`}><p className="text-xs font-bold">🎯 Closing Move</p><p className="text-sm mt-1">{prepData.closing_move}</p></div>}
+          {prepData.body_language_note && <p className={`text-xs ${c.textSecondaryondary}`}>🤸 {prepData.body_language_note}</p>}
+          {prepData.worst_case && <div className={`${c.danger} border rounded-xl p-4`}><p className="text-xs font-bold">💥 Worst Case</p><p className="text-sm mt-1">{prepData.worst_case.scenario}</p><p className={`text-xs ${c.orangeText} mt-1`}>Recovery: {prepData.worst_case.recovery}</p></div>}
+          <button onClick={() => { setPosition(prepPosition); setMode('setup'); }} className={`w-full py-2 rounded-xl text-xs font-bold ${c.btnSecondaryondary} border ${c.border}`}>🥊 Practice in a full debate →</button>
         </div>}
       </>}
 
       {/* ═══ FALLACY GYM ═══ */}
       {mode === 'fallacy' && <>
         <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-4`}>
-          <div className="flex items-center justify-between"><h3 className={`font-bold ${c.text}`}>🧩 Fallacy Gym</h3>{ftStreak > 0 && <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${c.ok} border`}>🔥 {ftStreak} streak</span>}</div>
-          <p className={`text-sm ${c.tm}`}>Spot the logical fallacy. The better you get, the harder they get.</p>
-          <div><p className={`text-xs font-bold ${c.label} mb-2`}>Difficulty</p><div className="flex gap-2">{['easy', 'medium', 'hard'].map(d => <button key={d} onClick={() => setFtDifficulty(d)} className={`px-3 py-1.5 rounded-lg text-xs font-medium ${ftDifficulty === d ? c.on : c.off}`}>{d === 'easy' ? '🟢' : d === 'medium' ? '🟡' : '🔴'} {d}</button>)}</div></div>
-          <button onClick={handleFallacyNew} disabled={loading} className={`w-full py-3 rounded-xl font-bold text-sm ${c.pri} disabled:opacity-50`}>{loading ? '⏳' : ftExercise ? '🔄 New Exercise' : '🧩 Start Training'}</button>
+          <div className="flex items-center justify-between"><h3 className={`font-bold ${c.text}`}>🧩 Fallacy Gym</h3>{ftStreak > 0 && <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${c.success} border`}>🔥 {ftStreak} streak</span>}</div>
+          <p className={`text-sm ${c.textMuteded}`}>Spot the logical fallacy. The better you get, the harder they get.</p>
+          <div><p className={`text-xs font-bold ${c.formLabel} mb-2`}>Difficulty</p><div className="flex gap-2">{['easy', 'medium', 'hard'].map(d => <button key={d} onClick={() => setFtDifficulty(d)} className={`px-3 py-1.5 rounded-lg text-xs font-medium ${ftDifficulty === d ? c.on : c.off}`}>{d === 'easy' ? '🟢' : d === 'medium' ? '🟡' : '🔴'} {d}</button>)}</div></div>
+          <button onClick={handleFallacyNew} disabled={loading} className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-50`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🥊'}</span> Loading...</> : ftExercise ? '🔄 New Exercise' : '🧩 Start Training'}</button>
         </div>
         {ftExercise && <div className="space-y-4">
           <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-            {ftExercise.context && <p className={`text-xs ${c.tm} mb-2`}>{ftExercise.context}</p>}
+            {ftExercise.context && <p className={`text-xs ${c.textMuteded} mb-2`}>{ftExercise.context}</p>}
             <p className={`text-sm ${c.text} whitespace-pre-line`}>"{ftExercise.argument}"</p>
           </div>
           {!ftFeedback && <div className="space-y-2">
             <input value={ftAnswer} onChange={e => setFtAnswer(e.target.value)} placeholder="What fallacy is this? (e.g., 'ad hominem', 'false dichotomy')" className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} onKeyDown={e => { if (e.key === 'Enter') handleFallacyCheck(); }} />
             <div className="flex gap-2">
-              <button onClick={handleFallacyCheck} disabled={loading || !ftAnswer.trim()} className={`flex-1 py-2.5 rounded-xl font-bold text-sm ${c.pri} disabled:opacity-50`}>{loading ? '⏳' : '✅ Check'}</button>
-              <button onClick={() => setFtShowAnswer(!ftShowAnswer)} className={`px-4 py-2.5 rounded-xl text-xs font-bold ${c.sec} border ${c.border}`}>{ftShowAnswer ? '🙈 Hide' : '💡 Hint'}</button>
+              <button onClick={handleFallacyCheck} disabled={loading || !ftAnswer.trim()} className={`flex-1 py-2.5 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-50`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🥊'}</span></> : '✅ Check'}</button>
+              <button onClick={() => setFtShowAnswer(!ftShowAnswer)} className={`px-4 py-2.5 rounded-xl text-xs font-bold ${c.btnSecondaryondary} border ${c.border}`}>{ftShowAnswer ? '🙈 Hide' : '💡 Hint'}</button>
             </div>
-            {ftShowAnswer && ftExercise.hint && <p className={`text-xs ${c.ts} italic`}>💡 {ftExercise.hint}</p>}
+            {ftShowAnswer && ftExercise.hint && <p className={`text-xs ${c.textSecondaryondary} italic`}>💡 {ftExercise.hint}</p>}
           </div>}
-          {ftFeedback && <div className={`${ftFeedback.correct ? c.ok : c.bad} border rounded-xl p-5 space-y-2`}>
+          {ftFeedback && <div className={`${ftFeedback.correct ? c.success : c.danger} border rounded-xl p-5 space-y-2`}>
             <p className="text-lg font-bold">{ftFeedback.correct ? '✅ Correct!' : '❌ Not quite'}</p>
             <p className="text-sm">{ftFeedback.feedback}</p>
             <p className="text-sm"><strong>Fallacy:</strong> {ftFeedback.the_fallacy}</p>
             <p className="text-xs">{ftFeedback.explanation}</p>
-            {ftFeedback.how_to_fix && <p className={`text-xs ${ftFeedback.correct ? '' : c.at}`}>💪 Fixed: {ftFeedback.how_to_fix}</p>}
-            <button onClick={handleFallacyNew} disabled={loading} className={`w-full py-2 rounded-xl font-bold text-xs ${c.sec} border ${c.border} mt-2`}>Next Exercise →</button>
+            {ftFeedback.how_to_fix && <p className={`text-xs ${ftFeedback.correct ? '' : c.orangeText}`}>💪 Fixed: {ftFeedback.how_to_fix}</p>}
+            <button onClick={handleFallacyNew} disabled={loading} className={`w-full py-2 rounded-xl font-bold text-xs ${c.btnSecondaryondary} border ${c.border} mt-2`}>Next Exercise →</button>
           </div>}
         </div>}
       </>}
@@ -596,38 +618,52 @@ const DebateMe = () => {
       {mode === 'stats' && (() => { const s = computeStats(); return <div className="space-y-4">
         <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
           <h3 className={`font-bold text-lg ${c.text} mb-4`}>📈 Stats</h3>
-          {!s ? <p className={`text-sm ${c.tm}`}>Complete a debate first.</p> : <div className="space-y-4">
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">{[['Debates', s.total, '🥊'], ['Avg', s.avg + '/10', '🧠'], ['Best', s.best + '/10', '⭐'], ['Turns', s.tot, '💬']].map(([l, v, i]) => <div key={l} className={`${c.cardAlt} rounded-xl p-3 text-center`}><p className="text-lg">{i}</p><p className={`text-xl font-black ${c.text}`}>{v}</p><p className={`text-xs ${c.tm}`}>{l}</p></div>)}</div>
-            {s.trend && <div className={`${s.trend.dir === 'up' ? c.ok : s.trend.dir === 'down' ? c.warn : c.info} border rounded-xl p-4`}><p className="text-sm font-bold">{s.trend.dir === 'up' ? '📈 Improving!' : s.trend.dir === 'down' ? '📉 Dipping' : '➡️ Steady'}</p><p className="text-xs mt-1">Early: {s.trend.early} → Recent: {s.trend.recent}</p></div>}
+          {!s ? <p className={`text-sm ${c.textMuteded}`}>Complete a debate first.</p> : <div className="space-y-4">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">{[['Debates', s.total, '🥊'], ['Avg', s.avg + '/10', '🧠'], ['Best', s.best + '/10', '⭐'], ['Turns', s.tot, '💬']].map(([l, v, i]) => <div key={l} className={`${c.cardAlt} rounded-xl p-3 text-center`}><p className="text-lg">{i}</p><p className={`text-xl font-black ${c.text}`}>{v}</p><p className={`text-xs ${c.textMuteded}`}>{l}</p></div>)}</div>
+            {s.trend && <div className={`${s.trend.dir === 'up' ? c.success : s.trend.dir === 'down' ? c.warning : c.infoCard} border rounded-xl p-4`}><p className="text-sm font-bold">{s.trend.dir === 'up' ? '📈 Improving!' : s.trend.dir === 'down' ? '📉 Dipping' : '➡️ Steady'}</p><p className="text-xs mt-1">Early: {s.trend.early} → Recent: {s.trend.recent}</p></div>}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {s.sw > 0 && <div className={`${c.cardAlt} rounded-lg p-3`}><p className={`text-xs font-bold ${c.text}`}>🔄 Switches</p><p className={`text-sm ${c.ts}`}>{s.sw}/{s.total} ({Math.round(s.sw / s.total * 100)}%)</p></div>}
-              {s.tl && <div className={`${c.cardAlt} rounded-lg p-3`}><p className={`text-xs font-bold ${c.text}`}>⚙️ Preferred</p><p className={`text-sm ${c.ts}`}>{LEVELS.find(l => l.id === s.tl[0])?.icon} {s.tl[0]} ({s.tl[1]}x)</p></div>}
-              {s.tf && <div className={`${c.warn} border rounded-lg p-3`}><p className="text-xs font-bold">⚠️ Top fallacy</p><p className="text-sm">{s.tf[0]} ({s.tf[1]}x)</p></div>}
+              {s.sw > 0 && <div className={`${c.cardAlt} rounded-lg p-3`}><p className={`text-xs font-bold ${c.text}`}>🔄 Switches</p><p className={`text-sm ${c.textSecondaryondary}`}>{s.sw}/{s.total} ({Math.round(s.sw / s.total * 100)}%)</p></div>}
+              {s.tl && <div className={`${c.cardAlt} rounded-lg p-3`}><p className={`text-xs font-bold ${c.text}`}>⚙️ Preferred</p><p className={`text-sm ${c.textSecondaryondary}`}>{LEVELS.find(l => l.id === s.tl[0])?.icon} {s.tl[0]} ({s.tl[1]}x)</p></div>}
+              {s.tf && <div className={`${c.warning} border rounded-lg p-3`}><p className="text-xs font-bold">⚠️ Top fallacy</p><p className="text-sm">{s.tf[0]} ({s.tf[1]}x)</p></div>}
             </div>
-            <button onClick={handleHighlightReel} disabled={loading || debateLog.length < 3} className={`w-full py-2.5 rounded-xl font-bold text-xs ${c.sec} border ${c.border} disabled:opacity-50`}>{highlightData ? '✅ Highlight Reel Ready' : loading ? '⏳ Analyzing...' : '🏆 Generate Highlight Reel (3+ debates)'}</button>
+            <button onClick={handleHighlightReel} disabled={loading || history.length < 3} className={`w-full py-2.5 rounded-xl font-bold text-xs ${c.btnSecondaryondary} border ${c.border} disabled:opacity-50`}>{highlightData ? '✅ Highlight Reel Ready' : loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🥊'}</span> Analyzing...</> : '🏆 Generate Highlight Reel (3+ debates)'}</button>
           </div>}
         </div>
 
         {/* Highlight Reel */}
         {highlightData && <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-4`}>
           <h3 className={`font-bold text-lg ${c.text}`}>🏆 Highlight Reel</h3>
-          {highlightData.debater_type && <div className={`${c.acc} border rounded-xl p-4`}><p className={`text-lg font-bold ${c.at}`}>{highlightData.debater_type.label}</p><p className={`text-sm ${c.ts}`}>{highlightData.debater_type.description}</p></div>}
-          {highlightData.overall_profile && <p className={`text-sm ${c.ts}`}>{highlightData.overall_profile}</p>}
-          {highlightData.top_strengths?.length > 0 && <div className={`${c.ok} border rounded-xl p-4 space-y-2`}><h3 className="font-bold text-sm">💪 Patterns</h3>{highlightData.top_strengths.map((s, i) => <p key={i} className="text-sm">• {s.pattern}</p>)}</div>}
-          {highlightData.persistent_weaknesses?.length > 0 && <div className={`${c.warn} border rounded-xl p-4 space-y-2`}><h3 className="font-bold text-sm">🔍 Persistent Weaknesses</h3>{highlightData.persistent_weaknesses.map((w, i) => <div key={i}><p className="text-sm">• {w.pattern} ({w.frequency})</p><p className={`text-xs ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>Rx: {w.prescription}</p></div>)}</div>}
-          {highlightData.fallacy_profile?.most_common && <div className={`${c.bad} border rounded-xl p-4`}><p className="text-sm font-bold">⚠️ Go-to fallacy: {highlightData.fallacy_profile.most_common}</p><p className="text-xs mt-1">{highlightData.fallacy_profile.pattern}</p><p className={`text-xs ${c.at}`}>Exercise: {highlightData.fallacy_profile.exercise}</p></div>}
-          {highlightData.growth_trajectory && <div className={`${c.info} border rounded-xl p-4`}><p className="text-sm font-bold">{highlightData.growth_trajectory.direction === 'improving' ? '📈' : '📊'} {highlightData.growth_trajectory.direction}</p><p className="text-xs mt-1">{highlightData.growth_trajectory.insight}</p></div>}
-          {highlightData.best_moment && <div className={`${c.purp} border rounded-xl p-4`}><p className="text-sm">⭐ <strong>Best ever:</strong> {highlightData.best_moment}</p></div>}
-          {highlightData.next_challenges?.length > 0 && <div className={`${c.cardAlt} rounded-lg p-3`}><p className={`text-xs font-bold ${c.text}`}>🎯 Try next:</p>{highlightData.next_challenges.map((ch, i) => <button key={i} onClick={() => { setPosition(ch); setMode('setup'); }} className={`text-xs block mt-1 ${c.at} hover:underline`}>→ {ch}</button>)}</div>}
+          {highlightData.debater_type && <div className={`${c.accentCard} border rounded-xl p-4`}><p className={`text-lg font-bold ${c.orangeText}`}>{highlightData.debater_type.label}</p><p className={`text-sm ${c.textSecondaryondary}`}>{highlightData.debater_type.description}</p></div>}
+          {highlightData.overall_profile && <p className={`text-sm ${c.textSecondaryondary}`}>{highlightData.overall_profile}</p>}
+          {highlightData.top_strengths?.length > 0 && <div className={`${c.success} border rounded-xl p-4 space-y-2`}><h3 className="font-bold text-sm">💪 Patterns</h3>{highlightData.top_strengths.map((s, i) => <p key={i} className="text-sm">• {s.pattern}</p>)}</div>}
+          {highlightData.persistent_weaknesses?.length > 0 && <div className={`${c.warning} border rounded-xl p-4 space-y-2`}><h3 className="font-bold text-sm">🔍 Persistent Weaknesses</h3>{highlightData.persistent_weaknesses.map((w, i) => <div key={i}><p className="text-sm">• {w.pattern} ({w.frequency})</p><p className={`text-xs ${c.amberText}`}>Rx: {w.prescription}</p></div>)}</div>}
+          {highlightData.fallacy_profile?.most_common && <div className={`${c.danger} border rounded-xl p-4`}><p className="text-sm font-bold">⚠️ Go-to fallacy: {highlightData.fallacy_profile.most_common}</p><p className="text-xs mt-1">{highlightData.fallacy_profile.pattern}</p><p className={`text-xs ${c.orangeText}`}>Exercise: {highlightData.fallacy_profile.exercise}</p></div>}
+          {highlightData.growth_trajectory && <div className={`${c.infoCard} border rounded-xl p-4`}><p className="text-sm font-bold">{highlightData.growth_trajectory.direction === 'improving' ? '📈' : '📊'} {highlightData.growth_trajectory.direction}</p><p className="text-xs mt-1">{highlightData.growth_trajectory.insight}</p></div>}
+          {highlightData.best_moment && <div className={`${c.highlightCard} border rounded-xl p-4`}><p className="text-sm">⭐ <strong>Best ever:</strong> {highlightData.best_moment}</p></div>}
+          {highlightData.next_challenges?.length > 0 && <div className={`${c.cardAlt} rounded-lg p-3`}><p className={`text-xs font-bold ${c.text}`}>🎯 Try next:</p>{highlightData.next_challenges.map((ch, i) => <button key={i} onClick={() => { setPosition(ch); setMode('setup'); }} className={`text-xs block mt-1 ${c.orangeText} hover:underline`}>→ {ch}</button>)}</div>}
         </div>}
-        <button onClick={startNew} className={`w-full py-2.5 rounded-xl font-bold text-sm ${c.pri}`}>🥊 New Debate</button>
+        <button onClick={startNew} className={`w-full py-2.5 rounded-xl font-bold text-sm ${c.btnPrimary}`}>🥊 New Debate</button>
       </div>; })()}
 
       {/* Error */}
-      {error && <div className={`${c.bad} border rounded-xl p-4 text-sm`}>⚠️ {error}</div>}
+      {error && <div className={`${c.danger} border rounded-xl p-4 text-sm`}>⚠️ {error}</div>}
+
+      {/* AI disclaimer */}
+      {(mode === 'scorecard' || mode === 'debate') && (
+        <p className={`text-xs text-center italic ${c.textMuteded}`}>
+          AI-generated counterarguments. Positions are simulated for practice purposes — not the AI's actual views.
+        </p>
+      )}
 
       {/* Cross-refs */}
-      {(mode === 'scorecard' || quickData || prepData) && <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}><p className={`text-xs ${c.tm} mb-2`}>Related:</p><div className="flex flex-wrap gap-2">{[['JargonAssassin', '🗡️', 'simplify arguments'], ['BrainDumpStructurer', '🧠', 'organize thoughts'], ['PaperDigest', '📄', 'check research']].map(([id, ico, desc]) => <a key={id} href={`/${id}`} target="_blank" rel="noopener noreferrer" className={`text-xs px-3 py-1.5 rounded-lg ${c.sec} no-underline`}>{ico} {desc}</a>)}</div></div>}
+      {(mode === 'scorecard' || quickData || prepData) && <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+        <p className={`text-xs ${c.textMuteded} mb-2`}>Also try:</p>
+        <div className="flex flex-wrap gap-3">
+          <a href="/tool/BeliefStressTest" target="_blank" rel="noopener noreferrer" className={linkStyle}>🧪 Belief Stress Test</a>
+          <a href="/tool/ArgumentSimulator" target="_blank" rel="noopener noreferrer" className={linkStyle}>⚔️ Argument Simulator</a>
+          <a href="/tool/DecisionCoach" target="_blank" rel="noopener noreferrer" className={linkStyle}>🎯 Decision Coach</a>
+        </div>
+      </div>}
     </div>
   );
 };

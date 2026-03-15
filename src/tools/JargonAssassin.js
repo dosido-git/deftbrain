@@ -23,30 +23,35 @@ const LEVELS = [
 const FLAG = { important: { i: '🚩', l: 'Important' }, decision: { i: '⚠️', l: 'Decision' }, red_flag: { i: '🔴', l: 'Red Flag' }, deadline: { i: '⏰', l: 'Deadline' } };
 const DANGER = { safe: '✅', caution: '🟡', warning: '🟠', danger: '🔴' };
 
-const JargonAssassin = () => {
+const JargonAssassin = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
-  const { theme } = useTheme();
-  const isDark = theme === 'dark';
+  const { isDark } = useTheme();
   const fileRef = useRef(null);
+  const resultsRef = React.useRef(null);
 
   const c = {
-    card: isDark ? 'bg-zinc-800' : 'bg-white', ca: isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    text: isDark ? 'text-zinc-50' : 'text-gray-900', ts: isDark ? 'text-zinc-300' : 'text-gray-600',
-    tm: isDark ? 'text-zinc-500' : 'text-gray-400',
-    input: isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder-zinc-400' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400',
-    pri: isDark ? 'bg-emerald-600 hover:bg-emerald-500 text-white' : 'bg-emerald-600 hover:bg-emerald-700 text-white',
-    sec: isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
-    on: isDark ? 'bg-emerald-600 text-white' : 'bg-emerald-600 text-white',
-    off: isDark ? 'bg-zinc-700 text-zinc-300 hover:bg-zinc-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200',
-    bdr: isDark ? 'border-zinc-700' : 'border-gray-200',
-    ok: isDark ? 'bg-green-900/20 border-green-700 text-green-200' : 'bg-green-50 border-green-300 text-green-800',
-    warn: isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
-    bad: isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
-    info: isDark ? 'bg-blue-900/20 border-blue-700 text-blue-200' : 'bg-blue-50 border-blue-200 text-blue-800',
-    acc: isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-200',
-    at: isDark ? 'text-emerald-300' : 'text-emerald-700',
-    purp: isDark ? 'bg-purple-900/20 border-purple-700 text-purple-200' : 'bg-purple-50 border-purple-200 text-purple-800',
+    card:          isDark ? 'bg-zinc-800'     : 'bg-white',
+    cardAlt:       isDark ? 'bg-zinc-700/50'  : 'bg-slate-50',
+    text:          isDark ? 'text-zinc-50'    : 'text-gray-900',
+    textSecondary: isDark ? 'text-zinc-300'   : 'text-gray-600',
+    textMuted:     isDark ? 'text-zinc-500'   : 'text-gray-400',
+    input:         isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder-zinc-400' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400',
+    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
+    border:        isDark ? 'border-zinc-700' : 'border-gray-200',
+    success:       isDark ? 'bg-green-900/20 border-green-700 text-green-200' : 'bg-green-50 border-green-300 text-green-800',
+    warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
+    danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
+    pillOn:        isDark ? 'bg-emerald-600 text-white' : 'bg-emerald-600 text-white',
+    pillOff:       isDark ? 'bg-zinc-700 text-zinc-300 hover:bg-zinc-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200',
+    accentCard:    isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-200',
+    highlight:     isDark ? 'bg-cyan-900/20 border-cyan-700 text-cyan-200' : 'bg-cyan-50 border-cyan-200 text-cyan-800',
   };
+
+  const linkStyle = isDark
+    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
+    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
+
 
   // ─── State ───
   const [mode, setMode] = useState('input');
@@ -55,13 +60,13 @@ const JargonAssassin = () => {
   const [docType, setDocType] = useState('general');
   const [readLevel, setReadLevel] = useState('5th-grade');
   const [fileName, setFileName] = useState('');
-  const [results, setResults] = useState(null);
+  const [results, setResults] = usePersistentState('jargon-results', null);
   const [activeTab, setActiveTab] = useState('translation');
   const [fontSize, setFontSize] = useState('base');
 
   // Q&A
   const [question, setQuestion] = useState('');
-  const [qaHistory, setQaHistory] = useState([]);
+  const [qaHistory, setQaHistory] = usePersistentState('ja-history', []);
 
   // Compare
   const [cmpT1, setCmpT1] = useState('');
@@ -112,7 +117,7 @@ const JargonAssassin = () => {
     if (!docText.trim()) { setError('Paste or upload a document.'); return; }
     setError(''); setResults(null); setQaHistory([]); setSugData(null); setRlData(null); setTplData(null); setApData(null);
     const data = await callToolEndpoint('jargon-assassin', { documentText: docText, documentType: docType, readingLevel: readLevel });
-    if (data) { setResults(data); setActiveTab('translation'); setMode('results'); }
+    if (data) { setResults(data); setActiveTab('translation'); setMode('results'); setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth' }), 100); }
   };
 
   const handleAsk = async () => {
@@ -182,7 +187,7 @@ const JargonAssassin = () => {
     if (data) setLtrData(data);
   };
 
-  const saveDoc = () => { if (!results) return; setSavedDocs(prev => [{ title: fileName || results.summary?.substring(0, 50), docType, readLevel, summary: results.summary, danger: results.danger_score?.level, timestamp: new Date().toISOString(), results, docText: docText.substring(0, 500) }, ...prev].slice(0, 20)); };
+  const saveDoc = () => { if (!results) return; setSavedDocs(prev => [{ title: fileName || results.summary?.substring(0, 50), docType, readLevel, summary: results.summary, danger: results.danger_score?.level, timestamp: new Date().toISOString(), results, docText: docText.substring(0, 500), preview: (fileName || docText || '').slice(0, 40) }, ...prev].slice(0, 6)); };
 
   const loadSaved = (s) => { setResults(s.results); setDocType(s.docType); setReadLevel(s.readLevel); setDocText(s.docText || ''); setMode('results'); setActiveTab('translation'); setQaHistory([]); setSugData(null); setRlData(null); setTplData(null); setApData(null); setShowSaved(false); };
 
@@ -190,62 +195,64 @@ const JargonAssassin = () => {
 
   const buildText = () => { if (!results) return ''; let t = `🗡️ Jargon Assassin\n\n📖 ${results.summary}\n📊 ${results.reading_level}\n\n${results.translation}\n`; if (results.glossary?.length) { t += '\nGLOSSARY:\n'; results.glossary.forEach(g => { t += `• ${g.term}: ${g.definition}\n`; }); } if (results.checklist?.length) { t += '\nCHECKLIST:\n'; results.checklist.forEach(ch => { t += `☐ ${ch}\n`; }); } return t + BRAND; };
 
-  const Tab = ({ id, icon, label }) => <button onClick={() => setActiveTab(id)} className={`px-3 py-1.5 rounded-lg text-xs font-medium ${activeTab === id ? c.on : c.off}`}>{icon} {label}</button>;
+  const Tab = ({ id, icon, label }) => <button onClick={() => setActiveTab(id)} className={`px-3 py-1.5 rounded-lg text-xs font-medium ${activeTab === id ? c.pillOn : c.pillOff}`}>{icon} {label}</button>;
   const FS = { small: 'text-sm', base: 'text-base', large: 'text-lg' };
-  const PRI_COLORS = { 'must-change': c.bad, 'should-change': c.warn, 'nice-to-have': c.info };
-  const VER_COLORS = { red_flag: c.bad, worse_than_usual: c.warn, unusual: c.warn, standard: c.ca, better_than_usual: c.ok };
+  const PRI_COLORS = { 'must-change': c.danger, 'should-change': c.warning, 'nice-to-have': c.highlight };
+  const VER_COLORS = { red_flag: c.danger, worse_than_usual: c.warning, unusual: c.warning, standard: c.cardAlt, better_than_usual: c.success };
+
+  const Spinner = () => <span className='inline-block animate-spin'>{tool?.icon ?? '⚙️'}</span>;
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Header */}
       <div>
         <h1 className={`text-2xl font-bold ${c.text}`}>Jargon Assassin 🗡️</h1>
-        <p className={`text-sm ${c.ts} mt-1`}>Confusing documents → plain language → what to do about it</p>
+        <p className={`text-sm ${c.textSecondaryondary} mt-1`}>Confusing documents → plain language → what to do about it</p>
       </div>
 
       {/* Nav */}
       <div className="flex flex-wrap gap-1.5">
-        <button onClick={startNew} className={`px-3 py-1.5 rounded-lg text-xs font-medium ${mode === 'input' ? c.on : c.off}`}>📄 New</button>
-        {results && <button onClick={() => setMode('results')} className={`px-3 py-1.5 rounded-lg text-xs font-medium ${mode === 'results' ? c.on : c.off}`}>📖 Results</button>}
-        <button onClick={() => { setMode('compare'); setError(''); }} className={`px-3 py-1.5 rounded-lg text-xs font-medium ${mode === 'compare' ? c.on : c.off}`}>🔀 Compare</button>
-        <button onClick={() => { setMode('dossier'); setError(''); }} className={`px-3 py-1.5 rounded-lg text-xs font-medium ${mode === 'dossier' ? c.on : c.off}`}>📁 Dossier</button>
-        {results && <button onClick={() => { setMode('letter'); setError(''); }} className={`px-3 py-1.5 rounded-lg text-xs font-medium ${mode === 'letter' ? c.on : c.off}`}>✉️ Letter</button>}
-        <button onClick={() => setShowSaved(!showSaved)} className={`px-3 py-1.5 rounded-lg text-xs font-medium ${showSaved ? c.on : c.off}`}>💾 Saved{savedDocs.length ? ` (${savedDocs.length})` : ''}</button>
+        <button onClick={startNew} className={`px-3 py-1.5 rounded-lg text-xs font-medium ${mode === 'input' ? c.pillOn : c.pillOff}`}>📄 New</button>
+        {results && <button onClick={() => setMode('results')} className={`px-3 py-1.5 rounded-lg text-xs font-medium ${mode === 'results' ? c.pillOn : c.pillOff}`}>📖 Results</button>}
+        <button onClick={() => { setMode('compare'); setError(''); }} className={`px-3 py-1.5 rounded-lg text-xs font-medium ${mode === 'compare' ? c.pillOn : c.pillOff}`}>🔀 Compare</button>
+        <button onClick={() => { setMode('dossier'); setError(''); }} className={`px-3 py-1.5 rounded-lg text-xs font-medium ${mode === 'dossier' ? c.pillOn : c.pillOff}`}>📁 Dossier</button>
+        {results && <button onClick={() => { setMode('letter'); setError(''); }} className={`px-3 py-1.5 rounded-lg text-xs font-medium ${mode === 'letter' ? c.pillOn : c.pillOff}`}>✉️ Letter</button>}
+        <button onClick={() => setShowSaved(!showSaved)} className={`px-3 py-1.5 rounded-lg text-xs font-medium ${showSaved ? c.pillOn : c.pillOff}`}>💾 Saved{savedDocs.length ? ` (${savedDocs.length})` : ''}</button>
       </div>
 
       {/* Saved */}
-      {showSaved && <div className={`${c.card} border ${c.bdr} rounded-xl p-5 space-y-3`}>
+      {showSaved && <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-5 space-y-3`}>
         <h3 className={`font-bold ${c.text}`}>💾 Saved</h3>
-        {savedDocs.length === 0 ? <p className={`text-sm ${c.tm}`}>Translate a document to start saving.</p> : savedDocs.map((s, i) => <div key={i} className={`${c.ca} rounded-lg p-3 flex items-start justify-between gap-2`}><div className="flex-1 cursor-pointer" onClick={() => loadSaved(s)}><div className="flex items-center gap-2"><p className={`text-sm font-bold ${c.text}`}>{s.title}</p>{s.danger && s.danger !== 'safe' && <span className="text-xs">{DANGER[s.danger]}</span>}</div><p className={`text-xs ${c.tm}`}>{DOC_TYPES.find(d => d.id === s.docType)?.icon} {s.docType} · {new Date(s.timestamp).toLocaleDateString()}</p></div><button onClick={() => setSavedDocs(prev => prev.filter((_, idx) => idx !== i))} className={`text-xs ${c.tm}`}>🗑️</button></div>)}
+        {savedDocs.length === 0 ? <p className={`text-sm ${c.textMuteded}`}>Translate a document to start saving.</p> : savedDocs.map((s, i) => <div key={i} className={`${c.cardAlt} rounded-lg p-3 flex items-start justify-between gap-2`}><div className="flex-1 cursor-pointer" onClick={() => loadSaved(s)}><div className="flex items-center gap-2"><p className={`text-sm font-bold ${c.text}`}>{s.title}</p>{s.danger && s.danger !== 'safe' && <span className="text-xs">{DANGER[s.danger]}</span>}</div><p className={`text-xs ${c.textMuteded}`}>{DOC_TYPES.find(d => d.id === s.docType)?.icon} {s.docType} · {new Date(s.timestamp).toLocaleDateString()}</p></div><button onClick={() => setSavedDocs(prev => prev.filter((_, idx) => idx !== i))} className={`text-xs ${c.textMuteded}`}>🗑️</button></div>)}
       </div>}
 
       {/* ═══ INPUT ═══ */}
-      {mode === 'input' && <div className={`${c.card} border ${c.bdr} rounded-xl p-5 space-y-5`}>
-        <div><h3 className={`font-bold text-lg ${c.text}`}>🗡️ What needs translating?</h3><p className={`text-sm ${c.tm} mt-1`}>Paste any confusing document. We'll turn it into plain language and flag anything concerning.</p></div>
-        <div><p className={`text-xs font-bold ${c.text} mb-2`}>Document Type</p><div className="flex flex-wrap gap-1.5">{DOC_TYPES.map(dt => <button key={dt.id} onClick={() => setDocType(dt.id)} className={`px-3 py-1.5 rounded-lg text-xs font-medium border ${docType === dt.id ? c.on : `${c.off} ${c.bdr}`}`}>{dt.icon} {dt.label}</button>)}</div></div>
-        <div><p className={`text-xs font-bold ${c.text} mb-2`}>Reading Level</p><div className="grid grid-cols-2 sm:grid-cols-4 gap-2">{LEVELS.map(rl => <button key={rl.id} onClick={() => setReadLevel(rl.id)} className={`p-2 rounded-xl border text-center ${readLevel === rl.id ? `${c.acc} border-emerald-500` : `${c.ca} ${c.bdr}`}`}><span className="text-lg">{rl.icon}</span><p className={`text-xs font-bold ${c.text}`}>{rl.label}</p><p className={`text-xs ${c.tm}`}>{rl.d}</p></button>)}</div></div>
-        <div className={`${c.ca} border-2 border-dashed ${c.bdr} rounded-xl p-4 text-center`}><input ref={fileRef} type="file" accept=".txt" onChange={handleFile} className="hidden" id="ja-f" />{fileName && <div className="mb-2"><span className={`text-xs px-3 py-1 rounded-full ${c.ok} border`}>✅ {fileName}</span></div>}<label htmlFor="ja-f" className={`inline-block px-4 py-2 rounded-lg text-xs font-bold cursor-pointer ${c.pri}`}>{fileName ? 'Change' : '📄 Upload .txt'}</label></div>
+      {mode === 'input' && <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-5 space-y-5`}>
+        <div><h3 className={`font-bold text-lg ${c.text}`}>🗡️ What needs translating?</h3><p className={`text-sm ${c.textMuteded} mt-1`}>Paste any confusing document. We'll turn it into plain language and flag anything concerning.</p></div>
+        <div><p className={`text-xs font-bold ${c.text} mb-2`}>Document Type</p><div className="flex flex-wrap gap-1.5">{DOC_TYPES.map(dt => <button key={dt.id} onClick={() => setDocType(dt.id)} className={`px-3 py-1.5 rounded-lg text-xs font-medium border ${docType === dt.id ? c.pillOn : `${c.pillOff} ${c.border}`}`}>{dt.icon} {dt.label}</button>)}</div></div>
+        <div><p className={`text-xs font-bold ${c.text} mb-2`}>Reading Level</p><div className="grid grid-cols-2 sm:grid-cols-4 gap-2">{LEVELS.map(rl => <button key={rl.id} onClick={() => setReadLevel(rl.id)} className={`p-2 rounded-xl border text-center ${readLevel === rl.id ? `${c.textSecondaryondaryCard} border-emerald-500` : `${c.cardAlt} ${c.border}`}`}><span className="text-lg">{rl.icon}</span><p className={`text-xs font-bold ${c.text}`}>{rl.label}</p><p className={`text-xs ${c.textMuteded}`}>{rl.d}</p></button>)}</div></div>
+        <div className={`${c.cardAlt} border-2 border-dashed ${c.border} rounded-xl p-4 text-center`}><input ref={fileRef} type="file" accept=".txt" onChange={handleFile} className="hidden" id="ja-f" />{fileName && <div className="mb-2"><span className={`text-xs px-3 py-1 rounded-full ${c.success} border`}>✅ {fileName}</span></div>}<label htmlFor="ja-f" className={`inline-block px-4 py-2 rounded-lg text-xs font-bold cursor-pointer ${c.btnPrimaryPrimary}`}>{fileName ? 'Change' : '📄 Upload .txt'}</label></div>
         <textarea value={docText} onChange={e => setDocText(e.target.value)} placeholder="Paste your document here..." rows={8} className={`w-full px-3 py-2 rounded-lg border text-sm font-mono ${c.input}`} />
-        <div className="flex justify-between"><span className={`text-xs ${c.tm}`}>{docText.length.toLocaleString()} chars</span>{docText.length > 12000 && <span className={`text-xs ${c.bad} border rounded px-2 py-0.5`}>⚠️ May truncate</span>}</div>
-        <button onClick={handleTranslate} disabled={loading || !docText.trim()} className={`w-full py-3 rounded-xl font-bold text-sm ${c.pri} disabled:opacity-50`}>{loading ? '⏳ Translating...' : '🗡️ Translate'}</button>
+        <div className="flex justify-between"><span className={`text-xs ${c.textMuteded}`}>{docText.length.toLocaleString()} chars</span>{docText.length > 12000 && <span className={`text-xs ${c.danger} border rounded px-2 py-0.5`}>⚠️ May truncate</span>}</div>
+        <button onClick={handleTranslate} disabled={loading || !docText.trim()} className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimaryPrimary} disabled:opacity-50`}>{loading ? (tool?.icon ?? '✂️') : <><span className='mr-1'>{tool?.icon ?? '✂️'}</span> Translate</>}</button>
       </div>}
 
       {/* ═══ RESULTS ═══ */}
-      {mode === 'results' && results && <div className="space-y-4">
+      {mode === 'results' && results && <div ref={resultsRef} className="space-y-4">
         {/* Summary + Danger */}
-        <div className={`${c.acc} border rounded-xl p-5`}>
-          <div className="flex items-start justify-between gap-3"><div className="flex-1"><h3 className={`font-bold ${c.at} text-sm`}>📖 Summary</h3><p className={`text-sm ${c.text} mt-1`}>{results.summary}</p></div><div className="flex flex-col items-end gap-1">{results.reading_level && <span className={`text-xs px-2 py-0.5 rounded-full ${c.info} border`}>📖 {results.reading_level}</span>}{results.danger_score && <span className={`text-xs px-2 py-0.5 rounded-full ${results.danger_score.level === 'safe' ? c.ok : results.danger_score.level === 'caution' ? c.warn : c.bad} border`}>{DANGER[results.danger_score.level]} {results.danger_score.level}</span>}</div></div>
-          {results.danger_score?.explanation && results.danger_score.level !== 'safe' && <p className={`text-xs ${c.ts} mt-2`}>{results.danger_score.explanation}</p>}
+        <div className={`${c.textSecondaryondaryCard} border rounded-xl p-5`}>
+          <div className="flex items-start justify-between gap-3"><div className="flex-1"><h3 className={`font-bold ${c.textSecondaryondary} text-sm`}>📖 Summary</h3><p className={`text-sm ${c.text} mt-1`}>{results.summary}</p></div><div className="flex flex-col items-end gap-1">{results.reading_level && <span className={`text-xs px-2 py-0.5 rounded-full ${c.highlight} border`}>📖 {results.reading_level}</span>}{results.danger_score && <span className={`text-xs px-2 py-0.5 rounded-full ${results.danger_score.level === 'safe' ? c.success : results.danger_score.level === 'caution' ? c.warning : c.danger} border`}>{DANGER[results.danger_score.level]} {results.danger_score.level}</span>}</div></div>
+          {results.danger_score?.explanation && results.danger_score.level !== 'safe' && <p className={`text-xs ${c.textSecondaryondary} mt-2`}>{results.danger_score.explanation}</p>}
         </div>
 
         {/* Actions */}
         <div className="flex flex-wrap gap-1.5">
-          <button onClick={saveDoc} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.sec} border ${c.bdr}`}>💾 Save</button>
-          <button onClick={handleSuggest} disabled={loading} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.sec} border ${c.bdr}`}>{sugData ? '✅ Questions' : '🤔 Questions to Ask'}</button>
-          <button onClick={() => { setRlData(null); handleRedLine(); }} disabled={loading} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.sec} border ${c.bdr}`}>{rlData ? '✅ Red-Line' : '✏️ Red-Line'}</button>
-          <button onClick={() => { setTplData(null); handleTemplate(); }} disabled={loading} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.sec} border ${c.bdr}`}>{tplData ? '✅ vs Normal' : '📊 vs Normal'}</button>
-          <button onClick={() => { setApData(null); handleActionPlan(); }} disabled={loading} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.sec} border ${c.bdr}`}>{apData ? '✅ Plan' : '📋 Action Plan'}</button>
-          <button onClick={startNew} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.sec} border ${c.bdr} ml-auto`}>📄 New</button>
+          <button onClick={saveDoc} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnPrimarySecondaryondary} border ${c.border}`}>💾 Save</button>
+          <button onClick={handleSuggest} disabled={loading} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnPrimarySecondaryondary} border ${c.border}`}>{sugData ? '✅ Questions' : '🤔 Questions to Ask'}</button>
+          <button onClick={() => { setRlData(null); handleRedLine(); }} disabled={loading} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnPrimarySecondaryondary} border ${c.border}`}>{rlData ? '✅ Red-Line' : '✏️ Red-Line'}</button>
+          <button onClick={() => { setTplData(null); handleTemplate(); }} disabled={loading} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnPrimarySecondaryondary} border ${c.border}`}>{tplData ? '✅ vs Normal' : '📊 vs Normal'}</button>
+          <button onClick={() => { setApData(null); handleActionPlan(); }} disabled={loading} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnPrimarySecondaryondary} border ${c.border}`}>{apData ? '✅ Plan' : '📋 Action Plan'}</button>
+          <button onClick={startNew} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnPrimarySecondaryondary} border ${c.border} ml-auto`}>📄 New</button>
         </div>
 
         {/* Tabs */}
@@ -256,114 +263,114 @@ const JargonAssassin = () => {
           <Tab id="glossary" icon="📚" label="Glossary" />
           <Tab id="qa" icon="❓" label={`Q&A${qaHistory.length ? ` (${qaHistory.length})` : ''}`} />
           <Tab id="explain" icon="🗣️" label="Explain To..." />
-          <div className="ml-auto flex gap-0.5">{['small', 'base', 'large'].map(s => <button key={s} onClick={() => setFontSize(s)} className={`w-6 h-6 rounded text-xs ${fontSize === s ? c.on : c.off}`}>A</button>)}</div>
+          <div className="ml-auto flex gap-0.5">{['small', 'base', 'large'].map(s => <button key={s} onClick={() => setFontSize(s)} className={`w-6 h-6 rounded text-xs ${fontSize === s ? c.pillOn : c.pillOff}`}>A</button>)}</div>
         </div>
 
         {/* Translation */}
-        {activeTab === 'translation' && <div className={`${c.card} border ${c.bdr} rounded-xl p-5`}><div className="flex items-center justify-between mb-3"><h3 className={`font-bold ${c.text}`}>📖 Translation</h3><CopyBtn content={results.translation + BRAND} label="Copy" /></div><div className={`${c.acc} border rounded-lg p-4 ${FS[fontSize]}`}><p className={`${c.text} leading-relaxed whitespace-pre-wrap`}>{results.translation}</p></div>
-          {results.jargon_highlights?.length > 0 && <div className="mt-3"><p className={`text-xs font-bold ${c.at} mb-1`}>🔤 Jargon Replaced ({results.jargon_highlights.length})</p><div className="flex flex-wrap gap-1.5">{results.jargon_highlights.map((j, i) => <span key={i} className={`text-xs px-2 py-0.5 rounded-full ${c.ca} border ${c.bdr}`} title={`→ ${j.replaced_with}`}><s className={c.tm}>{j.original}</s> → {j.replaced_with}</span>)}</div></div>}
+        {activeTab === 'translation' && <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-5`}><div className="flex items-center justify-between mb-3"><h3 className={`font-bold ${c.text}`}>📖 Translation</h3><CopyBtn content={results.translation + BRAND} label="Copy" /></div><div className={`${c.textSecondaryondaryCard} border rounded-lg p-4 ${FS[fontSize]}`}><p className={`${c.text} leading-relaxed whitespace-pre-wrap`}>{results.translation}</p></div>
+          {results.jargon_highlights?.length > 0 && <div className="mt-3"><p className={`text-xs font-bold ${c.textSecondaryondary} mb-1`}>🔤 Jargon Replaced ({results.jargon_highlights.length})</p><div className="flex flex-wrap gap-1.5">{results.jargon_highlights.map((j, i) => <span key={i} className={`text-xs px-2 py-0.5 rounded-full ${c.cardAlt} border ${c.border}`} title={`→ ${j.replaced_with}`}><s className={c.textMuteded}>{j.original}</s> → {j.replaced_with}</span>)}</div></div>}
         </div>}
 
         {/* Side-by-Side */}
         {activeTab === 'side-by-side' && <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <div className={`${c.card} border ${c.bdr} rounded-xl p-4`}><h3 className={`font-bold text-sm ${c.text} mb-2`}>Original</h3><div className={`${c.ca} rounded-lg p-3 max-h-96 overflow-y-auto ${FS[fontSize]}`}><pre className={`whitespace-pre-wrap font-sans ${c.ts}`}>{docText}</pre></div></div>
-          <div className={`${c.card} border ${c.bdr} rounded-xl p-4`}><div className="flex justify-between mb-2"><h3 className={`font-bold text-sm ${c.text}`}>Translated</h3><CopyBtn content={results.translation + BRAND} label="Copy" /></div><div className={`${c.acc} border rounded-lg p-3 max-h-96 overflow-y-auto ${FS[fontSize]}`}><p className={`${c.text} whitespace-pre-wrap`}>{results.translation}</p></div></div>
+          <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-4`}><h3 className={`font-bold text-sm ${c.text} mb-2`}>Original</h3><div className={`${c.cardAlt} rounded-lg p-3 max-h-96 overflow-y-auto ${FS[fontSize]}`}><pre className={`whitespace-pre-wrap font-sans ${c.textSecondaryondary}`}>{docText}</pre></div></div>
+          <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-4`}><div className="flex justify-between mb-2"><h3 className={`font-bold text-sm ${c.text}`}>Translated</h3><CopyBtn content={results.translation + BRAND} label="Copy" /></div><div className={`${c.textSecondaryondaryCard} border rounded-lg p-3 max-h-96 overflow-y-auto ${FS[fontSize]}`}><p className={`${c.text} whitespace-pre-wrap`}>{results.translation}</p></div></div>
         </div>}
 
         {/* Key Sections */}
-        {activeTab === 'highlights' && <div className="space-y-3">{!results.key_sections?.length ? <p className={`text-sm ${c.tm} text-center py-4`}>No critical sections flagged.</p> : results.key_sections.map((s, i) => {
-          const bg = s.type === 'red_flag' ? c.bad : s.type === 'deadline' ? c.purp : s.type === 'decision' ? c.warn : c.info;
+        {activeTab === 'highlights' && <div className="space-y-3">{!results.key_sections?.length ? <p className={`text-sm ${c.textMuteded} text-center py-4`}>No critical sections flagged.</p> : results.key_sections.map((s, i) => {
+          const bg = s.type === 'red_flag' ? c.danger : s.type === 'deadline' ? c.highlight : s.type === 'decision' ? c.warning : c.highlight;
           return <div key={i} className={`${bg} border rounded-xl p-4 space-y-2`}>
             <div className="flex items-center gap-2"><span>{FLAG[s.type]?.i}</span><span className="text-xs font-bold">{FLAG[s.type]?.l}</span><span className="font-bold text-sm">{s.title}</span></div>
             <p className="text-xs italic">"{s.original_text}"</p><p className="text-sm">{s.simplified}</p><p className="text-xs"><strong>Why:</strong> {s.why_it_matters}</p>
-            {s.enforceability_note && <div className={`${c.purp} border rounded-lg p-2`}><p className="text-xs">⚖️ {s.enforceability_note}</p></div>}
-            <button onClick={() => handleSection(s.original_text)} disabled={loading} className={`text-xs font-bold ${c.at}`}>🔍 Deep-dive →</button>
+            {s.enforceability_note && <div className={`${c.highlight} border rounded-lg p-2`}><p className="text-xs">⚖️ {s.enforceability_note}</p></div>}
+            <button onClick={() => handleSection(s.original_text)} disabled={loading} className={`text-xs font-bold ${c.textSecondaryondary}`}>🔍 Deep-dive →</button>
           </div>;
         })}</div>}
 
         {/* Glossary */}
-        {activeTab === 'glossary' && <div className={`${c.card} border ${c.bdr} rounded-xl p-5`}><h3 className={`font-bold ${c.text} mb-3`}>📚 Glossary</h3>{!results.glossary?.length ? <p className={`text-sm ${c.tm}`}>No technical terms.</p> : <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">{results.glossary.map((g, i) => <div key={i} className={`${c.ca} rounded-lg p-3`}><p className={`text-sm font-bold ${c.text}`}>{g.term}</p><p className={`text-xs ${c.ts}`}>{g.definition}</p>{g.context && <p className={`text-xs ${c.tm}`}>{g.context}</p>}</div>)}</div>}</div>}
+        {activeTab === 'glossary' && <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-5`}><h3 className={`font-bold ${c.text} mb-3`}>📚 Glossary</h3>{!results.glossary?.length ? <p className={`text-sm ${c.textMuteded}`}>No technical terms.</p> : <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">{results.glossary.map((g, i) => <div key={i} className={`${c.cardAlt} rounded-lg p-3`}><p className={`text-sm font-bold ${c.text}`}>{g.term}</p><p className={`text-xs ${c.textSecondaryondary}`}>{g.definition}</p>{g.context && <p className={`text-xs ${c.textMuteded}`}>{g.context}</p>}</div>)}</div>}</div>}
 
         {/* Q&A */}
         {activeTab === 'qa' && <div className="space-y-4">
-          <div className={`${c.card} border ${c.bdr} rounded-xl p-4 space-y-3`}><h3 className={`font-bold ${c.text}`}>❓ Ask About This Document</h3><div className="flex gap-2"><input value={question} onChange={e => setQuestion(e.target.value)} placeholder="Can I sublease? What if I miss a payment?" className={`flex-1 px-3 py-2 rounded-lg border text-sm ${c.input}`} onKeyDown={e => { if (e.key === 'Enter') handleAsk(); }} /><button onClick={handleAsk} disabled={loading || !question.trim()} className={`px-4 py-2 rounded-lg text-xs font-bold ${c.pri} disabled:opacity-50`}>Ask</button></div></div>
-          {qaHistory.map((qa, i) => <div key={i} className="space-y-2"><div className={`${c.acc} border rounded-xl p-3`}><p className={`text-sm font-medium ${c.text}`}>❓ {qa.q}</p></div><div className={`${c.card} border ${c.bdr} rounded-xl p-4 space-y-2`}><p className={`text-sm ${c.ts}`}>{qa.a.answer}</p>{qa.a.warning && <div className={`${c.bad} border rounded-lg p-2`}><p className="text-xs">⚠️ {qa.a.warning}</p></div>}{qa.a.who_to_ask && <p className={`text-xs ${c.tm}`}>👤 Ask: {qa.a.who_to_ask}</p>}{qa.a.follow_up && <button onClick={() => setQuestion(qa.a.follow_up)} className={`text-xs ${c.at}`}>→ {qa.a.follow_up}</button>}</div></div>)}
+          <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-4 space-y-3`}><h3 className={`font-bold ${c.text}`}>❓ Ask About This Document</h3><div className="flex gap-2"><input value={question} onChange={e => setQuestion(e.target.value)} placeholder="Can I sublease? What if I miss a payment?" className={`flex-1 px-3 py-2 rounded-lg border text-sm ${c.input}`} onKeyDown={e => { if (e.key === 'Enter') handleAsk(); }} /><button onClick={handleAsk} disabled={loading || !question.trim()} className={`px-4 py-2 rounded-lg text-xs font-bold ${c.btnPrimaryPrimary} disabled:opacity-50`}>Ask</button></div></div>
+          {qaHistory.map((qa, i) => <div key={i} className="space-y-2"><div className={`${c.textSecondaryondaryCard} border rounded-xl p-3`}><p className={`text-sm font-medium ${c.text}`}>❓ {qa.q}</p></div><div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-4 space-y-2`}><p className={`text-sm ${c.textSecondaryondary}`}>{qa.a.answer}</p>{qa.a.warning && <div className={`${c.danger} border rounded-lg p-2`}><p className="text-xs">⚠️ {qa.a.warning}</p></div>}{qa.a.who_to_ask && <p className={`text-xs ${c.textMuteded}`}>👤 Ask: {qa.a.who_to_ask}</p>}{qa.a.follow_up && <button onClick={() => setQuestion(qa.a.follow_up)} className={`text-xs ${c.textSecondaryondary}`}>→ {qa.a.follow_up}</button>}</div></div>)}
         </div>}
 
         {/* Explain To */}
         {activeTab === 'explain' && <div className="space-y-4">
-          <div className={`${c.card} border ${c.bdr} rounded-xl p-4 space-y-3`}>
+          <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-4 space-y-3`}>
             <h3 className={`font-bold ${c.text}`}>🗣️ Explain This To Someone Else</h3>
-            <p className={`text-xs ${c.tm}`}>Need to explain this document to your parent, roommate, partner, teenager? We'll reframe it for them.</p>
+            <p className={`text-xs ${c.textMuteded}`}>Need to explain this document to your parent, roommate, partner, teenager? We'll reframe it for them.</p>
             <input value={expAudience} onChange={e => setExpAudience(e.target.value)} placeholder="Who? (e.g., 'my 70-year-old mother', 'my teenage son', 'my business partner')" className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
             <textarea value={expSection} onChange={e => setExpSection(e.target.value)} placeholder="Specific section to explain (optional — defaults to full translation)" rows={2} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
-            <button onClick={handleExplainTo} disabled={loading} className={`w-full py-2.5 rounded-xl font-bold text-sm ${c.pri} disabled:opacity-50`}>{loading ? '⏳' : '🗣️ Reframe for Them'}</button>
+            <button onClick={handleExplainTo} disabled={loading} className={`w-full py-2.5 rounded-xl font-bold text-sm ${c.btnPrimaryPrimary} disabled:opacity-50`}>{loading ? (tool?.icon ?? '✂️') : <><span className='mr-1'>{tool?.icon ?? '✂️'}</span> Reframe for Them</>}</button>
           </div>
           {expData && <div className="space-y-3">
-            <div className={`${c.card} border ${c.bdr} rounded-xl p-5`}><p className={`text-sm ${c.ts} whitespace-pre-line`}>{expData.explanation}</p></div>
-            {expData.their_main_concern && <div className={`${c.warn} border rounded-xl p-4`}><p className="text-xs font-bold">😟 Their main concern</p><p className="text-sm mt-1">{expData.their_main_concern}</p></div>}
-            {expData.skip && <div className={`${c.ok} border rounded-xl p-4`}><p className="text-xs font-bold">😌 Tell them not to worry about</p><p className="text-sm mt-1">{expData.skip}</p></div>}
-            {expData.key_points_for_them?.length > 0 && <div className={`${c.info} border rounded-xl p-4`}><p className="text-xs font-bold mb-1">🎯 Key points for them</p>{expData.key_points_for_them.map((p, i) => <p key={i} className="text-xs">• {p}</p>)}</div>}
-            {expData.how_to_deliver && <div className={`${c.purp} border rounded-xl p-4`}><p className="text-xs font-bold">💬 How to have this conversation</p><p className="text-sm mt-1">{expData.how_to_deliver}</p></div>}
+            <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-5`}><p className={`text-sm ${c.textSecondaryondary} whitespace-pre-line`}>{expData.explanation}</p></div>
+            {expData.their_main_concern && <div className={`${c.warning} border rounded-xl p-4`}><p className="text-xs font-bold">😟 Their main concern</p><p className="text-sm mt-1">{expData.their_main_concern}</p></div>}
+            {expData.skip && <div className={`${c.success} border rounded-xl p-4`}><p className="text-xs font-bold">😌 Tell them not to worry about</p><p className="text-sm mt-1">{expData.skip}</p></div>}
+            {expData.key_points_for_them?.length > 0 && <div className={`${c.highlight} border rounded-xl p-4`}><p className="text-xs font-bold mb-1">🎯 Key points for them</p>{expData.key_points_for_them.map((p, i) => <p key={i} className="text-xs">• {p}</p>)}</div>}
+            {expData.how_to_deliver && <div className={`${c.highlight} border rounded-xl p-4`}><p className="text-xs font-bold">💬 How to have this conversation</p><p className="text-sm mt-1">{expData.how_to_deliver}</p></div>}
             <CopyBtn content={expData.explanation + BRAND} label="Copy explanation" />
           </div>}
         </div>}
 
         {/* Checklist */}
-        {results.checklist?.length > 0 && activeTab === 'translation' && <div className={`${c.warn} border rounded-xl p-5`}><h3 className="font-bold text-sm mb-3">⚠️ Before You Sign</h3>{results.checklist.map((item, i) => <label key={i} className="flex items-start gap-3 mb-2 cursor-pointer"><input type="checkbox" className="mt-1 w-4 h-4 rounded" /><span className="text-sm">{item}</span></label>)}</div>}
+        {results.checklist?.length > 0 && activeTab === 'translation' && <div className={`${c.warning} border rounded-xl p-5`}><h3 className="font-bold text-sm mb-3">⚠️ Before You Sign</h3>{results.checklist.map((item, i) => <label key={i} className="flex items-start gap-3 mb-2 cursor-pointer"><input type="checkbox" className="mt-1 w-4 h-4 rounded" /><span className="text-sm">{item}</span></label>)}</div>}
 
         {/* Suggested Questions */}
-        {sugData && <div className={`${c.card} border ${c.bdr} rounded-xl p-5 space-y-3`}><h3 className={`font-bold ${c.text}`}>🤔 Questions You Should Ask</h3>
-          {sugData.must_ask?.map((q, i) => <div key={i} className={`${c.bad} border rounded-lg p-3`}><p className="text-sm font-medium">{q.question}</p><p className="text-xs">{q.why} · 👤 {q.who_to_ask}</p>{q.what_good_looks_like && <p className={`text-xs ${c.at}`}>✅ Good answer: {q.what_good_looks_like}</p>}</div>)}
-          {sugData.negotiate?.map((n, i) => <div key={i} className={`${c.purp} border rounded-lg p-3`}><p className="text-sm font-medium">💪 {n.point}</p><p className="text-xs">Now: {n.current} → Ask: {n.better}</p><p className={`text-xs ${isDark ? 'text-purple-300' : 'text-purple-700'}`}>How: {n.how_to_ask}</p></div>)}
-          {sugData.overall_advice && <div className={`${c.acc} border rounded-lg p-3`}><p className={`text-sm ${c.at}`}>☕ {sugData.overall_advice}</p></div>}
+        {sugData && <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-5 space-y-3`}><h3 className={`font-bold ${c.text}`}>🤔 Questions You Should Ask</h3>
+          {sugData.must_ask?.map((q, i) => <div key={i} className={`${c.danger} border rounded-lg p-3`}><p className="text-sm font-medium">{q.question}</p><p className="text-xs">{q.why} · 👤 {q.who_to_ask}</p>{q.what_good_looks_like && <p className={`text-xs ${c.textSecondaryondary}`}>✅ Good answer: {q.what_good_looks_like}</p>}</div>)}
+          {sugData.negotiate?.map((n, i) => <div key={i} className={`${c.highlight} border rounded-lg p-3`}><p className="text-sm font-medium">💪 {n.point}</p><p className="text-xs">Now: {n.current} → Ask: {n.better}</p><p className={`text-xs ${isDark ? 'text-cyan-300' : 'text-cyan-700'}`}>How: {n.how_to_ask}</p></div>)}
+          {sugData.overall_advice && <div className={`${c.textSecondaryondaryCard} border rounded-lg p-3`}><p className={`text-sm ${c.textSecondaryondary}`}>☕ {sugData.overall_advice}</p></div>}
         </div>}
 
         {/* Red-Line */}
-        {rlData && <div className={`${c.card} border ${c.bdr} rounded-xl p-5 space-y-3`}>
-          <div className="flex items-center justify-between"><h3 className={`font-bold ${c.text}`}>✏️ Red-Line Markup</h3>{rlData.fairness_score && <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${rlData.fairness_score.score <= 3 ? c.bad : rlData.fairness_score.score <= 6 ? c.warn : c.ok} border`}>{rlData.fairness_score.score}/10 {rlData.fairness_score.label}</span>}</div>
+        {rlData && <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-5 space-y-3`}>
+          <div className="flex items-center justify-between"><h3 className={`font-bold ${c.text}`}>✏️ Red-Line Markup</h3>{rlData.fairness_score && <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${rlData.fairness_score.score <= 3 ? c.danger : rlData.fairness_score.score <= 6 ? c.warning : c.success} border`}>{rlData.fairness_score.score}/10 {rlData.fairness_score.label}</span>}</div>
           <p className={`text-xs ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>⚖️ Educational guidance, not legal advice.</p>
-          {rlData.overview && <p className={`text-sm ${c.ts}`}>{rlData.overview}</p>}
-          {rlData.redlines?.map((r, i) => <div key={i} className={`${PRI_COLORS[r.priority] || c.info} border rounded-lg p-3 space-y-1`}>
+          {rlData.overview && <p className={`text-sm ${c.textSecondaryondary}`}>{rlData.overview}</p>}
+          {rlData.redlines?.map((r, i) => <div key={i} className={`${PRI_COLORS[r.priority] || c.highlight} border rounded-lg p-3 space-y-1`}>
             <div className="flex items-center gap-2"><span className={`text-xs font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-zinc-600 text-zinc-200' : 'bg-gray-200 text-gray-700'}`}>{r.priority}</span></div>
             <p className="text-sm font-medium">{r.problem}</p>
-            <p className={`text-xs ${c.ts}`}>Current: {r.current_text}</p>
-            <div className={`${c.ok} border rounded p-2`}><p className="text-xs">✏️ Change to: {r.suggested_change}</p></div>
-            {r.negotiation_tip && <p className={`text-xs ${c.tm}`}>💡 {r.negotiation_tip}</p>}
+            <p className={`text-xs ${c.textSecondaryondary}`}>Current: {r.current_text}</p>
+            <div className={`${c.success} border rounded p-2`}><p className="text-xs">✏️ Change to: {r.suggested_change}</p></div>
+            {r.negotiation_tip && <p className={`text-xs ${c.textMuteded}`}>💡 {r.negotiation_tip}</p>}
           </div>)}
-          {rlData.add_these?.length > 0 && <div className={`${c.info} border rounded-lg p-3`}><p className="text-xs font-bold mb-1">➕ Add these protections:</p>{rlData.add_these.map((a, i) => <div key={i} className="mt-1"><p className="text-xs font-medium">{a.what}</p><p className="text-xs">{a.why}</p></div>)}</div>}
-          {rlData.overall_strategy && <div className={`${c.acc} border rounded-lg p-3`}><p className={`text-xs font-bold ${c.at}`}>🎯 Strategy</p><p className={`text-sm ${c.text}`}>{rlData.overall_strategy}</p></div>}
+          {rlData.add_these?.length > 0 && <div className={`${c.highlight} border rounded-lg p-3`}><p className="text-xs font-bold mb-1">➕ Add these protections:</p>{rlData.add_these.map((a, i) => <div key={i} className="mt-1"><p className="text-xs font-medium">{a.what}</p><p className="text-xs">{a.why}</p></div>)}</div>}
+          {rlData.overall_strategy && <div className={`${c.textSecondaryondaryCard} border rounded-lg p-3`}><p className={`text-xs font-bold ${c.textSecondaryondary}`}>🎯 Strategy</p><p className={`text-sm ${c.text}`}>{rlData.overall_strategy}</p></div>}
         </div>}
 
         {/* Template Compare */}
-        {tplData && <div className={`${c.card} border ${c.bdr} rounded-xl p-5 space-y-3`}>
-          <div className="flex items-center justify-between"><h3 className={`font-bold ${c.text}`}>📊 vs. What's Normal</h3>{tplData.normal_score && <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${tplData.normal_score.score <= 3 ? c.bad : tplData.normal_score.score <= 6 ? c.warn : c.ok} border`}>{tplData.normal_score.score}/10 {tplData.normal_score.label}</span>}</div>
-          {tplData.overall_assessment && <p className={`text-sm ${c.ts}`}>{tplData.overall_assessment}</p>}
-          {tplData.comparisons?.map((comp, i) => <div key={i} className={`${VER_COLORS[comp.verdict] || c.ca} border ${c.bdr} rounded-lg p-3 space-y-1`}>
+        {tplData && <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-5 space-y-3`}>
+          <div className="flex items-center justify-between"><h3 className={`font-bold ${c.text}`}>📊 vs. What's Normal</h3>{tplData.normal_score && <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${tplData.normal_score.score <= 3 ? c.danger : tplData.normal_score.score <= 6 ? c.warning : c.success} border`}>{tplData.normal_score.score}/10 {tplData.normal_score.label}</span>}</div>
+          {tplData.overall_assessment && <p className={`text-sm ${c.textSecondaryondary}`}>{tplData.overall_assessment}</p>}
+          {tplData.comparisons?.map((comp, i) => <div key={i} className={`${VER_COLORS[comp.verdict] || c.cardAlt} border ${c.border} rounded-lg p-3 space-y-1`}>
             <div className="flex items-center gap-2"><span className="text-sm font-bold">{comp.clause_area}</span><span className={`text-xs px-2 py-0.5 rounded-full ${comp.verdict === 'red_flag' ? (isDark ? 'bg-red-900/40 text-red-200' : 'bg-red-100 text-red-700') : comp.verdict === 'better_than_usual' ? (isDark ? 'bg-green-900/40 text-green-200' : 'bg-green-100 text-green-700') : (isDark ? 'bg-zinc-600 text-zinc-200' : 'bg-gray-200 text-gray-700')}`}>{comp.verdict.replace(/_/g, ' ')}</span></div>
             <p className="text-xs">This doc: {comp.this_document}</p>
             <p className="text-xs">Normal: {comp.typical_range}</p>
-            {comp.context && <p className={`text-xs ${c.tm}`}>{comp.context}</p>}
+            {comp.context && <p className={`text-xs ${c.textMuteded}`}>{comp.context}</p>}
           </div>)}
-          {tplData.missing_protections?.length > 0 && <div className={`${c.bad} border rounded-lg p-3`}><p className="text-xs font-bold mb-1">🚫 Missing protections:</p>{tplData.missing_protections.map((m, i) => <p key={i} className="text-xs">• {m}</p>)}</div>}
-          {tplData.unusually_good?.length > 0 && <div className={`${c.ok} border rounded-lg p-3`}><p className="text-xs font-bold mb-1">✅ Better than usual:</p>{tplData.unusually_good.map((g, i) => <p key={i} className="text-xs">• {g}</p>)}</div>}
-          {tplData.bottom_line && <div className={`${c.acc} border rounded-lg p-3`}><p className={`text-sm ${c.at}`}>☕ {tplData.bottom_line}</p></div>}
+          {tplData.missing_protections?.length > 0 && <div className={`${c.danger} border rounded-lg p-3`}><p className="text-xs font-bold mb-1">🚫 Missing protections:</p>{tplData.missing_protections.map((m, i) => <p key={i} className="text-xs">• {m}</p>)}</div>}
+          {tplData.unusually_good?.length > 0 && <div className={`${c.success} border rounded-lg p-3`}><p className="text-xs font-bold mb-1">✅ Better than usual:</p>{tplData.unusually_good.map((g, i) => <p key={i} className="text-xs">• {g}</p>)}</div>}
+          {tplData.bottom_line && <div className={`${c.textSecondaryondaryCard} border rounded-lg p-3`}><p className={`text-sm ${c.textSecondaryondary}`}>☕ {tplData.bottom_line}</p></div>}
         </div>}
 
         {/* Action Plan */}
-        {apData && <div className={`${c.card} border ${c.bdr} rounded-xl p-5 space-y-3`}>
+        {apData && <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-5 space-y-3`}>
           <h3 className={`font-bold ${c.text}`}>📋 Action Plan</h3>
-          {apData.summary && <p className={`text-sm ${c.ts}`}>{apData.summary}</p>}
-          {apData.quick_wins?.length > 0 && <div className={`${c.ok} border rounded-lg p-3`}><p className="text-xs font-bold">⚡ Quick wins (under 5 min):</p>{apData.quick_wins.map((w, i) => <p key={i} className="text-xs">• {w}</p>)}</div>}
-          {apData.steps?.map((s, i) => <div key={i} className={`${c.ca} border ${c.bdr} rounded-lg p-3 space-y-1`}>
-            <div className="flex items-center gap-2"><span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${c.on}`}>{s.order}</span><span className={`text-sm font-bold ${c.text}`}>{s.action}</span></div>
-            <p className={`text-xs ${c.ts}`}>{s.why}</p>
-            {s.deadline && <p className={`text-xs font-bold ${c.at}`}>⏰ {s.deadline}</p>}
-            {s.how && <p className={`text-xs ${c.tm}`}>How: {s.how}</p>}
-            {s.template && <div className={`${c.info} border rounded p-2 mt-1`}><p className="text-xs font-bold">📝 Script:</p><p className="text-xs">{s.template}</p></div>}
+          {apData.summary && <p className={`text-sm ${c.textSecondaryondary}`}>{apData.summary}</p>}
+          {apData.quick_wins?.length > 0 && <div className={`${c.success} border rounded-lg p-3`}><p className="text-xs font-bold">⚡ Quick wins (under 5 min):</p>{apData.quick_wins.map((w, i) => <p key={i} className="text-xs">• {w}</p>)}</div>}
+          {apData.steps?.map((s, i) => <div key={i} className={`${c.cardAlt} border ${c.border} rounded-lg p-3 space-y-1`}>
+            <div className="flex items-center gap-2"><span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${c.pillOn}`}>{s.order}</span><span className={`text-sm font-bold ${c.text}`}>{s.action}</span></div>
+            <p className={`text-xs ${c.textSecondaryondary}`}>{s.why}</p>
+            {s.deadline && <p className={`text-xs font-bold ${c.textSecondaryondary}`}>⏰ {s.deadline}</p>}
+            {s.how && <p className={`text-xs ${c.textMuteded}`}>How: {s.how}</p>}
+            {s.template && <div className={`${c.highlight} border rounded p-2 mt-1`}><p className="text-xs font-bold">📝 Script:</p><p className="text-xs">{s.template}</p></div>}
           </div>)}
-          {apData.if_you_do_nothing && <div className={`${c.bad} border rounded-lg p-3`}><p className="text-xs font-bold">⚠️ If you do nothing:</p><p className="text-xs">{apData.if_you_do_nothing}</p></div>}
-          {apData.timeline && <p className={`text-xs ${c.ts}`}>📅 Timeline: {apData.timeline}</p>}
+          {apData.if_you_do_nothing && <div className={`${c.danger} border rounded-lg p-3`}><p className="text-xs font-bold">⚠️ If you do nothing:</p><p className="text-xs">{apData.if_you_do_nothing}</p></div>}
+          {apData.timeline && <p className={`text-xs ${c.textSecondaryondary}`}>📅 Timeline: {apData.timeline}</p>}
         </div>}
 
         <ActionBar content={buildText()} title="Jargon Assassin" />
@@ -371,65 +378,73 @@ const JargonAssassin = () => {
 
       {/* ═══ SECTION DRILL ═══ */}
       {mode === 'section' && secData && <div className="space-y-4">
-        <button onClick={() => setMode('results')} className={`text-xs ${c.at} font-bold`}>← Back</button>
-        <div className={`${c.acc} border rounded-xl p-4`}><p className={`text-sm ${c.text}`}>{secData.section_summary}</p></div>
-        {secData.line_by_line?.map((l, i) => <div key={i} className={`${c.card} border ${c.bdr} rounded-xl p-4 space-y-2`}><p className={`text-xs ${c.tm} italic`}>"{l.original}"</p><p className={`text-sm ${c.text}`}>{l.meaning}</p><p className={`text-xs ${c.ts}`}>→ {l.implication}</p>{l.hidden_catch && <div className={`${c.bad} border rounded-lg p-2`}><p className="text-xs">🔍 {l.hidden_catch}</p></div>}</div>)}
-        {secData.what_this_means_for_you && <div className={`${c.info} border rounded-xl p-4`}><p className="text-sm">{secData.what_this_means_for_you}</p></div>}
+        <button onClick={() => setMode('results')} className={`text-xs ${c.textSecondaryondary} font-bold`}>← Back</button>
+        <div className={`${c.textSecondaryondaryCard} border rounded-xl p-4`}><p className={`text-sm ${c.text}`}>{secData.section_summary}</p></div>
+        {secData.line_by_line?.map((l, i) => <div key={i} className={`${c.card} ${c.border} border ${c.border} rounded-xl p-4 space-y-2`}><p className={`text-xs ${c.textMuteded} italic`}>"{l.original}"</p><p className={`text-sm ${c.text}`}>{l.meaning}</p><p className={`text-xs ${c.textSecondaryondary}`}>→ {l.implication}</p>{l.hidden_catch && <div className={`${c.danger} border rounded-lg p-2`}><p className="text-xs">🔍 {l.hidden_catch}</p></div>}</div>)}
+        {secData.what_this_means_for_you && <div className={`${c.highlight} border rounded-xl p-4`}><p className="text-sm">{secData.what_this_means_for_you}</p></div>}
       </div>}
 
       {/* ═══ COMPARE ═══ */}
       {mode === 'compare' && <div className="space-y-4">
-        <div className={`${c.card} border ${c.bdr} rounded-xl p-5 space-y-4`}><h3 className={`font-bold ${c.text}`}>🔀 Compare Versions</h3><div className="flex flex-wrap gap-1.5 mb-2">{DOC_TYPES.slice(0, 5).map(dt => <button key={dt.id} onClick={() => setDocType(dt.id)} className={`px-2.5 py-1 rounded-lg text-xs ${docType === dt.id ? c.on : c.off}`}>{dt.icon} {dt.label}</button>)}</div><textarea value={cmpT1} onChange={e => setCmpT1(e.target.value)} placeholder="Version 1 (original)" rows={4} className={`w-full px-3 py-2 rounded-lg border text-sm font-mono ${c.input}`} /><textarea value={cmpT2} onChange={e => setCmpT2(e.target.value)} placeholder="Version 2 (revised)" rows={4} className={`w-full px-3 py-2 rounded-lg border text-sm font-mono ${c.input}`} /><button onClick={handleCompare} disabled={loading} className={`w-full py-3 rounded-xl font-bold text-sm ${c.pri} disabled:opacity-50`}>{loading ? '⏳' : '🔀 Compare'}</button></div>
+        <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-5 space-y-4`}><h3 className={`font-bold ${c.text}`}>🔀 Compare Versions</h3><div className="flex flex-wrap gap-1.5 mb-2">{DOC_TYPES.slice(0, 5).map(dt => <button key={dt.id} onClick={() => setDocType(dt.id)} className={`px-2.5 py-1 rounded-lg text-xs ${docType === dt.id ? c.pillOn : c.pillOff}`}>{dt.icon} {dt.label}</button>)}</div><textarea value={cmpT1} onChange={e => setCmpT1(e.target.value)} placeholder="Version 1 (original)" rows={4} className={`w-full px-3 py-2 rounded-lg border text-sm font-mono ${c.input}`} /><textarea value={cmpT2} onChange={e => setCmpT2(e.target.value)} placeholder="Version 2 (revised)" rows={4} className={`w-full px-3 py-2 rounded-lg border text-sm font-mono ${c.input}`} /><button onClick={handleCompare} disabled={loading} className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimaryPrimary} disabled:opacity-50`}>{loading ? (tool?.icon ?? '✂️') : <><span className='mr-1'>{tool?.icon ?? '✂️'}</span> Compare</>}</button></div>
         {cmpData && <div className="space-y-3">
-          <div className={`${cmpData.overall_assessment?.direction === 'better' ? c.ok : cmpData.overall_assessment?.direction === 'worse' ? c.bad : c.warn} border rounded-xl p-4`}><p className="text-lg font-bold">{cmpData.overall_assessment?.direction === 'better' ? '✅ Better' : cmpData.overall_assessment?.direction === 'worse' ? '🔴 Worse' : '🟡 Mixed'}</p><p className="text-sm mt-1">{cmpData.summary}</p>{cmpData.overall_assessment?.recommendation && <p className="text-xs mt-1">{cmpData.overall_assessment.recommendation}</p>}</div>
-          {cmpData.changes?.map((ch, i) => <div key={i} className={`${ch.impact === 'negative' ? c.bad : ch.impact === 'positive' ? c.ok : `${c.ca} border ${c.bdr}`} ${ch.impact !== 'neutral' ? 'border' : ''} rounded-xl p-3 space-y-1`}><span className={`text-xs font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-zinc-600 text-zinc-200' : 'bg-gray-200 text-gray-700'}`}>{ch.severity}</span><p className={`text-sm font-medium ${c.text}`}>{ch.what_changed}</p><p className="text-xs">Before: {ch.before}</p><p className="text-xs">After: {ch.after}</p></div>)}
-          {cmpData.removed?.length > 0 && <div className={`${c.bad} border rounded-lg p-3`}><p className="text-xs font-bold">🗑️ Removed:</p>{cmpData.removed.map((r, i) => <p key={i} className="text-xs">• {r}</p>)}</div>}
+          <div className={`${cmpData.overall_assessment?.direction === 'better' ? c.success : cmpData.overall_assessment?.direction === 'worse' ? c.danger : c.warning} border rounded-xl p-4`}><p className="text-lg font-bold">{cmpData.overall_assessment?.direction === 'better' ? '✅ Better' : cmpData.overall_assessment?.direction === 'worse' ? '🔴 Worse' : '🟡 Mixed'}</p><p className="text-sm mt-1">{cmpData.summary}</p>{cmpData.overall_assessment?.recommendation && <p className="text-xs mt-1">{cmpData.overall_assessment.recommendation}</p>}</div>
+          {cmpData.changes?.map((ch, i) => <div key={i} className={`${ch.impact === 'negative' ? c.danger : ch.impact === 'positive' ? c.success : `${c.cardAlt} border ${c.border}`} ${ch.impact !== 'neutral' ? 'border' : ''} rounded-xl p-3 space-y-1`}><span className={`text-xs font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-zinc-600 text-zinc-200' : 'bg-gray-200 text-gray-700'}`}>{ch.severity}</span><p className={`text-sm font-medium ${c.text}`}>{ch.what_changed}</p><p className="text-xs">Before: {ch.before}</p><p className="text-xs">After: {ch.after}</p></div>)}
+          {cmpData.removed?.length > 0 && <div className={`${c.danger} border rounded-lg p-3`}><p className="text-xs font-bold">🗑️ Removed:</p>{cmpData.removed.map((r, i) => <p key={i} className="text-xs">• {r}</p>)}</div>}
         </div>}
       </div>}
 
       {/* ═══ DOSSIER ═══ */}
       {mode === 'dossier' && <div className="space-y-4">
-        <div className={`${c.card} border ${c.bdr} rounded-xl p-5 space-y-4`}>
-          <div><h3 className={`font-bold ${c.text}`}>📁 Multi-Document Dossier</h3><p className={`text-sm ${c.tm}`}>Cross-reference related documents — find conflicts, gaps, and dependencies.</p></div>
-          {dossDocs.map((d, i) => <div key={i} className={`${c.ca} border ${c.bdr} rounded-lg p-3 space-y-2`}><div className="flex gap-2"><input value={d.title} onChange={e => setDossDocs(prev => prev.map((p, j) => j === i ? { ...p, title: e.target.value } : p))} placeholder={`Document ${i + 1} title`} className={`flex-1 px-2 py-1 rounded border text-xs ${c.input}`} /><select value={d.type} onChange={e => setDossDocs(prev => prev.map((p, j) => j === i ? { ...p, type: e.target.value } : p))} className={`px-2 py-1 rounded border text-xs ${c.input}`}>{DOC_TYPES.map(dt => <option key={dt.id} value={dt.id}>{dt.label}</option>)}</select></div><textarea value={d.text} onChange={e => setDossDocs(prev => prev.map((p, j) => j === i ? { ...p, text: e.target.value } : p))} placeholder="Paste document text..." rows={3} className={`w-full px-2 py-1 rounded border text-xs font-mono ${c.input}`} /></div>)}
-          <button onClick={() => setDossDocs(prev => [...prev, { title: '', text: '', type: 'general' }])} className={`text-xs ${c.at} font-bold`}>➕ Add document</button>
-          <button onClick={handleDossier} disabled={loading} className={`w-full py-3 rounded-xl font-bold text-sm ${c.pri} disabled:opacity-50`}>{loading ? '⏳' : '📁 Cross-Reference'}</button>
+        <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-5 space-y-4`}>
+          <div><h3 className={`font-bold ${c.text}`}>📁 Multi-Document Dossier</h3><p className={`text-sm ${c.textMuteded}`}>Cross-reference related documents — find conflicts, gaps, and dependencies.</p></div>
+          {dossDocs.map((d, i) => <div key={i} className={`${c.cardAlt} border ${c.border} rounded-lg p-3 space-y-2`}><div className="flex gap-2"><input value={d.title} onChange={e => setDossDocs(prev => prev.map((p, j) => j === i ? { ...p, title: e.target.value } : p))} placeholder={`Document ${i + 1} title`} className={`flex-1 px-2 py-1 rounded border text-xs ${c.input}`} /><select value={d.type} onChange={e => setDossDocs(prev => prev.map((p, j) => j === i ? { ...p, type: e.target.value } : p))} className={`px-2 py-1 rounded border text-xs ${c.input}`}>{DOC_TYPES.map(dt => <option key={dt.id} value={dt.id}>{dt.label}</option>)}</select></div><textarea value={d.text} onChange={e => setDossDocs(prev => prev.map((p, j) => j === i ? { ...p, text: e.target.value } : p))} placeholder="Paste document text..." rows={3} className={`w-full px-2 py-1 rounded border text-xs font-mono ${c.input}`} /></div>)}
+          <button onClick={() => setDossDocs(prev => [...prev, { title: '', text: '', type: 'general' }])} className={`text-xs ${c.textSecondaryondary} font-bold`}>➕ Add document</button>
+          <button onClick={handleDossier} disabled={loading} className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimaryPrimary} disabled:opacity-50`}>{loading ? (tool?.icon ?? '✂️') : <><span className='mr-1'>{tool?.icon ?? '✂️'}</span> Cross-Reference</>}</button>
         </div>
         {dossData && <div className="space-y-3">
-          {dossData.relationship && <div className={`${c.acc} border rounded-xl p-4`}><p className={`text-sm ${c.text}`}>{dossData.relationship}</p></div>}
-          {dossData.conflicts?.length > 0 && <div className={`${c.bad} border rounded-xl p-4 space-y-2`}><h3 className="font-bold text-sm">⚡ Conflicts</h3>{dossData.conflicts.map((con, i) => <div key={i}><p className="text-sm">{con.conflict}</p><p className="text-xs">{con.doc1} vs {con.doc2} · {con.which_wins}</p><p className="text-xs">Risk: {con.risk}</p></div>)}</div>}
-          {dossData.gaps?.length > 0 && <div className={`${c.warn} border rounded-xl p-4`}><p className="text-xs font-bold">🚫 Gaps:</p>{dossData.gaps.map((g, i) => <p key={i} className="text-xs">• {g}</p>)}</div>}
-          {dossData.overall && <div className={`${c.info} border rounded-xl p-4`}><p className="text-sm">{dossData.overall}</p></div>}
+          {dossData.relationship && <div className={`${c.textSecondaryondaryCard} border rounded-xl p-4`}><p className={`text-sm ${c.text}`}>{dossData.relationship}</p></div>}
+          {dossData.conflicts?.length > 0 && <div className={`${c.danger} border rounded-xl p-4 space-y-2`}><h3 className="font-bold text-sm">⚡ Conflicts</h3>{dossData.conflicts.map((con, i) => <div key={i}><p className="text-sm">{con.conflict}</p><p className="text-xs">{con.doc1} vs {con.doc2} · {con.which_wins}</p><p className="text-xs">Risk: {con.risk}</p></div>)}</div>}
+          {dossData.gaps?.length > 0 && <div className={`${c.warning} border rounded-xl p-4`}><p className="text-xs font-bold">🚫 Gaps:</p>{dossData.gaps.map((g, i) => <p key={i} className="text-xs">• {g}</p>)}</div>}
+          {dossData.overall && <div className={`${c.highlight} border rounded-xl p-4`}><p className="text-sm">{dossData.overall}</p></div>}
         </div>}
       </div>}
 
       {/* ═══ LETTER ═══ */}
       {mode === 'letter' && <div className="space-y-4">
-        <div className={`${c.card} border ${c.bdr} rounded-xl p-5 space-y-4`}>
-          <div><h3 className={`font-bold ${c.text}`}>✉️ Write a Response</h3><p className={`text-sm ${c.tm}`}>Generate a professional response that references specific clauses.</p></div>
+        <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-5 space-y-4`}>
+          <div><h3 className={`font-bold ${c.text}`}>✉️ Write a Response</h3><p className={`text-sm ${c.textMuteded}`}>Generate a professional response that references specific clauses.</p></div>
           <input value={ltrIntent} onChange={e => setLtrIntent(e.target.value)} placeholder="What do you want to do? (e.g., 'dispute the late fee', 'negotiate the notice period', 'accept with conditions')" className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
           <textarea value={ltrPoints} onChange={e => setLtrPoints(e.target.value)} placeholder="Specific points to address (optional)" rows={2} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
-          <div><p className={`text-xs font-bold ${c.text} mb-1`}>Tone</p><div className="flex flex-wrap gap-1.5">{['professional but firm', 'friendly but clear', 'formal and assertive', 'conciliatory'].map(t => <button key={t} onClick={() => setLtrTone(t)} className={`px-3 py-1.5 rounded-lg text-xs ${ltrTone === t ? c.on : c.off}`}>{t}</button>)}</div></div>
-          <button onClick={handleLetter} disabled={loading} className={`w-full py-3 rounded-xl font-bold text-sm ${c.pri} disabled:opacity-50`}>{loading ? '⏳' : '✉️ Generate Letter'}</button>
+          <div><p className={`text-xs font-bold ${c.text} mb-1`}>Tone</p><div className="flex flex-wrap gap-1.5">{['professional but firm', 'friendly but clear', 'formal and assertive', 'conciliatory'].map(t => <button key={t} onClick={() => setLtrTone(t)} className={`px-3 py-1.5 rounded-lg text-xs ${ltrTone === t ? c.pillOn : c.pillOff}`}>{t}</button>)}</div></div>
+          <button onClick={handleLetter} disabled={loading} className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimaryPrimary} disabled:opacity-50`}>{loading ? (tool?.icon ?? '✂️') : <><span className='mr-1'>{tool?.icon ?? '✂️'}</span> Generate Letter</>}</button>
         </div>
         {ltrData && <div className="space-y-3">
-          {ltrData.subject_line && <div className={`${c.ca} border ${c.bdr} rounded-lg p-3`}><p className={`text-xs font-bold ${c.text}`}>Subject: {ltrData.subject_line}</p></div>}
-          <div className={`${c.card} border ${c.bdr} rounded-xl p-5`}><div className="flex justify-between mb-2"><h3 className={`font-bold ${c.text}`}>Your Letter</h3><CopyBtn content={ltrData.letter + BRAND} label="Copy" /></div><p className={`text-sm ${c.ts} whitespace-pre-line`}>{ltrData.letter}</p></div>
+          {ltrData.subject_line && <div className={`${c.cardAlt} border ${c.border} rounded-lg p-3`}><p className={`text-xs font-bold ${c.text}`}>Subject: {ltrData.subject_line}</p></div>}
+          <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-5`}><div className="flex justify-between mb-2"><h3 className={`font-bold ${c.text}`}>Your Letter</h3><CopyBtn content={ltrData.letter + BRAND} label="Copy" /></div><p className={`text-sm ${c.textSecondaryondary} whitespace-pre-line`}>{ltrData.letter}</p></div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            {ltrData.send_to && <div className={`${c.ca} rounded-lg p-2 text-center`}><p className={`text-xs ${c.tm}`}>To</p><p className={`text-xs font-bold ${c.text}`}>{ltrData.send_to}</p></div>}
-            {ltrData.send_via && <div className={`${c.ca} rounded-lg p-2 text-center`}><p className={`text-xs ${c.tm}`}>Via</p><p className={`text-xs font-bold ${c.text}`}>{ltrData.send_via}</p></div>}
-            {ltrData.timing && <div className={`${c.ca} rounded-lg p-2 text-center`}><p className={`text-xs ${c.tm}`}>When</p><p className={`text-xs font-bold ${c.text}`}>{ltrData.timing}</p></div>}
-            {ltrData.escalation && <div className={`${c.ca} rounded-lg p-2 text-center`}><p className={`text-xs ${c.tm}`}>If no response</p><p className={`text-xs font-bold ${c.text}`}>{ltrData.escalation}</p></div>}
+            {ltrData.send_to && <div className={`${c.cardAlt} rounded-lg p-2 text-center`}><p className={`text-xs ${c.textMuteded}`}>To</p><p className={`text-xs font-bold ${c.text}`}>{ltrData.send_to}</p></div>}
+            {ltrData.send_via && <div className={`${c.cardAlt} rounded-lg p-2 text-center`}><p className={`text-xs ${c.textMuteded}`}>Via</p><p className={`text-xs font-bold ${c.text}`}>{ltrData.send_via}</p></div>}
+            {ltrData.timing && <div className={`${c.cardAlt} rounded-lg p-2 text-center`}><p className={`text-xs ${c.textMuteded}`}>When</p><p className={`text-xs font-bold ${c.text}`}>{ltrData.timing}</p></div>}
+            {ltrData.escalation && <div className={`${c.cardAlt} rounded-lg p-2 text-center`}><p className={`text-xs ${c.textMuteded}`}>If no response</p><p className={`text-xs font-bold ${c.text}`}>{ltrData.escalation}</p></div>}
           </div>
-          {ltrData.warnings?.length > 0 && <div className={`${c.warn} border rounded-lg p-3`}><p className="text-xs font-bold">⚠️ Before sending:</p>{ltrData.warnings.map((w, i) => <p key={i} className="text-xs">• {w}</p>)}</div>}
+          {ltrData.warnings?.length > 0 && <div className={`${c.warning} border rounded-lg p-3`}><p className="text-xs font-bold">⚠️ Before sending:</p>{ltrData.warnings.map((w, i) => <p key={i} className="text-xs">• {w}</p>)}</div>}
         </div>}
       </div>}
 
       {/* Error */}
-      {error && <div className={`${c.bad} border rounded-xl p-4 text-sm`}>⚠️ {error}</div>}
+      {error && <div className={`${c.danger} border rounded-xl p-4 text-sm`}>⚠️ {error}</div>}
 
       {/* Cross-refs */}
-      {(results || cmpData || dossData) && <div className={`${c.ca} border ${c.bdr} rounded-xl p-4`}><p className={`text-xs ${c.tm} mb-2`}>Related:</p><div className="flex flex-wrap gap-2">{[['PaperDigest', '📄', 'digest research'], ['DebateMe', '🥊', 'test understanding'], ['BrainDumpStructurer', '🧠', 'organize info']].map(([id, ico, d]) => <a key={id} href={`/${id}`} target="_blank" rel="noopener noreferrer" className={`text-xs px-3 py-1.5 rounded-lg ${c.sec} no-underline`}>{ico} {d}</a>)}</div></div>}
+      {(results || cmpData || dossData) && <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}><p className={`text-xs ${c.textMuteded} mb-2`}>Related:</p><div className="flex flex-wrap gap-2">{[['PaperDigest', '📄', 'digest research'], ['DebateMe', '🥊', 'test understanding'], ['BrainDumpStructurer', '🧠', 'organize info']].map(([id, ico, d]) => <a key={id} href={`/${id}`} target="_blank" rel="noopener noreferrer" className={`text-xs px-3 py-1.5 rounded-lg ${c.btnPrimarySecondaryondary} no-underline`}>{ico} {d}</a>)}</div></div>}
+        <div className={`mt-6 pt-4 border-t text-sm ${c.border} ${c.textMuted}`}>
+          <p className="mb-2 font-medium">You might also like:</p>
+          <div className="flex flex-wrap gap-2">
+            {[{slug:'plain-talk',label:'💬 Plain Talk'},{slug:'analogy-engine',label:'💡 Analogy Engine'},{slug:'say-it-right',label:'🗣️ Say It Right'}].map(({slug,label})=>(
+              <a key={slug} href={`/tool/${slug}`} className={linkStyle}>{label}</a>
+            ))}
+          </div>
+        </div>
     </div>
   );
 };

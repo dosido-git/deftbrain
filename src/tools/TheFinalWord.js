@@ -2,7 +2,9 @@ import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
-import { CopyBtn, PrintBtn, ShareBtn } from '../components/ActionButtons';
+import { CopyBtn, PrintBtn, ShareBtn, ActionBar } from '../components/ActionButtons';
+
+const BRAND = '' + BRAND + '';
 
 // ════════════════════════════════════════════════════════
 // THE FINAL WORD — Settle arguments with authority
@@ -69,34 +71,37 @@ function getTimeAgo(timestamp) {
 // COMPONENT
 // ════════════════════════════════════════════════════════
 
-const TheFinalWord = () => {
+const TheFinalWord = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
-  const { theme } = useTheme();
-  const isDark = theme === 'dark';
+  const { isDark } = useTheme();
+
+  const linkStyle = isDark
+    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
+    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
 
   // ─── Theme ───
   const c = {
-    bg: isDark ? 'bg-zinc-900' : 'bg-gradient-to-br from-slate-50 to-amber-50/30',
-    card: isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-slate-200',
-    cardAlt: isDark ? 'bg-zinc-700/50 border-zinc-600' : 'bg-slate-50 border-slate-200',
-    input: isDark
-      ? 'bg-zinc-900 border-zinc-600 text-zinc-50 placeholder:text-zinc-500 focus:border-amber-500 focus:ring-amber-500/20'
-      : 'bg-white border-slate-300 text-slate-900 placeholder:text-slate-400 focus:border-amber-500 focus:ring-amber-100',
+    card: isDark ? 'bg-zinc-800' : 'bg-white',
+    cardAlt: isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
+    input: isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-50 placeholder:text-zinc-500 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-slate-300 text-slate-900 placeholder:text-slate-400 focus:border-cyan-500 focus:ring-cyan-100',
     text: isDark ? 'text-zinc-50' : 'text-slate-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-slate-600',
     textMuted: isDark ? 'text-zinc-500' : 'text-slate-400',
-    label: isDark ? 'text-zinc-200' : 'text-slate-700',
-    btnPrimary: isDark ? 'bg-amber-600 hover:bg-amber-500 text-white' : 'bg-amber-500 hover:bg-amber-600 text-white',
+    labelText: isDark ? 'text-zinc-200' : 'text-slate-700',
+    btnPrimary: isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
     btnSecondary: isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-slate-100 hover:bg-slate-200 text-slate-700',
-    accent: isDark ? 'text-amber-400' : 'text-amber-600',
+    accentTxt: isDark ? 'text-amber-400' : 'text-amber-600',
     border: isDark ? 'border-zinc-700' : 'border-slate-200',
-    success: isDark ? 'text-green-400' : 'text-green-600',
-    error: isDark ? 'text-red-400' : 'text-red-600',
+    success: isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
+    warning: isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
+    danger: isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
+    deleteHover: isDark ? 'text-zinc-600 hover:text-zinc-300' : 'text-slate-300 hover:text-slate-500',
+    deleteHover2: isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-slate-400 hover:text-slate-600',
   };
 
   // ─── Core State ───
   const [mode, setMode] = useState(null);
-  const [result, setResult] = useState(null);
+  const [result, setResult] = usePersistentState('tfw-result', null);
   const [error, setError] = useState('');
 
   // Question
@@ -143,6 +148,16 @@ const TheFinalWord = () => {
 
   // History & Stats
   const [history, setHistory] = usePersistentState('tfw-history', []);
+
+  useEffect(() => {
+    const handler = (e) => {
+      const tag = document.activeElement?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !loading) handleSubmit();
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [loading]);
   const [stats, setStats] = usePersistentState('tfw-stats', EMPTY_STATS);
   const [showHistory, setShowHistory] = useState(false);
   const [showStats, setShowStats] = useState(false);
@@ -269,8 +284,8 @@ const TheFinalWord = () => {
 
   // ─── Save to History ───
   const saveToHistory = (resultData, inputSummary) => {
-    const entry = { id: Date.now(), mode: resultData._mode, input: inputSummary, result: resultData, timestamp: new Date().toISOString() };
-    setHistory(prev => [entry, ...prev].slice(0, 50));
+    const entry = { id: Date.now(), mode: resultData._mode, input: inputSummary, preview: inputSummary.slice(0, 40), result: resultData, timestamp: new Date().toISOString() };
+    setHistory(prev => [entry, ...prev].slice(0, 6));
   };
 
   // ─── Submit Handlers ───
@@ -576,7 +591,7 @@ const TheFinalWord = () => {
     else if (result?._mode === 'dispute') text = `⚖️ The Final Word: ${result.verdict_headline}\n\n${result.explanation}`;
     else if (result?._mode === 'factcheck') text = `⚖️ ${result.ruling_display}\n\n${result.explanation}`;
     if (result?.sources?.length) text += `\n\nSources: ${result.sources.join(', ')}`;
-    return text + '\n\n— Generated by DeftBrain · deftbrain.com';
+    return text + '' + BRAND + '';
   };
 
   const buildTriviaShareText = () => {
@@ -611,23 +626,23 @@ const TheFinalWord = () => {
   // ─── Style Helpers ───
   const getConfidenceStyle = (confidence) => {
     const styles = {
-      certain: { text: isDark ? 'text-green-300' : 'text-green-800', width: '100%' },
+      certain: { text: isDark ? 'text-emerald-300' : 'text-emerald-800', width: '100%' },
       high: { text: isDark ? 'text-emerald-300' : 'text-emerald-800', width: '85%' },
       moderate: { text: isDark ? 'text-amber-300' : 'text-amber-800', width: '60%' },
-      low: { text: isDark ? 'text-orange-300' : 'text-orange-800', width: '35%' },
+      low: { text: isDark ? 'text-amber-300' : 'text-amber-800', width: '35%' },
       uncertain: { text: isDark ? 'text-red-300' : 'text-red-800', width: '15%' },
     };
     return styles[confidence] || styles.moderate;
   };
 
   const getRulingStyle = (ruling) => {
-    if (['true', 'mostly_true'].includes(ruling)) return isDark ? 'text-green-400 bg-green-900/20' : 'text-green-700 bg-green-50';
+    if (['true', 'mostly_true'].includes(ruling)) return isDark ? 'text-emerald-400 bg-emerald-900/20' : 'text-emerald-700 bg-green-50';
     if (['false', 'mostly_false'].includes(ruling)) return isDark ? 'text-red-400 bg-red-900/20' : 'text-red-700 bg-red-50';
     if (ruling === 'misleading') return isDark ? 'text-amber-400 bg-amber-900/20' : 'text-amber-700 bg-amber-50';
-    return isDark ? 'text-blue-400 bg-blue-900/20' : 'text-blue-700 bg-blue-50';
+    return isDark ? 'text-sky-400 bg-sky-900/20' : 'text-sky-700 bg-sky-50';
   };
 
-  const confBarColor = (conf) => conf === 'certain' ? 'bg-green-500' : conf === 'high' ? 'bg-emerald-500' : conf === 'moderate' ? 'bg-amber-500' : conf === 'low' ? 'bg-orange-500' : 'bg-red-500';
+  const confBarColor = (conf) => conf === 'certain' ? 'bg-emerald-500' : conf === 'high' ? 'bg-emerald-500' : conf === 'moderate' ? 'bg-amber-500' : conf === 'low' ? 'bg-amber-500' : 'bg-red-500';
 
   // ─── Reusable Sub-Components ───
   const VoiceButton = () => {
@@ -673,13 +688,12 @@ const TheFinalWord = () => {
     <div className={`px-6 py-3 border-t flex items-center justify-between flex-wrap gap-2 ${c.border}`}>
       <div className="flex gap-1.5 flex-wrap">
         <ShareBtn content={getVerdictText()} title="The Final Word" />
-        <CopyBtn content={getVerdictText()} label="Copy" />
-        <PrintBtn content={getVerdictText()} title="The Final Word" />
+        <ActionBar content={getVerdictText()} title="The Final Word" />
         <button onClick={() => setShowChallenge(!showChallenge)} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${c.btnSecondary}`}>
           <span>💬</span> Actually...
         </button>
         <button onClick={handleCreateShareLink} disabled={shareLoading} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${c.btnSecondary}`}>
-          <span>{shareLoading ? '⏳' : '🔗'}</span> {shareId ? 'Linked!' : 'Get Link'}
+          <span>{shareLoading ? (tool?.icon ?? '⚙️') : '🔗'}</span> {shareId ? 'Linked!' : 'Get Link'}
         </button>
         {showAppealBtn && (
           <button onClick={() => setShowAppeal(!showAppeal)} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${c.btnSecondary}`}>
@@ -698,7 +712,7 @@ const TheFinalWord = () => {
     if (!shareId) return null;
     const link = `${window.location.origin}/verdict/${shareId}`;
     return (
-      <div className={`mx-6 mb-3 p-3 rounded-xl border flex items-center gap-2 ${isDark ? 'bg-green-900/10 border-green-800/50' : 'bg-green-50 border-green-200'}`}>
+      <div className={`mx-6 mb-3 p-3 rounded-xl border flex items-center gap-2 ${isDark ? 'bg-emerald-900/10 border-green-800/50' : 'bg-green-50 border-green-200'}`}>
         <span>✅</span>
         <span className={`text-xs flex-1 truncate ${c.textSecondary}`}>Link copied: {link}</span>
         <CopyBtn content={link} label="Copy" />
@@ -710,15 +724,15 @@ const TheFinalWord = () => {
   const TriviaOption = ({ option, idx, isSelected, isCorrect, revealed, onClick, disabled }) => {
     let optionStyle = isDark ? 'border-zinc-700 hover:border-zinc-500 bg-zinc-800' : 'border-slate-200 hover:border-slate-300 bg-white';
     if (revealed) {
-      if (isCorrect) optionStyle = isDark ? 'border-green-500 bg-green-900/20 text-green-300' : 'border-green-400 bg-green-50 text-green-800';
+      if (isCorrect) optionStyle = isDark ? 'border-green-500 bg-emerald-900/20 text-emerald-300' : 'border-green-400 bg-green-50 text-emerald-800';
       else if (isSelected && !isCorrect) optionStyle = isDark ? 'border-red-500 bg-red-900/20 text-red-300' : 'border-red-400 bg-red-50 text-red-800';
       else optionStyle = isDark ? 'border-zinc-700 bg-zinc-800/50 opacity-50' : 'border-slate-200 bg-slate-50 opacity-50';
     } else if (isSelected) {
-      optionStyle = isDark ? 'border-purple-500 bg-purple-900/20' : 'border-purple-400 bg-purple-50';
+      optionStyle = isDark ? 'border-cyan-500 bg-cyan-900/20' : 'border-cyan-400 bg-cyan-50';
     }
     return (
       <button key={idx} onClick={onClick} disabled={disabled} className={`w-full text-left px-4 py-3 rounded-xl border-2 text-sm font-semibold transition-all flex items-center gap-3 ${optionStyle}`}>
-        <span className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-black flex-shrink-0 ${revealed && isCorrect ? 'bg-green-500 text-white' : revealed && isSelected && !isCorrect ? 'bg-red-500 text-white' : isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-slate-100 text-slate-600'}`}>
+        <span className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-black flex-shrink-0 ${revealed && isCorrect ? 'bg-emerald-500 text-white' : revealed && isSelected && !isCorrect ? 'bg-red-500 text-white' : isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-slate-100 text-slate-600'}`}>
           {revealed && isCorrect ? '✓' : revealed && isSelected ? '✗' : String.fromCharCode(65 + idx)}
         </span>
         <span className={revealed && !isCorrect && !isSelected ? c.textMuted : c.text}>{option}</span>
@@ -733,7 +747,7 @@ const TheFinalWord = () => {
   // RENDER
   // ════════════════════════════════════════════════════════
   return (
-    <div className={`min-h-screen ${c.bg} py-8 px-4`}>
+    <div className={`min-h-screen py-8 px-4`}>
       <div className="max-w-2xl mx-auto space-y-6">
 
         {/* ── Header ── */}
@@ -767,15 +781,15 @@ const TheFinalWord = () => {
             {/* Overview row */}
             <div className="grid grid-cols-3 gap-3">
               <div className={`p-3 rounded-xl border text-center ${c.cardAlt}`}>
-                <p className={`text-2xl font-black ${c.accent}`}>{stats.totalVerdicts || 0}</p>
+                <p className={`text-2xl font-black ${c.accentTxt}`}>{stats.totalVerdicts || 0}</p>
                 <p className={`text-xs ${c.textMuted}`}>Total Verdicts</p>
               </div>
               <div className={`p-3 rounded-xl border text-center ${c.cardAlt}`}>
-                <p className={`text-2xl font-black ${c.accent}`}>{stats.trivia?.totalQuestions || 0}</p>
+                <p className={`text-2xl font-black ${c.accentTxt}`}>{stats.trivia?.totalQuestions || 0}</p>
                 <p className={`text-xs ${c.textMuted}`}>Trivia Qs</p>
               </div>
               <div className={`p-3 rounded-xl border text-center ${c.cardAlt}`}>
-                <p className={`text-2xl font-black ${c.accent}`}>
+                <p className={`text-2xl font-black ${c.accentTxt}`}>
                   {stats.trivia?.totalQuestions ? `${Math.round((stats.trivia.totalCorrect / stats.trivia.totalQuestions) * 100)}%` : '—'}
                 </p>
                 <p className={`text-xs ${c.textMuted}`}>Trivia Accuracy</p>
@@ -857,7 +871,7 @@ const TheFinalWord = () => {
                         <p className={`text-sm font-semibold truncate ${c.text}`}>{entry.result?.answer || entry.result?.verdict_headline || entry.result?.ruling_display || entry.input}</p>
                         <p className={`text-xs truncate ${c.textSecondary}`}>{entry.input}</p>
                       </div>
-                      <button onClick={() => setHistory(prev => prev.filter(e => e.id !== entry.id))} className={`p-1 rounded-lg transition-all flex-shrink-0 ${isDark ? 'text-zinc-600 hover:text-red-400' : 'text-slate-300 hover:text-red-500'}`}>
+                      <button onClick={() => setHistory(prev => prev.filter(e => e.id !== entry.id))} className={`p-1 rounded-lg transition-all flex-shrink-0 ${c.deleteHover}`}>
                         <span className="text-xs">✕</span>
                       </button>
                     </div>
@@ -905,7 +919,7 @@ const TheFinalWord = () => {
                   <VoiceButton />
                 </div>
                 <button onClick={handleSubmit} disabled={loading || !question.trim()} className={`w-full py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-40 ${c.btnPrimary}`}>
-                  {loading ? <span className="animate-spin inline-block">⏳</span> : <span>🔍</span>} {loading ? 'Deliberating...' : 'Get The Final Word'}
+                  {loading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚙️'}</span> : <span>🔍</span>} {loading ? 'Deliberating...' : 'Get The Final Word'}
                 </button>
               </div>
             )}
@@ -939,7 +953,7 @@ const TheFinalWord = () => {
                       <textarea value={daPosition} onChange={(e) => setDaPosition(e.target.value)} placeholder="State your position clearly... e.g., 'Remote work is strictly better than office work for knowledge workers'" rows={3} className={`w-full px-4 py-3 rounded-xl border-2 text-sm transition-all focus:outline-none focus:ring-2 resize-none ${c.input}`} />
                     </div>
                     <button onClick={handleDevilsAdvocate} disabled={loading || !daPosition.trim()} className={`w-full py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-40 ${c.btnPrimary}`}>
-                      {loading ? <span className="animate-spin inline-block">⏳</span> : <span>😈</span>} {loading ? 'Building counter-argument...' : 'Challenge My Position'}
+                      {loading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚙️'}</span> : <span>😈</span>} {loading ? 'Building counter-argument...' : 'Challenge My Position'}
                     </button>
                   </div>
                 ) : (
@@ -977,7 +991,7 @@ const TheFinalWord = () => {
                       <input value={disputeContext} onChange={(e) => setDisputeContext(e.target.value)} placeholder="Any extra context..." className={`w-full px-4 py-2.5 rounded-xl border-2 text-sm transition-all focus:outline-none focus:ring-2 ${c.input}`} />
                     </div>
                     <button onClick={handleSubmit} disabled={loading || !claimA.trim() || !claimB.trim()} className={`w-full py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-40 ${c.btnPrimary}`}>
-                      {loading ? <span className="animate-spin inline-block">⏳</span> : <span>⚖️</span>} {loading ? 'Reviewing evidence...' : 'Deliver the Verdict'}
+                      {loading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚙️'}</span> : <span>⚖️</span>} {loading ? 'Reviewing evidence...' : 'Deliver the Verdict'}
                     </button>
                   </>
                 )}
@@ -1007,7 +1021,7 @@ const TheFinalWord = () => {
                   <p className={`text-xs ${c.textMuted}`}>Breaks the claim into its components — each piece gets its own verdict and reasoning.</p>
                 )}
                 <button onClick={dissectMode ? handleDissect : handleSubmit} disabled={loading || !claim.trim()} className={`w-full py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-40 ${c.btnPrimary}`}>
-                  {loading ? <span className="animate-spin inline-block">⏳</span> : <span>{dissectMode ? '🔬' : '🛡️'}</span>}
+                  {loading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚙️'}</span> : <span>{dissectMode ? '🔬' : '🛡️'}</span>}
                   {loading ? (dissectMode ? 'Dissecting...' : 'Fact-checking...') : (dissectMode ? 'Dissect This Claim' : 'Check This Claim')}
                 </button>
               </div>
@@ -1022,13 +1036,13 @@ const TheFinalWord = () => {
                   <div className="space-y-2">
                     {teams.map((team, idx) => (
                       <div key={idx} className="flex items-center gap-2">
-                        <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-black flex-shrink-0 ${isDark ? 'bg-purple-900/30 text-purple-300' : 'bg-purple-100 text-purple-700'}`}>{idx + 1}</div>
+                        <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-black flex-shrink-0 ${isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-100 text-cyan-700'}`}>{idx + 1}</div>
                         <input value={team.name} onChange={(e) => updateTeamName(idx, e.target.value)} placeholder={`Player/Team ${idx + 1}`} className={`flex-1 px-3 py-2 rounded-lg border-2 text-sm transition-all focus:outline-none focus:ring-2 ${c.input}`} />
-                        {teams.length > 1 && <button onClick={() => removeTeam(idx)} className={`p-1.5 rounded-lg transition-all ${isDark ? 'text-zinc-500 hover:text-red-400' : 'text-slate-400 hover:text-red-500'}`}><span className="text-sm">✕</span></button>}
+                        {teams.length > 1 && <button onClick={() => removeTeam(idx)} className={`p-1.5 rounded-lg transition-all ${c.deleteHover2}`}><span className="text-sm">✕</span></button>}
                       </div>
                     ))}
                   </div>
-                  {teams.length < 6 && <button onClick={addTeam} className={`mt-2 text-xs font-semibold flex items-center gap-1 ${c.accent} hover:underline`}>➕ Add player/team</button>}
+                  {teams.length < 6 && <button onClick={addTeam} className={`mt-2 text-xs font-semibold flex items-center gap-1 ${c.accentTxt} hover:underline`}>➕ Add player/team</button>}
                 </div>
 
                 {/* Rounds */}
@@ -1036,7 +1050,7 @@ const TheFinalWord = () => {
                   <label className={`block text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuted}`}>Number of Rounds</label>
                   <div className="flex gap-2">
                     {ROUND_OPTIONS.map(n => (
-                      <button key={n} onClick={() => setRoundLimit(n)} className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all border ${roundLimit === n ? isDark ? 'border-purple-500 bg-purple-900/20 text-purple-300' : 'border-purple-400 bg-purple-50 text-purple-700' : isDark ? 'border-zinc-700 text-zinc-400 hover:border-zinc-500' : 'border-slate-200 text-slate-500 hover:border-slate-300'}`}>{n}</button>
+                      <button key={n} onClick={() => setRoundLimit(n)} className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all border ${roundLimit === n ? isDark ? 'border-cyan-500 bg-cyan-900/20 text-cyan-300' : 'border-cyan-400 bg-cyan-50 text-cyan-700' : isDark ? 'border-zinc-700 text-zinc-400 hover:border-zinc-500' : 'border-slate-200 text-slate-500 hover:border-slate-300'}`}>{n}</button>
                     ))}
                   </div>
                 </div>
@@ -1046,7 +1060,7 @@ const TheFinalWord = () => {
                   <label className={`block text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuted}`}>Category</label>
                   <div className="flex flex-wrap gap-2">
                     {TRIVIA_CATEGORIES.map(cat => (
-                      <button key={cat.id} onClick={() => setTriviaCategory(cat.id)} className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all border ${triviaCategory === cat.id ? isDark ? 'border-purple-500 bg-purple-900/20 text-purple-300' : 'border-purple-400 bg-purple-50 text-purple-700' : isDark ? 'border-zinc-700 text-zinc-400 hover:border-zinc-500' : 'border-slate-200 text-slate-500 hover:border-slate-300'}`}>
+                      <button key={cat.id} onClick={() => setTriviaCategory(cat.id)} className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all border ${triviaCategory === cat.id ? isDark ? 'border-cyan-500 bg-cyan-900/20 text-cyan-300' : 'border-cyan-400 bg-cyan-50 text-cyan-700' : isDark ? 'border-zinc-700 text-zinc-400 hover:border-zinc-500' : 'border-slate-200 text-slate-500 hover:border-slate-300'}`}>
                         {cat.emoji} {cat.label}
                       </button>
                     ))}
@@ -1058,22 +1072,22 @@ const TheFinalWord = () => {
                   <label className={`block text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuted}`}>Difficulty</label>
                   <div className="flex gap-2">
                     {['easy', 'medium', 'hard'].map(d => (
-                      <button key={d} onClick={() => setTriviaDifficulty(d)} className={`flex-1 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all border ${triviaDifficulty === d ? isDark ? 'border-purple-500 bg-purple-900/20 text-purple-300' : 'border-purple-400 bg-purple-50 text-purple-700' : isDark ? 'border-zinc-700 text-zinc-400 hover:border-zinc-500' : 'border-slate-200 text-slate-500 hover:border-slate-300'}`}>{d}</button>
+                      <button key={d} onClick={() => setTriviaDifficulty(d)} className={`flex-1 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all border ${triviaDifficulty === d ? isDark ? 'border-cyan-500 bg-cyan-900/20 text-cyan-300' : 'border-cyan-400 bg-cyan-50 text-cyan-700' : isDark ? 'border-zinc-700 text-zinc-400 hover:border-zinc-500' : 'border-slate-200 text-slate-500 hover:border-slate-300'}`}>{d}</button>
                     ))}
                   </div>
                 </div>
 
                 {/* Start buttons */}
-                <button onClick={() => { setTriviaSetup(false); handleTrivia(); }} disabled={loading || teams.every(t => !t.name.trim())} className={`w-full py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-40 ${isDark ? 'bg-purple-600 hover:bg-purple-500 text-white' : 'bg-purple-600 hover:bg-purple-700 text-white'}`}>
-                  {loading ? <span className="animate-spin inline-block">⏳</span> : <span>⚡</span>} {loading ? 'Generating...' : 'Start Local Game'}
+                <button onClick={() => { setTriviaSetup(false); handleTrivia(); }} disabled={loading || teams.every(t => !t.name.trim())} className={`w-full py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-40 ${isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white'}`}>
+                  {loading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚙️'}</span> : <span>⚡</span>} {loading ? 'Generating...' : 'Start Local Game'}
                 </button>
 
                 {/* Multiplayer buttons */}
                 <div className="flex gap-2">
-                  <button onClick={() => setMpMode('host')} className={`flex-1 py-2.5 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-1.5 border-2 ${isDark ? 'border-purple-700 text-purple-300 hover:bg-purple-900/20' : 'border-purple-300 text-purple-700 hover:bg-purple-50'}`}>
+                  <button onClick={() => setMpMode('host')} className={`flex-1 py-2.5 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-1.5 border-2 ${isDark ? 'border-cyan-700 text-cyan-300 hover:bg-cyan-900/20' : 'border-cyan-300 text-cyan-700 hover:bg-cyan-50'}`}>
                     📡 Host Online Game
                   </button>
-                  <button onClick={() => setMpMode('join')} className={`flex-1 py-2.5 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-1.5 border-2 ${isDark ? 'border-purple-700 text-purple-300 hover:bg-purple-900/20' : 'border-purple-300 text-purple-700 hover:bg-purple-50'}`}>
+                  <button onClick={() => setMpMode('join')} className={`flex-1 py-2.5 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-1.5 border-2 ${isDark ? 'border-cyan-700 text-cyan-300 hover:bg-cyan-900/20' : 'border-cyan-300 text-cyan-700 hover:bg-cyan-50'}`}>
                     🎮 Join Game
                   </button>
                 </div>
@@ -1090,10 +1104,10 @@ const TheFinalWord = () => {
           <div className={`rounded-2xl border p-5 space-y-4 ${c.card}`}>
             <h3 className={`text-sm font-bold ${c.text}`}>📡 Host Online Trivia</h3>
             <input value={mpName} onChange={(e) => setMpName(e.target.value)} placeholder="Your name" className={`w-full px-4 py-3 rounded-xl border-2 text-sm transition-all focus:outline-none focus:ring-2 ${c.input}`} />
-            {mpError && <p className={`text-xs ${c.error}`}>{mpError}</p>}
+            {mpError && <p className={`text-xs ${c.danger}`}>{mpError}</p>}
             <div className="flex gap-2">
-              <button onClick={handleCreateRoom} disabled={mpLoading} className={`flex-1 py-3 rounded-xl font-bold text-sm transition-all disabled:opacity-40 ${isDark ? 'bg-purple-600 hover:bg-purple-500 text-white' : 'bg-purple-600 hover:bg-purple-700 text-white'}`}>
-                {mpLoading ? <span className="animate-spin inline-block">⏳</span> : 'Create Room'}
+              <button onClick={handleCreateRoom} disabled={mpLoading} className={`flex-1 py-3 rounded-xl font-bold text-sm transition-all disabled:opacity-40 ${isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white'}`}>
+                {mpLoading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚙️'}</span> : 'Create Room'}
               </button>
               <button onClick={() => setMpMode(null)} className={`px-4 py-3 rounded-xl text-sm font-semibold transition-all ${c.btnSecondary}`}>Cancel</button>
             </div>
@@ -1105,10 +1119,10 @@ const TheFinalWord = () => {
             <h3 className={`text-sm font-bold ${c.text}`}>🎮 Join Online Trivia</h3>
             <input value={mpName} onChange={(e) => setMpName(e.target.value)} placeholder="Your name" className={`w-full px-4 py-3 rounded-xl border-2 text-sm transition-all focus:outline-none focus:ring-2 ${c.input}`} />
             <input value={joinCode} onChange={(e) => setJoinCode(e.target.value.toUpperCase())} placeholder="Room code (e.g., ABCD)" maxLength={4} className={`w-full px-4 py-3 rounded-xl border-2 text-sm text-center font-black tracking-[0.3em] uppercase transition-all focus:outline-none focus:ring-2 ${c.input}`} />
-            {mpError && <p className={`text-xs ${c.error}`}>{mpError}</p>}
+            {mpError && <p className={`text-xs ${c.danger}`}>{mpError}</p>}
             <div className="flex gap-2">
-              <button onClick={handleJoinRoom} disabled={mpLoading} className={`flex-1 py-3 rounded-xl font-bold text-sm transition-all disabled:opacity-40 ${isDark ? 'bg-purple-600 hover:bg-purple-500 text-white' : 'bg-purple-600 hover:bg-purple-700 text-white'}`}>
-                {mpLoading ? <span className="animate-spin inline-block">⏳</span> : 'Join Room'}
+              <button onClick={handleJoinRoom} disabled={mpLoading} className={`flex-1 py-3 rounded-xl font-bold text-sm transition-all disabled:opacity-40 ${isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white'}`}>
+                {mpLoading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚙️'}</span> : 'Join Room'}
               </button>
               <button onClick={() => setMpMode(null)} className={`px-4 py-3 rounded-xl text-sm font-semibold transition-all ${c.btnSecondary}`}>Cancel</button>
             </div>
@@ -1120,7 +1134,7 @@ const TheFinalWord = () => {
           <div className={`rounded-2xl border p-5 space-y-4 ${c.card}`}>
             <div className="text-center">
               <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>Room Code</p>
-              <p className={`text-4xl font-black tracking-[0.3em] ${c.accent}`}>{roomCode}</p>
+              <p className={`text-4xl font-black tracking-[0.3em] ${c.accentTxt}`}>{roomCode}</p>
               <p className={`text-xs mt-1 ${c.textMuted}`}>Share this code with other players</p>
             </div>
 
@@ -1144,12 +1158,12 @@ const TheFinalWord = () => {
             </div>
 
             {isHost ? (
-              <button onClick={handleMpStartGame} disabled={mpLoading || (roomState.players?.length || 0) < 2} className={`w-full py-3 rounded-xl font-bold text-sm transition-all disabled:opacity-40 ${isDark ? 'bg-purple-600 hover:bg-purple-500 text-white' : 'bg-purple-600 hover:bg-purple-700 text-white'}`}>
-                {mpLoading ? <span className="animate-spin inline-block">⏳</span> : `Start Game (${roomState.players?.length || 0} players)`}
+              <button onClick={handleMpStartGame} disabled={mpLoading || (roomState.players?.length || 0) < 2} className={`w-full py-3 rounded-xl font-bold text-sm transition-all disabled:opacity-40 ${isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white'}`}>
+                {mpLoading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚙️'}</span> : `Start Game (${roomState.players?.length || 0} players)`}
               </button>
             ) : (
               <div className={`text-center py-4`}>
-                <span className="animate-spin inline-block mr-2">⏳</span>
+                <span className="inline-block animate-spin mr-2">{tool?.icon ?? '⚙️'}</span>
                 <span className={`text-sm ${c.textSecondary}`}>Waiting for host to start...</span>
               </div>
             )}
@@ -1160,23 +1174,23 @@ const TheFinalWord = () => {
 
         {/* ═══════ MULTIPLAYER GAME ═══════ */}
         {(mpMode === 'lobby' || mpMode === 'playing') && roomState?.started && roomState?.currentQuestion && !roomState?.finished && (
-          <div className={`rounded-2xl overflow-hidden border-2 shadow-lg ${isDark ? 'border-purple-700/50 bg-zinc-800' : 'border-purple-300 bg-white'}`}>
-            <div className={`px-6 py-4 ${isDark ? 'bg-purple-900/20' : 'bg-purple-50'} border-b ${c.border}`}>
+          <div className={`rounded-2xl overflow-hidden border-2 shadow-lg ${isDark ? 'border-cyan-700/50 bg-zinc-800' : 'border-cyan-300 bg-white'}`}>
+            <div className={`px-6 py-4 ${isDark ? 'bg-cyan-900/20' : 'bg-cyan-50'} border-b ${c.border}`}>
               <div className="flex items-center justify-between mb-2">
-                <span className={`text-xs font-black uppercase tracking-widest ${isDark ? 'text-purple-400' : 'text-purple-600'}`}>{roomState.currentQuestion.category_label || 'Trivia'}</span>
+                <span className={`text-xs font-black uppercase tracking-widest ${isDark ? 'text-cyan-400' : 'text-cyan-600'}`}>{roomState.currentQuestion.category_label || 'Trivia'}</span>
                 <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-slate-100 text-slate-600'}`}>Q{roomState.questionNumber}/{roomState.settings?.rounds} · 📡 {roomCode}</span>
               </div>
               <div className={`h-1.5 rounded-full overflow-hidden ${isDark ? 'bg-zinc-700' : 'bg-slate-200'}`}>
-                <div className="h-full rounded-full bg-purple-500 transition-all duration-500" style={{ width: `${(roomState.questionNumber / (roomState.settings?.rounds || 10)) * 100}%` }} />
+                <div className="h-full rounded-full bg-cyan-500 transition-all duration-500" style={{ width: `${(roomState.questionNumber / (roomState.settings?.rounds || 10)) * 100}%` }} />
               </div>
             </div>
 
             {/* Scoreboard */}
             <div className={`px-6 py-2 border-b ${c.border} flex gap-2 overflow-x-auto`}>
               {roomState.players?.map(p => (
-                <div key={p.id} className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap ${p.id === mpPlayerId ? isDark ? 'bg-purple-900/20 border border-purple-700 text-purple-300' : 'bg-purple-50 border border-purple-300 text-purple-700' : isDark ? 'bg-zinc-700/50 text-zinc-300' : 'bg-slate-50 text-slate-600'}`}>
+                <div key={p.id} className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap ${p.id === mpPlayerId ? isDark ? 'bg-cyan-900/20 border border-cyan-700 text-cyan-300' : 'bg-cyan-50 border border-cyan-300 text-cyan-700' : isDark ? 'bg-zinc-700/50 text-zinc-300' : 'bg-slate-50 text-slate-600'}`}>
                   <span>{p.name}</span>
-                  <span className={`font-black ${c.accent}`}>{p.score}</span>
+                  <span className={`font-black ${c.accentTxt}`}>{p.score}</span>
                   {p.answered && !roomState.revealed && <span>✓</span>}
                   {p.streak >= 3 && <span>🔥{p.streak}</span>}
                 </div>
@@ -1202,7 +1216,7 @@ const TheFinalWord = () => {
 
               {roomState.revealed && roomState.currentQuestion.explanation && (
                 <div className={`mt-4 p-4 rounded-xl border ${c.cardAlt}`}>
-                  <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${c.accent}`}>
+                  <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${c.accentTxt}`}>
                     {roomState.myAnswer === roomState.currentQuestion.correct_index ? '🎉 You got it!' : '😬 Not quite...'}
                   </p>
                   <p className={`text-sm ${c.textSecondary}`}>{roomState.currentQuestion.explanation}</p>
@@ -1218,12 +1232,12 @@ const TheFinalWord = () => {
               {isHost && (
                 <div className="flex gap-2">
                   {!roomState.revealed ? (
-                    <button onClick={handleMpReveal} disabled={!roomState.allAnswered && !roomState.revealed} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${isDark ? 'bg-purple-600 hover:bg-purple-500 text-white' : 'bg-purple-600 hover:bg-purple-700 text-white'} ${!roomState.allAnswered ? 'opacity-60' : ''}`}>
+                    <button onClick={handleMpReveal} disabled={!roomState.allAnswered && !roomState.revealed} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white'} ${!roomState.allAnswered ? 'opacity-60' : ''}`}>
                       {roomState.allAnswered ? 'Reveal Answer' : 'Reveal Early'}
                     </button>
                   ) : (
-                    <button onClick={handleMpNext} disabled={mpLoading} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${isDark ? 'bg-purple-600 hover:bg-purple-500 text-white' : 'bg-purple-600 hover:bg-purple-700 text-white'}`}>
-                      {mpLoading ? <span className="animate-spin inline-block">⏳</span> : '→'} {roomState.questionNumber >= (roomState.settings?.rounds || 10) ? 'See Results' : 'Next Question'}
+                    <button onClick={handleMpNext} disabled={mpLoading} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white'}`}>
+                      {mpLoading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚙️'}</span> : '→'} {roomState.questionNumber >= (roomState.settings?.rounds || 10) ? 'See Results' : 'Next Question'}
                     </button>
                   )}
                 </div>
@@ -1234,10 +1248,10 @@ const TheFinalWord = () => {
 
         {/* ═══════ MULTIPLAYER FINISHED ═══════ */}
         {roomState?.finished && (mpMode === 'lobby' || mpMode === 'playing') && (
-          <div className={`rounded-2xl overflow-hidden border-2 shadow-lg ${isDark ? 'border-purple-700/50 bg-zinc-800' : 'border-purple-300 bg-white'}`}>
-            <div className={`px-6 py-8 text-center ${isDark ? 'bg-purple-900/20' : 'bg-gradient-to-b from-purple-50 to-white'}`}>
+          <div className={`rounded-2xl overflow-hidden border-2 shadow-lg ${isDark ? 'border-cyan-700/50 bg-zinc-800' : 'border-cyan-300 bg-white'}`}>
+            <div className={`px-6 py-8 text-center ${isDark ? 'bg-cyan-900/20' : 'bg-gradient-to-b from-purple-50 to-white'}`}>
               <span className="text-5xl block mb-3">🏆</span>
-              <p className={`text-xs font-black uppercase tracking-widest mb-2 ${isDark ? 'text-purple-400' : 'text-purple-600'}`}>Online Trivia · Room {roomCode}</p>
+              <p className={`text-xs font-black uppercase tracking-widest mb-2 ${isDark ? 'text-cyan-400' : 'text-cyan-600'}`}>Online Trivia · Room {roomCode}</p>
               {(() => {
                 const sorted = [...(roomState.players || [])].sort((a, b) => b.score - a.score);
                 const isTie = sorted.length > 1 && sorted[0].score === sorted[1].score;
@@ -1246,14 +1260,14 @@ const TheFinalWord = () => {
             </div>
             <div className={`px-6 py-4 border-t ${c.border} space-y-3`}>
               {[...(roomState.players || [])].sort((a, b) => b.score - a.score).map((p, rank) => (
-                <div key={p.id} className={`p-3 rounded-xl border ${rank === 0 ? isDark ? 'bg-purple-900/10 border-purple-700/50' : 'bg-purple-50 border-purple-200' : c.cardAlt}`}>
+                <div key={p.id} className={`p-3 rounded-xl border ${rank === 0 ? isDark ? 'bg-cyan-900/10 border-cyan-700/50' : 'bg-cyan-50 border-cyan-200' : c.cardAlt}`}>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <span className="text-lg">{rank === 0 ? '🥇' : rank === 1 ? '🥈' : rank === 2 ? '🥉' : ''}</span>
                       <span className={`text-sm font-bold ${c.text}`}>{p.name}</span>
                       {p.id === mpPlayerId && <span className={`text-xs ${c.textMuted}`}>(you)</span>}
                     </div>
-                    <span className={`text-xl font-black ${rank === 0 ? c.accent : c.textSecondary}`}>{p.score}</span>
+                    <span className={`text-xl font-black ${rank === 0 ? c.accentTxt : c.textSecondary}`}>{p.score}</span>
                   </div>
                   {p.bestStreak >= 2 && <p className={`text-xs mt-1 ${c.textMuted}`}>🔥 Best streak: {p.bestStreak}</p>}
                 </div>
@@ -1271,7 +1285,7 @@ const TheFinalWord = () => {
         {result?._mode === 'question' && (
           <div className={`rounded-2xl overflow-hidden border-2 shadow-lg ${isDark ? 'border-amber-700/50 bg-zinc-800' : 'border-amber-300 bg-white'}`}>
             <div className={`px-6 py-4 ${isDark ? 'bg-amber-900/20' : 'bg-amber-50'} border-b ${c.border}`}>
-              <div className="flex items-center gap-2"><span>⚖️</span><span className={`text-xs font-black uppercase tracking-widest ${c.accent}`}>The Final Word</span>
+              <div className="flex items-center gap-2"><span>⚖️</span><span className={`text-xs font-black uppercase tracking-widest ${c.accentTxt}`}>The Final Word</span>
                 {result.category && <span className={`ml-auto text-xs font-semibold px-2 py-0.5 rounded-full ${isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-slate-100 text-slate-600'}`}>{result.category}</span>}
               </div>
             </div>
@@ -1280,8 +1294,8 @@ const TheFinalWord = () => {
               <ConfidenceBar confidence={result.confidence} />
               <p className={`text-sm leading-relaxed mb-4 ${c.textSecondary}`}>{result.explanation}</p>
               {result.supporting_facts?.length > 0 && <div className={`p-3 rounded-xl border ${c.cardAlt} mb-3`}><p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuted}`}>Key Facts</p>{result.supporting_facts.map((f, i) => <p key={i} className={`text-sm ${c.textSecondary} mb-1`}>• {f}</p>)}</div>}
-              {result.common_misconception && <div className={`p-3 rounded-xl border ${isDark ? 'bg-amber-900/10 border-amber-800/50' : 'bg-amber-50 border-amber-200'}`}><p className={`text-xs font-bold uppercase tracking-wider mb-1 ${c.accent}`}>Common Misconception</p><p className={`text-sm ${c.textSecondary}`}>{result.common_misconception}</p></div>}
-              {result.fun_extra && <div className={`mt-3 p-3 rounded-xl border ${c.cardAlt}`}><p className={`text-xs font-bold mb-1 ${c.accent}`}>💡 Bonus</p><p className={`text-sm ${c.textSecondary}`}>{result.fun_extra}</p></div>}
+              {result.common_misconception && <div className={`p-3 rounded-xl border ${isDark ? 'bg-amber-900/10 border-amber-800/50' : 'bg-amber-50 border-amber-200'}`}><p className={`text-xs font-bold uppercase tracking-wider mb-1 ${c.accentTxt}`}>Common Misconception</p><p className={`text-sm ${c.textSecondary}`}>{result.common_misconception}</p></div>}
+              {result.fun_extra && <div className={`mt-3 p-3 rounded-xl border ${c.cardAlt}`}><p className={`text-xs font-bold mb-1 ${c.accentTxt}`}>💡 Bonus</p><p className={`text-sm ${c.textSecondary}`}>{result.fun_extra}</p></div>}
               <SourcesList sources={result.sources} />
             </div>
             <ShareLinkDisplay />
@@ -1293,7 +1307,7 @@ const TheFinalWord = () => {
         {result?._mode === 'dispute' && (
           <div className={`rounded-2xl overflow-hidden border-2 shadow-lg ${isDark ? 'border-amber-700/50 bg-zinc-800' : 'border-amber-300 bg-white'}`}>
             <div className={`px-6 py-5 text-center ${isDark ? 'bg-gradient-to-r from-amber-900/30 to-zinc-800' : 'bg-gradient-to-r from-amber-50 to-amber-100'}`}>
-              <p className={`text-xs font-black uppercase tracking-widest mb-2 ${c.accent}`}>⚖️ The Verdict</p>
+              <p className={`text-xs font-black uppercase tracking-widest mb-2 ${c.accentTxt}`}>⚖️ The Verdict</p>
               <h2 className={`text-2xl font-black leading-snug ${c.text}`}>{result.verdict_headline}</h2>
             </div>
             {result.score && (
@@ -1301,11 +1315,11 @@ const TheFinalWord = () => {
                 {[result.score.person_a, result.score.person_b].map((person, i) => {
                   const isWinner = result.winner_name === person?.name;
                   return (
-                    <div key={i} className={`p-4 ${i === 0 ? `border-r ${c.border}` : ''} ${isWinner ? isDark ? 'bg-green-900/10' : 'bg-green-50/50' : ''}`}>
+                    <div key={i} className={`p-4 ${i === 0 ? `border-r ${c.border}` : ''} ${isWinner ? isDark ? 'bg-emerald-900/10' : 'bg-green-50/50' : ''}`}>
                       <div className="flex items-center gap-2 mb-2">{isWinner && <span>🏆</span>}<p className={`text-sm font-bold ${c.text}`}>{person?.name}</p></div>
-                      <div className={`text-3xl font-black mb-2 ${(person?.accuracy || 0) >= 70 ? c.success : (person?.accuracy || 0) >= 40 ? c.accent : c.error}`}>{person?.accuracy ?? '?'}%</div>
+                      <div className={`text-3xl font-black mb-2 ${(person?.accuracy || 0) >= 70 ? (isDark ? 'text-emerald-400' : 'text-emerald-600') : (person?.accuracy || 0) >= 40 ? (isDark ? 'text-amber-400' : 'text-amber-600') : (isDark ? 'text-red-400' : 'text-red-500')}`}>{person?.accuracy ?? '?'}%</div>
                       {person?.what_they_got_right && <p className={`text-xs mb-1 ${c.textSecondary}`}><span className={c.success}>✓</span> {person.what_they_got_right}</p>}
-                      {person?.what_they_got_wrong && <p className={`text-xs ${c.textMuted}`}><span className={c.error}>✗</span> {person.what_they_got_wrong}</p>}
+                      {person?.what_they_got_wrong && <p className={`text-xs ${c.textMuted}`}><span className={c.danger}>✗</span> {person.what_they_got_wrong}</p>}
                     </div>
                   );
                 })}
@@ -1313,9 +1327,9 @@ const TheFinalWord = () => {
             )}
             <div className="px-6 py-4 space-y-3">
               <p className={`text-sm leading-relaxed ${c.textSecondary}`}>{result.explanation}</p>
-              {result.the_actual_answer && <div className={`p-3 rounded-xl border ${c.cardAlt}`}><p className={`text-xs font-bold uppercase tracking-wider mb-1 ${c.accent}`}>The Actual Answer</p><p className={`text-sm font-semibold ${c.text}`}>{result.the_actual_answer}</p></div>}
-              {result.time_sensitive && result.how_to_verify && <div className={`p-3 rounded-xl border ${isDark ? 'bg-blue-900/10 border-blue-800/50' : 'bg-blue-50 border-blue-200'}`}><p className={`text-xs font-bold uppercase tracking-wider mb-1 ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>📡 Verify live</p><p className={`text-sm ${isDark ? 'text-blue-200' : 'text-blue-700'}`}>{result.how_to_verify}</p></div>}
-              {result.settlement_suggestion && <div className={`p-3 rounded-xl ${isDark ? 'bg-purple-900/10 border border-purple-800/50' : 'bg-purple-50 border border-purple-200'}`}><p className={`text-sm italic ${isDark ? 'text-purple-300' : 'text-purple-700'}`}>🤝 {result.settlement_suggestion}</p></div>}
+              {result.the_actual_answer && <div className={`p-3 rounded-xl border ${c.cardAlt}`}><p className={`text-xs font-bold uppercase tracking-wider mb-1 ${c.accentTxt}`}>The Actual Answer</p><p className={`text-sm font-semibold ${c.text}`}>{result.the_actual_answer}</p></div>}
+              {result.time_sensitive && result.how_to_verify && <div className={`p-3 rounded-xl border ${isDark ? 'bg-sky-900/10 border-sky-800/50' : 'bg-sky-50 border-sky-200'}`}><p className={`text-xs font-bold uppercase tracking-wider mb-1 ${isDark ? 'text-sky-400' : 'text-sky-600'}`}>📡 Verify live</p><p className={`text-sm ${isDark ? 'text-sky-200' : 'text-sky-700'}`}>{result.how_to_verify}</p></div>}
+              {result.settlement_suggestion && <div className={`p-3 rounded-xl ${isDark ? 'bg-cyan-900/10 border border-cyan-800/50' : 'bg-cyan-50 border border-cyan-200'}`}><p className={`text-sm italic ${isDark ? 'text-cyan-300' : 'text-cyan-700'}`}>🤝 {result.settlement_suggestion}</p></div>}
               <SourcesList sources={result.sources} />
             </div>
             <ShareLinkDisplay />
@@ -1333,15 +1347,15 @@ const TheFinalWord = () => {
             <div className="px-6 py-4 space-y-3">
               <ConfidenceBar confidence={result.confidence} />
               <p className={`text-sm leading-relaxed ${c.textSecondary}`}>{result.explanation}</p>
-              {result.what_is_true && <div className={`p-3 rounded-xl border ${c.cardAlt}`}><p className={`text-xs font-bold uppercase tracking-wider mb-1 ${c.accent}`}>What's Actually True</p><p className={`text-sm ${c.text}`}>{result.what_is_true}</p></div>}
+              {result.what_is_true && <div className={`p-3 rounded-xl border ${c.cardAlt}`}><p className={`text-xs font-bold uppercase tracking-wider mb-1 ${c.accentTxt}`}>What's Actually True</p><p className={`text-sm ${c.text}`}>{result.what_is_true}</p></div>}
               {result.the_nuance && <div className={`p-3 rounded-xl border ${c.cardAlt}`}><p className={`text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuted}`}>The Nuance</p><p className={`text-sm ${c.textSecondary}`}>{result.the_nuance}</p></div>}
-              {result.origin_of_myth && <div className={`p-3 rounded-xl ${isDark ? 'bg-purple-900/10 border border-purple-800/50' : 'bg-purple-50 border border-purple-200'}`}><p className={`text-xs font-bold uppercase tracking-wider mb-1 ${isDark ? 'text-purple-400' : 'text-purple-600'}`}>Where This Myth Started</p><p className={`text-sm ${isDark ? 'text-purple-200' : 'text-purple-700'}`}>{result.origin_of_myth}</p></div>}
+              {result.origin_of_myth && <div className={`p-3 rounded-xl ${isDark ? 'bg-cyan-900/10 border border-cyan-800/50' : 'bg-cyan-50 border border-cyan-200'}`}><p className={`text-xs font-bold uppercase tracking-wider mb-1 ${isDark ? 'text-cyan-400' : 'text-cyan-600'}`}>Where This Myth Started</p><p className={`text-sm ${isDark ? 'text-cyan-200' : 'text-cyan-700'}`}>{result.origin_of_myth}</p></div>}
               <SourcesList sources={result.sources} />
 
               {/* ═══ FACT-CHECK CHAINS ═══ */}
               {result.related_claims?.length > 0 && (
                 <div className={`p-4 rounded-xl border ${c.cardAlt}`}>
-                  <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.accent}`}>🔗 Related Claims — check these too</p>
+                  <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.accentTxt}`}>🔗 Related Claims — check these too</p>
                   <div className="space-y-2">
                     {result.related_claims.map((rc, i) => (
                       <button key={i} onClick={() => handleCheckRelatedClaim(rc)} className={`w-full text-left px-3 py-2.5 rounded-lg border text-sm transition-all flex items-center gap-2 ${isDark ? 'border-zinc-600 hover:border-amber-500 hover:bg-amber-900/10 text-zinc-200' : 'border-slate-200 hover:border-amber-400 hover:bg-amber-50 text-slate-700'}`}>
@@ -1388,19 +1402,19 @@ const TheFinalWord = () => {
                       true:            isDark ? 'border-l-emerald-500 bg-emerald-900/10' : 'border-l-emerald-500 bg-emerald-50',
                       false:           isDark ? 'border-l-red-500 bg-red-900/10'         : 'border-l-red-500 bg-red-50',
                       misleading:      isDark ? 'border-l-amber-500 bg-amber-900/10'     : 'border-l-amber-500 bg-amber-50',
-                      missing_context: isDark ? 'border-l-blue-500 bg-blue-900/10'       : 'border-l-blue-500 bg-blue-50',
-                      exaggerated:     isDark ? 'border-l-orange-500 bg-orange-900/10'   : 'border-l-orange-500 bg-orange-50',
+                      missing_context: isDark ? 'border-l-blue-500 bg-sky-900/10'       : 'border-l-blue-500 bg-sky-50',
+                      exaggerated:     isDark ? 'border-l-orange-500 bg-amber-900/10'   : 'border-l-orange-500 bg-orange-50',
                       unverifiable:    isDark ? 'border-l-zinc-500 bg-zinc-700/30'       : 'border-l-slate-400 bg-slate-50',
-                      opinion:         isDark ? 'border-l-purple-500 bg-purple-900/10'   : 'border-l-purple-500 bg-purple-50',
+                      opinion:         isDark ? 'border-l-cyan-500 bg-cyan-900/10'   : 'border-l-cyan-500 bg-cyan-50',
                     };
                     const labelColors = {
                       true:            isDark ? 'text-emerald-400' : 'text-emerald-700',
                       false:           isDark ? 'text-red-400'     : 'text-red-700',
                       misleading:      isDark ? 'text-amber-400'   : 'text-amber-700',
-                      missing_context: isDark ? 'text-blue-400'    : 'text-blue-700',
-                      exaggerated:     isDark ? 'text-orange-400'  : 'text-orange-700',
+                      missing_context: isDark ? 'text-sky-400'    : 'text-sky-700',
+                      exaggerated:     isDark ? 'text-amber-400'  : 'text-amber-700',
                       unverifiable:    isDark ? 'text-zinc-400'    : 'text-slate-500',
-                      opinion:         isDark ? 'text-purple-400'  : 'text-purple-700',
+                      opinion:         isDark ? 'text-cyan-400'  : 'text-cyan-700',
                     };
                     const colorClass = verdictColors[comp.verdict] || verdictColors.unverifiable;
                     const labelClass = labelColors[comp.verdict] || labelColors.unverifiable;
@@ -1431,16 +1445,16 @@ const TheFinalWord = () => {
               {/* What changes the picture */}
               {dissectResult.what_changes_the_picture && (
                 <div className={`p-3 rounded-xl border ${c.cardAlt}`}>
-                  <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${c.accent}`}>🔍 What Changes the Picture</p>
+                  <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${c.accentTxt}`}>🔍 What Changes the Picture</p>
                   <p className={`text-sm ${c.textSecondary}`}>{dissectResult.what_changes_the_picture}</p>
                 </div>
               )}
 
               {/* How it spread */}
               {dissectResult.how_it_spread && (
-                <div className={`p-3 rounded-xl ${isDark ? 'bg-purple-900/10 border border-purple-800/50' : 'bg-purple-50 border border-purple-200'}`}>
-                  <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${isDark ? 'text-purple-400' : 'text-purple-600'}`}>📡 Why This Spreads</p>
-                  <p className={`text-sm ${isDark ? 'text-purple-200' : 'text-purple-800'}`}>{dissectResult.how_it_spread}</p>
+                <div className={`p-3 rounded-xl ${isDark ? 'bg-cyan-900/10 border border-cyan-800/50' : 'bg-cyan-50 border border-cyan-200'}`}>
+                  <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${isDark ? 'text-cyan-400' : 'text-cyan-600'}`}>📡 Why This Spreads</p>
+                  <p className={`text-sm ${isDark ? 'text-cyan-200' : 'text-cyan-800'}`}>{dissectResult.how_it_spread}</p>
                 </div>
               )}
 
@@ -1450,7 +1464,7 @@ const TheFinalWord = () => {
                   <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${isDark ? 'text-amber-400' : 'text-amber-700'}`}>✍️ The Accurate Version</p>
                   <p className={`text-sm leading-relaxed italic ${c.text}`}>{dissectResult.the_accurate_version}</p>
                   <div className="mt-3">
-                    <CopyBtn content={`🔬 DEEP DISSECT\n\nClaim: "${dissectResult.claim_as_stated}"\n\nOverall: ${dissectResult.overall_verdict?.ruling_display} — ${dissectResult.overall_verdict?.one_line}\n\nAccurate version: ${dissectResult.the_accurate_version}\n\n— Generated by DeftBrain · deftbrain.com`} label="Copy Report" />
+                    <CopyBtn content={`🔬 DEEP DISSECT\n\nClaim: "${dissectResult.claim_as_stated}"\n\nOverall: ${dissectResult.overall_verdict?.ruling_display} — ${dissectResult.overall_verdict?.one_line}\n\nAccurate version: ${dissectResult.the_accurate_version}' + BRAND + '`} label="Copy Report" />
                   </div>
                 </div>
               )}
@@ -1459,7 +1473,7 @@ const TheFinalWord = () => {
             {/* Footer */}
             <div className={`px-6 py-3 border-t flex items-center justify-between flex-wrap gap-2 ${c.border}`}>
               <div className="flex gap-1.5">
-                <PrintBtn content={`🔬 DEEP DISSECT\n\n"${dissectResult.claim_as_stated}"\n\nOverall: ${dissectResult.overall_verdict?.ruling_display}\n${dissectResult.overall_verdict?.one_line}\n\n${dissectResult.components?.map(c => `${c.verdict_label}\n${c.element}\n${c.reasoning}`).join('\n\n')}\n\nAccurate version:\n${dissectResult.the_accurate_version}\n\n— Generated by DeftBrain · deftbrain.com`} title="Deep Dissect" />
+                <CopyBtn content={`🔬 DEEP DISSECT\n\n"${dissectResult.claim_as_stated}"\n\nOverall: ${dissectResult.overall_verdict?.ruling_display}\n${dissectResult.overall_verdict?.one_line}\n\n${dissectResult.components?.map(c => `${c.verdict_label}\n${c.element}\n${c.reasoning}`).join('\n\n')}\n\nAccurate version:\n${dissectResult.the_accurate_version}${BRAND}`} label="Copy Report" />
               </div>
               <button onClick={() => { setDissectResult(null); setClaim(''); }}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${c.btnSecondary}`}>
@@ -1473,7 +1487,7 @@ const TheFinalWord = () => {
         {daResult && (
           <div className={`rounded-2xl overflow-hidden border-2 shadow-lg ${isDark ? 'border-amber-700/50 bg-zinc-800' : 'border-amber-300 bg-white'}`}>
             <div className={`px-6 py-5 text-center ${isDark ? 'bg-gradient-to-r from-amber-900/30 to-zinc-800' : 'bg-gradient-to-r from-amber-50 to-amber-100'}`}>
-              <p className={`text-xs font-black uppercase tracking-widest mb-2 ${c.accent}`}>😈 Devil's Advocate Verdict</p>
+              <p className={`text-xs font-black uppercase tracking-widest mb-2 ${c.accentTxt}`}>😈 Devil's Advocate Verdict</p>
               <h2 className={`text-2xl font-black leading-snug ${c.text}`}>{daResult.verdict_headline}</h2>
             </div>
 
@@ -1488,26 +1502,26 @@ const TheFinalWord = () => {
             <div className="grid grid-cols-2 gap-0 border-b" style={{ borderColor: isDark ? '#3f3f46' : '#e2e8f0' }}>
               <div className={`p-4 border-r ${c.border}`}>
                 <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuted}`}>Your Position</p>
-                <div className={`text-3xl font-black mb-2 ${(daResult.user_score?.accuracy || 0) >= 60 ? c.success : c.error}`}>{daResult.user_score?.accuracy}%</div>
+                <div className={`text-3xl font-black mb-2 ${(daResult.user_score?.accuracy || 0) >= 60 ? c.success : c.danger}`}>{daResult.user_score?.accuracy}%</div>
                 <p className={`text-xs mb-0.5 ${c.textSecondary}`}><span className={c.success}>✓</span> {daResult.user_score?.strengths}</p>
-                <p className={`text-xs ${c.textMuted}`}><span className={c.error}>✗</span> {daResult.user_score?.weaknesses}</p>
+                <p className={`text-xs ${c.textMuted}`}><span className={c.danger}>✗</span> {daResult.user_score?.weaknesses}</p>
               </div>
               <div className="p-4">
                 <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuted}`}>Counter</p>
-                <div className={`text-3xl font-black mb-2 ${(daResult.counter_score?.accuracy || 0) >= 60 ? c.success : c.error}`}>{daResult.counter_score?.accuracy}%</div>
+                <div className={`text-3xl font-black mb-2 ${(daResult.counter_score?.accuracy || 0) >= 60 ? c.success : c.danger}`}>{daResult.counter_score?.accuracy}%</div>
                 <p className={`text-xs mb-0.5 ${c.textSecondary}`}><span className={c.success}>✓</span> {daResult.counter_score?.strengths}</p>
-                <p className={`text-xs ${c.textMuted}`}><span className={c.error}>✗</span> {daResult.counter_score?.weaknesses}</p>
+                <p className={`text-xs ${c.textMuted}`}><span className={c.danger}>✗</span> {daResult.counter_score?.weaknesses}</p>
               </div>
             </div>
 
             <div className="px-6 py-4 space-y-3">
               <p className={`text-sm leading-relaxed ${c.textSecondary}`}>{daResult.explanation}</p>
-              {daResult.the_nuance && <div className={`p-3 rounded-xl border ${c.cardAlt}`}><p className={`text-xs font-bold uppercase tracking-wider mb-1 ${c.accent}`}>The Key Insight</p><p className={`text-sm ${c.text}`}>{daResult.the_nuance}</p></div>}
-              {daResult.recommendation && <div className={`p-3 rounded-xl ${isDark ? 'bg-blue-900/10 border border-blue-800/50' : 'bg-blue-50 border border-blue-200'}`}><p className={`text-xs font-bold uppercase tracking-wider mb-1 ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>💡 What to Consider</p><p className={`text-sm ${isDark ? 'text-blue-200' : 'text-blue-700'}`}>{daResult.recommendation}</p></div>}
+              {daResult.the_nuance && <div className={`p-3 rounded-xl border ${c.cardAlt}`}><p className={`text-xs font-bold uppercase tracking-wider mb-1 ${c.accentTxt}`}>The Key Insight</p><p className={`text-sm ${c.text}`}>{daResult.the_nuance}</p></div>}
+              {daResult.recommendation && <div className={`p-3 rounded-xl ${isDark ? 'bg-sky-900/10 border border-sky-800/50' : 'bg-sky-50 border border-sky-200'}`}><p className={`text-xs font-bold uppercase tracking-wider mb-1 ${isDark ? 'text-sky-400' : 'text-sky-600'}`}>💡 What to Consider</p><p className={`text-sm ${isDark ? 'text-sky-200' : 'text-sky-700'}`}>{daResult.recommendation}</p></div>}
               <SourcesList sources={daResult.sources} />
             </div>
             <div className={`px-6 py-3 border-t flex items-center justify-between ${c.border}`}>
-              <CopyBtn content={`😈 Devil's Advocate: ${daResult.verdict_headline}\n\n${daResult.explanation}\n\n— Generated by DeftBrain · deftbrain.com`} label="Copy" />
+              <CopyBtn content={`😈 Devil's Advocate: ${daResult.verdict_headline}\n\n${daResult.explanation}' + BRAND + '`} label="Copy" />
               <button onClick={() => { resetAll(); setMode(null); }} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${c.btnSecondary}`}><span>🔄</span> New</button>
             </div>
           </div>
@@ -1515,22 +1529,22 @@ const TheFinalWord = () => {
 
         {/* ═══════ LOCAL TRIVIA QUESTION ═══════ */}
         {triviaQuestion && !triviaFinished && !mpMode && (
-          <div className={`rounded-2xl overflow-hidden border-2 shadow-lg ${isDark ? 'border-purple-700/50 bg-zinc-800' : 'border-purple-300 bg-white'}`}>
-            <div className={`px-6 py-4 ${isDark ? 'bg-purple-900/20' : 'bg-purple-50'} border-b ${c.border}`}>
+          <div className={`rounded-2xl overflow-hidden border-2 shadow-lg ${isDark ? 'border-cyan-700/50 bg-zinc-800' : 'border-cyan-300 bg-white'}`}>
+            <div className={`px-6 py-4 ${isDark ? 'bg-cyan-900/20' : 'bg-cyan-50'} border-b ${c.border}`}>
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
-                  <span className={`text-xs font-black uppercase tracking-widest ${isDark ? 'text-purple-400' : 'text-purple-600'}`}>⚡ Trivia Night</span>
-                  <span className={`text-xs px-1.5 py-0.5 rounded ${isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-purple-100 text-purple-500'}`}>{triviaQuestion.category_label || 'General'}</span>
+                  <span className={`text-xs font-black uppercase tracking-widest ${isDark ? 'text-cyan-400' : 'text-cyan-600'}`}>⚡ Trivia Night</span>
+                  <span className={`text-xs px-1.5 py-0.5 rounded ${isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-cyan-100 text-cyan-500'}`}>{triviaQuestion.category_label || 'General'}</span>
                 </div>
                 <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-slate-100 text-slate-600'}`}>Q{questionCount + (triviaRevealed ? 0 : 1)}/{roundLimit} · {triviaQuestion.difficulty_actual || triviaDifficulty}</span>
               </div>
               <div className={`h-1.5 rounded-full overflow-hidden ${isDark ? 'bg-zinc-700' : 'bg-slate-200'}`}>
-                <div className="h-full rounded-full bg-purple-500 transition-all duration-500" style={{ width: `${(questionCount / roundLimit) * 100}%` }} />
+                <div className="h-full rounded-full bg-cyan-500 transition-all duration-500" style={{ width: `${(questionCount / roundLimit) * 100}%` }} />
               </div>
-              {teams.length > 1 && <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg mt-2 ${isDark ? 'bg-purple-900/30' : 'bg-purple-100'}`}><span>👥</span><span className={`text-sm font-bold ${isDark ? 'text-purple-200' : 'text-purple-800'}`}>{teams[activeTeamIdx]?.name}&apos;s turn</span></div>}
-              {teams.length === 1 && questionCount > 0 && (() => { const fb = getSoloFeedback(teams[0].score, questionCount, teams[0].streak); return <div className={`flex items-center gap-2 mt-2 px-3 py-1.5 rounded-lg ${isDark ? 'bg-purple-900/20' : 'bg-purple-50'}`}><span>{fb.emoji}</span><span className={`text-xs font-bold ${isDark ? 'text-purple-300' : 'text-purple-700'}`}>{fb.text}</span><span className={`ml-auto text-xs font-bold ${c.accent}`}>{teams[0].score}/{questionCount} ({Math.round((teams[0].score / questionCount) * 100)}%)</span></div>; })()}
+              {teams.length > 1 && <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg mt-2 ${isDark ? 'bg-cyan-900/30' : 'bg-cyan-100'}`}><span>👥</span><span className={`text-sm font-bold ${isDark ? 'text-cyan-200' : 'text-cyan-800'}`}>{teams[activeTeamIdx]?.name}&apos;s turn</span></div>}
+              {teams.length === 1 && questionCount > 0 && (() => { const fb = getSoloFeedback(teams[0].score, questionCount, teams[0].streak); return <div className={`flex items-center gap-2 mt-2 px-3 py-1.5 rounded-lg ${isDark ? 'bg-cyan-900/20' : 'bg-cyan-50'}`}><span>{fb.emoji}</span><span className={`text-xs font-bold ${isDark ? 'text-cyan-300' : 'text-cyan-700'}`}>{fb.text}</span><span className={`ml-auto text-xs font-bold ${c.accentTxt}`}>{teams[0].score}/{questionCount} ({Math.round((teams[0].score / questionCount) * 100)}%)</span></div>; })()}
             </div>
-            {teams.length > 1 && <div className={`px-6 py-2 border-b ${c.border} flex gap-2 overflow-x-auto`}>{teams.map((team, idx) => <div key={idx} className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap ${idx === activeTeamIdx && !triviaRevealed ? isDark ? 'bg-purple-900/20 border border-purple-700 text-purple-300' : 'bg-purple-50 border border-purple-300 text-purple-700' : isDark ? 'bg-zinc-700/50 text-zinc-300' : 'bg-slate-50 text-slate-600'}`}><span>{team.name}</span><span className={`font-black ${c.accent}`}>{team.score}</span>{team.streak >= 3 && <span>🔥{team.streak}</span>}</div>)}</div>}
+            {teams.length > 1 && <div className={`px-6 py-2 border-b ${c.border} flex gap-2 overflow-x-auto`}>{teams.map((team, idx) => <div key={idx} className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap ${idx === activeTeamIdx && !triviaRevealed ? isDark ? 'bg-cyan-900/20 border border-cyan-700 text-cyan-300' : 'bg-cyan-50 border border-cyan-300 text-cyan-700' : isDark ? 'bg-zinc-700/50 text-zinc-300' : 'bg-slate-50 text-slate-600'}`}><span>{team.name}</span><span className={`font-black ${c.accentTxt}`}>{team.score}</span>{team.streak >= 3 && <span>🔥{team.streak}</span>}</div>)}</div>}
             <div className="px-6 py-5">
               <h3 className={`text-lg font-bold mb-5 ${c.text}`}>{triviaQuestion.question}</h3>
               <div className="space-y-2">
@@ -1538,15 +1552,15 @@ const TheFinalWord = () => {
                   <TriviaOption key={idx} option={option} idx={idx} isSelected={selectedAnswer === idx} isCorrect={idx === triviaQuestion.correct_index} revealed={triviaRevealed} onClick={() => handleTriviaAnswer(idx)} disabled={triviaRevealed} />
                 ))}
               </div>
-              {triviaRevealed && <div className={`mt-4 p-4 rounded-xl border ${c.cardAlt}`}><p className={`text-xs font-bold uppercase tracking-wider mb-1 ${c.accent}`}>{selectedAnswer === triviaQuestion.correct_index ? `🎉 ${teams[activeTeamIdx]?.name || 'You'} got it!` : `😬 Not quite${teams.length > 1 ? `, ${teams[activeTeamIdx]?.name}` : ''}...`}</p><p className={`text-sm ${c.textSecondary}`}>{triviaQuestion.explanation}</p></div>}
+              {triviaRevealed && <div className={`mt-4 p-4 rounded-xl border ${c.cardAlt}`}><p className={`text-xs font-bold uppercase tracking-wider mb-1 ${c.accentTxt}`}>{selectedAnswer === triviaQuestion.correct_index ? `🎉 ${teams[activeTeamIdx]?.name || 'You'} got it!` : `😬 Not quite${teams.length > 1 ? `, ${teams[activeTeamIdx]?.name}` : ''}...`}</p><p className={`text-sm ${c.textSecondary}`}>{triviaQuestion.explanation}</p></div>}
             </div>
             {triviaRevealed && (
               <div className={`px-6 py-3 border-t flex items-center justify-between ${c.border}`}>
                 <div className="flex items-center gap-3">{teams.length === 1 ? <span className={`text-sm font-bold ${c.text}`}>{teams[0].score}/{questionCount}</span> : <span className={`text-xs ${c.textMuted}`}>{teams.map(t => `${t.name}: ${t.score}`).join(' · ')}</span>}</div>
                 <div className="flex gap-2">
                   <button onClick={() => setShowChallenge(!showChallenge)} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${c.btnSecondary}`}><span>💬</span> Actually...</button>
-                  <button onClick={advanceTrivia} disabled={loading} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${isDark ? 'bg-purple-600 hover:bg-purple-500 text-white' : 'bg-purple-600 hover:bg-purple-700 text-white'}`}>
-                    {loading ? <span className="animate-spin inline-block">⏳</span> : <span>→</span>} {questionCount >= roundLimit ? 'See Results' : teams.length > 1 ? `${teams[(activeTeamIdx + 1) % teams.length]?.name}'s turn` : 'Next'}
+                  <button onClick={advanceTrivia} disabled={loading} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white'}`}>
+                    {loading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚙️'}</span> : <span>→</span>} {questionCount >= roundLimit ? 'See Results' : teams.length > 1 ? `${teams[(activeTeamIdx + 1) % teams.length]?.name}'s turn` : 'Next'}
                   </button>
                 </div>
               </div>
@@ -1556,10 +1570,10 @@ const TheFinalWord = () => {
 
         {/* ═══════ LOCAL TRIVIA ENDGAME ═══════ */}
         {triviaFinished && !mpMode && (
-          <div className={`rounded-2xl overflow-hidden border-2 shadow-lg ${isDark ? 'border-purple-700/50 bg-zinc-800' : 'border-purple-300 bg-white'}`}>
-            <div className={`px-6 py-8 text-center ${isDark ? 'bg-purple-900/20' : 'bg-gradient-to-b from-purple-50 to-white'}`}>
+          <div className={`rounded-2xl overflow-hidden border-2 shadow-lg ${isDark ? 'border-cyan-700/50 bg-zinc-800' : 'border-cyan-300 bg-white'}`}>
+            <div className={`px-6 py-8 text-center ${isDark ? 'bg-cyan-900/20' : 'bg-gradient-to-b from-purple-50 to-white'}`}>
               <span className="text-5xl block mb-3">🏆</span>
-              <p className={`text-xs font-black uppercase tracking-widest mb-2 ${isDark ? 'text-purple-400' : 'text-purple-600'}`}>Trivia Night Champion</p>
+              <p className={`text-xs font-black uppercase tracking-widest mb-2 ${isDark ? 'text-cyan-400' : 'text-cyan-600'}`}>Trivia Night Champion</p>
               {(() => { const sorted = [...teams].sort((a, b) => b.score - a.score); const isTie = sorted.length > 1 && sorted[0].score === sorted[1].score; return <h2 className={`text-2xl font-black ${c.text}`}>{isTie ? "It's a Tie!" : `${sorted[0].name} Wins!`}</h2>; })()}
               <p className={`text-sm mt-1 ${c.textMuted}`}>{questionCount} rounds · {TRIVIA_CATEGORIES.find(ct => ct.id === triviaCategory)?.label || 'General'} · {triviaDifficulty}</p>
             </div>
@@ -1568,12 +1582,12 @@ const TheFinalWord = () => {
                 const total = teams.length > 1 ? Math.ceil(questionCount / teams.length) : questionCount;
                 const pct = total > 0 ? Math.round((team.score / total) * 100) : 0;
                 return (
-                  <div key={team.name} className={`p-4 rounded-xl border ${rank === 0 ? isDark ? 'bg-purple-900/10 border-purple-700/50' : 'bg-purple-50 border-purple-200' : c.cardAlt}`}>
+                  <div key={team.name} className={`p-4 rounded-xl border ${rank === 0 ? isDark ? 'bg-cyan-900/10 border-cyan-700/50' : 'bg-cyan-50 border-cyan-200' : c.cardAlt}`}>
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2"><span className="text-lg">{rank === 0 ? '🥇' : rank === 1 ? '🥈' : '🥉'}</span><span className={`text-sm font-bold ${c.text}`}>{team.name}</span></div>
-                      <span className={`text-2xl font-black ${rank === 0 ? c.accent : c.textSecondary}`}>{team.score}/{total}</span>
+                      <span className={`text-2xl font-black ${rank === 0 ? c.accentTxt : c.textSecondary}`}>{team.score}/{total}</span>
                     </div>
-                    <div className="flex items-center gap-4"><div className={`flex-1 h-2 rounded-full overflow-hidden ${isDark ? 'bg-zinc-700' : 'bg-slate-100'}`}><div className={`h-full rounded-full transition-all duration-700 ${pct >= 80 ? 'bg-green-500' : pct >= 50 ? 'bg-amber-500' : 'bg-red-500'}`} style={{ width: `${pct}%` }} /></div><span className={`text-xs font-bold ${c.textSecondary}`}>{pct}%</span></div>
+                    <div className="flex items-center gap-4"><div className={`flex-1 h-2 rounded-full overflow-hidden ${isDark ? 'bg-zinc-700' : 'bg-slate-100'}`}><div className={`h-full rounded-full transition-all duration-700 ${pct >= 80 ? 'bg-emerald-500' : pct >= 50 ? 'bg-amber-500' : 'bg-red-500'}`} style={{ width: `${pct}%` }} /></div><span className={`text-xs font-bold ${c.textSecondary}`}>{pct}%</span></div>
                     {(team.bestStreak || 0) >= 2 && <p className={`text-xs mt-1.5 ${c.textMuted}`}>🔥 Best streak: {team.bestStreak}</p>}
                   </div>
                 );
@@ -1583,7 +1597,7 @@ const TheFinalWord = () => {
             <div className={`px-6 py-3 border-t flex items-center justify-between ${c.border}`}>
               <div className="flex gap-1.5"><ShareBtn content={buildTriviaShareText()} title="Trivia Night Results" /><CopyBtn content={buildTriviaShareText()} label="Copy" /></div>
               <div className="flex gap-2">
-                <button onClick={() => { setTriviaFinished(false); setTeams(prev => prev.map(t => ({ ...t, score: 0, streak: 0, bestStreak: 0 }))); setQuestionCount(0); setActiveTeamIdx(0); setPreviousQuestions([]); setCategoryBreakdown({}); setTriviaSetup(false); handleTrivia(); }} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${isDark ? 'bg-purple-600 hover:bg-purple-500 text-white' : 'bg-purple-600 hover:bg-purple-700 text-white'}`}><span>🔄</span> Rematch</button>
+                <button onClick={() => { setTriviaFinished(false); setTeams(prev => prev.map(t => ({ ...t, score: 0, streak: 0, bestStreak: 0 }))); setQuestionCount(0); setActiveTeamIdx(0); setPreviousQuestions([]); setCategoryBreakdown({}); setTriviaSetup(false); handleTrivia(); }} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white'}`}><span>🔄</span> Rematch</button>
                 <button onClick={resetTrivia} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${c.btnSecondary}`}><span>⚡</span> New Game</button>
               </div>
             </div>
@@ -1593,11 +1607,11 @@ const TheFinalWord = () => {
         {/* ═══════ CHALLENGE PANEL ═══════ */}
         {showChallenge && (
           <div className={`rounded-2xl p-5 border space-y-3 ${c.card}`}>
-            <h4 className={`text-sm font-bold flex items-center gap-2 ${c.text}`}><span className={c.accent}>💬</span>Think we got it wrong?</h4>
+            <h4 className={`text-sm font-bold flex items-center gap-2 ${c.text}`}><span className={c.accentTxt}>💬</span>Think we got it wrong?</h4>
             <textarea value={challengeText} onChange={(e) => setChallengeText(e.target.value)} placeholder="Tell us why..." rows={2} className={`w-full px-4 py-3 rounded-xl border-2 text-sm resize-none transition-all focus:outline-none focus:ring-2 ${c.input}`} />
-            <button onClick={handleChallenge} disabled={loading || !challengeText.trim()} className={`px-4 py-2 rounded-xl text-sm font-bold transition-all disabled:opacity-40 ${c.btnPrimary}`}>{loading ? <span className="animate-spin inline-block">⏳</span> : 'Submit Challenge'}</button>
+            <button onClick={handleChallenge} disabled={loading || !challengeText.trim()} className={`px-4 py-2 rounded-xl text-sm font-bold transition-all disabled:opacity-40 ${c.btnPrimary}`}>{loading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚙️'}</span> : 'Submit Challenge'}</button>
             {challengeResult && (
-              <div className={`p-4 rounded-xl border ${challengeResult.challenge_valid === true ? isDark ? 'bg-green-900/10 border-green-800/50' : 'bg-green-50 border-green-200' : challengeResult.challenge_valid === 'partially' ? isDark ? 'bg-amber-900/10 border-amber-800/50' : 'bg-amber-50 border-amber-200' : isDark ? 'bg-red-900/10 border-red-800/50' : 'bg-red-50 border-red-200'}`}>
+              <div className={`p-4 rounded-xl border ${challengeResult.challenge_valid === true ? isDark ? 'bg-emerald-900/10 border-green-800/50' : 'bg-green-50 border-green-200' : challengeResult.challenge_valid === 'partially' ? isDark ? 'bg-amber-900/10 border-amber-800/50' : 'bg-amber-50 border-amber-200' : isDark ? 'bg-red-900/10 border-red-800/50' : 'bg-red-50 border-red-200'}`}>
                 <p className={`text-sm font-bold mb-1 ${c.text}`}>{challengeResult.ruling}</p>
                 <p className={`text-sm ${c.textSecondary}`}>{challengeResult.explanation}</p>
                 {challengeResult.definitive_answer && <p className={`text-sm font-semibold mt-2 ${c.text}`}>Final answer: {challengeResult.definitive_answer}</p>}
@@ -1612,11 +1626,11 @@ const TheFinalWord = () => {
             <h4 className={`text-sm font-bold flex items-center gap-2 ${c.text}`}><span>🏛️</span> Appeal Court</h4>
             <p className={`text-xs ${c.textSecondary}`}>Present new evidence or arguments to challenge the verdict. Appeals are judged more rigorously.</p>
             <textarea value={appealEvidence} onChange={(e) => setAppealEvidence(e.target.value)} placeholder="New evidence or arguments for your appeal..." rows={3} className={`w-full px-4 py-3 rounded-xl border-2 text-sm resize-none transition-all focus:outline-none focus:ring-2 ${c.input}`} />
-            <button onClick={handleAppeal} disabled={appealLoading || !appealEvidence.trim()} className={`px-4 py-2 rounded-xl text-sm font-bold transition-all disabled:opacity-40 ${c.btnPrimary}`}>{appealLoading ? <span className="animate-spin inline-block">⏳</span> : 'File Appeal'}</button>
+            <button onClick={handleAppeal} disabled={appealLoading || !appealEvidence.trim()} className={`px-4 py-2 rounded-xl text-sm font-bold transition-all disabled:opacity-40 ${c.btnPrimary}`}>{appealLoading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚙️'}</span> : 'File Appeal'}</button>
 
             {appealResult && (
               <div className={`p-4 rounded-xl border space-y-3 ${
-                appealResult.appeal_ruling === 'overturned' ? isDark ? 'bg-green-900/10 border-green-800/50' : 'bg-green-50 border-green-200'
+                appealResult.appeal_ruling === 'overturned' ? isDark ? 'bg-emerald-900/10 border-green-800/50' : 'bg-green-50 border-green-200'
                 : appealResult.appeal_ruling === 'modified' ? isDark ? 'bg-amber-900/10 border-amber-800/50' : 'bg-amber-50 border-amber-200'
                 : isDark ? 'bg-red-900/10 border-red-800/50' : 'bg-red-50 border-red-200'
               }`}>
@@ -1636,8 +1650,8 @@ const TheFinalWord = () => {
                     ))}
                   </div>
                 )}
-                {appealResult.final_answer && <div className={`p-3 rounded-lg border ${c.cardAlt}`}><p className={`text-xs font-bold ${c.accent}`}>Final Answer</p><p className={`text-sm font-semibold ${c.text}`}>{appealResult.final_answer}</p></div>}
-                {appealResult.case_closed && <p className={`text-sm font-bold italic text-center ${c.accent}`}>"{appealResult.case_closed}"</p>}
+                {appealResult.final_answer && <div className={`p-3 rounded-lg border ${c.cardAlt}`}><p className={`text-xs font-bold ${c.accentTxt}`}>Final Answer</p><p className={`text-sm font-semibold ${c.text}`}>{appealResult.final_answer}</p></div>}
+                {appealResult.case_closed && <p className={`text-sm font-bold italic text-center ${c.accentTxt}`}>"{appealResult.case_closed}"</p>}
                 <SourcesList sources={appealResult.sources} />
               </div>
             )}
@@ -1650,14 +1664,14 @@ const TheFinalWord = () => {
             <h4 className={`text-sm font-bold flex items-center gap-2 ${c.text}`}><span>💬</span> Want to dig deeper?</h4>
             <div className="flex gap-2">
               <input value={followUpText} onChange={(e) => setFollowUpText(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && !followUpLoading && handleFollowUp()} placeholder="But what about..." className={`flex-1 px-4 py-2.5 rounded-xl border-2 text-sm transition-all focus:outline-none focus:ring-2 ${c.input}`} />
-              <button onClick={handleFollowUp} disabled={followUpLoading || !followUpText.trim()} className={`px-4 py-2.5 rounded-xl text-sm font-bold transition-all disabled:opacity-40 ${c.btnPrimary}`}>{followUpLoading ? <span className="animate-spin inline-block">⏳</span> : '→'}</button>
+              <button onClick={handleFollowUp} disabled={followUpLoading || !followUpText.trim()} className={`px-4 py-2.5 rounded-xl text-sm font-bold transition-all disabled:opacity-40 ${c.btnPrimary}`}>{followUpLoading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚙️'}</span> : '→'}</button>
             </div>
             {followUpResults.map((fu, i) => (
               <div key={i} className={`p-4 rounded-xl border space-y-2 ${c.cardAlt}`}>
-                <p className={`text-xs font-bold ${c.accent}`}>💬 {fu.question}</p>
+                <p className={`text-xs font-bold ${c.accentTxt}`}>💬 {fu.question}</p>
                 <p className={`text-sm font-bold ${c.text}`}>{fu.result.answer}</p>
                 <p className={`text-sm ${c.textSecondary}`}>{fu.result.explanation}</p>
-                {fu.result.changes_original && <div className={`p-2.5 rounded-lg border ${isDark ? 'bg-amber-900/10 border-amber-800/50' : 'bg-amber-50 border-amber-200'}`}><p className={`text-xs font-bold mb-0.5 ${c.accent}`}>⚠️ Updates original answer</p><p className={`text-xs ${c.textSecondary}`}>{fu.result.changes_original}</p></div>}
+                {fu.result.changes_original && <div className={`p-2.5 rounded-lg border ${isDark ? 'bg-amber-900/10 border-amber-800/50' : 'bg-amber-50 border-amber-200'}`}><p className={`text-xs font-bold mb-0.5 ${c.accentTxt}`}>⚠️ Updates original answer</p><p className={`text-xs ${c.textSecondary}`}>{fu.result.changes_original}</p></div>}
                 {fu.result.supporting_facts?.length > 0 && fu.result.supporting_facts.map((f, j) => <p key={j} className={`text-xs ${c.textSecondary}`}>• {f}</p>)}
                 <SourcesList sources={fu.result.sources} />
               </div>
@@ -1677,8 +1691,8 @@ const TheFinalWord = () => {
         {!result && !daResult && !triviaQuestion && !triviaFinished && !mpMode && (
           <div className={`text-center py-4 ${c.textMuted}`}>
             <p className="text-xs">
-              Need a creative debate topic? Try <a href="/tool/BrainRoulette" target="_blank" rel="noopener noreferrer" className={`font-semibold underline ${c.accent}`}>Brain Roulette</a>
-              {' '}· Drafting an argument? <a href="/tool/JargonAssassin" target="_blank" rel="noopener noreferrer" className={`font-semibold underline ${c.accent}`}>Jargon Assassin</a> can sharpen it
+              Need a creative debate topic? Try <a href="/tool/BrainRoulette" target="_blank" rel="noopener noreferrer" className={`font-semibold underline ${c.accentTxt}`}>Brain Roulette</a>
+              {' '}· Drafting an argument? <a href="/tool/JargonAssassin" target="_blank" rel="noopener noreferrer" className={`font-semibold underline ${c.accentTxt}`}>Jargon Assassin</a> can sharpen it
             </p>
           </div>
         )}

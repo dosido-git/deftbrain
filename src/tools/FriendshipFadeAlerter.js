@@ -23,15 +23,17 @@ const FREQUENCIES = [
   { value: 'semiannually', label: 'Every 6 months', days: 180 },
 ];
 
-const FriendshipFadeAlerter = () => {
-  const { theme } = useTheme();
-  const isDark = theme === 'dark';
+const FriendshipFadeAlerter = ({ tool }) => {
+  const { isDark } = useTheme();
   const { callToolEndpoint, loading } = useClaudeAPI();
 
+  const [_auditHistory, _setAuditHistory] = usePersistentState('ffa-historylog', []); // history marker
+  const [history, setHistory] = usePersistentState('ffa-history', []);
   const [relationships, setRelationships] = usePersistentState('ffa-relationships', []);
   const [circles, setCircles] = usePersistentState('ffa-circles', []); // { id, name, icon }
   const [view, setView] = useState('dashboard');
   const [error, setError] = useState('');
+  const resultsRef = React.useRef(null);
   const [activeCircleFilter, setActiveCircleFilter] = useState(null);
 
   // ── Form ──
@@ -66,22 +68,25 @@ const FriendshipFadeAlerter = () => {
 
   // ── Theme ──
   const c = {
-    bg: isDark ? 'bg-zinc-900' : 'bg-slate-50',
-    card: isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-stone-200',
-    cardAlt: isDark ? 'bg-zinc-700/40 border-zinc-600' : 'bg-blue-50/50 border-blue-100',
-    text: isDark ? 'text-zinc-50' : 'text-gray-900',
-    textSec: isDark ? 'text-zinc-300' : 'text-gray-600',
-    textMuted: isDark ? 'text-zinc-500' : 'text-gray-400',
-    input: isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder:text-zinc-500 focus:border-blue-500 focus:ring-blue-500/20' : 'bg-white border-stone-300 text-gray-900 placeholder:text-stone-400 focus:border-blue-500 focus:ring-blue-500/20',
-    btnPrimary: isDark ? 'bg-blue-600 hover:bg-blue-500 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white',
-    btnSecondary: isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-stone-100 hover:bg-stone-200 text-gray-700',
-    btnSoft: isDark ? 'bg-zinc-700/50 hover:bg-zinc-600/50 text-zinc-300' : 'bg-stone-50 hover:bg-stone-100 text-gray-500',
-    accent: isDark ? 'text-blue-400' : 'text-blue-600',
-    border: isDark ? 'border-zinc-700' : 'border-stone-200',
-    danger: isDark ? 'bg-red-900/20 border-red-800/50 text-red-300' : 'bg-red-50 border-red-200 text-red-700',
-    warning: isDark ? 'bg-amber-900/20 border-amber-800/50 text-amber-300' : 'bg-amber-50 border-amber-200 text-amber-700',
-    success: isDark ? 'bg-emerald-900/20 border-emerald-800/50 text-emerald-300' : 'bg-emerald-50 border-emerald-200 text-emerald-700',
+    card:          isDark ? 'bg-zinc-800' : 'bg-white',
+    cardAlt:       isDark ? 'bg-zinc-700/40' : 'bg-slate-50',
+    text:          isDark ? 'text-zinc-50' : 'text-gray-900',
+    textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
+    textMuted:     isDark ? 'text-zinc-500' : 'text-gray-400',
+    input:         isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder:text-zinc-500 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-cyan-500 focus:ring-cyan-500/20',
+    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
+    btnSoft:       isDark ? 'bg-zinc-700/50 hover:bg-zinc-600/50 text-zinc-300' : 'bg-gray-50 hover:bg-gray-100 text-gray-500',
+    border:        isDark ? 'border-zinc-700' : 'border-gray-200',
+    danger:        isDark ? 'bg-red-900/20 border-red-800/50 text-red-300' : 'bg-red-50 border-red-200 text-red-700',
+    warning:       isDark ? 'bg-amber-900/20 border-amber-800/50 text-amber-300' : 'bg-amber-50 border-amber-200 text-amber-700',
+    success:       isDark ? 'bg-emerald-900/20 border-emerald-800/50 text-emerald-300' : 'bg-emerald-50 border-emerald-200 text-emerald-700',
+    deleteHover: isDark ? '${c.deleteHover}' : '${c.deleteHover}',
   };
+
+  const linkStyle = isDark
+    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
+    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
 
   // ════════════════════════════════════════
   // HELPERS
@@ -103,7 +108,7 @@ const FriendshipFadeAlerter = () => {
 
   // ── Reciprocity ──
   const getReciprocity = (person) => {
-    const log = (person.contactLog || []).slice(0, 20);
+    const log = (person.contactLog || []).slice(0, 6);
     if (log.length < 3) return null;
     const you = log.filter(l => l.initiator !== 'them').length;
     const them = log.filter(l => l.initiator === 'them').length;
@@ -131,7 +136,7 @@ const FriendshipFadeAlerter = () => {
 
   // ── Conversation freshness ──
   const getUsedTopics = (person) => {
-    const log = (person.contactLog || []).slice(0, 8);
+    const log = (person.contactLog || []).slice(0, 6);
     return log.map(l => l.note).filter(n => n && n !== 'Reached out' && n.length > 5);
   };
 
@@ -188,8 +193,8 @@ const FriendshipFadeAlerter = () => {
   const markContacted = (id, note, initiator = 'you') => {
     setRelationships(prev => prev.map(p => {
       if (p.id !== id) return p;
-      const entry = { date: today, note: note || 'Reached out', initiator };
-      return { ...p, lastContact: today, snoozedUntil: null, pendingOutreach: initiator === 'you' ? today : null, contactLog: [entry, ...(p.contactLog || [])].slice(0, 50) };
+      const entry = { date: today, note: note || 'Reached out', initiator, preview: (note || 'Reached out').slice(0, 40) };
+      return { ...p, lastContact: today, snoozedUntil: null, pendingOutreach: initiator === 'you' ? today : null, contactLog: [entry, ...(p.contactLog || [])].slice(0, 6) };
     }));
   };
 
@@ -249,13 +254,14 @@ const FriendshipFadeAlerter = () => {
         reciprocity: reciprocity || null,
       });
       setStarters(data);
+      setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
     } catch (err) { setError(err.message || 'Failed to generate starters'); }
     finally { setStartersLoading(false); }
   };
 
   const runBatch = async () => {
     setBatchLoading(true); setBatchResults(null); setView('batch'); setError('');
-    const people = overduePeople.slice(0, 8).map(p => {
+    const people = overduePeople.slice(0, 6).map(p => {
       const status = getStatus(p);
       const lastLog = (p.contactLog || [])[0];
       return { name: p.name, relationshipType: p.relationshipType, daysSinceContact: status.days, contextNotes: p.contextNotes || null, lastNote: lastLog?.note || null };
@@ -275,6 +281,7 @@ const FriendshipFadeAlerter = () => {
         daysSinceOutreach: daysSince(person.pendingOutreach), contextNotes: person.contextNotes || null,
       });
       setFollowupAdvice(data);
+      setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
     } catch (err) { setError(err.message || 'Failed to get advice'); }
     finally { setFollowupLoading(false); }
   };
@@ -335,12 +342,12 @@ const FriendshipFadeAlerter = () => {
   // RENDER
   // ═══════════════════════════════════════
   return (
-    <div className={`min-h-screen ${c.bg} p-4 sm:p-6`}>
+    <div className={`min-h-screen ${c.card} ${c.border} p-4 sm:p-6`}>
       <div className="max-w-3xl mx-auto">
         <div className="text-center mb-6">
           <span className="text-5xl block mb-3">💛</span>
-          <h1 className={`text-3xl sm:text-4xl font-black tracking-tight ${c.text}`}>Friendship Fade Alerter</h1>
-          <p className={`text-base mt-2 ${c.textSec}`}>Keep up with the people who matter</p>
+          <h1 className={`text-3xl sm:text-4xl font-black tracking-tight ${c.text}`}><span className='mr-2'>{tool?.icon ?? '👥'}</span>{tool?.title || 'Friendship Fade Alerter'}</h1>
+          <p className={`text-base mt-2 ${c.textSecondaryondary}`}>Keep up with the people who matter</p>
         </div>
 
         {error && <div className={`p-3 rounded-xl border mb-4 ${c.danger}`}><span className="mr-1">⚠️</span> {error}</div>}
@@ -350,11 +357,11 @@ const FriendshipFadeAlerter = () => {
           <div className="space-y-5">
             {/* Health Overview */}
             {healthStats && healthStats.total > 0 && (
-              <div className={`${c.card} border rounded-2xl p-5`}>
+              <div className={`${c.card} ${c.border} border rounded-2xl p-5`}>
                 <div className="flex items-center justify-between mb-3">
-                  <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>📊 Relationship Health</p>
-                  <button onClick={generateDigest} disabled={digestLoading} className={`text-xs font-bold px-3 py-1.5 rounded-lg ${c.btnSecondary}`}>
-                    {digestLoading ? <span className="animate-spin inline-block">⏳</span> : '📋 Weekly Digest'}
+                  <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuteded}`}>📊 Relationship Health</p>
+                  <button onClick={generateDigest} disabled={digestLoading} className={`text-xs font-bold px-3 py-1.5 rounded-lg ${c.btnPrimarySecondaryondary}`}>
+                    {digestLoading ? <span className="animate-spin inline-block">{tool?.icon ?? '👥'}</span> : '📋 Weekly Digest'}
                   </button>
                 </div>
                 <div className="grid grid-cols-4 gap-3 mb-3">
@@ -364,15 +371,15 @@ const FriendshipFadeAlerter = () => {
                     { label: 'Due Soon', val: healthStats.soonCount, icon: '🟡' },
                     { label: 'This Month', val: healthStats.contactsThisMonth, icon: '💬' },
                   ].map((s, i) => (
-                    <div key={i} className={`p-3 rounded-xl ${c.cardAlt} border text-center`}>
+                    <div key={i} className={`p-3 rounded-xl ${c.cardAlt} ${c.border} border text-center`}>
                       <span className="text-lg block">{s.icon}</span>
                       <p className={`text-lg font-black ${s.cls || c.text}`}>{s.val}</p>
-                      <p className={`text-[10px] ${c.textMuted}`}>{s.label}</p>
+                      <p className={`text-[10px] ${c.textMuteded}`}>{s.label}</p>
                     </div>
                   ))}
                 </div>
                 {healthStats.neglectedCategory && healthStats.neglectedCategory[1].overdue > 0 && (
-                  <p className={`text-xs ${c.textMuted} mb-1`}>💡 Your {healthStats.neglectedCategory[0].toLowerCase()} connections need the most attention — {healthStats.neglectedCategory[1].overdue} of {healthStats.neglectedCategory[1].total} overdue</p>
+                  <p className={`text-xs ${c.textMuteded} mb-1`}>💡 Your {healthStats.neglectedCategory[0].toLowerCase()} connections need the most attention — {healthStats.neglectedCategory[1].overdue} of {healthStats.neglectedCategory[1].total} overdue</p>
                 )}
                 {healthStats.oneSided?.length > 0 && (
                   <p className={`text-xs ${isDark ? 'text-amber-400' : 'text-amber-600'}`}>↔️ One-sided: you always initiate with {healthStats.oneSided.slice(0, 3).join(', ')}{healthStats.oneSided.length > 3 ? ` +${healthStats.oneSided.length - 3} more` : ''}</p>
@@ -383,9 +390,9 @@ const FriendshipFadeAlerter = () => {
             {/* Circle filter chips */}
             {circles.length > 0 && (
               <div className="flex gap-2 flex-wrap">
-                <button onClick={() => setActiveCircleFilter(null)} className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${!activeCircleFilter ? c.btnPrimary : c.btnSoft}`}>All</button>
+                <button onClick={() => setActiveCircleFilter(null)} className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${!activeCircleFilter ? c.btnPrimaryPrimary : c.btnPrimarySoft}`}>All</button>
                 {circles.map(circ => (
-                  <button key={circ.id} onClick={() => setActiveCircleFilter(activeCircleFilter === circ.id ? null : circ.id)} className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${activeCircleFilter === circ.id ? c.btnPrimary : c.btnSoft}`}>
+                  <button key={circ.id} onClick={() => setActiveCircleFilter(activeCircleFilter === circ.id ? null : circ.id)} className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${activeCircleFilter === circ.id ? c.btnPrimaryPrimary : c.btnPrimarySoft}`}>
                     {circ.icon} {circ.name}
                   </button>
                 ))}
@@ -394,28 +401,28 @@ const FriendshipFadeAlerter = () => {
 
             {/* Action buttons */}
             <div className="flex gap-3 flex-wrap">
-              <button onClick={() => { resetForm(); setView('add'); }} className={`flex-1 py-3 rounded-xl font-bold ${c.btnPrimary}`}>
+              <button onClick={() => { resetForm(); setView('add'); }} className={`flex-1 py-3 rounded-xl font-bold ${c.btnPrimaryPrimary}`}>
                 <span className="mr-2">➕</span> Add Person
               </button>
               {overduePeople.length >= 2 && (
-                <button onClick={runBatch} className={`flex-1 py-3 rounded-xl font-bold ${c.btnSecondary}`}>
+                <button onClick={runBatch} className={`flex-1 py-3 rounded-xl font-bold ${c.btnPrimarySecondaryondary}`}>
                   <span className="mr-2">⚡</span> Catch-up Sprint ({overduePeople.length})
                 </button>
               )}
               <button onClick={() => { setReengageResults(null); setReengageForm({ personName: '', relationship: '', howLong: '', lastContext: '', reason: '' }); setView('reengage'); }}
-                className={`flex-1 py-3 rounded-xl font-bold ${c.btnSecondary}`}>
+                className={`flex-1 py-3 rounded-xl font-bold ${c.btnPrimarySecondaryondary}`}>
                 <span className="mr-2">🕸️</span> Re-engage
               </button>
             </div>
 
             {/* Person cards */}
             {sorted.length === 0 ? (
-              <div className={`${c.card} border rounded-2xl p-10 text-center`}>
+              <div className={`${c.card} ${c.border} border rounded-2xl p-10 text-center`}>
                 <span className="text-5xl block mb-3">👥</span>
                 <p className={`text-lg font-bold ${c.text} mb-2`}>{activeCircleFilter ? 'No one in this circle yet' : 'No one tracked yet'}</p>
-                <p className={`${c.textSec} mb-4`}>{activeCircleFilter ? 'Add people and tag them into this circle' : 'Add the people you want to stay connected with'}</p>
+                <p className={`${c.textSecondaryondary} mb-4`}>{activeCircleFilter ? 'Add people and tag them into this circle' : 'Add the people you want to stay connected with'}</p>
                 {!activeCircleFilter && (
-                  <button onClick={() => { resetForm(); setView('add'); }} className={`${c.btnPrimary} px-6 py-3 rounded-xl font-bold`}>
+                  <button onClick={() => { resetForm(); setView('add'); }} className={`${c.btnPrimaryPrimary} px-6 py-3 rounded-xl font-bold`}>
                     <span className="mr-2">➕</span> Add Your First Person
                   </button>
                 )}
@@ -429,15 +436,15 @@ const FriendshipFadeAlerter = () => {
                   const hasUpcoming = (person.upcomingEvents || []).some(e => { const d = daysSince(e.date); return d <= 0 && d > -14; });
                   const personCircles = circles.filter(circ => (person.circleIds || []).includes(circ.id));
                   return (
-                    <div key={person.id} className={`${c.card} border rounded-2xl p-5 border-l-4 ${status.color}`}>
+                    <div key={person.id} className={`${c.card} ${c.border} border rounded-2xl p-5 border-l-4 ${status.color}`}>
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex items-center gap-2">
                           <span className="text-xl">{relIcon(person.relationshipType)}</span>
                           <div>
                             <h3 className={`text-lg font-black ${c.text}`}>{person.name}</h3>
                             <div className="flex items-center gap-2">
-                              <p className={`text-xs ${c.textMuted}`}>{relLabel(person.relationshipType)} · {FREQUENCIES.find(f => f.value === person.frequency)?.label}</p>
-                              {personCircles.map(circ => <span key={circ.id} className={`text-[9px] px-1.5 py-0.5 rounded-full ${isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-stone-100 text-gray-500'}`}>{circ.icon} {circ.name}</span>)}
+                              <p className={`text-xs ${c.textMuteded}`}>{relLabel(person.relationshipType)} · {FREQUENCIES.find(f => f.value === person.frequency)?.label}</p>
+                              {personCircles.map(circ => <span key={circ.id} className={`text-[9px] px-1.5 py-0.5 rounded-full ${isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-zinc-100 text-gray-500'}`}>{circ.icon} {circ.name}</span>)}
                             </div>
                           </div>
                         </div>
@@ -449,14 +456,14 @@ const FriendshipFadeAlerter = () => {
                       </div>
 
                       <div className="grid grid-cols-2 gap-3 mb-3">
-                        <div className={`p-2.5 rounded-xl ${c.cardAlt} border`}>
-                          <p className={`text-[10px] font-bold ${c.textMuted}`}>LAST CONTACT</p>
+                        <div className={`p-2.5 rounded-xl ${c.cardAlt} ${c.border} border`}>
+                          <p className={`text-[10px] font-bold ${c.textMuteded}`}>LAST CONTACT</p>
                           <p className={`text-sm font-bold ${c.text}`}>{status.days} days ago</p>
                         </div>
                         {(person.contactLog || [])[0] && (
-                          <div className={`p-2.5 rounded-xl ${c.cardAlt} border`}>
-                            <p className={`text-[10px] font-bold ${c.textMuted}`}>LAST TOPIC</p>
-                            <p className={`text-xs ${c.textSec} truncate`}>{person.contactLog[0].note}</p>
+                          <div className={`p-2.5 rounded-xl ${c.cardAlt} ${c.border} border`}>
+                            <p className={`text-[10px] font-bold ${c.textMuteded}`}>LAST TOPIC</p>
+                            <p className={`text-xs ${c.textSecondaryondary} truncate`}>{person.contactLog[0].note}</p>
                           </div>
                         )}
                       </div>
@@ -465,7 +472,7 @@ const FriendshipFadeAlerter = () => {
                       {reciprocity && (
                         <div className={`flex items-center gap-2 mb-2 p-2 rounded-lg ${reciprocity.balance === 'one_sided' ? (isDark ? 'bg-amber-900/15' : 'bg-amber-50') : reciprocity.balance === 'balanced' ? (isDark ? 'bg-emerald-900/15' : 'bg-emerald-50') : ''}`}>
                           <span className="text-xs">{reciprocity.balance === 'balanced' ? '↔️' : reciprocity.balance === 'mostly_you' ? '➡️' : '➡️'}</span>
-                          <p className={`text-[10px] ${reciprocity.balance === 'one_sided' ? (isDark ? 'text-amber-400' : 'text-amber-700') : reciprocity.balance === 'balanced' ? (isDark ? 'text-emerald-400' : 'text-emerald-700') : c.textMuted}`}>
+                          <p className={`text-[10px] ${reciprocity.balance === 'one_sided' ? (isDark ? 'text-amber-400' : 'text-amber-700') : reciprocity.balance === 'balanced' ? (isDark ? 'text-emerald-400' : 'text-emerald-700') : c.textMuteded}`}>
                             You: {reciprocity.youInitiated} · Them: {reciprocity.theyInitiated} of last {reciprocity.total}
                             {reciprocity.balance === 'one_sided' && ' — always you'}
                             {reciprocity.balance === 'balanced' && ' — balanced'}
@@ -475,15 +482,15 @@ const FriendshipFadeAlerter = () => {
 
                       {/* Drift alert */}
                       {drift && (
-                        <div className={`flex items-center justify-between p-2 rounded-lg mb-2 ${isDark ? 'bg-purple-900/15' : 'bg-purple-50'}`}>
-                          <p className={`text-[10px] ${isDark ? 'text-purple-400' : 'text-purple-700'}`}>
+                        <div className={`flex items-center justify-between p-2 rounded-lg mb-2 ${isDark ? 'bg-cyan-900/15' : 'bg-cyan-50'}`}>
+                          <p className={`text-[10px] ${isDark ? 'text-cyan-400' : 'text-cyan-700'}`}>
                             📉 Drifting — you average every {drift.avgInterval}d vs {drift.target}d target
                           </p>
                           {drift.suggestion === 'lower' && (
                             <button onClick={() => {
                               const next = FREQUENCIES.find(f => f.days > drift.target);
                               if (next) adjustFrequency(person.id, next.value);
-                            }} className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-purple-800/50 text-purple-300' : 'bg-purple-100 text-purple-700'}`}>
+                            }} className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-cyan-800/50 text-cyan-300' : 'bg-cyan-100 text-cyan-700'}`}>
                               Adjust target
                             </button>
                           )}
@@ -492,30 +499,30 @@ const FriendshipFadeAlerter = () => {
 
                       {/* Upcoming events */}
                       {(person.upcomingEvents || []).filter(e => daysSince(e.date) <= 0 && daysSince(e.date) > -14).map((e, i) => (
-                        <div key={i} className={`p-2 rounded-lg mb-2 ${isDark ? 'bg-blue-900/20' : 'bg-blue-50'}`}>
-                          <p className={`text-xs font-bold ${c.accent}`}>📅 {e.label} — {new Date(e.date).toLocaleDateString()}</p>
+                        <div key={i} className={`p-2 rounded-lg mb-2 ${isDark ? 'bg-cyan-900/20' : 'bg-cyan-50'}`}>
+                          <p className={`text-xs font-bold ${c.textSecondaryondary}`}>📅 {e.label} — {new Date(e.date).toLocaleDateString()}</p>
                         </div>
                       ))}
 
                       {/* Action buttons */}
                       <div className="flex gap-2 flex-wrap">
-                        <button onClick={() => generateStarters(person)} className={`flex-1 py-2 px-3 rounded-xl text-sm font-bold ${c.btnPrimary}`}>
+                        <button onClick={() => generateStarters(person)} className={`flex-1 py-2 px-3 rounded-xl text-sm font-bold ${c.btnPrimaryPrimary}`}>
                           <span className="mr-1">💬</span> Reach Out
                         </button>
                         {person.pendingOutreach ? (
-                          <button onClick={() => getFollowupAdvice(person)} className={`py-2 px-3 rounded-xl text-sm font-bold ${c.btnSecondary}`}>
+                          <button onClick={() => getFollowupAdvice(person)} className={`py-2 px-3 rounded-xl text-sm font-bold ${c.btnPrimarySecondaryondary}`}>
                             <span className="mr-1">📨</span> No response?
                           </button>
                         ) : (
-                          <button onClick={() => markPendingOutreach(person.id)} className={`py-2 px-3 rounded-xl text-xs font-bold ${c.btnSoft}`}>📨 Sent</button>
+                          <button onClick={() => markPendingOutreach(person.id)} className={`py-2 px-3 rounded-xl text-xs font-bold ${c.btnPrimarySoft}`}>📨 Sent</button>
                         )}
-                        <button onClick={() => { markContacted(person.id, 'They reached out', 'them'); }} className={`py-2 px-3 rounded-xl text-xs font-bold ${c.btnSoft}`} title="They contacted you">📥 They texted</button>
-                        <button onClick={() => { setForm({ ...person, upcomingEvents: person.upcomingEvents || [], circleIds: person.circleIds || [] }); setView('add'); }} className={`py-2 px-3 rounded-xl text-xs ${c.btnSoft}`}>✏️</button>
+                        <button onClick={() => { markContacted(person.id, 'They reached out', 'them'); }} className={`py-2 px-3 rounded-xl text-xs font-bold ${c.btnPrimarySoft}`} title="They contacted you">📥 They texted</button>
+                        <button onClick={() => { setForm({ ...person, upcomingEvents: person.upcomingEvents || [], circleIds: person.circleIds || [] }); setView('add'); }} className={`py-2 px-3 rounded-xl text-xs ${c.btnPrimarySoft}`}>✏️</button>
                         <div className="relative group">
-                          <button className={`py-2 px-3 rounded-xl text-xs ${c.btnSoft}`}>😴</button>
-                          <div className={`absolute right-0 mt-1 hidden group-hover:block ${isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-stone-200'} border shadow-lg rounded-xl p-1.5 z-10`}>
+                          <button className={`py-2 px-3 rounded-xl text-xs ${c.btnPrimarySoft}`}>😴</button>
+                          <div className={`absolute right-0 mt-1 hidden group-hover:block ${isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-zinc-200'} border shadow-lg rounded-xl p-1.5 z-10`}>
                             {[1, 2, 4].map(w => (
-                              <button key={w} onClick={() => snooze(person.id, w)} className={`block w-full text-left px-3 py-1.5 rounded-lg text-xs ${isDark ? 'hover:bg-zinc-700 text-zinc-300' : 'hover:bg-stone-100 text-gray-700'}`}>
+                              <button key={w} onClick={() => snooze(person.id, w)} className={`block w-full text-left px-3 py-1.5 rounded-lg text-xs ${isDark ? 'hover:bg-zinc-700 text-zinc-300' : 'hover:bg-zinc-100 text-gray-700'}`}>
                                 {w} week{w > 1 ? 's' : ''}
                               </button>
                             ))}
@@ -530,12 +537,12 @@ const FriendshipFadeAlerter = () => {
 
             {/* Snoozed */}
             {snoozed.length > 0 && !activeCircleFilter && (
-              <div className={`${c.card} border rounded-2xl p-5`}>
-                <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textMuted}`}>😴 Snoozed ({snoozed.length})</p>
+              <div className={`${c.card} ${c.border} border rounded-2xl p-5`}>
+                <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textMuteded}`}>😴 Snoozed ({snoozed.length})</p>
                 {snoozed.map(p => (
-                  <div key={p.id} className={`flex items-center justify-between p-3 rounded-xl ${c.cardAlt} border mb-2`}>
-                    <div><p className={`text-sm font-bold ${c.text}`}>{p.name}</p><p className={`text-xs ${c.textMuted}`}>Until {new Date(p.snoozedUntil).toLocaleDateString()}</p></div>
-                    <button onClick={() => setRelationships(prev => prev.map(r => r.id === p.id ? { ...r, snoozedUntil: null } : r))} className={`text-xs font-bold ${c.accent}`}>Wake up</button>
+                  <div key={p.id} className={`flex items-center justify-between p-3 rounded-xl ${c.cardAlt} ${c.border} border mb-2`}>
+                    <div><p className={`text-sm font-bold ${c.text}`}>{p.name}</p><p className={`text-xs ${c.textMuteded}`}>Until {new Date(p.snoozedUntil).toLocaleDateString()}</p></div>
+                    <button onClick={() => setRelationships(prev => prev.map(r => r.id === p.id ? { ...r, snoozedUntil: null } : r))} className={`text-xs font-bold ${c.textSecondaryondary}`}>Wake up</button>
                   </div>
                 ))}
               </div>
@@ -546,19 +553,19 @@ const FriendshipFadeAlerter = () => {
         {/* ════════ ADD / EDIT ════════ */}
         {view === 'add' && (
           <div className="space-y-5">
-            <button onClick={() => { resetForm(); setView('dashboard'); }} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnSecondary}`}>← Back</button>
-            <div className={`${c.card} border rounded-2xl p-5 space-y-4`}>
+            <button onClick={() => { resetForm(); setView('dashboard'); }} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnPrimarySecondaryondary}`}>← Back</button>
+            <div className={`${c.card} ${c.border} border rounded-2xl p-5 space-y-4`}>
               <p className={`text-lg font-black ${c.text}`}>{form.id ? '✏️ Edit Person' : '➕ Add Person'}</p>
               <div>
-                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>Name *</label>
-                <input type="text" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder="Their name" className={`w-full p-3 border-2 rounded-xl focus:outline-none focus:ring-2 ${c.input}`} />
+                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>Name *</label>
+                <input type="text" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} onKeyDown={e => { if (e.key === 'Enter' && form.name.trim()) saveRelationship(); }} placeholder="Their name" className={`w-full p-3 border-2 rounded-xl focus:outline-none focus:ring-2 ${c.input}`} />
               </div>
               <div>
-                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>Relationship *</label>
+                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>Relationship *</label>
                 <div className="grid grid-cols-3 gap-2">
                   {REL_TYPES.map(r => (
                     <button key={r.value} onClick={() => setForm({ ...form, relationshipType: r.value })}
-                      className={`p-2.5 rounded-xl border text-center transition-all ${form.relationshipType === r.value ? (isDark ? 'border-blue-500 bg-blue-900/20' : 'border-blue-500 bg-blue-50') : (isDark ? 'border-zinc-600 hover:border-zinc-500' : 'border-stone-200 hover:border-stone-300')}`}>
+                      className={`p-2.5 rounded-xl border text-center transition-all ${form.relationshipType === r.value ? (isDark ? 'border-cyan-500 bg-cyan-900/20' : 'border-cyan-500 bg-cyan-50') : (isDark ? 'border-zinc-600 hover:border-zinc-500' : 'border-zinc-200 hover:border-zinc-300')}`}>
                       <span className="text-lg block">{r.icon}</span>
                       <span className={`text-[10px] font-bold ${c.text}`}>{r.label}</span>
                     </button>
@@ -566,46 +573,46 @@ const FriendshipFadeAlerter = () => {
                 </div>
               </div>
               <div>
-                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>Ideal Frequency *</label>
+                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>Ideal Frequency *</label>
                 <div className="flex flex-wrap gap-2">
                   {FREQUENCIES.map(f => (
                     <button key={f.value} onClick={() => setForm({ ...form, frequency: f.value })}
-                      className={`px-3 py-2 rounded-xl border text-xs font-bold transition-all ${form.frequency === f.value ? (isDark ? 'border-blue-500 bg-blue-900/20 text-blue-300' : 'border-blue-500 bg-blue-50 text-blue-700') : (isDark ? 'border-zinc-600 text-zinc-300' : 'border-stone-200 text-gray-600')}`}>
+                      className={`px-3 py-2 rounded-xl border text-xs font-bold transition-all ${form.frequency === f.value ? (isDark ? 'border-cyan-500 bg-cyan-900/20 text-cyan-300' : 'border-cyan-500 bg-cyan-50 text-cyan-700') : (isDark ? 'border-zinc-600 text-zinc-300' : 'border-zinc-200 text-gray-600')}`}>
                       {f.label}
                     </button>
                   ))}
                 </div>
               </div>
               <div>
-                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>Last Contact *</label>
+                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>Last Contact *</label>
                 <input type="date" value={form.lastContact} onChange={e => setForm({ ...form, lastContact: e.target.value })} max={today} className={`w-full p-3 border-2 rounded-xl focus:outline-none focus:ring-2 ${c.input}`} />
               </div>
               <div>
-                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>Context / shared interests</label>
+                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>Context / shared interests</label>
                 <textarea value={form.contextNotes} onChange={e => setForm({ ...form, contextNotes: e.target.value })} placeholder="e.g., loves hiking, ask about new job, into sci-fi books" rows={2} className={`w-full p-3 border-2 rounded-xl text-sm resize-y focus:outline-none focus:ring-2 ${c.input}`} />
               </div>
 
               {/* Circles */}
               <div>
-                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>🔵 Friend Circles</label>
+                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>🔵 Friend Circles</label>
                 {circles.length > 0 && (
                   <div className="flex flex-wrap gap-2 mb-2">
                     {circles.map(circ => (
                       <button key={circ.id} onClick={() => toggleCircle(circ.id)}
-                        className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${(form.circleIds || []).includes(circ.id) ? c.btnPrimary : c.btnSoft}`}>
+                        className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${(form.circleIds || []).includes(circ.id) ? c.btnPrimaryPrimary : c.btnPrimarySoft}`}>
                         {circ.icon} {circ.name}
                       </button>
                     ))}
                   </div>
                 )}
                 <div className="flex gap-2">
-                  <input type="text" value={newCircleName} onChange={e => setNewCircleName(e.target.value)} placeholder="New circle (e.g., College crew)" className={`flex-1 p-2.5 border-2 rounded-xl text-sm ${c.input}`} />
-                  <button onClick={addCircle} disabled={!newCircleName.trim()} className={`px-3 py-2.5 rounded-xl text-sm font-bold disabled:opacity-40 ${c.btnSecondary}`}>+</button>
+                  <input type="text" value={newCircleName} onChange={e => setNewCircleName(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && newCircleName.trim()) addCircle(); }} placeholder="New circle (e.g., College crew)" className={`flex-1 p-2.5 border-2 rounded-xl text-sm ${c.input}`} />
+                  <button onClick={addCircle} disabled={!newCircleName.trim()} className={`px-3 py-2.5 rounded-xl text-sm font-bold disabled:opacity-40 ${c.btnPrimarySecondaryondary}`}>+</button>
                 </div>
                 {circles.length > 0 && (
                   <div className="flex flex-wrap gap-1 mt-1.5">
                     {circles.map(circ => (
-                      <button key={circ.id} onClick={() => deleteCircle(circ.id)} className={`text-[9px] ${c.textMuted} hover:text-red-500`} title={`Delete ${circ.name}`}>✕ {circ.name}</button>
+                      <button key={circ.id} onClick={() => deleteCircle(circ.id)} className={`text-[9px] ${c.textMuteded} ${c.deleteHover}`} title={`Delete ${circ.name}`}>✕ {circ.name}</button>
                     ))}
                   </div>
                 )}
@@ -613,23 +620,23 @@ const FriendshipFadeAlerter = () => {
 
               {/* Events */}
               <div>
-                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>📅 Key dates (birthdays, events)</label>
+                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>📅 Key dates (birthdays, events)</label>
                 <div className="flex gap-2 mb-2">
                   <input type="text" value={eventLabel} onChange={e => setEventLabel(e.target.value)} placeholder="e.g., Birthday" className={`flex-1 p-2.5 border-2 rounded-xl text-sm ${c.input}`} />
                   <input type="date" value={eventDate} onChange={e => setEventDate(e.target.value)} className={`p-2.5 border-2 rounded-xl text-sm ${c.input}`} />
-                  <button onClick={addEvent} disabled={!eventLabel.trim() || !eventDate} className={`px-3 py-2.5 rounded-xl text-sm font-bold disabled:opacity-40 ${c.btnSecondary}`}>+</button>
+                  <button onClick={addEvent} disabled={!eventLabel.trim() || !eventDate} className={`px-3 py-2.5 rounded-xl text-sm font-bold disabled:opacity-40 ${c.btnPrimarySecondaryondary}`}>+</button>
                 </div>
                 {(form.upcomingEvents || []).map((e, i) => (
-                  <div key={i} className={`flex items-center justify-between p-2 rounded-lg ${c.cardAlt} border mb-1`}>
+                  <div key={i} className={`flex items-center justify-between p-2 rounded-lg ${c.cardAlt} ${c.border} border mb-1`}>
                     <p className={`text-xs ${c.text}`}>📅 {e.label} — {new Date(e.date).toLocaleDateString()}</p>
-                    <button onClick={() => removeEvent(i)} className={`text-xs ${c.textMuted} hover:text-red-500`}>✕</button>
+                    <button onClick={() => removeEvent(i)} className={`text-xs ${c.textMuteded} ${c.deleteHover}`}>✕</button>
                   </div>
                 ))}
               </div>
 
               <div className="flex gap-3">
-                <button onClick={saveRelationship} className={`flex-1 py-3 rounded-xl font-bold ${c.btnPrimary}`}>{form.id ? '✓ Update' : '✓ Add Person'}</button>
-                <button onClick={() => { resetForm(); setView('dashboard'); }} className={`py-3 px-6 rounded-xl font-bold ${c.btnSecondary}`}>Cancel</button>
+                <button onClick={saveRelationship} className={`flex-1 py-3 rounded-xl font-bold ${c.btnPrimaryPrimary}`}>{form.id ? '✓ Update' : '✓ Add Person'}</button>
+                <button onClick={() => { resetForm(); setView('dashboard'); }} className={`py-3 px-6 rounded-xl font-bold ${c.btnPrimarySecondaryondary}`}>Cancel</button>
                 {form.id && <button onClick={() => { deletePerson(form.id); resetForm(); setView('dashboard'); }} className="py-3 px-4 rounded-xl text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20">Delete</button>}
               </div>
             </div>
@@ -638,11 +645,11 @@ const FriendshipFadeAlerter = () => {
 
         {/* ════════ STARTERS VIEW ════════ */}
         {view === 'starters' && selectedPerson && (
-          <div className="space-y-5">
-            <button onClick={() => { setView('dashboard'); setStarters(null); }} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnSecondary}`}>← Back</button>
+          <div ref={resultsRef} className="space-y-5">
+            <button onClick={() => { setView('dashboard'); setStarters(null); }} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnPrimarySecondaryondary}`}>← Back</button>
 
             {startersLoading && (
-              <div className={`${c.card} border rounded-2xl p-12 text-center`}>
+              <div className={`${c.card} ${c.border} border rounded-2xl p-12 text-center`}>
                 <span className="text-4xl block mb-3 animate-bounce">💬</span>
                 <p className={`${c.text} font-bold`}>Writing messages for {selectedPerson.name}...</p>
               </div>
@@ -651,35 +658,36 @@ const FriendshipFadeAlerter = () => {
             {starters && (
               <div className="space-y-5">
                 {starters.encouragement && (
-                  <div className={`${c.card} border-2 rounded-2xl p-5 ${isDark ? 'border-emerald-700/50' : 'border-emerald-300'}`}>
+                  <div className={`${c.card} ${c.border} border-2 rounded-2xl p-5 ${isDark ? 'border-emerald-700/50' : 'border-emerald-300'}`}>
                     <p className={`text-sm ${c.text}`}>💛 {starters.encouragement}</p>
                   </div>
                 )}
 
                 {/* Freshness note */}
                 {getUsedTopics(selectedPerson).length > 2 && (
-                  <p className={`text-xs ${c.textMuted}`}>🔄 These avoid topics you've already used: {getUsedTopics(selectedPerson).slice(0, 3).map(t => `"${t.slice(0, 25)}…"`).join(', ')}</p>
+                  <p className={`text-xs ${c.textMuteded}`}>🔄 These avoid topics you've already used: {getUsedTopics(selectedPerson).slice(0, 3).map(t => `"${t.slice(0, 6)}…"`).join(', ')}</p>
                 )}
 
                 {starters.starters?.length > 0 && (
-                  <div className={`${c.card} border rounded-2xl p-5`}>
-                    <p className={`text-xs font-bold uppercase tracking-wider mb-4 ${c.accent}`}>💬 Ready-to-Send Messages</p>
+                  <div className={`${c.card} ${c.border} border rounded-2xl p-5`}>
+                    <p className={`text-xs font-bold uppercase tracking-wider mb-4 ${c.textSecondaryondary}`}>💬 Ready-to-Send Messages</p>
                     <div className="space-y-4">
                       {starters.starters.map((s, i) => (
-                        <div key={i} className={`border-l-4 border-blue-500 pl-4 p-3 rounded-xl ${c.cardAlt} border`}>
+                        <div key={i} className={`border-l-4 border-cyan-500 pl-4 p-3 rounded-xl ${c.cardAlt} ${c.border} border`}>
                           <p className={`text-sm font-semibold ${c.text} mb-2`}>"{s.message}"</p>
                           <div className="flex items-center gap-2 mb-2">
-                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-blue-900/40 text-blue-300' : 'bg-blue-100 text-blue-700'}`}>{s.tone}</span>
-                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${s.effort === 'low' ? (isDark ? 'bg-emerald-900/40 text-emerald-300' : 'bg-emerald-100 text-emerald-700') : s.effort === 'high' ? (isDark ? 'bg-purple-900/40 text-purple-300' : 'bg-purple-100 text-purple-700') : (isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-stone-100 text-gray-600')}`}>{s.effort} effort</span>
+                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-cyan-900/40 text-cyan-300' : 'bg-cyan-100 text-cyan-700'}`}>{s.tone}</span>
+                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${s.effort === 'low' ? (isDark ? 'bg-emerald-900/40 text-emerald-300' : 'bg-emerald-100 text-emerald-700') : s.effort === 'high' ? (isDark ? 'bg-cyan-900/40 text-cyan-300' : 'bg-cyan-100 text-cyan-700') : (isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-zinc-100 text-gray-600')}`}>{s.effort} effort</span>
                           </div>
-                          <p className={`text-xs ${c.textMuted} mb-2`}>{s.why_it_works}</p>
+                          <p className={`text-xs ${c.textMuteded} mb-2`}>{s.why_it_works}</p>
                           {s.follow_ups?.length > 0 && (
-                            <div className={`p-2 rounded-lg ${isDark ? 'bg-zinc-700/50' : 'bg-stone-50'}`}>
-                              <p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>FOLLOW-UP IDEAS:</p>
-                              {s.follow_ups.map((f, fi) => <p key={fi} className={`text-xs ${c.textSec}`}>• {f}</p>)}
+                            <div className={`p-2 rounded-lg ${isDark ? 'bg-zinc-700/50' : 'bg-zinc-50'}`}>
+                              <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>FOLLOW-UP IDEAS:</p>
+                              {s.follow_ups.map((f, fi) => <p key={fi} className={`text-xs ${c.textSecondaryondary}`}>• {f}</p>)}
                             </div>
                           )}
-                          <div className="mt-2"><CopyBtn content={s.message} label="Copy" /></div>
+                          <div className="mt-2"><CopyBtn content={s.message} label="Copy" />
+            <ActionBar copyContent={s.message} copyLabel="Copy" /></div>
                         </div>
                       ))}
                     </div>
@@ -687,48 +695,48 @@ const FriendshipFadeAlerter = () => {
                 )}
 
                 {starters.approaches?.length > 0 && (
-                  <div className={`${c.card} border rounded-2xl p-5`}>
-                    <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.accent}`}>🎯 Different Approaches</p>
+                  <div className={`${c.card} ${c.border} border rounded-2xl p-5`}>
+                    <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textSecondaryondary}`}>🎯 Different Approaches</p>
                     {starters.approaches.map((a, i) => (
-                      <div key={i} className={`p-3 rounded-xl ${c.cardAlt} border mb-2`}>
+                      <div key={i} className={`p-3 rounded-xl ${c.cardAlt} ${c.border} border mb-2`}>
                         <div className="flex items-start justify-between mb-1">
                           <p className={`text-sm font-bold ${c.text}`}>{a.name}</p>
                           <CopyBtn content={a.message} label="Copy" />
                         </div>
-                        <p className={`text-sm italic ${c.textSec} mb-1`}>"{a.message}"</p>
-                        <p className={`text-[10px] ${c.textMuted}`}>{a.best_for}</p>
+                        <p className={`text-sm italic ${c.textSecondaryondary} mb-1`}>"{a.message}"</p>
+                        <p className={`text-[10px] ${c.textMuteded}`}>{a.best_for}</p>
                       </div>
                     ))}
                   </div>
                 )}
 
                 {starters.context_hooks?.length > 0 && (
-                  <div className={`${c.card} border rounded-2xl p-5`}>
-                    <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.accent}`}>🪝 Conversation Hooks</p>
+                  <div className={`${c.card} ${c.border} border rounded-2xl p-5`}>
+                    <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textSecondaryondary}`}>🪝 Conversation Hooks</p>
                     {starters.context_hooks.map((h, i) => (
-                      <div key={i} className={`p-3 rounded-xl ${c.cardAlt} border mb-2`}>
+                      <div key={i} className={`p-3 rounded-xl ${c.cardAlt} ${c.border} border mb-2`}>
                         <p className={`text-sm font-bold ${c.text}`}>{h.topic}</p>
-                        <p className={`text-xs ${c.textSec}`}>{h.angle}</p>
+                        <p className={`text-xs ${c.textSecondaryondary}`}>{h.angle}</p>
                       </div>
                     ))}
                   </div>
                 )}
 
                 {/* Mark contacted with initiator */}
-                <div className={`${c.card} border-2 rounded-2xl p-5 ${isDark ? 'border-blue-700/50' : 'border-blue-300'}`}>
-                  <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.accent}`}>✅ Mark as Contacted</p>
+                <div className={`${c.card} ${c.border} border-2 rounded-2xl p-5 ${isDark ? 'border-cyan-700/50' : 'border-cyan-300'}`}>
+                  <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textSecondaryondary}`}>✅ Mark as Contacted</p>
                   <input type="text" value={logNote} onChange={e => setLogNote(e.target.value)} placeholder="What did you talk about? (optional)" className={`w-full p-3 border-2 rounded-xl text-sm mb-3 ${c.input}`} />
                   <div className="flex gap-2">
                     <button onClick={() => {
                       markContacted(selectedPerson.id, logNote.trim() || 'Reached out', 'you');
                       setLogNote(''); setView('dashboard'); setStarters(null);
-                    }} className={`flex-1 py-3 rounded-xl font-bold ${c.btnPrimary}`}>
+                    }} className={`flex-1 py-3 rounded-xl font-bold ${c.btnPrimaryPrimary}`}>
                       ✓ I Reached Out
                     </button>
                     <button onClick={() => {
                       markContacted(selectedPerson.id, logNote.trim() || 'They reached out', 'them');
                       setLogNote(''); setView('dashboard'); setStarters(null);
-                    }} className={`flex-1 py-3 rounded-xl font-bold ${c.btnSecondary}`}>
+                    }} className={`flex-1 py-3 rounded-xl font-bold ${c.btnPrimarySecondaryondary}`}>
                       📥 They Reached Out
                     </button>
                   </div>
@@ -736,13 +744,13 @@ const FriendshipFadeAlerter = () => {
 
                 {/* Contact history */}
                 {(selectedPerson.contactLog || []).length > 0 && (
-                  <div className={`${c.card} border rounded-2xl p-5`}>
-                    <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textMuted}`}>📋 Contact History</p>
-                    {selectedPerson.contactLog.slice(0, 10).map((l, i) => (
+                  <div className={`${c.card} ${c.border} border rounded-2xl p-5`}>
+                    <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textMuteded}`}>📋 Contact History</p>
+                    {selectedPerson.contactLog.slice(0, 6).map((l, i) => (
                       <div key={i} className={`flex items-center gap-3 p-2 rounded-lg ${i === 0 ? c.cardAlt + ' border' : ''} mb-1`}>
                         <span className="text-xs">{l.initiator === 'them' ? '📥' : '📤'}</span>
-                        <span className={`text-xs font-mono ${c.textMuted}`}>{new Date(l.date).toLocaleDateString()}</span>
-                        <p className={`text-xs ${c.textSec} flex-1`}>{l.note}</p>
+                        <span className={`text-xs font-mono ${c.textMuteded}`}>{new Date(l.date).toLocaleDateString()}</span>
+                        <p className={`text-xs ${c.textSecondaryondary} flex-1`}>{l.note}</p>
                       </div>
                     ))}
                   </div>
@@ -755,10 +763,10 @@ const FriendshipFadeAlerter = () => {
         {/* ════════ BATCH VIEW ════════ */}
         {view === 'batch' && (
           <div className="space-y-5">
-            <button onClick={() => { setView('dashboard'); setBatchResults(null); }} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnSecondary}`}>← Back</button>
+            <button onClick={() => { setView('dashboard'); setBatchResults(null); }} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnPrimarySecondaryondary}`}>← Back</button>
 
             {batchLoading && (
-              <div className={`${c.card} border rounded-2xl p-12 text-center`}>
+              <div className={`${c.card} ${c.border} border rounded-2xl p-12 text-center`}>
                 <span className="text-4xl block mb-3 animate-bounce">⚡</span>
                 <p className={`${c.text} font-bold`}>Generating messages for {overduePeople.length} people...</p>
               </div>
@@ -766,32 +774,32 @@ const FriendshipFadeAlerter = () => {
 
             {batchResults && (
               <div className="space-y-5">
-                <div className={`${c.card} border-2 rounded-2xl p-5 ${isDark ? 'border-amber-700/50' : 'border-amber-300'}`}>
+                <div className={`${c.card} ${c.border} border-2 rounded-2xl p-5 ${isDark ? 'border-amber-700/50' : 'border-amber-300'}`}>
                   <p className={`text-lg font-black ${c.text} mb-1`}>⚡ Catch-up Sprint</p>
-                  {batchResults.sprint_encouragement && <p className={`text-sm ${c.textSec}`}>{batchResults.sprint_encouragement}</p>}
+                  {batchResults.sprint_encouragement && <p className={`text-sm ${c.textSecondaryondary}`}>{batchResults.sprint_encouragement}</p>}
                 </div>
 
                 {batchResults.messages?.map((m, i) => {
                   const person = overduePeople.find(p => p.name === m.name);
                   return (
-                    <div key={i} className={`${c.card} border rounded-2xl p-5`}>
+                    <div key={i} className={`${c.card} ${c.border} border rounded-2xl p-5`}>
                       <div className="flex items-start justify-between mb-2">
                         <div className="flex items-center gap-2">
                           <span className="text-lg">{person ? relIcon(person.relationshipType) : '👤'}</span>
                           <p className={`font-black ${c.text}`}>{m.name}</p>
                         </div>
-                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-blue-900/40 text-blue-300' : 'bg-blue-100 text-blue-700'}`}>{m.tone}</span>
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-cyan-900/40 text-cyan-300' : 'bg-cyan-100 text-cyan-700'}`}>{m.tone}</span>
                       </div>
-                      <div className={`p-3 rounded-xl ${c.cardAlt} border mb-3`}>
+                      <div className={`p-3 rounded-xl ${c.cardAlt} ${c.border} border mb-3`}>
                         <p className={`text-sm ${c.text}`}>"{m.message}"</p>
                       </div>
-                      {m.tip && <p className={`text-xs ${c.textMuted} mb-2`}>💡 {m.tip}</p>}
+                      {m.tip && <p className={`text-xs ${c.textMuteded} mb-2`}>💡 {m.tip}</p>}
                       <div className="flex gap-2">
                         <CopyBtn content={m.message} label="Copy" />
                         {person && (
                           <button onClick={() => {
-                            markContacted(person.id, `Batch: ${m.message.slice(0, 50)}...`, 'you');
-                          }} className={`text-xs font-bold px-3 py-1.5 rounded-lg ${c.btnSecondary}`}>
+                            markContacted(person.id, `Batch: ${m.message.slice(0, 6)}...`, 'you');
+                          }} className={`text-xs font-bold px-3 py-1.5 rounded-lg ${c.btnPrimarySecondaryondary}`}>
                             ✓ Sent
                           </button>
                         )}
@@ -800,7 +808,7 @@ const FriendshipFadeAlerter = () => {
                   );
                 })}
 
-                <button onClick={() => { setView('dashboard'); setBatchResults(null); }} className={`w-full py-3 rounded-xl font-bold ${c.btnSecondary}`}>← Back to Dashboard</button>
+                <button onClick={() => { setView('dashboard'); setBatchResults(null); }} className={`w-full py-3 rounded-xl font-bold ${c.btnPrimarySecondaryondary}`}>← Back to Dashboard</button>
               </div>
             )}
           </div>
@@ -809,10 +817,10 @@ const FriendshipFadeAlerter = () => {
         {/* ════════ FOLLOWUP ADVICE ════════ */}
         {view === 'followup' && followupPerson && (
           <div className="space-y-5">
-            <button onClick={() => { setView('dashboard'); setFollowupAdvice(null); }} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnSecondary}`}>← Back</button>
+            <button onClick={() => { setView('dashboard'); setFollowupAdvice(null); }} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnPrimarySecondaryondary}`}>← Back</button>
 
             {followupLoading && (
-              <div className={`${c.card} border rounded-2xl p-12 text-center`}>
+              <div className={`${c.card} ${c.border} border rounded-2xl p-12 text-center`}>
                 <span className="text-4xl block mb-3 animate-bounce">📨</span>
                 <p className={`${c.text} font-bold`}>Thinking about {followupPerson.name}...</p>
               </div>
@@ -820,26 +828,26 @@ const FriendshipFadeAlerter = () => {
 
             {followupAdvice && (
               <div className="space-y-5">
-                <div className={`${c.card} border rounded-2xl p-5`}>
-                  <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuted}`}>📨 No Response from {followupPerson.name}</p>
+                <div className={`${c.card} ${c.border} border rounded-2xl p-5`}>
+                  <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuteded}`}>📨 No Response from {followupPerson.name}</p>
                   <p className={`text-sm ${c.text}`}>You reached out {daysSince(followupPerson.pendingOutreach)} days ago</p>
                 </div>
 
-                <div className={`${c.card} border-2 rounded-2xl p-5 ${followupAdvice.recommendation === 'follow_up' ? (isDark ? 'border-blue-700/50' : 'border-blue-300') : followupAdvice.recommendation === 'wait' ? (isDark ? 'border-amber-700/50' : 'border-amber-300') : (isDark ? 'border-zinc-600' : 'border-stone-300')}`}>
+                <div className={`${c.card} ${c.border} border-2 rounded-2xl p-5 ${followupAdvice.recommendation === 'follow_up' ? (isDark ? 'border-cyan-700/50' : 'border-cyan-300') : followupAdvice.recommendation === 'wait' ? (isDark ? 'border-amber-700/50' : 'border-amber-300') : (isDark ? 'border-zinc-600' : 'border-zinc-300')}`}>
                   <p className={`text-sm ${c.text} mb-3`}>{followupAdvice.assessment}</p>
-                  <div className={`p-3 rounded-xl ${c.cardAlt} border`}>
-                    <p className={`text-[10px] font-bold ${c.textMuted}`}>RECOMMENDATION</p>
+                  <div className={`p-3 rounded-xl ${c.cardAlt} ${c.border} border`}>
+                    <p className={`text-[10px] font-bold ${c.textMuteded}`}>RECOMMENDATION</p>
                     <p className={`text-sm font-bold ${c.text}`}>
                       {followupAdvice.recommendation === 'follow_up' ? '💬 Follow up' : followupAdvice.recommendation === 'wait' ? '⏰ Give it more time' : '🌊 Let it go for now'}
                     </p>
-                    {followupAdvice.follow_up_timing && <p className={`text-xs ${c.textSec} mt-1`}>{followupAdvice.follow_up_timing}</p>}
+                    {followupAdvice.follow_up_timing && <p className={`text-xs ${c.textSecondaryondary} mt-1`}>{followupAdvice.follow_up_timing}</p>}
                   </div>
                 </div>
 
                 {followupAdvice.follow_up_message && (
-                  <div className={`${c.card} border rounded-2xl p-5`}>
-                    <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.accent}`}>💬 Suggested Follow-up</p>
-                    <div className={`p-3 rounded-xl ${c.cardAlt} border mb-3`}>
+                  <div className={`${c.card} ${c.border} border rounded-2xl p-5`}>
+                    <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textSecondaryondary}`}>💬 Suggested Follow-up</p>
+                    <div className={`p-3 rounded-xl ${c.cardAlt} ${c.border} border mb-3`}>
                       <p className={`text-sm ${c.text}`}>"{followupAdvice.follow_up_message}"</p>
                     </div>
                     <CopyBtn content={followupAdvice.follow_up_message} label="Copy" />
@@ -853,9 +861,9 @@ const FriendshipFadeAlerter = () => {
                 )}
 
                 {followupAdvice.if_still_no_response && (
-                  <div className={`${c.card} border rounded-2xl p-5`}>
-                    <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuted}`}>IF STILL NO RESPONSE</p>
-                    <p className={`text-sm ${c.textSec}`}>{followupAdvice.if_still_no_response}</p>
+                  <div className={`${c.card} ${c.border} border rounded-2xl p-5`}>
+                    <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuteded}`}>IF STILL NO RESPONSE</p>
+                    <p className={`text-sm ${c.textSecondaryondary}`}>{followupAdvice.if_still_no_response}</p>
                   </div>
                 )}
 
@@ -863,11 +871,11 @@ const FriendshipFadeAlerter = () => {
                   <button onClick={() => {
                     markContacted(followupPerson.id, 'Followed up (no response to first message)', 'you');
                     setView('dashboard'); setFollowupAdvice(null);
-                  }} className={`flex-1 py-3 rounded-xl font-bold ${c.btnPrimary}`}>✓ Followed Up</button>
+                  }} className={`flex-1 py-3 rounded-xl font-bold ${c.btnPrimaryPrimary}`}>✓ Followed Up</button>
                   <button onClick={() => {
                     setRelationships(prev => prev.map(p => p.id === followupPerson.id ? { ...p, pendingOutreach: null } : p));
                     setView('dashboard'); setFollowupAdvice(null);
-                  }} className={`flex-1 py-3 rounded-xl font-bold ${c.btnSecondary}`}>Clear Pending</button>
+                  }} className={`flex-1 py-3 rounded-xl font-bold ${c.btnPrimarySecondaryondary}`}>Clear Pending</button>
                 </div>
               </div>
             )}
@@ -877,10 +885,10 @@ const FriendshipFadeAlerter = () => {
         {/* ════════ DIGEST VIEW ════════ */}
         {view === 'digest' && (
           <div className="space-y-5">
-            <button onClick={() => { setView('dashboard'); setDigest(null); }} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnSecondary}`}>← Back</button>
+            <button onClick={() => { setView('dashboard'); setDigest(null); }} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnPrimarySecondaryondary}`}>← Back</button>
 
             {digestLoading && (
-              <div className={`${c.card} border rounded-2xl p-12 text-center`}>
+              <div className={`${c.card} ${c.border} border rounded-2xl p-12 text-center`}>
                 <span className="text-4xl block mb-3 animate-bounce">📋</span>
                 <p className={`${c.text} font-bold`}>Generating your weekly digest...</p>
               </div>
@@ -899,9 +907,9 @@ const FriendshipFadeAlerter = () => {
 
               return (
                 <div className="space-y-5">
-                  <div className={`${c.card} border-2 rounded-2xl p-5 ${isDark ? 'border-blue-700/50' : 'border-blue-300'}`}>
+                  <div className={`${c.card} ${c.border} border-2 rounded-2xl p-5 ${isDark ? 'border-cyan-700/50' : 'border-cyan-300'}`}>
                     <div className="flex items-center justify-between mb-3">
-                      <p className={`text-xs font-bold uppercase tracking-wider ${c.accent}`}>📋 Weekly Digest</p>
+                      <p className={`text-xs font-bold uppercase tracking-wider ${c.textSecondaryondary}`}>📋 Weekly Digest</p>
                       <div className="flex gap-2">
                         <CopyBtn content={digestText} label="Copy" />
                         <ShareBtn content={digestText} title="Weekly Relationship Digest" />
@@ -924,8 +932,8 @@ const FriendshipFadeAlerter = () => {
                     )}
 
                     {digest.next_week_priorities?.length > 0 && (
-                      <div className={`p-3 rounded-xl mb-3 ${c.cardAlt} border`}>
-                        <p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>🎯 NEXT WEEK</p>
+                      <div className={`p-3 rounded-xl mb-3 ${c.cardAlt} ${c.border} border`}>
+                        <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>🎯 NEXT WEEK</p>
                         {digest.next_week_priorities.map((p, i) => <p key={i} className={`text-xs ${c.text}`}>{i + 1}. {p}</p>)}
                       </div>
                     )}
@@ -937,7 +945,7 @@ const FriendshipFadeAlerter = () => {
                     )}
 
                     {digest.one_liner && (
-                      <p className={`text-sm ${c.textSec} italic mt-3`}>💛 {digest.one_liner}</p>
+                      <p className={`text-sm ${c.textSecondaryondary} italic mt-3`}>💛 {digest.one_liner}</p>
                     )}
                   </div>
                 </div>
@@ -949,21 +957,21 @@ const FriendshipFadeAlerter = () => {
         {/* ════════ RE-ENGAGE ════════ */}
         {view === 'reengage' && (
           <div className="space-y-5">
-            <button onClick={() => { setView('dashboard'); setReengageResults(null); }} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnSecondary}`}>← Back</button>
-            <div className={`${c.card} border rounded-2xl p-5`}>
+            <button onClick={() => { setView('dashboard'); setReengageResults(null); }} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnPrimarySecondaryondary}`}>← Back</button>
+            <div className={`${c.card} ${c.border} border rounded-2xl p-5`}>
               <h2 className={`text-xl font-black tracking-tight mb-1 ${c.text}`}>🕸️ Re-engage</h2>
-              <p className={`text-sm mb-5 ${c.textSec}`}>The silence got awkward. Get a natural message that dissolves it — without making it weirder.</p>
+              <p className={`text-sm mb-5 ${c.textSecondaryondary}`}>The silence got awkward. Get a natural message that dissolves it — without making it weirder.</p>
 
               <div className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className={`block text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuted}`}>Who is it? <span className="text-red-400">*</span></label>
+                    <label className={`block text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuteded}`}>Who is it? <span className="text-red-400">*</span></label>
                     <input type="text" value={reengageForm.personName} onChange={e => setReengageForm(p => ({ ...p, personName: e.target.value }))}
                       placeholder="Their name"
                       className={`w-full p-3 border rounded-xl text-sm outline-none ${c.input}`} />
                   </div>
                   <div>
-                    <label className={`block text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuted}`}>Relationship</label>
+                    <label className={`block text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuteded}`}>Relationship</label>
                     <select value={reengageForm.relationship} onChange={e => setReengageForm(p => ({ ...p, relationship: e.target.value }))}
                       className={`w-full p-3 border rounded-xl text-sm outline-none ${c.input}`}>
                       <option value="">Select…</option>
@@ -973,14 +981,14 @@ const FriendshipFadeAlerter = () => {
                 </div>
 
                 <div>
-                  <label className={`block text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuted}`}>How long has it been? <span className="text-red-400">*</span></label>
+                  <label className={`block text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuteded}`}>How long has it been? <span className="text-red-400">*</span></label>
                   <input type="text" value={reengageForm.howLong} onChange={e => setReengageForm(p => ({ ...p, howLong: e.target.value }))}
                     placeholder="e.g. 4 months, almost a year, since last summer…"
                     className={`w-full p-3 border rounded-xl text-sm outline-none ${c.input}`} />
                 </div>
 
                 <div>
-                  <label className={`block text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuted}`}>Last context <span className={`font-normal normal-case ${c.textMuted}`}>(optional but helpful)</span></label>
+                  <label className={`block text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuteded}`}>Last context <span className={`font-normal normal-case ${c.textMuteded}`}>(optional but helpful)</span></label>
                   <textarea value={reengageForm.lastContext} onChange={e => setReengageForm(p => ({ ...p, lastContext: e.target.value }))}
                     placeholder="What were you last talking about? What was going on in their life? What do you know about them now?"
                     rows={2}
@@ -988,15 +996,15 @@ const FriendshipFadeAlerter = () => {
                 </div>
 
                 <div>
-                  <label className={`block text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuted}`}>Why did the silence start? <span className={`font-normal normal-case ${c.textMuted}`}>(optional)</span></label>
+                  <label className={`block text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuteded}`}>Why did the silence start? <span className={`font-normal normal-case ${c.textMuteded}`}>(optional)</span></label>
                   <input type="text" value={reengageForm.reason} onChange={e => setReengageForm(p => ({ ...p, reason: e.target.value }))}
                     placeholder="Life got busy, slight awkwardness, moved away, nothing specific…"
                     className={`w-full p-3 border rounded-xl text-sm outline-none ${c.input}`} />
                 </div>
 
                 <button onClick={handleReengage} disabled={reengageLoading || !reengageForm.personName.trim() || !reengageForm.howLong.trim()}
-                  className={`w-full py-3 rounded-xl font-bold disabled:opacity-50 ${c.btnPrimary}`}>
-                  {reengageLoading ? <><span className="animate-spin inline-block mr-2">⏳</span>Writing…</> : '🕸️ Write My Re-engagement Messages'}
+                  className={`w-full py-3 rounded-xl font-bold disabled:opacity-50 ${c.btnPrimaryPrimary}`}>
+                  {reengageLoading ? <><span className="animate-spin inline-block mr-2">{tool?.icon ?? '👥'}</span>Writing…</> : '🕸️ Write My Re-engagement Messages'}
                 </button>
               </div>
             </div>
@@ -1004,19 +1012,19 @@ const FriendshipFadeAlerter = () => {
             {reengageResults && (
               <div className="space-y-4">
                 {reengageResults.situation_read && (
-                  <div className={`${c.card} border rounded-2xl p-4`}>
-                    <p className={`text-sm italic ${c.textSec}`}>💡 {reengageResults.situation_read}</p>
+                  <div className={`${c.card} ${c.border} border rounded-2xl p-4`}>
+                    <p className={`text-sm italic ${c.textSecondaryondary}`}>💡 {reengageResults.situation_read}</p>
                   </div>
                 )}
 
                 {reengageResults.messages?.map((msg, i) => (
-                  <div key={i} className={`${c.card} border rounded-2xl p-5`}>
+                  <div key={i} className={`${c.card} ${c.border} border rounded-2xl p-5`}>
                     <div className="flex items-center justify-between mb-1 flex-wrap gap-2">
-                      <span className={`text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${c.btnSecondary}`}>{msg.style_label}</span>
-                      <span className={`text-xs ${c.textMuted}`}>{msg.best_for}</span>
+                      <span className={`text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${c.btnPrimarySecondaryondary}`}>{msg.style_label}</span>
+                      <span className={`text-xs ${c.textMuteded}`}>{msg.best_for}</span>
                     </div>
-                    <p className={`text-sm leading-relaxed mt-3 p-3 rounded-xl ${isDark ? 'bg-zinc-700/50' : 'bg-stone-50'} ${c.text}`}>{msg.message}</p>
-                    <p className={`text-xs mt-2 ${c.textMuted}`}>{msg.why_it_works}</p>
+                    <p className={`text-sm leading-relaxed mt-3 p-3 rounded-xl ${isDark ? 'bg-zinc-700/50' : 'bg-zinc-50'} ${c.text}`}>{msg.message}</p>
+                    <p className={`text-xs mt-2 ${c.textMuteded}`}>{msg.why_it_works}</p>
                     <div className="mt-3">
                       <CopyBtn content={`${msg.message}${BRANDING}`} label="Copy Message" />
                     </div>
@@ -1024,13 +1032,13 @@ const FriendshipFadeAlerter = () => {
                 ))}
 
                 {reengageResults.what_NOT_to_say?.length > 0 && (
-                  <div className={`${c.card} border rounded-2xl p-4`}>
-                    <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textMuted}`}>🚫 Avoid These</p>
+                  <div className={`${c.card} ${c.border} border rounded-2xl p-4`}>
+                    <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textMuteded}`}>🚫 Avoid These</p>
                     <div className="space-y-2">
                       {reengageResults.what_NOT_to_say.map((w, i) => (
                         <div key={i} className={`p-2 rounded-xl text-sm border ${c.danger}`}>
                           <p className="font-medium">"{w.phrase}"</p>
-                          <p className={`text-xs mt-0.5 ${c.textMuted}`}>{w.why}</p>
+                          <p className={`text-xs mt-0.5 ${c.textMuteded}`}>{w.why}</p>
                         </div>
                       ))}
                     </div>
@@ -1039,21 +1047,21 @@ const FriendshipFadeAlerter = () => {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {reengageResults.if_they_dont_respond && (
-                    <div className={`${c.card} border rounded-2xl p-4`}>
-                      <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuted}`}>📭 If They Don't Respond</p>
-                      <p className={`text-sm ${c.textSec}`}>{reengageResults.if_they_dont_respond}</p>
+                    <div className={`${c.card} ${c.border} border rounded-2xl p-4`}>
+                      <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuteded}`}>📭 If They Don't Respond</p>
+                      <p className={`text-sm ${c.textSecondaryondary}`}>{reengageResults.if_they_dont_respond}</p>
                     </div>
                   )}
                   {reengageResults.timing_tip && (
-                    <div className={`${c.card} border rounded-2xl p-4`}>
-                      <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuted}`}>⏰ Timing Tip</p>
-                      <p className={`text-sm ${c.textSec}`}>{reengageResults.timing_tip}</p>
+                    <div className={`${c.card} ${c.border} border rounded-2xl p-4`}>
+                      <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuteded}`}>⏰ Timing Tip</p>
+                      <p className={`text-sm ${c.textSecondaryondary}`}>{reengageResults.timing_tip}</p>
                     </div>
                   )}
                 </div>
 
                 <button onClick={() => { setReengageResults(null); setReengageForm({ personName: '', relationship: '', howLong: '', lastContext: '', reason: '' }); }}
-                  className={`w-full py-2.5 rounded-xl text-sm font-semibold ${c.btnSecondary}`}>
+                  className={`w-full py-2.5 rounded-xl text-sm font-semibold ${c.btnPrimarySecondaryondary}`}>
                   🔄 Try Another
                 </button>
               </div>
@@ -1062,6 +1070,24 @@ const FriendshipFadeAlerter = () => {
         )}
 
       </div>
+        <div className={`mt-6 pt-4 border-t text-sm ${c.border} ${c.textMuted}`}>
+          <p className="mb-2 font-medium">You might also like:</p>
+          <div className="flex flex-wrap gap-2">
+            {[{slug:'gentle-push-generator',label:'🫸 Gentle Push'},{slug:'gratitude-debt-clearer',label:'🙏 Gratitude Debt'},{slug:'six-degrees-of-me',label:'6️⃣ Six Degrees'}].map(({slug,label})=>(
+              <a key={slug} href={`/tool/${slug}`} className={linkStyle}>{label}</a>
+            ))}
+          </div>
+        </div>
+        {history.length > 0 && (
+          <div className={`mt-4 border-t pt-4 ${c.border}`}>
+            <h3 className={`text-sm font-semibold mb-2 ${c.textSecondary}`}>Recent</h3>
+            <div className="space-y-1">
+              {history.slice(0,6).map((h,i)=>(
+                <div key={h.id||i} className={`text-xs ${c.textMuted} truncate p-1`}>{h.preview}</div>
+              ))}
+            </div>
+          </div>
+        )}
     </div>
   );
 };

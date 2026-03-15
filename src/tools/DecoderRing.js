@@ -2,70 +2,7 @@ import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
-import { CopyBtn } from '../components/ActionButtons';
-
-// ════════════════════════════════════════════════════════════
-// THEME — Navy & Gold
-// ════════════════════════════════════════════════════════════
-const useColors = () => {
-  const { theme } = useTheme();
-  const d = theme === 'dark';
-  return {
-    d,
-    card:        d ? 'bg-[#2a2623] border-[#3d3630]'  : 'bg-white border-[#e8e1d5]',
-    cardAlt:     d ? 'bg-[#332e2a] border-[#3d3630]'  : 'bg-[#faf8f5] border-[#e8e1d5]',
-    inset:       d ? 'bg-[#1a1816]'                    : 'bg-[#faf8f5]',
-    inputBg:     d ? 'bg-[#1a1816] border-[#3d3630] text-[#f0eeea] placeholder-[#8a8275] focus:border-[#4a6a8a] focus:ring-[#4a6a8a]/20'
-                    : 'bg-[#faf8f5] border-[#d5cab8] text-[#3d3935] placeholder-[#8a8275] focus:border-[#4a6a8a] focus:ring-[#4a6a8a]/20',
-    text:        d ? 'text-[#f0eeea]'  : 'text-[#3d3935]',
-    heading:     d ? 'text-[#f3efe8]'  : 'text-[#1e2a3a]',
-    textSec:     d ? 'text-[#c8c3b9]'  : 'text-[#5a544a]',
-    textMut:     d ? 'text-[#8a8275]'  : 'text-[#8a8275]',
-    label:       d ? 'text-[#c8c3b9]'  : 'text-[#5a544a]',
-    border:      d ? 'border-[#3d3630]' : 'border-[#e8e1d5]',
-    divider:     d ? 'border-[#3d3630]' : 'border-[#e8e1d5]',
-    btn:         d ? 'bg-[#2c4a6e] hover:bg-[#4a6a8a] text-white' : 'bg-[#2c4a6e] hover:bg-[#1e3a58] text-white',
-    btnGold:     d ? 'bg-[#b06d22] hover:bg-[#c8872e] text-white' : 'bg-[#c8872e] hover:bg-[#b06d22] text-white',
-    btnSec:      d ? 'bg-[#332e2a] hover:bg-[#3d3630] text-[#c8c3b9] border border-[#3d3630]'
-                    : 'bg-[#f3efe8] hover:bg-[#e8e1d5] text-[#5e5042] border border-[#d5cab8]',
-    btnGhost:    d ? 'text-[#8a8275] hover:text-[#f0eeea]' : 'text-[#8a8275] hover:text-[#3d3935]',
-    btnDis:      d ? 'bg-[#332e2a] text-[#5a544a] cursor-not-allowed' : 'bg-[#e8e1d5] text-[#8a8275] cursor-not-allowed',
-    pillActive:  d ? 'border-[#4a6a8a] bg-[#2c4a6e]/30 text-[#a8b9ce]' : 'border-[#2c4a6e] bg-[#d4dde8] text-[#1e3a58]',
-    pillInactive: d ? 'border-[#3d3630] text-[#8a8275] hover:border-[#5a544a]' : 'border-[#d5cab8] text-[#5a544a] hover:border-[#8a8275]',
-    badge:       d ? 'bg-[#2c4a6e]/30 text-[#a8b9ce]' : 'bg-[#d4dde8] text-[#1e3a58]',
-    // Decoded layers
-    surfaceBg:   d ? 'bg-[#332e2a]' : 'bg-[#f3efe8]',
-    subtextBg:   d ? 'bg-[#2c4a6e]/15 border-[#4a6a8a]/30' : 'bg-[#d4dde8]/40 border-[#2c4a6e]/20',
-    subtextText: d ? 'text-[#a8b9ce]' : 'text-[#1e3a58]',
-    // Flags
-    redFlagBg:   d ? 'bg-[#b54a3f]/10 border-[#b54a3f]/30' : 'bg-[#fceae8] border-[#e8a8a0]',
-    redFlagText: d ? 'text-[#e88880]' : 'text-[#b54a3f]',
-    greenFlagBg: d ? 'bg-[#5a8a5c]/10 border-[#5a8a5c]/30' : 'bg-[#e8f0e8] border-[#5a8a5c]/30',
-    greenFlagText: d ? 'text-[#7aba7c]' : 'text-[#3a6a3c]',
-    // Emotion
-    emotionBg:   d ? 'bg-[#c8872e]/10 border-[#c8872e]/30' : 'bg-[#f9edd8] border-[#c8872e]/30',
-    emotionText: d ? 'text-[#d9a04e]' : 'text-[#93541f]',
-    // Tone bars
-    barBg:       d ? 'bg-[#332e2a]' : 'bg-[#e8e1d5]',
-    barNavy:     'bg-[#2c4a6e]',
-    barGold:     'bg-[#c8872e]',
-    barRed:      'bg-[#b54a3f]',
-    barGreen:    'bg-[#5a8a5c]',
-    // Strategy cards
-    stratBg:     d ? 'bg-[#1a1816] border-[#3d3630]' : 'bg-[#faf8f5] border-[#e8e1d5]',
-    // Error
-    errBg:       d ? 'bg-[#b54a3f]/15 border-[#b54a3f]/40' : 'bg-[#fceae8] border-[#e8a8a0]',
-    errText:     d ? 'text-[#e88880]' : 'text-[#b54a3f]',
-    // Translation highlight
-    transBg:     d ? 'bg-[#c8872e]/15 border-[#c8872e]/40' : 'bg-[#f9edd8] border-[#c8872e]/40',
-    transText:   d ? 'text-[#d9a04e]' : 'text-[#93541f]',
-    // History
-    histBg:      d ? 'bg-[#2c4a6e]/10 border-[#4a6a8a]/30' : 'bg-[#d4dde8]/30 border-[#2c4a6e]/15',
-    histCard:    d ? 'bg-[#2a2623] border-[#3d3630]' : 'bg-white border-[#e8e1d5]',
-    histAccent:  d ? 'text-[#a8b9ce]' : 'text-[#2c4a6e]',
-    linkStyle:   d ? 'text-[#6e8aaa] hover:text-[#a8b9ce] underline' : 'text-[#2c4a6e] hover:text-[#1e3a58] underline',
-  };
-};
+import { CopyBtn, ActionBar } from '../components/ActionButtons';
 
 // ════════════════════════════════════════════════════════════
 // CONSTANTS
@@ -114,23 +51,75 @@ const TECHNIQUE_EMOJIS = {
 // ════════════════════════════════════════════════════════════
 // MAIN COMPONENT
 // ════════════════════════════════════════════════════════════
-const DecoderRing = () => {
+const DecoderRing = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
-  const c = useColors();
+  const { isDark } = useTheme();
   const resultsRef = useRef(null);
+
+  const c = {
+    // Standard keys
+    card:          isDark ? 'bg-zinc-800' : 'bg-white',
+    cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
+    text:          isDark ? 'text-zinc-50' : 'text-gray-900',
+    textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
+    textMuted:     isDark ? 'text-zinc-500' : 'text-gray-400',
+    input:         isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500',
+    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
+    border:        isDark ? 'border-zinc-700' : 'border-gray-200',
+    success:       isDark ? 'bg-green-900/20 border-green-700 text-green-200' : 'bg-green-50 border-green-300 text-green-800',
+    warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
+    danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
+    // Bespoke tool-specific keys
+    btnDis:        isDark ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed' : 'bg-gray-200 text-gray-400 cursor-not-allowed',
+    btnGhost:      isDark ? 'text-zinc-500 hover:text-zinc-100' : 'text-gray-400 hover:text-gray-700',
+    btnGhostDel:   isDark ? 'text-zinc-500 hover:text-red-400' : 'text-gray-400 hover:text-red-500',
+    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-300' : 'border-cyan-600 bg-cyan-50 text-cyan-800',
+    pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-200 text-gray-500 hover:border-gray-400',
+    badge:         isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-50 text-cyan-800',
+    inset:         isDark ? 'bg-zinc-900/40' : 'bg-slate-50',
+    // Decoded layers
+    surfaceBg:     isDark ? 'bg-zinc-700/50' : 'bg-slate-100',
+    subtextBg:     isDark ? 'bg-cyan-900/15 border-cyan-700/30' : 'bg-cyan-50/40 border-cyan-200/50',
+    subtextText:   isDark ? 'text-cyan-300' : 'text-cyan-800',
+    // Flags
+    redFlagBg:     isDark ? 'bg-red-900/10 border-red-700/30' : 'bg-red-50 border-red-200',
+    redFlagText:   isDark ? 'text-red-300' : 'text-red-700',
+    greenFlagBg:   isDark ? 'bg-green-900/10 border-green-700/30' : 'bg-green-50 border-green-200',
+    greenFlagText: isDark ? 'text-green-300' : 'text-green-700',
+    // Emotion
+    emotionBg:     isDark ? 'bg-amber-900/20 border-amber-700/40' : 'bg-amber-50 border-amber-200',
+    emotionText:   isDark ? 'text-amber-300' : 'text-amber-800',
+    // Tone bars
+    barBg:         isDark ? 'bg-zinc-700' : 'bg-gray-200',
+    barCyan:       'bg-cyan-500',
+    barAmber:      'bg-amber-500',
+    barRed:        'bg-red-500',
+    barGreen:      'bg-green-500',
+    // Translation highlight
+    transBg:       isDark ? 'bg-amber-900/20 border-amber-700/40' : 'bg-amber-50 border-amber-300',
+    transText:     isDark ? 'text-amber-300' : 'text-amber-800',
+    // History
+    histBg:        isDark ? 'bg-zinc-800/60 border-zinc-700' : 'bg-slate-50 border-gray-200',
+    histAccent:    isDark ? 'text-cyan-400' : 'text-cyan-700',
+  };
+
+  const linkStyle = isDark
+    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
+    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
 
   // Persistent
   const [history, setHistory] = usePersistentState('decoder-ring-history', []);
   const [showHistory, setShowHistory] = useState(false);
 
   // Input
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = usePersistentState('decoder-ring-message', '');
   const [source, setSource] = useState('');
   const [relationship, setRelationship] = useState('');
   const [additionalContext, setAdditionalContext] = useState('');
 
   // Results
-  const [results, setResults] = useState(null);
+  const [results, setResults] = usePersistentState('decoder-ring-results', null);
   const [error, setError] = useState('');
 
   // Sections
@@ -176,15 +165,15 @@ const DecoderRing = () => {
   const saveToHistory = useCallback((data) => {
     const entry = {
       id: `dr_${Date.now()}`, date: new Date().toISOString(),
-      preview: message.trim().slice(0, 60),
+      preview: message.trim().slice(0, 40),
       emotion: data.emotional_undercurrent?.primary_emotion || '',
-      results: data,
+      result: data,
     };
-    setHistory(prev => [entry, ...prev].slice(0, 20));
+    setHistory(prev => [entry, ...prev].slice(0, 5));
   }, [message, setHistory]);
 
   const loadFromHistory = useCallback((entry) => {
-    setResults(entry.results); setShowHistory(false);
+    setResults(entry.result); setShowHistory(false);
   }, []);
 
   // ══════════════════════════════════════════
@@ -230,23 +219,23 @@ const DecoderRing = () => {
           <span className={`text-base font-semibold ${c.text}`}>{title}</span>
           {badge && <span className={`text-xs px-2 py-0.5 rounded-full ${c.badge}`}>{badge}</span>}
         </div>
-        <span className={`text-xs ${c.textMut}`}>{open ? '▲' : '▼'}</span>
+        <span className={`text-xs ${c.textMuted}`}>{open ? '▲' : '▼'}</span>
       </button>
-      {open && <div className={`px-5 pb-5 border-t ${c.divider}`}>{children}</div>}
+      {open && <div className={`px-5 pb-5 border-t ${c.border}`}>{children}</div>}
     </div>
   );
 
   // Score bar
   const ScoreBar = ({ label, value, max = 10, color = 'navy' }) => {
-    const barColor = color === 'gold' ? c.barGold : color === 'red' ? c.barRed : color === 'green' ? c.barGreen : c.barNavy;
+    const barColor = color === 'gold' ? c.barAmber : color === 'red' ? c.barRed : color === 'green' ? c.barGreen : c.barCyan;
     return (
       <div className="flex items-center gap-3">
-        <span className={`text-xs font-medium ${c.textMut} w-24 shrink-0`}>{label}</span>
+        <span className={`text-xs font-medium ${c.textMuted} w-24 shrink-0`}>{label}</span>
         <div className={`flex-1 h-2 rounded-full ${c.barBg}`}>
           <div className={`h-2 rounded-full transition-all duration-500 ${barColor}`}
             style={{ width: `${(value / max) * 100}%` }} />
         </div>
-        <span className={`text-xs font-mono ${c.textMut} w-6 text-right`}>{value}</span>
+        <span className={`text-xs font-mono ${c.textMuted} w-6 text-right`}>{value}</span>
       </div>
     );
   };
@@ -260,18 +249,18 @@ const DecoderRing = () => {
       <div className={`${c.card} border rounded-xl p-5`}>
         <div className="flex items-center justify-between mb-1">
           <label className={`text-base font-bold ${c.text}`}>Paste the message</label>
-          <button onClick={() => setMessage(EXAMPLE_MESSAGE)} className={`text-xs ${c.linkStyle}`}>Try example</button>
+          <button onClick={() => setMessage(EXAMPLE_MESSAGE)} className={`text-xs ${linkStyle}`}>Try example</button>
         </div>
-        <p className={`text-sm ${c.textMut} mb-4`}>What did they send you? Paste the exact message — tone and wording matter.</p>
-        <textarea value={message} onChange={e => setMessage(e.target.value)}
+        <p className={`text-sm ${c.textMuted} mb-4`}>What did they send you? Paste the exact message — tone and wording matter.</p>
+        <textarea value={message} onChange={e => setMessage(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && message.trim()) decode(); }}
           placeholder="Paste the confusing text, email, DM, or message here..."
-          className={`w-full h-32 p-4 border-2 rounded-xl ${c.inputBg} outline-none focus:ring-2 resize-none text-base`} />
-        <span className={`text-xs ${c.textMut} mt-2 block`}>{message.length} characters</span>
+          className={`w-full h-32 p-4 border-2 rounded-xl ${c.input} outline-none focus:ring-2 resize-none text-base`} />
+        <span className={`text-xs ${c.textMuted} mt-2 block`}>{message.length} characters</span>
       </div>
 
       {/* Source */}
       <div className={`${c.card} border rounded-xl p-5`}>
-        <label className={`text-xs font-bold ${c.textSec} uppercase tracking-wide mb-2 block`}>📬 Where did this come from?</label>
+        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>📬 Where did this come from?</label>
         <div className="flex flex-wrap gap-1.5">
           {SOURCE_OPTIONS.map(opt => (
             <Pill key={opt.value} active={source === opt.value}
@@ -284,7 +273,7 @@ const DecoderRing = () => {
 
       {/* Relationship */}
       <div className={`${c.card} border rounded-xl p-5`}>
-        <label className={`text-xs font-bold ${c.textSec} uppercase tracking-wide mb-2 block`}>👤 Who sent it?</label>
+        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>👤 Who sent it?</label>
         <div className="flex flex-wrap gap-1.5">
           {RELATIONSHIP_OPTIONS.map(opt => (
             <Pill key={opt.value} active={relationship === opt.value}
@@ -297,21 +286,21 @@ const DecoderRing = () => {
 
       {/* Context */}
       <div className={`${c.card} border rounded-xl p-5`}>
-        <label className={`text-xs font-bold ${c.textSec} uppercase tracking-wide mb-1 block`}>💬 Backstory</label>
-        <p className={`text-xs ${c.textMut} mb-2`}>Optional — helps decode ambiguous messages more accurately</p>
-        <input type="text" value={additionalContext} onChange={e => setAdditionalContext(e.target.value)}
+        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1 block`}>💬 Backstory</label>
+        <p className={`text-xs ${c.textMuted} mb-2`}>Optional — helps decode ambiguous messages more accurately</p>
+        <input type="text" value={additionalContext} onChange={e => setAdditionalContext(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && message.trim()) decode(); }}
           placeholder="e.g., 'We had an argument yesterday' or 'This is my new manager'"
-          className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.inputBg} outline-none`} />
+          className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
       </div>
 
       {/* Decode button */}
       <button onClick={decode}
         disabled={loading || !message.trim()}
         className={`w-full py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all ${
-          loading || !message.trim() ? c.btnDis : c.btn
+          loading || !message.trim() ? c.btnDis : c.btnPrimary
         }`}>
-        {loading ? <><span className="animate-spin inline-block">⏳</span> Decoding...</>
-          : <><span>🔍</span> Decode This Message</>}
+        {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🔍'}</span> Decoding...</>
+          : <><span>{tool?.icon ?? '🔍'}</span> Decode This Message</>}
       </button>
     </div>
   );
@@ -324,6 +313,7 @@ const DecoderRing = () => {
 
     return (
       <div ref={resultsRef} className="space-y-4 mt-4">
+        <ActionBar content={buildFullCopy()} title="Decoder Ring Analysis" />
         {/* Overall Translation — the headline */}
         {results.overall_translation && (
           <div className={`p-5 rounded-2xl border-2 ${c.transBg}`}>
@@ -338,7 +328,7 @@ const DecoderRing = () => {
         {/* What they want */}
         {results.what_they_want && (
           <div className={`p-4 rounded-xl ${c.inset}`}>
-            <p className={`text-xs font-bold ${c.textMut} mb-1`}>🎯 What they want from you</p>
+            <p className={`text-xs font-bold ${c.textMuted} mb-1`}>🎯 What they want from you</p>
             <p className={`text-sm ${c.text}`}>{results.what_they_want}</p>
           </div>
         )}
@@ -362,7 +352,7 @@ const DecoderRing = () => {
         {/* Tone radar */}
         {results.tone_rating && (
           <div className={`p-5 rounded-2xl border ${c.card}`}>
-            <p className={`text-xs font-bold ${c.textMut} uppercase tracking-wide mb-3`}>📊 Tone Analysis</p>
+            <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-3`}>📊 Tone Analysis</p>
             <div className="space-y-2">
               <ScoreBar label="Warmth" value={results.tone_rating.warmth} color="gold" />
               <ScoreBar label="Directness" value={results.tone_rating.directness} color="navy" />
@@ -387,8 +377,8 @@ const DecoderRing = () => {
                     <div className="flex items-start gap-2">
                       <span className="text-xs mt-0.5">📝</span>
                       <div>
-                        <span className={`text-[10px] font-bold uppercase ${c.textMut}`}>Surface</span>
-                        <p className={`text-sm ${c.textSec}`}>{layer.surface}</p>
+                        <span className={`text-[10px] font-bold uppercase ${c.textMuted}`}>Surface</span>
+                        <p className={`text-sm ${c.textSecondary}`}>{layer.surface}</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-2">
@@ -403,7 +393,7 @@ const DecoderRing = () => {
                         {TECHNIQUE_EMOJIS[layer.technique?.toLowerCase()] || '🔮'} {layer.technique}
                       </span>
                       {layer.confidence && (
-                        <span className={`text-[10px] ${c.textMut}`}>Confidence: {layer.confidence}</span>
+                        <span className={`text-[10px] ${c.textMuted}`}>Confidence: {layer.confidence}</span>
                       )}
                     </div>
                   </div>
@@ -444,16 +434,16 @@ const DecoderRing = () => {
             onToggle={() => setShowStrategies(!showStrategies)} badge={`${results.response_strategies.length} options`}>
             <div className="space-y-3 mt-4">
               {results.response_strategies.map((strat, idx) => (
-                <div key={idx} className={`p-4 rounded-xl border ${c.stratBg}`}>
+                <div key={idx} className={`p-4 rounded-xl border ${c.border} ${c.cardAlt}`}>
                   <div className="flex items-center justify-between mb-2">
                     <span className={`text-sm font-bold ${c.text}`}>{strat.approach}</span>
-                    <span className={`text-xs ${c.textMut}`}>{strat.goal}</span>
+                    <span className={`text-xs ${c.textMuted}`}>{strat.goal}</span>
                   </div>
                   <div className={`p-3 rounded-lg ${c.inset} mb-2`}>
                     <p className={`text-sm ${c.text} whitespace-pre-wrap`}>{strat.example}</p>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className={`text-xs ${c.textMut}`}>⚠️ Risk: {strat.risk}</span>
+                    <span className={`text-xs ${c.textMuted}`}>⚠️ Risk: {strat.risk}</span>
                     <CopyBtn content={`${strat.example}\n\n— Generated by DeftBrain · deftbrain.com`} label="Copy" />
                   </div>
                 </div>
@@ -462,22 +452,24 @@ const DecoderRing = () => {
           </Section>
         )}
 
+        {/* Disclaimer */}
+        <p className={`text-xs ${c.textMuted} text-center`}>AI analysis — use your own judgment when interpreting messages.</p>
+
         {/* Actions */}
         <div className="flex gap-2">
-          <div className="flex-1"><CopyBtn content={buildFullCopy()} label="Copy Full Analysis" /></div>
           <button onClick={handleReset}
-            className={`flex-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 ${c.btn}`}>
+            className={`w-full py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 ${c.btnSecondary}`}>
             <span>🔄</span> Decode Another
           </button>
         </div>
 
         {/* Cross-references */}
-        <div className={`p-4 rounded-2xl border ${c.card}`}>
-          <p className={`text-xs font-bold ${c.textMut} uppercase tracking-wide mb-2`}>🔗 Related Tools</p>
-          <div className={`space-y-1.5 text-xs ${c.textSec}`}>
-            <p>Need to craft a tough reply? <a href="/VelvetHammer" target="_blank" rel="noopener noreferrer" className={c.linkStyle}>Velvet Hammer</a> turns angry drafts into assertive messages.</p>
-            <p>Stuck on a bigger decision this triggered? <a href="/PlotTwist" target="_blank" rel="noopener noreferrer" className={c.linkStyle}>Plot Twist</a> untangles complex decisions with multiple frameworks.</p>
-          </div>
+        <div className={`p-4 rounded-2xl border ${c.border} ${isDark ? 'bg-zinc-800/60' : 'bg-slate-50'}`}>
+          <p className={`text-xs ${c.textMuted}`}>
+            💡 Need a tough reply?{' '}<a href="/tool/velvet-hammer" target="_blank" rel="noopener noreferrer" className={linkStyle}>Velvet Hammer</a>{' '}
+            turns angry drafts into assertive messages. Stuck in a bigger decision?{' '}<a href="/tool/context-collapse" target="_blank" rel="noopener noreferrer" className={linkStyle}>Context Collapse</a>{' '}
+            shows how your message lands on different people.
+          </p>
         </div>
       </div>
     );
@@ -504,25 +496,25 @@ const DecoderRing = () => {
         <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-left">
           <span className={`text-base ${c.histAccent}`}>🔍</span>
           <span className={`text-sm font-bold ${c.text} flex-1`}>Past Decodes</span>
-          <span className={`text-xs ${c.textMut}`}>{history.length}</span>
-          <span className={`text-xs ${c.textMut}`}>{showHistory ? '▲' : '▼'}</span>
+          <span className={`text-xs ${c.textMuted}`}>{history.length}</span>
+          <span className={`text-xs ${c.textMuted}`}>{showHistory ? '▲' : '▼'}</span>
         </button>
         {showHistory && (
           <div className="mt-3 space-y-2">
             {history.map(entry => (
-              <div key={entry.id} className={`rounded-xl border ${c.histCard} p-3 flex items-center gap-3`}>
+              <div key={entry.id} className={`rounded-xl border ${c.card} p-3 flex items-center gap-3`}>
                 <div className="flex-1 min-w-0">
                   <div className={`text-sm font-semibold ${c.text} truncate`}>"{entry.preview}..."</div>
-                  <div className={`text-xs ${c.textMut} mt-0.5`}>{formatDate(entry.date)}{entry.emotion ? ` · ${entry.emotion}` : ''}</div>
+                  <div className={`text-xs ${c.textMuted} mt-0.5`}>{formatDate(entry.date)}{entry.emotion ? ` · ${entry.emotion}` : ''}</div>
                 </div>
-                <button onClick={() => loadFromHistory(entry)} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnSec}`}>View</button>
+                <button onClick={() => loadFromHistory(entry)} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnSecondary}`}>View</button>
                 <button onClick={() => setHistory(prev => prev.filter(h => h.id !== entry.id))}
-                  className={`px-2 py-1.5 rounded-lg text-xs ${c.btnGhost} hover:text-red-500`}>🗑️</button>
+                  className={`px-2 py-1.5 rounded-lg text-xs ${c.btnGhostDel}`}>🗑️</button>
               </div>
             ))}
             {history.length > 1 && (
               <button onClick={() => setHistory([])}
-                className={`w-full mt-1 text-center text-xs font-semibold ${c.btnGhost} hover:text-red-500 py-1.5`}>Clear all</button>
+                className={`w-full mt-1 text-center text-xs font-semibold ${c.btnGhostDel} py-1.5`}>Clear all</button>
             )}
           </div>
         )}
@@ -537,16 +529,16 @@ const DecoderRing = () => {
     <div>
       <div className="flex items-center gap-3 mb-5">
         <div>
-          <h2 className={`text-2xl font-bold ${c.heading}`}>Decoder Ring <span className="text-xl">🔍</span></h2>
-          <p className={`text-sm ${c.textMut}`}>Decode what they actually mean beneath what they said</p>
+          <h2 className={`text-2xl font-bold ${c.text}`}><span className="mr-2">{tool?.icon ?? '🔍'}</span>Decoder Ring</h2>
+          <p className={`text-sm ${c.textMuted}`}>Decode what they actually mean beneath what they said</p>
         </div>
       </div>
-      {!results && renderInput()}
-      {results && renderResults()}
+      {renderInput()}
+      {renderResults()}
       {error && (
-        <div className={`mt-4 p-4 ${c.errBg} border rounded-xl flex items-start gap-3`}>
-          <span className={`text-base ${c.errText}`}>⚠️</span>
-          <p className={`text-sm ${c.errText}`}>{error}</p>
+        <div className={`mt-4 p-4 ${c.danger} border rounded-xl flex items-start gap-3`}>
+          <span className={`text-base ${c.danger}`}>⚠️</span>
+          <p className={`text-sm ${c.danger}`}>{error}</p>
         </div>
       )}
       {renderHistory()}

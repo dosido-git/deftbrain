@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect} from 'react';
 import { useTheme } from '../hooks/useTheme';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { CopyBtn, ActionBar } from '../components/ActionButtons';
@@ -25,15 +25,14 @@ const SEVERITY_CONFIG = {
 
 const VERDICT_CONFIG = {
   mostly_true:          { icon: '✅', label: 'MOSTLY TRUE',          color: (d) => d ? 'bg-green-900/20 border-green-700/50 text-green-200'   : 'bg-green-50 border-green-300 text-green-800' },
-  context_dependent:    { icon: '◇',  label: 'CONTEXT-DEPENDENT',    color: (d) => d ? 'bg-blue-900/20 border-blue-700/50 text-blue-200'     : 'bg-blue-50 border-blue-300 text-blue-800' },
+  context_dependent:    { icon: '◇',  label: 'CONTEXT-DEPENDENT',    color: (d) => d ? 'bg-sky-900/20 border-sky-700/50 text-sky-200'     : 'bg-sky-50 border-sky-300 text-sky-800' },
   useful_simplification:{ icon: '🔧', label: 'USEFUL SIMPLIFICATION', color: (d) => d ? 'bg-amber-900/20 border-amber-700/50 text-amber-200'  : 'bg-amber-50 border-amber-300 text-amber-800' },
   mostly_false:         { icon: '❌', label: 'MOSTLY FALSE',          color: (d) => d ? 'bg-red-900/20 border-red-700/50 text-red-200'         : 'bg-red-50 border-red-300 text-red-800' },
   it_depends:           { icon: '🔵', label: 'IT DEPENDS',            color: (d) => d ? 'bg-zinc-700/60 border-zinc-600 text-zinc-300'         : 'bg-gray-100 border-gray-300 text-gray-600' },
 };
 
 const BeliefStressTest = ({ tool }) => {
-  const { theme } = useTheme();
-  const isDark = theme === 'dark';
+  const { isDark } = useTheme();
   const { callToolEndpoint, loading } = useClaudeAPI();
 
   const c = {
@@ -45,10 +44,12 @@ const BeliefStressTest = ({ tool }) => {
     input:         isDark
       ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder:text-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
       : 'bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-cyan-500 focus:ring-cyan-500/20',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'   : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700'  : 'border-gray-200',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200'  : 'bg-red-50 border-red-200 text-red-800',
+    success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
+    warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
   };
 
   const linkStyle = isDark
@@ -76,7 +77,7 @@ const BeliefStressTest = ({ tool }) => {
       const newEntry = {
         id: Date.now(),
         timestamp: new Date().toISOString(),
-        preview: belief.trim().slice(0, 40),
+        preview: belief.trim().slice(0, 6),
         result: data,
       };
       setHistory(prev => [newEntry, ...prev].slice(0, 6));
@@ -97,6 +98,17 @@ const BeliefStressTest = ({ tool }) => {
 
   const vcfg = results ? (VERDICT_CONFIG[results.verdict?.rating] || VERDICT_CONFIG.it_depends) : null;
 
+  useEffect(() => {
+    const handler = (e) => {
+      const tag = document.activeElement?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !loading) handleSubmit();
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading]);
+
   return (
     <div className={`space-y-4 ${c.text}`}>
 
@@ -107,8 +119,8 @@ const BeliefStressTest = ({ tool }) => {
             {history.map(entry => (
               <button key={entry.id}
                 onClick={() => setResults(entry.result)}
-                className={`w-full text-left px-3 py-2 rounded-lg ${c.btnSecondary} border ${c.border} text-xs`}>
-                <span className={c.textMuted}>
+                className={`w-full text-left px-3 py-2 rounded-lg ${c.btnPrimarySecondaryondary} border ${c.border} text-xs`}>
+                <span className={c.textMuteded}>
                   {new Date(entry.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
                 </span>
                 <span className={`ml-2 ${c.text}`}>{entry.preview}…</span>
@@ -124,7 +136,7 @@ const BeliefStressTest = ({ tool }) => {
               <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
                 <span>{tool.icon}</span> Belief Stress Test
               </h2>
-              <p className={`text-sm ${c.textSecondary}`}>Your guiding beliefs, pressure-tested. Where they hold. Where they break.</p>
+              <p className={`text-sm ${c.textSecondaryondary}`}>Your guiding beliefs, pressure-tested. Where they hold. Where they break.</p>
             </div>
             <div>
               <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>
@@ -138,7 +150,7 @@ const BeliefStressTest = ({ tool }) => {
               <div className="flex flex-wrap gap-2 mt-2">
                 {EXAMPLE_BELIEFS.map(b => (
                   <button key={b} onClick={() => { setBelief(b); setResults(null); }}
-                    className={`px-2.5 py-1 rounded-lg text-xs ${c.btnSecondary}`}>
+                    className={`px-2.5 py-1 rounded-lg text-xs ${c.btnPrimarySecondaryondary}`}>
                     {b}
                   </button>
                 ))}
@@ -146,7 +158,7 @@ const BeliefStressTest = ({ tool }) => {
             </div>
 
             <div>
-              <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>Your context <span className={`font-normal ${c.textMuted}`}>(optional)</span></label>
+              <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>Your context <span className={`font-normal ${c.textMuteded}`}>(optional)</span></label>
               <input type="text" value={context} onChange={e => setContext(e.target.value)}
                 placeholder="How this belief shows up in your life, where you apply it most…"
                 onKeyDown={e => { if (e.key === 'Enter' && belief.trim()) { e.preventDefault(); handleSubmit(); } }}
@@ -155,14 +167,14 @@ const BeliefStressTest = ({ tool }) => {
 
             {error && <div className={`p-3 rounded-xl border text-sm ${c.danger}`}><span className="mr-1">⚠️</span>{error}</div>}
 
-            <p className={`text-xs text-center ${c.textMuted}`}>
+            <p className={`text-xs text-center ${c.textMuteded}`}>
               Want to challenge a specific claim first?{' '}
               <a href="/TheFinalWord" className={linkStyle}>The Final Word</a> fact-checks a statement before you stress-test the belief behind it.
             </p>
 
             <button onClick={handleSubmit} disabled={loading || !belief.trim()}
-              className={`w-full py-3 rounded-xl font-bold disabled:opacity-40 ${c.btnPrimary}`}>
-              {loading ? <><span className="animate-spin inline-block mr-2">🧪</span>Running stress tests…</> : '🧪 Run the Stress Test'}
+              className={`w-full py-3 rounded-xl font-bold disabled:opacity-40 ${c.btnPrimaryPrimary}`}>
+              {loading ? <><span className="animate-spin inline-block mr-2">{tool?.icon ?? '⚙️'}</span>Running stress tests…</> : '🧪 Run the Stress Test'}
             </button>
           </div>
         )}
@@ -173,7 +185,7 @@ const BeliefStressTest = ({ tool }) => {
             <div className="flex items-center justify-between flex-wrap gap-2">
               <ActionBar content={buildText()} title="Belief Stress Test" />
               <button onClick={() => { setResults(null); setBelief(''); setContext(''); }}
-                className={`px-4 py-2 rounded-lg text-sm font-bold min-h-[40px] border ${c.border} ${c.btnSecondary}`}>
+                className={`px-4 py-2 rounded-lg text-sm font-bold min-h-[40px] border ${c.border} ${c.btnPrimarySecondaryondary}`}>
                 ↩ Start Over
               </button>
             </div>
@@ -193,10 +205,10 @@ const BeliefStressTest = ({ tool }) => {
                 <p className={`text-xs font-black uppercase tracking-widest mb-3 ${isDark ? 'text-green-300' : 'text-green-700'}`}>✅ Where It Holds</p>
                 <p className={`text-sm font-semibold mb-2 ${c.text}`}>{results.where_it_holds.the_conditions}</p>
                 {results.where_it_holds.the_evidence_for && (
-                  <p className={`text-xs mb-1 ${c.textMuted}`}><span className="font-semibold">Evidence for it:</span> {results.where_it_holds.the_evidence_for}</p>
+                  <p className={`text-xs mb-1 ${c.textMuteded}`}><span className="font-semibold">Evidence for it:</span> {results.where_it_holds.the_evidence_for}</p>
                 )}
                 {results.where_it_holds.why_people_hold_it && (
-                  <p className={`text-xs ${c.textMuted}`}><span className="font-semibold">Why it spread:</span> {results.where_it_holds.why_people_hold_it}</p>
+                  <p className={`text-xs ${c.textMuteded}`}><span className="font-semibold">Why it spread:</span> {results.where_it_holds.why_people_hold_it}</p>
                 )}
               </div>
             )}
@@ -208,7 +220,7 @@ const BeliefStressTest = ({ tool }) => {
                   <p className={`text-xs font-black uppercase tracking-widest ${isDark ? 'text-red-300' : 'text-red-700'}`}>
                     🔬 Stress Tests ({results.stress_tests.length})
                   </p>
-                  <span className={`text-sm ${c.textMuted}`}>{expanded.tests ? '▲' : '▼'}</span>
+                  <span className={`text-sm ${c.textMuteded}`}>{expanded.tests ? '▲' : '▼'}</span>
                 </button>
                 {expanded.tests && (
                   <div className={`border-t ${c.border}`}>
@@ -218,10 +230,10 @@ const BeliefStressTest = ({ tool }) => {
                         <div key={i} className={`px-5 py-4 ${i > 0 ? `border-t ${c.border}` : ''}`}>
                           <div className="flex items-center gap-2 mb-2 flex-wrap">
                             <span className={`text-xs font-bold px-2 py-0.5 rounded-full border ${scfg.color(isDark)}`}>{scfg.label}</span>
-                            <span className={`text-xs font-semibold ${c.textMuted}`}>{st.test_label}</span>
+                            <span className={`text-xs font-semibold ${c.textMuteded}`}>{st.test_label}</span>
                           </div>
                           <p className={`text-sm font-semibold mb-1 ${c.text}`}>{st.the_test}</p>
-                          <p className={`text-xs ${c.textMuted}`}>{st.what_it_reveals}</p>
+                          <p className={`text-xs ${c.textMuteded}`}>{st.what_it_reveals}</p>
                         </div>
                       );
                     })}
@@ -234,21 +246,21 @@ const BeliefStressTest = ({ tool }) => {
             {results.the_hidden_structure && (
               <div className={`rounded-2xl border overflow-hidden ${c.card} border ${c.border}`}>
                 <button onClick={() => toggle('hidden')} className="w-full text-left px-5 py-4 flex items-center justify-between">
-                  <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>🔦 The Hidden Structure</p>
-                  <span className={`text-sm ${c.textMuted}`}>{expanded.hidden ? '▲' : '▼'}</span>
+                  <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuteded}`}>🔦 The Hidden Structure</p>
+                  <span className={`text-sm ${c.textMuteded}`}>{expanded.hidden ? '▲' : '▼'}</span>
                 </button>
                 {expanded.hidden && (
                   <div className={`px-5 pb-4 space-y-3 border-t ${c.border} pt-4`}>
                     {results.the_hidden_structure.what_its_really_saying && (
-                      <p className={`text-sm ${c.textSecondary}`}><span className={`font-semibold ${c.text}`}>What it's really saying:</span> {results.the_hidden_structure.what_its_really_saying}</p>
+                      <p className={`text-sm ${c.textSecondaryondary}`}><span className={`font-semibold ${c.text}`}>What it's really saying:</span> {results.the_hidden_structure.what_its_really_saying}</p>
                     )}
                     {results.the_hidden_structure.the_psychological_function && (
-                      <p className={`text-sm ${c.textSecondary}`}><span className={`font-semibold ${c.text}`}>Psychological function:</span> {results.the_hidden_structure.the_psychological_function}</p>
+                      <p className={`text-sm ${c.textSecondaryondary}`}><span className={`font-semibold ${c.text}`}>Psychological function:</span> {results.the_hidden_structure.the_psychological_function}</p>
                     )}
                     {results.the_hidden_structure.when_it_becomes_harmful && (
                       <div className={`p-3 rounded-xl border ${isDark ? 'bg-red-900/15 border-red-700/40' : 'bg-red-50 border-red-200'}`}>
                         <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${isDark ? 'text-red-300' : 'text-red-700'}`}>When it becomes harmful</p>
-                        <p className={`text-sm ${c.textSecondary}`}>{results.the_hidden_structure.when_it_becomes_harmful}</p>
+                        <p className={`text-sm ${c.textSecondaryondary}`}>{results.the_hidden_structure.when_it_becomes_harmful}</p>
                       </div>
                     )}
                   </div>
@@ -258,14 +270,14 @@ const BeliefStressTest = ({ tool }) => {
 
             {/* The nuanced version */}
             {results.the_nuanced_version && (
-              <div className={`rounded-2xl border-2 p-5 ${isDark ? 'border-blue-700 bg-blue-900/20' : 'border-blue-300 bg-blue-50'}`}>
-                <p className={`text-xs font-black uppercase tracking-widest mb-3 ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>⬆️ The Upgrade</p>
+              <div className={`rounded-2xl border-2 p-5 ${isDark ? 'border-sky-700 bg-sky-900/20' : 'border-sky-300 bg-sky-50'}`}>
+                <p className={`text-xs font-black uppercase tracking-widest mb-3 ${isDark ? 'text-sky-300' : 'text-sky-700'}`}>⬆️ The Upgrade</p>
                 <p className={`text-sm font-bold mb-2 ${c.text}`}>{results.the_nuanced_version.the_upgrade}</p>
                 {results.the_nuanced_version.the_key_conditions && (
-                  <p className={`text-xs mb-2 ${c.textMuted}`}><span className="font-semibold">When it's actually true:</span> {results.the_nuanced_version.the_key_conditions}</p>
+                  <p className={`text-xs mb-2 ${c.textMuteded}`}><span className="font-semibold">When it's actually true:</span> {results.the_nuanced_version.the_key_conditions}</p>
                 )}
                 {results.the_nuanced_version.example_of_upgrade_in_action && (
-                  <p className={`text-xs mb-3 italic ${c.textMuted}`}>{results.the_nuanced_version.example_of_upgrade_in_action}</p>
+                  <p className={`text-xs mb-3 italic ${c.textMuteded}`}>{results.the_nuanced_version.example_of_upgrade_in_action}</p>
                 )}
                 <CopyBtn content={`🧪 Upgraded belief:\n\n${results.the_nuanced_version.the_upgrade}${BRAND}`} label="Copy Upgrade" />
               </div>
@@ -274,20 +286,20 @@ const BeliefStressTest = ({ tool }) => {
 
 
             <div className="space-y-2">
-              <p className={`text-xs text-center ${c.textMuted}`}>
+              <p className={`text-xs text-center ${c.textMuteded}`}>
                 Want to go deeper?{' '}
                 <a href="/EgoKiller" className={linkStyle}>Ego Killer</a>{' '}
                 runs a full demolition-and-rebuild on the assumptions behind your worldview.
               </p>
               {results?.verdict?.rating === 'mostly_false' && (
-                <p className={`text-xs text-center ${c.textMuted}`}>
+                <p className={`text-xs text-center ${c.textMuteded}`}>
                   This belief didn't hold up well.{' '}
                   <a href="/EgoKiller" className={linkStyle}>Ego Killer</a>{' '}
                   can help you replace it with something that does.
                 </p>
               )}
               {(results?.stress_tests?.some(st => st.severity === 'fatal')) && results?.verdict?.rating !== 'mostly_false' && (
-                <p className={`text-xs text-center ${c.textMuted}`}>
+                <p className={`text-xs text-center ${c.textMuteded}`}>
                   Fatal stress tests found.{' '}
                   <a href="/TheFinalWord" className={linkStyle}>The Final Word</a>{' '}
                   can fact-check the specific claims those tests surface.
@@ -296,6 +308,15 @@ const BeliefStressTest = ({ tool }) => {
             </div>
           </div>
         )}
+
+        <div className={`mt-6 pt-4 border-t text-sm ${c.border} ${c.textMuted}`}>
+          <p className="mb-2 font-medium">You might also like:</p>
+          <div className="flex flex-wrap gap-2">
+            {[{slug:'ego-killer',label:'🪞 Ego Killer'},{slug:'debate-me',label:'⚔️ Debate Me'},{slug:'truth-bomb',label:'💣 Truth Bomb'}].map(({slug,label})=>(
+              <a key={slug} href={`/tool/${slug}`} className={linkStyle}>{label}</a>
+            ))}
+          </div>
+        </div>
       </div>
   );
 };

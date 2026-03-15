@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { usePersistentState } from '../hooks/usePersistentState';
 import { useTheme } from '../hooks/useTheme';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { CopyBtn, ActionBar } from '../components/ActionButtons';
@@ -10,40 +11,65 @@ const WHO_OPTIONS = [
 ];
 
 const DIRECTNESS_COLORS = [
-  { border: '#c8872e', bg: (d) => d ? 'bg-[#c8872e]/10 border-[#c8872e]/40' : 'bg-[#fdf3e4] border-[#e0c49a]', text: (d) => d ? 'text-[#d9a04e]' : 'text-[#93541f]', label: 'Gentle' },
-  { border: '#2c4a6e', bg: (d) => d ? 'bg-[#2c4a6e]/10 border-[#2c4a6e]/40' : 'bg-[#e8eef5] border-[#b0c4d8]', text: (d) => d ? 'text-[#a8b9ce]' : 'text-[#1e3a58]', label: 'Direct' },
-  { border: '#b54a3f', bg: (d) => d ? 'bg-[#b54a3f]/10 border-[#b54a3f]/40' : 'bg-[#fceae8] border-[#d4908a]', text: (d) => d ? 'text-[#e8a9a3]' : 'text-[#8a3028]', label: 'Full Truth' },
+  { border: 'amber', bg: (d) => d ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300', text: (d) => d ? 'text-amber-300' : 'text-amber-700', label: 'Gentle' },
+  { border: 'sky', bg: (d) => d ? 'bg-sky-900/20 border-sky-700' : 'bg-sky-50 border-sky-200', text: (d) => d ? 'text-sky-300' : 'text-sky-700', label: 'Direct' },
+  { border: 'red', bg: (d) => d ? 'bg-red-900/20 border-red-700' : 'bg-red-50 border-red-200', text: (d) => d ? 'text-red-300' : 'text-red-700', label: 'Full Truth' },
 ];
 
-const TruthBomb = () => {
-  const { theme } = useTheme();
-  const isDark = theme === 'dark';
+const TruthBomb = ({ tool }) => {
+  const { isDark } = useTheme();
   const { callToolEndpoint, loading } = useClaudeAPI();
 
+  const linkStyle = isDark
+    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
+    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
+
   const c = {
-    pageBg:       isDark ? 'bg-[#1a1816]'    : 'bg-[#faf8f5]',
-    card:         isDark ? 'bg-[#2a2623]'     : 'bg-white',
-    cardAlt:      isDark ? 'bg-[#332e2a]'     : 'bg-[#faf8f5]',
-    cardBorder:   isDark ? 'border-[#3d3630]' : 'border-[#e8e1d5]',
-    input:        isDark ? 'bg-[#1a1816] border-[#3d3630] text-[#f0eeea] placeholder:text-[#8a8275]'
-                         : 'bg-[#faf8f5] border-[#d5cab8] text-[#3d3935] placeholder:text-[#8a8275]',
-    inputFocus:   'focus:outline-none focus:ring-2 focus:ring-[#2c4a6e]/20 focus:border-[#4a6a8a]',
-    text:          isDark ? 'text-[#f0eeea]'  : 'text-[#3d3935]',
-    textSecondary: isDark ? 'text-[#c8c3b9]'  : 'text-[#5a544a]',
-    textMuted:     isDark ? 'text-[#8a8275]'  : 'text-[#8a8275]',
-    heading:       isDark ? 'text-[#f3efe8]'  : 'text-[#1e2a3a]',
-    btnPrimary:    isDark ? 'bg-[#2c4a6e] hover:bg-[#4a6a8a] text-white' : 'bg-[#2c4a6e] hover:bg-[#1e3a58] text-white',
-    btnSecondary:  isDark ? 'bg-[#332e2a] hover:bg-[#3d3630] text-[#c8c3b9] border border-[#3d3630]' : 'bg-[#f3efe8] hover:bg-[#e8e1d5] text-[#5e5042] border border-[#d5cab8]',
-    divider:       isDark ? 'border-[#3d3630]' : 'border-[#e8e1d5]',
-    error:         isDark ? 'bg-[#b54a3f]/15 border-[#b54a3f]/50 text-[#e8a9a3]' : 'bg-[#fceae8] border-[#d4908a] text-[#8a3028]',
-  };
+    card:          isDark ? 'bg-zinc-800' : 'bg-white',
+    cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    text:          isDark ? 'text-zinc-50' : 'text-gray-900',
+    textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
+    textMuted:     isDark ? 'text-zinc-500' : 'text-gray-400',
+    labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
+    accentTxt:     isDark ? 'text-amber-400' : 'text-amber-700',
+    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
+    border:        isDark ? 'border-zinc-700' : 'border-gray-200',
+    success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
+    warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
+    danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
+    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
+    badge:         isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-100 text-cyan-800',
+    tipBg:         isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
+    tipText:       isDark ? 'text-amber-300' : 'text-amber-800',
+    successBox:    isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-300',
+    successTxt:    isDark ? 'text-emerald-300' : 'text-emerald-800',
+    warningBox:    isDark ? 'bg-red-900/20 border-red-700' : 'bg-red-50 border-red-200',
+    warningTxt:    isDark ? 'text-red-300' : 'text-red-700',
+    infoBox:       isDark ? 'bg-sky-900/20 border-sky-700' : 'bg-sky-50 border-sky-200',
+    infoTxt:       isDark ? 'text-sky-300' : 'text-sky-800',
+    histBg:        isDark ? 'bg-sky-900/20 border-sky-700/30' : 'bg-sky-50 border-sky-200',
+  };;
 
   const [theUnsaidThing, setTheUnsaidThing] = useState('');
   const [whoItsAbout, setWhoItsAbout] = useState('');
   const [whyNotSaying, setWhyNotSaying] = useState('');
   const [relationshipContext, setRelationshipContext] = useState('');
-  const [results, setResults] = useState(null);
+  const [results, setResults] = usePersistentState('truthbomb-result', null);
   const [error, setError] = useState('');
+  const [history, setHistory] = usePersistentState('truthbomb-history', []);
+
+  useEffect(() => {
+    const handler = (e) => {
+      const tag = document.activeElement?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !loading) handleSubmit();
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [loading]);
   const [expanded, setExpanded] = useState({ timing: false, permission: false });
   const toggle = (k) => setExpanded(p => ({ ...p, [k]: !p[k] }));
 
@@ -58,6 +84,10 @@ const TruthBomb = () => {
         relationshipContext: relationshipContext.trim() || undefined,
       });
       setResults(data);
+      setHistory(prev => [{
+        id: Date.now(), date: new Date().toISOString(),
+        preview: theUnsaidThing.trim().slice(0, 40),
+      }, ...prev].slice(0, 6));
     } catch (e) { setError(e.message || 'Failed to process the truth.'); }
   };
 
@@ -76,18 +106,18 @@ const TruthBomb = () => {
   };
 
   return (
-    <div className={`min-h-screen py-8 px-4 ${c.pageBg}`}>
+    <div className={`min-h-screen py-8 px-4 ${c.cardAlt}`}>
       <div className="max-w-2xl mx-auto">
 
         <div className="text-center mb-8">
           <div className="text-5xl mb-3">💣</div>
-          <h1 className={`text-3xl font-black tracking-tight mb-2 ${c.heading}`}>Truth Bomb</h1>
-          <p className={`text-sm ${c.textMuted}`}>The thing you know but won't say. Explored, costed, and scripted three ways.</p>
+          <h1 className={`text-3xl font-black tracking-tight mb-2 ${c.text}`}>Truth Bomb</h1>
+          <p className={`text-sm ${c.textMuteded}`}>The thing you know but won't say. Explored, costed, and scripted three ways.</p>
         </div>
 
         {!results && (
-          <div className={`rounded-2xl border p-6 shadow-sm space-y-4 ${c.card} ${c.cardBorder}`}>
-            <div className={`p-3 rounded-xl border text-sm ${isDark ? 'bg-[#2c4a6e]/10 border-[#2c4a6e]/30 text-[#a8b9ce]' : 'bg-[#e8eef5] border-[#b0c4d8] text-[#1e3a58]'}`}>
+          <div className={`rounded-2xl border p-6 shadow-sm space-y-4 ${c.card} ${c.border}`}>
+            <div className={`p-3 rounded-xl border text-sm ${isDark ? 'bg-sky-900/20 border-sky-700 text-sky-300' : 'bg-sky-50 border-sky-200 text-sky-800'}`}>
               This is private. No judgment here — just clarity.
             </div>
 
@@ -98,17 +128,17 @@ const TruthBomb = () => {
               <textarea value={theUnsaidThing} onChange={e => setTheUnsaidThing(e.target.value)}
                 placeholder="Type the thing you're hiding — to yourself or someone else. Be honest. It stays here."
                 rows={4} maxLength={600}
-                className={`w-full px-4 py-3 rounded-xl border text-sm resize-none ${c.input} ${c.inputFocus}`} />
+                className={`w-full px-4 py-3 rounded-xl border text-sm resize-none ${c.input}`} />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>Who it's about or to <span className={`font-normal ${c.textMuted}`}>(optional)</span></label>
+                <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>Who it's about or to <span className={`font-normal ${c.textMuteded}`}>(optional)</span></label>
                 <div className="flex flex-wrap gap-1.5 mb-2">
                   {WHO_OPTIONS.map(w => (
                     <button key={w} onClick={() => setWhoItsAbout(whoItsAbout === w ? '' : w)}
                       className={`px-2.5 py-1 rounded-lg text-xs border transition-all ${
-                        whoItsAbout === w ? 'bg-[#2c4a6e] text-white border-[#2c4a6e]' : c.btnSecondary
+                        whoItsAbout === w ? c.btnPrimary : c.btnSecondary
                       }`}>
                       {w}
                     </button>
@@ -116,27 +146,28 @@ const TruthBomb = () => {
                 </div>
               </div>
               <div>
-                <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>Why you haven't said it <span className={`font-normal ${c.textMuted}`}>(optional)</span></label>
+                <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>Why you haven't said it <span className={`font-normal ${c.textMuteded}`}>(optional)</span></label>
                 <textarea value={whyNotSaying} onChange={e => setWhyNotSaying(e.target.value)}
                   placeholder="Fear of their reaction, not ready, not sure it's true…"
                   rows={3} maxLength={300}
-                  className={`w-full px-4 py-3 rounded-xl border text-sm resize-none ${c.input} ${c.inputFocus}`} />
+                  className={`w-full px-4 py-3 rounded-xl border text-sm resize-none ${c.input}`} />
               </div>
             </div>
 
             <div>
-              <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>Relationship context <span className={`font-normal ${c.textMuted}`}>(optional)</span></label>
+              <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>Relationship context <span className={`font-normal ${c.textMuteded}`}>(optional)</span></label>
               <input type="text" value={relationshipContext} onChange={e => setRelationshipContext(e.target.value)}
                 placeholder="How long you've known them, what the relationship is like, history…"
-                className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} ${c.inputFocus}`} />
+                className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input}`} />
             </div>
 
-            {error && <div className={`p-3 rounded-xl border text-sm ${c.error}`}><span className="mr-1">⚠️</span>{error}</div>}
+            {error && <div className={`p-3 rounded-xl border text-sm ${c.danger}`}><span className="mr-1">⚠️</span>{error}</div>}
 
             <button onClick={handleSubmit} disabled={loading || !theUnsaidThing.trim()}
               className={`w-full py-3 rounded-xl font-bold disabled:opacity-40 ${c.btnPrimary}`}>
-              {loading ? <><span className="animate-spin inline-block mr-2">⏳</span>Processing…</> : '💣 Handle the Truth'}
+              {loading ? <><span className="inline-block animate-spin mr-2">{tool?.icon ?? '⚙️'}</span>Processing…</> : '💣 Handle the Truth'}
             </button>
+          <p className={`text-xs text-center ${c.textMuted}`}>AI-generated — use your judgment.</p>
           </div>
         )}
 
@@ -145,18 +176,18 @@ const TruthBomb = () => {
 
             {/* What it's really about */}
             {results.the_thing_examined && (
-              <div className={`rounded-2xl border p-5 space-y-3 ${c.card} ${c.cardBorder}`}>
-                <p className={`text-xs font-black uppercase tracking-widest ${c.textMuted}`}>🔍 What It's Really About</p>
+              <div className={`rounded-2xl border p-5 space-y-3 ${c.card} ${c.border}`}>
+                <p className={`text-xs font-black uppercase tracking-widest ${c.textMuteded}`}>🔍 What It's Really About</p>
                 {results.the_thing_examined.what_its_really_about && (
-                  <p className={`text-sm leading-relaxed ${c.textSecondary}`}>{results.the_thing_examined.what_its_really_about}</p>
+                  <p className={`text-sm leading-relaxed ${c.textSecondaryondary}`}>{results.the_thing_examined.what_its_really_about}</p>
                 )}
                 {results.the_thing_examined.why_its_hard_to_say && (
-                  <p className={`text-xs ${c.textMuted}`}><span className="font-semibold">Why it's hard:</span> {results.the_thing_examined.why_its_hard_to_say}</p>
+                  <p className={`text-xs ${c.textMuteded}`}><span className="font-semibold">Why it's hard:</span> {results.the_thing_examined.why_its_hard_to_say}</p>
                 )}
                 {results.the_thing_examined.what_hiding_it_costs && (
-                  <div className={`p-3 rounded-xl border ${isDark ? 'bg-[#b54a3f]/10 border-[#b54a3f]/30' : 'bg-[#fceae8] border-[#d4908a]'}`}>
-                    <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${isDark ? 'text-[#e8a9a3]' : 'text-[#8a3028]'}`}>What hiding it costs</p>
-                    <p className={`text-sm ${c.textSecondary}`}>{results.the_thing_examined.what_hiding_it_costs}</p>
+                  <div className={`p-3 rounded-xl border ${isDark ? 'bg-red-900/20 border-red-700' : 'bg-red-50 border-red-200'}`}>
+                    <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${isDark ? 'text-red-300' : 'text-red-800'}`}>What hiding it costs</p>
+                    <p className={`text-sm ${c.textSecondaryondary}`}>{results.the_thing_examined.what_hiding_it_costs}</p>
                   </div>
                 )}
               </div>
@@ -164,16 +195,16 @@ const TruthBomb = () => {
 
             {/* What would actually happen */}
             {results.what_would_actually_happen && (
-              <div className={`rounded-2xl border p-5 space-y-3 ${isDark ? 'bg-[#5a8a5c]/10 border-[#5a8a5c]/40' : 'bg-[#e8f0e8] border-[#a8c4a8]'}`}>
-                <p className={`text-xs font-black uppercase tracking-widest ${isDark ? 'text-[#8aba8c]' : 'text-[#3d6e3f]'}`}>🌿 What Would Actually Happen</p>
+              <div className={`rounded-2xl border p-5 space-y-3 ${isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-300'}`}>
+                <p className={`text-xs font-black uppercase tracking-widest ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>🌿 What Would Actually Happen</p>
                 {results.what_would_actually_happen.most_likely_scenario && (
-                  <p className={`text-sm ${c.textSecondary}`}>{results.what_would_actually_happen.most_likely_scenario}</p>
+                  <p className={`text-sm ${c.textSecondaryondary}`}>{results.what_would_actually_happen.most_likely_scenario}</p>
                 )}
                 {results.what_would_actually_happen.the_fear_vs_reality_gap && (
-                  <p className={`text-xs ${c.textMuted}`}><span className="font-semibold">The gap:</span> {results.what_would_actually_happen.the_fear_vs_reality_gap}</p>
+                  <p className={`text-xs ${c.textMuteded}`}><span className="font-semibold">The gap:</span> {results.what_would_actually_happen.the_fear_vs_reality_gap}</p>
                 )}
                 {results.what_would_actually_happen.what_it_would_change && (
-                  <p className={`text-xs ${c.textMuted}`}><span className="font-semibold">What changes:</span> {results.what_would_actually_happen.what_it_would_change}</p>
+                  <p className={`text-xs ${c.textMuteded}`}><span className="font-semibold">What changes:</span> {results.what_would_actually_happen.what_it_would_change}</p>
                 )}
               </div>
             )}
@@ -181,7 +212,7 @@ const TruthBomb = () => {
             {/* Three ways to say it */}
             {results.three_ways_to_say_it?.length > 0 && (
               <div className="space-y-3">
-                <p className={`text-xs font-black uppercase tracking-widest px-1 ${c.textMuted}`}>🗣️ Three Ways to Say It</p>
+                <p className={`text-xs font-black uppercase tracking-widest px-1 ${c.textMuteded}`}>🗣️ Three Ways to Say It</p>
                 {results.three_ways_to_say_it.map((v, i) => {
                   const dcfg = DIRECTNESS_COLORS[i] || DIRECTNESS_COLORS[0];
                   return (
@@ -196,17 +227,17 @@ const TruthBomb = () => {
                         </div>
                       </div>
                       {v.when_to_use && (
-                        <p className={`text-xs ${c.textMuted}`}><span className="font-semibold">When:</span> {v.when_to_use}</p>
+                        <p className={`text-xs ${c.textMuteded}`}><span className="font-semibold">When:</span> {v.when_to_use}</p>
                       )}
                       {v.the_words && (
-                        <div className={`p-4 rounded-xl ${isDark ? 'bg-[#1a1816]/60' : 'bg-white/80'} border ${isDark ? 'border-[#3d3630]' : 'border-[#e8e1d5]'}`}>
+                        <div className={`p-4 rounded-xl ${isDark ? 'bg-zinc-900/60' : 'bg-white/80'} border ${isDark ? 'border-zinc-700' : 'border-gray-200'}`}>
                           <p className={`text-sm font-medium leading-relaxed ${c.text}`} style={{ fontStyle: 'italic' }}>
                             "{v.the_words}"
                           </p>
                         </div>
                       )}
                       {v.what_it_accomplishes && (
-                        <p className={`text-xs ${c.textMuted}`}>{v.what_it_accomplishes}</p>
+                        <p className={`text-xs ${c.textMuteded}`}>{v.what_it_accomplishes}</p>
                       )}
                       <CopyBtn content={v.the_words + BRAND} label="Copy this version" />
                     </div>
@@ -217,19 +248,19 @@ const TruthBomb = () => {
 
             {/* Timing */}
             {results.the_timing && (
-              <div className={`rounded-2xl border overflow-hidden ${c.card} ${c.cardBorder}`}>
+              <div className={`rounded-2xl border overflow-hidden ${c.card} ${c.border}`}>
                 <button onClick={() => toggle('timing')} className="w-full text-left px-5 py-4 flex items-center justify-between">
-                  <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>🕐 Timing & Handling the Reaction</p>
-                  <span className={`text-sm ${c.textMuted}`}>{expanded.timing ? '▲' : '▼'}</span>
+                  <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuteded}`}>🕐 Timing & Handling the Reaction</p>
+                  <span className={`text-sm ${c.textMuteded}`}>{expanded.timing ? '▲' : '▼'}</span>
                 </button>
                 {expanded.timing && (
-                  <div className={`px-5 pb-5 space-y-2 border-t ${c.divider} pt-4`}>
+                  <div className={`px-5 pb-5 space-y-2 border-t ${c.border} pt-4`}>
                     {[
                       { key: 'when_to_say_it', label: 'Best moment' },
                       { key: 'what_to_avoid', label: 'Avoid' },
                       { key: 'if_they_dont_respond_well', label: 'If they don\'t respond well' },
                     ].map(row => results.the_timing[row.key] && (
-                      <p key={row.key} className={`text-sm ${c.textSecondary}`}>
+                      <p key={row.key} className={`text-sm ${c.textSecondaryondary}`}>
                         <span className={`font-semibold ${c.text}`}>{row.label}:</span> {results.the_timing[row.key]}
                       </p>
                     ))}
@@ -240,20 +271,20 @@ const TruthBomb = () => {
 
             {/* Permission to not say it */}
             {results.permission_to_not_say_it && (
-              <div className={`rounded-2xl border overflow-hidden ${c.card} ${c.cardBorder}`}>
+              <div className={`rounded-2xl border overflow-hidden ${c.card} ${c.border}`}>
                 <button onClick={() => toggle('permission')} className="w-full text-left px-5 py-4 flex items-center justify-between">
-                  <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>🤫 Permission to Not Say It</p>
-                  <span className={`text-sm ${c.textMuted}`}>{expanded.permission ? '▲' : '▼'}</span>
+                  <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuteded}`}>🤫 Permission to Not Say It</p>
+                  <span className={`text-sm ${c.textMuteded}`}>{expanded.permission ? '▲' : '▼'}</span>
                 </button>
                 {expanded.permission && (
-                  <div className={`px-5 pb-5 space-y-2 border-t ${c.divider} pt-4`}>
+                  <div className={`px-5 pb-5 space-y-2 border-t ${c.border} pt-4`}>
                     {results.permission_to_not_say_it.when_silence_is_okay && (
-                      <p className={`text-sm ${c.textSecondary}`}>
+                      <p className={`text-sm ${c.textSecondaryondary}`}>
                         <span className={`font-semibold ${c.text}`}>When silence is okay:</span> {results.permission_to_not_say_it.when_silence_is_okay}
                       </p>
                     )}
                     {results.permission_to_not_say_it.the_honest_cost && (
-                      <p className={`text-sm ${c.textSecondary}`}>
+                      <p className={`text-sm ${c.textSecondaryondary}`}>
                         <span className={`font-semibold ${c.text}`}>The cost you're accepting:</span> {results.permission_to_not_say_it.the_honest_cost}
                       </p>
                     )}
@@ -270,8 +301,8 @@ const TruthBomb = () => {
               </button>
             </div>
 
-            <div className={`rounded-xl border p-4 ${c.cardAlt} ${c.cardBorder}`}>
-              <p className={`text-xs font-semibold uppercase tracking-wide mb-3 ${c.textMuted}`}>Related tools</p>
+            <div className={`rounded-xl border p-4 ${c.cardAlt} ${c.border}`}>
+              <p className={`text-xs font-semibold uppercase tracking-wide mb-3 ${c.textMuteded}`}>Related tools</p>
               <div className="flex flex-wrap gap-2">
                 {[
                   { id: 'ApologyCalibrator', icon: '🤝', label: 'Fix an apology that didn\'t land' },
@@ -288,6 +319,24 @@ const TruthBomb = () => {
           </div>
         )}
       </div>
+
+      {/* Session history */}
+      {/* eslint-disable-next-line no-restricted-globals */}
+      {history.length > 0 && (
+        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
+          <p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 Recent sessions</p>
+          <div className="space-y-1">
+            {/* eslint-disable-next-line no-restricted-globals */}
+
+            {history.map(s => (
+              <div key={s.id} className="flex items-center justify-between">
+                <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || 'Session'}</span>
+                <span className={`text-xs ${c.textMuted} ml-2 shrink-0`}>{new Date(s.date).toLocaleDateString()}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

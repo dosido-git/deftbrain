@@ -11,7 +11,7 @@
 //   const { bookmarks, isBookmarked, toggle } = useBookmarks();
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Bookmark } from 'lucide-react';
+
 
 const STORAGE_KEY = 'deftbrain-bookmarks';
 
@@ -109,7 +109,7 @@ export function BookmarkButton({ toolId, isDark, size = 'md', className = '' }) 
             : (isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-gray-100 hover:bg-gray-200 text-gray-700')
         }`}
       >
-        <Bookmark className={`${isSm ? 'w-3 h-3' : 'w-3.5 h-3.5'} ${saved ? 'fill-current' : ''}`} />
+        <span className={`${isSm ? 'text-xs' : 'text-sm'} ${saved ? '' : 'opacity-60'}`}>🔖</span>
         {!isSm && (saved ? 'Bookmarked' : 'Bookmark')}
       </button>
       {/* Toast */}

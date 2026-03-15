@@ -148,7 +148,7 @@ const computeLayout = (nodes, edges, width, height) => {
 // ════════════════════════════════════════════════════════════
 // COMPONENT
 // ════════════════════════════════════════════════════════════
-const SixDegreesOfMe = () => {
+const SixDegreesOfMe = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const c = useColors();
   const webRef = useRef(null);

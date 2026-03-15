@@ -38,45 +38,42 @@ const FEEDBACK_OPTIONS = [
   { value: 'not_relevant',  label: 'Not relevant',    icon: '❌' },
 ];
 
-const GentlePushGenerator = () => {
+const GentlePushGenerator = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
-  const { theme } = useTheme();
-  const isDark = theme === 'dark';
+  const { isDark } = useTheme();
 
-  // ─── Color config ───
+  // --- Color config ---
   const c = {
-    bg: isDark ? 'bg-zinc-900' : 'bg-gradient-to-br from-emerald-50 via-teal-50 to-green-50',
-    card: isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-gray-100',
-    cardHover: isDark ? 'hover:bg-zinc-750' : 'hover:bg-gray-50',
-    text: isDark ? 'text-zinc-50' : 'text-gray-900',
+    card:          isDark ? 'bg-zinc-800' : 'bg-white',
+    cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
+    text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
-    textMuted: isDark ? 'text-zinc-400' : 'text-gray-500',
-    input: isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder-zinc-400' : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400',
-    accent: isDark ? 'bg-emerald-600' : 'bg-emerald-500',
-    accentHover: isDark ? 'hover:bg-emerald-500' : 'hover:bg-emerald-600',
-    accentText: 'text-white',
-    accentLight: isDark ? 'bg-emerald-900/40 border-emerald-700' : 'bg-emerald-50 border-emerald-200',
-    accentLightText: isDark ? 'text-emerald-300' : 'text-emerald-800',
-    success: isDark ? 'bg-emerald-900/40 border-emerald-700' : 'bg-emerald-50 border-emerald-200',
-    successText: isDark ? 'text-emerald-300' : 'text-emerald-800',
-    warning: isDark ? 'bg-amber-900/40 border-amber-700' : 'bg-amber-50 border-amber-200',
-    warningText: isDark ? 'text-amber-300' : 'text-amber-800',
-    error: isDark ? 'bg-red-900/30 border-red-700' : 'bg-red-50 border-red-200',
-    errorText: isDark ? 'text-red-300' : 'text-red-800',
-    tag: isDark ? 'bg-zinc-700 text-zinc-200' : 'bg-gray-100 text-gray-700',
-    tagActive: isDark ? 'bg-emerald-600 text-white' : 'bg-emerald-500 text-white',
-    divider: isDark ? 'border-zinc-700' : 'border-gray-200',
-    blockBg: isDark ? 'bg-zinc-700/50' : 'bg-gray-50',
-    hero: isDark ? 'bg-gradient-to-br from-emerald-900/60 to-teal-900/60 border-emerald-600' : 'bg-gradient-to-br from-emerald-100 to-teal-100 border-emerald-300',
-    heroText: isDark ? 'text-emerald-200' : 'text-emerald-900',
+    textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
+    input:         isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder-zinc-400' : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400',
+    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
+    border:        isDark ? 'border-zinc-700' : 'border-gray-200',
+    success:       isDark ? 'bg-emerald-900/40 border-emerald-700 text-emerald-300' : 'bg-emerald-50 border-emerald-200 text-emerald-800',
+    warning:       isDark ? 'bg-amber-900/40 border-amber-700 text-amber-300' : 'bg-amber-50 border-amber-200 text-amber-800',
+    danger:        isDark ? 'bg-red-900/30 border-red-700 text-red-300' : 'bg-red-50 border-red-200 text-red-800',
+    tag:           isDark ? 'bg-zinc-700 text-zinc-200' : 'bg-gray-100 text-gray-700',
+    tagActive:     isDark ? 'bg-emerald-600 text-white' : 'bg-emerald-500 text-white',
+    heroCard:      isDark ? 'bg-gradient-to-br from-emerald-900/60 to-cyan-900/60 border-emerald-600' : 'bg-gradient-to-br from-emerald-100 to-cyan-100 border-emerald-300',
+    heroText:      isDark ? 'text-emerald-200' : 'text-emerald-900',
+    accentLight:   isDark ? 'bg-emerald-900/40 border-emerald-700 text-emerald-300' : 'bg-emerald-50 border-emerald-200 text-emerald-800',
   };
+
+  const linkStyle = isDark
+    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
+    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
+
 
   const intensityColor = (color) => {
     const map = {
       emerald: { bg: isDark ? 'bg-emerald-900/30 border-emerald-600' : 'bg-emerald-50 border-emerald-300', text: isDark ? 'text-emerald-300' : 'text-emerald-800', ring: isDark ? 'ring-emerald-500' : 'ring-emerald-400' },
       amber:   { bg: isDark ? 'bg-amber-900/30 border-amber-600' : 'bg-amber-50 border-amber-300', text: isDark ? 'text-amber-300' : 'text-amber-800', ring: isDark ? 'ring-amber-500' : 'ring-amber-400' },
-      rose:    { bg: isDark ? 'bg-rose-900/30 border-rose-600' : 'bg-rose-50 border-rose-300', text: isDark ? 'text-rose-300' : 'text-rose-800', ring: isDark ? 'ring-rose-500' : 'ring-rose-400' },
-      violet:  { bg: isDark ? 'bg-violet-900/30 border-violet-600' : 'bg-violet-50 border-violet-300', text: isDark ? 'text-violet-300' : 'text-violet-800', ring: isDark ? 'ring-violet-500' : 'ring-violet-400' },
+      rose:    { bg: isDark ? 'bg-red-900/30 border-red-600' : 'bg-red-50 border-red-300', text: isDark ? 'text-red-300' : 'text-red-800', ring: isDark ? 'ring-red-500' : 'ring-red-400' },
+      violet:  { bg: isDark ? 'bg-zinc-700/50 border-zinc-500' : 'bg-gray-50 border-gray-300', text: isDark ? 'text-zinc-300' : 'text-gray-700', ring: isDark ? 'ring-zinc-400' : 'ring-gray-400' },
     };
     return map[color] || map.emerald;
   };
@@ -85,6 +82,16 @@ const GentlePushGenerator = () => {
   // setup | pick | active | countdown | log | reflection | growth | ladder | inventory | vault
   const [view, setView] = useState('setup');
   const [error, setError] = useState('');
+  const resultsRef = React.useRef(null);
+
+  // Global Cmd/Ctrl+Enter submit
+  React.useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !loading) handleGenerate();
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [handleGenerate, loading]);
 
   // ─── State: Setup inputs ───
   const [domain, setDomain] = useState('');
@@ -259,8 +266,9 @@ const GentlePushGenerator = () => {
         learned: whatLearned.trim() || null,
         capacity,
         date: new Date().toISOString(),
+        preview: (activePush?.challenge || '').slice(0, 40),
       };
-      setPushLog(prev => [entry, ...prev].slice(0, 100));
+      setPushLog(prev => [entry, ...prev].slice(0, 6));
 
       setView('reflection');
     } catch (err) { setError(err.message || 'Failed to reflect.'); }
@@ -368,7 +376,7 @@ const GentlePushGenerator = () => {
   // ══════════════════════════════════════════════════
   if (view === 'setup') {
     return (
-      <div className={`min-h-screen ${c.bg} py-6 px-4`}>
+      <div className={`min-h-screen ${c.card} ${c.border} py-6 px-4`}>
         <div className="max-w-xl mx-auto space-y-5">
 
           {/* Header */}
@@ -380,7 +388,7 @@ const GentlePushGenerator = () => {
 
           {/* Stats bar */}
           {pushLog.length > 0 && (
-            <div className={`${c.card} border rounded-xl p-4`}>
+            <div className={`${c.card} ${c.border} border rounded-xl p-4`}>
               <div className="flex items-center justify-between flex-wrap gap-2">
                 <div className="flex items-center gap-3">
                   <span className={`text-sm font-medium ${c.text}`}>
@@ -410,11 +418,11 @@ const GentlePushGenerator = () => {
 
               {/* Badges (v3) */}
               {Object.keys(domainBadges).length > 0 && (
-                <div className={`flex flex-wrap gap-2 pt-2 border-t ${c.divider}`}>
+                <div className={`flex flex-wrap gap-2 pt-2 border-t ${c.border}`}>
                   {DOMAINS.filter(d => domainBadges[d.value]).map(d => {
                     const b = domainBadges[d.value];
                     return (
-                      <span key={d.value} className={`text-[10px] px-2 py-1 rounded-lg ${c.blockBg}`}>
+                      <span key={d.value} className={`text-[10px] px-2 py-1 rounded-lg ${c.cardAlt}`}>
                         {b.icon} {d.label} ({b.count})
                       </span>
                     );
@@ -424,7 +432,7 @@ const GentlePushGenerator = () => {
 
               {/* Prediction gap insight (v3) */}
               {predictionGap && (
-                <div className={`pt-2 border-t ${c.divider}`}>
+                <div className={`pt-2 border-t ${c.border}`}>
                   <p className={`text-[10px] ${c.accentLightText}`}>
                     {predictionGap.overpredict
                       ? `🧠 Your brain overpredicts scariness by ${predictionGap.avgGap} points on average (${predictionGap.count} pushes measured)`
@@ -445,7 +453,7 @@ const GentlePushGenerator = () => {
               {growthArea.trim() && (
                 <button onClick={handleLadder} disabled={loading}
                   className={`text-xs px-3 py-1.5 rounded-lg font-medium ${c.tag}`}>
-                  {loading ? '⏳' : '🪜'} Escalation Ladder
+                  {loading ? <span className='animate-spin inline-block mr-1'>{tool?.icon ?? '🌱'}</span> : <span className='mr-1'>{tool?.icon ?? '🌱'}</span>} Escalation Ladder
                 </button>
               )}
               <button onClick={() => setView('inventory')}
@@ -457,14 +465,14 @@ const GentlePushGenerator = () => {
 
           {/* Quick-log win panel (v3) */}
           {showQuickLog && (
-            <div className={`${c.card} border-2 rounded-xl p-4 space-y-2 ${isDark ? 'border-emerald-600' : 'border-emerald-300'}`}>
+            <div className={`${c.card} ${c.border} border-2 rounded-xl p-4 space-y-2 ${isDark ? 'border-emerald-600' : 'border-emerald-300'}`}>
               <p className={`text-sm font-semibold ${c.text}`}>⚡ Log an unplanned brave moment</p>
               <input type="text" value={quickLogText} onChange={e => setQuickLogText(e.target.value)}
                 placeholder="e.g., I said hi to a stranger, I spoke up in a meeting..."
                 className={`w-full p-2.5 rounded-lg border ${c.input} text-sm`} />
               <div className="flex gap-2">
                 <button onClick={saveQuickLog} disabled={!quickLogText.trim()}
-                  className={`flex-1 py-2 rounded-lg font-medium text-sm ${c.accent} ${c.accentText} disabled:opacity-40`}>
+                  className={`flex-1 py-2 rounded-lg font-medium text-sm ${c.btnPrimary} ${c.text} disabled:opacity-40`}>
                   ✅ Save
                 </button>
                 <button onClick={() => { setShowQuickLog(false); setQuickLogText(''); }}
@@ -474,7 +482,7 @@ const GentlePushGenerator = () => {
           )}
 
           {/* Push day selector (v3) */}
-          <div className={`${c.card} border rounded-xl p-4`}>
+          <div className={`${c.card} ${c.border} border rounded-xl p-4`}>
             <div className="flex items-center justify-between">
               <div>
                 <p className={`text-xs font-semibold ${c.text}`}>🔔 Weekly push day <span className={`font-normal ${c.textMuted}`}>(optional)</span></p>
@@ -492,7 +500,7 @@ const GentlePushGenerator = () => {
           </div>
 
           {/* Domain picker */}
-          <div className={`${c.card} border rounded-xl p-5 space-y-3`}>
+          <div className={`${c.card} ${c.border} border rounded-xl p-5 space-y-3`}>
             <label className={`block text-sm font-semibold ${c.text}`}>
               Which area of life? <span className={`font-normal ${c.textMuted}`}>(optional)</span>
             </label>
@@ -509,7 +517,7 @@ const GentlePushGenerator = () => {
 
           {/* Domain comfort sliders */}
           {domain && (
-            <div className={`${c.card} border rounded-xl p-5 space-y-3`}>
+            <div className={`${c.card} ${c.border} border rounded-xl p-5 space-y-3`}>
               <label className={`block text-sm font-semibold ${c.text}`}>
                 Comfort level: {DOMAINS.find(d => d.value === domain)?.label}
               </label>
@@ -527,27 +535,27 @@ const GentlePushGenerator = () => {
           )}
 
           {/* Comfort zone */}
-          <div className={`${c.card} border rounded-xl p-5 space-y-3`}>
+          <div className={`${c.card} ${c.border} border rounded-xl p-5 space-y-3`}>
             <label className={`block text-sm font-semibold ${c.text}`}>
               What's your comfort zone? <span className={`font-normal ${c.textMuted}`}>(optional)</span>
             </label>
-            <input type="text" value={comfortZone} onChange={e => setComfortZone(e.target.value)}
+            <input type="text" value={comfortZone} onChange={e => setComfortZone(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) handleGenerate(); }}
               placeholder="e.g., Fine texting friends, scared of phone calls"
               className={`w-full p-3 rounded-xl border-2 ${c.input} text-sm focus:ring-2 focus:ring-emerald-400 outline-none`} />
           </div>
 
           {/* Growth area */}
-          <div className={`${c.card} border rounded-xl p-5 space-y-3`}>
+          <div className={`${c.card} ${c.border} border rounded-xl p-5 space-y-3`}>
             <label className={`block text-sm font-semibold ${c.text}`}>
               Where do you want to grow? <span className={`text-red-400`}>*</span>
             </label>
-            <input type="text" value={growthArea} onChange={e => setGrowthArea(e.target.value)}
+            <input type="text" value={growthArea} onChange={e => setGrowthArea(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) handleGenerate(); }}
               placeholder="e.g., Deeper friendships, public speaking, trying new things"
               className={`w-full p-3 rounded-xl border-2 ${c.input} text-sm focus:ring-2 focus:ring-emerald-400 outline-none`} />
           </div>
 
           {/* Capacity */}
-          <div className={`${c.card} border rounded-xl p-5 space-y-3`}>
+          <div className={`${c.card} ${c.border} border rounded-xl p-5 space-y-3`}>
             <label className={`block text-sm font-semibold ${c.text}`}>How are you feeling today?</label>
             <div className="flex gap-2">
               {CAPACITY_LEVELS.map(cap => (
@@ -563,21 +571,21 @@ const GentlePushGenerator = () => {
 
           {/* Generate button */}
           <button onClick={handleGenerate} disabled={loading || !growthArea.trim()}
-            className={`w-full py-4 rounded-xl font-bold text-lg ${c.accent} ${c.accentHover} ${c.accentText} disabled:opacity-40 transition-all shadow-lg`}>
-            {loading ? <span><span className="animate-spin inline-block">⏳</span> Generating pushes...</span> : <span>🫸 Generate 3 Pushes</span>}
+            className={`w-full py-4 rounded-xl font-bold text-lg ${c.btnPrimary} ${c.text} disabled:opacity-40 transition-all shadow-lg`}>
+            {loading ? <span><span className="animate-spin inline-block">{tool?.icon ?? '🌱'}</span> Generating pushes...</span> : <span><span className="mr-1">{tool?.icon ?? '🌱'}</span> Generate 3 Pushes</span>}
           </button>
 
-          {error && <div className={`${c.error} border rounded-xl p-4`}><p className={`text-sm ${c.errorText}`}><span>⚠️</span> {error}</p></div>}
+          {error && <div className={`${c.danger} border rounded-xl p-4`}><p className={`text-sm ${c.danger}`}><span>⚠️</span> {error}</p></div>}
 
           {/* Recent pushes */}
           {pushLog.length > 0 && (
-            <div className={`${c.card} border rounded-xl p-5`}>
+            <div className={`${c.card} ${c.border} border rounded-xl p-5`}>
               <h3 className={`text-sm font-bold ${c.text} mb-3`}><span>🕐</span> Recent Pushes</h3>
               <div className="space-y-2">
                 {pushLog.slice(0, 5).map(p => {
                   const ic = INTENSITY_CONFIG[p.intensity] || INTENSITY_CONFIG.gentle;
                   return (
-                    <div key={p.id} className={`flex items-center justify-between p-2.5 rounded-lg ${c.blockBg}`}>
+                    <div key={p.id} className={`flex items-center justify-between p-2.5 rounded-lg ${c.cardAlt}`}>
                       <div className="flex items-center gap-2 flex-1 min-w-0">
                         <span className="text-xs">{ic.icon}</span>
                         <p className={`text-xs ${c.text} truncate`}>{p.challenge}</p>
@@ -595,7 +603,7 @@ const GentlePushGenerator = () => {
           )}
 
           {/* Cross-references */}
-          <div className={`${c.card} border rounded-xl p-4`}>
+          <div className={`${c.card} ${c.border} border rounded-xl p-4`}>
             <p className={`text-xs font-medium ${c.textMuted} mb-2`}>Related tools</p>
             <div className="flex flex-wrap gap-2">
               {[
@@ -604,7 +612,7 @@ const GentlePushGenerator = () => {
                 { id: 'BrainDumpStructurer', icon: '🧠', label: 'Brain Dump Structurer' },
               ].map(t => (
                 <a key={t.id} href={`/${t.id}`} target="_blank" rel="noopener noreferrer"
-                  className={`text-xs px-3 py-1.5 rounded-lg ${c.tag} ${c.cardHover} transition-colors`}><span>{t.icon}</span> {t.label}</a>
+                  className={`text-xs px-3 py-1.5 rounded-lg ${c.tag} transition-colors`}><span>{t.icon}</span> {t.label}</a>
               ))}
             </div>
           </div>
@@ -618,14 +626,14 @@ const GentlePushGenerator = () => {
   // ══════════════════════════════════════════════════
   if (view === 'pick' && pushOptions) {
     return (
-      <div className={`min-h-screen ${c.bg} py-6 px-4`}>
+      <div className={`min-h-screen ${c.card} ${c.border} py-6 px-4`}>
         <div className="max-w-xl mx-auto space-y-5">
 
           <button onClick={() => setView('setup')} className={`text-xs ${c.textMuted} mb-2`}>← Back</button>
 
           {/* Acknowledgment */}
           {acknowledgment && (
-            <div className={`${c.hero} border-2 rounded-2xl p-5 text-center shadow-lg`}>
+            <div className={`${c.heroCard} border-2 rounded-2xl p-5 text-center shadow-lg`}>
               <p className={`text-sm font-medium ${c.heroText}`}>{acknowledgment}</p>
             </div>
           )}
@@ -646,7 +654,7 @@ const GentlePushGenerator = () => {
               const cc = intensityColor(ic.color);
               return (
                 <button key={i} onClick={() => pickPush(push)}
-                  className={`w-full text-left ${cc.bg} border-2 rounded-xl p-5 space-y-2 transition-all hover:ring-2 ${cc.ring} hover:shadow-md`}>
+                  className={`w-full text-left ${cc.card} border-2 rounded-xl p-5 space-y-2 transition-all hover:ring-2 ${cc.ring} hover:shadow-md`}>
                   <div className="flex items-center gap-2">
                     <span className="text-lg">{ic.icon}</span>
                     <span className={`text-xs font-bold uppercase ${cc.text}`}>{ic.label}</span>
@@ -662,7 +670,7 @@ const GentlePushGenerator = () => {
 
           {/* Permission to skip */}
           {ifYouDont && (
-            <div className={`${c.card} border rounded-xl p-4 text-center`}>
+            <div className={`${c.card} ${c.border} border rounded-xl p-4 text-center`}>
               <p className={`text-xs ${c.textSecondary} italic`}>{ifYouDont}</p>
             </div>
           )}
@@ -673,7 +681,7 @@ const GentlePushGenerator = () => {
               🔄 None of these fit — try again
             </button>
           ) : (
-            <div className={`${c.card} border rounded-xl p-5 space-y-3`}>
+            <div className={`${c.card} ${c.border} border rounded-xl p-5 space-y-3`}>
               <p className={`text-sm font-semibold ${c.text}`}>What should be different?</p>
               <div className="flex flex-wrap gap-2">
                 {FEEDBACK_OPTIONS.map(fb => (
@@ -688,8 +696,8 @@ const GentlePushGenerator = () => {
                 className={`w-full p-2.5 rounded-lg border ${c.input} text-sm`} />
               <div className="flex gap-2">
                 <button onClick={handleRegenerate} disabled={loading || (!feedbackType && !feedbackCustom.trim())}
-                  className={`flex-1 py-2.5 rounded-lg font-medium text-sm ${c.accent} ${c.accentText} disabled:opacity-40`}>
-                  {loading ? '⏳' : '🔄'} Generate New
+                  className={`flex-1 py-2.5 rounded-lg font-medium text-sm ${c.btnPrimary} ${c.text} disabled:opacity-40`}>
+                  {loading ? <span className='animate-spin inline-block mr-1'>{tool?.icon ?? '🌱'}</span> : <span className='mr-1'>{tool?.icon ?? '🌱'}</span>} Generate New
                 </button>
                 <button onClick={() => { setShowFeedback(false); setFeedbackType(''); setFeedbackCustom(''); }}
                   className={`px-4 py-2.5 rounded-lg text-sm ${c.tag}`}>Cancel</button>
@@ -697,7 +705,7 @@ const GentlePushGenerator = () => {
             </div>
           )}
 
-          {error && <div className={`${c.error} border rounded-xl p-4`}><p className={`text-sm ${c.errorText}`}><span>⚠️</span> {error}</p></div>}
+          {error && <div className={`${c.danger} border rounded-xl p-4`}><p className={`text-sm ${c.danger}`}><span>⚠️</span> {error}</p></div>}
         </div>
       </div>
     );
@@ -711,13 +719,13 @@ const GentlePushGenerator = () => {
     const cc = intensityColor(ic.color);
 
     return (
-      <div className={`min-h-screen ${c.bg} py-6 px-4`}>
+      <div className={`min-h-screen ${c.card} ${c.border} py-6 px-4`}>
         <div className="max-w-xl mx-auto space-y-5">
 
           <button onClick={() => setView('pick')} className={`text-xs ${c.textMuted}`}>← Pick different</button>
 
           {/* The push */}
-          <div className={`${cc.bg} border-2 rounded-2xl p-6 space-y-3 shadow-lg`}>
+          <div className={`${cc.card} border-2 rounded-2xl p-6 space-y-3 shadow-lg`}>
             <div className="flex items-center gap-2 justify-center">
               <span className="text-2xl">{ic.icon}</span>
               <span className={`text-xs font-bold uppercase ${cc.text}`}>{ic.label} push</span>
@@ -730,7 +738,7 @@ const GentlePushGenerator = () => {
 
           {/* Why this size */}
           {activePush.why_this_size && (
-            <div className={`${c.card} border rounded-xl p-4`}>
+            <div className={`${c.card} ${c.border} border rounded-xl p-4`}>
               <p className={`text-[10px] font-bold uppercase ${c.textMuted} mb-1`}>Why this size</p>
               <p className={`text-sm ${c.textSecondary}`}>{activePush.why_this_size}</p>
             </div>
@@ -739,20 +747,20 @@ const GentlePushGenerator = () => {
           {/* What counts */}
           {activePush.what_counts && (
             <div className={`${c.success} border rounded-xl p-4`}>
-              <p className={`text-sm font-medium ${c.successText}`}>✅ {activePush.what_counts}</p>
+              <p className={`text-sm font-medium ${c.success}`}>✅ {activePush.what_counts}</p>
             </div>
           )}
 
           {/* If too much */}
           {activePush.if_too_much && (
             <div className={`${c.warning} border rounded-xl p-4`}>
-              <p className={`text-[10px] font-bold uppercase ${c.warningText} mb-1`}>If this feels too big</p>
-              <p className={`text-sm ${c.warningText}`}>{activePush.if_too_much}</p>
+              <p className={`text-[10px] font-bold uppercase ${c.warning} mb-1`}>If this feels too big</p>
+              <p className={`text-sm ${c.warning}`}>{activePush.if_too_much}</p>
             </div>
           )}
 
           {/* Reminder copy */}
-          <div className={`${c.card} border rounded-xl p-4 space-y-2`}>
+          <div className={`${c.card} ${c.border} border rounded-xl p-4 space-y-2`}>
             <p className={`text-[10px] font-bold uppercase ${c.textMuted}`}>📱 Set a reminder</p>
             <CopyBtn content={buildReminderText()} label="Copy reminder text" />
             <p className={`text-[10px] ${c.textMuted}`}>Paste into your reminders app, calendar, or notes.</p>
@@ -764,13 +772,13 @@ const GentlePushGenerator = () => {
               isDark ? 'bg-gradient-to-r from-orange-900/50 to-red-900/50 border-orange-600 text-orange-200 hover:border-orange-400'
                      : 'bg-gradient-to-r from-orange-50 to-red-50 border-orange-300 text-orange-800 hover:border-orange-500'
             }`}>
-            {loading ? <span><span className="animate-spin inline-block">⏳</span> Preparing...</span> : <span>💪 I'm about to do it — help me NOW</span>}
+            {loading ? <span><span className="animate-spin inline-block">{tool?.icon ?? '🌱'}</span> Preparing...</span> : <span><span className="mr-1">{tool?.icon ?? '🌱'}</span> I'm about to do it — help me NOW</span>}
           </button>
 
           {/* Action buttons */}
           <div className="space-y-3 pt-2">
             <button onClick={() => startLog(true)}
-              className={`w-full py-4 rounded-xl font-bold text-lg ${c.accent} ${c.accentHover} ${c.accentText} shadow-lg`}>
+              className={`w-full py-4 rounded-xl font-bold text-lg ${c.btnPrimary} ${c.text} shadow-lg`}>
               ✅ I did it (or I tried)
             </button>
             <button onClick={() => startLog(false)}
@@ -788,7 +796,7 @@ const GentlePushGenerator = () => {
   // ══════════════════════════════════════════════════
   if (view === 'log') {
     return (
-      <div className={`min-h-screen ${c.bg} py-6 px-4`}>
+      <div className={`min-h-screen ${c.card} ${c.border} py-6 px-4`}>
         <div className="max-w-xl mx-auto space-y-5">
 
           <div className="text-center">
@@ -803,7 +811,7 @@ const GentlePushGenerator = () => {
 
           {/* Predicted scariness — before attempting (v3) */}
           {attempted && (
-            <div className={`${c.card} border rounded-xl p-5 space-y-3`}>
+            <div className={`${c.card} ${c.border} border rounded-xl p-5 space-y-3`}>
               <label className={`block text-sm font-semibold ${c.text}`}>Before you did it — how scary did you EXPECT it to be?</label>
               <div className="flex gap-1.5">
                 {[1, 2, 3, 4, 5].map(n => (
@@ -820,7 +828,7 @@ const GentlePushGenerator = () => {
 
           {/* Actual scariness rating (if attempted) */}
           {attempted && (
-            <div className={`${c.card} border rounded-xl p-5 space-y-3`}>
+            <div className={`${c.card} ${c.border} border rounded-xl p-5 space-y-3`}>
               <label className={`block text-sm font-semibold ${c.text}`}>How scary was it actually?</label>
               <div className="flex gap-1.5">
                 {[1, 2, 3, 4, 5].map(n => (
@@ -835,7 +843,7 @@ const GentlePushGenerator = () => {
               {/* Prediction gap (v3) */}
               {predictedScariness > 0 && scariness > 0 && predictedScariness !== scariness && (
                 <div className={`p-3 rounded-lg text-center ${predictedScariness > scariness ? c.success : c.warning} border`}>
-                  <p className={`text-xs font-medium ${predictedScariness > scariness ? c.successText : c.warningText}`}>
+                  <p className={`text-xs font-medium ${predictedScariness > scariness ? c.success : c.warning}`}>
                     {predictedScariness > scariness
                       ? `Your brain said ${predictedScariness}/5. Reality was ${scariness}/5. Less scary than you thought. 🧠`
                       : `Your brain said ${predictedScariness}/5. Reality was ${scariness}/5. Scarier than expected — that took extra courage.`}
@@ -846,7 +854,7 @@ const GentlePushGenerator = () => {
           )}
 
           {/* What happened */}
-          <div className={`${c.card} border rounded-xl p-5 space-y-3`}>
+          <div className={`${c.card} ${c.border} border rounded-xl p-5 space-y-3`}>
             <label className={`block text-sm font-semibold ${c.text}`}>
               {attempted ? 'What happened?' : 'What got in the way?'}
               <span className={`font-normal ${c.textMuted}`}> (optional)</span>
@@ -859,7 +867,7 @@ const GentlePushGenerator = () => {
 
           {/* What you learned */}
           {attempted && (
-            <div className={`${c.card} border rounded-xl p-5 space-y-3`}>
+            <div className={`${c.card} ${c.border} border rounded-xl p-5 space-y-3`}>
               <label className={`block text-sm font-semibold ${c.text}`}>
                 What did you learn? <span className={`font-normal ${c.textMuted}`}>(optional)</span>
               </label>
@@ -871,11 +879,11 @@ const GentlePushGenerator = () => {
           )}
 
           <button onClick={handleReflect} disabled={loading}
-            className={`w-full py-4 rounded-xl font-bold text-lg ${c.accent} ${c.accentHover} ${c.accentText} disabled:opacity-40 shadow-lg`}>
-            {loading ? <span><span className="animate-spin inline-block">⏳</span> Reflecting...</span> : <span>💭 Get Reflection</span>}
+            className={`w-full py-4 rounded-xl font-bold text-lg ${c.btnPrimary} ${c.text} disabled:opacity-40 shadow-lg`}>
+            {loading ? <span><span className="animate-spin inline-block">{tool?.icon ?? '🌱'}</span> Reflecting...</span> : <span><span className="mr-1">{tool?.icon ?? '🌱'}</span> Get Reflection</span>}
           </button>
 
-          {error && <div className={`${c.error} border rounded-xl p-4`}><p className={`text-sm ${c.errorText}`}><span>⚠️</span> {error}</p></div>}
+          {error && <div className={`${c.danger} border rounded-xl p-4`}><p className={`text-sm ${c.danger}`}><span>⚠️</span> {error}</p></div>}
         </div>
       </div>
     );
@@ -887,17 +895,17 @@ const GentlePushGenerator = () => {
   if (view === 'reflection' && reflectionData) {
     const rd = reflectionData;
     return (
-      <div className={`min-h-screen ${c.bg} py-6 px-4`}>
+      <div className={`min-h-screen ${c.card} ${c.border} py-6 px-4`}>
         <div className="max-w-xl mx-auto space-y-5">
 
           {/* Celebration or acknowledgment */}
           {rd.celebration ? (
-            <div className={`${c.hero} border-2 rounded-2xl p-6 text-center shadow-lg`}>
+            <div className={`${c.heroCard} border-2 rounded-2xl p-6 text-center shadow-lg`}>
               <span className="text-3xl block mb-2">🎉</span>
               <p className={`text-base font-medium ${c.heroText}`}>{rd.celebration}</p>
             </div>
           ) : (
-            <div className={`${c.card} border rounded-2xl p-6 text-center`}>
+            <div className={`${c.card} ${c.border} border rounded-2xl p-6 text-center`}>
               <span className="text-3xl block mb-2">💚</span>
               <p className={`text-sm font-medium ${c.text}`}>Choosing not to do it is also information.</p>
             </div>
@@ -905,7 +913,7 @@ const GentlePushGenerator = () => {
 
           {/* Reflection */}
           {rd.reflection && (
-            <div className={`${c.card} border rounded-xl p-5`}>
+            <div className={`${c.card} ${c.border} border rounded-xl p-5`}>
               <p className={`text-[10px] font-bold uppercase ${c.textMuted} mb-2`}>💭 Reflection</p>
               <p className={`text-sm ${c.text} leading-relaxed`}>{rd.reflection}</p>
             </div>
@@ -921,7 +929,7 @@ const GentlePushGenerator = () => {
 
           {/* Scariness note */}
           {rd.scariness_note && (
-            <div className={`${c.card} border rounded-xl p-4`}>
+            <div className={`${c.card} ${c.border} border rounded-xl p-4`}>
               <p className={`text-[10px] font-bold uppercase ${c.textMuted} mb-1`}>📊 Calibration</p>
               <p className={`text-sm ${c.textSecondary}`}>{rd.scariness_note}</p>
             </div>
@@ -938,8 +946,8 @@ const GentlePushGenerator = () => {
           {/* Next suggestion */}
           {rd.next_suggestion && (
             <div className={`${c.warning} border rounded-xl p-4`}>
-              <p className={`text-[10px] font-bold uppercase ${c.warningText} mb-1`}>⏭️ Next time</p>
-              <p className={`text-sm ${c.warningText}`}>{rd.next_suggestion}</p>
+              <p className={`text-[10px] font-bold uppercase ${c.warning} mb-1`}>⏭️ Next time</p>
+              <p className={`text-sm ${c.warning}`}>{rd.next_suggestion}</p>
             </div>
           )}
 
@@ -954,7 +962,7 @@ const GentlePushGenerator = () => {
           {/* Actions */}
           <div className="flex gap-3">
             <button onClick={handleReset}
-              className={`flex-1 py-3.5 rounded-xl font-bold ${c.accent} ${c.accentHover} ${c.accentText}`}>
+              className={`flex-1 py-3.5 rounded-xl font-bold ${c.btnPrimary} ${c.text}`}>
               🫸 New Push
             </button>
             {pushLog.length >= 3 && (
@@ -975,7 +983,7 @@ const GentlePushGenerator = () => {
   if (view === 'growth' && reviewData) {
     const rv = reviewData;
     return (
-      <div className={`min-h-screen ${c.bg} py-6 px-4`}>
+      <div className={`min-h-screen ${c.card} ${c.border} py-6 px-4`}>
         <div className="max-w-xl mx-auto space-y-5">
 
           <button onClick={() => setView('setup')} className={`text-xs ${c.textMuted}`}>← Back</button>
@@ -992,7 +1000,7 @@ const GentlePushGenerator = () => {
               { label: 'Attempted', value: rv.attempted || attemptedCount, icon: '✅' },
               { label: 'Rate', value: rv.attempt_rate || `${attemptRate}%`, icon: '📊' },
             ].map((s, i) => (
-              <div key={i} className={`${c.card} border rounded-xl p-3 text-center`}>
+              <div key={i} className={`${c.card} ${c.border} border rounded-xl p-3 text-center`}>
                 <span className="text-lg">{s.icon}</span>
                 <p className={`text-lg font-bold ${c.text} mt-1`}>{s.value}</p>
                 <p className={`text-[9px] ${c.textMuted}`}>{s.label}</p>
@@ -1002,7 +1010,7 @@ const GentlePushGenerator = () => {
 
           {/* Comfort zone shift */}
           {rv.comfort_zone_shift && (
-            <div className={`${c.hero} border-2 rounded-2xl p-5 shadow-lg`}>
+            <div className={`${c.heroCard} border-2 rounded-2xl p-5 shadow-lg`}>
               <div className="flex items-center gap-2 justify-center mb-2">
                 <span className="text-xl">{rv.comfort_zone_shift.direction === 'expanding' ? '🌱' : rv.comfort_zone_shift.direction === 'contracting' ? '📉' : '➡️'}</span>
                 <span className={`text-sm font-bold uppercase ${c.heroText}`}>
@@ -1018,7 +1026,7 @@ const GentlePushGenerator = () => {
 
           {/* Streak */}
           {rv.streak && (
-            <div className={`${c.card} border rounded-xl p-4 flex items-center gap-3`}>
+            <div className={`${c.card} ${c.border} border rounded-xl p-4 flex items-center gap-3`}>
               <span className="text-2xl">🔥</span>
               <div>
                 <p className={`text-sm font-bold ${c.text}`}>Current: {rv.streak.current} · Longest: {rv.streak.longest}</p>
@@ -1029,7 +1037,7 @@ const GentlePushGenerator = () => {
 
           {/* Intensity pattern */}
           {rv.intensity_pattern && (
-            <div className={`${c.card} border rounded-xl p-4`}>
+            <div className={`${c.card} ${c.border} border rounded-xl p-4`}>
               <p className={`text-[10px] font-bold uppercase ${c.textMuted} mb-1`}>🎚️ Intensity pattern</p>
               <p className={`text-xs font-medium ${c.text}`}>Most chosen: {rv.intensity_pattern.most_chosen}</p>
               <p className={`text-xs ${c.textSecondary} mt-1`}>{rv.intensity_pattern.observation}</p>
@@ -1038,14 +1046,14 @@ const GentlePushGenerator = () => {
 
           {/* Domain breakdown */}
           {rv.domain_breakdown?.length > 0 && (
-            <div className={`${c.card} border rounded-xl p-5`}>
+            <div className={`${c.card} ${c.border} border rounded-xl p-5`}>
               <p className={`text-[10px] font-bold uppercase ${c.textMuted} mb-3`}>🎯 Domain breakdown</p>
               <div className="space-y-2">
                 {rv.domain_breakdown.map((d, i) => {
                   const dm = DOMAINS.find(dom => dom.value === d.domain);
                   const trendEmoji = d.trend === 'growing' ? '📈' : d.trend === 'avoiding' ? '🙈' : '➡️';
                   return (
-                    <div key={i} className={`flex items-center justify-between p-2.5 rounded-lg ${c.blockBg}`}>
+                    <div key={i} className={`flex items-center justify-between p-2.5 rounded-lg ${c.cardAlt}`}>
                       <div className="flex items-center gap-2">
                         <span>{dm?.icon || '•'}</span>
                         <span className={`text-xs font-medium ${c.text}`}>{dm?.label || d.domain}</span>
@@ -1065,14 +1073,14 @@ const GentlePushGenerator = () => {
           {/* Blind spots */}
           {rv.blind_spots && (
             <div className={`${c.warning} border rounded-xl p-4`}>
-              <p className={`text-[10px] font-bold uppercase ${c.warningText} mb-1`}>🙈 Blind spots</p>
-              <p className={`text-xs ${c.warningText}`}>{rv.blind_spots}</p>
+              <p className={`text-[10px] font-bold uppercase ${c.warning} mb-1`}>🙈 Blind spots</p>
+              <p className={`text-xs ${c.warning}`}>{rv.blind_spots}</p>
             </div>
           )}
 
           {/* Average scariness */}
           {rv.avg_scariness > 0 && (
-            <div className={`${c.card} border rounded-xl p-4 text-center`}>
+            <div className={`${c.card} ${c.border} border rounded-xl p-4 text-center`}>
               <p className={`text-[10px] ${c.textMuted}`}>Average scariness</p>
               <div className="flex items-center justify-center gap-1 mt-1">
                 {[1, 2, 3, 4, 5].map(n => (
@@ -1087,7 +1095,7 @@ const GentlePushGenerator = () => {
 
           {/* Comfort zone radar (v3) — CSS-based spider chart */}
           {rv.domain_breakdown?.length > 0 && (
-            <div className={`${c.card} border rounded-xl p-5`}>
+            <div className={`${c.card} ${c.border} border rounded-xl p-5`}>
               <p className={`text-[10px] font-bold uppercase ${c.textMuted} mb-3 text-center`}>🎯 Comfort Zone Radar</p>
               <div className="relative mx-auto" style={{ width: 220, height: 220 }}>
                 {/* Background circles */}
@@ -1147,13 +1155,13 @@ const GentlePushGenerator = () => {
 
           {/* Domain badges (v3) */}
           {Object.keys(domainBadges).length > 0 && (
-            <div className={`${c.card} border rounded-xl p-4`}>
+            <div className={`${c.card} ${c.border} border rounded-xl p-4`}>
               <p className={`text-[10px] font-bold uppercase ${c.textMuted} mb-2`}>🏅 Badges earned</p>
               <div className="flex flex-wrap gap-2">
                 {DOMAINS.filter(d => domainBadges[d.value]).map(d => {
                   const b = domainBadges[d.value];
                   return (
-                    <div key={d.value} className={`px-3 py-2 rounded-lg ${c.blockBg} text-center`}>
+                    <div key={d.value} className={`px-3 py-2 rounded-lg ${c.cardAlt} text-center`}>
                       <span className="text-lg block">{b.icon}</span>
                       <span className={`text-[10px] font-medium ${c.text} block`}>{d.label}</span>
                       <span className={`text-[9px] ${c.textMuted}`}>{b.count} pushes</span>
@@ -1168,20 +1176,20 @@ const GentlePushGenerator = () => {
           {/* Encouragement */}
           {rv.encouragement && (
             <div className={`${c.success} border rounded-xl p-4 text-center`}>
-              <p className={`text-sm font-medium ${c.successText}`}>{rv.encouragement}</p>
+              <p className={`text-sm font-medium ${c.success}`}>{rv.encouragement}</p>
             </div>
           )}
 
           {/* Next recommendation */}
           {rv.next_recommendation && (
-            <div className={`${c.card} border rounded-xl p-4`}>
+            <div className={`${c.card} ${c.border} border rounded-xl p-4`}>
               <p className={`text-[10px] font-bold uppercase ${c.textMuted} mb-1`}>⏭️ Recommended next</p>
               <p className={`text-sm ${c.text}`}>{rv.next_recommendation}</p>
             </div>
           )}
 
           <button onClick={handleReset}
-            className={`w-full py-3.5 rounded-xl font-bold ${c.accent} ${c.accentHover} ${c.accentText}`}>
+            className={`w-full py-3.5 rounded-xl font-bold ${c.btnPrimary} ${c.text}`}>
             🫸 New Push
           </button>
         </div>
@@ -1198,7 +1206,7 @@ const GentlePushGenerator = () => {
     const isLastStep = countdownStep >= steps.length;
 
     return (
-      <div className={`min-h-screen ${c.bg} py-6 px-4`}>
+      <div className={`min-h-screen ${c.card} ${c.border} py-6 px-4`}>
         <div className="max-w-xl mx-auto space-y-5">
 
           {/* Opening */}
@@ -1242,8 +1250,8 @@ const GentlePushGenerator = () => {
               <p className={`text-2xl font-bold ${c.text} mb-4`}>{cd.go_line || "You're doing it."}</p>
               {cd.panic_plan && (
                 <div className={`${c.warning} border rounded-xl p-4 mt-4`}>
-                  <p className={`text-[10px] font-bold uppercase ${c.warningText} mb-1`}>If panic hits</p>
-                  <p className={`text-sm ${c.warningText}`}>{cd.panic_plan}</p>
+                  <p className={`text-[10px] font-bold uppercase ${c.warning} mb-1`}>If panic hits</p>
+                  <p className={`text-sm ${c.warning}`}>{cd.panic_plan}</p>
                 </div>
               )}
             </div>
@@ -1261,7 +1269,7 @@ const GentlePushGenerator = () => {
               </button>
             ) : (
               <button onClick={() => { setView('active'); setCountdownData(null); setCountdownStep(0); }}
-                className={`w-full py-4 rounded-xl font-bold text-lg ${c.accent} ${c.accentHover} ${c.accentText} shadow-lg`}>
+                className={`w-full py-4 rounded-xl font-bold text-lg ${c.btnPrimary} ${c.text} shadow-lg`}>
                 ✅ Go back — log how it went
               </button>
             )}
@@ -1283,7 +1291,7 @@ const GentlePushGenerator = () => {
     const rungs = ld.rungs || [];
 
     return (
-      <div className={`min-h-screen ${c.bg} py-6 px-4`}>
+      <div className={`min-h-screen ${c.card} ${c.border} py-6 px-4`}>
         <div className="max-w-xl mx-auto space-y-5">
 
           <button onClick={() => setView(pushOptions ? 'pick' : 'setup')} className={`text-xs ${c.textMuted}`}>← Back</button>
@@ -1302,7 +1310,7 @@ const GentlePushGenerator = () => {
               const scareColors = [
                 '', // 0
                 isDark ? 'border-l-emerald-500' : 'border-l-emerald-400',
-                isDark ? 'border-l-teal-500' : 'border-l-teal-400',
+                isDark ? 'border-l-cyan-500' : 'border-l-cyan-400',
                 isDark ? 'border-l-amber-500' : 'border-l-amber-400',
                 isDark ? 'border-l-orange-500' : 'border-l-orange-400',
                 isDark ? 'border-l-red-500' : 'border-l-red-400',
@@ -1338,7 +1346,7 @@ const GentlePushGenerator = () => {
           {/* Distance note */}
           {ld.distance_note && (
             <div className={`${c.success} border rounded-xl p-4 text-center`}>
-              <p className={`text-sm ${c.successText}`}>{ld.distance_note}</p>
+              <p className={`text-sm ${c.success}`}>{ld.distance_note}</p>
             </div>
           )}
 
@@ -1351,7 +1359,7 @@ const GentlePushGenerator = () => {
           )}
 
           <button onClick={handleReset}
-            className={`w-full py-3.5 rounded-xl font-bold ${c.accent} ${c.accentHover} ${c.accentText}`}>
+            className={`w-full py-3.5 rounded-xl font-bold ${c.btnPrimary} ${c.text}`}>
             🫸 Generate Push for Next Rung
           </button>
         </div>
@@ -1388,7 +1396,7 @@ const GentlePushGenerator = () => {
     const answeredCount = Object.keys(inventoryResponses).length;
 
     return (
-      <div className={`min-h-screen ${c.bg} py-6 px-4`}>
+      <div className={`min-h-screen ${c.card} ${c.border} py-6 px-4`}>
         <div className="max-w-xl mx-auto space-y-5">
 
           <button onClick={() => setView('setup')} className={`text-xs ${c.textMuted}`}>← Back</button>
@@ -1406,7 +1414,7 @@ const GentlePushGenerator = () => {
                 {SCENARIOS.map(s => {
                   const dm = DOMAINS.find(d => d.value === s.domain);
                   return (
-                    <div key={s.id} className={`${c.card} border rounded-xl p-3`}>
+                    <div key={s.id} className={`${c.card} ${c.border} border rounded-xl p-3`}>
                       <div className="flex items-center justify-between gap-2">
                         <div className="flex items-center gap-2 flex-1 min-w-0">
                           <span className="text-xs">{dm?.icon || '•'}</span>
@@ -1427,21 +1435,21 @@ const GentlePushGenerator = () => {
                 })}
               </div>
               <button onClick={handleFearInventory} disabled={loading || answeredCount < 10}
-                className={`w-full py-3.5 rounded-xl font-bold ${c.accent} ${c.accentHover} ${c.accentText} disabled:opacity-40`}>
-                {loading ? <span><span className="animate-spin inline-block">⏳</span> Analyzing...</span> : `📋 Analyze My Profile (${answeredCount}/20)`}
+                className={`w-full py-3.5 rounded-xl font-bold ${c.btnPrimary} ${c.text} disabled:opacity-40`}>
+                {loading ? <span><span className="animate-spin inline-block">{tool?.icon ?? '🌱'}</span> Analyzing...</span> : `📋 Analyze My Profile (${answeredCount}/20)`}
               </button>
             </>
           ) : (
             <div className="space-y-4">
               {inventoryResults.profile_summary && (
-                <div className={`${c.hero} border-2 rounded-2xl p-5 shadow-lg`}>
+                <div className={`${c.heroCard} border-2 rounded-2xl p-5 shadow-lg`}>
                   <p className={`text-sm font-medium ${c.heroText}`}>{inventoryResults.profile_summary}</p>
                 </div>
               )}
               {inventoryResults.strongest && (
                 <div className={`${c.success} border rounded-xl p-4`}>
-                  <p className={`text-[10px] font-bold uppercase ${c.successText} mb-1`}>💪 Strongest</p>
-                  <p className={`text-xs ${c.successText}`}>{DOMAINS.find(d => d.value === inventoryResults.strongest.domain)?.icon} {inventoryResults.strongest.observation}</p>
+                  <p className={`text-[10px] font-bold uppercase ${c.success} mb-1`}>💪 Strongest</p>
+                  <p className={`text-xs ${c.success}`}>{DOMAINS.find(d => d.value === inventoryResults.strongest.domain)?.icon} {inventoryResults.strongest.observation}</p>
                 </div>
               )}
               {inventoryResults.growth_edge && (
@@ -1452,12 +1460,12 @@ const GentlePushGenerator = () => {
               )}
               {inventoryResults.biggest_fear && (
                 <div className={`${c.warning} border rounded-xl p-4`}>
-                  <p className={`text-[10px] font-bold uppercase ${c.warningText} mb-1`}>🫣 Handle with care</p>
-                  <p className={`text-xs ${c.warningText}`}>{DOMAINS.find(d => d.value === inventoryResults.biggest_fear.domain)?.icon} {inventoryResults.biggest_fear.observation}</p>
+                  <p className={`text-[10px] font-bold uppercase ${c.warning} mb-1`}>🫣 Handle with care</p>
+                  <p className={`text-xs ${c.warning}`}>{DOMAINS.find(d => d.value === inventoryResults.biggest_fear.domain)?.icon} {inventoryResults.biggest_fear.observation}</p>
                 </div>
               )}
               {inventoryResults.patterns?.length > 0 && (
-                <div className={`${c.card} border rounded-xl p-4`}>
+                <div className={`${c.card} ${c.border} border rounded-xl p-4`}>
                   <p className={`text-[10px] font-bold uppercase ${c.textMuted} mb-2`}>🔍 Patterns</p>
                   {inventoryResults.patterns.map((p, i) => (
                     <p key={i} className={`text-xs ${c.textSecondary} mb-1`}>• {p.pattern}: {p.insight}</p>
@@ -1465,20 +1473,20 @@ const GentlePushGenerator = () => {
                 </div>
               )}
               {inventoryResults.recommended_first_push && (
-                <div className={`${c.card} border-2 rounded-xl p-4 ${isDark ? 'border-emerald-600' : 'border-emerald-300'}`}>
+                <div className={`${c.card} ${c.border} border-2 rounded-xl p-4 ${isDark ? 'border-emerald-600' : 'border-emerald-300'}`}>
                   <p className={`text-[10px] font-bold uppercase ${c.accentLightText} mb-1`}>🎯 Recommended first push</p>
                   <p className={`text-sm font-medium ${c.text}`}>{inventoryResults.recommended_first_push.direction}</p>
                   <p className={`text-xs ${c.textSecondary} mt-1`}>{inventoryResults.recommended_first_push.why}</p>
                 </div>
               )}
               <button onClick={() => { setInventoryResults(null); setInventoryResponses({}); setView('setup'); }}
-                className={`w-full py-3.5 rounded-xl font-bold ${c.accent} ${c.accentHover} ${c.accentText}`}>
+                className={`w-full py-3.5 rounded-xl font-bold ${c.btnPrimary} ${c.text}`}>
                 🫸 Generate Push Based on Profile
               </button>
             </div>
           )}
 
-          {error && <div className={`${c.error} border rounded-xl p-4`}><p className={`text-sm ${c.errorText}`}><span>⚠️</span> {error}</p></div>}
+          {error && <div className={`${c.danger} border rounded-xl p-4`}><p className={`text-sm ${c.danger}`}><span>⚠️</span> {error}</p></div>}
         </div>
       </div>
     );
@@ -1489,7 +1497,7 @@ const GentlePushGenerator = () => {
   // ══════════════════════════════════════════════════
   if (view === 'vault') {
     return (
-      <div className={`min-h-screen ${c.bg} py-6 px-4`}>
+      <div className={`min-h-screen ${c.card} ${c.border} py-6 px-4`}>
         <div className="max-w-xl mx-auto space-y-5">
 
           <button onClick={() => setView('setup')} className={`text-xs ${c.textMuted}`}>← Back</button>
@@ -1502,7 +1510,7 @@ const GentlePushGenerator = () => {
           </div>
 
           {celebrationVault.length === 0 ? (
-            <div className={`${c.card} border rounded-xl p-8 text-center`}>
+            <div className={`${c.card} ${c.border} border rounded-xl p-8 text-center`}>
               <span className="text-3xl block mb-2">🌱</span>
               <p className={`text-sm ${c.textSecondary}`}>Nothing here yet. Complete your first push to start your vault.</p>
             </div>
@@ -1512,7 +1520,7 @@ const GentlePushGenerator = () => {
                 const ic = INTENSITY_CONFIG[p.intensity] || INTENSITY_CONFIG.gentle;
                 const dm = DOMAINS.find(d => d.value === p.domain);
                 return (
-                  <div key={p.id || i} className={`${c.card} border rounded-xl p-4`}>
+                  <div key={p.id || i} className={`${c.card} ${c.border} border rounded-xl p-4`}>
                     <div className="flex items-start gap-3">
                       <div className="flex-shrink-0 text-center">
                         <span className="text-lg block">{ic.icon}</span>
@@ -1553,9 +1561,18 @@ const GentlePushGenerator = () => {
           )}
 
           <button onClick={handleReset}
-            className={`w-full py-3.5 rounded-xl font-bold ${c.accent} ${c.accentHover} ${c.accentText}`}>
+            className={`w-full py-3.5 rounded-xl font-bold ${c.btnPrimary} ${c.text}`}>
             🫸 New Push
           </button>
+
+          <div className={`mt-4 pt-4 border-t text-sm ${c.border} ${c.textMuted}`}>
+            <p className="mb-2 font-medium">You might also like:</p>
+            <div className="flex flex-wrap gap-2">
+              {[{slug:'belief-stress-test',label:'🧪 Belief Stress Test'},{slug:'conflict-coach',label:'🤝 Conflict Coach'},{slug:'ego-killer',label:'🪞 Ego Killer'}].map(({slug,label})=>(
+                <a key={slug} href={`/tool/${slug}`} className={linkStyle}>{label}</a>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     );

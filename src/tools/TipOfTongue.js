@@ -71,7 +71,7 @@ const EXAMPLES = [
 // ════════════════════════════════════════════════════════════
 // MAIN COMPONENT
 // ════════════════════════════════════════════════════════════
-const TipOfTongue = () => {
+const TipOfTongue = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const c = useColors();
   const resultsRef = useRef(null);

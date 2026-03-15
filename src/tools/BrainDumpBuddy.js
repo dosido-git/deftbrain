@@ -39,7 +39,7 @@ const CATEGORY_CONFIG = {
   feelings:        { icon: '💗', label: 'Feelings to Acknowledge', color: 'green' },
 };
 
-const BrainDumpStructurer = ({ tool }) => {
+const BrainDumpBuddy = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { isDark } = useTheme();
   const textRef = useRef(null);
@@ -499,8 +499,9 @@ const BrainDumpStructurer = ({ tool }) => {
       usedExcavate: Object.keys(excavateData).length > 0,
       emergencyMode,
       date: new Date().toISOString(),
+      preview: (context || 'Brain dump').slice(0, 40),
     };
-    setDumpLog(prev => [entry, ...prev].slice(0, 50));
+    setDumpLog(prev => [entry, ...prev].slice(0, 6));
     // Save current results for next dump diff
     if (results && !results.mode) {
       setPreviousDumpResults({ actions: results.actions, decisions: results.decisions, tell_someone: results.tell_someone, worries: results.worries, do_first: results.do_first });
@@ -649,7 +650,7 @@ const BrainDumpStructurer = ({ tool }) => {
                       {key === 'worries' && !excavateData[i] && (
                         <button onClick={() => handleExcavate(text, i)} disabled={excavatingIdx === i}
                           className={`text-[10px] px-2 py-1 rounded-lg ${c.btnSecondary} hover:opacity-80`}>
-                          {excavatingIdx === i ? <span className="animate-spin inline-block">🧠</span> : '🔍'}
+                          {excavatingIdx === i ? <span className="animate-spin inline-block">{tool?.icon ?? '⚙️'}</span> : '🔍'}
                         </button>
                       )}
                     </div>
@@ -916,7 +917,7 @@ const BrainDumpStructurer = ({ tool }) => {
           {/* Structure button */}
           <button onClick={handleStructure} disabled={loading || !hasDump}
             className={`w-full py-4 rounded-xl font-bold text-lg ${c.btnPrimary} disabled:opacity-40 transition-all shadow-lg`}>
-            {loading ? <span><span className="animate-spin inline-block">🧠</span> Sorting your brain...</span> : <span><span>🧠</span> Structure This</span>}
+            {loading ? <span><span className="animate-spin inline-block">{tool?.icon ?? '⚙️'}</span> Sorting your brain...</span> : <span><span>🧠</span> Structure This</span>}
           </button>
 
           {error && <div className={`${c.danger} border rounded-xl p-4`}><p className={`text-sm`}><span>⚠️</span> {error}</p></div>}
@@ -958,6 +959,14 @@ const BrainDumpStructurer = ({ tool }) => {
               </div>
             </div>
           )}
+          <div className={`mt-4 pt-4 border-t text-sm ${c.border} ${c.textMuted}`}>
+            <p className="mb-2 font-medium">You might also like:</p>
+            <div className="flex flex-wrap gap-2">
+              {[{slug:'focus-pocus',label:'🎯 Focus Pocus'},{slug:'brain-state-deejay',label:'🎵 Brain State Deejay'},{slug:'chaos-pilot',label:'✈️ Chaos Pilot'}].map(({slug,label})=>(
+                <a key={slug} href={`/tool/${slug}`} className={linkStyle}>{label}</a>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -1176,7 +1185,7 @@ const BrainDumpStructurer = ({ tool }) => {
               {!doFirstDone && (
                 <button onClick={handleStartWithMe} disabled={loading}
                   className={`mt-3 w-full py-2.5 rounded-lg text-xs font-medium ${c.startWithMeBtn} transition-all`}>
-                  {loading ? <span className="animate-spin inline-block">🧠</span> : <span>🚀</span>} Can't start? Launch with me
+                  {loading ? <span className="animate-spin inline-block">{tool?.icon ?? '⚙️'}</span> : <span>🚀</span>} Can't start? Launch with me
                 </button>
               )}
             </div>
@@ -1221,7 +1230,7 @@ const BrainDumpStructurer = ({ tool }) => {
             <div className="flex flex-wrap gap-2">
               <button onClick={handleShrink} disabled={loading || showShrink}
                 className={`text-xs px-3 py-2 rounded-lg font-medium transition-all ${showShrink ? c.pillActive : c.btnSecondary}`}>
-                {loading && !showShrink ? <span className="animate-spin inline-block">🧠</span> : '✂️'} Shrink the list
+                {loading && !showShrink ? <span className="animate-spin inline-block">{tool?.icon ?? '⚙️'}</span> : '✂️'} Shrink the list
               </button>
               <button onClick={() => setShowTimeMap(!showTimeMap)}
                 className={`text-xs px-3 py-2 rounded-lg font-medium transition-all ${showTimeMap ? c.pillActive : c.btnSecondary}`}>
@@ -1230,7 +1239,7 @@ const BrainDumpStructurer = ({ tool }) => {
               {previousDumpResults && (
                 <button onClick={handleDumpDiff} disabled={loading || !!dumpDiffData}
                   className={`text-xs px-3 py-2 rounded-lg font-medium transition-all ${dumpDiffData ? c.pillActive : c.btnSecondary}`}>
-                  {loading && !dumpDiffData ? <span className="animate-spin inline-block">🧠</span> : '📊'} Compare to last dump
+                  {loading && !dumpDiffData ? <span className="animate-spin inline-block">{tool?.icon ?? '⚙️'}</span> : '📊'} Compare to last dump
                 </button>
               )}
             </div>
@@ -1303,7 +1312,7 @@ const BrainDumpStructurer = ({ tool }) => {
                   </div>
                   <button onClick={handleTimeMap} disabled={loading || !timeMapAvailable}
                     className={`w-full py-2.5 rounded-lg font-medium text-sm ${c.launchBtn} text-white disabled:opacity-40`}>
-                    {loading ? <><span className="animate-spin inline-block">🧠</span> Building...</> : '🗓️ Build My Schedule'}
+                    {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '⚙️'}</span> Building...</> : '🗓️ Build My Schedule'}
                   </button>
                 </div>
               )}
@@ -1513,7 +1522,7 @@ const BrainDumpStructurer = ({ tool }) => {
             </>
           ) : (
             <div className={`${c.card} border ${c.border} rounded-xl p-8 text-center`}>
-              <span className="animate-spin inline-block text-2xl">🧠</span>
+              <span className="animate-spin inline-block text-2xl">{tool?.icon ?? '⚙️'}</span>
               <p className={`text-sm ${c.textMuted} mt-2`}>Analyzing your dumps...</p>
             </div>
           )}
@@ -1525,5 +1534,5 @@ const BrainDumpStructurer = ({ tool }) => {
   return null;
 };
 
-BrainDumpStructurer.displayName = 'BrainDumpStructurer';
-export default BrainDumpStructurer;
+BrainDumpBuddy.displayName = 'BrainDumpBuddy';
+export default BrainDumpBuddy;

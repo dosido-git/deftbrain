@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -60,43 +60,45 @@ const START_TIMES = ['5:00 PM', '5:30 PM', '6:00 PM', '6:30 PM', '7:00 PM', '7:3
 // COMPONENT
 // ═══════════════════════════════════════════
 
-const DateNight = () => {
+const DateNight = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
-  const { theme } = useTheme();
-  const isDark = theme === 'dark';
+  const { isDark } = useTheme();
+
+
+  const linkStyle = isDark
+    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
+    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
 
   const c = {
-    card: isDark ? 'bg-zinc-800' : 'bg-white', text: isDark ? 'text-zinc-50' : 'text-gray-900',
-    ts: isDark ? 'text-zinc-300' : 'text-gray-600', tm: isDark ? 'text-zinc-500' : 'text-gray-400',
-    input: isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder-zinc-400' : 'bg-white border-stone-300 text-gray-900 placeholder-stone-400',
-    pri: isDark ? 'bg-rose-600 hover:bg-rose-500 text-white' : 'bg-rose-600 hover:bg-rose-700 text-white',
-    sec: isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-stone-100 hover:bg-stone-200 text-gray-700',
-    on: isDark ? 'bg-rose-600 text-white border-rose-500' : 'bg-rose-600 text-white border-rose-600',
-    off: isDark ? 'bg-zinc-700 text-zinc-300 hover:bg-zinc-600 border-zinc-600' : 'bg-white text-gray-700 hover:bg-stone-50 border-stone-200',
-    bdr: isDark ? 'border-zinc-700' : 'border-stone-200',
-    acc: isDark ? 'text-rose-400' : 'text-rose-600', accBg: isDark ? 'bg-rose-900/30' : 'bg-rose-50',
-    ok: isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-200 text-emerald-800',
-    warn: isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
-    info: isDark ? 'bg-blue-900/20 border-blue-700 text-blue-200' : 'bg-blue-50 border-blue-200 text-blue-800',
-    bad: isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
-    purp: isDark ? 'bg-violet-900/20 border-violet-700 text-violet-200' : 'bg-violet-50 border-violet-200 text-violet-800',
-    hdr: isDark ? 'bg-gradient-to-br from-rose-900/30 to-zinc-800 border-rose-700' : 'bg-gradient-to-br from-rose-50 to-pink-50 border-rose-200',
-    jnl: isDark ? 'bg-amber-900/15 border-amber-700/40' : 'bg-amber-50 border-amber-300',
-    jt: isDark ? 'text-amber-400' : 'text-amber-700',
-    budgetBar: isDark ? 'bg-zinc-700' : 'bg-stone-200', budgetFill: 'bg-gradient-to-r from-rose-500 to-pink-500',
-    quote: isDark ? 'bg-zinc-900/60' : 'bg-rose-50/60',
-    stop: isDark ? 'bg-zinc-900/60 border-zinc-700' : 'bg-stone-50 border-stone-200',
-    tl: isDark ? 'bg-zinc-700' : 'bg-rose-200',
-    tlDot: isDark ? 'bg-rose-900/40 border-rose-700' : 'bg-rose-100 border-rose-300',
-    live: isDark ? 'bg-gradient-to-br from-rose-900/40 to-zinc-800 border-rose-600' : 'bg-gradient-to-br from-rose-50 to-pink-50 border-rose-200',
-    jar: isDark ? 'bg-pink-900/20 border-pink-700' : 'bg-pink-50 border-pink-200',
-  };
+    card:          isDark ? 'bg-zinc-800' : 'bg-white',
+    cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    text:          isDark ? 'text-zinc-50' : 'text-gray-900',
+    textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
+    textMuted:     isDark ? 'text-zinc-500' : 'text-gray-400',
+    labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
+    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
+    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
+    border:        isDark ? 'border-zinc-700' : 'border-gray-200',
+    success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
+    warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
+    danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
+    infoBox:       isDark ? 'bg-sky-900/20 border-sky-700 text-sky-200' : 'bg-sky-50 border-sky-200 text-sky-800',
+    successBox:    isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-300',
+    successTxt:    isDark ? 'text-emerald-300' : 'text-emerald-800',
+    warningBox:    isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
+    warningTxt:    isDark ? 'text-amber-300' : 'text-amber-800',
+    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
+  };;
+
 
   // ─── Input ───
   const [currency, setCurrency] = useState(detectCur);
   const [budget, setBudget] = useState(() => (BUDGET_PRESETS[detectCur()] || BUDGET_PRESETS['$'])[2]);
-  const [dateType, setDateType] = useState('');
-  const [location, setLocation] = useState(detectLoc);
+  const [dateType, setDateType] = usePersistentState('date-night-type', '');
+  const [location, setLocation] = usePersistentState('date-night-location', detectLoc() || '');
   const [restrictions, setRestrictions] = useState('');
   const [lastTime, setLastTime] = useState('');
   const [startTime, setStartTime] = useState('7:00 PM');
@@ -109,7 +111,7 @@ const DateNight = () => {
   const [error, setError] = useState('');
 
   // ─── Results ───
-  const [results, setResults] = useState(null);
+  const [results, setResults] = usePersistentState('date-night-results', null);
   const [swapping, setSwapping] = useState(null);
   const [expandedConvo, setExpandedConvo] = useState(false);
   const [expandedPlanB, setExpandedPlanB] = useState(false);
@@ -117,7 +119,7 @@ const DateNight = () => {
   // ─── Live mode ───
   const [liveMode, setLiveMode] = useState(false);
   const [liveStep, setLiveStep] = useState(0);
-  const [timeOffset, setTimeOffset] = useState(0); // minutes offset
+  const [timeOffset, setTimeOffset] = useState(0);
 
   // ─── Rating ───
   const [showRate, setShowRate] = useState(false);
@@ -153,12 +155,39 @@ const DateNight = () => {
   const [showPartner, setShowPartner] = useState(false);
 
   // ─── Persistent ───
+  // Journal capped at 50 (not 5-6): pattern analysis requires enough history to detect ruts
   const [journal, setJournal] = usePersistentState('date-night-journal', []);
   const [prefs, setPrefs] = usePersistentState('date-night-prefs', { liked: [], disliked: [] });
   const [favorites, setFavorites] = usePersistentState('date-night-favorites', []);
   const [partnerPrefs, setPartnerPrefs] = usePersistentState('date-night-partner', { partnerLikes: '', partnerDislikes: '', noiseLevel: '', energyLevel: '' });
   const [dateJar, setDateJar] = usePersistentState('date-night-jar', []);
+  const [history, setHistory] = usePersistentState('date-night-history', []);
   const [showJournal, setShowJournal] = useState(false);
+
+  const resultsRef = useRef(null);
+
+  // Scroll to results when they load
+  useEffect(() => {
+    if (results && !showInputs && resultsRef.current) {
+      resultsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [results, showInputs]);
+
+  // Cmd/Ctrl+Enter to submit
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+        const tag = document.activeElement?.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') {
+          if (!location.trim() || !dateType || loading) return;
+          e.preventDefault();
+          generate();
+        }
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  });
 
   // ─── Derived ───
   const presets = BUDGET_PRESETS[currency] || BUDGET_PRESETS['$'];
@@ -186,10 +215,15 @@ const DateNight = () => {
 
   const saveToJournal = useCallback((res) => {
     setJournal(p => [{ id: `dn_${Date.now()}`, date: new Date().toISOString(), location: location.trim(),
-      dateType, vibeTitle: res.vibe_title, stops: res.itinerary || [], budget, currency, rating: null }, ...p].slice(0, 50));
+      dateType, vibeTitle: res.vibe_title, stops: res.itinerary || [], budget, currency, rating: null }, ...p].slice(0, 6));
   }, [setJournal, location, dateType, budget, currency]);
 
-  const resetResults = () => { setShowRate(false); setRateResult(null); setShareData(null); setSimilarResults(null); setExpandedConvo(false); setExpandedPlanB(false); setStopRatings({}); setOverallRating(0); setRateNotes(''); setActualSpend(''); setChecklist(null); setChecklistChecked({}); setLiveMode(false); setLiveStep(0); setTimeOffset(0); setRutResult(null); };
+  const resetResults = () => {
+    setShowRate(false); setRateResult(null); setShareData(null); setSimilarResults(null);
+    setExpandedConvo(false); setExpandedPlanB(false); setStopRatings({}); setOverallRating(0);
+    setRateNotes(''); setActualSpend(''); setChecklist(null); setChecklistChecked({});
+    setLiveMode(false); setLiveStep(0); setTimeOffset(0); setRutResult(null);
+  };
 
   const buildText = () => {
     if (!results?.itinerary) return '';
@@ -202,7 +236,7 @@ const DateNight = () => {
   const toggleFavorite = (stop) => {
     const exists = favorites.find(f => f.venue_name === stop.venue_name);
     if (exists) setFavorites(p => p.filter(f => f.venue_name !== stop.venue_name));
-    else setFavorites(p => [{ venue_name: stop.venue_name, stop_type: stop.stop_type, estimated_cost: stop.estimated_cost, added: new Date().toISOString() }, ...p].slice(0, 30));
+    else setFavorites(p => [{ venue_name: stop.venue_name, stop_type: stop.stop_type, estimated_cost: stop.estimated_cost, added: new Date().toISOString() }, ...p].slice(0, 6));
   };
 
   const isFav = (stop) => favorites.some(f => f.venue_name === stop.venue_name);
@@ -215,11 +249,17 @@ const DateNight = () => {
     setError(''); setResults(null); resetResults();
     if (isAnni && yearsTogether > 0) {
       const data = await callToolEndpoint('date-night', { action: 'anniversary-deep', ...getPayload(), yearsTogether });
-      if (data) { setResults(data); setShowInputs(false); saveToJournal(data); }
+      if (data) {
+        setResults(data); setShowInputs(false); saveToJournal(data);
+        setHistory(p => [{ preview: (data.vibe_title || location.trim()).slice(0, 40), result: data, date: new Date().toISOString() }, ...p].slice(0, 6));
+      }
       return;
     }
     const data = await callToolEndpoint('date-night', { action: 'generate', ...getPayload() });
-    if (data) { setResults(data); setShowInputs(false); saveToJournal(data); }
+    if (data) {
+      setResults(data); setShowInputs(false); saveToJournal(data);
+      setHistory(p => [{ preview: (data.vibe_title || location.trim()).slice(0, 40), result: data, date: new Date().toISOString() }, ...p].slice(0, 6));
+    }
   };
 
   const regenerate = async () => {
@@ -281,13 +321,27 @@ const DateNight = () => {
     setRutLoading(false);
   };
 
-  const loadJournal = (entry) => { setResults({ vibe_title: entry.vibeTitle, itinerary: entry.stops }); setLocation(entry.location || ''); setDateType(entry.dateType || ''); setCurrency(entry.currency || '$'); setBudget(entry.budget || 100); setShowInputs(false); resetResults(); setShowJournal(false); };
+  const loadJournal = (entry) => {
+    setResults({ vibe_title: entry.vibeTitle, itinerary: entry.stops });
+    setLocation(entry.location || ''); setDateType(entry.dateType || '');
+    setCurrency(entry.currency || '$'); setBudget(entry.budget || 100);
+    setShowInputs(false); resetResults(); setShowJournal(false);
+  };
 
   // ═══ SHARED ═══
-  const Pill = ({ options, value, setter, multi }) => <div className="flex flex-wrap gap-1.5">{options.map(o => {
-    const active = multi ? (value || []).includes(o.v) : value === (o.v || o.id);
-    return <button key={o.v || o.id} onClick={() => multi ? setter(o.v) : setter(o.v || o.id)} className={`px-3 py-1.5 rounded-lg text-xs font-semibold border ${active ? c.on : c.off}`}>{active && '✓ '}{o.l}</button>;
-  })}</div>;
+  const Pill = ({ options, value, setter, multi }) => (
+    <div className="flex flex-wrap gap-1.5">
+      {options.map(o => {
+        const active = multi ? (value || []).includes(o.v) : value === (o.v || o.id);
+        return (
+          <button key={o.v || o.id} onClick={() => multi ? setter(o.v) : setter(o.v || o.id)}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold border ${active ? c.chipOn : c.chipOff}`}>
+            {active && '✓ '}{o.l}
+          </button>
+        );
+      })}
+    </div>
+  );
 
   // ═══════════════════════════════════════════
   // RENDER
@@ -295,262 +349,500 @@ const DateNight = () => {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
+
       {/* Header */}
       <div>
-        <h1 className={`text-2xl font-bold ${c.text}`}>💘 Date Night</h1>
-        <p className={`text-sm ${c.ts} mt-1`}>Budget-smart evening plans that feel intentional, not improvised</p>
+        <h2 className={`text-2xl font-bold ${c.text}`}>
+          <span className="mr-1">{tool?.icon ?? '💘'}</span>{tool?.title ?? 'Date Night'}
+        </h2>
+        <p className={`text-sm ${c.textSecondaryondary} mt-1`}>
+          {tool?.tagline ?? 'Budget-smart evening plans that feel intentional, not improvised'}
+        </p>
       </div>
+
+      {/* Pre-result cross-ref */}
+      {!results && (
+        <p className={`text-xs ${c.textMuteded}`}>
+          Need ideas first? <a href="/tool/CrowdWisdom" className={linkStyle}>CrowdWisdom</a> can help you decide what kind of evening fits the moment.
+        </p>
+      )}
 
       {/* Nav */}
       <div className="flex flex-wrap gap-2">
-        {journal.length > 0 && <button onClick={() => setShowJournal(!showJournal)} className={`text-xs font-bold ${c.jt}`}>📔 History ({journal.length})</button>}
-        {favorites.length > 0 && <button onClick={() => {}} className={`text-xs font-bold ${c.acc}`}>❤️ Favorites ({favorites.length})</button>}
-        {journal.length >= 3 && <button onClick={handleRutDetect} disabled={rutLoading} className={`text-xs font-bold ${isDark ? 'text-violet-300' : 'text-violet-600'}`}>{rutLoading ? '⏳' : '🔍 Rut check'}</button>}
-        <button onClick={() => { setShowJar(!showJar); if (!dateJar.length && location.trim()) handleDateJar(); }} className={`text-xs font-bold ${isDark ? 'text-pink-300' : 'text-pink-600'}`}>🫙 Date Jar</button>
-        {prefs.liked?.length > 0 && <span className={`text-xs ${c.tm}`}>🧠 {prefs.liked.length} prefs</span>}
+        {journal.length > 0 && <button onClick={() => setShowJournal(!showJournal)} className={`text-xs font-bold ${c.journalText}`}>📔 History ({journal.length})</button>}
+        {journal.length >= 3 && <button onClick={handleRutDetect} disabled={rutLoading} className={`text-xs font-bold ${c.rutText}`}>{rutLoading ? <><span className="animate-spin inline-block">{tool?.icon ?? '💘'}</span></> : '🔍 Rut check'}</button>}
+        <button onClick={() => { setShowJar(!showJar); if (!dateJar.length && location.trim()) handleDateJar(); }} className={`text-xs font-bold ${c.jarBtnText}`}>🫙 Date Jar</button>
+        {prefs.liked?.length > 0 && <span className={`text-xs ${c.textMuteded}`}>🧠 {prefs.liked.length} prefs</span>}
       </div>
 
       {/* Rut result */}
-      {rutResult && <div className={`${c.purp} border rounded-xl p-4 space-y-2`}>
-        <div className="flex justify-between"><h4 className="font-bold text-sm">🔍 Date Pattern Analysis</h4><button onClick={() => setRutResult(null)} className={`text-xs ${c.tm}`}>✕</button></div>
-        <p className={`text-sm`}>{rutResult.pattern_summary}</p>
-        {rutResult.rut_detected && <div className={`${c.warn} border rounded-lg p-3 text-xs`}>⚠️ {rutResult.rut_description}</div>}
-        {rutResult.missing_categories?.length > 0 && <p className={`text-xs`}>Missing: {rutResult.missing_categories.join(', ')}</p>}
-        {(rutResult.suggestions || []).map((s, i) => <div key={i} className={`text-xs ${c.ts}`}>💡 {s.idea} — {s.why}</div>)}
-        {rutResult.encouragement && <p className={`text-xs italic ${c.ts}`}>{rutResult.encouragement}</p>}
-      </div>}
+      {rutResult && (
+        <div className={`${c.altCard} border rounded-xl p-4 space-y-2`}>
+          <div className="flex justify-between"><h4 className={`font-bold text-sm ${c.text}`}>🔍 Date Pattern Analysis</h4><button onClick={() => setRutResult(null)} className={`text-xs ${c.textMuteded}`}>✕</button></div>
+          <p className={`text-sm ${c.textSecondaryondary}`}>{rutResult.pattern_summary}</p>
+          {rutResult.rut_detected && <div className={`${c.warning} border rounded-lg p-3 text-xs`}>⚠️ {rutResult.rut_description}</div>}
+          {rutResult.missing_categories?.length > 0 && <p className={`text-xs ${c.textSecondaryondary}`}>Missing: {rutResult.missing_categories.join(', ')}</p>}
+          {(rutResult.suggestions || []).map((s, i) => <div key={i} className={`text-xs ${c.textSecondaryondary}`}>💡 {s.idea} — {s.why}</div>)}
+          {rutResult.encouragement && <p className={`text-xs italic ${c.textSecondaryondary}`}>{rutResult.encouragement}</p>}
+        </div>
+      )}
 
       {/* Date Jar */}
-      {showJar && <div className={`${c.jar} border rounded-xl p-4 space-y-3`}>
-        <div className="flex justify-between items-center">
-          <h4 className={`font-bold text-sm ${c.text}`}>🫙 Date Jar — {dateJar.length} ideas</h4>
-          <div className="flex gap-2">
-            <button onClick={handleDateJar} disabled={jarLoading || !location.trim()} className={`text-xs font-bold ${c.acc}`}>{jarLoading ? '⏳' : '🔄 Refill'}</button>
-            <button onClick={() => setShowJar(false)} className={`text-xs ${c.tm}`}>✕</button>
+      {showJar && (
+        <div className={`${c.jarCard} border rounded-xl p-4 space-y-3`}>
+          <div className="flex justify-between items-center">
+            <h4 className={`font-bold text-sm ${c.text}`}>🫙 Date Jar — {dateJar.length} ideas</h4>
+            <div className="flex gap-2">
+              <button onClick={handleDateJar} disabled={jarLoading || !location.trim()} className={`text-xs font-bold ${c.roseText}`}>{jarLoading ? <><span className="animate-spin inline-block">{tool?.icon ?? '💘'}</span> Filling…</> : '🔄 Refill'}</button>
+              <button onClick={() => setShowJar(false)} className={`text-xs ${c.textMuteded}`}>✕</button>
+            </div>
           </div>
+          {dateJar.length === 0 && !jarLoading && <p className={`text-xs ${c.textMuteded}`}>Enter a location above, then tap Refill to generate ideas.</p>}
+          {dateJar.map((concept, i) => (
+            <div key={i} className={`${c.card} border ${c.border} rounded-lg p-3 cursor-pointer hover:opacity-80`}
+              onClick={() => { setDateType(concept.type || 'casual'); setShowJar(false); setShowInputs(true); }}>
+              <div className="flex justify-between items-start">
+                <p className={`text-sm font-bold ${c.text}`}>{concept.name}</p>
+                <span className={`text-xs ${c.roseText}`}>{concept.estimated_budget}</span>
+              </div>
+              <p className={`text-xs ${c.textSecondaryondary} mt-0.5`}>{concept.description}</p>
+              <div className="flex gap-2 mt-1">
+                {concept.vibe && <span className={`text-[10px] ${c.textMuteded}`}>✨ {concept.vibe}</span>}
+                {concept.best_for && <span className={`text-[10px] ${c.textMuteded}`}>📅 {concept.best_for}</span>}
+              </div>
+            </div>
+          ))}
         </div>
-        {dateJar.length === 0 && !jarLoading && <p className={`text-xs ${c.tm}`}>Enter a location above, then tap Refill to generate ideas.</p>}
-        {dateJar.map((concept, i) => (
-          <div key={i} className={`${c.card} border ${c.bdr} rounded-lg p-3 cursor-pointer hover:opacity-80`}
-            onClick={() => { setDateType(concept.type || 'casual'); setShowJar(false); setShowInputs(true); }}>
-            <div className="flex justify-between items-start">
-              <p className={`text-sm font-bold ${c.text}`}>{concept.name}</p>
-              <span className={`text-xs ${c.acc}`}>{concept.estimated_budget}</span>
-            </div>
-            <p className={`text-xs ${c.ts} mt-0.5`}>{concept.description}</p>
-            <div className="flex gap-2 mt-1">
-              {concept.vibe && <span className={`text-[10px] ${c.tm}`}>✨ {concept.vibe}</span>}
-              {concept.best_for && <span className={`text-[10px] ${c.tm}`}>📅 {concept.best_for}</span>}
-            </div>
-          </div>
-        ))}
-      </div>}
+      )}
 
       {/* Journal */}
-      {showJournal && <div className={`${c.jnl} border rounded-xl p-4 space-y-2`}>
-        {journal.map(e => <div key={e.id} className={`${c.card} border ${c.bdr} rounded-lg p-3`}>
-          <div className="flex justify-between"><div className="flex-1 cursor-pointer" onClick={() => loadJournal(e)}>
-            <p className={`text-sm font-bold ${c.text}`}>{e.vibeTitle || 'Date'}</p>
-            <span className={`text-xs ${c.tm}`}>{fmtDate(e.date)} · {e.location} · {fm(e.budget)}{e.rating ? ` · ${'⭐'.repeat(e.rating)}` : ''}</span>
-          </div><button onClick={() => setJournal(p => p.filter(j => j.id !== e.id))} className={`text-xs ${c.tm}`}>🗑️</button></div>
-        </div>)}
-      </div>}
+      {showJournal && (
+        <div className={`${c.journalCard} border rounded-xl p-4 space-y-2`}>
+          {journal.map(e => (
+            <div key={e.id} className={`${c.card} border ${c.border} rounded-lg p-3`}>
+              <div className="flex justify-between">
+                <div className="flex-1 cursor-pointer" onClick={() => loadJournal(e)}>
+                  <p className={`text-sm font-bold ${c.text}`}>{e.vibeTitle || 'Date'}</p>
+                  <span className={`text-xs ${c.textMuteded}`}>{fmtDate(e.date)} · {e.location} · {fm(e.budget)}{e.rating ? ` · ${'⭐'.repeat(e.rating)}` : ''}</span>
+                </div>
+                <button onClick={() => setJournal(p => p.filter(j => j.id !== e.id))} className={`text-xs ${c.textMuteded}`}>🗑️</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Recent plans (history) */}
+      {history.length > 0 && !results && !liveMode && !showJournal && (
+        <div className={`${c.card} border ${c.border} rounded-xl p-4 space-y-2`}>
+          <p className={`text-xs font-bold uppercase tracking-wide ${c.textMuteded}`}>Recent plans</p>
+          {history.map((h, i) => (
+            <button
+              key={i}
+              onClick={() => { setResults(h.result); setShowInputs(false); resetResults(); }}
+              className={`w-full text-left px-3 py-2 rounded-lg text-xs ${c.cardAlt} ${c.textSecondaryondary} hover:opacity-80`}
+            >
+              {h.preview}{(h.preview?.length ?? 0) >= 40 ? '…' : ''}
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* ═══ INPUT FORM ═══ */}
-      {(!results || showInputs) && !liveMode && <div className="space-y-4">
-        {/* Date type */}
-        <div className={`${c.card} border ${c.bdr} rounded-xl p-5`}>
-          <p className={`text-xs font-bold ${c.ts} uppercase mb-3`}>💘 What kind of date?</p>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-            {DATE_TYPES.map(dt => <button key={dt.id} onClick={() => setDateType(dateType === dt.id ? '' : dt.id)} className={`p-3 rounded-lg border text-left ${dateType === dt.id ? c.on : c.off}`}>
-              <span className="text-xs font-bold">{dt.l}</span>
-              <p className={`text-[10px] mt-0.5 ${dateType === dt.id ? 'text-white/70' : c.tm}`}>{dt.d}</p>
-            </button>)}
-          </div>
-          {isAnni && <div className="mt-3 flex items-center gap-2"><input type="number" min={1} max={75} value={yearsTogether} onChange={e => setYearsTogether(Math.max(1, parseInt(e.target.value) || 1))} className={`w-20 px-3 py-2 rounded-lg border text-sm text-center ${c.input}`} /><span className={`text-xs ${c.tm}`}>year{yearsTogether > 1 ? 's' : ''}</span></div>}
-        </div>
-
-        {/* Budget */}
-        <div className={`${c.card} border ${c.bdr} rounded-xl p-5`}>
-          <div className="flex justify-between mb-2">
-            <p className={`text-xs font-bold ${c.ts} uppercase`}>💰 Budget: <span className={c.acc}>{fm(budget)}</span></p>
-            <select value={currency} onChange={e => handleCurrencyChange(e.target.value)} className={`py-1 px-2 border rounded-lg text-xs ${c.input}`}>
-              {CURRENCIES.map(cur => <option key={cur.s} value={cur.s}>{cur.f} {cur.l}</option>)}
-            </select>
-          </div>
-          <div className="relative w-full h-6 flex items-center">
-            <div className={`absolute left-0 right-0 h-2 rounded-full ${isDark ? 'bg-zinc-700' : 'bg-stone-300'}`}>
-              <div className="h-full rounded-full bg-gradient-to-r from-rose-500 to-pink-500" style={{ width: `${((budget - br.min) / (br.max - br.min)) * 100}%` }} />
+      {(!results || showInputs) && !liveMode && (
+        <div className="space-y-4">
+          {/* Date type */}
+          <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+            <div className={`border-b ${c.border} pb-3 mb-3`}>
+              <p className={`text-xs font-bold ${c.textSecondaryondary} uppercase`}>{tool?.icon ?? '💘'} What kind of date?</p>
             </div>
-            <input type="range" min={br.min} max={br.max} step={br.step} value={budget} onChange={e => setBudget(Number(e.target.value))}
-              className="absolute left-0 w-full h-2 cursor-pointer opacity-0" style={{ zIndex: 2 }} />
-            <div className="absolute h-5 w-5 rounded-full bg-rose-500 border-2 border-white shadow-md pointer-events-none" style={{ left: `calc(${((budget - br.min) / (br.max - br.min)) * 100}% - 10px)`, zIndex: 1 }} />
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              {DATE_TYPES.map(dt => (
+                <button key={dt.id} onClick={() => setDateType(dateType === dt.id ? '' : dt.id)}
+                  className={`p-3 rounded-lg border text-left ${dateType === dt.id ? c.chipOn : c.chipOff}`}>
+                  <span className="text-xs font-bold">{dt.l}</span>
+                  <p className={`text-[10px] mt-0.5 ${dateType === dt.id ? 'text-white/70' : c.textMuteded}`}>{dt.d}</p>
+                </button>
+              ))}
+            </div>
+            {isAnni && (
+              <div className="mt-3 flex items-center gap-2">
+                <input type="number" min={1} max={75} value={yearsTogether} onChange={e => setYearsTogether(Math.max(1, parseInt(e.target.value) || 1))} className={`w-20 px-3 py-2 rounded-lg border text-sm text-center ${c.input}`} />
+                <span className={`text-xs ${c.textMuteded}`}>year{yearsTogether > 1 ? 's' : ''}</span>
+              </div>
+            )}
           </div>
-          <div className="flex flex-wrap gap-1.5 mt-2">{presets.map(p => <button key={p} onClick={() => setBudget(p)} className={`px-3 py-1.5 rounded-lg text-xs font-bold border ${budget === p ? c.on : c.off}`}>{fm(p)}</button>)}</div>
-        </div>
 
-        {/* Location + Time + Duration + Weather */}
-        <div className={`${c.card} border ${c.bdr} rounded-xl p-5 space-y-3`}>
-          <div><p className={`text-xs font-bold ${c.ts} uppercase mb-1`}>📍 Location</p><input value={location} onChange={e => setLocation(e.target.value)} placeholder="City, neighborhood..." className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input}`} /></div>
-          <div className="grid grid-cols-2 gap-3">
-            <div><p className={`text-xs font-bold ${c.ts} uppercase mb-1`}>🕐 Start</p><select value={startTime} onChange={e => setStartTime(e.target.value)} className={`w-full py-2.5 px-3 border rounded-lg text-sm ${c.input}`}>{START_TIMES.map(t => <option key={t} value={t}>{t}</option>)}</select></div>
-            <div><p className={`text-xs font-bold ${c.ts} uppercase mb-1`}>⏱️ Length</p><Pill options={DURATION_OPTIONS} value={duration} setter={setDuration} /></div>
+          {/* Budget */}
+          <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+            <div className="flex justify-between mb-2">
+              <p className={`text-xs font-bold ${c.textSecondaryondary} uppercase`}>💰 Budget: <span className={c.roseText}>{fm(budget)}</span></p>
+              <select value={currency} onChange={e => handleCurrencyChange(e.target.value)} className={`py-1 px-2 border rounded-lg text-xs ${c.input}`}>
+                {CURRENCIES.map(cur => <option key={cur.s} value={cur.s}>{cur.f} {cur.l}</option>)}
+              </select>
+            </div>
+            <div className="relative w-full h-6 flex items-center">
+              <div className={`absolute left-0 right-0 h-2 rounded-full ${c.budgetBar}`}>
+                <div className={`h-full rounded-full ${c.budgetFill}`} style={{ width: `${((budget - br.min) / (br.max - br.min)) * 100}%` }} />
+              </div>
+              <input type="range" min={br.min} max={br.max} step={br.step} value={budget} onChange={e => setBudget(Number(e.target.value))}
+                className="absolute left-0 w-full h-2 cursor-pointer opacity-0" style={{ zIndex: 2 }} />
+              <div className="absolute h-5 w-5 rounded-full bg-red-500 border-2 border-white shadow-md pointer-events-none" style={{ left: `calc(${((budget - br.min) / (br.max - br.min)) * 100}% - 10px)`, zIndex: 1 }} />
+            </div>
+            <div className="flex flex-wrap gap-1.5 mt-2">
+              {presets.map(p => (
+                <button key={p} onClick={() => setBudget(p)} className={`px-3 py-1.5 rounded-lg text-xs font-bold border ${budget === p ? c.chipOn : c.chipOff}`}>{fm(p)}</button>
+              ))}
+            </div>
           </div>
-          <div><p className={`text-xs font-bold ${c.ts} uppercase mb-1`}>🌙 Weather</p><Pill options={WEATHER_OPTIONS} value={weather} setter={setWeather} /></div>
+
+          {/* Location + Time + Duration + Weather */}
+          <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-3`}>
+            <div>
+              <p className={`text-xs font-bold ${c.textSecondaryondary} uppercase mb-1`}>📍 Location</p>
+              <input value={location} onChange={e => setLocation(e.target.value)} placeholder="City, neighborhood..." className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input}`} />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <p className={`text-xs font-bold ${c.textSecondaryondary} uppercase mb-1`}>🕐 Start</p>
+                <select value={startTime} onChange={e => setStartTime(e.target.value)} className={`w-full py-2.5 px-3 border rounded-lg text-sm ${c.input}`}>
+                  {START_TIMES.map(t => <option key={t} value={t}>{t}</option>)}
+                </select>
+              </div>
+              <div>
+                <p className={`text-xs font-bold ${c.textSecondaryondary} uppercase mb-1`}>⏱️ Length</p>
+                <Pill options={DURATION_OPTIONS} value={duration} setter={setDuration} />
+              </div>
+            </div>
+            <div>
+              <p className={`text-xs font-bold ${c.textSecondaryondary} uppercase mb-1`}>🌙 Weather</p>
+              <Pill options={WEATHER_OPTIONS} value={weather} setter={setWeather} />
+            </div>
+          </div>
+
+          {/* Dietary + Restrictions */}
+          <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+            <button onClick={() => setShowDietary(!showDietary)} className={`text-xs font-bold ${c.textSecondaryondary} uppercase`}>
+              🍽️ Dietary {dietary.length > 0 ? `(${dietary.length})` : ''} {showDietary ? '▲' : '▼'}
+            </button>
+            {showDietary && (
+              <div className="mt-2 space-y-2">
+                <Pill options={DIETARY_OPTIONS} value={dietary} setter={toggleDietary} multi />
+                <input value={restrictions} onChange={e => setRestrictions(e.target.value)} placeholder="Other restrictions..." className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input}`} />
+              </div>
+            )}
+          </div>
+
+          {/* Partner prefs */}
+          <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+            <button onClick={() => setShowPartner(!showPartner)} className={`text-xs font-bold ${c.textSecondaryondary} uppercase`}>
+              👫 Partner Preferences {showPartner ? '▲' : '▼'}
+            </button>
+            {showPartner && (
+              <div className="mt-3 space-y-3">
+                <div>
+                  <p className={`text-xs ${c.textMuteded} mb-1`}>What does your partner enjoy?</p>
+                  <input value={partnerPrefs.partnerLikes} onChange={e => setPartnerPrefs(p => ({ ...p, partnerLikes: e.target.value }))} placeholder="Live music, cozy spots, Italian food..." className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input}`} />
+                </div>
+                <div>
+                  <p className={`text-xs ${c.textMuteded} mb-1`}>What do they dislike?</p>
+                  <input value={partnerPrefs.partnerDislikes} onChange={e => setPartnerPrefs(p => ({ ...p, partnerDislikes: e.target.value }))} placeholder="Loud clubs, crowded places, spicy food..." className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input}`} />
+                </div>
+                <div>
+                  <p className={`text-xs ${c.textMuteded} mb-1`}>Noise level</p>
+                  <Pill options={NOISE_OPTIONS} value={partnerPrefs.noiseLevel} setter={v => setPartnerPrefs(p => ({ ...p, noiseLevel: v }))} />
+                </div>
+                <div>
+                  <p className={`text-xs ${c.textMuteded} mb-1`}>Energy level</p>
+                  <Pill options={ENERGY_OPTIONS} value={partnerPrefs.energyLevel} setter={v => setPartnerPrefs(p => ({ ...p, energyLevel: v }))} />
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Last time */}
+          <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+            <p className={`text-xs font-bold ${c.textSecondaryondary} uppercase mb-1`}>🔁 Last time? <span className={c.textMuteded}>(optional)</span></p>
+            <input value={lastTime} onChange={e => setLastTime(e.target.value)} placeholder="Sushi and a movie..." className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input}`} />
+          </div>
+
+          {prefs.liked?.length > 0 && (
+            <div className={`${c.accentCard} border ${c.border} rounded-lg p-3`}>
+              <p className={`text-xs ${c.roseText}`}>🧠 You enjoy: {prefs.liked.slice(0, 4).join(', ')}</p>
+            </div>
+          )}
+
+          {error && <div className={`${c.danger} border rounded-xl p-4 text-sm`}>⚠️ {error}</div>}
+
+          <button onClick={generate} disabled={loading || !location.trim() || !dateType}
+            className={`w-full py-3.5 rounded-xl font-bold text-sm ${c.btnAction} disabled:opacity-50`}>
+            {loading
+              ? <><span className="animate-spin inline-block mr-2">{tool?.icon ?? '💘'}</span>Planning…</>
+              : isAnni
+                ? <><span className="mr-1">{tool?.icon ?? '💘'}</span>Plan {yearsTogether}-Year Anniversary</>
+                : <><span className="mr-1">{tool?.icon ?? '💘'}</span>Plan My Date Night</>}
+          </button>
+          <p className={`text-xs text-center ${c.textMuteded}`}>Cmd+Enter to plan</p>
         </div>
-
-        {/* Dietary + Restrictions */}
-        <div className={`${c.card} border ${c.bdr} rounded-xl p-5`}>
-          <button onClick={() => setShowDietary(!showDietary)} className={`text-xs font-bold ${c.ts} uppercase`}>🍽️ Dietary {dietary.length > 0 ? `(${dietary.length})` : ''} {showDietary ? '▲' : '▼'}</button>
-          {showDietary && <div className="mt-2 space-y-2">
-            <Pill options={DIETARY_OPTIONS} value={dietary} setter={toggleDietary} multi />
-            <input value={restrictions} onChange={e => setRestrictions(e.target.value)} placeholder="Other restrictions..." className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input}`} />
-          </div>}
-        </div>
-
-        {/* Partner prefs */}
-        <div className={`${c.card} border ${c.bdr} rounded-xl p-5`}>
-          <button onClick={() => setShowPartner(!showPartner)} className={`text-xs font-bold ${c.ts} uppercase`}>👫 Partner Preferences {showPartner ? '▲' : '▼'}</button>
-          {showPartner && <div className="mt-3 space-y-3">
-            <div><p className={`text-xs ${c.tm} mb-1`}>What does your partner enjoy?</p><input value={partnerPrefs.partnerLikes} onChange={e => setPartnerPrefs(p => ({ ...p, partnerLikes: e.target.value }))} placeholder="Live music, cozy spots, Italian food..." className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input}`} /></div>
-            <div><p className={`text-xs ${c.tm} mb-1`}>What do they dislike?</p><input value={partnerPrefs.partnerDislikes} onChange={e => setPartnerPrefs(p => ({ ...p, partnerDislikes: e.target.value }))} placeholder="Loud clubs, crowded places, spicy food..." className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input}`} /></div>
-            <div><p className={`text-xs ${c.tm} mb-1`}>Noise level</p><Pill options={NOISE_OPTIONS} value={partnerPrefs.noiseLevel} setter={v => setPartnerPrefs(p => ({ ...p, noiseLevel: v }))} /></div>
-            <div><p className={`text-xs ${c.tm} mb-1`}>Energy level</p><Pill options={ENERGY_OPTIONS} value={partnerPrefs.energyLevel} setter={v => setPartnerPrefs(p => ({ ...p, energyLevel: v }))} /></div>
-          </div>}
-        </div>
-
-        {/* Last time */}
-        <div className={`${c.card} border ${c.bdr} rounded-xl p-5`}>
-          <p className={`text-xs font-bold ${c.ts} uppercase mb-1`}>🔁 Last time? <span className={c.tm}>(optional)</span></p>
-          <input value={lastTime} onChange={e => setLastTime(e.target.value)} placeholder="Sushi and a movie..." className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input}`} />
-        </div>
-
-        {prefs.liked?.length > 0 && <div className={`${c.accBg} border ${c.bdr} rounded-lg p-3`}><p className={`text-xs ${c.acc}`}>🧠 You enjoy: {prefs.liked.slice(0, 4).join(', ')}</p></div>}
-
-        <button onClick={generate} disabled={loading || !location.trim() || !dateType} className={`w-full py-3.5 rounded-xl font-bold text-sm ${c.pri} disabled:opacity-50`}>
-          {loading ? '⏳ Planning...' : isAnni ? `💍 Plan ${yearsTogether}-Year Anniversary` : '💘 Plan My Date Night'}
-        </button>
-      </div>}
+      )}
 
       {/* ═══ RESULTS ═══ */}
       {results && !showInputs && !liveMode && (() => {
         const stops = results.itinerary || [];
-        return <div className="space-y-4">
-          <button onClick={() => setShowInputs(true)} className={`text-xs font-bold ${c.acc}`}>✏️ Edit · {location} · {fm(budget)}</button>
+        return (
+          <div ref={resultsRef} className="space-y-4">
+            <button onClick={() => setShowInputs(true)} className={`text-xs font-bold ${c.roseText}`}>✏️ Edit · {location} · {fm(budget)}</button>
 
-          {/* Header */}
-          <div className={`${c.hdr} border-2 rounded-2xl p-5 text-center`}>
-            <h2 className={`text-xl font-bold ${c.text}`}>💘 {results.vibe_title || 'Your Evening'}</h2>
-            {results.vibe_description && <p className={`text-sm ${c.ts} mt-1`}>{results.vibe_description}</p>}
-            {results.narrative_arc && <p className={`text-xs italic ${c.ts} mt-2`}>{results.narrative_arc}</p>}
-          </div>
+            {/* ActionBar — at top of results */}
+            <ActionBar content={buildText()} title="Date Night" />
 
-          {/* Actions */}
-          <div className="flex flex-wrap gap-2">
-            <button onClick={() => { setLiveMode(true); setLiveStep(0); setTimeOffset(0); }} className={`px-4 py-2 rounded-xl text-xs font-bold ${isDark ? 'bg-sky-600 text-white' : 'bg-sky-600 text-white'}`}>▶️ Start Date</button>
-            <button onClick={handleChecklist} disabled={checklistLoading} className={`px-3 py-2 rounded-xl text-xs font-bold ${c.sec} border ${c.bdr}`}>{checklistLoading ? '⏳' : '📋 Pre-date checklist'}</button>
-            <button onClick={regenerate} disabled={loading} className={`px-3 py-2 rounded-xl text-xs font-bold ${c.sec} border ${c.bdr}`}>{loading ? '⏳' : '🔄 Different'}</button>
-            <button onClick={() => { setSurpriseMode(false); handleShare(); }} disabled={shareLoading} className={`px-3 py-2 rounded-xl text-xs font-bold ${c.sec} border ${c.bdr}`}>{shareLoading ? '⏳' : '📨 Send plan'}</button>
-            <button onClick={() => { setSurpriseMode(true); handleShare(); }} disabled={shareLoading} className={`px-3 py-2 rounded-xl text-xs font-bold ${c.sec} border ${c.bdr}`}>{shareLoading ? '⏳' : '🎁 Surprise invite'}</button>
-          </div>
+            {/* Header */}
+            <div className={`${c.headerCard} border-2 rounded-2xl p-5 text-center`}>
+              <h3 className={`text-xl font-bold ${c.text}`}>{tool?.icon ?? '💘'} {results.vibe_title || 'Your Evening'}</h3>
+              {results.vibe_description && <p className={`text-sm ${c.textSecondaryondary} mt-1`}>{results.vibe_description}</p>}
+              {results.narrative_arc && <p className={`text-xs italic ${c.textSecondaryondary} mt-2`}>{results.narrative_arc}</p>}
+            </div>
 
-          {/* Checklist */}
-          {checklist && <div className={`${c.ok} border rounded-xl p-4 space-y-2`}>
-            <div className="flex justify-between"><h4 className="font-bold text-sm">📋 Pre-Date Checklist</h4><button onClick={() => setChecklist(null)} className={`text-xs ${c.tm}`}>✕</button></div>
-            {(checklist.checklist || []).map((item, i) => (
-              <button key={i} onClick={() => setChecklistChecked(p => ({ ...p, [i]: !p[i] }))}
-                className={`flex items-center gap-2 w-full text-left text-xs ${checklistChecked[i] ? 'line-through opacity-50' : ''}`}>
-                <span className={`w-5 h-5 rounded flex-shrink-0 flex items-center justify-center border-2 text-[10px] ${checklistChecked[i] ? 'bg-emerald-500 border-emerald-500 text-white' : c.bdr}`}>{checklistChecked[i] ? '✓' : ''}</span>
-                <span className="flex-1">{item.item}</span>
-                <span className={c.tm}>{item.timing}</span>
-                {item.priority === 'must' && <span className={`text-[10px] ${c.acc}`}>●</span>}
+            {/* Actions */}
+            <div className="flex flex-wrap gap-2">
+              <button onClick={() => { setLiveMode(true); setLiveStep(0); setTimeOffset(0); }} className={`px-4 py-2 rounded-xl text-xs font-bold ${c.btnLive}`}>▶️ Start Date</button>
+              <button onClick={handleChecklist} disabled={checklistLoading} className={`px-3 py-2 rounded-xl text-xs font-bold ${c.btnSecondaryondary} border ${c.border}`}>
+                {checklistLoading ? <><span className="animate-spin inline-block">{tool?.icon ?? '💘'}</span> Loading…</> : '📋 Pre-date checklist'}
               </button>
-            ))}
-            {checklist.last_minute_reminder && <div className={`${c.warn} border rounded-lg p-2 text-xs mt-2`}>🚪 {checklist.last_minute_reminder}</div>}
-          </div>}
+              <button onClick={regenerate} disabled={loading} className={`px-3 py-2 rounded-xl text-xs font-bold ${c.btnSecondaryondary} border ${c.border}`}>
+                {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '💘'}</span> …</> : '🔄 Different'}
+              </button>
+              <button onClick={() => { setSurpriseMode(false); handleShare(); }} disabled={shareLoading} className={`px-3 py-2 rounded-xl text-xs font-bold ${c.btnSecondaryondary} border ${c.border}`}>
+                {shareLoading ? <><span className="animate-spin inline-block">{tool?.icon ?? '💘'}</span> …</> : '📨 Send plan'}
+              </button>
+              <button onClick={() => { setSurpriseMode(true); handleShare(); }} disabled={shareLoading} className={`px-3 py-2 rounded-xl text-xs font-bold ${c.btnSecondaryondary} border ${c.border}`}>
+                {shareLoading ? <><span className="animate-spin inline-block">{tool?.icon ?? '💘'}</span> …</> : '🎁 Surprise invite'}
+              </button>
+            </div>
 
-          {/* Share */}
-          {shareData && <div className={`${c.info} border rounded-xl p-4 space-y-2`}>
-            <div className="flex justify-between"><h4 className="text-sm font-bold">{shareData.isSurprise ? '🎁 Mystery Invite' : '📨 Invite'}</h4><button onClick={() => setShareData(null)} className={`text-xs ${c.tm}`}>✕</button></div>
-            <p className={`text-sm whitespace-pre-line`}>{shareData.message}</p>
-            {shareData.what_to_tell_them && <div className={`${c.warn} border rounded-lg p-2 text-xs`}>📌 All they need to know: {shareData.what_to_tell_them}</div>}
-            <CopyBtn content={shareData.message + BRAND} label="Copy" />
-          </div>}
+            {/* Checklist */}
+            {checklist && (
+              <div className={`${c.success} border rounded-xl p-4 space-y-2`}>
+                <div className="flex justify-between"><h4 className="font-bold text-sm">📋 Pre-Date Checklist</h4><button onClick={() => setChecklist(null)} className={`text-xs ${c.textMuteded}`}>✕</button></div>
+                {(checklist.checklist || []).map((item, i) => (
+                  <button key={i} onClick={() => setChecklistChecked(p => ({ ...p, [i]: !p[i] }))}
+                    className={`flex items-center gap-2 w-full text-left text-xs ${checklistChecked[i] ? 'line-through opacity-50' : ''}`}>
+                    <span className={`w-5 h-5 rounded flex-shrink-0 flex items-center justify-center border-2 text-[10px] ${checklistChecked[i] ? 'bg-emerald-500 border-emerald-500 text-white' : c.border}`}>{checklistChecked[i] ? '✓' : ''}</span>
+                    <span className="flex-1">{item.item}</span>
+                    <span className={c.textMuteded}>{item.timing}</span>
+                    {item.priority === 'must' && <span className={`text-[10px] ${c.roseText}`}>●</span>}
+                  </button>
+                ))}
+                {checklist.last_minute_reminder && <div className={`${c.warning} border rounded-lg p-2 text-xs mt-2`}>🚪 {checklist.last_minute_reminder}</div>}
+              </div>
+            )}
 
-          {/* Dress code */}
-          {results.overall_dress_code && <div className={`${c.purp} border rounded-xl p-3 text-center`}><p className="text-xs font-bold">👗 {results.overall_dress_code}</p></div>}
+            {/* Share */}
+            {shareData && (
+              <div className={`${c.infoCard} border rounded-xl p-4 space-y-2`}>
+                <div className="flex justify-between"><h4 className="text-sm font-bold">{shareData.isSurprise ? '🎁 Mystery Invite' : '📨 Invite'}</h4><button onClick={() => setShareData(null)} className={`text-xs ${c.textMuteded}`}>✕</button></div>
+                <p className={`text-sm whitespace-pre-line`}>{shareData.message}</p>
+                {shareData.what_to_tell_them && <div className={`${c.warning} border rounded-lg p-2 text-xs`}>📌 All they need to know: {shareData.what_to_tell_them}</div>}
+                <CopyBtn content={shareData.message + BRAND} label="Copy" />
+              </div>
+            )}
 
-          {/* Budget bar */}
-          <div className={`${c.card} border ${c.bdr} rounded-xl p-4`}>
-            <div className="flex justify-between mb-2"><p className={`text-xs font-bold ${c.text}`}>💰 Budget</p><p className={`text-sm font-bold ${c.text}`}>~{fm(totalSpent)} / {fm(budget)}</p></div>
-            <div className={`w-full h-3 rounded-full ${c.budgetBar} overflow-hidden`}><div className={`h-full rounded-full ${c.budgetFill}`} style={{ width: `${spentPct}%` }} /></div>
-            {bufferAmt > 0 && <p className={`text-[10px] font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-600'} mt-1 text-right`}>~{fm(bufferAmt)} buffer</p>}
-          </div>
+            {/* Dress code */}
+            {results.overall_dress_code && (
+              <div className={`${c.altCard} border rounded-xl p-3 text-center`}>
+                <p className={`text-xs font-bold ${c.text}`}>👗 {results.overall_dress_code}</p>
+              </div>
+            )}
 
-          {/* Milestone gesture */}
-          {results.milestone_gesture && <div className={`${c.accBg} border ${c.bdr} rounded-xl p-4`}><p className={`text-xs font-bold ${c.acc} mb-1`}>🎁 Anniversary gesture</p><p className={`text-sm ${c.text}`}>{results.milestone_gesture}</p></div>}
+            {/* Budget bar */}
+            <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+              <div className="flex justify-between mb-2">
+                <p className={`text-xs font-bold ${c.text}`}>💰 Budget</p>
+                <p className={`text-sm font-bold ${c.text}`}>~{fm(totalSpent)} / {fm(budget)}</p>
+              </div>
+              <div className={`w-full h-3 rounded-full ${c.budgetBar} overflow-hidden`}>
+                <div className={`h-full rounded-full ${c.budgetFill}`} style={{ width: `${spentPct}%` }} />
+              </div>
+              {bufferAmt > 0 && <p className={`text-[10px] font-bold ${c.bufferText} mt-1 text-right`}>~{fm(bufferAmt)} buffer</p>}
+            </div>
 
-          {/* Timeline */}
-          <div className="relative">
-            <div className={`absolute left-[19px] top-6 bottom-6 w-px ${c.tl}`} />
-            {stops.map((stop, idx) => {
-              const isSwap = swapping === (stop.stop_number || idx + 1);
-              return <div key={idx} className="flex gap-4 relative mb-4">
-                <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center z-10 border-2 ${c.tlDot}`}><span className="text-base">{stopEmoji(stop.stop_type || stop.venue_name)}</span></div>
-                <div className={`flex-1 ${c.stop} border rounded-xl p-4 ${isSwap ? 'opacity-50' : ''}`}>
-                  <div className="flex justify-between mb-1"><div><span className={`text-[10px] font-bold ${c.acc} uppercase`}>{stop.time}</span><h4 className={`text-sm font-bold ${c.text}`}>{stop.venue_name}</h4></div><span className={`text-sm font-black ${c.acc}`}>~{fm(stop.estimated_cost)}</span></div>
-                  <p className={`text-xs ${c.ts} leading-relaxed mb-2`}>{stop.description}</p>
-                  {stop.dress_vibe && <p className={`text-[10px] ${c.tm} mb-1`}>👗 {stop.dress_vibe}</p>}
-                  {stop.pro_tip && <p className={`text-[10px] ${isDark ? 'text-amber-400' : 'text-amber-600'} mb-1`}>💡 {stop.pro_tip}</p>}
-                  {stop.anniversary_touch && <p className={`text-[10px] ${c.acc} mb-1`}>💍 {stop.anniversary_touch}</p>}
-                  {stop.plan_b && <p className={`text-[10px] ${c.tm} mb-1`}>🔄 Backup: {stop.plan_b}</p>}
-                  <div className="flex flex-wrap gap-1.5 mt-2">
-                    <button onClick={() => swapStop(stop.stop_number || idx + 1)} disabled={isSwap || loading} className={`text-xs font-bold ${c.tm}`}>{isSwap ? '⏳' : '🔄 Swap'}</button>
-                    <button onClick={() => handleSimilar(stop)} disabled={similarLoading} className={`text-xs font-bold ${c.acc}`}>💜 More like this</button>
-                    <button onClick={() => toggleFavorite(stop)} className={`text-xs font-bold ${isFav(stop) ? '❤️' : c.tm}`}>{isFav(stop) ? '❤️ Saved' : '🤍 Save'}</button>
+            {/* Milestone gesture */}
+            {results.milestone_gesture && (
+              <div className={`${c.accentCard} border ${c.border} rounded-xl p-4`}>
+                <p className={`text-xs font-bold ${c.roseText} mb-1`}>🎁 Anniversary gesture</p>
+                <p className={`text-sm ${c.text}`}>{results.milestone_gesture}</p>
+              </div>
+            )}
+
+            {/* Timeline */}
+            <div className="relative">
+              <div className={`absolute left-[19px] top-6 bottom-6 w-px ${c.timelineLine}`} />
+              {stops.map((stop, idx) => {
+                const isSwap = swapping === (stop.stop_number || idx + 1);
+                return (
+                  <div key={idx} className="flex gap-4 relative mb-4">
+                    <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center z-10 border-2 ${c.timelineDot}`}>
+                      <span className="text-base">{stopEmoji(stop.stop_type || stop.venue_name)}</span>
+                    </div>
+                    <div className={`flex-1 ${c.stopCard} border rounded-xl p-4 ${isSwap ? 'opacity-50' : ''}`}>
+                      <div className="flex justify-between mb-1">
+                        <div>
+                          <span className={`text-[10px] font-bold ${c.roseText} uppercase`}>{stop.time}</span>
+                          <h4 className={`text-sm font-bold ${c.text}`}>{stop.venue_name}</h4>
+                        </div>
+                        <span className={`text-sm font-black ${c.roseText}`}>~{fm(stop.estimated_cost)}</span>
+                      </div>
+                      <p className={`text-xs ${c.textSecondaryondary} leading-relaxed mb-2`}>{stop.description}</p>
+                      {stop.dress_vibe && <p className={`text-[10px] ${c.textMuteded} mb-1`}>👗 {stop.dress_vibe}</p>}
+                      {stop.pro_tip && <p className={`text-[10px] ${c.proTipText} mb-1`}>💡 {stop.pro_tip}</p>}
+                      {stop.anniversary_touch && <p className={`text-[10px] ${c.roseText} mb-1`}>💍 {stop.anniversary_touch}</p>}
+                      {stop.plan_b && <p className={`text-[10px] ${c.textMuteded} mb-1`}>🔄 Backup: {stop.plan_b}</p>}
+                      <div className="flex flex-wrap gap-1.5 mt-2">
+                        <button onClick={() => swapStop(stop.stop_number || idx + 1)} disabled={isSwap || loading} className={`text-xs font-bold ${c.textMuteded}`}>
+                          {isSwap ? <><span className="animate-spin inline-block">{tool?.icon ?? '💘'}</span></> : '🔄 Swap'}
+                        </button>
+                        <button onClick={() => handleSimilar(stop)} disabled={similarLoading} className={`text-xs font-bold ${c.roseText}`}>💜 More like this</button>
+                        <button onClick={() => toggleFavorite(stop)} className={`text-xs font-bold ${isFav(stop) ? c.roseText : c.textMuteded}`}>{isFav(stop) ? '❤️ Saved' : '🤍 Save'}</button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Similar */}
+            {similarResults && (
+              <div className={`${c.altCard} border rounded-xl p-5 space-y-3`}>
+                <div className="flex justify-between">
+                  <h3 className={`font-bold text-sm ${c.text}`}>💜 More like "{similarResults.original}"</h3>
+                  <button onClick={() => setSimilarResults(null)} className={`text-xs ${c.textMuteded}`}>✕</button>
+                </div>
+                {(similarResults.similar || []).map((s, i) => (
+                  <div key={i} className={`${c.card} border ${c.border} rounded-lg p-3`}>
+                    <div className="flex justify-between">
+                      <p className={`text-sm font-bold ${c.text}`}>{stopEmoji(s.stop_type)} {s.venue_name}</p>
+                      <span className={`text-xs font-bold ${c.roseText}`}>~{fm(s.estimated_cost)}</span>
+                    </div>
+                    <p className={`text-xs ${c.textSecondaryondary} mt-1`}>{s.why_similar}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Conversation starters / nostalgia */}
+            {(results.conversation_starters || results.nostalgia_prompts) && (
+              <div className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
+                <button onClick={() => setExpandedConvo(!expandedConvo)} className="w-full p-4 flex justify-between text-left">
+                  <span className={`text-sm font-bold ${c.text}`}>{results.nostalgia_prompts ? '💭 Reflection Prompts' : '💬 Conversation Starters'}</span>
+                  <span className={`text-xs ${c.textMuteded}`}>{expandedConvo ? '▲' : '▼'}</span>
+                </button>
+                {expandedConvo && (
+                  <div className={`px-4 pb-4 space-y-2 border-t ${c.border} pt-3`}>
+                    {(results.nostalgia_prompts || results.conversation_starters || []).map((q, i) => (
+                      <div key={i} className={`${c.quoteCard} rounded-lg p-3`}>
+                        <p className={`text-xs ${c.textSecondaryondary}`}>{results.nostalgia_prompts ? '💭' : '💬'} {q}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Plan B + Tips */}
+            {results.plan_b && (
+              <div className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
+                <button onClick={() => setExpandedPlanB(!expandedPlanB)} className="w-full p-4 flex justify-between text-left">
+                  <span className={`text-sm font-bold ${c.text}`}>🔄 Plan B</span>
+                  <span className={`text-xs ${c.textMuteded}`}>{expandedPlanB ? '▲' : '▼'}</span>
+                </button>
+                {expandedPlanB && <div className={`px-4 pb-4 border-t ${c.border} pt-3`}><p className={`text-sm ${c.textSecondaryondary}`}>{results.plan_b}</p></div>}
+              </div>
+            )}
+            {results.tips?.length > 0 && (
+              <div className={`${c.warning} border rounded-xl p-4`}>
+                <p className="text-xs font-bold mb-2">✨ Make It Better</p>
+                {results.tips.map((t, i) => <p key={i} className="text-xs mb-1">• {t}</p>)}
+              </div>
+            )}
+
+            {/* Rate */}
+            <button onClick={() => setShowRate(!showRate)} className={`text-xs font-bold ${c.roseText}`}>{showRate ? '▲' : '⭐'} Rate this date</button>
+            {showRate && (
+              <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-4`}>
+                <div>
+                  <p className={`text-sm font-bold ${c.text} mb-2`}>Overall</p>
+                  <div className="flex gap-1">
+                    {[1, 2, 3, 4, 5].map(s => (
+                      <button key={s} onClick={() => setOverallRating(s)} className={`text-2xl ${s <= overallRating ? '' : 'opacity-30'}`}>⭐</button>
+                    ))}
                   </div>
                 </div>
-              </div>;
-            })}
-          </div>
+                <div>
+                  <p className={`text-sm font-bold ${c.text} mb-2`}>Each stop</p>
+                  {stops.map((s, i) => (
+                    <div key={i} className={`${c.stopCard} border rounded-lg p-3 mb-2`}>
+                      <p className={`text-xs font-bold ${c.text} mb-1`}>{stopEmoji(s.stop_type)} {s.venue_name}</p>
+                      <div className="flex gap-1">
+                        {STOP_RATINGS.map(r => (
+                          <button key={r.v} onClick={() => setStopRatings(p => ({ ...p, [s.stop_number || i + 1]: r.v }))}
+                            className={`px-2 py-1 rounded-lg text-xs border ${stopRatings[s.stop_number || i + 1] === r.v ? c.chipOn : c.chipOff}`}>{r.l}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div>
+                  <p className={`text-xs font-bold ${c.text} mb-1`}>💰 Actual spend? <span className={c.textMuteded}>(optional)</span></p>
+                  <input value={actualSpend} onChange={e => setActualSpend(e.target.value)} placeholder={`e.g., ${fm(budget)}`} className={`w-40 px-3 py-2 border rounded-lg text-sm ${c.input}`} />
+                </div>
+                <textarea value={rateNotes} onChange={e => setRateNotes(e.target.value)} placeholder="Highlight? What to change?" rows={2} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
+                <button onClick={handleRate} disabled={loading || !overallRating} className={`w-full py-2.5 rounded-xl font-bold text-sm ${c.btnAction} disabled:opacity-50`}>
+                  {loading ? <><span className="animate-spin inline-block mr-2">{tool?.icon ?? '💘'}</span>Saving…</> : '⭐ Submit'}
+                </button>
+                {rateResult && (
+                  <div className={`${c.success} border rounded-xl p-4 space-y-2`}>
+                    <p className={`text-sm`}>{rateResult.encouragement}</p>
+                    <p className={`text-xs ${c.textSecondaryondary}`}>{rateResult.summary}</p>
+                    {rateResult.next_suggestion && <p className={`text-xs ${c.roseText}`}>💡 Next: {rateResult.next_suggestion}</p>}
+                    {rateResult.budget_accuracy && <p className={`text-xs ${c.textMuteded}`}>💰 {rateResult.budget_accuracy}</p>}
+                  </div>
+                )}
+              </div>
+            )}
 
-          {/* Similar */}
-          {similarResults && <div className={`${c.purp} border rounded-xl p-5 space-y-3`}>
-            <div className="flex justify-between"><h3 className="font-bold text-sm">💜 More like "{similarResults.original}"</h3><button onClick={() => setSimilarResults(null)} className={`text-xs ${c.tm}`}>✕</button></div>
-            {(similarResults.similar || []).map((s, i) => <div key={i} className={`${c.card} border ${c.bdr} rounded-lg p-3`}><div className="flex justify-between"><p className={`text-sm font-bold ${c.text}`}>{stopEmoji(s.stop_type)} {s.venue_name}</p><span className={`text-xs font-bold ${c.acc}`}>~{fm(s.estimated_cost)}</span></div><p className={`text-xs ${c.ts} mt-1`}>{s.why_similar}</p></div>)}
-          </div>}
+            {/* AI disclaimer */}
+            <p className={`text-xs italic text-center ${c.textMuteded}`}>
+              AI-generated suggestions. Venue types are ideas — confirm availability and local pricing before going.
+            </p>
 
-          {/* Conversation starters / nostalgia */}
-          {(results.conversation_starters || results.nostalgia_prompts) && <div className={`${c.card} border ${c.bdr} rounded-xl overflow-hidden`}>
-            <button onClick={() => setExpandedConvo(!expandedConvo)} className="w-full p-4 flex justify-between text-left">
-              <span className={`text-sm font-bold ${c.text}`}>{results.nostalgia_prompts ? '💭 Reflection Prompts' : '💬 Conversation Starters'}</span>
-              <span className={`text-xs ${c.tm}`}>{expandedConvo ? '▲' : '▼'}</span>
+            {/* Conditional cross-ref: only on anniversary dates */}
+            {isAnni && (
+              <p className={`text-xs text-center ${c.textMuteded}`}>
+                Capturing the memory?{' '}
+                <a href="/tool/CaptionMagic" className={linkStyle}>CaptionMagic</a> can write the perfect caption for your photos tonight.
+              </p>
+            )}
+
+            {/* Post-result cross-refs */}
+            <div className={`rounded-xl p-1`}>
+              <p className={`text-xs ${c.textMuteded} mb-2`}>Related:</p>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  ['/tool/FridgeAlchemy', '🍳', 'cook together instead'],
+                  ['/tool/CaptionMagic', '📸', 'caption the photos'],
+                ].map(([href, ico, d]) => (
+                  <a key={href} href={href} target="_blank" rel="noopener noreferrer" className={linkStyle}>{ico} {d}</a>
+                ))}
+              </div>
+            </div>
+
+            {/* Reset */}
+            <button onClick={() => { setResults(null); setShowInputs(true); resetResults(); }} className={`px-4 py-2 rounded-lg text-sm font-medium ${c.btnSecondaryondary}`}>
+              🔄 New Date Night
             </button>
-            {expandedConvo && <div className={`px-4 pb-4 space-y-2 border-t ${c.bdr} pt-3`}>
-              {(results.nostalgia_prompts || results.conversation_starters || []).map((q, i) => <div key={i} className={`${c.quote} rounded-lg p-3`}><p className={`text-xs ${c.ts}`}>{results.nostalgia_prompts ? '💭' : '💬'} {q}</p></div>)}
-            </div>}
-          </div>}
-
-          {/* Plan B + Tips */}
-          {results.plan_b && <div className={`${c.card} border ${c.bdr} rounded-xl overflow-hidden`}>
-            <button onClick={() => setExpandedPlanB(!expandedPlanB)} className="w-full p-4 flex justify-between text-left"><span className={`text-sm font-bold ${c.text}`}>🔄 Plan B</span><span className={`text-xs ${c.tm}`}>{expandedPlanB ? '▲' : '▼'}</span></button>
-            {expandedPlanB && <div className={`px-4 pb-4 border-t ${c.bdr} pt-3`}><p className={`text-sm ${c.ts}`}>{results.plan_b}</p></div>}
-          </div>}
-          {results.tips?.length > 0 && <div className={`${c.warn} border rounded-xl p-4`}><p className="text-xs font-bold mb-2">✨ Make It Better</p>{results.tips.map((t, i) => <p key={i} className="text-xs mb-1">• {t}</p>)}</div>}
-
-          {/* Rate */}
-          <button onClick={() => setShowRate(!showRate)} className={`text-xs font-bold ${c.acc}`}>{showRate ? '▲' : '⭐'} Rate this date</button>
-          {showRate && <div className={`${c.card} border ${c.bdr} rounded-xl p-5 space-y-4`}>
-            <div><p className={`text-sm font-bold ${c.text} mb-2`}>Overall</p><div className="flex gap-1">{[1,2,3,4,5].map(s => <button key={s} onClick={() => setOverallRating(s)} className={`text-2xl ${s <= overallRating ? '' : 'opacity-30'}`}>⭐</button>)}</div></div>
-            <div><p className={`text-sm font-bold ${c.text} mb-2`}>Each stop</p>{stops.map((s, i) => <div key={i} className={`${c.stop} border rounded-lg p-3 mb-2`}><p className={`text-xs font-bold ${c.text} mb-1`}>{stopEmoji(s.stop_type)} {s.venue_name}</p><div className="flex gap-1">{STOP_RATINGS.map(r => <button key={r.v} onClick={() => setStopRatings(p => ({ ...p, [s.stop_number || i + 1]: r.v }))} className={`px-2 py-1 rounded-lg text-xs border ${stopRatings[s.stop_number || i + 1] === r.v ? c.on : c.off}`}>{r.l}</button>)}</div></div>)}</div>
-            <div><p className={`text-xs font-bold ${c.text} mb-1`}>💰 Actual spend? <span className={c.tm}>(optional)</span></p><input value={actualSpend} onChange={e => setActualSpend(e.target.value)} placeholder={`e.g., ${fm(budget)}`} className={`w-40 px-3 py-2 border rounded-lg text-sm ${c.input}`} /></div>
-            <textarea value={rateNotes} onChange={e => setRateNotes(e.target.value)} placeholder="Highlight? What to change?" rows={2} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
-            <button onClick={handleRate} disabled={loading || !overallRating} className={`w-full py-2.5 rounded-xl font-bold text-sm ${c.pri} disabled:opacity-50`}>{loading ? '⏳' : '⭐ Submit'}</button>
-            {rateResult && <div className={`${c.ok} border rounded-xl p-4 space-y-2`}><p className={`text-sm`}>{rateResult.encouragement}</p><p className={`text-xs ${c.ts}`}>{rateResult.summary}</p>{rateResult.next_suggestion && <p className={`text-xs ${c.acc}`}>💡 Next: {rateResult.next_suggestion}</p>}{rateResult.budget_accuracy && <p className={`text-xs ${c.tm}`}>💰 {rateResult.budget_accuracy}</p>}</div>}
-          </div>}
-
-          <ActionBar content={buildText()} title="Date Night" />
-        </div>;
+          </div>
+        );
       })()}
 
       {/* ═══ LIVE DATE MODE ═══ */}
@@ -560,70 +852,99 @@ const DateNight = () => {
         if (!cur) return null;
         const progress = stops.length > 0 ? ((liveStep + 1) / stops.length) * 100 : 0;
 
-        return <div className="space-y-4">
-          <div className={`${c.live} border-2 rounded-2xl p-5`}>
-            <div className="flex justify-between items-center mb-3">
-              <h3 className={`font-bold text-sm ${c.text}`}>▶️ Date Night Live</h3>
-              <button onClick={() => setLiveMode(false)} className={`text-xs font-bold ${c.tm}`}>✕ Exit</button>
+        return (
+          <div className="space-y-4">
+            <div className={`${c.liveCard} border-2 rounded-2xl p-5`}>
+              <div className="flex justify-between items-center mb-3">
+                <h3 className={`font-bold text-sm ${c.text}`}>▶️ Date Night Live</h3>
+                <button onClick={() => setLiveMode(false)} className={`text-xs font-bold ${c.textMuteded}`}>✕ Exit</button>
+              </div>
+              <div className={`w-full h-2 rounded-full ${c.budgetBar} mb-2`}>
+                <div className="h-full rounded-full bg-red-500 transition-all" style={{ width: `${progress}%` }} />
+              </div>
+              <div className="flex justify-between">
+                <p className={`text-xs ${c.textMuteded}`}>Stop {liveStep + 1} of {stops.length}</p>
+                {timeOffset !== 0 && <p className={`text-xs ${c.roseText}`}>{timeOffset > 0 ? `+${timeOffset}` : timeOffset}min</p>}
+              </div>
             </div>
-            <div className={`w-full h-2 rounded-full ${c.budgetBar} mb-2`}><div className="h-full rounded-full bg-rose-500 transition-all" style={{ width: `${progress}%` }} /></div>
-            <div className="flex justify-between"><p className={`text-xs ${c.tm}`}>Stop {liveStep + 1} of {stops.length}</p>
-              {timeOffset !== 0 && <p className={`text-xs ${c.acc}`}>{timeOffset > 0 ? `+${timeOffset}` : timeOffset}min</p>}
+
+            {/* Time adjuster */}
+            <div className="flex items-center gap-2">
+              <span className={`text-xs ${c.textSecondaryondary}`}>Running late?</span>
+              {[15, 30, -15].map(m => (
+                <button key={m} onClick={() => setTimeOffset(p => p + m)} className={`px-2 py-1 rounded text-xs ${c.btnSecondaryondary} border ${c.border}`}>{m > 0 ? '+' : ''}{m}m</button>
+              ))}
+              {timeOffset !== 0 && <button onClick={() => setTimeOffset(0)} className={`text-xs ${c.textMuteded}`}>Reset</button>}
+            </div>
+
+            {/* Current stop */}
+            <div className={`${c.card} border-2 ${c.roseBorder} rounded-2xl p-5 space-y-3`}>
+              <div className="flex justify-between">
+                <div>
+                  <p className={`text-xs font-bold ${c.roseText} mb-1`}>NOW</p>
+                  <h3 className={`text-lg font-bold ${c.text}`}>{stopEmoji(cur.stop_type)} {cur.venue_name}</h3>
+                </div>
+                <span className={`text-sm font-bold ${c.roseText}`}>~{fm(cur.estimated_cost)}</span>
+              </div>
+              <p className={`text-sm ${c.text}`}>{cur.description}</p>
+              {cur.dress_vibe && <p className={`text-sm font-bold ${c.textSecondaryondary}`}>👗 {cur.dress_vibe}</p>}
+              {cur.pro_tip && <div className={`text-sm p-3 rounded-lg border ${c.warning}`}>💡 {cur.pro_tip}</div>}
+              {cur.anniversary_touch && <div className={`text-sm p-3 rounded-lg border ${c.accentCard} ${c.border}`}>💍 {cur.anniversary_touch}</div>}
+            </div>
+
+            {/* Plan B for this stop */}
+            {cur.plan_b && (
+              <div className={`${c.infoCard} border rounded-xl p-3`}>
+                <p className={`text-xs font-bold mb-0.5`}>🔄 If this doesn't work:</p>
+                <p className={`text-xs`}>{cur.plan_b}</p>
+              </div>
+            )}
+
+            {/* Swap mid-date */}
+            <button onClick={() => swapStop(cur.stop_number || liveStep + 1)} disabled={swapping === (cur.stop_number || liveStep + 1) || loading}
+              className={`w-full py-2 rounded-xl text-xs font-bold ${c.btnSecondaryondary} border ${c.border}`}>
+              {swapping ? <><span className="animate-spin inline-block mr-1">{tool?.icon ?? '💘'}</span>Finding replacement…</> : '🔄 This stop isn\'t working — swap it'}
+            </button>
+
+            {/* Next stop preview */}
+            {liveStep < stops.length - 1 && (
+              <div className={`${c.altCard} border ${c.border} rounded-xl p-3`}>
+                <p className={`text-xs font-bold ${c.text} mb-1`}>Up next: {stopEmoji(stops[liveStep + 1].stop_type)} {stops[liveStep + 1].venue_name}</p>
+                <p className={`text-xs ${c.textMuteded}`}>{stops[liveStep + 1].time}{timeOffset ? ` (adj: ~${timeOffset > 0 ? '+' : ''}${timeOffset}m)` : ''}</p>
+                {results.transportation && <p className={`text-xs ${c.textSecondaryondary} mt-1`}>🚶 {results.transportation}</p>}
+              </div>
+            )}
+
+            {/* Nav */}
+            <div className="flex gap-2">
+              {liveStep > 0 && <button onClick={() => setLiveStep(p => p - 1)} className={`flex-1 py-3 rounded-xl text-sm font-bold ${c.btnSecondaryondary} border ${c.border}`}>← Back</button>}
+              {liveStep < stops.length - 1
+                ? <button onClick={() => setLiveStep(p => p + 1)} className={`flex-1 py-3 rounded-xl text-sm font-bold ${c.btnAction}`}>Next stop →</button>
+                : <button onClick={() => { setLiveMode(false); setShowRate(true); }} className={`flex-1 py-3 rounded-xl text-sm font-bold ${c.btnAction}`}>🎉 Finish & Rate</button>}
             </div>
           </div>
-
-          {/* Time adjuster */}
-          <div className="flex items-center gap-2">
-            <span className={`text-xs ${c.ts}`}>Running late?</span>
-            {[15, 30, -15].map(m => <button key={m} onClick={() => setTimeOffset(p => p + m)} className={`px-2 py-1 rounded text-xs ${c.sec} border ${c.bdr}`}>{m > 0 ? '+' : ''}{m}m</button>)}
-            {timeOffset !== 0 && <button onClick={() => setTimeOffset(0)} className={`text-xs ${c.tm}`}>Reset</button>}
-          </div>
-
-          {/* Current stop — big */}
-          <div className={`${c.card} border-2 ${isDark ? 'border-rose-600' : 'border-rose-300'} rounded-2xl p-5 space-y-3`}>
-            <div className="flex justify-between"><div><p className={`text-xs font-bold ${c.acc} mb-1`}>NOW</p><h3 className={`text-lg font-bold ${c.text}`}>{stopEmoji(cur.stop_type)} {cur.venue_name}</h3></div><span className={`text-sm font-bold ${c.acc}`}>~{fm(cur.estimated_cost)}</span></div>
-            <p className={`text-sm ${c.text}`}>{cur.description}</p>
-            {cur.dress_vibe && <p className={`text-sm font-bold ${c.ts}`}>👗 {cur.dress_vibe}</p>}
-            {cur.pro_tip && <div className={`text-sm p-3 rounded-lg border ${c.warn}`}>💡 {cur.pro_tip}</div>}
-            {cur.anniversary_touch && <div className={`text-sm p-3 rounded-lg border ${c.accBg} ${c.bdr}`}>💍 {cur.anniversary_touch}</div>}
-          </div>
-
-          {/* Plan B for this stop */}
-          {cur.plan_b && <div className={`${c.info} border rounded-xl p-3`}><p className={`text-xs font-bold mb-0.5`}>🔄 If this doesn't work:</p><p className={`text-xs`}>{cur.plan_b}</p></div>}
-
-          {/* Swap mid-date */}
-          <button onClick={() => swapStop(cur.stop_number || liveStep + 1)} disabled={swapping === (cur.stop_number || liveStep + 1) || loading} className={`w-full py-2 rounded-xl text-xs font-bold ${c.sec} border ${c.bdr}`}>{swapping ? '⏳ Finding replacement...' : '🔄 This stop isn\'t working — swap it'}</button>
-
-          {/* Next stop preview */}
-          {liveStep < stops.length - 1 && <div className={`${isDark ? 'bg-zinc-700/30' : 'bg-stone-50'} border ${c.bdr} rounded-xl p-3`}>
-            <p className={`text-xs font-bold ${c.text} mb-1`}>Up next: {stopEmoji(stops[liveStep + 1].stop_type)} {stops[liveStep + 1].venue_name}</p>
-            <p className={`text-xs ${c.tm}`}>{stops[liveStep + 1].time}{timeOffset ? ` (adj: ~${timeOffset > 0 ? '+' : ''}${timeOffset}m)` : ''}</p>
-            {results.transportation && <p className={`text-xs ${c.ts} mt-1`}>🚶 {results.transportation}</p>}
-          </div>}
-
-          {/* Nav */}
-          <div className="flex gap-2">
-            {liveStep > 0 && <button onClick={() => setLiveStep(p => p - 1)} className={`flex-1 py-3 rounded-xl text-sm font-bold ${c.sec} border ${c.bdr}`}>← Back</button>}
-            {liveStep < stops.length - 1
-              ? <button onClick={() => setLiveStep(p => p + 1)} className={`flex-1 py-3 rounded-xl text-sm font-bold ${c.pri}`}>Next stop →</button>
-              : <button onClick={() => { setLiveMode(false); setShowRate(true); }} className={`flex-1 py-3 rounded-xl text-sm font-bold ${c.pri}`}>🎉 Finish & Rate</button>}
-          </div>
-        </div>;
+        );
       })()}
 
       {/* Favorites list */}
-      {favorites.length > 0 && !results && !liveMode && <div className={`${c.card} border ${c.bdr} rounded-xl p-4`}>
-        <p className={`text-xs font-bold ${c.acc} mb-2`}>❤️ Saved Venues ({favorites.length})</p>
-        <div className="space-y-1">{favorites.slice(0, 6).map((f, i) => <div key={i} className="flex justify-between text-xs"><span className={c.text}>{stopEmoji(f.stop_type)} {f.venue_name}</span><button onClick={() => setFavorites(p => p.filter(x => x.venue_name !== f.venue_name))} className={c.tm}>✕</button></div>)}</div>
-        {favorites.length > 6 && <p className={`text-xs ${c.tm} mt-1`}>+{favorites.length - 6} more</p>}
-        <p className={`text-xs ${c.tm} mt-2`}>These are factored into future plans.</p>
-      </div>}
+      {favorites.length > 0 && !results && !liveMode && (
+        <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+          <p className={`text-xs font-bold ${c.roseText} mb-2`}>❤️ Saved Venues ({favorites.length})</p>
+          <div className="space-y-1">
+            {favorites.slice(0, 6).map((f, i) => (
+              <div key={i} className="flex justify-between text-xs">
+                <span className={c.text}>{stopEmoji(f.stop_type)} {f.venue_name}</span>
+                <button onClick={() => setFavorites(p => p.filter(x => x.venue_name !== f.venue_name))} className={c.textMuteded}>✕</button>
+              </div>
+            ))}
+          </div>
+          {favorites.length > 6 && <p className={`text-xs ${c.textMuteded} mt-1`}>+{favorites.length - 6} more</p>}
+          <p className={`text-xs ${c.textMuteded} mt-2`}>These are factored into future plans.</p>
+        </div>
+      )}
 
       {/* Error */}
-      {error && <div className={`${c.bad} border rounded-xl p-4 text-sm`}>⚠️ {error}</div>}
-
-      {/* Cross-refs */}
-      {results && !liveMode && <div className={`bg-transparent rounded-xl`}><p className={`text-xs ${c.tm} mb-2`}>Related:</p><div className="flex flex-wrap gap-2">{[['MicroAdventureMapper', '🗺️', 'explore your area'], ['FridgeAlchemy', '🍳', 'cook together'], ['CaptionMagic', '📸', 'caption the photos']].map(([id, ico, d]) => <a key={id} href={`/${id}`} target="_blank" rel="noopener noreferrer" className={`text-xs px-3 py-1.5 rounded-lg ${c.sec} border ${c.bdr} no-underline`}>{ico} {d}</a>)}</div></div>}
+      {error && <div className={`${c.danger} border rounded-xl p-4 text-sm`}>⚠️ {error}</div>}
     </div>
   );
 };

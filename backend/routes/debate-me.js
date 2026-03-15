@@ -257,6 +257,7 @@ Return ONLY valid JSON:
 {
   "verdict": {
     "more_persuasive": "Side A | Side B | Too close to call",
+    "winner": "integer: 0=Side A won, 1=Side B won, 2=too close to call",
     "confidence": "Strongly | Slightly | Barely",
     "reason": "Why this side was more convincing to an undecided observer. 2-3 sentences."
   },

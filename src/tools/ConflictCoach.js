@@ -11,63 +11,43 @@ const ConflictCoach = ({ tool }) => {
   const { isDark } = useTheme();
 
   // ─── Standard c object ───
-  const c = {
-    card:          isDark ? 'bg-zinc-800'       : 'bg-white',
-    cardAlt:       isDark ? 'bg-zinc-700/50'    : 'bg-slate-50',
-    text:          isDark ? 'text-zinc-50'      : 'text-slate-900',
-    textSecondary: isDark ? 'text-zinc-300'     : 'text-slate-600',
-    textMuted:     isDark ? 'text-zinc-500'     : 'text-slate-400',
-    input:         isDark
-      ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
-      : 'bg-white border-slate-300 text-slate-900 placeholder-slate-400 focus:border-cyan-600 focus:ring-cyan-300/20',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
-    btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-slate-100 hover:bg-slate-200 text-slate-700',
-    border:        isDark ? 'border-zinc-700'   : 'border-slate-200',
-    success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-300' : 'bg-emerald-50 border-emerald-200 text-emerald-800',
-    warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-300' : 'bg-amber-50 border-amber-200 text-amber-800',
-    danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-300' : 'bg-red-50 border-red-200 text-red-800',
-    // Tool-specific keys
-    highlight:     isDark ? 'bg-sky-900/20 border-sky-700 text-sky-300' : 'bg-sky-50 border-sky-200 text-sky-800',
-    lockIcon:      isDark ? 'text-red-400'     : 'text-red-500',
-    unlockIcon:    isDark ? 'text-emerald-400' : 'text-emerald-500',
-    manipulation:      isDark ? 'bg-purple-900/20 border-purple-700 text-purple-300' : 'bg-purple-50 border-purple-300 text-purple-800',
-    toast:             isDark ? 'bg-zinc-700 text-zinc-50 border border-zinc-600' : 'bg-white text-slate-900 border border-slate-200',
-    historyPanel:      isDark ? 'bg-zinc-700 border-zinc-600' : 'bg-slate-50 border-slate-200',
-    historyItem:       isDark ? 'bg-zinc-800' : 'bg-white',
-    threadContainer:   isDark ? 'bg-zinc-900 border-zinc-700' : 'bg-slate-50 border-slate-200',
-    threadMsgMe:       isDark ? 'bg-cyan-900/30 border-cyan-700' : 'bg-cyan-50 border-cyan-200',
-    threadMsgThem:     isDark ? 'bg-zinc-700 border-zinc-600' : 'bg-white border-slate-200',
-    draftBox:          isDark ? 'border-red-700 bg-red-900/20' : 'border-red-300 bg-red-50',
-    emotionRequired:   isDark ? 'border-cyan-500 bg-cyan-900/20' : 'border-cyan-500 bg-cyan-50',
-    goalActive:        isDark ? 'border-cyan-500 bg-cyan-900/20' : 'border-cyan-600 bg-cyan-50',
-    goalInactive:      isDark ? 'border-zinc-700' : 'border-slate-200',
-    strategySelected:  'border-cyan-500',
-    strategyHover:     isDark ? 'border-zinc-600 hover:border-cyan-600' : 'border-slate-200 hover:border-cyan-400',
-    manipulationInner: isDark ? 'bg-purple-900/30' : 'bg-purple-50',
-    strategyText:      isDark ? 'bg-zinc-900' : 'bg-slate-50',
-    toneSlider:        isDark ? 'bg-zinc-700' : 'bg-slate-50',
-    toneAdjusted:      isDark ? 'bg-zinc-900' : 'bg-white',
-    apologyBox:        isDark ? 'bg-sky-900/20' : 'bg-sky-50',
-    landminePhrase:    isDark ? 'bg-red-900/20' : 'bg-red-50',
-    escalationScript:  isDark ? 'bg-zinc-900' : 'bg-white',
-    followupMe:        isDark ? 'bg-zinc-700' : 'bg-slate-50',
-    confirmModal:      isDark ? 'bg-zinc-900' : 'bg-slate-50',
-    toneBadge:         isDark ? 'bg-sky-900/30 text-sky-300' : 'bg-sky-100 text-sky-700',
-    draftFlag:         isDark ? 'bg-amber-900/20' : 'bg-amber-50',
-  };
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
     : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
+
+  const c = {
+    card:          isDark ? 'bg-zinc-800' : 'bg-white',
+    cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    text:          isDark ? 'text-zinc-50' : 'text-gray-900',
+    textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
+    textMuted:     isDark ? 'text-zinc-500' : 'text-gray-400',
+    labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
+    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
+    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
+    border:        isDark ? 'border-zinc-700' : 'border-gray-200',
+    success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
+    warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
+    danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
+    infoBox:       isDark ? 'bg-sky-900/20 border-sky-700 text-sky-200' : 'bg-sky-50 border-sky-200 text-sky-800',
+    successBox:    isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-300',
+    successTxt:    isDark ? 'text-emerald-300' : 'text-emerald-800',
+    warningBox:    isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
+    warningTxt:    isDark ? 'text-amber-300' : 'text-amber-800',
+    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
+  };
 
   // Emotion-specific active state colors (tool-specific: each emotion has a semantically distinct color)
   const emotionActive = {
     angry:      isDark ? 'border-red-500 bg-red-900/30'      : 'border-red-500 bg-red-100',
     hurt:       isDark ? 'border-sky-500 bg-sky-900/30'      : 'border-sky-500 bg-sky-100',
     defensive:  isDark ? 'border-amber-500 bg-amber-900/30'  : 'border-amber-500 bg-amber-100',
-    frustrated: isDark ? 'border-orange-500 bg-orange-900/30': 'border-orange-500 bg-orange-100',
+    frustrated: isDark ? 'border-amber-500 bg-amber-900/30': 'border-amber-500 bg-amber-100',
     calm:       isDark ? 'border-green-500 bg-green-900/30'  : 'border-green-500 bg-green-100',
-    confused:   isDark ? 'border-violet-500 bg-violet-900/30': 'border-violet-500 bg-violet-100',
+    confused:   isDark ? 'border-cyan-500 bg-cyan-900/30': 'border-cyan-500 bg-cyan-100',
   };
   const emotionInactive = isDark ? 'border-zinc-700' : 'border-slate-200';
 
@@ -91,6 +71,7 @@ const ConflictCoach = ({ tool }) => {
 
   // ─── Persisted state ───
   const [receivedMessage, setReceivedMessage] = usePersistentState('cc-message', '');
+  const [history, setHistory] = usePersistentState('conflictcoach-history', []);
   const [relationship,    setRelationship]    = usePersistentState('cc-relationship', 'Friend');
   const [personLabel,     setPersonLabel]     = usePersistentState('cc-person', '');
   const [actualGoal,      setActualGoal]      = usePersistentState('cc-goal', '');
@@ -173,6 +154,7 @@ const ConflictCoach = ({ tool }) => {
         isThread: useThread, personLabel: personLabel.trim() || null,
       });
       setResults(data);
+      setHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: '' }, ...prev].slice(0, 6));
       if (data.message_analysis?.emotional_temperature === 'high' || emotionalState.angry || emotionalState.defensive) {
         setMandatoryDelay(true);
         if (!delayActive) { setDelaySeconds(600); setDelayActive(true); }
@@ -312,9 +294,9 @@ const ConflictCoach = ({ tool }) => {
         return p ? (
           <div className={`${c.manipulation} border-2 rounded-xl p-5`}>
             <h3 className={`font-bold mb-2 ${c.text}`}>🔗 Pattern Detected</h3>
-            <p className={`text-sm ${c.textSecondary}`}>You've logged <strong>{p.count} conflicts</strong> with <strong>{p.person}</strong> in the past {p.timeframe}.</p>
-            {p.repeatedTactics.length > 0 && <p className={`text-sm mt-1 ${c.textSecondary}`}>Recurring tactics: <strong>{p.repeatedTactics.join(', ')}</strong>. This is a pattern, not an incident.</p>}
-            <p className={`text-xs mt-2 ${c.textMuted}`}>Consider whether this relationship dynamic needs professional support.</p>
+            <p className={`text-sm ${c.textSecondaryondary}`}>You've logged <strong>{p.count} conflicts</strong> with <strong>{p.person}</strong> in the past {p.timeframe}.</p>
+            {p.repeatedTactics.length > 0 && <p className={`text-sm mt-1 ${c.textSecondaryondary}`}>Recurring tactics: <strong>{p.repeatedTactics.join(', ')}</strong>. This is a pattern, not an incident.</p>}
+            <p className={`text-xs mt-2 ${c.textMuteded}`}>Consider whether this relationship dynamic needs professional support.</p>
           </div>
         ) : null;
       })()}
@@ -333,8 +315,8 @@ const ConflictCoach = ({ tool }) => {
       {showGoalClarification && !actualGoal && (
         <div className={`${c.highlight} border-4 rounded-xl p-6`}>
           <h3 className={`text-lg font-bold mb-4 ${c.text}`}>🎯 What Do You Actually Want?</h3>
-          <p className={`text-sm mb-3 ${c.textSecondary}`}>Not "what do I want to say" — what <em>outcome</em> do I want?</p>
-          <div className={`space-y-2 mb-4 text-sm ${c.textSecondary}`}>
+          <p className={`text-sm mb-3 ${c.textSecondaryondary}`}>Not "what do I want to say" — what <em>outcome</em> do I want?</p>
+          <div className={`space-y-2 mb-4 text-sm ${c.textSecondaryondary}`}>
             <p>Examples:</p>
             <ul className="list-disc list-inside space-y-1">
               <li>"I want them to understand how this affected me"</li>
@@ -359,9 +341,9 @@ const ConflictCoach = ({ tool }) => {
               <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
                 <span>{tool?.icon ?? '💬'}</span>{tool?.title ?? 'Conflict Coach'}
               </h2>
-              <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Stop, breathe, and craft the right response'}</p>
+              <p className={`text-sm ${c.textSecondaryondary}`}>{tool?.tagline ?? 'Stop, breathe, and craft the right response'}</p>
             </div>
-            <button onClick={() => setShowHistory(!showHistory)} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs`}>
+            <button onClick={() => setShowHistory(!showHistory)} className={`${c.btnSecondaryondary} px-3 py-1.5 rounded-lg text-xs`}>
               📋 History
             </button>
           </div>
@@ -370,7 +352,7 @@ const ConflictCoach = ({ tool }) => {
         {/* Warning notice */}
         <div className={`${c.warning} border-l-4 rounded-r-lg p-4 mb-4`}>
           <p className={`text-sm font-semibold ${c.text}`}>⚠️ Before you send that message — STOP.</p>
-          <p className={`text-xs ${c.textSecondary} mt-1`}>Includes cooling periods, manipulation detection, draft analysis, and goal clarification. Not a replacement for therapy. For abusive situations, seek professional help.</p>
+          <p className={`text-xs ${c.textSecondaryondary} mt-1`}>Includes cooling periods, manipulation detection, draft analysis, and goal clarification. Not a replacement for therapy. For abusive situations, seek professional help.</p>
         </div>
 
         {/* History panel */}
@@ -384,15 +366,15 @@ const ConflictCoach = ({ tool }) => {
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
                         <span className={`text-xs px-1.5 py-0.5 rounded font-semibold ${histTempBadge(e.temperature)}`}>{e.temperature}</span>
-                        <span className={`text-xs ${c.textMuted}`}>{e.person} · {new Date(e.date).toLocaleDateString()}</span>
+                        <span className={`text-xs ${c.textMuteded}`}>{e.person} · {new Date(e.date).toLocaleDateString()}</span>
                       </div>
                       <p className={`text-sm truncate ${c.text}`}>{e.topic}</p>
-                      {e.tactics?.length > 0 && <p className={`text-xs ${c.textMuted}`}>Tactics: {e.tactics.join(', ')}</p>}
+                      {e.tactics?.length > 0 && <p className={`text-xs ${c.textMuteded}`}>Tactics: {e.tactics.join(', ')}</p>}
                     </div>
                   </div>
                 ))}
               </div>
-            ) : <p className={`text-sm ${c.textMuted}`}>No past conflicts saved.</p>}
+            ) : <p className={`text-sm ${c.textMuteded}`}>No past conflicts saved.</p>}
           </div>
         )}
 
@@ -429,9 +411,9 @@ const ConflictCoach = ({ tool }) => {
                   {threadMessages.map(m => (
                     <div key={m.id} className={`flex ${m.sender === 'me' ? 'justify-end' : 'justify-start'}`}>
                       <div className={`max-w-[75%] p-2 rounded-lg text-sm border ${m.sender === 'me' ? c.threadMsgMe : c.threadMsgThem}`}>
-                        <p className={`text-xs font-bold mb-0.5 ${c.textMuted}`}>{m.sender === 'me' ? 'You' : 'Them'}</p>
+                        <p className={`text-xs font-bold mb-0.5 ${c.textMuteded}`}>{m.sender === 'me' ? 'You' : 'Them'}</p>
                         <p className={c.text}>{m.text}</p>
-                        <button onClick={() => handleRemoveThreadMessage(m.id)} className={`text-xs ${c.textMuted} mt-1 hover:underline`}>✕ remove</button>
+                        <button onClick={() => handleRemoveThreadMessage(m.id)} className={`text-xs ${c.textMuteded} mt-1 hover:underline`}>✕ remove</button>
                       </div>
                     </div>
                   ))}
@@ -447,12 +429,12 @@ const ConflictCoach = ({ tool }) => {
                   onKeyDown={e => { if (e.key === 'Enter') handleAddThreadMessage(); }} />
                 <button onClick={handleAddThreadMessage} className={`${c.btnPrimary} px-3 py-2 rounded text-sm`}>Add</button>
               </div>
-              <p className={`text-xs ${c.textMuted} mt-1`}>Add messages in order. The AI analyzes the full dynamic.</p>
+              <p className={`text-xs ${c.textMuteded} mt-1`}>Add messages in order. The AI analyzes the full dynamic.</p>
             </div>
           ) : (
             <div>
               <div className="flex justify-between mb-1">
-                <label className={`text-sm font-medium ${c.text}`}>The message you received <span className={c.textMuted}>*</span></label>
+                <label className={`text-sm font-medium ${c.text}`}>The message you received <span className={c.textMuteded}>*</span></label>
                 <button onClick={() => setReceivedMessage(exampleMessage)} className={`text-xs ${linkStyle}`}>Example</button>
               </div>
                 placeholder="Paste the tense/upsetting message… (Ctrl+Enter to analyze)"
@@ -468,7 +450,7 @@ const ConflictCoach = ({ tool }) => {
             </div>
               placeholder="Your reactive response… be honest"
               className={`w-full p-3 border rounded-lg ${c.input}`} rows={3} />
-            <p className={`text-xs ${c.textMuted} mt-1`}>We catch escalation BEFORE it happens. Honesty helps.</p>
+            <p className={`text-xs ${c.textMuteded} mt-1`}>We catch escalation BEFORE it happens. Honesty helps.</p>
           </div>
 
           {/* Emotions */}
@@ -489,7 +471,7 @@ const ConflictCoach = ({ tool }) => {
                 </label>
               ))}
             </div>
-            {!emotionCheckDone && <p className={`text-xs ${c.textMuted} mt-2 font-semibold`}>⚠️ Required for accurate analysis</p>}
+            {!emotionCheckDone && <p className={`text-xs ${c.textMuteded} mt-2 font-semibold`}>⚠️ Required for accurate analysis</p>}
           </div>
 
           {/* Goals */}
@@ -512,7 +494,7 @@ const ConflictCoach = ({ tool }) => {
           </div>
 
           {/* Pre-result cross-ref */}
-          <p className={`text-xs text-center ${c.textMuted}`}>
+          <p className={`text-xs text-center ${c.textMuteded}`}>
             Need to rehearse? <a href="/DifficultTalkCoach" rel="noopener noreferrer" className={linkStyle}>Difficult Talk Coach</a> lets you practice.
           </p>
 
@@ -524,7 +506,7 @@ const ConflictCoach = ({ tool }) => {
                 : <><span>{tool?.icon ?? '📱'}</span> Analyze</>}
             </button>
             {results && (
-              <button onClick={handleReset} className={`px-6 py-3 border-2 ${c.border} ${c.btnSecondary} rounded-lg`}>New</button>
+              <button onClick={handleReset} className={`px-6 py-3 border-2 ${c.border} ${c.btnSecondaryondary} rounded-lg`}>New</button>
             )}
           </div>
           {error && (
@@ -552,8 +534,8 @@ const ConflictCoach = ({ tool }) => {
             <div className={`${c.card} border ${c.border} rounded-xl shadow-lg p-6 text-center`}>
               <div className="text-6xl mb-3">{tempEmoji(results.message_analysis.emotional_temperature)}</div>
               <div className={`text-2xl font-black ${c.text} mb-1`}>{results.message_analysis.emotional_temperature?.toUpperCase()} TEMPERATURE</div>
-              <p className={`text-sm ${c.textSecondary}`}>Primary: <strong>{results.message_analysis.primary_emotion_detected}</strong></p>
-              {results.message_analysis.underlying_need && <p className={`text-xs ${c.textMuted} mt-1`}>Need: {results.message_analysis.underlying_need}</p>}
+              <p className={`text-sm ${c.textSecondaryondary}`}>Primary: <strong>{results.message_analysis.primary_emotion_detected}</strong></p>
+              {results.message_analysis.underlying_need && <p className={`text-xs ${c.textMuteded} mt-1`}>Need: {results.message_analysis.underlying_need}</p>}
             </div>
           )}
 
@@ -561,13 +543,13 @@ const ConflictCoach = ({ tool }) => {
           {results.manipulation_tactics?.length > 0 && (
             <div className={`${c.manipulation} border-2 rounded-xl p-6`}>
               <h3 className={`text-lg font-bold mb-4 flex items-center gap-2 ${c.text}`}><span>🎭</span> Manipulation Tactics Detected</h3>
-              <p className={`text-sm mb-4 ${c.textSecondary}`}>These patterns in their message may be attempts to control the conversation:</p>
+              <p className={`text-sm mb-4 ${c.textSecondaryondary}`}>These patterns in their message may be attempts to control the conversation:</p>
               <div className="space-y-3">
                 {results.manipulation_tactics.map((t, i) => (
                   <div key={i} className={`p-4 rounded-lg ${c.manipulationInner}`}>
                     <div className="flex items-center gap-2 mb-1"><span className="text-lg">{t.icon || '🚩'}</span><h4 className={`font-bold ${c.text}`}>{t.tactic}</h4></div>
-                    <p className={`text-sm mb-2 ${c.textSecondary}`}>{t.description}</p>
-                    {t.example_phrase && <p className={`text-xs italic ${c.textMuted}`}>From their message: "{t.example_phrase}"</p>}
+                    <p className={`text-sm mb-2 ${c.textSecondaryondary}`}>{t.description}</p>
+                    {t.example_phrase && <p className={`text-xs italic ${c.textMuteded}`}>From their message: "{t.example_phrase}"</p>}
                     {t.healthy_response && <p className={`text-sm mt-2 font-semibold ${c.text}`}>💡 Healthy response: {t.healthy_response}</p>}
                   </div>
                 ))}
@@ -595,7 +577,7 @@ const ConflictCoach = ({ tool }) => {
             <div className={`${tempColor(results.message_analysis.emotional_temperature)} border-l-4 rounded-r-lg p-5`}>
               <h3 className={`font-bold mb-3 ${c.text}`}>{tempEmoji(results.message_analysis.emotional_temperature)} Triggers</h3>
               <ul className={`text-sm space-y-1 ${c.text}`}>{results.message_analysis.triggers_identified.map((t, i) => <li key={i}>• "{t}"</li>)}</ul>
-              {results.message_analysis.communication_style && <p className={`text-sm mt-2 ${c.textMuted}`}>Style: {results.message_analysis.communication_style}</p>}
+              {results.message_analysis.communication_style && <p className={`text-sm mt-2 ${c.textMuteded}`}>Style: {results.message_analysis.communication_style}</p>}
             </div>
           )}
 
@@ -603,7 +585,7 @@ const ConflictCoach = ({ tool }) => {
           {results.draft_analysis && userDraft && (
             <div className={`${c.card} border ${c.border} rounded-xl p-6`}>
               <h3 className={`text-lg font-bold mb-3 ${c.text}`}>🚨 Your Draft — Honest Analysis</h3>
-              <p className={`text-sm mb-3 ${c.textSecondary}`}>{results.draft_analysis.overall_assessment}</p>
+              <p className={`text-sm mb-3 ${c.textSecondaryondary}`}>{results.draft_analysis.overall_assessment}</p>
               {results.draft_analysis.tone_flags?.length > 0 && (
                 <div className="mb-3">
                   <p className={`text-sm font-bold mb-2 ${c.text}`}>Tone Flags:</p>
@@ -626,7 +608,7 @@ const ConflictCoach = ({ tool }) => {
             <div className={`${c.card} border ${c.border} rounded-xl p-6`}>
               <h3 className={`text-lg font-bold ${c.text} mb-4 flex items-center gap-2`}>
                 {delayActive ? <span className={c.lockIcon}>🔒</span> : <span className={c.unlockIcon}>🔓</span>} Strategies
-                {delayActive && <span className={`text-sm font-normal ${c.textMuted}`}>(Locked)</span>}
+                {delayActive && <span className={`text-sm font-normal ${c.textMuteded}`}>(Locked)</span>}
               </h3>
               <div className="space-y-4">
                 {results.response_strategies.map((s, idx) => (
@@ -637,15 +619,15 @@ const ConflictCoach = ({ tool }) => {
                         {s.tone && <span className={`text-xs px-2 py-0.5 rounded ${c.toneBadge}`}>Tone: {s.tone}</span>}
                       </div>
                       <button onClick={() => handleCopyResponse(s.response_text)} disabled={delayActive}
-                        className={`${c.btnSecondary} px-3 py-1.5 rounded text-sm disabled:opacity-50`}>
+                        className={`${c.btnSecondaryondary} px-3 py-1.5 rounded text-sm disabled:opacity-50`}>
                         {delayActive ? '🔒' : '📋'} Copy
                       </button>
                     </div>
                     <div className={`p-3 rounded ${c.strategyText} mb-2`}>
                       <p className={`${c.text} font-medium`}>"{s.response_text}"</p>
                     </div>
-                    {s.what_this_does && <p className={`text-sm ${c.textSecondary} mb-1`}><strong>Effect:</strong> {s.what_this_does}</p>}
-                    {s.risks && <p className={`text-sm ${c.textMuted}`}><strong>⚠️ Risk:</strong> {s.risks}</p>}
+                    {s.what_this_does && <p className={`text-sm ${c.textSecondaryondary} mb-1`}><strong>Effect:</strong> {s.what_this_does}</p>}
+                    {s.risks && <p className={`text-sm ${c.textMuteded}`}><strong>⚠️ Risk:</strong> {s.risks}</p>}
 
                     {!delayActive && (
                       <div className="mt-3">
@@ -671,9 +653,9 @@ const ConflictCoach = ({ tool }) => {
                                 <div className={`p-3 rounded border ${c.border} ${c.toneAdjusted}`}>
                                   <p className={`text-sm ${c.text}`}>"{adjustedResponse.adjusted_text}"</p>
                                 </div>
-                                {adjustedResponse.tone_note && <p className={`text-xs mt-1 ${c.textMuted}`}>{adjustedResponse.tone_note}</p>}
+                                {adjustedResponse.tone_note && <p className={`text-xs mt-1 ${c.textMuteded}`}>{adjustedResponse.tone_note}</p>}
                                 <button onClick={() => handleCopyResponse(adjustedResponse.adjusted_text)}
-                                  className={`${c.btnSecondary} px-3 py-1 rounded text-xs mt-2`}>📋 Copy adjusted</button>
+                                  className={`${c.btnSecondaryondary} px-3 py-1 rounded text-xs mt-2`}>📋 Copy adjusted</button>
                               </div>
                             )}
                           </div>
@@ -694,7 +676,7 @@ const ConflictCoach = ({ tool }) => {
               {results.apology_assessment.is_apology_appropriate && results.apology_assessment.suggested_apology && (
                 <div className={`p-3 rounded mt-2 ${c.apologyBox}`}>
                   <p className={`text-sm ${c.text}`}>"{results.apology_assessment.suggested_apology}"</p>
-                  <p className={`text-xs mt-1 ${c.textMuted}`}>Fine-tune → <a href="/ApologyCalibrator" rel="noopener noreferrer" className={linkStyle}>Apology Calibrator</a></p>
+                  <p className={`text-xs mt-1 ${c.textMuteded}`}>Fine-tune → <a href="/ApologyCalibrator" rel="noopener noreferrer" className={linkStyle}>Apology Calibrator</a></p>
                 </div>
               )}
             </div>
@@ -711,7 +693,7 @@ const ConflictCoach = ({ tool }) => {
                     {results.what_NOT_to_say.map((it, i) => (
                       <div key={i} className={`p-3 rounded ${c.landminePhrase}`}>
                         <p className={`font-semibold text-sm ${c.text}`}>"{it.phrase}"</p>
-                        <p className={`text-sm ${c.textSecondary}`}>{it.why_avoid}</p>
+                        <p className={`text-sm ${c.textSecondaryondary}`}>{it.why_avoid}</p>
                       </div>
                     ))}
                   </div>
@@ -720,13 +702,13 @@ const ConflictCoach = ({ tool }) => {
               {results.timing_landmines?.length > 0 && (
                 <div className="mb-4">
                   <p className={`text-sm font-bold mb-2 ${c.text}`}>⏰ Timing:</p>
-                  <ul className="space-y-1">{results.timing_landmines.map((t, i) => <li key={i} className={`text-sm ${c.textSecondary}`}>⏰ {t}</li>)}</ul>
+                  <ul className="space-y-1">{results.timing_landmines.map((t, i) => <li key={i} className={`text-sm ${c.textSecondaryondary}`}>⏰ {t}</li>)}</ul>
                 </div>
               )}
               {results.channel_landmines?.length > 0 && (
                 <div>
                   <p className={`text-sm font-bold mb-2 ${c.text}`}>📱 Channel:</p>
-                  <ul className="space-y-1">{results.channel_landmines.map((ch, i) => <li key={i} className={`text-sm ${c.textSecondary}`}>📱 {ch}</li>)}</ul>
+                  <ul className="space-y-1">{results.channel_landmines.map((ch, i) => <li key={i} className={`text-sm ${c.textSecondaryondary}`}>📱 {ch}</li>)}</ul>
                 </div>
               )}
             </div>
@@ -754,17 +736,17 @@ const ConflictCoach = ({ tool }) => {
           {/* Follow-up Q&A */}
           <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
             <h3 className={`font-bold mb-3 ${c.text}`}>💬 Follow-up Coaching</h3>
-            <p className={`text-xs mb-3 ${c.textMuted}`}>"They responded with X, now what?" or "What if they bring up Y?"</p>
+            <p className={`text-xs mb-3 ${c.textMuteded}`}>"They responded with X, now what?" or "What if they bring up Y?"</p>
             {followupHistory.length > 0 && (
               <div className="space-y-3 mb-4">
                 {followupHistory.map((f, i) => (
                   <div key={i} className="space-y-1">
                     <div className={`p-3 rounded ${c.followupMe}`}>
-                      <p className={`text-xs font-semibold ${c.textMuted}`}>You:</p>
+                      <p className={`text-xs font-semibold ${c.textMuteded}`}>You:</p>
                       <p className={`text-sm ${c.text}`}>{f.question}</p>
                     </div>
                     <div className={`p-3 rounded ${c.cardAlt}`}>
-                      <p className={`text-sm ${c.textSecondary}`}>{f.answer}</p>
+                      <p className={`text-sm ${c.textSecondaryondary}`}>{f.answer}</p>
                     </div>
                   </div>
                 ))}
@@ -784,16 +766,16 @@ const ConflictCoach = ({ tool }) => {
 
           {/* Cross-refs (conditional post-result) */}
           <div className="text-center space-y-1">
-            <p className={`text-xs ${c.textMuted}`}>Need a firm response? <a href="/VelvetHammer" rel="noopener noreferrer" className={linkStyle}>Velvet Hammer</a></p>
-            <p className={`text-xs ${c.textMuted}`}>Cooking up a comeback? <a href="/ComebackCooker" rel="noopener noreferrer" className={linkStyle}>Comeback Cooker</a> sharpens your reply.</p>
+            <p className={`text-xs ${c.textMuteded}`}>Need a firm response? <a href="/VelvetHammer" rel="noopener noreferrer" className={linkStyle}>Velvet Hammer</a></p>
+            <p className={`text-xs ${c.textMuteded}`}>Cooking up a comeback? <a href="/ComebackCooker" rel="noopener noreferrer" className={linkStyle}>Comeback Cooker</a> sharpens your reply.</p>
             {results.message_analysis?.emotional_temperature === 'high' && (
-              <p className={`text-xs ${c.textMuted}`}>Still spiraling? → <a href="/SpiralStopper" rel="noopener noreferrer" className={linkStyle}>Spiral Stopper</a></p>
+              <p className={`text-xs ${c.textMuteded}`}>Still spiraling? → <a href="/SpiralStopper" rel="noopener noreferrer" className={linkStyle}>Spiral Stopper</a></p>
             )}
           </div>
 
           {/* AI disclaimer */}
           <div className={`p-4 rounded-xl text-center ${c.cardAlt}`}>
-            <p className={`text-xs ${c.textMuted}`}>💬 AI-generated guidance. Conflict dynamics are complex — trust your judgment. Not a substitute for professional support.</p>
+            <p className={`text-xs ${c.textMuteded}`}>💬 AI-generated guidance. Conflict dynamics are complex — trust your judgment. Not a substitute for professional support.</p>
           </div>
         </div>
       )}
@@ -814,7 +796,7 @@ const ConflictCoach = ({ tool }) => {
             </div>
             <div className="flex gap-3">
               <button onClick={handleConfirmCopy} className={`flex-1 ${c.btnPrimary} py-3 rounded-lg font-semibold`}>Yes, Copy</button>
-              <button onClick={() => { setShowConfirmSend(false); setSelectedResponse(null); }} className={`flex-1 ${c.btnSecondary} py-3 rounded-lg`}>Wait, Think More</button>
+              <button onClick={() => { setShowConfirmSend(false); setSelectedResponse(null); }} className={`flex-1 ${c.btnSecondaryondary} py-3 rounded-lg`}>Wait, Think More</button>
             </div>
           </div>
         </div>

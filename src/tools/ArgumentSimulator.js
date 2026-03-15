@@ -25,8 +25,7 @@ const EXAMPLE_TOPICS = [
 
 const ArgumentSimulator = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
-  const { theme } = useTheme();
-  const isDark = theme === 'dark';
+  const { isDark } = useTheme();
   const resultsRef = useRef(null);
 
   // ─── Colors ───
@@ -39,19 +38,21 @@ const ArgumentSimulator = ({ tool }) => {
     input:         isDark
       ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
       : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-500/20',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'    : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700'  : 'border-gray-200',
-    error:         isDark ? 'bg-red-900/20 border-red-700 text-red-200'  : 'bg-red-50 border-red-200 text-red-800',
     pillActive:    isDark ? 'bg-cyan-600 border-cyan-600 text-white'     : 'bg-cyan-600 border-cyan-600 text-white',
     pillInactive:  isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-300 hover:border-zinc-500' : 'bg-white border-gray-200 text-gray-600 hover:border-gray-300',
-    sideABg:       isDark ? 'bg-blue-900/20'   : 'bg-blue-50',
-    sideABorder:   isDark ? 'border-blue-700'  : 'border-blue-200',
-    sideAAccent:   isDark ? 'text-blue-300'    : 'text-blue-700',
+    sideABg:       isDark ? 'bg-sky-900/20'   : 'bg-sky-50',
+    sideABorder:   isDark ? 'border-sky-700'  : 'border-sky-200',
+    sideAAccent:   isDark ? 'text-sky-300'    : 'text-sky-700',
     sideBBg:       isDark ? 'bg-amber-900/20'  : 'bg-amber-50',
     sideBBorder:   isDark ? 'border-amber-700' : 'border-amber-200',
     sideBAccent:   isDark ? 'text-amber-300'   : 'text-amber-700',
     verdictBg:     isDark ? 'bg-zinc-700/50'   : 'bg-slate-50',
+    success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
+    warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
+    danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
   };
 
   const linkStyle = isDark
@@ -98,7 +99,7 @@ const ArgumentSimulator = ({ tool }) => {
       setHistory(prev => [{
         id: Date.now(),
         timestamp: new Date().toISOString(),
-        preview: hotTake.trim().slice(0, 45),
+        preview: hotTake.trim().slice(0, 6),
         result: res,
       }, ...(prev || [])].slice(0, 6));
     } catch (err) {
@@ -192,15 +193,15 @@ const ArgumentSimulator = ({ tool }) => {
         </div>
 
         {/* Expandable details */}
-        <div className={`border-t ${isA ? (isDark ? 'border-blue-700/30' : 'border-blue-200/60') : (isDark ? 'border-amber-700/20' : 'border-amber-200/50')}`}>
+        <div className={`border-t ${isA ? (isDark ? 'border-sky-700/30' : 'border-sky-200/60') : (isDark ? 'border-amber-700/20' : 'border-amber-200/50')}`}>
           <button
             onClick={() => toggleSection(detailsKey)}
             className="w-full px-5 py-3 flex items-center justify-between text-left transition-colors"
           >
-            <span className={`text-xs font-semibold uppercase tracking-wider ${c.textMuted}`}>
+            <span className={`text-xs font-semibold uppercase tracking-wider ${c.textMuteded}`}>
               Killer point · Evidence · Uncomfortable truth
             </span>
-            <span className={`text-sm ${c.textMuted}`}>{isExpanded ? '▲' : '▼'}</span>
+            <span className={`text-sm ${c.textMuteded}`}>{isExpanded ? '▲' : '▼'}</span>
           </button>
 
           {isExpanded && (
@@ -210,7 +211,7 @@ const ArgumentSimulator = ({ tool }) => {
                 <span className="text-base flex-shrink-0 mt-0.5">💥</span>
                 <div>
                   <p className={`text-xs font-semibold uppercase ${accent} mb-1`}>Killer Point</p>
-                  <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{side.killer_point}</p>
+                  <p className={`text-sm ${c.textSecondaryondary} leading-relaxed`}>{side.killer_point}</p>
                 </div>
               </div>
 
@@ -219,7 +220,7 @@ const ArgumentSimulator = ({ tool }) => {
                 <span className="text-base flex-shrink-0 mt-0.5">📊</span>
                 <div>
                   <p className={`text-xs font-semibold uppercase ${accent} mb-1`}>Evidence</p>
-                  <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{side.evidence}</p>
+                  <p className={`text-sm ${c.textSecondaryondary} leading-relaxed`}>{side.evidence}</p>
                 </div>
               </div>
 
@@ -228,7 +229,7 @@ const ArgumentSimulator = ({ tool }) => {
                 <span className="text-base flex-shrink-0 mt-0.5">😬</span>
                 <div>
                   <p className={`text-xs font-semibold uppercase ${accent} mb-1`}>Uncomfortable Truth</p>
-                  <p className={`text-sm ${c.textSecondary} leading-relaxed italic`}>{side.uncomfortable_truth}</p>
+                  <p className={`text-sm ${c.textSecondaryondary} leading-relaxed italic`}>{side.uncomfortable_truth}</p>
                 </div>
               </div>
             </div>
@@ -239,6 +240,16 @@ const ArgumentSimulator = ({ tool }) => {
   };
 
   // ─── Render ───
+  useEffect(() => {
+    const handler = (e) => {
+      const tag = document.activeElement?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !loading) handleSubmit();
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [loading]);
+
   return (
     <div className={`space-y-4 ${c.text}`}>
 
@@ -250,7 +261,7 @@ const ArgumentSimulator = ({ tool }) => {
           <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
             <span>{tool.icon}</span> Argument Simulator
           </h2>
-          <p className={`text-sm ${c.textSecondary}`}>Drop a hot take. AI argues both sides with full conviction.</p>
+          <p className={`text-sm ${c.textSecondaryondary}`}>Drop a hot take. AI argues both sides with full conviction.</p>
         </div>
 
         {/* Hot take input */}
@@ -270,11 +281,11 @@ const ArgumentSimulator = ({ tool }) => {
           <div className="flex items-center justify-between">
             <button
               onClick={handleRandomTopic}
-              className={`text-xs ${c.btnSecondary} px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5`}
+              className={`text-xs ${c.btnPrimarySecondaryondary} px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5`}
             >
               <span>🎲</span> Random topic
             </button>
-            <span className={`text-xs ${c.textMuted}`}>{hotTake.length}/300</span>
+            <span className={`text-xs ${c.textMuteded}`}>{hotTake.length}/300</span>
           </div>
         </div>
 
@@ -292,14 +303,14 @@ const ArgumentSimulator = ({ tool }) => {
               >
                 <span className="text-xl block mb-1">{opt.icon}</span>
                 <p className="text-sm font-medium leading-tight">{opt.label}</p>
-                <p className={`text-xs ${c.textMuted} leading-tight mt-0.5 hidden sm:block`}>{opt.desc}</p>
+                <p className={`text-xs ${c.textMuteded} leading-tight mt-0.5 hidden sm:block`}>{opt.desc}</p>
               </button>
             ))}
           </div>
         </div>
 
         {/* Pre-result cross-ref */}
-        <p className={`text-xs text-center ${c.textMuted}`}>
+        <p className={`text-xs text-center ${c.textMuteded}`}>
           Want to test your own belief first?{' '}
           <a href="/BeliefStressTest" className={linkStyle}>Belief Stress Test</a>{' '}
           finds the weakest assumptions before you argue them.
@@ -309,12 +320,12 @@ const ArgumentSimulator = ({ tool }) => {
         <button
           onClick={handleSubmit}
           disabled={loading || !hotTake.trim()}
-          className={`w-full ${c.btnPrimary} py-3 rounded-xl font-semibold text-sm shadow-md min-h-[48px]
+          className={`w-full ${c.btnPrimaryPrimary} py-3 rounded-xl font-semibold text-sm shadow-md min-h-[48px]
             disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-2`}
         >
           {loading ? (
             <>
-              <span className="animate-spin inline-block">⚔️</span>
+              <span className="animate-spin inline-block">{tool?.icon ?? '⚙️'}</span>
               Both sides loading their weapons...
             </>
           ) : (
@@ -327,7 +338,7 @@ const ArgumentSimulator = ({ tool }) => {
 
       {/* ── Error ── */}
       {error && (
-        <div className={`${c.error} border rounded-xl p-4 text-sm flex items-center gap-2`}>
+        <div className={`${c.danger} border rounded-xl p-4 text-sm flex items-center gap-2`}>
           <span>⚠️</span> {error}
         </div>
       )}
@@ -340,7 +351,7 @@ const ArgumentSimulator = ({ tool }) => {
           <div className="flex flex-wrap items-center justify-between gap-2">
             <button
               onClick={handleReset}
-              className={`${c.btnSecondary} px-4 py-2 rounded-lg text-sm font-bold flex items-center min-h-[40px]`}
+              className={`${c.btnPrimarySecondaryondary} px-4 py-2 rounded-lg text-sm font-bold flex items-center min-h-[40px]`}
             >
               ↩ Start Over
             </button>
@@ -353,7 +364,7 @@ const ArgumentSimulator = ({ tool }) => {
           {/* Topic banner */}
           {results.topic_framed && (
             <div className={`${c.cardAlt} border ${c.border} rounded-2xl p-4 text-center`}>
-              <p className={`text-xs font-semibold uppercase tracking-wider ${c.textMuted} mb-1`}>
+              <p className={`text-xs font-semibold uppercase tracking-wider ${c.textMuteded} mb-1`}>
                 Tonight's debate
               </p>
               <p className={`text-lg font-bold ${c.text} italic`}>
@@ -368,7 +379,7 @@ const ArgumentSimulator = ({ tool }) => {
           {/* VS divider */}
           <div className="flex items-center gap-4 py-1">
             <div className={`flex-1 border-t ${c.border}`} />
-            <span className={`text-2xl font-black ${c.textMuted}`}>VS</span>
+            <span className={`text-2xl font-black ${c.textMuteded}`}>VS</span>
             <div className={`flex-1 border-t ${c.border}`} />
           </div>
 
@@ -382,7 +393,7 @@ const ArgumentSimulator = ({ tool }) => {
                 <span className="text-lg">🔍</span>
                 <h3 className={`font-bold ${c.text}`}>Where They Actually Disagree</h3>
               </div>
-              <p className={`text-sm ${c.textSecondary} leading-relaxed`}>
+              <p className={`text-sm ${c.textSecondaryondary} leading-relaxed`}>
                 {results.where_they_actually_disagree}
               </p>
             </div>
@@ -394,7 +405,7 @@ const ArgumentSimulator = ({ tool }) => {
               {!showVerdict ? (
                 <button
                   onClick={() => setShowVerdict(true)}
-                  className={`w-full ${c.btnPrimary} py-3 rounded-xl font-semibold text-sm shadow-md transition-all duration-200 flex items-center justify-center gap-2`}
+                  className={`w-full ${c.btnPrimaryPrimary} py-3 rounded-xl font-semibold text-sm shadow-md transition-all duration-200 flex items-center justify-center gap-2`}
                 >
                   <span>🏛️</span> Reveal the Judge's Verdict
                 </button>
@@ -419,10 +430,10 @@ const ArgumentSimulator = ({ tool }) => {
                 <span className="text-lg">🍷</span>
                 <h3 className={`font-bold ${c.text}`}>The Dinner Party Take</h3>
               </div>
-              <p className={`text-sm italic ${c.textSecondary} leading-relaxed`}>
+              <p className={`text-sm italic ${c.textSecondaryondary} leading-relaxed`}>
                 "{results.dinner_party_take}"
               </p>
-              <p className={`text-xs ${c.textMuted} mt-2`}>
+              <p className={`text-xs ${c.textMuteded} mt-2`}>
                 — The nuanced take that makes you sound smart without alienating anyone
               </p>
             </div>
@@ -430,7 +441,7 @@ const ArgumentSimulator = ({ tool }) => {
 
           {/* Conditional cross-ref: unhinged intensity → Roast Me */}
           {intensity === 'unhinged' && (
-            <p className={`text-xs text-center ${c.textMuted}`}>
+            <p className={`text-xs text-center ${c.textMuteded}`}>
               Enjoyed the chaos?{' '}
               <a href="/RoastMe" className={linkStyle}>Roast Me</a>{' '}
               turns that energy on you — if you can handle it.
@@ -439,7 +450,7 @@ const ArgumentSimulator = ({ tool }) => {
 
           {/* Post-result cross-refs */}
           <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 space-y-2`}>
-            <p className={`text-xs font-semibold ${c.textMuted} uppercase tracking-wider`}>
+            <p className={`text-xs font-semibold ${c.textMuteded} uppercase tracking-wider`}>
               Keep the fun going
             </p>
             <div className="flex flex-wrap gap-x-4 gap-y-1">
@@ -459,8 +470,8 @@ const ArgumentSimulator = ({ tool }) => {
             {history.map(entry => (
               <button key={entry.id}
                 onClick={() => setResults(entry.result)}
-                className={`w-full text-left px-3 py-2 rounded-lg ${c.btnSecondary} text-xs flex items-center gap-2`}>
-                <span className={c.textMuted}>
+                className={`w-full text-left px-3 py-2 rounded-lg ${c.btnPrimarySecondaryondary} text-xs flex items-center gap-2`}>
+                <span className={c.textMuteded}>
                   {new Date(entry.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
                 </span>
                 <span className={`${c.text} truncate`}>{entry.preview}{entry.preview.length >= 45 ? '…' : ''}</span>
@@ -469,6 +480,14 @@ const ArgumentSimulator = ({ tool }) => {
           </div>
         </div>
       )}
+        <div className={`mt-6 pt-4 border-t text-sm ${c.border} ${c.textMuted}`}>
+          <p className="mb-2 font-medium">You might also like:</p>
+          <div className="flex flex-wrap gap-2">
+            {[{slug:'debate-me',label:'⚔️ Debate Me'},{slug:'heckler-prep',label:'😤 Heckler Prep'},{slug:'conflict-coach',label:'🤝 Conflict Coach'}].map(({slug,label})=>(
+              <a key={slug} href={`/tool/${slug}`} className={linkStyle}>{label}</a>
+            ))}
+          </div>
+        </div>
     </div>
   );
 };

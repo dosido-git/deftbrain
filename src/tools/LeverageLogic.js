@@ -29,9 +29,8 @@ const RELATIONSHIP = [
   { value: 'critical', label: 'Must preserve', icon: '💎' },
 ];
 
-const LeverageLogic = () => {
-  const { theme } = useTheme();
-  const isDark = theme === 'dark';
+const LeverageLogic = ({ tool }) => {
+  const { isDark } = useTheme();
   const { callToolEndpoint } = useClaudeAPI();
 
   const [history, setHistory] = usePersistentState('ll-history', []);
@@ -49,7 +48,7 @@ const LeverageLogic = () => {
   const [error, setError] = useState('');
 
   // ── Results ──
-  const [results, setResults] = useState(null);
+  const [results, setResults] = usePersistentState('leverage-results', null);
   const [loading, setLoading] = useState(false);
   const [expandedSections, setExpandedSections] = useState({});
   const toggle = (key) => setExpandedSections(prev => ({ ...prev, [key]: !prev[key] }));
@@ -93,20 +92,25 @@ const LeverageLogic = () => {
   const [anchorWalkaway, setAnchorWalkaway] = useState('');
 
   // ── Theme ──
-  const c = {
-    bg: isDark ? 'bg-zinc-900' : 'bg-slate-50',
-    card: isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-stone-200',
+  const linkStyle = isDark
+    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
+    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
+
+    const c = {
+    card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt: isDark ? 'bg-zinc-700/40 border-zinc-600' : 'bg-amber-50/40 border-amber-100',
     text: isDark ? 'text-zinc-50' : 'text-gray-900',
-    textSec: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted: isDark ? 'text-zinc-500' : 'text-gray-400',
-    input: isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder:text-zinc-500 focus:border-amber-500 focus:ring-amber-500/20' : 'bg-white border-stone-300 text-gray-900 placeholder:text-stone-400 focus:border-amber-500 focus:ring-amber-500/20',
-    btnPrimary: isDark ? 'bg-amber-600 hover:bg-amber-500 text-white' : 'bg-amber-600 hover:bg-amber-700 text-white',
-    btnSecondary: isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-stone-100 hover:bg-stone-200 text-gray-700',
-    btnSoft: isDark ? 'bg-zinc-700/50 hover:bg-zinc-600/50 text-zinc-300' : 'bg-stone-50 hover:bg-stone-100 text-gray-500',
-    accent: isDark ? 'text-amber-400' : 'text-amber-600',
-    border: isDark ? 'border-zinc-700' : 'border-stone-200',
+    input: isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder:text-zinc-500 focus:border-amber-500 focus:ring-amber-500/20' : 'bg-white border-zinc-300 text-gray-900 placeholder:text-zinc-400 focus:border-amber-500 focus:ring-amber-500/20',
+    btnPrimary: isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnSecondary: isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-zinc-100 hover:bg-zinc-200 text-gray-700',
+    btnSoft: isDark ? 'bg-zinc-700/50 hover:bg-zinc-600/50 text-zinc-300' : 'bg-zinc-50 hover:bg-zinc-100 text-gray-500',
+    border: isDark ? 'border-zinc-700' : 'border-zinc-200',
     danger: isDark ? 'bg-red-900/20 border-red-800/50 text-red-300' : 'bg-red-50 border-red-200 text-red-700',
+    textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
+    success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
+    warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
+    deleteHover: isDark ? '${c.deleteHover}' : '${c.deleteHover}',
   };
 
   const strengthColor = (s) => { const l = (s || '').toLowerCase(); if (l === 'strong') return isDark ? 'bg-emerald-900/40 text-emerald-300 border-emerald-700' : 'bg-emerald-100 text-emerald-700 border-emerald-300'; if (l === 'medium') return isDark ? 'bg-amber-900/40 text-amber-300 border-amber-700' : 'bg-amber-100 text-amber-700 border-amber-300'; return isDark ? 'bg-red-900/40 text-red-300 border-red-700' : 'bg-red-100 text-red-700 border-red-300'; };
@@ -144,10 +148,10 @@ const LeverageLogic = () => {
       const data = await callToolEndpoint('leverage-logic', {
         situation: situation.trim(), leverage: leverage.trim() || null,
         desired: desired.trim() || null, negotiationType, urgency, relationship,
-        pastAttempts: history.filter(h => h.situation.toLowerCase().includes(situation.trim().toLowerCase().slice(0, 20))).slice(0, 3),
+        pastAttempts: history.filter(h => h.situation.toLowerCase().includes(situation.trim().toLowerCase().slice(0, 6))).slice(0, 3),
       });
       setResults(data); setView('results');
-      setHistory(prev => [{ id: Date.now(), situation: situation.trim(), type: negotiationType, date: new Date().toLocaleDateString(), approach: data?.strategy?.approach || '', result: '' }, ...prev].slice(0, 20));
+      setHistory(prev => [{ id: Date.now(), situation: situation.trim(), type: negotiationType, date: new Date().toLocaleDateString(), approach: data?.strategy?.approach || '', result: '', preview: situation.trim().slice(0, 40) }, ...prev].slice(0, 6));
     } catch (err) { setError(err.message || 'Failed to analyze'); }
     finally { setLoading(false); }
   };
@@ -243,13 +247,14 @@ const LeverageLogic = () => {
   // ═══════════════════════════════════
   // RENDER
   // ═══════════════════════════════════
+
   return (
-    <div className={`min-h-screen ${c.bg} p-4 sm:p-6`}>
+    <div className={`min-h-screen ${c.cardAlt} p-4 sm:p-6`}>
       <div className="max-w-3xl mx-auto">
         <div className="text-center mb-6">
           <span className="text-5xl block mb-3">⚖️</span>
           <h1 className={`text-3xl sm:text-4xl font-black tracking-tight ${c.text}`}>LeverageLogic</h1>
-          <p className={`text-base mt-2 ${c.textSec}`}>Win any negotiation with the right strategy</p>
+          <p className={`text-base mt-2 ${c.textSecondary}`}>Win any negotiation with the right strategy</p>
         </div>
 
         {error && <div className={`p-3 rounded-xl border mb-4 ${c.danger}`}><span className="mr-1">⚠️</span> {error}</div>}
@@ -259,15 +264,15 @@ const LeverageLogic = () => {
           <div className="space-y-5">
             <div className={`${c.card} border rounded-2xl p-5 space-y-5`}>
               <div>
-                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>What's the situation? *</label>
+                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>What's the situation? *</label>
                 <textarea value={situation} onChange={e => setSituation(e.target.value)} placeholder='e.g., "I want a 15% raise. Been here 2 years, just led a major project. My boss is budget-conscious but values retention."' rows={3} className={`w-full p-3 border-2 rounded-xl text-sm resize-y focus:outline-none focus:ring-2 ${c.input}`} />
               </div>
               <div>
-                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>What type of negotiation?</label>
+                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>What type of negotiation?</label>
                 <div className="grid grid-cols-4 gap-2">
                   {NEG_TYPES.map(nt => (
                     <button key={nt.value} onClick={() => setNegotiationType(nt.value)}
-                      className={`p-2 rounded-xl border text-center transition-all ${negotiationType === nt.value ? (isDark ? 'border-amber-500 bg-amber-900/20' : 'border-amber-500 bg-amber-50') : (isDark ? 'border-zinc-600 hover:border-zinc-500' : 'border-stone-200 hover:border-stone-300')}`}>
+                      className={`p-2 rounded-xl border text-center transition-all ${negotiationType === nt.value ? (isDark ? 'border-amber-500 bg-amber-900/20' : 'border-amber-500 bg-amber-50') : (isDark ? 'border-zinc-600 hover:border-zinc-500' : 'border-zinc-200 hover:border-zinc-300')}`}>
                       <span className="text-lg block">{nt.icon}</span>
                       <span className={`text-[9px] font-bold leading-tight block ${c.text}`}>{nt.label}</span>
                     </button>
@@ -275,50 +280,50 @@ const LeverageLogic = () => {
                 </div>
               </div>
               <div>
-                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>What leverage do you have? (optional)</label>
+                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>What leverage do you have? (optional)</label>
                 <textarea value={leverage} onChange={e => setLeverage(e.target.value)} placeholder='e.g., "Outside offer at $120k, strong performance reviews, only one who knows the billing system"' rows={2} className={`w-full p-3 border-2 rounded-xl text-sm resize-y focus:outline-none focus:ring-2 ${c.input}`} />
               </div>
               <div>
-                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>What do you want? (optional)</label>
+                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>What do you want? (optional)</label>
                 <input type="text" value={desired} onChange={e => setDesired(e.target.value)} placeholder='e.g., "15% raise + remote Fridays" or "20% off quoted price"' className={`w-full p-3 border-2 rounded-xl text-sm focus:outline-none focus:ring-2 ${c.input}`} />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>Urgency</label>
+                  <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>Urgency</label>
                   <div className="flex gap-2">
                     {URGENCY.map(u => (
-                      <button key={u.value} onClick={() => setUrgency(u.value)} className={`flex-1 py-2 rounded-xl text-xs font-bold border transition-all ${urgency === u.value ? (isDark ? 'border-amber-500 bg-amber-900/20' : 'border-amber-500 bg-amber-50') : (isDark ? 'border-zinc-600' : 'border-stone-200')}`}>{u.icon} {u.label}</button>
+                      <button key={u.value} onClick={() => setUrgency(u.value)} className={`flex-1 py-2 rounded-xl text-xs font-bold border transition-all ${urgency === u.value ? (isDark ? 'border-amber-500 bg-amber-900/20' : 'border-amber-500 bg-amber-50') : (isDark ? 'border-zinc-600' : 'border-zinc-200')}`}>{u.icon} {u.label}</button>
                     ))}
                   </div>
                 </div>
                 <div>
-                  <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>Relationship</label>
+                  <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>Relationship</label>
                   <div className="flex gap-2">
                     {RELATIONSHIP.map(r => (
-                      <button key={r.value} onClick={() => setRelationship(r.value)} className={`flex-1 py-2 rounded-xl text-xs font-bold border transition-all ${relationship === r.value ? (isDark ? 'border-amber-500 bg-amber-900/20' : 'border-amber-500 bg-amber-50') : (isDark ? 'border-zinc-600' : 'border-stone-200')}`}>{r.icon} {r.label}</button>
+                      <button key={r.value} onClick={() => setRelationship(r.value)} className={`flex-1 py-2 rounded-xl text-xs font-bold border transition-all ${relationship === r.value ? (isDark ? 'border-amber-500 bg-amber-900/20' : 'border-amber-500 bg-amber-50') : (isDark ? 'border-zinc-600' : 'border-zinc-200')}`}>{r.icon} {r.label}</button>
                     ))}
                   </div>
                 </div>
               </div>
-              <button onClick={analyze} disabled={loading} className={`w-full py-3.5 rounded-xl font-bold text-base ${c.btnPrimary} disabled:opacity-50`}>
-                {loading ? <span className="animate-spin inline-block mr-2">⏳</span> : <span className="mr-2">⚖️</span>}
+              <button onClick={analyze} disabled={loading} className={`w-full py-3.5 rounded-xl font-bold text-base ${c.btnPrimaryPrimary} disabled:opacity-50`}>
+                {loading ? <span className="animate-spin inline-block mr-2">{tool?.icon ?? '⚙️'}</span> : <span className="mr-2">⚖️</span>}
                 {loading ? 'Building strategy...' : 'Build My Strategy'}
               </button>
               {situation.trim() && (
-                <button onClick={() => { setView('prep'); fetchPrepCheck(); }} className={`w-full py-2.5 rounded-xl text-xs font-bold ${c.btnSoft}`}>📋 Not ready yet? Check my prep first</button>
+                <button onClick={() => { setView('prep'); fetchPrepCheck(); }} className={`w-full py-2.5 rounded-xl text-xs font-bold ${c.btnPrimarySoft}`}>📋 Not ready yet? Check my prep first</button>
               )}
             </div>
             {history.length > 0 && (
               <div className={`${c.card} border rounded-2xl p-5`}>
-                <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textMuted}`}>📋 Past Negotiations</p>
+                <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textMuteded}`}>📋 Past Negotiations</p>
                 <div className="space-y-1.5">
                   {history.slice(0, 5).map(h => (
                     <button key={h.id} onClick={() => { setSituation(h.situation); setNegotiationType(h.type); }} className={`w-full text-left p-2.5 rounded-xl ${c.cardAlt} border`}>
                       <div className="flex items-center justify-between">
                         <p className={`text-xs font-bold ${c.text} truncate flex-1`}>{h.situation}</p>
-                        <span className={`text-[10px] ${c.textMuted} shrink-0 ml-2`}>{h.date}</span>
+                        <span className={`text-[10px] ${c.textMuteded} shrink-0 ml-2`}>{h.date}</span>
                       </div>
-                      {h.approach && <p className={`text-[10px] ${c.textMuted}`}>Strategy: {h.approach}</p>}
+                      {h.approach && <p className={`text-[10px] ${c.textMuteded}`}>Strategy: {h.approach}</p>}
                     </button>
                   ))}
                 </div>
@@ -331,7 +336,7 @@ const LeverageLogic = () => {
         {view === 'results' && results && (
           <div className="space-y-5">
             <div className="flex gap-2 flex-wrap">
-              <button onClick={resetAll} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnSecondary}`}>← New</button>
+              <button onClick={resetAll} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnPrimarySecondaryondary}`}>← New</button>
               <div className="flex-1" />
               <ActionBar>
                 <CopyBtn content={buildFullText} label="Copy" />
@@ -345,10 +350,10 @@ const LeverageLogic = () => {
                 <p className={`text-sm font-black ${c.text} mb-2`}>{results.situation_read.summary}</p>
                 <div className="flex flex-wrap gap-2 mb-2">
                   <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${strengthColor(results.situation_read.power_balance === 'they_have_leverage' ? 'weak' : results.situation_read.power_balance === 'balanced' ? 'medium' : 'strong')}`}>⚖️ {(results.situation_read.power_balance || '').replace(/_/g, ' ')}</span>
-                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-stone-100 text-gray-600'}`}>{results.situation_read.stakes} stakes</span>
-                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-stone-100 text-gray-600'}`}>{results.situation_read.complexity}</span>
+                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-zinc-100 text-gray-600'}`}>{results.situation_read.stakes} stakes</span>
+                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-zinc-100 text-gray-600'}`}>{results.situation_read.complexity}</span>
                 </div>
-                <p className={`text-xs ${c.textSec}`}>{results.situation_read.power_explanation}</p>
+                <p className={`text-xs ${c.textSecondary}`}>{results.situation_read.power_explanation}</p>
               </div>
             )}
 
@@ -363,8 +368,8 @@ const LeverageLogic = () => {
             {results.your_leverage?.length > 0 && (
               <div className={`${c.card} border rounded-2xl p-5`}>
                 <button onClick={() => toggle('yourLev')} className="w-full flex items-center justify-between">
-                  <p className={`text-xs font-bold uppercase tracking-wider ${c.accent}`}>🃏 Your Cards</p>
-                  <span className={`text-xs ${c.textMuted}`}>{expandedSections.yourLev ? '▼' : '▶'} {results.your_leverage.length}</span>
+                  <p className={`text-xs font-bold uppercase tracking-wider ${c.textSecondaryondary}`}>🃏 Your Cards</p>
+                  <span className={`text-xs ${c.textMuteded}`}>{expandedSections.yourLev ? '▼' : '▶'} {results.your_leverage.length}</span>
                 </button>
                 {expandedSections.yourLev !== false && (
                   <div className="space-y-2.5 mt-3">
@@ -374,8 +379,8 @@ const LeverageLogic = () => {
                           <p className={`text-sm font-black ${c.text}`}>{lev.point}</p>
                           <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border shrink-0 ${strengthColor(lev.strength)}`}>{lev.strength}</span>
                         </div>
-                        <p className={`text-xs ${c.textSec} mb-1`}>💡 {lev.how_to_use}</p>
-                        <p className={`text-[10px] ${c.textMuted}`}>⏰ Deploy: {lev.when}</p>
+                        <p className={`text-xs ${c.textSecondary} mb-1`}>💡 {lev.how_to_use}</p>
+                        <p className={`text-[10px] ${c.textMuteded}`}>⏰ Deploy: {lev.when}</p>
                         {lev.warning && <p className={`text-[10px] ${isDark ? 'text-red-400' : 'text-red-600'} mt-1`}>⚠️ {lev.warning}</p>}
                       </div>
                     ))}
@@ -388,8 +393,8 @@ const LeverageLogic = () => {
             {results.their_leverage?.length > 0 && (
               <div className={`${c.card} border rounded-2xl p-5`}>
                 <button onClick={() => toggle('theirLev')} className="w-full flex items-center justify-between">
-                  <p className={`text-xs font-bold uppercase tracking-wider ${c.accent}`}>🎯 Their Cards (& How to Neutralize)</p>
-                  <span className={`text-xs ${c.textMuted}`}>{expandedSections.theirLev ? '▼' : '▶'}</span>
+                  <p className={`text-xs font-bold uppercase tracking-wider ${c.textSecondaryondary}`}>🎯 Their Cards (& How to Neutralize)</p>
+                  <span className={`text-xs ${c.textMuteded}`}>{expandedSections.theirLev ? '▼' : '▶'}</span>
                 </button>
                 {expandedSections.theirLev && (
                   <div className="space-y-2.5 mt-3">
@@ -410,32 +415,32 @@ const LeverageLogic = () => {
             {/* Strategy */}
             {results.strategy && (
               <div className={`${c.card} border-2 rounded-2xl p-5 ${isDark ? 'border-amber-700/50' : 'border-amber-300'}`}>
-                <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.accent}`}>🎯 Strategy: {results.strategy.approach}</p>
+                <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textSecondaryondary}`}>🎯 Strategy: {results.strategy.approach}</p>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
                   <div className={`p-3 rounded-xl ${isDark ? 'bg-emerald-900/20' : 'bg-emerald-50'}`}>
-                    <p className={`text-[10px] font-bold ${c.textMuted}`}>OPEN AT</p>
+                    <p className={`text-[10px] font-bold ${c.textMuteded}`}>OPEN AT</p>
                     <p className={`text-xs font-black ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>{results.strategy.opening_position}</p>
                   </div>
                   <div className={`p-3 rounded-xl ${isDark ? 'bg-amber-900/20' : 'bg-amber-50'}`}>
-                    <p className={`text-[10px] font-bold ${c.textMuted}`}>TARGET</p>
+                    <p className={`text-[10px] font-bold ${c.textMuteded}`}>TARGET</p>
                     <p className={`text-xs font-black ${isDark ? 'text-amber-400' : 'text-amber-700'}`}>{results.strategy.target}</p>
                   </div>
                   <div className={`p-3 rounded-xl ${isDark ? 'bg-red-900/20' : 'bg-red-50'}`}>
-                    <p className={`text-[10px] font-bold ${c.textMuted}`}>WALK AWAY</p>
+                    <p className={`text-[10px] font-bold ${c.textMuteded}`}>WALK AWAY</p>
                     <p className={`text-xs font-black ${isDark ? 'text-red-400' : 'text-red-700'}`}>{results.strategy.walkaway}</p>
                   </div>
                 </div>
-                {results.strategy.timing && <p className={`text-xs ${c.textSec} mb-1`}>⏰ {results.strategy.timing}</p>}
-                {results.strategy.setting && <p className={`text-xs ${c.textSec}`}>📍 {results.strategy.setting}</p>}
+                {results.strategy.timing && <p className={`text-xs ${c.textSecondary} mb-1`}>⏰ {results.strategy.timing}</p>}
+                {results.strategy.setting && <p className={`text-xs ${c.textSecondary}`}>📍 {results.strategy.setting}</p>}
                 {results.strategy.concession_ladder?.length > 0 && (
                   <div className="mt-4">
-                    <p className={`text-[10px] font-bold ${c.textMuted} mb-2`}>CONCESSION LADDER (give up in this order)</p>
+                    <p className={`text-[10px] font-bold ${c.textMuteded} mb-2`}>CONCESSION LADDER (give up in this order)</p>
                     {results.strategy.concession_ladder.map((con, i) => (
                       <div key={i} className="flex items-center gap-2 mb-1.5">
-                        <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black shrink-0 ${isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-stone-200 text-gray-600'}`}>{con.order}</span>
+                        <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black shrink-0 ${isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-zinc-200 text-gray-600'}`}>{con.order}</span>
                         <div className="flex-1 min-w-0">
                           <p className={`text-xs font-bold ${c.text}`}>{con.give_up}</p>
-                          <p className={`text-[10px] ${c.textMuted}`}>Costs you: {con.costs_you} · Value to them: {con.value_to_them}</p>
+                          <p className={`text-[10px] ${c.textMuteded}`}>Costs you: {con.costs_you} · Value to them: {con.value_to_them}</p>
                         </div>
                       </div>
                     ))}
@@ -447,12 +452,12 @@ const LeverageLogic = () => {
             {/* Anchoring Calculator */}
             <div className={`${c.card} border rounded-2xl p-5`}>
               <button onClick={() => toggle('anchor')} className="w-full flex items-center justify-between">
-                <p className={`text-xs font-bold uppercase tracking-wider ${c.accent}`}>🧮 Anchoring Calculator</p>
-                <span className={`text-xs ${c.textMuted}`}>{expandedSections.anchor ? '▼' : '▶'}</span>
+                <p className={`text-xs font-bold uppercase tracking-wider ${c.textSecondaryondary}`}>🧮 Anchoring Calculator</p>
+                <span className={`text-xs ${c.textMuteded}`}>{expandedSections.anchor ? '▼' : '▶'}</span>
               </button>
               {expandedSections.anchor && (
                 <div className="mt-3 space-y-3">
-                  <p className={`text-xs ${c.textSec}`}>Plug in numbers to see where you'll likely land.</p>
+                  <p className={`text-xs ${c.textSecondary}`}>Plug in numbers to see where you'll likely land.</p>
                   <div className="grid grid-cols-3 gap-2">
                     <div>
                       <label className={`text-[10px] font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>Your anchor</label>
@@ -463,14 +468,14 @@ const LeverageLogic = () => {
                       <input type="number" value={anchorTheir} onChange={e => setAnchorTheir(e.target.value)} placeholder="95000" className={`w-full p-2 border-2 rounded-lg text-sm ${c.input}`} />
                     </div>
                     <div>
-                      <label className={`text-[10px] font-bold ${c.textMuted}`}>Walk away</label>
+                      <label className={`text-[10px] font-bold ${c.textMuteded}`}>Walk away</label>
                       <input type="number" value={anchorWalkaway} onChange={e => setAnchorWalkaway(e.target.value)} placeholder="105000" className={`w-full p-2 border-2 rounded-lg text-sm ${c.input}`} />
                     </div>
                   </div>
                   {anchorData && (
                     <div>
                       {/* Visual number line */}
-                      <div className={`relative h-12 rounded-lg ${isDark ? 'bg-zinc-700' : 'bg-stone-200'} mt-2 mb-3 overflow-hidden`}>
+                      <div className={`relative h-12 rounded-lg ${isDark ? 'bg-zinc-700' : 'bg-zinc-200'} mt-2 mb-3 overflow-hidden`}>
                         {(() => {
                           const min = Math.min(anchorData.yourAnchor, anchorData.theirAnchor, anchorData.walkaway || Infinity) * 0.95;
                           const max = Math.max(anchorData.yourAnchor, anchorData.theirAnchor, anchorData.walkaway || -Infinity) * 1.05;
@@ -488,7 +493,7 @@ const LeverageLogic = () => {
                               </div>
                               {anchorData.walkaway !== undefined && !isNaN(anchorData.walkaway) && (
                                 <div className="absolute top-1 text-[8px] font-black" style={{ left: pos(anchorData.walkaway), transform: 'translateX(-50%)' }}>
-                                  <span className={c.textMuted}>⛔ {anchorData.walkaway.toLocaleString()}</span>
+                                  <span className={c.textMuteded}>⛔ {anchorData.walkaway.toLocaleString()}</span>
                                 </div>
                               )}
                             </>
@@ -497,11 +502,11 @@ const LeverageLogic = () => {
                       </div>
                       <div className="grid grid-cols-2 gap-2">
                         <div className={`p-2 rounded-lg ${isDark ? 'bg-amber-900/20' : 'bg-amber-50'}`}>
-                          <p className={`text-[10px] ${c.textMuted}`}>Expected landing zone</p>
+                          <p className={`text-[10px] ${c.textMuteded}`}>Expected landing zone</p>
                           <p className={`text-sm font-black ${isDark ? 'text-amber-400' : 'text-amber-700'}`}>{anchorData.midpoint.toLocaleString()}</p>
                         </div>
-                        <div className={`p-2 rounded-lg ${isDark ? 'bg-zinc-700' : 'bg-stone-100'}`}>
-                          <p className={`text-[10px] ${c.textMuted}`}>Your concession</p>
+                        <div className={`p-2 rounded-lg ${isDark ? 'bg-zinc-700' : 'bg-zinc-100'}`}>
+                          <p className={`text-[10px] ${c.textMuteded}`}>Your concession</p>
                           <p className={`text-sm font-black ${c.text}`}>{anchorData.yourConcession.toLocaleString()}</p>
                         </div>
                       </div>
@@ -519,17 +524,17 @@ const LeverageLogic = () => {
             {/* Scripts */}
             {results.scripts?.length > 0 && (
               <div className={`${c.card} border rounded-2xl p-5`}>
-                <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.accent}`}>🎬 Word-for-Word Scripts</p>
+                <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textSecondaryondary}`}>🎬 Word-for-Word Scripts</p>
                 <div className="space-y-3">
                   {results.scripts.map((s, i) => (
                     <div key={i} className={`${c.cardAlt} border rounded-xl p-3.5`}>
                       <div className="flex items-center justify-between mb-1.5">
-                        <p className={`text-[10px] font-bold ${c.accent}`}>{s.moment}</p>
-                        <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-stone-100 text-gray-600'}`}>{s.tone}</span>
+                        <p className={`text-[10px] font-bold ${c.textSecondaryondary}`}>{s.moment}</p>
+                        <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-zinc-100 text-gray-600'}`}>{s.tone}</span>
                       </div>
                       <p className={`text-sm font-bold ${c.text} mb-1.5`}>"{s.say_this}"</p>
                       <div className="flex items-center justify-between">
-                        <p className={`text-[10px] ${c.textMuted}`}>💡 {s.why_it_works}</p>
+                        <p className={`text-[10px] ${c.textMuteded}`}>💡 {s.why_it_works}</p>
                         <CopyBtn content={s.say_this} label="Copy" />
                       </div>
                     </div>
@@ -542,15 +547,15 @@ const LeverageLogic = () => {
             {results.traps_to_avoid?.length > 0 && (
               <div className={`${c.card} border rounded-2xl p-5`}>
                 <button onClick={() => toggle('traps')} className="w-full flex items-center justify-between">
-                  <p className={`text-xs font-bold uppercase tracking-wider ${c.accent}`}>🚫 Traps to Avoid</p>
-                  <span className={`text-xs ${c.textMuted}`}>{expandedSections.traps ? '▼' : '▶'}</span>
+                  <p className={`text-xs font-bold uppercase tracking-wider ${c.textSecondaryondary}`}>🚫 Traps to Avoid</p>
+                  <span className={`text-xs ${c.textMuteded}`}>{expandedSections.traps ? '▼' : '▶'}</span>
                 </button>
                 {expandedSections.traps && (
                   <div className="space-y-2.5 mt-3">
                     {results.traps_to_avoid.map((t, i) => (
                       <div key={i} className={`p-3.5 rounded-xl ${isDark ? 'bg-red-900/15 border border-red-800/30' : 'bg-red-50 border border-red-200'}`}>
                         <p className={`text-xs font-black ${isDark ? 'text-red-300' : 'text-red-700'} mb-1`}>⚠️ {t.trap}</p>
-                        <p className={`text-[10px] ${c.textSec} mb-1`}>{t.why_dangerous}</p>
+                        <p className={`text-[10px] ${c.textSecondary} mb-1`}>{t.why_dangerous}</p>
                         <p className={`text-[10px] font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>✓ Instead: {t.instead}</p>
                       </div>
                     ))}
@@ -562,11 +567,11 @@ const LeverageLogic = () => {
             {/* BATNA */}
             {results.batna && (
               <div className={`${c.card} border rounded-2xl p-5`}>
-                <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.accent}`}>🛡️ BATNA (Your Plan B)</p>
+                <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.textSecondaryondary}`}>🛡️ BATNA (Your Plan B)</p>
                 <p className={`text-sm font-bold ${c.text} mb-1`}>{results.batna.best_alternative}</p>
                 <div className="flex items-center gap-2 mb-2">
                   <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${strengthColor(results.batna.how_strong === 'decent' ? 'medium' : results.batna.how_strong)}`}>{results.batna.how_strong} fallback</span>
-                  <span className={`text-[10px] ${c.textMuted}`}>Mention: {(results.batna.mention_it || '').replace(/_/g, ' ')}</span>
+                  <span className={`text-[10px] ${c.textMuteded}`}>Mention: {(results.batna.mention_it || '').replace(/_/g, ' ')}</span>
                 </div>
                 {results.batna.how_to_strengthen && <p className={`text-xs ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>💪 {results.batna.how_to_strengthen}</p>}
               </div>
@@ -576,13 +581,13 @@ const LeverageLogic = () => {
             {results.body_language && (
               <div className={`${c.card} border rounded-2xl p-5`}>
                 <button onClick={() => toggle('body')} className="w-full flex items-center justify-between">
-                  <p className={`text-xs font-bold uppercase tracking-wider ${c.accent}`}>🧍 Body Language</p>
-                  <span className={`text-xs ${c.textMuted}`}>{expandedSections.body ? '▼' : '▶'}</span>
+                  <p className={`text-xs font-bold uppercase tracking-wider ${c.textSecondaryondary}`}>🧍 Body Language</p>
+                  <span className={`text-xs ${c.textMuteded}`}>{expandedSections.body ? '▼' : '▶'}</span>
                 </button>
                 {expandedSections.body && (
                   <div className="grid grid-cols-2 gap-3 mt-3">
-                    <div><p className={`text-[10px] font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-700'} mb-1`}>✓ DO</p>{results.body_language.do?.map((d, i) => <p key={i} className={`text-xs ${c.textSec}`}>• {d}</p>)}</div>
-                    <div><p className={`text-[10px] font-bold ${isDark ? 'text-red-400' : 'text-red-700'} mb-1`}>✕ AVOID</p>{results.body_language.avoid?.map((a, i) => <p key={i} className={`text-xs ${c.textSec}`}>• {a}</p>)}</div>
+                    <div><p className={`text-[10px] font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-700'} mb-1`}>✓ DO</p>{results.body_language.do?.map((d, i) => <p key={i} className={`text-xs ${c.textSecondary}`}>• {d}</p>)}</div>
+                    <div><p className={`text-[10px] font-bold ${isDark ? 'text-red-400' : 'text-red-700'} mb-1`}>✕ AVOID</p>{results.body_language.avoid?.map((a, i) => <p key={i} className={`text-xs ${c.textSecondary}`}>• {a}</p>)}</div>
                   </div>
                 )}
               </div>
@@ -590,8 +595,8 @@ const LeverageLogic = () => {
 
             {/* ── Timeline Tracker ── */}
             <div className={`${c.card} border-2 rounded-2xl p-5 ${isDark ? 'border-purple-700/50' : 'border-purple-300'}`}>
-              <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.accent}`}>📜 Negotiation Timeline</p>
-              <p className={`text-xs ${c.textSec} mb-3`}>Log each round. This feeds into your counter-moves, simulations, and email drafts.</p>
+              <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textSecondaryondary}`}>📜 Negotiation Timeline</p>
+              <p className={`text-xs ${c.textSecondary} mb-3`}>Log each round. This feeds into your counter-moves, simulations, and email drafts.</p>
               {timeline.length > 0 && (
                 <div className="space-y-1.5 mb-3">
                   {timeline.map((t, i) => (
@@ -599,34 +604,34 @@ const LeverageLogic = () => {
                       <span className={`text-[10px] font-black shrink-0 mt-0.5 ${t.who === 'you' ? (isDark ? 'text-emerald-400' : 'text-emerald-700') : (isDark ? 'text-red-400' : 'text-red-700')}`}>R{i + 1}</span>
                       <div className="flex-1 min-w-0">
                         <p className={`text-xs ${c.text}`}><span className="font-bold">{t.who === 'you' ? 'You' : 'Them'}:</span> {t.what}</p>
-                        {t.result && <p className={`text-[10px] ${c.textMuted}`}>→ {t.result}</p>}
+                        {t.result && <p className={`text-[10px] ${c.textMuteded}`}>→ {t.result}</p>}
                       </div>
-                      <button onClick={() => removeTimelineEntry(t.id)} className={`text-[9px] ${c.textMuted} hover:text-red-500 shrink-0`}>✕</button>
+                      <button onClick={() => removeTimelineEntry(t.id)} className={`text-[9px] ${c.textMuteded} ${c.deleteHover} shrink-0`}>✕</button>
                     </div>
                   ))}
                 </div>
               )}
               <div className="space-y-2">
                 <div className="flex gap-2">
-                  <button onClick={() => setTlWho('you')} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${tlWho === 'you' ? (isDark ? 'bg-emerald-900/30 text-emerald-300' : 'bg-emerald-100 text-emerald-700') : c.btnSoft}`}>You said</button>
-                  <button onClick={() => setTlWho('them')} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${tlWho === 'them' ? (isDark ? 'bg-red-900/30 text-red-300' : 'bg-red-100 text-red-700') : c.btnSoft}`}>They said</button>
+                  <button onClick={() => setTlWho('you')} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${tlWho === 'you' ? (isDark ? 'bg-emerald-900/30 text-emerald-300' : 'bg-emerald-100 text-emerald-700') : c.btnPrimarySoft}`}>You said</button>
+                  <button onClick={() => setTlWho('them')} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${tlWho === 'them' ? (isDark ? 'bg-red-900/30 text-red-300' : 'bg-red-100 text-red-700') : c.btnPrimarySoft}`}>They said</button>
                 </div>
                 <textarea value={tlWhat} onChange={e => setTlWhat(e.target.value)} placeholder="What was said or offered..." rows={2} className={`w-full p-2.5 border-2 rounded-xl text-sm resize-y ${c.input}`} />
                 <input type="text" value={tlResult} onChange={e => setTlResult(e.target.value)} placeholder="Result (optional — e.g., 'they countered with 8%')" className={`w-full p-2.5 border-2 rounded-xl text-sm ${c.input}`} />
-                <button onClick={addTimelineEntry} disabled={!tlWhat.trim()} className={`w-full py-2 rounded-xl text-xs font-bold ${c.btnSecondary} disabled:opacity-40`}>+ Log Round</button>
+                <button onClick={addTimelineEntry} disabled={!tlWhat.trim()} className={`w-full py-2 rounded-xl text-xs font-bold ${c.btnPrimarySecondaryondary} disabled:opacity-40`}>+ Log Round</button>
               </div>
             </div>
 
             {/* ── Action strip ── */}
             <div className={`${c.card} border rounded-2xl p-5 space-y-2`}>
-              <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuted}`}>🔧 Tools</p>
+              <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuteded}`}>🔧 Tools</p>
               <div className="grid grid-cols-2 gap-2">
-                <button onClick={() => setView('counter')} className={`py-2.5 rounded-xl text-xs font-bold ${c.btnPrimary}`}>💬 Counter-move</button>
-                <button onClick={() => setView('simulate')} className={`py-2.5 rounded-xl text-xs font-bold ${c.btnSecondary}`}>🎯 War-game it</button>
-                <button onClick={() => setView('email')} className={`py-2.5 rounded-xl text-xs font-bold ${c.btnSecondary}`}>📧 Draft email</button>
-                <button onClick={() => { setView('prep'); fetchPrepCheck(); }} className={`py-2.5 rounded-xl text-xs font-bold ${c.btnSoft}`}>📋 Prep check</button>
-                <button onClick={() => toggle('anchor')} className={`py-2.5 rounded-xl text-xs font-bold ${c.btnSoft}`}>🧮 Anchoring math</button>
-                <button onClick={() => setView('debrief')} className={`py-2.5 rounded-xl text-xs font-bold ${c.btnSoft}`}>📊 Debrief</button>
+                <button onClick={() => setView('counter')} className={`py-2.5 rounded-xl text-xs font-bold ${c.btnPrimaryPrimary}`}>💬 Counter-move</button>
+                <button onClick={() => setView('simulate')} className={`py-2.5 rounded-xl text-xs font-bold ${c.btnPrimarySecondaryondary}`}>🎯 War-game it</button>
+                <button onClick={() => setView('email')} className={`py-2.5 rounded-xl text-xs font-bold ${c.btnPrimarySecondaryondary}`}>📧 Draft email</button>
+                <button onClick={() => { setView('prep'); fetchPrepCheck(); }} className={`py-2.5 rounded-xl text-xs font-bold ${c.btnPrimarySoft}`}>📋 Prep check</button>
+                <button onClick={() => toggle('anchor')} className={`py-2.5 rounded-xl text-xs font-bold ${c.btnPrimarySoft}`}>🧮 Anchoring math</button>
+                <button onClick={() => setView('debrief')} className={`py-2.5 rounded-xl text-xs font-bold ${c.btnPrimarySoft}`}>📊 Debrief</button>
               </div>
             </div>
           </div>
@@ -635,13 +640,13 @@ const LeverageLogic = () => {
         {/* ════════ COUNTER ════════ */}
         {view === 'counter' && (
           <div className="space-y-5">
-            <button onClick={() => setView('results')} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnSecondary}`}>← Back to Strategy</button>
+            <button onClick={() => setView('results')} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnPrimarySecondaryondary}`}>← Back to Strategy</button>
             <div className={`${c.card} border-2 rounded-2xl p-5 ${isDark ? 'border-amber-700/50' : 'border-amber-300'}`}>
               <p className={`text-lg font-black ${c.text} mb-1`}>💬 Real-Time Counter</p>
-              <p className={`text-xs ${c.textSec} mb-4`}>What did they just say? I'll help you respond.</p>
+              <p className={`text-xs ${c.textSecondary} mb-4`}>What did they just say? I'll help you respond.</p>
               <textarea value={theyJustSaid} onChange={e => setTheyJustSaid(e.target.value)} placeholder={`"We don't have budget for that" or "That's our final offer" or "We can only do 5%"`} rows={3} className={`w-full p-3 border-2 rounded-xl text-sm resize-y mb-3 focus:outline-none focus:ring-2 ${c.input}`} />
-              <button onClick={fetchCounter} disabled={counterLoading || !theyJustSaid.trim()} className={`w-full py-3 rounded-xl font-bold ${c.btnPrimary} disabled:opacity-50`}>
-                {counterLoading ? <span className="animate-spin inline-block mr-2">⏳</span> : <span className="mr-2">⚡</span>}
+              <button onClick={fetchCounter} disabled={counterLoading || !theyJustSaid.trim()} className={`w-full py-3 rounded-xl font-bold ${c.btnPrimaryPrimary} disabled:opacity-50`}>
+                {counterLoading ? <span className="animate-spin inline-block mr-2">{tool?.icon ?? '⚙️'}</span> : <span className="mr-2">⚡</span>}
                 {counterLoading ? 'Thinking...' : 'What should I say?'}
               </button>
             </div>
@@ -649,24 +654,24 @@ const LeverageLogic = () => {
               <div className="space-y-4">
                 <div className={`${c.card} border rounded-2xl p-5`}>
                   <div className="flex items-center gap-2 mb-2">
-                    <p className={`text-xs font-bold uppercase tracking-wider ${c.accent}`}>🔍 Reading the Room</p>
+                    <p className={`text-xs font-bold uppercase tracking-wider ${c.textSecondaryondary}`}>🔍 Reading the Room</p>
                     <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${dangerColor(counterResults.danger_level)}`}>{counterResults.danger_level}</span>
                   </div>
                   <p className={`text-sm font-bold ${c.text} mb-1`}>{counterResults.read}</p>
-                  {counterResults.their_tactic && <p className={`text-xs ${c.textMuted}`}>🎯 Tactic: {counterResults.their_tactic}</p>}
+                  {counterResults.their_tactic && <p className={`text-xs ${c.textMuteded}`}>🎯 Tactic: {counterResults.their_tactic}</p>}
                 </div>
                 {counterResults.responses?.length > 0 && (
                   <div className="space-y-3">
                     {counterResults.responses.map((r, i) => (
                       <div key={i} className={`${c.card} border-2 rounded-2xl p-5 ${i === 0 ? (isDark ? 'border-amber-700/50' : 'border-amber-300') : ''}`}>
                         <div className="flex items-center justify-between mb-2">
-                          <p className={`text-xs font-bold ${c.accent}`}>{i === 0 ? '⭐ ' : ''}{r.approach}</p>
+                          <p className={`text-xs font-bold ${c.textSecondaryondary}`}>{i === 0 ? '⭐ ' : ''}{r.approach}</p>
                           <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${strengthColor(r.risk === 'low' ? 'strong' : r.risk === 'medium' ? 'medium' : 'weak')}`}>{r.risk} risk</span>
                         </div>
                         <p className={`text-sm font-bold ${c.text} mb-2`}>"{r.say_this}"</p>
-                        <p className={`text-[10px] ${c.textSec} mb-1`}>→ Then: {r.then_what}</p>
+                        <p className={`text-[10px] ${c.textSecondary} mb-1`}>→ Then: {r.then_what}</p>
                         <div className="flex items-center justify-between">
-                          <p className={`text-[10px] ${c.textMuted}`}>Best if: {r.best_if}</p>
+                          <p className={`text-[10px] ${c.textMuteded}`}>Best if: {r.best_if}</p>
                           <CopyBtn content={r.say_this} label="Copy" />
                         </div>
                       </div>
@@ -679,14 +684,14 @@ const LeverageLogic = () => {
                   </div>
                 )}
                 {counterResults.silence_option && (
-                  <div className={`p-3.5 rounded-xl ${isDark ? 'bg-zinc-800 border border-zinc-700' : 'bg-stone-100 border border-stone-200'}`}>
+                  <div className={`p-3.5 rounded-xl ${isDark ? 'bg-zinc-800 border border-zinc-700' : 'bg-zinc-100 border border-zinc-200'}`}>
                     <p className={`text-xs font-bold ${c.text} mb-1`}>🤫 The Silence Play</p>
-                    <p className={`text-xs ${c.textSec}`}>{counterResults.silence_option}</p>
+                    <p className={`text-xs ${c.textSecondary}`}>{counterResults.silence_option}</p>
                   </div>
                 )}
                 <div className="flex gap-2">
-                  <button onClick={() => { addTimelineEntry(); setTlWho('them'); setTlWhat(theyJustSaid); setTheyJustSaid(''); setCounterResults(null); }} className={`flex-1 py-2.5 rounded-xl text-xs font-bold ${c.btnSoft}`}>📜 Log & ask again</button>
-                  <button onClick={() => setView('results')} className={`flex-1 py-2.5 rounded-xl text-xs font-bold ${c.btnSecondary}`}>← Back</button>
+                  <button onClick={() => { addTimelineEntry(); setTlWho('them'); setTlWhat(theyJustSaid); setTheyJustSaid(''); setCounterResults(null); }} className={`flex-1 py-2.5 rounded-xl text-xs font-bold ${c.btnPrimarySoft}`}>📜 Log & ask again</button>
+                  <button onClick={() => setView('results')} className={`flex-1 py-2.5 rounded-xl text-xs font-bold ${c.btnPrimarySecondaryondary}`}>← Back</button>
                 </div>
               </div>
             )}
@@ -696,16 +701,16 @@ const LeverageLogic = () => {
         {/* ════════ SIMULATOR ════════ */}
         {view === 'simulate' && (
           <div className="space-y-5">
-            <button onClick={() => setView('results')} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnSecondary}`}>← Back to Strategy</button>
-            <div className={`${c.card} border-2 rounded-2xl p-5 ${isDark ? 'border-blue-700/50' : 'border-blue-300'}`}>
+            <button onClick={() => setView('results')} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnPrimarySecondaryondary}`}>← Back to Strategy</button>
+            <div className={`${c.card} border-2 rounded-2xl p-5 ${isDark ? 'border-sky-700/50' : 'border-sky-300'}`}>
               <p className={`text-lg font-black ${c.text} mb-1`}>🎯 Outcome Simulator</p>
-              <p className={`text-xs ${c.textSec} mb-4`}>War-game your next move. See the most likely responses and how to handle each.</p>
+              <p className={`text-xs ${c.textSecondary} mb-4`}>War-game your next move. See the most likely responses and how to handle each.</p>
               <div>
-                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>Your next move (optional — defaults to your opening)</label>
+                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>Your next move (optional — defaults to your opening)</label>
                 <textarea value={simOpening} onChange={e => setSimOpening(e.target.value)} placeholder={`e.g., "I'm going to ask for 15% and mention the outside offer" or leave blank to use your planned opening`} rows={2} className={`w-full p-3 border-2 rounded-xl text-sm resize-y mb-3 focus:outline-none focus:ring-2 ${c.input}`} />
               </div>
-              <button onClick={fetchSimulation} disabled={simLoading} className={`w-full py-3 rounded-xl font-bold ${c.btnPrimary} disabled:opacity-50`}>
-                {simLoading ? <span className="animate-spin inline-block mr-2">⏳</span> : <span className="mr-2">🎯</span>}
+              <button onClick={fetchSimulation} disabled={simLoading} className={`w-full py-3 rounded-xl font-bold ${c.btnPrimaryPrimary} disabled:opacity-50`}>
+                {simLoading ? <span className="animate-spin inline-block mr-2">{tool?.icon ?? '⚙️'}</span> : <span className="mr-2">🎯</span>}
                 {simLoading ? 'Simulating...' : 'Run Simulation'}
               </button>
             </div>
@@ -714,41 +719,41 @@ const LeverageLogic = () => {
                 {simResults.scenarios?.map((sc, i) => (
                   <div key={i} className={`${c.card} border-2 rounded-2xl p-5 ${i === 0 ? (isDark ? 'border-amber-700/50' : 'border-amber-300') : ''}`}>
                     <div className="flex items-center justify-between mb-2">
-                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${i === 0 ? (isDark ? 'bg-amber-900/40 text-amber-300' : 'bg-amber-100 text-amber-700') : (isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-stone-100 text-gray-600')}`}>
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${i === 0 ? (isDark ? 'bg-amber-900/40 text-amber-300' : 'bg-amber-100 text-amber-700') : (isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-zinc-100 text-gray-600')}`}>
                         {(sc.likelihood || '').replace(/_/g, ' ')}
                       </span>
                     </div>
                     <div className={`p-3 rounded-xl mb-2 ${isDark ? 'bg-red-900/15' : 'bg-red-50'}`}>
                       <p className={`text-[10px] font-bold ${isDark ? 'text-red-400' : 'text-red-700'}`}>THEY SAY:</p>
                       <p className={`text-sm font-bold ${c.text}`}>"{sc.they_say}"</p>
-                      <p className={`text-[10px] ${c.textMuted} mt-1`}>Subtext: {sc.subtext}</p>
+                      <p className={`text-[10px] ${c.textMuteded} mt-1`}>Subtext: {sc.subtext}</p>
                     </div>
                     <div className={`p-3 rounded-xl mb-2 ${isDark ? 'bg-emerald-900/15' : 'bg-emerald-50'}`}>
                       <p className={`text-[10px] font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>YOU COUNTER:</p>
                       <p className={`text-sm font-bold ${c.text}`}>"{sc.your_counter}"</p>
                       <div className="mt-1"><CopyBtn content={sc.your_counter} label="Copy" /></div>
                     </div>
-                    <p className={`text-xs ${c.textSec}`}>→ Then: {sc.then_expect}</p>
-                    <p className={`text-[10px] font-bold ${c.accent} mt-1`}>End state: {sc.end_state}</p>
+                    <p className={`text-xs ${c.textSecondary}`}>→ Then: {sc.then_expect}</p>
+                    <p className={`text-[10px] font-bold ${c.textSecondaryondary} mt-1`}>End state: {sc.end_state}</p>
                   </div>
                 ))}
                 {simResults.wild_card && (
-                  <div className={`p-4 rounded-xl ${isDark ? 'bg-purple-900/15 border border-purple-800/30' : 'bg-purple-50 border border-purple-200'}`}>
-                    <p className={`text-xs font-bold ${isDark ? 'text-purple-300' : 'text-purple-700'} mb-1`}>🃏 Wild Card: {simResults.wild_card.scenario}</p>
-                    <p className={`text-[10px] ${c.textSec}`}>Handle it: {simResults.wild_card.how_to_handle}</p>
+                  <div className={`p-4 rounded-xl ${isDark ? 'bg-cyan-900/15 border border-purple-800/30' : 'bg-cyan-50 border border-purple-200'}`}>
+                    <p className={`text-xs font-bold ${isDark ? 'text-cyan-300' : 'text-cyan-700'} mb-1`}>🃏 Wild Card: {simResults.wild_card.scenario}</p>
+                    <p className={`text-[10px] ${c.textSecondary}`}>Handle it: {simResults.wild_card.how_to_handle}</p>
                   </div>
                 )}
                 <div className="grid grid-cols-2 gap-3">
                   {simResults.best_path && (
                     <div className={`p-3 rounded-xl ${isDark ? 'bg-emerald-900/15' : 'bg-emerald-50'}`}>
                       <p className={`text-[10px] font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>✅ STEER TOWARD</p>
-                      <p className={`text-xs ${c.textSec}`}>{simResults.best_path}</p>
+                      <p className={`text-xs ${c.textSecondary}`}>{simResults.best_path}</p>
                     </div>
                   )}
                   {simResults.danger_path && (
                     <div className={`p-3 rounded-xl ${isDark ? 'bg-red-900/15' : 'bg-red-50'}`}>
                       <p className={`text-[10px] font-bold ${isDark ? 'text-red-400' : 'text-red-700'}`}>⚠️ AVOID</p>
-                      <p className={`text-xs ${c.textSec}`}>{simResults.danger_path}</p>
+                      <p className={`text-xs ${c.textSecondary}`}>{simResults.danger_path}</p>
                     </div>
                   )}
                 </div>
@@ -760,25 +765,25 @@ const LeverageLogic = () => {
         {/* ════════ EMAIL DRAFTER ════════ */}
         {view === 'email' && (
           <div className="space-y-5">
-            <button onClick={() => setView('results')} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnSecondary}`}>← Back to Strategy</button>
+            <button onClick={() => setView('results')} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnPrimarySecondaryondary}`}>← Back to Strategy</button>
             <div className={`${c.card} border-2 rounded-2xl p-5 ${isDark ? 'border-cyan-700/50' : 'border-cyan-300'}`}>
               <p className={`text-lg font-black ${c.text} mb-1`}>📧 Email Drafter</p>
-              <p className={`text-xs ${c.textSec} mb-4`}>Convert your strategy into a send-ready email. 3 versions, different tones.</p>
+              <p className={`text-xs ${c.textSecondary} mb-4`}>Convert your strategy into a send-ready email. 3 versions, different tones.</p>
               <div className="space-y-3">
                 <input type="text" value={emailRecipient} onChange={e => setEmailRecipient(e.target.value)} placeholder="Recipient name (optional)" className={`w-full p-2.5 border-2 rounded-xl text-sm ${c.input}`} />
                 <div>
-                  <p className={`text-[10px] font-bold ${c.textMuted} mb-1.5`}>TONE</p>
+                  <p className={`text-[10px] font-bold ${c.textMuteded} mb-1.5`}>TONE</p>
                   <div className="flex gap-2">
                     {['professional', 'direct', 'warm'].map(t => (
-                      <button key={t} onClick={() => setEmailTone(t)} className={`flex-1 py-2 rounded-xl text-xs font-bold border ${emailTone === t ? (isDark ? 'border-amber-500 bg-amber-900/20' : 'border-amber-500 bg-amber-50') : (isDark ? 'border-zinc-600' : 'border-stone-200')}`}>
+                      <button key={t} onClick={() => setEmailTone(t)} className={`flex-1 py-2 rounded-xl text-xs font-bold border ${emailTone === t ? (isDark ? 'border-amber-500 bg-amber-900/20' : 'border-amber-500 bg-amber-50') : (isDark ? 'border-zinc-600' : 'border-zinc-200')}`}>
                         {t === 'professional' ? '👔' : t === 'direct' ? '🎯' : '🤝'} {t}
                       </button>
                     ))}
                   </div>
                 </div>
               </div>
-              <button onClick={fetchEmailDraft} disabled={emailLoading} className={`w-full py-3 rounded-xl font-bold mt-3 ${c.btnPrimary} disabled:opacity-50`}>
-                {emailLoading ? <span className="animate-spin inline-block mr-2">⏳</span> : <span className="mr-2">📧</span>}
+              <button onClick={fetchEmailDraft} disabled={emailLoading} className={`w-full py-3 rounded-xl font-bold mt-3 ${c.btnPrimaryPrimary} disabled:opacity-50`}>
+                {emailLoading ? <span className="animate-spin inline-block mr-2">{tool?.icon ?? '⚙️'}</span> : <span className="mr-2">📧</span>}
                 {emailLoading ? 'Drafting...' : 'Draft Email'}
               </button>
             </div>
@@ -787,36 +792,36 @@ const LeverageLogic = () => {
                 {emailResults.drafts?.map((draft, i) => (
                   <div key={i} className={`${c.card} border-2 rounded-2xl p-5 ${i === 0 ? (isDark ? 'border-amber-700/50' : 'border-amber-300') : ''}`}>
                     <div className="flex items-center justify-between mb-2">
-                      <p className={`text-xs font-bold ${c.accent}`}>{draft.version}</p>
+                      <p className={`text-xs font-bold ${c.textSecondaryondary}`}>{draft.version}</p>
                       <CopyBtn content={`Subject: ${draft.subject_line}\n\n${draft.body}${BRANDING}`} label="Copy" />
                     </div>
-                    <div className={`p-2 rounded-lg ${isDark ? 'bg-zinc-700/50' : 'bg-stone-100'} mb-2`}>
-                      <p className={`text-[10px] font-bold ${c.textMuted}`}>SUBJECT</p>
+                    <div className={`p-2 rounded-lg ${isDark ? 'bg-zinc-700/50' : 'bg-zinc-100'} mb-2`}>
+                      <p className={`text-[10px] font-bold ${c.textMuteded}`}>SUBJECT</p>
                       <p className={`text-xs font-bold ${c.text}`}>{draft.subject_line}</p>
                     </div>
                     <div className={`p-3 rounded-lg ${c.cardAlt} border`}>
                       <p className={`text-xs ${c.text} whitespace-pre-line`}>{draft.body}</p>
                     </div>
-                    <p className={`text-[10px] ${c.textMuted} mt-2`}>💡 {draft.tone_note}</p>
+                    <p className={`text-[10px] ${c.textMuteded} mt-2`}>💡 {draft.tone_note}</p>
                   </div>
                 ))}
                 {emailResults.do_not_put_in_writing?.length > 0 && (
                   <div className={`p-3.5 rounded-xl ${isDark ? 'bg-red-900/15 border border-red-800/30' : 'bg-red-50 border border-red-200'}`}>
                     <p className={`text-xs font-black ${isDark ? 'text-red-300' : 'text-red-700'} mb-1`}>🚫 Don't put in writing:</p>
-                    {emailResults.do_not_put_in_writing.map((d, i) => <p key={i} className={`text-[10px] ${c.textSec}`}>• {d}</p>)}
+                    {emailResults.do_not_put_in_writing.map((d, i) => <p key={i} className={`text-[10px] ${c.textSecondary}`}>• {d}</p>)}
                   </div>
                 )}
                 <div className="grid grid-cols-2 gap-3">
                   {emailResults.timing_tip && (
                     <div className={`p-3 rounded-xl ${c.cardAlt} border`}>
-                      <p className={`text-[10px] font-bold ${c.textMuted}`}>⏰ SEND TIMING</p>
-                      <p className={`text-xs ${c.textSec}`}>{emailResults.timing_tip}</p>
+                      <p className={`text-[10px] font-bold ${c.textMuteded}`}>⏰ SEND TIMING</p>
+                      <p className={`text-xs ${c.textSecondary}`}>{emailResults.timing_tip}</p>
                     </div>
                   )}
                   {emailResults.follow_up_plan && (
                     <div className={`p-3 rounded-xl ${c.cardAlt} border`}>
-                      <p className={`text-[10px] font-bold ${c.textMuted}`}>🔄 FOLLOW UP</p>
-                      <p className={`text-xs ${c.textSec}`}>{emailResults.follow_up_plan}</p>
+                      <p className={`text-[10px] font-bold ${c.textMuteded}`}>🔄 FOLLOW UP</p>
+                      <p className={`text-xs ${c.textSecondary}`}>{emailResults.follow_up_plan}</p>
                     </div>
                   )}
                 </div>
@@ -828,39 +833,39 @@ const LeverageLogic = () => {
         {/* ════════ PREP CHECK ════════ */}
         {view === 'prep' && (
           <div className="space-y-5">
-            <button onClick={() => results ? setView('results') : setView('form')} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnSecondary}`}>← Back</button>
+            <button onClick={() => results ? setView('results') : setView('form')} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnPrimarySecondaryondary}`}>← Back</button>
             {!prepResults && !prepLoading && (
               <div className={`${c.card} border rounded-2xl p-5 space-y-4`}>
                 <p className={`text-lg font-black ${c.text}`}>📋 Prep Check</p>
-                <p className={`text-xs ${c.textSec}`}>Let's see how ready you are before walking in.</p>
+                <p className={`text-xs ${c.textSecondary}`}>Let's see how ready you are before walking in.</p>
                 <div>
-                  <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>What do you already know?</label>
+                  <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>What do you already know?</label>
                   <textarea value={whatYouKnow} onChange={e => setWhatYouKnow(e.target.value)} placeholder='e.g., "Market rate is $95-110k, company just had record quarter"' rows={2} className={`w-full p-3 border-2 rounded-xl text-sm resize-y focus:outline-none focus:ring-2 ${c.input}`} />
                 </div>
                 <div>
-                  <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>What are you unsure about?</label>
+                  <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>What are you unsure about?</label>
                   <textarea value={whatYouDontKnow} onChange={e => setWhatYouDontKnow(e.target.value)} placeholder={`e.g., "Don't know what others make, don't know budget cycle"`} rows={2} className={`w-full p-3 border-2 rounded-xl text-sm resize-y focus:outline-none focus:ring-2 ${c.input}`} />
                 </div>
-                <button onClick={fetchPrepCheck} disabled={prepLoading} className={`w-full py-3 rounded-xl font-bold ${c.btnPrimary} disabled:opacity-50`}>{prepLoading ? '⏳ Assessing...' : '📋 Check My Readiness'}</button>
+                <button onClick={fetchPrepCheck} disabled={prepLoading} className={`w-full py-3 rounded-xl font-bold ${c.btnPrimaryPrimary} disabled:opacity-50`}>{prepLoading ? '🕐 Assessing...' : '📋 Check My Readiness'}</button>
               </div>
             )}
             {prepLoading && (
               <div className={`${c.card} border rounded-2xl p-8 text-center`}>
-                <span className="animate-spin inline-block text-3xl">⏳</span>
-                <p className={`text-sm ${c.textSec} mt-2`}>Assessing your preparation...</p>
+                <span className="animate-spin inline-block text-3xl">{tool?.icon ?? '⚙️'}</span>
+                <p className={`text-sm ${c.textSecondary} mt-2`}>Assessing your preparation...</p>
               </div>
             )}
             {prepResults && (
               <div className="space-y-4">
                 <div className={`${c.card} border-2 rounded-2xl p-5 text-center ${prepResults.readiness_score >= 80 ? (isDark ? 'border-emerald-700/50' : 'border-emerald-300') : prepResults.readiness_score >= 50 ? (isDark ? 'border-amber-700/50' : 'border-amber-300') : (isDark ? 'border-red-700/50' : 'border-red-300')}`}>
                   <p className={`text-5xl font-black ${prepResults.readiness_score >= 80 ? (isDark ? 'text-emerald-400' : 'text-emerald-700') : prepResults.readiness_score >= 50 ? (isDark ? 'text-amber-400' : 'text-amber-700') : (isDark ? 'text-red-400' : 'text-red-700')}`}>{prepResults.readiness_score}%</p>
-                  <p className={`text-xs font-bold ${c.textMuted} mt-1`}>{(prepResults.readiness_label || '').replace(/_/g, ' ').toUpperCase()}</p>
+                  <p className={`text-xs font-bold ${c.textMuteded} mt-1`}>{(prepResults.readiness_label || '').replace(/_/g, ' ').toUpperCase()}</p>
                 </div>
                 {prepResults.quick_win && <div className={`p-4 rounded-xl ${isDark ? 'bg-amber-900/15 border border-amber-800/40' : 'bg-amber-50 border border-amber-200'}`}><p className={`text-xs font-bold ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>⚡ 5-Minute Quick Win: {prepResults.quick_win}</p></div>}
                 {prepResults.strengths?.length > 0 && (
                   <div className={`${c.card} border rounded-2xl p-5`}>
                     <p className={`text-[10px] font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-700'} mb-2`}>✓ STRENGTHS</p>
-                    {prepResults.strengths.map((s, i) => <p key={i} className={`text-xs ${c.textSec} mb-0.5`}>✓ {s}</p>)}
+                    {prepResults.strengths.map((s, i) => <p key={i} className={`text-xs ${c.textSecondary} mb-0.5`}>✓ {s}</p>)}
                   </div>
                 )}
                 {prepResults.critical_gaps?.length > 0 && (
@@ -879,18 +884,18 @@ const LeverageLogic = () => {
                 )}
                 {prepResults.homework?.length > 0 && (
                   <div className={`${c.card} border rounded-2xl p-5`}>
-                    <p className={`text-[10px] font-bold ${c.textMuted} mb-2`}>📝 HOMEWORK</p>
+                    <p className={`text-[10px] font-bold ${c.textMuteded} mb-2`}>📝 HOMEWORK</p>
                     {prepResults.homework.map((h, i) => (
                       <div key={i} className="flex items-center gap-2 mb-1.5">
-                        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${h.priority === 'must_do' ? (isDark ? 'bg-red-900/30 text-red-300' : 'bg-red-100 text-red-700') : h.priority === 'should_do' ? (isDark ? 'bg-amber-900/30 text-amber-300' : 'bg-amber-100 text-amber-700') : (isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-stone-100 text-gray-600')}`}>{h.priority?.replace(/_/g, ' ')}</span>
+                        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${h.priority === 'must_do' ? (isDark ? 'bg-red-900/30 text-red-300' : 'bg-red-100 text-red-700') : h.priority === 'should_do' ? (isDark ? 'bg-amber-900/30 text-amber-300' : 'bg-amber-100 text-amber-700') : (isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-zinc-100 text-gray-600')}`}>{h.priority?.replace(/_/g, ' ')}</span>
                         <p className={`text-xs ${c.text} flex-1`}>{h.task}</p>
-                        <span className={`text-[10px] ${c.textMuted} shrink-0`}>{h.time}</span>
+                        <span className={`text-[10px] ${c.textMuteded} shrink-0`}>{h.time}</span>
                       </div>
                     ))}
                   </div>
                 )}
                 {prepResults.ready_when && <div className={`p-4 rounded-xl ${isDark ? 'bg-emerald-900/15 border border-emerald-800/40' : 'bg-emerald-50 border border-emerald-200'}`}><p className={`text-xs font-bold ${isDark ? 'text-emerald-300' : 'text-emerald-700'}`}>✅ {prepResults.ready_when}</p></div>}
-                <button onClick={() => results ? setView('results') : setView('form')} className={`w-full py-3 rounded-xl font-bold ${c.btnPrimary}`}>{results ? '← Back to Strategy' : '← Build Strategy'}</button>
+                <button onClick={() => results ? setView('results') : setView('form')} className={`w-full py-3 rounded-xl font-bold ${c.btnPrimaryPrimary}`}>{results ? '← Back to Strategy' : '← Build Strategy'}</button>
               </div>
             )}
           </div>
@@ -899,16 +904,16 @@ const LeverageLogic = () => {
         {/* ════════ DEBRIEF ════════ */}
         {view === 'debrief' && (
           <div className="space-y-5">
-            <button onClick={() => setView('results')} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnSecondary}`}>← Back to Strategy</button>
+            <button onClick={() => setView('results')} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnPrimarySecondaryondary}`}>← Back to Strategy</button>
             <div className={`${c.card} border-2 rounded-2xl p-5 ${isDark ? 'border-emerald-700/50' : 'border-emerald-300'}`}>
               <p className={`text-lg font-black ${c.text} mb-1`}>📊 Post-Negotiation Debrief</p>
-              <p className={`text-xs ${c.textSec} mb-4`}>It's done. Let's analyze what happened and learn from it.</p>
+              <p className={`text-xs ${c.textSecondary} mb-4`}>It's done. Let's analyze what happened and learn from it.</p>
               <div>
-                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>What was the final outcome? *</label>
+                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>What was the final outcome? *</label>
                 <textarea value={finalOutcome} onChange={e => setFinalOutcome(e.target.value)} placeholder='e.g., "Got 10% raise, no remote Fridays. They said maybe next quarter for remote."' rows={3} className={`w-full p-3 border-2 rounded-xl text-sm resize-y mb-3 focus:outline-none focus:ring-2 ${c.input}`} />
               </div>
-              <button onClick={fetchDebrief} disabled={debriefLoading || !finalOutcome.trim()} className={`w-full py-3 rounded-xl font-bold ${c.btnPrimary} disabled:opacity-50`}>
-                {debriefLoading ? <span className="animate-spin inline-block mr-2">⏳</span> : <span className="mr-2">📊</span>}
+              <button onClick={fetchDebrief} disabled={debriefLoading || !finalOutcome.trim()} className={`w-full py-3 rounded-xl font-bold ${c.btnPrimaryPrimary} disabled:opacity-50`}>
+                {debriefLoading ? <span className="animate-spin inline-block mr-2">{tool?.icon ?? '⚙️'}</span> : <span className="mr-2">📊</span>}
                 {debriefLoading ? 'Analyzing...' : 'Run Debrief'}
               </button>
             </div>
@@ -927,7 +932,7 @@ const LeverageLogic = () => {
                     {debriefResults.what_worked.map((w, i) => (
                       <div key={i} className={`p-2.5 rounded-lg ${isDark ? 'bg-emerald-900/15' : 'bg-emerald-50'} mb-1.5`}>
                         <p className={`text-xs font-bold ${c.text}`}>{w.tactic}</p>
-                        <p className={`text-[10px] ${c.textSec}`}>{w.impact}</p>
+                        <p className={`text-[10px] ${c.textSecondary}`}>{w.impact}</p>
                       </div>
                     ))}
                   </div>
@@ -953,19 +958,19 @@ const LeverageLogic = () => {
                     <p className={`text-xs font-bold ${debriefResults.value_left_on_table.likely === 'yes' ? (isDark ? 'text-amber-300' : 'text-amber-700') : (isDark ? 'text-emerald-300' : 'text-emerald-700')} mb-1`}>
                       {debriefResults.value_left_on_table.likely === 'yes' ? '💰 Value left on the table' : debriefResults.value_left_on_table.likely === 'maybe' ? '🤔 Possibly left value' : '✅ Got a solid deal'}
                     </p>
-                    <p className={`text-xs ${c.textSec}`}>{debriefResults.value_left_on_table.explanation}</p>
-                    {debriefResults.value_left_on_table.how_to_capture && <p className={`text-[10px] ${c.accent} mt-1`}>→ {debriefResults.value_left_on_table.how_to_capture}</p>}
+                    <p className={`text-xs ${c.textSecondary}`}>{debriefResults.value_left_on_table.explanation}</p>
+                    {debriefResults.value_left_on_table.how_to_capture && <p className={`text-[10px] ${c.textSecondaryondary} mt-1`}>→ {debriefResults.value_left_on_table.how_to_capture}</p>}
                   </div>
                 )}
 
                 {/* For next time */}
                 {debriefResults.for_next_time && (
                   <div className={`${c.card} border-2 rounded-2xl p-5 ${isDark ? 'border-cyan-700/50' : 'border-cyan-300'}`}>
-                    <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.accent}`}>🎯 For Next Time</p>
+                    <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textSecondaryondary}`}>🎯 For Next Time</p>
                     <div className="space-y-2">
-                      {debriefResults.for_next_time.do_more && <p className={`text-xs ${c.textSec}`}><span className={`font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>↑ More:</span> {debriefResults.for_next_time.do_more}</p>}
-                      {debriefResults.for_next_time.do_less && <p className={`text-xs ${c.textSec}`}><span className={`font-bold ${isDark ? 'text-red-400' : 'text-red-700'}`}>↓ Less:</span> {debriefResults.for_next_time.do_less}</p>}
-                      {debriefResults.for_next_time.try_new && <p className={`text-xs ${c.textSec}`}><span className={`font-bold ${isDark ? 'text-cyan-400' : 'text-cyan-700'}`}>★ New:</span> {debriefResults.for_next_time.try_new}</p>}
+                      {debriefResults.for_next_time.do_more && <p className={`text-xs ${c.textSecondary}`}><span className={`font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>↑ More:</span> {debriefResults.for_next_time.do_more}</p>}
+                      {debriefResults.for_next_time.do_less && <p className={`text-xs ${c.textSecondary}`}><span className={`font-bold ${isDark ? 'text-red-400' : 'text-red-700'}`}>↓ Less:</span> {debriefResults.for_next_time.do_less}</p>}
+                      {debriefResults.for_next_time.try_new && <p className={`text-xs ${c.textSecondary}`}><span className={`font-bold ${isDark ? 'text-cyan-400' : 'text-cyan-700'}`}>★ New:</span> {debriefResults.for_next_time.try_new}</p>}
                     </div>
                     {debriefResults.for_next_time.key_insight && (
                       <div className={`mt-3 p-3 rounded-xl ${isDark ? 'bg-amber-900/15' : 'bg-amber-50'}`}>
@@ -977,8 +982,8 @@ const LeverageLogic = () => {
 
                 {debriefResults.leverage_lessons?.length > 0 && (
                   <div className={`${c.card} border rounded-2xl p-5`}>
-                    <p className={`text-[10px] font-bold ${c.textMuted} mb-2`}>🃏 LEVERAGE LESSONS</p>
-                    {debriefResults.leverage_lessons.map((l, i) => <p key={i} className={`text-xs ${c.textSec} mb-0.5`}>• {l}</p>)}
+                    <p className={`text-[10px] font-bold ${c.textMuteded} mb-2`}>🃏 LEVERAGE LESSONS</p>
+                    {debriefResults.leverage_lessons.map((l, i) => <p key={i} className={`text-xs ${c.textSecondary} mb-0.5`}>• {l}</p>)}
                   </div>
                 )}
               </div>
@@ -987,6 +992,14 @@ const LeverageLogic = () => {
         )}
 
       </div>
+        <div className={`mt-6 pt-4 border-t text-sm ${c.border} ${c.textMuted}`}>
+          <p className="mb-2 font-medium">You might also like:</p>
+          <div className="flex flex-wrap gap-2">
+            {[{slug:'decision-coach',label:'🧭 Decision Coach'},{slug:'pre-mortem',label:'💀 Pre-Mortem'},{slug:'contrast-report',label:'📊 Contrast Report'}].map(({slug,label})=>(
+              <a key={slug} href={`/tool/${slug}`} className={linkStyle}>{label}</a>
+            ))}
+          </div>
+        </div>
     </div>
   );
 };

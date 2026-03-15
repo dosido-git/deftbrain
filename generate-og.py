@@ -29,7 +29,7 @@ from PIL import Image, ImageDraw, ImageFont
 # ── Configuration ────────────────────────────────────────────────────────────
 
 TOOLS_JS_PATH  = 'src/data/tools.js'
-LOGO_PATH      = 'src/assets/logo-brain-only-l.png'
+LOGO_PATH      = 'src/assets/Pbrain-l.png'
 OUTPUT_DIR     = 'public/og'
 
 BASE_URL       = 'https://deftbrain.com'

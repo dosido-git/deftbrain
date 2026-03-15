@@ -33,34 +33,33 @@ const ContextCollapse = ({ tool }) => {
   const resultsRef = useRef(null);
 
   // ─── Standard c object ───
-  const c = {
-    card:          isDark ? 'bg-zinc-800'     : 'bg-white',
-    cardAlt:       isDark ? 'bg-zinc-700/50'  : 'bg-slate-50',
-    text:          isDark ? 'text-zinc-50'    : 'text-slate-900',
-    textSecondary: isDark ? 'text-zinc-300'   : 'text-slate-600',
-    textMuted:     isDark ? 'text-zinc-500'   : 'text-slate-400',
-    input:         isDark
-      ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
-      : 'bg-white border-slate-300 text-slate-900 placeholder-slate-400 focus:border-cyan-600 focus:ring-cyan-300/20',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
-    btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-slate-100 hover:bg-slate-200 text-slate-700',
-    border:        isDark ? 'border-zinc-700' : 'border-slate-200',
-    success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-300' : 'bg-emerald-50 border-emerald-200 text-emerald-800',
-    warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-300' : 'bg-amber-50 border-amber-200 text-amber-800',
-    danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-300' : 'bg-red-50 border-red-200 text-red-800',
-    // Tool-specific keys
-    highlight:     isDark ? 'bg-sky-900/20 border-sky-700 text-sky-300' : 'bg-sky-50 border-sky-200 text-sky-800',
-    btnDisabled:   isDark ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed' : 'bg-slate-200 text-slate-400 cursor-not-allowed',
-    removeBtn:     isDark ? 'text-zinc-500 hover:text-red-400' : 'text-slate-400 hover:text-red-500',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-300' : 'border-cyan-600 bg-cyan-50 text-cyan-800',
-    pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-slate-300 text-slate-500 hover:border-slate-400',
-    badge:         isDark ? 'bg-zinc-700 text-zinc-200' : 'bg-slate-100 text-slate-700',
-    histBg:        isDark ? 'bg-sky-900/10 border-sky-800/30' : 'bg-sky-50/40 border-sky-200/60',
-  };
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
     : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
+
+  const c = {
+    card:          isDark ? 'bg-zinc-800' : 'bg-white',
+    cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    text:          isDark ? 'text-zinc-50' : 'text-gray-900',
+    textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
+    textMuted:     isDark ? 'text-zinc-500' : 'text-gray-400',
+    labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
+    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
+    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
+    border:        isDark ? 'border-zinc-700' : 'border-gray-200',
+    success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
+    warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
+    danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
+    infoBox:       isDark ? 'bg-sky-900/20 border-sky-700 text-sky-200' : 'bg-sky-50 border-sky-200 text-sky-800',
+    successTxt:    isDark ? 'text-emerald-300' : 'text-emerald-800',
+    warningBox:    isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
+    warningTxt:    isDark ? 'text-amber-300' : 'text-amber-800',
+    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
+  };
 
   // ─── Persisted state ───
   const [history,   setHistory]   = usePersistentState('cc-collapse-history', []);
@@ -111,6 +110,7 @@ const ContextCollapse = ({ tool }) => {
         concerns: concerns.trim() || null,
       });
       setResults(data);
+      setHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: '' }, ...prev].slice(0, 6));
       const entry = {
         id: 'cc_' + Date.now(),
         date: new Date().toISOString(),
@@ -177,11 +177,11 @@ const ContextCollapse = ({ tool }) => {
           <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
             <span>{tool?.icon ?? '📢'}</span>{tool?.title ?? 'Context Collapse'}
           </h2>
-          <p className={`text-sm ${c.textMuted} mt-0.5`}>{tool?.tagline ?? 'See how different people will read the same message — before you send it'}</p>
+          <p className={`text-sm ${c.textMuteded} mt-0.5`}>{tool?.tagline ?? 'See how different people will read the same message — before you send it'}</p>
         </div>
 
         {/* Pre-result cross-ref */}
-        <p className={`text-xs text-center ${c.textMuted} mb-4`}>
+        <p className={`text-xs text-center ${c.textMuteded} mb-4`}>
           Already got a confusing reply?{' '}
           <a href="/DecoderRing" rel="noopener noreferrer" className={linkStyle}>Decoder Ring</a>{' '}
           reads the subtext before you respond.
@@ -191,9 +191,9 @@ const ContextCollapse = ({ tool }) => {
         <div className="space-y-4">
           <div>
             <label className={`text-sm font-semibold ${c.text} mb-1 block`}>
-              📢 What are you about to send? <span className={c.textMuted}>*</span>
+              📢 What are you about to send? <span className={c.textMuteded}>*</span>
             </label>
-            <p className={`text-xs ${c.textMuted} mb-2`}>We'll show you how different people will read the same message.</p>
+            <p className={`text-xs ${c.textMuteded} mb-2`}>We'll show you how different people will read the same message.</p>
             <textarea
               value={message}
               onChange={e => setMessage(e.target.value)}
@@ -204,7 +204,7 @@ const ContextCollapse = ({ tool }) => {
 
           {/* Platform */}
           <div>
-            <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>📱 Platform</label>
+            <label className={`text-xs font-bold ${c.textSecondaryondary} uppercase tracking-wide mb-2 block`}>📱 Platform</label>
             <div className="flex flex-wrap gap-1.5">
               {PLATFORMS.map(p => (
                 <Pill key={p.value} active={platform === p.value} onClick={() => setPlatform(p.value)}>{p.label}</Pill>
@@ -214,12 +214,12 @@ const ContextCollapse = ({ tool }) => {
 
           {/* Audiences */}
           <div>
-            <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>👥 Who will see this?</label>
+            <label className={`text-xs font-bold ${c.textSecondaryondary} uppercase tracking-wide mb-2 block`}>👥 Who will see this?</label>
             <div className="space-y-3">
               {audiences.map((a, idx) => (
                 <div key={idx} className={`p-3 rounded-xl border ${c.border} ${c.cardAlt} space-y-2`}>
                   <div className="flex items-center gap-2">
-                    <span className={`text-xs font-bold ${c.textMuted} w-20`}>Audience {idx + 1}</span>
+                    <span className={`text-xs font-bold ${c.textMuteded} w-20`}>Audience {idx + 1}</span>
                     <input
                       type="text" value={a.label}
                       onChange={e => updateAudience(idx, 'label', e.target.value)}
@@ -256,7 +256,7 @@ const ContextCollapse = ({ tool }) => {
 
           {/* Intent */}
           <div>
-            <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1 block`}>🎯 What are you trying to say?</label>
+            <label className={`text-xs font-bold ${c.textSecondaryondary} uppercase tracking-wide mb-1 block`}>🎯 What are you trying to say?</label>
             <input
               type="text" value={intent}
               onChange={e => setIntent(e.target.value)}
@@ -267,7 +267,7 @@ const ContextCollapse = ({ tool }) => {
 
           {/* Concerns */}
           <div>
-            <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1 block`}>😰 What are you worried about? (optional)</label>
+            <label className={`text-xs font-bold ${c.textSecondaryondary} uppercase tracking-wide mb-1 block`}>😰 What are you worried about? (optional)</label>
             <input
               type="text" value={concerns}
               onChange={e => setConcerns(e.target.value)}
@@ -322,17 +322,17 @@ const ContextCollapse = ({ tool }) => {
 
           {/* Your message */}
           <div className={`p-4 rounded-xl ${c.cardAlt}`}>
-            <p className={`text-xs font-bold ${c.textMuted} mb-2`}>📝 Your message</p>
+            <p className={`text-xs font-bold ${c.textMuteded} mb-2`}>📝 Your message</p>
             <p className={`text-sm ${c.text} italic`}>"{message}"</p>
           </div>
 
           {/* Tone analysis */}
           {results.message_analysis && (
             <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-              <p className={`text-xs font-bold ${c.textMuted} uppercase mb-2`}>🔍 Tone detected</p>
+              <p className={`text-xs font-bold ${c.textMuteded} uppercase mb-2`}>🔍 Tone detected</p>
               <p className={`text-sm ${c.text} mb-2`}>{results.message_analysis.tone_detected}</p>
               {results.message_analysis.subtext && (
-                <p className={`text-xs ${c.textSecondary} mb-2`}>💭 Subtext: {results.message_analysis.subtext}</p>
+                <p className={`text-xs ${c.textSecondaryondary} mb-2`}>💭 Subtext: {results.message_analysis.subtext}</p>
               )}
               {results.message_analysis.ambiguous_elements?.length > 0 && (
                 <div className="flex flex-wrap gap-1 mt-2">
@@ -355,9 +355,9 @@ const ContextCollapse = ({ tool }) => {
                   <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${c.badge}`}>{r.risk_level?.replace('_', ' ')}</span>
                 </div>
                 <p className={`text-sm ${c.text} mb-2`}>{r.reads_as}</p>
-                {r.emotional_impact && <p className={`text-xs ${c.textSecondary} mb-1`}>💭 Feels: {r.emotional_impact}</p>}
+                {r.emotional_impact && <p className={`text-xs ${c.textSecondaryondary} mb-1`}>💭 Feels: {r.emotional_impact}</p>}
                 {r.key_trigger && <p className={`text-xs font-semibold ${c.text} mb-1`}>⚡ Trigger: "{r.key_trigger}"</p>}
-                {r.what_they_might_do && <p className={`text-xs ${c.textMuted} italic`}>→ They might: {r.what_they_might_do}</p>}
+                {r.what_they_might_do && <p className={`text-xs ${c.textMuteded} italic`}>→ They might: {r.what_they_might_do}</p>}
               </div>
             );
           })}
@@ -365,8 +365,8 @@ const ContextCollapse = ({ tool }) => {
           {/* Intent vs Reality */}
           {results.intent_vs_reality && (
             <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-              <p className={`text-xs font-bold ${c.textMuted} uppercase mb-2`}>🎯 Intent vs. Reality</p>
-              <p className={`text-xs ${c.textSecondary} mb-2`}>{results.intent_vs_reality.gap_analysis}</p>
+              <p className={`text-xs font-bold ${c.textMuteded} uppercase mb-2`}>🎯 Intent vs. Reality</p>
+              <p className={`text-xs ${c.textSecondaryondary} mb-2`}>{results.intent_vs_reality.gap_analysis}</p>
               {results.intent_vs_reality.biggest_risk && (
                 <div className={`p-3 rounded-lg border ${c.warning}`}>
                   <p className="text-xs font-bold">⚠️ Biggest risk: {results.intent_vs_reality.biggest_risk}</p>
@@ -378,14 +378,14 @@ const ContextCollapse = ({ tool }) => {
           {/* Rewrites */}
           {results.rewrites?.length > 0 && (
             <div className="space-y-3">
-              <p className={`text-xs font-bold ${c.textMuted} uppercase`}>✏️ Suggested Rewrites</p>
+              <p className={`text-xs font-bold ${c.textMuteded} uppercase`}>✏️ Suggested Rewrites</p>
               {results.rewrites.map((rw, idx) => (
                 <div key={idx} className={`p-4 rounded-xl border ${c.success}`}>
                   <p className={`text-xs font-bold mb-2`}>{rw.label}</p>
                   <div className={`p-3 rounded-lg ${c.cardAlt} mb-2`}>
                     <p className={`text-sm ${c.text} italic`}>"{rw.message}"</p>
                   </div>
-                  <p className={`text-xs ${c.textMuted} mb-2`}>Trade-off: {rw.tradeoff}</p>
+                  <p className={`text-xs ${c.textMuteded} mb-2`}>Trade-off: {rw.tradeoff}</p>
                   <CopyBtn content={rw.message + BRAND} label="Copy rewrite" />
                 </div>
               ))}
@@ -395,7 +395,7 @@ const ContextCollapse = ({ tool }) => {
           {/* Platform note */}
           {results.platform_note && (
             <div className={`p-4 rounded-xl ${c.cardAlt}`}>
-              <p className={`text-xs font-bold ${c.textMuted} mb-1`}>📱 Platform consideration</p>
+              <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>📱 Platform consideration</p>
               <p className={`text-sm ${c.text}`}>{results.platform_note}</p>
             </div>
           )}
@@ -408,7 +408,7 @@ const ContextCollapse = ({ tool }) => {
                 className={`w-full flex items-center gap-2 p-3 rounded-xl ${c.cardAlt} border ${c.border} hover:opacity-80`}>
                 <span>💣</span>
                 <span className={`text-xs font-bold ${c.text} flex-1`}>Worst-Case Scenarios</span>
-                <span className={`text-xs ${c.textMuted}`}>{showNuclear ? '▲' : '▼'}</span>
+                <span className={`text-xs ${c.textMuteded}`}>{showNuclear ? '▲' : '▼'}</span>
               </button>
               {showNuclear && (
                 <div className="mt-2 space-y-2">
@@ -418,7 +418,7 @@ const ContextCollapse = ({ tool }) => {
                         <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${c.badge}`}>{n.likelihood}</span>
                         <span className="text-xs font-bold">{n.scenario}</span>
                       </div>
-                      <p className={`text-xs ${c.textSecondary}`}>Mitigation: {n.mitigation}</p>
+                      <p className={`text-xs ${c.textSecondaryondary}`}>Mitigation: {n.mitigation}</p>
                     </div>
                   ))}
                 </div>
@@ -428,15 +428,15 @@ const ContextCollapse = ({ tool }) => {
 
           {/* Reset */}
           <button
-            onClick={handleReset}
-            className={`w-full py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2 ${c.btnSecondary}`}>
+            onClick={handleReset} disabled={loading}
+            className={`w-full py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2 ${c.btnSecondaryondary}`}>
             <span>📢</span> New Message
           </button>
 
           {/* Cross-refs */}
           <div className={`p-4 rounded-2xl border ${c.card} ${c.border}`}>
-            <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-2`}>🔗 Related Tools</p>
-            <div className={`space-y-1.5 text-xs ${c.textSecondary}`}>
+            <p className={`text-xs font-bold ${c.textMuteded} uppercase tracking-wide mb-2`}>🔗 Related Tools</p>
+            <div className={`space-y-1.5 text-xs ${c.textSecondaryondary}`}>
               <p>Got a tense reply back? <a href="/ConflictCoach" rel="noopener noreferrer" className={linkStyle}>Conflict Coach</a> helps craft your response.</p>
               <p>Writing something firm but diplomatic? <a href="/VelvetHammer" rel="noopener noreferrer" className={linkStyle}>Velvet Hammer</a> crafts it.</p>
             </div>
@@ -444,7 +444,7 @@ const ContextCollapse = ({ tool }) => {
 
           {/* AI disclaimer */}
           <div className={`p-4 rounded-xl text-center ${c.cardAlt}`}>
-            <p className={`text-xs ${c.textMuted}`}>💬 AI-generated analysis. Audience interpretations are predictions, not certainties — use your judgment.</p>
+            <p className={`text-xs ${c.textMuteded}`}>💬 AI-generated analysis. Audience interpretations are predictions, not certainties — use your judgment.</p>
           </div>
         </div>
       )}
@@ -455,8 +455,8 @@ const ContextCollapse = ({ tool }) => {
           <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-left">
             <span>📋</span>
             <span className={`text-sm font-bold ${c.text} flex-1`}>Past Analyses</span>
-            <span className={`text-xs ${c.textMuted}`}>{history.length}</span>
-            <span className={`text-xs ${c.textMuted}`}>{showHistory ? '▲' : '▼'}</span>
+            <span className={`text-xs ${c.textMuteded}`}>{history.length}</span>
+            <span className={`text-xs ${c.textMuteded}`}>{showHistory ? '▲' : '▼'}</span>
           </button>
           {showHistory && (
             <div className="mt-3 space-y-2">
@@ -467,13 +467,13 @@ const ContextCollapse = ({ tool }) => {
                     <span>{riskEmoji(entry.verdict === 'SEND AS IS' ? 'safe' : entry.verdict === 'MINOR TWEAKS' ? 'mild_risk' : entry.verdict === 'REWRITE NEEDED' ? 'risky' : 'dangerous')}</span>
                     <div className="flex-1 min-w-0">
                       <div className={`text-sm font-semibold ${c.text} truncate`}>{entry.message}</div>
-                      <div className={`text-xs ${c.textMuted} mt-0.5`}>
+                      <div className={`text-xs ${c.textMuteded} mt-0.5`}>
                         {(() => { try { const d = new Date(entry.date); const diff = Math.floor((new Date() - d) / 86400000); return diff === 0 ? 'Today' : diff === 1 ? 'Yesterday' : diff < 7 ? diff + 'd ago' : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); } catch { return ''; } })()}
                       </div>
                     </div>
                     <button
                       onClick={() => { setResults(entry.results); setMessage(entry.message?.replace('…', '') || ''); setShowHistory(false); }}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnSecondary}`}>View</button>
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnSecondaryondary}`}>View</button>
                   </div>
                 );
               })}

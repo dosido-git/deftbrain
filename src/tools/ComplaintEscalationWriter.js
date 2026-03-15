@@ -11,65 +11,34 @@ const ComplaintEscalationWriter = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
 
   // ─── Standard c object ───
-  const c = {
-    card:          isDark ? 'bg-zinc-800'        : 'bg-white',
-    cardAlt:       isDark ? 'bg-zinc-700/50'     : 'bg-slate-50',
-    text:          isDark ? 'text-zinc-50'       : 'text-gray-900',
-    textSecondary: isDark ? 'text-zinc-300'      : 'text-gray-600',
-    textMuted:     isDark ? 'text-zinc-500'      : 'text-gray-400',
-    input:         isDark
-      ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
-      : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-600 focus:ring-cyan-300/20',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
-    btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
-    border:        isDark ? 'border-zinc-700'    : 'border-gray-200',
-    success:       isDark ? 'bg-green-900/20 border-green-700 text-green-300' : 'bg-green-50 border-green-200 text-green-800',
-    warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-300' : 'bg-amber-50 border-amber-200 text-amber-800',
-    danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-300'       : 'bg-red-50 border-red-200 text-red-800',
-    // Tool-specific keys
-    highlight:       isDark ? 'bg-sky-900/15 border-sky-800 text-sky-300'       : 'bg-sky-50 border-sky-200 text-sky-700',
-    hintStyle:       isDark ? 'bg-amber-900/20 border border-amber-700/40 text-amber-300' : 'bg-amber-50 border border-amber-100 text-amber-700',
-    industryActive:  isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-300' : 'border-cyan-500 bg-cyan-50 text-cyan-700',
-    industryInactive: isDark ? 'border-zinc-600 text-zinc-300 hover:border-zinc-500' : 'border-gray-200 text-gray-600 hover:border-gray-300',
-    toneActive:      isDark ? 'border-cyan-500 bg-cyan-900/20' : 'border-cyan-400 bg-cyan-50',
-    toneInactive:    isDark ? 'border-zinc-600 hover:border-zinc-500' : 'border-gray-200 hover:border-gray-300',
-    letterBox:       isDark ? 'bg-zinc-700/30 border-zinc-600' : 'bg-slate-50 border-gray-200',
-    contextBadge:    isDark ? 'bg-sky-900/40 text-sky-300' : 'bg-sky-50 text-sky-700',
-    resolvedBtn:     isDark ? 'border-green-700 text-green-300 hover:bg-green-900/20' : 'border-green-300 text-green-700 hover:bg-green-50',
-    analyzeBtn:      isDark ? 'border-sky-700 text-sky-300 hover:bg-sky-900/20' : 'border-sky-300 text-sky-700 hover:bg-sky-50',
-    escalateBtn:     isDark ? 'border-red-700 text-red-300 hover:bg-red-900/20' : 'border-red-300 text-red-700 hover:bg-red-50',
-    deadlineNormal:  isDark ? 'border-zinc-600 bg-zinc-700/30' : 'border-gray-200 bg-gray-50',
-    editDoneBtn:     isDark ? 'bg-green-900/30 text-green-300' : 'bg-green-50 text-green-700',
-    loadingSubmit:   isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400',
-    tacticsTag:      isDark ? 'bg-amber-900/30 text-amber-300' : 'bg-amber-50 text-amber-700',
-    counterBox:      isDark ? 'border-sky-800 bg-sky-900/10' : 'border-sky-200 bg-sky-50/50',
-    counterBoxHd:    isDark ? 'text-sky-400' : 'text-sky-700',
-    redFlagsBox:     isDark ? 'bg-red-900/15 text-red-400' : 'bg-red-50 text-red-700',
-    callOpenBox:     isDark ? 'bg-sky-900/15 border-sky-800/40' : 'bg-sky-50 border-sky-100',
-    callOpenText:    isDark ? 'text-sky-400' : 'text-sky-700',
-    callPhrasesBox:  isDark ? 'bg-green-900/10' : 'bg-green-50/50',
-    callPhrasesText: isDark ? 'text-green-400' : 'text-green-700',
-    callAvoidBox:    isDark ? 'bg-red-900/10' : 'bg-red-50/50',
-    callAvoidText:   isDark ? 'text-red-400' : 'text-red-700',
-    callPressureBox: isDark ? 'bg-amber-900/15 border-amber-800/40' : 'bg-amber-50 border-amber-100',
-    callPressureText: isDark ? 'text-amber-400' : 'text-amber-700',
-    timelineLine:    isDark ? 'bg-zinc-700' : 'bg-gray-200',
-    timelineDotRest: isDark ? 'bg-zinc-600 border-zinc-500' : 'bg-gray-300 border-gray-200',
-    progressTrack:   isDark ? 'bg-zinc-600' : 'bg-gray-200',
-    resetBtn:        isDark ? 'bg-red-900/30 text-red-300 hover:bg-red-800/40' : 'bg-red-50 text-red-700 hover:bg-red-100',
-    issueTip:        isDark ? 'text-amber-400' : 'text-amber-600',
-    stageTabInactive: isDark ? 'border-zinc-700 text-zinc-400 hover:text-zinc-200' : 'border-gray-200 text-gray-500 hover:text-gray-700',
-    resolvedText:    isDark ? 'text-green-400' : 'text-green-600',
-    failedText:      isDark ? 'text-red-400' : 'text-red-600',
-    firstVisitLink:  isDark ? 'text-cyan-400 hover:text-cyan-300' : 'text-cyan-600 hover:text-cyan-700',
-    disclaimerBox:   isDark ? 'bg-zinc-800/50' : 'bg-gray-50',
-    checkboxAccent:  isDark ? 'accent-green-500' : 'accent-green-600',
-    evidenceChecked: isDark ? 'bg-green-900/15 border border-green-800' : 'bg-green-50 border border-green-200',
-  };
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
     : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
+
+  const c = {
+    card:          isDark ? 'bg-zinc-800' : 'bg-white',
+    cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    text:          isDark ? 'text-zinc-50' : 'text-gray-900',
+    textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
+    textMuted:     isDark ? 'text-zinc-500' : 'text-gray-400',
+    labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
+    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
+    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
+    border:        isDark ? 'border-zinc-700' : 'border-gray-200',
+    success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
+    warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
+    danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
+    infoBox:       isDark ? 'bg-sky-900/20 border-sky-700 text-sky-200' : 'bg-sky-50 border-sky-200 text-sky-800',
+    successBox:    isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-300',
+    successTxt:    isDark ? 'text-emerald-300' : 'text-emerald-800',
+    warningBox:    isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
+    warningTxt:    isDark ? 'text-amber-300' : 'text-amber-800',
+    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
+  };
 
   // ─── Helper color maps (dynamic + isDark) ───
   const legalStrengthBadge = {
@@ -97,10 +66,10 @@ const ComplaintEscalationWriter = ({ tool }) => {
     return isDark ? 'bg-zinc-700/50' : 'bg-gray-50';
   };
   const timeLimitTxt = (days) => {
-    if (!days) return c.textMuted;
+    if (!days) return c.textMuteded;
     if (days <= 30) return isDark ? 'text-red-400' : 'text-red-600';
     if (days <= 90) return isDark ? 'text-amber-400' : 'text-amber-600';
-    return c.textMuted;
+    return c.textMuteded;
   };
 
   const evidencePriority = {
@@ -122,16 +91,16 @@ const ComplaintEscalationWriter = ({ tool }) => {
   const deadlineTxt = (info) => {
     if (info.isOverdue) return isDark ? 'text-red-400' : 'text-red-600';
     if (info.daysRemaining <= 3) return isDark ? 'text-amber-400' : 'text-amber-600';
-    return c.textMuted;
+    return c.textMuteded;
   };
 
   // ─── Stage color map (tool-specific: 5 distinct stage colors) ───
   const stageColors = (color, type) => {
     const map = {
-      blue:   { badge: isDark ? 'bg-blue-900/40 text-blue-300 border-blue-700' : 'bg-blue-100 text-blue-700 border-blue-200', bg: isDark ? 'bg-blue-900/15' : 'bg-blue-50', border: isDark ? 'border-blue-700' : 'border-blue-300', accent: isDark ? 'text-blue-400' : 'text-blue-600' },
-      purple: { badge: isDark ? 'bg-purple-900/40 text-purple-300 border-purple-700' : 'bg-purple-100 text-purple-700 border-purple-200', bg: isDark ? 'bg-purple-900/15' : 'bg-purple-50', border: isDark ? 'border-purple-700' : 'border-purple-300', accent: isDark ? 'text-purple-400' : 'text-purple-600' },
-      orange: { badge: isDark ? 'bg-orange-900/40 text-orange-300 border-orange-700' : 'bg-orange-100 text-orange-700 border-orange-200', bg: isDark ? 'bg-orange-900/15' : 'bg-orange-50', border: isDark ? 'border-orange-700' : 'border-orange-300', accent: isDark ? 'text-orange-400' : 'text-orange-600' },
-      pink:   { badge: isDark ? 'bg-pink-900/40 text-pink-300 border-pink-700' : 'bg-pink-100 text-pink-700 border-pink-200', bg: isDark ? 'bg-pink-900/15' : 'bg-pink-50', border: isDark ? 'border-pink-700' : 'border-pink-300', accent: isDark ? 'text-pink-400' : 'text-pink-600' },
+      blue:   { badge: isDark ? 'bg-sky-900/40 text-sky-300 border-sky-700' : 'bg-sky-100 text-sky-700 border-sky-200', bg: isDark ? 'bg-sky-900/15' : 'bg-sky-50', border: isDark ? 'border-sky-700' : 'border-sky-300', accent: isDark ? 'text-sky-400' : 'text-sky-600' },
+      purple: { badge: isDark ? 'bg-cyan-900/40 text-cyan-300 border-cyan-700' : 'bg-cyan-100 text-cyan-700 border-cyan-200', bg: isDark ? 'bg-cyan-900/15' : 'bg-cyan-50', border: isDark ? 'border-cyan-700' : 'border-cyan-300', accent: isDark ? 'text-cyan-400' : 'text-cyan-600' },
+      orange: { badge: isDark ? 'bg-amber-900/40 text-amber-300 border-amber-700' : 'bg-amber-100 text-amber-700 border-amber-200', bg: isDark ? 'bg-amber-900/15' : 'bg-amber-50', border: isDark ? 'border-amber-700' : 'border-amber-300', accent: isDark ? 'text-amber-400' : 'text-amber-600' },
+      pink:   { badge: isDark ? 'bg-red-900/40 text-red-300 border-red-700' : 'bg-red-100 text-red-700 border-red-200', bg: isDark ? 'bg-red-900/15' : 'bg-red-50', border: isDark ? 'border-red-700' : 'border-red-300', accent: isDark ? 'text-red-400' : 'text-red-600' },
       red:    { badge: isDark ? 'bg-red-900/40 text-red-300 border-red-700' : 'bg-red-100 text-red-700 border-red-200', bg: isDark ? 'bg-red-900/15' : 'bg-red-50', border: isDark ? 'border-red-700' : 'border-red-300', accent: isDark ? 'text-red-400' : 'text-red-600' },
     };
     return map[color]?.[type] || '';
@@ -140,7 +109,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
   const severityConfig = {
     low:      { label: 'Low Severity',    color: isDark ? 'text-green-400' : 'text-green-600',  bg: isDark ? 'bg-green-900/20' : 'bg-green-50',  border: isDark ? 'border-green-700' : 'border-green-200' },
     medium:   { label: 'Medium Severity', color: isDark ? 'text-amber-400' : 'text-amber-600',  bg: isDark ? 'bg-amber-900/20' : 'bg-amber-50',  border: isDark ? 'border-amber-700' : 'border-amber-200' },
-    high:     { label: 'High Severity',   color: isDark ? 'text-orange-400' : 'text-orange-600', bg: isDark ? 'bg-orange-900/20' : 'bg-orange-50', border: isDark ? 'border-orange-700' : 'border-orange-200' },
+    high:     { label: 'High Severity',   color: isDark ? 'text-amber-400' : 'text-amber-600', bg: isDark ? 'bg-amber-900/20' : 'bg-amber-50', border: isDark ? 'border-amber-700' : 'border-amber-200' },
     critical: { label: 'Critical',        color: isDark ? 'text-red-400' : 'text-red-600',       bg: isDark ? 'bg-red-900/20' : 'bg-red-50',       border: isDark ? 'border-red-700' : 'border-red-200' },
   };
 
@@ -172,6 +141,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
   const [industry,         setIndustry]         = usePersistentState('cew-industry', 'auto');
   const [issue,            setIssue]            = usePersistentState('cew-issue', '');
   const [previousAttempts, setPreviousAttempts] = usePersistentState('cew-prev-attempts', '');
+  const [history, setHistory] = usePersistentState('complaintescalationwriter-history', []);
   const [desiredOutcome,   setDesiredOutcome]   = usePersistentState('cew-outcome', '');
   const [amountAtStake,    setAmountAtStake]    = usePersistentState('cew-amount', '');
   const [hasDocumentation, setHasDocumentation] = usePersistentState('cew-docs', '');
@@ -322,7 +292,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
           <div className="flex items-center justify-between">
             <div>
               <p className={`text-sm font-bold ${c.text}`}>Ready to send?</p>
-              <p className={`text-xs ${c.textMuted}`}>Mark as sent to track deadlines and follow-up dates</p>
+              <p className={`text-xs ${c.textMuteded}`}>Mark as sent to track deadlines and follow-up dates</p>
             </div>
             <button onClick={() => markStageSent(stageNum)} className={`px-4 py-2 rounded-lg text-sm font-bold ${c.btnPrimary}`}>
               ✅ {sentLabel || 'Mark as Sent'}
@@ -360,7 +330,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
           )}
 
           <div className={`p-4 rounded-xl border ${c.border} ${c.cardAlt}`}>
-            <p className={`text-xs ${c.textMuted} mb-3`}>Did the company respond?</p>
+            <p className={`text-xs ${c.textMuteded} mb-3`}>Did the company respond?</p>
             <div className="flex flex-wrap gap-2">
               <button onClick={() => markStageOutcome(stageNum, 'resolved')} className={`px-3 py-1.5 rounded-lg text-xs font-bold border ${c.resolvedBtn}`}>✅ Resolved</button>
               <button onClick={() => setShowResponseInput(stageNum)} className={`px-3 py-1.5 rounded-lg text-xs font-bold border ${c.analyzeBtn}`}>📨 They Responded — Analyze It</button>
@@ -391,7 +361,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
                 >
                   {responseLoading ? <><span className="animate-spin inline-block">{tool?.icon ?? '📧'}</span> Analyzing…</> : <><span>🔍</span> Analyze Response</>}
                 </button>
-                <button onClick={() => { setShowResponseInput(null); setResponseText(''); setResponseAnalysis(null); }} className={`text-xs font-bold ${c.textMuted}`}>Cancel</button>
+                <button onClick={() => { setShowResponseInput(null); setResponseText(''); setResponseAnalysis(null); }} className={`text-xs font-bold ${c.textMuteded}`}>Cancel</button>
               </div>
 
               {responseAnalysis && (
@@ -399,18 +369,18 @@ const ComplaintEscalationWriter = ({ tool }) => {
                   <div className={`p-3 rounded-xl border ${recoBg[responseAnalysis.recommendation] || recoDefault}`}>
                     <div className="flex items-center gap-2 mb-2">
                       <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${recoBadge[responseAnalysis.recommendation] || recoBadgeDefault}`}>
-                        {responseAnalysis.recommendation === 'accept' ? '✅ Accept' : responseAnalysis.recommendation === 'counter' ? '🤝 Counter' : responseAnalysis.recommendation === 'escalate' ? '⬆️ Escalate' : '⏳ Wait'}
+                        {responseAnalysis.recommendation === 'accept' ? '✅ Accept' : responseAnalysis.recommendation === 'counter' ? '🤝 Counter' : responseAnalysis.recommendation === 'escalate' ? '⬆️ Escalate' : <><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> Wait</>}
                       </span>
-                      <span className={`text-xs ${c.textMuted}`}>{responseAnalysis.response_type_label}</span>
+                      <span className={`text-xs ${c.textMuteded}`}>{responseAnalysis.response_type_label}</span>
                     </div>
                     <p className={`text-sm leading-relaxed ${c.text}`}>{responseAnalysis.assessment}</p>
                   </div>
 
-                  <p className={`text-sm leading-relaxed ${c.textSecondary}`}>{responseAnalysis.recommendation_explanation}</p>
+                  <p className={`text-sm leading-relaxed ${c.textSecondaryondary}`}>{responseAnalysis.recommendation_explanation}</p>
 
                   {responseAnalysis.tactics_used?.length > 0 && (
                     <div>
-                      <p className={`text-xs font-bold ${c.textMuted} mb-1.5`}>🎭 Corporate Tactics Identified</p>
+                      <p className={`text-xs font-bold ${c.textMuteded} mb-1.5`}>🎭 Corporate Tactics Identified</p>
                       <div className="flex flex-wrap gap-1.5">
                         {responseAnalysis.tactics_used.map((t, i) => (
                           <span key={i} className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${c.tacticsTag}`}>{t}</span>
@@ -421,12 +391,12 @@ const ComplaintEscalationWriter = ({ tool }) => {
 
                   {responseAnalysis.offer_analysis?.what_they_offered && (
                     <div className={`p-3 rounded-lg ${c.cardAlt}`}>
-                      <p className={`text-xs font-bold ${c.textMuted} mb-2`}>💰 Offer Analysis</p>
+                      <p className={`text-xs font-bold ${c.textMuteded} mb-2`}>💰 Offer Analysis</p>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-                        <div><span className={c.textMuted}>Offered: </span><span className={`font-bold ${c.text}`}>{responseAnalysis.offer_analysis.what_they_offered}</span></div>
-                        <div><span className={c.textMuted}>You asked: </span><span className={`font-bold ${c.text}`}>{responseAnalysis.offer_analysis.what_you_asked_for}</span></div>
-                        {responseAnalysis.offer_analysis.gap && <div className="col-span-2"><span className={c.textMuted}>Gap: </span><span className={`font-bold ${c.issueTip}`}>{responseAnalysis.offer_analysis.gap}</span></div>}
-                        {responseAnalysis.offer_analysis.fair_market_value && <div className="col-span-2"><span className={c.textMuted}>Fair value: </span><span className={c.textSecondary}>{responseAnalysis.offer_analysis.fair_market_value}</span></div>}
+                        <div><span className={c.textMuteded}>Offered: </span><span className={`font-bold ${c.text}`}>{responseAnalysis.offer_analysis.what_they_offered}</span></div>
+                        <div><span className={c.textMuteded}>You asked: </span><span className={`font-bold ${c.text}`}>{responseAnalysis.offer_analysis.what_you_asked_for}</span></div>
+                        {responseAnalysis.offer_analysis.gap && <div className="col-span-2"><span className={c.textMuteded}>Gap: </span><span className={`font-bold ${c.issueTip}`}>{responseAnalysis.offer_analysis.gap}</span></div>}
+                        {responseAnalysis.offer_analysis.fair_market_value && <div className="col-span-2"><span className={c.textMuteded}>Fair value: </span><span className={c.textSecondaryondary}>{responseAnalysis.offer_analysis.fair_market_value}</span></div>}
                       </div>
                     </div>
                   )}
@@ -437,21 +407,21 @@ const ComplaintEscalationWriter = ({ tool }) => {
                         <p className={`text-xs font-bold ${c.counterBoxHd}`}>🤝 Suggested Counter-Offer</p>
                         <CopyBtn content={responseAnalysis.if_counter.counter_offer_text + BRAND} label="Copy" />
                       </div>
-                      <div className={`whitespace-pre-wrap text-xs ${c.textSecondary} leading-relaxed`}>{responseAnalysis.if_counter.counter_offer_text}</div>
+                      <div className={`whitespace-pre-wrap text-xs ${c.textSecondaryondary} leading-relaxed`}>{responseAnalysis.if_counter.counter_offer_text}</div>
                     </div>
                   )}
 
                   {responseAnalysis.red_flags?.length > 0 && (
                     <div className={`p-3 rounded-lg ${c.redFlagsBox}`}>
                       <p className="text-xs font-bold mb-1">🚩 Red Flags in Their Response</p>
-                      {responseAnalysis.red_flags.map((f, i) => <p key={i} className={`text-xs ${c.textSecondary}`}>• {f}</p>)}
+                      {responseAnalysis.red_flags.map((f, i) => <p key={i} className={`text-xs ${c.textSecondaryondary}`}>• {f}</p>)}
                     </div>
                   )}
 
                   {responseAnalysis.things_to_get_in_writing?.length > 0 && (
                     <div className={`p-3 rounded-lg ${c.cardAlt}`}>
-                      <p className={`text-xs font-bold ${c.textMuted} mb-1`}>📝 Get In Writing</p>
-                      {responseAnalysis.things_to_get_in_writing.map((t, i) => <p key={i} className={`text-xs ${c.textSecondary}`}>• {t}</p>)}
+                      <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>📝 Get In Writing</p>
+                      {responseAnalysis.things_to_get_in_writing.map((t, i) => <p key={i} className={`text-xs ${c.textSecondaryondary}`}>• {t}</p>)}
                     </div>
                   )}
 
@@ -492,6 +462,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
         amountAtStake: amountAtStake.trim() || null, hasDocumentation: hasDocumentation.trim() || null, tone,
       });
       setResults(data);
+      setHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: '' }, ...prev].slice(0, 6));
       setActiveStage(1);
       const id = Date.now().toString();
       setActiveComplaintId(id);
@@ -610,10 +581,10 @@ const ComplaintEscalationWriter = ({ tool }) => {
               <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
                 <span>{tool?.icon ?? '📧'}</span>{tool?.title ?? 'Complaint Escalation Writer'}
               </h2>
-              <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Full escalation campaigns that companies can\'t ignore'}</p>
+              <p className={`text-sm ${c.textSecondaryondary}`}>{tool?.tagline ?? 'Full escalation campaigns that companies can\'t ignore'}</p>
             </div>
             {complaintHistory.length > 0 && (
-              <button onClick={() => setShowHistory(!showHistory)} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
+              <button onClick={() => setShowHistory(!showHistory)} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnSecondaryondary}`}>
                 <span>📁</span> History ({complaintHistory.length})
               </button>
             )}
@@ -621,7 +592,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
         </div>
 
         {/* Pre-result cross-ref */}
-        <p className={`text-xs text-center ${c.textMuted} mb-4`}>
+        <p className={`text-xs text-center ${c.textMuteded} mb-4`}>
           Got a confusing response from a company?{' '}
           <a href="/PlainTalk" className={linkStyle}>PlainTalk</a>{' '}
           decodes corporate language before you escalate.
@@ -631,7 +602,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
         {!hasVisited && (
           <div className={`${c.cardAlt} rounded-xl p-5 mb-4`}>
             <h3 className={`text-base font-bold ${c.text} mb-2`}>Your escalation strategist 📨</h3>
-            <p className={`text-sm ${c.textSecondary} mb-4`}>Builds a complete multi-stage campaign to resolve complaints that companies are ignoring.</p>
+            <p className={`text-sm ${c.textSecondaryondary} mb-4`}>Builds a complete multi-stage campaign to resolve complaints that companies are ignoring.</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-4">
               {[
                 { emoji: '📨', title: '5-stage escalation ladder', desc: 'Direct → Regulatory → Executive → Public → Legal' },
@@ -641,7 +612,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
               ].map((f, i) => (
                 <div key={i} className={`flex items-start gap-2 p-2.5 rounded-xl ${c.card}`}>
                   <span className="text-lg">{f.emoji}</span>
-                  <div><p className={`text-sm font-bold ${c.text}`}>{f.title}</p><p className={`text-xs ${c.textMuted}`}>{f.desc}</p></div>
+                  <div><p className={`text-sm font-bold ${c.text}`}>{f.title}</p><p className={`text-xs ${c.textMuteded}`}>{f.desc}</p></div>
                 </div>
               ))}
             </div>
@@ -652,14 +623,14 @@ const ComplaintEscalationWriter = ({ tool }) => {
         <div className="space-y-4">
           {/* Company */}
           <div>
-            <label className={`block font-semibold ${c.text} mb-2`}>Company <span className={c.textMuted}>*</span></label>
+            <label className={`block font-semibold ${c.text} mb-2`}>Company <span className={c.textMuteded}>*</span></label>
               placeholder="e.g., Delta Airlines, Comcast, Chase Bank"
               className={`w-full p-3 border rounded-xl outline-none focus:ring-2 ${c.input}`} />
           </div>
 
           {/* Industry */}
           <div>
-            <label className={`block font-semibold ${c.text} mb-2`}>Industry <span className={`text-xs font-normal ${c.textMuted}`}>(helps identify the right regulations)</span></label>
+            <label className={`block font-semibold ${c.text} mb-2`}>Industry <span className={`text-xs font-normal ${c.textMuteded}`}>(helps identify the right regulations)</span></label>
             <div className="flex flex-wrap gap-2">
               {industries.map(ind => (
                 <button key={ind.id} onClick={() => setIndustry(ind.id)}
@@ -672,13 +643,13 @@ const ComplaintEscalationWriter = ({ tool }) => {
 
           {/* Issue */}
           <div>
-            <label className={`block font-semibold ${c.text} mb-2`}>What happened? <span className={c.textMuted}>*</span></label>
+            <label className={`block font-semibold ${c.text} mb-2`}>What happened? <span className={c.textMuteded}>*</span></label>
               placeholder="Be specific: dates, amounts, what was promised vs. delivered, names of reps you spoke to, reference/case numbers. The more detail you provide, the stronger your campaign will be."
               rows={6} className={`w-full p-4 border rounded-xl outline-none text-sm resize-y focus:ring-2 ${c.input}`} />
             {issue.length > 0 && issue.length < 100 && (
               <p className={`text-xs ${c.issueTip} mt-2`}>Tip: More detail = stronger letters. Include dates, dollar amounts, names of reps, and reference numbers.</p>
             )}
-            <p className={`text-xs ${c.textMuted} mt-1`}>Ctrl+Enter to generate</p>
+            <p className={`text-xs ${c.textMuteded} mt-1`}>Ctrl+Enter to generate</p>
           </div>
 
           {/* Tone */}
@@ -689,7 +660,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
                 <button key={t.id} onClick={() => setTone(t.id)}
                   className={`p-3 rounded-xl border text-left transition-all ${tone === t.id ? c.toneActive : c.toneInactive}`}>
                   <p className={`text-sm font-bold ${c.text}`}>{t.label}</p>
-                  <p className={`text-xs ${c.textMuted} mt-0.5`}>{t.desc}</p>
+                  <p className={`text-xs ${c.textMuteded} mt-0.5`}>{t.desc}</p>
                 </button>
               ))}
             </div>
@@ -740,10 +711,10 @@ const ComplaintEscalationWriter = ({ tool }) => {
                 <div key={h.id} className={`flex items-center gap-3 p-3 rounded-xl ${c.cardAlt}`}>
                   <div className="flex-1 min-w-0">
                     <p className={`text-sm font-bold truncate ${c.text}`}>{h.company}</p>
-                    <p className={`text-xs ${c.textMuted} truncate`}>{new Date(h.date).toLocaleDateString()} · {h.issue}</p>
+                    <p className={`text-xs ${c.textMuteded} truncate`}>{new Date(h.date).toLocaleDateString()} · {h.issue}</p>
                   </div>
                   <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${sev.bg} ${sev.color} border ${sev.border}`}>{sev.label}</span>
-                  {stagesCompleted > 0 && <span className={`text-xs ${c.textMuted}`}>{stagesCompleted}/5</span>}
+                  {stagesCompleted > 0 && <span className={`text-xs ${c.textMuteded}`}>{stagesCompleted}/5</span>}
                 </div>
               );
             })}
@@ -776,12 +747,12 @@ const ComplaintEscalationWriter = ({ tool }) => {
                 <div className="flex items-start justify-between flex-wrap gap-3 mb-3">
                   <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${sev.bg} ${sev.color} border ${sev.border}`}>{sev.label}</span>
                   <div className="flex gap-3 text-sm">
-                    {results.situation_assessment.legal_strength && <span className={c.textSecondary}>Legal position: <strong className={c.text}>{results.situation_assessment.legal_strength}</strong></span>}
-                    {results.situation_assessment.estimated_resolution_likelihood && <span className={c.textSecondary}>Success est: <strong className={c.text}>{results.situation_assessment.estimated_resolution_likelihood}</strong></span>}
+                    {results.situation_assessment.legal_strength && <span className={c.textSecondaryondary}>Legal position: <strong className={c.text}>{results.situation_assessment.legal_strength}</strong></span>}
+                    {results.situation_assessment.estimated_resolution_likelihood && <span className={c.textSecondaryondary}>Success est: <strong className={c.text}>{results.situation_assessment.estimated_resolution_likelihood}</strong></span>}
                   </div>
                 </div>
                 <p className={`font-semibold ${c.text} mb-2`}>{results.situation_assessment.key_insight}</p>
-                {results.situation_assessment.company_reputation && <p className={`text-sm ${c.textSecondary}`}>{results.situation_assessment.company_reputation}</p>}
+                {results.situation_assessment.company_reputation && <p className={`text-sm ${c.textSecondaryondary}`}>{results.situation_assessment.company_reputation}</p>}
               </div>
             );
           })()}
@@ -801,8 +772,8 @@ const ComplaintEscalationWriter = ({ tool }) => {
                         <p className={`font-bold ${c.text} text-sm`}>{law.law_or_regulation}</p>
                         <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${legalStrengthBadge[law.strength] || legalStrengthDefault}`}>{law.strength}</span>
                       </div>
-                      <p className={`text-sm ${c.textSecondary} mb-1`}>{law.how_it_applies}</p>
-                      <p className={`text-xs ${c.textMuted}`}>Company risk: {law.consequence_for_company}</p>
+                      <p className={`text-sm ${c.textSecondaryondary} mb-1`}>{law.how_it_applies}</p>
+                      <p className={`text-xs ${c.textMuteded}`}>Company risk: {law.consequence_for_company}</p>
                       {law.time_limit_days && (
                         <div className={`mt-2 flex items-center gap-2 px-2.5 py-1.5 rounded-lg ${timeLimitBg(law.time_limit_days)}`}>
                           <span className="text-xs">{law.time_limit_days <= 30 ? '🚨' : law.time_limit_days <= 90 ? '⏰' : '📅'}</span>
@@ -836,10 +807,10 @@ const ComplaintEscalationWriter = ({ tool }) => {
                       <input type="checkbox" checked={isEvidenceChecked(idx)} readOnly className={`mt-1 w-4 h-4 rounded ${c.checkboxAccent}`} />
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
-                          <p className={`text-sm font-semibold ${isEvidenceChecked(idx) ? `${c.textMuted} line-through` : c.text}`}>{item.item}</p>
+                          <p className={`text-sm font-semibold ${isEvidenceChecked(idx) ? `${c.textMuteded} line-through` : c.text}`}>{item.item}</p>
                           <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold uppercase ${evidencePriority[item.priority] || evidencePriorityDefault}`}>{item.priority}</span>
                         </div>
-                        <p className={`text-xs ${c.textSecondary} mt-0.5`}>{item.how}</p>
+                        <p className={`text-xs ${c.textSecondaryondary} mt-0.5`}>{item.how}</p>
                       </div>
                     </div>
                   ))}
@@ -851,7 +822,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
           {/* ── ESCALATION LADDER ── */}
           <div className={`${c.card} border ${c.border} rounded-xl shadow-lg p-6`}>
             <h3 className={`font-bold ${c.text} mb-4 flex items-center gap-2`}><span>⚡</span> Escalation Ladder</h3>
-            <p className={`text-sm ${c.textSecondary} mb-5`}>Start at Stage 1. Only move to the next stage if the previous one fails.</p>
+            <p className={`text-sm ${c.textSecondaryondary} mb-5`}>Start at Stage 1. Only move to the next stage if the previous one fails.</p>
 
             {/* Stage Tabs */}
             <div className="flex gap-1 mb-6 overflow-x-auto pb-1">
@@ -873,7 +844,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
             {/* Campaign Progress */}
             {activeComplaintId && Object.keys(stageProgress[activeComplaintId] || {}).length > 0 && (
               <div className={`mb-5 p-3 rounded-lg ${c.cardAlt}`}>
-                <span className={`text-xs font-bold ${c.textMuted}`}>CAMPAIGN PROGRESS</span>
+                <span className={`text-xs font-bold ${c.textMuteded}`}>CAMPAIGN PROGRESS</span>
                 <div className="flex gap-1 mt-2">
                   {[1, 2, 3, 4, 5].map(n => (
                     <div key={n} className={`flex-1 h-2 rounded-full ${progressBarFill(n)}`} />
@@ -893,24 +864,24 @@ const ComplaintEscalationWriter = ({ tool }) => {
                   <div className="flex items-center justify-between">
                     <h4 className={`font-bold ${c.text}`}>Stage 1: Direct Company Complaint</h4>
                     <div className="flex items-center gap-2">
-                      {!isEditing && <button onClick={() => startEditingLetter(stageKey, s.letter_body)} className={`px-2.5 py-1 rounded-lg text-xs font-bold ${c.btnSecondary}`}>✏️ Edit</button>}
+                      {!isEditing && <button onClick={() => startEditingLetter(stageKey, s.letter_body)} className={`px-2.5 py-1 rounded-lg text-xs font-bold ${c.btnSecondaryondary}`}>✏️ Edit</button>}
                       <CopyBtn content={`Subject: ${s.subject_line}\n\n${letterText}${BRAND}`} label="Copy Letter" />
                     </div>
                   </div>
                   <div className={`rounded-xl p-5 border ${c.letterBox}`}>
-                    <p className={`text-xs font-bold ${c.textMuted} mb-1`}>SUBJECT</p>
+                    <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>SUBJECT</p>
                     <p className={`font-semibold ${c.text} mb-4`}>{s.subject_line}</p>
                     {isEditing ? (
                       <div>
                         <textarea value={editedLetters[stageKey] || s.letter_body} onChange={e => setEditedLetters(prev => ({ ...prev, [stageKey]: e.target.value }))} rows={16} className={`w-full p-3 border rounded-xl text-sm resize-y outline-none focus:ring-2 leading-relaxed ${c.input}`} />
                         <div className="flex items-center gap-2 mt-2">
                           <button onClick={() => setEditingLetter(null)} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.editDoneBtn}`}>✅ Done Editing</button>
-                          <button onClick={() => cancelEditingLetter(stageKey, s.letter_body)} className={`text-xs font-bold ${c.textMuted}`}>Reset to Original</button>
+                          <button onClick={() => cancelEditingLetter(stageKey, s.letter_body)} className={`text-xs font-bold ${c.textMuteded}`}>Reset to Original</button>
                           {editedLetters[stageKey] !== s.letter_body && <span className={`text-[10px] ${c.issueTip}`}>✏️ Modified</span>}
                         </div>
                       </div>
                     ) : (
-                      <div className={`whitespace-pre-wrap text-sm ${c.textSecondary} leading-relaxed`}>{letterText}
+                      <div className={`whitespace-pre-wrap text-sm ${c.textSecondaryondary} leading-relaxed`}>{letterText}
                         {editedLetters[stageKey] && editedLetters[stageKey] !== s.letter_body && <p className={`text-[10px] mt-2 ${c.issueTip}`}>✏️ You've edited this letter</p>}
                       </div>
                     )}
@@ -919,16 +890,16 @@ const ComplaintEscalationWriter = ({ tool }) => {
                     <div className={`p-4 rounded-lg ${stageColors('blue', 'bg')}`}>
                       <p className={`text-xs font-bold ${stageColors('blue', 'accent')} mb-2`}>SEND TO</p>
                       {s.send_to.map((r, i) => (
-                        <div key={i} className={`text-sm ${c.textSecondary} mb-2`}>
+                        <div key={i} className={`text-sm ${c.textSecondaryondary} mb-2`}>
                           <span className={`font-semibold ${c.text}`}>{r.role}</span> — {r.how_to_find}
-                          {r.email_pattern && <span className={`ml-1 ${c.textMuted}`}>({r.email_pattern})</span>}
+                          {r.email_pattern && <span className={`ml-1 ${c.textMuteded}`}>({r.email_pattern})</span>}
                         </div>
                       ))}
                     </div>
                   )}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {s.send_via && <div className={`p-3 rounded-lg ${c.cardAlt}`}><p className={`text-xs font-bold ${c.textMuted} mb-1`}>SEND VIA</p><p className={`text-sm ${c.textSecondary}`}>{s.send_via}</p></div>}
-                    {s.deadline_to_set && <div className={`p-3 rounded-lg ${c.cardAlt}`}><p className={`text-xs font-bold ${c.textMuted} mb-1`}>RESPONSE DEADLINE</p><p className={`text-sm ${c.textSecondary}`}>{s.deadline_to_set}</p></div>}
+                    {s.send_via && <div className={`p-3 rounded-lg ${c.cardAlt}`}><p className={`text-xs font-bold ${c.textMuteded} mb-1`}>SEND VIA</p><p className={`text-sm ${c.textSecondaryondary}`}>{s.send_via}</p></div>}
+                    {s.deadline_to_set && <div className={`p-3 rounded-lg ${c.cardAlt}`}><p className={`text-xs font-bold ${c.textMuteded} mb-1`}>RESPONSE DEADLINE</p><p className={`text-sm ${c.textSecondaryondary}`}>{s.deadline_to_set}</p></div>}
                   </div>
                   {s.leverage_points_used?.length > 0 && (
                     <div className="flex flex-wrap gap-2">
@@ -951,7 +922,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
                 <div className={`p-8 text-center ${c.cardAlt} rounded-xl`}>
                   <p className="text-lg mb-2"><span className="animate-spin inline-block">{tool?.icon ?? '📧'}</span></p>
                   <p className={`text-sm font-bold ${c.text}`}>Regenerating Stage 2 with campaign context…</p>
-                  <p className={`text-xs ${c.textMuted} mt-1`}>Weaving in what happened at Stage 1 to make this complaint more powerful</p>
+                  <p className={`text-xs ${c.textMuteded} mt-1`}>Weaving in what happened at Stage 1 to make this complaint more powerful</p>
                 </div>
               );
               return (
@@ -962,7 +933,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
                       {isRegenerated && <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${c.contextBadge}`}>🔄 Context-aware</span>}
                     </div>
                     <div className="flex items-center gap-2">
-                      {!isEditing && <button onClick={() => startEditingLetter(stageKey, s.complaint_text)} className={`px-2.5 py-1 rounded-lg text-xs font-bold ${c.btnSecondary}`}>✏️ Edit</button>}
+                      {!isEditing && <button onClick={() => startEditingLetter(stageKey, s.complaint_text)} className={`px-2.5 py-1 rounded-lg text-xs font-bold ${c.btnSecondaryondary}`}>✏️ Edit</button>}
                       <CopyBtn content={`${complaintText}${BRAND}`} label="Copy Complaint" />
                     </div>
                   </div>
@@ -970,26 +941,26 @@ const ComplaintEscalationWriter = ({ tool }) => {
                     <p className={`text-xs font-bold ${stageColors('purple', 'accent')} mb-1`}>FILE WITH</p>
                     <p className={`font-bold ${c.text} text-lg`}>{s.agency}</p>
                     {s.agency_url && <p className={`text-sm ${stageColors('purple', 'accent')} mt-1`}>{s.agency_url}</p>}
-                    <p className={`text-sm ${c.textSecondary} mt-2`}>{s.why_this_agency}</p>
+                    <p className={`text-sm ${c.textSecondaryondary} mt-2`}>{s.why_this_agency}</p>
                   </div>
                   <div className={`rounded-xl p-5 border ${c.letterBox}`}>
-                    <p className={`text-xs font-bold ${c.textMuted} mb-2`}>PRE-WRITTEN COMPLAINT TEXT</p>
+                    <p className={`text-xs font-bold ${c.textMuteded} mb-2`}>PRE-WRITTEN COMPLAINT TEXT</p>
                     {isEditing ? (
                       <div>
                         <textarea value={editedLetters[stageKey] || s.complaint_text} onChange={e => setEditedLetters(prev => ({ ...prev, [stageKey]: e.target.value }))} rows={12} className={`w-full p-3 border rounded-xl text-sm resize-y outline-none focus:ring-2 leading-relaxed ${c.input}`} />
                         <div className="flex items-center gap-2 mt-2">
                           <button onClick={() => setEditingLetter(null)} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.editDoneBtn}`}>✅ Done</button>
-                          <button onClick={() => cancelEditingLetter(stageKey, s.complaint_text)} className={`text-xs font-bold ${c.textMuted}`}>Reset</button>
+                          <button onClick={() => cancelEditingLetter(stageKey, s.complaint_text)} className={`text-xs font-bold ${c.textMuteded}`}>Reset</button>
                         </div>
                       </div>
                     ) : (
-                      <div className={`whitespace-pre-wrap text-sm ${c.textSecondary} leading-relaxed`}>{complaintText}
+                      <div className={`whitespace-pre-wrap text-sm ${c.textSecondaryondary} leading-relaxed`}>{complaintText}
                         {editedLetters[stageKey] && editedLetters[stageKey] !== s.complaint_text && <p className={`text-[10px] mt-2 ${c.issueTip}`}>✏️ You've edited this text</p>}
                       </div>
                     )}
                   </div>
-                  {s.what_happens_after && <div className={`p-4 rounded-lg ${c.cardAlt}`}><p className={`text-xs font-bold ${c.textMuted} mb-1`}>WHAT HAPPENS AFTER FILING</p><p className={`text-sm ${c.textSecondary}`}>{s.what_happens_after}</p></div>}
-                  {s.company_impact && <div className={`p-4 rounded-lg ${c.cardAlt}`}><p className={`text-xs font-bold ${c.textMuted} mb-1`}>WHY COMPANIES TAKE THIS SERIOUSLY</p><p className={`text-sm ${c.textSecondary}`}>{s.company_impact}</p></div>}
+                  {s.what_happens_after && <div className={`p-4 rounded-lg ${c.cardAlt}`}><p className={`text-xs font-bold ${c.textMuteded} mb-1`}>WHAT HAPPENS AFTER FILING</p><p className={`text-sm ${c.textSecondaryondary}`}>{s.what_happens_after}</p></div>}
+                  {s.company_impact && <div className={`p-4 rounded-lg ${c.cardAlt}`}><p className={`text-xs font-bold ${c.textMuteded} mb-1`}>WHY COMPANIES TAKE THIS SERIOUSLY</p><p className={`text-sm ${c.textSecondaryondary}`}>{s.company_impact}</p></div>}
                   <StageActionBar stageNum={2} sentLabel="Mark as Filed" nextStage={3} />
                 </div>
               );
@@ -1006,7 +977,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
                 <div className={`p-8 text-center ${c.cardAlt} rounded-xl`}>
                   <p className="text-lg mb-2"><span className="animate-spin inline-block">{tool?.icon ?? '📧'}</span></p>
                   <p className={`text-sm font-bold ${c.text}`}>Regenerating Stage 3 with campaign context…</p>
-                  <p className={`text-xs ${c.textMuted} mt-1`}>Incorporating company responses and failed resolution attempts</p>
+                  <p className={`text-xs ${c.textMuteded} mt-1`}>Incorporating company responses and failed resolution attempts</p>
                 </div>
               );
               return (
@@ -1017,23 +988,23 @@ const ComplaintEscalationWriter = ({ tool }) => {
                       {isRegenerated && <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${c.contextBadge}`}>🔄 Context-aware</span>}
                     </div>
                     <div className="flex items-center gap-2">
-                      {!isEditing && <button onClick={() => startEditingLetter(stageKey, s.letter_body)} className={`px-2.5 py-1 rounded-lg text-xs font-bold ${c.btnSecondary}`}>✏️ Edit</button>}
+                      {!isEditing && <button onClick={() => startEditingLetter(stageKey, s.letter_body)} className={`px-2.5 py-1 rounded-lg text-xs font-bold ${c.btnSecondaryondary}`}>✏️ Edit</button>}
                       <CopyBtn content={`Subject: ${s.subject_line}\n\n${letterText}${BRAND}`} label="Copy Letter" />
                     </div>
                   </div>
                   <div className={`rounded-xl p-5 border ${c.letterBox}`}>
-                    <p className={`text-xs font-bold ${c.textMuted} mb-1`}>SUBJECT</p>
+                    <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>SUBJECT</p>
                     <p className={`font-semibold ${c.text} mb-4`}>{s.subject_line}</p>
                     {isEditing ? (
                       <div>
                         <textarea value={editedLetters[stageKey] || s.letter_body} onChange={e => setEditedLetters(prev => ({ ...prev, [stageKey]: e.target.value }))} rows={12} className={`w-full p-3 border rounded-xl text-sm resize-y outline-none focus:ring-2 leading-relaxed ${c.input}`} />
                         <div className="flex items-center gap-2 mt-2">
                           <button onClick={() => setEditingLetter(null)} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.editDoneBtn}`}>✅ Done</button>
-                          <button onClick={() => cancelEditingLetter(stageKey, s.letter_body)} className={`text-xs font-bold ${c.textMuted}`}>Reset</button>
+                          <button onClick={() => cancelEditingLetter(stageKey, s.letter_body)} className={`text-xs font-bold ${c.textMuteded}`}>Reset</button>
                         </div>
                       </div>
                     ) : (
-                      <div className={`whitespace-pre-wrap text-sm ${c.textSecondary} leading-relaxed`}>{letterText}
+                      <div className={`whitespace-pre-wrap text-sm ${c.textSecondaryondary} leading-relaxed`}>{letterText}
                         {editedLetters[stageKey] && editedLetters[stageKey] !== s.letter_body && <p className={`text-[10px] mt-2 ${c.issueTip}`}>✏️ You've edited this letter</p>}
                       </div>
                     )}
@@ -1042,15 +1013,15 @@ const ComplaintEscalationWriter = ({ tool }) => {
                     <div className={`p-4 rounded-lg ${stageColors('orange', 'bg')} border ${stageColors('orange', 'border')}`}>
                       <p className={`text-xs font-bold ${stageColors('orange', 'accent')} mb-2`}>TARGET CONTACTS</p>
                       {s.target_contacts.map((tc, i) => (
-                        <div key={i} className={`text-sm ${c.textSecondary} mb-2`}>
+                        <div key={i} className={`text-sm ${c.textSecondaryondary} mb-2`}>
                           <span className={`font-semibold ${c.text}`}>{tc.title}</span>
-                          {tc.email_pattern && <span className={`ml-2 font-mono text-xs ${c.textMuted}`}>{tc.email_pattern}</span>}
-                          {tc.why && <p className={`text-xs ${c.textMuted} mt-0.5`}>{tc.why}</p>}
+                          {tc.email_pattern && <span className={`ml-2 font-mono text-xs ${c.textMuteded}`}>{tc.email_pattern}</span>}
+                          {tc.why && <p className={`text-xs ${c.textMuteded} mt-0.5`}>{tc.why}</p>}
                         </div>
                       ))}
                     </div>
                   )}
-                  {s.timing && <div className={`p-3 rounded-lg ${c.cardAlt}`}><p className={`text-xs font-bold ${c.textMuted} mb-1`}>TIMING</p><p className={`text-sm ${c.textSecondary}`}>{s.timing}</p></div>}
+                  {s.timing && <div className={`p-3 rounded-lg ${c.cardAlt}`}><p className={`text-xs font-bold ${c.textMuteded} mb-1`}>TIMING</p><p className={`text-sm ${c.textSecondaryondary}`}>{s.timing}</p></div>}
                   <StageActionBar stageNum={3} sentLabel="Mark as Sent" nextStage={4} />
                 </div>
               );
@@ -1064,7 +1035,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
                 <div className={`p-8 text-center ${c.cardAlt} rounded-xl`}>
                   <p className="text-lg mb-2"><span className="animate-spin inline-block">{tool?.icon ?? '📧'}</span></p>
                   <p className={`text-sm font-bold ${c.text}`}>Regenerating Stage 4 with campaign context…</p>
-                  <p className={`text-xs ${c.textMuted} mt-1`}>Building a fact-based public post from your documented campaign history</p>
+                  <p className={`text-xs ${c.textMuteded} mt-1`}>Building a fact-based public post from your documented campaign history</p>
                 </div>
               );
               return (
@@ -1076,38 +1047,38 @@ const ComplaintEscalationWriter = ({ tool }) => {
                   {s.social_media_post && (
                     <div className={`rounded-xl p-5 border ${c.letterBox}`}>
                       <div className="flex items-center justify-between mb-2">
-                        <p className={`text-xs font-bold ${c.textMuted}`}>X / TWITTER POST</p>
+                        <p className={`text-xs font-bold ${c.textMuteded}`}>X / TWITTER POST</p>
                         <CopyBtn content={s.social_media_post} label="Copy" />
                       </div>
                       <p className={`text-sm ${c.text} leading-relaxed`}>{s.social_media_post}</p>
-                      <p className={`text-xs ${c.textMuted} mt-2`}>{s.social_media_post.length} characters</p>
+                      <p className={`text-xs ${c.textMuteded} mt-2`}>{s.social_media_post.length} characters</p>
                     </div>
                   )}
                   {s.social_media_long && (
                     <div className={`rounded-xl p-5 border ${c.letterBox}`}>
                       <div className="flex items-center justify-between mb-2">
-                        <p className={`text-xs font-bold ${c.textMuted}`}>DETAILED POST (Facebook / LinkedIn / Reddit)</p>
+                        <p className={`text-xs font-bold ${c.textMuteded}`}>DETAILED POST (Facebook / LinkedIn / Reddit)</p>
                         <CopyBtn content={s.social_media_long} label="Copy" />
                       </div>
-                      <div className={`whitespace-pre-wrap text-sm ${c.textSecondary} leading-relaxed`}>{s.social_media_long}</div>
+                      <div className={`whitespace-pre-wrap text-sm ${c.textSecondaryondary} leading-relaxed`}>{s.social_media_long}</div>
                     </div>
                   )}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {s.platforms_to_target?.length > 0 && (
                       <div className={`p-4 rounded-lg ${stageColors('pink', 'bg')} border ${stageColors('pink', 'border')}`}>
                         <p className={`text-xs font-bold ${stageColors('pink', 'accent')} mb-2`}>POST ON</p>
-                        {s.platforms_to_target.map((p, i) => <p key={i} className={`text-sm ${c.textSecondary}`}>• {p}</p>)}
+                        {s.platforms_to_target.map((p, i) => <p key={i} className={`text-sm ${c.textSecondaryondary}`}>• {p}</p>)}
                       </div>
                     )}
                     {s.review_sites?.length > 0 && (
                       <div className={`p-4 rounded-lg ${stageColors('pink', 'bg')} border ${stageColors('pink', 'border')}`}>
                         <p className={`text-xs font-bold ${stageColors('pink', 'accent')} mb-2`}>LEAVE REVIEWS ON</p>
-                        {s.review_sites.map((r, i) => <p key={i} className={`text-sm ${c.textSecondary}`}>• {r}</p>)}
+                        {s.review_sites.map((r, i) => <p key={i} className={`text-sm ${c.textSecondaryondary}`}>• {r}</p>)}
                       </div>
                     )}
                   </div>
                   {s.hashtags?.length > 0 && <div className="flex flex-wrap gap-2">{s.hashtags.map((h, i) => <span key={i} className={`px-2 py-1 rounded-full text-xs font-medium ${stageColors('pink', 'badge')}`}>{h}</span>)}</div>}
-                  {s.media_tip && <div className={`p-3 rounded-lg ${c.cardAlt}`}><p className={`text-xs font-bold ${c.textMuted} mb-1`}>📺 MEDIA TIP</p><p className={`text-sm ${c.textSecondary}`}>{s.media_tip}</p></div>}
+                  {s.media_tip && <div className={`p-3 rounded-lg ${c.cardAlt}`}><p className={`text-xs font-bold ${c.textMuteded} mb-1`}>📺 MEDIA TIP</p><p className={`text-sm ${c.textSecondaryondary}`}>{s.media_tip}</p></div>}
                   <StageActionBar stageNum={4} sentLabel="Mark as Posted" nextStage={5} />
                 </div>
               );
@@ -1121,7 +1092,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
                 <div className={`p-8 text-center ${c.cardAlt} rounded-xl`}>
                   <p className="text-lg mb-2"><span className="animate-spin inline-block">{tool?.icon ?? '📧'}</span></p>
                   <p className={`text-sm font-bold ${c.text}`}>Regenerating Stage 5 with campaign context…</p>
-                  <p className={`text-xs ${c.textMuted} mt-1`}>Building your legal case from documented campaign evidence</p>
+                  <p className={`text-xs ${c.textMuteded} mt-1`}>Building your legal case from documented campaign evidence</p>
                 </div>
               );
               return (
@@ -1134,31 +1105,31 @@ const ComplaintEscalationWriter = ({ tool }) => {
                     <div className={`p-5 rounded-xl border ${stageColors('red', 'border')} ${stageColors('red', 'bg')}`}>
                       <p className={`text-xs font-bold ${stageColors('red', 'accent')} mb-2`}>💳 CREDIT CARD CHARGEBACK</p>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
-                        {s.chargeback.reason_code && <div><p className={`text-xs ${c.textMuted}`}>Reason Code</p><p className={`text-sm font-semibold ${c.text}`}>{s.chargeback.reason_code}</p></div>}
-                        {s.chargeback.time_window && <div><p className={`text-xs ${c.textMuted}`}>Time Window</p><p className={`text-sm font-semibold ${c.text}`}>{s.chargeback.time_window}</p></div>}
+                        {s.chargeback.reason_code && <div><p className={`text-xs ${c.textMuteded}`}>Reason Code</p><p className={`text-sm font-semibold ${c.text}`}>{s.chargeback.reason_code}</p></div>}
+                        {s.chargeback.time_window && <div><p className={`text-xs ${c.textMuteded}`}>Time Window</p><p className={`text-sm font-semibold ${c.text}`}>{s.chargeback.time_window}</p></div>}
                       </div>
-                      {s.chargeback.how_to_file && <p className={`text-sm ${c.textSecondary} mb-2`}><strong>How to file:</strong> {s.chargeback.how_to_file}</p>}
-                      {s.chargeback.documentation_needed && <p className={`text-sm ${c.textSecondary} mb-2`}><strong>Documentation:</strong> {s.chargeback.documentation_needed}</p>}
-                      {s.chargeback.success_likelihood && <p className={`text-sm ${c.textSecondary}`}><strong>Likelihood:</strong> {s.chargeback.success_likelihood}</p>}
+                      {s.chargeback.how_to_file && <p className={`text-sm ${c.textSecondaryondary} mb-2`}><strong>How to file:</strong> {s.chargeback.how_to_file}</p>}
+                      {s.chargeback.documentation_needed && <p className={`text-sm ${c.textSecondaryondary} mb-2`}><strong>Documentation:</strong> {s.chargeback.documentation_needed}</p>}
+                      {s.chargeback.success_likelihood && <p className={`text-sm ${c.textSecondaryondary}`}><strong>Likelihood:</strong> {s.chargeback.success_likelihood}</p>}
                     </div>
                   )}
                   {s.small_claims?.applicable && (
                     <div className={`p-5 rounded-xl border ${c.border} ${c.cardAlt}`}>
                       <p className={`text-xs font-bold ${stageColors('red', 'accent')} mb-2`}>⚖️ SMALL CLAIMS COURT</p>
                       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-3">
-                        {s.small_claims.filing_fee_range && <div><p className={`text-xs ${c.textMuted}`}>Filing Fee</p><p className={`text-sm font-semibold ${c.text}`}>{s.small_claims.filing_fee_range}</p></div>}
-                        {s.small_claims.max_claim_amount && <div><p className={`text-xs ${c.textMuted}`}>Max Claim</p><p className={`text-sm font-semibold ${c.text}`}>{s.small_claims.max_claim_amount}</p></div>}
-                        {s.small_claims.jurisdiction && <div><p className={`text-xs ${c.textMuted}`}>Jurisdiction</p><p className={`text-sm font-semibold ${c.text}`}>{s.small_claims.jurisdiction}</p></div>}
+                        {s.small_claims.filing_fee_range && <div><p className={`text-xs ${c.textMuteded}`}>Filing Fee</p><p className={`text-sm font-semibold ${c.text}`}>{s.small_claims.filing_fee_range}</p></div>}
+                        {s.small_claims.max_claim_amount && <div><p className={`text-xs ${c.textMuteded}`}>Max Claim</p><p className={`text-sm font-semibold ${c.text}`}>{s.small_claims.max_claim_amount}</p></div>}
+                        {s.small_claims.jurisdiction && <div><p className={`text-xs ${c.textMuteded}`}>Jurisdiction</p><p className={`text-sm font-semibold ${c.text}`}>{s.small_claims.jurisdiction}</p></div>}
                       </div>
-                      {s.small_claims.typical_outcome && <p className={`text-sm ${c.textSecondary} mb-1`}><strong>Typical outcome:</strong> {s.small_claims.typical_outcome}</p>}
-                      {s.small_claims.company_response && <p className={`text-sm ${c.textSecondary}`}><strong>Company usually:</strong> {s.small_claims.company_response}</p>}
+                      {s.small_claims.typical_outcome && <p className={`text-sm ${c.textSecondaryondary} mb-1`}><strong>Typical outcome:</strong> {s.small_claims.typical_outcome}</p>}
+                      {s.small_claims.company_response && <p className={`text-sm ${c.textSecondaryondary}`}><strong>Company usually:</strong> {s.small_claims.company_response}</p>}
                     </div>
                   )}
                   {s.attorney_general?.applicable && (
                     <div className={`p-5 rounded-xl border ${c.border} ${c.cardAlt}`}>
                       <p className={`text-xs font-bold ${stageColors('red', 'accent')} mb-2`}>🏛️ STATE ATTORNEY GENERAL</p>
-                      {s.attorney_general.how_to_file && <p className={`text-sm ${c.textSecondary} mb-1`}><strong>How to file:</strong> {s.attorney_general.how_to_file}</p>}
-                      {s.attorney_general.what_it_triggers && <p className={`text-sm ${c.textSecondary}`}><strong>What it triggers:</strong> {s.attorney_general.what_it_triggers}</p>}
+                      {s.attorney_general.how_to_file && <p className={`text-sm ${c.textSecondaryondary} mb-1`}><strong>How to file:</strong> {s.attorney_general.how_to_file}</p>}
+                      {s.attorney_general.what_it_triggers && <p className={`text-sm ${c.textSecondaryondary}`}><strong>What it triggers:</strong> {s.attorney_general.what_it_triggers}</p>}
                     </div>
                   )}
                   <StageActionBar stageNum={5} sentLabel="Mark as Filed" nextStage={null} />
@@ -1169,7 +1140,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
             {/* Preview next stage nudge */}
             {activeStage < 5 && !getStageStatus(activeStage) && (
               <div className="flex justify-end mt-4">
-                <button onClick={() => setActiveStage(activeStage + 1)} className={`flex items-center gap-1.5 text-sm font-medium ${c.textSecondary} transition-colors`}>
+                <button onClick={() => setActiveStage(activeStage + 1)} className={`flex items-center gap-1.5 text-sm font-medium ${c.textSecondaryondary} transition-colors`}>
                   Preview Stage {activeStage + 1} <span>→</span>
                 </button>
               </div>
@@ -1185,8 +1156,8 @@ const ComplaintEscalationWriter = ({ tool }) => {
                 {Object.entries(results.timeline).map(([key, value], idx) => (
                   <div key={key} className="relative mb-4 last:mb-0">
                     <div className={`absolute -left-4 top-1 w-3 h-3 rounded-full border-2 ${idx === 0 ? 'bg-green-500 border-green-300' : c.timelineDotRest}`} />
-                    <p className={`text-xs font-bold uppercase tracking-wide ${idx === 0 ? c.resolvedText : c.textMuted} mb-0.5`}>{key.replace(/_/g, ' ')}</p>
-                    <p className={`text-sm ${c.textSecondary}`}>{value}</p>
+                    <p className={`text-xs font-bold uppercase tracking-wide ${idx === 0 ? c.resolvedText : c.textMuteded} mb-0.5`}>{key.replace(/_/g, ' ')}</p>
+                    <p className={`text-sm ${c.textSecondaryondary}`}>{value}</p>
                   </div>
                 ))}
               </div>
@@ -1197,7 +1168,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
           {results.quick_tips?.length > 0 && (
             <div className={`${c.card} border ${c.border} rounded-xl shadow-lg p-6`}>
               <h3 className={`font-bold ${c.text} mb-3 flex items-center gap-2`}><span>⚡</span> Tactical Tips</h3>
-              {results.quick_tips.map((tip, idx) => <p key={idx} className={`text-sm ${c.textSecondary} mb-2`}>• {tip}</p>)}
+              {results.quick_tips.map((tip, idx) => <p key={idx} className={`text-sm ${c.textSecondaryondary} mb-2`}>• {tip}</p>)}
             </div>
           )}
 
@@ -1231,16 +1202,16 @@ const ComplaintEscalationWriter = ({ tool }) => {
                       {results.call_script.things_to_avoid_saying.map((phrase, i) => (
                         <div key={i} className={`flex items-start gap-2 mb-2 p-2 rounded-lg ${c.callAvoidBox}`}>
                           <span className="text-xs mt-0.5">✕</span>
-                          <p className={`text-sm ${c.textSecondary}`}>"{phrase}"</p>
+                          <p className={`text-sm ${c.textSecondaryondary}`}>"{phrase}"</p>
                         </div>
                       ))}
                     </div>
                   )}
                   {results.call_script.redirect_to_writing && (
                     <div className={`p-4 rounded-xl border ${c.border} ${c.cardAlt}`}>
-                      <p className={`text-xs font-bold ${c.textMuted} mb-1`}>📝 REDIRECT TO WRITING</p>
+                      <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>📝 REDIRECT TO WRITING</p>
                       <p className={`text-sm italic ${c.text}`}>"{results.call_script.redirect_to_writing}"</p>
-                      <p className={`text-xs ${c.textMuted} mt-1`}>Companies prefer phone calls because there's no paper trail. Always redirect.</p>
+                      <p className={`text-xs ${c.textMuteded} mt-1`}>Companies prefer phone calls because there's no paper trail. Always redirect.</p>
                     </div>
                   )}
                   {results.call_script.if_they_pressure && (
@@ -1272,11 +1243,11 @@ const ComplaintEscalationWriter = ({ tool }) => {
                         <div className="flex items-center gap-2 mb-1">
                           <span>{stg?.icon || '📨'}</span>
                           <p className={`text-sm font-bold ${c.text}`}>Stage {entry.stage}: {stg?.label || 'Unknown'}</p>
-                          {entry.sentDate && <span className={`text-xs ${c.textMuted}`}>Sent {new Date(entry.sentDate).toLocaleDateString()}</span>}
+                          {entry.sentDate && <span className={`text-xs ${c.textMuteded}`}>Sent {new Date(entry.sentDate).toLocaleDateString()}</span>}
                           {entry.outcome && <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${outcomeBadge[entry.outcome] || ''}`}>{entry.outcome}</span>}
                         </div>
-                        {entry.companyResponse && <p className={`text-xs ${c.textSecondary} mt-1`}>📨 Response: {entry.companyResponse.slice(0, 120)}…</p>}
-                        {entry.analysisResult?.recommendation && <p className={`text-xs ${c.textMuted} mt-0.5`}>AI said: {entry.analysisResult.recommendation} — {entry.analysisResult.assessment?.slice(0, 100)}…</p>}
+                        {entry.companyResponse && <p className={`text-xs ${c.textSecondaryondary} mt-1`}>📨 Response: {entry.companyResponse.slice(0, 120)}…</p>}
+                        {entry.analysisResult?.recommendation && <p className={`text-xs ${c.textMuteded} mt-0.5`}>AI said: {entry.analysisResult.recommendation} — {entry.analysisResult.assessment?.slice(0, 100)}…</p>}
                       </div>
                     );
                   })}
@@ -1287,8 +1258,8 @@ const ComplaintEscalationWriter = ({ tool }) => {
 
           {/* Cross-references (post-result, one conditional) */}
           <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-xs font-semibold ${c.textMuted} uppercase tracking-wider mb-2`}>While you're at it</p>
-            <p className={`text-sm ${c.textSecondary}`}>
+            <p className={`text-xs font-semibold ${c.textMuteded} uppercase tracking-wider mb-2`}>While you're at it</p>
+            <p className={`text-sm ${c.textSecondaryondary}`}>
               Trying to negotiate the outcome?{' '}
               <a href="/LeverageLogic" className={linkStyle}>Leverage Logic</a>{' '}
               maps your negotiating power before you make an offer.
@@ -1303,7 +1274,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
 
           {/* Disclaimer */}
           <div className={`p-4 rounded-xl text-center ${c.disclaimerBox}`}>
-            <p className={`text-xs ${c.textMuted}`}>⚖️ This tool provides strategic guidance for consumer complaints. It does not constitute legal advice. Consult an attorney for specific legal questions. All letters and complaints should be reviewed for accuracy before sending.</p>
+            <p className={`text-xs ${c.textMuteded}`}>⚖️ This tool provides strategic guidance for consumer complaints. It does not constitute legal advice. Consult an attorney for specific legal questions. All letters and complaints should be reviewed for accuracy before sending.</p>
           </div>
         </div>
       )}

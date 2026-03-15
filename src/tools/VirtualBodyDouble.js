@@ -61,10 +61,10 @@ const SESSION_MODES = [
 // Mode-specific color accents for active session
 const MODE_COLORS = {
   default:          { bar: 'bg-sky-500',     glow: 'shadow-sky-500/20',     badge: 'bg-sky-500' },
-  deep_work:        { bar: 'bg-indigo-500',  glow: 'shadow-indigo-500/20',  badge: 'bg-indigo-500' },
+  deep_work:        { bar: 'bg-sky-500',  glow: 'shadow-sky-500/20',  badge: 'bg-sky-500' },
   sprint:           { bar: 'bg-orange-500',  glow: 'shadow-orange-500/20',  badge: 'bg-orange-500' },
   grind:            { bar: 'bg-zinc-500',    glow: 'shadow-zinc-500/20',    badge: 'bg-zinc-600' },
-  creative:         { bar: 'bg-violet-500',  glow: 'shadow-violet-500/20',  badge: 'bg-violet-500' },
+  creative:         { bar: 'bg-cyan-500',  glow: 'shadow-cyan-500/20',  badge: 'bg-cyan-500' },
   avoidance_buster: { bar: 'bg-emerald-500', glow: 'shadow-emerald-500/20', badge: 'bg-emerald-500' },
 };
 
@@ -94,42 +94,50 @@ const sendNotification = (title, body) => {
   } catch (e) { /* notifications not available */ }
 };
 
-const VirtualBodyDouble = () => {
+const VirtualBodyDouble = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
-  const { theme } = useTheme();
-  const isDark = theme === 'dark';
+  const { isDark } = useTheme();
 
   // ─── Color config ───
+  const linkStyle = isDark
+    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
+    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
+
   const c = {
-    bg: isDark ? 'bg-zinc-900' : 'bg-gradient-to-br from-sky-50 via-indigo-50 to-cyan-50',
-    card: isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-gray-100',
-    cardHover: isDark ? 'hover:bg-zinc-750' : 'hover:bg-gray-50',
-    text: isDark ? 'text-zinc-50' : 'text-gray-900',
+    card:          isDark ? 'bg-zinc-800' : 'bg-white',
+    cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
-    textMuted: isDark ? 'text-zinc-400' : 'text-gray-500',
-    input: isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder-zinc-400' : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400',
-    accent: isDark ? 'bg-sky-600' : 'bg-sky-500',
-    accentHover: isDark ? 'hover:bg-sky-500' : 'hover:bg-sky-600',
-    accentText: 'text-white',
-    accentLight: isDark ? 'bg-sky-900/40 border-sky-700' : 'bg-sky-50 border-sky-200',
-    accentLightText: isDark ? 'text-sky-300' : 'text-sky-800',
-    success: isDark ? 'bg-emerald-900/40 border-emerald-700' : 'bg-emerald-50 border-emerald-200',
-    successText: isDark ? 'text-emerald-300' : 'text-emerald-800',
-    warning: isDark ? 'bg-amber-900/40 border-amber-700' : 'bg-amber-50 border-amber-200',
-    warningText: isDark ? 'text-amber-300' : 'text-amber-800',
-    error: isDark ? 'bg-red-900/30 border-red-700' : 'bg-red-50 border-red-200',
-    errorText: isDark ? 'text-red-300' : 'text-red-800',
-    tag: isDark ? 'bg-zinc-700 text-zinc-200' : 'bg-gray-100 text-gray-700',
-    tagActive: isDark ? 'bg-sky-600 text-white' : 'bg-sky-500 text-white',
-    divider: isDark ? 'border-zinc-700' : 'border-gray-200',
-    pulse: isDark ? 'bg-sky-400' : 'bg-sky-500',
-    bubbleBg: isDark ? 'bg-zinc-700' : 'bg-sky-50',
-    bubbleText: isDark ? 'text-zinc-100' : 'text-sky-900',
-  };
+    textMuted:     isDark ? 'text-zinc-500' : 'text-gray-400',
+    labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
+    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
+    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
+    border:        isDark ? 'border-zinc-700' : 'border-gray-200',
+    success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
+    warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
+    danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
+    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
+    badge:         isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-100 text-cyan-800',
+    infoBox:       isDark ? 'bg-sky-900/20 border-sky-700 text-sky-200' : 'bg-sky-50 border-sky-200 text-sky-800',
+  };;
 
   // ─── State: View ───
   const [view, setView] = useState('setup');
   const [error, setError] = useState('');
+  const [history, setHistory] = usePersistentState('virtualbodydouble-history', []);
+
+  useEffect(() => {
+    const handler = (e) => {
+      const tag = document.activeElement?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !loading) handleStart();
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [loading]);
 
   // ─── State: Setup ───
   const [task, setTask] = useState('');
@@ -432,14 +440,14 @@ const VirtualBodyDouble = () => {
   // ─── Save session ───
   const saveSession = () => {
     const entry = {
-      id: Date.now(), task, duration: actualDuration, checkInFreq, environment, mode: sessionMode,
+      id: Date.now(), task, duration: actualDuration, checkInFreq, environment, mode: sessionMode, preview: task.slice(0, 40),
       minutesWorked: Math.floor(secondsElapsed / 60), checkIns: checkInsDone,
       moodBefore: mood, moodAfter, completionNote, date: new Date().toISOString(),
       completed: secondsRemaining <= 0,
       subTasksCompleted: subTasks.length > 0 ? subTasksCompleted : undefined,
       totalSubTasks: subTasks.length > 0 ? subTasks.length : undefined,
     };
-    setSessionLog(prev => [entry, ...prev].slice(0, 50));
+    setSessionLog(prev => [entry, ...prev].slice(0, 6));
     setView('setup'); resetForm();
   };
 
@@ -506,14 +514,14 @@ const VirtualBodyDouble = () => {
   // ══════════════════════════════════════════════════
   if (view === 'setup') {
     return (
-      <div className={`min-h-screen ${c.bg} py-6 px-4`}>
+      <div className={`min-h-screen ${c.cardAlt} py-6 px-4`}>
         <div className="max-w-xl mx-auto space-y-5">
 
           {/* Header */}
           <div className="text-center mb-2">
             <span className="text-4xl">👥</span>
             <h1 className={`text-2xl font-bold ${c.text} mt-2`}>Virtual Body Double</h1>
-            <p className={`${c.textSecondary} text-sm mt-1`}>A quiet coworking partner for solo tasks</p>
+            <p className={`${c.textSecondaryondary} text-sm mt-1`}>A quiet coworking partner for solo tasks</p>
           </div>
 
           {/* Status bar */}
@@ -523,7 +531,7 @@ const VirtualBodyDouble = () => {
                 {sessionLog.length > 0 && (
                   <span className={`text-sm font-medium ${c.text}`}>
                     <span>📊</span> {sessionLog.length} session{sessionLog.length !== 1 ? 's' : ''} ·{' '}
-                    <span className={`text-xs ${c.textMuted}`}>
+                    <span className={`text-xs ${c.textMuteded}`}>
                       {Math.round(sessionLog.reduce((sum, s) => sum + (s.minutesWorked || 0), 0) / 60 * 10) / 10}h total
                     </span>
                   </span>
@@ -562,7 +570,7 @@ const VirtualBodyDouble = () => {
                   <span className="text-lg">{m.icon}</span>
                   <div>
                     <span className="text-sm font-medium block">{m.label}</span>
-                    <span className={`text-xs ${sessionMode === m.id ? 'text-white/70' : c.textMuted}`}>{m.desc}</span>
+                    <span className={`text-xs ${sessionMode === m.id ? 'text-white/70' : c.textMuteded}`}>{m.desc}</span>
                   </div>
                 </button>
               ))}
@@ -583,7 +591,7 @@ const VirtualBodyDouble = () => {
                   <button onClick={handleBreakdown} disabled={loading}
                     className={`px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap ${subTasks.length > 0 ? c.tagActive : c.tag} transition-all`}
                     title="Break task into sub-tasks">
-                    {loading ? <span className="animate-spin inline-block">⏳</span> : '✂️'} Split
+                    {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> : '✂️'} Split
                   </button>
                 )}
               </div>
@@ -595,7 +603,7 @@ const VirtualBodyDouble = () => {
                 <div className="flex items-center justify-between">
                   <p className={`text-xs font-bold ${c.accentLightText} uppercase tracking-wider`}><span>✂️</span> Task breakdown</p>
                   <button onClick={() => { setShowBreakdown(false); setSubTasks([]); setBreakdownData(null); }}
-                    className={`text-xs ${c.textMuted}`}>✕ Clear</button>
+                    className={`text-xs ${c.textMuteded}`}>✕ Clear</button>
                 </div>
                 {breakdownData.strategy_note && <p className={`text-xs ${c.accentLightText} italic`}>{breakdownData.strategy_note}</p>}
                 {breakdownData.sub_tasks?.map((st, i) => (
@@ -603,8 +611,8 @@ const VirtualBodyDouble = () => {
                     <span className={`text-xs font-bold ${c.accentLightText} mt-0.5 w-4`}>{i + 1}</span>
                     <div className="flex-1">
                       <span className={`text-sm ${c.text}`}>{st.label}</span>
-                      <span className={`text-xs ${c.textMuted} ml-2`}>~{st.estimated_minutes}m</span>
-                      {st.tip && <p className={`text-xs ${c.textMuted} mt-0.5`}>💡 {st.tip}</p>}
+                      <span className={`text-xs ${c.textMuteded} ml-2`}>~{st.estimated_minutes}m</span>
+                      {st.tip && <p className={`text-xs ${c.textMuteded} mt-0.5`}>💡 {st.tip}</p>}
                     </div>
                     <span className={`text-xs px-1.5 py-0.5 rounded ${
                       st.difficulty === 'easy' ? 'bg-emerald-100 text-emerald-700' :
@@ -649,9 +657,9 @@ const VirtualBodyDouble = () => {
 
           {/* Optional context */}
           <div className={`${c.card} border rounded-xl p-5 space-y-4`}>
-            <p className={`text-xs font-medium ${c.textMuted} uppercase tracking-wider`}>Optional context</p>
+            <p className={`text-xs font-medium ${c.textMuteded} uppercase tracking-wider`}>Optional context</p>
             <div>
-              <label className={`block text-sm font-medium ${c.textSecondary} mb-2`}>Where are you?</label>
+              <label className={`block text-sm font-medium ${c.textSecondaryondary} mb-2`}>Where are you?</label>
               <div className="flex flex-wrap gap-2">
                 {ENVIRONMENTS.map(e => (
                   <button key={e.id} onClick={() => setEnvironment(environment === e.id ? '' : e.id)}
@@ -662,7 +670,7 @@ const VirtualBodyDouble = () => {
               </div>
             </div>
             <div>
-              <label className={`block text-sm font-medium ${c.textSecondary} mb-2`}>Current mood</label>
+              <label className={`block text-sm font-medium ${c.textSecondaryondary} mb-2`}>Current mood</label>
               <div className="flex flex-wrap gap-2">
                 {MOODS.map(m => (
                   <button key={m.id} onClick={() => setMood(mood === m.id ? '' : m.id)}
@@ -673,7 +681,7 @@ const VirtualBodyDouble = () => {
               </div>
             </div>
             <div>
-              <label className={`block text-sm font-medium ${c.textSecondary} mb-2`}>Session goal (optional)</label>
+              <label className={`block text-sm font-medium ${c.textSecondaryondary} mb-2`}>Session goal (optional)</label>
               <input type="text" value={goals} onChange={e => setGoals(e.target.value)}
                 placeholder="Finish first draft, clear inbox, organize notes..."
                 className={`w-full p-3 rounded-lg border ${c.input} focus:ring-2 focus:ring-sky-400 outline-none text-sm`} />
@@ -682,23 +690,23 @@ const VirtualBodyDouble = () => {
 
           {/* Start button */}
           <button onClick={handleStart} disabled={loading || !task.trim()}
-            className={`w-full py-4 rounded-xl font-bold text-lg ${modeColors.badge} ${c.accentText} disabled:opacity-40 transition-all shadow-lg hover:opacity-90`}>
+            className={`w-full py-4 rounded-xl font-bold text-lg ${modeColors.badge} ${c.accentTxt} disabled:opacity-40 transition-all shadow-lg hover:opacity-90`}>
             {loading ? (
-              <span><span className="animate-spin inline-block">⏳</span> Setting up...</span>
+              <span><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> Setting up...</span>
             ) : (
               <span><span>{SESSION_MODES.find(m => m.id === sessionMode)?.icon || '▶️'}</span> Start {modeLabel} Session</span>
             )}
           </button>
 
           {error && (
-            <div className={`${c.error} border rounded-xl p-4`}>
+            <div className={`${c.danger} border rounded-xl p-4`}>
               <p className={`text-sm ${c.errorText}`}><span>⚠️</span> {error}</p>
             </div>
           )}
 
           {/* Cross-references */}
           <div className={`${c.card} border rounded-xl p-4`}>
-            <p className={`text-xs font-medium ${c.textMuted} mb-2`}>Related tools</p>
+            <p className={`text-xs font-medium ${c.textMuteded} mb-2`}>Related tools</p>
             <div className="flex flex-wrap gap-2">
               {[
                 { id: 'BatchFlow', icon: '🔀', label: 'BatchFlow' },
@@ -725,7 +733,7 @@ const VirtualBodyDouble = () => {
                         <span className="text-xs">{SESSION_MODES.find(m => m.id === s.mode)?.icon || '👥'}</span>
                         <span className={`text-sm font-medium ${c.text} truncate`}>{s.task}</span>
                       </div>
-                      <span className={`text-xs ${c.textMuted}`}>
+                      <span className={`text-xs ${c.textMuteded}`}>
                         {s.minutesWorked}m · {new Date(s.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                         {s.subTasksCompleted !== undefined ? ` · ${s.subTasksCompleted}/${s.totalSubTasks} tasks` : ''}
                       </span>
@@ -753,7 +761,7 @@ const VirtualBodyDouble = () => {
     const progress = actualDuration > 0 ? ((actualDuration * 60 - secondsRemaining) / (actualDuration * 60)) * 100 : 0;
 
     return (
-      <div className={`min-h-screen ${c.bg} py-6 px-4`}>
+      <div className={`min-h-screen ${c.cardAlt} py-6 px-4`}>
         <div className="max-w-xl mx-auto space-y-4">
 
           {/* Timer header with mode-colored bar */}
@@ -762,7 +770,7 @@ const VirtualBodyDouble = () => {
             <div className="flex items-center justify-center gap-2 mb-3">
               <span className="text-xs">{SESSION_MODES.find(m => m.id === sessionMode)?.icon}</span>
               <div className={`w-2 h-2 rounded-full ${modeColors.bar} animate-pulse`} />
-              <span className={`text-xs font-medium ${c.textMuted}`}>
+              <span className={`text-xs font-medium ${c.textMuteded}`}>
                 {sessionPlan?.session_personality?.name || 'Buddy'} is here
                 {sessionPlan?.session_personality?.style ? ` · ${sessionPlan.session_personality.style}` : ''}
               </span>
@@ -771,7 +779,7 @@ const VirtualBodyDouble = () => {
             <div className={`text-5xl font-mono font-bold ${c.text} mb-2`}>
               {isOnBreak ? formatTime(breakSecondsRemaining) : formatTime(secondsRemaining)}
             </div>
-            <p className={`text-sm ${c.textMuted}`}>{isOnBreak ? '☕ Break time' : task}</p>
+            <p className={`text-sm ${c.textMuteded}`}>{isOnBreak ? '☕ Break time' : task}</p>
 
             {/* Mode-colored progress bar */}
             <div className={`mt-3 h-2 rounded-full ${isDark ? 'bg-zinc-700' : 'bg-gray-200'} overflow-hidden`}>
@@ -801,7 +809,7 @@ const VirtualBodyDouble = () => {
           {/* Sub-task checklist */}
           {subTasks.length > 0 && (
             <div className={`${c.card} border rounded-xl p-4`}>
-              <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wider mb-2`}>
+              <p className={`text-xs font-bold ${c.textMuteded} uppercase tracking-wider mb-2`}>
                 <span>✂️</span> Sub-tasks · {subTasksCompleted}/{subTasks.length}
               </p>
               <div className="space-y-1.5">
@@ -834,7 +842,7 @@ const VirtualBodyDouble = () => {
                   }`}>
                     {msg.emoji && msg.from === 'buddy' && <span className="mr-1">{msg.emoji}</span>}
                     <span className="text-sm">{msg.message}</span>
-                    <div className={`text-[10px] mt-1 ${msg.from === 'user' ? 'text-sky-200' : c.textMuted}`}>{msg.time}</div>
+                    <div className={`text-[10px] mt-1 ${msg.from === 'user' ? 'text-sky-200' : c.textMuteded}`}>{msg.time}</div>
                   </div>
                 </div>
               ))}
@@ -876,8 +884,8 @@ const VirtualBodyDouble = () => {
           {!isOnBreak && !showCheckIn && (
             <div className="flex gap-3">
               <button onClick={handleStuck} disabled={loading}
-                className={`flex-1 py-3 rounded-xl text-sm font-medium ${c.warning} border ${c.warningText} transition-all`}>
-                {loading ? <span className="animate-spin inline-block">⏳</span> : <span>🧱</span>} I'm stuck
+                className={`flex-1 py-3 rounded-xl text-sm font-medium ${c.warning} border ${c.warning} transition-all`}>
+                {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> : <span>🧱</span>} I'm stuck
               </button>
               <button onClick={handleInvite} disabled={loading}
                 className={`flex-1 py-3 rounded-xl text-sm font-medium ${c.tag} transition-all`}>
@@ -892,12 +900,12 @@ const VirtualBodyDouble = () => {
               <h3 className={`text-sm font-bold ${c.text}`}><span>🔧</span> Unstick Plan</h3>
               {stuckData.micro_steps?.map((step, i) => (
                 <div key={i} className={`flex items-start gap-2 p-2 rounded-lg ${isDark ? 'bg-zinc-700/50' : 'bg-gray-50'}`}>
-                  <span className={`text-xs font-bold ${c.textMuted} mt-0.5`}>{i + 1}</span>
+                  <span className={`text-xs font-bold ${c.textMuteded} mt-0.5`}>{i + 1}</span>
                   <span className={`text-sm ${c.text}`}>{step}</span>
                 </div>
               ))}
-              {stuckData.environment_shift && <p className={`text-sm ${c.textSecondary}`}><span>🔄</span> Try: {stuckData.environment_shift}</p>}
-              {stuckData.bailout_option && <p className={`text-xs ${c.textMuted} italic`}>Or: {stuckData.bailout_option}</p>}
+              {stuckData.environment_shift && <p className={`text-sm ${c.textSecondaryondary}`}><span>🔄</span> Try: {stuckData.environment_shift}</p>}
+              {stuckData.bailout_option && <p className={`text-xs ${c.textMuteded} italic`}>Or: {stuckData.bailout_option}</p>}
             </div>
           )}
 
@@ -907,7 +915,7 @@ const VirtualBodyDouble = () => {
               <h3 className={`text-sm font-bold ${c.text}`}><span>👋</span> Invite a Coworking Buddy</h3>
               {inviteData.messages?.map((msg, i) => (
                 <div key={i} className="space-y-1">
-                  <p className={`text-xs font-medium ${c.textMuted} capitalize`}>{msg.tone}</p>
+                  <p className={`text-xs font-medium ${c.textMuteded} capitalize`}>{msg.tone}</p>
                   <div className={`p-3 rounded-lg ${isDark ? 'bg-zinc-700' : 'bg-gray-50'}`}>
                     <p className={`text-sm ${c.text}`}>{msg.text}</p>
                   </div>
@@ -926,17 +934,17 @@ const VirtualBodyDouble = () => {
   // ══════════════════════════════════════════════════
   if (view === 'complete') {
     return (
-      <div className={`min-h-screen ${c.bg} py-6 px-4`}>
+      <div className={`min-h-screen ${c.cardAlt} py-6 px-4`}>
         <div className="max-w-xl mx-auto space-y-5">
 
           {/* Celebration */}
           <div className={`${c.success} border rounded-xl p-6 text-center`}>
             <span className="text-4xl block mb-3">🎉</span>
-            <h2 className={`text-xl font-bold ${c.successText}`}>Session Complete!</h2>
+            <h2 className={`text-xl font-bold ${c.accentTxt}`}>Session Complete!</h2>
             {completionData && (
               <div className="mt-3 space-y-2">
-                <p className={`text-sm ${c.successText}`}>{completionData.celebration}</p>
-                <p className={`text-sm ${c.successText} opacity-80`}>{completionData.accomplishment_reframe}</p>
+                <p className={`text-sm ${c.accentTxt}`}>{completionData.celebration}</p>
+                <p className={`text-sm ${c.accentTxt} opacity-80`}>{completionData.accomplishment_reframe}</p>
               </div>
             )}
           </div>
@@ -946,21 +954,21 @@ const VirtualBodyDouble = () => {
             <div className={`grid ${subTasks.length > 0 ? 'grid-cols-4' : 'grid-cols-3'} gap-3 text-center`}>
               <div>
                 <p className={`text-2xl font-bold ${c.text}`}>{Math.floor(secondsElapsed / 60)}</p>
-                <p className={`text-xs ${c.textMuted}`}>minutes</p>
+                <p className={`text-xs ${c.textMuteded}`}>minutes</p>
               </div>
               <div>
                 <p className={`text-2xl font-bold ${c.text}`}>{checkInsDone}</p>
-                <p className={`text-xs ${c.textMuted}`}>check-ins</p>
+                <p className={`text-xs ${c.textMuteded}`}>check-ins</p>
               </div>
               {subTasks.length > 0 && (
                 <div>
                   <p className={`text-2xl font-bold ${c.text}`}>{subTasksCompleted}/{subTasks.length}</p>
-                  <p className={`text-xs ${c.textMuted}`}>sub-tasks</p>
+                  <p className={`text-xs ${c.textMuteded}`}>sub-tasks</p>
                 </div>
               )}
               <div>
                 <p className={`text-2xl font-bold ${c.text}`}>{sessionLog.length + 1}</p>
-                <p className={`text-xs ${c.textMuted}`}>total</p>
+                <p className={`text-xs ${c.textMuteded}`}>total</p>
               </div>
             </div>
           </div>
@@ -973,7 +981,7 @@ const VirtualBodyDouble = () => {
           )}
           {completionData?.streak_message && (
             <div className={`${c.warning} border rounded-xl p-4`}>
-              <p className={`text-sm ${c.warningText}`}><span>🔥</span> {completionData.streak_message}</p>
+              <p className={`text-sm ${c.warning}`}><span>🔥</span> {completionData.streak_message}</p>
             </div>
           )}
 
@@ -981,7 +989,7 @@ const VirtualBodyDouble = () => {
           {!showCard && completionData && (
             <button onClick={handleGenerateCard} disabled={loading}
               className={`w-full py-3 rounded-xl text-sm font-bold ${modeColors.badge} text-white transition-all hover:opacity-90`}>
-              {loading ? <span className="animate-spin inline-block">⏳</span> : <span>🏆</span>} Generate Session Card
+              {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> : <span>🏆</span>} Generate Session Card
             </button>
           )}
 
@@ -994,29 +1002,29 @@ const VirtualBodyDouble = () => {
                 <p className="text-sm opacity-80 mt-1">{modeLabel} mode</p>
               </div>
               <div className={`${isDark ? 'bg-zinc-800' : 'bg-white'} p-5 space-y-3`}>
-                <p className={`text-center text-sm italic ${c.textSecondary}`}>
+                <p className={`text-center text-sm italic ${c.textSecondaryondary}`}>
                   "{completionData?.card_quote || 'Another one done.'}"
                 </p>
                 <div className="flex justify-center gap-6 text-center">
                   <div>
                     <p className={`text-lg font-bold ${c.text}`}>{Math.floor(secondsElapsed / 60)}</p>
-                    <p className={`text-[10px] ${c.textMuted} uppercase`}>min</p>
+                    <p className={`text-[10px] ${c.textMuteded} uppercase`}>min</p>
                   </div>
                   {subTasks.length > 0 && (
                     <div>
                       <p className={`text-lg font-bold ${c.text}`}>{subTasksCompleted}/{subTasks.length}</p>
-                      <p className={`text-[10px] ${c.textMuted} uppercase`}>tasks</p>
+                      <p className={`text-[10px] ${c.textMuteded} uppercase`}>tasks</p>
                     </div>
                   )}
                   <div>
                     <p className={`text-lg font-bold ${c.text}`}>
                       {MOODS.find(m => m.id === mood)?.icon || '😐'} → {MOODS.find(m => m.id === moodAfter)?.icon || '😐'}
                     </p>
-                    <p className={`text-[10px] ${c.textMuted} uppercase`}>mood</p>
+                    <p className={`text-[10px] ${c.textMuteded} uppercase`}>mood</p>
                   </div>
                 </div>
-                <div className={`text-center pt-2 border-t ${c.divider}`}>
-                  <p className={`text-[10px] ${c.textMuted}`}>
+                <div className={`text-center pt-2 border-t ${c.border}`}>
+                  <p className={`text-[10px] ${c.textMuteded}`}>
                     {sessionPlan?.session_personality?.name || 'Buddy'} was here · deftbrain.com
                   </p>
                 </div>
@@ -1048,14 +1056,14 @@ const VirtualBodyDouble = () => {
 
           {/* Rest permission */}
           {completionData?.rest_permission && (
-            <div className={`${isDark ? 'bg-purple-900/30 border-purple-700' : 'bg-purple-50 border-purple-200'} border rounded-xl p-4`}>
-              <p className={`text-sm ${isDark ? 'text-purple-300' : 'text-purple-800'}`}><span>💜</span> {completionData.rest_permission}</p>
+            <div className={`${isDark ? 'bg-cyan-900/30 border-cyan-700' : 'bg-cyan-50 border-cyan-200'} border rounded-xl p-4`}>
+              <p className={`text-sm ${isDark ? 'text-cyan-300' : 'text-cyan-800'}`}><span>💜</span> {completionData.rest_permission}</p>
             </div>
           )}
 
           {/* Actions */}
           <div className="flex gap-3">
-            <button onClick={saveSession} className={`flex-1 py-3.5 rounded-xl font-bold ${c.accent} ${c.accentHover} ${c.accentText}`}>
+            <button onClick={saveSession} className={`flex-1 py-3.5 rounded-xl font-bold ${c.accentTxt} ${c.accentHover} ${c.accentTxt}`}>
               <span>💾</span> Save & Done
             </button>
             <button onClick={() => handleExtend(15)} disabled={loading} className={`flex-1 py-3.5 rounded-xl font-bold border ${c.tag}`}>
@@ -1074,7 +1082,7 @@ const VirtualBodyDouble = () => {
   // ══════════════════════════════════════════════════
   if (view === 'insights') {
     return (
-      <div className={`min-h-screen ${c.bg} py-6 px-4`}>
+      <div className={`min-h-screen ${c.cardAlt} py-6 px-4`}>
         <div className="max-w-xl mx-auto space-y-5">
           <div className="flex items-center justify-between">
             <h2 className={`text-xl font-bold ${c.text}`}><span>📈</span> Session Insights</h2>
@@ -1087,15 +1095,15 @@ const VirtualBodyDouble = () => {
                 <div className="grid grid-cols-3 gap-3 text-center">
                   <div>
                     <p className={`text-2xl font-bold ${c.text}`}>{reviewData.total_sessions}</p>
-                    <p className={`text-xs ${c.textMuted}`}>sessions</p>
+                    <p className={`text-xs ${c.textMuteded}`}>sessions</p>
                   </div>
                   <div>
                     <p className={`text-2xl font-bold ${c.text}`}>{reviewData.total_minutes}</p>
-                    <p className={`text-xs ${c.textMuted}`}>minutes</p>
+                    <p className={`text-xs ${c.textMuteded}`}>minutes</p>
                   </div>
                   <div>
                     <p className={`text-2xl font-bold ${c.text}`}>{reviewData.completion_rate}</p>
-                    <p className={`text-xs ${c.textMuted}`}>completed</p>
+                    <p className={`text-xs ${c.textMuteded}`}>completed</p>
                   </div>
                 </div>
               </div>
@@ -1116,7 +1124,7 @@ const VirtualBodyDouble = () => {
                     {reviewData.patterns.map((p, i) => (
                       <div key={i} className={`p-3 rounded-lg ${isDark ? 'bg-zinc-700/50' : 'bg-gray-50'}`}>
                         <p className={`text-sm font-medium ${c.text}`}>{p.observation}</p>
-                        <p className={`text-xs ${c.textSecondary} mt-1`}>→ {p.suggestion}</p>
+                        <p className={`text-xs ${c.textSecondaryondary} mt-1`}>→ {p.suggestion}</p>
                       </div>
                     ))}
                   </div>
@@ -1125,27 +1133,53 @@ const VirtualBodyDouble = () => {
 
               {reviewData.streak && (
                 <div className={`${c.warning} border rounded-xl p-4`}>
-                  <p className={`text-sm font-medium ${c.warningText}`}>
+                  <p className={`text-sm font-medium ${c.warning}`}>
                     <span>🔥</span> Streak: {reviewData.streak.current} day{reviewData.streak.current !== 1 ? 's' : ''}
                     {reviewData.streak.longest > reviewData.streak.current ? ` (best: ${reviewData.streak.longest})` : ''}
                   </p>
-                  {reviewData.streak.message && <p className={`text-xs ${c.warningText} mt-1`}>{reviewData.streak.message}</p>}
+                  {reviewData.streak.message && <p className={`text-xs ${c.warning} mt-1`}>{reviewData.streak.message}</p>}
                 </div>
               )}
 
               {reviewData.encouragement && (
                 <div className={`${c.success} border rounded-xl p-4`}>
-                  <p className={`text-sm ${c.successText}`}><span>💚</span> {reviewData.encouragement}</p>
+                  <p className={`text-sm ${c.accentTxt}`}><span>💚</span> {reviewData.encouragement}</p>
                 </div>
               )}
             </>
           ) : (
             <div className={`${c.card} border rounded-xl p-8 text-center`}>
-              <span className="animate-spin inline-block text-2xl">⏳</span>
-              <p className={`text-sm ${c.textMuted} mt-2`}>Analyzing your sessions...</p>
+              <span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span>
+              <p className={`text-sm ${c.textMuteded} mt-2`}>Analyzing your sessions...</p>
             </div>
           )}
         </div>
+
+      {/* eslint-disable-next-line no-restricted-globals */}
+      {history.length > 0 && (
+        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
+          <p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 Recent sessions</p>
+          <div className="space-y-1">
+            {/* eslint-disable-next-line no-restricted-globals */}
+
+            {history.map(s => (
+              <div key={s.id} className="flex items-center justify-between">
+                <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || 'Session'}</span>
+                <span className={`text-xs ${c.textMuted} ml-2`}>{new Date(s.date).toLocaleDateString()}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      {/* Related tools */}
+      <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-2`}>
+        <p className={`text-xs font-bold ${c.textMuted} mb-2`}>🔗 Related tools</p>
+        <div className="flex flex-wrap gap-3">
+          <a href="/tool/task-avalanche-breaker" className={`text-xs ${linkStyle}`}>⚡ Task Avalanche Breaker</a>
+          <a href="/tool/batch-flow" className={`text-xs ${linkStyle}`}>🔄 Batch Flow</a>
+          <a href="/tool/dopamine-menu-builder" className={`text-xs ${linkStyle}`}>🎯 Dopamine Menu Builder</a>
+        </div>
+      </div>
       </div>
     );
   }

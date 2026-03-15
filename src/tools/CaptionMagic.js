@@ -54,53 +54,34 @@ const HASHTAG_CATEGORY_STYLES = {
 const CaptionMagic = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { isDark } = useTheme();
-  const c = {
-    // ── Standard keys ──
-    card:          isDark ? 'bg-zinc-800'       : 'bg-white',
-    cardAlt:       isDark ? 'bg-zinc-700/50'    : 'bg-slate-50',
-    text:          isDark ? 'text-zinc-50'      : 'text-gray-900',
-    textSecondary: isDark ? 'text-zinc-300'     : 'text-gray-600',
-    textMuted:     isDark ? 'text-zinc-500'     : 'text-gray-400',
-    input:         isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500'
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
-    btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
-    border:        isDark ? 'border-zinc-700'   : 'border-gray-200',
-    success:       isDark ? 'bg-green-900/20 border-green-700 text-green-200' : 'bg-green-50 border-green-300 text-green-800',
-    warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
-    danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200'       : 'bg-red-50 border-red-200 text-red-800',
-    // ── Tool-specific structural ──
-    highlight:     isDark ? 'bg-sky-900/20 border-sky-700 text-sky-200'       : 'bg-sky-50 border-sky-200 text-sky-800',
-    captionBg:     isDark ? 'bg-zinc-700/50 border-zinc-600'    : 'bg-slate-50 border-gray-200',
-    pillActive:    isDark ? 'bg-cyan-600 border-cyan-500 text-white'                          : 'bg-cyan-600 border-cyan-700 text-white',
-    pillInactive:  isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-300 hover:border-zinc-500' : 'bg-white border-gray-300 text-gray-600 hover:border-gray-400',
-    dropzone:      isDark ? 'border-zinc-600 hover:border-cyan-500 bg-zinc-800' : 'border-gray-300 hover:border-cyan-500 bg-white',
-    dropActive:    isDark ? 'border-cyan-500 bg-cyan-900/10'  : 'border-cyan-500 bg-cyan-50/30',
-    tonePill:      isDark ? 'bg-zinc-700 text-zinc-300'        : 'bg-gray-100 text-gray-600',
-    htTrending:    isDark ? 'bg-amber-900/20 text-amber-300 border-amber-700/40' : 'bg-amber-50 text-amber-700 border-amber-300/60',
-    htNiche:       isDark ? 'bg-cyan-900/20 text-cyan-300 border-cyan-700/40'   : 'bg-cyan-50 text-cyan-700 border-cyan-300/60',
-    htBranded:     isDark ? 'bg-green-900/20 text-green-300 border-green-700/40': 'bg-green-50 text-green-700 border-green-300/60',
-    altSection:    isDark ? 'bg-sky-900/20 border-sky-700/40' : 'bg-sky-50 border-sky-200',
-    okBg:          isDark ? 'bg-green-900/20 border-green-700/40' : 'bg-green-50 border-green-300',
-    heatHigh:      isDark ? 'bg-amber-700/40' : 'bg-amber-100',
-    heatMed:       isDark ? 'bg-zinc-700'     : 'bg-gray-100',
-    histCard:      isDark ? 'bg-zinc-800 border-zinc-700'       : 'bg-white border-gray-200',
-    histBg:        isDark ? 'bg-zinc-800/50 border-zinc-700/50' : 'bg-slate-50 border-gray-200',
-    stateDisabled: isDark ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed' : 'bg-gray-100 text-gray-400 cursor-not-allowed',
-    btnDelete:     isDark ? 'bg-red-600 hover:bg-red-500 text-white' : 'bg-red-500 hover:bg-red-600 text-white',
-    // ── Standalone text semantics ──
-    textCyan:      isDark ? 'text-cyan-400'   : 'text-cyan-600',
-    textOk:        isDark ? 'text-green-400'  : 'text-green-700',
-    textDanger:    isDark ? 'text-red-400'    : 'text-red-600',
-    textCaution:   isDark ? 'text-amber-300'  : 'text-amber-700',
-    textHighlight: isDark ? 'text-sky-300'    : 'text-sky-600',
-    textGhost:     isDark ? 'text-zinc-500 hover:text-zinc-200' : 'text-gray-400 hover:text-gray-700',
-    textGhostDel:  isDark ? 'text-zinc-500 hover:text-red-400'  : 'text-gray-400 hover:text-red-500',
-  };
+
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
     : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
 
+  const c = {
+    card:          isDark ? 'bg-zinc-800' : 'bg-white',
+    cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    text:          isDark ? 'text-zinc-50' : 'text-gray-900',
+    textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
+    textMuted:     isDark ? 'text-zinc-500' : 'text-gray-400',
+    labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
+    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
+    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
+    border:        isDark ? 'border-zinc-700' : 'border-gray-200',
+    success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
+    warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
+    danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
+    infoBox:       isDark ? 'bg-sky-900/20 border-sky-700 text-sky-200' : 'bg-sky-50 border-sky-200 text-sky-800',
+    successBox:    isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-300',
+    successTxt:    isDark ? 'text-emerald-300' : 'text-emerald-800',
+    warningBox:    isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
+    warningTxt:    isDark ? 'text-amber-300' : 'text-amber-800',
+    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
+  };
   // ── Persistent ──
   const [history, setHistory] = usePersistentState('caption-magic-history', []);
   const [brandProfile, setBrandProfile] = usePersistentState('caption-magic-brand', { generations: 0, toneFreq: {}, lengthFreq: {}, platformFreq: {} });
@@ -376,7 +357,7 @@ const CaptionMagic = ({ tool }) => {
       results: data,
     };
     // Cap at 10 (not 5–6): each entry stores full nested results (captions + hashtags + schedule)
-    setHistory(prev => [entry, ...prev].slice(0, 10));
+    setHistory(prev => [entry, ...prev].slice(0, 6));
   }, [platform, setHistory]);
 
   const loadFromHistory = useCallback((entry) => {
@@ -441,7 +422,7 @@ const CaptionMagic = ({ tool }) => {
         <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
           <span>{tool?.icon || '📸'}</span> {tool?.title || 'Caption Magic'}
         </h2>
-        <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline || 'Turn any photo into engaging social media captions'}</p>
+        <p className={`text-sm ${c.textSecondaryondary}`}>{tool?.tagline || 'Turn any photo into engaging social media captions'}</p>
       </div>
     </div>
   );
@@ -451,7 +432,7 @@ const CaptionMagic = ({ tool }) => {
   // ══════════════════════════════════════════
   const renderImageUpload = () => (
     <div className={`p-5 rounded-2xl border ${c.border} ${c.card}`}>
-      <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-3 block`}>📷 Your photo</label>
+      <label className={`text-xs font-bold ${c.textSecondaryondary} uppercase tracking-wide mb-3 block`}>📷 Your photo</label>
       {compressing ? (
         <div className={`border-2 border-dashed rounded-xl p-8 text-center ${c.dropActive}`}>
           <span className="animate-spin inline-block text-2xl mb-3">{tool?.icon ?? '📸'}</span>
@@ -464,9 +445,9 @@ const CaptionMagic = ({ tool }) => {
           <span className="text-3xl block mb-3">📷</span>
           <div className="flex items-center justify-center gap-2 mb-3">
             <label htmlFor="cm-image-upload" className={`px-4 py-2 rounded-lg text-xs font-bold cursor-pointer ${c.btnPrimary}`}>Upload Image</label>
-            <button onClick={handlePaste} className={`px-4 py-2 rounded-lg text-xs font-bold ${c.btnSecondary}`}>📋 Paste</button>
+            <button onClick={handlePaste} className={`px-4 py-2 rounded-lg text-xs font-bold ${c.btnSecondaryondary}`}>📋 Paste</button>
           </div>
-          <p className={`text-xs ${c.textMuted}`}>{isDragging ? 'Drop your image here!' : 'Drag & drop, paste, or upload — or describe it below'}</p>
+          <p className={`text-xs ${c.textMuteded}`}>{isDragging ? 'Drop your image here!' : 'Drag & drop, paste, or upload — or describe it below'}</p>
         </div>
       ) : (
         <div className="relative">
@@ -488,25 +469,25 @@ const CaptionMagic = ({ tool }) => {
       {renderImageUpload()}
 
       <div className={`p-5 rounded-2xl border ${c.border} ${c.card}`}>
-        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>📱 Platform</label>
+        <label className={`text-xs font-bold ${c.textSecondaryondary} uppercase tracking-wide mb-2 block`}>📱 Platform</label>
         {renderPills(PLATFORMS, platform, setPlatform)}
-        <p className={`text-xs ${c.textMuted} mt-2`}>Character limit: {PLATFORMS.find(p => p.value === platform)?.limit?.toLocaleString()}</p>
+        <p className={`text-xs ${c.textMuteded} mt-2`}>Character limit: {PLATFORMS.find(p => p.value === platform)?.limit?.toLocaleString()}</p>
       </div>
 
       <div className={`p-5 rounded-2xl border ${c.border} ${c.card}`}>
-        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1 block`}>🎭 Tone</label>
-        <p className={`text-xs ${c.textMuted} mb-2`}>Pick up to 3</p>
+        <label className={`text-xs font-bold ${c.textSecondaryondary} uppercase tracking-wide mb-1 block`}>🎭 Tone</label>
+        <p className={`text-xs ${c.textMuteded} mb-2`}>Pick up to 3</p>
         {renderPills(TONES, selectedTones, toggleTone, true)}
       </div>
 
       <div className={`p-5 rounded-2xl border ${c.border} ${c.card}`}>
-        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>📏 Caption Length</label>
+        <label className={`text-xs font-bold ${c.textSecondaryondary} uppercase tracking-wide mb-2 block`}>📏 Caption Length</label>
         {renderPills(LENGTH_OPTIONS, captionLength, setCaptionLength)}
       </div>
 
       <div className={`p-5 rounded-2xl border ${c.border} ${c.card}`}>
-        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1 block`}>💬 Context</label>
-        <p className={`text-xs ${c.textMuted} mb-2`}>Optional — backstory helps craft better captions</p>
+        <label className={`text-xs font-bold ${c.textSecondaryondary} uppercase tracking-wide mb-1 block`}>💬 Context</label>
+        <p className={`text-xs ${c.textMuteded} mb-2`}>Optional — backstory helps craft better captions</p>
         <input type="text" value={context} onChange={e => setContext(e.target.value)}
           placeholder="e.g., 'Team retreat in Colorado' or 'First time making sourdough'"
           className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
@@ -524,7 +505,7 @@ const CaptionMagic = ({ tool }) => {
               </div>
             </div>
             <button onClick={() => setUseBrandVoice(!useBrandVoice)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold ${useBrandVoice ? c.btnPrimary : c.btnSecondary}`}>
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold ${useBrandVoice ? c.btnPrimary : c.btnSecondaryondary}`}>
               {useBrandVoice ? '✓ On' : 'Use'}
             </button>
           </div>
@@ -555,7 +536,7 @@ const CaptionMagic = ({ tool }) => {
       </button>
 
       {/* Pre-result cross-ref */}
-      <p className={`text-xs text-center ${c.textMuted} mt-1`}>
+      <p className={`text-xs text-center ${c.textMuteded} mt-1`}>
         Want help crafting what you write next?{' '}
         <a href="/VelvetHammer" className={linkStyle}>Velvet Hammer</a> nails any tricky reply or comment.
       </p>
@@ -581,7 +562,7 @@ const CaptionMagic = ({ tool }) => {
 
     return (
       <div className="mb-3">
-        <div className={`text-xs font-semibold ${c.textSecondary} mb-1.5`}>Hashtags</div>
+        <div className={`text-xs font-semibold ${c.textSecondaryondary} mb-1.5`}>Hashtags</div>
         {hasCats ? (
           <div className="space-y-1.5">
             {Object.entries(grouped).filter(([,tags]) => tags.length > 0).map(([cat, tags]) => {
@@ -589,7 +570,7 @@ const CaptionMagic = ({ tool }) => {
               const pillClass = cat === 'trending' ? c.htTrending : cat === 'niche' ? c.htNiche : cat === 'branded' ? c.htBranded : c.pillInactive;
               return (
                 <div key={cat} className="flex flex-wrap gap-1.5 items-center">
-                  {meta && <span className={`text-[10px] font-bold ${c.textMuted} mr-1`}>{meta.emoji} {meta.label}</span>}
+                  {meta && <span className={`text-[10px] font-bold ${c.textMuteded} mr-1`}>{meta.emoji} {meta.label}</span>}
                   {tags.map((tag, i) => (
                     <span key={i} className={`px-2 py-0.5 rounded text-xs font-medium border ${pillClass}`}>#{tag}</span>
                   ))}
@@ -642,7 +623,7 @@ const CaptionMagic = ({ tool }) => {
             <span key={i} className={`px-2.5 py-1 rounded-lg text-xs font-semibold ${c.heatMed} ${c.text}`}>🕐 {hour}</span>
           ))}
         </div>
-        {sched.why && <p className={`text-xs ${c.textMuted}`}>{sched.why}</p>}
+        {sched.why && <p className={`text-xs ${c.textMuteded}`}>{sched.why}</p>}
       </div>
     );
   };
@@ -664,11 +645,11 @@ const CaptionMagic = ({ tool }) => {
               </div>
               <p className={`text-sm whitespace-pre-wrap mb-2 ${c.text}`}>{adapt.text}</p>
               {adapt.hashtags?.length > 0 && (
-                <p className={`text-xs ${c.textMuted} mb-2`}>{adapt.hashtags.map(h => '#' + h).join(' ')}</p>
+                <p className={`text-xs ${c.textMuteded} mb-2`}>{adapt.hashtags.map(h => '#' + h).join(' ')}</p>
               )}
               <div className="flex items-center gap-2">
                 <CopyBtn content={`${adapt.text}${adapt.hashtags?.length ? '\n\n' + adapt.hashtags.map(h => '#' + h).join(' ') : ''}\n\n— Generated by DeftBrain · deftbrain.com`} label="Copy" />
-                {adapt.adaptation_note && <span className={`text-[10px] ${c.textMuted} italic`}>{adapt.adaptation_note}</span>}
+                {adapt.adaptation_note && <span className={`text-[10px] ${c.textMuteded} italic`}>{adapt.adaptation_note}</span>}
               </div>
             </div>
           ))}
@@ -692,13 +673,13 @@ const CaptionMagic = ({ tool }) => {
     return (
       <div className={`p-4 rounded-2xl border ${c.border} ${c.card}`}>
         <button onClick={() => setShowRemix(!showRemix)}
-          className={`flex items-center gap-2 text-xs font-bold ${c.textSecondary} w-full text-left`}>
+          className={`flex items-center gap-2 text-xs font-bold ${c.textSecondaryondary} w-full text-left`}>
           <span>{showRemix ? '▲' : '▼'}</span>
           <span>🎰 Remix Captions</span>
         </button>
         {showRemix && (
           <div className="mt-3 space-y-3">
-            <p className={`text-xs ${c.textMuted}`}>Select 2+ captions to blend, then tell us what to combine</p>
+            <p className={`text-xs ${c.textMuteded}`}>Select 2+ captions to blend, then tell us what to combine</p>
             <div className="flex gap-2">
               {results.captions.map((cap, idx) => (
                 <button key={idx} onClick={() => toggleRemixSelection(idx)}
@@ -757,10 +738,10 @@ const CaptionMagic = ({ tool }) => {
           <h3 className={`text-sm font-bold ${c.text}`}>Your Captions</h3>
           <div className="flex gap-2 flex-wrap items-center">
             {results.best_posting_time && (
-              <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${c.cardAlt} ${c.textMuted}`}>🕐 {results.best_posting_time}</span>
+              <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${c.cardAlt} ${c.textMuteded}`}>🕐 {results.best_posting_time}</span>
             )}
             <ActionBar content={buildAllCopy()} title={`Caption Magic: ${platform}`} />
-            <button onClick={handleReset} className={`px-3 py-1 rounded-lg text-xs font-bold flex items-center gap-1.5 ${c.btnSecondary}`}>
+            <button onClick={handleReset} className={`px-3 py-1 rounded-lg text-xs font-bold flex items-center gap-1.5 ${c.btnSecondaryondary}`}>
               <span>🔄</span> New
             </button>
           </div>
@@ -769,7 +750,7 @@ const CaptionMagic = ({ tool }) => {
         {/* Image read */}
         {results.image_read && (
           <div className={`p-3 rounded-xl ${c.cardAlt}`}>
-            <p className={`text-xs ${c.textMuted}`}>📷 <strong>What I see:</strong> {results.image_read}</p>
+            <p className={`text-xs ${c.textMuteded}`}>📷 <strong>What I see:</strong> {results.image_read}</p>
           </div>
         )}
 
@@ -792,9 +773,9 @@ const CaptionMagic = ({ tool }) => {
                 {caption.tone}
               </span>
               {caption.char_count != null && renderCharCount(caption.char_count)}
-              {caption.best_for && <span className={`text-xs ${c.textMuted}`}>· {caption.best_for}</span>}
+              {caption.best_for && <span className={`text-xs ${c.textMuteded}`}>· {caption.best_for}</span>}
             </div>
-            {caption.why_it_works && <p className={`text-xs ${c.textSecondary} mb-3 italic`}>{caption.why_it_works}</p>}
+            {caption.why_it_works && <p className={`text-xs ${c.textSecondaryondary} mb-3 italic`}>{caption.why_it_works}</p>}
             {caption.revision_note && <p className={`text-xs ${c.textCaution} mb-2`}>🎛️ {caption.revision_note}</p>}
 
             {/* Caption text */}
@@ -812,7 +793,7 @@ const CaptionMagic = ({ tool }) => {
                 <button key={opt.value}
                   onClick={() => reviseCaption(caption.text, index, opt.value)}
                   disabled={revisingIndex === index}
-                  className={`px-3 py-2 rounded-lg text-xs font-semibold ${c.btnSecondary} ${revisingIndex === index ? 'opacity-50' : ''}`}>
+                  className={`px-3 py-2 rounded-lg text-xs font-semibold ${c.btnSecondaryondary} ${revisingIndex === index ? 'opacity-50' : ''}`}>
                   {revisingIndex === index ? <span className="animate-spin inline-block">{tool?.icon ?? '📸'}</span> : opt.label}
                 </button>
               ))}
@@ -821,7 +802,7 @@ const CaptionMagic = ({ tool }) => {
             {/* A/B winner + adapt row */}
             <div className="flex gap-2 mt-2">
               <button onClick={() => markAbWinner(index)}
-                className={`px-3 py-2 rounded-lg text-xs font-semibold ${c.btnSecondary}`}>
+                className={`px-3 py-2 rounded-lg text-xs font-semibold ${c.btnSecondaryondary}`}>
                 📊 This one won
               </button>
               <button onClick={() => adaptAllPlatforms(caption.text, caption.hashtags)}
@@ -860,13 +841,13 @@ const CaptionMagic = ({ tool }) => {
 
         {/* Start Over */}
         <button onClick={handleReset}
-          className={`w-full py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 ${c.btnSecondary}`}>
+          className={`w-full py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 ${c.btnSecondaryondary}`}>
           <span>🔄</span> Start Over
         </button>
 
         {renderCrossRefs()}
 
-        <p className={`text-[10px] ${c.textMuted} text-center px-4`}>
+        <p className={`text-[10px] ${c.textMuteded} text-center px-4`}>
           Captions are AI-generated suggestions. Review and personalize before posting.
         </p>
       </div>
@@ -878,8 +859,8 @@ const CaptionMagic = ({ tool }) => {
   // ══════════════════════════════════════════
   const renderCrossRefs = () => (
     <div className={`p-4 rounded-2xl border ${c.border} ${c.card} mt-2`}>
-      <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-2`}>🔗 Related Tools</p>
-      <div className={`space-y-1.5 text-xs ${c.textSecondary}`}>
+      <p className={`text-xs font-bold ${c.textMuteded} uppercase tracking-wide mb-2`}>🔗 Related Tools</p>
+      <div className={`space-y-1.5 text-xs ${c.textSecondaryondary}`}>
         {results?.captions?.some(cap => cap.tone?.toLowerCase().includes('professional')) && (
           <p>For professional posts, <a href="/BragSheetBuilder" className={linkStyle}>Brag Sheet Builder</a> turns your wins into polished LinkedIn-ready copy.</p>
         )}
@@ -918,8 +899,8 @@ const CaptionMagic = ({ tool }) => {
         <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-left">
           <span className={`text-base ${c.textCyan}`}>✨</span>
           <span className={`text-sm font-bold ${c.text} flex-1`}>Past Captions</span>
-          <span className={`text-xs ${c.textMuted}`}>{history.length}</span>
-          <span className={`text-xs ${c.textMuted}`}>{showHistory ? '▲' : '▼'}</span>
+          <span className={`text-xs ${c.textMuteded}`}>{history.length}</span>
+          <span className={`text-xs ${c.textMuteded}`}>{showHistory ? '▲' : '▼'}</span>
         </button>
         {showHistory && (
           <div className="mt-3 space-y-2">
@@ -927,9 +908,9 @@ const CaptionMagic = ({ tool }) => {
               <div key={entry.id} className={`rounded-xl border ${c.histCard} p-3 flex items-center gap-3`}>
                 <div className="flex-1 min-w-0">
                   <div className={`text-sm font-semibold ${c.text} truncate`}>{entry.preview}...</div>
-                  <div className={`text-xs ${c.textMuted} mt-0.5`}>{formatDate(entry.date)} · {entry.platform} · {entry.captionCount} captions</div>
+                  <div className={`text-xs ${c.textMuteded} mt-0.5`}>{formatDate(entry.date)} · {entry.platform} · {entry.captionCount} captions</div>
                 </div>
-                <button onClick={() => loadFromHistory(entry)} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnSecondary}`}>View</button>
+                <button onClick={() => loadFromHistory(entry)} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnSecondaryondary}`}>View</button>
                 <button onClick={() => removeFromHistory(entry.id)} className={`px-2 py-1.5 rounded-lg text-xs ${c.textGhostDel}`}>🗑️</button>
               </div>
             ))}

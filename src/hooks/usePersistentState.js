@@ -2,9 +2,8 @@ import { useState, useEffect } from 'react';
 
 export function usePersistentState(key, initialValue) {
   const [state, setState] = useState(() => {
-    const saved = localStorage.getItem(key);
-    // Handle the case where the saved value might not be valid JSON
     try {
+      const saved = localStorage.getItem(key);
       return saved !== null ? JSON.parse(saved) : initialValue;
     } catch {
       return initialValue;
@@ -12,7 +11,11 @@ export function usePersistentState(key, initialValue) {
   });
 
   useEffect(() => {
-    localStorage.setItem(key, JSON.stringify(state));
+    try {
+      localStorage.setItem(key, JSON.stringify(state));
+    } catch {
+      // Storage unavailable or quota exceeded — fail silently
+    }
   }, [key, state]);
 
   return [state, setState];

@@ -91,49 +91,82 @@ function fmtDate(iso) {
 // COMPONENT
 // ═══════════════════════════════════════════
 
-const CrisisPrioritizer = () => {
+const CrisisPrioritizer = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
-  const { theme } = useTheme();
-  const isDark = theme === 'dark';
+  const { isDark } = useTheme();
 
   const c = {
-    card: isDark ? 'bg-zinc-800' : 'bg-white',
-    cardAlt: isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    text: isDark ? 'text-zinc-50' : 'text-gray-900',
-    ts: isDark ? 'text-zinc-300' : 'text-gray-600',
-    tm: isDark ? 'text-zinc-500' : 'text-gray-400',
-    input: isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder-zinc-400' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400',
-    pri: isDark ? 'bg-red-600 hover:bg-red-500 text-white' : 'bg-red-600 hover:bg-red-700 text-white',
-    sec: isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
-    bdr: isDark ? 'border-zinc-700' : 'border-gray-200',
-    chip: (a) => a ? (isDark ? 'bg-red-900/40 border-red-500 text-red-200' : 'bg-red-100 border-red-400 text-red-800') : (isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-200 text-gray-500 hover:border-gray-300'),
-    ok: isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
-    warn: isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
-    bad: isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
-    info: isDark ? 'bg-blue-900/20 border-blue-700 text-blue-200' : 'bg-blue-50 border-blue-200 text-blue-800',
-    purp: isDark ? 'bg-purple-900/20 border-purple-700 text-purple-200' : 'bg-purple-50 border-purple-200 text-purple-800',
-    crit: isDark ? 'bg-red-900/30 border-red-600 text-red-200' : 'bg-red-50 border-red-400 text-red-900',
-    imp: isDark ? 'bg-orange-900/30 border-orange-600 text-orange-200' : 'bg-orange-50 border-orange-400 text-orange-900',
-    med: isDark ? 'bg-amber-900/30 border-amber-600 text-amber-200' : 'bg-amber-50 border-amber-400 text-amber-900',
-    low: isDark ? 'bg-emerald-900/30 border-emerald-600 text-emerald-200' : 'bg-emerald-50 border-emerald-400 text-emerald-900',
-    opt: isDark ? 'bg-zinc-700/50 border-zinc-600 text-zinc-300' : 'bg-slate-50 border-slate-300 text-slate-700',
-    jnl: isDark ? 'bg-amber-900/15 border-amber-700/40' : 'bg-amber-50 border-amber-300',
-    jt: isDark ? 'text-amber-400' : 'text-amber-700',
-    tblock: isDark ? 'bg-zinc-700/60 border-zinc-600' : 'bg-gray-50 border-gray-200',
-    tbreakBg: isDark ? 'bg-blue-900/15 border-blue-700/30' : 'bg-blue-50/60 border-blue-200',
-    panic: isDark ? 'bg-red-900/50 border-red-500 text-red-100' : 'bg-red-600 text-white border-red-700',
-    panicCard: isDark ? 'bg-zinc-900 border-red-600' : 'bg-white border-red-400',
-    dash: isDark ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700' : 'bg-gradient-to-br from-white to-slate-50 border-gray-200',
-    split: isDark ? 'bg-indigo-900/20 border-indigo-700 text-indigo-200' : 'bg-indigo-50 border-indigo-300 text-indigo-800',
-    snap: isDark ? 'bg-teal-900/20 border-teal-700 text-teal-200' : 'bg-teal-50 border-teal-300 text-teal-800',
-    rolling: isDark ? 'bg-cyan-900/20 border-cyan-700 text-cyan-200' : 'bg-cyan-50 border-cyan-300 text-cyan-800',
+    // ─── Standard keys ───
+    card:          isDark ? 'bg-zinc-800' : 'bg-white',
+    cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
+    text:          isDark ? 'text-zinc-50' : 'text-gray-900',
+    textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
+    textMuted:     isDark ? 'text-zinc-500' : 'text-gray-400',
+    input:         isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder-zinc-400' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400',
+    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
+    border:        isDark ? 'border-zinc-700' : 'border-gray-200',
+    btnDisabled:   isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400',
+    success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
+    warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
+    danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
+    // ─── Tool-specific keys ───
+    // chip: active state uses red urgency theme (tool-specific — crisis red palette)
+    chip:       (a) => a ? (isDark ? 'bg-red-900/40 border-red-500 text-red-200' : 'bg-red-100 border-red-400 text-red-800') : (isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-200 text-gray-500 hover:border-gray-300'),
+    // highlight: replaces banned 'info' (blue → cyan)
+    highlight:  isDark ? 'bg-cyan-900/20 border-cyan-700 text-cyan-100' : 'bg-cyan-50 border-cyan-300 text-cyan-900',
+    // purpWarn: replaces banned 'purp' (purple → amber)
+    purpWarn:   isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
+    // Urgency levels: critical/important/medium/low/optional (tool-core, justified exceptions)
+    // Note: 'imp' uses amber (orange was banned; amber is the closest approved equivalent)
+    crit:       isDark ? 'bg-red-900/30 border-red-600 text-red-200' : 'bg-red-50 border-red-400 text-red-900',
+    imp:        isDark ? 'bg-amber-800/50 border-amber-400 text-amber-50' : 'bg-amber-100 border-amber-500 text-amber-900',
+    med:        isDark ? 'bg-amber-900/30 border-amber-600 text-amber-200' : 'bg-amber-50 border-amber-400 text-amber-900',
+    low:        isDark ? 'bg-emerald-900/30 border-emerald-600 text-emerald-200' : 'bg-emerald-50 border-emerald-400 text-emerald-900',
+    opt:        isDark ? 'bg-zinc-700/50 border-zinc-600 text-zinc-300' : 'bg-slate-50 border-slate-300 text-slate-700',
+    jnl:        isDark ? 'bg-amber-900/15 border-amber-700/40' : 'bg-amber-50 border-amber-300',
+    journalText: isDark ? 'text-amber-400' : 'text-amber-700',
+    tblock:     isDark ? 'bg-zinc-700/60 border-zinc-600' : 'bg-gray-50 border-gray-200',
+    // tbreakBg: replaces banned blue → sky (sky is approved)
+    tbreakBg:   isDark ? 'bg-sky-900/15 border-sky-700/30' : 'bg-sky-50/60 border-sky-200',
+    panic:      isDark ? 'bg-red-900/50 border-red-500 text-red-100' : 'bg-red-600 text-white border-red-700',
+    panicCard:  isDark ? 'bg-zinc-900 border-red-600' : 'bg-white border-red-400',
+    dash:       isDark ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700' : 'bg-gradient-to-br from-white to-slate-50 border-gray-200',
+    // splitBg: replaces banned indigo → zinc/slate
+    splitBg:    isDark ? 'bg-zinc-700/40 border-zinc-600 text-zinc-200' : 'bg-slate-50 border-slate-300 text-slate-800',
+    // acctBg: replaces banned teal → cyan
+    acctBg:     isDark ? 'bg-cyan-900/20 border-cyan-700 text-cyan-100' : 'bg-cyan-50 border-cyan-300 text-cyan-900',
+    rolling:    isDark ? 'bg-cyan-900/20 border-cyan-700 text-cyan-200' : 'bg-cyan-50 border-cyan-300 text-cyan-800',
+    // ─── Extracted raw isDark ternaries from JSX ───
+    successTxt:    isDark ? 'text-emerald-400' : 'text-emerald-600',
+    // workTime/restText: replaces banned blue → sky
+    workTime:       isDark ? 'text-sky-400' : 'text-sky-600',
+    restText:       isDark ? 'text-sky-300' : 'text-sky-600',
+    realityBorder:  isDark ? 'border-sky-500' : 'border-sky-400',
+    timelineBreak:  isDark ? 'bg-sky-700' : 'bg-sky-300',
+    // patternText/navPatternBtn: replaces banned purple → amber
+    patternText:    isDark ? 'text-amber-300' : 'text-amber-600',
+    navPatternBtn:  isDark ? 'text-amber-300 font-bold' : 'text-amber-700 font-bold',
+    navDashBtn:     isDark ? 'text-cyan-300 font-bold' : 'text-cyan-600 font-bold',
+    resetBtn:       isDark ? 'bg-red-900/30 text-red-300' : 'bg-red-50 text-red-700',
+    // Countdown badge colors (replaces raw cdColor ternaries)
+    cdCrit:         isDark ? 'text-red-400 bg-red-900/30' : 'text-red-600 bg-red-100',
+    cdImp:          isDark ? 'text-amber-300 bg-amber-900/30' : 'text-amber-700 bg-amber-100',
+    cdMed:          isDark ? 'text-amber-400 bg-amber-900/30' : 'text-amber-600 bg-amber-100',
   };
+  const linkStyle = isDark
+    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
+    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
   const urgStyle = (lvl) => ({ critical: c.crit, important: c.imp, medium: c.med, low: c.low, optional: c.opt }[lvl] || c.med);
-  const cdColor = (u) => u === 'critical' ? (isDark ? 'text-red-400 bg-red-900/30' : 'text-red-600 bg-red-100') : u === 'important' ? (isDark ? 'text-orange-400 bg-orange-900/30' : 'text-orange-600 bg-orange-100') : (isDark ? 'text-amber-400 bg-amber-900/30' : 'text-amber-600 bg-amber-100');
+  const cdColor = (u) => {
+    if (u === 'critical') return c.cdCrit;
+    if (u === 'important') return c.cdImp;
+    return c.cdMed;
+  };
 
   // ─── Input ───
   const [timeframe, setTimeframe] = useState('right_now');
-  const [tasks, setTasks] = useState([{ text: '', deadline: '', who: '' }]);
+  const [tasks, setTasks] = usePersistentState('crisis-tasks', [{ text: '', deadline: '', who: '' }]);
   const [showDetails, setShowDetails] = useState({});
   const [energy, setEnergy] = useState('');
   const [hours, setHours] = useState('');
@@ -148,7 +181,7 @@ const CrisisPrioritizer = () => {
   const [dumpLoading, setDumpLoading] = useState(false);
 
   // ─── Results ───
-  const [results, setResults] = useState(null);
+  const [results, setResults] = usePersistentState('crisis-results', null);
   const [showBreather, setShowBreather] = useState(false);
   const [breatherDone, setBreatherDone] = useState(false);
   const [expanded, setExpanded] = useState({});
@@ -215,6 +248,10 @@ const CrisisPrioritizer = () => {
   const [journal, setJournal] = usePersistentState('crisis-journal', []);
   const [lastSessionPending, setLastSessionPending] = usePersistentState('crisis-last-pending', null);
   const [rollingPlan, setRollingPlan] = usePersistentState('crisis-rolling-plan', null);
+  const [history, setHistory] = usePersistentState('crisis-history', []);
+
+  // ─── Results ref for scroll-to ───
+  const resultsRef = React.useRef(null);
 
   // ─── Derived ───
   const filledTasks = tasks.filter(t => t.text.trim());
@@ -242,6 +279,13 @@ const CrisisPrioritizer = () => {
     }
   }, [showBreather, results]);
 
+  // ─── Scroll to results on load ───
+  useEffect(() => {
+    if (results && !showBreather) {
+      setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+    }
+  }, [results, showBreather]);
+
   // ═══ HANDLERS ═══
 
   const addTask = () => setTasks(p => [...p, { text: '', deadline: '', who: '' }]);
@@ -265,11 +309,12 @@ const CrisisPrioritizer = () => {
   const saveToJournal = useCallback((res, taskCount) => {
     const entry = {
       id: `cp_${Date.now()}`, date: new Date().toISOString(), timeframe,
+      preview: filledTasks[0]?.text?.slice(0, 6) || '',
       taskCount, actuallyUrgent: res.actual_crisis_tasks || 0,
       canWait: res.can_wait || 0, emotional: emotional || '?',
       followUp: null,
     };
-    setJournal(p => [entry, ...p].slice(0, 50));
+    setJournal(p => [entry, ...p].slice(0, 6));
     setLastSessionPending(entry);
   }, [setJournal, setLastSessionPending, timeframe, emotional]);
 
@@ -352,7 +397,7 @@ const CrisisPrioritizer = () => {
   const handlePattern = async () => {
     if (journal.length < 3) return;
     setPatternLoading(true);
-    const data = await callToolEndpoint('crisis-prioritizer', { action: 'pattern', sessions: journal.slice(0, 15) });
+    const data = await callToolEndpoint('crisis-prioritizer', { action: 'pattern', sessions: journal.slice(0, 6) });
     if (data) setPatternResult(data);
     setPatternLoading(false);
   };
@@ -448,7 +493,7 @@ const CrisisPrioritizer = () => {
   const handleDashInsights = async () => {
     if (!journal.length) return;
     setDashLoading(true);
-    const data = await callToolEndpoint('crisis-prioritizer', { action: 'dashboard-insights', sessions: journal.slice(0, 20) });
+    const data = await callToolEndpoint('crisis-prioritizer', { action: 'dashboard-insights', sessions: journal.slice(0, 6) });
     if (data) setDashInsights(data);
     setDashLoading(false);
   };
@@ -481,7 +526,7 @@ const CrisisPrioritizer = () => {
 
   const Section = ({ id, title, emoji, children, defaultOpen, badge }) => {
     const isOpen = expanded[id] !== undefined ? expanded[id] : defaultOpen;
-    return <div className={`${c.card} rounded-xl shadow-lg p-5`}><button onClick={() => toggleExpand(id)} className={`w-full flex items-center justify-between ${c.text}`}><h3 className="font-bold text-sm flex items-center gap-2"><span>{emoji}</span> {title}{badge && <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${c.bad} border`}>{badge}</span>}</h3><span className="text-xs">{isOpen ? '▲' : '▼'}</span></button>{isOpen && <div className="mt-4">{children}</div>}</div>;
+    return <div className={`${c.card} rounded-xl shadow-lg p-5`}><button onClick={() => toggleExpand(id)} className={`w-full flex items-center justify-between ${c.text}`}><h3 className="font-bold text-sm flex items-center gap-2"><span>{emoji}</span> {title}{badge && <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${c.danger} border`}>{badge}</span>}</h3><span className="text-xs">{isOpen ? '▲' : '▼'}</span></button>{isOpen && <div className="mt-4">{children}</div>}</div>;
   };
 
   const CountdownBadge = ({ deadline }) => {
@@ -498,16 +543,16 @@ const CrisisPrioritizer = () => {
     <div className="max-w-4xl mx-auto space-y-5">
       {/* Header */}
       <div>
-        <h2 className={`text-2xl font-bold ${c.text}`}>🚨 Crisis Prioritizer</h2>
-        <p className={`text-sm ${c.tm}`}>Separate real urgency from the feeling of urgency</p>
+        <h2 className={`text-2xl font-bold ${c.text}`}>{tool?.icon ?? '🚨'} {tool?.title ?? 'Crisis Prioritizer'}</h2>
+        <p className={`text-sm ${c.textSecondary}`}>Separate real urgency from the feeling of urgency</p>
       </div>
 
       {/* Nav */}
       <div className="flex flex-wrap gap-2">
-        {journal.length > 0 && <button onClick={() => { setShowJournal(!showJournal); setShowDashboard(false); }} className={`text-xs font-bold ${c.jt}`}>📔 History ({journal.length})</button>}
-        {journal.length >= 3 && <button onClick={handlePattern} disabled={patternLoading} className={`text-xs font-bold ${isDark ? 'text-purple-300' : 'text-purple-600'}`}>{patternLoading ? '⏳' : '📊 Patterns'}</button>}
-        {journal.length >= 2 && <button onClick={() => { setShowDashboard(!showDashboard); setShowJournal(false); }} className={`text-xs font-bold ${isDark ? 'text-cyan-300' : 'text-cyan-600'}`}>📈 Dashboard</button>}
-        {hasPendingFollowUp && <button onClick={() => setShowFollowUp(true)} className={`text-xs font-bold px-3 py-1 rounded-lg ${c.ok} border`}>✋ How did last time go?</button>}
+        {journal.length > 0 && <button onClick={() => { setShowJournal(!showJournal); setShowDashboard(false); }} className={`text-xs font-bold ${c.journalText}`}>📔 History ({journal.length})</button>}
+        {journal.length >= 3 && <button onClick={handlePattern} disabled={patternLoading} className={`text-xs ${c.navPatternBtn}`}>{patternLoading ? <span className="animate-spin">{tool?.icon ?? '🚨'}</span> : '📊 Patterns'}</button>}
+        {journal.length >= 2 && <button onClick={() => { setShowDashboard(!showDashboard); setShowJournal(false); }} className={`text-xs font-bold ${c.navDashBtn}`}>📈 Dashboard</button>}
+        {hasPendingFollowUp && <button onClick={() => setShowFollowUp(true)} className={`text-xs font-bold px-3 py-1 rounded-lg ${c.success} border`}>✋ How did last time go?</button>}
         {rollingPlan && !results && <button onClick={() => setShowRollingUpdate(!showRollingUpdate)} className={`text-xs font-bold px-3 py-1 rounded-lg ${c.rolling} border`}>🔄 Update Rolling Plan</button>}
       </div>
 
@@ -515,23 +560,23 @@ const CrisisPrioritizer = () => {
       {showOneThing && oneThingResult && <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-6">
         <div className={`max-w-md w-full rounded-2xl p-8 text-center shadow-2xl border-2 ${c.panicCard}`}>
           <p className="text-5xl mb-4">🎯</p>
-          <p className={`text-xs uppercase tracking-widest font-bold mb-2 ${c.tm}`}>Just One Thing</p>
+          <p className={`text-xs uppercase tracking-widest font-bold mb-2 ${c.textMuted}`}>Just One Thing</p>
           <h3 className={`text-xl font-bold mb-4 ${c.text}`}>{oneThingResult.the_one_thing}</h3>
-          <div className={`${c.cardAlt} rounded-xl p-4 mb-4 text-left border ${c.bdr}`}>
-            <p className={`text-xs font-bold uppercase ${c.tm} mb-1`}>Your first physical action:</p>
+          <div className={`${c.cardAlt} rounded-xl p-4 mb-4 text-left border ${c.border}`}>
+            <p className={`text-xs font-bold uppercase ${c.textMuted} mb-1`}>Your first physical action:</p>
             <p className={`text-sm font-semibold ${c.text}`}>{oneThingResult.first_physical_action}</p>
           </div>
           <div className="flex justify-center gap-4 mb-4 text-center">
-            <div><p className={`text-lg font-bold ${c.text}`}>{oneThingResult.time_estimate}</p><p className={`text-xs ${c.tm}`}>estimated</p></div>
+            <div><p className={`text-lg font-bold ${c.text}`}>{oneThingResult.time_estimate}</p><p className={`text-xs ${c.textMuted}`}>estimated</p></div>
           </div>
-          <p className={`text-sm ${c.ts} mb-2`}>{oneThingResult.why_this_one}</p>
-          <p className={`text-xs ${c.tm} mb-4 italic`}>{oneThingResult.everything_else}</p>
-          <p className={`text-2xl font-bold mb-6 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>{oneThingResult.grounding_word}</p>
+          <p className={`text-sm ${c.textSecondary} mb-2`}>{oneThingResult.why_this_one}</p>
+          <p className={`text-xs ${c.textMuted} mb-4 italic`}>{oneThingResult.everything_else}</p>
+          <p className={`text-2xl font-bold mb-6 ${c.success}`}>{oneThingResult.grounding_word}</p>
           <div className="flex gap-3 justify-center">
-            <button onClick={() => setShowOneThing(false)} className={`px-5 py-2.5 rounded-xl text-sm font-bold ${c.sec}`}>Show Full Triage</button>
-            <button onClick={() => { setShowOneThing(false); reset(); }} className={`px-5 py-2.5 rounded-xl text-sm font-bold ${c.pri}`}>Got It — Go</button>
+            <button onClick={() => setShowOneThing(false)} className={`px-5 py-2.5 rounded-xl text-sm font-bold ${c.btnSecondary}`}>Show Full Triage</button>
+            <button onClick={() => { setShowOneThing(false); reset(); }} className={`px-5 py-2.5 rounded-xl text-sm font-bold ${c.btnPrimary}`}>Got It — Go</button>
           </div>
-          {oneThingResult.after_this && <p className={`text-xs ${c.tm} mt-4`}>After this → {oneThingResult.after_this}</p>}
+          {oneThingResult.after_this && <p className={`text-xs ${c.textMuted} mt-4`}>After this → {oneThingResult.after_this}</p>}
         </div>
       </div>}
 
@@ -539,112 +584,112 @@ const CrisisPrioritizer = () => {
       {showDashboard && <div className={`${c.dash} border rounded-xl p-5 space-y-4`}>
         <div className="flex justify-between items-center">
           <h4 className={`font-bold text-sm ${c.text}`}>📈 Triage Dashboard</h4>
-          <button onClick={() => setShowDashboard(false)} className={`text-xs ${c.tm}`}>✕</button>
+          <button onClick={() => setShowDashboard(false)} className={`text-xs ${c.textMuted}`}>✕</button>
         </div>
         {dashStats && <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <div className={`${c.card} rounded-lg p-3 text-center border ${c.bdr}`}><p className={`text-2xl font-bold ${c.text}`}>{dashStats.sessions}</p><p className={`text-xs ${c.tm}`}>sessions</p></div>
-          <div className={`${c.card} rounded-lg p-3 text-center border ${c.bdr}`}><p className={`text-2xl font-bold ${c.text}`}>{dashStats.totalTasks}</p><p className={`text-xs ${c.tm}`}>tasks triaged</p></div>
-          <div className={`${c.card} rounded-lg p-3 text-center border ${c.bdr}`}><p className="text-2xl font-bold text-red-500">{dashStats.urgentPct}%</p><p className={`text-xs ${c.tm}`}>actually urgent</p></div>
-          <div className={`${c.card} rounded-lg p-3 text-center border ${c.bdr}`}><p className={`text-2xl font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>{100 - dashStats.urgentPct}%</p><p className={`text-xs ${c.tm}`}>could wait</p></div>
+          <div className={`${c.card} rounded-lg p-3 text-center border ${c.border}`}><p className={`text-2xl font-bold ${c.text}`}>{dashStats.sessions}</p><p className={`text-xs ${c.textMuted}`}>sessions</p></div>
+          <div className={`${c.card} rounded-lg p-3 text-center border ${c.border}`}><p className={`text-2xl font-bold ${c.text}`}>{dashStats.totalTasks}</p><p className={`text-xs ${c.textMuted}`}>tasks triaged</p></div>
+          <div className={`${c.card} rounded-lg p-3 text-center border ${c.border}`}><p className="text-2xl font-bold text-red-500">{dashStats.urgentPct}%</p><p className={`text-xs ${c.textMuted}`}>actually urgent</p></div>
+          <div className={`${c.card} rounded-lg p-3 text-center border ${c.border}`}><p className={`text-2xl font-bold ${c.success}`}>{100 - dashStats.urgentPct}%</p><p className={`text-xs ${c.textMuted}`}>could wait</p></div>
         </div>}
         <div className="flex gap-2">
-          <div className={`flex-1 ${c.cardAlt} rounded-lg p-3 border ${c.bdr}`}><p className={`text-xs ${c.tm}`}>Avg tasks/session</p><p className={`font-bold ${c.text}`}>{dashStats?.avgTasks}</p></div>
-          <div className={`flex-1 ${c.cardAlt} rounded-lg p-3 border ${c.bdr}`}><p className={`text-xs ${c.tm}`}>Most common state</p><p className={`font-bold ${c.text}`}>{dashStats?.topEmotion?.replace(/_/g, ' ')}</p></div>
+          <div className={`flex-1 ${c.cardAlt} rounded-lg p-3 border ${c.border}`}><p className={`text-xs ${c.textMuted}`}>Avg tasks/session</p><p className={`font-bold ${c.text}`}>{dashStats?.avgTasks}</p></div>
+          <div className={`flex-1 ${c.cardAlt} rounded-lg p-3 border ${c.border}`}><p className={`text-xs ${c.textMuted}`}>Most common state</p><p className={`font-bold ${c.text}`}>{dashStats?.topEmotion?.replace(/_/g, ' ')}</p></div>
         </div>
-        {!dashInsights && journal.length >= 3 && <button onClick={handleDashInsights} disabled={dashLoading} className={`w-full py-2 rounded-lg text-xs font-bold ${c.sec} border ${c.bdr}`}>{dashLoading ? '⏳ Analyzing...' : '🤖 Get AI Insights'}</button>}
-        {dashInsights && <div className={`${c.info} border rounded-lg p-4 space-y-2`}>
+        {!dashInsights && journal.length >= 3 && <button onClick={handleDashInsights} disabled={dashLoading} className={`w-full py-2 rounded-lg text-xs font-bold ${c.btnSecondary} border ${c.border}`}>{dashLoading ? <><span className="animate-spin">{tool?.icon ?? '🚨'}</span> Analyzing...</> : '🤖 Get AI Insights'}</button>}
+        {dashInsights && <div className={`${c.highlight} border rounded-lg p-4 space-y-2`}>
           <p className={`text-sm font-semibold ${c.text}`}>{dashInsights.headline_insight}</p>
           <div className="grid grid-cols-2 gap-2">
             <p className="text-xs">📅 Frequency: {dashInsights.frequency_trend}</p>
             <p className="text-xs">🎯 Calibration: {dashInsights.calibration_trend}</p>
           </div>
-          <p className={`text-xs italic ${c.ts}`}>{dashInsights.encouragement}</p>
+          <p className={`text-xs italic ${c.textSecondary}`}>{dashInsights.encouragement}</p>
         </div>}
       </div>}
 
       {/* ═══ ROLLING CRISIS UPDATE ═══ */}
       {showRollingUpdate && rollingPlan && !results && <div className={`${c.rolling} border rounded-xl p-5 space-y-3`}>
-        <div className="flex justify-between"><h4 className="font-bold text-sm">🔄 Update Rolling Plan</h4><button onClick={() => setShowRollingUpdate(false)} className={`text-xs ${c.tm}`}>✕</button></div>
-        <p className={`text-xs ${c.ts}`}>Your multi-week plan has {(rollingPlan.multi_week_plan || []).length} weeks. Check off completed items above, add new tasks below, then update.</p>
-        {(rollingPlan.multi_week_plan || []).map((w, wi) => <div key={wi} className={`${c.card} rounded-lg p-3 border ${c.bdr}`}>
+        <div className="flex justify-between"><h4 className="font-bold text-sm">🔄 Update Rolling Plan</h4><button onClick={() => setShowRollingUpdate(false)} className={`text-xs ${c.textMuted}`}>✕</button></div>
+        <p className={`text-xs ${c.textSecondary}`}>Your multi-week plan has {(rollingPlan.multi_week_plan || []).length} weeks. Check off completed items above, add new tasks below, then update.</p>
+        {(rollingPlan.multi_week_plan || []).map((w, wi) => <div key={wi} className={`${c.card} rounded-lg p-3 border ${c.border}`}>
           <p className={`text-xs font-bold ${c.text} mb-1`}>{w.week_label}: {w.focus}</p>
-          {(w.must_dos || []).map((t, ti) => <label key={ti} className="flex items-center gap-2 text-xs"><input type="checkbox" checked={!!checked[`mw${wi}-${ti}`]} onChange={() => toggleCheck(`mw${wi}-${ti}`)} className="w-3.5 h-3.5 accent-red-500" /><span className={checked[`mw${wi}-${ti}`] ? 'line-through opacity-60' : ''}>{t}</span></label>)}
+          {(w.must_dos || []).map((t, ti) => <label key={ti} className="flex items-center gap-2 text-xs"><input type="checkbox" checked={!!checked[`mw${wi}-${ti}`]} onChange={() => toggleCheck(`mw${wi}-${ti}`)} className="w-3.5 h-3.5 accent-cyan-600" /><span className={checked[`mw${wi}-${ti}`] ? 'line-through opacity-60' : ''}>{t}</span></label>)}
         </div>)}
         <textarea value={rollingNewTasks} onChange={e => setRollingNewTasks(e.target.value)} placeholder="New tasks? (one per line)" rows={3} className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input}`} />
-        <button onClick={handleRollingUpdate} disabled={rollingLoading} className={`w-full py-2.5 rounded-xl text-sm font-bold ${c.pri} disabled:opacity-50`}>{rollingLoading ? '⏳ Updating...' : '🔄 Re-triage My Plan'}</button>
-        {rollingResult && <div className={`${c.ok} border rounded-xl p-4 space-y-2`}>
+        <button onClick={handleRollingUpdate} disabled={rollingLoading} className={`w-full py-2.5 rounded-xl text-sm font-bold ${c.btnPrimary} disabled:opacity-50`}>{rollingLoading ? <><span className="animate-spin">{tool?.icon ?? '🚨'}</span> Updating...</> : '🔄 Re-triage My Plan'}</button>
+        {rollingResult && <div className={`${c.success} border rounded-xl p-4 space-y-2`}>
           <p className="text-sm">{rollingResult.progress_acknowledgment}</p>
-          <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${rollingResult.plan_status === 'on_track' || rollingResult.plan_status === 'ahead' ? c.ok : rollingResult.plan_status === 'slightly_behind' ? c.warn : c.bad} border`}>{rollingResult.plan_status?.replace(/_/g, ' ')}</span>
-          <p className={`text-xs ${c.ts}`}>{rollingResult.status_note}</p>
-          {rollingResult.sustainability_update && <p className={`text-xs ${c.ts}`}>💛 {rollingResult.sustainability_update}</p>}
+          <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${rollingResult.plan_status === 'on_track' || rollingResult.plan_status === 'ahead' ? c.success : rollingResult.plan_status === 'slightly_behind' ? c.warning : c.danger} border`}>{rollingResult.plan_status?.replace(/_/g, ' ')}</span>
+          <p className={`text-xs ${c.textSecondary}`}>{rollingResult.status_note}</p>
+          {rollingResult.sustainability_update && <p className={`text-xs ${c.textSecondary}`}>💛 {rollingResult.sustainability_update}</p>}
           <p className={`text-xs font-bold`}>Next check-in: {rollingResult.next_check_in}</p>
         </div>}
-        <button onClick={() => { setRollingPlan(null); setShowRollingUpdate(false); }} className={`text-xs ${c.tm}`}>🗑️ Clear rolling plan</button>
+        <button onClick={() => { setRollingPlan(null); setShowRollingUpdate(false); }} className={`text-xs ${c.textMuted}`}>🗑️ Clear rolling plan</button>
       </div>}
 
       {/* Follow-up prompt */}
-      {showFollowUp && !results && <div className={`${c.info} border rounded-xl p-5 space-y-3`}>
-        <div className="flex justify-between"><h4 className="font-bold text-sm">✋ Follow-up: {fmtDate(lastSessionPending?.date)}</h4><button onClick={() => { setShowFollowUp(false); setLastSessionPending(null); }} className={`text-xs ${c.tm}`}>Skip</button></div>
+      {showFollowUp && !results && <div className={`${c.highlight} border rounded-xl p-5 space-y-3`}>
+        <div className="flex justify-between"><h4 className="font-bold text-sm">✋ Follow-up: {fmtDate(lastSessionPending?.date)}</h4><button onClick={() => { setShowFollowUp(false); setLastSessionPending(null); }} className={`text-xs ${c.textMuted}`}>Skip</button></div>
         <p className="text-xs">{lastSessionPending?.taskCount} tasks, {lastSessionPending?.actuallyUrgent} marked urgent. How did it go?</p>
         <input value={fuDone} onChange={e => setFuDone(e.target.value)} placeholder="What got done?" className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input}`} />
         <input value={fuDidnt} onChange={e => setFuDidnt(e.target.value)} placeholder="What didn't get done?" className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input}`} />
         <input value={fuSurprises} onChange={e => setFuSurprises(e.target.value)} placeholder="Any surprises? (optional)" className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input}`} />
-        <button onClick={handleFollowUp} disabled={fuLoading} className={`w-full py-2.5 rounded-xl text-sm font-bold ${c.pri} disabled:opacity-50`}>{fuLoading ? '⏳' : '📊 Analyze'}</button>
-        {fuResult && <div className={`${c.ok} border rounded-xl p-4 space-y-2`}>
+        <button onClick={handleFollowUp} disabled={fuLoading} className={`w-full py-2.5 rounded-xl text-sm font-bold ${c.btnPrimary} disabled:opacity-50`}>{fuLoading ? <span className="animate-spin">{tool?.icon ?? '🚨'}</span> : '📊 Analyze'}</button>
+        {fuResult && <div className={`${c.success} border rounded-xl p-4 space-y-2`}>
           <p className="text-sm">{fuResult.hindsight_summary}</p>
           <p className="text-xs">🎯 Calibration: {fuResult.calibration_insight}</p>
           {fuResult.deferral_note && <p className="text-xs">✅ Deferrals: {fuResult.deferral_note}</p>}
-          {fuResult.pattern_hint && <p className={`text-xs ${isDark ? 'text-purple-300' : 'text-purple-600'}`}>📊 {fuResult.pattern_hint}</p>}
-          <p className={`text-xs italic ${c.ts}`}>{fuResult.encouragement}</p>
-          <button onClick={() => { setShowFollowUp(false); setFuResult(null); }} className={`text-xs font-bold ${c.tm}`}>Done — start new triage</button>
+          {fuResult.pattern_hint && <p className={`text-xs ${c.patternText}`}>📊 {fuResult.pattern_hint}</p>}
+          <p className={`text-xs italic ${c.textSecondary}`}>{fuResult.encouragement}</p>
+          <button onClick={() => { setShowFollowUp(false); setFuResult(null); }} className={`text-xs font-bold ${c.textMuted}`}>Done — start new triage</button>
         </div>}
       </div>}
 
       {/* Pattern result */}
-      {patternResult && <div className={`${c.purp} border rounded-xl p-5 space-y-3`}>
-        <div className="flex justify-between"><h4 className="font-bold text-sm">📊 Your Crisis Patterns</h4><button onClick={() => setPatternResult(null)} className={`text-xs ${c.tm}`}>✕</button></div>
+      {patternResult && <div className={`${c.purpWarn} border rounded-xl p-5 space-y-3`}>
+        <div className="flex justify-between"><h4 className="font-bold text-sm">📊 Your Crisis Patterns</h4><button onClick={() => setPatternResult(null)} className={`text-xs ${c.textMuted}`}>✕</button></div>
         <p className="text-sm">{patternResult.pattern_summary}</p>
         <p className="text-xs">📅 Frequency: {patternResult.frequency_insight}</p>
         <p className="text-xs">🎯 Calibration: {patternResult.urgency_calibration}</p>
         {patternResult.recurring_themes?.length > 0 && <div className="text-xs space-y-1">{patternResult.recurring_themes.map((t, i) => <p key={i}>🔄 {t}</p>)}</div>}
         <p className="text-xs font-bold">💡 {patternResult.biggest_insight}</p>
-        {patternResult.improvement_noted && <p className={`text-xs ${isDark ? 'text-emerald-300' : 'text-emerald-600'}`}>📈 {patternResult.improvement_detail}</p>}
-        <p className={`text-xs italic ${c.ts}`}>{patternResult.encouragement}</p>
+        {patternResult.improvement_noted && <p className={`text-xs ${c.success}`}>📈 {patternResult.improvement_detail}</p>}
+        <p className={`text-xs italic ${c.textSecondary}`}>{patternResult.encouragement}</p>
       </div>}
 
       {/* Journal */}
       {showJournal && <div className={`${c.jnl} border rounded-xl p-4 space-y-2`}>
-        <div className="flex justify-between"><h4 className={`font-bold text-sm ${c.jt}`}>📔 Crisis History</h4><button onClick={() => setShowJournal(false)} className={`text-xs ${c.tm}`}>✕</button></div>
-        {journal.map(e => <div key={e.id} className={`${c.card} border ${c.bdr} rounded-lg p-3`}>
+        <div className="flex justify-between"><h4 className={`font-bold text-sm ${c.journalText}`}>📔 Crisis History</h4><button onClick={() => setShowJournal(false)} className={`text-xs ${c.textMuted}`}>✕</button></div>
+        {journal.map(e => <div key={e.id} className={`${c.card} border ${c.border} rounded-lg p-3`}>
           <div className="flex justify-between items-center">
-            <div><span className={`text-xs font-bold ${c.text}`}>{fmtDate(e.date)}</span><span className={`text-xs ${c.tm} ml-2`}>{e.taskCount} tasks · {e.actuallyUrgent} urgent · {e.emotional}</span></div>
+            <div><span className={`text-xs font-bold ${c.text}`}>{fmtDate(e.date)}</span><span className={`text-xs ${c.textMuted} ml-2`}>{e.taskCount} tasks · {e.actuallyUrgent} urgent · {e.emotional}</span></div>
             <div className="flex gap-2">
-              {e.followUp && <span className={`text-xs ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>✓ reviewed</span>}
-              <button onClick={() => setJournal(p => p.filter(j => j.id !== e.id))} className={`text-xs ${c.tm}`}>🗑️</button>
+              {e.followUp && <span className={`text-xs ${c.success}`}>✓ reviewed</span>}
+              <button onClick={() => setJournal(p => p.filter(j => j.id !== e.id))} className={`text-xs ${c.textMuted}`}>🗑️</button>
             </div>
           </div>
         </div>)}
-        {journal.length === 0 && <p className={`text-xs ${c.tm}`}>No history yet.</p>}
+        {journal.length === 0 && <p className={`text-xs ${c.textMuted}`}>No history yet.</p>}
       </div>}
 
       {/* ═══ BREATHER OVERLAY ═══ */}
       {showBreather && <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-6">
-        <div className={`max-w-md w-full rounded-2xl p-8 text-center shadow-2xl ${isDark ? 'bg-zinc-800' : 'bg-white'}`}>
+        <div className={`max-w-md w-full rounded-2xl p-8 text-center shadow-2xl ${c.card}`}>
           {!results ? <>
             <p className="text-4xl mb-4">🫁</p>
             <h3 className={`text-xl font-bold mb-3 ${c.text}`}>Taking a breath while we analyze...</h3>
-            <p className={`text-sm ${c.ts} mb-6`}>In through your nose... out through your mouth.</p>
-            <div className="flex items-center justify-center gap-3"><span className="inline-block animate-spin text-2xl">⏳</span><span className={`text-sm ${c.tm}`}>Separating real urgency from noise...</span></div>
+            <p className={`text-sm ${c.textSecondary} mb-6`}>In through your nose... out through your mouth.</p>
+            <div className="flex items-center justify-center gap-3"><span className="inline-block animate-spin text-2xl">{tool?.icon ?? '🚨'}</span><span className={`text-sm ${c.textMuted}`}>Separating real urgency from noise...</span></div>
           </> : !breatherDone ? <>
             <p className="text-4xl mb-4">🫁</p>
             <h3 className={`text-xl font-bold mb-3 ${c.text}`}>Before we look at this...</h3>
-            <p className={`text-sm ${c.ts} mb-6`}>One slow breath. The tasks will still be there in 3 seconds.</p>
-            <div className={`w-16 h-16 mx-auto rounded-full border-4 ${isDark ? 'border-zinc-600' : 'border-gray-200'} animate-pulse`}><div className="w-full h-full rounded-full bg-blue-400/30 animate-ping" style={{ animationDuration: '2s' }} /></div>
+            <p className={`text-sm ${c.textSecondary} mb-6`}>One slow breath. The tasks will still be there in 3 seconds.</p>
+            <div className={`w-16 h-16 mx-auto rounded-full border-4 ${c.border} animate-pulse`}><div className="w-full h-full rounded-full bg-sky-400/30 animate-ping" style={{ animationDuration: '2s' }} /></div>
           </> : <>
             <p className="text-4xl mb-4">✓</p>
             <h3 className={`text-xl font-bold mb-3 ${c.text}`}>Good. Let's look clearly.</h3>
-            <p className={`text-sm ${c.ts} mb-6`}>{results.grounding_message || "Not everything that feels urgent is actually urgent."}</p>
-            <button onClick={() => { setShowBreather(false); setBreatherDone(false); }} className={`px-6 py-3 rounded-xl font-semibold ${c.pri}`}>Show My Priorities</button>
+            <p className={`text-sm ${c.textSecondary} mb-6`}>{results.grounding_message || "Not everything that feels urgent is actually urgent."}</p>
+            <button onClick={() => { setShowBreather(false); setBreatherDone(false); }} className={`px-6 py-3 rounded-xl font-semibold ${c.btnPrimary}`}>Show My Priorities</button>
           </>}
         </div>
       </div>}
@@ -652,19 +697,22 @@ const CrisisPrioritizer = () => {
       {/* ═══ INPUT VIEW ═══ */}
       {!results && !showBreather && !showFollowUp && <div className="space-y-5">
 
+        {/* Pre-result cross-ref */}
+        <p className={`text-xs ${c.textMuted}`}>Already past the crisis point? <a href="/CrashPredictor" target="_blank" rel="noopener noreferrer" className={linkStyle}>CrashPredictor</a> helps you spot burnout before it arrives.</p>
+
         {/* Quick Templates */}
         <div className={`${c.card} rounded-xl shadow-lg p-4`}>
-          <p className={`text-xs font-bold ${c.tm} mb-2`}>⚡ Quick Start</p>
+          <p className={`text-xs font-bold ${c.textMuted} mb-2`}>⚡ Quick Start</p>
           <div className="grid grid-cols-2 gap-2">{QUICK_TEMPLATES.map(tpl => <button key={tpl.id} onClick={() => applyTemplate(tpl)} className={`px-3 py-2.5 rounded-lg border text-xs font-semibold text-left ${c.chip(false)} hover:border-red-400 transition-all`}><span className="block text-base mb-0.5">{tpl.emoji}</span>{tpl.l.split(' ').slice(1).join(' ')}</button>)}</div>
         </div>
 
         {/* Panic Button — Just One Thing */}
-        <button onClick={handleOneThing} disabled={oneThingLoading || filledTasks.length === 0} className={`w-full py-3 rounded-xl font-bold text-sm border-2 transition-all ${filledTasks.length === 0 ? `${c.sec} opacity-50 cursor-not-allowed border-transparent` : `${c.panic} shadow-lg hover:shadow-xl`}`}>
-          {oneThingLoading ? <><span className="animate-spin inline-block">⏳</span> Finding your one thing...</> : <>🎯 I Can't Even — Just Tell Me ONE Thing</>}
+        <button onClick={handleOneThing} disabled={oneThingLoading || filledTasks.length === 0} className={`w-full py-3 rounded-xl font-bold text-sm border-2 transition-all ${filledTasks.length === 0 ? `${c.btnSecondary} opacity-50 cursor-not-allowed border-transparent` : `${c.panic} shadow-lg hover:shadow-xl`}`}>
+          {oneThingLoading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🚨'}</span> Finding your one thing...</> : <>🎯 I Can't Even — Just Tell Me ONE Thing</>}
         </button>
 
         {/* Timeframe */}
-        <div className="flex gap-2">{TIMEFRAME_OPTS.map(o => <button key={o.v} onClick={() => setTimeframe(o.v)} className={`flex-1 px-3 py-3 rounded-xl border text-sm font-semibold text-center ${c.chip(timeframe === o.v)}`}><span className="block text-lg mb-0.5">{o.l.split(' ')[0]}</span>{o.l.split(' ').slice(1).join(' ')}<span className={`block text-xs font-normal mt-0.5 ${c.tm}`}>{o.d}</span></button>)}</div>
+        <div className="flex gap-2">{TIMEFRAME_OPTS.map(o => <button key={o.v} onClick={() => setTimeframe(o.v)} className={`flex-1 px-3 py-3 rounded-xl border text-sm font-semibold text-center ${c.chip(timeframe === o.v)}`}><span className="block text-lg mb-0.5">{o.l.split(' ')[0]}</span>{o.l.split(' ').slice(1).join(' ')}<span className={`block text-xs font-normal mt-0.5 ${c.textMuted}`}>{o.d}</span></button>)}</div>
 
         {/* Quick dump toggle + Voice toggle */}
         <div className="flex gap-2 flex-wrap">
@@ -674,9 +722,9 @@ const CrisisPrioritizer = () => {
         {/* Quick dump */}
         {dumpMode && <div className={`${c.card} rounded-xl shadow-lg p-5 space-y-3`}>
           <p className={`text-sm font-bold ${c.text}`}>🧠 Paste your panicked thoughts</p>
-          <p className={`text-xs ${c.tm}`}>Can't organize? Just dump everything. We'll extract the tasks.</p>
+          <p className={`text-xs ${c.textMuted}`}>Can't organize? Just dump everything. We'll extract the tasks.</p>
           <textarea value={dumpText} onChange={e => setDumpText(e.target.value)} placeholder="Everything is falling apart. I have to call the dentist and my boss wants that report by Friday and I forgot to pay rent and..." rows={5} className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input}`} />
-          <button onClick={handleDump} disabled={dumpLoading || !dumpText.trim()} className={`w-full py-3 rounded-xl font-bold text-sm ${c.pri} disabled:opacity-50`}>{dumpLoading ? '⏳ Extracting tasks...' : '🧠 Extract My Tasks'}</button>
+          <button onClick={handleDump} disabled={dumpLoading || !dumpText.trim()} className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-50`}>{dumpLoading ? <><span className="animate-spin">{tool?.icon ?? '🚨'}</span> Extracting tasks...</> : '🧠 Extract My Tasks'}</button>
         </div>}
 
         {/* Emotional + Energy + Hours + Voice */}
@@ -694,16 +742,16 @@ const CrisisPrioritizer = () => {
           {/* Voice / tone */}
           <div className={`${c.card} rounded-xl shadow-lg p-5`}>
             <label className={`block font-semibold text-sm ${c.text} mb-1`}>💬 How should I talk to you?</label>
-            <p className={`text-xs ${c.tm} mb-3`}>Sets the tone for grounding messages and analysis</p>
+            <p className={`text-xs ${c.textMuted} mb-3`}>Sets the tone for grounding messages and analysis</p>
             <Pill options={VOICE_OPTS} value={voice} setter={setVoice} />
           </div>
 
           {/* Tasks */}
           <div className={`${c.card} rounded-xl shadow-lg p-5 ${validFail ? 'ring-2 ring-red-500' : ''}`}>
             <label className={`block font-semibold text-sm ${c.text} mb-1`}>
-              {timeframe === 'right_now' ? "What feels urgent right now?" : timeframe === 'this_week' ? "Everything on your plate this week" : "Everything weighing on you"} <span className="text-red-500">*</span>
+              {timeframe === 'right_now' ? "What feels urgent right now?" : timeframe === 'this_week' ? "Everything on your plate this week" : "Everything weighing on you"} <span className={c.textMuted}>*</span>
             </label>
-            <p className={`text-xs ${validFail ? 'text-red-500' : c.tm} mb-4`}>{validFail ? 'Add at least one task' : 'List everything. The analysis will sort real from noise.'}</p>
+            <p className={`text-xs ${validFail ? 'text-red-500' : c.textMuted} mb-4`}>{validFail ? 'Add at least one task' : 'List everything. The analysis will sort real from noise.'}</p>
             <div className="space-y-3 mb-4">
               {tasks.map((task, i) => <div key={i}>
                 <div className="flex gap-2">
@@ -713,8 +761,8 @@ const CrisisPrioritizer = () => {
                     data-task-index={i} placeholder={`Task ${i + 1}...`}
                     className={`flex-1 p-3 border rounded-lg outline-none text-sm focus:ring-2 focus:ring-red-300 ${c.input}`} />
                   <button onClick={() => toggleDetail(i)} className={`px-3 rounded-lg border text-sm ${showDetails[i] ? c.chip(true) : c.chip(false)}`}>ℹ️</button>
-                  {task.text.trim().length > 15 && <button onClick={() => handleSplitTask(task.text.trim())} disabled={splitLoading && splitTask === task.text.trim()} className={`px-2.5 rounded-lg border text-xs ${c.chip(false)}`} title="Split this task">{splitLoading && splitTask === task.text.trim() ? '⏳' : '🧩'}</button>}
-                  {tasks.length > 1 && <button onClick={() => removeTask(i)} className={`px-3 rounded-lg ${c.sec}`}>✕</button>}
+                  {task.text.trim().length > 15 && <button onClick={() => handleSplitTask(task.text.trim())} disabled={splitLoading && splitTask === task.text.trim()} className={`px-2.5 rounded-lg border text-xs ${c.chip(false)}`} title="Split this task">{splitLoading && splitTask === task.text.trim() ? <span className="animate-spin">{tool?.icon ?? '🚨'}</span> : '🧩'}</button>}
+                  {tasks.length > 1 && <button onClick={() => removeTask(i)} className={`px-3 rounded-lg ${c.btnSecondary}`}>✕</button>}
                 </div>
                 {showDetails[i] && <div className="flex gap-2 mt-2">
                   <input type="text" value={task.deadline} onChange={e => updateTask(i, 'deadline', e.target.value)} placeholder="Deadline?" className={`flex-1 p-2 border rounded-lg text-xs ${c.input}`} />
@@ -726,116 +774,118 @@ const CrisisPrioritizer = () => {
           </div>
 
           {/* Task Split Result (inline) */}
-          {splitResult && <div className={`${c.split} border rounded-xl p-5 space-y-3`}>
-            <div className="flex justify-between"><h4 className="font-bold text-sm">🧩 Task Breakdown</h4><button onClick={() => { setSplitTask(null); setSplitResult(null); }} className={`text-xs ${c.tm}`}>✕</button></div>
-            <p className={`text-xs ${c.ts}`}>{splitResult.diagnosis}</p>
-            <div className="space-y-2">{(splitResult.sub_tasks || []).map((st, i) => <div key={i} className={`${c.card} border ${c.bdr} rounded-lg p-3 flex items-start gap-3`}>
+          {splitResult && <div className={`${c.splitBg} border rounded-xl p-5 space-y-3`}>
+            <div className="flex justify-between"><h4 className="font-bold text-sm">🧩 Task Breakdown</h4><button onClick={() => { setSplitTask(null); setSplitResult(null); }} className={`text-xs ${c.textMuted}`}>✕</button></div>
+            <p className={`text-xs ${c.textSecondary}`}>{splitResult.diagnosis}</p>
+            <div className="space-y-2">{(splitResult.sub_tasks || []).map((st, i) => <div key={i} className={`${c.card} border ${c.border} rounded-lg p-3 flex items-start gap-3`}>
               <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${urgStyle(st.urgency)} border`}>{i + 1}</span>
               <div className="flex-1">
                 <p className={`text-sm font-semibold ${c.text}`}>{st.task}</p>
                 <div className="flex gap-3 mt-1">
-                  <span className={`text-xs ${c.tm}`}>⏱️ {st.time_estimate}</span>
-                  <span className={`text-xs ${c.tm}`}>💪 {st.effort_level}</span>
-                  {st.depends_on && <span className={`text-xs ${c.tm}`}>⤵️ after #{st.depends_on}</span>}
+                  <span className={`text-xs ${c.textMuted}`}>⏱️ {st.time_estimate}</span>
+                  <span className={`text-xs ${c.textMuted}`}>💪 {st.effort_level}</span>
+                  {st.depends_on && <span className={`text-xs ${c.textMuted}`}>⤵️ after #{st.depends_on}</span>}
                 </div>
-                {st.note && <p className={`text-xs ${c.ts} mt-1`}>{st.note}</p>}
+                {st.note && <p className={`text-xs ${c.textSecondary} mt-1`}>{st.note}</p>}
               </div>
             </div>)}</div>
-            {splitResult.quick_wins?.length > 0 && <p className={`text-xs ${isDark ? 'text-emerald-300' : 'text-emerald-600'}`}>⚡ Quick wins: items #{splitResult.quick_wins.join(', #')}</p>}
-            <p className={`text-xs ${c.tm}`}>Total: {splitResult.total_time_estimate}</p>
+            {splitResult.quick_wins?.length > 0 && <p className={`text-xs ${c.success}`}>⚡ Quick wins: items #{splitResult.quick_wins.join(', #')}</p>}
+            <p className={`text-xs ${c.textMuted}`}>Total: {splitResult.total_time_estimate}</p>
             <div className="flex gap-2">
-              <button onClick={acceptSplit} className={`px-4 py-2 rounded-lg text-xs font-bold ${c.pri}`}>✅ Replace with sub-tasks</button>
-              <button onClick={() => { setSplitTask(null); setSplitResult(null); }} className={`px-4 py-2 rounded-lg text-xs font-bold ${c.sec}`}>Keep original</button>
+              <button onClick={acceptSplit} className={`px-4 py-2 rounded-lg text-xs font-bold ${c.btnPrimary}`}>✅ Replace with sub-tasks</button>
+              <button onClick={() => { setSplitTask(null); setSplitResult(null); }} className={`px-4 py-2 rounded-lg text-xs font-bold ${c.btnSecondary}`}>Keep original</button>
             </div>
           </div>}
 
           {/* Submit */}
-          <button onClick={handlePrioritize} disabled={loading} className={`w-full py-4 rounded-xl font-semibold text-lg flex items-center justify-center gap-2 shadow-lg ${loading ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : c.pri}`}>
-            {loading ? <><span className="animate-spin">⏳</span> Analyzing...</> : <>🚨 {timeframe === 'right_now' ? 'Prioritize These Tasks' : timeframe === 'this_week' ? 'Build My Week Plan' : 'Build Multi-Week Plan'}</>}
+          <button onClick={handlePrioritize} disabled={loading || filledTasks.length === 0} className={`w-full py-4 rounded-xl font-semibold text-lg flex items-center justify-center gap-2 shadow-lg ${loading || filledTasks.length === 0 ? `${c.btnSecondary} opacity-50 cursor-not-allowed` : c.btnPrimary}`}>
+            {loading ? <><span className="animate-spin">{tool?.icon ?? '🚨'}</span> Analyzing...</> : <>🚨 {timeframe === 'right_now' ? 'Prioritize These Tasks' : timeframe === 'this_week' ? 'Build My Week Plan' : 'Build Multi-Week Plan'}</>}
           </button>
-          <p className={`text-xs text-center ${c.tm}`}>Enter adds a task · Ctrl+Enter submits</p>
+          <p className={`text-xs text-center ${c.textMuted}`}>Enter adds a task · Ctrl+Enter submits</p>
         </>}
 
-        {error && <div className={`p-4 rounded-xl ${c.bad} border text-sm`}>⚠️ {error}</div>}
+        {error && <div className={`p-4 rounded-xl ${c.danger} border text-sm`}>⚠️ {error}</div>}
       </div>}
 
       {/* ═══ RESULTS VIEW ═══ */}
-      {results && !showBreather && <div className="space-y-5">
+      {results && !showBreather && <div ref={resultsRef} className="space-y-5">
 
         {/* Controls */}
         <div className={`${c.card} rounded-xl shadow-lg p-4 flex items-center justify-between flex-wrap gap-3`}>
           <span className={`text-sm font-semibold ${c.text}`}>{filledTasks.length} tasks analyzed</span>
           <div className="flex items-center gap-2 flex-wrap">
-            <button onClick={handleOneThing} disabled={oneThingLoading} className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold ${c.panic} border`}>{oneThingLoading ? '⏳' : '🎯 One Thing'}</button>
-            <button onClick={handleRetriage} disabled={retriageLoading} className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold ${c.sec}`}>{retriageLoading ? '⏳' : "🔄 What's next?"}</button>
-            {timeframe === 'right_now' && <button onClick={handleTimeBlock} disabled={timeBlockLoading} className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold ${c.sec}`}>{timeBlockLoading ? '⏳' : '⏰ Build Schedule'}</button>}
-            <button onClick={() => setShowAccountability(!showAccountability)} className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold ${c.sec}`}>🤝 Share Plan</button>
+            <button onClick={handleOneThing} disabled={oneThingLoading} className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold ${c.panic} border`}>{oneThingLoading ? <span className="animate-spin">{tool?.icon ?? '🚨'}</span> : '🎯 One Thing'}</button>
+            <button onClick={handleRetriage} disabled={retriageLoading} className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnSecondary}`}>{retriageLoading ? <span className="animate-spin">{tool?.icon ?? '🚨'}</span> : "🔄 What's next?"}</button>
+            {timeframe === 'right_now' && <button onClick={handleTimeBlock} disabled={timeBlockLoading} className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnSecondary}`}>{timeBlockLoading ? <span className="animate-spin">{tool?.icon ?? '🚨'}</span> : '⏰ Build Schedule'}</button>}
+            <button onClick={() => setShowAccountability(!showAccountability)} className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnSecondary}`}>🤝 Share Plan</button>
             <CopyBtn content={buildText()} label="Copy" />
-            <button onClick={reset} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${isDark ? 'bg-red-900/30 text-red-300' : 'bg-red-50 text-red-700'}`}>🔄 Start Over</button>
+            <button onClick={reset} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnSecondary}`}>🔄 Start Over</button>
           </div>
         </div>
 
+        <ActionBar content={buildText()} title="Crisis Prioritizer" />
+
         {/* Accountability Snapshot */}
-        {showAccountability && <div className={`${c.snap} border rounded-xl p-5 space-y-3`}>
-          <div className="flex justify-between"><h4 className="font-bold text-sm">🤝 Accountability Snapshot</h4><button onClick={() => { setShowAccountability(false); setAcctResult(null); }} className={`text-xs ${c.tm}`}>✕</button></div>
-          <p className={`text-xs ${c.ts}`}>Share your plan with someone for accountability</p>
+        {showAccountability && <div className={`${c.acctBg} border rounded-xl p-5 space-y-3`}>
+          <div className="flex justify-between"><h4 className="font-bold text-sm">🤝 Accountability Snapshot</h4><button onClick={() => { setShowAccountability(false); setAcctResult(null); }} className={`text-xs ${c.textMuted}`}>✕</button></div>
+          <p className={`text-xs ${c.textSecondary}`}>Share your plan with someone for accountability</p>
           <Pill options={RECIPIENT_OPTS} value={acctRecipient} setter={setAcctRecipient} />
-          <button onClick={handleAccountability} disabled={acctLoading} className={`w-full py-2.5 rounded-xl text-sm font-bold ${c.pri} disabled:opacity-50`}>{acctLoading ? '⏳' : '📱 Generate Message'}</button>
-          {acctResult && <div className={`${c.ok} border rounded-xl p-4 space-y-2`}>
+          <button onClick={handleAccountability} disabled={acctLoading} className={`w-full py-2.5 rounded-xl text-sm font-bold ${c.btnPrimary} disabled:opacity-50`}>{acctLoading ? <span className="animate-spin">{tool?.icon ?? '🚨'}</span> : '📱 Generate Message'}</button>
+          {acctResult && <div className={`${c.success} border rounded-xl p-4 space-y-2`}>
             <p className="text-sm whitespace-pre-line">{acctResult.message}</p>
-            {acctResult.check_in_time && <p className={`text-xs ${c.ts}`}>📱 Good check-in time: {acctResult.check_in_time}</p>}
+            {acctResult.check_in_time && <p className={`text-xs ${c.textSecondary}`}>📱 Good check-in time: {acctResult.check_in_time}</p>}
             <CopyBtn content={`${acctResult.message}${BRAND}`} label="Copy message" />
           </div>}
         </div>}
 
         {/* Re-triage result */}
-        {retriageResult && <div className={`${c.info} border rounded-xl p-5 space-y-3`}>
-          <div className="flex justify-between"><h4 className="font-bold text-sm">🔄 Re-triage</h4><button onClick={() => setRetriageResult(null)} className={`text-xs ${c.tm}`}>✕</button></div>
+        {retriageResult && <div className={`${c.highlight} border rounded-xl p-5 space-y-3`}>
+          <div className="flex justify-between"><h4 className="font-bold text-sm">🔄 Re-triage</h4><button onClick={() => setRetriageResult(null)} className={`text-xs ${c.textMuted}`}>✕</button></div>
           <p className="text-sm">{retriageResult.acknowledgment}</p>
-          {retriageResult.can_stop_now && <div className={`${c.ok} border rounded-lg p-3 text-xs font-bold`}>✅ You can stop now. {retriageResult.stop_reasoning}</div>}
+          {retriageResult.can_stop_now && <div className={`${c.success} border rounded-lg p-3 text-xs font-bold`}>✅ You can stop now. {retriageResult.stop_reasoning}</div>}
           {!retriageResult.can_stop_now && retriageResult.still_must_do?.length > 0 && <div><p className="text-xs font-bold mb-1">Still need to do:</p>{retriageResult.still_must_do.map((t, i) => <p key={i} className="text-xs">• {t}</p>)}</div>}
           {retriageResult.next_action && <p className="text-xs font-bold">→ Next: {retriageResult.next_action}</p>}
-          <p className={`text-xs ${c.ts}`}>🔋 {retriageResult.energy_check}</p>
+          <p className={`text-xs ${c.textSecondary}`}>🔋 {retriageResult.energy_check}</p>
         </div>}
 
         {/* Time-Block Schedule */}
         {timeBlockResult && <Section id="timeblock" title="Your Time-Blocked Schedule" emoji="⏰" defaultOpen>
           <div className="space-y-1">
-            <p className={`text-sm ${c.ts} mb-3`}>{timeBlockResult.schedule_summary}</p>
+            <p className={`text-sm ${c.textSecondary} mb-3`}>{timeBlockResult.schedule_summary}</p>
             <div className="flex flex-wrap gap-3 mb-4">
-              <div className="text-center"><p className={`text-sm font-bold ${c.text}`}>{timeBlockResult.start_time}</p><p className={`text-xs ${c.tm}`}>start</p></div>
-              <div className="text-center"><p className={`text-sm font-bold ${c.text}`}>{timeBlockResult.end_time}</p><p className={`text-xs ${c.tm}`}>done</p></div>
-              <div className="text-center"><p className={`text-sm font-bold ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>{timeBlockResult.total_work_time}m</p><p className={`text-xs ${c.tm}`}>work</p></div>
-              <div className="text-center"><p className={`text-sm font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>{timeBlockResult.total_break_time}m</p><p className={`text-xs ${c.tm}`}>breaks</p></div>
+              <div className="text-center"><p className={`text-sm font-bold ${c.text}`}>{timeBlockResult.start_time}</p><p className={`text-xs ${c.textMuted}`}>start</p></div>
+              <div className="text-center"><p className={`text-sm font-bold ${c.text}`}>{timeBlockResult.end_time}</p><p className={`text-xs ${c.textMuted}`}>done</p></div>
+              <div className="text-center"><p className={`text-sm font-bold ${c.workTime}`}>{timeBlockResult.total_work_time}m</p><p className={`text-xs ${c.textMuted}`}>work</p></div>
+              <div className="text-center"><p className={`text-sm font-bold ${c.success}`}>{timeBlockResult.total_break_time}m</p><p className={`text-xs ${c.textMuted}`}>breaks</p></div>
             </div>
             {(timeBlockResult.blocks || []).map((block, i) => <div key={i} className={`flex items-stretch gap-3 ${block.type === 'break' ? 'opacity-75' : ''}`}>
-              <div className="w-20 flex-shrink-0 text-right pr-2 pt-2"><p className={`text-xs font-mono font-bold ${c.text}`}>{block.start}</p><p className={`text-xs font-mono ${c.tm}`}>{block.end}</p></div>
-              <div className={`w-1 flex-shrink-0 rounded-full ${block.type === 'break' ? (isDark ? 'bg-blue-700' : 'bg-blue-300') : block.urgency === 'critical' ? 'bg-red-500' : block.urgency === 'important' ? 'bg-orange-500' : (isDark ? 'bg-zinc-600' : 'bg-gray-300')}`} />
+              <div className="w-20 flex-shrink-0 text-right pr-2 pt-2"><p className={`text-xs font-mono font-bold ${c.text}`}>{block.start}</p><p className={`text-xs font-mono ${c.textMuted}`}>{block.end}</p></div>
+              <div className={`w-1 flex-shrink-0 rounded-full ${block.type === 'break' ? c.timelineBreak : block.urgency === 'critical' ? 'bg-red-500' : block.urgency === 'important' ? 'bg-amber-500' : c.cardAlt}`} />
               <div className={`flex-1 p-3 rounded-lg border ${block.type === 'break' ? c.tbreakBg : c.tblock}`}>
                 <div className="flex items-center gap-2 mb-1">
                   <span>{block.type === 'break' ? '☕' : URGENCY_EMOJI[block.urgency] || '🔹'}</span>
                   <p className={`text-sm font-semibold ${c.text}`}>{block.task}</p>
-                  <span className={`text-xs ${c.tm}`}>{block.duration_minutes}m</span>
+                  <span className={`text-xs ${c.textMuted}`}>{block.duration_minutes}m</span>
                 </div>
-                {block.concrete_action && block.type !== 'break' && <p className={`text-xs ${c.ts}`}>→ {block.concrete_action}</p>}
-                {block.energy_note && <p className={`text-xs italic ${c.tm}`}>{block.energy_note}</p>}
+                {block.concrete_action && block.type !== 'break' && <p className={`text-xs ${c.textSecondary}`}>→ {block.concrete_action}</p>}
+                {block.energy_note && <p className={`text-xs italic ${c.textMuted}`}>{block.energy_note}</p>}
               </div>
             </div>)}
-            {timeBlockResult.overflow?.length > 0 && <div className={`mt-3 p-3 rounded-lg ${c.warn} border`}><p className="text-xs font-bold mb-1">⏳ Didn't fit today:</p>{timeBlockResult.overflow.map((t, i) => <p key={i} className="text-xs">• {t}</p>)}</div>}
-            {timeBlockResult.flexibility_note && <p className={`text-xs italic ${c.tm} mt-2`}>💡 {timeBlockResult.flexibility_note}</p>}
+            {timeBlockResult.overflow?.length > 0 && <div className={`mt-3 p-3 rounded-lg ${c.warning} border`}><p className="text-xs font-bold mb-1">🕐 Didn't fit today:</p>{timeBlockResult.overflow.map((t, i) => <p key={i} className="text-xs">• {t}</p>)}</div>}
+            {timeBlockResult.flexibility_note && <p className={`text-xs italic ${c.textMuted} mt-2`}>💡 {timeBlockResult.flexibility_note}</p>}
           </div>
           <CopyBtn content={`TIME-BLOCKED SCHEDULE\n${(timeBlockResult.blocks || []).map(b => `${b.start}-${b.end} | ${b.type === 'break' ? '☕' : '🔹'} ${b.task}`).join('\n')}${BRAND}`} label="Copy schedule" />
         </Section>}
 
         {/* Reality Check */}
-        {results.reality_check && <div className={`${c.card} rounded-xl shadow-lg p-5 border-l-4 ${isDark ? 'border-blue-500' : 'border-blue-400'}`}>
+        {results.reality_check && <div className={`${c.card} rounded-xl shadow-lg p-5 border-l-4 ${c.realityBorder}`}>
           <h3 className={`text-base font-bold mb-3 ${c.text}`}>💡 Reality Check</h3>
-          <p className={`text-sm ${c.ts} leading-relaxed mb-4`}>{results.reality_check}</p>
+          <p className={`text-sm ${c.textSecondary} leading-relaxed mb-4`}>{results.reality_check}</p>
           <div className="flex flex-wrap gap-4">
-            <div className="text-center"><div className={`text-2xl font-bold ${c.text}`}>{results.tasks_analyzed || filledTasks.length}</div><div className={`text-xs ${c.tm}`}>analyzed</div></div>
-            <div className="text-center"><div className="text-2xl font-bold text-red-500">{results.actual_crisis_tasks ?? '?'}</div><div className={`text-xs ${c.tm}`}>actually urgent</div></div>
-            <div className="text-center"><div className={`text-2xl font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>{results.can_wait ?? '?'}</div><div className={`text-xs ${c.tm}`}>can wait</div></div>
-            {results.estimated_time && <div className="text-center"><div className={`text-2xl font-bold ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>{results.estimated_time}</div><div className={`text-xs ${c.tm}`}>for must-dos</div></div>}
+            <div className="text-center"><div className={`text-2xl font-bold ${c.text}`}>{results.tasks_analyzed || filledTasks.length}</div><div className={`text-xs ${c.textMuted}`}>analyzed</div></div>
+            <div className="text-center"><div className="text-2xl font-bold text-red-500">{results.actual_crisis_tasks ?? '?'}</div><div className={`text-xs ${c.textMuted}`}>actually urgent</div></div>
+            <div className="text-center"><div className={`text-2xl font-bold ${c.success}`}>{results.can_wait ?? '?'}</div><div className={`text-xs ${c.textMuted}`}>can wait</div></div>
+            {results.estimated_time && <div className="text-center"><div className={`text-2xl font-bold ${c.workTime}`}>{results.estimated_time}</div><div className={`text-xs ${c.textMuted}`}>for must-dos</div></div>}
           </div>
         </div>}
 
@@ -843,26 +893,26 @@ const CrisisPrioritizer = () => {
         {results.todays_actual_must_dos?.length > 0 && <div className={`p-5 rounded-xl ${c.crit} border-2`}>
           <h3 className="text-sm font-bold mb-3">🔥 TODAY'S ACTUAL MUST-DOS</h3>
           <ul className="space-y-2">{results.todays_actual_must_dos.map((task, i) => <li key={i} className="flex items-center gap-3">
-            <input type="checkbox" checked={!!checked[`must-${i}`]} onChange={() => toggleCheck(`must-${i}`)} className="w-5 h-5 rounded accent-red-500 flex-shrink-0" />
+            <input type="checkbox" checked={!!checked[`must-${i}`]} onChange={() => toggleCheck(`must-${i}`)} className="w-5 h-5 rounded accent-cyan-600 flex-shrink-0" />
             <span className={`text-sm font-medium ${checked[`must-${i}`] ? 'line-through opacity-60' : ''}`}>{task}</span>
           </li>)}</ul>
-          {results.estimated_time && <p className={`text-xs mt-3 ${c.tm}`}>Estimated: {results.estimated_time}</p>}
+          {results.estimated_time && <p className={`text-xs mt-3 ${c.textMuted}`}>Estimated: {results.estimated_time}</p>}
         </div>}
 
         {/* Anxiety Audit */}
         {results.anxiety_audit && <Section id="anxiety" title="Anxiety Audit" emoji="🧠" defaultOpen>
           <div className="space-y-4">
             {results.anxiety_audit.anxiety_driven?.length > 0 && <div>
-              <p className={`text-xs font-bold uppercase ${c.tm} mb-2`}>Feels urgent but ISN'T</p>
-              {results.anxiety_audit.anxiety_driven.map((item, i) => <div key={i} className={`p-3 rounded-lg ${c.warn} border mb-2`}>
+              <p className={`text-xs font-bold uppercase ${c.textMuted} mb-2`}>Feels urgent but ISN'T</p>
+              {results.anxiety_audit.anxiety_driven.map((item, i) => <div key={i} className={`p-3 rounded-lg ${c.warning} border mb-2`}>
                 <p className="text-sm font-semibold mb-1">{item.task}</p>
-                <p className={`text-xs ${c.ts}`}><b>Feels urgent because:</b> {item.why_it_feels_urgent}</p>
-                <p className={`text-xs ${c.ts}`}><b>Reality:</b> {item.reality}</p>
+                <p className={`text-xs ${c.textSecondary}`}><b>Feels urgent because:</b> {item.why_it_feels_urgent}</p>
+                <p className={`text-xs ${c.textSecondary}`}><b>Reality:</b> {item.reality}</p>
               </div>)}
             </div>}
             {results.anxiety_audit.legitimately_urgent?.length > 0 && <div>
-              <p className={`text-xs font-bold uppercase ${c.tm} mb-2`}>Actually time-sensitive</p>
-              {results.anxiety_audit.legitimately_urgent.map((item, i) => <div key={i} className={`p-3 rounded-lg ${c.bad} border mb-2`}><p className="text-sm font-semibold">{item.task}</p><p className={`text-xs ${c.ts}`}>{item.why}</p></div>)}
+              <p className={`text-xs font-bold uppercase ${c.textMuted} mb-2`}>Actually time-sensitive</p>
+              {results.anxiety_audit.legitimately_urgent.map((item, i) => <div key={i} className={`p-3 rounded-lg ${c.danger} border mb-2`}><p className="text-sm font-semibold">{item.task}</p><p className={`text-xs ${c.textSecondary}`}>{item.why}</p></div>)}
             </div>}
           </div>
         </Section>}
@@ -872,7 +922,7 @@ const CrisisPrioritizer = () => {
           <div className="space-y-3">{results.objective_priorities.map((item, idx) => <div key={idx} className={`border-2 rounded-lg p-4 ${urgStyle(item.actual_urgency)}`}>
             <div className="flex items-start justify-between mb-2">
               <div className="flex items-center gap-3">
-                <input type="checkbox" checked={!!checked[`pri-${item.rank}`]} onChange={() => toggleCheck(`pri-${item.rank}`)} className="w-5 h-5 rounded accent-red-500 flex-shrink-0 mt-0.5" />
+                <input type="checkbox" checked={!!checked[`pri-${item.rank}`]} onChange={() => toggleCheck(`pri-${item.rank}`)} className="w-5 h-5 rounded accent-cyan-600 flex-shrink-0 mt-0.5" />
                 <div><span className="text-xl font-bold">#{item.rank}</span><h4 className={`font-bold text-sm ${checked[`pri-${item.rank}`] ? 'line-through opacity-60' : ''}`}>{item.task}</h4></div>
               </div>
               <div className="flex items-center gap-2 flex-shrink-0">
@@ -880,91 +930,111 @@ const CrisisPrioritizer = () => {
                 <span className="text-xs font-bold px-2 py-0.5 rounded-full border">{URGENCY_EMOJI[item.actual_urgency] || '🟡'} {item.actual_urgency}</span>
               </div>
             </div>
-            {item.deadline && item.deadline !== 'no hard deadline' && <p className={`text-xs ${c.ts}`}><b>Deadline:</b> {item.deadline}</p>}
-            {item.consequence_if_missed && <p className={`text-xs ${c.ts}`}><b>If missed:</b> {item.consequence_if_missed}</p>}
-            {item.anxiety_vs_reality && <p className={`text-xs ${c.ts}`}><b>Reality:</b> {item.anxiety_vs_reality}</p>}
+            {item.deadline && item.deadline !== 'no hard deadline' && <p className={`text-xs ${c.textSecondary}`}><b>Deadline:</b> {item.deadline}</p>}
+            {item.consequence_if_missed && <p className={`text-xs ${c.textSecondary}`}><b>If missed:</b> {item.consequence_if_missed}</p>}
+            {item.anxiety_vs_reality && <p className={`text-xs ${c.textSecondary}`}><b>Reality:</b> {item.anxiety_vs_reality}</p>}
             {item.do_this && <p className="text-xs font-bold mt-1">→ {item.do_this}</p>}
             <div className="flex gap-2 mt-2 flex-wrap">
-              {(item.actual_urgency === 'low' || item.actual_urgency === 'optional' || item.actual_urgency === 'medium') && <button onClick={() => { setDelegateTask(item.task); setDelegateResult(null); }} className={`text-xs font-bold ${c.tm}`}>📨 Delegate</button>}
-              <button onClick={() => handleSplitTask(item.task)} disabled={splitLoading && splitTask === item.task} className={`text-xs font-bold ${c.tm}`}>{splitLoading && splitTask === item.task ? '⏳' : '🧩 Split'}</button>
+              {(item.actual_urgency === 'low' || item.actual_urgency === 'optional' || item.actual_urgency === 'medium') && <button onClick={() => { setDelegateTask(item.task); setDelegateResult(null); }} className={`text-xs font-bold ${c.textMuted}`}>📨 Delegate</button>}
+              <button onClick={() => handleSplitTask(item.task)} disabled={splitLoading && splitTask === item.task} className={`text-xs font-bold ${c.textMuted}`}>{splitLoading && splitTask === item.task ? <span className="animate-spin">{tool?.icon ?? '🚨'}</span> : '🧩 Split'}</button>
             </div>
           </div>)}</div>
         </Section>}
 
         {/* Split result in results view */}
-        {splitResult && results && <div className={`${c.split} border rounded-xl p-5 space-y-3`}>
-          <div className="flex justify-between"><h4 className="font-bold text-sm">🧩 Task Breakdown: "{splitTask}"</h4><button onClick={() => { setSplitTask(null); setSplitResult(null); }} className={`text-xs ${c.tm}`}>✕</button></div>
-          <p className={`text-xs ${c.ts}`}>{splitResult.diagnosis}</p>
-          <div className="space-y-2">{(splitResult.sub_tasks || []).map((st, i) => <div key={i} className={`${c.card} border ${c.bdr} rounded-lg p-3`}>
+        {splitResult && results && <div className={`${c.splitBg} border rounded-xl p-5 space-y-3`}>
+          <div className="flex justify-between"><h4 className="font-bold text-sm">🧩 Task Breakdown: "{splitTask}"</h4><button onClick={() => { setSplitTask(null); setSplitResult(null); }} className={`text-xs ${c.textMuted}`}>✕</button></div>
+          <p className={`text-xs ${c.textSecondary}`}>{splitResult.diagnosis}</p>
+          <div className="space-y-2">{(splitResult.sub_tasks || []).map((st, i) => <div key={i} className={`${c.card} border ${c.border} rounded-lg p-3`}>
             <div className="flex items-start gap-2">
               <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${urgStyle(st.urgency)} border flex-shrink-0`}>{i + 1}</span>
-              <div><p className={`text-sm font-semibold ${c.text}`}>{st.task}</p><p className={`text-xs ${c.tm}`}>⏱️ {st.time_estimate} · 💪 {st.effort_level}{st.depends_on ? ` · ⤵️ after #${st.depends_on}` : ''}</p></div>
+              <div><p className={`text-sm font-semibold ${c.text}`}>{st.task}</p><p className={`text-xs ${c.textMuted}`}>⏱️ {st.time_estimate} · 💪 {st.effort_level}{st.depends_on ? ` · ⤵️ after #${st.depends_on}` : ''}</p></div>
             </div>
           </div>)}</div>
-          <p className={`text-xs ${c.tm}`}>Total: {splitResult.total_time_estimate}</p>
+          <p className={`text-xs ${c.textMuted}`}>Total: {splitResult.total_time_estimate}</p>
         </div>}
 
         {/* Delegate panel */}
-        {delegateTask && <div className={`${c.info} border rounded-xl p-5 space-y-3`}>
-          <div className="flex justify-between"><h4 className="font-bold text-sm">📨 Delegate: "{delegateTask}"</h4><button onClick={() => { setDelegateTask(null); setDelegateResult(null); }} className={`text-xs ${c.tm}`}>✕</button></div>
+        {delegateTask && <div className={`${c.highlight} border rounded-xl p-5 space-y-3`}>
+          <div className="flex justify-between"><h4 className="font-bold text-sm">📨 Delegate: "{delegateTask}"</h4><button onClick={() => { setDelegateTask(null); setDelegateResult(null); }} className={`text-xs ${c.textMuted}`}>✕</button></div>
           <input value={delegateTo} onChange={e => setDelegateTo(e.target.value)} placeholder="Who should do this? (colleague, partner, anyone...)" className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input}`} />
           <Pill options={DELEGATE_TONES} value={delegateTone} setter={setDelegateTone} />
-          <button onClick={handleDelegate} disabled={delegateLoading} className={`w-full py-2.5 rounded-xl text-sm font-bold ${c.pri} disabled:opacity-50`}>{delegateLoading ? '⏳' : '📨 Draft handoff'}</button>
-          {delegateResult && <div className={`${c.ok} border rounded-xl p-4 space-y-2`}>
+          <button onClick={handleDelegate} disabled={delegateLoading} className={`w-full py-2.5 rounded-xl text-sm font-bold ${c.btnPrimary} disabled:opacity-50`}>{delegateLoading ? <span className="animate-spin">{tool?.icon ?? '🚨'}</span> : '📨 Draft handoff'}</button>
+          {delegateResult && <div className={`${c.success} border rounded-xl p-4 space-y-2`}>
             {delegateResult.subject_line && <p className="text-xs font-bold">Subject: {delegateResult.subject_line}</p>}
             <p className="text-sm whitespace-pre-line">{delegateResult.message}</p>
-            {delegateResult.what_to_include && <p className={`text-xs ${c.ts}`}>📎 Include: {delegateResult.what_to_include}</p>}
+            {delegateResult.what_to_include && <p className={`text-xs ${c.textSecondary}`}>📎 Include: {delegateResult.what_to_include}</p>}
             <CopyBtn content={`${delegateResult.subject_line ? 'Subject: ' + delegateResult.subject_line + '\n\n' : ''}${delegateResult.message}${BRAND}`} label="Copy" />
           </div>}
         </div>}
 
         {/* Guilt-free deferrals */}
-        {results.guilt_free_deferrals?.length > 0 && <div className={`p-5 rounded-xl ${c.ok} border`}>
+        {results.guilt_free_deferrals?.length > 0 && <div className={`p-5 rounded-xl ${c.success} border`}>
           <h3 className="text-sm font-bold mb-3">✅ Permission to Defer</h3>
           <ul className="space-y-2">{results.guilt_free_deferrals.map((s, i) => <li key={i} className="text-sm flex items-start gap-2"><span>•</span><span>{s}</span></li>)}</ul>
         </div>}
 
         {/* Energy plan */}
-        {results.energy_plan && <Section id="energy" title="Energy-Matched Plan" emoji="🔋"><p className={`text-sm ${c.ts} leading-relaxed`}>{results.energy_plan}</p></Section>}
+        {results.energy_plan && <Section id="energy" title="Energy-Matched Plan" emoji="🔋"><p className={`text-sm ${c.textSecondary} leading-relaxed`}>{results.energy_plan}</p></Section>}
 
         {/* Weekly plan */}
         {results.weekly_plan?.length > 0 && <Section id="weekly" title="Your Week" emoji="📅" defaultOpen>
-          <div className="space-y-4">{results.weekly_plan.map((day, di) => <div key={di} className={`p-4 rounded-lg border ${c.cardAlt} ${c.bdr}`}>
-            <div className="flex items-center justify-between mb-2"><h4 className={`font-bold text-sm ${c.text}`}>{day.day_label}</h4>{day.theme && <span className={`text-xs px-2 py-0.5 rounded-full ${c.info} border`}>{day.theme}</span>}</div>
-            {day.energy_note && <p className={`text-xs ${c.tm} mb-2 italic`}>🔋 {day.energy_note}</p>}
+          <div className="space-y-4">{results.weekly_plan.map((day, di) => <div key={di} className={`p-4 rounded-lg border ${c.cardAlt} ${c.border}`}>
+            <div className="flex items-center justify-between mb-2"><h4 className={`font-bold text-sm ${c.text}`}>{day.day_label}</h4>{day.theme && <span className={`text-xs px-2 py-0.5 rounded-full ${c.highlight} border`}>{day.theme}</span>}</div>
+            {day.energy_note && <p className={`text-xs ${c.textMuted} mb-2 italic`}>🔋 {day.energy_note}</p>}
             {day.tasks?.length > 0 && <ul className="space-y-1.5 mb-2">{day.tasks.map((t, ti) => <li key={ti} className="flex items-center gap-2">
-              <input type="checkbox" checked={!!checked[`w${di}-${ti}`]} onChange={() => toggleCheck(`w${di}-${ti}`)} className="w-4 h-4 rounded accent-red-500 flex-shrink-0" />
-              <span className={`text-sm ${checked[`w${di}-${ti}`] ? 'line-through opacity-60' : ''} ${c.ts}`}>{t.task}{t.time_estimate && <span className={`text-xs ${c.tm}`}> ({t.time_estimate})</span>}</span>
+              <input type="checkbox" checked={!!checked[`w${di}-${ti}`]} onChange={() => toggleCheck(`w${di}-${ti}`)} className="w-4 h-4 rounded accent-cyan-600 flex-shrink-0" />
+              <span className={`text-sm ${checked[`w${di}-${ti}`] ? 'line-through opacity-60' : ''} ${c.textSecondary}`}>{t.task}{t.time_estimate && <span className={`text-xs ${c.textMuted}`}> ({t.time_estimate})</span>}</span>
             </li>)}</ul>}
-            {day.rest_reminder && <p className={`text-xs ${isDark ? 'text-blue-300' : 'text-blue-600'} mt-1`}>💤 {day.rest_reminder}</p>}
+            {day.rest_reminder && <p className={`text-xs ${c.restText} mt-1`}>💤 {day.rest_reminder}</p>}
           </div>)}</div>
         </Section>}
 
         {/* Multi-week plan */}
         {results.multi_week_plan?.length > 0 && <Section id="multiweek" title="Multi-Week Plan" emoji="🗓️" defaultOpen>
-          <div className="space-y-5">{results.multi_week_plan.map((week, wi) => <div key={wi} className={`p-5 rounded-xl border-2 ${c.card} ${c.bdr}`}>
-            <div className="flex items-center justify-between mb-3"><h4 className={`font-bold ${c.text}`}>{week.week_label}</h4>{week.focus && <span className={`text-xs px-2 py-0.5 rounded-full ${c.warn} border font-semibold`}>{week.focus}</span>}</div>
-            {week.must_dos?.length > 0 && <div className="mb-3"><p className={`text-xs font-bold uppercase ${c.tm} mb-1`}>🔴 Must-dos</p><ul className="space-y-1">{week.must_dos.map((t, ti) => <li key={ti} className="flex items-center gap-2"><input type="checkbox" checked={!!checked[`mw${wi}-${ti}`]} onChange={() => toggleCheck(`mw${wi}-${ti}`)} className="w-4 h-4 rounded accent-red-500 flex-shrink-0" /><span className={`text-sm ${checked[`mw${wi}-${ti}`] ? 'line-through opacity-60' : ''} ${c.ts}`}>{t}</span></li>)}</ul></div>}
-            {week.delegate?.length > 0 && <div className="mb-3"><p className={`text-xs font-bold uppercase ${c.tm} mb-1`}>🤝 Delegate</p><ul className="space-y-1">{week.delegate.map((t, ti) => <li key={ti} className={`text-sm ${c.ts} flex items-start gap-2`}><span>→</span><span>{t}</span><button onClick={() => { setDelegateTask(t); setDelegateResult(null); }} className={`text-xs ${c.tm} ml-1`}>📨</button></li>)}</ul></div>}
-            {week.delete?.length > 0 && <div className="mb-3"><p className={`text-xs font-bold uppercase ${c.tm} mb-1`}>🗑️ Drop</p><ul className="space-y-1">{week.delete.map((t, ti) => <li key={ti} className={`text-sm ${c.ts} flex items-start gap-2 opacity-60`}><span>✕</span><span className="line-through">{t}</span></li>)}</ul></div>}
-            {week.self_care && <p className={`text-xs ${isDark ? 'text-purple-300' : 'text-purple-600'} mt-2`}>💜 {week.self_care}</p>}
+          <div className="space-y-5">{results.multi_week_plan.map((week, wi) => <div key={wi} className={`p-5 rounded-xl border-2 ${c.card} ${c.border}`}>
+            <div className="flex items-center justify-between mb-3"><h4 className={`font-bold ${c.text}`}>{week.week_label}</h4>{week.focus && <span className={`text-xs px-2 py-0.5 rounded-full ${c.warning} border font-semibold`}>{week.focus}</span>}</div>
+            {week.must_dos?.length > 0 && <div className="mb-3"><p className={`text-xs font-bold uppercase ${c.textMuted} mb-1`}>🔴 Must-dos</p><ul className="space-y-1">{week.must_dos.map((t, ti) => <li key={ti} className="flex items-center gap-2"><input type="checkbox" checked={!!checked[`mw${wi}-${ti}`]} onChange={() => toggleCheck(`mw${wi}-${ti}`)} className="w-4 h-4 rounded accent-cyan-600 flex-shrink-0" /><span className={`text-sm ${checked[`mw${wi}-${ti}`] ? 'line-through opacity-60' : ''} ${c.textSecondary}`}>{t}</span></li>)}</ul></div>}
+            {week.delegate?.length > 0 && <div className="mb-3"><p className={`text-xs font-bold uppercase ${c.textMuted} mb-1`}>🤝 Delegate</p><ul className="space-y-1">{week.delegate.map((t, ti) => <li key={ti} className={`text-sm ${c.textSecondary} flex items-start gap-2`}><span>→</span><span>{t}</span><button onClick={() => { setDelegateTask(t); setDelegateResult(null); }} className={`text-xs ${c.textMuted} ml-1`}>📨</button></li>)}</ul></div>}
+            {week.delete?.length > 0 && <div className="mb-3"><p className={`text-xs font-bold uppercase ${c.textMuted} mb-1`}>🗑️ Drop</p><ul className="space-y-1">{week.delete.map((t, ti) => <li key={ti} className={`text-sm ${c.textSecondary} flex items-start gap-2 opacity-60`}><span>✕</span><span className="line-through">{t}</span></li>)}</ul></div>}
+            {week.self_care && <p className={`text-xs ${c.patternText} mt-2`}>💜 {week.self_care}</p>}
           </div>)}</div>
         </Section>}
 
         {/* Sustainability / overcommitment */}
-        {results.sustainability_check && <div className={`p-5 rounded-xl ${c.info} border`}><h3 className="text-sm font-bold mb-2">💛 Sustainability Check</h3><p className="text-sm">{results.sustainability_check}</p></div>}
-        {results.overcommitment_warning && <div className={`p-5 rounded-xl ${c.purp} border`}><h3 className="text-sm font-bold mb-2">💜 Overcommitment Warning</h3><p className="text-sm">{results.overcommitment_warning}</p></div>}
+        {results.sustainability_check && <div className={`p-5 rounded-xl ${c.highlight} border`}><h3 className="text-sm font-bold mb-2">💛 Sustainability Check</h3><p className="text-sm">{results.sustainability_check}</p></div>}
+        {results.overcommitment_warning && <div className={`p-5 rounded-xl ${c.purpWarn} border`}><h3 className="text-sm font-bold mb-2">💜 Overcommitment Warning</h3><p className="text-sm">{results.overcommitment_warning}</p></div>}
 
         {/* Mid-session add */}
-        <button onClick={addTaskToResults} className={`text-xs font-bold ${c.tm}`}>+ Forgot something? Add a task and re-triage</button>
+        <button onClick={addTaskToResults} className={`text-xs font-bold ${c.textMuted}`}>+ Forgot something? Add a task and re-triage</button>
 
-        <ActionBar content={buildText()} title="Crisis Prioritizer" />
+        <p className={`text-xs ${c.textMuted} text-center`}>This tool uses AI to analyze consequences and deadlines — results are a guide, not a guarantee. If you're in genuine crisis, please reach out to someone you trust.</p>
 
-        <p className={`text-xs ${c.tm} text-center`}>This tool analyzes consequences and deadlines. If you're in genuine crisis, please reach out to someone you trust.</p>
+        {/* Post-result cross-refs */}
+        <div><p className={`text-xs ${c.textMuted} mb-2`}>Related:</p><div className="flex flex-wrap gap-2">
+          <a href="/CrashPredictor" target="_blank" rel="noopener noreferrer" className={linkStyle}>⚠️ CrashPredictor — spot burnout before it hits</a>
+          <a href="/BrainStateDeejay" target="_blank" rel="noopener noreferrer" className={linkStyle}>🎧 BrainStateDeejay — shift your energy state</a>
+          {results?.actual_crisis_tasks >= 4 && <a href="/BatchFlow" target="_blank" rel="noopener noreferrer" className={linkStyle}>🔄 BatchFlow — tackle big workloads in batches</a>}
+        </div></div>
       </div>}
-
-      {/* Cross-refs */}
-      {results && !showBreather && <div><p className={`text-xs ${c.tm} mb-2`}>Related:</p><div className="flex flex-wrap gap-2">{[['TaskAvalancheBreaker', '🏔️', 'break tasks into steps'], ['BrainDumpStructurer', '🧠', 'organize messy thoughts'], ['BrainStateDeejay', '🎧', 'shift your energy']].map(([id, ico, d]) => <a key={id} href={`/${id}`} target="_blank" rel="noopener noreferrer" className={`text-xs px-3 py-1.5 rounded-lg ${c.sec} border ${c.bdr} no-underline`}>{ico} {d}</a>)}</div></div>}
+        {history.length > 0 && (
+          <div className={`mt-4 border-t pt-4 ${c.border}`}>
+            <h3 className={`text-sm font-semibold mb-2 ${c.textSecondary}`}>Recent</h3>
+            <div className="space-y-1">
+              {history.slice(0, 6).map((h, i) => (
+                <div key={h.id || i} className={`text-xs ${c.textMuted} truncate`}>{h.preview || h.id}</div>
+              ))}
+            </div>
+          </div>
+        )}
+        <div className={`mt-6 pt-4 border-t text-sm ${c.border} ${c.textMuted}`}>
+          <p className="mb-2 font-medium">You might also like:</p>
+          <div className="flex flex-wrap gap-2">
+            {[{slug:'decision-coach',label:'🧭 Decision Coach'},{slug:'chaos-pilot',label:'✈️ Chaos Pilot'},{slug:'crash-predictor',label:'💥 Crash Predictor'}].map(({slug,label})=>(
+              <a key={slug} href={`/tool/${slug}`} className={linkStyle}>{label}</a>
+            ))}
+          </div>
+        </div>
     </div>
   );
 };

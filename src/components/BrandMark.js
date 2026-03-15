@@ -32,8 +32,8 @@ const BrandMark = ({
 
   // Image source based on direction
   const imgSrc = direction === 'left'
-    ? '/logo-brain-only-r.png'
-    : '/logo-brain-only-l.png';
+    ? '/Pbrain-r.png'
+    : '/Pbrain-l.png';
 
   // Navy & Gold palette — theme-aware
   const goldD    = isDark ? 'text-[#d9a04e]' : 'text-[#c8872e]';

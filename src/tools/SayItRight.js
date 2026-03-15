@@ -79,7 +79,7 @@ const EXAMPLES = [
 // ════════════════════════════════════════════════════════════
 // MAIN
 // ════════════════════════════════════════════════════════════
-const SayItRight = () => {
+const SayItRight = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const c = useColors();
   const resultsRef = useRef(null);

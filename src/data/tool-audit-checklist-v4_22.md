@@ -1,4 +1,4 @@
-# Tool Audit Checklist v4.20
+# Tool Audit Checklist v4.22
 ### DeftBrain — Pre-Ship Quality & Consistency Standard
 
 Score each item: ✅ Pass | ⚠️ Needs Work | ❌ Fail | N/A
@@ -26,7 +26,7 @@ Score each item: ✅ Pass | ⚠️ Needs Work | ❌ Fail | N/A
   # Confirm the string in h2 matches tools.js title (or is dynamic via tool?.title)
   ```
 
-- [ ] 🔍 **Tagline is one punchy line** — no more than ~8 words. Completes the name, doesn't restate it.
+- [ ] 🔍 **Tagline is one punchy line** — 10 words or less are preferred but don't sacrifice clarity for number of words. Completes the name, doesn't restate it.
   ```bash
   grep "tagline:" tools.js | grep "ToolId" -A1
   # Count words manually — flag if > 8
@@ -916,3 +916,11 @@ For each tool, capture:
 **(1) Frontend/Backend JSON key mismatch (Section 2.2):** Frontend accesses a JSON key name that differs from what the backend prompt instructs the model to return. Example: frontend renders `analysis.poor_interoception_support` but backend prompt defines the key as `poor_self_awareness_support` — section silently never renders because the key is always undefined. **Scan:** `grep -h "analysis\.\|data\." ComponentName.js | grep -oP '(?<=\.)[a-z_]+(?=\b)' | sort | uniq` then cross-check against all `"key_name":` strings in the corresponding backend .js file. Any mismatch is a silent data loss bug.
 
 **(2) `useTheme` non-standard destructure pattern (Section 1.3):** Some tools use `const { theme } = useTheme(); const isDark = theme === 'dark'` instead of the standard `const { isDark } = useTheme()`. Both work at runtime but the non-standard form adds a manual derivation step, is inconsistent with the family, and adds surface area for bugs if the hook's return shape changes. **Scan:** `grep "const { theme }" ComponentName.js` — must return zero results. If found, replace with `const { isDark } = useTheme()`.*
+
+*v4.22 — New bug pattern discovered during CrisisPrioritizer audit, March 2026:*
+
+**(1) Unnamed / abbreviated c keys (Section 1.1):** Tools sometimes use compressed key aliases (`ts`, `tm`, `pri`, `sec`, `bdr`, `ok`, `warn`, `bad`) instead of the required standard names (`textSecondary`, `textMuted`, `btnPrimary`, `btnSecondary`, `border`, `success`, `warning`, `danger`). These aliases are functionally equivalent at runtime but fail the standard keys check and make cross-tool auditing harder. **Scan:** `grep -n "  ts:\|  tm:\|  pri:\|  sec:\|  bdr:\|  ok:\|  warn:\|  bad:" ComponentName.js` — must return zero results. Any hit is a rename violation; update both the definition and every JSX reference in the same pass.*
+
+**(2) `btnPrimary` defaulting to a bespoke theme color instead of cyan (Section 1.1):** Crisis-themed or urgency-themed tools sometimes set `btnPrimary` (or its alias `pri:`) to `bg-red-600` to match the tool's urgency palette. This violates the family standard: `btnPrimary` must always be cyan. The tool's urgency palette belongs in bespoke keys like `panic:`, `crit:`, etc. — never in `btnPrimary`. **Scan:** `grep "btnPrimary:" ComponentName.js` — value must contain `bg-cyan-` in both branches. If it contains any other color family, replace.*
+
+**(3) History cap above 6 requires documented exception (Section 1.5):** The standard caps history at 5–6 entries. Tools with pattern-analysis features that require larger history sets (e.g., CrisisPrioritizer's pattern analysis uses up to 20 sessions) may exceed this cap, but must document it explicitly in the component as a comment and in the audit notes. **Scan:** `grep "\.slice(0, [0-9]" ComponentName.js | grep -i "journal\|history\|setHistory"` — any cap above 6 without a documented exception comment is a violation.*

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -28,10 +28,9 @@ const SITUATIONS = [
   { id: 'cultural', icon: '🌐', label: 'Culture Bridge', desc: 'Cross-cultural money' },
 ];
 
-const MoneyDiplomat = () => {
+const MoneyDiplomat = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
-  const { theme } = useTheme();
-  const isDark = theme === 'dark';
+  const { isDark } = useTheme();
 
   // ─── State: Core ───
   const [activeType, setActiveType] = useState(null);
@@ -112,8 +111,11 @@ const MoneyDiplomat = () => {
   const lang = navigator.language || 'en';
 
   // ─── Color config ───
-  const c = {
-    bg: isDark ? 'bg-zinc-900' : 'bg-gray-50',
+  const linkStyle = isDark
+    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
+    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
+
+    const c = {
     card: isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt: isDark ? 'bg-zinc-700/50' : 'bg-gray-50',
     text: isDark ? 'text-zinc-50' : 'text-gray-900',
@@ -121,25 +123,23 @@ const MoneyDiplomat = () => {
     textMuted: isDark ? 'text-zinc-400' : 'text-gray-500',
     border: isDark ? 'border-zinc-700' : 'border-gray-200',
     input: isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder-zinc-400' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400',
-    btnPrimary: isDark ? 'bg-emerald-600 hover:bg-emerald-500 text-white' : 'bg-emerald-600 hover:bg-emerald-700 text-white',
-    accentBg: isDark ? 'bg-emerald-900/20' : 'bg-emerald-50',
-    accentText: isDark ? 'text-emerald-400' : 'text-emerald-700',
+    btnPrimary: isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
     success: isDark ? 'bg-green-900/30 text-green-300 border-green-700' : 'bg-green-50 text-green-800 border-green-200',
     warning: isDark ? 'bg-amber-900/30 text-amber-300 border-amber-700' : 'bg-amber-50 text-amber-800 border-amber-200',
     danger: isDark ? 'bg-red-900/30 text-red-300 border-red-700' : 'bg-red-50 text-red-800 border-red-200',
-    info: isDark ? 'bg-sky-900/30 text-sky-300 border-sky-700' : 'bg-sky-50 text-sky-800 border-sky-200',
+    btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
   };
 
   const Badge = ({ children, type = 'info' }) => <span className={`text-[9px] px-2 py-0.5 rounded-full font-bold border ${c[type]}`}>{children}</span>;
   const Btn = ({ onClick, disabled, icon, label, color }) => (
-    <button onClick={onClick} disabled={disabled} className={`${color || c.btnPrimary} px-4 py-2 rounded-xl text-sm font-bold transition-all disabled:opacity-50 flex items-center gap-2`}>
-      {disabled && loading ? <span className="inline-block animate-spin">⏳</span> : <span>{icon}</span>}
+    <button onClick={onClick} disabled={disabled} className={`${color || c.btnPrimaryPrimary} px-4 py-2 rounded-xl text-sm font-bold transition-all disabled:opacity-50 flex items-center gap-2`}>
+      {disabled && loading ? <span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> : <span>{icon}</span>}
       {label}
     </button>
   );
   const Field = ({ label, value, onChange, placeholder, type = 'text', rows }) => (
     <div>
-      <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{label}</label>
+      <label className={`text-[10px] font-bold ${c.textMuteded} block mb-0.5`}>{label}</label>
       {rows ? (
         <textarea value={value} onChange={e => onChange(e.target.value)} rows={rows} placeholder={placeholder} className={`w-full p-2 border rounded-lg outline-none text-sm resize-y ${c.input}`} />
       ) : (
@@ -149,7 +149,7 @@ const MoneyDiplomat = () => {
   );
   const Select = ({ label, value, onChange, options }) => (
     <div>
-      <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{label}</label>
+      <label className={`text-[10px] font-bold ${c.textMuteded} block mb-0.5`}>{label}</label>
       <select value={value} onChange={e => onChange(e.target.value)} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`}>
         {options.map(o => <option key={o.value || o} value={o.value || o}>{o.label || o}</option>)}
       </select>
@@ -191,7 +191,7 @@ const MoneyDiplomat = () => {
       setResults(data);
       // Save to history for profile
       const label = SITUATIONS.find(s => s.id === activeType)?.label || activeType;
-      setHistory(prev => [{ type: label, summary: situation.trim().substring(0, 100), date: new Date().toISOString(), outcome: null }, ...prev].slice(0, 50));
+      setHistory(prev => [{ type: label, summary: situation.trim().substring(0, 100), date: new Date().toISOString(), outcome: null , preview: (situation || '').slice(0, 40)}, ...prev].slice(0, 6));
     } catch (err) { setError(err.message || 'Failed.'); }
   };
 
@@ -282,14 +282,25 @@ const MoneyDiplomat = () => {
   };
 
   // ═══════════════ RENDER ═══════════════
+  useEffect(() => {
+    const handler = (e) => {
+      const tag = document.activeElement?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !loading) handleSubmit();
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading]);
+
   return (
-    <div className={`max-w-2xl mx-auto space-y-6 p-4 ${c.bg}`}>
+    <div className={`max-w-2xl mx-auto space-y-6 p-4 ${c.cardAlt}`}>
       {/* Header */}
       <div className="text-center">
         <h2 className={`text-2xl font-black ${c.text}`}>💸 MoneyDiplomat</h2>
-        <p className={`${c.textSecondary} text-sm mt-1`}>Navigate every awkward money moment with confidence</p>
+        <p className={`${c.textSecondaryondary} text-sm mt-1`}>Navigate every awkward money moment with confidence</p>
         {history.length >= 3 && (
-          <button onClick={() => { setShowProfile(!showProfile); if (!profileData) handleProfile(); }} className={`mt-2 text-xs ${c.accentText} underline`}>
+          <button onClick={() => { setShowProfile(!showProfile); if (!profileData) handleProfile(); }} className={`mt-2 text-xs ${c.textSecondaryondary} underline`}>
             📊 My Money Style ({history.length} situations analyzed)
           </button>
         )}
@@ -304,7 +315,7 @@ const MoneyDiplomat = () => {
             🔥 Quick Math
           </button>
           {history.length >= 3 && (
-            <button onClick={() => setShowTrends(!showTrends)} className={`text-xs px-3 py-1 rounded-full ${showTrends ? (isDark ? 'bg-purple-700 text-purple-100' : 'bg-purple-600 text-white') : `${c.cardAlt} ${c.text}`} transition-colors`}>
+            <button onClick={() => setShowTrends(!showTrends)} className={`text-xs px-3 py-1 rounded-full ${showTrends ? (isDark ? 'bg-cyan-700 text-cyan-100' : 'bg-cyan-600 text-white') : `${c.cardAlt} ${c.text}`} transition-colors`}>
               📈 Trends
             </button>
           )}
@@ -317,14 +328,14 @@ const MoneyDiplomat = () => {
       {/* ─── Money Style Profile ─── */}
       {showProfile && profileData && (
         <div className={`${c.card} rounded-xl shadow-lg overflow-hidden border-2 ${isDark ? 'border-emerald-600' : 'border-emerald-400'}`}>
-          <div className={`p-5 ${c.accentBg} border-b ${c.border}`}>
+          <div className={`p-5 ${c.cardAlt} border-b ${c.border}`}>
             <h4 className={`font-bold ${c.text} flex items-center gap-2`}><span>📊</span> Your Money Style</h4>
           </div>
           <div className="p-5 space-y-4">
             {profileData.money_style && (
               <div className="text-center">
-                <p className={`text-lg font-black ${c.accentText}`}>{profileData.money_style.archetype}</p>
-                <p className={`text-sm ${c.textSecondary} mt-1`}>{profileData.money_style.description}</p>
+                <p className={`text-lg font-black ${c.textSecondaryondary}`}>{profileData.money_style.archetype}</p>
+                <p className={`text-sm ${c.textSecondaryondary} mt-1`}>{profileData.money_style.description}</p>
                 <div className="flex justify-center gap-4 mt-3">
                   <div className={`text-center p-2 rounded-lg ${c.success} border`}><p className="text-[9px] font-bold">STRENGTH</p><p className="text-xs mt-0.5">{profileData.money_style.strength}</p></div>
                   <div className={`text-center p-2 rounded-lg ${c.warning} border`}><p className="text-[9px] font-bold">BLIND SPOT</p><p className="text-xs mt-0.5">{profileData.money_style.blind_spot}</p></div>
@@ -334,29 +345,29 @@ const MoneyDiplomat = () => {
             {profileData.money_health_score && (
               <div className="text-center">
                 <p className={`text-3xl font-black ${profileData.money_health_score.score >= 70 ? (isDark ? 'text-emerald-400' : 'text-emerald-600') : (isDark ? 'text-amber-400' : 'text-amber-600')}`}>{profileData.money_health_score.score}/100</p>
-                <p className={`text-[10px] ${c.textMuted}`}>Social Money Health</p>
-                <p className={`text-xs ${c.textSecondary} mt-1`}>{profileData.money_health_score.meaning}</p>
+                <p className={`text-[10px] ${c.textMuteded}`}>Social Money Health</p>
+                <p className={`text-xs ${c.textSecondaryondary} mt-1`}>{profileData.money_health_score.meaning}</p>
               </div>
             )}
             {profileData.patterns?.map((p, i) => (
               <div key={i} className={`p-3 rounded-lg ${c.cardAlt}`}>
                 <p className={`text-xs font-bold ${c.text}`}>{p.pattern}</p>
-                <p className={`text-[10px] ${c.textMuted}`}>Shows up: {p.frequency}</p>
-                <p className={`text-[10px] ${c.accentText} mt-0.5`}>Fix: {p.fix}</p>
+                <p className={`text-[10px] ${c.textMuteded}`}>Shows up: {p.frequency}</p>
+                <p className={`text-[10px] ${c.textSecondaryondary} mt-0.5`}>Fix: {p.fix}</p>
               </div>
             ))}
             {profileData.by_category && (
               <div className="grid grid-cols-2 gap-2">
                 {Object.entries(profileData.by_category).map(([k, v]) => (
                   <div key={k} className={`p-2 rounded-lg ${c.cardAlt} text-center`}>
-                    <p className={`text-[9px] font-bold ${c.textMuted} uppercase`}>{k}</p>
+                    <p className={`text-[9px] font-bold ${c.textMuteded} uppercase`}>{k}</p>
                     <p className={`text-[10px] ${c.text}`}>{v}</p>
                   </div>
                 ))}
               </div>
             )}
             {profileData.prediction && <p className={`text-xs ${isDark ? 'text-amber-300' : 'text-amber-700'} italic`}>🔮 Next likely situation: {profileData.prediction}</p>}
-            {profileData.growth && <p className={`text-xs ${c.accentText}`}>📈 {profileData.growth}</p>}
+            {profileData.growth && <p className={`text-xs ${c.textSecondaryondary}`}>📈 {profileData.growth}</p>}
           </div>
         </div>
       )}
@@ -364,14 +375,14 @@ const MoneyDiplomat = () => {
       {/* ─── PROFILE SETUP ─── */}
       {showProfileSetup && (
         <div className={`${c.card} rounded-xl shadow-lg p-4 border ${c.border}`}>
-          <p className={`text-[10px] font-bold ${c.textMuted} mb-2`}>⚙️ YOUR CONTEXT — personalizes all advice</p>
+          <p className={`text-[10px] font-bold ${c.textMuteded} mb-2`}>⚙️ YOUR CONTEXT — personalizes all advice</p>
           <div className="grid grid-cols-2 gap-2">
             <Select label="Budget comfort" value={userProfile.incomeLevel} onChange={v => setUserProfile(p => ({ ...p, incomeLevel: v }))} options={[{ value: '', label: 'Not set' }, 'Student/tight budget', 'Early career', 'Comfortable', 'High earner', 'Varies']} />
             <Field label="Cultural background" value={userProfile.culture} onChange={v => setUserProfile(p => ({ ...p, culture: v }))} placeholder="e.g., Korean-American, British..." />
             <Select label="Relationship status" value={userProfile.relationshipStatus} onChange={v => setUserProfile(p => ({ ...p, relationshipStatus: v }))} options={[{ value: '', label: 'Not set' }, 'Single', 'Dating', 'Partnered', 'Married', 'Separated']} />
             <Select label="Home country" value={userProfile.country} onChange={v => setUserProfile(p => ({ ...p, country: v }))} options={['USA', 'Canada', 'UK', 'Australia', 'Germany', 'France', 'Japan', 'South Korea', 'India', 'Brazil', 'Mexico', 'Other']} />
           </div>
-          {profileCtx && <p className={`text-[10px] ${c.accentText} mt-2`}>✓ Active context: {profileCtx}</p>}
+          {profileCtx && <p className={`text-[10px] ${c.textSecondaryondary} mt-2`}>✓ Active context: {profileCtx}</p>}
         </div>
       )}
 
@@ -390,13 +401,13 @@ const MoneyDiplomat = () => {
           </div>
           <div className="flex items-end gap-3">
             <div className="flex-1">
-              <label className={`text-[9px] font-bold ${c.textMuted}`}>Bill</label>
+              <label className={`text-[9px] font-bold ${c.textMuteded}`}>Bill</label>
               <input type="text" value={quickCalc.bill} onChange={e => setQuickCalc(p => ({ ...p, bill: e.target.value }))}
                 placeholder="$145.00" className={`w-full p-2 border rounded-lg text-lg font-bold ${c.input}`} />
             </div>
             {quickCalc.type === 'tip' && (
               <div className="w-20">
-                <label className={`text-[9px] font-bold ${c.textMuted}`}>Tip %</label>
+                <label className={`text-[9px] font-bold ${c.textMuteded}`}>Tip %</label>
                 <div className="flex items-center gap-1">
                   {[15, 18, 20, 25].map(p => (
                     <button key={p} onClick={() => setQuickCalc(prev => ({ ...prev, tipPct: p }))}
@@ -406,25 +417,25 @@ const MoneyDiplomat = () => {
               </div>
             )}
             <div className="w-16">
-              <label className={`text-[9px] font-bold ${c.textMuted}`}>People</label>
+              <label className={`text-[9px] font-bold ${c.textMuteded}`}>People</label>
               <input type="number" min="1" max="50" value={quickCalc.people} onChange={e => setQuickCalc(p => ({ ...p, people: parseInt(e.target.value) || 1 }))}
                 className={`w-full p-2 border rounded-lg text-center ${c.input}`} />
             </div>
           </div>
           {quickResult && (
-            <div className={`flex items-center justify-around mt-3 p-3 rounded-lg ${c.accentBg}`}>
+            <div className={`flex items-center justify-around mt-3 p-3 rounded-lg ${c.cardAlt}`}>
               {quickCalc.type === 'tip' && <>
-                <div className="text-center"><p className={`text-[9px] ${c.textMuted}`}>Tip</p><p className={`text-lg font-black ${c.accentText}`}>${quickResult.tip}</p></div>
-                <div className="text-center"><p className={`text-[9px] ${c.textMuted}`}>Total</p><p className={`text-lg font-black ${c.text}`}>${quickResult.total}</p></div>
-                {quickResult.perPerson && <div className="text-center"><p className={`text-[9px] ${c.textMuted}`}>Per person</p><p className={`text-lg font-black ${c.text}`}>${quickResult.perPerson}</p></div>}
+                <div className="text-center"><p className={`text-[9px] ${c.textMuteded}`}>Tip</p><p className={`text-lg font-black ${c.textSecondaryondary}`}>${quickResult.tip}</p></div>
+                <div className="text-center"><p className={`text-[9px] ${c.textMuteded}`}>Total</p><p className={`text-lg font-black ${c.text}`}>${quickResult.total}</p></div>
+                {quickResult.perPerson && <div className="text-center"><p className={`text-[9px] ${c.textMuteded}`}>Per person</p><p className={`text-lg font-black ${c.text}`}>${quickResult.perPerson}</p></div>}
               </>}
               {quickCalc.type === 'split' && <>
-                <div className="text-center"><p className={`text-[9px] ${c.textMuted}`}>Total</p><p className={`text-lg font-black ${c.text}`}>${quickResult.total}</p></div>
-                <div className="text-center"><p className={`text-[9px] ${c.textMuted}`}>Per person</p><p className={`text-lg font-black ${c.accentText}`}>${quickResult.perPerson}</p></div>
+                <div className="text-center"><p className={`text-[9px] ${c.textMuteded}`}>Total</p><p className={`text-lg font-black ${c.text}`}>${quickResult.total}</p></div>
+                <div className="text-center"><p className={`text-[9px] ${c.textMuteded}`}>Per person</p><p className={`text-lg font-black ${c.textSecondaryondary}`}>${quickResult.perPerson}</p></div>
               </>}
             </div>
           )}
-          <p className={`text-[9px] ${c.textMuted} text-center mt-2`}>Need nuance? Use full Tip Advisor or Bill Splitter below ↓</p>
+          <p className={`text-[9px] ${c.textMuteded} text-center mt-2`}>Need nuance? Use full Tip Advisor or Bill Splitter below ↓</p>
         </div>
       )}
 
@@ -457,7 +468,7 @@ const MoneyDiplomat = () => {
                     <Badge type={h.eval.score >= 70 ? 'success' : h.eval.score >= 50 ? 'warning' : 'danger'}>{h.eval.score}/100</Badge>
                     <div className="flex-1">
                       <p className={`text-[10px] ${isDark ? 'text-green-300' : 'text-green-700'}`}>✅ {h.eval.what_worked}</p>
-                      {h.eval.power_move && <p className={`text-[10px] ${c.accentText}`}>⚡ {h.eval.power_move}</p>}
+                      {h.eval.power_move && <p className={`text-[10px] ${c.textSecondaryondary}`}>⚡ {h.eval.power_move}</p>}
                     </div>
                   </div>
                 )}
@@ -467,21 +478,21 @@ const MoneyDiplomat = () => {
             {/* Current prompt */}
             {simPrompt && !simPrompt.resolved && (
               <div>
-                {simPrompt.scene && <p className={`text-xs ${c.textMuted} italic mb-2`}>{simPrompt.scene}</p>}
+                {simPrompt.scene && <p className={`text-xs ${c.textMuteded} italic mb-2`}>{simPrompt.scene}</p>}
                 <div className={`p-4 rounded-lg ${isDark ? 'bg-pink-900/15 border-pink-700' : 'bg-pink-50 border-pink-200'} border-2`}>
                   <div className="flex items-center gap-2 mb-1">
                     {simPrompt.their_emotion && <Badge type="info">{simPrompt.their_emotion}</Badge>}
                     {simPrompt.escalation_level && <Badge type={simPrompt.escalation_level === 'Escalating' ? 'danger' : simPrompt.escalation_level === 'De-escalating' ? 'success' : 'info'}>{simPrompt.escalation_level}</Badge>}
                   </div>
                   <p className={`text-sm font-semibold ${c.text}`}>🎭 "{simPrompt.their_line}"</p>
-                  {simPrompt.what_theyre_really_thinking && <p className={`text-[10px] ${c.textMuted} italic mt-1`}>💭 Thinking: {simPrompt.what_theyre_really_thinking}</p>}
-                  {simPrompt.coaching_hint && <p className={`text-[10px] ${c.accentText} mt-1`}>💡 Hint: {simPrompt.coaching_hint}</p>}
+                  {simPrompt.what_theyre_really_thinking && <p className={`text-[10px] ${c.textMuteded} italic mt-1`}>💭 Thinking: {simPrompt.what_theyre_really_thinking}</p>}
+                  {simPrompt.coaching_hint && <p className={`text-[10px] ${c.textSecondaryondary} mt-1`}>💡 Hint: {simPrompt.coaching_hint}</p>}
                 </div>
                 <textarea value={simResponse} onChange={e => setSimResponse(e.target.value)} rows={2}
                   placeholder="What do you say?" className={`w-full p-3 border rounded-xl outline-none text-sm resize-y mt-2 ${c.input}`} />
                 <div className="flex items-center gap-2 mt-2">
                   <Btn onClick={handleSimRespond} disabled={simLoading || !simResponse.trim()} icon="💬" label="Respond" color={isDark ? 'bg-pink-600 hover:bg-pink-500 text-white' : 'bg-pink-600 hover:bg-pink-700 text-white'} />
-                  <button onClick={() => { setSimPrompt(null); setSimHistory([]); setSimSituation(''); }} className={`text-xs ${c.textMuted} underline`}>New scenario</button>
+                  <button onClick={() => { setSimPrompt(null); setSimHistory([]); setSimSituation(''); }} className={`text-xs ${c.textMuteded} underline`}>New scenario</button>
                 </div>
               </div>
             )}
@@ -489,11 +500,11 @@ const MoneyDiplomat = () => {
               <div className={`${isDark ? 'bg-green-900/20' : 'bg-green-50'} border-2 ${isDark ? 'border-green-600' : 'border-green-400'} rounded-lg p-4 text-center`}>
                 <p className="text-lg">✅</p>
                 <p className={`text-sm font-bold ${c.text}`}>Conversation resolved!</p>
-                <p className={`text-xs ${c.textSecondary} mt-1`}>Average score: {Math.round(simHistory.reduce((s, h) => s + (h.eval?.score || 0), 0) / (simHistory.length || 1))}/100 across {simHistory.length} exchanges</p>
-                <button onClick={() => { setSimPrompt(null); setSimHistory([]); setSimSituation(''); }} className={`text-xs ${c.accentText} underline mt-2`}>Try another scenario</button>
+                <p className={`text-xs ${c.textSecondaryondary} mt-1`}>Average score: {Math.round(simHistory.reduce((s, h) => s + (h.eval?.score || 0), 0) / (simHistory.length || 1))}/100 across {simHistory.length} exchanges</p>
+                <button onClick={() => { setSimPrompt(null); setSimHistory([]); setSimSituation(''); }} className={`text-xs ${c.textSecondaryondary} underline mt-2`}>Try another scenario</button>
               </div>
             )}
-            {simLoading && <p className={`text-xs ${c.textMuted} flex items-center gap-2`}><span className="inline-block animate-spin">⏳</span> Thinking in character...</p>}
+            {simLoading && <p className={`text-xs ${c.textMuteded} flex items-center gap-2`}><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> Thinking in character...</p>}
           </div>
         </div>
       )}
@@ -503,19 +514,19 @@ const MoneyDiplomat = () => {
         <div className={`${c.card} rounded-xl shadow-lg p-5 space-y-4 border-2 ${isDark ? 'border-purple-600' : 'border-purple-400'}`}>
           <h4 className={`font-bold ${c.text} flex items-center gap-2`}><span>📈</span> Your Money Trends</h4>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            <div className={`text-center p-3 rounded-lg ${c.accentBg}`}><p className={`text-2xl font-black ${c.accentText}`}>{trends.total}</p><p className={`text-[9px] ${c.textMuted}`}>Total situations</p></div>
-            <div className={`text-center p-3 rounded-lg ${c.accentBg}`}><p className={`text-2xl font-black ${c.text}`}>{trends.thisMonth}</p><p className={`text-[9px] ${c.textMuted}`}>This month</p></div>
-            <div className={`text-center p-3 rounded-lg ${isDark ? 'bg-amber-900/20' : 'bg-amber-50'}`}><p className={`text-2xl font-black ${isDark ? 'text-amber-400' : 'text-amber-600'}`}>${trends.totalOwed.toFixed(0)}</p><p className={`text-[9px] ${c.textMuted}`}>Outstanding</p></div>
-            <div className={`text-center p-3 rounded-lg ${isDark ? 'bg-green-900/20' : 'bg-green-50'}`}><p className={`text-2xl font-black ${isDark ? 'text-green-400' : 'text-green-600'}`}>${trends.totalSettled.toFixed(0)}</p><p className={`text-[9px] ${c.textMuted}`}>Collected</p></div>
+            <div className={`text-center p-3 rounded-lg ${c.cardAlt}`}><p className={`text-2xl font-black ${c.textSecondaryondary}`}>{trends.total}</p><p className={`text-[9px] ${c.textMuteded}`}>Total situations</p></div>
+            <div className={`text-center p-3 rounded-lg ${c.cardAlt}`}><p className={`text-2xl font-black ${c.text}`}>{trends.thisMonth}</p><p className={`text-[9px] ${c.textMuteded}`}>This month</p></div>
+            <div className={`text-center p-3 rounded-lg ${isDark ? 'bg-amber-900/20' : 'bg-amber-50'}`}><p className={`text-2xl font-black ${isDark ? 'text-amber-400' : 'text-amber-600'}`}>${trends.totalOwed.toFixed(0)}</p><p className={`text-[9px] ${c.textMuteded}`}>Outstanding</p></div>
+            <div className={`text-center p-3 rounded-lg ${isDark ? 'bg-green-900/20' : 'bg-green-50'}`}><p className={`text-2xl font-black ${isDark ? 'text-green-400' : 'text-green-600'}`}>${trends.totalSettled.toFixed(0)}</p><p className={`text-[9px] ${c.textMuteded}`}>Collected</p></div>
           </div>
           {/* Category breakdown */}
           <div>
-            <p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>MOST USED</p>
+            <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>MOST USED</p>
             {trends.typeCounts.slice(0, 5).map(([type, count], i) => (
               <div key={i} className="flex items-center gap-2 py-1">
                 <span className={`text-xs ${c.text} flex-1`}>{type}</span>
                 <div className={`h-2 rounded-full ${isDark ? 'bg-zinc-700' : 'bg-gray-200'} flex-1 overflow-hidden`}>
-                  <div className="h-2 rounded-full bg-purple-500" style={{ width: `${(count / trends.typeCounts[0][1]) * 100}%` }} />
+                  <div className="h-2 rounded-full bg-cyan-500" style={{ width: `${(count / trends.typeCounts[0][1]) * 100}%` }} />
                 </div>
                 <span className={`text-xs font-bold ${c.text} w-6 text-right`}>{count}</span>
               </div>
@@ -524,26 +535,26 @@ const MoneyDiplomat = () => {
           {/* Recap button */}
           <div className="text-center">
             {!recapData ? (
-              <Btn onClick={handleRecap} disabled={recapLoading} icon="📊" label="Generate Monthly Recap" color={isDark ? 'bg-purple-600 hover:bg-purple-500 text-white' : 'bg-purple-600 hover:bg-purple-700 text-white'} />
+              <Btn onClick={handleRecap} disabled={recapLoading} icon="📊" label="Generate Monthly Recap" color={isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white'} />
             ) : (
               <div className="text-left space-y-3">
                 <p className={`text-lg font-black ${c.text} text-center`}>{recapData.headline}</p>
                 {recapData.stats && (
                   <div className={`${c.cardAlt} rounded-lg p-3 grid grid-cols-2 gap-2`}>
                     {Object.entries(recapData.stats).map(([k, v]) => (
-                      <div key={k}><p className={`text-[9px] ${c.textMuted} uppercase`}>{k.replace(/_/g, ' ')}</p><p className={`text-xs font-bold ${c.text}`}>{v}</p></div>
+                      <div key={k}><p className={`text-[9px] ${c.textMuteded} uppercase`}>{k.replace(/_/g, ' ')}</p><p className={`text-xs font-bold ${c.text}`}>{v}</p></div>
                     ))}
                   </div>
                 )}
                 {recapData.insights?.map((ins, i) => (
                   <div key={i} className={`p-2 rounded-lg ${c.cardAlt}`}>
                     <p className={`text-xs font-bold ${c.text}`}>{ins.insight}</p>
-                    <p className={`text-[10px] ${c.accentText}`}>{ins.so_what}</p>
+                    <p className={`text-[10px] ${c.textSecondaryondary}`}>{ins.so_what}</p>
                   </div>
                 ))}
                 {recapData.growth && <p className={`text-xs ${c.text}`}>📈 {recapData.growth}</p>}
                 {recapData.challenge_next_month && <p className={`text-xs ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>🎯 Next month: {recapData.challenge_next_month}</p>}
-                {recapData.fun_stat && <p className={`text-xs ${c.textMuted} italic`}>🃏 {recapData.fun_stat}</p>}
+                {recapData.fun_stat && <p className={`text-xs ${c.textMuteded} italic`}>🃏 {recapData.fun_stat}</p>}
                 {recapData.shareable && (
                   <div className="flex items-center justify-center gap-2">
                     <p className={`text-xs ${c.text} italic`}>"{recapData.shareable}"</p>
@@ -569,12 +580,12 @@ const MoneyDiplomat = () => {
               <Field label="Amount" value={newDebt.amount} onChange={v => setNewDebt(p => ({ ...p, amount: v }))} placeholder="$85" />
               <Field label="For what" value={newDebt.context} onChange={v => setNewDebt(p => ({ ...p, context: v }))} placeholder="Concert tickets" />
               <div className="flex items-end">
-                <button onClick={addDebt} disabled={!newDebt.person.trim() || !newDebt.amount} className={`${c.btnPrimary} px-3 py-2 rounded-lg text-xs font-bold w-full disabled:opacity-50`}>➕ Add</button>
+                <button onClick={addDebt} disabled={!newDebt.person.trim() || !newDebt.amount} className={`${c.btnPrimaryPrimary} px-3 py-2 rounded-lg text-xs font-bold w-full disabled:opacity-50`}>➕ Add</button>
               </div>
             </div>
 
             {/* Active debts */}
-            {debts.filter(d => !d.settled).length === 0 && <p className={`text-xs ${c.textMuted} text-center py-2`}>Nobody owes you anything! 🎉</p>}
+            {debts.filter(d => !d.settled).length === 0 && <p className={`text-xs ${c.textMuteded} text-center py-2`}>Nobody owes you anything! 🎉</p>}
             {debts.filter(d => !d.settled).map(debt => (
               <div key={debt.id} className={`flex items-center gap-3 p-3 rounded-lg border ${c.border}`}>
                 <div className="flex-1">
@@ -582,11 +593,11 @@ const MoneyDiplomat = () => {
                     <p className={`text-sm font-bold ${c.text}`}>{debt.person}</p>
                     <p className={`text-sm font-black ${isDark ? 'text-amber-400' : 'text-amber-600'}`}>{debt.amount}</p>
                   </div>
-                  <p className={`text-[10px] ${c.textMuted}`}>{debt.context} · {debt.date} · {debt.attempts || 0} reminders sent</p>
+                  <p className={`text-[10px] ${c.textMuteded}`}>{debt.context} · {debt.date} · {debt.attempts || 0} reminders sent</p>
                 </div>
                 <div className="flex items-center gap-1">
                   <button onClick={() => handleNudge(debt)} disabled={nudgeLoading} className={`text-[10px] px-2 py-1 rounded ${isDark ? 'bg-amber-800/50 text-amber-200 hover:bg-amber-700' : 'bg-amber-100 text-amber-800 hover:bg-amber-200'} transition-colors`}>
-                    {nudgeLoading ? '⏳' : '📨'} Nudge
+                    {nudgeLoading ? '🕐' : '📨'} Nudge
                   </button>
                   <button onClick={() => settleDebt(debt.id)} className={`text-[10px] px-2 py-1 rounded ${isDark ? 'bg-green-800/50 text-green-200' : 'bg-green-100 text-green-800'}`}>✅ Paid</button>
                   <button onClick={() => removeDebt(debt.id)} className={`text-[10px] px-2 py-1 rounded ${isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-100 text-gray-500'}`}>🗑️</button>
@@ -596,7 +607,7 @@ const MoneyDiplomat = () => {
 
             {/* Nudge result */}
             {nudgeData && (
-              <div className={`${c.accentBg} border rounded-lg p-3 ${c.border}`}>
+              <div className={`${c.cardAlt} border rounded-lg p-3 ${c.border}`}>
                 <div className="flex items-center gap-2 mb-1">
                   <Badge type="info">{nudgeData.tone}</Badge>
                   <Badge type="info">{nudgeData.platform}</Badge>
@@ -604,18 +615,18 @@ const MoneyDiplomat = () => {
                 <p className={`text-sm ${c.text} italic`}>"{nudgeData.message}"</p>
                 <div className="flex items-center gap-2 mt-2">
                   <CopyBtn content={nudgeData.message} label="Copy Message" />
-                  <span className={`text-[9px] ${c.textMuted}`}>{nudgeData.timing}</span>
+                  <span className={`text-[9px] ${c.textMuteded}`}>{nudgeData.timing}</span>
                 </div>
-                {nudgeData.escalation_note && <p className={`text-[10px] ${c.textMuted} mt-1`}>If no response: {nudgeData.escalation_note}</p>}
+                {nudgeData.escalation_note && <p className={`text-[10px] ${c.textMuteded} mt-1`}>If no response: {nudgeData.escalation_note}</p>}
               </div>
             )}
 
             {/* Settled debts */}
             {debts.filter(d => d.settled).length > 0 && (
               <div>
-                <p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>✅ SETTLED</p>
+                <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>✅ SETTLED</p>
                 {debts.filter(d => d.settled).map(debt => (
-                  <div key={debt.id} className={`flex items-center gap-2 py-1 text-xs ${c.textMuted} line-through`}>
+                  <div key={debt.id} className={`flex items-center gap-2 py-1 text-xs ${c.textMuteded} line-through`}>
                     <span>{debt.person}</span><span>{debt.amount}</span><span>{debt.context}</span>
                     <button onClick={() => removeDebt(debt.id)} className="text-[9px]">🗑️</button>
                   </div>
@@ -626,7 +637,7 @@ const MoneyDiplomat = () => {
             {/* Total owed */}
             {debts.filter(d => !d.settled).length > 0 && (
               <div className={`text-center pt-2 border-t ${c.border}`}>
-                <p className={`text-[10px] ${c.textMuted}`}>Total outstanding</p>
+                <p className={`text-[10px] ${c.textMuteded}`}>Total outstanding</p>
                 <p className={`text-lg font-black ${isDark ? 'text-amber-400' : 'text-amber-600'}`}>
                   ${debts.filter(d => !d.settled).reduce((sum, d) => sum + (parseFloat(String(d.amount).replace(/[^0-9.]/g, '')) || 0), 0).toFixed(2)}
                 </p>
@@ -639,7 +650,7 @@ const MoneyDiplomat = () => {
       {/* ─── Situation Picker ─── */}
       {!results && (
         <div className={`${c.card} rounded-xl shadow-lg p-5`}>
-          <p className={`text-xs font-bold ${c.textMuted} mb-3`}>What kind of money situation?</p>
+          <p className={`text-xs font-bold ${c.textMuteded} mb-3`}>What kind of money situation?</p>
           <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
             {SITUATIONS.map(s => (
               <button key={s.id} onClick={() => { setActiveType(s.id); setResults(null); setError(''); }}
@@ -647,8 +658,8 @@ const MoneyDiplomat = () => {
                   ? (isDark ? 'border-emerald-500 bg-emerald-900/20' : 'border-emerald-500 bg-emerald-50')
                   : `${c.border} ${c.card} hover:border-emerald-300`}`}>
                 <span className="text-xl">{s.icon}</span>
-                <p className={`text-[10px] font-bold mt-1 ${activeType === s.id ? c.accentText : c.text}`}>{s.label}</p>
-                <p className={`text-[9px] ${c.textMuted}`}>{s.desc}</p>
+                <p className={`text-[10px] font-bold mt-1 ${activeType === s.id ? c.textSecondaryondary : c.text}`}>{s.label}</p>
+                <p className={`text-[9px] ${c.textMuteded}`}>{s.desc}</p>
               </button>
             ))}
           </div>
@@ -830,7 +841,7 @@ const MoneyDiplomat = () => {
 
               <div className="flex items-center gap-2 pt-2">
                 <Btn onClick={handleSubmit} disabled={loading || (!situation.trim() && !['travel', 'gift', 'cultural'].includes(activeType))} icon="💸" label="Get Advice" />
-                {activeType && <button onClick={() => { setActiveType(null); setSituation(''); setError(''); }} className={`text-xs ${c.textMuted} underline`}>Back</button>}
+                {activeType && <button onClick={() => { setActiveType(null); setSituation(''); setError(''); }} className={`text-xs ${c.textMuteded} underline`}>Back</button>}
               </div>
             </div>
           )}
@@ -849,47 +860,47 @@ const MoneyDiplomat = () => {
             </h3>
             <div className="flex items-center gap-2">
               <ActionBar copyContent={buildFullText()} printContent={buildFullText()} printTitle="MoneyDiplomat" />
-              <button onClick={clearResults} className={`text-xs ${c.accentText} underline`}>New situation</button>
+              <button onClick={clearResults} className={`text-xs ${c.textSecondaryondary} underline`}>New situation</button>
             </div>
           </div>
 
           {/* ─── TIP ADVISOR RESULTS ─── */}
           {activeType === 'tip' && results.recommendation && (
             <div className={`${c.card} rounded-xl shadow-lg overflow-hidden`}>
-              <div className={`p-5 ${c.accentBg} border-b ${c.border}`}>
+              <div className={`p-5 ${c.cardAlt} border-b ${c.border}`}>
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className={`text-3xl font-black ${c.accentText}`}>{results.recommendation.percentage}%</p>
+                    <p className={`text-3xl font-black ${c.textSecondaryondary}`}>{results.recommendation.percentage}%</p>
                     <p className={`text-sm ${c.text} font-semibold`}>{results.recommendation.amount}</p>
                   </div>
                   {results.recommendation.range && (
                     <div className="flex gap-3 text-center">
                       {[{ l: 'Low', v: results.recommendation.range.low }, { l: 'Sweet spot', v: results.recommendation.range.mid }, { l: 'Generous', v: results.recommendation.range.generous }].map((r, i) => (
-                        <div key={i} className={`p-2 rounded-lg ${i === 1 ? c.accentBg : c.cardAlt}`}>
-                          <p className={`text-[9px] ${c.textMuted}`}>{r.l}</p>
-                          <p className={`text-sm font-bold ${i === 1 ? c.accentText : c.text}`}>{r.v}</p>
+                        <div key={i} className={`p-2 rounded-lg ${i === 1 ? c.cardAlt : c.cardAlt}`}>
+                          <p className={`text-[9px] ${c.textMuteded}`}>{r.l}</p>
+                          <p className={`text-sm font-bold ${i === 1 ? c.textSecondaryondary : c.text}`}>{r.v}</p>
                         </div>
                       ))}
                     </div>
                   )}
                 </div>
-                <p className={`text-xs ${c.textSecondary} mt-2`}>{results.recommendation.verdict}</p>
+                <p className={`text-xs ${c.textSecondaryondary} mt-2`}>{results.recommendation.verdict}</p>
               </div>
               <div className="p-5 space-y-3">
                 <p className={`text-sm ${c.text}`}>{results.reasoning}</p>
-                {results.cultural_context && <p className={`text-xs ${c.textMuted} italic`}>🌍 {results.cultural_context}</p>}
+                {results.cultural_context && <p className={`text-xs ${c.textMuteded} italic`}>🌍 {results.cultural_context}</p>}
                 {results.adjustments?.map((adj, i) => (
                   <div key={i} className="flex items-center gap-2 text-xs">
                     <span>{adj.direction === 'up' ? '📈' : adj.direction === 'down' ? '📉' : '➡️'}</span>
                     <span className={c.text}>{adj.factor}:</span>
-                    <span className={c.textSecondary}>{adj.explanation}</span>
+                    <span className={c.textSecondaryondary}>{adj.explanation}</span>
                   </div>
                 ))}
                 {results.etiquette_notes?.map((note, i) => <p key={i} className={`text-xs ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>💡 {note}</p>)}
                 {results.awkward_scenario && (
                   <div className={`${c.cardAlt} rounded-lg p-3`}>
                     <p className={`text-[10px] font-bold ${c.text}`}>{results.awkward_scenario.question}</p>
-                    <p className={`text-xs ${c.accentText} mt-1`}>{results.awkward_scenario.answer}</p>
+                    <p className={`text-xs ${c.textSecondaryondary} mt-1`}>{results.awkward_scenario.answer}</p>
                   </div>
                 )}
               </div>
@@ -915,18 +926,18 @@ const MoneyDiplomat = () => {
                       <span className={`font-bold ${c.text}`}>{b.amount}</span>
                     </div>
                   ))}
-                  <p className={`text-[10px] ${c.textMuted} mt-1`}>{opt.best_for}</p>
+                  <p className={`text-[10px] ${c.textMuteded} mt-1`}>{opt.best_for}</p>
                 </div>
               ))}
-              {results.recommended && <p className={`text-sm ${c.accentText} font-semibold`}>👉 {results.recommended}</p>}
+              {results.recommended && <p className={`text-sm ${c.textSecondaryondary} font-semibold`}>👉 {results.recommended}</p>}
               {results.how_to_bring_it_up && (
-                <div className={`${c.accentBg} rounded-lg p-3 border ${c.border}`}>
-                  <p className={`text-[10px] font-bold ${c.accentText}`}>WHAT TO SAY</p>
+                <div className={`${c.cardAlt} rounded-lg p-3 border ${c.border}`}>
+                  <p className={`text-[10px] font-bold ${c.textSecondaryondary}`}>WHAT TO SAY</p>
                   <p className={`text-sm ${c.text} mt-1 italic`}>"{results.how_to_bring_it_up}"</p>
                   <CopyBtn content={`${results.how_to_bring_it_up}${BRAND}`} label="Copy" />
                 </div>
               )}
-              {results.next_time && <p className={`text-xs ${c.textMuted}`}>🔮 Next time: {results.next_time}</p>}
+              {results.next_time && <p className={`text-xs ${c.textMuteded}`}>🔮 Next time: {results.next_time}</p>}
             </div>
           )}
 
@@ -940,9 +951,9 @@ const MoneyDiplomat = () => {
               <p className={`text-sm ${c.text}`}>{results.reasoning}</p>
               {results.the_math && (
                 <div className="grid grid-cols-3 gap-2">
-                  <div className={`p-2 rounded-lg ${c.cardAlt} text-center`}><p className={`text-[9px] ${c.textMuted}`}>At stake</p><p className={`text-sm font-bold ${c.text}`}>{results.the_math.amount_at_stake}</p></div>
-                  <div className={`p-2 rounded-lg ${c.cardAlt} text-center`}><p className={`text-[9px] ${c.textMuted}`}>Relationship</p><p className={`text-[10px] ${c.text}`}>{results.the_math.relationship_value}</p></div>
-                  <div className={`p-2 rounded-lg ${results.the_math.resentment_risk === 'High' ? c.danger : c.cardAlt} text-center border`}><p className={`text-[9px] ${c.textMuted}`}>Resentment</p><p className={`text-[10px] font-bold`}>{results.the_math.resentment_risk}</p></div>
+                  <div className={`p-2 rounded-lg ${c.cardAlt} text-center`}><p className={`text-[9px] ${c.textMuteded}`}>At stake</p><p className={`text-sm font-bold ${c.text}`}>{results.the_math.amount_at_stake}</p></div>
+                  <div className={`p-2 rounded-lg ${c.cardAlt} text-center`}><p className={`text-[9px] ${c.textMuteded}`}>Relationship</p><p className={`text-[10px] ${c.text}`}>{results.the_math.relationship_value}</p></div>
+                  <div className={`p-2 rounded-lg ${results.the_math.resentment_risk === 'High' ? c.danger : c.cardAlt} text-center border`}><p className={`text-[9px] ${c.textMuteded}`}>Resentment</p><p className={`text-[10px] font-bold`}>{results.the_math.resentment_risk}</p></div>
                 </div>
               )}
               {results.if_requesting?.message && (
@@ -952,18 +963,18 @@ const MoneyDiplomat = () => {
                   <div className="flex items-center gap-2 mt-2">
                     <CopyBtn content={`${results.if_requesting.message}${BRAND}`} label="Copy" />
                     <Badge type="info">{results.if_requesting.platform}</Badge>
-                    <span className={`text-[9px] ${c.textMuted}`}>{results.if_requesting.timing}</span>
+                    <span className={`text-[9px] ${c.textMuteded}`}>{results.if_requesting.timing}</span>
                   </div>
                 </div>
               )}
               {results.if_letting_go?.reframe && (
-                <div className={`${c.info} border rounded-lg p-3`}>
+                <div className={`${c.cardAlt} border rounded-lg p-3`}>
                   <p className="text-[10px] font-bold">IF LETTING GO</p>
                   <p className="text-xs mt-1">{results.if_letting_go.reframe}</p>
-                  <p className={`text-[10px] ${c.textMuted} mt-1`}>Prevention: {results.if_letting_go.prevention}</p>
+                  <p className={`text-[10px] ${c.textMuteded} mt-1`}>Prevention: {results.if_letting_go.prevention}</p>
                 </div>
               )}
-              {results.the_line && <p className={`text-xs ${c.accentText}`}>📏 The line: {results.the_line}</p>}
+              {results.the_line && <p className={`text-xs ${c.textSecondaryondary}`}>📏 The line: {results.the_line}</p>}
             </div>
           )}
 
@@ -971,12 +982,12 @@ const MoneyDiplomat = () => {
           {activeType === 'gift' && results.recommendation && (
             <div className={`${c.card} rounded-xl shadow-lg p-5 space-y-4`}>
               <div className="text-center">
-                <p className={`text-3xl font-black ${c.accentText}`}>{results.recommendation.amount}</p>
-                <p className={`text-sm ${c.textSecondary}`}>{results.recommendation.verdict}</p>
+                <p className={`text-3xl font-black ${c.textSecondaryondary}`}>{results.recommendation.amount}</p>
+                <p className={`text-sm ${c.textSecondaryondary}`}>{results.recommendation.verdict}</p>
                 {results.recommendation.range && (
                   <div className="flex justify-center gap-4 mt-2">
                     {[{ l: 'Minimum', v: results.recommendation.range.minimum }, { l: 'Sweet spot', v: results.recommendation.range.sweet_spot }, { l: 'Generous', v: results.recommendation.range.generous }].map((r, i) => (
-                      <div key={i}><p className={`text-[9px] ${c.textMuted}`}>{r.l}</p><p className={`text-sm font-bold ${i === 1 ? c.accentText : c.text}`}>{r.v}</p></div>
+                      <div key={i}><p className={`text-[9px] ${c.textMuteded}`}>{r.l}</p><p className={`text-sm font-bold ${i === 1 ? c.textSecondaryondary : c.text}`}>{r.v}</p></div>
                     ))}
                   </div>
                 )}
@@ -984,16 +995,16 @@ const MoneyDiplomat = () => {
               {results.calibration && (
                 <div className={`${c.cardAlt} rounded-lg p-3 space-y-1`}>
                   <p className={`text-xs ${c.text}`}>🎯 Occasion: <span className="font-bold">{results.calibration.occasion_weight}</span></p>
-                  <p className={`text-xs ${c.textSecondary}`}>{results.calibration.relationship_factor}</p>
-                  <p className={`text-xs ${c.textMuted}`}>{results.calibration.reciprocity_note}</p>
-                  <p className={`text-xs ${c.textMuted}`}>{results.calibration.regional_norm}</p>
+                  <p className={`text-xs ${c.textSecondaryondary}`}>{results.calibration.relationship_factor}</p>
+                  <p className={`text-xs ${c.textMuteded}`}>{results.calibration.reciprocity_note}</p>
+                  <p className={`text-xs ${c.textMuteded}`}>{results.calibration.regional_norm}</p>
                 </div>
               )}
               {results.group_gift_option?.makes_sense && (
-                <div className={`${c.accentBg} border rounded-lg p-3 ${c.border}`}>
-                  <p className={`text-[10px] font-bold ${c.accentText}`}>🎁 GROUP GIFT OPTION</p>
+                <div className={`${c.cardAlt} border rounded-lg p-3 ${c.border}`}>
+                  <p className={`text-[10px] font-bold ${c.textSecondaryondary}`}>🎁 GROUP GIFT OPTION</p>
                   <p className={`text-xs ${c.text} mt-1`}>Your share: <span className="font-bold">{results.group_gift_option.your_share}</span></p>
-                  <p className={`text-[10px] ${c.textSecondary}`}>{results.group_gift_option.how_to_organize}</p>
+                  <p className={`text-[10px] ${c.textSecondaryondary}`}>{results.group_gift_option.how_to_organize}</p>
                 </div>
               )}
               {results.pitfalls?.map((p, i) => <p key={i} className={`text-xs ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>⚠️ {p.mistake}: {p.instead}</p>)}
@@ -1008,12 +1019,12 @@ const MoneyDiplomat = () => {
                 <div key={i} className={`p-3 rounded-lg border ${c.border} flex items-center justify-between`}>
                   <div>
                     <p className={`text-sm font-bold ${c.text}`}>{fs.person}</p>
-                    <p className={`text-[10px] ${c.textMuted}`}>{fs.percentage}%</p>
+                    <p className={`text-[10px] ${c.textMuteded}`}>{fs.percentage}%</p>
                   </div>
-                  <p className={`text-lg font-black ${c.accentText}`}>{fs.amount}</p>
+                  <p className={`text-lg font-black ${c.textSecondaryondary}`}>{fs.amount}</p>
                 </div>
               ))}
-              {results.methodology && <p className={`text-xs ${c.textSecondary}`}>📐 {results.methodology}</p>}
+              {results.methodology && <p className={`text-xs ${c.textSecondaryondary}`}>📐 {results.methodology}</p>}
               {results.factors_considered?.map((f, i) => (
                 <div key={i} className="flex items-center gap-2 text-xs">
                   <Badge type="info">{f.impact}</Badge>
@@ -1021,11 +1032,11 @@ const MoneyDiplomat = () => {
                 </div>
               ))}
               {results.the_conversation && (
-                <div className={`${c.accentBg} rounded-lg p-3 border ${c.border}`}>
-                  <p className={`text-[10px] font-bold ${c.accentText}`}>HOW TO BRING IT UP</p>
+                <div className={`${c.cardAlt} rounded-lg p-3 border ${c.border}`}>
+                  <p className={`text-[10px] font-bold ${c.textSecondaryondary}`}>HOW TO BRING IT UP</p>
                   <p className={`text-sm ${c.text} mt-1 italic`}>"{results.the_conversation.opener}"</p>
                   <CopyBtn content={`${results.the_conversation.opener}${BRAND}`} label="Copy" />
-                  {results.the_conversation.if_pushback && <p className={`text-[10px] ${c.textMuted} mt-2`}>If pushback: {results.the_conversation.if_pushback}</p>}
+                  {results.the_conversation.if_pushback && <p className={`text-[10px] ${c.textMuteded} mt-2`}>If pushback: {results.the_conversation.if_pushback}</p>}
                 </div>
               )}
             </div>
@@ -1041,10 +1052,10 @@ const MoneyDiplomat = () => {
               {results.the_real_issue && <p className={`text-sm ${c.text} italic`}>🎯 {results.the_real_issue}</p>}
               <p className={`text-sm ${c.text}`}>{results.recommendation}</p>
               {results.script && (
-                <div className={`${c.accentBg} border rounded-lg p-4 ${c.border} space-y-2`}>
-                  <p className={`text-[10px] font-bold ${c.accentText}`}>📜 THE SCRIPT ({results.script.setting})</p>
+                <div className={`${c.cardAlt} border rounded-lg p-4 ${c.border} space-y-2`}>
+                  <p className={`text-[10px] font-bold ${c.textSecondaryondary}`}>📜 THE SCRIPT ({results.script.setting})</p>
                   <p className={`text-sm ${c.text}`}>Open with: "{results.script.opener}"</p>
-                  {results.script.key_phrases?.map((kp, i) => <p key={i} className={`text-xs ${c.textSecondary}`}>• "{kp}"</p>)}
+                  {results.script.key_phrases?.map((kp, i) => <p key={i} className={`text-xs ${c.textSecondaryondary}`}>• "{kp}"</p>)}
                   {results.script.boundary_line && <p className={`text-xs font-bold ${c.text} mt-1`}>The boundary: "{results.script.boundary_line}"</p>}
                   {results.script.if_guilt_trip && <p className={`text-[10px] ${isDark ? 'text-amber-300' : 'text-amber-700'} mt-1`}>If guilt trip: {results.script.if_guilt_trip}</p>}
                   <CopyBtn content={`Opening: ${results.script.opener}\n\nBoundary: ${results.script.boundary_line || ''}${BRAND}`} label="Copy Script" />
@@ -1054,10 +1065,10 @@ const MoneyDiplomat = () => {
                 <div key={i} className={`p-3 rounded-lg border ${i === 0 ? c.success : c.warning}`}>
                   <p className="text-[10px] font-bold">{s.label}</p>
                   <p className="text-xs mt-1">{s.label.includes('yes') ? s.terms : s.how}</p>
-                  <p className={`text-[10px] ${c.textMuted} mt-1`}>{s.label.includes('yes') ? `Risk: ${s.risk}` : `Expect: ${s.aftermath}`}</p>
+                  <p className={`text-[10px] ${c.textMuteded} mt-1`}>{s.label.includes('yes') ? `Risk: ${s.risk}` : `Expect: ${s.aftermath}`}</p>
                 </div>
               ))}
-              {results.long_term && <p className={`text-xs ${c.accentText}`}>🔄 Long-term: {results.long_term}</p>}
+              {results.long_term && <p className={`text-xs ${c.textSecondaryondary}`}>🔄 Long-term: {results.long_term}</p>}
             </div>
           )}
 
@@ -1065,15 +1076,15 @@ const MoneyDiplomat = () => {
           {activeType === 'dining' && results.pre_game && (
             <div className={`${c.card} rounded-xl shadow-lg p-5 space-y-4`}>
               {results.who_pays && (
-                <div className={`p-3 rounded-lg ${c.accentBg} border ${c.border}`}>
-                  <p className={`text-[10px] font-bold ${c.accentText}`}>WHO PAYS</p>
+                <div className={`p-3 rounded-lg ${c.cardAlt} border ${c.border}`}>
+                  <p className={`text-[10px] font-bold ${c.textSecondaryondary}`}>WHO PAYS</p>
                   <p className={`text-sm ${c.text} mt-1`}>{results.who_pays.expectation}</p>
-                  <p className={`text-xs ${c.textSecondary}`}>{results.who_pays.reasoning}</p>
-                  <p className={`text-[10px] ${c.textMuted} mt-1 italic`}>{results.who_pays.the_dance}</p>
+                  <p className={`text-xs ${c.textSecondaryondary}`}>{results.who_pays.reasoning}</p>
+                  <p className={`text-[10px] ${c.textMuteded} mt-1 italic`}>{results.who_pays.the_dance}</p>
                 </div>
               )}
               <div className="space-y-2">
-                <p className={`text-[10px] font-bold ${c.textMuted}`}>🎯 PRE-GAME STRATEGY</p>
+                <p className={`text-[10px] font-bold ${c.textMuteded}`}>🎯 PRE-GAME STRATEGY</p>
                 <p className={`text-xs ${c.text}`}>🍽️ {results.pre_game.restaurant_strategy}</p>
                 <p className={`text-xs ${c.text}`}>💳 {results.pre_game.splitting_strategy}</p>
                 <p className={`text-xs ${c.text}`}>📋 {results.pre_game.ordering_strategy}</p>
@@ -1092,7 +1103,7 @@ const MoneyDiplomat = () => {
                   {results.budget_moves.if_pressured && <p className="text-[10px]">If pressured: {results.budget_moves.if_pressured}</p>}
                 </div>
               )}
-              {results.pro_tip && <p className={`text-xs ${c.accentText} italic`}>💡 {results.pro_tip}</p>}
+              {results.pro_tip && <p className={`text-xs ${c.textSecondaryondary} italic`}>💡 {results.pro_tip}</p>}
             </div>
           )}
 
@@ -1103,14 +1114,14 @@ const MoneyDiplomat = () => {
                 <div key={i} className={`p-3 rounded-lg border ${c.border} flex items-center justify-between`}>
                   <div>
                     <p className={`text-sm font-bold ${c.text}`}>{s.person}</p>
-                    <p className={`text-[10px] ${c.textMuted}`}>Paid: {s.paid_so_far} · Fair: {s.fair_share}</p>
+                    <p className={`text-[10px] ${c.textMuteded}`}>Paid: {s.paid_so_far} · Fair: {s.fair_share}</p>
                   </div>
                   <p className={`text-sm font-black ${s.owes_or_owed?.startsWith('+') ? (isDark ? 'text-red-300' : 'text-red-700') : (isDark ? 'text-green-300' : 'text-green-700')}`}>{s.owes_or_owed}</p>
                 </div>
               ))}
               {results.simplification?.transactions?.length > 0 && (
-                <div className={`${c.accentBg} border rounded-lg p-3 ${c.border}`}>
-                  <p className={`text-[10px] font-bold ${c.accentText} mb-1`}>SIMPLIFIED ({results.simplification.transactions.length} transactions)</p>
+                <div className={`${c.cardAlt} border rounded-lg p-3 ${c.border}`}>
+                  <p className={`text-[10px] font-bold ${c.textSecondaryondary} mb-1`}>SIMPLIFIED ({results.simplification.transactions.length} transactions)</p>
                   {results.simplification.transactions.map((t, i) => (
                     <p key={i} className={`text-xs ${c.text}`}>{t.from} → {t.to}: <span className="font-bold">{t.amount}</span> ({t.method})</p>
                   ))}
@@ -1126,7 +1137,7 @@ const MoneyDiplomat = () => {
                   </>}
                 </div>
               )}
-              {results.next_event_tip && <p className={`text-xs ${c.accentText}`}>🔮 {results.next_event_tip}</p>}
+              {results.next_event_tip && <p className={`text-xs ${c.textSecondaryondary}`}>🔮 {results.next_event_tip}</p>}
             </div>
           )}
 
@@ -1142,7 +1153,7 @@ const MoneyDiplomat = () => {
                 <div className="grid grid-cols-2 gap-2">
                   {[{ l: 'Get it back?', v: results.risk_assessment.will_you_get_it_back }, { l: 'If you lend', v: `Risk: ${results.risk_assessment.relationship_risk_if_lend}` }, { l: 'If you refuse', v: `Risk: ${results.risk_assessment.relationship_risk_if_refuse}` }, { l: 'Resentment', v: results.risk_assessment.resentment_forecast }].map((r, i) => (
                     <div key={i} className={`p-2 rounded-lg ${c.cardAlt} text-center`}>
-                      <p className={`text-[9px] ${c.textMuted}`}>{r.l}</p>
+                      <p className={`text-[9px] ${c.textMuteded}`}>{r.l}</p>
                       <p className={`text-[10px] font-bold ${c.text}`}>{r.v}</p>
                     </div>
                   ))}
@@ -1155,7 +1166,7 @@ const MoneyDiplomat = () => {
                   <p className="text-xs">{results.if_yes.terms}</p>
                   <p className="text-sm italic mt-2">"{results.if_yes.the_conversation}"</p>
                   <CopyBtn content={`${results.if_yes.the_conversation}${BRAND}`} label="Copy" />
-                  <p className={`text-[10px] ${c.textMuted} mt-2`}>💡 {results.if_yes.mental_trick}</p>
+                  <p className={`text-[10px] ${c.textMuteded} mt-2`}>💡 {results.if_yes.mental_trick}</p>
                 </div>
               )}
               {results.if_no && (
@@ -1180,15 +1191,15 @@ const MoneyDiplomat = () => {
                 {results.assessment.career_risk !== 'None' && <Badge type="warning">Career risk: {results.assessment.career_risk}</Badge>}
               </div>
               {results.recommendation && (
-                <div className={`${c.accentBg} border rounded-lg p-3 ${c.border}`}>
+                <div className={`${c.cardAlt} border rounded-lg p-3 ${c.border}`}>
                   <p className={`text-sm font-bold ${c.text}`}>{results.recommendation.action}</p>
-                  {results.recommendation.amount && <p className={`text-xs ${c.accentText} mt-1`}>Amount: {results.recommendation.amount}</p>}
-                  <p className={`text-xs ${c.textSecondary}`}>{results.recommendation.reasoning}</p>
+                  {results.recommendation.amount && <p className={`text-xs ${c.textSecondaryondary} mt-1`}>Amount: {results.recommendation.amount}</p>}
+                  <p className={`text-xs ${c.textSecondaryondary}`}>{results.recommendation.reasoning}</p>
                 </div>
               )}
               {results.if_opting_out?.possible && (
                 <div className={`${c.cardAlt} rounded-lg p-3`}>
-                  <p className={`text-[10px] font-bold ${c.textMuted}`}>🚪 OPT OUT OPTION</p>
+                  <p className={`text-[10px] font-bold ${c.textMuteded}`}>🚪 OPT OUT OPTION</p>
                   <p className={`text-xs ${c.text} mt-1`}>{results.if_opting_out.how}</p>
                 </div>
               )}
@@ -1207,26 +1218,26 @@ const MoneyDiplomat = () => {
           {activeType === 'travel' && results.tipping_guide && (
             <div className={`${c.card} rounded-xl shadow-lg p-5 space-y-4`}>
               <div>
-                <p className={`text-[10px] font-bold ${c.textMuted} mb-2`}>🧾 TIPPING GUIDE</p>
+                <p className={`text-[10px] font-bold ${c.textMuteded} mb-2`}>🧾 TIPPING GUIDE</p>
                 <div className="grid grid-cols-2 gap-2">
                   {Object.entries(results.tipping_guide).filter(([k]) => k !== 'other').map(([k, v]) => v ? (
                     <div key={k} className={`p-2 rounded-lg ${c.cardAlt}`}>
-                      <p className={`text-[9px] font-bold ${c.textMuted} uppercase`}>{k}</p>
-                      <p className={`text-sm font-bold ${c.accentText}`}>{v.norm}</p>
-                      <p className={`text-[9px] ${c.textMuted}`}>{v.note}</p>
+                      <p className={`text-[9px] font-bold ${c.textMuteded} uppercase`}>{k}</p>
+                      <p className={`text-sm font-bold ${c.textSecondaryondary}`}>{v.norm}</p>
+                      <p className={`text-[9px] ${c.textMuteded}`}>{v.note}</p>
                     </div>
                   ) : null)}
                 </div>
               </div>
               {results.payment_norms && (
                 <div className={`${c.cardAlt} rounded-lg p-3 space-y-1`}>
-                  <p className={`text-[10px] font-bold ${c.textMuted}`}>💳 PAYMENT NORMS</p>
+                  <p className={`text-[10px] font-bold ${c.textMuteded}`}>💳 PAYMENT NORMS</p>
                   <p className={`text-xs ${c.text}`}>{results.payment_norms.cash_vs_card}</p>
-                  {results.payment_norms.digital_payments && <p className={`text-xs ${c.accentText}`}>📱 {results.payment_norms.digital_payments}</p>}
+                  {results.payment_norms.digital_payments && <p className={`text-xs ${c.textSecondaryondary}`}>📱 {results.payment_norms.digital_payments}</p>}
                 </div>
               )}
               {results.haggling && (
-                <div className={`p-3 rounded-lg border ${results.haggling.expected ? c.success : c.info}`}>
+                <div className={`p-3 rounded-lg border ${results.haggling.expected ? c.success : c.cardAlt}`}>
                   <p className="text-[10px] font-bold">🏪 HAGGLING: {results.haggling.expected ? 'YES' : 'NO'}</p>
                   {results.haggling.where && <p className="text-xs mt-1">Where: {results.haggling.where}</p>}
                   {results.haggling.how && <p className="text-xs">How: {results.haggling.how}</p>}
@@ -1236,15 +1247,15 @@ const MoneyDiplomat = () => {
               {results.social_money_rules?.map((r, i) => (
                 <div key={i} className={`p-2 rounded-lg ${c.cardAlt}`}>
                   <p className={`text-xs font-bold ${c.text}`}>{r.rule}</p>
-                  <p className={`text-[10px] ${c.textMuted}`}>{r.why}</p>
+                  <p className={`text-[10px] ${c.textMuteded}`}>{r.why}</p>
                   <p className={`text-[10px] ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>Tourist mistake: {r.tourist_mistake}</p>
                 </div>
               ))}
               {results.the_host_dance && <p className={`text-xs ${c.text} italic`}>🤝 {results.the_host_dance}</p>}
               {results.tourist_traps?.map((t, i) => <p key={i} className={`text-xs ${isDark ? 'text-red-300' : 'text-red-700'}`}>🚩 {t.trap}: {t.what_to_do}</p>)}
               {results.quick_reference && (
-                <div className={`${c.accentBg} border rounded-lg p-3 ${c.border}`}>
-                  <p className={`text-[10px] font-bold ${c.accentText}`}>📋 QUICK REFERENCE</p>
+                <div className={`${c.cardAlt} border rounded-lg p-3 ${c.border}`}>
+                  <p className={`text-[10px] font-bold ${c.textSecondaryondary}`}>📋 QUICK REFERENCE</p>
                   <p className={`text-sm ${c.text} mt-1`}>{results.quick_reference}</p>
                   <CopyBtn content={`Money tips for ${travelFields.destination}: ${results.quick_reference}${BRAND}`} label="Copy Card" />
                 </div>
@@ -1258,15 +1269,15 @@ const MoneyDiplomat = () => {
               <div className="text-center">
                 <Badge type={results.who_pays.recommendation === 'Split' ? 'info' : 'success'}>{results.who_pays.recommendation}</Badge>
                 <p className={`text-xl font-black ${c.text} mt-1`}>{results.who_pays.confidence}% confident</p>
-                <p className={`text-sm ${c.textSecondary} mt-1`}>{results.who_pays.reasoning}</p>
+                <p className={`text-sm ${c.textSecondaryondary} mt-1`}>{results.who_pays.reasoning}</p>
               </div>
               {results.the_signals && (
                 <div className={`${c.cardAlt} rounded-lg p-3 space-y-2`}>
-                  <p className={`text-[10px] font-bold ${c.textMuted}`}>📡 SIGNAL DECODER</p>
+                  <p className={`text-[10px] font-bold ${c.textMuteded}`}>📡 SIGNAL DECODER</p>
                   <p className={`text-xs ${c.text}`}>💳 Offering to pay: {results.the_signals.what_offering_to_pay_signals}</p>
                   <p className={`text-xs ${c.text}`}>✂️ Splitting: {results.the_signals.what_splitting_signals}</p>
                   <p className={`text-xs ${c.text}`}>🤝 Letting them: {results.the_signals.what_letting_them_pay_signals}</p>
-                  {results.the_signals.the_reach && <p className={`text-[10px] ${c.accentText} italic`}>The reach: {results.the_signals.the_reach}</p>}
+                  {results.the_signals.the_reach && <p className={`text-[10px] ${c.textSecondaryondary} italic`}>The reach: {results.the_signals.the_reach}</p>}
                 </div>
               )}
               {results.scripts?.map((s, i) => (
@@ -1280,7 +1291,7 @@ const MoneyDiplomat = () => {
                 <div className="flex gap-2">
                   {[{ l: 'This date', v: results.progression.this_date }, { l: 'Next date', v: results.progression.next_date }, { l: 'Long term', v: results.progression.long_term }].map((p, i) => (
                     <div key={i} className={`flex-1 p-2 rounded-lg ${c.cardAlt} text-center`}>
-                      <p className={`text-[9px] font-bold ${c.textMuted}`}>{p.l}</p>
+                      <p className={`text-[9px] font-bold ${c.textMuteded}`}>{p.l}</p>
                       <p className={`text-[10px] ${c.text}`}>{p.v}</p>
                     </div>
                   ))}
@@ -1292,7 +1303,7 @@ const MoneyDiplomat = () => {
                   <p className="text-xs mt-1">{results.income_gap.how_to_handle}</p>
                 </div>
               )}
-              {results.pro_tip && <p className={`text-xs ${c.accentText} italic`}>💡 {results.pro_tip}</p>}
+              {results.pro_tip && <p className={`text-xs ${c.textSecondaryondary} italic`}>💡 {results.pro_tip}</p>}
             </div>
           )}
 
@@ -1302,21 +1313,21 @@ const MoneyDiplomat = () => {
               {results.the_wrinkle && <p className={`text-xs ${isDark ? 'text-amber-300' : 'text-amber-700'} italic`}>😬 {results.the_wrinkle}</p>}
               {results.fair_split.map((fs, i) => (
                 <div key={i} className={`p-3 rounded-lg border ${c.border} flex items-center justify-between`}>
-                  <div><p className={`text-sm font-bold ${c.text}`}>{fs.person}</p><p className={`text-[10px] ${c.textMuted}`}>{fs.reasoning}</p></div>
-                  <p className={`text-lg font-black ${c.accentText}`}>{fs.amount}</p>
+                  <div><p className={`text-sm font-bold ${c.text}`}>{fs.person}</p><p className={`text-[10px] ${c.textMuteded}`}>{fs.reasoning}</p></div>
+                  <p className={`text-lg font-black ${c.textSecondaryondary}`}>{fs.amount}</p>
                 </div>
               ))}
               {results.manager_premium?.applicable && (
-                <p className={`text-xs ${c.accentText}`}>👑 Account manager gets {results.manager_premium.discount} off — {results.manager_premium.reasoning}</p>
+                <p className={`text-xs ${c.textSecondaryondary}`}>👑 Account manager gets {results.manager_premium.discount} off — {results.manager_premium.reasoning}</p>
               )}
               {results.if_leaving && (
-                <div className={`${c.accentBg} border rounded-lg p-3 ${c.border}`}>
-                  <p className={`text-[10px] font-bold ${c.accentText}`}>🚪 IF YOU WANT OFF</p>
+                <div className={`${c.cardAlt} border rounded-lg p-3 ${c.border}`}>
+                  <p className={`text-[10px] font-bold ${c.textSecondaryondary}`}>🚪 IF YOU WANT OFF</p>
                   <p className={`text-sm ${c.text} italic mt-1`}>"{results.if_leaving.how_to_say_it}"</p>
                   <CopyBtn content={`${results.if_leaving.how_to_say_it}${BRAND}`} label="Copy" />
                 </div>
               )}
-              {results.alternatives && <p className={`text-xs ${c.textSecondary}`}>🤔 {results.alternatives}</p>}
+              {results.alternatives && <p className={`text-xs ${c.textSecondaryondary}`}>🤔 {results.alternatives}</p>}
             </div>
           )}
 
@@ -1324,35 +1335,35 @@ const MoneyDiplomat = () => {
           {activeType === 'salary' && results.range && (
             <div className={`${c.card} rounded-xl shadow-lg p-5 space-y-4`}>
               <div className="flex items-center justify-around">
-                {[{ l: 'Your ask', v: results.range.ask, clr: c.accentText }, { l: 'Likely outcome', v: results.range.likely_outcome, clr: c.text }, { l: 'Walk-away (secret)', v: results.range.minimum, clr: isDark ? 'text-red-400' : 'text-red-600' }].map((r, i) => (
+                {[{ l: 'Your ask', v: results.range.ask, clr: c.textSecondaryondary }, { l: 'Likely outcome', v: results.range.likely_outcome, clr: c.text }, { l: 'Walk-away (secret)', v: results.range.minimum, clr: isDark ? 'text-red-400' : 'text-red-600' }].map((r, i) => (
                   <div key={i} className="text-center">
-                    <p className={`text-[9px] font-bold ${c.textMuted}`}>{r.l}</p>
+                    <p className={`text-[9px] font-bold ${c.textMuteded}`}>{r.l}</p>
                     <p className={`text-lg font-black ${r.clr}`}>{r.v}</p>
                   </div>
                 ))}
               </div>
-              <p className={`text-xs ${c.textSecondary}`}>{results.range.reasoning}</p>
+              <p className={`text-xs ${c.textSecondaryondary}`}>{results.range.reasoning}</p>
               {results.strategy && (
                 <div className={`${c.cardAlt} rounded-lg p-3 space-y-1`}>
-                  <p className={`text-[10px] font-bold ${c.textMuted}`}>🎯 STRATEGY</p>
+                  <p className={`text-[10px] font-bold ${c.textMuteded}`}>🎯 STRATEGY</p>
                   <p className={`text-xs ${c.text}`}>⏰ {results.strategy.when_to_discuss}</p>
                   <p className={`text-xs ${c.text}`}>🎤 {results.strategy.who_goes_first}</p>
-                  <p className={`text-xs ${c.accentText}`}>⚓ {results.strategy.the_anchor}</p>
+                  <p className={`text-xs ${c.textSecondaryondary}`}>⚓ {results.strategy.the_anchor}</p>
                 </div>
               )}
               {results.scripts?.map((s, i) => (
                 <div key={i} className={`p-3 rounded-lg border ${c.border}`}>
                   <p className={`text-[10px] font-bold ${c.text}`}>{s.moment}</p>
                   <p className={`text-sm ${isDark ? 'text-green-300' : 'text-green-700'} italic mt-1`}>"{s.say_this}"</p>
-                  {s.if_they_counter && <p className={`text-[10px] ${c.textMuted} mt-1`}>If they counter: "{s.if_they_counter}"</p>}
+                  {s.if_they_counter && <p className={`text-[10px] ${c.textMuteded} mt-1`}>If they counter: "{s.if_they_counter}"</p>}
                   <CopyBtn content={`${s.say_this}${BRAND}`} label="Copy" />
                 </div>
               ))}
               {results.beyond_salary?.negotiate_these?.length > 0 && (
-                <div className={`${c.accentBg} border rounded-lg p-3 ${c.border}`}>
-                  <p className={`text-[10px] font-bold ${c.accentText}`}>💎 BEYOND SALARY</p>
-                  <div className="flex flex-wrap gap-1 mt-1">{results.beyond_salary.negotiate_these.map((n, i) => <span key={i} className={`text-[9px] px-2 py-0.5 rounded-full ${c.info} border`}>{n}</span>)}</div>
-                  <p className={`text-xs ${c.textSecondary} mt-1`}>{results.beyond_salary.how}</p>
+                <div className={`${c.cardAlt} border rounded-lg p-3 ${c.border}`}>
+                  <p className={`text-[10px] font-bold ${c.textSecondaryondary}`}>💎 BEYOND SALARY</p>
+                  <div className="flex flex-wrap gap-1 mt-1">{results.beyond_salary.negotiate_these.map((n, i) => <span key={i} className={`text-[9px] px-2 py-0.5 rounded-full ${c.cardAlt} border`}>{n}</span>)}</div>
+                  <p className={`text-xs ${c.textSecondaryondary} mt-1`}>{results.beyond_salary.how}</p>
                 </div>
               )}
               {results.power_read && <p className={`text-xs ${c.text} italic`}>⚡ {results.power_read}</p>}
@@ -1367,7 +1378,7 @@ const MoneyDiplomat = () => {
                 <p className={`text-xl font-black ${c.text} mt-1`}>{results.confidence}%</p>
               </div>
               {results.the_math && <p className={`text-sm ${c.text}`}>🧮 {results.the_math}</p>}
-              {results.the_real_question && <p className={`text-sm ${c.accentText} italic`}>🎯 {results.the_real_question}</p>}
+              {results.the_real_question && <p className={`text-sm ${c.textSecondaryondary} italic`}>🎯 {results.the_real_question}</p>}
               {results.if_yes && (
                 <div className={`${c.success} border rounded-lg p-3`}>
                   <p className="text-[10px] font-bold">✅ IF YES</p>
@@ -1385,7 +1396,7 @@ const MoneyDiplomat = () => {
                 </div>
               )}
               {results.social_pressure_check && <p className={`text-xs ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>🤔 {results.social_pressure_check}</p>}
-              {results.future_you && <p className={`text-xs ${c.textMuted} italic`}>🔮 Future you: {results.future_you}</p>}
+              {results.future_you && <p className={`text-xs ${c.textMuteded} italic`}>🔮 Future you: {results.future_you}</p>}
             </div>
           )}
 
@@ -1402,25 +1413,25 @@ const MoneyDiplomat = () => {
                 <div key={i} className={`${c.warning} border rounded-lg p-3`}>
                   <p className="text-xs font-bold">{t.trap}</p>
                   <p className="text-[10px] mt-0.5">{t.why_it_happens}</p>
-                  <p className={`text-[10px] ${c.accentText} mt-0.5`}>Prevention: {t.prevention}</p>
+                  <p className={`text-[10px] ${c.textSecondaryondary} mt-0.5`}>Prevention: {t.prevention}</p>
                 </div>
               ))}
               {results.the_conversations?.map((conv, i) => (
                 <div key={i} className={`p-3 rounded-lg ${c.cardAlt}`}>
-                  <p className={`text-[10px] font-bold ${c.textMuted}`}>Talk to: {conv.with_whom}</p>
+                  <p className={`text-[10px] font-bold ${c.textMuteded}`}>Talk to: {conv.with_whom}</p>
                   <p className={`text-xs ${c.text}`}>About: {conv.about_what}</p>
                   <p className={`text-xs ${isDark ? 'text-green-300' : 'text-green-700'} italic`}>Open with: "{conv.opener}"</p>
                   {conv.boundary && <p className={`text-[10px] ${isDark ? 'text-red-300' : 'text-red-700'}`}>🚫 Not yet: {conv.boundary}</p>}
                 </div>
               ))}
               {results.fairness_framework && (
-                <div className={`${c.accentBg} border rounded-lg p-3 ${c.border} space-y-1`}>
-                  <p className={`text-[10px] font-bold ${c.accentText}`}>⚖️ FAIRNESS FRAMEWORK</p>
+                <div className={`${c.cardAlt} border rounded-lg p-3 ${c.border} space-y-1`}>
+                  <p className={`text-[10px] font-bold ${c.textSecondaryondary}`}>⚖️ FAIRNESS FRAMEWORK</p>
                   <p className={`text-xs ${c.text}`}>{results.fairness_framework.equal_vs_equitable}</p>
-                  {results.fairness_framework.the_caretaker_question && <p className={`text-[10px] ${c.textSecondary}`}>Caretaker: {results.fairness_framework.the_caretaker_question}</p>}
+                  {results.fairness_framework.the_caretaker_question && <p className={`text-[10px] ${c.textSecondaryondary}`}>Caretaker: {results.fairness_framework.the_caretaker_question}</p>}
                 </div>
               )}
-              {results.timeline && <p className={`text-xs ${c.textMuted}`}>⏰ {results.timeline}</p>}
+              {results.timeline && <p className={`text-xs ${c.textMuteded}`}>⏰ {results.timeline}</p>}
               {results.the_thing_nobody_says && <p className={`text-xs ${c.text} italic`}>🤫 {results.the_thing_nobody_says}</p>}
             </div>
           )}
@@ -1443,7 +1454,7 @@ const MoneyDiplomat = () => {
                   <div className={`p-3 rounded-lg ${isDark ? 'bg-rose-900/15' : 'bg-rose-50'}`}>
                     <p className={`text-[10px] font-bold ${isDark ? 'text-rose-300' : 'text-rose-700'}`}>THEIR NORMS</p>
                     <p className={`text-xs ${c.text} mt-1`}>{results.their_norms.what_they_expect}</p>
-                    <p className={`text-[10px] ${c.textSecondary} mt-1`}>{results.their_norms.what_they_might_do}</p>
+                    <p className={`text-[10px] ${c.textSecondaryondary} mt-1`}>{results.their_norms.what_they_might_do}</p>
                   </div>
                 )}
               </div>
@@ -1452,7 +1463,7 @@ const MoneyDiplomat = () => {
                   <p className={`text-xs font-bold ${c.text}`}>They do: {tg.their_behavior}</p>
                   <p className={`text-[10px] ${isDark ? 'text-green-300' : 'text-green-700'}`}>Means: {tg.what_it_means}</p>
                   <p className={`text-[10px] ${isDark ? 'text-red-300' : 'text-red-700'}`}>You might think: {tg.what_you_might_think}</p>
-                  <p className={`text-[10px] ${c.accentText}`}>Do this: {tg.how_to_respond}</p>
+                  <p className={`text-[10px] ${c.textSecondaryondary}`}>Do this: {tg.how_to_respond}</p>
                 </div>
               ))}
               {results.dos_and_donts && (
@@ -1467,8 +1478,8 @@ const MoneyDiplomat = () => {
                   </div>
                 </div>
               )}
-              {results.the_bridge && <p className={`text-sm ${c.accentText} italic text-center`}>🌉 {results.the_bridge}</p>}
-              {results.if_awkward && <p className={`text-xs ${c.textMuted}`}>😅 If awkward: {results.if_awkward}</p>}
+              {results.the_bridge && <p className={`text-sm ${c.textSecondaryondary} italic text-center`}>🌉 {results.the_bridge}</p>}
+              {results.if_awkward && <p className={`text-xs ${c.textMuteded}`}>😅 If awkward: {results.if_awkward}</p>}
             </div>
           )}
 
@@ -1476,12 +1487,12 @@ const MoneyDiplomat = () => {
           {activeType === 'charity' && results.recommendation && (
             <div className={`${c.card} rounded-xl shadow-lg p-5 space-y-4`}>
               <div className="text-center">
-                <p className={`text-3xl font-black ${c.accentText}`}>{results.recommendation.amount}</p>
-                <p className={`text-sm ${c.textSecondary}`}>{results.recommendation.verdict}</p>
+                <p className={`text-3xl font-black ${c.textSecondaryondary}`}>{results.recommendation.amount}</p>
+                <p className={`text-sm ${c.textSecondaryondary}`}>{results.recommendation.verdict}</p>
                 {results.recommendation.range && (
                   <div className="flex justify-center gap-4 mt-2">
                     {[{ l: 'Minimum', v: results.recommendation.range.minimum }, { l: 'Comfortable', v: results.recommendation.range.comfortable }, { l: 'Generous', v: results.recommendation.range.generous }].map((r, i) => (
-                      <div key={i}><p className={`text-[9px] ${c.textMuted}`}>{r.l}</p><p className={`text-sm font-bold ${i === 1 ? c.accentText : c.text}`}>{r.v}</p></div>
+                      <div key={i}><p className={`text-[9px] ${c.textMuteded}`}>{r.l}</p><p className={`text-sm font-bold ${i === 1 ? c.textSecondaryondary : c.text}`}>{r.v}</p></div>
                     ))}
                   </div>
                 )}
@@ -1489,7 +1500,7 @@ const MoneyDiplomat = () => {
               {results.obligation_check && (
                 <div className={`${c.cardAlt} rounded-lg p-3`}>
                   <p className={`text-xs ${c.text}`}>Obligated? <span className="font-bold">{results.obligation_check.are_you_obligated}</span></p>
-                  <p className={`text-[10px] ${c.textMuted} mt-0.5`}>{results.obligation_check.what_happens_if_no}</p>
+                  <p className={`text-[10px] ${c.textMuteded} mt-0.5`}>{results.obligation_check.what_happens_if_no}</p>
                   <p className={`text-[10px] ${isDark ? 'text-amber-300' : 'text-amber-700'} mt-0.5`}>{results.obligation_check.guilt_vs_genuine}</p>
                 </div>
               )}
@@ -1508,8 +1519,8 @@ const MoneyDiplomat = () => {
                   {results.if_declining.alternative && <p className="text-[10px] mt-1">Instead: {results.if_declining.alternative}</p>}
                 </div>
               )}
-              {results.frequency_check && <p className={`text-xs ${c.accentText}`}>🔄 Policy: {results.frequency_check}</p>}
-              {results.tax_note && <p className={`text-[10px] ${c.textMuted}`}>💼 {results.tax_note}</p>}
+              {results.frequency_check && <p className={`text-xs ${c.textSecondaryondary}`}>🔄 Policy: {results.frequency_check}</p>}
+              {results.tax_note && <p className={`text-[10px] ${c.textMuteded}`}>💼 {results.tax_note}</p>}
             </div>
           )}
 
@@ -1517,14 +1528,9 @@ const MoneyDiplomat = () => {
           <div className={`${c.cardAlt} rounded-lg p-4`}>
             <p className={`text-[10px] font-bold ${c.textMuted} mb-2`}>🔗 Related Tools</p>
             <div className="flex flex-wrap gap-2">
-              {activeType === 'gift' && <a href="/tool/anti-gift-panic" target="_blank" className={`text-xs ${c.accentText} underline`}>🎁 AntiGiftPanic — Gift ideas</a>}
-              {(activeType === 'family' || activeType === 'lend' || activeType === 'inheritance') && <a href="/tool/difficult-talk-coach" target="_blank" className={`text-xs ${c.accentText} underline`}>🗣️ DifficultTalkCoach — Hard conversations</a>}
-              {activeType === 'dining' && <a href="/tool/fridge-alchemy" target="_blank" className={`text-xs ${c.accentText} underline`}>🧪 FridgeAlchemy — Cook instead</a>}
-              {activeType === 'lend' && <a href="/tool/confrontation-coach" target="_blank" className={`text-xs ${c.accentText} underline`}>🥊 ConfrontationCoach — Difficult asks</a>}
-              {activeType === 'salary' && <a href="/tool/skill-gap-map" target="_blank" className={`text-xs ${c.accentText} underline`}>🗺️ SkillGapMap — Career transitions</a>}
-              {activeType === 'salary' && <a href="/tool/brag-sheet-builder" target="_blank" className={`text-xs ${c.accentText} underline`}>📝 BragSheetBuilder — Document wins</a>}
-              {activeType === 'travel' && <a href="/tool/caption-magic" target="_blank" className={`text-xs ${c.accentText} underline`}>📸 CaptionMagic — Travel captions</a>}
-              <a href="/tool/buy-wise" target="_blank" className={`text-xs ${c.accentText} underline`}>🛒 BuyWise — Smart spending</a>
+              {[{slug:'buy-wise',label:'🛒 Buy Wise'},{slug:'bill-rescue',label:'💸 Bill Rescue'},{slug:'difficult-talk-coach',label:'🗣️ Difficult Talk Coach'}].map(({slug,label})=>(
+                <a key={slug} href={`/tool/${slug}`} className={linkStyle}>{label}</a>
+              ))}
             </div>
           </div>
         </div>
@@ -1534,14 +1540,14 @@ const MoneyDiplomat = () => {
       {history.length > 0 && !results && (
         <div className={`${c.card} rounded-xl shadow-lg p-4`}>
           <div className="flex items-center justify-between mb-2">
-            <p className={`text-[10px] font-bold ${c.textMuted}`}>📜 RECENT ({history.length})</p>
-            <button onClick={() => { setHistory([]); setProfileData(null); }} className={`text-[10px] ${c.textMuted} underline`}>Clear</button>
+            <p className={`text-[10px] font-bold ${c.textMuteded}`}>📜 RECENT ({history.length})</p>
+            <button onClick={() => { setHistory([]); setProfileData(null); }} className={`text-[10px] ${c.textMuteded} underline`}>Clear</button>
           </div>
           {history.slice(0, 5).map((h, i) => (
             <div key={i} className={`flex items-center gap-2 py-1.5 border-b last:border-0 ${c.border}`}>
               <Badge type="info">{h.type}</Badge>
               <span className={`text-xs ${c.text} flex-1 truncate`}>{h.summary}</span>
-              <span className={`text-[9px] ${c.textMuted}`}>{new Date(h.date).toLocaleDateString()}</span>
+              <span className={`text-[9px] ${c.textMuteded}`}>{new Date(h.date).toLocaleDateString()}</span>
             </div>
           ))}
         </div>

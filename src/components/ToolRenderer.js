@@ -59,7 +59,7 @@ const ToolRenderer = ({ college }) => {
           <p className="text-blue-600 font-mono text-[10px] tracking-widest uppercase">Decrypting Asset...</p>
         </div>
       }>
-        <ToolComponent college={college} />
+<ToolComponent college={college} tool={toolData} />
       </Suspense>
     </ToolPageWrapper>
   );

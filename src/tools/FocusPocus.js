@@ -2,8 +2,7 @@ import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
-import { getToolById } from '../data/tools';
-import { CopyBtn } from '../components/ActionButtons';
+import { CopyBtn, ActionBar } from '../components/ActionButtons';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, ScatterChart, Scatter, CartesianGrid } from 'recharts';
 
 // ════════════════════════════════════════════════════════════
@@ -115,7 +114,7 @@ const QUIT_REBUTTALS = [
   "Close your eyes for 10 seconds, take a breath, then keep going.",
 ];
 
-const todayKey = () => new Date().toISOString().slice(0, 10);
+const todayKey = () => new Date().toISOString().slice(0, 6);
 
 const scoreSession = ({ plannedMin, actualMin, overtimeMin, pauseCount, distractionCount }) => {
   let score = 100;
@@ -133,18 +132,16 @@ const scoreSession = ({ plannedMin, actualMin, overtimeMin, pauseCount, distract
 const scoreLabel = (s) => s >= 85 ? 'Excellent' : s >= 70 ? 'Good' : s >= 50 ? 'Fair' : 'Rough';
 const scoreColor = (s, isDark) => s >= 85
   ? (isDark ? 'text-emerald-400' : 'text-emerald-600')
-  : s >= 70 ? (isDark ? 'text-blue-400' : 'text-blue-600')
+  : s >= 70 ? (isDark ? 'text-sky-400' : 'text-sky-600')
   : s >= 50 ? (isDark ? 'text-amber-400' : 'text-amber-600')
   : (isDark ? 'text-red-400' : 'text-red-600');
 
 // ════════════════════════════════════════════════════════════
 // MAIN COMPONENT
 // ════════════════════════════════════════════════════════════
-const FocusPocus = () => {
-  const { theme } = useTheme();
-  const isDark = theme === 'dark';
+const FocusPocus = ({ tool }) => {
+  const { isDark } = useTheme();
   const { callToolEndpoint, loading } = useClaudeAPI();
-  const toolData = getToolById('FocusPocus');
 
   // ── Persisted session state ──
   const [sessionActivity, setSessionActivity] = usePersistentState('fp-activity', '');
@@ -195,6 +192,7 @@ const FocusPocus = () => {
   const [now, setNow] = useState(Date.now());
   const [results, setResults] = useState(null);
   const [error, setError] = useState('');
+  const resultsRef = React.useRef(null);
   const [quitRebuttal, setQuitRebuttal] = useState('');
   const [checkedActions, setCheckedActions] = useState({});
   const [soundEnabled, setSoundEnabled] = useState(true);
@@ -214,14 +212,24 @@ const FocusPocus = () => {
 
   // ── Theme ──
   const c = {
-    card: isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-stone-200',
-    text: isDark ? 'text-zinc-50' : 'text-gray-900',
-    textSec: isDark ? 'text-zinc-300' : 'text-gray-600',
-    textMuted: isDark ? 'text-zinc-500' : 'text-gray-500',
-    input: isDark
-      ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder:text-zinc-500 focus:border-indigo-500 focus:ring-indigo-500/20'
-      : 'bg-white border-stone-300 text-gray-900 placeholder:text-stone-400 focus:border-indigo-500 focus:ring-indigo-500/20',
+    card:          isDark ? 'bg-zinc-800' : 'bg-white',
+    border:        isDark ? 'border-zinc-700' : 'border-gray-200',
+    text:          isDark ? 'text-zinc-50' : 'text-gray-900',
+    textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
+    textMuted:     isDark ? 'text-zinc-500' : 'text-gray-500',
+    input:         isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder:text-zinc-500 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-cyan-500 focus:ring-cyan-500/20',
+    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
+    cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
+    success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
+    warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
+    danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
+    deleteHover: isDark ? '${c.deleteHover}' : '${c.deleteHover}',
   };
+
+  const linkStyle = isDark
+    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
+    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
 
   // ── Timer calculations ──
   const totalDurationMs = sessionDurationMin * 60 * 1000;
@@ -421,7 +429,7 @@ const FocusPocus = () => {
       if (prev.lastDate === today) return { ...prev, totalMinutes: prev.totalMinutes + elapsedMin };
       const yesterday = new Date();
       yesterday.setDate(yesterday.getDate() - 1);
-      const yesterdayKey = yesterday.toISOString().slice(0, 10);
+      const yesterdayKey = yesterday.toISOString().slice(0, 6);
       const isConsecutive = prev.lastDate === yesterdayKey;
       const newCurrent = isConsecutive ? prev.currentStreak + 1 : 1;
       return {
@@ -500,7 +508,7 @@ const FocusPocus = () => {
 
   // ── Weekly challenge generation ──
   const generateChallenges = useCallback(() => {
-    const weekKey = new Date().toISOString().slice(0, 10).replace(/-\d+$/, `-W${Math.ceil(new Date().getDate() / 7)}`);
+    const weekKey = new Date().toISOString().slice(0, 6).replace(/-\d+$/, `-W${Math.ceil(new Date().getDate() / 7)}`);
     if (weeklyChallenges.week === weekKey && weeklyChallenges.challenges.length > 0) return;
 
     // Pick 3 relevant challenges based on history
@@ -615,7 +623,7 @@ const FocusPocus = () => {
 
     // Distraction heatmap: [day][hour] => count
     const heatmap = Array.from({ length: 7 }, () => Array(24).fill(0));
-    sessionHistory.slice(0, 50).forEach(h => {
+    sessionHistory.slice(0, 6).forEach(h => {
       const d = new Date(h.date);
       const day = d.getDay();
       const hour = d.getHours();
@@ -624,7 +632,7 @@ const FocusPocus = () => {
 
     // Session count heatmap (for activity patterns)
     const activityHeatmap = Array.from({ length: 7 }, () => Array(24).fill(0));
-    sessionHistory.slice(0, 50).forEach(h => {
+    sessionHistory.slice(0, 6).forEach(h => {
       const d = new Date(h.date);
       activityHeatmap[d.getDay()][d.getHours()]++;
     });
@@ -754,8 +762,9 @@ const FocusPocus = () => {
       bodyCheck: aiResults?.body_check || null,
       note: sessionNote || null,
       chain: chainConfig ? { label: chainConfig.label, index: chainIndex, total: chainConfig.sessions.length } : null,
+      preview: (sessionActivity || 'Focus session').slice(0, 40),
     };
-    setSessionHistory(prev => [entry, ...prev].slice(0, 100));
+    setSessionHistory(prev => [entry, ...prev].slice(0, 6));
 
     // Update daily streak
     const today = todayKey();
@@ -803,6 +812,7 @@ const FocusPocus = () => {
           : '',
       });
       setResults(data);
+      setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
       recordSession(data);
 
       // If in a chain, set break timer for chain break
@@ -889,7 +899,7 @@ const FocusPocus = () => {
     const seen = new Set();
     return sessionHistory
       .filter(h => { if (seen.has(h.activity)) return false; seen.add(h.activity); return true; })
-      .slice(0, 8)
+      .slice(0, 6)
       .map(h => h.activity);
   }, [sessionHistory]);
 
@@ -924,7 +934,7 @@ const FocusPocus = () => {
   // ── Focus patterns data ──
   const getPatterns = useCallback(() => {
     if (sessionHistory.length < 5) return null;
-    const recent = sessionHistory.slice(0, 50);
+    const recent = sessionHistory.slice(0, 6);
     const avgDuration = Math.round(recent.reduce((s, h) => s + h.actualMin, 0) / recent.length);
     const avgScore = Math.round(recent.reduce((s, h) => s + (h.score || 0), 0) / recent.length);
     const totalMin = recent.reduce((s, h) => s + h.actualMin, 0);
@@ -978,7 +988,7 @@ const FocusPocus = () => {
   // ── Urgency colors ──
   const urgencyColors = (level) => {
     const maps = [
-      { bg: isDark ? 'bg-indigo-900/30' : 'bg-indigo-50', border: isDark ? 'border-indigo-700' : 'border-indigo-200', text: isDark ? 'text-indigo-300' : 'text-indigo-700', timerText: isDark ? 'text-indigo-300' : 'text-indigo-600', ring: isDark ? 'stroke-indigo-400' : 'stroke-indigo-500', ringBg: isDark ? 'stroke-zinc-700' : 'stroke-stone-200' },
+      { bg: isDark ? 'bg-cyan-900/30' : 'bg-cyan-50', border: isDark ? 'border-cyan-700' : 'border-cyan-200', text: isDark ? 'text-cyan-300' : 'text-cyan-700', timerText: isDark ? 'text-cyan-300' : 'text-cyan-600', ring: isDark ? 'stroke-indigo-400' : 'stroke-indigo-500', ringBg: isDark ? 'stroke-zinc-700' : 'stroke-stone-200' },
       { bg: isDark ? 'bg-amber-900/20' : 'bg-amber-50', border: isDark ? 'border-amber-700' : 'border-amber-200', text: isDark ? 'text-amber-300' : 'text-amber-700', timerText: isDark ? 'text-amber-300' : 'text-amber-600', ring: isDark ? 'stroke-amber-400' : 'stroke-amber-500', ringBg: isDark ? 'stroke-zinc-700' : 'stroke-stone-200' },
       { bg: isDark ? 'bg-orange-900/20' : 'bg-orange-50', border: isDark ? 'border-orange-700' : 'border-orange-200', text: isDark ? 'text-orange-300' : 'text-orange-700', timerText: isDark ? 'text-orange-300' : 'text-orange-600', ring: isDark ? 'stroke-orange-400' : 'stroke-orange-500', ringBg: isDark ? 'stroke-zinc-700' : 'stroke-stone-200' },
       { bg: isDark ? 'bg-red-900/20' : 'bg-red-50', border: isDark ? 'border-red-700' : 'border-red-200', text: isDark ? 'text-red-300' : 'text-red-700', timerText: isDark ? 'text-red-300' : 'text-red-600', ring: isDark ? 'stroke-red-400' : 'stroke-red-500', ringBg: isDark ? 'stroke-zinc-700' : 'stroke-stone-200' },
@@ -1009,7 +1019,7 @@ const FocusPocus = () => {
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           {isOvertime && <span className={`text-xs font-bold uppercase tracking-wider mb-1 ${uc.text}`}>Overtime</span>}
           <span className={`text-4xl font-mono font-bold tracking-tight ${uc.timerText}`}>{fmt(seconds)}</span>
-          {!isOvertime && <span className={`text-xs ${c.textMuted} mt-1`}>remaining</span>}
+          {!isOvertime && <span className={`text-xs ${c.textMuteded} mt-1`}>remaining</span>}
         </div>
       </div>
     );
@@ -1017,10 +1027,10 @@ const FocusPocus = () => {
 
   // ── Stat pill ──
   const Pill = ({ emoji, label, value, color }) => (
-    <div className={`flex items-center gap-2 px-3 py-2 rounded-xl border ${isDark ? 'bg-zinc-700/50 border-zinc-600' : 'bg-stone-50 border-stone-200'}`}>
+    <div className={`flex items-center gap-2 px-3 py-2 rounded-xl border ${isDark ? 'bg-zinc-700/50 border-zinc-600' : 'bg-zinc-50 border-zinc-200'}`}>
       <span>{emoji}</span>
       <div>
-        <div className={`text-xs ${c.textMuted}`}>{label}</div>
+        <div className={`text-xs ${c.textMuteded}`}>{label}</div>
         <div className={`text-sm font-bold ${color || c.text}`}>{value}</div>
       </div>
     </div>
@@ -1030,7 +1040,7 @@ const FocusPocus = () => {
   const Hint = ({ id, children }) => {
     if (dismissedHints[id]) return null;
     return (
-      <div className={`flex items-start gap-2 px-3 py-2 rounded-lg text-xs ${isDark ? 'bg-indigo-900/20 text-indigo-300 border border-indigo-800/40' : 'bg-indigo-50 text-indigo-700 border border-indigo-100'}`}>
+      <div className={`flex items-start gap-2 px-3 py-2 rounded-lg text-xs ${isDark ? 'bg-cyan-900/20 text-cyan-300 border border-cyan-800/40' : 'bg-cyan-50 text-cyan-700 border border-cyan-100'}`}>
         <span className="flex-shrink-0 mt-0.5">💡</span>
         <span className="flex-1">{children}</span>
         <button onClick={() => setDismissedHints(prev => ({ ...prev, [id]: true }))}
@@ -1045,8 +1055,8 @@ const FocusPocus = () => {
       {/* ── Header ── */}
       <div className="flex items-center justify-between mb-5">
         <div>
-          <h2 className={`text-2xl font-bold ${c.text}`}>{toolData?.title || 'Focus Pocus'} 🎩</h2>
-          <p className={`text-sm ${c.textMuted}`}>{toolData?.tagline || 'Lock in your focus session, get pulled out when time is up'}</p>
+          <h2 className={`text-2xl font-bold ${c.text}`}>{tool?.icon ?? '🎩'} {tool?.title || 'Focus Pocus'}</h2>
+          <p className={`text-sm ${c.textMuteded}`}>{tool?.tagline || 'Lock in your focus session, get pulled out when time is up'}</p>
         </div>
         {todaySessions > 0 && phase === 'setup' && (
           <div className="flex items-center gap-2">
@@ -1055,7 +1065,7 @@ const FocusPocus = () => {
                 🔥 {multiDayStreak.currentStreak}-day streak
               </div>
             )}
-            <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold ${isDark ? 'bg-indigo-900/30 text-indigo-300' : 'bg-indigo-50 text-indigo-700'}`}>
+            <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold ${isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-50 text-cyan-700'}`}>
               🔥 {todaySessions} today · {todayMinutes}m
             </div>
           </div>
@@ -1070,9 +1080,9 @@ const FocusPocus = () => {
 
           {/* First-visit welcome */}
           {!hasVisited && (
-            <div className={`${c.card} border rounded-2xl shadow-lg p-5 sm:p-6`}>
+            <div className={`${c.card} ${c.border} border rounded-2xl shadow-lg p-5 sm:p-6`}>
               <h3 className={`text-lg font-bold ${c.text} mb-2`}>Welcome to Focus Pocus 🎩</h3>
-              <p className={`text-sm ${c.textSec} mb-4`}>
+              <p className={`text-sm ${c.textSecondaryondary} mb-4`}>
                 A focus timer that tracks your habits and helps you take better breaks.
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-4">
@@ -1082,24 +1092,24 @@ const FocusPocus = () => {
                   { emoji: '📱', title: 'Distraction logging', desc: 'See what pulls you out of flow' },
                   { emoji: '🧠', title: 'AI break plans', desc: 'Context-aware recovery advice' },
                 ].map((f, i) => (
-                  <div key={i} className={`flex items-start gap-2 p-2.5 rounded-xl ${isDark ? 'bg-zinc-700/50' : 'bg-stone-50'}`}>
+                  <div key={i} className={`flex items-start gap-2 p-2.5 rounded-xl ${isDark ? 'bg-zinc-700/50' : 'bg-zinc-50'}`}>
                     <span className="text-lg">{f.emoji}</span>
                     <div>
                       <p className={`text-sm font-bold ${c.text}`}>{f.title}</p>
-                      <p className={`text-xs ${c.textMuted}`}>{f.desc}</p>
+                      <p className={`text-xs ${c.textMuteded}`}>{f.desc}</p>
                     </div>
                   </div>
                 ))}
               </div>
               <button onClick={() => setHasVisited(true)}
-                className={`text-xs font-bold ${isDark ? 'text-indigo-400' : 'text-indigo-600'}`}>
+                className={`text-xs font-bold ${isDark ? 'text-cyan-400' : 'text-cyan-600'}`}>
                 Got it — let's focus →
               </button>
             </div>
           )}
 
           {/* Activity */}
-          <div className={`${c.card} border rounded-2xl shadow-lg p-5 sm:p-6`}>
+          <div className={`${c.card} ${c.border} border rounded-2xl shadow-lg p-5 sm:p-6`}>
             <label className={`block text-lg font-bold ${c.text} mb-3`}>What are you focusing on?</label>
             <input
               type="text" value={sessionActivity}
@@ -1108,12 +1118,12 @@ const FocusPocus = () => {
               placeholder="e.g., Coding the new dashboard, Studying for chemistry exam…"
               className={`w-full p-3 border rounded-xl outline-none focus:ring-2 transition-colors text-sm ${c.input}`}
             />
-            {sessionActivity.trim() && <p className={`text-xs ${c.textMuted} mt-2`}>Press Enter to start</p>}
+            {sessionActivity.trim() && <p className={`text-xs ${c.textMuteded} mt-2`}>Press Enter to start</p>}
 
             {/* Favorite activities */}
             {favoriteActivities.length > 0 && !sessionActivity.trim() && (
               <div className="mt-3">
-                <p className={`text-xs font-bold ${c.textMuted} mb-1.5`}>⭐ Favorites</p>
+                <p className={`text-xs font-bold ${c.textMuteded} mb-1.5`}>⭐ Favorites</p>
                 <div className="flex flex-wrap gap-1.5">
                   {favoriteActivities.map(a => (
                     <button key={a} onClick={() => setSessionActivity(a)}
@@ -1128,11 +1138,11 @@ const FocusPocus = () => {
             {/* Recent activities */}
             {recentActivities.length > 0 && !sessionActivity.trim() && favoriteActivities.length === 0 && (
               <div className="mt-3">
-                <p className={`text-xs font-bold ${c.textMuted} mb-1.5`}>🕐 Recent</p>
+                <p className={`text-xs font-bold ${c.textMuteded} mb-1.5`}>🕐 Recent</p>
                 <div className="flex flex-wrap gap-1.5">
                   {recentActivities.slice(0, 5).map(a => (
                     <button key={a} onClick={() => setSessionActivity(a)}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${isDark ? 'bg-zinc-700 text-zinc-300 hover:bg-zinc-600 border border-zinc-600' : 'bg-stone-100 text-stone-600 hover:bg-stone-200 border border-stone-200'}`}>
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${isDark ? 'bg-zinc-700 text-zinc-300 hover:bg-zinc-600 border border-zinc-600' : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200 border border-zinc-200'}`}>
                       {a}
                     </button>
                   ))}
@@ -1143,18 +1153,18 @@ const FocusPocus = () => {
             {/* Favorite toggle for current activity */}
             {sessionActivity.trim() && (
               <button onClick={() => toggleFavorite(sessionActivity.trim())}
-                className={`mt-2 text-xs font-bold flex items-center gap-1 ${favoriteActivities.includes(sessionActivity.trim()) ? (isDark ? 'text-amber-400' : 'text-amber-600') : c.textMuted}`}>
+                className={`mt-2 text-xs font-bold flex items-center gap-1 ${favoriteActivities.includes(sessionActivity.trim()) ? (isDark ? 'text-amber-400' : 'text-amber-600') : c.textMuteded}`}>
                 {favoriteActivities.includes(sessionActivity.trim()) ? '⭐ Favorited' : '☆ Add to favorites'}
               </button>
             )}
 
             {/* Last session note for this activity */}
             {lastNoteForActivity && (
-              <div className={`mt-3 p-3 rounded-xl flex items-start gap-2 ${isDark ? 'bg-indigo-900/20 border border-indigo-800/40' : 'bg-indigo-50 border border-indigo-100'}`}>
+              <div className={`mt-3 p-3 rounded-xl flex items-start gap-2 ${isDark ? 'bg-cyan-900/20 border border-cyan-800/40' : 'bg-cyan-50 border border-cyan-100'}`}>
                 <span>🔖</span>
                 <div className="flex-1 min-w-0">
-                  <p className={`text-[10px] font-bold ${isDark ? 'text-indigo-400' : 'text-indigo-600'} mb-0.5`}>Last time you left off:</p>
-                  <p className={`text-xs ${c.textSec} italic`}>"{lastNoteForActivity}"</p>
+                  <p className={`text-[10px] font-bold ${isDark ? 'text-cyan-400' : 'text-cyan-600'} mb-0.5`}>Last time you left off:</p>
+                  <p className={`text-xs ${c.textSecondaryondary} italic`}>"{lastNoteForActivity}"</p>
                 </div>
               </div>
             )}
@@ -1168,7 +1178,7 @@ const FocusPocus = () => {
           </div>
 
           {/* Session mode tabs + duration */}
-          <div className={`${c.card} border rounded-2xl shadow-lg p-5 sm:p-6`}>
+          <div className={`${c.card} ${c.border} border rounded-2xl shadow-lg p-5 sm:p-6`}>
             {/* Mode tabs */}
             <div className="flex gap-1 mb-4">
               {[
@@ -1178,8 +1188,8 @@ const FocusPocus = () => {
                 <button key={m.id} onClick={() => setSessionMode(m.id)}
                   className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-all ${
                     sessionMode === m.id
-                      ? isDark ? 'bg-indigo-900/40 text-indigo-300 border border-indigo-500' : 'bg-indigo-50 text-indigo-700 border border-indigo-300'
-                      : isDark ? 'text-zinc-400 hover:text-zinc-200 border border-transparent' : 'text-stone-400 hover:text-stone-600 border border-transparent'
+                      ? isDark ? 'bg-cyan-900/40 text-cyan-300 border border-cyan-500' : 'bg-cyan-50 text-cyan-700 border border-cyan-300'
+                      : isDark ? 'text-zinc-400 hover:text-zinc-200 border border-transparent' : 'text-zinc-400 hover:text-zinc-600 border border-transparent'
                   }`}>
                   {m.label}
                 </button>
@@ -1196,13 +1206,13 @@ const FocusPocus = () => {
                       onClick={() => { setSessionDurationMin(p.minutes); setCustomMinutes(''); }}
                       className={`px-4 py-2.5 rounded-xl text-sm font-bold border transition-all ${
                         sessionDurationMin === p.minutes && !customMinutes
-                          ? isDark ? 'border-indigo-500 bg-indigo-900/40 text-indigo-300 ring-1 ring-indigo-500/30' : 'border-indigo-400 bg-indigo-50 text-indigo-700 ring-1 ring-indigo-200'
-                          : isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500 hover:text-zinc-200' : 'border-stone-200 text-stone-500 hover:border-stone-400 hover:text-gray-700'
+                          ? isDark ? 'border-cyan-500 bg-cyan-900/40 text-cyan-300 ring-1 ring-indigo-500/30' : 'border-cyan-400 bg-cyan-50 text-cyan-700 ring-1 ring-indigo-200'
+                          : isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500 hover:text-zinc-200' : 'border-zinc-200 text-zinc-500 hover:border-zinc-400 hover:text-gray-700'
                       }`}>
                       <div>{p.label}</div>
                       <div className={`text-[10px] font-medium mt-0.5 ${
                         sessionDurationMin === p.minutes && !customMinutes
-                          ? isDark ? 'text-indigo-400' : 'text-indigo-500' : isDark ? 'text-zinc-500' : 'text-stone-400'
+                          ? isDark ? 'text-cyan-400' : 'text-cyan-500' : isDark ? 'text-zinc-500' : 'text-zinc-400'
                       }`}>{p.sub}</div>
                     </button>
                   ))}
@@ -1213,7 +1223,7 @@ const FocusPocus = () => {
                       placeholder="Custom" min="1" max="480"
                       className={`w-20 px-3 py-2.5 border rounded-xl text-sm font-bold outline-none focus:ring-2 transition-colors ${c.input}`}
                     />
-                    <span className={`text-xs font-medium ${c.textMuted}`}>min</span>
+                    <span className={`text-xs font-medium ${c.textMuteded}`}>min</span>
                   </div>
                 </div>
               </>
@@ -1230,17 +1240,17 @@ const FocusPocus = () => {
                       onClick={() => { if (sessionActivity.trim()) startChain(ch); }}
                       disabled={!sessionActivity.trim()}
                       className={`p-3 rounded-xl border text-left transition-all ${
-                        isDark ? 'border-zinc-600 hover:border-indigo-500 hover:bg-indigo-900/20' : 'border-stone-200 hover:border-indigo-400 hover:bg-indigo-50'
+                        isDark ? 'border-zinc-600 hover:border-cyan-500 hover:bg-cyan-900/20' : 'border-zinc-200 hover:border-cyan-400 hover:bg-cyan-50'
                       } ${!sessionActivity.trim() ? 'opacity-40 cursor-not-allowed' : ''}`}>
                       <div className={`text-sm font-bold ${c.text}`}>🔗 {ch.label}</div>
-                      <div className={`text-xs ${c.textMuted} mt-0.5`}>
+                      <div className={`text-xs ${c.textMuteded} mt-0.5`}>
                         {ch.sessions.length} sessions · {ch.breakMin}m breaks
                       </div>
                     </button>
                   ))}
                 </div>
                 {!sessionActivity.trim() && (
-                  <p className={`text-xs ${c.textMuted} mt-2`}>↑ Enter your activity above first</p>
+                  <p className={`text-xs ${c.textMuteded} mt-2`}>↑ Enter your activity above first</p>
                 )}
               </>
             )}
@@ -1248,27 +1258,27 @@ const FocusPocus = () => {
 
           {/* Session templates */}
           {(sessionTemplates.length > 0 || sessionActivity.trim()) && (
-            <div className={`${c.card} border rounded-2xl shadow-lg p-5 sm:p-6`}>
+            <div className={`${c.card} ${c.border} border rounded-2xl shadow-lg p-5 sm:p-6`}>
               <div className="flex items-center justify-between mb-3">
                 <label className={`text-sm font-bold ${c.text}`}>⚡ Quick Start Templates</label>
                 {sessionActivity.trim() && (
                   <button onClick={() => setShowTemplateForm(!showTemplateForm)}
-                    className={`text-xs font-bold ${isDark ? 'text-indigo-400' : 'text-indigo-600'}`}>
+                    className={`text-xs font-bold ${isDark ? 'text-cyan-400' : 'text-cyan-600'}`}>
                     {showTemplateForm ? '✕ Cancel' : '➕ Save Current'}
                   </button>
                 )}
               </div>
 
               {showTemplateForm && sessionActivity.trim() && (
-                <div className={`mb-3 p-3 rounded-xl border ${isDark ? 'bg-zinc-700/50 border-zinc-600' : 'bg-stone-50 border-stone-200'}`}>
-                  <p className={`text-xs ${c.textSec} mb-2`}>Save "{sessionActivity.trim()}" as a template with {sessionDurationMin}m duration?</p>
+                <div className={`mb-3 p-3 rounded-xl border ${isDark ? 'bg-zinc-700/50 border-zinc-600' : 'bg-zinc-50 border-zinc-200'}`}>
+                  <p className={`text-xs ${c.textSecondaryondary} mb-2`}>Save "{sessionActivity.trim()}" as a template with {sessionDurationMin}m duration?</p>
                   <div className="flex gap-2">
                     <button onClick={() => saveTemplate(sessionActivity, sessionDurationMin, upcomingObligations)}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-bold ${isDark ? 'bg-indigo-600 text-white hover:bg-indigo-500' : 'bg-indigo-600 text-white hover:bg-indigo-700'}`}>
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold ${isDark ? 'bg-cyan-600 text-white hover:bg-cyan-500' : 'bg-cyan-600 text-white hover:bg-cyan-700'}`}>
                       ✅ Save Template
                     </button>
                     <button onClick={() => setShowTemplateForm(false)}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-bold ${isDark ? 'bg-zinc-600 text-zinc-300 hover:bg-zinc-500' : 'bg-stone-200 text-stone-600 hover:bg-stone-300'}`}>
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold ${isDark ? 'bg-zinc-600 text-zinc-300 hover:bg-zinc-500' : 'bg-zinc-200 text-zinc-600 hover:bg-zinc-300'}`}>
                       Cancel
                     </button>
                   </div>
@@ -1278,39 +1288,39 @@ const FocusPocus = () => {
               {sessionTemplates.length > 0 ? (
                 <div className="space-y-1.5">
                   {sessionTemplates.map(t => (
-                    <div key={t.id} className={`flex items-center gap-2 p-2.5 rounded-xl transition-colors cursor-pointer group ${isDark ? 'hover:bg-zinc-700/50' : 'hover:bg-stone-50'}`}>
+                    <div key={t.id} className={`flex items-center gap-2 p-2.5 rounded-xl transition-colors cursor-pointer group ${isDark ? 'hover:bg-zinc-700/50' : 'hover:bg-zinc-50'}`}>
                       <button onClick={() => { loadTemplate(t); }}
                         className="flex-1 flex items-center gap-2.5 text-left min-w-0">
                         <span className="text-lg">⚡</span>
                         <div className="min-w-0">
                           <p className={`text-sm font-bold truncate ${c.text}`}>{t.activity}</p>
-                          <p className={`text-[10px] ${c.textMuted}`}>{t.duration}m{t.context ? ` · ${t.context}` : ''}</p>
+                          <p className={`text-[10px] ${c.textMuteded}`}>{t.duration}m{t.context ? ` · ${t.context}` : ''}</p>
                         </div>
                       </button>
                       <button onClick={() => deleteTemplate(t.id)}
-                        className={`opacity-0 group-hover:opacity-100 text-xs p-1 rounded transition-opacity ${isDark ? 'text-zinc-500 hover:text-red-400' : 'text-stone-400 hover:text-red-500'}`}>
+                        className={`opacity-0 group-hover:opacity-100 text-xs p-1 rounded transition-opacity ${isDark ? 'text-zinc-500 ${c.deleteHover}' : 'text-zinc-400 ${c.deleteHover}'}`}>
                         🗑️
                       </button>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className={`text-xs ${c.textMuted}`}>Set up an activity + duration above, then save it as a one-tap template</p>
+                <p className={`text-xs ${c.textMuteded}`}>Set up an activity + duration above, then save it as a one-tap template</p>
               )}
             </div>
           )}
 
           {/* Optional context */}
-          <div className={`${c.card} border rounded-2xl shadow-lg p-5 sm:p-6`}>
+          <div className={`${c.card} ${c.border} border rounded-2xl shadow-lg p-5 sm:p-6`}>
             <button onClick={() => setShowOptional(!showOptional)}
-              className={`flex items-center gap-2 text-sm font-bold ${c.textSec} w-full`}>
+              className={`flex items-center gap-2 text-sm font-bold ${c.textSecondaryondary} w-full`}>
               <span className={`transition-transform ${showOptional ? 'rotate-180' : ''}`}>▼</span>
               Optional: context for smarter breaks
             </button>
             {showOptional && (
               <div className="mt-4 space-y-4">
                 <div>
-                  <label className={`block text-sm font-medium ${c.textSec} mb-1.5`}>Upcoming obligations</label>
+                  <label className={`block text-sm font-medium ${c.textSecondaryondary} mb-1.5`}>Upcoming obligations</label>
                   <input type="text" value={upcomingObligations} onChange={e => setUpcomingObligations(e.target.value)}
                     onKeyDown={handleKeyDown}
                     placeholder="e.g., Meeting at 3pm, Dinner reservation at 7"
@@ -1318,7 +1328,7 @@ const FocusPocus = () => {
                   />
                 </div>
                 <div>
-                  <label className={`block text-sm font-medium ${c.textSec} mb-1.5`}>Already skipped or missed</label>
+                  <label className={`block text-sm font-medium ${c.textSecondaryondary} mb-1.5`}>Already skipped or missed</label>
                   <input type="text" value={missedNeeds} onChange={e => setMissedNeeds(e.target.value)}
                     onKeyDown={handleKeyDown}
                     placeholder="e.g., Haven't eaten since breakfast, Skipped gym"
@@ -1335,68 +1345,68 @@ const FocusPocus = () => {
               disabled={!sessionActivity.trim()}
               className={`w-full flex items-center justify-center gap-3 px-6 py-4 rounded-2xl font-bold text-lg transition-all shadow-lg ${
                 sessionActivity.trim()
-                  ? 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-200 dark:shadow-indigo-900/40'
-                  : isDark ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed' : 'bg-stone-200 text-stone-400 cursor-not-allowed'
+                  ? 'bg-cyan-600 hover:bg-cyan-700 text-white shadow-indigo-200 dark:shadow-indigo-900/40'
+                  : isDark ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed' : 'bg-zinc-200 text-zinc-400 cursor-not-allowed'
               }`}>
               ▶️ Start {sessionDurationMin}-Minute Session
             </button>
           )}
 
           {/* 🎵 Sound Architect link */}
-          <div className={`${c.card} border rounded-2xl p-4 flex items-center gap-3`}>
+          <div className={`${c.card} ${c.border} border rounded-2xl p-4 flex items-center gap-3`}>
             <span className="text-2xl">🎵</span>
             <div className="flex-1">
               <p className={`text-sm font-bold ${c.text}`}>Need focus sounds?</p>
-              <p className={`text-xs ${c.textMuted}`}>Pair with Focus Sound Architect for AI-designed soundscapes</p>
+              <p className={`text-xs ${c.textMuteded}`}>Pair with Focus Sound Architect for AI-designed soundscapes</p>
             </div>
             <a href="/FocusSoundArchitect" target="_blank" rel="noopener noreferrer"
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${isDark ? 'bg-violet-900/40 text-violet-300 hover:bg-violet-900/60' : 'bg-violet-50 text-violet-700 hover:bg-violet-100'}`}>
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${isDark ? 'bg-cyan-900/40 text-cyan-300 hover:bg-cyan-900/60' : 'bg-cyan-50 text-cyan-700 hover:bg-cyan-100'}`}>
               Open →
             </a>
           </div>
 
           {/* Focus Patterns + History — combined card */}
           {sessionHistory.length > 0 && (
-            <div className={`${c.card} border rounded-2xl shadow-lg p-5`}>
+            <div className={`${c.card} ${c.border} border rounded-2xl shadow-lg p-5`}>
               <div className="flex items-center justify-between mb-3">
                 <h4 className={`text-sm font-bold ${c.text}`}>📊 Your Focus Data</h4>
                 {sessionHistory.length >= 5 && (
                   <button onClick={() => setPhase('patterns')}
-                    className={`text-xs font-bold px-3 py-1.5 rounded-lg transition-colors ${isDark ? 'bg-indigo-900/30 text-indigo-300 hover:bg-indigo-900/50' : 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100'}`}>
+                    className={`text-xs font-bold px-3 py-1.5 rounded-lg transition-colors ${isDark ? 'bg-cyan-900/30 text-cyan-300 hover:bg-cyan-900/50' : 'bg-cyan-50 text-cyan-700 hover:bg-cyan-100'}`}>
                     View Patterns →
                   </button>
                 )}
               </div>
               {/* Mini stats row */}
               <div className="flex gap-3 mb-3">
-                <div className={`text-center px-3 py-2 rounded-lg ${isDark ? 'bg-zinc-700/50' : 'bg-stone-50'}`}>
+                <div className={`text-center px-3 py-2 rounded-lg ${isDark ? 'bg-zinc-700/50' : 'bg-zinc-50'}`}>
                   <div className={`text-lg font-bold ${c.text}`}>{sessionHistory.length}</div>
-                  <div className={`text-[10px] ${c.textMuted}`}>sessions</div>
+                  <div className={`text-[10px] ${c.textMuteded}`}>sessions</div>
                 </div>
-                <div className={`text-center px-3 py-2 rounded-lg ${isDark ? 'bg-zinc-700/50' : 'bg-stone-50'}`}>
+                <div className={`text-center px-3 py-2 rounded-lg ${isDark ? 'bg-zinc-700/50' : 'bg-zinc-50'}`}>
                   <div className={`text-lg font-bold ${c.text}`}>{Math.round(sessionHistory.reduce((s, h) => s + h.actualMin, 0) / 60)}h</div>
-                  <div className={`text-[10px] ${c.textMuted}`}>total</div>
+                  <div className={`text-[10px] ${c.textMuteded}`}>total</div>
                 </div>
-                <div className={`text-center px-3 py-2 rounded-lg ${isDark ? 'bg-zinc-700/50' : 'bg-stone-50'}`}>
-                  <div className={`text-lg font-bold ${scoreColor(Math.round(sessionHistory.slice(0, 10).reduce((s, h) => s + (h.score || 0), 0) / Math.min(10, sessionHistory.length)), isDark)}`}>
-                    {Math.round(sessionHistory.slice(0, 10).reduce((s, h) => s + (h.score || 0), 0) / Math.min(10, sessionHistory.length))}
+                <div className={`text-center px-3 py-2 rounded-lg ${isDark ? 'bg-zinc-700/50' : 'bg-zinc-50'}`}>
+                  <div className={`text-lg font-bold ${scoreColor(Math.round(sessionHistory.slice(0, 6).reduce((s, h) => s + (h.score || 0), 0) / Math.min(10, sessionHistory.length)), isDark)}`}>
+                    {Math.round(sessionHistory.slice(0, 6).reduce((s, h) => s + (h.score || 0), 0) / Math.min(10, sessionHistory.length))}
                   </div>
-                  <div className={`text-[10px] ${c.textMuted}`}>avg score</div>
+                  <div className={`text-[10px] ${c.textMuteded}`}>avg score</div>
                 </div>
               </div>
               {/* Recent sessions */}
               <button onClick={() => setShowHistory(!showHistory)}
-                className={`flex items-center gap-2 w-full text-xs font-bold ${c.textMuted}`}>
+                className={`flex items-center gap-2 w-full text-xs font-bold ${c.textMuteded}`}>
                 Recent ({Math.min(sessionHistory.length, 15)})
                 <span className={`ml-auto transition-transform ${showHistory ? 'rotate-180' : ''}`}>▼</span>
               </button>
               {showHistory && (
                 <div className="mt-2 space-y-2 max-h-60 overflow-y-auto">
-                  {sessionHistory.slice(0, 15).map(h => (
-                    <div key={h.id} className={`flex items-center gap-3 p-3 rounded-xl ${isDark ? 'bg-zinc-700/50' : 'bg-stone-50'}`}>
+                  {sessionHistory.slice(0, 6).map(h => (
+                    <div key={h.id} className={`flex items-center gap-3 p-3 rounded-xl ${isDark ? 'bg-zinc-700/50' : 'bg-zinc-50'}`}>
                       <div className="flex-1 min-w-0">
                         <p className={`text-sm font-bold truncate ${c.text}`}>{h.activity}</p>
-                        <p className={`text-xs ${c.textMuted}`}>
+                        <p className={`text-xs ${c.textMuteded}`}>
                           {new Date(h.date).toLocaleDateString()} · {h.actualMin}m
                           {h.chain && ` · 🔗 ${h.chain.index + 1}/${h.chain.total}`}
                           {h.distractions > 0 && ` · ${h.distractions} 📱`}
@@ -1409,7 +1419,7 @@ const FocusPocus = () => {
                 </div>
               )}
               {sessionHistory.length < 5 && (
-                <p className={`text-xs ${c.textMuted} mt-2`}>
+                <p className={`text-xs ${c.textMuteded} mt-2`}>
                   Complete {5 - sessionHistory.length} more session{5 - sessionHistory.length > 1 ? 's' : ''} to unlock Focus Patterns
                 </p>
               )}
@@ -1428,7 +1438,7 @@ const FocusPocus = () => {
           <div className="space-y-4">
             <div className="flex items-center justify-between mb-2">
               <h3 className={`text-xl font-bold ${c.text}`}>📊 Focus Patterns</h3>
-              <button onClick={() => setPhase('setup')} className={`text-sm font-bold ${c.textMuted} hover:${c.text}`}>← Back</button>
+              <button onClick={() => setPhase('setup')} className={`text-sm font-bold ${c.textMuteded} hover:${c.text}`}>← Back</button>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -1447,17 +1457,17 @@ const FocusPocus = () => {
             {chartData && (
               <>
                 {/* Score Trend Line */}
-                <div className={`${c.card} border rounded-2xl shadow-lg p-5`}>
+                <div className={`${c.card} ${c.border} border rounded-2xl shadow-lg p-5`}>
                   <h4 className={`text-sm font-bold ${c.text} mb-3`}>📈 Score Trend</h4>
                   <div className="h-48">
                     <ResponsiveContainer width="100%" height="100%">
                       <LineChart data={chartData.scoreTrend} margin={{ top: 5, right: 10, bottom: 5, left: -20 }}>
-                        <CartesianGrid strokeDasharray="3 3" stroke={isDark ? '#3f3f46' : '#e7e5e4'} />
-                        <XAxis dataKey="date" tick={{ fill: isDark ? '#a1a1aa' : '#78716c', fontSize: 10 }} interval="preserveStartEnd" />
-                        <YAxis domain={[0, 100]} tick={{ fill: isDark ? '#a1a1aa' : '#78716c', fontSize: 10 }} />
+                        <CartesianGrid strokeDasharray="3 3" stroke={isDark ? 'rgb(63,63,70)' : 'rgb(231,229,228)'} />
+                        <XAxis dataKey="date" tick={{ fill: isDark ? 'rgb(161,161,170)' : 'rgb(120,113,108)', fontSize: 10 }} interval="preserveStartEnd" />
+                        <YAxis domain={[0, 100]} tick={{ fill: isDark ? 'rgb(161,161,170)' : 'rgb(120,113,108)', fontSize: 10 }} />
                         <Tooltip
-                          contentStyle={{ background: isDark ? '#27272a' : '#fff', border: `1px solid ${isDark ? '#3f3f46' : '#e7e5e4'}`, borderRadius: 8, fontSize: 12 }}
-                          labelStyle={{ color: isDark ? '#e4e4e7' : '#1c1917' }}
+                          contentStyle={{ background: isDark ? isDark ? 'bg-zinc-800' : 'rgb(248,250,252)' : 'rgb(255,255,255)', border: `1px solid ${isDark ? 'rgb(63,63,70)' : 'rgb(231,229,228)'}`, borderRadius: 8, fontSize: 12 }}
+                          labelStyle={{ color: isDark ? 'rgb(228,228,231)' : 'rgb(28,25,23)' }}
                         />
                         <Line type="monotone" dataKey="score" stroke={isDark ? '#818cf8' : '#6366f1'} strokeWidth={2} dot={{ r: 3, fill: isDark ? '#818cf8' : '#6366f1' }} />
                       </LineChart>
@@ -1467,17 +1477,17 @@ const FocusPocus = () => {
 
                 {/* Duration vs Score Scatter */}
                 {chartData.durationVsScore.length >= 5 && (
-                  <div className={`${c.card} border rounded-2xl shadow-lg p-5`}>
+                  <div className={`${c.card} ${c.border} border rounded-2xl shadow-lg p-5`}>
                     <h4 className={`text-sm font-bold ${c.text} mb-1`}>⏱️ vs 📊 Duration × Score</h4>
-                    <p className={`text-[10px] ${c.textMuted} mb-3`}>Find your sweet-spot session length</p>
+                    <p className={`text-[10px] ${c.textMuteded} mb-3`}>Find your sweet-spot session length</p>
                     <div className="h-48">
                       <ResponsiveContainer width="100%" height="100%">
                         <ScatterChart margin={{ top: 5, right: 10, bottom: 5, left: -20 }}>
-                          <CartesianGrid strokeDasharray="3 3" stroke={isDark ? '#3f3f46' : '#e7e5e4'} />
-                          <XAxis dataKey="duration" name="Duration" unit="m" tick={{ fill: isDark ? '#a1a1aa' : '#78716c', fontSize: 10 }} />
-                          <YAxis dataKey="score" name="Score" domain={[0, 100]} tick={{ fill: isDark ? '#a1a1aa' : '#78716c', fontSize: 10 }} />
+                          <CartesianGrid strokeDasharray="3 3" stroke={isDark ? 'rgb(63,63,70)' : 'rgb(231,229,228)'} />
+                          <XAxis dataKey="duration" name="Duration" unit="m" tick={{ fill: isDark ? 'rgb(161,161,170)' : 'rgb(120,113,108)', fontSize: 10 }} />
+                          <YAxis dataKey="score" name="Score" domain={[0, 100]} tick={{ fill: isDark ? 'rgb(161,161,170)' : 'rgb(120,113,108)', fontSize: 10 }} />
                           <Tooltip
-                            contentStyle={{ background: isDark ? '#27272a' : '#fff', border: `1px solid ${isDark ? '#3f3f46' : '#e7e5e4'}`, borderRadius: 8, fontSize: 12 }}
+                            contentStyle={{ background: isDark ? isDark ? 'bg-zinc-800' : 'rgb(248,250,252)' : 'rgb(255,255,255)', border: `1px solid ${isDark ? 'rgb(63,63,70)' : 'rgb(231,229,228)'}`, borderRadius: 8, fontSize: 12 }}
                             formatter={(val, name) => [val, name === 'duration' ? 'Duration (min)' : 'Score']}
                           />
                           <Scatter data={chartData.durationVsScore} fill={isDark ? '#34d399' : '#10b981'} fillOpacity={0.7} />
@@ -1488,22 +1498,22 @@ const FocusPocus = () => {
                 )}
 
                 {/* Activity Heatmap */}
-                <div className={`${c.card} border rounded-2xl shadow-lg p-5`}>
+                <div className={`${c.card} ${c.border} border rounded-2xl shadow-lg p-5`}>
                   <h4 className={`text-sm font-bold ${c.text} mb-1`}>🗓️ Activity Heatmap</h4>
-                  <p className={`text-[10px] ${c.textMuted} mb-3`}>When you focus most</p>
+                  <p className={`text-[10px] ${c.textMuteded} mb-3`}>When you focus most</p>
                   <div className="overflow-x-auto">
                     <div className="min-w-[400px]">
                       {/* Hour labels */}
                       <div className="flex mb-1 ml-10">
                         {[0, 6, 12, 18, 23].map(h => (
-                          <span key={h} className={`text-[9px] ${c.textMuted}`} style={{ position: 'relative', left: `${(h / 24) * 100}%` }}>{h}:00</span>
+                          <span key={h} className={`text-[9px] ${c.textMuteded}`} style={{ position: 'relative', left: `${(h / 24) * 100}%` }}>{h}:00</span>
                         ))}
                       </div>
                       {DAY_NAMES_SHORT.map((day, dayIdx) => {
                         const maxVal = Math.max(1, ...chartData.activityHeatmap[dayIdx]);
                         return (
                           <div key={day} className="flex items-center gap-1 mb-0.5">
-                            <span className={`text-[10px] w-8 text-right ${c.textMuted}`}>{day}</span>
+                            <span className={`text-[10px] w-8 text-right ${c.textMuteded}`}>{day}</span>
                             <div className="flex-1 flex gap-[1px]">
                               {chartData.activityHeatmap[dayIdx].map((count, hourIdx) => {
                                 const intensity = count / maxVal;
@@ -1513,7 +1523,7 @@ const FocusPocus = () => {
                                     title={`${day} ${hourIdx}:00 — ${count} session${count !== 1 ? 's' : ''}`}
                                     style={{
                                       backgroundColor: count === 0
-                                        ? (isDark ? '#27272a' : '#f5f5f4')
+                                        ? (isDark ? isDark ? 'bg-zinc-800' : 'rgb(248,250,252)' : '#f5f5f4')
                                         : isDark
                                           ? `rgba(129, 140, 248, ${0.2 + intensity * 0.8})`
                                           : `rgba(99, 102, 241, ${0.15 + intensity * 0.7})`,
@@ -1531,21 +1541,21 @@ const FocusPocus = () => {
 
                 {/* Distraction Heatmap */}
                 {sessionHistory.some(h => (h.distractions || 0) > 0) && (
-                  <div className={`${c.card} border rounded-2xl shadow-lg p-5`}>
+                  <div className={`${c.card} ${c.border} border rounded-2xl shadow-lg p-5`}>
                     <h4 className={`text-sm font-bold ${c.text} mb-1`}>📱 Distraction Heatmap</h4>
-                    <p className={`text-[10px] ${c.textMuted} mb-3`}>When you get distracted most</p>
+                    <p className={`text-[10px] ${c.textMuteded} mb-3`}>When you get distracted most</p>
                     <div className="overflow-x-auto">
                       <div className="min-w-[400px]">
                         <div className="flex mb-1 ml-10">
                           {[0, 6, 12, 18, 23].map(h => (
-                            <span key={h} className={`text-[9px] ${c.textMuted}`} style={{ position: 'relative', left: `${(h / 24) * 100}%` }}>{h}:00</span>
+                            <span key={h} className={`text-[9px] ${c.textMuteded}`} style={{ position: 'relative', left: `${(h / 24) * 100}%` }}>{h}:00</span>
                           ))}
                         </div>
                         {DAY_NAMES_SHORT.map((day, dayIdx) => {
                           const maxVal = Math.max(1, ...chartData.heatmap[dayIdx]);
                           return (
                             <div key={day} className="flex items-center gap-1 mb-0.5">
-                              <span className={`text-[10px] w-8 text-right ${c.textMuted}`}>{day}</span>
+                              <span className={`text-[10px] w-8 text-right ${c.textMuteded}`}>{day}</span>
                               <div className="flex-1 flex gap-[1px]">
                                 {chartData.heatmap[dayIdx].map((count, hourIdx) => (
                                   <div key={hourIdx}
@@ -1553,7 +1563,7 @@ const FocusPocus = () => {
                                     title={`${day} ${hourIdx}:00 — ${count} distraction${count !== 1 ? 's' : ''}`}
                                     style={{
                                       backgroundColor: count === 0
-                                        ? (isDark ? '#27272a' : '#f5f5f4')
+                                        ? (isDark ? isDark ? 'bg-zinc-800' : 'rgb(248,250,252)' : '#f5f5f4')
                                         : isDark
                                           ? `rgba(251, 146, 60, ${0.2 + (count / maxVal) * 0.8})`
                                           : `rgba(234, 88, 12, ${0.15 + (count / maxVal) * 0.7})`,
@@ -1571,33 +1581,33 @@ const FocusPocus = () => {
 
                 {/* Chain Analytics */}
                 {chartData.chainStats && (
-                  <div className={`${c.card} border rounded-2xl shadow-lg p-5`}>
+                  <div className={`${c.card} ${c.border} border rounded-2xl shadow-lg p-5`}>
                     <h4 className={`text-sm font-bold ${c.text} mb-3`}>🔗 Chain Session Analytics</h4>
                     <div className="grid grid-cols-2 gap-3 mb-4">
-                      <div className={`text-center p-3 rounded-xl ${isDark ? 'bg-zinc-700/50' : 'bg-stone-50'}`}>
+                      <div className={`text-center p-3 rounded-xl ${isDark ? 'bg-zinc-700/50' : 'bg-zinc-50'}`}>
                         <div className={`text-xl font-bold ${c.text}`}>{chartData.chainStats.total}</div>
-                        <div className={`text-[10px] ${c.textMuted}`}>Chain sessions</div>
+                        <div className={`text-[10px] ${c.textMuteded}`}>Chain sessions</div>
                       </div>
-                      <div className={`text-center p-3 rounded-xl ${isDark ? 'bg-zinc-700/50' : 'bg-stone-50'}`}>
+                      <div className={`text-center p-3 rounded-xl ${isDark ? 'bg-zinc-700/50' : 'bg-zinc-50'}`}>
                         <div className={`text-xl font-bold ${chartData.chainStats.completionRate >= 70 ? (isDark ? 'text-emerald-400' : 'text-emerald-600') : c.text}`}>{chartData.chainStats.completionRate}%</div>
-                        <div className={`text-[10px] ${c.textMuted}`}>Chain completion</div>
+                        <div className={`text-[10px] ${c.textMuteded}`}>Chain completion</div>
                       </div>
                     </div>
-                    <p className={`text-xs font-bold ${c.textSec} mb-2`}>Performance by Position</p>
+                    <p className={`text-xs font-bold ${c.textSecondaryondary} mb-2`}>Performance by Position</p>
                     <div className="space-y-1.5">
                       {chartData.chainStats.positionData.map(pos => (
-                        <div key={pos.position} className={`flex items-center gap-3 p-2.5 rounded-lg ${isDark ? 'bg-zinc-700/30' : 'bg-stone-50/80'}`}>
+                        <div key={pos.position} className={`flex items-center gap-3 p-2.5 rounded-lg ${isDark ? 'bg-zinc-700/30' : 'bg-zinc-50/80'}`}>
                           <span className={`text-xs font-bold ${c.text} w-20`}>{pos.position}</span>
                           <div className="flex-1 flex items-center gap-3">
                             <div className="flex items-center gap-1">
-                              <span className={`text-xs ${c.textMuted}`}>Score:</span>
+                              <span className={`text-xs ${c.textMuteded}`}>Score:</span>
                               <span className={`text-xs font-bold ${scoreColor(pos.avgScore, isDark)}`}>{pos.avgScore}</span>
                             </div>
                             <div className="flex items-center gap-1">
-                              <span className={`text-xs ${c.textMuted}`}>📱</span>
+                              <span className={`text-xs ${c.textMuteded}`}>📱</span>
                               <span className={`text-xs font-bold ${c.text}`}>{pos.avgDistractions}</span>
                             </div>
-                            <span className={`text-[10px] ${c.textMuted} ml-auto`}>{pos.count}×</span>
+                            <span className={`text-[10px] ${c.textMuteded} ml-auto`}>{pos.count}×</span>
                           </div>
                         </div>
                       ))}
@@ -1620,11 +1630,11 @@ const FocusPocus = () => {
 
             {/* Body insights */}
             {Object.keys(bodyInsights).length > 0 && (
-              <div className={`${c.card} border rounded-2xl shadow-lg p-5`}>
+              <div className={`${c.card} ${c.border} border rounded-2xl shadow-lg p-5`}>
                 <h4 className={`text-sm font-bold ${c.text} mb-3`}>🧘 Body Check Patterns</h4>
                 <div className="space-y-2">
                   {Object.entries(bodyInsights).map(([key, vals]) => (
-                    <div key={key} className={`flex items-center gap-2 text-sm ${c.textSec}`}>
+                    <div key={key} className={`flex items-center gap-2 text-sm ${c.textSecondaryondary}`}>
                       <span>{BODY_EMOJIS[key] || '📋'}</span>
                       <span className={`font-bold ${c.text}`}>{BODY_LABELS[key] || key}:</span>
                       <span className="truncate">{vals[vals.length - 1]}</span>
@@ -1635,21 +1645,21 @@ const FocusPocus = () => {
             )}
 
             {/* Insights */}
-            <div className={`${c.card} border rounded-2xl shadow-lg p-5`}>
+            <div className={`${c.card} ${c.border} border rounded-2xl shadow-lg p-5`}>
               <h4 className={`text-sm font-bold ${c.text} mb-3`}>💡 Insights</h4>
               <div className="space-y-2">
-                {p.avgDuration < 30 && <p className={`text-sm ${c.textSec}`}>Your average session is {p.avgDuration} min — try extending to 35 min for deeper flow.</p>}
-                {p.avgDuration > 60 && <p className={`text-sm ${c.textSec}`}>You average {p.avgDuration} min — impressive stamina. Watch for diminishing returns past 90 min.</p>}
-                {p.topDistraction === 'phone' && <p className={`text-sm ${c.textSec}`}>Phone is your #1 distractor. Try putting it in another room during sessions.</p>}
-                {p.completionRate < 60 && <p className={`text-sm ${c.textSec}`}>You complete {p.completionRate}% of sessions. Try shorter durations — finishing builds momentum.</p>}
-                {p.completionRate >= 90 && <p className={`text-sm ${c.textSec}`}>🔥 {p.completionRate}% completion rate — outstanding discipline.</p>}
-                {p.peakHour && <p className={`text-sm ${c.textSec}`}>Your peak focus hour is around {p.peakHour}. Schedule your hardest work here.</p>}
+                {p.avgDuration < 30 && <p className={`text-sm ${c.textSecondaryondary}`}>Your average session is {p.avgDuration} min — try extending to 35 min for deeper flow.</p>}
+                {p.avgDuration > 60 && <p className={`text-sm ${c.textSecondaryondary}`}>You average {p.avgDuration} min — impressive stamina. Watch for diminishing returns past 90 min.</p>}
+                {p.topDistraction === 'phone' && <p className={`text-sm ${c.textSecondaryondary}`}>Phone is your #1 distractor. Try putting it in another room during sessions.</p>}
+                {p.completionRate < 60 && <p className={`text-sm ${c.textSecondaryondary}`}>You complete {p.completionRate}% of sessions. Try shorter durations — finishing builds momentum.</p>}
+                {p.completionRate >= 90 && <p className={`text-sm ${c.textSecondaryondary}`}>🔥 {p.completionRate}% completion rate — outstanding discipline.</p>}
+                {p.peakHour && <p className={`text-sm ${c.textSecondaryondary}`}>Your peak focus hour is around {p.peakHour}. Schedule your hardest work here.</p>}
               </div>
             </div>
 
             {/* Milestones */}
             {earnedMilestones.length > 0 && (
-              <div className={`${c.card} border rounded-2xl shadow-lg p-5`}>
+              <div className={`${c.card} ${c.border} border rounded-2xl shadow-lg p-5`}>
                 <h4 className={`text-sm font-bold ${c.text} mb-3`}>🏅 Milestones</h4>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                   {MILESTONES.map(m => {
@@ -1658,11 +1668,11 @@ const FocusPocus = () => {
                       <div key={m.id} className={`flex flex-col items-center p-3 rounded-xl border text-center transition-colors ${
                         earned
                           ? isDark ? 'bg-amber-900/20 border-amber-700/50' : 'bg-amber-50 border-amber-200'
-                          : isDark ? 'bg-zinc-800/50 border-zinc-700 opacity-40' : 'bg-stone-50 border-stone-200 opacity-40'
+                          : isDark ? 'bg-zinc-800/50 border-zinc-700 opacity-40' : 'bg-zinc-50 border-zinc-200 opacity-40'
                       }`}>
                         <span className="text-2xl mb-1">{m.emoji}</span>
-                        <span className={`text-xs font-bold ${earned ? c.text : c.textMuted}`}>{m.label}</span>
-                        {m.desc && <span className={`text-[10px] ${c.textMuted}`}>{m.desc}</span>}
+                        <span className={`text-xs font-bold ${earned ? c.text : c.textMuteded}`}>{m.label}</span>
+                        {m.desc && <span className={`text-[10px] ${c.textMuteded}`}>{m.desc}</span>}
                       </div>
                     );
                   })}
@@ -1672,20 +1682,20 @@ const FocusPocus = () => {
 
             {/* Multi-day streak */}
             {multiDayStreak.totalMinutes > 0 && (
-              <div className={`${c.card} border rounded-2xl shadow-lg p-5`}>
+              <div className={`${c.card} ${c.border} border rounded-2xl shadow-lg p-5`}>
                 <h4 className={`text-sm font-bold ${c.text} mb-3`}>🔥 Streak Stats</h4>
                 <div className="grid grid-cols-3 gap-3">
                   <div className="text-center">
                     <div className={`text-2xl font-bold ${isDark ? 'text-amber-400' : 'text-amber-600'}`}>{multiDayStreak.currentStreak}</div>
-                    <div className={`text-xs ${c.textMuted}`}>Current streak</div>
+                    <div className={`text-xs ${c.textMuteded}`}>Current streak</div>
                   </div>
                   <div className="text-center">
                     <div className={`text-2xl font-bold ${c.text}`}>{multiDayStreak.longestStreak}</div>
-                    <div className={`text-xs ${c.textMuted}`}>Best streak</div>
+                    <div className={`text-xs ${c.textMuteded}`}>Best streak</div>
                   </div>
                   <div className="text-center">
                     <div className={`text-2xl font-bold ${c.text}`}>{Math.round(multiDayStreak.totalMinutes / 60)}h</div>
-                    <div className={`text-xs ${c.textMuted}`}>All time</div>
+                    <div className={`text-xs ${c.textMuteded}`}>All time</div>
                   </div>
                 </div>
               </div>
@@ -1693,20 +1703,20 @@ const FocusPocus = () => {
 
             {/* Weekly Challenges */}
             {sessionHistory.length >= 5 && (
-              <div className={`${c.card} border rounded-2xl shadow-lg p-5`}>
+              <div className={`${c.card} ${c.border} border rounded-2xl shadow-lg p-5`}>
                 <div className="flex items-center justify-between mb-3">
                   <h4 className={`text-sm font-bold ${c.text}`}>🎯 Weekly Challenges</h4>
                   {weeklyChallenges.challenges.length > 0 && (
-                    <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-indigo-900/30 text-indigo-300' : 'bg-indigo-50 text-indigo-700'}`}>
+                    <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-50 text-cyan-700'}`}>
                       {weeklyChallenges.completed.length}/{weeklyChallenges.challenges.length} done
                     </span>
                   )}
                 </div>
                 {weeklyChallenges.challenges.length === 0 ? (
                   <div className="text-center py-2">
-                    <p className={`text-xs ${c.textSec} mb-3`}>Get personalized weekly focus challenges based on your patterns</p>
+                    <p className={`text-xs ${c.textSecondaryondary} mb-3`}>Get personalized weekly focus challenges based on your patterns</p>
                     <button onClick={generateChallenges}
-                      className={`px-5 py-2 rounded-xl text-xs font-bold transition-colors ${isDark ? 'bg-indigo-900/40 text-indigo-300 hover:bg-indigo-900/60 border border-indigo-700' : 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200'}`}>
+                      className={`px-5 py-2 rounded-xl text-xs font-bold transition-colors ${isDark ? 'bg-cyan-900/40 text-cyan-300 hover:bg-cyan-900/60 border border-cyan-700' : 'bg-cyan-50 text-cyan-700 hover:bg-cyan-100 border border-cyan-200'}`}>
                       🎯 Generate Challenges
                     </button>
                   </div>
@@ -1718,18 +1728,18 @@ const FocusPocus = () => {
                         <div key={ch.id} className={`flex items-center gap-3 p-3 rounded-xl border transition-colors ${
                           done
                             ? isDark ? 'bg-emerald-900/20 border-emerald-800/40' : 'bg-emerald-50 border-emerald-200'
-                            : isDark ? 'bg-zinc-700/30 border-zinc-600' : 'bg-stone-50 border-stone-200'
+                            : isDark ? 'bg-zinc-700/30 border-zinc-600' : 'bg-zinc-50 border-zinc-200'
                         }`}>
                           <span className="text-xl">{done ? '✅' : ch.emoji}</span>
                           <div className="flex-1 min-w-0">
                             <p className={`text-sm font-bold ${done ? (isDark ? 'text-emerald-300 line-through' : 'text-emerald-700 line-through') : c.text}`}>{ch.label}</p>
-                            <p className={`text-xs ${c.textMuted}`}>{ch.desc}</p>
+                            <p className={`text-xs ${c.textMuteded}`}>{ch.desc}</p>
                           </div>
                         </div>
                       );
                     })}
                     <button onClick={() => setWeeklyChallenges(prev => ({ ...prev, challenges: [], completed: [] }))}
-                      className={`w-full text-xs font-bold py-2 rounded-lg transition-colors ${isDark ? 'text-zinc-400 hover:text-zinc-200' : 'text-stone-400 hover:text-stone-600'}`}>
+                      className={`w-full text-xs font-bold py-2 rounded-lg transition-colors ${isDark ? 'text-zinc-400 hover:text-zinc-200' : 'text-zinc-400 hover:text-zinc-600'}`}>
                       🔄 New challenges
                     </button>
                   </div>
@@ -1738,31 +1748,31 @@ const FocusPocus = () => {
             )}
 
             {/* AI Pattern Analysis */}
-            <div className={`${c.card} border rounded-2xl shadow-lg p-5`}>
+            <div className={`${c.card} ${c.border} border rounded-2xl shadow-lg p-5`}>
               <div className="flex items-center justify-between mb-3">
                 <h4 className={`text-sm font-bold ${c.text}`}>🤖 AI Pattern Analysis</h4>
-                {aiPatterns && <CopyBtn content={aiPatternText} label="Copy" />}
+                {aiPatterns && <ActionBar copyContent={aiPatternText} copyLabel="Copy" />}
               </div>
               {!aiPatterns ? (
                 <div className="text-center py-2">
-                  <p className={`text-xs ${c.textSec} mb-3`}>Get AI-powered insights about your focus habits, patterns, and growth trajectory</p>
+                  <p className={`text-xs ${c.textSecondaryondary} mb-3`}>Get AI-powered insights about your focus habits, patterns, and growth trajectory</p>
                   <button onClick={handleAiPatterns} disabled={aiPatternsLoading || sessionHistory.length < 5}
                     className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-colors ${
                       aiPatternsLoading || sessionHistory.length < 5
-                        ? isDark ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed' : 'bg-stone-200 text-stone-400 cursor-not-allowed'
-                        : isDark ? 'bg-indigo-900/40 text-indigo-300 hover:bg-indigo-900/60 border border-indigo-700' : 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200'
+                        ? isDark ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed' : 'bg-zinc-200 text-zinc-400 cursor-not-allowed'
+                        : isDark ? 'bg-cyan-900/40 text-cyan-300 hover:bg-cyan-900/60 border border-cyan-700' : 'bg-cyan-50 text-cyan-700 hover:bg-cyan-100 border border-cyan-200'
                     }`}>
-                    {aiPatternsLoading ? '⏳ Analyzing your patterns…' : '🤖 Analyze My Patterns'}
+                    {aiPatternsLoading ? <><span className='animate-spin inline-block mr-1'>{tool?.icon ?? '🎩'}</span>Analyzing…</> : <>🤖 Analyze My Patterns</>}
                   </button>
                 </div>
               ) : (
                 <div className="space-y-3">
                   {/* Focus profile */}
                   {aiPatterns.focus_profile && (
-                    <div className={`p-4 rounded-xl text-center ${isDark ? 'bg-indigo-900/20 border border-indigo-800/40' : 'bg-indigo-50 border border-indigo-100'}`}>
+                    <div className={`p-4 rounded-xl text-center ${isDark ? 'bg-cyan-900/20 border border-cyan-800/40' : 'bg-cyan-50 border border-cyan-100'}`}>
                       <span className="text-3xl block mb-1">{aiPatterns.focus_profile.emoji}</span>
                       <p className={`text-lg font-bold ${c.text}`}>{aiPatterns.focus_profile.title}</p>
-                      <p className={`text-xs ${c.textSec} mt-1`}>{aiPatterns.focus_profile.description}</p>
+                      <p className={`text-xs ${c.textSecondaryondary} mt-1`}>{aiPatterns.focus_profile.description}</p>
                     </div>
                   )}
 
@@ -1771,11 +1781,11 @@ const FocusPocus = () => {
                     <div className={`p-3 rounded-xl ${isDark ? 'bg-emerald-900/20 border border-emerald-800/40' : 'bg-emerald-50 border border-emerald-100'}`}>
                       <p className={`text-xs font-bold ${isDark ? 'text-emerald-300' : 'text-emerald-700'} mb-2`}>⚡ Peak Performance</p>
                       <div className="grid grid-cols-2 gap-2 text-xs">
-                        <div><span className={c.textMuted}>Best time:</span> <span className={c.text}>{aiPatterns.peak_performance.best_time}</span></div>
-                        <div><span className={c.textMuted}>Worst time:</span> <span className={c.text}>{aiPatterns.peak_performance.worst_time}</span></div>
-                        <div className="col-span-2"><span className={c.textMuted}>Sweet spot:</span> <span className={c.text}>{aiPatterns.peak_performance.optimal_duration}</span></div>
+                        <div><span className={c.textMuteded}>Best time:</span> <span className={c.text}>{aiPatterns.peak_performance.best_time}</span></div>
+                        <div><span className={c.textMuteded}>Worst time:</span> <span className={c.text}>{aiPatterns.peak_performance.worst_time}</span></div>
+                        <div className="col-span-2"><span className={c.textMuteded}>Sweet spot:</span> <span className={c.text}>{aiPatterns.peak_performance.optimal_duration}</span></div>
                       </div>
-                      <p className={`text-xs ${c.textSec} mt-2`}>{aiPatterns.peak_performance.sweet_spot_insight}</p>
+                      <p className={`text-xs ${c.textSecondaryondary} mt-2`}>{aiPatterns.peak_performance.sweet_spot_insight}</p>
                     </div>
                   )}
 
@@ -1783,27 +1793,27 @@ const FocusPocus = () => {
                   {aiPatterns.distraction_analysis && (
                     <div className={`p-3 rounded-xl ${isDark ? 'bg-amber-900/20 border border-amber-800/40' : 'bg-amber-50 border border-amber-100'}`}>
                       <p className={`text-xs font-bold ${isDark ? 'text-amber-300' : 'text-amber-700'} mb-2`}>📱 Distraction Analysis</p>
-                      <p className={`text-xs ${c.textSec}`}><strong className={c.text}>Trigger:</strong> {aiPatterns.distraction_analysis.primary_trigger}</p>
-                      <p className={`text-xs ${c.textSec}`}><strong className={c.text}>Pattern:</strong> {aiPatterns.distraction_analysis.pattern}</p>
-                      <p className={`text-xs ${c.textSec} mt-1`}>💡 {aiPatterns.distraction_analysis.strategy}</p>
+                      <p className={`text-xs ${c.textSecondaryondary}`}><strong className={c.text}>Trigger:</strong> {aiPatterns.distraction_analysis.primary_trigger}</p>
+                      <p className={`text-xs ${c.textSecondaryondary}`}><strong className={c.text}>Pattern:</strong> {aiPatterns.distraction_analysis.pattern}</p>
+                      <p className={`text-xs ${c.textSecondaryondary} mt-1`}>💡 {aiPatterns.distraction_analysis.strategy}</p>
                     </div>
                   )}
 
                   {/* Growth */}
                   {aiPatterns.growth && (
-                    <div className={`p-3 rounded-xl ${isDark ? 'bg-violet-900/20 border border-violet-800/40' : 'bg-violet-50 border border-violet-100'}`}>
-                      <p className={`text-xs font-bold ${isDark ? 'text-violet-300' : 'text-violet-700'} mb-2`}>📈 Growth</p>
+                    <div className={`p-3 rounded-xl ${isDark ? 'bg-cyan-900/20 border border-violet-800/40' : 'bg-cyan-50 border border-violet-100'}`}>
+                      <p className={`text-xs font-bold ${isDark ? 'text-cyan-300' : 'text-cyan-700'} mb-2`}>📈 Growth</p>
                       <div className="flex items-center gap-3 mb-1">
                         <span className={`text-sm font-bold ${c.text}`}>{aiPatterns.growth.early_avg_score}</span>
-                        <span className={c.textMuted}>→</span>
+                        <span className={c.textMuteded}>→</span>
                         <span className={`text-sm font-bold ${aiPatterns.growth.trajectory === 'improving' ? (isDark ? 'text-emerald-400' : 'text-emerald-600') : c.text}`}>{aiPatterns.growth.recent_avg_score}</span>
                         <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
                           aiPatterns.growth.trajectory === 'improving' ? (isDark ? 'bg-emerald-900/30 text-emerald-300' : 'bg-emerald-50 text-emerald-700')
                           : aiPatterns.growth.trajectory === 'declining' ? (isDark ? 'bg-red-900/30 text-red-300' : 'bg-red-50 text-red-700')
-                          : isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-stone-100 text-stone-600'
+                          : isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-zinc-100 text-zinc-600'
                         }`}>{aiPatterns.growth.trajectory}</span>
                       </div>
-                      <p className={`text-xs ${c.textSec}`}>{aiPatterns.growth.insight}</p>
+                      <p className={`text-xs ${c.textSecondaryondary}`}>{aiPatterns.growth.insight}</p>
                     </div>
                   )}
 
@@ -1811,33 +1821,33 @@ const FocusPocus = () => {
                   {aiPatterns.core_blocker && (
                     <div className={`p-3 rounded-xl ${isDark ? 'bg-red-900/20 border border-red-800/40' : 'bg-red-50 border border-red-100'}`}>
                       <p className={`text-xs font-bold ${isDark ? 'text-red-300' : 'text-red-700'} mb-1`}>🚧 Core Blocker</p>
-                      <p className={`text-xs ${c.textSec}`}>{aiPatterns.core_blocker}</p>
+                      <p className={`text-xs ${c.textSecondaryondary}`}>{aiPatterns.core_blocker}</p>
                     </div>
                   )}
                   {aiPatterns.prescription && (
                     <div className={`p-3 rounded-xl ${isDark ? 'bg-emerald-900/20 border border-emerald-800/40' : 'bg-emerald-50 border border-emerald-100'}`}>
                       <p className={`text-xs font-bold ${isDark ? 'text-emerald-300' : 'text-emerald-700'} mb-1`}>💊 Prescription</p>
-                      <p className={`text-xs ${c.textSec}`}>{aiPatterns.prescription}</p>
+                      <p className={`text-xs ${c.textSecondaryondary}`}>{aiPatterns.prescription}</p>
                     </div>
                   )}
                   {aiPatterns.weekly_strategy && (
-                    <div className={`p-3 rounded-xl ${isDark ? 'bg-indigo-900/20 border border-indigo-800/40' : 'bg-indigo-50 border border-indigo-100'}`}>
-                      <p className={`text-xs font-bold ${isDark ? 'text-indigo-300' : 'text-indigo-700'} mb-1`}>📋 Weekly Strategy</p>
-                      <p className={`text-xs ${c.textSec}`}>{aiPatterns.weekly_strategy}</p>
+                    <div className={`p-3 rounded-xl ${isDark ? 'bg-cyan-900/20 border border-cyan-800/40' : 'bg-cyan-50 border border-cyan-100'}`}>
+                      <p className={`text-xs font-bold ${isDark ? 'text-cyan-300' : 'text-cyan-700'} mb-1`}>📋 Weekly Strategy</p>
+                      <p className={`text-xs ${c.textSecondaryondary}`}>{aiPatterns.weekly_strategy}</p>
                     </div>
                   )}
 
                   {/* Share snippet */}
                   {aiPatterns.share_snippet && (
-                    <div className={`p-3 rounded-xl text-center ${isDark ? 'bg-zinc-700/50' : 'bg-stone-50'}`}>
-                      <p className={`text-sm italic ${c.textSec}`}>"{aiPatterns.share_snippet}"</p>
+                    <div className={`p-3 rounded-xl text-center ${isDark ? 'bg-zinc-700/50' : 'bg-zinc-50'}`}>
+                      <p className={`text-sm italic ${c.textSecondaryondary}`}>"{aiPatterns.share_snippet}"</p>
                     </div>
                   )}
 
                   {/* Re-analyze button */}
                   <button onClick={() => { setAiPatterns(null); handleAiPatterns(); }}
                     disabled={aiPatternsLoading}
-                    className={`w-full text-xs font-bold py-2 rounded-lg transition-colors ${isDark ? 'text-zinc-400 hover:text-zinc-200' : 'text-stone-400 hover:text-stone-600'}`}>
+                    className={`w-full text-xs font-bold py-2 rounded-lg transition-colors ${isDark ? 'text-zinc-400 hover:text-zinc-200' : 'text-zinc-400 hover:text-zinc-600'}`}>
                     🔄 Re-analyze with latest data
                   </button>
                 </div>
@@ -1845,7 +1855,7 @@ const FocusPocus = () => {
             </div>
 
             <button onClick={() => setPhase('setup')}
-              className={`w-full px-6 py-3 rounded-2xl font-bold text-sm transition-colors ${isDark ? 'bg-zinc-700 text-zinc-200 hover:bg-zinc-600' : 'bg-stone-100 text-gray-700 hover:bg-stone-200'}`}>
+              className={`w-full px-6 py-3 rounded-2xl font-bold text-sm transition-colors ${isDark ? 'bg-zinc-700 text-zinc-200 hover:bg-zinc-600' : 'bg-zinc-100 text-gray-700 hover:bg-zinc-200'}`}>
               ← Back to Setup
             </button>
           </div>
@@ -1857,18 +1867,18 @@ const FocusPocus = () => {
       {/* ═══════════════════════════════════════════════════ */}
       {(phase === 'active' || phase === 'paused') && (
         <div className="space-y-4">
-          <div className={`${c.card} border rounded-2xl shadow-lg p-6 sm:p-8 text-center`}>
+          <div className={`${c.card} ${c.border} border rounded-2xl shadow-lg p-6 sm:p-8 text-center`}>
             {/* Chain progress */}
             {chainConfig && (
               <div className={`flex items-center justify-center gap-2 mb-4`}>
                 {chainConfig.sessions.map((_, i) => (
                   <div key={i} className={`w-8 h-1.5 rounded-full ${
                     i < chainIndex ? (isDark ? 'bg-emerald-500' : 'bg-emerald-500')
-                    : i === chainIndex ? (isDark ? 'bg-indigo-400' : 'bg-indigo-500')
-                    : (isDark ? 'bg-zinc-600' : 'bg-stone-300')
+                    : i === chainIndex ? (isDark ? 'bg-cyan-400' : 'bg-cyan-500')
+                    : (isDark ? 'bg-zinc-600' : 'bg-zinc-300')
                   }`} />
                 ))}
-                <span className={`text-xs font-bold ${c.textMuted} ml-2`}>
+                <span className={`text-xs font-bold ${c.textMuteded} ml-2`}>
                   🔗 {chainIndex + 1}/{chainConfig.sessions.length}
                 </span>
               </div>
@@ -1876,7 +1886,7 @@ const FocusPocus = () => {
 
             {/* Activity label */}
             <div className="flex items-center justify-center gap-2 mb-6">
-              <span className={isDark ? 'text-indigo-400' : 'text-indigo-600'}>🧠</span>
+              <span className={isDark ? 'text-cyan-400' : 'text-cyan-600'}>🧠</span>
               <span className={`text-sm font-bold ${c.text}`}>{sessionActivity}</span>
             </div>
 
@@ -1886,25 +1896,25 @@ const FocusPocus = () => {
             <div className="flex items-center justify-center gap-3 mt-6">
               {phase === 'active' ? (
                 <button onClick={pauseSession}
-                  className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-colors ${isDark ? 'bg-zinc-700 text-zinc-300 hover:bg-zinc-600' : 'bg-stone-100 text-gray-600 hover:bg-stone-200'}`}>
+                  className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-colors ${isDark ? 'bg-zinc-700 text-zinc-300 hover:bg-zinc-600' : 'bg-zinc-100 text-gray-600 hover:bg-zinc-200'}`}>
                   ⏸ Pause
                 </button>
               ) : (
                 <button onClick={resumeSession}
-                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold bg-indigo-600 hover:bg-indigo-700 text-white transition-colors">
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold bg-cyan-600 hover:bg-cyan-700 text-white transition-colors">
                   ▶️ Resume
                 </button>
               )}
               <button onClick={handleWantToQuit}
-                className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-colors ${isDark ? 'text-zinc-400 hover:text-red-400 hover:bg-red-900/20' : 'text-stone-400 hover:text-red-600 hover:bg-red-50'}`}>
+                className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-colors ${isDark ? 'text-zinc-400 ${c.deleteHover} hover:bg-red-900/20' : 'text-zinc-400 ${c.deleteHover} hover:bg-red-50'}`}>
                 ⏹ I want to stop
               </button>
             </div>
 
             {/* Distraction logger — always-visible bar */}
-            <div className={`mt-4 p-3 rounded-xl ${isDark ? 'bg-zinc-700/30' : 'bg-stone-50'}`}>
+            <div className={`mt-4 p-3 rounded-xl ${isDark ? 'bg-zinc-700/30' : 'bg-zinc-50'}`}>
               <div className="flex items-center justify-between mb-1">
-                <span className={`text-xs font-bold ${c.textSec}`}>📱 Distraction Log</span>
+                <span className={`text-xs font-bold ${c.textSecondaryondary}`}>📱 Distraction Log</span>
                 {distractions.length > 0 && (
                   <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-amber-900/30 text-amber-300' : 'bg-amber-50 text-amber-700'}`}>
                     {distractions.length} logged
@@ -1914,39 +1924,39 @@ const FocusPocus = () => {
               <div className="flex items-center gap-1.5">
                 {DISTRACTION_TYPES.map(d => (
                   <button key={d.id} onClick={() => logDistraction(d.id)}
-                    className={`flex-1 flex flex-col items-center gap-0.5 py-2 rounded-lg text-xs transition-colors ${isDark ? 'hover:bg-zinc-600' : 'hover:bg-stone-200'}`}>
+                    className={`flex-1 flex flex-col items-center gap-0.5 py-2 rounded-lg text-xs transition-colors ${isDark ? 'hover:bg-zinc-600' : 'hover:bg-zinc-200'}`}>
                     <span className="text-base">{d.emoji}</span>
-                    <span className={c.textMuted}>{d.label}</span>
+                    <span className={c.textMuteded}>{d.label}</span>
                   </button>
                 ))}
               </div>
               {distractions.length === 0 && !dismissedHints.distractions && (
-                <p className={`text-xs ${c.textMuted} mt-1.5`}>💡 Tap when something pulls your focus — see patterns over time</p>
+                <p className={`text-xs ${c.textMuteded} mt-1.5`}>💡 Tap when something pulls your focus — see patterns over time</p>
               )}
             </div>
 
             {/* Sound toggle */}
             <button onClick={() => setSoundEnabled(!soundEnabled)}
-              className={`mt-3 flex items-center gap-1.5 mx-auto text-xs ${c.textMuted}`}>
+              className={`mt-3 flex items-center gap-1.5 mx-auto text-xs ${c.textMuteded}`}>
               {soundEnabled ? '🔊 Sound on' : '🔇 Sound off'}
             </button>
 
             {/* Session note / bookmark */}
-            <div className={`mt-4 p-3 rounded-xl ${isDark ? 'bg-zinc-700/30' : 'bg-stone-50'}`}>
-              <label className={`text-xs font-bold ${c.textSec} mb-1.5 flex items-center gap-1.5`}>
+            <div className={`mt-4 p-3 rounded-xl ${isDark ? 'bg-zinc-700/30' : 'bg-zinc-50'}`}>
+              <label className={`text-xs font-bold ${c.textSecondaryondary} mb-1.5 flex items-center gap-1.5`}>
                 🔖 Session Bookmark
               </label>
               <input type="text" value={sessionNote} onChange={e => setSessionNote(e.target.value)}
                 placeholder="Where you left off, what to remember…"
                 className={`w-full p-2 border rounded-lg text-xs outline-none focus:ring-2 transition-colors ${c.input}`}
               />
-              <p className={`text-[10px] ${c.textMuted} mt-1`}>Saved to your session history for easy pickup</p>
+              <p className={`text-[10px] ${c.textMuteded} mt-1`}>Saved to your session history for easy pickup</p>
             </div>
 
             {/* Ambient sounds */}
-            <div className={`mt-3 p-3 rounded-xl ${isDark ? 'bg-zinc-700/30' : 'bg-stone-50'}`}>
+            <div className={`mt-3 p-3 rounded-xl ${isDark ? 'bg-zinc-700/30' : 'bg-zinc-50'}`}>
               <div className="flex items-center justify-between mb-2">
-                <span className={`text-xs font-bold ${c.textSec}`}>🎧 Ambient Sound</span>
+                <span className={`text-xs font-bold ${c.textSecondaryondary}`}>🎧 Ambient Sound</span>
                 {activeAmbient && (
                   <button onClick={stopAmbient} className={`text-[10px] font-bold ${isDark ? 'text-red-400' : 'text-red-600'}`}>Stop</button>
                 )}
@@ -1956,32 +1966,32 @@ const FocusPocus = () => {
                   <button key={p.id} onClick={() => toggleAmbient(p.id)}
                     className={`flex-1 flex flex-col items-center gap-0.5 py-2 rounded-lg text-xs transition-all ${
                       activeAmbient === p.id
-                        ? isDark ? 'bg-indigo-900/40 text-indigo-300 border border-indigo-500' : 'bg-indigo-50 text-indigo-700 border border-indigo-300'
-                        : isDark ? 'hover:bg-zinc-600 border border-transparent' : 'hover:bg-stone-200 border border-transparent'
+                        ? isDark ? 'bg-cyan-900/40 text-cyan-300 border border-cyan-500' : 'bg-cyan-50 text-cyan-700 border border-cyan-300'
+                        : isDark ? 'hover:bg-zinc-600 border border-transparent' : 'hover:bg-zinc-200 border border-transparent'
                     }`}>
                     <span className="text-base">{p.emoji}</span>
-                    <span className={activeAmbient === p.id ? '' : c.textMuted}>{p.label}</span>
+                    <span className={activeAmbient === p.id ? '' : c.textMuteded}>{p.label}</span>
                   </button>
                 ))}
               </div>
               {activeAmbient && (
                 <div className="flex items-center gap-2 mt-2">
-                  <span className={`text-[10px] ${c.textMuted}`}>🔈</span>
+                  <span className={`text-[10px] ${c.textMuteded}`}>🔈</span>
                   <input type="range" min="5" max="100" value={ambientVolume}
                     onChange={e => setAmbientVolume(parseInt(e.target.value, 10))}
                     className="flex-1 h-1 accent-indigo-500"
                   />
-                  <span className={`text-[10px] ${c.textMuted}`}>🔊</span>
+                  <span className={`text-[10px] ${c.textMuteded}`}>🔊</span>
                 </div>
               )}
             </div>
 
             {/* Quit rebuttal */}
             {quitRebuttal && (
-              <div className={`mt-4 p-4 rounded-xl border-2 text-sm font-medium animate-pulse ${isDark ? 'bg-indigo-900/30 border-indigo-700 text-indigo-300' : 'bg-indigo-50 border-indigo-200 text-indigo-700'}`}>
+              <div className={`mt-4 p-4 rounded-xl border-2 text-sm font-medium animate-pulse ${isDark ? 'bg-cyan-900/30 border-cyan-700 text-cyan-300' : 'bg-cyan-50 border-cyan-200 text-cyan-700'}`}>
                 {quitRebuttal}
                 <button onClick={forceEndSession}
-                  className={`block mx-auto mt-3 text-xs font-bold underline ${isDark ? 'text-zinc-400' : 'text-stone-400'}`}>
+                  className={`block mx-auto mt-3 text-xs font-bold underline ${isDark ? 'text-zinc-400' : 'text-zinc-400'}`}>
                   No really, I need to stop
                 </button>
               </div>
@@ -1994,7 +2004,7 @@ const FocusPocus = () => {
             )}
           </div>
 
-          <div className={`flex items-center justify-between text-xs ${c.textMuted} px-1`}>
+          <div className={`flex items-center justify-between text-xs ${c.textMuteded} px-1`}>
             <span>{elapsedMin} min elapsed</span>
             <span>{sessionDurationMin} min session {distractions.length > 0 && `· ${distractions.length} distractions`}</span>
           </div>
@@ -2008,7 +2018,7 @@ const FocusPocus = () => {
         const uc = urgencyColors(currentUrgency);
         return (
           <div className="space-y-4">
-            <div className={`${uc.bg} border-2 ${uc.border} rounded-2xl shadow-lg p-6 sm:p-8 text-center transition-colors duration-500`}>
+            <div className={`${uc.cardAlt} border-2 ${uc.border} rounded-2xl shadow-lg p-6 sm:p-8 text-center transition-colors duration-500`}>
               <div className="flex justify-center mb-4">
                 <span className={`text-4xl ${currentUrgency >= 3 ? 'animate-bounce' : ''}`}>
                   {currentUrgency >= 3 ? '⚠️' : '⏰'}
@@ -2017,7 +2027,7 @@ const FocusPocus = () => {
               <p className={`text-lg font-bold mb-4 ${uc.text}`}>
                 {NUDGE_MESSAGES[Math.min(currentUrgency, NUDGE_MESSAGES.length - 1)]}
               </p>
-              <p className={`text-sm mb-4 ${c.textSec}`}>
+              <p className={`text-sm mb-4 ${c.textSecondaryondary}`}>
                 You've been working on <strong className={c.text}>{sessionActivity}</strong> for <strong className={c.text}>{elapsedMin} minutes</strong>.
                 {overtimeFromOriginalMin > 0 && <> That's <strong className={uc.text}>{overtimeFromOriginalMin} min past</strong> your planned session.</>}
               </p>
@@ -2025,7 +2035,7 @@ const FocusPocus = () => {
 
               {/* Distraction count during overtime */}
               {distractions.length > 0 && (
-                <p className={`text-xs mt-2 ${c.textMuted}`}>📱 {distractions.length} distraction{distractions.length > 1 ? 's' : ''} logged</p>
+                <p className={`text-xs mt-2 ${c.textMuteded}`}>📱 {distractions.length} distraction{distractions.length > 1 ? 's' : ''} logged</p>
               )}
 
               <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-6">
@@ -2035,11 +2045,11 @@ const FocusPocus = () => {
                       ? 'bg-red-600 hover:bg-red-700 text-white shadow-red-200 dark:shadow-red-900/40 animate-pulse'
                       : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-200 dark:shadow-emerald-900/40'
                   }`}>
-                  {loading ? <>⏳ Generating break plan…</> : <>☕ Take a Break</>}
+                  {loading ? <><span className='animate-spin inline-block mr-1'>{tool?.icon ?? '🎩'}</span>Generating…</> : <>☕ Take a Break</>}
                 </button>
                 {snoozeCount < MAX_SNOOZES && (
                   <button onClick={handleSnooze}
-                    className={`flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-bold transition-colors ${isDark ? 'bg-zinc-700 text-zinc-300 hover:bg-zinc-600' : 'bg-stone-100 text-gray-600 hover:bg-stone-200'}`}>
+                    className={`flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-bold transition-colors ${isDark ? 'bg-zinc-700 text-zinc-300 hover:bg-zinc-600' : 'bg-zinc-100 text-gray-600 hover:bg-zinc-200'}`}>
                     ⚡ 5 more min ({MAX_SNOOZES - snoozeCount} left)
                   </button>
                 )}
@@ -2062,19 +2072,19 @@ const FocusPocus = () => {
       {/* ═══════════════════════════════════════════════════ */}
       {phase === 'chainBreak' && (
         <div className="space-y-4">
-          <div className={`${c.card} border rounded-2xl shadow-lg p-6 text-center`}>
+          <div className={`${c.card} ${c.border} border rounded-2xl shadow-lg p-6 text-center`}>
             {/* Chain progress */}
             <div className="flex items-center justify-center gap-2 mb-4">
               {chainConfig?.sessions.map((_, i) => (
                 <div key={i} className={`w-10 h-2 rounded-full ${
-                  i <= chainIndex ? (isDark ? 'bg-emerald-500' : 'bg-emerald-500') : (isDark ? 'bg-zinc-600' : 'bg-stone-300')
+                  i <= chainIndex ? (isDark ? 'bg-emerald-500' : 'bg-emerald-500') : (isDark ? 'bg-zinc-600' : 'bg-zinc-300')
                 }`} />
               ))}
             </div>
             <h3 className={`text-xl font-bold ${c.text} mb-2`}>
               ☕ Break Time — {chainIndex + 1}/{chainConfig?.sessions.length} complete
             </h3>
-            <p className={`text-sm ${c.textSec} mb-4`}>
+            <p className={`text-sm ${c.textSecondaryondary} mb-4`}>
               Next session starts in {fmt(breakRemainingSec)}
             </p>
 
@@ -2088,11 +2098,11 @@ const FocusPocus = () => {
 
             <div className="flex items-center justify-center gap-3 mt-4">
               <button onClick={advanceChain}
-                className="flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold bg-indigo-600 hover:bg-indigo-700 text-white transition-colors">
+                className="flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold bg-cyan-600 hover:bg-cyan-700 text-white transition-colors">
                 ⏭ Skip break, start next
               </button>
               <button onClick={() => { setChainConfig(null); setChainIndex(0); setPhase('break'); }}
-                className={`px-5 py-3 rounded-xl text-sm font-bold transition-colors ${isDark ? 'bg-zinc-700 text-zinc-300 hover:bg-zinc-600' : 'bg-stone-100 text-gray-600 hover:bg-stone-200'}`}>
+                className={`px-5 py-3 rounded-xl text-sm font-bold transition-colors ${isDark ? 'bg-zinc-700 text-zinc-300 hover:bg-zinc-600' : 'bg-zinc-100 text-gray-600 hover:bg-zinc-200'}`}>
                 End chain
               </button>
             </div>
@@ -2100,9 +2110,9 @@ const FocusPocus = () => {
 
           {/* Show break results if available */}
           {results && (
-            <div className={`${c.card} border rounded-2xl shadow-lg p-5`}>
+            <div ref={resultsRef} className={`${c.card} ${c.border} border rounded-2xl shadow-lg p-5`}>
               <h4 className={`text-sm font-bold ${c.text} mb-2`}>{results.headline}</h4>
-              <p className={`text-xs ${c.textSec}`}>{results.message}</p>
+              <p className={`text-xs ${c.textSecondaryondary}`}>{results.message}</p>
             </div>
           )}
         </div>
@@ -2115,11 +2125,11 @@ const FocusPocus = () => {
         <div className="space-y-4">
 
           {/* Session summary with score */}
-          <div className={`${c.card} border rounded-2xl shadow-lg p-5`}>
+          <div className={`${c.card} ${c.border} border rounded-2xl shadow-lg p-5`}>
             <div className="flex items-center justify-between">
               <div>
                 <p className={`text-sm font-bold ${c.text}`}>{sessionActivity}</p>
-                <p className={`text-xs ${c.textMuted}`}>
+                <p className={`text-xs ${c.textMuteded}`}>
                   {elapsedMin} min total{overtimeFromOriginalMin > 0 && ` (${overtimeFromOriginalMin} min overtime)`}
                   {snoozeCount > 0 && ` · ${snoozeCount} snooze${snoozeCount > 1 ? 's' : ''}`}
                   {distractions.length > 0 && ` · ${distractions.length} distraction${distractions.length > 1 ? 's' : ''}`}
@@ -2145,8 +2155,8 @@ const FocusPocus = () => {
 
             {/* Distraction breakdown if any */}
             {distractions.length > 0 && (
-              <div className={`mt-3 pt-3 border-t ${isDark ? 'border-zinc-700' : 'border-stone-200'}`}>
-                <p className={`text-xs font-bold ${c.textMuted} mb-1.5`}>Distraction breakdown</p>
+              <div className={`mt-3 pt-3 border-t ${isDark ? 'border-zinc-700' : 'border-zinc-200'}`}>
+                <p className={`text-xs font-bold ${c.textMuteded} mb-1.5`}>Distraction breakdown</p>
                 <div className="flex gap-2">
                   {(() => {
                     const counts = {};
@@ -2154,7 +2164,7 @@ const FocusPocus = () => {
                     return Object.entries(counts).sort((a, b) => b[1] - a[1]).map(([type, count]) => {
                       const dt = DISTRACTION_TYPES.find(t => t.id === type);
                       return (
-                        <span key={type} className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs ${isDark ? 'bg-zinc-700/50' : 'bg-stone-50'}`}>
+                        <span key={type} className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs ${isDark ? 'bg-zinc-700/50' : 'bg-zinc-50'}`}>
                           {dt?.emoji} {count}×
                         </span>
                       );
@@ -2165,8 +2175,8 @@ const FocusPocus = () => {
             )}
 
             {/* Accomplishment check */}
-            <div className={`mt-3 pt-3 border-t ${isDark ? 'border-zinc-700' : 'border-stone-200'}`}>
-              <p className={`text-xs font-bold ${c.textMuted} mb-2`}>Did you accomplish what you set out to do?</p>
+            <div className={`mt-3 pt-3 border-t ${isDark ? 'border-zinc-700' : 'border-zinc-200'}`}>
+              <p className={`text-xs font-bold ${c.textMuteded} mb-2`}>Did you accomplish what you set out to do?</p>
               <div className="flex gap-2">
                 {[{ v: 'yes', l: '✅ Yes' }, { v: 'partial', l: '🟡 Partially' }, { v: 'no', l: '❌ No' }].map(opt => (
                   <button key={opt.v}
@@ -2181,8 +2191,8 @@ const FocusPocus = () => {
                     }}
                     className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors ${
                       accomplishment === opt.v
-                        ? isDark ? 'border-indigo-500 bg-indigo-900/40 text-indigo-300' : 'border-indigo-400 bg-indigo-50 text-indigo-700'
-                        : isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-stone-200 text-stone-500 hover:border-stone-400'
+                        ? isDark ? 'border-cyan-500 bg-cyan-900/40 text-cyan-300' : 'border-cyan-400 bg-cyan-50 text-cyan-700'
+                        : isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-zinc-200 text-zinc-500 hover:border-zinc-400'
                     }`}>
                     {opt.l}
                   </button>
@@ -2199,13 +2209,13 @@ const FocusPocus = () => {
           {/* Claude's break plan */}
           {results ? (
             <>
-              <div className={`${c.card} border rounded-2xl shadow-lg p-6 text-center`}>
+              <div className={`${c.card} ${c.border} border rounded-2xl shadow-lg p-6 text-center`}>
                 <h3 className={`text-2xl font-bold ${c.text} mb-3`}>{results.headline}</h3>
-                <p className={`text-sm ${c.textSec} leading-relaxed max-w-lg mx-auto`}>{results.message}</p>
+                <p className={`text-sm ${c.textSecondaryondary} leading-relaxed max-w-lg mx-auto`}>{results.message}</p>
               </div>
 
               {results.mandatory_actions?.length > 0 && (
-                <div className={`${c.card} border rounded-2xl shadow-lg p-5 sm:p-6`}>
+                <div className={`${c.card} ${c.border} border rounded-2xl shadow-lg p-5 sm:p-6`}>
                   <h4 className={`text-sm font-bold ${c.text} mb-3 flex items-center gap-2`}>
                     <span className={isDark ? 'text-amber-400' : 'text-amber-600'}>⚠️</span> Do these before you continue
                   </h4>
@@ -2215,7 +2225,7 @@ const FocusPocus = () => {
                         className={`flex items-start gap-3 p-3 rounded-xl cursor-pointer transition-colors ${
                           checkedActions[idx]
                             ? isDark ? 'bg-emerald-900/20 border border-emerald-700' : 'bg-emerald-50 border border-emerald-200'
-                            : isDark ? 'bg-zinc-700/50 hover:bg-zinc-700 border border-zinc-600' : 'bg-stone-50 hover:bg-stone-100 border border-stone-200'
+                            : isDark ? 'bg-zinc-700/50 hover:bg-zinc-700 border border-zinc-600' : 'bg-zinc-50 hover:bg-zinc-100 border border-zinc-200'
                         }`}>
                         <input type="checkbox" checked={!!checkedActions[idx]}
                           onChange={() => setCheckedActions(prev => ({ ...prev, [idx]: !prev[idx] }))}
@@ -2231,16 +2241,16 @@ const FocusPocus = () => {
               )}
 
               {results.body_check && (
-                <div className={`${c.card} border rounded-2xl shadow-lg p-5 sm:p-6`}>
+                <div className={`${c.card} ${c.border} border rounded-2xl shadow-lg p-5 sm:p-6`}>
                   <h4 className={`text-sm font-bold ${c.text} mb-3`}>🧘 Body Check</h4>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                     {Object.entries(results.body_check).map(([key, val]) => (
-                      <div key={key} className={`p-3 rounded-xl border ${isDark ? 'bg-zinc-700/50 border-zinc-600' : 'bg-stone-50 border-stone-200'}`}>
+                      <div key={key} className={`p-3 rounded-xl border ${isDark ? 'bg-zinc-700/50 border-zinc-600' : 'bg-zinc-50 border-zinc-200'}`}>
                         <div className="flex items-center gap-1.5 mb-1">
                           <span className="text-sm">{BODY_EMOJIS[key] || '📋'}</span>
                           <span className={`text-xs font-bold ${c.text}`}>{BODY_LABELS[key] || key}</span>
                         </div>
-                        <p className={`text-xs ${c.textSec} leading-relaxed`}>{val}</p>
+                        <p className={`text-xs ${c.textSecondaryondary} leading-relaxed`}>{val}</p>
                       </div>
                     ))}
                   </div>
@@ -2249,19 +2259,19 @@ const FocusPocus = () => {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {results.re_entry && (
-                  <div className={`${c.card} border rounded-2xl shadow-lg p-5`}>
+                  <div className={`${c.card} ${c.border} border rounded-2xl shadow-lg p-5`}>
                     <h4 className={`text-sm font-bold ${c.text} mb-2 flex items-center gap-2`}>
-                      <span className={isDark ? 'text-indigo-400' : 'text-indigo-600'}>🔖</span> Re-Entry Plan
+                      <span className={isDark ? 'text-cyan-400' : 'text-cyan-600'}>🔖</span> Re-Entry Plan
                     </h4>
-                    <p className={`text-xs ${c.textSec} leading-relaxed`}>{results.re_entry}</p>
+                    <p className={`text-xs ${c.textSecondaryondary} leading-relaxed`}>{results.re_entry}</p>
                   </div>
                 )}
                 {results.next_session && (
-                  <div className={`${c.card} border rounded-2xl shadow-lg p-5`}>
+                  <div className={`${c.card} ${c.border} border rounded-2xl shadow-lg p-5`}>
                     <h4 className={`text-sm font-bold ${c.text} mb-2 flex items-center gap-2`}>
                       <span className={isDark ? 'text-emerald-400' : 'text-emerald-600'}>→</span> Next Session
                     </h4>
-                    <p className={`text-xs ${c.textSec} leading-relaxed`}>{results.next_session}</p>
+                    <p className={`text-xs ${c.textSecondaryondary} leading-relaxed`}>{results.next_session}</p>
                   </div>
                 )}
               </div>
@@ -2270,24 +2280,24 @@ const FocusPocus = () => {
               <div className="flex items-center gap-2">
                 <CopyBtn content={breakPlanText} label="Copy Plan" />
                 <button onClick={printBreakPlan}
-                  className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-colors ${isDark ? 'bg-zinc-700 text-zinc-300 hover:bg-zinc-600' : 'bg-stone-100 text-gray-600 hover:bg-stone-200'}`}>
+                  className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-colors ${isDark ? 'bg-zinc-700 text-zinc-300 hover:bg-zinc-600' : 'bg-zinc-100 text-gray-600 hover:bg-zinc-200'}`}>
                   🖨️ Print
                 </button>
               </div>
             </>
           ) : (
-            <div className={`${c.card} border rounded-2xl shadow-lg p-6 text-center`}>
+            <div className={`${c.card} ${c.border} border rounded-2xl shadow-lg p-6 text-center`}>
               <h3 className={`text-xl font-bold ${c.text} mb-2`}>Session Ended</h3>
-              <p className={`text-sm ${c.textSec} mb-4`}>
+              <p className={`text-sm ${c.textSecondaryondary} mb-4`}>
                 Take a moment to stand up, drink water, and rest your eyes before starting again.
               </p>
             </div>
           )}
 
           {/* Break timer */}
-          <div className={`${c.card} border rounded-2xl shadow-lg p-5`}>
+          <div className={`${c.card} ${c.border} border rounded-2xl shadow-lg p-5`}>
             <div className="flex items-center justify-between mb-3">
-              <h4 className={`text-sm font-bold ${c.text} flex items-center gap-1.5`}>⏳ Break Timer</h4>
+              <h4 className={`text-sm font-bold ${c.text} flex items-center gap-1.5`}>⏱️ Break Timer</h4>
               {breakEndTime && breakRemainingMs > 0 && (
                 <span className={`text-sm font-mono font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>
                   {fmt(breakRemainingSec)}
@@ -2302,7 +2312,7 @@ const FocusPocus = () => {
                       className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${
                         breakTimerMin === m
                           ? isDark ? 'bg-emerald-900/40 text-emerald-300 border border-emerald-500' : 'bg-emerald-50 text-emerald-700 border border-emerald-300'
-                          : isDark ? 'bg-zinc-700 text-zinc-400 hover:text-zinc-200 border border-zinc-600' : 'bg-stone-100 text-stone-500 hover:text-stone-700 border border-stone-200'
+                          : isDark ? 'bg-zinc-700 text-zinc-400 hover:text-zinc-200 border border-zinc-600' : 'bg-zinc-100 text-zinc-500 hover:text-zinc-700 border border-zinc-200'
                       }`}>
                       {m}m
                     </button>
@@ -2317,54 +2327,54 @@ const FocusPocus = () => {
               <p className={`text-sm font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>✅ Break timer complete — time to get back to it!</p>
             ) : (
               <div className="flex items-center gap-2">
-                <div className={`flex-1 h-2 rounded-full overflow-hidden ${isDark ? 'bg-zinc-700' : 'bg-stone-200'}`}>
+                <div className={`flex-1 h-2 rounded-full overflow-hidden ${isDark ? 'bg-zinc-700' : 'bg-zinc-200'}`}>
                   <div className={`h-full rounded-full transition-all duration-1000 ${isDark ? 'bg-emerald-500' : 'bg-emerald-500'}`}
                     style={{ width: `${Math.min(100, ((breakTimerMin * 60 * 1000 - breakRemainingMs) / (breakTimerMin * 60 * 1000)) * 100)}%` }}
                   />
                 </div>
                 <button onClick={() => setBreakEndTime(null)}
-                  className={`text-xs font-bold ${c.textMuted}`}>Cancel</button>
+                  className={`text-xs font-bold ${c.textMuteded}`}>Cancel</button>
               </div>
             )}
           </div>
 
           {/* Break coaching */}
-          <div className={`${c.card} border rounded-2xl shadow-lg p-5`}>
+          <div className={`${c.card} ${c.border} border rounded-2xl shadow-lg p-5`}>
             <div className="flex items-center justify-between mb-3">
               <h4 className={`text-sm font-bold ${c.text} flex items-center gap-1.5`}>🧘 Break Coach</h4>
             </div>
             {!breakCoachResult ? (
               <div className="text-center">
-                <p className={`text-xs ${c.textSec} mb-3`}>Get personalized guidance for a restorative break</p>
+                <p className={`text-xs ${c.textSecondaryondary} mb-3`}>Get personalized guidance for a restorative break</p>
                 <button onClick={handleBreakCoach} disabled={breakCoachLoading}
-                  className={`px-5 py-2 rounded-xl text-xs font-bold transition-colors ${isDark ? 'bg-violet-900/40 text-violet-300 hover:bg-violet-900/60 border border-violet-700' : 'bg-violet-50 text-violet-700 hover:bg-violet-100 border border-violet-200'}`}>
-                  {breakCoachLoading ? '⏳ Getting coaching…' : '🧘 Get Break Coaching'}
+                  className={`px-5 py-2 rounded-xl text-xs font-bold transition-colors ${isDark ? 'bg-cyan-900/40 text-cyan-300 hover:bg-cyan-900/60 border border-violet-700' : 'bg-cyan-50 text-cyan-700 hover:bg-cyan-100 border border-violet-200'}`}>
+                  {breakCoachLoading ? <><span className='animate-spin inline-block mr-1'>{tool?.icon ?? '🎩'}</span>Coaching…</> : <>🧘 Get Break Coaching</>}
                 </button>
               </div>
             ) : (
               <div className="space-y-3">
                 {breakCoachResult.acknowledgment && (
-                  <div className={`p-3 rounded-xl ${isDark ? 'bg-indigo-900/20 border border-indigo-800/40' : 'bg-indigo-50 border border-indigo-100'}`}>
-                    <p className={`text-xs font-bold ${isDark ? 'text-indigo-300' : 'text-indigo-700'} mb-1`}>💬 Acknowledgment</p>
-                    <p className={`text-xs ${c.textSec}`}>{breakCoachResult.acknowledgment}</p>
+                  <div className={`p-3 rounded-xl ${isDark ? 'bg-cyan-900/20 border border-cyan-800/40' : 'bg-cyan-50 border border-cyan-100'}`}>
+                    <p className={`text-xs font-bold ${isDark ? 'text-cyan-300' : 'text-cyan-700'} mb-1`}>💬 Acknowledgment</p>
+                    <p className={`text-xs ${c.textSecondaryondary}`}>{breakCoachResult.acknowledgment}</p>
                   </div>
                 )}
                 {breakCoachResult.physical_reset && (
                   <div className={`p-3 rounded-xl ${isDark ? 'bg-emerald-900/20 border border-emerald-800/40' : 'bg-emerald-50 border border-emerald-100'}`}>
                     <p className={`text-xs font-bold ${isDark ? 'text-emerald-300' : 'text-emerald-700'} mb-1`}>🏃 Physical Reset</p>
-                    <p className={`text-xs ${c.textSec}`}>{breakCoachResult.physical_reset}</p>
+                    <p className={`text-xs ${c.textSecondaryondary}`}>{breakCoachResult.physical_reset}</p>
                   </div>
                 )}
                 {breakCoachResult.mental_transition && (
-                  <div className={`p-3 rounded-xl ${isDark ? 'bg-violet-900/20 border border-violet-800/40' : 'bg-violet-50 border border-violet-100'}`}>
-                    <p className={`text-xs font-bold ${isDark ? 'text-violet-300' : 'text-violet-700'} mb-1`}>🧠 Mental Transition</p>
-                    <p className={`text-xs ${c.textSec}`}>{breakCoachResult.mental_transition}</p>
+                  <div className={`p-3 rounded-xl ${isDark ? 'bg-cyan-900/20 border border-violet-800/40' : 'bg-cyan-50 border border-violet-100'}`}>
+                    <p className={`text-xs font-bold ${isDark ? 'text-cyan-300' : 'text-cyan-700'} mb-1`}>🧠 Mental Transition</p>
+                    <p className={`text-xs ${c.textSecondaryondary}`}>{breakCoachResult.mental_transition}</p>
                   </div>
                 )}
                 {breakCoachResult.resume_tip && (
                   <div className={`p-3 rounded-xl ${isDark ? 'bg-amber-900/20 border border-amber-800/40' : 'bg-amber-50 border border-amber-100'}`}>
                     <p className={`text-xs font-bold ${isDark ? 'text-amber-300' : 'text-amber-700'} mb-1`}>🔖 Resume Tip</p>
-                    <p className={`text-xs ${c.textSec}`}>{breakCoachResult.resume_tip}</p>
+                    <p className={`text-xs ${c.textSecondaryondary}`}>{breakCoachResult.resume_tip}</p>
                   </div>
                 )}
               </div>
@@ -2373,13 +2383,13 @@ const FocusPocus = () => {
 
           {/* New session */}
           <button onClick={resetAll}
-            className="w-full flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl font-bold text-white bg-indigo-600 hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-200 dark:shadow-indigo-900/40">
+            className="w-full flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl font-bold text-white bg-cyan-600 hover:bg-cyan-700 transition-colors shadow-lg shadow-indigo-200 dark:shadow-indigo-900/40">
             🔄 Start New Session
           </button>
 
           {/* Cross-references */}
-          <div className={`${c.card} border rounded-2xl p-4`}>
-            <p className={`text-xs font-bold ${c.textMuted} mb-2`}>🔗 Related tools</p>
+          <div className={`${c.card} ${c.border} border rounded-2xl p-4`}>
+            <p className={`text-xs font-bold ${c.textMuteded} mb-2`}>🔗 Related tools</p>
             <div className="flex flex-wrap gap-2">
               {[
                 { name: 'Focus Sound Architect', slug: 'FocusSoundArchitect', emoji: '🎵' },
@@ -2387,7 +2397,7 @@ const FocusPocus = () => {
                 { name: 'Task Avalanche Breaker', slug: 'TaskAvalancheBreaker', emoji: '🏔️' },
               ].map(t => (
                 <a key={t.slug} href={`/${t.slug}`} target="_blank" rel="noopener noreferrer"
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${isDark ? 'bg-zinc-700 text-zinc-300 hover:bg-zinc-600' : 'bg-stone-100 text-stone-600 hover:bg-stone-200'}`}>
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${isDark ? 'bg-zinc-700 text-zinc-300 hover:bg-zinc-600' : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'}`}>
                   {t.emoji} {t.name}
                 </a>
               ))}
@@ -2395,6 +2405,14 @@ const FocusPocus = () => {
           </div>
         </div>
       )}
+        <div className={`mt-6 pt-4 border-t text-sm ${c.border} ${c.textMuted}`}>
+          <p className="mb-2 font-medium">You might also like:</p>
+          <div className="flex flex-wrap gap-2">
+            {[{slug:'focus-sound-architect',label:'🎵 Focus Sound'},{slug:'virtual-body-double',label:'👥 Virtual Body Double'},{slug:'brain-state-deejay',label:'🎵 Brain Deejay'}].map(({slug,label})=>(
+              <a key={slug} href={`/tool/${slug}`} className={linkStyle}>{label}</a>
+            ))}
+          </div>
+        </div>
     </div>
   );
 };

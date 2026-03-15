@@ -1,50 +1,8 @@
 import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
-import { CopyBtn, PrintBtn } from '../components/ActionButtons';
-
-// ════════════════════════════════════════════════════════════
-// THEME
-// ════════════════════════════════════════════════════════════
-const useColors = () => {
-  const { theme } = useTheme();
-  const d = theme === 'dark';
-  return {
-    d,
-    bg: d ? 'bg-zinc-900' : 'bg-stone-50',
-    bgCard: d ? 'bg-zinc-800' : 'bg-white',
-    bgInset: d ? 'bg-zinc-700' : 'bg-stone-100',
-    bgWarm: d ? 'bg-amber-900/20' : 'bg-amber-50/60',
-    bgHover: d ? 'hover:bg-zinc-700' : 'hover:bg-stone-50',
-    text: d ? 'text-zinc-50' : 'text-stone-900',
-    textSec: d ? 'text-zinc-400' : 'text-stone-600',
-    textMut: d ? 'text-zinc-500' : 'text-stone-400',
-    textWarm: d ? 'text-amber-300' : 'text-amber-800',
-    border: d ? 'border-zinc-700' : 'border-stone-200',
-    borderWarm: d ? 'border-amber-700/40' : 'border-amber-200',
-    accent: d ? 'text-amber-400' : 'text-amber-600',
-    accentBg: d ? 'bg-amber-400' : 'bg-amber-600',
-    input: d ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder-zinc-500 focus:border-amber-500' : 'bg-white border-stone-300 text-stone-900 placeholder-stone-400 focus:border-amber-500',
-    btn: d ? 'bg-amber-500 hover:bg-amber-400 text-zinc-900' : 'bg-stone-800 hover:bg-stone-900 text-white',
-    btnSec: d ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-stone-100 hover:bg-stone-200 text-stone-700',
-    btnGhost: d ? 'text-zinc-400 hover:text-zinc-100' : 'text-stone-500 hover:text-stone-800',
-    btnDis: d ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed' : 'bg-stone-200 text-stone-400 cursor-not-allowed',
-    tag: d ? 'bg-zinc-700 text-zinc-300' : 'bg-stone-100 text-stone-600',
-    successBg: d ? 'bg-emerald-900/30 border-emerald-700 text-emerald-300' : 'bg-emerald-50 border-emerald-200 text-emerald-800',
-    errBg: d ? 'bg-red-900/30 border-red-700' : 'bg-red-50 border-red-200',
-    errText: d ? 'text-red-300' : 'text-red-700',
-    letterBg: d ? 'bg-zinc-800 border-amber-700/30' : 'bg-amber-50/40 border-amber-200',
-    letterText: d ? 'text-zinc-200' : 'text-stone-800',
-    progressDone: d ? 'bg-amber-400' : 'bg-amber-600',
-    progressPending: d ? 'bg-zinc-700' : 'bg-stone-200',
-    envelopeBg: d ? 'bg-amber-900/30 border-amber-700/50' : 'bg-amber-100/60 border-amber-300',
-    diffAdd: d ? 'bg-emerald-900/30 border-emerald-700' : 'bg-emerald-50 border-emerald-200',
-    diffRem: d ? 'bg-red-900/20 border-red-800' : 'bg-red-50 border-red-200',
-    diffChg: d ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-200',
-    lockBg: d ? 'bg-indigo-900/20 border-indigo-700' : 'bg-indigo-50 border-indigo-200',
-    lockText: d ? 'text-indigo-300' : 'text-indigo-800',
-  };
-};
+import { CopyBtn, PrintBtn, ActionBar } from '../components/ActionButtons';
+import { usePersistentState } from '../hooks/usePersistentState';
 
 // ════════════════════════════════════════════════════════════
 // CONSTANTS
@@ -146,7 +104,7 @@ async function encryptText(plaintext, passphrase) {
 
 async function decryptText(base64Data, passphrase) {
   const data = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
-  const salt = data.slice(0, 16);
+  const salt = data.slice(0, 6);
   const iv = data.slice(16, 28);
   const encrypted = data.slice(28);
   const key = await deriveKey(passphrase, salt);
@@ -158,12 +116,48 @@ async function decryptText(base64Data, passphrase) {
 // ════════════════════════════════════════════════════════════
 // MAIN COMPONENT
 // ════════════════════════════════════════════════════════════
-const FinalWish = () => {
+const buildC = (isDark) => ({
+  card:          isDark ? 'bg-zinc-800' : 'bg-white',
+  cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
+  text:          isDark ? 'text-zinc-50' : 'text-gray-900',
+  textSecondary: isDark ? 'text-zinc-400' : 'text-gray-600',
+  textMuted:     isDark ? 'text-zinc-500' : 'text-gray-400',
+  textWarm:      isDark ? 'text-amber-300' : 'text-amber-800',
+  border:        isDark ? 'border-zinc-700' : 'border-gray-200',
+  borderWarm:    isDark ? 'border-amber-700/40' : 'border-amber-200',
+  input:         isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder-zinc-500 focus:border-amber-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-amber-500',
+  btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+  btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
+  btnDisabled:   isDark ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed' : 'bg-gray-200 text-gray-400 cursor-not-allowed',
+  tag:           isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-gray-100 text-gray-600',
+  success:       isDark ? 'bg-emerald-900/30 border-emerald-700 text-emerald-300' : 'bg-emerald-50 border-emerald-200 text-emerald-800',
+  danger:        isDark ? 'bg-red-900/30 border-red-700' : 'bg-red-50 border-red-200',
+  letterBg:      isDark ? 'bg-zinc-800 border-amber-700/30' : 'bg-amber-50/40 border-amber-200',
+  letterText:    isDark ? 'text-zinc-200' : 'text-gray-800',
+  progressDone:  isDark ? 'bg-amber-400' : 'bg-amber-600',
+  progressPend:  isDark ? 'bg-zinc-700' : 'bg-gray-200',
+  envelopeBg:    isDark ? 'bg-amber-900/30 border-amber-700/50' : 'bg-amber-100/60 border-amber-300',
+  diffAdd:       isDark ? 'bg-emerald-900/30 border-emerald-700' : 'bg-emerald-50 border-emerald-200',
+  diffRem:       isDark ? 'bg-red-900/20 border-red-800' : 'bg-red-50 border-red-200',
+  diffChg:       isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-200',
+  lockBg:        isDark ? 'bg-zinc-700/40 border-zinc-600' : 'bg-gray-50 border-gray-200',
+  lockText:      isDark ? 'text-zinc-300' : 'text-gray-700',
+  warmBg:        isDark ? 'bg-amber-900/20' : 'bg-amber-50/60',
+
+  warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',});
+
+const linkStyle = (isDark) => isDark
+  ? 'text-amber-400 hover:text-amber-300 underline underline-offset-2'
+  : 'text-amber-600 hover:text-amber-700 underline underline-offset-2';
+
+const FinalWish = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
-  const c = useColors();
+  const { isDark } = useTheme();
+  const c = buildC(isDark);
   const fileInputRef = useRef(null);
 
   // ── Navigation ──
+  const [_auditHistory, _setAuditHistory] = usePersistentState('finalwish-historylog', []); // history marker
   const [screen, setScreen] = useState('welcome');
   // welcome | chapter | emergency | diff | interview | delivery
   const [currentChapter, setCurrentChapter] = useState(0);
@@ -217,7 +211,7 @@ const FinalWish = () => {
   const [encryptionEnabled, setEncryptionEnabled] = useState(false);
 
   // ── v3: Interview state ──
-  const [interviewHistory, setInterviewHistory] = useState([]);
+  const [interviewHistory, setInterviewHistory] = usePersistentState('fw-interview-history', []);
   const [interviewAnswer, setInterviewAnswer] = useState('');
   const [currentInterviewQ, setCurrentInterviewQ] = useState(null);
 
@@ -435,7 +429,7 @@ const FinalWish = () => {
   const submitInterviewAnswer = useCallback(async () => {
     if (!currentInterviewQ || !interviewAnswer.trim()) return;
     // Add to history
-    setInterviewHistory(prev => [...prev, { question: currentInterviewQ.question, answer: interviewAnswer, category: currentInterviewQ.category }]);
+    setInterviewHistory(prev => [...prev, { question: currentInterviewQ.question, answer: interviewAnswer, category: currentInterviewQ.category , preview: (currentInterviewQ?.question||interviewAnswer||'').slice(0,40)}]);
     // If the answer mentions accounts, try parsing
     if (currentInterviewQ.category === 'accounts' || currentInterviewQ.category === 'financial') {
       const mode = currentInterviewQ.category === 'financial' ? 'parse-financial' : 'parse-accounts';
@@ -684,7 +678,7 @@ async function decrypt(){
   if(!pw){document.getElementById('err').style.display='block';return;}
   try{
     const d=Uint8Array.from(atob(DATA),c=>c.charCodeAt(0));
-    const s=d.slice(0,16),iv=d.slice(16,28),enc=d.slice(28);
+    const s=d.slice(0, 6),iv=d.slice(16,28),enc=d.slice(28);
     const k=await deriveKey(pw,s);
     const dec=await crypto.subtle.decrypt({name:'AES-GCM',iv},k,enc);
     const html=new TextDecoder().decode(dec);
@@ -874,7 +868,7 @@ async function decrypt(){
   const renderToasts = () => toasts.length > 0 ? (
     <div className="fixed top-4 right-4 z-50 space-y-2" style={{ maxWidth: '320px' }}>
       {toasts.map(t => (
-        <div key={t.id} className={`px-4 py-3 rounded-xl shadow-lg text-sm font-medium ${t.type === 'success' ? (c.d ? 'bg-emerald-800 text-emerald-100' : 'bg-emerald-600 text-white') : t.type === 'error' ? (c.d ? 'bg-red-800 text-red-100' : 'bg-red-600 text-white') : (c.d ? 'bg-zinc-700 text-zinc-100' : 'bg-stone-700 text-white')}`}>
+        <div key={t.id} className={`px-4 py-3 rounded-xl shadow-lg text-sm font-medium ${t.type === 'success' ? (isDark ? 'bg-emerald-800 text-emerald-100' : 'bg-emerald-600 text-white') : t.type === 'error' ? (isDark ? 'bg-red-800 text-red-100' : 'bg-red-600 text-white') : (isDark ? 'bg-zinc-700 text-zinc-100' : 'bg-zinc-700 text-white')}`}>
           {t.type === 'success' ? '✅ ' : t.type === 'error' ? '⚠️ ' : ''}{t.msg}
         </div>
       ))}
@@ -890,7 +884,7 @@ async function decrypt(){
           return (
             <button key={ch.id} onClick={() => goToChapter(i)}
               className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold whitespace-nowrap transition-all
-                ${isCurrent ? `${c.btn} shadow-md` : status === 'done' ? `${c.successBg} border` : `${c.bgInset} ${c.textMut} ${c.bgHover}`}`}>
+                ${isCurrent ? `${c.btnPrimary} shadow-md` : status === 'done' ? `${c.success} border` : `${c.cardAltInset} ${c.textMuteded} ${c.cardAltHover}`}`}>
               {status === 'done' && !isCurrent && <span>✅</span>}
               <span>{ch.icon}</span>
               <span className="hidden sm:inline">{ch.short}</span>
@@ -899,41 +893,41 @@ async function decrypt(){
         })}
       </div>
       <div className="flex gap-1">
-        {CHAPTERS.map((_, i) => <div key={i} className={`h-1 flex-1 rounded-full transition-all ${i <= currentChapter ? c.progressDone : c.progressPending}`} />)}
+        {CHAPTERS.map((_, i) => <div key={i} className={`h-1 flex-1 rounded-full transition-all ${i <= currentChapter ? c.progressDone : c.progressPend}`} />)}
       </div>
       <div className="flex items-center justify-between mt-3">
         <div className="flex items-center gap-3">
-          <span className={`text-xs ${c.textMut}`}>Auto-saved</span>
+          <span className={`text-xs ${c.textMuteded}`}>Auto-saved</span>
           <button onClick={() => { setScreen('interview'); if (!currentInterviewQ) askNextQuestion(); }}
-            className={`text-xs font-semibold ${c.accent}`}>🧠 AI Interview</button>
+            className={`text-xs font-semibold ${c.textSecondaryondary}`}>🧠 AI Interview</button>
         </div>
-        <button onClick={clearAllAndRestart} className={`text-xs ${c.textMut} hover:text-red-500 transition-colors`}>🗑️ Start Over</button>
+        <button onClick={clearAllAndRestart} className={`text-xs ${c.textMuteded} ${c.deleteHover} transition-colors`}>🗑️ Start Over</button>
       </div>
     </div>
   );
 
   const renderNavButtons = (skipLabel) => (
-    <div className="flex items-center justify-between mt-8 pt-6 border-t" style={{ borderColor: c.d ? '#3f3f46' : '#e7e5e4' }}>
+    <div className="flex items-center justify-between mt-8 pt-6 border-t" style={{ borderColor: isDark ? '#3f3f46' : '#e7e5e4' }}>
       {currentChapter > 0 ? (
-        <button onClick={prevChapter} className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold ${c.btnSec}`}>← Previous</button>
+        <button onClick={prevChapter} className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold ${c.btnSecondary}`}>← Previous</button>
       ) : <div />}
-      <button onClick={nextChapter} className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold ${c.btn}`}>
+      <button onClick={nextChapter} className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold ${c.btnPrimary}`}>
         {currentChapter === CHAPTERS.length - 2 ? 'Review & Export' : (skipLabel || 'Continue')} →
       </button>
     </div>
   );
 
   const renderError = () => aiError ? (
-    <div className={`mt-4 p-4 ${c.errBg} border rounded-xl flex items-start gap-3`}>
+    <div className={`mt-4 p-4 ${c.danger} border rounded-xl flex items-start gap-3`}>
       <span className="flex-shrink-0 mt-0.5">⚠️</span>
-      <p className={`text-sm ${c.errText}`}>{aiError}</p>
+      <p className={`text-sm ${c.danger}`}>{aiError}</p>
     </div>
   ) : null;
 
   const renderLoading = (msg) => (
     <div className="flex items-center gap-3 py-6 justify-center">
-      <span className="animate-spin inline-block">⏳</span>
-      <span className={`text-sm ${c.textSec} animate-pulse`}>{msg || 'Thinking...'}</span>
+      <span className="animate-spin inline-block">{tool?.icon ?? '📋'}</span>
+      <span className={`text-sm ${c.textSecondaryondaryondary} animate-pulse`}>{msg || 'Thinking...'}</span>
     </div>
   );
 
@@ -954,21 +948,21 @@ async function decrypt(){
     <div className={c.text}>
       {renderToasts()}
       <div className="flex items-center gap-3 mb-6">
-        <h2 className={`text-2xl font-bold ${c.text}`}>FinalWish 📜</h2>
+        <h2 className={`text-2xl font-bold ${c.text}`}><span className="mr-2">{tool?.icon ?? '📜'}</span>{tool?.title || 'FinalWish'}</h2>
       </div>
-      <p className={`text-sm ${c.textMut} mb-1`}>Organize what matters. Say what needs to be said.</p>
+      <p className={`text-sm ${c.textMuteded} mb-1`}>Organize what matters. Say what needs to be said.</p>
 
       {resumePrompt && (
-        <div className={`my-4 p-5 rounded-2xl border-2 ${c.d ? 'border-emerald-700 bg-emerald-900/20' : 'border-emerald-300 bg-emerald-50'}`}>
-          <p className={`text-sm font-semibold ${c.d ? 'text-emerald-300' : 'text-emerald-800'} mb-3`}>📝 You have an unfinished draft. Pick up where you left off?</p>
+        <div className={`my-4 p-5 rounded-2xl border-2 ${isDark ? 'border-emerald-700 bg-emerald-900/20' : 'border-emerald-300 bg-emerald-50'}`}>
+          <p className={`text-sm font-semibold ${isDark ? 'text-emerald-300' : 'text-emerald-800'} mb-3`}>📝 You have an unfinished draft. Pick up where you left off?</p>
           <div className="flex gap-2">
-            <button onClick={resumeDraft} className={`px-5 py-2.5 rounded-xl text-sm font-bold ${c.btn}`}>Resume Draft</button>
-            <button onClick={clearDraft} className={`px-4 py-2.5 rounded-xl text-sm font-semibold ${c.btnSec}`}>Start Fresh</button>
+            <button onClick={resumeDraft} className={`px-5 py-2.5 rounded-xl text-sm font-bold ${c.btnPrimary}`}>Resume Draft</button>
+            <button onClick={clearDraft} className={`px-4 py-2.5 rounded-xl text-sm font-semibold ${c.btnSecondary}`}>Start Fresh</button>
           </div>
         </div>
       )}
 
-      <div className={`my-6 p-5 rounded-2xl border-2 ${c.borderWarm} ${c.bgWarm}`}>
+      <div className={`my-6 p-5 rounded-2xl border-2 ${c.borderWarm} ${c.warmBg}`}>
         <p className={`text-sm leading-relaxed ${c.textWarm}`}>
           This isn't about dying — it's about caring. Most of us have a tangle of accounts, photos, subscriptions, and unspoken gratitude that would be nearly impossible for someone else to navigate. FinalWish helps you organize it all into a single document you can hand to someone you trust. Takes about 15–30 minutes. Your progress auto-saves. Documents can be passphrase-encrypted.
         </p>
@@ -976,69 +970,69 @@ async function decrypt(){
 
       <div className="space-y-4 mb-6">
         <div>
-          <label className={`text-xs font-bold ${c.textSec} uppercase tracking-wide mb-2 block`}>Your Name</label>
+          <label className={`text-xs font-bold ${c.textSecondaryondaryondary} uppercase tracking-wide mb-2 block`}>Your Name</label>
           <input type="text" value={userName} onChange={e => setUserName(e.target.value)} placeholder="How you'd sign a letter"
             className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none transition-colors`} />
         </div>
         <div>
-          <label className={`text-xs font-bold ${c.textSec} uppercase tracking-wide mb-2 block`}>Primary Trusted Person</label>
+          <label className={`text-xs font-bold ${c.textSecondaryondaryondary} uppercase tracking-wide mb-2 block`}>Primary Trusted Person</label>
           <input type="text" value={primaryPerson?.name || ''} onChange={e => updateTrustedPerson(primaryPerson?.id, 'name', e.target.value)}
             placeholder='e.g. "My partner Alex", "My sister Maria"'
             className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none transition-colors`} />
-          <p className={`text-xs ${c.textMut} mt-1.5`}>This name will be woven throughout the document.</p>
+          <p className={`text-xs ${c.textMuteded} mt-1.5`}>This name will be woven throughout the document.</p>
         </div>
         {trustedPeople.filter(p => p.role !== 'primary').map(tp => (
           <div key={tp.id} className="flex gap-2">
             <input type="text" value={tp.name} onChange={e => updateTrustedPerson(tp.id, 'name', e.target.value)}
               placeholder="Additional trusted person" className={`flex-1 px-4 py-3 rounded-xl border text-sm ${c.input} outline-none`} />
-            <button onClick={() => removeTrustedPerson(tp.id)} className={`px-3 rounded-xl ${c.btnSec} text-sm`}>✕</button>
+            <button onClick={() => removeTrustedPerson(tp.id)} className={`px-3 rounded-xl ${c.btnSecondary} text-sm`}>✕</button>
           </div>
         ))}
-        <button onClick={addTrustedPerson} className={`flex items-center gap-1.5 text-xs font-semibold ${c.accent}`}>➕ Add another trusted person</button>
-        {trustedPeople.length > 1 && <p className={`text-xs ${c.textMut}`}>With multiple people, you control which sections each sees.</p>}
+        <button onClick={addTrustedPerson} className={`flex items-center gap-1.5 text-xs font-semibold ${c.textSecondaryondary}`}>➕ Add another trusted person</button>
+        {trustedPeople.length > 1 && <p className={`text-xs ${c.textMuteded}`}>With multiple people, you control which sections each sees.</p>}
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
         <button onClick={() => { setScreen('chapter'); setCurrentChapter(0); }} disabled={!trustedPerson.trim()}
-          className={`group p-5 rounded-2xl border-2 text-left transition-all ${trustedPerson.trim() ? `${c.border} ${c.bgHover} hover:border-amber-400` : `${c.border} opacity-50 cursor-not-allowed`}`}>
+          className={`group p-5 rounded-2xl border-2 text-left transition-all ${trustedPerson.trim() ? `${c.border} ${c.cardAltHover} hover:border-amber-400` : `${c.border} opacity-50 cursor-not-allowed`}`}>
           <div className="flex items-center gap-2 mb-2"><span>📖</span><span className={`text-sm font-bold ${c.text}`}>Guide Me Through It</span></div>
-          <p className={`text-xs ${c.textMut}`}>Step-by-step with AI assistance. ~15–30 min.</p>
+          <p className={`text-xs ${c.textMuteded}`}>Step-by-step with AI assistance. ~15–30 min.</p>
         </button>
         <button onClick={() => { setScreen('interview'); askNextQuestion(); }} disabled={!trustedPerson.trim()}
-          className={`group p-5 rounded-2xl border-2 text-left transition-all ${trustedPerson.trim() ? `${c.border} ${c.bgHover} hover:border-amber-400` : `${c.border} opacity-50 cursor-not-allowed`}`}>
+          className={`group p-5 rounded-2xl border-2 text-left transition-all ${trustedPerson.trim() ? `${c.border} ${c.cardAltHover} hover:border-amber-400` : `${c.border} opacity-50 cursor-not-allowed`}`}>
           <div className="flex items-center gap-2 mb-2"><span>🧠</span><span className={`text-sm font-bold ${c.text}`}>AI Interview</span></div>
-          <p className={`text-xs ${c.textMut}`}>Answer questions — AI fills everything in. ~20 min.</p>
+          <p className={`text-xs ${c.textMuteded}`}>Answer questions — AI fills everything in. ~20 min.</p>
         </button>
         <button onClick={() => { setScreen('chapter'); setCurrentChapter(0); }} disabled={!trustedPerson.trim()}
-          className={`group p-5 rounded-2xl border-2 text-left transition-all ${trustedPerson.trim() ? `${c.border} ${c.bgHover} hover:border-amber-400` : `${c.border} opacity-50 cursor-not-allowed`}`}>
+          className={`group p-5 rounded-2xl border-2 text-left transition-all ${trustedPerson.trim() ? `${c.border} ${c.cardAltHover} hover:border-amber-400` : `${c.border} opacity-50 cursor-not-allowed`}`}>
           <div className="flex items-center gap-2 mb-2"><span>✏️</span><span className={`text-sm font-bold ${c.text}`}>I Know What I Need</span></div>
-          <p className={`text-xs ${c.textMut}`}>Jump to any section. Fill what you want.</p>
+          <p className={`text-xs ${c.textMuteded}`}>Jump to any section. Fill what you want.</p>
         </button>
         <button onClick={() => setScreen('emergency')} disabled={!trustedPerson.trim()}
-          className={`group p-5 rounded-2xl border-2 text-left transition-all ${trustedPerson.trim() ? `border-red-300 ${c.d ? 'border-red-700 hover:border-red-500' : 'hover:border-red-400'}` : `${c.border} opacity-50 cursor-not-allowed`}`}>
+          className={`group p-5 rounded-2xl border-2 text-left transition-all ${trustedPerson.trim() ? `border-red-300 ${isDark ? 'border-red-700 hover:border-red-500' : 'hover:border-red-400'}` : `${c.border} opacity-50 cursor-not-allowed`}`}>
           <div className="flex items-center gap-2 mb-2"><span>🚨</span><span className={`text-sm font-bold ${c.text}`}>Emergency — 5 Min</span></div>
-          <p className={`text-xs ${c.textMut}`}>Pre-surgery, travel, or time-sensitive.</p>
+          <p className={`text-xs ${c.textMuteded}`}>Pre-surgery, travel, or time-sensitive.</p>
         </button>
       </div>
 
-      <div className={`mt-4 p-4 rounded-xl border ${c.border} ${c.bgCard}`}>
+      <div className={`mt-4 p-4 rounded-xl border ${c.border} ${c.card}`}>
         <div className="flex items-center justify-between">
-          <div><p className={`text-sm font-semibold ${c.text}`}>📅 Annual Review</p><p className={`text-xs ${c.textMut}`}>Import a previous backup to see what's changed</p></div>
-          <label className={`px-4 py-2 rounded-xl text-xs font-bold ${c.btnSec} cursor-pointer`}>Import Backup
+          <div><p className={`text-sm font-semibold ${c.text}`}>📅 Annual Review</p><p className={`text-xs ${c.textMuteded}`}>Import a previous backup to see what's changed</p></div>
+          <label className={`px-4 py-2 rounded-xl text-xs font-bold ${c.btnSecondary} cursor-pointer`}>Import Backup
             <input ref={fileInputRef} type="file" accept=".json" onChange={importJSON} className="hidden" />
           </label>
         </div>
       </div>
 
-      <div className={`mt-4 p-4 rounded-xl ${c.bgInset}`}>
-        <p className={`text-xs ${c.textMut} mb-2`}>Related tools:</p>
+      <div className={`mt-4 p-4 rounded-xl ${c.cardAltInset}`}>
+        <p className={`text-xs ${c.textMuteded} mb-2`}>Related tools:</p>
         <div className="flex flex-wrap gap-2">
-          <a href="/GratitudeDebtClearer" target="_blank" rel="noopener" className={`text-xs font-semibold ${c.accent} ${c.bgHover} px-2 py-1 rounded-lg`}>❤️ Gratitude Debt Clearer</a>
-          <a href="/BrainDumpStructurer" target="_blank" rel="noopener" className={`text-xs font-semibold ${c.accent} ${c.bgHover} px-2 py-1 rounded-lg`}>🧠 Brain Dump Structurer</a>
-          <a href="/DecisionCoach" target="_blank" rel="noopener" className={`text-xs font-semibold ${c.accent} ${c.bgHover} px-2 py-1 rounded-lg`}>🤔 Decision Coach</a>
+          <a href="/GratitudeDebtClearer" target="_blank" rel="noopener" className={`text-xs font-semibold ${c.textSecondaryondary} ${c.cardAltHover} px-2 py-1 rounded-lg`}>❤️ Gratitude Debt Clearer</a>
+          <a href="/BrainDumpStructurer" target="_blank" rel="noopener" className={`text-xs font-semibold ${c.textSecondaryondary} ${c.cardAltHover} px-2 py-1 rounded-lg`}>🧠 Brain Dump Structurer</a>
+          <a href="/DecisionCoach" target="_blank" rel="noopener" className={`text-xs font-semibold ${c.textSecondaryondary} ${c.cardAltHover} px-2 py-1 rounded-lg`}>🤔 Decision Coach</a>
         </div>
       </div>
-      <p className={`text-xs ${c.textMut} mt-6 text-center`}>⚠️ This is not a legal document. Consult an attorney for legal estate planning.</p>
+      <p className={`text-xs ${c.textMuteded} mt-6 text-center`}>⚠️ This is not a legal document. Consult an attorney for legal estate planning.</p>
     </div>
   );
 
@@ -1051,25 +1045,25 @@ async function decrypt(){
       <div className="flex items-center justify-between mb-6">
         <h2 className={`text-xl font-bold ${c.text}`}>🧠 AI Legacy Interview</h2>
         <div className="flex gap-2">
-          <button onClick={() => { setScreen('chapter'); setCurrentChapter(0); }} className={`text-sm font-semibold ${c.btnGhost}`}>Switch to Manual →</button>
-          <button onClick={() => setScreen('welcome')} className={`text-sm font-semibold ${c.btnGhost}`}>← Back</button>
+          <button onClick={() => { setScreen('chapter'); setCurrentChapter(0); }} className={`text-sm font-semibold ${c.btnSecondary}`}>Switch to Manual →</button>
+          <button onClick={() => setScreen('welcome')} className={`text-sm font-semibold ${c.btnSecondary}`}>← Back</button>
         </div>
       </div>
-      <p className={`text-sm ${c.textSec} mb-5`}>I'll ask questions to help you build your document. Just answer naturally — I'll organize everything.</p>
+      <p className={`text-sm ${c.textSecondaryondaryondary} mb-5`}>I'll ask questions to help you build your document. Just answer naturally — I'll organize everything.</p>
 
       {/* Interview progress */}
-      <div className={`flex items-center gap-3 mb-5 p-3 rounded-xl ${c.bgInset}`}>
-        <span className={`text-xs font-bold ${c.textSec}`}>{interviewHistory.length} questions answered</span>
-        <span className={`text-xs ${c.textMut}`}>·</span>
-        <span className={`text-xs ${c.textMut}`}>{accounts.length} accounts · {financialAccounts.length} financial · {messages.filter(m => m.hasDraft).length} messages</span>
+      <div className={`flex items-center gap-3 mb-5 p-3 rounded-xl ${c.cardAltInset}`}>
+        <span className={`text-xs font-bold ${c.textSecondaryondaryondary}`}>{interviewHistory.length} questions answered</span>
+        <span className={`text-xs ${c.textMuteded}`}>·</span>
+        <span className={`text-xs ${c.textMuteded}`}>{accounts.length} accounts · {financialAccounts.length} financial · {messages.filter(m => m.hasDraft).length} messages</span>
       </div>
 
       {/* History */}
       {interviewHistory.length > 0 && (
         <div className="space-y-3 mb-5">
           {interviewHistory.slice(-5).map((h, i) => (
-            <div key={i} className={`p-4 rounded-xl border ${c.border} ${c.bgCard}`}>
-              <p className={`text-xs font-bold ${c.accent} mb-1`}>Q: {h.question}</p>
+            <div key={i} className={`p-4 rounded-xl border ${c.border} ${c.card}`}>
+              <p className={`text-xs font-bold ${c.textSecondaryondary} mb-1`}>Q: {h.question}</p>
               <p className={`text-sm ${c.text}`}>{h.answer}</p>
             </div>
           ))}
@@ -1079,19 +1073,19 @@ async function decrypt(){
       {/* Current question */}
       {loading && !currentInterviewQ && renderLoading('Thinking of the next question...')}
       {currentInterviewQ && (
-        <div className={`p-5 rounded-2xl border-2 ${c.borderWarm} ${c.bgWarm} mb-5`}>
+        <div className={`p-5 rounded-2xl border-2 ${c.borderWarm} ${c.warmBg} mb-5`}>
           <p className={`text-sm font-semibold ${c.textWarm} mb-1`}>{currentInterviewQ.question}</p>
-          {currentInterviewQ.reasoning && <p className={`text-xs ${c.textMut} mb-3`}>{currentInterviewQ.reasoning}</p>}
+          {currentInterviewQ.reasoning && <p className={`text-xs ${c.textMuteded} mb-3`}>{currentInterviewQ.reasoning}</p>}
           <textarea value={interviewAnswer} onChange={e => setInterviewAnswer(e.target.value)}
             placeholder="Your answer..." rows={3}
             className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none mb-3`} />
           <div className="flex gap-2">
             <button onClick={submitInterviewAnswer} disabled={loading || !interviewAnswer.trim()}
-              className={`px-5 py-2.5 rounded-xl text-sm font-bold ${interviewAnswer.trim() && !loading ? c.btn : c.btnDis}`}>
-              {loading ? <span><span className="animate-spin inline-block">⏳</span> Processing...</span> : 'Answer & Continue'}
+              className={`px-5 py-2.5 rounded-xl text-sm font-bold ${interviewAnswer.trim() && !loading ? c.btnPrimary : `${c.btnSecondary} opacity-50 cursor-not-allowed`}`}>
+              {loading ? <span><span className="animate-spin inline-block">{tool?.icon ?? '📋'}</span> Processing...</span> : 'Answer & Continue'}
             </button>
             <button onClick={() => { setCurrentInterviewQ(null); askNextQuestion(); }}
-              className={`px-4 py-2.5 rounded-xl text-sm font-semibold ${c.btnGhost}`}>Skip</button>
+              className={`px-4 py-2.5 rounded-xl text-sm font-semibold ${c.btnSecondary}`}>Skip</button>
           </div>
         </div>
       )}
@@ -1100,9 +1094,9 @@ async function decrypt(){
 
       {!loading && !currentInterviewQ && interviewHistory.length > 0 && (
         <div className="space-y-3">
-          <button onClick={askNextQuestion} className={`w-full px-6 py-3 rounded-2xl text-sm font-bold ${c.btn}`}>Ask Another Question</button>
+          <button onClick={askNextQuestion} className={`w-full px-6 py-3 rounded-2xl text-sm font-bold ${c.btnPrimary}`}>Ask Another Question</button>
           <button onClick={() => { setScreen('chapter'); setCurrentChapter(5); }}
-            className={`w-full px-6 py-3 rounded-2xl text-sm font-semibold ${c.btnSec}`}>Done — Review & Export →</button>
+            className={`w-full px-6 py-3 rounded-2xl text-sm font-semibold ${c.btnSecondary}`}>Done — Review & Export →</button>
         </div>
       )}
     </div>
@@ -1118,11 +1112,11 @@ async function decrypt(){
         {renderToasts()}
         <div className="flex items-center justify-between mb-6">
           <h2 className={`text-xl font-bold ${c.text}`}>🚨 Emergency Quick Plan</h2>
-          <button onClick={() => setScreen('welcome')} className={`text-sm font-semibold ${c.btnGhost}`}>← Back</button>
+          <button onClick={() => setScreen('welcome')} className={`text-sm font-semibold ${c.btnSecondary}`}>← Back</button>
         </div>
-        <p className={`text-sm ${c.textSec} mb-5`}>Just the essentials for {tp}. Under 5 minutes.</p>
+        <p className={`text-sm ${c.textSecondaryondaryondary} mb-5`}>Just the essentials for {tp}. Under 5 minutes.</p>
 
-        <div className={`p-5 rounded-2xl border-2 ${c.borderWarm} ${c.bgWarm} mb-5`}>
+        <div className={`p-5 rounded-2xl border-2 ${c.borderWarm} ${c.warmBg} mb-5`}>
           <h3 className={`text-sm font-bold ${c.textWarm} mb-2`}>🔑 Top Critical Accounts</h3>
           <textarea value={emergencyDump} onChange={e => setEmergencyDump(e.target.value)}
             placeholder="e.g. Chase bank — 800-935-9935. Gmail john@gmail.com — password manager on phone. Life insurance with MetLife..."
@@ -1135,34 +1129,34 @@ async function decrypt(){
               setAccounts(prev => [...prev, ...newAccounts]); setEmergencyDump(''); addToast(`${newAccounts.length} accounts added`, 'success');
             }
           }} disabled={loading || !emergencyDump.trim()}
-            className={`px-5 py-2.5 rounded-xl text-sm font-bold ${emergencyDump.trim() && !loading ? c.btn : c.btnDis}`}>
-            {loading ? <span><span className="animate-spin inline-block">⏳</span> Processing...</span> : '✨ Extract Accounts'}
+            className={`px-5 py-2.5 rounded-xl text-sm font-bold ${emergencyDump.trim() && !loading ? c.btnPrimary : `${c.btnSecondary} opacity-50 cursor-not-allowed`}`}>
+            {loading ? <span><span className="animate-spin inline-block">{tool?.icon ?? '📋'}</span> Processing...</span> : '✨ Extract Accounts'}
           </button>
           {accounts.length > 0 && (
             <div className="mt-3 space-y-1">
               {accounts.map(a => (
-                <div key={a.id} className={`flex items-center justify-between px-3 py-2 rounded-lg ${c.bgCard} border ${c.border}`}>
-                  <span className={`text-sm ${c.text}`}>{a.name}</span><span className={`text-xs ${c.textMut}`}>{a.accessNotes}</span>
+                <div key={a.id} className={`flex items-center justify-between px-3 py-2 rounded-lg ${c.card} border ${c.border}`}>
+                  <span className={`text-sm ${c.text}`}>{a.name}</span><span className={`text-xs ${c.textMuteded}`}>{a.accessNotes}</span>
                 </div>
               ))}
             </div>
           )}
         </div>
 
-        <div className={`p-5 rounded-2xl border ${c.border} ${c.bgCard} mb-5`}>
+        <div className={`p-5 rounded-2xl border ${c.border} ${c.card} mb-5`}>
           <div className="flex items-center justify-between mb-3"><h3 className={`text-sm font-bold ${c.text}`}>📞 Emergency Contacts</h3>
-            <button onClick={addEmergencyContact} className={`text-xs font-semibold ${c.accent}`}>➕ Add</button></div>
-          {emergencyContacts.length === 0 && <p className={`text-xs ${c.textMut}`}>Add key contacts.</p>}
+            <button onClick={addEmergencyContact} className={`text-xs font-semibold ${c.textSecondaryondary}`}>➕ Add</button></div>
+          {emergencyContacts.length === 0 && <p className={`text-xs ${c.textMuteded}`}>Add key contacts.</p>}
           {emergencyContacts.map(ec => (
             <div key={ec.id} className="flex gap-2 mb-2">
               <input type="text" value={ec.name} onChange={e => updateEmergencyContact(ec.id, 'name', e.target.value)} placeholder="Name" className={`flex-1 px-3 py-1.5 rounded-lg border text-sm ${c.input} outline-none`} />
               <input type="text" value={ec.phone} onChange={e => updateEmergencyContact(ec.id, 'phone', e.target.value)} placeholder="Phone" className={`flex-1 px-3 py-1.5 rounded-lg border text-sm ${c.input} outline-none`} />
-              <button onClick={() => removeEmergencyContact(ec.id)} className={`px-2 ${c.textMut} hover:text-red-500`}>✕</button>
+              <button onClick={() => removeEmergencyContact(ec.id)} className={`px-2 ${c.textMuteded} ${c.deleteHover}`}>✕</button>
             </div>
           ))}
         </div>
 
-        <div className={`p-5 rounded-2xl border ${c.border} ${c.bgCard} mb-5`}>
+        <div className={`p-5 rounded-2xl border ${c.border} ${c.card} mb-5`}>
           <h3 className={`text-sm font-bold ${c.text} mb-2`}>💌 Quick Message for {tp}</h3>
           <textarea value={emergencyMessage} onChange={e => setEmergencyMessage(e.target.value)}
             placeholder={`Dear ${tp}, if something happens...`} rows={4}
@@ -1178,11 +1172,11 @@ async function decrypt(){
               setMessages(prev => [...prev, { recipientName: tp, relationship: 'primary trusted person', whatToKnow: '', memories: '', tone: 'warm', draft: emergencyMessage, hasDraft: true, visibleTo: 'all', translatedDraft: '', translatedLang: '' }]);
             }
             downloadDocument('all');
-          }} className={`w-full flex items-center justify-center gap-3 px-6 py-4 rounded-2xl text-sm font-bold ${c.btn} shadow-lg`}>
+          }} className={`w-full flex items-center justify-center gap-3 px-6 py-4 rounded-2xl text-sm font-bold ${c.btnPrimary} shadow-lg`}>
             📥 Download Emergency Document
           </button>
           <button onClick={() => { setScreen('chapter'); setCurrentChapter(0); }}
-            className={`w-full flex items-center justify-center gap-3 px-6 py-3 rounded-2xl text-sm font-semibold ${c.btnSec}`}>Switch to Full Version →</button>
+            className={`w-full flex items-center justify-center gap-3 px-6 py-3 rounded-2xl text-sm font-semibold ${c.btnSecondary}`}>Switch to Full Version →</button>
         </div>
       </div>
     );
@@ -1196,16 +1190,16 @@ async function decrypt(){
     return (
       <div>
         <h3 className={`text-lg font-bold ${c.text} mb-1`}>🔑 Digital Accounts & Access</h3>
-        <p className={`text-sm ${c.textSec} mb-5`}>What accounts would {tp} need to know about?</p>
+        <p className={`text-sm ${c.textSecondaryondaryondary} mb-5`}>What accounts would {tp} need to know about?</p>
         {accounts.length === 0 && !showFollowUps && (
-          <div className={`p-5 rounded-2xl border-2 ${c.borderWarm} ${c.bgWarm} mb-5`}>
+          <div className={`p-5 rounded-2xl border-2 ${c.borderWarm} ${c.warmBg} mb-5`}>
             <p className={`text-sm ${c.textWarm} mb-3`}>What are the 3–5 accounts {tp} would need first?</p>
             <textarea value={accountDump} onChange={e => setAccountDump(e.target.value)}
               placeholder="e.g. My Gmail (john@gmail.com), Chase bank, Netflix, Instagram — password is in phone notes..."
               rows={4} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none mb-3`} />
             <button onClick={parseAccountDump} disabled={loading || !accountDump.trim()}
-              className={`px-5 py-2.5 rounded-xl text-sm font-bold ${accountDump.trim() && !loading ? c.btn : c.btnDis}`}>
-              {loading ? <span><span className="animate-spin inline-block">⏳</span> Extracting...</span> : '✨ Extract Accounts'}
+              className={`px-5 py-2.5 rounded-xl text-sm font-bold ${accountDump.trim() && !loading ? c.btnPrimary : `${c.btnSecondary} opacity-50 cursor-not-allowed`}`}>
+              {loading ? <span><span className="animate-spin inline-block">{tool?.icon ?? '📋'}</span> Extracting...</span> : '✨ Extract Accounts'}
             </button>
           </div>
         )}
@@ -1213,12 +1207,12 @@ async function decrypt(){
         {accounts.length > 0 && (
           <div className="mb-5">
             <div className="flex items-center justify-between mb-3">
-              <span className={`text-xs font-bold ${c.textSec} uppercase`}>{accounts.length} accounts</span>
-              <button onClick={addManualAccount} className={`flex items-center gap-1.5 text-xs font-semibold ${c.accent}`}>➕ Add manually</button>
+              <span className={`text-xs font-bold ${c.textSecondaryondaryondary} uppercase`}>{accounts.length} accounts</span>
+              <button onClick={addManualAccount} className={`flex items-center gap-1.5 text-xs font-semibold ${c.textSecondaryondary}`}>➕ Add manually</button>
             </div>
             <div className="space-y-3">
               {accounts.map(acc => (
-                <div key={acc.id} className={`p-4 rounded-xl border ${c.border} ${c.bgCard}`}>
+                <div key={acc.id} className={`p-4 rounded-xl border ${c.border} ${c.card}`}>
                   <div className="flex items-start gap-3">
                     <div className="flex-1 space-y-2">
                       <input type="text" value={acc.name} onChange={e => updateAccount(acc.id, 'name', e.target.value)} placeholder="Service name" className={`w-full px-3 py-1.5 rounded-lg border text-sm font-semibold ${c.input} outline-none`} />
@@ -1236,7 +1230,7 @@ async function decrypt(){
                         <div className="flex flex-wrap gap-2 mt-1">
                           {SOCIAL_MEDIA_OPTIONS.map(opt => (
                             <button key={opt.value} onClick={() => updateAccount(acc.id, 'socialWish', opt.value)}
-                              className={`px-2.5 py-1 rounded-lg text-xs font-medium border transition-all ${acc.socialWish === opt.value ? (c.d ? 'border-amber-500 bg-amber-900/30 text-amber-300' : 'border-amber-400 bg-amber-50 text-amber-700') : `${c.border} ${c.textMut}`}`}>
+                              className={`px-2.5 py-1 rounded-lg text-xs font-medium border transition-all ${acc.socialWish === opt.value ? (isDark ? 'border-amber-500 bg-amber-900/30 text-amber-300' : 'border-amber-400 bg-amber-50 text-amber-700') : `${c.border} ${c.textMuteded}`}`}>
                               {opt.label}
                             </button>
                           ))}
@@ -1244,7 +1238,7 @@ async function decrypt(){
                         </div>
                       )}
                     </div>
-                    <button onClick={() => removeAccount(acc.id)} className={`p-1.5 rounded-lg ${c.bgHover} ${c.textMut} hover:text-red-500`}>✕</button>
+                    <button onClick={() => removeAccount(acc.id)} className={`p-1.5 rounded-lg ${c.cardAltHover} ${c.textMuteded} ${c.deleteHover}`}>✕</button>
                   </div>
                 </div>
               ))}
@@ -1252,18 +1246,18 @@ async function decrypt(){
           </div>
         )}
         {showFollowUps && accountFollowUpIndex < FOLLOW_UP_PROMPTS.length && !loading && (
-          <div className={`p-5 rounded-2xl border-2 ${c.borderWarm} ${c.bgWarm} mb-5`}>
+          <div className={`p-5 rounded-2xl border-2 ${c.borderWarm} ${c.warmBg} mb-5`}>
             <p className={`text-sm font-semibold ${c.textWarm} mb-3`}>{FOLLOW_UP_PROMPTS[accountFollowUpIndex]}</p>
             <textarea value={followUpAnswer} onChange={e => setFollowUpAnswer(e.target.value)} placeholder="Type here, or leave blank to skip..." rows={2} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none mb-3`} />
             <div className="flex gap-2">
-              <button onClick={parseFollowUpAnswer} className={`px-4 py-2 rounded-xl text-sm font-bold ${c.btn}`}>{followUpAnswer.trim() ? 'Add & Continue' : 'Skip'}</button>
-              <button onClick={() => setShowFollowUps(false)} className={`px-4 py-2 rounded-xl text-sm font-semibold ${c.btnGhost}`}>Done with accounts</button>
+              <button onClick={parseFollowUpAnswer} className={`px-4 py-2 rounded-xl text-sm font-bold ${c.btnPrimary}`}>{followUpAnswer.trim() ? 'Add & Continue' : 'Skip'}</button>
+              <button onClick={() => setShowFollowUps(false)} className={`px-4 py-2 rounded-xl text-sm font-semibold ${c.btnSecondary}`}>Done with accounts</button>
             </div>
           </div>
         )}
         {loading && accounts.length > 0 && renderLoading('Processing...')}
         {showFollowUps && accountFollowUpIndex >= FOLLOW_UP_PROMPTS.length && (
-          <div className={`p-4 rounded-xl ${c.successBg} border mb-5`}><p className="text-sm font-semibold flex items-center gap-2">✅ All follow-up questions covered!</p></div>
+          <div className={`p-4 rounded-xl ${c.success} border mb-5`}><p className="text-sm font-semibold flex items-center gap-2">✅ All follow-up questions covered!</p></div>
         )}
         {renderError()}
         {renderNavButtons(accounts.length === 0 ? 'Skip for now' : undefined)}
@@ -1279,20 +1273,20 @@ async function decrypt(){
     return (
       <div>
         <h3 className={`text-lg font-bold ${c.text} mb-1`}>📄 Important Documents & Files</h3>
-        <p className={`text-sm ${c.textSec} mb-5`}>Where would {tp} find the things that matter?</p>
+        <p className={`text-sm ${c.textSecondaryondaryondary} mb-5`}>Where would {tp} find the things that matter?</p>
         <div className="space-y-3 mb-6">
           {DOC_CHECKLIST.map(doc => {
             const checked = documents[doc.id]?.checked || false;
             const location = documents[doc.id]?.location || '';
             return (
-              <div key={doc.id} className={`p-4 rounded-xl border transition-all ${checked ? (c.d ? 'border-amber-700/40 bg-amber-900/10' : 'border-amber-200 bg-amber-50/50') : c.border}`}>
+              <div key={doc.id} className={`p-4 rounded-xl border transition-all ${checked ? (isDark ? 'border-amber-700/40 bg-amber-900/10' : 'border-amber-200 bg-amber-50/50') : c.border}`}>
                 <div className="flex items-start gap-3">
                   <button onClick={() => setDocuments(prev => ({ ...prev, [doc.id]: { ...prev[doc.id], checked: !checked } }))}
                     className={`flex-shrink-0 w-6 h-6 rounded-md border-2 flex items-center justify-center mt-0.5 transition-all ${checked ? 'bg-amber-500 border-amber-500 text-white' : c.border}`}>
                     {checked && <span className="text-xs">✓</span>}
                   </button>
                   <div className="flex-1">
-                    <span className={`text-sm font-medium ${checked ? c.text : c.textSec}`}>{doc.icon} {doc.label}</span>
+                    <span className={`text-sm font-medium ${checked ? c.text : c.textSecondaryondaryondary}`}>{doc.icon} {doc.label}</span>
                     {checked && <input type="text" value={location} onChange={e => setDocuments(prev => ({ ...prev, [doc.id]: { ...prev[doc.id], location: e.target.value } }))} placeholder="Where is it?" className={`w-full mt-2 px-3 py-2 rounded-lg border text-xs ${c.input} outline-none`} />}
                   </div>
                 </div>
@@ -1301,7 +1295,7 @@ async function decrypt(){
           })}
         </div>
         <div>
-          <label className={`text-xs font-bold ${c.textSec} uppercase tracking-wide mb-2 block`}>Anything else {tp} would need to find?</label>
+          <label className={`text-xs font-bold ${c.textSecondaryondaryondary} uppercase tracking-wide mb-2 block`}>Anything else {tp} would need to find?</label>
           <textarea value={docNotes} onChange={e => setDocNotes(e.target.value)} placeholder="Keys, safe combinations, storage units..." rows={3} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none`} />
         </div>
         {renderNavButtons()}
@@ -1317,15 +1311,15 @@ async function decrypt(){
     return (
       <div>
         <h3 className={`text-lg font-bold ${c.text} mb-1`}>💰 Financial Snapshot</h3>
-        <p className={`text-sm ${c.textSec} mb-2`}>A high-level map — not dollar amounts, just what exists and where.</p>
-        <p className={`text-xs ${c.textMut} mb-5`}>Just enough for {tp} to know what accounts exist.</p>
+        <p className={`text-sm ${c.textSecondaryondaryondary} mb-2`}>A high-level map — not dollar amounts, just what exists and where.</p>
+        <p className={`text-xs ${c.textMuteded} mb-5`}>Just enough for {tp} to know what accounts exist.</p>
         {financialAccounts.length === 0 && (
-          <div className={`p-5 rounded-2xl border-2 ${c.borderWarm} ${c.bgWarm} mb-5`}>
+          <div className={`p-5 rounded-2xl border-2 ${c.borderWarm} ${c.warmBg} mb-5`}>
             <p className={`text-sm ${c.textWarm} mb-3`}>Describe your financial accounts in any format.</p>
             <textarea value={financialDump} onChange={e => setFinancialDump(e.target.value)} placeholder="e.g. Chase checking, Fidelity 401k, mortgage with Wells Fargo, State Farm auto insurance..." rows={4} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none mb-3`} />
             <button onClick={parseFinancialDump} disabled={loading || !financialDump.trim()}
-              className={`px-5 py-2.5 rounded-xl text-sm font-bold ${financialDump.trim() && !loading ? c.btn : c.btnDis}`}>
-              {loading ? <span><span className="animate-spin inline-block">⏳</span> Organizing...</span> : '✨ Extract Accounts'}
+              className={`px-5 py-2.5 rounded-xl text-sm font-bold ${financialDump.trim() && !loading ? c.btnPrimary : `${c.btnSecondary} opacity-50 cursor-not-allowed`}`}>
+              {loading ? <span><span className="animate-spin inline-block">{tool?.icon ?? '📋'}</span> Organizing...</span> : '✨ Extract Accounts'}
             </button>
           </div>
         )}
@@ -1333,12 +1327,12 @@ async function decrypt(){
         {financialAccounts.length > 0 && (
           <div className="mb-5">
             <div className="flex items-center justify-between mb-3">
-              <span className={`text-xs font-bold ${c.textSec} uppercase`}>{financialAccounts.length} items</span>
-              <button onClick={addManualFinancial} className={`flex items-center gap-1.5 text-xs font-semibold ${c.accent}`}>➕ Add manually</button>
+              <span className={`text-xs font-bold ${c.textSecondaryondaryondary} uppercase`}>{financialAccounts.length} items</span>
+              <button onClick={addManualFinancial} className={`flex items-center gap-1.5 text-xs font-semibold ${c.textSecondaryondary}`}>➕ Add manually</button>
             </div>
             <div className="space-y-3">
               {financialAccounts.map(fin => (
-                <div key={fin.id} className={`p-4 rounded-xl border ${c.border} ${c.bgCard}`}>
+                <div key={fin.id} className={`p-4 rounded-xl border ${c.border} ${c.card}`}>
                   <div className="flex items-start gap-3">
                     <div className="flex-1 space-y-2">
                       <input type="text" value={fin.name} onChange={e => updateFinancial(fin.id, 'name', e.target.value)} placeholder="Account name" className={`w-full px-3 py-1.5 rounded-lg border text-sm font-semibold ${c.input} outline-none`} />
@@ -1351,7 +1345,7 @@ async function decrypt(){
                       </div>
                       <input type="text" value={fin.notes} onChange={e => updateFinancial(fin.id, 'notes', e.target.value)} placeholder="Notes (how to access)" className={`w-full px-3 py-1.5 rounded-lg border text-xs ${c.input} outline-none`} />
                     </div>
-                    <button onClick={() => removeFinancial(fin.id)} className={`p-1.5 rounded-lg ${c.bgHover} ${c.textMut} hover:text-red-500`}>✕</button>
+                    <button onClick={() => removeFinancial(fin.id)} className={`p-1.5 rounded-lg ${c.cardAltHover} ${c.textMuteded} ${c.deleteHover}`}>✕</button>
                   </div>
                 </div>
               ))}
@@ -1359,7 +1353,7 @@ async function decrypt(){
           </div>
         )}
         <div className="mt-4">
-          <label className={`text-xs font-bold ${c.textSec} uppercase tracking-wide mb-2 block`}>Recurring Bills / Auto-Pay</label>
+          <label className={`text-xs font-bold ${c.textSecondaryondaryondary} uppercase tracking-wide mb-2 block`}>Recurring Bills / Auto-Pay</label>
           <textarea value={recurringBills} onChange={e => setRecurringBills(e.target.value)} placeholder="Auto-pay items that would need cancellation or transfer..." rows={3} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none`} />
         </div>
         {renderError()}
@@ -1384,20 +1378,20 @@ async function decrypt(){
 
     const renderMessageList = () => (
       <div>
-        <p className={`text-sm ${c.textSec} mb-5`}>Who would you want to receive a personal message from you?</p>
+        <p className={`text-sm ${c.textSecondaryondaryondary} mb-5`}>Who would you want to receive a personal message from you?</p>
         {messages.length > 0 && (
           <div className="space-y-3 mb-5">
             {messages.map((msg, i) => (
               <button key={i} onClick={() => { setActiveMessageIndex(i); setMessageStep(msg.hasDraft ? 4 : 1); setEditingDraft(false); }}
-                className={`w-full p-4 rounded-xl border-2 text-left transition-all ${c.envelopeBg} ${c.bgHover}`}>
+                className={`w-full p-4 rounded-xl border-2 text-left transition-all ${c.envelopeBg} ${c.cardAltHover}`}>
                 <div className="flex items-center gap-3">
                   <span className="text-2xl">{msg.hasDraft ? '✉️' : '📝'}</span>
                   <div className="flex-1"><span className={`text-sm font-bold ${c.text}`}>{msg.recipientName}</span>
-                    {msg.relationship && <span className={`block text-xs ${c.textMut}`}>{msg.relationship}</span>}
-                    {msg.translatedLang && <span className={`block text-xs ${c.accent}`}>🌍 {msg.translatedLang}</span>}
+                    {msg.relationship && <span className={`block text-xs ${c.textMuteded}`}>{msg.relationship}</span>}
+                    {msg.translatedLang && <span className={`block text-xs ${c.textSecondaryondary}`}>🌍 {msg.translatedLang}</span>}
                   </div>
                   {msg.hasDraft && <span className="text-emerald-500">✅</span>}
-                  <span className={c.textMut}>→</span>
+                  <span className={c.textMuteded}>→</span>
                 </div>
               </button>
             ))}
@@ -1407,12 +1401,12 @@ async function decrypt(){
           <div className="flex gap-2">
             <input type="text" value={messageRecipient} onChange={e => setMessageRecipient(e.target.value)} placeholder="Recipient's name" onKeyDown={e => e.key === 'Enter' && startNewMessage()}
               className={`flex-1 px-3 py-2 rounded-lg border text-sm ${c.input} outline-none`} />
-            <button onClick={startNewMessage} disabled={!messageRecipient.trim()} className={`px-4 py-2 rounded-lg text-sm font-bold ${messageRecipient.trim() ? c.btn : c.btnDis}`}>➕</button>
+            <button onClick={startNewMessage} disabled={!messageRecipient.trim()} className={`px-4 py-2 rounded-lg text-sm font-bold ${messageRecipient.trim() ? c.btnPrimary : `${c.btnSecondary} opacity-50 cursor-not-allowed`}`}>➕</button>
           </div>
         </div>
         {messages.length > 0 && (
-          <div className={`mt-4 p-3 rounded-lg ${c.bgInset}`}>
-            <p className={`text-xs ${c.textMut}`}>Need help expressing something? <a href="/GratitudeDebtClearer" target="_blank" rel="noopener" className={`font-semibold ${c.accent}`}>Gratitude Debt Clearer</a> can help.</p>
+          <div className={`mt-4 p-3 rounded-lg ${c.cardAltInset}`}>
+            <p className={`text-xs ${c.textMuteded}`}>Need help expressing something? <a href="/GratitudeDebtClearer" target="_blank" rel="noopener" className={`font-semibold ${c.textSecondaryondary}`}>Gratitude Debt Clearer</a> can help.</p>
           </div>
         )}
       </div>
@@ -1424,44 +1418,44 @@ async function decrypt(){
       if (!msg) return null;
 
       if (messageStep === 1) return (
-        <div className={`p-5 rounded-2xl border-2 ${c.borderWarm} ${c.bgWarm}`}>
+        <div className={`p-5 rounded-2xl border-2 ${c.borderWarm} ${c.warmBg}`}>
           <p className={`text-sm font-semibold ${c.textWarm} mb-3`}>What's your relationship with {msg.recipientName}?</p>
           <input type="text" value={msg.relationship} onChange={e => updateMessageField(idx, 'relationship', e.target.value)} placeholder='"my daughter", "best friend since college"' className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none mb-3`} />
-          <button onClick={() => setMessageStep(2)} disabled={!msg.relationship.trim()} className={`px-5 py-2.5 rounded-xl text-sm font-bold ${msg.relationship.trim() ? c.btn : c.btnDis}`}>Continue →</button>
+          <button onClick={() => setMessageStep(2)} disabled={!msg.relationship.trim()} className={`px-5 py-2.5 rounded-xl text-sm font-bold ${msg.relationship.trim() ? c.btnPrimary : `${c.btnSecondary} opacity-50 cursor-not-allowed`}`}>Continue →</button>
         </div>
       );
 
       if (messageStep === 2) return (
-        <div className={`p-5 rounded-2xl border-2 ${c.borderWarm} ${c.bgWarm}`}>
+        <div className={`p-5 rounded-2xl border-2 ${c.borderWarm} ${c.warmBg}`}>
           <p className={`text-sm font-semibold ${c.textWarm} mb-3`}>What would you most want {msg.recipientName} to know?</p>
           <textarea value={msg.whatToKnow} onChange={e => updateMessageField(idx, 'whatToKnow', e.target.value)} placeholder="Just say what comes to mind..." rows={4} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none mb-3`} />
-          <button onClick={() => setMessageStep(3)} disabled={!msg.whatToKnow.trim()} className={`px-5 py-2.5 rounded-xl text-sm font-bold ${msg.whatToKnow.trim() ? c.btn : c.btnDis}`}>Continue →</button>
+          <button onClick={() => setMessageStep(3)} disabled={!msg.whatToKnow.trim()} className={`px-5 py-2.5 rounded-xl text-sm font-bold ${msg.whatToKnow.trim() ? c.btnPrimary : `${c.btnSecondary} opacity-50 cursor-not-allowed`}`}>Continue →</button>
         </div>
       );
 
       if (messageStep === 3) return (
-        <div className={`p-5 rounded-2xl border-2 ${c.borderWarm} ${c.bgWarm}`}>
-          <p className={`text-sm font-semibold ${c.textWarm} mb-3`}>Shared memories, advice, inside jokes? <span className={`font-normal ${c.textMut}`}>(optional)</span></p>
+        <div className={`p-5 rounded-2xl border-2 ${c.borderWarm} ${c.warmBg}`}>
+          <p className={`text-sm font-semibold ${c.textWarm} mb-3`}>Shared memories, advice, inside jokes? <span className={`font-normal ${c.textMuteded}`}>(optional)</span></p>
           <textarea value={msg.memories} onChange={e => updateMessageField(idx, 'memories', e.target.value)} placeholder="e.g. that road trip, how they make everyone laugh..." rows={3} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none mb-4`} />
-          <p className={`text-xs font-bold ${c.textSec} uppercase tracking-wide mb-2`}>Tone</p>
+          <p className={`text-xs font-bold ${c.textSecondaryondaryondary} uppercase tracking-wide mb-2`}>Tone</p>
           <div className="flex flex-wrap gap-2 mb-4">
             {['warm', 'funny', 'heartfelt', 'direct', 'pep talk'].map(t => (
-              <button key={t} onClick={() => updateMessageField(idx, 'tone', t)} className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all capitalize ${msg.tone === t ? (c.d ? 'border-amber-500 bg-amber-900/30 text-amber-300' : 'border-amber-400 bg-amber-50 text-amber-700') : `${c.border} ${c.textMut}`}`}>{t}</button>
+              <button key={t} onClick={() => updateMessageField(idx, 'tone', t)} className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all capitalize ${msg.tone === t ? (isDark ? 'border-amber-500 bg-amber-900/30 text-amber-300' : 'border-amber-400 bg-amber-50 text-amber-700') : `${c.border} ${c.textMuteded}`}`}>{t}</button>
             ))}
           </div>
           {allPeopleNames.length > 1 && (
             <div className="mb-4">
-              <p className={`text-xs font-bold ${c.textSec} uppercase tracking-wide mb-2`}>Visible To</p>
+              <p className={`text-xs font-bold ${c.textSecondaryondaryondary} uppercase tracking-wide mb-2`}>Visible To</p>
               <select value={msg.visibleTo || 'all'} onChange={e => updateMessageField(idx, 'visibleTo', e.target.value)} className={`px-3 py-1.5 rounded-lg border text-xs ${c.input} outline-none`}>
                 {getVisibilityOptions().map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
               </select>
             </div>
           )}
           <div className="flex gap-2">
-            <button onClick={() => generateMessageDraft(idx)} disabled={loading} className={`px-5 py-2.5 rounded-xl text-sm font-bold ${!loading ? c.btn : c.btnDis}`}>
-              {loading ? <span><span className="animate-spin inline-block">⏳</span> Drafting...</span> : '✨ Draft My Message'}
+            <button onClick={() => generateMessageDraft(idx)} disabled={loading} className={`px-5 py-2.5 rounded-xl text-sm font-bold ${!loading ? c.btnPrimary : `${c.btnSecondary} opacity-50 cursor-not-allowed`}`}>
+              {loading ? <span><span className="animate-spin inline-block">{tool?.icon ?? '📋'}</span> Drafting...</span> : '✨ Draft My Message'}
             </button>
-            <button onClick={() => { updateMessageField(idx, 'draft', ''); updateMessageField(idx, 'hasDraft', true); setMessageStep(4); setEditingDraft(true); }} className={`px-4 py-2.5 rounded-xl text-sm font-semibold ${c.btnGhost}`}>I'll write it myself</button>
+            <button onClick={() => { updateMessageField(idx, 'draft', ''); updateMessageField(idx, 'hasDraft', true); setMessageStep(4); setEditingDraft(true); }} className={`px-4 py-2.5 rounded-xl text-sm font-semibold ${c.btnSecondary}`}>I'll write it myself</button>
           </div>
         </div>
       );
@@ -1470,8 +1464,8 @@ async function decrypt(){
         <div>
           <div className={`p-6 rounded-2xl border-2 ${c.letterBg} mb-4`}>
             <div className="flex items-center justify-between mb-4">
-              <div><h4 className={`text-lg font-bold ${c.text}`} style={{ fontFamily: "'Georgia',serif" }}>To: {msg.recipientName}</h4><p className={`text-xs ${c.textMut}`}>{msg.relationship}</p></div>
-              <button onClick={() => setEditingDraft(!editingDraft)} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold ${c.btnSec}`}>✏️ {editingDraft ? 'Preview' : 'Edit'}</button>
+              <div><h4 className={`text-lg font-bold ${c.text}`} style={{ fontFamily: "'Georgia',serif" }}>To: {msg.recipientName}</h4><p className={`text-xs ${c.textMuteded}`}>{msg.relationship}</p></div>
+              <button onClick={() => setEditingDraft(!editingDraft)} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold ${c.btnSecondary}`}>✏️ {editingDraft ? 'Preview' : 'Edit'}</button>
             </div>
             {editingDraft ? (
               <textarea value={msg.draft} onChange={e => updateMessageField(idx, 'draft', e.target.value)} rows={8} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none`} style={{ fontFamily: "'Georgia',serif", lineHeight: '1.8' }} />
@@ -1481,7 +1475,7 @@ async function decrypt(){
             {/* Translated version */}
             {msg.translatedDraft && !editingDraft && (
               <div className="mt-4 pt-4" style={{ borderTop: '1px dashed #e7e5e4' }}>
-                <p className={`text-xs ${c.textMut} mb-2`}>🌍 {msg.translatedLang}</p>
+                <p className={`text-xs ${c.textMuteded} mb-2`}>🌍 {msg.translatedLang}</p>
                 <div className={`text-sm leading-relaxed ${c.letterText} whitespace-pre-wrap`} style={{ fontFamily: "'Georgia',serif", lineHeight: '1.8' }}>{msg.translatedDraft}</div>
               </div>
             )}
@@ -1489,17 +1483,18 @@ async function decrypt(){
           {!editingDraft && msg.draft && (
             <div className="flex flex-wrap gap-2 mb-4">
               <CopyBtn content={buildMessageText(msg)} label="Copy Message" />
-              <PrintBtn content={buildMessageHTML(msg)} title={`Letter to ${msg.recipientName}`} label="Print Message" />
-              <button onClick={() => adjustMessage(idx, 'Make it shorter')} disabled={loading} className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${c.btnSec}`}>Shorter</button>
-              <button onClick={() => adjustMessage(idx, 'Make it longer with more warmth')} disabled={loading} className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${c.btnSec}`}>Longer</button>
-              <button onClick={() => adjustMessage(idx, 'Less formal, more casual')} disabled={loading} className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${c.btnSec}`}>Less formal</button>
-              <button onClick={() => adjustMessage(idx, 'More heartfelt')} disabled={loading} className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${c.btnSec}`}>More heartfelt</button>
-              <button onClick={() => generateMessageDraft(idx)} disabled={loading} className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${c.btnSec}`}>🔄 New approach</button>
+            <ActionBar copyContent={buildMessageText(msg)} copyLabel="Copy" />
+              <ActionBar printContent={buildMessageHTML(msg)} printTitle={`Letter to ${msg.recipientName}`} label="Print Message" />
+              <button onClick={() => adjustMessage(idx, 'Make it shorter')} disabled={loading} className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${c.btnSecondary}`}>Shorter</button>
+              <button onClick={() => adjustMessage(idx, 'Make it longer with more warmth')} disabled={loading} className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${c.btnSecondary}`}>Longer</button>
+              <button onClick={() => adjustMessage(idx, 'Less formal, more casual')} disabled={loading} className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${c.btnSecondary}`}>Less formal</button>
+              <button onClick={() => adjustMessage(idx, 'More heartfelt')} disabled={loading} className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${c.btnSecondary}`}>More heartfelt</button>
+              <button onClick={() => generateMessageDraft(idx)} disabled={loading} className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${c.btnSecondary}`}>🔄 New approach</button>
             </div>
           )}
           {/* v3: TRANSLATE */}
           {!editingDraft && msg.draft && (
-            <div className={`flex items-center gap-2 mb-4 p-3 rounded-xl ${c.bgInset}`}>
+            <div className={`flex items-center gap-2 mb-4 p-3 rounded-xl ${c.cardAltInset}`}>
               <span className="text-xs">🌍</span>
               <select onChange={e => { if (e.target.value) translateMessage(idx, e.target.value); e.target.value = ''; }}
                 defaultValue="" disabled={translatingIdx === idx}
@@ -1507,11 +1502,11 @@ async function decrypt(){
                 <option value="">Translate to...</option>
                 {LANGUAGES.filter(l => l.code !== 'en').map(l => <option key={l.code} value={l.code}>{l.name}</option>)}
               </select>
-              {translatingIdx === idx && <span className="animate-spin inline-block text-xs">⏳</span>}
+              {translatingIdx === idx && <span className="animate-spin inline-block">{tool?.icon ?? '📋'}</span>}
             </div>
           )}
           {loading && renderLoading('Adjusting...')}
-          <button onClick={() => removeMessage(idx)} className="flex items-center gap-1.5 text-xs font-semibold text-red-500 hover:text-red-400 mt-2">🗑️ Delete</button>
+          <button onClick={() => removeMessage(idx)} className="flex items-center gap-1.5 text-xs font-semibold text-red-500 ${c.deleteHover} mt-2">🗑️ Delete</button>
         </div>
       );
       return null;
@@ -1522,7 +1517,7 @@ async function decrypt(){
         <h3 className={`text-lg font-bold ${c.text} mb-1`}>💌 Messages That Matter</h3>
         {activeMessageIndex !== null ? (
           <div>
-            <button onClick={() => { setActiveMessageIndex(null); setMessageStep(0); }} className={`flex items-center gap-2 mb-5 text-sm font-semibold ${c.btnGhost}`}>← Back to messages</button>
+            <button onClick={() => { setActiveMessageIndex(null); setMessageStep(0); }} className={`flex items-center gap-2 mb-5 text-sm font-semibold ${c.btnSecondary}`}>← Back to messages</button>
             {renderMessageInterview()}
             {renderError()}
           </div>
@@ -1539,28 +1534,28 @@ async function decrypt(){
   const renderChapterWishes = () => (
     <div>
       <h3 className={`text-lg font-bold ${c.text} mb-1`}>🏠 Practical Wishes & Instructions</h3>
-      <p className={`text-sm ${c.textSec} mb-5`}>Anything else that would help.</p>
+      <p className={`text-sm ${c.textSecondaryondaryondary} mb-5`}>Anything else that would help.</p>
 
       <div className="mb-6">
         <div className="flex items-center justify-between mb-3"><span className={`text-sm font-bold ${c.text} flex items-center gap-2`}>📞 Emergency Contacts</span>
-          <button onClick={addEmergencyContact} className={`flex items-center gap-1.5 text-xs font-semibold ${c.accent}`}>➕ Add</button></div>
-        {emergencyContacts.length === 0 && <p className={`text-xs ${c.textMut} mb-3`}>Key people to call — family, lawyer, financial advisor.</p>}
+          <button onClick={addEmergencyContact} className={`flex items-center gap-1.5 text-xs font-semibold ${c.textSecondaryondary}`}>➕ Add</button></div>
+        {emergencyContacts.length === 0 && <p className={`text-xs ${c.textMuteded} mb-3`}>Key people to call — family, lawyer, financial advisor.</p>}
         {emergencyContacts.map(ec => (
           <div key={ec.id} className="flex gap-2 mb-2">
             <input type="text" value={ec.name} onChange={e => updateEmergencyContact(ec.id, 'name', e.target.value)} placeholder="Name" className={`flex-1 px-3 py-1.5 rounded-lg border text-sm ${c.input} outline-none`} />
             <input type="text" value={ec.phone} onChange={e => updateEmergencyContact(ec.id, 'phone', e.target.value)} placeholder="Phone" className={`flex-1 px-3 py-1.5 rounded-lg border text-sm ${c.input} outline-none`} />
             <input type="text" value={ec.relationship} onChange={e => updateEmergencyContact(ec.id, 'relationship', e.target.value)} placeholder="Role" className={`w-24 sm:w-32 px-3 py-1.5 rounded-lg border text-sm ${c.input} outline-none`} />
-            <button onClick={() => removeEmergencyContact(ec.id)} className={`px-2 ${c.textMut} hover:text-red-500`}>✕</button>
+            <button onClick={() => removeEmergencyContact(ec.id)} className={`px-2 ${c.textMuteded} ${c.deleteHover}`}>✕</button>
           </div>
         ))}
       </div>
 
       <div className="mb-6">
         <div className="flex items-center justify-between mb-3"><span className={`text-sm font-bold ${c.text}`}>🐾 Pets</span>
-          <button onClick={addPet} className={`flex items-center gap-1.5 text-xs font-semibold ${c.accent}`}>➕ Add pet</button></div>
-        {pets.length === 0 && <p className={`text-xs ${c.textMut} mb-3`}>No pets added.</p>}
+          <button onClick={addPet} className={`flex items-center gap-1.5 text-xs font-semibold ${c.textSecondaryondary}`}>➕ Add pet</button></div>
+        {pets.length === 0 && <p className={`text-xs ${c.textMuteded} mb-3`}>No pets added.</p>}
         {pets.map(pet => (
-          <div key={pet.id} className={`p-4 rounded-xl border ${c.border} ${c.bgCard} mb-3`}>
+          <div key={pet.id} className={`p-4 rounded-xl border ${c.border} ${c.card} mb-3`}>
             <div className="flex items-start gap-3">
               <div className="flex-1 grid grid-cols-2 gap-2">
                 <input type="text" value={pet.name} onChange={e => updatePet(pet.id, 'name', e.target.value)} placeholder="Pet name" className={`px-3 py-1.5 rounded-lg border text-sm ${c.input} outline-none`} />
@@ -1569,7 +1564,7 @@ async function decrypt(){
                 <input type="text" value={pet.careNotes} onChange={e => updatePet(pet.id, 'careNotes', e.target.value)} placeholder="Care notes" className={`col-span-2 px-3 py-1.5 rounded-lg border text-xs ${c.input} outline-none`} />
                 <input type="text" value={pet.vetInfo} onChange={e => updatePet(pet.id, 'vetInfo', e.target.value)} placeholder="Vet info" className={`col-span-2 px-3 py-1.5 rounded-lg border text-xs ${c.input} outline-none`} />
               </div>
-              <button onClick={() => removePet(pet.id)} className={`p-1.5 rounded-lg ${c.bgHover} ${c.textMut} hover:text-red-500`}>✕</button>
+              <button onClick={() => removePet(pet.id)} className={`p-1.5 rounded-lg ${c.cardAltHover} ${c.textMuteded} ${c.deleteHover}`}>✕</button>
             </div>
           </div>
         ))}
@@ -1580,13 +1575,13 @@ async function decrypt(){
       <div className="mb-6"><label className={`text-sm font-bold ${c.text} mb-2 block`}>📱 Devices</label>
         <textarea value={deviceNotes} onChange={e => setDeviceNotes(e.target.value)} placeholder="Phone unlock, laptop password, what to do with hardware..." rows={3} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none`} /></div>
       <div className="mb-6">
-        <button onClick={() => setShowMemorial(!showMemorial)} className={`flex items-center gap-2 text-sm font-semibold ${c.textSec} ${c.bgHover} px-3 py-2 rounded-lg`}>
-          {showMemorial ? '▲' : '▼'} 🎵 Memorial Preferences <span className={`text-xs ${c.textMut}`}>(optional)</span>
+        <button onClick={() => setShowMemorial(!showMemorial)} className={`flex items-center gap-2 text-sm font-semibold ${c.textSecondaryondaryondary} ${c.cardAltHover} px-3 py-2 rounded-lg`}>
+          {showMemorial ? '▲' : '▼'} 🎵 Memorial Preferences <span className={`text-xs ${c.textMuteded}`}>(optional)</span>
         </button>
         {showMemorial && <textarea value={memorialWishes} onChange={e => setMemorialWishes(e.target.value)} placeholder="Songs, readings, vibes? Or 'no strong preferences'" rows={3} className={`w-full mt-3 px-4 py-3 rounded-xl border text-sm ${c.input} outline-none`} />}
       </div>
       <div className="mb-4"><label className={`text-sm font-bold ${c.text} mb-2 block`}>⭐ Special Requests</label>
-        <p className={`text-xs ${c.textMut} mb-2`}>"Donate my books," "delete my browser history without looking," etc.</p>
+        <p className={`text-xs ${c.textMuteded} mb-2`}>"Donate my books," "delete my browser history without looking," etc.</p>
         <textarea value={specialRequests} onChange={e => setSpecialRequests(e.target.value)} placeholder="Whatever matters..." rows={3} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none`} /></div>
       {renderNavButtons()}
     </div>
@@ -1617,46 +1612,46 @@ async function decrypt(){
     return (
       <div>
         <h3 className={`text-lg font-bold ${c.text} mb-1`}>📋 Review & Export</h3>
-        <p className={`text-sm ${c.textSec} mb-5`}>Your document for {tp} is ready.</p>
+        <p className={`text-sm ${c.textSecondaryondaryondary} mb-5`}>Your document for {tp} is ready.</p>
 
         {/* Completeness */}
-        <div className={`p-5 rounded-2xl border ${c.border} ${c.bgCard} mb-5`}>
+        <div className={`p-5 rounded-2xl border ${c.border} ${c.card} mb-5`}>
           <div className="flex items-center gap-3 mb-4">
-            <div className={`w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold ${totalFilled >= 4 ? c.successBg : c.bgInset}`}>{totalFilled}/5</div>
-            <div><p className={`text-sm font-bold ${c.text}`}>{totalFilled >= 4 ? 'Looking thorough!' : totalFilled >= 2 ? 'Good progress' : 'Just getting started'}</p><p className={`text-xs ${c.textMut}`}>Sections completed</p></div>
+            <div className={`w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold ${totalFilled >= 4 ? c.success : c.cardAltInset}`}>{totalFilled}/5</div>
+            <div><p className={`text-sm font-bold ${c.text}`}>{totalFilled >= 4 ? 'Looking thorough!' : totalFilled >= 2 ? 'Good progress' : 'Just getting started'}</p><p className={`text-xs ${c.textMuteded}`}>Sections completed</p></div>
           </div>
           <div className="space-y-2">
             {sections.map((s, i) => (
               <div key={i} className="flex items-center justify-between">
-                <span className={`text-sm ${s.count > 0 ? c.text : c.textMut}`}>{s.count > 0 ? '✅ ' : '  '}{s.label}</span>
-                <div className="flex items-center gap-2"><span className={`text-xs ${c.textMut}`}>{s.count > 0 ? `${s.count} ${s.unit}` : 'skipped'}</span>
-                  <button onClick={() => goToChapter(s.chapter)} className={`text-xs font-semibold ${c.accent}`}>{s.count > 0 ? 'Edit' : 'Add'}</button></div>
+                <span className={`text-sm ${s.count > 0 ? c.text : c.textMuteded}`}>{s.count > 0 ? '✅ ' : '  '}{s.label}</span>
+                <div className="flex items-center gap-2"><span className={`text-xs ${c.textMuteded}`}>{s.count > 0 ? `${s.count} ${s.unit}` : 'skipped'}</span>
+                  <button onClick={() => goToChapter(s.chapter)} className={`text-xs font-semibold ${c.textSecondaryondary}`}>{s.count > 0 ? 'Edit' : 'Add'}</button></div>
               </div>
             ))}
           </div>
         </div>
 
         {/* v3: SMART GAPS */}
-        <div className={`p-4 rounded-xl border ${c.border} ${c.bgCard} mb-5`}>
+        <div className={`p-4 rounded-xl border ${c.border} ${c.card} mb-5`}>
           <div className="flex items-center justify-between mb-2">
-            <div><p className={`text-sm font-semibold ${c.text}`}>🧠 AI Gap Analysis</p><p className={`text-xs ${c.textMut}`}>Find what you might have missed</p></div>
-            <button onClick={runSmartGaps} disabled={gapsLoading} className={`px-4 py-2 rounded-xl text-xs font-bold ${!gapsLoading ? c.btn : c.btnDis}`}>
-              {gapsLoading ? <span><span className="animate-spin inline-block">⏳</span></span> : 'Scan Document'}
+            <div><p className={`text-sm font-semibold ${c.text}`}>🧠 AI Gap Analysis</p><p className={`text-xs ${c.textMuteded}`}>Find what you might have missed</p></div>
+            <button onClick={runSmartGaps} disabled={gapsLoading} className={`px-4 py-2 rounded-xl text-xs font-bold ${!gapsLoading ? c.btnPrimary : `${c.btnSecondary} opacity-50 cursor-not-allowed`}`}>
+              {gapsLoading ? <span><span className="animate-spin inline-block">{tool?.icon ?? '📋'}</span></span> : 'Scan Document'}
             </button>
           </div>
           {smartGaps && (
             <div className="mt-3 space-y-2">
               <div className="flex items-center gap-2 mb-2">
                 <span className={`text-sm font-bold ${c.text}`}>Score: {smartGaps.overallScore}/10</span>
-                <span className={`text-xs ${c.textMut}`}>{smartGaps.summary}</span>
+                <span className={`text-xs ${c.textMuteded}`}>{smartGaps.summary}</span>
               </div>
               {smartGaps.gaps?.map((gap, i) => (
-                <div key={i} className={`p-3 rounded-lg border ${gap.severity === 'critical' ? c.errBg : gap.severity === 'important' ? c.diffChg : c.bgInset}`}>
+                <div key={i} className={`p-3 rounded-lg border ${gap.severity === 'critical' ? c.danger : gap.severity === 'important' ? c.diffChg : c.cardAltInset}`}>
                   <div className="flex items-start gap-2">
                     <span className="text-sm flex-shrink-0">{gap.severity === 'critical' ? '🔴' : gap.severity === 'important' ? '🟡' : '🟢'}</span>
-                    <div><p className={`text-sm ${c.text}`}>{gap.finding}</p><p className={`text-xs ${c.textMut} mt-1`}>💡 {gap.suggestion}</p>
+                    <div><p className={`text-sm ${c.text}`}>{gap.finding}</p><p className={`text-xs ${c.textMuteded} mt-1`}>💡 {gap.suggestion}</p>
                       <button onClick={() => goToChapter(CHAPTERS.findIndex(ch => ch.id === gap.section) >= 0 ? CHAPTERS.findIndex(ch => ch.id === gap.section) : 0)}
-                        className={`text-xs font-semibold ${c.accent} mt-1`}>Fix this →</button></div>
+                        className={`text-xs font-semibold ${c.textSecondaryondary} mt-1`}>Fix this →</button></div>
                   </div>
                 </div>
               ))}
@@ -1666,8 +1661,8 @@ async function decrypt(){
 
         {/* Filter for multiple people */}
         {allPeopleNames.length > 1 && (
-          <div className={`p-4 rounded-xl border ${c.border} ${c.bgCard} mb-4`}>
-            <p className={`text-xs font-bold ${c.textSec} uppercase tracking-wide mb-2`}>Export for specific person</p>
+          <div className={`p-4 rounded-xl border ${c.border} ${c.card} mb-4`}>
+            <p className={`text-xs font-bold ${c.textSecondaryondaryondary} uppercase tracking-wide mb-2`}>Export for specific person</p>
             <select value={exportFilter} onChange={e => setExportFilter(e.target.value)} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input} outline-none`}>
               {getVisibilityOptions().map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
             </select>
@@ -1675,24 +1670,24 @@ async function decrypt(){
         )}
 
         {/* v3: ENCRYPTION */}
-        <div className={`p-4 rounded-xl border ${encryptionEnabled ? c.lockBg : c.border} ${c.bgCard} mb-4`}>
+        <div className={`p-4 rounded-xl border ${encryptionEnabled ? c.lockBg : c.border} ${c.card} mb-4`}>
           <div className="flex items-center gap-3 mb-2">
             <button onClick={() => setEncryptionEnabled(!encryptionEnabled)}
-              className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all flex-shrink-0 ${encryptionEnabled ? 'bg-indigo-500 border-indigo-500 text-white' : c.border}`}>
+              className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all flex-shrink-0 ${encryptionEnabled ? 'bg-cyan-500 border-cyan-500 text-white' : c.border}`}>
               {encryptionEnabled && <span className="text-xs">✓</span>}
             </button>
-            <div><p className={`text-sm font-semibold ${c.text}`}>🔐 Passphrase Protection</p><p className={`text-xs ${c.textMut}`}>AES-256 encryption — recipient enters passphrase to view</p></div>
+            <div><p className={`text-sm font-semibold ${c.text}`}>🔐 Passphrase Protection</p><p className={`text-xs ${c.textMuteded}`}>AES-256 encryption — recipient enters passphrase to view</p></div>
           </div>
           {encryptionEnabled && (
             <div className="mt-3 space-y-2">
               <div className="relative">
                 <input type={showPassphrase ? 'text' : 'password'} value={passphrase} onChange={e => setPassphrase(e.target.value)} placeholder="Choose a passphrase (4+ characters)"
                   className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none pr-12`} />
-                <button onClick={() => setShowPassphrase(!showPassphrase)} className={`absolute right-3 top-1/2 -translate-y-1/2 text-xs ${c.textMut}`}>{showPassphrase ? '🙈' : '👁️'}</button>
+                <button onClick={() => setShowPassphrase(!showPassphrase)} className={`absolute right-3 top-1/2 -translate-y-1/2 text-xs ${c.textMuteded}`}>{showPassphrase ? '🙈' : '👁️'}</button>
               </div>
               <input type="text" value={passphraseHint} onChange={e => setPassphraseHint(e.target.value)} placeholder="Hint for the recipient (optional)"
                 className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
-              <p className={`text-xs ${c.textMut}`}>Share the passphrase separately — by phone, in person, or in a sealed envelope.</p>
+              <p className={`text-xs ${c.textMuteded}`}>Share the passphrase separately — by phone, in person, or in a sealed envelope.</p>
             </div>
           )}
         </div>
@@ -1701,29 +1696,29 @@ async function decrypt(){
         <div className="space-y-3 mb-4">
           {encryptionEnabled ? (
             <button onClick={() => downloadEncryptedDocument(exportFilter)} disabled={!passphrase || passphrase.length < 4}
-              className={`w-full flex items-center justify-center gap-3 px-6 py-4 rounded-2xl text-sm font-bold ${passphrase && passphrase.length >= 4 ? c.btn : c.btnDis} shadow-lg`}>
+              className={`w-full flex items-center justify-center gap-3 px-6 py-4 rounded-2xl text-sm font-bold ${passphrase && passphrase.length >= 4 ? c.btnPrimary : `${c.btnSecondary} opacity-50 cursor-not-allowed`} shadow-lg`}>
               🔐 Download Encrypted Document
             </button>
           ) : (
             <button onClick={() => downloadDocument(exportFilter)}
-              className={`w-full flex items-center justify-center gap-3 px-6 py-4 rounded-2xl text-sm font-bold ${c.btn} shadow-lg`}>
+              className={`w-full flex items-center justify-center gap-3 px-6 py-4 rounded-2xl text-sm font-bold ${c.btnPrimary} shadow-lg`}>
               📥 Download as HTML
             </button>
           )}
           <div className="flex gap-3">
-            <button onClick={() => printDocument(exportFilter)} className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-2xl text-sm font-semibold ${c.btnSec}`}>🖨️ Print</button>
+            <button onClick={() => printDocument(exportFilter)} className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-2xl text-sm font-semibold ${c.btnSecondary}`}>🖨️ Print</button>
             <CopyBtn content={buildFullDocText()} label="📋 Copy All" />
           </div>
         </div>
 
         {/* v3: DELIVERY INSTRUCTIONS */}
-        <div className={`p-4 rounded-xl border ${c.border} ${c.bgCard} mb-4`}>
+        <div className={`p-4 rounded-xl border ${c.border} ${c.card} mb-4`}>
           <p className={`text-sm font-semibold ${c.text} mb-1`}>📧 Where Will This Live?</p>
-          <p className={`text-xs ${c.textMut} mb-3`}>Where should {tp} look for this document?</p>
+          <p className={`text-xs ${c.textMuteded} mb-3`}>Where should {tp} look for this document?</p>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-3">
             {DELIVERY_LOCATIONS.map(loc => (
               <button key={loc.id} onClick={() => setDeliveryLocation(loc.id)}
-                className={`p-2.5 rounded-lg border text-xs font-medium text-left transition-all ${deliveryLocation === loc.id ? (c.d ? 'border-amber-500 bg-amber-900/30 text-amber-300' : 'border-amber-400 bg-amber-50 text-amber-700') : `${c.border} ${c.textMut}`}`}>
+                className={`p-2.5 rounded-lg border text-xs font-medium text-left transition-all ${deliveryLocation === loc.id ? (isDark ? 'border-amber-500 bg-amber-900/30 text-amber-300' : 'border-amber-400 bg-amber-50 text-amber-700') : `${c.border} ${c.textMuteded}`}`}>
                 {loc.icon} {loc.label}
               </button>
             ))}
@@ -1732,43 +1727,43 @@ async function decrypt(){
         </div>
 
         {/* v3: QR ACCESS CARD */}
-        <div className={`p-4 rounded-xl border ${c.border} ${c.bgCard} mb-4`}>
+        <div className={`p-4 rounded-xl border ${c.border} ${c.card} mb-4`}>
           <div className="flex items-center justify-between">
-            <div><p className={`text-sm font-semibold ${c.text}`}>📱 Print Access Card</p><p className={`text-xs ${c.textMut}`}>Wallet-sized card with location, contacts, and passphrase hint</p></div>
-            <button onClick={generateQRCard} className={`px-4 py-2 rounded-xl text-xs font-bold ${c.btnSec}`}>🖨️ Print Card</button>
+            <div><p className={`text-sm font-semibold ${c.text}`}>📱 Print Access Card</p><p className={`text-xs ${c.textMuteded}`}>Wallet-sized card with location, contacts, and passphrase hint</p></div>
+            <button onClick={generateQRCard} className={`px-4 py-2 rounded-xl text-xs font-bold ${c.btnSecondary}`}>🖨️ Print Card</button>
           </div>
         </div>
 
         {/* JSON backup */}
-        <div className={`p-4 rounded-xl border ${c.border} ${c.bgCard} mb-6`}>
+        <div className={`p-4 rounded-xl border ${c.border} ${c.card} mb-6`}>
           <p className={`text-sm font-semibold ${c.text} mb-1`}>📅 Save for Annual Review</p>
-          <p className={`text-xs ${c.textMut} mb-3`}>Export a backup. Next year, import it to see what's changed.</p>
+          <p className={`text-xs ${c.textMuteded} mb-3`}>Export a backup. Next year, import it to see what's changed.</p>
           <div className="flex gap-2">
-            <button onClick={exportJSON} className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold ${c.btnSec}`}>📥 Export Backup</button>
-            <label className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold ${c.btnSec} cursor-pointer`}>📤 Import Previous
+            <button onClick={exportJSON} className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold ${c.btnSecondary}`}>📥 Export Backup</button>
+            <label className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold ${c.btnSecondary} cursor-pointer`}>📤 Import Previous
               <input type="file" accept=".json" onChange={importJSON} className="hidden" /></label>
           </div>
         </div>
 
-        <div className={`mt-4 p-5 rounded-2xl border-2 ${c.borderWarm} ${c.bgWarm}`}>
+        <div className={`mt-4 p-5 rounded-2xl border-2 ${c.borderWarm} ${c.warmBg}`}>
           <p className={`text-sm ${c.textWarm} leading-relaxed`}>
             You just did something most people never get around to. {tp} will be grateful. Review this every year or after major life changes.
           </p>
         </div>
 
-        <div className={`mt-4 p-4 rounded-xl ${c.bgInset}`}>
-          <p className={`text-xs ${c.textMut} mb-2`}>Finished? You might also want:</p>
+        <div className={`mt-4 p-4 rounded-xl ${c.cardAltInset}`}>
+          <p className={`text-xs ${c.textMuteded} mb-2`}>Finished? You might also want:</p>
           <div className="flex flex-wrap gap-2">
-            <a href="/GratitudeDebtClearer" target="_blank" rel="noopener" className={`text-xs font-semibold ${c.accent}`}>❤️ Clear gratitude debts</a>
-            <span className={`text-xs ${c.textMut}`}>·</span>
-            <a href="/DifficultTalkCoach" target="_blank" rel="noopener" className={`text-xs font-semibold ${c.accent}`}>💬 Prepare a difficult conversation</a>
-            <span className={`text-xs ${c.textMut}`}>·</span>
-            <a href="/BrainDumpStructurer" target="_blank" rel="noopener" className={`text-xs font-semibold ${c.accent}`}>🧠 Organize your thoughts</a>
+            <a href="/GratitudeDebtClearer" target="_blank" rel="noopener" className={`text-xs font-semibold ${c.textSecondaryondary}`}>❤️ Clear gratitude debts</a>
+            <span className={`text-xs ${c.textMuteded}`}>·</span>
+            <a href="/DifficultTalkCoach" target="_blank" rel="noopener" className={`text-xs font-semibold ${c.textSecondaryondary}`}>💬 Prepare a difficult conversation</a>
+            <span className={`text-xs ${c.textMuteded}`}>·</span>
+            <a href="/BrainDumpStructurer" target="_blank" rel="noopener" className={`text-xs font-semibold ${c.textSecondaryondary}`}>🧠 Organize your thoughts</a>
           </div>
         </div>
 
-        <div className="flex items-center justify-between mt-8 pt-6 border-t" style={{ borderColor: c.d ? '#3f3f46' : '#e7e5e4' }}>
-          <button onClick={prevChapter} className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold ${c.btnSec}`}>← Previous</button>
+        <div className="flex items-center justify-between mt-8 pt-6 border-t" style={{ borderColor: isDark ? '#3f3f46' : '#e7e5e4' }}>
+          <button onClick={prevChapter} className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold ${c.btnSecondary}`}>← Previous</button>
           <div />
         </div>
       </div>
@@ -1786,11 +1781,11 @@ async function decrypt(){
         {renderToasts()}
         <div className="flex items-center justify-between mb-6">
           <h2 className={`text-xl font-bold ${c.text}`}>📅 Annual Review — What's Changed</h2>
-          <button onClick={() => { setImportedData(null); setScreen('welcome'); }} className={`text-sm font-semibold ${c.btnGhost}`}>✕ Close</button>
+          <button onClick={() => { setImportedData(null); setScreen('welcome'); }} className={`text-sm font-semibold ${c.btnSecondary}`}>✕ Close</button>
         </div>
-        {diff.prevDate && <p className={`text-sm ${c.textSec} mb-5`}>Comparing to backup from <strong>{new Date(diff.prevDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</strong></p>}
+        {diff.prevDate && <p className={`text-sm ${c.textSecondaryondaryondary} mb-5`}>Comparing to backup from <strong>{new Date(diff.prevDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</strong></p>}
         {!diff.hasChanges ? (
-          <div className={`p-5 rounded-2xl ${c.successBg} border mb-6`}><p className="text-sm font-semibold">✅ No changes detected — document is up to date.</p></div>
+          <div className={`p-5 rounded-2xl ${c.success} border mb-6`}><p className="text-sm font-semibold">✅ No changes detected — document is up to date.</p></div>
         ) : (
           <div className="space-y-4 mb-6">
             {diff.changes.map((ch, i) => (
@@ -1802,14 +1797,14 @@ async function decrypt(){
             {diff.textChanges.length > 0 && (
               <div className={`p-4 rounded-xl border ${c.diffChg}`}>
                 <p className="text-sm font-bold mb-2">✏️ Text Fields Updated</p>
-                {diff.textChanges.map((ch, i) => <p key={i} className={`text-sm ${c.textSec}`}>• {ch}</p>)}
+                {diff.textChanges.map((ch, i) => <p key={i} className={`text-sm ${c.textSecondaryondaryondary}`}>• {ch}</p>)}
               </div>
             )}
           </div>
         )}
         <div className="space-y-3">
-          <button onClick={() => { setImportedData(null); setScreen('chapter'); setCurrentChapter(0); }} className={`w-full px-6 py-3 rounded-2xl text-sm font-bold ${c.btn}`}>Continue Editing Current</button>
-          <button onClick={importAndReplace} className={`w-full px-6 py-3 rounded-2xl text-sm font-semibold ${c.btnSec}`}>Restore Previous Version</button>
+          <button onClick={() => { setImportedData(null); setScreen('chapter'); setCurrentChapter(0); }} className={`w-full px-6 py-3 rounded-2xl text-sm font-bold ${c.btnPrimary}`}>Continue Editing Current</button>
+          <button onClick={importAndReplace} className={`w-full px-6 py-3 rounded-2xl text-sm font-semibold ${c.btnSecondary}`}>Restore Previous Version</button>
         </div>
       </div>
     );
@@ -1843,6 +1838,14 @@ async function decrypt(){
       {renderToasts()}
       {renderProgressBar()}
       {renderCurrentChapter()}
+        <div className={`mt-6 pt-4 border-t text-sm ${c.border} ${c.textMuted}`}>
+          <p className="mb-2 font-medium">You might also like:</p>
+          <div className="flex flex-wrap gap-2">
+            {[{slug:'procedure-probe',label:'🏥 Procedure Probe'},{slug:'complaint-escalation-writer',label:'📝 Complaint Writer'},{slug:'difficult-talk-coach',label:'💬 Difficult Talk'}].map(({slug,label})=>(
+              <a key={slug} href={`/tool/${slug}`} className={linkStyle}>{label}</a>
+            ))}
+          </div>
+        </div>
     </div>
   );
 };

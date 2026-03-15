@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTheme } from '../hooks/useTheme';
+import { usePersistentState } from '../hooks/usePersistentState';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { CopyBtn, ActionBar } from '../components/ActionButtons';
 
@@ -18,37 +19,54 @@ const EXAMPLES = [
   },
 ];
 
-const OnePercenter = () => {
-  const { theme } = useTheme();
-  const isDark = theme === 'dark';
+const OnePercenter = ({ tool }) => {
+  const { isDark } = useTheme();
+
+  useEffect(() => {
+    const handler = (e) => {
+      const tag = document.activeElement?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !loading) handleSubmit();
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [loading]);
   const { callToolEndpoint, loading } = useClaudeAPI();
 
+
+  const linkStyle = isDark
+    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
+    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
+
   const c = {
-    pageBg:       isDark ? 'bg-[#1a1816]'    : 'bg-[#faf8f5]',
-    card:         isDark ? 'bg-[#2a2623]'     : 'bg-white',
-    cardAlt:      isDark ? 'bg-[#332e2a]'     : 'bg-[#faf8f5]',
-    cardBorder:   isDark ? 'border-[#3d3630]' : 'border-[#e8e1d5]',
-    input:        isDark ? 'bg-[#1a1816] border-[#3d3630] text-[#f0eeea] placeholder:text-[#8a8275]'
-                         : 'bg-[#faf8f5] border-[#d5cab8] text-[#3d3935] placeholder:text-[#8a8275]',
-    inputFocus:   'focus:outline-none focus:ring-2 focus:ring-[#2c4a6e]/20 focus:border-[#4a6a8a]',
-    text:          isDark ? 'text-[#f0eeea]'  : 'text-[#3d3935]',
-    textSecondary: isDark ? 'text-[#c8c3b9]'  : 'text-[#5a544a]',
-    textMuted:     isDark ? 'text-[#8a8275]'  : 'text-[#8a8275]',
-    heading:       isDark ? 'text-[#f3efe8]'  : 'text-[#1e2a3a]',
-    btnPrimary:    isDark ? 'bg-[#2c4a6e] hover:bg-[#4a6a8a] text-white' : 'bg-[#2c4a6e] hover:bg-[#1e3a58] text-white',
-    btnSecondary:  isDark ? 'bg-[#332e2a] hover:bg-[#3d3630] text-[#c8c3b9] border border-[#3d3630]' : 'bg-[#f3efe8] hover:bg-[#e8e1d5] text-[#5e5042] border border-[#d5cab8]',
-    divider:       isDark ? 'border-[#3d3630]' : 'border-[#e8e1d5]',
-    error:         isDark ? 'bg-[#b54a3f]/15 border-[#b54a3f]/50 text-[#e8a9a3]' : 'bg-[#fceae8] border-[#d4908a] text-[#8a3028]',
-    navyBg:        isDark ? 'bg-[#2c4a6e]/15 border-[#2c4a6e]/50' : 'bg-[#e8eef5] border-[#b0c4d8]',
-    navyText:      isDark ? 'text-[#a8b9ce]' : 'text-[#1e3a58]',
-    greenBg:       isDark ? 'bg-[#5a8a5c]/15 border-[#5a8a5c]/40' : 'bg-[#e8f0e8] border-[#a8c4a8]',
-    greenText:     isDark ? 'text-[#8aba8c]' : 'text-[#3d6e3f]',
+    card:          isDark ? 'bg-zinc-800' : 'bg-white',
+    cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    text:          isDark ? 'text-zinc-50' : 'text-gray-900',
+    textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
+    textMuted:     isDark ? 'text-zinc-500' : 'text-gray-400',
+    labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
+    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
+    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
+    border:        isDark ? 'border-zinc-700' : 'border-gray-200',
+    success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
+    warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
+    danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
+    infoBox:       isDark ? 'bg-sky-900/20 border-sky-700 text-sky-200' : 'bg-sky-50 border-sky-200 text-sky-800',
+    successBox:    isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-300',
+    successTxt:    isDark ? 'text-emerald-300' : 'text-emerald-800',
+    warningBox:    isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
+    warningTxt:    isDark ? 'text-amber-300' : 'text-amber-800',
+    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
   };
 
   const [routine, setRoutine] = useState('');
   const [goals, setGoals] = useState('');
   const [painPoints, setPainPoints] = useState('');
-  const [results, setResults] = useState(null);
+  const [results, setResults] = usePersistentState('onepercenter-result', null);
+  const [history, setHistory] = usePersistentState('onepercenter-history', []);
   const [error, setError] = useState('');
 
   const handleSubmit = async () => {
@@ -60,7 +78,8 @@ const OnePercenter = () => {
         goals: goals.trim() || undefined,
         painPoints: painPoints.trim() || undefined,
       });
-      setResults(data);
+      setResults(data)
+      setHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: (routine || '').slice(0, 40) }, ...prev].slice(0, 6));
     } catch (e) { setError(e.message || 'Failed to find your 1% change.'); }
   };
 
@@ -87,19 +106,19 @@ const OnePercenter = () => {
   };
 
   return (
-    <div className={`min-h-screen py-8 px-4 ${c.pageBg}`}>
+    <div className={`min-h-screen py-8 px-4 ${c.cardAlt}`}>
       <div className="max-w-2xl mx-auto">
 
         {/* Header */}
         <div className="text-center mb-8">
           <div className="text-5xl mb-3">⚡</div>
-          <h1 className={`text-3xl font-black tracking-tight mb-2 ${c.heading}`}>One Percenter</h1>
-          <p className={`text-sm ${c.textMuted}`}>The single 1% change with the largest compound effect on your year.</p>
+          <h1 className={`text-3xl font-black tracking-tight mb-2 ${c.text}`}>One Percenter</h1>
+          <p className={`text-sm ${c.textMuteded}`}>The single 1% change with the largest compound effect on your year.</p>
         </div>
 
         {/* Input */}
         {!results && (
-          <div className={`rounded-2xl border p-6 shadow-sm space-y-4 ${c.card} ${c.cardBorder}`}>
+          <div className={`rounded-2xl border p-6 shadow-sm space-y-4 ${c.card} ${c.border}`}>
             <div>
               <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>
                 Your daily routine, hour by hour <span className="text-red-400">*</span>
@@ -107,32 +126,32 @@ const OnePercenter = () => {
               <textarea value={routine} onChange={e => setRoutine(e.target.value)}
                 placeholder="Walk through a typical weekday — when you wake up, what you do first, how your work goes, what evenings look like, when you sleep. Include the bad habits. That's where the leverage is."
                 rows={5} maxLength={800}
-                className={`w-full px-4 py-3 rounded-xl border text-sm resize-none ${c.input} ${c.inputFocus}`} />
+                className={`w-full px-4 py-3 rounded-xl border text-sm resize-none ${c.input} `} />
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>What you're trying to improve <span className={`font-normal ${c.textMuted}`}>(optional)</span></label>
+                <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>What you're trying to improve <span className={`font-normal ${c.textMuteded}`}>(optional)</span></label>
                 <input type="text" value={goals} onChange={e => setGoals(e.target.value)}
                   placeholder="Focus, energy, sleep, output, fitness…"
-                  className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} ${c.inputFocus}`} />
+                  className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} `} />
               </div>
               <div>
-                <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>What you notice isn't working <span className={`font-normal ${c.textMuted}`}>(optional)</span></label>
+                <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>What you notice isn't working <span className={`font-normal ${c.textMuteded}`}>(optional)</span></label>
                 <input type="text" value={painPoints} onChange={e => setPainPoints(e.target.value)}
                   placeholder="The 2pm crash, can't focus mornings…"
-                  className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} ${c.inputFocus}`} />
+                  className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} `} />
               </div>
             </div>
 
-            {error && <div className={`p-3 rounded-xl border text-sm ${c.error}`}><span className="mr-1">⚠️</span>{error}</div>}
+            {error && <div className={`p-3 rounded-xl border text-sm ${c.danger}`}><span className="mr-1">⚠️</span>{error}</div>}
 
             <div className="flex gap-2">
               <button onClick={handleSubmit} disabled={loading || !routine.trim()}
                 className={`flex-1 py-3 rounded-xl font-bold disabled:opacity-40 ${c.btnPrimary}`}>
-                {loading ? <><span className="animate-spin inline-block mr-2">⏳</span>Analyzing your system…</> : '⚡ Find My 1% Change'}
+                {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span>Analyzing your system…</> : '⚡ Find My 1% Change'}
               </button>
               <button onClick={handleExample} disabled={loading}
-                className={`px-4 py-3 rounded-xl text-sm font-medium ${c.btnSecondary}`}>
+                className={`px-4 py-3 rounded-xl text-sm font-medium ${c.btnSecondaryondary}`}>
                 Example
               </button>
             </div>
@@ -144,25 +163,25 @@ const OnePercenter = () => {
           <div className="space-y-4">
 
             {/* System diagnosis */}
-            <div className={`rounded-2xl border p-5 ${c.card} ${c.cardBorder}`}>
-              <p className={`text-xs font-black uppercase tracking-widest mb-3 ${c.textMuted}`}>🔬 How Your System Works</p>
+            <div className={`rounded-2xl border p-5 ${c.card} ${c.border}`}>
+              <p className={`text-xs font-black uppercase tracking-widest mb-3 ${c.textMuteded}`}>🔬 How Your System Works</p>
               {results.routine_diagnosis?.how_the_system_works && (
-                <p className={`text-sm leading-relaxed mb-3 ${c.textSecondary}`}>{results.routine_diagnosis.how_the_system_works}</p>
+                <p className={`text-sm leading-relaxed mb-3 ${c.textSecondaryondary}`}>{results.routine_diagnosis.how_the_system_works}</p>
               )}
               {results.routine_diagnosis?.the_bottleneck && (
-                <div className={`p-3 rounded-xl border ${isDark ? 'bg-[#b54a3f]/10 border-[#b54a3f]/30' : 'bg-[#fceae8] border-[#d4908a]'}`}>
-                  <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${isDark ? 'text-[#e8a9a3]' : 'text-[#8a3028]'}`}>🔴 The Bottleneck</p>
-                  <p className={`text-sm ${c.textSecondary}`}>{results.routine_diagnosis.the_bottleneck}</p>
+                <div className={`p-3 rounded-xl border ${isDark ? 'bg-zinc-500 border-zinc-500' : 'bg-zinc-500 border-zinc-500'}`}>
+                  <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>🔴 The Bottleneck</p>
+                  <p className={`text-sm ${c.textSecondaryondary}`}>{results.routine_diagnosis.the_bottleneck}</p>
                 </div>
               )}
               {results.routine_diagnosis?.what_the_data_shows && (
-                <p className={`text-xs mt-3 italic ${c.textMuted}`}>{results.routine_diagnosis.what_the_data_shows}</p>
+                <p className={`text-xs mt-3 italic ${c.textMuteded}`}>{results.routine_diagnosis.what_the_data_shows}</p>
               )}
             </div>
 
             {/* THE ONE CHANGE — hero card */}
             {results.the_one_change && (
-              <div className={`rounded-2xl border-2 overflow-hidden ${isDark ? 'border-[#2c4a6e] bg-[#2a2623]' : 'border-[#2c4a6e] bg-white'}`}>
+              <div className={`rounded-2xl border-2 overflow-hidden ${isDark ? 'border-cyan-800 bg-zinc-800' : 'border-cyan-800 bg-white'}`}>
                 <div style={{ background: isDark ? 'linear-gradient(135deg, #1e2a3a, #2c4a6e)' : 'linear-gradient(135deg, #2c4a6e, #4a6a8a)' }}
                   className="px-6 py-5">
                   <p className="text-xs font-black uppercase tracking-widest text-white/70 mb-2">⚡ The 1% Change</p>
@@ -175,8 +194,8 @@ const OnePercenter = () => {
                 <div className="px-6 py-5 space-y-4">
                   {results.the_one_change.the_mechanism && (
                     <div>
-                      <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuted}`}>⚙️ The Chain Reaction</p>
-                      <p className={`text-sm leading-relaxed ${c.textSecondary}`}>{results.the_one_change.the_mechanism}</p>
+                      <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuteded}`}>⚙️ The Chain Reaction</p>
+                      <p className={`text-sm leading-relaxed ${c.textSecondaryondary}`}>{results.the_one_change.the_mechanism}</p>
                     </div>
                   )}
 
@@ -189,8 +208,8 @@ const OnePercenter = () => {
 
                   {results.the_one_change.implementation && (
                     <div>
-                      <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuted}`}>✅ How to implement</p>
-                      <p className={`text-sm ${c.textSecondary}`}>{results.the_one_change.implementation}</p>
+                      <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuteded}`}>✅ How to implement</p>
+                      <p className={`text-sm ${c.textSecondaryondary}`}>{results.the_one_change.implementation}</p>
                     </div>
                   )}
                 </div>
@@ -199,15 +218,15 @@ const OnePercenter = () => {
 
             {/* Why not other things */}
             {results.why_not_other_things && (
-              <div className={`rounded-2xl border p-5 ${c.card} ${c.cardBorder}`}>
-                <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textMuted}`}>🤔 "But what about…"</p>
+              <div className={`rounded-2xl border p-5 ${c.card} ${c.border}`}>
+                <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textMuteded}`}>🤔 "But what about…"</p>
                 {results.why_not_other_things.the_tempting_alternatives && (
-                  <p className={`text-sm mb-2 ${c.textSecondary}`}>
+                  <p className={`text-sm mb-2 ${c.textSecondaryondary}`}>
                     <span className={`font-semibold ${c.text}`}>You might be tempted to:</span> {results.why_not_other_things.the_tempting_alternatives}
                   </p>
                 )}
                 {results.why_not_other_things.why_those_are_second_order && (
-                  <p className={`text-sm ${c.textSecondary}`}>
+                  <p className={`text-sm ${c.textSecondaryondary}`}>
                     <span className={`font-semibold ${c.text}`}>Why those come after:</span> {results.why_not_other_things.why_those_are_second_order}
                   </p>
                 )}
@@ -218,15 +237,15 @@ const OnePercenter = () => {
             {results.the_year_from_now && (
               <div className={`rounded-2xl border p-5 ${c.greenBg}`}>
                 <p className={`text-xs font-black uppercase tracking-widest mb-2 ${c.greenText}`}>📅 A Year From Now</p>
-                <p className={`text-sm leading-relaxed ${c.textSecondary}`}>{results.the_year_from_now}</p>
+                <p className={`text-sm leading-relaxed ${c.textSecondaryondary}`}>{results.the_year_from_now}</p>
               </div>
             )}
 
             {/* The resistance */}
             {results.the_resistance && (
-              <div className={`rounded-2xl border p-4 ${isDark ? 'bg-[#c8872e]/10 border-[#c8872e]/30' : 'bg-[#fdf3e4] border-[#e0c49a]'}`}>
-                <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${isDark ? 'text-[#d9a04e]' : 'text-[#93541f]'}`}>🧠 Why You Haven't Done This Already</p>
-                <p className={`text-sm ${c.textSecondary}`}>{results.the_resistance}</p>
+              <div className={`rounded-2xl border p-4 ${isDark ? 'bg-zinc-500 border-zinc-500' : 'bg-zinc-500 border-zinc-500'}`}>
+                <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>🧠 Why You Haven't Done This Already</p>
+                <p className={`text-sm ${c.textSecondaryondary}`}>{results.the_resistance}</p>
               </div>
             )}
 
@@ -234,14 +253,14 @@ const OnePercenter = () => {
             <div className="flex items-center gap-3 flex-wrap">
               <ActionBar content={buildText()} title="One Percenter" />
               <button onClick={() => { setResults(null); setRoutine(''); setGoals(''); setPainPoints(''); }}
-                className={`px-4 py-2 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
+                className={`px-4 py-2 rounded-lg text-sm font-medium ${c.btnSecondaryondary}`}>
                 🔄 Try a Different Routine
               </button>
             </div>
 
             {/* Cross-references */}
-            <div className={`rounded-xl border p-4 ${c.cardAlt} ${c.cardBorder}`}>
-              <p className={`text-xs font-semibold uppercase tracking-wide mb-3 ${c.textMuted}`}>Related tools</p>
+            <div className={`rounded-xl border p-4 ${c.cardAlt} ${c.border}`}>
+              <p className={`text-xs font-semibold uppercase tracking-wide mb-3 ${c.textMuteded}`}>Related tools</p>
               <div className="flex flex-wrap gap-2">
                 {[
                   { id: 'ChaosPilot', icon: '🎰', label: 'One calculated disruption' },
@@ -249,7 +268,7 @@ const OnePercenter = () => {
                   { id: 'FutureProof', icon: '🔮', label: '5-year trajectory check' },
                 ].map(r => (
                   <a key={r.id} href={`/tool/${r.id}`} target="_blank" rel="noopener noreferrer"
-                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${c.btnSecondary}`}>
+                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${c.btnSecondaryondary}`}>
                     {r.icon} {r.label}
                   </a>
                 ))}
@@ -258,6 +277,9 @@ const OnePercenter = () => {
           </div>
         )}
       </div>
+
+      {/* eslint-disable-next-line no-restricted-globals */}
+      {history.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}><p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 Recent</p><div className="space-y-1">{history.map(s => (<div key={s.id} className="flex items-center justify-between"><span className={`text-xs ${c.textSecondary} truncate`}>{s.preview||'Session'}</span><span className={`text-xs ${c.textMuted} ml-2`}>{new Date(s.date).toLocaleDateString()}</span></div>))}</div></div>)}
     </div>
   );
 };

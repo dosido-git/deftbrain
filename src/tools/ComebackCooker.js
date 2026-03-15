@@ -34,46 +34,43 @@ const ComebackCooker = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { isDark } = useTheme();
 
-  const c = {
-    card:          isDark ? 'bg-zinc-800'        : 'bg-white',
-    cardAlt:       isDark ? 'bg-zinc-700/50'     : 'bg-slate-50',
-    text:          isDark ? 'text-zinc-50'       : 'text-slate-900',
-    textSecondary: isDark ? 'text-zinc-300'      : 'text-slate-600',
-    textMuted:     isDark ? 'text-zinc-500'      : 'text-slate-400',
-    input:         isDark
-      ? 'bg-zinc-900 border-zinc-700 text-zinc-50 placeholder:text-zinc-500 focus:border-cyan-500'
-      : 'bg-slate-50 border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
-    btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-slate-100 hover:bg-slate-200 text-slate-700',
-    border:        isDark ? 'border-zinc-700'    : 'border-slate-200',
-    success:       isDark ? 'bg-emerald-900/30 border-emerald-700 text-emerald-300' : 'bg-emerald-50 border-emerald-200 text-emerald-800',
-    warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-300'       : 'bg-amber-50 border-amber-200 text-amber-800',
-    danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-300'             : 'bg-red-50 border-red-200 text-red-800',
-    // Tool-specific: mood chip states
-    chipActive:    isDark ? 'bg-cyan-600 border-cyan-500 text-white'              : 'bg-cyan-600 border-cyan-700 text-white',
-    chipInactive:  isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-300 hover:border-zinc-500' : 'bg-white border-slate-200 text-slate-500 hover:border-slate-400',
-    // Card accent for delivery note
-    deliveryBg:    isDark ? 'bg-zinc-700/60'     : 'bg-slate-100',
-    deliveryText:  isDark ? 'text-cyan-400'      : 'text-cyan-700',
-    // High road card
-    highRoadBg:    isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-300',
-    highRoadText:  isDark ? 'text-emerald-300'   : 'text-emerald-700',
-    // Nuclear option card
-    nuclearBg:     isDark ? 'bg-red-900/20 border-red-700'         : 'bg-red-50 border-red-300',
-    nuclearText:   isDark ? 'text-red-300'       : 'text-red-700',
-  };
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
     : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
 
+  const c = {
+    card:          isDark ? 'bg-zinc-800' : 'bg-white',
+    cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    text:          isDark ? 'text-zinc-50' : 'text-gray-900',
+    textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
+    textMuted:     isDark ? 'text-zinc-500' : 'text-gray-400',
+    labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
+    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
+    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
+    border:        isDark ? 'border-zinc-700' : 'border-gray-200',
+    success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
+    warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
+    danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
+    infoBox:       isDark ? 'bg-sky-900/20 border-sky-700 text-sky-200' : 'bg-sky-50 border-sky-200 text-sky-800',
+    successBox:    isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-300',
+    successTxt:    isDark ? 'text-emerald-300' : 'text-emerald-800',
+    warningBox:    isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
+    warningTxt:    isDark ? 'text-amber-300' : 'text-amber-800',
+    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
+  };;
+
+
   // ── Persisted state ──
   const [situation,    setSituation]    = usePersistentState('comeback-cooker-situation', '');
   const [whatTheySaid, setWhatTheySaid] = usePersistentState('comeback-cooker-theysaid', '');
+  const [history, setHistory] = usePersistentState('comebackcooker-history', []);
   const [relationship, setRelationship] = usePersistentState('comeback-cooker-relationship', '');
   const [mood,         setMood]         = usePersistentState('comeback-cooker-mood', 'witty');
   const [results,      setResults]      = usePersistentState('comeback-cooker-results', null);
-  const [history,      setHistory]      = usePersistentState('comeback-cooker-history', []);
 
   const [error,           setError]           = useState('');
   const [revealedNuclear, setRevealedNuclear] = useState(false);
@@ -172,11 +169,11 @@ const ComebackCooker = ({ tool }) => {
           <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
             <span>{tool?.icon ?? '🍳'}</span>{tool?.title ?? 'Comeback Cooker'}
           </h2>
-          <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'The perfect response you thought of three hours too late.'}</p>
+          <p className={`text-sm ${c.textSecondaryondary}`}>{tool?.tagline ?? 'The perfect response you thought of three hours too late.'}</p>
         </div>
 
         {/* Pre-result cross-ref */}
-        <p className={`text-xs text-center ${c.textMuted} mb-4`}>
+        <p className={`text-xs text-center ${c.textMuteded} mb-4`}>
           Need to actually say something?{' '}
           <a href="/VelvetHammer" className={linkStyle}>Velvet Hammer</a>{' '}
           gets the tone right when you actually have to send it.
@@ -186,7 +183,7 @@ const ComebackCooker = ({ tool }) => {
           {/* Situation */}
           <div>
             <label className={`text-sm font-semibold ${c.text} block mb-1.5`}>
-              <span className="mr-1.5">📍</span>What happened? <span className={c.textMuted}>*</span>
+              <span className="mr-1.5">📍</span>What happened? <span className={c.textMuteded}>*</span>
             </label>
             <textarea
               value={situation}
@@ -196,14 +193,14 @@ const ComebackCooker = ({ tool }) => {
               maxLength={500}
               className={`w-full px-4 py-3 rounded-xl text-sm border focus:outline-none transition-colors resize-none ${c.input}`}
             />
-            <p className={`text-xs ${c.textMuted} mt-1`}>Ctrl+Enter to generate</p>
+            <p className={`text-xs ${c.textMuteded} mt-1`}>Ctrl+Enter to generate</p>
           </div>
 
           {/* What they said */}
           <div>
             <label className={`text-sm font-semibold ${c.text} block mb-1.5`}>
               <span className="mr-1.5">💬</span>What did they say?{' '}
-              <span className={`font-normal ${c.textMuted}`}>(optional — exact words help)</span>
+              <span className={`font-normal ${c.textMuteded}`}>(optional — exact words help)</span>
             </label>
             <input
               type="text"
@@ -219,7 +216,7 @@ const ComebackCooker = ({ tool }) => {
           <div>
             <label className={`text-sm font-semibold ${c.text} block mb-1.5`}>
               <span className="mr-1.5">👤</span>Who are they to you?{' '}
-              <span className={`font-normal ${c.textMuted}`}>(optional)</span>
+              <span className={`font-normal ${c.textMuteded}`}>(optional)</span>
             </label>
             <input
               type="text"
@@ -245,7 +242,7 @@ const ComebackCooker = ({ tool }) => {
                 >
                   <span className="text-lg block mb-0.5">{m.icon}</span>
                   <p className="text-xs font-medium leading-tight">{m.label}</p>
-                  <p className={`text-xs leading-tight mt-0.5 hidden sm:block ${mood === m.id ? 'opacity-80' : c.textMuted}`}>{m.desc}</p>
+                  <p className={`text-xs leading-tight mt-0.5 hidden sm:block ${mood === m.id ? 'opacity-80' : c.textMuteded}`}>{m.desc}</p>
                 </button>
               ))}
             </div>
@@ -278,9 +275,9 @@ const ComebackCooker = ({ tool }) => {
               <button
                 key={entry.id}
                 onClick={() => setResults(entry.result)}
-                className={`w-full text-left px-3 py-2 rounded-lg ${c.btnSecondary} text-xs`}
+                className={`w-full text-left px-3 py-2 rounded-lg ${c.btnSecondaryondary} text-xs`}
               >
-                <span className={c.textMuted}>
+                <span className={c.textMuteded}>
                   {new Date(entry.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
                 </span>
                 <span className={`ml-2 ${c.text}`}>{entry.preview}…</span>
@@ -309,7 +306,7 @@ const ComebackCooker = ({ tool }) => {
               </button>
               <button
                 onClick={handleReset}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${c.btnSecondary}`}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${c.btnSecondaryondary}`}
               >
                 ↺ Start Over
               </button>
@@ -319,7 +316,7 @@ const ComebackCooker = ({ tool }) => {
           {/* Situation read */}
           {r.situation_read && (
             <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 text-center`}>
-              <p className={`text-xs font-semibold uppercase tracking-wider ${c.textMuted} mb-1`}>The read</p>
+              <p className={`text-xs font-semibold uppercase tracking-wider ${c.textMuteded} mb-1`}>The read</p>
               <p className={`text-sm italic ${c.text}`}>{r.situation_read}</p>
             </div>
           )}
@@ -327,7 +324,7 @@ const ComebackCooker = ({ tool }) => {
           {/* Comebacks */}
           {r.comebacks?.length > 0 && (
             <div className="space-y-3">
-              <h3 className={`text-xs font-semibold uppercase tracking-wider ${c.textMuted} px-1`}>
+              <h3 className={`text-xs font-semibold uppercase tracking-wider ${c.textMuteded} px-1`}>
                 What you should have said
               </h3>
               {r.comebacks.map((cb, i) => {
@@ -337,7 +334,7 @@ const ComebackCooker = ({ tool }) => {
                   <div key={i} className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
                     <button onClick={() => toggleCard(i)} className="w-full p-5 text-left">
                       <div className="flex items-start gap-3">
-                        <span className={`text-lg font-bold ${c.textMuted} flex-shrink-0`}>{i + 1}.</span>
+                        <span className={`text-lg font-bold ${c.textMuteded} flex-shrink-0`}>{i + 1}.</span>
                         <div className="flex-1 min-w-0">
                           <p className={`text-base font-semibold ${c.text} leading-snug`}
                              style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
@@ -345,10 +342,10 @@ const ComebackCooker = ({ tool }) => {
                           </p>
                           <div className="flex items-center gap-2 mt-2">
                             <span className="text-sm">{emoji}</span>
-                            <span className={`text-xs ${c.textMuted}`}>{cb.technique}</span>
+                            <span className={`text-xs ${c.textMuteded}`}>{cb.technique}</span>
                           </div>
                         </div>
-                        <span className={`text-sm ${c.textMuted} flex-shrink-0 mt-1`}>
+                        <span className={`text-sm ${c.textMuteded} flex-shrink-0 mt-1`}>
                           {isOpen ? '▲' : '▼'}
                         </span>
                       </div>
@@ -357,12 +354,12 @@ const ComebackCooker = ({ tool }) => {
                     {isOpen && (
                       <div className={`px-5 pb-5 space-y-3 border-t ${c.border} pt-3 ml-8`}>
                         <div>
-                          <p className={`text-xs font-semibold ${c.textMuted} mb-1`}>Why it works</p>
-                          <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{cb.why_it_works}</p>
+                          <p className={`text-xs font-semibold ${c.textMuteded} mb-1`}>Why it works</p>
+                          <p className={`text-sm ${c.textSecondaryondary} leading-relaxed`}>{cb.why_it_works}</p>
                         </div>
                         <div className={`${c.deliveryBg} rounded-xl p-3`}>
                           <p className={`text-xs font-semibold ${c.deliveryText} mb-1`}>🎬 Delivery</p>
-                          <p className={`text-sm ${c.textSecondary} leading-relaxed italic`}>{cb.delivery_note}</p>
+                          <p className={`text-sm ${c.textSecondaryondary} leading-relaxed italic`}>{cb.delivery_note}</p>
                         </div>
                         <div className="pt-1">
                           <CopyBtn
@@ -388,7 +385,7 @@ const ComebackCooker = ({ tool }) => {
                  style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
                 "{r.the_high_road.line}"
               </p>
-              <p className={`text-sm ${c.textSecondary} leading-relaxed italic`}>
+              <p className={`text-sm ${c.textSecondaryondary} leading-relaxed italic`}>
                 {r.the_high_road.why_its_devastating}
               </p>
               <div className="mt-3">
@@ -406,10 +403,10 @@ const ComebackCooker = ({ tool }) => {
               {!revealedNuclear ? (
                 <button
                   onClick={() => setRevealedNuclear(true)}
-                  className={`w-full ${c.btnSecondary} py-3 rounded-xl text-sm font-medium transition-colors flex items-center justify-center gap-2`}
+                  className={`w-full ${c.btnSecondaryondary} py-3 rounded-xl text-sm font-medium transition-colors flex items-center justify-center gap-2`}
                 >
                   <span>☢️</span> Reveal the nuclear option
-                  <span className={`text-xs ${c.textMuted}`}>(fantasy drawer only)</span>
+                  <span className={`text-xs ${c.textMuteded}`}>(fantasy drawer only)</span>
                 </button>
               ) : (
                 <div className={`${c.nuclearBg} border rounded-xl p-5`}>
@@ -420,7 +417,7 @@ const ComebackCooker = ({ tool }) => {
                      style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
                     "{r.the_nuclear_option.line}"
                   </p>
-                  <p className={`text-xs ${c.textMuted} italic flex items-start gap-1.5`}>
+                  <p className={`text-xs ${c.textMuteded} italic flex items-start gap-1.5`}>
                     <span>⚠️</span>{r.the_nuclear_option.warning}
                   </p>
                 </div>
@@ -429,25 +426,25 @@ const ComebackCooker = ({ tool }) => {
           )}
 
           {/* Disclaimer */}
-          <p className={`text-xs ${c.textMuted} text-center italic`}>
+          <p className={`text-xs ${c.textMuteded} text-center italic`}>
             Purely cathartic. What you should have said — not what you should go say now.
           </p>
 
           {/* Cross-refs — post-result with conditional */}
           <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 space-y-2`}>
-            <p className={`text-xs ${c.textMuted} text-center`}>
+            <p className={`text-xs ${c.textMuteded} text-center`}>
               Is this an ongoing situation?{' '}
               <a href="/ConflictCoach" className={linkStyle}>Conflict Coach</a>{' '}
               helps you navigate repeated friction with the same person.
             </p>
             {mood === 'petty' || mood === 'surgical' ? (
-              <p className={`text-xs ${c.textMuted} text-center`}>
+              <p className={`text-xs ${c.textMuteded} text-center`}>
                 Want to practice the argument before it happens?{' '}
                 <a href="/ArgumentSimulator" className={linkStyle}>Argument Simulator</a>{' '}
                 lets you play both sides.
               </p>
             ) : (
-              <p className={`text-xs ${c.textMuted} text-center`}>
+              <p className={`text-xs ${c.textMuteded} text-center`}>
                 Want to get roasted right back?{' '}
                 <a href="/RoastMe" className={linkStyle}>Roast Me</a>{' '}
                 finds what's specifically roastable about you.

@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { useTheme } from '../hooks/useTheme';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -29,36 +29,46 @@ const EXAMPLE_ROUTINES = [
 // ════════════════════════════════════════════════════════════
 const ChaosPilot = ({ tool }) => {
   const { isDark } = useTheme();
+
+  useEffect(() => {
+    const handler = (e) => {
+      const tag = document.activeElement?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !loading) handleSubmit();
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [loading]);
   const { callToolEndpoint, loading } = useClaudeAPI();
 
-  const c = {
-    pageBg:        isDark ? 'bg-zinc-900'        : 'bg-slate-50',
-    card:          isDark ? 'bg-zinc-800'        : 'bg-white',
-    cardAlt:       isDark ? 'bg-zinc-700/50'     : 'bg-slate-50',
-    text:          isDark ? 'text-zinc-50'       : 'text-slate-900',
-    textSecondary: isDark ? 'text-zinc-300'      : 'text-slate-600',
-    textMuted:     isDark ? 'text-zinc-500'      : 'text-slate-400',
-    input:         isDark
-      ? 'bg-zinc-900 border-zinc-700 text-zinc-50 placeholder:text-zinc-500 focus:border-cyan-500'
-      : 'bg-slate-50 border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
-    btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-slate-100 hover:bg-slate-200 text-slate-700',
-    border:        isDark ? 'border-zinc-700'    : 'border-slate-200',
-    success:       isDark ? 'bg-emerald-900/30 border-emerald-700 text-emerald-300' : 'bg-emerald-50 border-emerald-200 text-emerald-800',
-    warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-300'       : 'bg-amber-50 border-amber-200 text-amber-800',
-    danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-300'             : 'bg-red-50 border-red-200 text-red-800',
-    // Tool-specific: disruption hero card
-    disruptionHero:   isDark ? 'border-amber-600/60 bg-zinc-800'   : 'border-amber-600 bg-white',
-    disruptionHead:   isDark ? 'bg-amber-900/20'                   : 'bg-amber-50',
-    disruptionAccent: isDark ? 'text-amber-400'                    : 'text-amber-700',
-    disruptionSub:    isDark ? 'bg-zinc-700/60 border-zinc-600'    : 'bg-slate-100 border-slate-200',
-    // Standalone text semantics
-    textDanger:    isDark ? 'text-red-300'  : 'text-red-700',
-  };
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
     : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
+
+  const c = {
+    card:          isDark ? 'bg-zinc-800' : 'bg-white',
+    cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    text:          isDark ? 'text-zinc-50' : 'text-gray-900',
+    textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
+    textMuted:     isDark ? 'text-zinc-500' : 'text-gray-400',
+    labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
+    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
+    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
+    border:        isDark ? 'border-zinc-700' : 'border-gray-200',
+    success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
+    warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
+    danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
+    infoBox:       isDark ? 'bg-sky-900/20 border-sky-700 text-sky-200' : 'bg-sky-50 border-sky-200 text-sky-800',
+    successBox:    isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-300',
+    successTxt:    isDark ? 'text-emerald-300' : 'text-emerald-800',
+    warningBox:    isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
+    warningTxt:    isDark ? 'text-amber-300' : 'text-amber-800',
+    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
+  };
 
   // ── Persisted state ──
   const [routine, setRoutine] = usePersistentState('chaos-pilot-routine', '');
@@ -146,7 +156,7 @@ const ChaosPilot = ({ tool }) => {
   };
 
   return (
-    <div className={`min-h-screen py-8 px-4 ${c.pageBg}`}>
+    <div className={`min-h-screen py-8 px-4 ${c.cardAlt}`}>
       <div className="max-w-2xl mx-auto space-y-4">
 
         {/* ── Input Card ── */}
@@ -156,11 +166,11 @@ const ChaosPilot = ({ tool }) => {
             <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
               <span>{tool?.icon ?? '🎰'}</span>{tool?.title ?? 'Chaos Pilot'}
             </h2>
-            <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'One calculated disruption. Not random — strategically chaotic.'}</p>
+            <p className={`text-sm ${c.textSecondaryondary}`}>{tool?.tagline ?? 'One calculated disruption. Not random — strategically chaotic.'}</p>
           </div>
 
           {/* Pre-result cross-ref */}
-          <p className={`text-xs text-center ${c.textMuted} mb-4`}>
+          <p className={`text-xs text-center ${c.textMuteded} mb-4`}>
             Want to find the single highest-leverage habit change?{' '}
             <a href="/OnePercenter" className={linkStyle}>One Percenter</a> does the math.
           </p>
@@ -169,7 +179,7 @@ const ChaosPilot = ({ tool }) => {
             {/* Required field */}
             <div>
               <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>
-                Your typical week, hour by hour <span className={c.textMuted}>*</span>
+                Your typical week, hour by hour <span className={c.textMuteded}>*</span>
               </label>
               <textarea
                 value={routine}
@@ -180,13 +190,13 @@ const ChaosPilot = ({ tool }) => {
                 maxLength={800}
                 className={`w-full px-4 py-3 rounded-xl border text-sm resize-none focus:outline-none transition-colors ${c.input}`}
               />
-              <p className={`text-xs ${c.textMuted} mt-1`}>Ctrl+Enter to submit</p>
+              <p className={`text-xs ${c.textMuteded} mt-1`}>Ctrl+Enter to submit</p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>
-                  Context about you <span className={`font-normal ${c.textMuted}`}>(optional)</span>
+                  Context about you <span className={`font-normal ${c.textMuteded}`}>(optional)</span>
                 </label>
                 <textarea
                   value={context}
@@ -200,7 +210,7 @@ const ChaosPilot = ({ tool }) => {
               </div>
               <div>
                 <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>
-                  What's feeling stale? <span className={`font-normal ${c.textMuted}`}>(optional)</span>
+                  What's feeling stale? <span className={`font-normal ${c.textMuteded}`}>(optional)</span>
                 </label>
                 <textarea
                   value={whatsFeelingStuck}
@@ -233,7 +243,7 @@ const ChaosPilot = ({ tool }) => {
               <button
                 onClick={handleExample}
                 disabled={loading}
-                className={`px-4 py-3 rounded-xl text-sm font-medium transition-colors ${c.btnSecondary}`}
+                className={`px-4 py-3 rounded-xl text-sm font-medium transition-colors ${c.btnSecondaryondary}`}
               >
                 Example
               </button>
@@ -250,9 +260,9 @@ const ChaosPilot = ({ tool }) => {
                 <button
                   key={entry.id}
                   onClick={() => setResults(entry.result)}
-                  className={`w-full text-left px-3 py-2 rounded-lg ${c.btnSecondary} text-xs`}
+                  className={`w-full text-left px-3 py-2 rounded-lg ${c.btnSecondaryondary} text-xs`}
                 >
-                  <span className={c.textMuted}>
+                  <span className={c.textMuteded}>
                     {new Date(entry.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
                   </span>
                   <span className={`ml-2 ${c.text}`}>{entry.preview}…</span>
@@ -279,7 +289,7 @@ const ChaosPilot = ({ tool }) => {
                 </button>
                 <button
                   onClick={handleReset}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${c.btnSecondary}`}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${c.btnSecondaryondary}`}
                 >
                   ↺ Start Over
                 </button>
@@ -288,10 +298,10 @@ const ChaosPilot = ({ tool }) => {
 
             {/* Pattern diagnosis */}
             <div className={`${c.card} rounded-xl border ${c.border} p-5`}>
-              <p className={`text-xs font-black uppercase tracking-widest mb-3 ${c.textMuted}`}>🔍 The Invisible Rut</p>
+              <p className={`text-xs font-black uppercase tracking-widest mb-3 ${c.textMuteded}`}>🔍 The Invisible Rut</p>
               <p className={`text-base font-bold mb-2 ${c.text}`}>{results.pattern_diagnosis?.the_invisible_rut}</p>
               {results.pattern_diagnosis?.why_its_invisible && (
-                <p className={`text-sm mb-2 ${c.textSecondary}`}>{results.pattern_diagnosis.why_its_invisible}</p>
+                <p className={`text-sm mb-2 ${c.textSecondaryondary}`}>{results.pattern_diagnosis.why_its_invisible}</p>
               )}
               {results.pattern_diagnosis?.what_its_costing && (
                 <div className={`mt-3 p-3 rounded-xl border ${c.danger}`}>
@@ -313,20 +323,20 @@ const ChaosPilot = ({ tool }) => {
                 </div>
                 <div className="px-6 py-5 space-y-4">
                   {results.the_disruption.the_full_instruction && (
-                    <p className={`text-sm leading-relaxed italic ${c.textSecondary}`}>
+                    <p className={`text-sm leading-relaxed italic ${c.textSecondaryondary}`}>
                       "{results.the_disruption.the_full_instruction}"
                     </p>
                   )}
                   {results.the_disruption.the_slight_discomfort && (
                     <div className={`p-3 rounded-xl border ${c.disruptionSub}`}>
-                      <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${c.textMuted}`}>😬 The friction you'll feel</p>
-                      <p className={`text-sm ${c.textSecondary}`}>{results.the_disruption.the_slight_discomfort}</p>
+                      <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${c.textMuteded}`}>😬 The friction you'll feel</p>
+                      <p className={`text-sm ${c.textSecondaryondary}`}>{results.the_disruption.the_slight_discomfort}</p>
                     </div>
                   )}
                   {results.the_disruption.why_this_one && (
                     <div>
-                      <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${c.textMuted}`}>Why this one specifically</p>
-                      <p className={`text-sm ${c.textSecondary}`}>{results.the_disruption.why_this_one}</p>
+                      <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${c.textMuteded}`}>Why this one specifically</p>
+                      <p className={`text-sm ${c.textSecondaryondary}`}>{results.the_disruption.why_this_one}</p>
                     </div>
                   )}
                 </div>
@@ -336,7 +346,7 @@ const ChaosPilot = ({ tool }) => {
             {/* Downstream effects */}
             {results.the_downstream_effect && (
               <div className={`${c.card} rounded-xl border ${c.border} p-5 space-y-3`}>
-                <p className={`text-xs font-black uppercase tracking-widest ${c.textMuted}`}>⚡ The Ripple Effect</p>
+                <p className={`text-xs font-black uppercase tracking-widest ${c.textMuteded}`}>⚡ The Ripple Effect</p>
                 {[
                   { key: 'immediate',     label: 'First 30 minutes',  icon: '⚡' },
                   { key: 'within_a_week', label: 'Within a week',     icon: '🌊' },
@@ -345,8 +355,8 @@ const ChaosPilot = ({ tool }) => {
                   <div key={row.key} className="flex gap-3">
                     <span className="flex-shrink-0 text-lg">{row.icon}</span>
                     <div>
-                      <p className={`text-xs font-bold uppercase tracking-wide mb-0.5 ${c.textMuted}`}>{row.label}</p>
-                      <p className={`text-sm ${c.textSecondary}`}>{results.the_downstream_effect[row.key]}</p>
+                      <p className={`text-xs font-bold uppercase tracking-wide mb-0.5 ${c.textMuteded}`}>{row.label}</p>
+                      <p className={`text-sm ${c.textSecondaryondary}`}>{results.the_downstream_effect[row.key]}</p>
                     </div>
                   </div>
                 ))}
@@ -363,13 +373,13 @@ const ChaosPilot = ({ tool }) => {
 
             {/* Cross-refs — post-result */}
             <div className={`${c.cardAlt} rounded-xl border ${c.border} p-4 space-y-2`}>
-              <p className={`text-xs ${c.textMuted} text-center`}>
+              <p className={`text-xs ${c.textMuteded} text-center`}>
                 Want to engineer a lasting change?{' '}
                 <a href="/AlternatePath" className={linkStyle}>Alternate Path</a>{' '}
                 maps the concrete steps between where you are and where you want to be.
               </p>
               {results.the_disruption?.why_this_one && (
-                <p className={`text-xs ${c.textMuted} text-center`}>
+                <p className={`text-xs ${c.textMuteded} text-center`}>
                   Want more people to serendipitously cross your path?{' '}
                   <a href="/LuckSurface" className={linkStyle}>Luck Surface</a>{' '}
                   expands where opportunity can find you.
@@ -378,7 +388,7 @@ const ChaosPilot = ({ tool }) => {
             </div>
 
             {/* AI disclaimer */}
-            <p className={`text-xs text-center ${c.textMuted}`}>
+            <p className={`text-xs text-center ${c.textMuteded}`}>
               AI-generated — treat as a creative prompt, not a prescription.
             </p>
 

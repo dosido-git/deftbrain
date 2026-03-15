@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -15,29 +15,48 @@ const FIELDS = [
   { id: 'other', icon: '📄', label: 'Other' },
 ];
 
-const PaperDigest = () => {
+const PaperDigest = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
-  const { theme } = useTheme();
-  const isDark = theme === 'dark';
+  const { isDark } = useTheme();
+
+  useEffect(() => {
+    const handler = (e) => {
+      const tag = document.activeElement?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !loading) handleDigest();
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [loading]);
+
+
+  const linkStyle = isDark
+    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
+    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
 
   const c = {
-    card: isDark ? 'bg-zinc-800' : 'bg-white', cardAlt: isDark ? 'bg-zinc-700/50' : 'bg-indigo-50/50',
-    text: isDark ? 'text-zinc-50' : 'text-gray-900', textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
-    textMuted: isDark ? 'text-zinc-500' : 'text-gray-400', label: isDark ? 'text-zinc-200' : 'text-gray-800',
-    input: isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder-zinc-400' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400',
-    btnPrimary: isDark ? 'bg-indigo-600 hover:bg-indigo-500 text-white' : 'bg-indigo-600 hover:bg-indigo-700 text-white',
-    btnSecondary: isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
-    btnActive: isDark ? 'bg-indigo-600 text-white' : 'bg-indigo-600 text-white',
-    btnInactive: isDark ? 'bg-zinc-700 text-zinc-300 hover:bg-zinc-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200',
-    border: isDark ? 'border-zinc-700' : 'border-gray-200',
-    success: isDark ? 'bg-green-900/20 border-green-700 text-green-200' : 'bg-green-50 border-green-300 text-green-800',
-    warning: isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
-    danger: isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
-    info: isDark ? 'bg-blue-900/20 border-blue-700 text-blue-200' : 'bg-blue-50 border-blue-200 text-blue-800',
-    accentBg: isDark ? 'bg-indigo-900/20 border-indigo-700' : 'bg-indigo-50 border-indigo-200',
-    accentText: isDark ? 'text-indigo-300' : 'text-indigo-700',
-    purpleBg: isDark ? 'bg-purple-900/20 border-purple-700 text-purple-200' : 'bg-purple-50 border-purple-200 text-purple-800',
-  };
+    card:          isDark ? 'bg-zinc-800' : 'bg-white',
+    cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    text:          isDark ? 'text-zinc-50' : 'text-gray-900',
+    textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
+    textMuted:     isDark ? 'text-zinc-500' : 'text-gray-400',
+    labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
+    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
+    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
+    border:        isDark ? 'border-zinc-700' : 'border-gray-200',
+    success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
+    warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
+    danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
+    infoBox:       isDark ? 'bg-sky-900/20 border-sky-700 text-sky-200' : 'bg-sky-50 border-sky-200 text-sky-800',
+    successBox:    isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-300',
+    successTxt:    isDark ? 'text-emerald-300' : 'text-emerald-800',
+    warningBox:    isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
+    warningTxt:    isDark ? 'text-amber-300' : 'text-amber-800',
+    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
+  };;
 
   // ─── Mode ───
   const [mode, setMode] = useState('digest');
@@ -74,6 +93,7 @@ const PaperDigest = () => {
 
   // ─── Persistent ───
   const [savedDigests, setSavedDigests] = usePersistentState('paper-digest-saved', []);
+  const [history, setHistory] = usePersistentState('paperdigest-history', []);
   const [jargonDict, setJargonDict] = usePersistentState('paper-digest-jargon', []);
   const [showSaved, setShowSaved] = useState(false);
   const [showDict, setShowDict] = useState(false);
@@ -90,7 +110,7 @@ const PaperDigest = () => {
   });
   const filteredDict = dictSearch.trim() ? jargonDict.filter(d => d.term.toLowerCase().includes(dictSearch.toLowerCase()) || d.meaning.toLowerCase().includes(dictSearch.toLowerCase())) : jargonDict;
 
-  const saveDigest = (title, data) => setSavedDigests(prev => [{ title: title || 'Untitled paper', data, timestamp: new Date().toISOString() }, ...prev].slice(0, 20));
+  const saveDigest = (title, data) => setSavedDigests(prev => [{ title: title || 'Untitled paper', data, timestamp: new Date().toISOString() }, ...prev].slice(0, 6));
 
   // ═══ API HANDLERS ═══
   const handleDigest = async () => {
@@ -99,6 +119,9 @@ const PaperDigest = () => {
     const data = await callToolEndpoint('paper-digest', { text: paperText, title: paperTitle, field: FIELDS.find(f => f.id === field)?.label || field });
     if (data) {
       setDigestResults(data);
+      setHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: (typeof paperText !== 'undefined' ? String(paperText) : '').slice(0, 40) }, ...prev].slice(0, 6));
+      setHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: (paperText || '').slice(0, 40) }, ...prev].slice(0, 6));
+      setHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: (paperTitle || paperText || '').slice(0, 40) }, ...prev].slice(0, 6));
       data.jargon_decoded?.forEach(j => addJargon(j.term, j.plain_english, j.why_it_matters));
     }
   };
@@ -159,15 +182,17 @@ const PaperDigest = () => {
     return <div className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}><button onClick={() => toggleSection(id)} className="w-full p-4 flex items-center justify-between"><h3 className={`font-bold ${c.text}`}>{title}</h3><span>{isOpen ? '▲' : '▼'}</span></button>{isOpen && <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-2`}>{children}</div>}</div>;
   };
 
-  const ACCURACY_COLORS = { 'Accurate': c.success, 'Mostly accurate': c.info, 'Exaggerated': c.warning, 'Misleading': c.danger, 'Completely wrong': c.danger };
+  const ACCURACY_COLORS = { 'Accurate': c.success, 'Mostly accurate': c.infoBox, 'Exaggerated': c.warning, 'Misleading': c.danger, 'Completely wrong': c.danger };
 
   // ═══ RENDER ═══
+
+  const handleReset = () => { setDigestResults(null); setMediaResults(null); setCompareResults(null); setRelResults(null); setJargonResults(null); setError(''); };
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Header */}
       <div>
         <h1 className={`text-2xl font-bold ${c.text}`}>Paper Digest 📄</h1>
-        <p className={`text-sm ${c.textSecondary} mt-1`}>What this paper actually says — and whether what you read about it is true</p>
+        <p className={`text-sm ${c.textSecondaryondary} mt-1`}>What this paper actually says — and whether what you read about it is true</p>
       </div>
 
       {/* Mode Tabs */}
@@ -180,50 +205,50 @@ const PaperDigest = () => {
       {/* ─── Saved Panel ─── */}
       {showSaved && <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-3`}>
         <h3 className={`font-bold ${c.text}`}>💾 Saved Digests</h3>
-        {savedDigests.length === 0 ? <p className={`text-sm ${c.textMuted}`}>Digest a paper and save it for reference.</p> : savedDigests.map((sd, i) => <div key={i} className={`${c.cardAlt} rounded-lg p-3 flex items-start justify-between`}><div className="flex-1"><p className={`text-sm font-bold ${c.text}`}>{sd.title}</p><p className={`text-xs ${c.textSecondary}`}>{sd.data.one_sentence}</p><p className={`text-xs ${c.textMuted}`}>{new Date(sd.timestamp).toLocaleDateString()}</p></div><button onClick={() => setSavedDigests(prev => prev.filter((_, idx) => idx !== i))} className={`text-xs ${c.textMuted} ml-2`}>🗑️</button></div>)}
+        {savedDigests.length === 0 ? <p className={`text-sm ${c.textMuteded}`}>Digest a paper and save it for reference.</p> : savedDigests.map((sd, i) => <div key={i} className={`${c.cardAlt} rounded-lg p-3 flex items-start justify-between`}><div className="flex-1"><p className={`text-sm font-bold ${c.text}`}>{sd.title}</p><p className={`text-xs ${c.textSecondaryondary}`}>{sd.data.one_sentence}</p><p className={`text-xs ${c.textMuteded}`}>{new Date(sd.timestamp).toLocaleDateString()}</p></div><button onClick={() => setSavedDigests(prev => prev.filter((_, idx) => idx !== i))} className={`text-xs ${c.textMuteded} ml-2`}>🗑️</button></div>)}
       </div>}
 
       {/* ─── Dictionary Panel ─── */}
       {showDict && <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-3`}>
         <h3 className={`font-bold ${c.text}`}>📖 Your Jargon Dictionary ({jargonDict.length})</h3>
-        <p className={`text-xs ${c.textMuted}`}>Auto-grows as you digest papers. Your personal science glossary.</p>
+        <p className={`text-xs ${c.textMuteded}`}>Auto-grows as you digest papers. Your personal science glossary.</p>
         <input value={dictSearch} onChange={e => setDictSearch(e.target.value)} placeholder="Search terms..." className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
-        {filteredDict.length === 0 ? <p className={`text-sm ${c.textMuted}`}>{jargonDict.length === 0 ? 'Digest a paper to start building your dictionary.' : 'No matches.'}</p> : filteredDict.slice(0, 20).map((d, i) => <div key={i} className={`${c.cardAlt} rounded-lg p-3`}><div className="flex items-start justify-between"><div><span className={`text-sm font-bold ${c.text}`}>{d.term}</span><p className={`text-xs ${c.textSecondary}`}>{d.meaning}</p>{d.why && <p className={`text-xs ${c.textMuted}`}>{d.why}</p>}</div><button onClick={() => setJargonDict(prev => prev.filter((_, idx) => idx !== jargonDict.indexOf(d)))} className={`text-xs ${c.textMuted}`}>✕</button></div></div>)}
+        {filteredDict.length === 0 ? <p className={`text-sm ${c.textMuteded}`}>{jargonDict.length === 0 ? 'Digest a paper to start building your dictionary.' : 'No matches.'}</p> : filteredDict.slice(0, 20).map((d, i) => <div key={i} className={`${c.cardAlt} rounded-lg p-3`}><div className="flex items-start justify-between"><div><span className={`text-sm font-bold ${c.text}`}>{d.term}</span><p className={`text-xs ${c.textSecondaryondary}`}>{d.meaning}</p>{d.why && <p className={`text-xs ${c.textMuteded}`}>{d.why}</p>}</div><button onClick={() => setJargonDict(prev => prev.filter((_, idx) => idx !== jargonDict.indexOf(d)))} className={`text-xs ${c.textMuteded}`}>✕</button></div></div>)}
       </div>}
 
       {/* ═══ DIGEST MODE ═══ */}
       {mode === 'digest' && <>
         <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-4`}>
           <h3 className={`font-bold ${c.text}`}>📄 Digest a Paper</h3>
-          <p className={`text-sm ${c.textMuted}`}>Paste an abstract, excerpt, or full text. We'll tell you what it actually says — no PhD required.</p>
+          <p className={`text-sm ${c.textMuteded}`}>Paste an abstract, excerpt, or full text. We'll tell you what it actually says — no PhD required.</p>
           <input value={paperTitle} onChange={e => setPaperTitle(e.target.value)} placeholder="Paper title (optional — helps with context)" className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
           <textarea value={paperText} onChange={e => setPaperText(e.target.value)} placeholder="Paste abstract or paper text here..." rows={8} className={`w-full px-3 py-2 rounded-lg border text-sm font-mono ${c.input}`} />
           <div className="flex flex-wrap gap-2">{FIELDS.map(f => <button key={f.id} onClick={() => setField(f.id)} className={`px-3 py-1.5 rounded-lg text-xs font-medium border ${field === f.id ? c.btnActive : `${c.btnInactive} ${c.border}`}`}><span className="mr-1">{f.icon}</span> {f.label}</button>)}</div>
-          <button onClick={handleDigest} disabled={loading} className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-50`}>{loading ? '⏳ Digesting...' : '📄 Digest This Paper'}</button>
+          <button onClick={handleDigest} disabled={loading} className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-50`}>{loading ? <span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> : '📄 Digest This Paper'}</button>
         </div>
 
         {digestResults && (() => { const r = digestResults; return (
           <div className="space-y-4">
-            <button onClick={() => saveDigest(paperTitle || r.one_sentence?.substring(0, 60), r)} className={`w-full py-2 rounded-lg text-xs font-bold ${c.btnSecondary} border ${c.border}`}>💾 Save This Digest</button>
+            <button onClick={() => saveDigest(paperTitle || r.one_sentence?.substring(0, 60), r)} className={`w-full py-2 rounded-lg text-xs font-bold ${c.btnSecondaryondary} border ${c.border}`}>💾 Save This Digest</button>
 
             {/* One Sentence */}
-            <div className={`${c.accentBg} border rounded-xl p-5`}>
-              <h3 className={`font-bold ${c.accentText} text-sm`}>📌 The Finding</h3>
+            <div className={`${c.warningBox} border rounded-xl p-5`}>
+              <h3 className={`font-bold ${c.accentTxt} text-sm`}>📌 The Finding</h3>
               <p className={`text-lg font-semibold ${c.text} mt-2`}>{r.one_sentence}</p>
             </div>
 
             {/* Why It Matters */}
-            {r.why_it_matters && <div className={`${c.info} border rounded-xl p-5`}><h3 className="font-bold text-sm">💡 Why It Matters</h3><p className="text-sm mt-1">{r.why_it_matters}</p></div>}
+            {r.why_it_matters && <div className={`${c.infoBox} border rounded-xl p-5`}><h3 className="font-bold text-sm">💡 Why It Matters</h3><p className="text-sm mt-1">{r.why_it_matters}</p></div>}
 
             {/* What They Did */}
             {r.what_they_did && (
               <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-3`}>
                 <h3 className={`font-bold ${c.text}`}>🔬 What They Did</h3>
-                <div className={`${c.cardAlt} rounded-lg p-3`}><span className={`text-xs font-bold ${c.accentText}`}>Study type</span><p className={`text-sm ${c.text} mt-0.5`}>{r.what_they_did.study_type}</p></div>
-                <div className={`${c.cardAlt} rounded-lg p-3`}><span className={`text-xs font-bold ${c.accentText}`}>Who they studied</span><p className={`text-sm ${c.text} mt-0.5`}>{r.what_they_did.sample}</p></div>
-                <div className={`${c.cardAlt} rounded-lg p-3`}><span className={`text-xs font-bold ${c.accentText}`}>Method</span><p className={`text-sm ${c.text} mt-0.5`}>{r.what_they_did.method_plain}</p></div>
-                {r.what_they_did.controls && <div className={`${c.cardAlt} rounded-lg p-3`}><span className={`text-xs font-bold ${c.accentText}`}>Controls</span><p className={`text-sm ${c.text} mt-0.5`}>{r.what_they_did.controls}</p></div>}
-                {r.what_they_did.stats_note && <div className={`${c.cardAlt} rounded-lg p-3`}><span className={`text-xs font-bold ${c.accentText}`}>The numbers</span><p className={`text-sm ${c.text} mt-0.5`}>{r.what_they_did.stats_note}</p></div>}
+                <div className={`${c.cardAlt} rounded-lg p-3`}><span className={`text-xs font-bold ${c.accentTxt}`}>Study type</span><p className={`text-sm ${c.text} mt-0.5`}>{r.what_they_did.study_type}</p></div>
+                <div className={`${c.cardAlt} rounded-lg p-3`}><span className={`text-xs font-bold ${c.accentTxt}`}>Who they studied</span><p className={`text-sm ${c.text} mt-0.5`}>{r.what_they_did.sample}</p></div>
+                <div className={`${c.cardAlt} rounded-lg p-3`}><span className={`text-xs font-bold ${c.accentTxt}`}>Method</span><p className={`text-sm ${c.text} mt-0.5`}>{r.what_they_did.method_plain}</p></div>
+                {r.what_they_did.controls && <div className={`${c.cardAlt} rounded-lg p-3`}><span className={`text-xs font-bold ${c.accentTxt}`}>Controls</span><p className={`text-sm ${c.text} mt-0.5`}>{r.what_they_did.controls}</p></div>}
+                {r.what_they_did.stats_note && <div className={`${c.cardAlt} rounded-lg p-3`}><span className={`text-xs font-bold ${c.accentTxt}`}>The numbers</span><p className={`text-sm ${c.text} mt-0.5`}>{r.what_they_did.stats_note}</p></div>}
               </div>
             )}
 
@@ -234,10 +259,10 @@ const PaperDigest = () => {
             </div>
 
             {/* Limitations */}
-            {r.limitations?.length > 0 && <Section id="limits" title="🧱 Limitations">{r.limitations.map((l, i) => <p key={i} className={`text-sm ${c.textSecondary}`}>• {l}</p>)}</Section>}
+            {r.limitations?.length > 0 && <Section id="limits" title="🧱 Limitations">{r.limitations.map((l, i) => <p key={i} className={`text-sm ${c.textSecondaryondary}`}>• {l}</p>)}</Section>}
 
             {/* Jargon */}
-            {r.jargon_decoded?.length > 0 && <Section id="jargon" title={`🔤 Jargon Decoded (${r.jargon_decoded.length} terms saved to dictionary)`}>{r.jargon_decoded.map((j, i) => <div key={i} className={`${c.cardAlt} rounded-lg p-3`}><p className={`text-sm font-bold ${c.text}`}>{j.term}</p><p className={`text-xs ${c.textSecondary}`}>{j.meaning}</p>{j.why_it_matters && <p className={`text-xs ${c.textMuted}`}>{j.why_it_matters}</p>}</div>)}</Section>}
+            {r.jargon_decoded?.length > 0 && <Section id="jargon" title={`🔤 Jargon Decoded (${r.jargon_decoded.length} terms saved to dictionary)`}>{r.jargon_decoded.map((j, i) => <div key={i} className={`${c.cardAlt} rounded-lg p-3`}><p className={`text-sm font-bold ${c.text}`}>{j.term}</p><p className={`text-xs ${c.textSecondaryondary}`}>{j.meaning}</p>{j.why_it_matters && <p className={`text-xs ${c.textMuteded}`}>{j.why_it_matters}</p>}</div>)}</Section>}
 
             {/* Field Context */}
             {r.field_context && <div className={`${c.purpleBg} border rounded-xl p-4`}><h3 className="font-bold text-sm">🗺️ Bigger Picture</h3><p className="text-sm mt-1">{r.field_context}</p></div>}
@@ -256,8 +281,8 @@ const PaperDigest = () => {
 
             {/* Quick actions */}
             <div className="flex flex-wrap gap-2">
-              <button onClick={() => { setMode('media'); setMediaPaper(paperText); }} className={`px-4 py-2 rounded-lg text-xs font-bold ${c.btnSecondary}`}>📰 Check media coverage</button>
-              <button onClick={() => { setMode('relevance'); setRelSummary(r.one_sentence); }} className={`px-4 py-2 rounded-lg text-xs font-bold ${c.btnSecondary}`}>🎯 Does this apply to me?</button>
+              <button onClick={() => { setMode('media'); setMediaPaper(paperText); }} className={`px-4 py-2 rounded-lg text-xs font-bold ${c.btnSecondaryondary}`}>📰 Check media coverage</button>
+              <button onClick={() => { setMode('relevance'); setRelSummary(r.one_sentence); }} className={`px-4 py-2 rounded-lg text-xs font-bold ${c.btnSecondaryondary}`}>🎯 Does this apply to me?</button>
             </div>
 
             <ActionBar content={buildDigestText()} title={`PaperDigest: ${paperTitle || 'Paper'}`} />
@@ -269,11 +294,11 @@ const PaperDigest = () => {
       {mode === 'media' && <>
         <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-4`}>
           <h3 className={`font-bold ${c.text}`}>📰 Media Accuracy Check</h3>
-          <p className={`text-sm ${c.textMuted}`}>Paste the headline (and article if you have it) plus the paper's abstract. We'll tell you if the media got it right.</p>
+          <p className={`text-sm ${c.textMuteded}`}>Paste the headline (and article if you have it) plus the paper's abstract. We'll tell you if the media got it right.</p>
           <input value={mediaHeadline} onChange={e => setMediaHeadline(e.target.value)} placeholder="The headline you saw" className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
           <textarea value={mediaArticle} onChange={e => setMediaArticle(e.target.value)} placeholder="Article excerpt (optional — paste relevant paragraphs)" rows={3} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
           <textarea value={mediaPaper} onChange={e => setMediaPaper(e.target.value)} placeholder="Paper abstract or text (paste here or digest a paper first)" rows={5} className={`w-full px-3 py-2 rounded-lg border text-sm font-mono ${c.input}`} />
-          <button onClick={handleMedia} disabled={loading} className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-50`}>{loading ? '⏳ Checking...' : '📰 Check Accuracy'}</button>
+          <button onClick={handleMedia} disabled={loading} className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-50`}>{loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> Checking...</> : '📰 Check Accuracy'}</button>
         </div>
 
         {mediaResults && (() => { const r = mediaResults; return (
@@ -283,12 +308,12 @@ const PaperDigest = () => {
             </div>}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {r.paper_actually_says && <div className={`${c.success} border rounded-xl p-4`}><h3 className="font-bold text-sm">📄 Paper says</h3><p className="text-sm mt-1">{r.paper_actually_says}</p></div>}
-              {r.media_says && <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}><h3 className={`font-bold text-sm ${c.text}`}>📰 Media says</h3><p className={`text-sm mt-1 ${c.textSecondary}`}>{r.media_says}</p></div>}
+              {r.media_says && <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}><h3 className={`font-bold text-sm ${c.text}`}>📰 Media says</h3><p className={`text-sm mt-1 ${c.textSecondaryondary}`}>{r.media_says}</p></div>}
             </div>
-            {r.distortions?.length > 0 && <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-3`}><h3 className={`font-bold ${c.text}`}>🔍 Distortions Found</h3>{r.distortions.map((d, i) => <div key={i} className={`${c.danger} border rounded-lg p-3 space-y-1`}><div className="flex items-center gap-2"><span className={`text-xs font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-red-900/40 text-red-200' : 'bg-red-100 text-red-700'}`}>{d.distortion_type}</span></div><p className="text-sm"><strong>Media:</strong> {d.what_media_said}</p><p className="text-sm"><strong>Paper:</strong> {d.what_paper_said}</p><p className={`text-xs ${c.textMuted}`}>{d.why_it_matters}</p></div>)}</div>}
+            {r.distortions?.length > 0 && <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-3`}><h3 className={`font-bold ${c.text}`}>🔍 Distortions Found</h3>{r.distortions.map((d, i) => <div key={i} className={`${c.danger} border rounded-lg p-3 space-y-1`}><div className="flex items-center gap-2"><span className={`text-xs font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-red-900/40 text-red-200' : 'bg-red-100 text-red-700'}`}>{d.distortion_type}</span></div><p className="text-sm"><strong>Media:</strong> {d.what_media_said}</p><p className="text-sm"><strong>Paper:</strong> {d.what_paper_said}</p><p className={`text-xs ${c.textMuteded}`}>{d.why_it_matters}</p></div>)}</div>}
             {r.what_they_got_right?.length > 0 && <div className={`${c.success} border rounded-xl p-4`}><h3 className="font-bold text-sm">✅ What They Got Right</h3>{r.what_they_got_right.map((g, i) => <p key={i} className="text-sm mt-1">• {g}</p>)}</div>}
-            {r.the_real_story && <div className={`${c.accentBg} border rounded-xl p-5`}><h3 className={`font-bold ${c.accentText} text-sm`}>📝 What the headline should have said</h3><p className={`text-sm ${c.text} mt-1`}>{r.the_real_story}</p></div>}
-            {r.should_you_worry && <div className={`${c.info} border rounded-xl p-4`}><p className="text-sm">🎯 <strong>Should you worry?</strong> {r.should_you_worry}</p></div>}
+            {r.the_real_story && <div className={`${c.warningBox} border rounded-xl p-5`}><h3 className={`font-bold ${c.accentTxt} text-sm`}>📝 What the headline should have said</h3><p className={`text-sm ${c.text} mt-1`}>{r.the_real_story}</p></div>}
+            {r.should_you_worry && <div className={`${c.infoBox} border rounded-xl p-4`}><p className="text-sm">🎯 <strong>Should you worry?</strong> {r.should_you_worry}</p></div>}
           </div>
         ); })()}
       </>}
@@ -297,24 +322,24 @@ const PaperDigest = () => {
       {mode === 'compare' && <>
         <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-4`}>
           <h3 className={`font-bold ${c.text}`}>⚖️ Compare Two Papers</h3>
-          <p className={`text-sm ${c.textMuted}`}>Do these studies agree? Disagree? Which should you trust more?</p>
+          <p className={`text-sm ${c.textMuteded}`}>Do these studies agree? Disagree? Which should you trust more?</p>
           <textarea value={paper1} onChange={e => setPaper1(e.target.value)} placeholder="Paper 1 — paste abstract or text" rows={4} className={`w-full px-3 py-2 rounded-lg border text-sm font-mono ${c.input}`} />
           <textarea value={paper2} onChange={e => setPaper2(e.target.value)} placeholder="Paper 2 — paste abstract or text" rows={4} className={`w-full px-3 py-2 rounded-lg border text-sm font-mono ${c.input}`} />
           <input value={compareQ} onChange={e => setCompareQ(e.target.value)} placeholder="Your specific question (optional — 'which diet is actually better?')" className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
-          <button onClick={handleCompare} disabled={loading} className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-50`}>{loading ? '⏳ Comparing...' : '⚖️ Compare'}</button>
+          <button onClick={handleCompare} disabled={loading} className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-50`}>{loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> Comparing...</> : '⚖️ Compare'}</button>
         </div>
 
         {compareResults && (() => { const r = compareResults; return (
           <div className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}><h3 className={`font-bold text-sm ${c.text}`}>📄 Paper 1</h3><p className={`text-sm ${c.textSecondary} mt-1`}>{r.paper1_says}</p></div>
-              <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}><h3 className={`font-bold text-sm ${c.text}`}>📄 Paper 2</h3><p className={`text-sm ${c.textSecondary} mt-1`}>{r.paper2_says}</p></div>
+              <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}><h3 className={`font-bold text-sm ${c.text}`}>📄 Paper 1</h3><p className={`text-sm ${c.textSecondaryondary} mt-1`}>{r.paper1_says}</p></div>
+              <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}><h3 className={`font-bold text-sm ${c.text}`}>📄 Paper 2</h3><p className={`text-sm ${c.textSecondaryondary} mt-1`}>{r.paper2_says}</p></div>
             </div>
             {r.do_they_agree && <div className={`${r.do_they_agree.verdict === 'Yes' ? c.success : r.do_they_agree.verdict === 'No' ? c.danger : c.warning} border rounded-xl p-5`}><h3 className="font-bold text-lg">{r.do_they_agree.verdict === 'Yes' ? '✅' : r.do_they_agree.verdict === 'No' ? '❌' : '🤔'} {r.do_they_agree.verdict}</h3><p className="text-sm mt-1">{r.do_they_agree.explanation}</p></div>}
-            {r.why_different?.length > 0 && <Section id="whydiff" title="🔍 Why They Differ">{r.why_different.map((w, i) => <p key={i} className={`text-sm ${c.textSecondary}`}>• {w}</p>)}</Section>}
-            {r.which_to_trust_more && <div className={`${c.accentBg} border rounded-xl p-5`}><h3 className={`font-bold ${c.accentText} text-sm`}>🏆 Which to Trust?</h3><p className={`text-sm ${c.text} mt-1`}>{r.which_to_trust_more.assessment}</p>{r.which_to_trust_more.caveats && <p className={`text-xs ${c.textMuted} mt-2`}>{r.which_to_trust_more.caveats}</p>}</div>}
+            {r.why_different?.length > 0 && <Section id="whydiff" title="🔍 Why They Differ">{r.why_different.map((w, i) => <p key={i} className={`text-sm ${c.textSecondaryondary}`}>• {w}</p>)}</Section>}
+            {r.which_to_trust_more && <div className={`${c.warningBox} border rounded-xl p-5`}><h3 className={`font-bold ${c.accentTxt} text-sm`}>🏆 Which to Trust?</h3><p className={`text-sm ${c.text} mt-1`}>{r.which_to_trust_more.assessment}</p>{r.which_to_trust_more.caveats && <p className={`text-xs ${c.textMuteded} mt-2`}>{r.which_to_trust_more.caveats}</p>}</div>}
             {r.the_takeaway && <div className={`${c.success} border rounded-xl p-4`}><p className="text-sm">🎯 <strong>Takeaway:</strong> {r.the_takeaway}</p></div>}
-            {r.what_we_still_dont_know && <div className={`${c.info} border rounded-xl p-4`}><p className="text-sm">❓ <strong>Still unknown:</strong> {r.what_we_still_dont_know}</p></div>}
+            {r.what_we_still_dont_know && <div className={`${c.infoBox} border rounded-xl p-4`}><p className="text-sm">❓ <strong>Still unknown:</strong> {r.what_we_still_dont_know}</p></div>}
           </div>
         ); })()}
       </>}
@@ -323,18 +348,18 @@ const PaperDigest = () => {
       {mode === 'relevance' && <>
         <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-4`}>
           <h3 className={`font-bold ${c.text}`}>🎯 Does This Apply to Me?</h3>
-          <p className={`text-sm ${c.textMuted}`}>You read about a study. Should you actually care? Should you change anything?</p>
+          <p className={`text-sm ${c.textMuteded}`}>You read about a study. Should you actually care? Should you change anything?</p>
           <textarea value={relSummary} onChange={e => setRelSummary(e.target.value)} placeholder="The finding or claim (e.g., 'Study found that drinking 3 cups of coffee daily reduces heart disease risk by 15%')" rows={3} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
           <textarea value={relContext} onChange={e => setRelContext(e.target.value)} placeholder="Your situation (e.g., 'I'm 35, drink 2 cups a day, have family history of heart disease')" rows={2} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
           <input value={relQuestion} onChange={e => setRelQuestion(e.target.value)} placeholder="Your specific question (e.g., 'Should I drink more coffee?')" className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
-          <button onClick={handleRelevance} disabled={loading} className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-50`}>{loading ? '⏳' : '🎯 Check Relevance'}</button>
+          <button onClick={handleRelevance} disabled={loading} className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-50`}>{loading ? (tool?.icon ?? '⚙️') : '🎯 Check Relevance'}</button>
         </div>
 
         {relResults && (() => { const r = relResults; return (
           <div className="space-y-4">
-            {r.applies_to_you && <div className={`${r.applies_to_you.verdict === 'Yes directly' ? c.success : r.applies_to_you.verdict === 'Not really' ? c.cardAlt : c.warning} border rounded-xl p-5`}><h3 className={`font-bold ${c.text} text-lg`}>{r.applies_to_you.verdict === 'Yes directly' ? '✅' : r.applies_to_you.verdict === 'Not really' ? '🤷' : '🤔'} {r.applies_to_you.verdict}</h3><p className={`text-sm ${c.textSecondary} mt-1`}>{r.applies_to_you.explanation}</p></div>}
-            {r.should_you_change && <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-2`}><h3 className={`font-bold ${c.text}`}>🔄 Should You Change?</h3><p className={`text-sm ${c.textSecondary}`}>{r.should_you_change.behavior}</p><p className={`text-sm ${c.textSecondary}`}>📊 <strong>Confidence:</strong> {r.should_you_change.confidence}</p>{r.should_you_change.cost_of_waiting && <p className={`text-sm ${c.textMuted}`}>⏳ Cost of waiting: {r.should_you_change.cost_of_waiting}</p>}</div>}
-            {r.talk_to && <div className={`${c.info} border rounded-xl p-4`}><p className="text-sm">👩‍⚕️ {r.talk_to}</p></div>}
+            {r.applies_to_you && <div className={`${r.applies_to_you.verdict === 'Yes directly' ? c.success : r.applies_to_you.verdict === 'Not really' ? c.cardAlt : c.warning} border rounded-xl p-5`}><h3 className={`font-bold ${c.text} text-lg`}>{r.applies_to_you.verdict === 'Yes directly' ? '✅' : r.applies_to_you.verdict === 'Not really' ? '🤷' : '🤔'} {r.applies_to_you.verdict}</h3><p className={`text-sm ${c.textSecondaryondary} mt-1`}>{r.applies_to_you.explanation}</p></div>}
+            {r.should_you_change && <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-2`}><h3 className={`font-bold ${c.text}`}>🔄 Should You Change?</h3><p className={`text-sm ${c.textSecondaryondary}`}>{r.should_you_change.behavior}</p><p className={`text-sm ${c.textSecondaryondary}`}>📊 <strong>Confidence:</strong> {r.should_you_change.confidence}</p>{r.should_you_change.cost_of_waiting && <p className={`text-sm ${c.textMuteded}`}>⏱️ Cost of waiting: {r.should_you_change.cost_of_waiting}</p>}</div>}
+            {r.talk_to && <div className={`${c.infoBox} border rounded-xl p-4`}><p className="text-sm">👩‍⚕️ {r.talk_to}</p></div>}
             {r.the_bottom_line && <div className={`${c.success} border rounded-xl p-5`}><p className={`text-sm font-medium ${isDark ? 'text-green-200' : 'text-green-800'}`}>☕ {r.the_bottom_line}</p></div>}
           </div>
         ); })()}
@@ -344,20 +369,20 @@ const PaperDigest = () => {
       {mode === 'jargon' && <>
         <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-4`}>
           <h3 className={`font-bold ${c.text}`}>🔤 Jargon Decoder</h3>
-          <p className={`text-sm ${c.textMuted}`}>List terms you don't understand. We'll explain them like a human, not a textbook. Saved to your dictionary.</p>
+          <p className={`text-sm ${c.textMuteded}`}>List terms you don't understand. We'll explain them like a human, not a textbook. Saved to your dictionary.</p>
           <input value={jargonTerms} onChange={e => setJargonTerms(e.target.value)} placeholder="Terms (comma-separated: 'p-value, meta-analysis, double-blind')" className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
           <textarea value={jargonContext} onChange={e => setJargonContext(e.target.value)} placeholder="Paste the sentence they appeared in (optional — helps with context)" rows={2} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
-          <button onClick={handleJargon} disabled={loading} className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-50`}>{loading ? '⏳' : '🔤 Decode'}</button>
+          <button onClick={handleJargon} disabled={loading} className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-50`}>{loading ? (tool?.icon ?? '⚙️') : '🔤 Decode'}</button>
         </div>
 
         {jargonResults?.terms?.map((t, i) => (
           <div key={i} className={`${c.card} border ${c.border} rounded-xl p-5 space-y-2`}>
             <h3 className={`font-bold ${c.text}`}>{t.term}</h3>
-            <p className={`text-sm ${c.textSecondary}`}>{t.plain_english}</p>
-            {t.why_it_matters && <p className={`text-sm ${c.textMuted}`}>💡 {t.why_it_matters}</p>}
+            <p className={`text-sm ${c.textSecondaryondary}`}>{t.plain_english}</p>
+            {t.why_it_matters && <p className={`text-sm ${c.textMuteded}`}>💡 {t.why_it_matters}</p>}
             {t.watch_out && <div className={`${c.warning} border rounded-lg p-3`}><p className="text-xs">⚠️ {t.watch_out}</p></div>}
-            {t.example && <p className={`text-xs ${c.textMuted}`}>📝 {t.example}</p>}
-            <p className={`text-xs ${c.accentText}`}>📖 Saved to dictionary</p>
+            {t.example && <p className={`text-xs ${c.textMuteded}`}>📝 {t.example}</p>}
+            <p className={`text-xs ${c.accentTxt}`}>📖 Saved to dictionary</p>
           </div>
         ))}
       </>}
@@ -366,7 +391,27 @@ const PaperDigest = () => {
       {error && <div className={`${c.danger} border rounded-xl p-4 text-sm`}>⚠️ {error}</div>}
 
       {/* ─── Cross-References ─── */}
-      {(digestResults || mediaResults || compareResults || relResults) && <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}><p className={`text-xs ${c.textMuted} mb-2`}>Related tools:</p><div className="flex flex-wrap gap-2">{[['JargonAssassin', '🗡️', 'simplify any text'], ['BrainDumpStructurer', '🧠', 'organize complex thoughts'], ['BookScout', '📚', 'find books on this topic']].map(([id, ico, desc]) => <a key={id} href={`/${id}`} target="_blank" rel="noopener noreferrer" className={`text-xs px-3 py-1.5 rounded-lg ${c.btnSecondary} no-underline`}>{ico} {desc}</a>)}</div></div>}
+      {(digestResults || mediaResults || compareResults || relResults) && <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}><p className={`text-xs ${c.textMuteded} mb-2`}>Related tools:</p><div className="flex flex-wrap gap-2">{[['JargonAssassin', '🗡️', 'simplify any text'], ['BrainDumpStructurer', '🧠', 'organize complex thoughts'], ['BookScout', '📚', 'find books on this topic']].map(([id, ico, desc]) => <a key={id} href={`/${id}`} target="_blank" rel="noopener noreferrer" className={`text-xs px-3 py-1.5 rounded-lg ${c.btnSecondaryondary} no-underline`}>{ico} {desc}</a>)}</div></div>}
+      <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
+        <p className={`text-xs font-bold ${c.textMuted} mb-2`}>🔗 Related tools</p>
+        <div className="flex flex-wrap gap-3">
+          <a href="/tool/decision-coach" className={`text-xs ${linkStyle}`}>🎯 Decision Coach</a>
+          <a href="/tool/spiral-stopper" className={`text-xs ${linkStyle}`}>🌀 Spiral Stopper</a>
+        </div>
+      </div>
+      {history.length > 0 && (
+        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
+          <p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 Recent</p>
+          <div className="space-y-1">
+            {history.map(s => (
+              <div key={s.id} className="flex items-center justify-between">
+                <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || 'Session'}</span>
+                <span className={`text-xs ${c.textMuted} ml-2`}>{new Date(s.date).toLocaleDateString()}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

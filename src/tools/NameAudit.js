@@ -5,12 +5,11 @@ import { usePersistentState } from '../hooks/usePersistentState';
 import { usePremium, PremiumGate, PremiumBadge } from '../hooks/usePremium';
 import { BookmarkButton } from '../hooks/useBookmarks';
 import { getToolById } from '../data/tools';
-import { CopyBtn } from '../components/ActionButtons';
+import { CopyBtn, ActionBar } from '../components/ActionButtons';
 
-const NameAudit = () => {
+const NameAudit = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
-  const { theme } = useTheme();
-  const isDark = theme === 'dark';
+  const { isDark } = useTheme();
   const toolData = getToolById('NameAudit');
   const { isUnlocked } = usePremium();
 
@@ -34,8 +33,6 @@ const NameAudit = () => {
     success: isDark ? 'bg-green-900/20 border-green-700 text-green-200' : 'bg-green-50 border-green-300 text-green-800',
     warning: isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
     danger: isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
-    info: isDark ? 'bg-blue-900/20 border-blue-700 text-blue-200' : 'bg-blue-50 border-blue-200 text-blue-800',
-    purple: isDark ? 'bg-purple-900/20 border-purple-700 text-purple-200' : 'bg-purple-50 border-purple-200 text-purple-800',
     cyan: isDark ? 'bg-cyan-900/20 border-cyan-700 text-cyan-200' : 'bg-cyan-50 border-cyan-200 text-cyan-800',
   };
 
@@ -156,8 +153,9 @@ const NameAudit = () => {
       strengths: data.strengths?.length || 0,
       weaknesses: data.weaknesses?.length || 0,
       dealBreakers: data.deal_breakers?.length || 0,
+      preview: (data.name_analyzed || '').slice(0, 40),
     };
-    setAuditHistory(prev => [entry, ...prev.filter(e => e.name !== data.name_analyzed)].slice(0, 30));
+    setAuditHistory(prev => [entry, ...prev.filter(e => e.name !== data.name_analyzed)].slice(0, 6));
   }, [context, setAuditHistory]);
 
   const loadFromHistory = (entry) => {
@@ -524,48 +522,48 @@ const NameAudit = () => {
     const mockups = {
       app_store: (
         <div className={`p-4 rounded-lg border ${c.border} ${isDark ? 'bg-zinc-900' : 'bg-gray-50'}`}>
-          <p className={`text-xs ${c.textMuted} mb-2`}>App Store Listing</p>
+          <p className={`text-xs ${c.textMuteded} mb-2`}>App Store Listing</p>
           <div className="flex items-center gap-3">
             <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-2xl font-bold ${isDark ? 'bg-cyan-600 text-white' : 'bg-cyan-500 text-white'}`}>{initial}</div>
             <div>
               <p className={`font-bold ${c.text}`}>{n}</p>
-              <p className={`text-xs ${c.textMuted}`}>{industry || 'Productivity'} · ★★★★★ 4.8</p>
-              <p className={`text-[10px] ${c.textMuted}`}>{slug}.com</p>
+              <p className={`text-xs ${c.textMuteded}`}>{industry || 'Productivity'} · ★★★★★ 4.8</p>
+              <p className={`text-[10px] ${c.textMuteded}`}>{slug}.com</p>
             </div>
           </div>
         </div>
       ),
       business_card: (
         <div className={`p-6 rounded-lg border-2 ${isDark ? 'border-zinc-600 bg-zinc-900' : 'border-gray-300 bg-white'} text-center`}>
-          <p className={`text-xs ${c.textMuted} mb-3`}>Business Card</p>
+          <p className={`text-xs ${c.textMuteded} mb-3`}>Business Card</p>
           <p className={`text-xl font-bold tracking-wide ${c.text}`} style={{ fontFamily: 'Georgia, serif' }}>{n}</p>
-          <p className={`text-[10px] ${c.textMuted} mt-1`}>{industry || 'Innovation for everyone'}</p>
+          <p className={`text-[10px] ${c.textMuteded} mt-1`}>{industry || 'Innovation for everyone'}</p>
           <div className={`mt-3 pt-2 border-t ${c.border}`}>
-            <p className={`text-[10px] ${c.textMuted}`}>hello@{slug}.com · {slug}.com</p>
+            <p className={`text-[10px] ${c.textMuteded}`}>hello@{slug}.com · {slug}.com</p>
           </div>
         </div>
       ),
       email_sig: (
         <div className={`p-4 rounded-lg border ${c.border} ${isDark ? 'bg-zinc-900' : 'bg-gray-50'}`}>
-          <p className={`text-xs ${c.textMuted} mb-2`}>Email Signature</p>
-          <div className={`text-xs ${c.textSecondary} space-y-0.5`}>
+          <p className={`text-xs ${c.textMuteded} mb-2`}>Email Signature</p>
+          <div className={`text-xs ${c.textSecondaryondary} space-y-0.5`}>
             <p className="font-semibold">Alex Johnson</p>
             <p>Co-founder & CEO, <span className={`font-bold ${c.text}`}>{n}</span></p>
-            <p className={`${c.textMuted}`}>alex@{slug}.com | {slug}.com</p>
+            <p className={`${c.textMuteded}`}>alex@{slug}.com | {slug}.com</p>
           </div>
         </div>
       ),
       hero: (
         <div className={`p-6 rounded-lg border ${c.border} ${isDark ? 'bg-gradient-to-b from-zinc-800 to-zinc-900' : 'bg-gradient-to-b from-gray-50 to-white'} text-center`}>
-          <p className={`text-xs ${c.textMuted} mb-3`}>Website Hero</p>
+          <p className={`text-xs ${c.textMuteded} mb-3`}>Website Hero</p>
           <p className={`text-2xl font-bold ${c.text} mb-1`}>{n}</p>
-          <p className={`text-sm ${c.textSecondary}`}>{industry ? `The future of ${industry.toLowerCase()}` : 'Built for what comes next'}</p>
+          <p className={`text-sm ${c.textSecondaryondary}`}>{industry ? `The future of ${industry.toLowerCase()}` : 'Built for what comes next'}</p>
           <div className={`inline-block mt-3 px-4 py-1.5 rounded-full text-xs font-semibold ${isDark ? 'bg-cyan-600 text-white' : 'bg-cyan-500 text-white'}`}>Get Started</div>
         </div>
       ),
       browser_bar: (
         <div className={`p-3 rounded-lg border ${c.border} ${isDark ? 'bg-zinc-900' : 'bg-gray-50'}`}>
-          <p className={`text-xs ${c.textMuted} mb-2`}>Browser Bar</p>
+          <p className={`text-xs ${c.textMuteded} mb-2`}>Browser Bar</p>
           <div className={`flex items-center gap-2 p-2 rounded border ${isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-gray-300'}`}>
             <span className="text-xs">🔒</span>
             <span className={`text-sm font-mono ${c.text}`}>https://{slug}.com</span>
@@ -574,38 +572,38 @@ const NameAudit = () => {
       ),
       notification: (
         <div className={`p-3 rounded-lg border ${c.border} ${isDark ? 'bg-zinc-900' : 'bg-gray-50'}`}>
-          <p className={`text-xs ${c.textMuted} mb-2`}>Push Notification</p>
+          <p className={`text-xs ${c.textMuteded} mb-2`}>Push Notification</p>
           <div className={`flex items-center gap-2.5 p-2.5 rounded-lg ${isDark ? 'bg-zinc-800' : 'bg-white'} shadow`}>
             <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold ${isDark ? 'bg-cyan-600 text-white' : 'bg-cyan-500 text-white'}`}>{initial}</div>
             <div>
               <p className={`text-xs font-bold ${c.text}`}>{n}</p>
-              <p className={`text-[10px] ${c.textMuted}`}>Your weekly report is ready</p>
+              <p className={`text-[10px] ${c.textMuteded}`}>Your weekly report is ready</p>
             </div>
           </div>
         </div>
       ),
       spotify: (
         <div className={`p-4 rounded-lg border ${c.border} ${isDark ? 'bg-zinc-900' : 'bg-gray-50'}`}>
-          <p className={`text-xs ${c.textMuted} mb-2`}>Spotify Artist Page</p>
+          <p className={`text-xs ${c.textMuteded} mb-2`}>Spotify Artist Page</p>
           <div className="flex items-center gap-3">
             <div className={`w-14 h-14 rounded-full flex items-center justify-center text-xl font-bold ${isDark ? 'bg-green-700 text-white' : 'bg-green-600 text-white'}`}>{initial}</div>
             <div>
               <p className={`font-bold ${c.text}`}>{n}</p>
-              <p className={`text-xs ${c.textMuted}`}>23,847 monthly listeners</p>
+              <p className={`text-xs ${c.textMuteded}`}>23,847 monthly listeners</p>
             </div>
           </div>
         </div>
       ),
       poster: (
         <div className={`p-6 rounded-lg border-2 ${isDark ? 'border-zinc-500 bg-zinc-900' : 'border-gray-400 bg-gray-50'} text-center`}>
-          <p className={`text-xs ${c.textMuted} mb-3`}>Tour Poster</p>
+          <p className={`text-xs ${c.textMuteded} mb-3`}>Tour Poster</p>
           <p className={`text-3xl font-black tracking-wider uppercase ${c.text}`} style={{ fontFamily: 'Impact, sans-serif' }}>{n}</p>
-          <p className={`text-xs ${c.textMuted} mt-2`}>LIVE AT THE FILLMORE · OCT 15</p>
+          <p className={`text-xs ${c.textMuteded} mt-2`}>LIVE AT THE FILLMORE · OCT 15</p>
         </div>
       ),
       merch: (
         <div className={`p-4 rounded-lg border ${c.border} ${isDark ? 'bg-zinc-900' : 'bg-gray-50'} text-center`}>
-          <p className={`text-xs ${c.textMuted} mb-2`}>Merch / T-Shirt</p>
+          <p className={`text-xs ${c.textMuteded} mb-2`}>Merch / T-Shirt</p>
           <div className={`py-6 rounded ${isDark ? 'bg-zinc-800' : 'bg-gray-800'}`}>
             <p className="text-white text-lg font-bold tracking-widest uppercase">{n}</p>
           </div>
@@ -613,30 +611,30 @@ const NameAudit = () => {
       ),
       packaging: (
         <div className={`p-4 rounded-lg border-2 ${c.border} ${isDark ? 'bg-zinc-900' : 'bg-white'} text-center`}>
-          <p className={`text-xs ${c.textMuted} mb-2`}>Product Label</p>
+          <p className={`text-xs ${c.textMuteded} mb-2`}>Product Label</p>
           <p className={`text-lg font-bold tracking-wider ${c.text}`} style={{ fontFamily: 'Georgia, serif' }}>{n}</p>
           <div className={`h-px ${isDark ? 'bg-zinc-600' : 'bg-gray-300'} my-1.5 mx-8`}></div>
-          <p className={`text-[10px] tracking-widest uppercase ${c.textMuted}`}>{industry || 'Premium Quality'}</p>
+          <p className={`text-[10px] tracking-widest uppercase ${c.textMuteded}`}>{industry || 'Premium Quality'}</p>
         </div>
       ),
       birth_announcement: (
         <div className={`p-6 rounded-lg border-2 ${isDark ? 'border-pink-700 bg-pink-950/20' : 'border-pink-300 bg-pink-50'} text-center`}>
-          <p className={`text-xs ${c.textMuted} mb-2`}>Birth Announcement</p>
-          <p className={`text-xs tracking-widest uppercase ${c.textMuted}`}>welcome to the world</p>
+          <p className={`text-xs ${c.textMuteded} mb-2`}>Birth Announcement</p>
+          <p className={`text-xs tracking-widest uppercase ${c.textMuteded}`}>welcome to the world</p>
           <p className={`text-3xl font-light mt-1 ${c.text}`} style={{ fontFamily: 'Georgia, serif' }}>{n}</p>
-          <p className={`text-xs ${c.textMuted} mt-1`}>7 lbs 4 oz · January 15, 2026</p>
+          <p className={`text-xs ${c.textMuteded} mt-1`}>7 lbs 4 oz · January 15, 2026</p>
         </div>
       ),
       nametag: (
         <div className={`p-4 rounded-lg border-2 ${isDark ? 'border-amber-700 bg-amber-950/20' : 'border-amber-300 bg-amber-50'} text-center`}>
-          <p className={`text-xs ${c.textMuted} mb-1`}>Name Tag</p>
+          <p className={`text-xs ${c.textMuteded} mb-1`}>Name Tag</p>
           <p className={`text-2xl font-bold ${c.text}`}>{n}</p>
         </div>
       ),
       vet_record: (
         <div className={`p-4 rounded-lg border ${c.border} ${isDark ? 'bg-zinc-900' : 'bg-gray-50'}`}>
-          <p className={`text-xs ${c.textMuted} mb-2`}>Vet Record</p>
-          <div className={`text-xs ${c.textSecondary} space-y-0.5`}>
+          <p className={`text-xs ${c.textMuteded} mb-2`}>Vet Record</p>
+          <div className={`text-xs ${c.textSecondaryondary} space-y-0.5`}>
             <p><span className="font-bold">Patient:</span> <span className={`font-bold ${c.text}`}>{n}</span></p>
             <p><span className="font-bold">Species:</span> Canine · <span className="font-bold">Breed:</span> Golden Retriever</p>
             <p><span className="font-bold">Owner:</span> Johnson, A.</p>
@@ -676,7 +674,7 @@ const NameAudit = () => {
         <h3 className={`font-bold ${c.text} mb-3 flex items-center gap-2`}>
           <span>📈</span> Name Evolution Timeline
         </h3>
-        <p className={`text-xs ${c.textMuted} mb-3`}>Track your naming journey — how scores changed across audits</p>
+        <p className={`text-xs ${c.textMuteded} mb-3`}>Track your naming journey — how scores changed across audits</p>
         <div className="flex items-end gap-1 h-24 mb-2">
           {evolutionTimeline.slice(-15).map((entry, i) => {
             const pct = entry.score ? (entry.score / 100) * 100 : 10;
@@ -686,7 +684,7 @@ const NameAudit = () => {
             return (
               <div key={i} className="flex-1 flex flex-col items-center gap-1 group relative">
                 <div className={`w-full rounded-t ${barColor} transition-all`} style={{ height: `${pct}%`, minHeight: '4px' }}></div>
-                <p className={`text-[8px] ${c.textMuted} truncate max-w-full`}>{entry.name?.slice(0, 6)}</p>
+                <p className={`text-[8px] ${c.textMuteded} truncate max-w-full`}>{entry.name?.slice(0, 6)}</p>
                 {/* Tooltip */}
                 <div className={`absolute bottom-full mb-1 left-1/2 -translate-x-1/2 hidden group-hover:block z-10 px-2 py-1 rounded text-xs whitespace-nowrap ${isDark ? 'bg-zinc-700 text-zinc-100' : 'bg-gray-800 text-white'}`}>
                   {entry.name}: {entry.score}/100 ({entry.grade})
@@ -696,11 +694,11 @@ const NameAudit = () => {
           })}
         </div>
         <div className="flex justify-between">
-          <span className={`text-[9px] ${c.textMuted}`}>← Older</span>
-          <span className={`text-[9px] ${c.textMuted}`}>Newer →</span>
+          <span className={`text-[9px] ${c.textMuteded}`}>← Older</span>
+          <span className={`text-[9px] ${c.textMuteded}`}>Newer →</span>
         </div>
         <button onClick={() => { if (window.confirm('Clear evolution timeline?')) setEvolutionTimeline([]); }}
-          className={`text-xs ${c.textMuted} hover:underline mt-2`}>Clear timeline</button>
+          className={`text-xs ${c.textMuteded} hover:underline mt-2`}>Clear timeline</button>
       </div>
     );
   };
@@ -762,7 +760,7 @@ const NameAudit = () => {
   const PassFail = ({ pass, notes }) => (
     <div className="flex items-start gap-2">
       <span className="flex-shrink-0 mt-0.5">{pass ? '✅' : '❌'}</span>
-      <span className={`text-sm ${c.textSecondary}`}>{notes}</span>
+      <span className={`text-sm ${c.textSecondaryondary}`}>{notes}</span>
     </div>
   );
 
@@ -978,7 +976,7 @@ const NameAudit = () => {
           </div>
         </button>
         {explainerVisible && explainer && (
-          <div className={`mt-2 p-3 rounded-lg ${c.info} border text-sm`}>
+          <div className={`mt-2 p-3 rounded-lg ${c.cardAlt} border text-sm`}>
             💡 {explainer}
           </div>
         )}
@@ -993,7 +991,7 @@ const NameAudit = () => {
       <div className="mb-5 flex items-start justify-between">
         <div>
           <h2 className={`text-2xl font-bold ${c.text}`}>{toolData?.title || 'NameAudit'} {toolData?.icon || '🔍'}</h2>
-          <p className={`text-sm ${c.textMuted}`}>{toolData?.tagline || 'Stress-test any name before you commit'}</p>
+          <p className={`text-sm ${c.textMuteded}`}>{toolData?.tagline || 'Stress-test any name before you commit'}</p>
         </div>
       </div>
 
@@ -1038,19 +1036,19 @@ const NameAudit = () => {
                     className={`flex-1 p-3 border rounded-lg outline-none text-sm font-semibold focus:ring-2 focus:ring-cyan-300 ${c.input}`} />
                   {compareNames.length > 2 && (
                     <button onClick={() => setCompareNames(compareNames.filter((_, i) => i !== idx))}
-                      className={`p-2 rounded-lg ${c.btnSecondary}`}><span>✕</span></button>
+                      className={`p-2 rounded-lg ${c.btnPrimarySecondaryondary}`}><span>✕</span></button>
                   )}
                 </div>
               ))}
               {compareNames.length < 4 && (
                 isUnlocked('nameAudit.compare3plus') || compareNames.length < 2 ? (
                   <button onClick={() => setCompareNames([...compareNames, ''])}
-                    className={`flex items-center gap-1 text-sm ${c.textMuted} hover:${c.text}`}>
+                    className={`flex items-center gap-1 text-sm ${c.textMuteded} hover:${c.text}`}>
                     <span>➕</span> Add another <PremiumBadge feature="nameAudit.compare3plus" />
                   </button>
                 ) : (
                   <PremiumGate feature="nameAudit.compare3plus" label="Compare 3-4 Names">
-                    <button className={`flex items-center gap-1 text-sm ${c.textMuted}`}>
+                    <button className={`flex items-center gap-1 text-sm ${c.textMuteded}`}>
                       <span>➕</span> Add another
                     </button>
                   </PremiumGate>
@@ -1074,7 +1072,7 @@ const NameAudit = () => {
 
           {/* Optional */}
           <div className={`${c.card} rounded-xl shadow-lg p-6 space-y-4`}>
-            <p className={`text-xs font-bold uppercase tracking-wide ${c.textMuted}`}>Optional — improves analysis accuracy</p>
+            <p className={`text-xs font-bold uppercase tracking-wide ${c.textMuteded}`}>Optional — improves analysis accuracy</p>
             <div>
               <label className={`block text-sm font-semibold ${c.text} mb-1`}>Industry / Context</label>
               <input type="text" value={industry} onChange={(e) => setIndustry(e.target.value)}
@@ -1115,20 +1113,20 @@ const NameAudit = () => {
                           {entry.dealBreakers > 0 && <span className={`text-xs px-1.5 py-0.5 rounded border ${c.danger}`}>🚨 {entry.dealBreakers} deal breaker{entry.dealBreakers > 1 ? 's' : ''}</span>}
                         </div>
                         <div className="flex items-center gap-2 mt-0.5">
-                          {entry.context && <span className={`text-xs ${c.textMuted}`}>{entry.context}</span>}
-                          <span className={`text-xs ${c.textMuted}`}>
+                          {entry.context && <span className={`text-xs ${c.textMuteded}`}>{entry.context}</span>}
+                          <span className={`text-xs ${c.textMuteded}`}>
                             {new Date(entry.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
                           </span>
                         </div>
                       </div>
                       <button onClick={() => loadFromHistory(entry)}
-                        className={`flex-shrink-0 flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium ${c.btnSecondary}`}>
+                        className={`flex-shrink-0 flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium ${c.btnPrimarySecondaryondary}`}>
                         <span>🔄</span> Re-audit
                       </button>
                     </div>
                   ))}
                   <button onClick={() => { setAuditHistory([]); setShowHistory(false); }}
-                    className={`text-xs ${c.textMuted} hover:underline mt-1`}>Clear history</button>
+                    className={`text-xs ${c.textMuteded} hover:underline mt-1`}>Clear history</button>
                 </div>
               )}
             </div>
@@ -1138,9 +1136,9 @@ const NameAudit = () => {
           <button onClick={mode === 'analyze' ? handleAnalyze : handleCompare}
             disabled={loading || compareLoading || (mode === 'analyze' ? (!name.trim() || !context) : (compareNames.filter(n => n.trim()).length < 2 || !context))}
             className={`w-full py-4 px-6 rounded-xl font-semibold text-lg transition-all flex items-center justify-center gap-2 shadow-lg ${
-              (loading || compareLoading) ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : c.btnPrimary
+              (loading || compareLoading) ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : c.btnPrimaryPrimary
             }`}>
-            {(loading || compareLoading) ? (<><span className="animate-spin inline-block">⏳</span> {mode === 'analyze' ? 'Analyzing...' : 'Comparing...'}</>)
+            {(loading || compareLoading) ? (<><span className="animate-spin inline-block">{tool?.icon ?? '⚙️'}</span> {mode === 'analyze' ? 'Analyzing...' : 'Comparing...'}</>)
               : (<><span>🔍</span> {mode === 'analyze' ? 'Analyze This Name' : 'Compare These Names'}</>)}
           </button>
 
@@ -1151,7 +1149,7 @@ const NameAudit = () => {
           )}
 
           {/* NameStorm cross-ref */}
-          <p className={`text-xs text-center ${c.textMuted}`}>
+          <p className={`text-xs text-center ${c.textMuteded}`}>
             Need name ideas first? Try{' '}
             <a href="/NameStorm" className={linkStyle}>NameStorm</a>{' '}
             to generate names, then bring your favorites here.
@@ -1166,10 +1164,11 @@ const NameAudit = () => {
             <span className={`text-sm font-semibold ${c.text}`}>Comparison: {compareNames.filter(n => n.trim()).join(' vs ')}</span>
             <div className="flex items-center gap-2 flex-wrap">
               <CopyBtn content={buildCompareText()} label="Copy All" />
-              <button onClick={handlePrintCompare} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
+              <ActionBar content={buildFullText()} copyLabel="Copy Report" />
+              <button onClick={handlePrintCompare} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnPrimarySecondaryondary}`}>
                 <span>🖨️</span> Print
               </button>
-              <button onClick={handleShareCompare} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
+              <button onClick={handleShareCompare} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnPrimarySecondaryondary}`}>
                 <span>📤</span> Share
               </button>
               <BookmarkButton toolId="NameAudit" isDark={isDark} size="sm" />
@@ -1187,8 +1186,8 @@ const NameAudit = () => {
                 <h3 className={`text-xl font-bold ${c.text}`}>{compareResults.winner.name}</h3>
                 <span className={`px-2 py-0.5 text-xs font-bold rounded-full ${c.warning} border`}>{compareResults.winner.margin.replace(/_/g, ' ')}</span>
               </div>
-              <p className={`text-sm ${c.textSecondary}`}>{compareResults.winner.why}</p>
-              <p className={`text-xs ${c.textMuted} mt-3 italic`}>💡 Run this comparison 2-3 times — if the same name wins consistently, you've got your answer! If it's a toss-up, your finalists are genuinely close and you can trust your instincts.</p>
+              <p className={`text-sm ${c.textSecondaryondary}`}>{compareResults.winner.why}</p>
+              <p className={`text-xs ${c.textMuteded} mt-3 italic`}>💡 Run this comparison 2-3 times — if the same name wins consistently, you've got your answer! If it's a toss-up, your finalists are genuinely close and you can trust your instincts.</p>
             </div>
           )}
 
@@ -1209,7 +1208,7 @@ const NameAudit = () => {
                       <span className={`px-2.5 py-1 rounded-full text-xs font-bold border ${gradeColors[cand.grade] || c.warning}`}>{cand.grade}</span>
                     </div>
                   </div>
-                  <p className={`text-sm ${c.textSecondary} mb-3`}>{cand.one_liner}</p>
+                  <p className={`text-sm ${c.textSecondaryondary} mb-3`}>{cand.one_liner}</p>
                   <div className="space-y-2">
                     <div className={`p-2 rounded-lg ${c.success} border`}>
                       <p className="text-xs font-bold mb-0.5">Best quality</p><p className="text-sm">{cand.best_quality}</p>
@@ -1222,7 +1221,7 @@ const NameAudit = () => {
                       <span className={`px-2 py-0.5 rounded text-xs border ${cand.radio_test === 'pass' ? c.success : cand.radio_test === 'fail' ? c.danger : c.warning}`}>Radio: {cand.radio_test}</span>
                       <span className={`px-2 py-0.5 rounded text-xs border ${cand.global_safety === 'clean' ? c.success : cand.global_safety === 'problem' ? c.danger : c.warning}`}>Global: {cand.global_safety}</span>
                     </div>
-                    <p className={`text-xs ${c.textMuted} italic`}>Personality: {cand.personality}</p>
+                    <p className={`text-xs ${c.textMuteded} italic`}>Personality: {cand.personality}</p>
                   </div>
                 </div>
               );
@@ -1230,7 +1229,7 @@ const NameAudit = () => {
           </div>
 
           {compareResults.comparison_insight && (
-            <div className={`p-4 rounded-xl ${c.info} border text-center`}>
+            <div className={`p-4 rounded-xl ${c.cardAlt} border text-center`}>
               <p className="text-sm font-medium">{compareResults.comparison_insight}</p>
             </div>
           )}
@@ -1254,23 +1253,23 @@ const NameAudit = () => {
               </div>
               <div className="flex items-center gap-2 flex-wrap">
                 <CopyBtn content={buildFullText()} label="Copy All" />
-                <button onClick={handlePrint} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
+                <button onClick={handlePrint} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnPrimarySecondaryondary}`}>
                   <span>🖨️</span> Print
                 </button>
-                <button onClick={handleShare} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
+                <button onClick={handleShare} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnPrimarySecondaryondary}`}>
                   <span>📤</span> Share
                 </button>
                 <PremiumGate feature="nameAudit.pdfExport" inline>
-                  <button onClick={handlePdfExport} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
+                  <button onClick={handlePdfExport} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnPrimarySecondaryondary}`}>
                     <span>📄</span> PDF <PremiumBadge feature="nameAudit.pdfExport" />
                   </button>
                 </PremiumGate>
                 <button onClick={() => allExpanded ? collapseAll() : expandAll()}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnPrimarySecondaryondary}`}>
                   <span>{allExpanded ? '🔼' : '🔽'}</span> {allExpanded ? 'Collapse All' : 'Expand All'}
                 </button>
                 <button onClick={() => setShowMockups(!showMockups)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${showMockups ? (isDark ? 'bg-cyan-900/40 text-cyan-200' : 'bg-cyan-100 text-cyan-700') : c.btnSecondary}`}>
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${showMockups ? (isDark ? 'bg-cyan-900/40 text-cyan-200' : 'bg-cyan-100 text-cyan-700') : c.btnPrimarySecondaryondary}`}>
                   <span>🎨</span> Mockups
                 </button>
                 <button onClick={reset} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-50 text-cyan-700'}`}>
@@ -1281,19 +1280,19 @@ const NameAudit = () => {
 
             {/* Analyze Another — quick input */}
             <div className={`flex items-center gap-2 pt-2 border-t ${c.border}`}>
-              <span className={`text-xs font-semibold ${c.textMuted} flex-shrink-0`}>Quick audit:</span>
+              <span className={`text-xs font-semibold ${c.textMuteded} flex-shrink-0`}>Quick audit:</span>
               <input type="text" value={quickName} onChange={(e) => setQuickName(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter') handleQuickAnalyze(); }}
                 placeholder="Test another name (same settings)"
                 className={`flex-1 p-2 border rounded-lg outline-none text-sm focus:ring-2 focus:ring-cyan-300 ${c.input}`} />
               <button onClick={handleQuickAnalyze} disabled={loading || !quickName.trim()}
-                className={`px-3 py-2 rounded-lg text-sm font-medium ${loading || !quickName.trim() ? (isDark ? 'bg-zinc-700 text-zinc-500' : 'bg-gray-100 text-gray-400') : c.btnPrimary}`}>
-                {loading ? <span className="animate-spin inline-block">⏳</span> : 'Audit'}
+                className={`px-3 py-2 rounded-lg text-sm font-medium ${loading || !quickName.trim() ? (isDark ? 'bg-zinc-700 text-zinc-500' : 'bg-gray-100 text-gray-400') : c.btnPrimaryPrimary}`}>
+                {loading ? <span className="animate-spin inline-block">{tool?.icon ?? '⚙️'}</span> : 'Audit'}
               </button>
               {/* Compare from Analyze */}
               {!analyzeToCompare ? (
                 <button onClick={() => setAnalyzeToCompare(true)}
-                  className={`flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium flex-shrink-0 ${c.btnSecondary}`}>
+                  className={`flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium flex-shrink-0 ${c.btnPrimarySecondaryondary}`}>
                   <span>📊</span> Compare
                 </button>
               ) : (
@@ -1303,11 +1302,11 @@ const NameAudit = () => {
                     placeholder="vs..."
                     className={`w-28 p-2 border rounded-lg outline-none text-sm focus:ring-2 focus:ring-cyan-300 ${c.input}`} />
                   <button onClick={handleCompareFromAnalyze} disabled={compareLoading || !compareSecondName.trim()}
-                    className={`px-3 py-2 rounded-lg text-sm font-medium ${compareLoading || !compareSecondName.trim() ? (isDark ? 'bg-zinc-700 text-zinc-500' : 'bg-gray-100 text-gray-400') : c.btnPrimary}`}>
-                    {compareLoading ? <span className="animate-spin inline-block">⏳</span> : 'Go'}
+                    className={`px-3 py-2 rounded-lg text-sm font-medium ${compareLoading || !compareSecondName.trim() ? (isDark ? 'bg-zinc-700 text-zinc-500' : 'bg-gray-100 text-gray-400') : c.btnPrimaryPrimary}`}>
+                    {compareLoading ? <span className="animate-spin inline-block">{tool?.icon ?? '⚙️'}</span> : 'Go'}
                   </button>
                   <button onClick={() => { setAnalyzeToCompare(false); setCompareSecondName(''); }}
-                    className={`text-xs ${c.textMuted}`}>✕</button>
+                    className={`text-xs ${c.textMuteded}`}>✕</button>
                 </>
               )}
             </div>
@@ -1332,7 +1331,7 @@ const NameAudit = () => {
                   </span>
                   <h3 className={`text-lg font-bold ${c.text}`}>"{results.name_analyzed}"</h3>
                 </div>
-                <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{results.overall_summary}</p>
+                <p className={`text-sm ${c.textSecondaryondary} leading-relaxed`}>{results.overall_summary}</p>
               </div>
             </div>
           </div>
@@ -1367,7 +1366,7 @@ const NameAudit = () => {
                 <span>📊</span> Score Profile
               </h3>
               <RadarChart scores={results.section_scores} />
-              <p className={`text-xs ${c.textMuted} text-center mt-2`}>Each axis represents a 0-10 score. Larger area = stronger name overall.</p>
+              <p className={`text-xs ${c.textMuteded} text-center mt-2`}>Each axis represents a 0-10 score. Larger area = stronger name overall.</p>
             </div>
           )}
 
@@ -1380,23 +1379,23 @@ const NameAudit = () => {
                 <div className="space-y-3">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div className={`p-3 rounded-lg ${c.cardAlt}`}>
-                      <p className={`text-xs font-bold ${c.textMuted} mb-1`}>BOUBA / KIKI EFFECT</p>
+                      <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>BOUBA / KIKI EFFECT</p>
                       <p className={`text-sm font-semibold ${c.text}`}>{psych.boubaKiki}</p>
-                      <p className={`text-xs ${c.textMuted} mt-0.5`}>Round sounds feel soft & friendly. Sharp sounds feel angular & modern.</p>
+                      <p className={`text-xs ${c.textMuteded} mt-0.5`}>Round sounds feel soft & friendly. Sharp sounds feel angular & modern.</p>
                     </div>
                     <div className={`p-3 rounded-lg ${c.cardAlt}`}>
-                      <p className={`text-xs font-bold ${c.textMuted} mb-1`}>SIZE SYMBOLISM</p>
+                      <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>SIZE SYMBOLISM</p>
                       <p className={`text-sm font-semibold ${c.text}`}>{psych.sizeSymbol}</p>
-                      <p className={`text-xs ${c.textMuted} mt-0.5`}>Front vowels (e, i) feel small & light. Back vowels (a, o, u) feel large & heavy.</p>
+                      <p className={`text-xs ${c.textMuteded} mt-0.5`}>Front vowels (e, i) feel small & light. Back vowels (a, o, u) feel large & heavy.</p>
                     </div>
                     <div className={`p-3 rounded-lg ${c.cardAlt}`}>
-                      <p className={`text-xs font-bold ${c.textMuted} mb-1`}>VOWEL : CONSONANT RATIO</p>
+                      <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>VOWEL : CONSONANT RATIO</p>
                       <p className={`text-sm font-semibold ${c.text}`}>{psych.vowelRatio}</p>
                     </div>
                     <div className={`p-3 rounded-lg ${c.cardAlt}`}>
-                      <p className={`text-xs font-bold ${c.textMuted} mb-1`}>LEXICAL NEIGHBORHOOD</p>
+                      <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>LEXICAL NEIGHBORHOOD</p>
                       <p className={`text-sm font-semibold ${c.text}`}>{psych.neighborDensity}</p>
-                      <p className={`text-xs ${c.textMuted} mt-0.5`}>More similar-sounding words = harder to recall distinctly.</p>
+                      <p className={`text-xs ${c.textMuteded} mt-0.5`}>More similar-sounding words = harder to recall distinctly.</p>
                     </div>
                   </div>
                   {psych.traits.length > 0 && (
@@ -1418,7 +1417,7 @@ const NameAudit = () => {
           {results && (
             <Section id="pronunciation-map" title="Global Pronunciation Confidence" icon="🗺️">
               <div className="space-y-3">
-                <p className={`text-xs ${c.textMuted}`}>Estimated pronunciation accuracy based on phoneme inventory of each language. ✓ = likely correct, ~ = close but imperfect, ✗ = frequently mispronounced.</p>
+                <p className={`text-xs ${c.textMuteded}`}>Estimated pronunciation accuracy based on phoneme inventory of each language. ✓ = likely correct, ~ = close but imperfect, ✗ = frequently mispronounced.</p>
                 <PronunciationMap nameStr={results.name_analyzed} />
               </div>
             </Section>
@@ -1442,13 +1441,13 @@ const NameAudit = () => {
           {results.first_impression && (
             <Section id="impression" title="First Impression" icon="👁️" defaultOpen score={results.section_scores?.first_impression}>
               <div className="space-y-3">
-                <p className={`text-sm ${c.textSecondary}`}>{results.first_impression.gut_reaction}</p>
+                <p className={`text-sm ${c.textSecondaryondary}`}>{results.first_impression.gut_reaction}</p>
                 <div className="flex flex-wrap gap-1.5">
                   {results.first_impression.associations?.map((a, i) => (
                     <span key={i} className={`px-2.5 py-1 rounded-full text-xs border ${c.chip(false)}`}>{a}</span>
                   ))}
                 </div>
-                <p className={`text-sm ${c.textMuted} italic`}>Personality: {results.first_impression.personality_projected}</p>
+                <p className={`text-sm ${c.textMuteded} italic`}>Personality: {results.first_impression.personality_projected}</p>
               </div>
             </Section>
           )}
@@ -1460,8 +1459,8 @@ const NameAudit = () => {
                 {['syllables', 'mouth_feel', 'accent_notes', 'sound_psychology', 'rhythm'].map(key => (
                   results.phonetic_profile[key] && (
                     <div key={key} className={`p-3 rounded-lg ${c.cardAlt}`}>
-                      <p className={`text-xs font-bold ${c.textMuted} mb-1`}>{key.replace(/_/g, ' ').toUpperCase()}</p>
-                      <p className={`text-sm ${c.textSecondary}`}>{results.phonetic_profile[key]}</p>
+                      <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{key.replace(/_/g, ' ').toUpperCase()}</p>
+                      <p className={`text-sm ${c.textSecondaryondary}`}>{results.phonetic_profile[key]}</p>
                     </div>
                   )
                 ))}
@@ -1481,7 +1480,7 @@ const NameAudit = () => {
                   { key: 'shout_test', label: 'Shout Test' },
                 ].map(({ key, label }) => results.memorability[key] && (
                   <div key={key} className="flex items-start gap-3">
-                    <span className={`text-xs font-bold w-32 flex-shrink-0 pt-0.5 ${c.textMuted}`}>{label}</span>
+                    <span className={`text-xs font-bold w-32 flex-shrink-0 pt-0.5 ${c.textMuteded}`}>{label}</span>
                     <PassFail pass={results.memorability[key].pass} notes={results.memorability[key].notes} />
                   </div>
                 ))}
@@ -1519,7 +1518,7 @@ const NameAudit = () => {
                     { label: 'Title Case', val: results.visual_analysis.title_case },
                   ].map(({ label, val }) => val && (
                     <div key={label} className={`p-3 rounded-lg ${c.cardAlt} text-center`}>
-                      <p className={`text-xs ${c.textMuted} mb-1`}>{label}</p>
+                      <p className={`text-xs ${c.textMuteded} mb-1`}>{label}</p>
                       <p className={`text-lg font-bold ${c.text}`}>{val}</p>
                     </div>
                   ))}
@@ -1527,8 +1526,8 @@ const NameAudit = () => {
                 {['url_appearance', 'logo_potential', 'visual_issues'].map(key => (
                   results.visual_analysis[key] && (
                     <div key={key} className={`p-3 rounded-lg ${c.cardAlt}`}>
-                      <p className={`text-xs font-bold ${c.textMuted} mb-1`}>{key.replace(/_/g, ' ').toUpperCase()}</p>
-                      <p className={`text-sm ${c.textSecondary}`}>{results.visual_analysis[key]}</p>
+                      <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{key.replace(/_/g, ' ').toUpperCase()}</p>
+                      <p className={`text-sm ${c.textSecondaryondary}`}>{results.visual_analysis[key]}</p>
                     </div>
                   )
                 ))}
@@ -1558,8 +1557,8 @@ const NameAudit = () => {
                 {['natural_shortening', 'initials', 'hashtag', 'issues'].map(key => (
                   results.abbreviation_audit[key] && (
                     <div key={key} className={`p-3 rounded-lg ${key === 'issues' && results.abbreviation_audit[key] !== 'Clean' ? c.warning : c.cardAlt} ${key === 'issues' && results.abbreviation_audit[key] !== 'Clean' ? 'border' : ''}`}>
-                      <p className={`text-xs font-bold ${c.textMuted} mb-1`}>{key.replace(/_/g, ' ').toUpperCase()}</p>
-                      <p className={`text-sm ${c.textSecondary} ${key === 'hashtag' ? 'font-mono' : ''}`}>{results.abbreviation_audit[key]}</p>
+                      <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{key.replace(/_/g, ' ').toUpperCase()}</p>
+                      <p className={`text-sm ${c.textSecondaryondary} ${key === 'hashtag' ? 'font-mono' : ''}`}>{results.abbreviation_audit[key]}</p>
                     </div>
                   )
                 ))}
@@ -1578,8 +1577,8 @@ const NameAudit = () => {
                   </div>
                 )}
                 <div className={`p-3 rounded-lg ${c.cardAlt}`}>
-                  <p className={`text-xs font-bold ${c.textMuted} mb-1`}>DIFFERENTIATION</p>
-                  <p className={`text-sm ${c.textSecondary}`}>{results.competitive_landscape.differentiation}</p>
+                  <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>DIFFERENTIATION</p>
+                  <p className={`text-sm ${c.textSecondaryondary}`}>{results.competitive_landscape.differentiation}</p>
                 </div>
               </div>
             </Section>
@@ -1592,8 +1591,8 @@ const NameAudit = () => {
                 {['uniqueness', 'google_competition', 'seo_assessment'].map(key => (
                   results.searchability[key] && (
                     <div key={key} className={`p-3 rounded-lg ${c.cardAlt}`}>
-                      <p className={`text-xs font-bold ${c.textMuted} mb-1`}>{key.replace(/_/g, ' ').toUpperCase()}</p>
-                      <p className={`text-sm ${c.textSecondary}`}>{results.searchability[key]}</p>
+                      <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{key.replace(/_/g, ' ').toUpperCase()}</p>
+                      <p className={`text-sm ${c.textSecondaryondary}`}>{results.searchability[key]}</p>
                     </div>
                   )
                 ))}
@@ -1608,8 +1607,8 @@ const NameAudit = () => {
                 {['trend_dependency', 'aging_risk', 'verdict'].map(key => (
                   results.longevity[key] && (
                     <div key={key} className={`p-3 rounded-lg ${c.cardAlt}`}>
-                      <p className={`text-xs font-bold ${c.textMuted} mb-1`}>{key.replace(/_/g, ' ').toUpperCase()}</p>
-                      <p className={`text-sm ${c.textSecondary}`}>{results.longevity[key]}</p>
+                      <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{key.replace(/_/g, ' ').toUpperCase()}</p>
+                      <p className={`text-sm ${c.textSecondaryondary}`}>{results.longevity[key]}</p>
                     </div>
                   )
                 ))}
@@ -1625,8 +1624,8 @@ const NameAudit = () => {
                 {['tld_choice', 'trust_signal', 'confusion_risk', 'competing_com', 'alternative_tlds'].map(key => (
                   results.tld_analysis[key] && (
                     <div key={key} className={`p-3 rounded-lg ${c.cardAlt}`}>
-                      <p className={`text-xs font-bold ${c.textMuted} mb-1`}>{key.replace(/_/g, ' ').toUpperCase()}</p>
-                      <p className={`text-sm ${c.textSecondary}`}>{results.tld_analysis[key]}</p>
+                      <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{key.replace(/_/g, ' ').toUpperCase()}</p>
+                      <p className={`text-sm ${c.textSecondaryondary}`}>{results.tld_analysis[key]}</p>
                     </div>
                   )
                 ))}
@@ -1641,8 +1640,8 @@ const NameAudit = () => {
                 {['browser_bar', 'typosquatting_risk', 'verbal_sharing', 'email_test'].map(key => (
                   results.domain_specific_tests[key] && (
                     <div key={key} className={`p-3 rounded-lg ${c.cardAlt}`}>
-                      <p className={`text-xs font-bold ${c.textMuted} mb-1`}>{key.replace(/_/g, ' ').toUpperCase()}</p>
-                      <p className={`text-sm ${c.textSecondary}`}>{results.domain_specific_tests[key]}</p>
+                      <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{key.replace(/_/g, ' ').toUpperCase()}</p>
+                      <p className={`text-sm ${c.textSecondaryondary}`}>{results.domain_specific_tests[key]}</p>
                     </div>
                   )
                 ))}
@@ -1655,18 +1654,18 @@ const NameAudit = () => {
             <Section id="emotion" title="Emotional Resonance" icon="❤️" score={results.section_scores?.emotional_resonance}>
               <div className="space-y-3">
                 {results.emotional_resonance.personality_match && (
-                  <p className={`text-sm ${c.textSecondary}`}>{results.emotional_resonance.personality_match}</p>
+                  <p className={`text-sm ${c.textSecondaryondary}`}>{results.emotional_resonance.personality_match}</p>
                 )}
                 {results.emotional_resonance.sensory_associations && (
-                  <div className={`p-3 rounded-lg ${c.purple} border`}>
+                  <div className={`p-3 rounded-lg ${c.cardAlt} border`}>
                     <p className="text-xs font-bold mb-1">SENSORY ASSOCIATIONS</p>
                     <p className="text-sm">{results.emotional_resonance.sensory_associations}</p>
                   </div>
                 )}
                 {results.emotional_resonance.if_it_were_a_person && (
                   <div className={`p-3 rounded-lg ${c.cardAlt}`}>
-                    <p className={`text-xs font-bold ${c.textMuted} mb-1`}>IF THIS NAME WERE A PERSON</p>
-                    <p className={`text-sm ${c.textSecondary} italic`}>{results.emotional_resonance.if_it_were_a_person}</p>
+                    <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>IF THIS NAME WERE A PERSON</p>
+                    <p className={`text-sm ${c.textSecondaryondary} italic`}>{results.emotional_resonance.if_it_were_a_person}</p>
                   </div>
                 )}
               </div>
@@ -1679,7 +1678,7 @@ const NameAudit = () => {
               <div className="space-y-3">
                 {results.live_availability.domains && (
                   <div>
-                    <p className={`text-xs font-bold ${c.textMuted} mb-2`}>DOMAINS</p>
+                    <p className={`text-xs font-bold ${c.textMuteded} mb-2`}>DOMAINS</p>
                     <div className="flex flex-wrap gap-1.5">
                       {Object.entries(results.live_availability.domains).map(([domain, status]) => (
                         <span key={domain} className={`px-2.5 py-1 rounded text-xs font-mono border ${
@@ -1695,7 +1694,7 @@ const NameAudit = () => {
                 )}
                 {results.live_availability.social && (
                   <div>
-                    <p className={`text-xs font-bold ${c.textMuted} mb-2`}>SOCIAL: {results.live_availability.social.handle}</p>
+                    <p className={`text-xs font-bold ${c.textMuteded} mb-2`}>SOCIAL: {results.live_availability.social.handle}</p>
                     <div className="flex flex-wrap gap-1.5">
                       {Object.entries(results.live_availability.social.platforms).map(([platform, status]) => (
                         <span key={platform} className={`px-2.5 py-1 rounded text-xs border ${
@@ -1720,15 +1719,15 @@ const NameAudit = () => {
             <h3 className={`font-bold ${c.text} mb-2 flex items-center gap-2`}>
               <span>👥</span> Audience Reaction Simulator
             </h3>
-            <p className={`text-xs ${c.textMuted} mb-3`}>
+            <p className={`text-xs ${c.textMuteded} mb-3`}>
               How would your target audience react to hearing this name for the first time?
             </p>
             {!reactionsResults ? (
               <button onClick={handleReactions} disabled={reactionsLoading}
                 className={`w-full py-3 px-4 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all ${
-                  reactionsLoading ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : c.btnPrimary
+                  reactionsLoading ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : c.btnPrimaryPrimary
                 }`}>
-                {reactionsLoading ? (<><span className="animate-spin inline-block">⏳</span> Simulating reactions...</>)
+                {reactionsLoading ? (<><span className="animate-spin inline-block">{tool?.icon ?? '⚙️'}</span> Simulating reactions...</>)
                   : (<><span>👥</span> Simulate Audience Reactions
                     <span className={`text-[9px] px-1 py-0.5 rounded font-bold ${isDark ? 'bg-cyan-900/50 text-cyan-300' : 'bg-cyan-100 text-cyan-700'}`}>PRO</span></>)}
               </button>
@@ -1740,24 +1739,24 @@ const NameAudit = () => {
                       <span className="text-lg">{persona.emoji || '👤'}</span>
                       <div>
                         <p className={`text-sm font-bold ${c.text}`}>{persona.name}</p>
-                        <p className={`text-xs ${c.textMuted}`}>{persona.description}</p>
+                        <p className={`text-xs ${c.textMuteded}`}>{persona.description}</p>
                       </div>
                     </div>
-                    <p className={`text-sm ${c.textSecondary} italic`}>"{persona.reaction}"</p>
+                    <p className={`text-sm ${c.textSecondaryondary} italic`}>"{persona.reaction}"</p>
                     {persona.would_they_remember && (
-                      <p className={`text-xs ${c.textMuted} mt-1.5`}>
+                      <p className={`text-xs ${c.textMuteded} mt-1.5`}>
                         Would they remember it? <span className="font-semibold">{persona.would_they_remember}</span>
                       </p>
                     )}
                     {persona.trust_level && (
-                      <p className={`text-xs ${c.textMuted}`}>
+                      <p className={`text-xs ${c.textMuteded}`}>
                         Trust level: <span className="font-semibold">{persona.trust_level}</span>
                       </p>
                     )}
                   </div>
                 ))}
                 {reactionsResults.consensus && (
-                  <div className={`p-3 rounded-lg ${c.info} border`}>
+                  <div className={`p-3 rounded-lg ${c.cardAlt} border`}>
                     <p className="text-xs font-bold mb-1">AUDIENCE CONSENSUS</p>
                     <p className="text-sm">{reactionsResults.consensus}</p>
                   </div>
@@ -1771,7 +1770,7 @@ const NameAudit = () => {
             <h3 className={`font-bold ${c.text} mb-2 flex items-center gap-2`}>
               <span>🔬</span> {context === 'Baby' ? 'Baby Name Deep Dive' : context === 'Band / Music Project' ? 'Music Industry Deep Dive' : context === 'Pet' ? 'Pet Name Deep Dive' : 'Industry-Specific Deep Dive'}
             </h3>
-            <p className={`text-xs ${c.textMuted} mb-3`}>
+            <p className={`text-xs ${c.textMuteded} mb-3`}>
               {context === 'Baby' ? 'Popularity trends, sibling compatibility, playground-proofing, and more.'
                 : context === 'Band / Music Project' ? 'Genre fit, Spotify searchability, tour poster test, and merch potential.'
                 : context === 'Pet' ? 'Call-and-response test, vet-confusion check, and multi-pet compatibility.'
@@ -1780,9 +1779,9 @@ const NameAudit = () => {
             {!deepDiveResults ? (
               <button onClick={handleDeepDive} disabled={deepDiveLoading}
                 className={`w-full py-3 px-4 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all ${
-                  deepDiveLoading ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : c.btnPrimary
+                  deepDiveLoading ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : c.btnPrimaryPrimary
                 }`}>
-                {deepDiveLoading ? (<><span className="animate-spin inline-block">⏳</span> Running deep dive...</>)
+                {deepDiveLoading ? (<><span className="animate-spin inline-block">{tool?.icon ?? '⚙️'}</span> Running deep dive...</>)
                   : (<><span>🔬</span> Run Deep Dive
                     <span className={`text-[9px] px-1 py-0.5 rounded font-bold ${isDark ? 'bg-cyan-900/50 text-cyan-300' : 'bg-cyan-100 text-cyan-700'}`}>PRO</span></>)}
               </button>
@@ -1792,11 +1791,11 @@ const NameAudit = () => {
                   <div key={i} className={`p-3 rounded-lg ${section.severity === 'positive' ? c.success : section.severity === 'problem' ? c.danger : section.severity === 'caution' ? c.warning : c.cardAlt} ${section.severity ? 'border' : ''}`}>
                     <p className="text-xs font-bold mb-1">{section.title}</p>
                     <p className="text-sm">{section.finding}</p>
-                    {section.detail && <p className={`text-xs ${c.textMuted} mt-1`}>{section.detail}</p>}
+                    {section.detail && <p className={`text-xs ${c.textMuteded} mt-1`}>{section.detail}</p>}
                   </div>
                 ))}
                 {deepDiveResults.verdict && (
-                  <div className={`p-3 rounded-lg ${c.info} border`}>
+                  <div className={`p-3 rounded-lg ${c.cardAlt} border`}>
                     <p className="text-xs font-bold mb-1">DEEP DIVE VERDICT</p>
                     <p className="text-sm">{deepDiveResults.verdict}</p>
                   </div>
@@ -1810,15 +1809,15 @@ const NameAudit = () => {
             <h3 className={`font-bold ${c.text} mb-2 flex items-center gap-2`}>
               <span>🔄</span> Second Opinion
             </h3>
-            <p className={`text-xs ${c.textMuted} mb-3`}>
+            <p className={`text-xs ${c.textMuteded} mb-3`}>
               Run the analysis again independently and see where two opinions agree vs. disagree. Agreement = reliable signal.
             </p>
             {!secondOpinionResults ? (
               <button onClick={handleSecondOpinion} disabled={secondOpinionLoading}
                 className={`w-full py-3 px-4 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all ${
-                  secondOpinionLoading ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : c.btnPrimary
+                  secondOpinionLoading ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : c.btnPrimaryPrimary
                 }`}>
-                {secondOpinionLoading ? (<><span className="animate-spin inline-block">⏳</span> Getting second opinion...</>)
+                {secondOpinionLoading ? (<><span className="animate-spin inline-block">{tool?.icon ?? '⚙️'}</span> Getting second opinion...</>)
                   : (<><span>🔄</span> Get Second Opinion
                     <span className={`text-[9px] px-1 py-0.5 rounded font-bold ${isDark ? 'bg-cyan-900/50 text-cyan-300' : 'bg-cyan-100 text-cyan-700'}`}>PRO</span></>)}
               </button>
@@ -1827,14 +1826,14 @@ const NameAudit = () => {
                 {/* Score comparison */}
                 <div className="grid grid-cols-2 gap-3">
                   <div className={`p-3 rounded-lg text-center ${c.cardAlt}`}>
-                    <p className={`text-xs font-bold ${c.textMuted} mb-1`}>FIRST ANALYSIS</p>
+                    <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>FIRST ANALYSIS</p>
                     <p className={`text-2xl font-bold ${scoreColor(results?.overall_score || 0)}`}>{results?.overall_score}</p>
-                    <p className={`text-xs font-bold ${c.textMuted}`}>{results?.overall_grade}</p>
+                    <p className={`text-xs font-bold ${c.textMuteded}`}>{results?.overall_grade}</p>
                   </div>
                   <div className={`p-3 rounded-lg text-center ${c.cardAlt}`}>
-                    <p className={`text-xs font-bold ${c.textMuted} mb-1`}>SECOND OPINION</p>
+                    <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>SECOND OPINION</p>
                     <p className={`text-2xl font-bold ${scoreColor(secondOpinionResults.score || 0)}`}>{secondOpinionResults.score}</p>
-                    <p className={`text-xs font-bold ${c.textMuted}`}>{secondOpinionResults.grade}</p>
+                    <p className={`text-xs font-bold ${c.textMuteded}`}>{secondOpinionResults.grade}</p>
                   </div>
                 </div>
                 {/* Agreements */}
@@ -1853,13 +1852,13 @@ const NameAudit = () => {
                 )}
                 {/* New insights */}
                 {secondOpinionResults.new_insights?.length > 0 && (
-                  <div className={`p-3 rounded-lg ${c.info} border`}>
+                  <div className={`p-3 rounded-lg ${c.cardAlt} border`}>
                     <p className="text-xs font-bold mb-1">💡 NEW INSIGHTS</p>
                     {secondOpinionResults.new_insights.map((n, i) => <p key={i} className="text-sm mb-0.5">• {n}</p>)}
                   </div>
                 )}
                 {secondOpinionResults.confidence_verdict && (
-                  <p className={`text-sm ${c.textSecondary} italic text-center`}>🎯 {secondOpinionResults.confidence_verdict}</p>
+                  <p className={`text-sm ${c.textSecondaryondary} italic text-center`}>🎯 {secondOpinionResults.confidence_verdict}</p>
                 )}
               </div>
             )}
@@ -1878,7 +1877,7 @@ const NameAudit = () => {
                 </div>
               )}
               {results.suggestions.alternatives_direction && (
-                <div className={`p-3 rounded-lg ${c.info} border mb-3`}>
+                <div className={`p-3 rounded-lg ${c.cardAlt} border mb-3`}>
                   <p className="text-xs font-bold mb-1">IF RECONSIDERING</p>
                   <p className="text-sm">{results.suggestions.alternatives_direction}</p>
                 </div>
@@ -1889,11 +1888,11 @@ const NameAudit = () => {
                   className={`w-full mt-2 py-3 px-4 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all ${
                     fixResults ? (isDark ? 'bg-zinc-700 border border-zinc-600 text-zinc-400' : 'bg-gray-100 border border-gray-200 text-gray-400')
                     : fixLoading ? (isDark ? 'bg-zinc-700 border border-zinc-600 text-zinc-400' : 'bg-gray-200 border border-gray-200 text-gray-400')
-                    : isDark ? 'bg-violet-900/30 border border-violet-700 text-violet-200 hover:bg-violet-900/50'
-                      : 'bg-violet-50 border border-violet-200 text-violet-700 hover:bg-violet-100'
+                    : isDark ? 'bg-cyan-900/30 border border-violet-700 text-cyan-200 hover:bg-cyan-900/50'
+                      : 'bg-cyan-50 border border-violet-200 text-cyan-700 hover:bg-cyan-100'
                   }`}
                 >
-                  {fixLoading ? (<><span className="animate-spin inline-block">⏳</span> Generating fixes...</>)
+                  {fixLoading ? (<><span className="animate-spin inline-block">{tool?.icon ?? '⚙️'}</span> Generating fixes...</>)
                     : fixResults ? (<><span>✅</span> Fixes generated below</>)
                     : (<><span>✨</span> Fix This Name — Generate improved variations <PremiumBadge feature="nameAudit.fixThisName" /></>)}
                 </button>
@@ -1908,7 +1907,7 @@ const NameAudit = () => {
                 <span>✨</span> Improved Variations of "{results?.name_analyzed}"
               </h3>
               {fixResults.approach && (
-                <p className={`text-sm ${c.textSecondary} mb-4 italic`}>{fixResults.approach}</p>
+                <p className={`text-sm ${c.textSecondaryondary} mb-4 italic`}>{fixResults.approach}</p>
               )}
               <div className="space-y-3">
                 {fixResults.variations?.map((v, i) => (
@@ -1917,7 +1916,7 @@ const NameAudit = () => {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
                           <h4 className={`text-lg font-bold ${c.text}`}>{v.name}</h4>
-                          {v.pronunciation && <span className={`text-xs font-mono ${c.textMuted}`}>/{v.pronunciation}/</span>}
+                          {v.pronunciation && <span className={`text-xs font-mono ${c.textMuteded}`}>/{v.pronunciation}/</span>}
                           <button onClick={() => speakName(v.name)} className="p-0.5 rounded" title="Hear it">
                             <span className="text-sm">🔊</span>
                           </button>
@@ -1929,20 +1928,20 @@ const NameAudit = () => {
                             }`}>{v.estimated_score}</span>
                           )}
                         </div>
-                        <p className={`text-sm ${c.textSecondary} mt-1.5`}>{v.why_its_better}</p>
+                        <p className={`text-sm ${c.textSecondaryondary} mt-1.5`}>{v.why_its_better}</p>
                         {v.what_it_fixes && (
-                          <p className={`text-xs ${isDark ? 'text-violet-300' : 'text-violet-600'} mt-1 font-medium`}>
+                          <p className={`text-xs ${isDark ? 'text-cyan-300' : 'text-cyan-600'} mt-1 font-medium`}>
                             → Fixes: {v.what_it_fixes}
                           </p>
                         )}
                         {v.tradeoff && (
-                          <p className={`text-xs ${c.textMuted} mt-1`}>⚖️ Tradeoff: {v.tradeoff}</p>
+                          <p className={`text-xs ${c.textMuteded} mt-1`}>⚖️ Tradeoff: {v.tradeoff}</p>
                         )}
                       </div>
                       <div className="flex items-center gap-1 flex-shrink-0">
                         <CopyBtn content={v.name} />
                         <a href={`/NameAudit?name=${encodeURIComponent(v.name)}`}
-                          className={`p-1.5 rounded-lg transition-all ${c.btnSecondary}`} title="Audit this name">
+                          className={`p-1.5 rounded-lg transition-all ${c.btnPrimarySecondaryondary}`} title="Audit this name">
                           <span className="text-sm">🔍</span>
                         </a>
                       </div>
@@ -1951,7 +1950,7 @@ const NameAudit = () => {
                 ))}
               </div>
               {fixResults.naming_direction && (
-                <p className={`text-sm ${c.textSecondary} mt-4 italic`}>💡 {fixResults.naming_direction}</p>
+                <p className={`text-sm ${c.textSecondaryondary} mt-4 italic`}>💡 {fixResults.naming_direction}</p>
               )}
             </div>
           )}
@@ -1972,10 +1971,10 @@ const NameAudit = () => {
                 <a href={stormUrl} className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${isDark ? 'bg-amber-600 hover:bg-amber-500 text-white' : 'bg-amber-600 hover:bg-amber-700 text-white'}`}>
                   <span>⚡</span> Generate Better Names
                 </a>
-                {weaknesses && <p className={`text-xs ${c.textMuted} mt-2`}>NameStorm will be pre-filled with your context and told to avoid: {weaknesses}</p>}
+                {weaknesses && <p className={`text-xs ${c.textMuteded} mt-2`}>NameStorm will be pre-filled with your context and told to avoid: {weaknesses}</p>}
               </div>
             ) : (
-              <p className={`text-xs text-center ${c.textMuted}`}>
+              <p className={`text-xs text-center ${c.textMuteded}`}>
                 Want alternatives? <a href={stormUrl} className={linkStyle}>Open NameStorm</a> with your settings pre-filled.
               </p>
             );
@@ -1990,7 +1989,7 @@ const NameAudit = () => {
               <h3 className={`font-bold ${c.text} mb-3 flex items-center gap-2`}>
                 <span>📝</span> Naming Journal
               </h3>
-              <p className={`text-xs ${c.textMuted} mb-3`}>
+              <p className={`text-xs ${c.textMuteded} mb-3`}>
                 Jot down thoughts, stakeholder feedback, or context that will help you decide later.
               </p>
               {/* Existing notes */}
@@ -1999,13 +1998,13 @@ const NameAudit = () => {
                   {journalEntries[results.name_analyzed].map((note) => (
                     <div key={note.id} className={`flex items-start justify-between gap-2 p-2.5 rounded-lg ${c.cardAlt}`}>
                       <div className="flex-1 min-w-0">
-                        <p className={`text-sm ${c.textSecondary}`}>{note.text}</p>
-                        <p className={`text-xs ${c.textMuted} mt-0.5`}>
+                        <p className={`text-sm ${c.textSecondaryondary}`}>{note.text}</p>
+                        <p className={`text-xs ${c.textMuteded} mt-0.5`}>
                           {new Date(note.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
                         </p>
                       </div>
                       <button onClick={() => deleteJournalNote(results.name_analyzed, note.id)}
-                        className={`text-xs ${c.textMuted} hover:${c.text} flex-shrink-0`}>✕</button>
+                        className={`text-xs ${c.textMuteded} hover:${c.text} flex-shrink-0`}>✕</button>
                     </div>
                   ))}
                 </div>
@@ -2017,7 +2016,7 @@ const NameAudit = () => {
                   placeholder="e.g., Sarah loved this one / Board prefers shorter names / Too close to CompetitorX"
                   className={`flex-1 p-2.5 border rounded-lg outline-none text-sm focus:ring-2 focus:ring-cyan-300 ${c.input}`} />
                 <button onClick={() => addJournalNote(results.name_analyzed)} disabled={!journalDraft.trim()}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium ${!journalDraft.trim() ? (isDark ? 'bg-zinc-700 text-zinc-500' : 'bg-gray-100 text-gray-400') : c.btnPrimary}`}>
+                  className={`px-4 py-2 rounded-lg text-sm font-medium ${!journalDraft.trim() ? (isDark ? 'bg-zinc-700 text-zinc-500' : 'bg-gray-100 text-gray-400') : c.btnPrimaryPrimary}`}>
                   Add
                 </button>
               </div>
@@ -2028,12 +2027,12 @@ const NameAudit = () => {
           {results && (
             <div className={`p-4 rounded-xl border-2 border-dashed ${isDark ? 'border-cyan-800' : 'border-cyan-300'} text-center`}>
               <p className={`text-sm font-semibold ${c.text} mb-1`}>📋 Need to share this with your team?</p>
-              <p className={`text-xs ${c.textMuted} mb-3`}>Copy the full analysis with radar chart, key findings, and your journal notes.</p>
+              <p className={`text-xs ${c.textMuteded} mb-3`}>Copy the full analysis with radar chart, key findings, and your journal notes.</p>
               <div className="flex items-center justify-center gap-2 flex-wrap">
                 <CopyBtn content={buildFullText() + (journalEntries[results.name_analyzed]?.length > 0
                   ? '\n\nJOURNAL NOTES\n' + journalEntries[results.name_analyzed].map(n => `• ${n.text}`).join('\n')
                   : '')} label="Copy Full Report" />
-                <button onClick={handlePdfExport} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
+                <button onClick={handlePdfExport} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnPrimarySecondaryondary}`}>
                   <span>📄</span> Print / Save as PDF
                 </button>
               </div>
@@ -2042,12 +2041,20 @@ const NameAudit = () => {
 
           {/* Disclaimer */}
           <div className={`p-4 rounded-xl text-center ${isDark ? 'bg-zinc-800/50' : 'bg-gray-50'}`}>
-            <p className={`text-xs ${c.textMuted}`}>
+            <p className={`text-xs ${c.textMuteded}`}>
               🔍 Domain and social availability checks are approximations via DNS. Language analysis is AI-generated — verify critical findings with native speakers. Trademark analysis is informational, not legal advice.
             </p>
           </div>
         </div>
       )}
+        <div className={`mt-6 pt-4 border-t text-sm ${c.border} ${c.textMuted}`}>
+          <p className="mb-2 font-medium">You might also like:</p>
+          <div className="flex flex-wrap gap-2">
+            {[{slug:'analogy-engine',label:'💡 Analogy Engine'},{slug:'jargon-assassin',label:'🗡️ Jargon Assassin'},{slug:'say-it-right',label:'🗣️ Say It Right'}].map(({slug,label})=>(
+              <a key={slug} href={`/tool/${slug}`} className={linkStyle}>{label}</a>
+            ))}
+          </div>
+        </div>
     </div>
   );
 };

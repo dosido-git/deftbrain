@@ -1,48 +1,37 @@
 import React, { useState } from 'react';
-import { Moon, Eye, TrendingUp, Calendar, Loader2, Plus, Trash2, ChevronDown, ChevronUp, BookOpen, Brain, Heart, Star } from 'lucide-react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import { CopyBtn, ActionBar } from '../components/ActionButtons';
+import { usePersistentState } from '../hooks/usePersistentState';
 import { useTheme } from '../hooks/useTheme';
 
-const DreamPatternSpotter = () => {
+const DreamPatternSpotter = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
-  const { theme } = useTheme();
-  const isDark = theme === 'dark';
+  const { isDark } = useTheme();
 
-  // Theme-aware colors (night theme)
   const c = {
-    bg: isDark ? 'bg-slate-900' : 'bg-gradient-to-br from-indigo-50 via-purple-50 to-slate-100',
-    card: isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-indigo-200',
-    cardAlt: isDark ? 'bg-slate-700 border-slate-600' : 'bg-indigo-50 border-indigo-200',
-    
-    input: isDark
-      ? 'bg-slate-900 border-slate-700 text-slate-50 placeholder:text-slate-500 focus:border-indigo-500 focus:ring-indigo-500/20'
-      : 'bg-white border-indigo-300 text-indigo-900 placeholder:text-indigo-400 focus:border-indigo-600 focus:ring-indigo-100',
-    
-    text: isDark ? 'text-slate-50' : 'text-indigo-900',
-    textSecondary: isDark ? 'text-slate-300' : 'text-indigo-700',
-    textMuted: isDark ? 'text-slate-400' : 'text-indigo-600',
-    label: isDark ? 'text-slate-200' : 'text-indigo-800',
-    
-    btnPrimary: isDark
-      ? 'bg-indigo-600 hover:bg-indigo-700 text-white'
-      : 'bg-indigo-600 hover:bg-indigo-700 text-white',
-    btnSecondary: isDark
-      ? 'bg-slate-700 hover:bg-slate-600 text-slate-50'
-      : 'bg-indigo-100 hover:bg-indigo-200 text-indigo-900',
-    
-    theme: isDark
-      ? 'bg-purple-900/20 border-purple-700 text-purple-200'
-      : 'bg-purple-50 border-purple-300 text-purple-800',
-    symbol: isDark
-      ? 'bg-indigo-900/20 border-indigo-700 text-indigo-200'
-      : 'bg-indigo-50 border-indigo-300 text-indigo-800',
-    emotion: isDark
-      ? 'bg-pink-900/20 border-pink-700 text-pink-200'
-      : 'bg-pink-50 border-pink-300 text-pink-800',
-    insight: isDark
-      ? 'bg-amber-900/20 border-amber-700 text-amber-200'
-      : 'bg-amber-50 border-amber-300 text-amber-800',
+    card:          isDark ? 'bg-zinc-800' : 'bg-white',
+    cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
+    text:          isDark ? 'text-zinc-50' : 'text-gray-900',
+    textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
+    textMuted:     isDark ? 'text-zinc-500' : 'text-gray-400',
+    input:         isDark ? 'bg-zinc-900 border-zinc-700 text-zinc-50 placeholder:text-zinc-500 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-cyan-500',
+    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
+    border:        isDark ? 'border-zinc-700' : 'border-gray-200',
+    success:       isDark ? 'bg-green-900/20 border-green-700 text-green-200' : 'bg-green-50 border-green-300 text-green-800',
+    warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
+    danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
+    // Bespoke dream-themed keys
+    dreamTheme:    isDark ? 'bg-zinc-700/40 border-zinc-600 text-zinc-200' : 'bg-slate-100 border-slate-300 text-zinc-800',
+    dreamSymbol:   isDark ? 'bg-cyan-900/20 border-cyan-700 text-cyan-200' : 'bg-cyan-50 border-cyan-200 text-cyan-800',
+    dreamEmotion:  isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
+    dreamInsight:  isDark ? 'bg-green-900/20 border-green-700 text-green-200' : 'bg-green-50 border-green-300 text-green-800',
+    deleteHover: isDark ? 'hover:text-red-400' : 'hover:text-red-600',
   };
+
+  const linkStyle = isDark
+    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
+    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
 
   // Mode selection
   const [mode, setMode] = useState('single'); // 'single' or 'pattern'
@@ -75,8 +64,21 @@ const DreamPatternSpotter = () => {
   ]);
 
   // Results state
-  const [results, setResults] = useState(null);
+  const [results, setResults] = usePersistentState('dps-results', null);
+  const [history, setHistory] = usePersistentState('dps-history', []);
   const [error, setError] = useState('');
+  const resultsRef = React.useRef(null);
+
+  React.useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !loading) {
+        if (mode === 'pattern') handlePatternAnalyze();
+        else handleSingleDreamAnalyze();
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [handleSingleDreamAnalyze, handlePatternAnalyze, mode, loading]);
   const [expandedSections, setExpandedSections] = useState({
     themes: true,
     symbols: false,
@@ -109,7 +111,9 @@ const DreamPatternSpotter = () => {
         lifeContext: singleDream.lifeContext.trim() || null,
       });
       
-      setResults(data);
+      setHistory(prev => [{ id: Date.now().toString(), date: new Date().toISOString(), preview: (singleDream?.title || dreams[0]?.description || 'Dream').slice(0, 40) }, ...prev].slice(0, 6));
+      setHistory(prev => [{ id: Date.now().toString(), date: new Date().toISOString(), preview: (singleDream?.title || dreams[0]?.description || 'Dream').slice(0, 40) }, ...prev].slice(0, 6));
+      setResults(data); setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
       setExpandedSections(prev => ({
         ...prev,
         themes: true,
@@ -143,7 +147,8 @@ const DreamPatternSpotter = () => {
         })),
       });
       
-      setResults(data);
+      setHistory(prev => [{ id: Date.now().toString(), date: new Date().toISOString(), preview: (singleDream?.title || dreams[0]?.description || 'Dream').slice(0, 40) }, ...prev].slice(0, 6));
+      setResults(data); setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
       setExpandedSections(prev => ({
         ...prev,
         themes: true,
@@ -208,32 +213,48 @@ const DreamPatternSpotter = () => {
     setError('');
   };
 
+  const buildExportText = () => {
+    if (!results) return '';
+    const lines = ['DREAM ANALYSIS', ''];
+    if (results.core_message) lines.push('CORE MESSAGE', results.core_message, '');
+    if (results.plain_english_summary) lines.push('SUMMARY', results.plain_english_summary, '');
+    results.recurring_themes?.forEach((t, i) => lines.push(`THEME ${i+1}: ${t.theme}`, t.interpretation || '', ''));
+    results.key_symbols?.forEach(s => lines.push(`SYMBOL: ${s.symbol}`, s.interpretation || '', ''));
+    results.emotional_landscape?.map(e => `• ${e}`).forEach(e => lines.push(e));
+    if (results.questions_for_reflection?.length) {
+      lines.push('', 'REFLECTION QUESTIONS');
+      results.questions_for_reflection.forEach(q => lines.push(`• ${q}`));
+    }
+    lines.push('', '— Generated by DeftBrain · deftbrain.com');
+    return lines.join('\n');
+  };
+
   return (
-    <div className={`min-h-screen ${c.bg} py-8 px-4`}>
+    <div className={` ${c.card} py-8 px-4`}>
       <div className="max-w-4xl mx-auto space-y-6">
         
         {/* Header */}
         <div className={`${c.card} border rounded-xl shadow-lg p-6 transition-colors duration-200 relative overflow-hidden`}>
           {/* Decorative stars */}
           <div className="absolute top-2 right-2 opacity-20">
-            <Star className="w-4 h-4 fill-current text-indigo-400" />
+            <span>⭐</span>
           </div>
           <div className="absolute top-8 right-12 opacity-10">
-            <Star className="w-3 h-3 fill-current text-indigo-400" />
+            <span>✨</span>
           </div>
           
           <div className="flex items-center gap-3 mb-4">
             
             <div>
-              <h2 className={`text-2xl font-bold ${c.text}`}>Dream Pattern Spotter 🌙</h2>
-              <p className={`text-sm ${c.textMuted}`}>Discover recurring themes and emotional patterns in your dreams</p>
+              <h2 className={`text-2xl font-bold ${c.text}`}><span className="mr-2">{tool?.icon ?? '🌙'}</span>{tool?.title || 'Dream Pattern Spotter'}</h2>
+              <p className={`text-sm ${c.textMuteded}`}>{tool?.tagline || 'Discover recurring themes and emotional patterns in your dreams'}</p>
             </div>
           </div>
 
           {/* Important notice */}
-          <div className={`${c.insight} border-l-4 rounded-r-lg p-4`}>
+          <div className={`${c.dreamInsight} border-l-4 rounded-r-lg p-4`}>
             <div className="flex items-start gap-2">
-              <Brain className="w-4 h-4 flex-shrink-0 mt-0.5" />
+              <span>🧠</span>
               <div>
                 <h3 className="font-bold text-sm mb-1">Psychological Pattern Recognition</h3>
                 <p className="text-xs">
@@ -254,16 +275,16 @@ const DreamPatternSpotter = () => {
               className={`p-4 border-2 rounded-lg transition-colors ${
                 mode === 'single'
                   ? isDark
-                    ? 'border-indigo-500 bg-indigo-900/20'
-                    : 'border-indigo-500 bg-indigo-50'
+                    ? 'border-cyan-500 bg-cyan-900/20'
+                    : 'border-cyan-500 bg-cyan-50'
                   : isDark
-                    ? 'border-slate-700 hover:border-slate-600'
-                    : 'border-indigo-200 hover:border-indigo-300'
+                    ? 'border-zinc-700 hover:border-zinc-600'
+                    : 'border-gray-200 hover:border-gray-300'
               }`}
             >
-              <Eye className={`w-6 h-6 mx-auto mb-2 ${mode === 'single' ? 'text-indigo-600' : c.textMuted}`} />
+              <span className="text-2xl block mb-1">🌙</span>
               <h4 className={`font-semibold ${c.text} mb-1`}>Single Dream</h4>
-              <p className={`text-xs ${c.textMuted}`}>Analyze one dream in depth</p>
+              <p className={`text-xs ${c.textMuteded}`}>Analyze one dream in depth</p>
             </button>
             
             <button
@@ -271,16 +292,16 @@ const DreamPatternSpotter = () => {
               className={`p-4 border-2 rounded-lg transition-colors ${
                 mode === 'pattern'
                   ? isDark
-                    ? 'border-indigo-500 bg-indigo-900/20'
-                    : 'border-indigo-500 bg-indigo-50'
+                    ? 'border-cyan-500 bg-cyan-900/20'
+                    : 'border-cyan-500 bg-cyan-50'
                   : isDark
-                    ? 'border-slate-700 hover:border-slate-600'
-                    : 'border-indigo-200 hover:border-indigo-300'
+                    ? 'border-zinc-700 hover:border-zinc-600'
+                    : 'border-gray-200 hover:border-gray-300'
               }`}
             >
-              <TrendingUp className={`w-6 h-6 mx-auto mb-2 ${mode === 'pattern' ? 'text-indigo-600' : c.textMuted}`} />
+              <span className="text-2xl block mb-1">📊</span>
               <h4 className={`font-semibold ${c.text} mb-1`}>Pattern Analysis</h4>
-              <p className={`text-xs ${c.textMuted}`}>Find patterns across 2+ dreams</p>
+              <p className={`text-xs ${c.textMuteded}`}>Find patterns across 2+ dreams</p>
             </button>
           </div>
         </div>
@@ -293,13 +314,14 @@ const DreamPatternSpotter = () => {
             <div className="space-y-6">
               {/* Dream Description */}
               <div>
-                <label htmlFor="dream" className={`block text-sm font-medium ${c.label} mb-2`}>
+                <label htmlFor="dream" className={`block text-sm font-medium ${c.textSecondaryondary} mb-2`}>
                   Dream description *
                 </label>
                 <textarea
                   id="dream"
                   value={singleDream.description}
                   onChange={(e) => setSingleDream(prev => ({ ...prev, description: e.target.value }))}
+                  onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) handleSingleDreamAnalyze(); }}
                   placeholder="Describe your dream in as much detail as you remember... Include people, places, emotions, actions, symbols, and anything that stood out to you."
                   className={`w-full h-48 p-4 border-2 rounded-lg ${c.input} outline-none focus:ring-2 resize-none`}
                 />
@@ -307,7 +329,7 @@ const DreamPatternSpotter = () => {
 
               {/* Date */}
               <div>
-                <label htmlFor="date" className={`block text-sm font-medium ${c.label} mb-2`}>
+                <label htmlFor="date" className={`block text-sm font-medium ${c.textSecondaryondary} mb-2`}>
                   Date of dream
                 </label>
                 <input
@@ -321,7 +343,7 @@ const DreamPatternSpotter = () => {
 
               {/* Emotional Tone */}
               <div>
-                <label className={`block text-sm font-medium ${c.label} mb-3`}>
+                <label className={`block text-sm font-medium ${c.textSecondaryondary} mb-3`}>
                   Emotional tone (select all that apply)
                 </label>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -331,11 +353,11 @@ const DreamPatternSpotter = () => {
                       className={`flex items-center gap-2 p-3 border-2 rounded-lg cursor-pointer transition-colors ${
                         singleDream.emotions[emotion.toLowerCase()]
                           ? isDark
-                            ? 'border-indigo-500 bg-indigo-900/20'
-                            : 'border-indigo-500 bg-indigo-50'
+                            ? 'border-cyan-500 bg-cyan-900/20'
+                            : 'border-cyan-500 bg-cyan-50'
                           : isDark
-                            ? 'border-slate-700 hover:border-slate-600'
-                            : 'border-indigo-200 hover:border-indigo-300'
+                            ? 'border-zinc-700 hover:border-zinc-600'
+                            : 'border-gray-200 hover:border-gray-300'
                       }`}
                     >
                       <input
@@ -348,7 +370,7 @@ const DreamPatternSpotter = () => {
                             [emotion.toLowerCase()]: !prev.emotions[emotion.toLowerCase()]
                           }
                         }))}
-                        className="w-4 h-4 text-indigo-600 rounded focus:ring-2 focus:ring-indigo-500"
+                        className="w-4 h-4 rounded accent-cyan-500"
                       />
                       <span className="text-sm">{emotion}</span>
                     </label>
@@ -358,7 +380,7 @@ const DreamPatternSpotter = () => {
 
               {/* Life Context */}
               <div>
-                <label htmlFor="context" className={`block text-sm font-medium ${c.label} mb-2`}>
+                <label htmlFor="context" className={`block text-sm font-medium ${c.textSecondaryondary} mb-2`}>
                   What was happening in your life? (optional but helpful)
                 </label>
                 <textarea
@@ -374,16 +396,16 @@ const DreamPatternSpotter = () => {
               <button
                 onClick={handleSingleDreamAnalyze}
                 disabled={loading}
-                className={`w-full ${c.btnPrimary} disabled:opacity-50 py-3 px-6 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2`}
+                className={`w-full ${c.btnPrimaryPrimary} disabled:opacity-50 py-3 px-6 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2`}
               >
                 {loading ? (
                   <>
-                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <span className="animate-spin inline-block">{tool?.icon ?? '🌙'}</span>
                     Analyzing dream...
                   </>
                 ) : (
                   <>
-                    <Eye className="w-5 h-5" />
+                    <span>🌙</span>
                     Analyze Dream
                   </>
                 )}
@@ -399,9 +421,9 @@ const DreamPatternSpotter = () => {
               <h3 className={`text-lg font-bold ${c.text}`}>Add Your Dreams (2+ for pattern analysis)</h3>
               <button
                 onClick={addDream}
-                className={`${c.btnSecondary} py-2 px-4 rounded-lg text-sm flex items-center gap-2`}
+                className={`${c.btnPrimarySecondaryondary} py-2 px-4 rounded-lg text-sm flex items-center gap-2`}
               >
-                <Plus className="w-4 h-4" />
+                <span>+</span>
                 Add Dream
               </button>
             </div>
@@ -414,9 +436,9 @@ const DreamPatternSpotter = () => {
                     {dreams.length > 1 && (
                       <button
                         onClick={() => removeDream(dream.id)}
-                        className="text-red-500 hover:text-red-600"
+                        className="text-red-500 ${c.deleteHover}"
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <span>🗑️</span>
                       </button>
                     )}
                   </div>
@@ -444,16 +466,16 @@ const DreamPatternSpotter = () => {
             <button
               onClick={handlePatternAnalyze}
               disabled={loading}
-              className={`w-full ${c.btnPrimary} disabled:opacity-50 py-3 px-6 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 mt-6`}
+              className={`w-full ${c.btnPrimaryPrimary} disabled:opacity-50 py-3 px-6 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 mt-6`}
             >
               {loading ? (
                 <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <span className="animate-spin inline-block">{tool?.icon ?? '🌙'}</span>
                   Analyzing patterns...
                 </>
               ) : (
                 <>
-                  <TrendingUp className="w-5 h-5" />
+                  <span>📊</span>
                   Analyze Patterns
                 </>
               )}
@@ -470,13 +492,14 @@ const DreamPatternSpotter = () => {
 
         {/* Results */}
         {results && (
-          <div className="space-y-6">
+          <div ref={resultsRef} className="space-y-6">
             
-            {/* Reset Button */}
-            <div className="flex justify-end">
+            {/* Controls */}
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <ActionBar content={buildExportText()} title="Dream Analysis" />
               <button
                 onClick={handleReset}
-                className={`${c.btnSecondary} py-2 px-4 rounded-lg text-sm`}
+                className={`${c.btnPrimarySecondaryondary} py-2 px-4 rounded-lg text-sm`}
               >
                 New Analysis
               </button>
@@ -489,13 +512,13 @@ const DreamPatternSpotter = () => {
                 <div className="grid grid-cols-2 gap-4">
                   {results.pattern_analysis.total_dreams_analyzed && (
                     <div className={`${c.cardAlt} border rounded-lg p-3`}>
-                      <p className={`text-xs ${c.textMuted}`}>Dreams Analyzed</p>
+                      <p className={`text-xs ${c.textMuteded}`}>Dreams Analyzed</p>
                       <p className={`text-2xl font-bold ${c.text}`}>{results.pattern_analysis.total_dreams_analyzed}</p>
                     </div>
                   )}
                   {results.pattern_analysis.date_range && (
                     <div className={`${c.cardAlt} border rounded-lg p-3`}>
-                      <p className={`text-xs ${c.textMuted}`}>Date Range</p>
+                      <p className={`text-xs ${c.textMuteded}`}>Date Range</p>
                       <p className={`text-sm font-semibold ${c.text}`}>{results.pattern_analysis.date_range}</p>
                     </div>
                   )}
@@ -510,23 +533,23 @@ const DreamPatternSpotter = () => {
                   onClick={() => toggleSection('themes')}
                   className="flex items-center gap-2 mb-4 w-full"
                 >
-                  <BookOpen className="w-5 h-5" />
+                  <span>📖</span>
                   <h3 className={`text-xl font-bold ${c.text}`}>Recurring Themes</h3>
                   {expandedSections.themes ? (
-                    <ChevronUp className="w-5 h-5 ml-auto" />
+                    <span className="ml-auto">▲</span>
                   ) : (
-                    <ChevronDown className="w-5 h-5 ml-auto" />
+                    <span className="ml-auto">▼</span>
                   )}
                 </button>
 
                 {expandedSections.themes && (
                   <div className="space-y-4">
                     {(results.pattern_analysis?.recurring_themes || results.themes || []).map((theme, idx) => (
-                      <div key={idx} className={`${c.theme} border rounded-lg p-4`}>
+                      <div key={idx} className={`${c.dreamTheme} border rounded-lg p-4`}>
                         <div className="flex items-start justify-between mb-2">
                           <h4 className="font-bold text-lg">{theme.theme}</h4>
                           {theme.frequency && (
-                            <span className="text-sm px-2 py-1 rounded bg-purple-200 dark:bg-purple-900/40 text-purple-900 dark:text-purple-100">
+                            <span className="text-sm px-2 py-1 rounded bg-zinc-200 dark:bg-zinc-700 text-zinc-800 dark:text-zinc-100">
                               {theme.frequency}x
                             </span>
                           )}
@@ -563,23 +586,23 @@ const DreamPatternSpotter = () => {
                   onClick={() => toggleSection('symbols')}
                   className="flex items-center gap-2 mb-4 w-full"
                 >
-                  <Star className="w-5 h-5" />
+                  <span>⭐</span>
                   <h3 className={`text-xl font-bold ${c.text}`}>Recurring Symbols</h3>
                   {expandedSections.symbols ? (
-                    <ChevronUp className="w-5 h-5 ml-auto" />
+                    <span className="ml-auto">▲</span>
                   ) : (
-                    <ChevronDown className="w-5 h-5 ml-auto" />
+                    <span className="ml-auto">▼</span>
                   )}
                 </button>
 
                 {expandedSections.symbols && (
                   <div className="space-y-4">
                     {results.pattern_analysis.recurring_symbols.map((symbol, idx) => (
-                      <div key={idx} className={`${c.symbol} border rounded-lg p-4`}>
+                      <div key={idx} className={`${c.dreamSymbol} border rounded-lg p-4`}>
                         <div className="flex items-start justify-between mb-2">
                           <h4 className="font-bold capitalize">{symbol.symbol}</h4>
                           {symbol.frequency && (
-                            <span className="text-sm px-2 py-1 rounded bg-indigo-200 dark:bg-indigo-900/40 text-indigo-900 dark:text-indigo-100">
+                            <span className="text-sm px-2 py-1 rounded bg-cyan-100 dark:bg-cyan-900/40 text-cyan-900 dark:text-cyan-100">
                               {symbol.frequency}x
                             </span>
                           )}
@@ -621,12 +644,12 @@ const DreamPatternSpotter = () => {
                   onClick={() => toggleSection('people')}
                   className="flex items-center gap-2 mb-4 w-full"
                 >
-                  <Heart className="w-5 h-5" />
+                  <span>💫</span>
                   <h3 className={`text-xl font-bold ${c.text}`}>Recurring People/Figures</h3>
                   {expandedSections.people ? (
-                    <ChevronUp className="w-5 h-5 ml-auto" />
+                    <span className="ml-auto">▲</span>
                   ) : (
-                    <ChevronDown className="w-5 h-5 ml-auto" />
+                    <span className="ml-auto">▼</span>
                   )}
                 </button>
 
@@ -635,10 +658,10 @@ const DreamPatternSpotter = () => {
                     {results.pattern_analysis.recurring_people.map((person, idx) => (
                       <div key={idx} className={`${c.cardAlt} border rounded-lg p-4`}>
                         <h4 className={`font-bold ${c.text} mb-2`}>{person.person_type}</h4>
-                        <p className={`text-sm ${c.textSecondary} mb-1`}>
+                        <p className={`text-sm ${c.textSecondaryondary} mb-1`}>
                           <strong>Role:</strong> {person.role_in_dreams}
                         </p>
-                        <p className={`text-sm ${c.textSecondary}`}>
+                        <p className={`text-sm ${c.textSecondaryondary}`}>
                           <strong>Possible connection:</strong> {person.possible_connection}
                         </p>
                         {person.frequency && (
@@ -658,17 +681,17 @@ const DreamPatternSpotter = () => {
                   onClick={() => toggleSection('emotions')}
                   className="flex items-center gap-2 mb-4 w-full"
                 >
-                  <Heart className="w-5 h-5" />
+                  <span>💫</span>
                   <h3 className={`text-xl font-bold ${c.text}`}>Emotional Patterns</h3>
                   {expandedSections.emotions ? (
-                    <ChevronUp className="w-5 h-5 ml-auto" />
+                    <span className="ml-auto">▲</span>
                   ) : (
-                    <ChevronDown className="w-5 h-5 ml-auto" />
+                    <span className="ml-auto">▼</span>
                   )}
                 </button>
 
                 {expandedSections.emotions && (
-                  <div className={`${c.emotion} border rounded-lg p-4 space-y-3`}>
+                  <div className={`${c.dreamEmotion} border rounded-lg p-4 space-y-3`}>
                     {results.pattern_analysis.emotional_patterns.most_common_emotion && (
                       <p className="text-sm">
                         <strong>Most common emotion:</strong> {results.pattern_analysis.emotional_patterns.most_common_emotion}
@@ -696,12 +719,12 @@ const DreamPatternSpotter = () => {
                   onClick={() => toggleSection('correlations')}
                   className="flex items-center gap-2 mb-4 w-full"
                 >
-                  <Calendar className="w-5 h-5" />
+                  <span>📅</span>
                   <h3 className={`text-xl font-bold ${c.text}`}>Life Event Correlations</h3>
                   {expandedSections.correlations ? (
-                    <ChevronUp className="w-5 h-5 ml-auto" />
+                    <span className="ml-auto">▲</span>
                   ) : (
-                    <ChevronDown className="w-5 h-5 ml-auto" />
+                    <span className="ml-auto">▼</span>
                   )}
                 </button>
 
@@ -710,10 +733,10 @@ const DreamPatternSpotter = () => {
                     {results.life_event_correlations.map((corr, idx) => (
                       <div key={idx} className={`${c.cardAlt} border rounded-lg p-4`}>
                         <h4 className={`font-semibold ${c.text} mb-2`}>Event: {corr.life_event}</h4>
-                        <p className={`text-sm ${c.textSecondary} mb-2`}>
+                        <p className={`text-sm ${c.textSecondaryondary} mb-2`}>
                           <strong>Dream changes:</strong> {corr.dream_changes}
                         </p>
-                        <p className={`text-sm ${c.textSecondary}`}>
+                        <p className={`text-sm ${c.textSecondaryondary}`}>
                           <strong>Pattern:</strong> {corr.pattern}
                         </p>
                       </div>
@@ -730,12 +753,12 @@ const DreamPatternSpotter = () => {
                   onClick={() => toggleSection('preoccupations')}
                   className="flex items-center gap-2 mb-4 w-full"
                 >
-                  <Brain className="w-5 h-5" />
+                  <span>🧠</span>
                   <h3 className={`text-xl font-bold ${c.text}`}>Subconscious Preoccupations</h3>
                   {expandedSections.preoccupations ? (
-                    <ChevronUp className="w-5 h-5 ml-auto" />
+                    <span className="ml-auto">▲</span>
                   ) : (
-                    <ChevronDown className="w-5 h-5 ml-auto" />
+                    <span className="ml-auto">▼</span>
                   )}
                 </button>
 
@@ -745,12 +768,12 @@ const DreamPatternSpotter = () => {
                       <div key={idx} className={`${c.cardAlt} border rounded-lg p-4`}>
                         <h4 className={`font-bold ${c.text} mb-2`}>{preoc.preoccupation}</h4>
                         {preoc.evidence && preoc.evidence.length > 0 && (
-                          <p className={`text-sm ${c.textSecondary} mb-2`}>
+                          <p className={`text-sm ${c.textSecondaryondary} mb-2`}>
                             <strong>Evidence:</strong> {preoc.evidence.join(', ')}
                           </p>
                         )}
                         {preoc.reflection_prompt && (
-                          <p className={`text-sm italic ${c.textMuted} mt-2`}>
+                          <p className={`text-sm italic ${c.textMuteded} mt-2`}>
                             💭 {preoc.reflection_prompt}
                           </p>
                         )}
@@ -768,24 +791,24 @@ const DreamPatternSpotter = () => {
                   onClick={() => toggleSection('questions')}
                   className="flex items-center gap-2 mb-4 w-full"
                 >
-                  <Eye className="w-5 h-5" />
+                  <span>🌙</span>
                   <h3 className={`text-xl font-bold ${c.text}`}>Questions for Reflection</h3>
                   {expandedSections.questions ? (
-                    <ChevronUp className="w-5 h-5 ml-auto" />
+                    <span className="ml-auto">▲</span>
                   ) : (
-                    <ChevronDown className="w-5 h-5 ml-auto" />
+                    <span className="ml-auto">▼</span>
                   )}
                 </button>
 
                 {expandedSections.questions && (
                   <div className={`${c.cardAlt} border rounded-lg p-4`}>
-                    <p className={`text-sm ${c.textMuted} mb-3`}>
+                    <p className={`text-sm ${c.textMuteded} mb-3`}>
                       Use these questions in journaling or therapy to explore what your dreams might reveal:
                     </p>
                     <ul className="space-y-2">
                       {results.reflection_questions.map((q, idx) => (
-                        <li key={idx} className={`text-sm ${c.textSecondary} flex items-start gap-2`}>
-                          <span className="text-indigo-500 mt-0.5">?</span>
+                        <li key={idx} className={`text-sm ${c.textSecondaryondary} flex items-start gap-2`}>
+                          <span className="text-cyan-500 mt-0.5">?</span>
                           <span>{q}</span>
                         </li>
                       ))}
@@ -802,19 +825,19 @@ const DreamPatternSpotter = () => {
                   onClick={() => toggleSection('insights')}
                   className="flex items-center gap-2 mb-4 w-full"
                 >
-                  <Moon className="w-5 h-5" />
+                  <span>🌙</span>
                   <h3 className={`text-xl font-bold ${c.text}`}>Overall Insights</h3>
                   {expandedSections.insights ? (
-                    <ChevronUp className="w-5 h-5 ml-auto" />
+                    <span className="ml-auto">▲</span>
                   ) : (
-                    <ChevronDown className="w-5 h-5 ml-auto" />
+                    <span className="ml-auto">▼</span>
                   )}
                 </button>
 
                 {expandedSections.insights && (
                   <div className="space-y-4">
                     {results.insights.overall_assessment && (
-                      <div className={`${c.insight} border rounded-lg p-4`}>
+                      <div className={`${c.dreamInsight} border rounded-lg p-4`}>
                         <h4 className="font-semibold mb-2">Overall Assessment:</h4>
                         <p className="text-sm">{results.insights.overall_assessment}</p>
                       </div>
@@ -822,13 +845,13 @@ const DreamPatternSpotter = () => {
                     {results.insights.therapeutic_value && (
                       <div className={`${c.cardAlt} border rounded-lg p-4`}>
                         <h4 className={`font-semibold ${c.text} mb-2`}>Therapeutic Value:</h4>
-                        <p className={`text-sm ${c.textSecondary}`}>{results.insights.therapeutic_value}</p>
+                        <p className={`text-sm ${c.textSecondaryondary}`}>{results.insights.therapeutic_value}</p>
                       </div>
                     )}
                     {results.insights.growth_areas && (
                       <div className={`${c.cardAlt} border rounded-lg p-4`}>
                         <h4 className={`font-semibold ${c.text} mb-2`}>Growth Areas:</h4>
-                        <p className={`text-sm ${c.textSecondary}`}>{results.insights.growth_areas}</p>
+                        <p className={`text-sm ${c.textSecondaryondary}`}>{results.insights.growth_areas}</p>
                       </div>
                     )}
                   </div>
@@ -844,11 +867,40 @@ const DreamPatternSpotter = () => {
                 with a therapist or counselor for deeper exploration.
               </p>
             </div>
+
+            {/* Cross-references */}
+            <p className={`text-xs ${c.textMuteded} text-center`}>
+              AI-generated patterns — trust what resonates.{' '}
+              Recurring anxiety in dreams?{' '}<a href="/EgoKiller" target="_blank" rel="noopener noreferrer" className={linkStyle}>Ego Killer</a>{' '}
+              surfaces the beliefs worth examining.
+            </p>
           </div>
         )}
       </div>
+        <div className={`mt-6 pt-4 border-t text-sm ${c.border} ${c.textMuteded}`}>
+          <p className="mb-2 font-medium">You might also like:</p>
+          <div className="flex flex-wrap gap-2">
+            {[{slug:'recall',label:'🧠 Recall'},{slug:'brain-dump-buddy',label:'📤 Brain Dump Buddy'},{slug:'spiral-stopper',label:'🌀 Spiral Stopper'}].map(({slug,label})=>(
+              <a key={slug} href={`/tool/${slug}`} className={linkStyle}>{label}</a>
+            ))}
+          </div>
+        </div>
+        {history.length > 0 && (
+          <div className={`mt-6 border-t pt-4 ${c.border}`}>
+            <h3 className={`text-sm font-semibold mb-3 ${c.textSecondary}`}>Recent Analyses</h3>
+            <div className="space-y-1">
+              {history.slice(0, 6).map((h, i) => (
+                <div key={h.id || i} className={`flex items-center justify-between p-2 rounded-lg ${c.cardAlt}`}>
+                  <span className={`text-xs ${c.textMuted} truncate flex-1`}>{h.preview}</span>
+                  <span className={`text-xs ${c.textMuted} ml-2 flex-shrink-0`}>{new Date(h.date).toLocaleDateString()}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
     </div>
   );
 };
 
+DreamPatternSpotter.displayName = 'DreamPatternSpotter';
 export default DreamPatternSpotter;

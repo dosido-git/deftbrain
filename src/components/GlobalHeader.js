@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Search, X } from 'lucide-react';
+
 
 const GlobalHeader = ({ searchTerm, setSearchTerm, toolCount }) => {
   const [logoLoaded, setLogoLoaded] = useState(false);
@@ -63,7 +63,7 @@ const GlobalHeader = ({ searchTerm, setSearchTerm, toolCount }) => {
             Intelligence on Demand
           </p>
           <div className={`relative transition-all duration-300 ${scrolled ? 'w-52' : 'w-64'}`}>
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs">🔍</span>
             <input
               ref={searchRef}
               type="text"
@@ -75,7 +75,7 @@ const GlobalHeader = ({ searchTerm, setSearchTerm, toolCount }) => {
             <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
               {searchTerm && (
                 <button onClick={() => setSearchTerm('')} className="p-0.5 rounded hover:bg-slate-200 transition-colors">
-                  <X className="w-3.5 h-3.5 text-slate-400" />
+                  <span className="w-3.5 h-3.5 text-slate-400 flex items-center justify-center text-xs">✕</span>
                 </button>
               )}
               <kbd className="hidden sm:flex items-center gap-0.5 px-1.5 py-0.5 bg-white border border-slate-200 rounded text-[9px] font-bold text-slate-400">

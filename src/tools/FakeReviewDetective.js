@@ -4,40 +4,6 @@ import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { CopyBtn, PrintBtn, ActionBar } from '../components/ActionButtons';
 
-// ════════════════════════════════════════════════════════════
-// THEME COLORS
-// ════════════════════════════════════════════════════════════
-function useColors() {
-  const { theme } = useTheme();
-  const d = theme === 'dark';
-  return {
-    bg: d ? 'bg-zinc-900' : 'bg-gradient-to-br from-slate-50 to-blue-50',
-    card: d ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-slate-200',
-    cardAlt: d ? 'bg-zinc-750 border-zinc-600' : 'bg-slate-50 border-slate-200',
-    input: d ? 'bg-zinc-900 border-zinc-600 text-zinc-50 placeholder:text-zinc-500 focus:border-blue-500 focus:ring-blue-500/20' : 'bg-white border-slate-300 text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:ring-blue-100',
-    text: d ? 'text-zinc-50' : 'text-slate-900', textSec: d ? 'text-zinc-400' : 'text-slate-600', textMuted: d ? 'text-zinc-500' : 'text-slate-500',
-    label: d ? 'text-zinc-300' : 'text-slate-700', accent: d ? 'text-blue-400' : 'text-blue-600',
-    btnPrimary: d ? 'bg-blue-600 hover:bg-blue-500 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white',
-    btnSec: d ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-slate-100 hover:bg-slate-200 text-slate-800',
-    btnOutline: d ? 'border-zinc-600 hover:border-zinc-500 text-zinc-300' : 'border-slate-300 hover:border-slate-400 text-slate-700',
-    danger: d ? 'bg-red-900/20 border-red-700/50 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
-    dangerText: d ? 'text-red-400' : 'text-red-600',
-    success: d ? 'bg-emerald-900/20 border-emerald-700/50 text-emerald-200' : 'bg-emerald-50 border-emerald-200 text-emerald-800',
-    successText: d ? 'text-emerald-400' : 'text-emerald-600',
-    warning: d ? 'bg-amber-900/20 border-amber-700/50 text-amber-200' : 'bg-amber-50 border-amber-200 text-amber-800',
-    warningText: d ? 'text-amber-400' : 'text-amber-600',
-    info: d ? 'bg-blue-900/20 border-blue-700/50 text-blue-200' : 'bg-blue-50 border-blue-200 text-blue-800',
-    pillRed: d ? 'bg-red-900/40 text-red-300 border-red-700/40' : 'bg-red-100 text-red-700 border-red-200',
-    pillGreen: d ? 'bg-emerald-900/40 text-emerald-300 border-emerald-700/40' : 'bg-emerald-100 text-emerald-700 border-emerald-200',
-    pillGray: d ? 'bg-zinc-700 text-zinc-400 border-zinc-600' : 'bg-slate-100 text-slate-500 border-slate-200',
-    pillAmber: d ? 'bg-amber-900/40 text-amber-300 border-amber-700/40' : 'bg-amber-100 text-amber-700 border-amber-200',
-    pillPurple: d ? 'bg-purple-900/40 text-purple-300 border-purple-700/40' : 'bg-purple-100 text-purple-700 border-purple-200',
-    statCard: d ? 'bg-zinc-700/50 border-zinc-600' : 'bg-white border-slate-200',
-    barBg: d ? 'bg-zinc-700' : 'bg-slate-200', skeleton: d ? 'bg-zinc-700 animate-pulse' : 'bg-slate-200 animate-pulse',
-    quoteBg: d ? 'bg-zinc-900/60' : 'bg-slate-50',
-    hlFake: d ? 'bg-red-800/30' : 'bg-red-100', hlGeneric: d ? 'bg-amber-800/30' : 'bg-amber-100', hlCompetitor: d ? 'bg-purple-800/30' : 'bg-purple-100',
-  };
-}
 
 // ════════════════════════════════════════════════════════════
 // REVIEW PARSER — all JavaScript, no AI
@@ -69,7 +35,7 @@ function computeAggregateStats(reviews){const t=reviews.length,sd={1:0,2:0,3:0,4
 // ════════════════════════════════════════════════════════════
 // SCORE HELPERS
 // ════════════════════════════════════════════════════════════
-const trustColor = s => s>=76?{bg:'#10b981',ring:'#10b981'}:s>=51?{bg:'#84cc16',ring:'#84cc16'}:s>=26?{bg:'#f59e0b',ring:'#f59e0b'}:{bg:'#ef4444',ring:'#ef4444'};
+const trustColor = s => s>=76?{bg:'rgb(16,185,129)',ring:'rgb(16,185,129)'}:s>=51?{bg:'rgb(132,204,22)',ring:'rgb(132,204,22)'}:s>=26?{bg:'rgb(245,158,11)',ring:'rgb(245,158,11)'}:{bg:'rgb(239,68,68)',ring:'rgb(239,68,68)'};
 const verdictLabel = s => s>=76?'Reviews Look Genuine':s>=51?'Mostly Trustworthy':s>=26?'Approach with Caution':'Likely Manipulated';
 const edgeColor = s => s>=60?'border-l-emerald-500':s>=40?'border-l-amber-500':'border-l-red-500';
 const badgeBg = s => s>=60?'bg-emerald-500 text-white':s>=40?'bg-amber-500 text-white':'bg-red-500 text-white';
@@ -102,14 +68,15 @@ function highlightText(text, c) {
 // SUB-COMPONENTS
 // ════════════════════════════════════════════════════════════
 function StatCard({ label, value, color = 'neutral', c }) {
-  const vc = color === 'green' ? c.successText : color === 'red' ? c.dangerText : color === 'amber' ? c.warningText : c.text;
-  return <div className={`${c.statCard} border rounded-lg p-3 text-center`}><p className={`text-[10px] font-bold ${c.textMuted} uppercase`}>{label}</p><p className={`text-lg font-black mt-0.5 ${vc}`}>{value}</p></div>;
+  const vc = color === 'green' ? c.success : color === 'red' ? c.danger : color === 'amber' ? c.warning : c.text;
+  return <div className={`${c.statCard} border rounded-lg p-3 text-center`}><p className={`text-[10px] font-bold ${c.textMuteded} uppercase`}>{label}</p><p className={`text-lg font-black mt-0.5 ${vc}`}>{value}</p></div>;
 }
 
 function ReviewCard({ review, expanded, onToggle, c, isDark, fpGroup }) {
   const score = review.authenticity_score ?? 50;
   const vt = review.verdict === 'likely_fake' ? '🔴 Likely Fake' : review.verdict === 'likely_genuine' ? '🟢 Likely Genuine' : '🟡 Uncertain';
   const hl = useMemo(() => expanded ? highlightText(review.rawText, c) : null, [expanded, review.rawText, c]);
+
   return (
     <div className={`${c.card} border rounded-xl border-l-4 ${edgeColor(score)} overflow-hidden`}>
       <button onClick={onToggle} className="w-full p-4 text-left">
@@ -117,29 +84,29 @@ function ReviewCard({ review, expanded, onToggle, c, isDark, fpGroup }) {
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1.5 flex-wrap">
               {review.starRating && <span className="text-xs">{'⭐'.repeat(review.starRating)}{'☆'.repeat(5 - review.starRating)}</span>}
-              <span className={`text-[10px] font-bold ${c.textMuted}`}>{vt}</span>
-              {fpGroup && <span className={`${c.pillPurple} border text-[9px] font-semibold px-1.5 py-0.5 rounded`}>👥 Group {fpGroup}</span>}
+              <span className={`text-[10px] font-bold ${c.textMuteded}`}>{vt}</span>
+              {fpGroup && <span className={`${c.pillCyan} border text-[9px] font-semibold px-1.5 py-0.5 rounded`}>👥 Group {fpGroup}</span>}
             </div>
-            <p className={`text-xs ${c.textSec} ${expanded ? '' : 'line-clamp-2'}`}>{review.rawText.slice(0, expanded ? undefined : 200)}{!expanded && review.rawText.length > 200 ? '...' : ''}</p>
+            <p className={`text-xs ${c.textSecondaryondary} ${expanded ? '' : 'line-clamp-2'}`}>{review.rawText.slice(0, expanded ? undefined : 200)}{!expanded && review.rawText.length > 200 ? '...' : ''}</p>
             <div className="flex flex-wrap gap-1 mt-2">
-              {(review.red_flags || []).slice(0, expanded ? undefined : 2).map((f, i) => <span key={`r${i}`} className={`${c.pillRed} border text-[9px] font-semibold px-1.5 py-0.5 rounded`}>{f}</span>)}
-              {(review.green_flags || []).slice(0, expanded ? undefined : 2).map((f, i) => <span key={`g${i}`} className={`${c.pillGreen} border text-[9px] font-semibold px-1.5 py-0.5 rounded`}>{f}</span>)}
-              {!expanded && <>{review.isVerified && <span className={`${c.pillGreen} border text-[9px] font-semibold px-1.5 py-0.5 rounded`}>Verified</span>}{review.wordCount && <span className={`${c.pillGray} border text-[9px] font-semibold px-1.5 py-0.5 rounded`}>{review.wordCount}w</span>}</>}
+              {(review.red_flags || []).slice(0, expanded ? undefined : 2).map((f, i) => <span key={`r${i}`} className={`${c.danger} border text-[9px] font-semibold px-1.5 py-0.5 rounded`}>{f}</span>)}
+              {(review.green_flags || []).slice(0, expanded ? undefined : 2).map((f, i) => <span key={`g${i}`} className={`${c.success} border text-[9px] font-semibold px-1.5 py-0.5 rounded`}>{f}</span>)}
+              {!expanded && <>{review.isVerified && <span className={`${c.success} border text-[9px] font-semibold px-1.5 py-0.5 rounded`}>Verified</span>}{review.wordCount && <span className={`${c.pillGray} border text-[9px] font-semibold px-1.5 py-0.5 rounded`}>{review.wordCount}w</span>}</>}
             </div>
           </div>
-          <div className="flex flex-col items-center gap-1 flex-shrink-0"><div className={`w-10 h-10 rounded-full ${badgeBg(score)} flex items-center justify-center`}><span className="text-xs font-black">{score}</span></div><span className={`text-xs ${c.textMuted}`}>{expanded ? '▲' : '▼'}</span></div>
+          <div className="flex flex-col items-center gap-1 flex-shrink-0"><div className={`w-10 h-10 rounded-full ${badgeBg(score)} flex items-center justify-center`}><span className="text-xs font-black">{score}</span></div><span className={`text-xs ${c.textMuteded}`}>{expanded ? '▲' : '▼'}</span></div>
         </div>
         {expanded && <div className={`mt-3 pt-3 border-t ${isDark ? 'border-zinc-700' : 'border-slate-200'}`}>
-          <div className={`${c.quoteBg} p-3 rounded-lg mb-3`}><p className={`text-xs ${c.textSec} italic whitespace-pre-wrap`}>{hl || `"${review.rawText}"`}</p></div>
-          {hl && <p className={`text-[9px] ${c.textMuted} mb-2`}><span className={`${c.hlGeneric} rounded px-0.5`}>generic</span> <span className={`${c.hlFake} rounded px-0.5`}>emphasis</span> <span className={`${c.hlCompetitor} rounded px-0.5`}>competitor</span></p>}
+          <div className={`${c.quoteBg} p-3 rounded-lg mb-3`}><p className={`text-xs ${c.textSecondaryondary} italic whitespace-pre-wrap`}>{hl || `"${review.rawText}"`}</p></div>
+          {hl && <p className={`text-[9px] ${c.textMuteded} mb-2`}><span className={`${c.hlGeneric} rounded px-0.5`}>generic</span> <span className={`${c.hlFake} rounded px-0.5`}>emphasis</span> <span className={`${c.hlCompetitor} rounded px-0.5`}>competitor</span></p>}
           {review.one_liner && <p className={`text-xs font-semibold ${c.text} mb-2`}>🔍 {review.one_liner}</p>}
           <div className="flex flex-wrap gap-1">
-            {review.isVerified ? <span className={`${c.pillGreen} border text-[9px] font-semibold px-1.5 py-0.5 rounded`}>Verified</span> : <span className={`${c.pillRed} border text-[9px] font-semibold px-1.5 py-0.5 rounded`}>Unverified</span>}
+            {review.isVerified ? <span className={`${c.success} border text-[9px] font-semibold px-1.5 py-0.5 rounded`}>Verified</span> : <span className={`${c.danger} border text-[9px] font-semibold px-1.5 py-0.5 rounded`}>Unverified</span>}
             <span className={`${c.pillGray} border text-[9px] font-semibold px-1.5 py-0.5 rounded`}>{review.wordCount}w</span>
             {review.daysAgo != null && <span className={`${c.pillGray} border text-[9px] font-semibold px-1.5 py-0.5 rounded`}>{review.daysAgo === 0 ? 'Today' : `${review.daysAgo}d ago`}</span>}
-            {review.hasSpecificDetails && <span className={`${c.pillGreen} border text-[9px] font-semibold px-1.5 py-0.5 rounded`}>Specific details</span>}
-            {review.hasGenericPraise && <span className={`${c.pillRed} border text-[9px] font-semibold px-1.5 py-0.5 rounded`}>Generic praise</span>}
-            {review.mentionsCompetitor && <span className={`${c.pillAmber} border text-[9px] font-semibold px-1.5 py-0.5 rounded`}>Competitor</span>}
+            {review.hasSpecificDetails && <span className={`${c.success} border text-[9px] font-semibold px-1.5 py-0.5 rounded`}>Specific details</span>}
+            {review.hasGenericPraise && <span className={`${c.danger} border text-[9px] font-semibold px-1.5 py-0.5 rounded`}>Generic praise</span>}
+            {review.mentionsCompetitor && <span className={`${c.warning} border text-[9px] font-semibold px-1.5 py-0.5 rounded`}>Competitor</span>}
           </div>
         </div>}
       </button>
@@ -150,12 +117,12 @@ function ReviewCard({ review, expanded, onToggle, c, isDark, fpGroup }) {
 // FEATURE 2: Forensics Timeline
 function ForensicsTimeline({ reviews, scores, c, isDark }) {
   const dated = reviews.filter(r => r.daysAgo !== null).sort((a, b) => b.daysAgo - a.daysAgo);
-  if (dated.length < 2) return <p className={`text-xs ${c.textMuted} text-center py-3`}>Need 2+ dated reviews for timeline</p>;
+  if (dated.length < 2) return <p className={`text-xs ${c.textMuteded} text-center py-3`}>Need 2+ dated reviews for timeline</p>;
   const maxDays = Math.max(...dated.map(r => r.daysAgo), 1);
   const W = 100, H = 40, pad = 4;
   const x = (d) => pad + ((maxDays - d) / maxDays) * (W - pad * 2);
   const getScore = (idx) => { const s = scores?.find(sc => sc.index === idx); return s?.authenticity_score ?? 50; };
-  const dotColor = (sc) => sc >= 60 ? '#10b981' : sc >= 40 ? '#f59e0b' : '#ef4444';
+  const dotColor = (sc) => sc >= 60 ? 'rgb(16,185,129)' : sc >= 40 ? 'rgb(245,158,11)' : 'rgb(239,68,68)';
   return (
     <div>
       <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ maxHeight: 160 }}>
@@ -169,7 +136,7 @@ function ForensicsTimeline({ reviews, scores, c, isDark }) {
         <text x={W - pad} y={H - 1.5} fontSize="2.5" fill={isDark ? '#71717a' : '#94a3b8'} textAnchor="end">Today</text>
       </svg>
       <div className="flex flex-wrap gap-3 justify-center text-[10px] mt-1">
-        <span><span style={{ color: '#10b981' }}>●</span> Genuine</span><span><span style={{ color: '#f59e0b' }}>●</span> Uncertain</span><span><span style={{ color: '#ef4444' }}>●</span> Fake</span>
+        <span><span style={{ color: 'rgb(16,185,129)' }}>●</span> Genuine</span><span><span style={{ color: 'rgb(245,158,11)' }}>●</span> Uncertain</span><span><span style={{ color: 'rgb(239,68,68)' }}>●</span> Fake</span>
         <span><span style={{ border: '1px dashed #10b981', borderRadius: '50%', display: 'inline-block', width: 8, height: 8 }} /> Verified</span>
       </div>
     </div>
@@ -188,14 +155,47 @@ const PASTE_GUIDES = [
 // ════════════════════════════════════════════════════════════
 // MAIN COMPONENT
 // ════════════════════════════════════════════════════════════
-const FakeReviewDetective = () => {
+const FakeReviewDetective = ({ tool }) => {
   const { callToolEndpoint } = useClaudeAPI();
-  const c = useColors();
-  const { theme } = useTheme();
-  const isDark = theme === 'dark';
+  const { isDark } = useTheme();
+
+  const c = {
+    card:          isDark ? 'bg-zinc-800' : 'bg-white',
+    cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
+    text:          isDark ? 'text-zinc-50' : 'text-gray-900',
+    textSecondary: isDark ? 'text-zinc-400' : 'text-gray-600',
+    textMuted:     isDark ? 'text-zinc-500' : 'text-gray-400',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-50 placeholder:text-zinc-500 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-cyan-500',
+    border:        isDark ? 'border-zinc-700' : 'border-gray-200',
+    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-gray-100 hover:bg-gray-200 text-gray-800',
+    btnOutline:    isDark ? 'border-zinc-600 hover:border-zinc-500 text-zinc-300' : 'border-gray-300 hover:border-gray-400 text-gray-700',
+    danger:        isDark ? 'bg-red-900/20 border-red-700/50 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
+    success:       isDark ? 'bg-emerald-900/20 border-emerald-700/50 text-emerald-200' : 'bg-emerald-50 border-emerald-200 text-emerald-800',
+    warning:       isDark ? 'bg-amber-900/20 border-amber-700/50 text-amber-200' : 'bg-amber-50 border-amber-200 text-amber-800',
+    highlight:     isDark ? 'bg-cyan-900/20 border-cyan-700/50 text-cyan-200' : 'bg-cyan-50 border-cyan-200 text-cyan-800',
+    pillRed:       isDark ? 'bg-red-900/40 text-red-300 border-red-700/40' : 'bg-red-100 text-red-700 border-red-200',
+    pillGreen:     isDark ? 'bg-emerald-900/40 text-emerald-300 border-emerald-700/40' : 'bg-emerald-100 text-emerald-700 border-emerald-200',
+    pillGray:      isDark ? 'bg-zinc-700 text-zinc-400 border-zinc-600' : 'bg-gray-100 text-gray-500 border-gray-200',
+    pillAmber:     isDark ? 'bg-amber-900/40 text-amber-300 border-amber-700/40' : 'bg-amber-100 text-amber-700 border-amber-200',
+    pillCyan:      isDark ? 'bg-cyan-900/40 text-cyan-300 border-cyan-700/40' : 'bg-cyan-100 text-cyan-700 border-cyan-200',
+    statCard:      isDark ? 'bg-zinc-700/50 border-zinc-600' : 'bg-white border-gray-200',
+    barBg:         isDark ? 'bg-zinc-700' : 'bg-gray-200',
+    skeleton:      isDark ? 'bg-zinc-700 animate-pulse' : 'bg-gray-200 animate-pulse',
+    quoteBg:       isDark ? 'bg-zinc-900/60' : 'bg-slate-50',
+    hlFake:        isDark ? 'bg-red-800/30' : 'bg-red-100',
+    hlGeneric:     isDark ? 'bg-amber-800/30' : 'bg-amber-100',
+    hlCompetitor:  isDark ? 'bg-zinc-700/60' : 'bg-gray-200',
+    deleteHover: isDark ? '${c.deleteHover}' : '${c.deleteHover}',
+  };
+
+  const linkStyle = isDark
+    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
+    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
+
 
   // Form
-  const [reviewText, setReviewText] = useState('');
+  const [reviewText, setReviewText] = usePersistentState('frd-review-text', '');
   const [category, setCategory] = useState('Electronics');
   const [productUrl, setProductUrl] = useState('');
   const [currentSource, setCurrentSource] = useState('');
@@ -204,6 +204,7 @@ const FakeReviewDetective = () => {
   const [phase, setPhase] = useState('input');
   const [scoreProgress, setScoreProgress] = useState('');
   const [error, setError] = useState('');
+  const resultsRef = React.useRef(null);
 
   // Results
   const [parsedReviews, setParsedReviews] = useState([]);
@@ -272,7 +273,7 @@ const FakeReviewDetective = () => {
     const aggStats = computeAggregateStats(reviews);
     setParsedReviews(reviews); setStats(aggStats);
 
-    const aiRevs = reviews.slice(0, 20), trunc = reviews.length > 20;
+    const aiRevs = reviews.slice(0, 6), trunc = reviews.length > 20;
 
     // Phase 1: Score
     setPhase('scoring'); setScoreProgress(`Scoring ${aiRevs.length} reviews...`);
@@ -308,8 +309,8 @@ const FakeReviewDetective = () => {
         realPros: ad.genuine_consensus?.real_pros || [], realCons: ad.genuine_consensus?.real_cons || [],
         realRating: ad.genuine_consensus?.real_rating, manipulationType: ad.manipulation_detected?.type,
       };
-      setSavedAnalyses(prev => [snap, ...prev].slice(0, 30));
-      if (currentSource) setSourceAnalyses(prev => [{ ...snap, sourceName: currentSource }, ...prev].slice(0, 20));
+      setSavedAnalyses(prev => [snap, ...prev].slice(0, 6));
+      if (currentSource) setSourceAnalyses(prev => [{ ...snap, sourceName: currentSource, preview: (currentSource || reviewText || '').slice(0, 40) }, ...prev].slice(0, 6));
     } catch (err) { setError('Analysis failed: ' + (err.message || '')); }
     setPhase('done');
   }, [reviewText, category, productUrl, currentSource, callToolEndpoint, setSavedAnalyses, setSourceAnalyses]);
@@ -320,7 +321,7 @@ const FakeReviewDetective = () => {
     setFingerprintLoading(true); setError('');
     try {
       const data = await callToolEndpoint('fake-review-detective', {
-        action: 'fingerprint', reviews: parsedReviews.slice(0, 20).map(r => ({ index: r.index, rawText: r.rawText, starRating: r.starRating, isVerified: r.isVerified, wordCount: r.wordCount })),
+        action: 'fingerprint', reviews: parsedReviews.slice(0, 6).map(r => ({ index: r.index, rawText: r.rawText, starRating: r.starRating, isVerified: r.isVerified, wordCount: r.wordCount })),
         scores: reviewScores,
       });
       setFingerprint(data);
@@ -364,7 +365,7 @@ const FakeReviewDetective = () => {
   // ─── Sorted reviews ───
   const sorted = useMemo(() => {
     if (!reviewScores || !parsedReviews.length) return [];
-    const merged = parsedReviews.slice(0, 20).map(r => ({ ...r, ...(reviewScores.find(s => s.index === r.index) || {}) }));
+    const merged = parsedReviews.slice(0, 6).map(r => ({ ...r, ...(reviewScores.find(s => s.index === r.index) || {}) }));
     return sortSuspicious ? [...merged].sort((a, b) => (a.authenticity_score ?? 50) - (b.authenticity_score ?? 50)) : merged;
   }, [parsedReviews, reviewScores, sortSuspicious]);
 
@@ -379,16 +380,16 @@ const FakeReviewDetective = () => {
   return (
     <div className={`space-y-6 ${c.text}`}>
       <div className="mb-2">
-        <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>🔍 Fake Review Detective</h2>
+        <h2 className={`text-2xl font-bold ${c.text}`}><span className="mr-2">{tool?.icon ?? '🔍'}</span>{tool?.title || 'Fake Review Detective'}</h2>
         <p className={`text-sm ${isDark ? 'text-zinc-400' : 'text-gray-500'}`}>Spot fake reviews before you get burned</p>
       </div>
 
       {/* INTRO */}
-      <div className={`${c.info} border rounded-xl p-5 flex items-start gap-3`}>
+      <div className={`${c.highlight} border rounded-xl p-5 flex items-start gap-3`}>
         <span className="text-xl">🛡️</span>
         <div className="flex-1">
-          <p className={`text-sm ${isDark ? 'text-blue-200' : 'text-blue-800'}`}>Paste reviews or import from a URL. Real stats computed instantly, then AI scores each review, detects manipulation patterns, fingerprints authors, and teaches you to spot fakes.</p>
-          <button onClick={() => setShowPasteHelper(!showPasteHelper)} className={`text-xs font-semibold ${c.accent} mt-1 hover:underline`}>{showPasteHelper ? 'Hide guide ▲' : '📋 How to copy reviews ▼'}</button>
+          <p className={`text-sm ${isDark ? 'text-zinc-300' : 'text-gray-700'}`}>Paste reviews or import from a URL. Real stats computed instantly, then AI scores each review, detects manipulation patterns, fingerprints authors, and teaches you to spot fakes.</p>
+          <button onClick={() => setShowPasteHelper(!showPasteHelper)} className={`text-xs font-semibold ${c.textSecondaryondary} mt-1 hover:underline`}>{showPasteHelper ? 'Hide guide ▲' : '📋 How to copy reviews ▼'}</button>
         </div>
       </div>
 
@@ -400,7 +401,7 @@ const FakeReviewDetective = () => {
             {PASTE_GUIDES.map(g => (
               <div key={g.platform} className={`${c.cardAlt} border rounded-lg p-3`}>
                 <p className={`text-sm font-bold ${c.text} mb-2`}>{g.icon} {g.platform}</p>
-                <ol className="space-y-1">{g.steps.map((s, i) => <li key={i} className={`text-xs ${c.textSec}`}>{i + 1}. {s}</li>)}</ol>
+                <ol className="space-y-1">{g.steps.map((s, i) => <li key={i} className={`text-xs ${c.textSecondaryondary}`}>{i + 1}. {s}</li>)}</ol>
               </div>
             ))}
           </div>
@@ -413,47 +414,47 @@ const FakeReviewDetective = () => {
         <div className="flex gap-2">
           <div className="relative flex-1"><span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm">🔗</span>
             <input type="url" value={productUrl} onChange={e => setProductUrl(e.target.value)} placeholder="https://amazon.com/product-name/..." className={`w-full pl-9 pr-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} disabled={isRunning} /></div>
-          <button onClick={extractFromUrl} disabled={!productUrl.trim() || isRunning} className={`${c.btnSec} disabled:opacity-40 font-semibold px-4 py-2.5 rounded-lg text-sm whitespace-nowrap`}>{phase === 'extracting' ? '⏳ ...' : '🌐 Extract'}</button>
+          <button onClick={extractFromUrl} disabled={!productUrl.trim() || isRunning} className={`${c.btnPrimarySecondaryondary} disabled:opacity-40 font-semibold px-4 py-2.5 rounded-lg text-sm whitespace-nowrap`}>{phase === 'extracting' ? <><span className="animate-spin inline-block">{tool?.icon ?? '🔍'}</span> ...</> : <><span>{tool?.icon ?? '🔍'}</span> Extract</>}</button>
         </div>
-        <p className={`text-[11px] ${c.textMuted} mt-1.5`}>Reviews append to existing text. Works with Amazon, Best Buy, Walmart, etc.</p>
+        <p className={`text-[11px] ${c.textMuteded} mt-1.5`}>Reviews append to existing text. Works with Amazon, Best Buy, Walmart, etc.</p>
       </div>
 
       {/* INPUT + SOURCE TAG */}
       <div className={`${c.card} border rounded-xl p-6`}>
         <div className="flex items-center gap-3 mb-4">
-          <div className={`p-2.5 rounded-lg ${isDark ? 'bg-blue-900/30' : 'bg-blue-100'}`}><span className="text-xl">🔍</span></div>
-          <div className="flex-1"><h2 className={`text-lg font-bold ${c.text}`}>Paste Reviews</h2><p className={`text-xs ${c.textMuted}`}>Or edit reviews imported from URL</p></div>
+          <div className={`p-2.5 rounded-lg ${isDark ? 'bg-cyan-900/30' : 'bg-cyan-100'}`}><span className="text-xl">🔍</span></div>
+          <div className="flex-1"><h2 className={`text-lg font-bold ${c.text}`}>Paste Reviews</h2><p className={`text-xs ${c.textMuteded}`}>Or edit reviews imported from URL</p></div>
         </div>
 
         {/* FEATURE 1: Source tagger */}
         <div className="mb-4">
-          <label className={`text-xs font-semibold ${c.label} block mb-1.5`}>📌 Source (for multi-platform comparison)</label>
+          <label className={`text-xs font-semibold ${c.textSecondaryondary} block mb-1.5`}>📌 Source (for multi-platform comparison)</label>
           <div className="flex flex-wrap gap-1.5">
-            {SOURCE_PRESETS.map(s => <button key={s} onClick={() => setCurrentSource(s)} className={`px-3 py-1 rounded-lg text-xs font-semibold border transition-colors ${currentSource === s ? (isDark ? 'bg-purple-600 border-purple-500 text-white' : 'bg-purple-600 border-purple-600 text-white') : `${c.btnSec} border-transparent`}`}>{s}</button>)}
-            {currentSource && !SOURCE_PRESETS.includes(currentSource) && <span className={`px-3 py-1 rounded-lg text-xs font-semibold bg-purple-600 text-white`}>{currentSource}</span>}
+            {SOURCE_PRESETS.map(s => <button key={s} onClick={() => setCurrentSource(s)} className={`px-3 py-1 rounded-lg text-xs font-semibold border transition-colors ${currentSource === s ? (isDark ? 'bg-emerald-600 border-emerald-500 text-white' : 'bg-emerald-600 border-emerald-600 text-white') : `${c.btnPrimarySecondaryondary} border-transparent`}`}>{s}</button>)}
+            {currentSource && !SOURCE_PRESETS.includes(currentSource) && <span className={`px-3 py-1 rounded-lg text-xs font-semibold bg-emerald-600 text-white`}>{currentSource}</span>}
           </div>
         </div>
 
         <div className="space-y-4">
           <div>
             <div className="flex items-center justify-between mb-1.5">
-              <label className={`text-sm font-semibold ${c.label}`}>Product reviews</label>
-              <button onClick={() => setReviewText(EXAMPLE_REVIEWS)} className={`text-xs font-semibold ${c.accent} hover:underline`}>Try example</button>
+              <label className={`text-sm font-semibold ${c.textSecondaryondary}`}>Product reviews</label>
+              <button onClick={() => setReviewText(EXAMPLE_REVIEWS)} className={`text-xs font-semibold ${c.textSecondaryondary} hover:underline`}>Try example</button>
             </div>
             <textarea value={reviewText} onChange={e => setReviewText(e.target.value)} placeholder="Paste reviews here..." className={`w-full p-4 border rounded-lg ${c.input} outline-none focus:ring-2 font-mono text-sm`} rows={8} />
-            <p className={`text-xs ${c.textMuted} mt-1`}>Min 100 chars · {reviewText.length} entered</p>
+            <p className={`text-xs ${c.textMuteded} mt-1`}>Min 100 chars · {reviewText.length} entered</p>
           </div>
 
           <div>
-            <label className={`text-sm font-semibold ${c.label} block mb-2`}>Category</label>
-            <div className="flex flex-wrap gap-1.5">{CATEGORIES.map(cat => <button key={cat} onClick={() => setCategory(cat)} className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${category === cat ? (isDark ? 'bg-blue-600 border-blue-500 text-white' : 'bg-blue-600 border-blue-600 text-white') : `${c.btnSec} border-transparent`}`}>{cat}</button>)}</div>
+            <label className={`text-sm font-semibold ${c.textSecondaryondary} block mb-2`}>Category</label>
+            <div className="flex flex-wrap gap-1.5">{CATEGORIES.map(cat => <button key={cat} onClick={() => setCategory(cat)} className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${category === cat ? (isDark ? 'bg-emerald-600 border-emerald-500 text-white' : 'bg-emerald-600 border-emerald-600 text-white') : `${c.btnPrimarySecondaryondary} border-transparent`}`}>{cat}</button>)}</div>
           </div>
 
           <div className="flex gap-3">
-            <button onClick={runAnalysis} disabled={!canAnalyze} className={`flex-1 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 px-6 rounded-lg flex items-center justify-center gap-2`}>
-              {isRunning ? <><span className="animate-spin inline-block">⏳</span><span className="text-sm">{scoreProgress || 'Processing...'}</span></> : <>🔍 Detect Fakes</>}
+            <button onClick={runAnalysis} disabled={!canAnalyze} className={`flex-1 ${c.btnPrimaryPrimary} disabled:opacity-40 font-bold py-3 px-6 rounded-lg flex items-center justify-center gap-2`}>
+              {isRunning ? <><span className="animate-spin inline-block">{tool?.icon ?? '🔍'}</span><span className="text-sm">{scoreProgress || 'Processing...'}</span></> : <><span>{tool?.icon ?? '🔍'}</span> Detect Fakes</>}
             </button>
-            {(stats || analysis) && <button onClick={handleReset} className={`px-5 py-3 border-2 ${c.btnOutline} font-semibold rounded-lg`}>Reset</button>}
+            {(stats || analysis) && <button onClick={handleReset} className={`px-5 py-3 border-2 ${c.btnPrimaryOutline} font-semibold rounded-lg`}>Reset</button>}
           </div>
         </div>
       </div>
@@ -464,15 +465,15 @@ const FakeReviewDetective = () => {
       {stats && confidence && confidence.level !== 'high' && (
         <div className={`${confidence.color === 'red' ? c.danger : c.warning} border rounded-lg p-3 flex items-start gap-2`}>
           <span>{confidence.level === 'very_low' ? '🚨' : '⚠️'}</span>
-          <div><p className="text-xs font-bold">Sample: {confidence.label}</p><p className={`text-xs ${c.textSec}`}>{confidence.note}</p></div>
+          <div><p className="text-xs font-bold">Sample: {confidence.label}</p><p className={`text-xs ${c.textSecondaryondary}`}>{confidence.note}</p></div>
         </div>
       )}
 
       {/* INSTANT STATS */}
       {stats && (
-        <div className={`${c.card} border rounded-xl p-6`}>
-          <h3 className={`text-sm font-bold ${c.text} mb-4 flex items-center gap-2`}><span>📊</span> Stats <span className={`text-[10px] font-bold ${c.textMuted} uppercase`}>Instant</span>
-            {confidence && <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${confidence.color === 'green' ? c.pillGreen : confidence.color === 'amber' ? c.pillAmber : c.pillRed} border`}>{confidence.label}</span>}
+        <div ref={resultsRef} className={`${c.card} border rounded-xl p-6`}>
+          <h3 className={`text-sm font-bold ${c.text} mb-4 flex items-center gap-2`}><span>📊</span> Stats <span className={`text-[10px] font-bold ${c.textMuteded} uppercase`}>Instant</span>
+            {confidence && <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${confidence.color === 'green' ? c.success : confidence.color === 'amber' ? c.warning : c.danger} border`}>{confidence.label}</span>}
           </h3>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-5">
             <StatCard label="Reviews" value={stats.totalReviews} c={c} />
@@ -482,7 +483,7 @@ const FakeReviewDetective = () => {
             <StatCard label="Clusters" value={stats.hasTimingCluster ? stats.dateClusters.length : 'None'} color={stats.hasTimingCluster ? 'red' : 'green'} c={c} />
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            {stats.ratedCount > 0 && <div><p className={`text-xs font-bold ${c.label} mb-2`}>Stars</p><div className="space-y-1.5">{[5,4,3,2,1].map(s => { const cnt = stats.starDistribution[s]||0, mx = Math.max(...Object.values(stats.starDistribution),1); return <div key={s} className="flex items-center gap-2"><span className={`w-8 text-xs text-right font-semibold ${c.textSec}`}>{s}★</span><div className={`flex-1 h-5 rounded-sm overflow-hidden ${c.barBg}`}><div className={`h-full rounded-sm ${s>=4?'bg-emerald-500':s===3?'bg-amber-500':'bg-red-500'}`} style={{width:`${(cnt/mx)*100}%`,transition:'width 0.4s ease'}}/></div><span className={`w-6 text-xs text-right font-semibold ${c.textMuted}`}>{cnt}</span></div>; })}</div></div>}
+            {stats.ratedCount > 0 && <div><p className={`text-xs font-bold ${c.textSecondaryondary} mb-2`}>Stars</p><div className="space-y-1.5">{[5,4,3,2,1].map(s => { const cnt = stats.starDistribution[s]||0, mx = Math.max(...Object.values(stats.starDistribution),1); return <div key={s} className="flex items-center gap-2"><span className={`w-8 text-xs text-right font-semibold ${c.textSecondaryondary}`}>{s}★</span><div className={`flex-1 h-5 rounded-sm overflow-hidden ${c.barBg}`}><div className={`h-full rounded-sm ${s>=4?'bg-emerald-500':s===3?'bg-amber-500':'bg-red-500'}`} style={{width:`${(cnt/mx)*100}%`,transition:'width 0.4s ease'}}/></div><span className={`w-6 text-xs text-right font-semibold ${c.textMuteded}`}>{cnt}</span></div>; })}</div></div>}
             <div className="space-y-2">
               {stats.hasTimingCluster && stats.dateClusters.map((cl, i) => <div key={i} className={`${c.danger} border rounded-lg p-3 flex items-start gap-2`}><span>🕐</span><p className="text-xs"><span className="font-bold">{cl.count} reviews</span> within 48hrs ({cl.daysAgoRange})</p></div>)}
               {stats.verifiedPercent < 40 && stats.totalReviews >= 3 && <div className={`${c.warning} border rounded-lg p-3 flex items-start gap-2`}><span>⚠️</span><p className="text-xs">Only <span className="font-bold">{stats.verifiedPercent}%</span> verified</p></div>}
@@ -494,7 +495,7 @@ const FakeReviewDetective = () => {
       )}
 
       {/* PHASE */}
-      {isRunning && <div className={`${c.card} border rounded-xl p-4 flex items-center gap-3`}><span className="animate-spin text-lg">⏳</span><div><p className={`text-sm font-bold ${c.text}`}>{phase === 'extracting' ? 'Extracting...' : phase === 'parsing' ? 'Parsing...' : phase === 'scoring' ? 'Step 1/2: Scoring' : 'Step 2/2: Patterns'}</p><p className={`text-xs ${c.textMuted}`}>{scoreProgress}</p></div></div>}
+      {isRunning && <div className={`${c.card} border rounded-xl p-4 flex items-center gap-3`}><span className="animate-spin text-lg">{tool?.icon ?? '🔍'}</span><div><p className={`text-sm font-bold ${c.text}`}>{phase === 'extracting' ? 'Extracting...' : phase === 'parsing' ? 'Parsing...' : phase === 'scoring' ? 'Step 1/2: Scoring' : 'Step 2/2: Patterns'}</p><p className={`text-xs ${c.textMuteded}`}>{scoreProgress}</p></div></div>}
 
       {/* QUICK VERDICT */}
       {analysis?.quick_verdict && (
@@ -508,11 +509,17 @@ const FakeReviewDetective = () => {
               <text x="45" y="56" textAnchor="middle" className="text-[9px] font-bold" fill={isDark ? '#9ca3af' : '#64748b'}>/ 100</text>
             </svg>
             <div className="flex-1 text-center sm:text-left">
-              <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted} mb-1`}>Trust Score {currentSource && `· ${currentSource}`}</p>
+              <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuteded} mb-1`}>Trust Score {currentSource && `· ${currentSource}`}</p>
               <h3 className={`text-xl font-black ${c.text} mb-1`}>{analysis.quick_verdict.label || verdictLabel(analysis.quick_verdict.trust_score)}</h3>
-              <p className={`text-sm ${c.textSec}`}>{analysis.quick_verdict.one_liner}</p>
+              <p className={`text-sm ${c.textSecondaryondary}`}>{analysis.quick_verdict.one_liner}</p>
             </div>
             <ActionBar><CopyBtn content={buildReport()} label="Copy" /><PrintBtn content={buildReport()} title="Fake Review Detective" /></ActionBar>
+            <p className={`text-xs ${c.textMuteded} mt-2`}>
+              AI-generated analysis — use alongside your own judgment.{' '}
+              Ready to buy?{' '}
+              <a href="/BuyWise" target="_blank" rel="noopener noreferrer" className={linkStyle}>BuyWise</a>{' '}
+              stress-tests the decision itself.
+            </p>
           </div>
         </div>
       )}
@@ -521,11 +528,11 @@ const FakeReviewDetective = () => {
       {reviewScores && parsedReviews.filter(r => r.daysAgo !== null).length >= 2 && (
         <div className={`${c.card} border rounded-xl p-5`}>
           <button onClick={() => setShowTimeline(!showTimeline)} className={`flex items-center gap-2 w-full text-left`}>
-            <span>🕵️</span><h3 className={`text-sm font-bold ${c.text} flex-1`}>Forensics Timeline</h3><span className={c.textMuted}>{showTimeline ? '▲' : '▼'}</span>
+            <span>🕵️</span><h3 className={`text-sm font-bold ${c.text} flex-1`}>Forensics Timeline</h3><span className={c.textMuteded}>{showTimeline ? '▲' : '▼'}</span>
           </button>
           {showTimeline && <div className="mt-3">
             <ForensicsTimeline reviews={parsedReviews} scores={reviewScores} c={c} isDark={isDark} />
-            <p className={`text-[10px] ${c.textMuted} text-center mt-2`}>Each dot = one review. Y-axis = star rating. Color = authenticity score. Red clusters = suspicious timing.</p>
+            <p className={`text-[10px] ${c.textMuteded} text-center mt-2`}>Each dot = one review. Y-axis = star rating. Color = authenticity score. Red clusters = suspicious timing.</p>
           </div>}
         </div>
       )}
@@ -535,10 +542,10 @@ const FakeReviewDetective = () => {
         <div>
           <div className="flex items-center justify-between mb-3">
             <h3 className={`text-sm font-bold ${c.text} flex items-center gap-2`}><span>🛡️</span> Scores ({reviewScores.length})</h3>
-            <button onClick={() => setSortSuspicious(p => !p)} className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold ${c.btnSec}`}>↕️ {sortSuspicious ? 'Suspicious first' : 'Original'}</button>
+            <button onClick={() => setSortSuspicious(p => !p)} className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold ${c.btnPrimarySecondaryondary}`}>↕️ {sortSuspicious ? 'Suspicious first' : 'Original'}</button>
           </div>
           <div className="space-y-3">{visible.map(r => <ReviewCard key={r.index} review={r} expanded={!!expandedCards[r.index]} onToggle={() => toggleCard(r.index)} c={c} isDark={isDark} fpGroup={fpGroupMap[r.index]} />)}</div>
-          {sorted.length > 5 && !showAllReviews && <button onClick={() => setShowAllReviews(true)} className={`w-full mt-3 py-3 rounded-lg text-sm font-semibold ${c.btnSec}`}>▼ Show all {sorted.length}</button>}
+          {sorted.length > 5 && !showAllReviews && <button onClick={() => setShowAllReviews(true)} className={`w-full mt-3 py-3 rounded-lg text-sm font-semibold ${c.btnPrimarySecondaryondary}`}>▼ Show all {sorted.length}</button>}
         </div>
       )}
 
@@ -547,26 +554,26 @@ const FakeReviewDetective = () => {
         <div className={`${c.card} border rounded-xl p-5`}>
           <button onClick={() => setShowFingerprint(!showFingerprint)} className="flex items-center gap-2 w-full text-left">
             <span>🔬</span><h3 className={`text-sm font-bold ${c.text} flex-1`}>Author Fingerprinting</h3>
-            {!fingerprint && <button onClick={(e) => { e.stopPropagation(); runFingerprint(); }} disabled={fingerprintLoading} className={`${c.btnSec} text-xs px-3 py-1 rounded-lg disabled:opacity-50`}>{fingerprintLoading ? '⏳' : '🔬 Analyze'}</button>}
-            <span className={c.textMuted}>{showFingerprint ? '▲' : '▼'}</span>
+            {!fingerprint && <button onClick={(e) => { e.stopPropagation(); runFingerprint(); }} disabled={fingerprintLoading} className={`${c.btnPrimarySecondaryondary} text-xs px-3 py-1 rounded-lg disabled:opacity-50`}>{fingerprintLoading ? (tool?.icon ?? '🔍') : '🔬 Analyze'}</button>}
+            <span className={c.textMuteded}>{showFingerprint ? '▲' : '▼'}</span>
           </button>
           {showFingerprint && (fingerprint ? (
             <div className="mt-3 space-y-3">
-              {fingerprint.overall_assessment && <p className={`text-sm ${c.textSec}`}>{fingerprint.overall_assessment}</p>}
+              {fingerprint.overall_assessment && <p className={`text-sm ${c.textSecondaryondary}`}>{fingerprint.overall_assessment}</p>}
               {fingerprint.template_detected && fingerprint.template_structure && <div className={`${c.danger} border rounded-lg p-3`}><p className="text-xs font-bold mb-1">📝 Template Detected</p><p className="text-xs">{fingerprint.template_structure}</p></div>}
               {fingerprint.author_groups?.map(g => (
-                <div key={g.group_id} className={`${c.pillPurple} border-2 rounded-lg p-4`}>
+                <div key={g.group_id} className={`${c.pillCyan} border-2 rounded-lg p-4`}>
                   <div className="flex items-center gap-2 mb-2"><span className="text-lg">👥</span><p className={`text-sm font-bold ${c.text}`}>Group {g.group_id}: Reviews #{g.review_indices?.join(', #')}</p>
-                    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${g.confidence === 'high' ? c.pillRed : c.pillAmber} border`}>{g.confidence}</span></div>
+                    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${g.confidence === 'high' ? c.danger : c.warning} border`}>{g.confidence}</span></div>
                   <p className={`text-xs font-semibold ${c.text} mb-1 capitalize`}>{(g.pattern_type || '').replace(/_/g, ' ')}</p>
-                  <p className={`text-xs ${c.textSec} mb-2`}>{g.summary}</p>
-                  {g.shared_phrases?.length > 0 && <div className="flex flex-wrap gap-1 mb-2">{g.shared_phrases.map((p, i) => <span key={i} className={`${c.pillRed} border text-[9px] font-semibold px-1.5 py-0.5 rounded`}>"{p}"</span>)}</div>}
-                  {g.evidence?.map((e, i) => <p key={i} className={`text-xs ${c.textSec}`}>• {e}</p>)}
+                  <p className={`text-xs ${c.textSecondaryondary} mb-2`}>{g.summary}</p>
+                  {g.shared_phrases?.length > 0 && <div className="flex flex-wrap gap-1 mb-2">{g.shared_phrases.map((p, i) => <span key={i} className={`${c.danger} border text-[9px] font-semibold px-1.5 py-0.5 rounded`}>"{p}"</span>)}</div>}
+                  {g.evidence?.map((e, i) => <p key={i} className={`text-xs ${c.textSecondaryondary}`}>• {e}</p>)}
                 </div>
               ))}
-              {fingerprint.singleton_reviews?.length > 0 && <p className={`text-xs ${c.textMuted}`}>✅ Reviews #{fingerprint.singleton_reviews.join(', #')} appear to be from unique authors.</p>}
+              {fingerprint.singleton_reviews?.length > 0 && <p className={`text-xs ${c.textMuteded}`}>✅ Reviews #{fingerprint.singleton_reviews.join(', #')} appear to be from unique authors.</p>}
             </div>
-          ) : <p className={`text-xs ${c.textMuted} mt-3`}>Click "Analyze" to detect same-author patterns across reviews.</p>)}
+          ) : <p className={`text-xs ${c.textMuteded} mt-3`}>Click "Analyze" to detect same-author patterns across reviews.</p>)}
         </div>
       )}
 
@@ -590,10 +597,10 @@ const FakeReviewDetective = () => {
               {analysis.genuine_consensus.real_pros?.length > 0 && <div><p className="text-xs font-bold mb-1">📈 Pros</p>{analysis.genuine_consensus.real_pros.map((p, i) => <p key={i} className="text-xs">✓ {p}</p>)}</div>}
               {analysis.genuine_consensus.real_cons?.length > 0 && <div><p className="text-xs font-bold mb-1">📉 Cons</p>{analysis.genuine_consensus.real_cons.map((cn, i) => <p key={i} className="text-xs">✗ {cn}</p>)}</div>}
             </div>
-            {analysis.genuine_consensus.real_rating && <p className={`text-xs font-bold mt-2 ${c.successText}`}>Genuine: {analysis.genuine_consensus.real_rating}/5 ★</p>}
+            {analysis.genuine_consensus.real_rating && <p className={`text-xs font-bold mt-2 ${c.success}`}>Genuine: {analysis.genuine_consensus.real_rating}/5 ★</p>}
           </div></div>}
 
-          {analysis.sentiment_trajectory?.trend !== 'insufficient_data' && analysis.sentiment_trajectory && <div className={`${c.info} border rounded-xl p-5 flex items-start gap-3`}><span className="text-lg">{analysis.sentiment_trajectory.trend === 'improving' ? '📈' : analysis.sentiment_trajectory.trend === 'declining' ? '📉' : '➡️'}</span><div><h4 className="text-sm font-bold mb-1">Trend: {analysis.sentiment_trajectory.trend}</h4><p className="text-sm">{analysis.sentiment_trajectory.description}</p></div></div>}
+          {analysis.sentiment_trajectory?.trend !== 'insufficient_data' && analysis.sentiment_trajectory && <div className={`${c.highlight} border rounded-xl p-5 flex items-start gap-3`}><span className="text-lg">{analysis.sentiment_trajectory.trend === 'improving' ? '📈' : analysis.sentiment_trajectory.trend === 'declining' ? '📉' : '➡️'}</span><div><h4 className="text-sm font-bold mb-1">Trend: {analysis.sentiment_trajectory.trend}</h4><p className="text-sm">{analysis.sentiment_trajectory.description}</p></div></div>}
 
           {analysis.purchase_recommendation && <div className={`${analysis.purchase_recommendation.verdict === 'buy' ? c.success : analysis.purchase_recommendation.verdict === 'skip' ? c.danger : c.warning} border rounded-xl p-5 flex items-start gap-3`}><span className="text-lg">{analysis.purchase_recommendation.verdict === 'buy' ? '✅' : analysis.purchase_recommendation.verdict === 'skip' ? '🚫' : '⏸️'}</span><div>
             <h4 className="text-sm font-bold mb-1">Verdict: <span className="uppercase">{analysis.purchase_recommendation.verdict}</span> {analysis.purchase_recommendation.confidence && <span className="text-[10px] opacity-70">({analysis.purchase_recommendation.confidence})</span>}</h4>
@@ -604,18 +611,18 @@ const FakeReviewDetective = () => {
           {analysis.playbook?.tactics_detected?.length > 0 && (
             <div className={`${c.card} border rounded-xl p-5`}>
               <button onClick={() => setShowPlaybook(!showPlaybook)} className="flex items-center gap-2 w-full text-left">
-                <span>🎓</span><h3 className={`text-sm font-bold ${c.text} flex-1`}>Fake Review Playbook</h3><span className={`text-[10px] ${c.textMuted}`}>Learn to spot these</span><span className={c.textMuted}>{showPlaybook ? '▲' : '▼'}</span>
+                <span>🎓</span><h3 className={`text-sm font-bold ${c.text} flex-1`}>Fake Review Playbook</h3><span className={`text-[10px] ${c.textMuteded}`}>Learn to spot these</span><span className={c.textMuteded}>{showPlaybook ? '▲' : '▼'}</span>
               </button>
               {showPlaybook && <div className="mt-3 space-y-3">
                 {analysis.playbook.tactics_detected.map((t, i) => (
                   <div key={i} className={`${c.cardAlt} border rounded-lg p-4`}>
                     <div className="flex items-center gap-2 mb-2"><span className="text-lg">{t.icon || '🎭'}</span><h4 className={`text-sm font-bold ${c.text}`}>{t.name}</h4></div>
-                    <p className={`text-xs ${c.textSec} mb-2`}>{t.description}</p>
+                    <p className={`text-xs ${c.textSecondaryondary} mb-2`}>{t.description}</p>
                     <div className={`${c.danger} border rounded-lg p-2 mb-2`}><p className="text-[10px] font-bold mb-0.5">In these reviews:</p><p className="text-xs">{t.evidence_here}</p></div>
                     <div className={`${c.success} border rounded-lg p-2`}><p className="text-[10px] font-bold mb-0.5">🔍 How to spot this:</p><p className="text-xs">{t.how_to_spot}</p></div>
                   </div>
                 ))}
-                {analysis.playbook.overall_tip && <div className={`${c.info} border rounded-lg p-3`}><p className="text-xs font-bold">💡 {analysis.playbook.overall_tip}</p></div>}
+                {analysis.playbook.overall_tip && <div className={`${c.highlight} border rounded-lg p-3`}><p className="text-xs font-bold">💡 {analysis.playbook.overall_tip}</p></div>}
               </div>}
             </div>
           )}
@@ -623,36 +630,36 @@ const FakeReviewDetective = () => {
           {/* FEATURE 4: TRY ALTERNATIVE */}
           <div className={`${c.card} border-2 border-dashed rounded-xl p-5 text-center`}>
             <p className={`text-sm font-semibold ${c.text} mb-2`}>🔄 Not convinced? Try the alternative.</p>
-            <p className={`text-xs ${c.textMuted} mb-3`}>Analyze reviews from a competing product, then compare side-by-side.</p>
-            <button onClick={handleTryAlternative} className={`${c.btnPrimary} px-6 py-2.5 rounded-lg text-sm font-semibold`}>🔍 Analyze Another Product</button>
+            <p className={`text-xs ${c.textMuteded} mb-3`}>Analyze reviews from a competing product, then compare side-by-side.</p>
+            <button onClick={handleTryAlternative} className={`${c.btnPrimaryPrimary} px-6 py-2.5 rounded-lg text-sm font-semibold`}>🔍 Analyze Another Product</button>
           </div>
 
           {/* Cross-tool */}
-          <div className={`${c.cardAlt} border rounded-lg p-3 flex items-center gap-2`}><span>🛒</span><p className={`text-xs ${c.textSec} flex-1`}>Reviews check out? Run through <a href="/BuyWise" target="_blank" rel="noopener noreferrer" className={`font-semibold ${c.accent} hover:underline`}>BuyWise</a> to see if it's worth the price.</p></div>
+          <div className={`${c.cardAlt} border rounded-lg p-3 flex items-center gap-2`}><span>🛒</span><p className={`text-xs ${c.textSecondaryondary} flex-1`}>Reviews check out? Run through <a href="/BuyWise" target="_blank" rel="noopener noreferrer" className={`font-semibold ${c.textSecondaryondary} hover:underline`}>BuyWise</a> to see if it's worth the price.</p></div>
         </div>
       )}
 
-      {(reviewScores || analysis) && <p className={`text-[10px] ${c.textMuted} text-center px-4`}>AI-assisted. Cannot verify identities. Use judgment.</p>}
+      {(reviewScores || analysis) && <p className={`text-[10px] ${c.textMuteded} text-center px-4`}>AI-assisted. Cannot verify identities. Use judgment.</p>}
 
       {/* FEATURE 1: MULTI-SOURCE SYNTHESIS */}
       {sourceAnalyses.length >= 2 && (
         <div className={`${c.card} border rounded-xl p-5`}>
           <div className="flex items-center justify-between mb-3">
             <h3 className={`text-sm font-bold ${c.text} flex items-center gap-2`}><span>🌐</span> Cross-Platform Comparison ({sourceAnalyses.length} sources)</h3>
-            <button onClick={runSynthesis} disabled={synthesisLoading} className={`${c.btnPrimary} text-xs px-3 py-1.5 rounded-lg disabled:opacity-50`}>{synthesisLoading ? '⏳' : synthesis ? '🔄 Refresh' : '🔬 Synthesize'}</button>
+            <button onClick={runSynthesis} disabled={synthesisLoading} className={`${c.btnPrimaryPrimary} text-xs px-3 py-1.5 rounded-lg disabled:opacity-50`}>{synthesisLoading ? (tool?.icon ?? '🔍') : synthesis ? '🔄 Refresh' : '🔬 Synthesize'}</button>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-3">
             {sourceAnalyses.slice(0, 6).map(sa => (
               <div key={sa.id} className={`${c.cardAlt} border rounded-lg p-3 text-center`}>
                 <p className={`text-xs font-bold ${c.text}`}>{sa.sourceName}</p>
-                <p className={`text-2xl font-black ${sa.trustScore >= 60 ? c.successText : sa.trustScore >= 40 ? c.warningText : c.dangerText}`}>{sa.trustScore ?? '?'}</p>
-                <p className={`text-[10px] ${c.textMuted}`}>{sa.reviewCount}r · {sa.fakeCount}🔴 {sa.genuineCount}🟢</p>
+                <p className={`text-2xl font-black ${sa.trustScore >= 60 ? c.success : sa.trustScore >= 40 ? c.warning : c.danger}`}>{sa.trustScore ?? '?'}</p>
+                <p className={`text-[10px] ${c.textMuteded}`}>{sa.reviewCount}r · {sa.fakeCount}🔴 {sa.genuineCount}🟢</p>
               </div>
             ))}
           </div>
           {synthesis && <div className="space-y-3 mt-3">
             <div className={`${synthesis.unified_verdict === 'buy' ? c.success : synthesis.unified_verdict === 'skip' ? c.danger : c.warning} border-2 rounded-xl p-5 text-center`}>
-              <p className={`text-xs font-bold ${c.textMuted} uppercase mb-1`}>Cross-Platform Verdict</p>
+              <p className={`text-xs font-bold ${c.textMuteded} uppercase mb-1`}>Cross-Platform Verdict</p>
               <p className="text-3xl font-black">{synthesis.unified_trust_score}/100</p>
               <p className="text-sm font-bold uppercase mt-1">{synthesis.unified_verdict} <span className="text-[10px] opacity-70">({synthesis.unified_confidence})</span></p>
             </div>
@@ -662,23 +669,23 @@ const FakeReviewDetective = () => {
                 {synthesis.consensus.agreed_cons?.length > 0 && <div>{synthesis.consensus.agreed_cons.map((cn, i) => <p key={i} className="text-xs">✗ {cn}</p>)}</div>}
               </div>
             </div>}
-            {synthesis.source_rankings?.length > 0 && <div className={`${c.cardAlt} border rounded-lg p-4`}><p className="text-xs font-bold mb-2">📊 Source Reliability</p>{synthesis.source_rankings.map((s, i) => <div key={i} className="flex items-center justify-between mb-1"><span className={`text-xs font-semibold ${c.text}`}>{s.source_name}</span><span className={`text-[10px] px-1.5 py-0.5 rounded ${s.trust_level === 'most_reliable' ? c.pillGreen : s.trust_level === 'reliable' ? c.pillGreen : s.trust_level === 'somewhat_reliable' ? c.pillAmber : c.pillRed} border`}>{(s.trust_level||'').replace(/_/g,' ')}</span></div>)}</div>}
+            {synthesis.source_rankings?.length > 0 && <div className={`${c.cardAlt} border rounded-lg p-4`}><p className="text-xs font-bold mb-2">📊 Source Reliability</p>{synthesis.source_rankings.map((s, i) => <div key={i} className="flex items-center justify-between mb-1"><span className={`text-xs font-semibold ${c.text}`}>{s.source_name}</span><span className={`text-[10px] px-1.5 py-0.5 rounded ${s.trust_level === 'most_reliable' ? c.success : s.trust_level === 'reliable' ? c.success : s.trust_level === 'somewhat_reliable' ? c.warning : c.danger} border`}>{(s.trust_level||'').replace(/_/g,' ')}</span></div>)}</div>}
             {synthesis.disagreements?.length > 0 && <div className={`${c.warning} border rounded-lg p-4`}><p className="text-xs font-bold mb-2">⚡ Disagreements</p>{synthesis.disagreements.map((d, i) => <div key={i} className="mb-2"><p className={`text-xs font-semibold ${c.text}`}>{d.topic}</p><p className="text-xs">{d.description}</p></div>)}</div>}
-            {synthesis.final_recommendation && <div className={`${c.info} border rounded-lg p-3`}><p className="text-xs font-bold">💡 {synthesis.final_recommendation}</p></div>}
+            {synthesis.final_recommendation && <div className={`${c.highlight} border rounded-lg p-3`}><p className="text-xs font-bold">💡 {synthesis.final_recommendation}</p></div>}
           </div>}
-          {!synthesis && <p className={`text-xs ${c.textMuted} text-center`}>Click Synthesize to get a cross-platform verdict.</p>}
+          {!synthesis && <p className={`text-xs ${c.textMuteded} text-center`}>Click Synthesize to get a cross-platform verdict.</p>}
         </div>
       )}
 
       {/* COMPARISON */}
       {savedAnalyses.length >= 2 && analysis && (
         <div className={`${c.card} border rounded-xl p-5`}>
-          <div className="flex items-center justify-between mb-3"><h3 className={`text-sm font-bold ${c.text} flex items-center gap-2`}><span>⚖️</span> Compare</h3><button onClick={() => setShowCompare(!showCompare)} className={`text-xs ${c.accent} font-semibold`}>{showCompare ? 'Hide' : 'Show'}</button></div>
+          <div className="flex items-center justify-between mb-3"><h3 className={`text-sm font-bold ${c.text} flex items-center gap-2`}><span>⚖️</span> Compare</h3><button onClick={() => setShowCompare(!showCompare)} className={`text-xs ${c.textSecondaryondary} font-semibold`}>{showCompare ? 'Hide' : 'Show'}</button></div>
           {showCompare && <div>
-            <div className="space-y-2 mb-4 max-h-40 overflow-y-auto">{savedAnalyses.slice(1).map(sa => <button key={sa.id} onClick={() => setCompareSlot(sa)} className={`w-full text-left ${compareSlot?.id === sa.id ? c.info : c.cardAlt} border rounded-lg p-3 transition-colors`}><div className="flex items-center justify-between"><span className={`text-sm font-semibold ${c.text}`}>{sa.source || sa.category} · {sa.reviewCount}r</span><span className={`text-lg font-black ${sa.trustScore >= 60 ? c.successText : sa.trustScore >= 40 ? c.warningText : c.dangerText}`}>{sa.trustScore ?? '?'}</span></div><p className={`text-xs ${c.textMuted} truncate`}>{sa.summary || sa.date}</p></button>)}</div>
+            <div className="space-y-2 mb-4 max-h-40 overflow-y-auto">{savedAnalyses.slice(1).map(sa => <button key={sa.id} onClick={() => setCompareSlot(sa)} className={`w-full text-left ${compareSlot?.id === sa.id ? c.highlight : c.cardAlt} border rounded-lg p-3 transition-colors`}><div className="flex items-center justify-between"><span className={`text-sm font-semibold ${c.text}`}>{sa.source || sa.category} · {sa.reviewCount}r</span><span className={`text-lg font-black ${sa.trustScore >= 60 ? c.success : sa.trustScore >= 40 ? c.warning : c.danger}`}>{sa.trustScore ?? '?'}</span></div><p className={`text-xs ${c.textMuteded} truncate`}>{sa.summary || sa.date}</p></button>)}</div>
             {compareSlot && <div className="grid grid-cols-2 gap-3">
-              <div className={`${c.card} border rounded-lg p-4 text-center`}><p className={`text-xs ${c.textMuted} mb-1`}>Current {currentSource && `(${currentSource})`}</p><p className={`text-3xl font-black ${analysis.quick_verdict?.trust_score >= 60 ? c.successText : analysis.quick_verdict?.trust_score >= 40 ? c.warningText : c.dangerText}`}>{analysis.quick_verdict?.trust_score ?? '?'}</p><p className={`text-xs font-bold mt-1 uppercase ${analysis.purchase_recommendation?.verdict === 'buy' ? c.successText : analysis.purchase_recommendation?.verdict === 'skip' ? c.dangerText : c.warningText}`}>{analysis.purchase_recommendation?.verdict || '—'}</p></div>
-              <div className={`${c.card} border rounded-lg p-4 text-center`}><p className={`text-xs ${c.textMuted} mb-1`}>Previous {compareSlot.source && `(${compareSlot.source})`}</p><p className={`text-3xl font-black ${compareSlot.trustScore >= 60 ? c.successText : compareSlot.trustScore >= 40 ? c.warningText : c.dangerText}`}>{compareSlot.trustScore ?? '?'}</p><p className={`text-xs font-bold mt-1 uppercase ${compareSlot.verdict === 'buy' ? c.successText : compareSlot.verdict === 'skip' ? c.dangerText : c.warningText}`}>{compareSlot.verdict || '—'}</p></div>
+              <div className={`${c.card} border rounded-lg p-4 text-center`}><p className={`text-xs ${c.textMuteded} mb-1`}>Current {currentSource && `(${currentSource})`}</p><p className={`text-3xl font-black ${analysis.quick_verdict?.trust_score >= 60 ? c.success : analysis.quick_verdict?.trust_score >= 40 ? c.warning : c.danger}`}>{analysis.quick_verdict?.trust_score ?? '?'}</p><p className={`text-xs font-bold mt-1 uppercase ${analysis.purchase_recommendation?.verdict === 'buy' ? c.success : analysis.purchase_recommendation?.verdict === 'skip' ? c.danger : c.warning}`}>{analysis.purchase_recommendation?.verdict || '—'}</p></div>
+              <div className={`${c.card} border rounded-lg p-4 text-center`}><p className={`text-xs ${c.textMuteded} mb-1`}>Previous {compareSlot.source && `(${compareSlot.source})`}</p><p className={`text-3xl font-black ${compareSlot.trustScore >= 60 ? c.success : compareSlot.trustScore >= 40 ? c.warning : c.danger}`}>{compareSlot.trustScore ?? '?'}</p><p className={`text-xs font-bold mt-1 uppercase ${compareSlot.verdict === 'buy' ? c.success : compareSlot.verdict === 'skip' ? c.danger : c.warning}`}>{compareSlot.verdict || '—'}</p></div>
             </div>}
           </div>}
         </div>
@@ -688,17 +695,25 @@ const FakeReviewDetective = () => {
       {savedAnalyses.length > 0 && (
         <div className={`${c.card} border rounded-xl p-5`}>
           <div className="flex items-center justify-between mb-3"><h3 className={`text-sm font-bold ${c.text} flex items-center gap-2`}><span>📋</span> History ({savedAnalyses.length})</h3>
-            <button onClick={() => { if (window.confirm('Clear history?')) { setSavedAnalyses([]); setSourceAnalyses([]); setSynthesis(null); } }} className={`text-xs ${c.textMuted} hover:text-red-500`}>Clear</button></div>
+            <button onClick={() => { if (window.confirm('Clear history?')) { setSavedAnalyses([]); setSourceAnalyses([]); setSynthesis(null); } }} className={`text-xs ${c.textMuteded} ${c.deleteHover}`}>Clear</button></div>
           <div className="space-y-2 max-h-60 overflow-y-auto">{savedAnalyses.map(sa => <div key={sa.id} className={`${c.cardAlt} border rounded-lg p-3`}>
-            <div className="flex items-center justify-between"><div className="flex items-center gap-2 flex-1 min-w-0"><span className={`text-lg font-black ${sa.trustScore >= 60 ? c.successText : sa.trustScore >= 40 ? c.warningText : c.dangerText}`}>{sa.trustScore ?? '?'}</span>
-              {sa.source && <span className={`${c.pillPurple} border text-[9px] font-semibold px-1.5 py-0.5 rounded`}>{sa.source}</span>}
-              <span className={`text-xs ${c.text}`}>{sa.category}</span><span className={`text-[10px] ${c.textMuted}`}>{sa.date}</span></div>
-              {sa.verdict && <span className={`text-[10px] font-bold uppercase px-1.5 py-0.5 rounded ${sa.verdict === 'buy' ? c.pillGreen : sa.verdict === 'skip' ? c.pillRed : c.pillAmber} border`}>{sa.verdict}</span>}
+            <div className="flex items-center justify-between"><div className="flex items-center gap-2 flex-1 min-w-0"><span className={`text-lg font-black ${sa.trustScore >= 60 ? c.success : sa.trustScore >= 40 ? c.warning : c.danger}`}>{sa.trustScore ?? '?'}</span>
+              {sa.source && <span className={`${c.pillCyan} border text-[9px] font-semibold px-1.5 py-0.5 rounded`}>{sa.source}</span>}
+              <span className={`text-xs ${c.text}`}>{sa.category}</span><span className={`text-[10px] ${c.textMuteded}`}>{sa.date}</span></div>
+              {sa.verdict && <span className={`text-[10px] font-bold uppercase px-1.5 py-0.5 rounded ${sa.verdict === 'buy' ? c.success : sa.verdict === 'skip' ? c.danger : c.warning} border`}>{sa.verdict}</span>}
             </div>
-            <p className={`text-xs ${c.textSec} truncate mt-0.5`}>{sa.summary}</p>
+            <p className={`text-xs ${c.textSecondaryondary} truncate mt-0.5`}>{sa.summary}</p>
           </div>)}</div>
         </div>
       )}
+        <div className={`mt-6 pt-4 border-t text-sm ${c.border} ${c.textMuted}`}>
+          <p className="mb-2 font-medium">You might also like:</p>
+          <div className="flex flex-wrap gap-2">
+            {[{slug:'markup-detective',label:'🔍 Markup Detective'},{slug:'upsell-shield',label:'🛡️ Upsell Shield'},{slug:'buy-wise',label:'💰 Buy Wise'}].map(({slug,label})=>(
+              <a key={slug} href={`/tool/${slug}`} className={linkStyle}>{label}</a>
+            ))}
+          </div>
+        </div>
     </div>
   );
 };

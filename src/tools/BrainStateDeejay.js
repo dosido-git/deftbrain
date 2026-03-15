@@ -113,7 +113,7 @@ const formatTimer = (secs) => {
 // ════════════════════════════════════════════════════════════
 // MAIN COMPONENT
 // ════════════════════════════════════════════════════════════
-const BrainstateDeejay = ({ tool }) => {
+const BrainStateDeejay = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { isDark } = useTheme();
 
@@ -168,8 +168,8 @@ const BrainstateDeejay = ({ tool }) => {
     presetNowBadge:      isDark ? 'bg-amber-600 text-white' : 'bg-amber-500 text-white',
     phaseActiveTab:      'bg-cyan-700 text-white',
     // ── Raw CSS values for inline styles ──
-    breathRing:    isDark ? '#0891b2' : '#0e7490',
-    breathGlow:    isDark ? 'rgba(8,145,178,0.3)' : 'rgba(14,116,144,0.2)',
+    breathRing:    isDark ? 'rgb(8,145,178)' : 'rgb(14,116,144)',
+    breathGlow:    isDark ? 'rgb(8 145 178 / 0.3)' : 'rgb(14 116 144 / 0.2)',
   };
 
   const linkStyle = isDark
@@ -1090,6 +1090,14 @@ const BrainstateDeejay = ({ tool }) => {
         )}
       </div>
       <p className={`text-[10px] ${c.textMuted} mt-3`}>AI-generated playlists — for reference only. Not a substitute for professional music therapy.</p>
+      <div className={`mt-4 pt-4 border-t text-sm ${c.border} ${c.textMuted}`}>
+        <p className="mb-2 font-medium">You might also like:</p>
+        <div className="flex flex-wrap gap-2">
+          {[{slug:'dopamine-menu-builder',label:'🍽️ Dopamine Menu Builder'},{slug:'spiral-stopper',label:'🌀 Spiral Stopper'},{slug:'focus-pocus',label:'🎯 Focus Pocus'}].map(({slug,label})=>(
+            <a key={slug} href={`/tool/${slug}`} className={linkStyle}>{label}</a>
+          ))}
+        </div>
+      </div>
     </div>
   );
 
@@ -1154,7 +1162,7 @@ const BrainstateDeejay = ({ tool }) => {
                         <span>🎵</span> View Again
                       </button>
                       <button onClick={() => removeFromHistory(entry.id)}
-                        className={`mt-2 px-3 py-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 ${c.btnSecondary} hover:text-red-500`}>
+                        className={`mt-2 px-3 py-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 ${c.btnSecondary} hover:opacity-80`}>
                         <span>🗑️</span>
                       </button>
                     </div>
@@ -1164,7 +1172,7 @@ const BrainstateDeejay = ({ tool }) => {
             })}
             {history.length > 1 && (
               <button onClick={() => { setHistory([]); setExpandedHistId(null); }}
-                className={`w-full mt-1 text-center text-xs font-semibold ${c.btnGhost} hover:text-red-500 py-1.5`}>
+                className={`w-full mt-1 text-center text-xs font-semibold ${c.btnGhost} hover:opacity-80 py-1.5`}>
                 Clear all history
               </button>
             )}
@@ -1188,5 +1196,5 @@ const BrainstateDeejay = ({ tool }) => {
   );
 };
 
-BrainstateDeejay.displayName = 'BrainstateDeejay';
-export default BrainstateDeejay;
+BrainStateDeejay.displayName = 'BrainStateDeejay';
+export default BrainStateDeejay;

@@ -5,52 +5,18 @@ import { usePersistentState } from '../hooks/usePersistentState';
 import { CopyBtn, PrintBtn, ActionBar } from '../components/ActionButtons';
 
 // ════════════════════════════════════════════════════════════
-// THEME
-// ════════════════════════════════════════════════════════════
-function useColors() {
-  const { theme } = useTheme();
-  const d = theme === 'dark';
-  return {
-    card: d ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-emerald-200',
-    cardAlt: d ? 'bg-zinc-700 border-zinc-600' : 'bg-emerald-50 border-emerald-200',
-    input: d ? 'bg-zinc-900 border-zinc-700 text-zinc-50 placeholder:text-zinc-500 focus:border-emerald-500 focus:ring-emerald-500/20' : 'bg-white border-emerald-300 text-emerald-900 placeholder:text-emerald-400 focus:border-emerald-600 focus:ring-emerald-100',
-    text: d ? 'text-zinc-50' : 'text-emerald-900',
-    textSec: d ? 'text-zinc-300' : 'text-emerald-700',
-    textMuted: d ? 'text-zinc-400' : 'text-emerald-600',
-    label: d ? 'text-zinc-200' : 'text-emerald-800',
-    accent: d ? 'text-emerald-400' : 'text-emerald-600',
-    btnPrimary: d ? 'bg-emerald-600 hover:bg-emerald-500 text-white' : 'bg-emerald-600 hover:bg-emerald-700 text-white',
-    btnSec: d ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-50' : 'bg-emerald-100 hover:bg-emerald-200 text-emerald-900',
-    btnDanger: d ? 'bg-red-900/30 hover:bg-red-900/50 text-red-300' : 'bg-red-50 hover:bg-red-100 text-red-700',
-    urgent: d ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-300 text-red-800',
-    thisWeek: d ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
-    optional: d ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
-    info: d ? 'bg-blue-900/20 border-blue-700 text-blue-200' : 'bg-blue-50 border-blue-200 text-blue-900',
-    success: d ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-200 text-emerald-800',
-    warning: d ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
-    purple: d ? 'bg-purple-900/20 border-purple-700 text-purple-200' : 'bg-purple-50 border-purple-200 text-purple-900',
-    pillSky: d ? 'bg-sky-900/40 text-sky-300 border-sky-700/40' : 'bg-sky-100 text-sky-700 border-sky-200',
-    pillGreen: d ? 'bg-emerald-900/40 text-emerald-300 border-emerald-700/40' : 'bg-emerald-100 text-emerald-700 border-emerald-200',
-    pillAmber: d ? 'bg-amber-900/40 text-amber-300 border-amber-700/40' : 'bg-amber-100 text-amber-700 border-amber-200',
-    pillRed: d ? 'bg-red-900/40 text-red-300 border-red-700/40' : 'bg-red-100 text-red-700 border-red-200',
-    pillGray: d ? 'bg-zinc-700 text-zinc-400 border-zinc-600' : 'bg-zinc-100 text-zinc-500 border-zinc-200',
-    border: d ? 'border-zinc-700' : 'border-emerald-200',
-  };
-}
-
-// ════════════════════════════════════════════════════════════
 // CONSTANTS
 // ════════════════════════════════════════════════════════════
 const ROLES = ['Employee', 'Manager', 'Freelancer', 'Student', 'Personal', 'Executive', 'Academic/Researcher'];
 const TIER_CFG = {
-  now: { icon: '🔴', label: 'Reply Now', sub: 'Needs response today', ck: 'urgent', bc: 'border-red-400' },
-  this_week: { icon: '⏰', label: 'This Week', sub: 'Can wait a few days', ck: 'thisWeek', bc: 'border-amber-400' },
-  optional: { icon: '☕', label: 'Optional', sub: 'No response needed', ck: 'optional', bc: 'border-emerald-400' },
+  now: { icon: '🔴', label: 'Reply Now', sub: 'Needs response today', ck: 'tierNow', bc: 'border-red-400' },
+  this_week: { icon: '⏰', label: 'This Week', sub: 'Can wait a few days', ck: 'tierWeek', bc: 'border-amber-400' },
+  optional: { icon: '☕', label: 'Optional', sub: 'No response needed', ck: 'tierOptional', bc: 'border-emerald-400' },
 };
 const CAT_MAP = {
-  'fyi': { icon: 'ℹ️', bg: 'bg-blue-500' }, 'action required': { icon: '🎯', bg: 'bg-red-500' },
+  'fyi': { icon: 'ℹ️', bg: 'bg-cyan-500' }, 'action required': { icon: '🎯', bg: 'bg-red-500' },
   'response expected': { icon: '💬', bg: 'bg-amber-500' }, 'automated': { icon: '🔔', bg: 'bg-gray-500' },
-  'newsletter': { icon: '✉️', bg: 'bg-purple-500' },
+  'newsletter': { icon: '✉️', bg: 'bg-zinc-500' },
 };
 const TONES = [
   { id: 'professional', label: '💼 Professional' }, { id: 'casual', label: '😊 Casual' },
@@ -72,23 +38,52 @@ const RULE_TYPES = [
 // ════════════════════════════════════════════════════════════
 // MAIN COMPONENT
 // ════════════════════════════════════════════════════════════
-const EmailUrgencyTriager = () => {
+const EmailUrgencyTriager = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
-  const c = useColors();
-  const { theme } = useTheme();
-  const isDark = theme === 'dark';
+  const { isDark } = useTheme();
+
+  const c = {
+    card:          isDark ? 'bg-zinc-800' : 'bg-white',
+    cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
+    text:          isDark ? 'text-zinc-50' : 'text-gray-900',
+    textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
+    textMuted:     isDark ? 'text-zinc-500' : 'text-gray-400',
+    input:         isDark ? 'bg-zinc-900 border-zinc-700 text-zinc-50 placeholder:text-zinc-500 focus:border-emerald-500 focus:ring-emerald-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-emerald-500',
+    border:        isDark ? 'border-zinc-700' : 'border-gray-200',
+    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
+    danger:        isDark ? 'bg-red-900/30 hover:bg-red-900/50 text-red-300' : 'bg-red-50 hover:bg-red-100 text-red-700',
+    // Status tier colors (domain-specific)
+    tierNow:      isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-300 text-red-800',
+    tierWeek:     isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
+    tierOptional: isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
+    highlight:     isDark ? 'bg-cyan-900/20 border-cyan-700 text-cyan-200' : 'bg-cyan-50 border-cyan-200 text-cyan-800',
+    success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-200 text-emerald-800',
+    warning:       isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
+    // Pill variants
+    pillCyan:  isDark ? 'bg-cyan-900/40 text-cyan-300 border-cyan-700/40' : 'bg-cyan-100 text-cyan-700 border-cyan-200',
+    pillGreen: isDark ? 'bg-emerald-900/40 text-emerald-300 border-emerald-700/40' : 'bg-emerald-100 text-emerald-700 border-emerald-200',
+    pillAmber: isDark ? 'bg-amber-900/40 text-amber-300 border-amber-700/40' : 'bg-amber-100 text-amber-700 border-amber-200',
+    pillRed:   isDark ? 'bg-red-900/40 text-red-300 border-red-700/40' : 'bg-red-100 text-red-700 border-red-200',
+    pillGray:  isDark ? 'bg-zinc-700 text-zinc-400 border-zinc-600' : 'bg-zinc-100 text-zinc-500 border-zinc-200',
+  };
+
+  const linkStyle = isDark
+    ? 'text-emerald-400 hover:text-emerald-300 underline underline-offset-2'
+    : 'text-emerald-600 hover:text-emerald-700 underline underline-offset-2';
 
   // MODE
   const [mode, setMode] = useState('input');
 
   // FORM
-  const [emailContent, setEmailContent] = useState('');
+  const [emailContent, setEmailContent] = usePersistentState('email-content', '');
   const [userRole, setUserRole] = useState('Employee');
   const [userTimezone] = useState(Intl.DateTimeFormat().resolvedOptions().timeZone);
 
   // RESULTS + UI
-  const [results, setResults] = useState(null);
+  const [results, setResults] = usePersistentState('email-results', null);
   const [error, setError] = useState('');
+  const resultsRef = React.useRef(null);
   const [expandedEmail, setExpandedEmail] = useState(null);
   const [expandAll, setExpandAll] = useState(false);
   const [handled, setHandled] = useState({});
@@ -184,7 +179,7 @@ const EmailUrgencyTriager = () => {
     try {
       const data = await callToolEndpoint('email-urgency-triager', {
         emailContent: emailContent.trim(), userRole: activeProfile.role || userRole, userTimezone,
-        senderHistory: profileSenders, triageHistory: profileTriages.slice(0, 5),
+        senderHistory: profileSenders, triageHistory: profileTriages.slice(0, 6),
       });
       setResults(data); setMode('results');
       updateSenderHistory(data.urgency_analysis);
@@ -220,10 +215,11 @@ const EmailUrgencyTriager = () => {
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       profileId: activeProfileId, summary: results.summary,
       emailCount: results.urgency_analysis?.length || 0,
-      subjects: results.urgency_analysis?.map(e => e.email_subject).slice(0, 10) || [],
+      subjects: results.urgency_analysis?.map(e => e.email_subject).slice(0, 6) || [],
+      preview: `${results.urgency_analysis?.length || 0} emails triaged`.slice(0, 40),
       handled: { ...handled }, results,
     };
-    setTriageHistory(prev => [entry, ...prev].slice(0, 50));
+    setTriageHistory(prev => [entry, ...prev].slice(0, 6));
   }, [results, handled, activeProfileId, setTriageHistory]);
 
   // F4: Mark done with timestamp tracking
@@ -235,7 +231,7 @@ const EmailUrgencyTriager = () => {
         subject: emailData.email_subject, from: emailData.from,
         tier: key.split('-')[0], triageTime: new Date().toISOString(),
         doneTime: new Date().toISOString(),
-      }].slice(0, 200));
+      }].slice(0, 6));
     }
   }, [handled, activeProfileId, setResponseTimes]);
 
@@ -286,7 +282,7 @@ const EmailUrgencyTriager = () => {
 
   // F5: INBOX HEALTH SCORE
   const inboxHealth = useMemo(() => {
-    const recent = profileTriages.slice(0, 10);
+    const recent = profileTriages.slice(0, 6);
     if (recent.length < 2) return null;
     const totalEmails = recent.reduce((s, t) => s + (t.summary?.total_emails || 0), 0);
     const urgentEmails = recent.reduce((s, t) => s + (t.summary?.urgent_count || 0), 0);
@@ -309,17 +305,17 @@ const EmailUrgencyTriager = () => {
     const latest = profileTriages[0];
     const previous = profileTriages[1];
     // Overdue: urgent items from previous triages not marked done
-    const overdue = profileTriages.slice(0, 3).flatMap(t =>
+    const overdue = profileTriages.slice(0, 6).flatMap(t =>
       (t.results?.urgency_analysis || []).filter(e => e.urgency_tier === 'now')
         .filter(e => !t.handled?.[`now-${(t.results?.urgency_analysis || []).indexOf(e)}`])
         .map(e => ({ ...e, triageDate: t.date }))
-    ).slice(0, 5);
+    ).slice(0, 6);
     // Volume comparison
     const latestCount = latest.summary?.total_emails || 0;
     const prevCount = previous?.summary?.total_emails || 0;
     const volumeChange = previous ? Math.round(((latestCount - prevCount) / Math.max(prevCount, 1)) * 100) : null;
     // Avg urgent
-    const avgUrgent = profileTriages.length >= 3 ? Math.round(profileTriages.slice(0, 5).reduce((s, t) => s + (t.summary?.urgent_count || 0), 0) / Math.min(profileTriages.length, 5) * 10) / 10 : null;
+    const avgUrgent = profileTriages.length >= 3 ? Math.round(profileTriages.slice(0, 6).reduce((s, t) => s + (t.summary?.urgent_count || 0), 0) / Math.min(profileTriages.length, 5) * 10) / 10 : null;
     return { latest, previous, overdue, volumeChange, latestCount, prevCount, avgUrgent };
   }, [profileTriages]);
 
@@ -358,29 +354,29 @@ const EmailUrgencyTriager = () => {
             </div>
             <p className={`text-sm font-semibold ${c.text} truncate`}>{email.email_subject}</p>
             <p className={`text-xs ${c.textMuted} mt-0.5`}>From: {email.from}</p>
-            {email.deadline_detected && <p className={`text-xs mt-1 font-medium ${c.accent}`}>📅 {email.deadline_detected}</p>}
+            {email.deadline_detected && <p className={`text-xs mt-1 font-medium ${c.textSecondary}`}>📅 {email.deadline_detected}</p>}
           </div>
           <div className="flex items-center gap-1 ml-2 flex-shrink-0">
             {tier !== 'optional' && <button onClick={() => markHandled(key, email)} className={`text-sm p-1 rounded ${status === 'done' ? 'opacity-100' : 'opacity-40 hover:opacity-100'}`} title="Done">✅</button>}
             {tier !== 'optional' && <button onClick={() => openComposer(email)} className={`text-sm p-1 rounded opacity-40 hover:opacity-100`} title="Compose reply">✍️</button>}
-            <button onClick={() => setExpandedEmail(isExp && !expandAll ? null : key)} className={`p-1 rounded ${c.btnSec} text-xs`}>{isExp ? '▲' : '▼'}</button>
+            <button onClick={() => setExpandedEmail(isExp && !expandAll ? null : key)} className={`p-1 rounded ${c.btnSecondary} text-xs`}>{isExp ? '▲' : '▼'}</button>
           </div>
         </div>
         {isExp && (
           <div className={`mt-3 pt-3 ${c.border} border-t space-y-3`}>
-            <div><p className={`text-[10px] font-bold ${c.textMuted}`}>WHY</p><p className={`text-xs ${c.textSec}`}>{email.reasoning}</p></div>
-            {email.consequence_of_delay && <div><p className={`text-[10px] font-bold ${c.textMuted}`}>IF YOU WAIT</p><p className={`text-xs ${c.textSec}`}>{email.consequence_of_delay}</p></div>}
+            <div><p className={`text-[10px] font-bold ${c.textMuted}`}>WHY</p><p className={`text-xs ${c.textSecondary}`}>{email.reasoning}</p></div>
+            {email.consequence_of_delay && <div><p className={`text-[10px] font-bold ${c.textMuted}`}>IF YOU WAIT</p><p className={`text-xs ${c.textSecondary}`}>{email.consequence_of_delay}</p></div>}
             {email.response_optimization && (
               <div className={`${c.cardAlt} border rounded-lg p-3 space-y-1`}>
                 <p className="text-xs"><strong>Best time:</strong> {email.response_optimization.best_time}</p>
                 {email.response_optimization.estimated_time && <p className="text-xs"><strong>Time:</strong> {email.response_optimization.estimated_time}</p>}
-                {email.response_optimization.can_delegate && <p className={`text-xs ${c.accent}`}>💡 Delegate to: {email.response_optimization.delegate_to}</p>}
+                {email.response_optimization.can_delegate && <p className={`text-xs ${c.textSecondary}`}>💡 Delegate to: {email.response_optimization.delegate_to}</p>}
               </div>
             )}
             {email.draft_reply && (
               <div>
                 <div className="flex items-center justify-between mb-1"><p className={`text-[10px] font-bold ${c.textMuted}`}>DRAFT REPLY</p><CopyBtn content={email.draft_reply + '\n\n— Generated by DeftBrain · deftbrain.com'} label="Copy" /></div>
-                <div className={`${c.info} border rounded-lg p-3`}><p className={`text-xs ${c.textSec} whitespace-pre-wrap`}>{email.draft_reply}</p></div>
+                <div className={`${c.highlight} border rounded-lg p-3`}><p className={`text-xs ${c.textSecondary} whitespace-pre-wrap`}>{email.draft_reply}</p></div>
               </div>
             )}
             <div><p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>MOVE TO</p><div className="flex gap-1.5">
@@ -399,7 +395,7 @@ const EmailUrgencyTriager = () => {
   return (
     <div className={`space-y-6 ${c.text}`}>
       <div className="mb-2">
-        <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Email Urgency Triager 📨</h2>
+        <h2 className={`text-2xl font-bold ${c.text}`}><span className="mr-2">{tool?.icon ?? '📨'}</span>{tool?.title || 'Email Urgency Triager'}</h2>
         <p className={`text-sm ${isDark ? 'text-zinc-400' : 'text-gray-500'}`}>AI triage with composer, sender learning, health tracking, and smart rules</p>
       </div>
 
@@ -421,7 +417,7 @@ const EmailUrgencyTriager = () => {
         }} className={`text-xs px-2 py-1 rounded-lg border ${c.pillGray} border hover:opacity-80`}>➕</button>
         {profiles.length > 1 && activeProfileId !== 'work' && (
           <button onClick={() => { if (window.confirm(`Delete "${activeProfile.name}"?`)) { setProfiles(p => p.filter(pr => pr.id !== activeProfileId)); setActiveProfileId('work'); } }}
-            className={`text-[10px] ${c.textMuted} hover:text-red-500 ml-auto`}>🗑️ Delete</button>
+            className={`text-[10px] ${c.textMuted} hover:opacity-80 ml-auto`}>🗑️ Delete</button>
         )}
       </div>
 
@@ -449,21 +445,22 @@ const EmailUrgencyTriager = () => {
       {mode === 'input' && (
         <div className="space-y-4">
           {senderStats.total > 0 && (
-            <div className={`${c.purple} border-l-4 rounded-r-lg p-3 flex items-center gap-2`}>
+            <div className={`${c.highlight} border-l-4 rounded-r-lg p-3 flex items-center gap-2`}>
               <span>📈</span><span className="text-xs font-semibold">{senderStats.total} senders tracked{senderStats.vips > 0 ? ` · ${senderStats.vips} ⭐` : ''}{senderStats.wolves > 0 ? ` · ${senderStats.wolves} 🐺` : ''}</span>
-              {profileRules.length > 0 && <span className={`${c.pillSky} border text-[9px] px-1.5 py-0.5 rounded ml-auto`}>{profileRules.length} rules active</span>}
+              {profileRules.length > 0 && <span className={`${c.pillCyan} border text-[9px] px-1.5 py-0.5 rounded ml-auto`}>{profileRules.length} rules active</span>}
             </div>
           )}
           <div className={`${c.card} border rounded-xl p-6 space-y-5`}>
-            <div><label className={`text-sm font-semibold ${c.label} block mb-1.5`}>Paste Emails</label>
+            <div><label className={`text-sm font-semibold ${c.textSecondary} block mb-1.5`}>Paste Emails</label>
               <p className={`text-[10px] ${c.textMuted} mb-1`}>Include full threads for best analysis. Separate with '---'</p>
               <textarea value={emailContent} onChange={e => setEmailContent(e.target.value)}
                 placeholder={"From: client@company.com\nSubject: Re: Project timeline\n\nFollowing up on my earlier email...\n\n---\n\nFrom: newsletter@service.com\nSubject: Weekly Tips\n[content...]"}
+                onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && emailContent.trim()) handleAnalyze(); }}
                 className={`w-full h-44 p-4 border-2 rounded-lg ${c.input} outline-none focus:ring-2 resize-none text-sm font-mono`} />
             </div>
             <button onClick={handleAnalyze} disabled={loading || !emailContent.trim()}
               className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2`}>
-              {loading ? <><span className="animate-spin inline-block">⏳</span> Analyzing...</> : <>⚡ Analyze Urgency</>}
+              {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '📨'}</span> Analyzing...</> : <>⚡ Analyze Urgency</>}
             </button>
             {error && <div className={`${c.warning} border rounded-lg p-4 flex items-start gap-2`}><span>⚠️</span><p className="text-sm">{error}</p></div>}
           </div>
@@ -472,21 +469,21 @@ const EmailUrgencyTriager = () => {
 
       {/* ══════════ RESULTS MODE ══════════ */}
       {mode === 'results' && results && (
-        <div className="space-y-4">
+        <div ref={resultsRef} className="space-y-4">
           <div className="flex items-center justify-between flex-wrap gap-2">
             <div className="flex flex-wrap gap-2">
               <button onClick={saveToHistory} className={`${c.btnPrimary} py-2 px-4 rounded-lg text-sm font-semibold`}>💾 Save</button>
-              <button onClick={handleReset} className={`${c.btnSec} py-2 px-3 rounded-lg text-sm`}>✨ New</button>
-              <button onClick={() => setExpandAll(p => !p)} className={`${c.btnSec} py-2 px-3 rounded-lg text-sm`}>{expandAll ? '▲ Collapse' : '▼ Expand'}</button>
+              <button onClick={handleReset} className={`${c.btnSecondary} py-2 px-3 rounded-lg text-sm`}>✨ New</button>
+              <button onClick={() => setExpandAll(p => !p)} className={`${c.btnSecondary} py-2 px-3 rounded-lg text-sm`}>{expandAll ? '▲ Collapse' : '▼ Expand'}</button>
             </div>
             <ActionBar><CopyBtn content={buildUrgentExport()} label="Urgent" /><CopyBtn content={buildFullExport()} label="Full" /><PrintBtn content={buildFullExport()} title="Email Triage Report" /></ActionBar>
           </div>
 
           <div className="grid grid-cols-4 gap-3">
             <div className={`${c.card} border rounded-xl p-3 text-center`}><p className="text-2xl font-bold">{results.summary?.total_emails || 0}</p><p className={`text-[10px] ${c.textMuted}`}>Total</p></div>
-            <div className={`${c.urgent} border rounded-xl p-3 text-center`}><p className="text-2xl font-bold">{getEmailsByTier('now').length}</p><p className="text-[10px] opacity-75">🔴 Now</p></div>
-            <div className={`${c.thisWeek} border rounded-xl p-3 text-center`}><p className="text-2xl font-bold">{getEmailsByTier('this_week').length}</p><p className="text-[10px] opacity-75">⏰ Week</p></div>
-            <div className={`${c.optional} border rounded-xl p-3 text-center`}><p className="text-2xl font-bold">{getEmailsByTier('optional').length}</p><p className="text-[10px] opacity-75">☕ Skip</p></div>
+            <div className={`${c.tierNow} border rounded-xl p-3 text-center`}><p className="text-2xl font-bold">{getEmailsByTier('now').length}</p><p className="text-[10px] opacity-75">🔴 Now</p></div>
+            <div className={`${c.tierWeek} border rounded-xl p-3 text-center`}><p className="text-2xl font-bold">{getEmailsByTier('this_week').length}</p><p className="text-[10px] opacity-75">⏰ Week</p></div>
+            <div className={`${c.tierOptional} border rounded-xl p-3 text-center`}><p className="text-2xl font-bold">{getEmailsByTier('optional').length}</p><p className="text-[10px] opacity-75">☕ Skip</p></div>
           </div>
 
           {handledStats.done > 0 && (
@@ -497,7 +494,7 @@ const EmailUrgencyTriager = () => {
           )}
 
           {results.batch_insights?.time_block_suggestion && (
-            <div className={`${c.purple} border-l-4 rounded-r-lg p-4 flex items-start gap-2`}><span>⚡</span><div><p className="text-sm font-bold">Time Block</p><p className="text-xs">{results.batch_insights.time_block_suggestion}</p>{results.summary?.total_estimated_minutes > 0 && <p className="text-xs mt-1 font-semibold">⏱️ ~{results.summary.total_estimated_minutes} min</p>}</div></div>
+            <div className={`${c.highlight} border-l-4 rounded-r-lg p-4 flex items-start gap-2`}><span>⚡</span><div><p className="text-sm font-bold">Time Block</p><p className="text-xs">{results.batch_insights.time_block_suggestion}</p>{results.summary?.total_estimated_minutes > 0 && <p className="text-xs mt-1 font-semibold">⏱️ ~{results.summary.total_estimated_minutes} min</p>}</div></div>
           )}
 
           {results.anxiety_relief && (
@@ -509,11 +506,11 @@ const EmailUrgencyTriager = () => {
           )}
 
           {results.recurring_patterns?.unsubscribe_candidates?.length > 0 && (
-            <div className={`${c.info} border-l-4 rounded-r-lg p-4`}><h4 className="font-bold text-sm mb-1">🔄 Patterns</h4>{results.recurring_patterns.unsubscribe_candidates.map((u, i) => <p key={i} className="text-xs mb-0.5">📬 {u}</p>)}{results.recurring_patterns.volume_observation && <p className="text-xs mt-1">{results.recurring_patterns.volume_observation}</p>}</div>
+            <div className={`${c.highlight} border-l-4 rounded-r-lg p-4`}><h4 className="font-bold text-sm mb-1">🔄 Patterns</h4>{results.recurring_patterns.unsubscribe_candidates.map((u, i) => <p key={i} className="text-xs mb-0.5">📬 {u}</p>)}{results.recurring_patterns.volume_observation && <p className="text-xs mt-1">{results.recurring_patterns.volume_observation}</p>}</div>
           )}
 
           {Object.keys(overrides).length > 0 && (
-            <div className={`${c.thisWeek} border rounded-lg p-3 flex items-center justify-between`}><p className="text-xs font-semibold">{Object.keys(overrides).length} manually moved</p><button onClick={() => setOverrides({})} className="text-xs underline">Reset</button></div>
+            <div className={`${c.tierWeek} border rounded-lg p-3 flex items-center justify-between`}><p className="text-xs font-semibold">{Object.keys(overrides).length} manually moved</p><button onClick={() => setOverrides({})} className="text-xs underline">Reset</button></div>
           )}
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
@@ -528,7 +525,7 @@ const EmailUrgencyTriager = () => {
 
           {results.response_templates?.length > 0 && (
             <div className={`${c.card} border rounded-xl p-5`}><h3 className={`text-sm font-bold ${c.text} mb-3`}>⚡ Templates</h3><div className="space-y-2">{results.response_templates.map((t, i) => (
-              <div key={i} className={`${c.cardAlt} border rounded-lg p-3`}><div className="flex items-center justify-between mb-1"><span className={`${t.for_urgency === 'now' ? c.pillRed : c.pillAmber} border text-[9px] font-bold px-1.5 py-0.5 rounded`}>{t.for_urgency}</span><CopyBtn content={t.template + '\n\n— Generated by DeftBrain · deftbrain.com'} label="Copy" /></div><p className={`text-xs ${c.textSec}`}>{t.template}</p></div>
+              <div key={i} className={`${c.cardAlt} border rounded-lg p-3`}><div className="flex items-center justify-between mb-1"><span className={`${t.for_urgency === 'now' ? c.pillRed : c.pillAmber} border text-[9px] font-bold px-1.5 py-0.5 rounded`}>{t.for_urgency}</span><CopyBtn content={t.template + '\n\n— Generated by DeftBrain · deftbrain.com'} label="Copy" /></div><p className={`text-xs ${c.textSecondary}`}>{t.template}</p></div>
             ))}</div></div>
           )}
 
@@ -544,7 +541,7 @@ const EmailUrgencyTriager = () => {
       {mode === 'compose' && (
         <div className="space-y-4">
           {!composeTarget ? (
-            <div className={`${c.card} border rounded-xl p-6 text-center`}><span className="text-4xl block mb-3">✍️</span><p className={`text-sm ${c.textSec}`}>Click the ✍️ button on any email in Results to compose a reply.</p><button onClick={() => setMode('results')} className={`${c.btnPrimary} px-4 py-2 rounded-lg text-sm mt-3`}>← Back to Results</button></div>
+            <div className={`${c.card} border rounded-xl p-6 text-center`}><span className="text-4xl block mb-3">✍️</span><p className={`text-sm ${c.textSecondary}`}>Click the ✍️ button on any email in Results to compose a reply.</p><button onClick={() => setMode('results')} className={`${c.btnPrimary} px-4 py-2 rounded-lg text-sm mt-3`}>← Back to Results</button></div>
           ) : (<>
             <div className={`${c.card} border rounded-xl p-5`}>
               <h3 className={`text-sm font-bold ${c.text} mb-3 flex items-center gap-2`}><span>✍️</span> Reply Composer</h3>
@@ -556,25 +553,25 @@ const EmailUrgencyTriager = () => {
 
               <div className="space-y-4">
                 <div>
-                  <label className={`text-xs font-semibold ${c.label} block mb-1`}>Current Draft</label>
+                  <label className={`text-xs font-semibold ${c.textSecondary} block mb-1`}>Current Draft</label>
                   <textarea value={composeDraft} onChange={e => setComposeDraft(e.target.value)}
                     placeholder="Start typing or let AI compose from scratch..."
                     className={`w-full h-24 p-3 border-2 rounded-lg ${c.input} outline-none resize-none text-sm`} />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
-                  <div><label className={`text-xs font-semibold ${c.label} block mb-1`}>Tone</label>
+                  <div><label className={`text-xs font-semibold ${c.textSecondary} block mb-1`}>Tone</label>
                     <div className="flex flex-wrap gap-1">{TONES.map(t => (<button key={t.id} onClick={() => setComposeTone(t.id)} className={`text-[10px] px-2 py-1 rounded border transition-colors ${composeTone === t.id ? (isDark ? 'border-emerald-500 bg-emerald-900/20' : 'border-emerald-500 bg-emerald-50') : `${c.pillGray} border`}`}>{t.label}</button>))}</div>
                   </div>
-                  <div><label className={`text-xs font-semibold ${c.label} block mb-1`}>Length</label>
+                  <div><label className={`text-xs font-semibold ${c.textSecondary} block mb-1`}>Length</label>
                     <div className="flex flex-wrap gap-1">{LENGTHS.map(l => (<button key={l.id} onClick={() => setComposeLength(l.id)} className={`text-[10px] px-2 py-1 rounded border transition-colors ${composeLength === l.id ? (isDark ? 'border-emerald-500 bg-emerald-900/20' : 'border-emerald-500 bg-emerald-50') : `${c.pillGray} border`}`}>{l.label}</button>))}</div>
                   </div>
                 </div>
-                <div><label className={`text-xs font-semibold ${c.label} block mb-1`}>Instructions <span className={`text-[10px] ${c.textMuted}`}>(optional)</span></label>
-                  <input value={composeInstructions} onChange={e => setComposeInstructions(e.target.value)} placeholder="Make it shorter, add the deadline, push back politely..."
+                <div><label className={`text-xs font-semibold ${c.textSecondary} block mb-1`}>Instructions <span className={`text-[10px] ${c.textMuted}`}>(optional)</span></label>
+                  <input value={composeInstructions} onChange={e => setComposeInstructions(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') handleCompose(); }} placeholder="Make it shorter, add the deadline, push back politely..."
                     className={`w-full p-2.5 border rounded-lg ${c.input} outline-none text-sm`} />
                 </div>
                 <button onClick={handleCompose} disabled={loading} className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2`}>
-                  {loading ? <><span className="animate-spin inline-block">⏳</span> Composing...</> : <>✍️ {composeDraft.trim() ? 'Refine Reply' : 'Compose Reply'}</>}
+                  {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '📨'}</span> Composing...</> : <>✍️ {composeDraft.trim() ? 'Refine Reply' : 'Compose Reply'}</>}
                 </button>
               </div>
             </div>
@@ -585,7 +582,7 @@ const EmailUrgencyTriager = () => {
                   <ActionBar><CopyBtn content={composeResult.composed_reply + '\n\n— Generated by DeftBrain · deftbrain.com'} label="Copy" /><PrintBtn content={`Subject: ${composeResult.subject_line}\n\n${composeResult.composed_reply}`} title="Email Reply" /></ActionBar>
                 </div>
                 <div className={`${c.cardAlt} border rounded-lg p-3`}><p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>SUBJECT</p><p className={`text-sm ${c.text}`}>{composeResult.subject_line}</p></div>
-                <div className={`${c.info} border rounded-lg p-4`}><p className={`text-sm ${c.textSec} whitespace-pre-wrap`}>{composeResult.composed_reply}</p></div>
+                <div className={`${c.highlight} border rounded-lg p-4`}><p className={`text-sm ${c.textSecondary} whitespace-pre-wrap`}>{composeResult.composed_reply}</p></div>
                 <div className="flex flex-wrap gap-2">
                   {composeResult.key_points_addressed?.map((p, i) => <span key={i} className={`${c.pillGreen} border text-[9px] px-1.5 py-0.5 rounded`}>✓ {p}</span>)}
                   <span className={`${c.pillGray} border text-[9px] px-1.5 py-0.5 rounded`}>{composeResult.word_count} words · {composeResult.tone_used}</span>
@@ -593,10 +590,18 @@ const EmailUrgencyTriager = () => {
                 {composeResult.alternative_closings?.length > 0 && (
                   <div><p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>ALTERNATIVE CLOSINGS</p><div className="flex flex-wrap gap-1">{composeResult.alternative_closings.map((cl, i) => <span key={i} className={`${c.pillGray} border text-[10px] px-2 py-0.5 rounded`}>{cl}</span>)}</div></div>
                 )}
-                <button onClick={() => { setComposeDraft(composeResult.composed_reply); setComposeResult(null); }} className={`${c.btnSec} text-xs px-3 py-2 rounded-lg`}>🔄 Refine Further</button>
+                <button onClick={() => { setComposeDraft(composeResult.composed_reply); setComposeResult(null); }} className={`${c.btnSecondary} text-xs px-3 py-2 rounded-lg`}>🔄 Refine Further</button>
               </div>
             )}
           </>)}
+
+          {/* Cross-references */}
+          <p className={`text-xs ${c.textMuted} text-center`}>
+            AI-generated triage — your judgment is the final call.{' '}
+            Need to craft a tricky reply?{' '}
+            <a href="/GentlePushGenerator" target="_blank" rel="noopener noreferrer" className={linkStyle}>Gentle Push Generator</a>{' '}
+            helps you nudge without friction.
+          </p>
         </div>
       )}
 
@@ -625,7 +630,7 @@ const EmailUrgencyTriager = () => {
               </div>
             </div>
           ) : (
-            <div className={`${c.card} border rounded-xl p-5 text-center`}><span className="text-3xl block mb-2">🏥</span><p className={`text-sm ${c.textSec}`}>Triage 2+ batches to see your Inbox Health Score</p></div>
+            <div className={`${c.card} border rounded-xl p-5 text-center`}><span className="text-3xl block mb-2">🏥</span><p className={`text-sm ${c.textSecondary}`}>Triage 2+ batches to see your Inbox Health Score</p></div>
           )}
 
           {/* F2: Briefing */}
@@ -633,7 +638,7 @@ const EmailUrgencyTriager = () => {
             <div className="space-y-4">
               {/* Overdue from previous */}
               {briefingData.overdue.length > 0 && (
-                <div className={`${c.urgent} border-2 rounded-xl p-4`}>
+                <div className={`${c.tierNow} border-2 rounded-xl p-4`}>
                   <h4 className="font-bold text-sm mb-2">⚠️ Unreplied Urgent ({briefingData.overdue.length})</h4>
                   {briefingData.overdue.map((e, i) => <div key={i} className="flex items-center gap-2 mb-1"><span className={`text-[10px] ${c.textMuted}`}>{e.triageDate}</span><p className={`text-xs ${c.text} truncate`}>{e.email_subject} — {e.from}</p></div>)}
                 </div>
@@ -648,7 +653,7 @@ const EmailUrgencyTriager = () => {
                   <div className="text-center"><p className="text-xl font-bold">{briefingData.latest.summary?.optional_count || 0}</p><p className={`text-[10px] ${c.textMuted}`}>☕ Optional</p></div>
                 </div>
                 {briefingData.volumeChange !== null && (
-                  <div className={`${briefingData.volumeChange > 20 ? c.urgent : briefingData.volumeChange < -20 ? c.success : c.info} border rounded-lg p-3`}>
+                  <div className={`${briefingData.volumeChange > 20 ? c.tierNow : briefingData.volumeChange < -20 ? c.success : c.highlight} border rounded-lg p-3`}>
                     <p className="text-xs">{briefingData.volumeChange > 0 ? `📈 ${briefingData.volumeChange}% more` : briefingData.volumeChange < 0 ? `📉 ${Math.abs(briefingData.volumeChange)}% fewer` : '➡️ Same volume'} emails vs previous ({briefingData.prevCount} → {briefingData.latestCount})</p>
                   </div>
                 )}
@@ -659,10 +664,10 @@ const EmailUrgencyTriager = () => {
               {profileTriages.length >= 3 && (
                 <div className={`${c.card} border rounded-xl p-5`}>
                   <h3 className={`text-sm font-bold ${c.text} mb-3`}>📈 Volume Trend</h3>
-                  <div className="space-y-1.5">{profileTriages.slice(0, 10).map(entry => {
+                  <div className="space-y-1.5">{profileTriages.slice(0, 6).map(entry => {
                     const total = entry.summary?.total_emails || 0;
                     const urgent = entry.summary?.urgent_count || 0;
-                    const max = Math.max(...profileTriages.slice(0, 10).map(e => e.summary?.total_emails || 1));
+                    const max = Math.max(...profileTriages.slice(0, 6).map(e => e.summary?.total_emails || 1));
                     return (<div key={entry.id} className="flex items-center gap-2"><span className={`w-16 text-[10px] ${c.textMuted}`}>{entry.date}</span><div className={`flex-1 h-4 rounded-full overflow-hidden ${isDark ? 'bg-zinc-700' : 'bg-emerald-100'} flex`}><div className="h-full bg-red-500 rounded-l-full" style={{ width: `${(urgent / max) * 100}%` }} /><div className="h-full bg-emerald-500" style={{ width: `${((total - urgent) / max) * 100}%` }} /></div><span className={`w-8 text-right text-[10px] font-bold ${c.textMuted}`}>{total}</span></div>);
                   })}</div>
                   <div className="flex items-center gap-3 mt-2"><div className="flex items-center gap-1"><div className="w-2 h-2 rounded bg-red-500" /><span className={`text-[9px] ${c.textMuted}`}>Urgent</span></div><div className="flex items-center gap-1"><div className="w-2 h-2 rounded bg-emerald-500" /><span className={`text-[9px] ${c.textMuted}`}>Other</span></div></div>
@@ -670,7 +675,7 @@ const EmailUrgencyTriager = () => {
               )}
             </div>
           ) : (
-            <div className={`${c.card} border rounded-xl p-6 text-center`}><span className="text-3xl block mb-2">📰</span><p className={`text-sm ${c.textSec}`}>Save a triage to start seeing your daily briefing.</p></div>
+            <div className={`${c.card} border rounded-xl p-6 text-center`}><span className="text-3xl block mb-2">📰</span><p className={`text-sm ${c.textSecondary}`}>Save a triage to start seeing your daily briefing.</p></div>
           )}
         </div>
       )}
@@ -698,9 +703,9 @@ const EmailUrgencyTriager = () => {
           <div className={`${c.card} border rounded-xl p-5`}>
             <div className="flex items-center justify-between mb-3">
               <h3 className={`text-sm font-bold ${c.text}`}>📚 History ({profileTriages.length})</h3>
-              {profileTriages.length > 0 && <button onClick={() => { if (window.confirm('Clear history?')) setTriageHistory(p => p.filter(t => t.profileId !== activeProfileId)); }} className={`text-xs ${c.textMuted} hover:text-red-500`}>Clear</button>}
+              {profileTriages.length > 0 && <button onClick={() => { if (window.confirm('Clear history?')) setTriageHistory(p => p.filter(t => t.profileId !== activeProfileId)); }} className={`text-xs ${c.textMuted} hover:opacity-80`}>Clear</button>}
             </div>
-            {profileTriages.length === 0 ? <p className={`text-sm ${c.textSec} text-center py-6`}>Save triages to build history.</p>
+            {profileTriages.length === 0 ? <p className={`text-sm ${c.textSecondary} text-center py-6`}>Save triages to build history.</p>
             : <div className="space-y-2 max-h-[500px] overflow-y-auto">{profileTriages.map(entry => (
               <div key={entry.id} className={`${c.cardAlt} border rounded-lg p-4`}>
                 <div className="flex items-center justify-between mb-2">
@@ -711,12 +716,12 @@ const EmailUrgencyTriager = () => {
                     <span className={`${c.pillGreen} border text-[9px] font-bold px-1.5 py-0.5 rounded`}>{entry.summary?.optional_count || 0}</span>
                   </div>
                 </div>
-                <p className={`text-xs ${c.textSec}`}>{entry.emailCount} emails</p>
-                {entry.subjects?.slice(0, 3).map((s, i) => <p key={i} className={`text-[10px] ${c.textMuted} truncate`}>• {s}</p>)}
-                {Object.values(entry.handled || {}).filter(v => v === 'done').length > 0 && <p className={`text-[10px] ${c.accent} mt-1`}>✅ {Object.values(entry.handled).filter(v => v === 'done').length} handled</p>}
+                <p className={`text-xs ${c.textSecondary}`}>{entry.emailCount} emails</p>
+                {entry.subjects?.slice(0, 6).map((s, i) => <p key={i} className={`text-[10px] ${c.textMuted} truncate`}>• {s}</p>)}
+                {Object.values(entry.handled || {}).filter(v => v === 'done').length > 0 && <p className={`text-[10px] ${c.textSecondary} mt-1`}>✅ {Object.values(entry.handled).filter(v => v === 'done').length} handled</p>}
                 <div className="flex gap-2 mt-2">
-                  <button onClick={() => { setResults(entry.results); setHandled(entry.handled || {}); setOverrides({}); setMode('results'); }} className={`${c.btnSec} text-xs px-3 py-1 rounded-lg`}>👁️ View</button>
-                  <button onClick={() => setTriageHistory(p => p.filter(e => e.id !== entry.id))} className={`text-xs ${c.textMuted} hover:text-red-500 px-1`}>🗑️</button>
+                  <button onClick={() => { setResults(entry.results); setHandled(entry.handled || {}); setOverrides({}); setMode('results'); }} className={`${c.btnSecondary} text-xs px-3 py-1 rounded-lg`}>👁️ View</button>
+                  <button onClick={() => setTriageHistory(p => p.filter(e => e.id !== entry.id))} className={`text-xs ${c.textMuted} hover:opacity-80 px-1`}>🗑️</button>
                 </div>
               </div>
             ))}</div>}
@@ -751,7 +756,7 @@ const EmailUrgencyTriager = () => {
                 {rule.pattern && <span className={`text-xs ${c.text}`}>"{rule.pattern}"</span>}
                 <span className="text-xs">→</span>
                 <span className={`${c.pillGray} border text-[9px] px-1.5 py-0.5 rounded`}>{TIER_CFG[rule.tier]?.icon} {TIER_CFG[rule.tier]?.label}</span>
-                <button onClick={() => setRules(p => p.filter(r => r.id !== rule.id))} className={`text-[10px] ${c.textMuted} hover:text-red-500 ml-auto`}>✕</button>
+                <button onClick={() => setRules(p => p.filter(r => r.id !== rule.id))} className={`text-[10px] ${c.textMuted} hover:opacity-80 ml-auto`}>✕</button>
               </div>
             ))}</div>}
           </div>
@@ -760,7 +765,7 @@ const EmailUrgencyTriager = () => {
           <div className={`${c.card} border rounded-xl p-5`}>
             <div className="flex items-center justify-between mb-3">
               <h3 className={`text-sm font-bold ${c.text}`}>📊 Senders ({senderStats.total})</h3>
-              {senderStats.total > 0 && <button onClick={() => { if (window.confirm('Clear sender data?')) { const updated = { ...senderHistory }; Object.keys(updated).forEach(k => { if (k.startsWith(pfx)) delete updated[k]; }); setSenderHistory(updated); } }} className={`text-xs ${c.textMuted} hover:text-red-500`}>Clear</button>}
+              {senderStats.total > 0 && <button onClick={() => { if (window.confirm('Clear sender data?')) { const updated = { ...senderHistory }; Object.keys(updated).forEach(k => { if (k.startsWith(pfx)) delete updated[k]; }); setSenderHistory(updated); } }} className={`text-xs ${c.textMuted} hover:opacity-80`}>Clear</button>}
             </div>
             {senderStats.total === 0 ? <p className={`text-xs ${c.textMuted} text-center py-3`}>Analyze emails to start tracking senders.</p>
             : <div className="space-y-2 max-h-80 overflow-y-auto">{Object.entries(profileSenders).sort((a, b) => b[1].total - a[1].total).map(([sender, data]) => {
@@ -770,13 +775,13 @@ const EmailUrgencyTriager = () => {
                 <div key={sender} className={`${c.cardAlt} border rounded-lg p-3`}>
                   <div className="flex items-center justify-between mb-1">
                     <div className="flex items-center gap-2"><span className={`text-xs font-semibold ${c.text}`}>{sender}</span>{rep && <span className={`${c[rep.pill]} border text-[9px] font-bold px-1.5 py-0.5 rounded`}>{rep.icon} {rep.label}</span>}</div>
-                    <button onClick={() => { const updated = { ...senderHistory }; delete updated[pfx + sender]; setSenderHistory(updated); }} className={`text-[10px] ${c.textMuted} hover:text-red-500`}>✕</button>
+                    <button onClick={() => { const updated = { ...senderHistory }; delete updated[pfx + sender]; setSenderHistory(updated); }} className={`text-[10px] ${c.textMuted} hover:opacity-80`}>✕</button>
                   </div>
                   <div className="flex flex-wrap gap-1.5 items-center">
                     <span className={`${c.pillGray} border text-[9px] px-1.5 py-0.5 rounded`}>{data.total} emails</span>
                     <span className={`${c.pillRed} border text-[9px] px-1.5 py-0.5 rounded`}>{data.actuallyUrgent || 0} urgent</span>
                     {data.cryWolfScore > 0.3 && <span className={`${c.pillAmber} border text-[9px] px-1.5 py-0.5 rounded`}>🐺 {Math.round(data.cryWolfScore * 100)}%</span>}
-                    {topCat && <span className={`${c.pillSky} border text-[9px] px-1.5 py-0.5 rounded`}>{topCat[0]}</span>}
+                    {topCat && <span className={`${c.pillCyan} border text-[9px] px-1.5 py-0.5 rounded`}>{topCat[0]}</span>}
                   </div>
                   <div className="flex gap-1.5 mt-2">
                     <button onClick={() => setSenderHistory(prev => ({ ...prev, [pfx + sender]: { ...prev[pfx + sender], actuallyUrgent: prev[pfx + sender].total, cryWolfScore: 0 } }))} className={`text-[9px] px-2 py-0.5 rounded border ${c.pillAmber} border`}>⭐ VIP</button>
@@ -805,7 +810,7 @@ const EmailUrgencyTriager = () => {
           })()}
 
           {/* Response time clear */}
-          {profileResponses.length > 0 && <button onClick={() => { if (window.confirm('Clear response tracking?')) setResponseTimes(p => p.filter(r => r.profileId !== activeProfileId)); }} className={`text-xs ${c.textMuted} hover:text-red-500`}>🗑️ Clear response tracking ({profileResponses.length} entries)</button>}
+          {profileResponses.length > 0 && <button onClick={() => { if (window.confirm('Clear response tracking?')) setResponseTimes(p => p.filter(r => r.profileId !== activeProfileId)); }} className={`text-xs ${c.textMuted} hover:opacity-80`}>🗑️ Clear response tracking ({profileResponses.length} entries)</button>}
         </div>
       )}
     </div>

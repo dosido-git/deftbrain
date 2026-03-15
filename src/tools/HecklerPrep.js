@@ -1,5 +1,6 @@
-import React, { useState, useCallback } from 'react';
-import { CopyBtn } from '../components/ActionButtons';
+import React, { useState, useCallback, useEffect } from 'react';
+import { CopyBtn, ActionBar } from '../components/ActionButtons';
+import { usePersistentState } from '../hooks/usePersistentState';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 
@@ -11,46 +12,49 @@ const STAKES_LEVELS = [
   { value: 'high', label: 'High stakes', emoji: '😰', desc: 'Board / exec' },
 ];
 
-const HecklerPrep = () => {
+const HecklerPrep = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
-  const { theme } = useTheme();
-  const isDark = theme === 'dark';
+  const { isDark } = useTheme();
+
+
+
+  const linkStyle = isDark
+    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
+    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
 
   const c = {
-    pageBg:       isDark ? 'bg-[#1a1816]'    : 'bg-[#faf8f5]',
-    card:         isDark ? 'bg-[#2a2623]'     : 'bg-white',
-    cardAlt:      isDark ? 'bg-[#332e2a]'     : 'bg-[#faf8f5]',
-    cardBorder:   isDark ? 'border-[#3d3630]' : 'border-[#e8e1d5]',
-    inputBg:      isDark ? 'bg-[#1a1816]'     : 'bg-[#faf8f5]',
-    inputBorder:  isDark ? 'border-[#3d3630]' : 'border-[#d5cab8]',
-    inputFocus:   isDark ? 'focus:border-[#4a6a8a] focus:ring-[#2c4a6e]/20'
-                         : 'focus:border-[#4a6a8a] focus:ring-[#2c4a6e]/12',
-    text:          isDark ? 'text-[#f0eeea]'  : 'text-[#3d3935]',
-    textSecondary: isDark ? 'text-[#c8c3b9]'  : 'text-[#5a544a]',
-    textMuted:     isDark ? 'text-[#8a8275]'  : 'text-[#8a8275]',
-    heading:       isDark ? 'text-[#f3efe8]'  : 'text-[#1e2a3a]',
-    btnPrimary:    isDark ? 'bg-[#2c4a6e] hover:bg-[#4a6a8a] text-white' : 'bg-[#2c4a6e] hover:bg-[#1e3a58] text-white',
-    btnSecondary:  isDark ? 'bg-[#332e2a] hover:bg-[#3d3630] text-[#c8c3b9] border border-[#3d3630]' : 'bg-[#f3efe8] hover:bg-[#e8e1d5] text-[#5e5042] border border-[#d5cab8]',
-    btnGold:       isDark ? 'bg-[#b06d22] hover:bg-[#c8872e] text-white' : 'bg-[#c8872e] hover:bg-[#b06d22] text-white',
-    badgeNeutral:  isDark ? 'bg-[#3d3630] text-[#c8c3b9]' : 'bg-[#f3efe8] text-[#73614e]',
-    badgeGold:     isDark ? 'bg-[#b06d22]/20 text-[#d9a04e]' : 'bg-[#f9edd8] text-[#93541f]',
-    badgePrimary:  isDark ? 'bg-[#2c4a6e]/30 text-[#a8b9ce]' : 'bg-[#d4dde8] text-[#1e3a58]',
-    divider:       isDark ? 'border-[#3d3630]' : 'border-[#e8e1d5]',
-    link:          isDark ? 'text-[#6e8aaa] hover:text-[#a8b9ce]' : 'text-[#2c4a6e] hover:text-[#1e3a58]',
-    success:       isDark ? 'bg-[#5a8a5c]/15 border-[#5a8a5c]/30 text-[#8abf8c]' : 'bg-[#e8f0e8] border-[#5a8a5c]/20 text-[#3d6b3f]',
-    warning:       isDark ? 'bg-[#c8872e]/15 border-[#c8872e]/30 text-[#d9a04e]' : 'bg-[#fdf3e4] border-[#c8872e]/20 text-[#93541f]',
-    error:         isDark ? 'bg-[#b54a3f]/15 border-[#b54a3f]/30 text-[#e08a82]' : 'bg-[#fceae8] border-[#b54a3f]/20 text-[#8a3530]',
-    pillActive:    isDark ? 'bg-[#2c4a6e] border-[#4a6a8a] text-white' : 'bg-[#2c4a6e] border-[#2c4a6e] text-white',
-    pillInactive:  isDark ? 'bg-[#2a2623] border-[#3d3630] text-[#c8c3b9] hover:border-[#5a544a]' : 'bg-white border-[#e8e1d5] text-[#5a544a] hover:border-[#d5cab8]',
+    card:          isDark ? 'bg-zinc-800' : 'bg-white',
+    cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    text:          isDark ? 'text-zinc-50' : 'text-gray-900',
+    textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
+    textMuted:     isDark ? 'text-zinc-500' : 'text-gray-400',
+    labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
+    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
+    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
+    border:        isDark ? 'border-zinc-700' : 'border-gray-200',
+    success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
+    warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
+    danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
+    infoBox:       isDark ? 'bg-sky-900/20 border-sky-700 text-sky-200' : 'bg-sky-50 border-sky-200 text-sky-800',
+    successBox:    isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-300',
+    successTxt:    isDark ? 'text-emerald-300' : 'text-emerald-800',
+    warningBox:    isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
+    warningTxt:    isDark ? 'text-amber-300' : 'text-amber-800',
+    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
   };
 
-  const [topic, setTopic] = useState('');
+  const [topic, setTopic] = usePersistentState('hp-topic', '');
+  const [history, setHistory] = usePersistentState('hecklerprep-history', []);
   const [audience, setAudience] = useState('');
   const [proposal, setProposal] = useState('');
   const [knownObjections, setKnownObjections] = useState('');
   const [stakes, setStakes] = useState('moderate');
-  const [results, setResults] = useState(null);
+  const [results, setResults] = usePersistentState('hp-results', null);
   const [error, setError] = useState('');
+  const resultsRef = React.useRef(null);
   const [expandedQ, setExpandedQ] = useState(null);
 
   const generate = useCallback(async () => {
@@ -65,6 +69,8 @@ const HecklerPrep = () => {
         stakes,
       });
       setResults(data);
+      setHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: '' }, ...prev].slice(0, 6));
+      setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
     } catch (err) { setError(err.message || 'Failed to generate questions.'); }
   }, [topic, audience, proposal, knownObjections, stakes, callToolEndpoint]);
 
@@ -89,45 +95,45 @@ const HecklerPrep = () => {
     return text + BRAND;
   }, [results, topic]);
 
-  const difficultyBadge = (d) => d === 'brutal' ? c.error : d === 'hard' ? c.warning : c.success;
+  const difficultyBadge = (d) => d === 'brutal' ? c.danger : d === 'hard' ? c.warning : c.success;
   const difficultyEmoji = (d) => d === 'brutal' ? '🔴' : d === 'hard' ? '🟡' : '🟢';
 
   const r = results;
 
   return (
     <div className={`space-y-6 ${c.text}`}>
-      <div className={`${c.card} border ${c.cardBorder} rounded-xl p-6`}>
-        <div className={`mb-5 pb-4 border-b ${c.divider}`}>
-          <h2 className={`text-2xl font-bold ${c.heading}`}>HecklerPrep 🎤</h2>
-          <p className={`text-sm ${c.textSecondary} mt-1`}>Anticipate the hardest questions before they land</p>
+      <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-6`}>
+        <div className={`mb-5 pb-4 border-b ${c.border}`}>
+          <h2 className={`text-2xl font-bold ${c.text}`}>HecklerPrep 🎤</h2>
+          <p className={`text-sm ${c.textSecondaryondary} mt-1`}>Anticipate the hardest questions before they land</p>
         </div>
 
         <div className="mb-4">
           <label className={`text-sm font-bold ${c.text} block mb-1.5`}>What are you presenting or proposing?</label>
-          <textarea value={topic} onChange={e => setTopic(e.target.value)} rows={2}
+          <textarea value={topic} onChange={e => setTopic(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && topic.trim()) generate(); }} rows={2}
             placeholder="e.g., budget increase for Q3, new product feature launch, policy change proposal"
-            className={`w-full px-4 py-3 border rounded-xl text-sm ${c.inputBg} ${c.inputBorder} ${c.text} ${c.inputFocus} outline-none focus:ring-2 resize-none`} />
+            className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} ${c.text} outline-none focus:ring-2 resize-none`} />
         </div>
 
         <div className="mb-4">
           <label className={`text-sm font-bold ${c.text} block mb-1.5`}>Who's your audience?</label>
-          <input type="text" value={audience} onChange={e => setAudience(e.target.value)}
+          <input type="text" value={audience} onChange={e => setAudience(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && topic.trim()) generate(); }}
             placeholder="e.g., C-suite executives, engineering team, investors, school board"
-            className={`w-full px-4 py-3 border rounded-xl text-sm ${c.inputBg} ${c.inputBorder} ${c.text} ${c.inputFocus} outline-none focus:ring-2`} />
+            className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} ${c.text} outline-none focus:ring-2`} />
         </div>
 
         <div className="mb-4">
-          <label className={`text-sm font-bold ${c.text} block mb-1.5`}>What are you asking for? <span className={`font-normal ${c.textMuted}`}>(optional)</span></label>
-          <input type="text" value={proposal} onChange={e => setProposal(e.target.value)}
+          <label className={`text-sm font-bold ${c.text} block mb-1.5`}>What are you asking for? <span className={`font-normal ${c.textMuteded}`}>(optional)</span></label>
+          <input type="text" value={proposal} onChange={e => setProposal(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && topic.trim()) generate(); }}
             placeholder="e.g., $500k budget, approval to hire 3 people, go-ahead on the redesign"
-            className={`w-full px-4 py-3 border rounded-xl text-sm ${c.inputBg} ${c.inputBorder} ${c.text} ${c.inputFocus} outline-none focus:ring-2`} />
+            className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} ${c.text} outline-none focus:ring-2`} />
         </div>
 
         <div className="mb-4">
-          <label className={`text-sm font-bold ${c.text} block mb-1.5`}>Known objections <span className={`font-normal ${c.textMuted}`}>(optional)</span></label>
-          <input type="text" value={knownObjections} onChange={e => setKnownObjections(e.target.value)}
+          <label className={`text-sm font-bold ${c.text} block mb-1.5`}>Known objections <span className={`font-normal ${c.textMuteded}`}>(optional)</span></label>
+          <input type="text" value={knownObjections} onChange={e => setKnownObjections(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && topic.trim()) generate(); }}
             placeholder='e.g., "CFO thinks marketing is overspending", "engineering says timeline is unrealistic"'
-            className={`w-full px-4 py-3 border rounded-xl text-sm ${c.inputBg} ${c.inputBorder} ${c.text} ${c.inputFocus} outline-none focus:ring-2`} />
+            className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} ${c.text} outline-none focus:ring-2`} />
         </div>
 
         <div className="mb-5">
@@ -140,7 +146,7 @@ const HecklerPrep = () => {
                 }`}>
                 <span className="text-base">{s.emoji}</span>
                 <span>{s.label}</span>
-                <span className={`font-normal text-[9px] ${stakes === s.value ? 'opacity-80' : c.textMuted}`}>{s.desc}</span>
+                <span className={`font-normal text-[9px] ${stakes === s.value ? 'opacity-80' : c.textMuteded}`}>{s.desc}</span>
               </button>
             ))}
           </div>
@@ -148,34 +154,34 @@ const HecklerPrep = () => {
 
         <div className="flex gap-3">
           <button onClick={generate} disabled={loading || !topic.trim()}
-            className={`flex-1 ${c.btnGold} disabled:opacity-40 disabled:cursor-not-allowed font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-2 min-h-[48px] shadow-lg`}>
-            {loading ? <><span className="animate-spin inline-block">⏳</span> Generating hardest questions...</> : <><span>🎤</span> Prep Me</>}
+            className={`flex-1 ${c.btnPrimary} disabled:opacity-40 disabled:cursor-not-allowed font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-2 min-h-[48px] shadow-lg`}>
+            {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🎤'}</span> Generating hardest questions...</> : <><span>{tool?.icon ?? '🎤'}</span> Prep Me</>}
           </button>
-          {results && <button onClick={handleReset} className={`px-5 py-3 ${c.btnSecondary} rounded-xl font-medium min-h-[48px]`}>New</button>}
+          {results && <button onClick={handleReset} className={`px-5 py-3 ${c.btnSecondaryondary} rounded-xl font-medium min-h-[48px]`}>New</button>}
         </div>
 
         {!results && (
-          <div className={`mt-5 pt-4 border-t ${c.divider}`}>
-            <p className={`text-xs ${c.textMuted}`}>
-              🔨 Need to frame a difficult message? <a href="/VelvetHammer" target="_blank" rel="noopener noreferrer" className={`underline ${c.link}`}>Velvet Hammer</a> helps you say hard things well.
+          <div className={`mt-5 pt-4 border-t ${c.border}`}>
+            <p className={`text-xs ${c.textMuteded}`}>
+              🔨 Need to frame a difficult message? <a href="/VelvetHammer" target="_blank" rel="noopener noreferrer" className={`underline ${linkStyle}`}>Velvet Hammer</a> helps you say hard things well.
             </p>
           </div>
         )}
       </div>
 
       {error && (
-        <div className={`${c.error} border rounded-xl p-4 flex items-start gap-3`}>
+        <div className={`${c.danger} border rounded-xl p-4 flex items-start gap-3`}>
           <span className="flex-shrink-0 mt-0.5">⚠️</span><p className="text-sm">{error}</p>
         </div>
       )}
 
       {r && (
-        <div className="space-y-4">
-          <div className="flex justify-end"><CopyBtn content={buildFullText()} label="Copy All" /></div>
+        <div ref={resultsRef} className="space-y-4">
+          <div className="flex justify-end"><ActionBar content={buildFullText()} subject="Heckler Prep Questions" /></div>
 
           {r.situation_read && (
-            <div className={`${c.card} border ${c.cardBorder} rounded-xl p-5`}>
-              <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{r.situation_read}</p>
+            <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-5`}>
+              <p className={`text-sm ${c.textSecondaryondary} leading-relaxed`}>{r.situation_read}</p>
             </div>
           )}
 
@@ -193,21 +199,21 @@ const HecklerPrep = () => {
           {/* Questions */}
           {r.questions?.length > 0 && (
             <div className="space-y-3">
-              <h3 className={`text-sm font-bold ${c.heading}`}>The 10 Hardest Questions</h3>
+              <h3 className={`text-sm font-bold ${c.text}`}>The 10 Hardest Questions</h3>
               {r.questions.map((q, idx) => {
                 const isExpanded = expandedQ === idx;
                 return (
-                  <div key={idx} className={`${c.card} border ${c.cardBorder} rounded-xl overflow-hidden`}>
+                  <div key={idx} className={`${c.card} ${c.border} border ${c.border} rounded-xl overflow-hidden`}>
                     <button onClick={() => setExpandedQ(isExpanded ? null : idx)}
                       className="w-full p-4 text-left">
                       <div className="flex items-start gap-3">
                         <span className={`text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 ${
-                          q.difficulty === 'brutal' ? (isDark ? 'bg-[#b54a3f]/30 text-[#e08a82]' : 'bg-[#fceae8] text-[#8a3530]') :
-                          q.difficulty === 'hard' ? (isDark ? 'bg-[#c8872e]/20 text-[#d9a04e]' : 'bg-[#fdf3e4] text-[#93541f]') :
-                          (isDark ? 'bg-[#5a8a5c]/20 text-[#8abf8c]' : 'bg-[#e8f0e8] text-[#3d6b3f]')
+                          q.difficulty === 'brutal' ? (isDark ? 'bg-red-900/30 text-red-300' : 'bg-red-50 text-red-700') :
+                          q.difficulty === 'hard' ? (isDark ? 'bg-amber-900/20 text-amber-300' : 'bg-amber-50 text-amber-700') :
+                          (isDark ? 'bg-emerald-900/20 text-emerald-300' : 'bg-emerald-50 text-emerald-700')
                         }`}>{q.number}</span>
                         <div className="flex-1 min-w-0">
-                          <p className={`text-sm font-bold ${c.heading} leading-snug`}>"{q.question}"</p>
+                          <p className={`text-sm font-bold ${c.text} leading-snug`}>"{q.question}"</p>
                           <div className="flex gap-1.5 mt-1">
                             <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full border ${difficultyBadge(q.difficulty)}`}>
                               {difficultyEmoji(q.difficulty)} {q.difficulty}
@@ -215,30 +221,30 @@ const HecklerPrep = () => {
                             <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${c.badgeNeutral}`}>{q.type}</span>
                           </div>
                         </div>
-                        <span className={`${c.textMuted} flex-shrink-0`}>{isExpanded ? '▲' : '▼'}</span>
+                        <span className={`${c.textMuteded} flex-shrink-0`}>{isExpanded ? '▲' : '▼'}</span>
                       </div>
                     </button>
 
                     {isExpanded && (
-                      <div className={`px-4 pb-4 border-t ${c.divider} pt-3 space-y-3`}>
+                      <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-3`}>
                         <div>
-                          <p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>Real concern behind this question:</p>
-                          <p className={`text-xs ${c.textSecondary} italic`}>{q.real_concern}</p>
+                          <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>Real concern behind this question:</p>
+                          <p className={`text-xs ${c.textSecondaryondary} italic`}>{q.real_concern}</p>
                         </div>
                         <div className={`${c.cardAlt} rounded-lg p-4`}>
-                          <p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>✅ Model answer:</p>
+                          <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>✅ Model answer:</p>
                           <p className={`text-xs ${c.text} leading-relaxed`}>{q.model_answer}</p>
                         </div>
                         {q.dont_say && (
-                          <div className={`${c.error} border rounded-lg p-3`}>
+                          <div className={`${c.danger} border rounded-lg p-3`}>
                             <p className="text-[10px] font-bold mb-0.5">🚫 Don't say:</p>
                             <p className="text-xs">{q.dont_say}</p>
                           </div>
                         )}
                         {q.bail_out && (
                           <div>
-                            <p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>🆘 If you don't know:</p>
-                            <p className={`text-xs ${c.textSecondary}`}>"{q.bail_out}"</p>
+                            <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>🆘 If you don't know:</p>
+                            <p className={`text-xs ${c.textSecondaryondary}`}>"{q.bail_out}"</p>
                           </div>
                         )}
                         <CopyBtn content={`Q: ${q.question}\nA: ${q.model_answer}${BRAND}`} label="Copy Q&A" />
@@ -270,7 +276,7 @@ const HecklerPrep = () => {
             </div>
           )}
 
-          <div className={`${c.card} border ${c.cardBorder} rounded-xl p-4`}>
+          <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-4`}>
             <p className={`text-xs font-bold ${c.text} mb-2`}>Related tools</p>
             <div className="flex flex-wrap gap-2">
               <a href="/TheRunthrough" target="_blank" rel="noopener noreferrer" className={`text-xs px-3 py-1.5 rounded-lg border ${c.pillInactive} no-underline`}>🏃 The Runthrough</a>

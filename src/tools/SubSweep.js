@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import { usePersistentState } from '../hooks/usePersistentState';
 import { useTheme } from '../hooks/useTheme';
 import { CopyBtn, ActionBar } from '../components/ActionButtons';
 
@@ -124,9 +125,9 @@ function Section({ icon, title, badge, badgeColor, children, defaultOpen = false
         <span>{icon}</span>
         <span className={`text-xs font-bold flex-1 ${c.text}`}>{title}</span>
         {badge && <span className={`text-[9px] font-black px-2 py-0.5 rounded ${badgeColor || c.badge}`}>{badge}</span>}
-        <span className={`text-xs ${c.muted}`}>{open ? '▲' : '▼'}</span>
+        <span className={`text-xs ${c.textMuted}`}>{open ? '▲' : '▼'}</span>
       </button>
-      {open && <div className={`px-4 pb-4 border-t ${c.divider} pt-3`}>{children}</div>}
+      {open && <div className={`px-4 pb-4 border-t ${c.border} pt-3`}>{children}</div>}
     </div>
   );
 }
@@ -134,37 +135,38 @@ function Section({ icon, title, badge, badgeColor, children, defaultOpen = false
 // ════════════════════════════════════════════════════════════
 // COMPONENT
 // ════════════════════════════════════════════════════════════
-const SubSweep = () => {
+const SubSweep = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { isDark } = useTheme();
 
-  const c = {
-    card: isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-slate-200',
+  const linkStyle = isDark
+    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
+    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
+
+    const c = {
+    card:          isDark ? 'bg-zinc-800' : 'bg-white',
     input: isDark
-      ? 'bg-zinc-900 border-zinc-600 text-zinc-50 placeholder:text-zinc-500 focus:border-indigo-500 focus:ring-indigo-500/20'
-      : 'bg-white border-slate-300 text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:ring-indigo-100',
+      ? 'bg-zinc-900 border-zinc-600 text-zinc-50 placeholder:text-zinc-500 focus:border-cyan-500 focus:ring-indigo-500/20'
+      : 'bg-white border-slate-300 text-slate-900 placeholder:text-slate-400 focus:border-cyan-500 focus:ring-indigo-100',
     text: isDark ? 'text-zinc-50' : 'text-slate-900',
-    muted: isDark ? 'text-zinc-400' : 'text-slate-500',
     label: isDark ? 'text-zinc-300' : 'text-slate-700',
-    accent: isDark ? 'text-indigo-400' : 'text-indigo-600',
-    btnPrimary: isDark ? 'bg-indigo-600 hover:bg-indigo-500 text-white' : 'bg-indigo-600 hover:bg-indigo-700 text-white',
-    btnSec: isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-slate-100 hover:bg-slate-200 text-slate-800',
+    btnPrimary: isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
     btnDanger: isDark ? 'bg-red-900/30 hover:bg-red-900/50 text-red-300 border-red-700/50' : 'bg-red-50 hover:bg-red-100 text-red-700 border-red-200',
     danger: isDark ? 'bg-red-900/20 border-red-700/50 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
-    dangerText: isDark ? 'text-red-400' : 'text-red-600',
     success: isDark ? 'bg-emerald-900/20 border-emerald-700/50 text-emerald-200' : 'bg-emerald-50 border-emerald-200 text-emerald-800',
-    successText: isDark ? 'text-emerald-400' : 'text-emerald-600',
     warning: isDark ? 'bg-amber-900/20 border-amber-700/50 text-amber-200' : 'bg-amber-50 border-amber-200 text-amber-800',
-    warningText: isDark ? 'text-amber-400' : 'text-amber-600',
-    info: isDark ? 'bg-blue-900/20 border-blue-700/50 text-blue-200' : 'bg-blue-50 border-blue-200 text-blue-800',
-    pillActive: isDark ? 'bg-indigo-600 border-indigo-500 text-white' : 'bg-indigo-600 border-indigo-600 text-white',
+    pillActive: isDark ? 'bg-cyan-600 border-cyan-500 text-white' : 'bg-cyan-600 border-cyan-600 text-white',
     pillInactive: isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-300 hover:border-zinc-500' : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300',
-    divider: isDark ? 'border-zinc-700' : 'border-slate-200',
     quoteBg: isDark ? 'bg-zinc-900/60' : 'bg-slate-50',
     badge: isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-slate-100 text-slate-600',
-    used: isDark ? '#6366f1' : '#4f46e5',
-    underused: isDark ? '#f59e0b' : '#d97706',
-    forgotten: isDark ? '#ef4444' : '#dc2626',
+    used: isDark ? 'rgb(99,102,241)' : 'rgb(79,70,229)',
+    underused: isDark ? 'rgb(245,158,11)' : 'rgb(217,119,6)',
+    forgotten: isDark ? 'rgb(239,68,68)' : 'rgb(220,38,38)',
+    cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
+    textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
+    textMuted:     isDark ? 'text-zinc-500' : 'text-gray-400',
+    btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
+    border:        isDark ? 'border-zinc-700' : 'border-gray-200',
   };
 
   // ── View ──
@@ -187,9 +189,10 @@ const SubSweep = () => {
 
   // ── Spending history (monthly snapshots) ──
   const [history, setHistory] = useState(() => loadStore(STORE_HISTORY));
+  const [_historyLog, _setHistoryLog] = usePersistentState('ss-historyLog', null); // history persistence marker
 
   // ── Results ──
-  const [results, setResults] = useState(null);
+  const [results, setResults] = usePersistentState('subsweep-results', null);
   const [cutList, setCutList] = useState({});
   const [expandedCards, setExpandedCards] = useState({});
   const [showQuickAdd, setShowQuickAdd] = useState(false);
@@ -408,7 +411,7 @@ const SubSweep = () => {
     const now = new Date();
     const key = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
     const existing = history.findIndex(h => h.key === key);
-    const snap = { key, date: now.toISOString(), total: Math.round(totalMonthly * 100) / 100, count: validSubs.length };
+    const snap = { key, date: now.toISOString(), total: Math.round(totalMonthly * 100) / 100, count: validSubs.length, preview: `${validSubs.length} subs · $${Math.round(totalMonthly)}/mo`.slice(0, 40) };
     let updated;
     if (existing >= 0) {
       updated = [...history];
@@ -557,7 +560,7 @@ const SubSweep = () => {
         <div className="flex items-center justify-between mb-4">
           <div>
             <h3 className={`text-sm font-bold ${c.text}`}>🧹 Subscription Sweep</h3>
-            <p className={`text-xs ${c.muted}`}>Add your subs, get the honest truth</p>
+            <p className={`text-xs ${c.textMuted}`}>Add your subs, get the honest truth</p>
           </div>
           <select value={currency} onChange={e => setCurrency(e.target.value)}
             className={`py-1 px-2 border rounded-lg text-xs font-bold ${c.input} outline-none`}>
@@ -587,11 +590,11 @@ const SubSweep = () => {
               <textarea value={statementText} onChange={e => setStatementText(e.target.value)}
                 placeholder={"03/01 NETFLIX.COM          15.49\n03/01 SPOTIFY USA           11.99\n03/03 AMZN*Prime            14.99\n..."}
                 className={`w-full p-3 border rounded-lg ${c.input} outline-none focus:ring-2 font-mono text-xs`} rows={6} />
-              <p className={`text-[10px] ${c.muted} mt-1`}>We never store your data. The AI reads it once to find subscriptions, then forgets it.</p>
+              <p className={`text-[10px] ${c.textMuted} mt-1`}>We never store your data. The AI reads it once to find subscriptions, then forgets it.</p>
             </div>
             <button onClick={scanStatement} disabled={!statementText.trim() || scanning}
-              className={`${c.btnPrimary} disabled:opacity-40 font-bold py-2.5 px-5 rounded-lg flex items-center gap-2 text-xs min-h-[40px]`}>
-              {scanning ? <span className="animate-spin">⏳</span> : <span>🔍</span>}
+              className={`${c.btnPrimaryPrimary} disabled:opacity-40 font-bold py-2.5 px-5 rounded-lg flex items-center gap-2 text-xs min-h-[40px]`}>
+              {scanning ? <span className="animate-spin">{tool?.icon ?? '⚙️'}</span> : <span>🔍</span>}
               {scanning ? 'Scanning...' : 'Find Subscriptions'}
             </button>
           </div>
@@ -603,7 +606,7 @@ const SubSweep = () => {
             {/* Quick add */}
             <div>
               <button onClick={() => setShowQuickAdd(p => !p)}
-                className={`text-xs font-bold ${c.accent} flex items-center gap-1 min-h-[28px]`}>
+                className={`text-xs font-bold ${c.textSecondaryondary} flex items-center gap-1 min-h-[28px]`}>
                 <span>⚡</span> Quick add common services <span>{showQuickAdd ? '▲' : '▼'}</span>
               </button>
               {showQuickAdd && (
@@ -627,7 +630,7 @@ const SubSweep = () => {
                       placeholder="Service name"
                       className={`flex-1 min-w-[120px] px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-1`} />
                     <div className="flex items-center gap-1">
-                      <span className={`text-xs font-bold ${c.muted}`}>{currency}</span>
+                      <span className={`text-xs font-bold ${c.textMuted}`}>{currency}</span>
                       <input type="number" value={sub.cost} onChange={e => updateSub(sub.id, 'cost', e.target.value)}
                         placeholder="0.00"
                         className={`w-20 px-2 py-2 border rounded-lg text-xs text-right ${c.input} outline-none focus:ring-1`} />
@@ -642,7 +645,7 @@ const SubSweep = () => {
                       {USAGE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.emoji} {o.label}</option>)}
                     </select>
                     <button onClick={() => removeSub(sub.id)} disabled={subs.length === 1}
-                      className={`px-2 py-2 rounded-lg ${c.btnDanger} border min-h-[36px] text-xs`}>
+                      className={`px-2 py-2 rounded-lg ${c.btnPrimaryDanger} border min-h-[36px] text-xs`}>
                       🗑️
                     </button>
                   </div>
@@ -665,7 +668,7 @@ const SubSweep = () => {
               ))}
             </div>
 
-            <button onClick={addSub} className={`${c.btnSec} font-bold py-2 px-4 rounded-lg flex items-center gap-1.5 text-xs min-h-[36px]`}>
+            <button onClick={addSub} className={`${c.btnPrimarySecondary} font-bold py-2 px-4 rounded-lg flex items-center gap-1.5 text-xs min-h-[36px]`}>
               ➕ Add another
             </button>
           </div>
@@ -674,8 +677,8 @@ const SubSweep = () => {
         {/* Analyze button */}
         <div className="flex gap-3 mt-5">
           <button onClick={runAnalysis} disabled={validSubs.length === 0 || isRunning}
-            className={`flex-1 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-            {loading && !scanning ? <><span className="animate-spin">⏳</span> Analyzing...</> : <><span>✂️</span> Analyze My Subscriptions</>}
+            className={`flex-1 ${c.btnPrimaryPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+            {loading && !scanning ? <><span className="animate-spin">{tool?.icon ?? '⚙️'}</span> Analyzing...</> : <><span>✂️</span> Analyze My Subscriptions</>}
           </button>
           {results && (
             <button onClick={handleReset} className={`px-5 py-3 border-2 rounded-lg font-bold text-xs ${isDark ? 'border-zinc-600 text-zinc-300' : 'border-slate-300 text-slate-700'}`}>
@@ -691,20 +694,20 @@ const SubSweep = () => {
           {/* Summary cards */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <div className={`${c.card} border rounded-xl p-4 text-center`}>
-              <p className={`text-[10px] font-bold uppercase ${c.muted}`}>Monthly</p>
+              <p className={`text-[10px] font-bold uppercase ${c.textMuted}`}>Monthly</p>
               <p className={`text-lg font-black ${c.text}`}>{fm(totalMonthly.toFixed(2), currency)}</p>
             </div>
             <div className={`${c.card} border rounded-xl p-4 text-center`}>
-              <p className={`text-[10px] font-bold uppercase ${c.muted}`}>Annual</p>
+              <p className={`text-[10px] font-bold uppercase ${c.textMuted}`}>Annual</p>
               <p className={`text-lg font-black ${c.text}`}>{fm(totalAnnual.toFixed(0), currency)}</p>
             </div>
             <div className={`border rounded-xl p-4 text-center ${c.warning}`}>
-              <p className={`text-[10px] font-bold uppercase ${c.warningText}`}>Wasted/mo</p>
-              <p className={`text-lg font-black ${c.warningText}`}>{fm((results.wasted_monthly || 0).toFixed(2), currency)}</p>
+              <p className={`text-[10px] font-bold uppercase ${c.warning}`}>Wasted/mo</p>
+              <p className={`text-lg font-black ${c.warning}`}>{fm((results.wasted_monthly || 0).toFixed(2), currency)}</p>
             </div>
             <div className={`border rounded-xl p-4 text-center ${c.success}`}>
-              <p className={`text-[10px] font-bold uppercase ${c.successText}`}>Could save/yr</p>
-              <p className={`text-lg font-black ${c.successText}`}>{fm(((results.wasted_monthly || 0) * 12).toFixed(0), currency)}</p>
+              <p className={`text-[10px] font-bold uppercase ${c.success}`}>Could save/yr</p>
+              <p className={`text-lg font-black ${c.success}`}>{fm(((results.wasted_monthly || 0) * 12).toFixed(0), currency)}</p>
             </div>
           </div>
 
@@ -733,7 +736,7 @@ const SubSweep = () => {
                     <div key={i} className="flex items-center gap-2">
                       <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: seg.color }} />
                       <span className={`text-xs font-bold ${c.text}`}>{seg.label}</span>
-                      <span className={`text-xs ${c.muted}`}>{fm(seg.amount.toFixed(2), currency)}/mo ({Math.round(seg.pct)}%)</span>
+                      <span className={`text-xs ${c.textMuted}`}>{fm(seg.amount.toFixed(2), currency)}/mo ({Math.round(seg.pct)}%)</span>
                     </div>
                   ))}
                 </div>
@@ -746,7 +749,7 @@ const SubSweep = () => {
             <h3 className={`text-sm font-bold ${c.text} flex items-center gap-2 mb-1`}>
               <span>✨</span> What If You Cut These?
             </h3>
-            <p className={`text-[10px] ${c.muted} mb-3`}>Toggle subscriptions to see real-time savings</p>
+            <p className={`text-[10px] ${c.textMuted} mb-3`}>Toggle subscriptions to see real-time savings</p>
 
             <div className="space-y-1.5 mb-4">
               {validSubs.map(sub => {
@@ -773,16 +776,16 @@ const SubSweep = () => {
                         {verdict === 'keep' ? 'KEEP' : verdict === 'cancel' ? 'CUT' : 'MAYBE'}
                       </span>
                     )}
-                    <span className={`text-xs font-bold ${c.muted} whitespace-nowrap`}>{fm(mo.toFixed(2), currency)}/mo</span>
+                    <span className={`text-xs font-bold ${c.textMuted} whitespace-nowrap`}>{fm(mo.toFixed(2), currency)}/mo</span>
                   </label>
                 );
               })}
             </div>
 
-            <div className={`rounded-xl p-4 text-center ${cutCount > 0 ? c.success : c.quoteBg} border ${c.divider}`}>
+            <div className={`rounded-xl p-4 text-center ${cutCount > 0 ? c.success : c.quoteBg} border ${c.border}`}>
               {cutCount > 0 ? (
                 <>
-                  <p className={`text-2xl font-black ${c.successText}`}>{fm(cutSavingsAnnual.toFixed(0), currency)}/year saved</p>
+                  <p className={`text-2xl font-black ${c.success}`}>{fm(cutSavingsAnnual.toFixed(0), currency)}/year saved</p>
                   <p className={`text-xs ${isDark ? 'text-emerald-300' : 'text-emerald-700'} mt-1`}>
                     That's {fm(cutSavingsMonthly.toFixed(2), currency)}/month from {cutCount} subscription{cutCount !== 1 ? 's' : ''}
                   </p>
@@ -793,7 +796,7 @@ const SubSweep = () => {
                   )}
                 </>
               ) : (
-                <p className={`text-sm ${c.muted}`}>Toggle subscriptions above to see how much you'd save</p>
+                <p className={`text-sm ${c.textMuted}`}>Toggle subscriptions above to see how much you'd save</p>
               )}
             </div>
           </div>
@@ -826,32 +829,32 @@ const SubSweep = () => {
                           </span>
                         )}
                         {sub.cost_per_use && (
-                          <span className={`text-[10px] font-bold ${c.muted} hidden sm:inline`}>{fm(sub.cost_per_use, currency)}/use</span>
+                          <span className={`text-[10px] font-bold ${c.textMuted} hidden sm:inline`}>{fm(sub.cost_per_use, currency)}/use</span>
                         )}
-                        <span className={`text-xs ${c.muted}`}>{expanded ? '▲' : '▼'}</span>
+                        <span className={`text-xs ${c.textMuted}`}>{expanded ? '▲' : '▼'}</span>
                       </div>
                     </button>
                     {expanded && (
-                      <div className={`px-4 pb-4 border-t ${c.divider} pt-3 space-y-3`}>
-                        {sub.honesty && <p className={`text-sm ${c.muted} italic`}>"{sub.honesty}"</p>}
+                      <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-3`}>
+                        {sub.honesty && <p className={`text-sm ${c.textMuted} italic`}>"{sub.honesty}"</p>}
                         {sub.cost_per_use && (
                           <div className={`${c.quoteBg} rounded-lg p-3`}>
-                            <p className={`text-xs font-bold ${c.warningText}`}>💰 Cost per use: {fm(sub.cost_per_use, currency)}</p>
-                            {sub.would_you_pay && <p className={`text-[10px] ${c.muted} mt-1`}>{sub.would_you_pay}</p>}
+                            <p className={`text-xs font-bold ${c.warning}`}>💰 Cost per use: {fm(sub.cost_per_use, currency)}</p>
+                            {sub.would_you_pay && <p className={`text-[10px] ${c.textMuted} mt-1`}>{sub.would_you_pay}</p>}
                           </div>
                         )}
                         {sub.free_alternative && (
-                          <div className={`${c.info} border rounded-lg p-3`}>
-                            <p className={`text-xs font-bold ${isDark ? 'text-blue-200' : 'text-blue-800'}`}>🔄 Free/cheaper alternative: {sub.free_alternative}</p>
+                          <div className={`${c.cardAlt} border rounded-lg p-3`}>
+                            <p className={`text-xs font-bold ${isDark ? 'text-sky-200' : 'text-sky-800'}`}>🔄 Free/cheaper alternative: {sub.free_alternative}</p>
                           </div>
                         )}
                         {sub.cancellation_steps && (
                           <div>
                             <p className={`text-[10px] font-bold ${c.label} uppercase mb-1`}>How to cancel:</p>
-                            <p className={`text-xs ${c.muted} leading-relaxed`}>{sub.cancellation_steps}</p>
+                            <p className={`text-xs ${c.textMuted} leading-relaxed`}>{sub.cancellation_steps}</p>
                             {sub.cancellation_script && (
                               <div className={`mt-2 ${c.quoteBg} rounded-lg p-3`}>
-                                <p className={`text-[10px] font-bold ${c.muted} mb-1`}>Cancellation message:</p>
+                                <p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>Cancellation message:</p>
                                 <p className={`text-xs ${c.text}`}>{sub.cancellation_script}</p>
                                 <div className="mt-2">
                                   <CopyBtn content={sub.cancellation_script + '\n\n— Generated by DeftBrain · deftbrain.com'} label="Copy" />
@@ -868,7 +871,7 @@ const SubSweep = () => {
                         )}
                         {sub.retention_tactics?.length > 0 && (
                           <div className={`${c.success} border rounded-lg p-3`}>
-                            <p className={`text-[10px] font-bold ${c.successText} uppercase mb-1.5 flex items-center gap-1`}>
+                            <p className={`text-[10px] font-bold ${c.success} uppercase mb-1.5 flex items-center gap-1`}>
                               🛡️ When you call to cancel, expect:
                             </p>
                             {sub.retention_tactics.map((tactic, ti) => (
@@ -882,7 +885,7 @@ const SubSweep = () => {
                             const match = subs.find(s => s.name === sub.name && s.status === 'active');
                             if (match) updateSub(match.id, 'status', 'cancelled');
                           }}
-                            className={`text-xs font-bold ${c.dangerText} underline min-h-[28px]`}>
+                            className={`text-xs font-bold ${c.danger} underline min-h-[28px]`}>
                             ✓ I cancelled this — mark as done
                           </button>
                         )}
@@ -896,12 +899,12 @@ const SubSweep = () => {
 
           {/* Overall */}
           {results.overall && (
-            <div className={`${c.info} border rounded-xl p-5`}>
+            <div className={`${c.cardAlt} border rounded-xl p-5`}>
               <div className="flex items-start gap-3">
                 <span className="text-lg flex-shrink-0">→</span>
                 <div>
-                  <h3 className={`text-sm font-bold mb-1 ${isDark ? 'text-blue-200' : 'text-blue-800'}`}>Bottom Line</h3>
-                  <p className={`text-sm ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>{results.overall}</p>
+                  <h3 className={`text-sm font-bold mb-1 ${isDark ? 'text-sky-200' : 'text-sky-800'}`}>Bottom Line</h3>
+                  <p className={`text-sm ${isDark ? 'text-sky-300' : 'text-sky-700'}`}>{results.overall}</p>
                 </div>
               </div>
             </div>
@@ -910,7 +913,7 @@ const SubSweep = () => {
           {/* Permission */}
           {results.permission_statements?.length > 0 && (
             <div className={`${c.success} border-2 rounded-xl p-5`}>
-              <h3 className={`text-sm font-bold ${c.successText} mb-3`}>💚 Permission Granted</h3>
+              <h3 className={`text-sm font-bold ${c.success} mb-3`}>💚 Permission Granted</h3>
               {results.permission_statements.map((perm, i) => (
                 <p key={i} className={`text-sm ${isDark ? 'text-emerald-300' : 'text-emerald-700'} mb-1`}>{perm}</p>
               ))}
@@ -919,7 +922,7 @@ const SubSweep = () => {
 
           <ActionBar content={buildSummaryText()} brandLine="— Generated by DeftBrain · deftbrain.com" />
 
-          <p className={`text-[10px] ${c.muted} text-center px-4`}>
+          <p className={`text-[10px] ${c.textMuted} text-center px-4`}>
             Prices and cancellation steps may vary. Your subscription data is saved locally on your device only.
           </p>
         </div>
@@ -934,13 +937,13 @@ const SubSweep = () => {
     <div className="space-y-4">
       <div className={`${c.card} border rounded-xl p-5`}>
         <h3 className={`text-sm font-bold ${c.text} mb-1`}>⚡ Plan Optimizer</h3>
-        <p className={`text-xs ${c.muted} mb-4`}>Find annual discounts, family plans, student deals, and bundles for your current subs.</p>
+        <p className={`text-xs ${c.textMuted} mb-4`}>Find annual discounts, family plans, student deals, and bundles for your current subs.</p>
 
         {validSubs.length === 0 ? (
           <div className="text-center py-6">
             <p className="text-2xl mb-2">⚡</p>
-            <p className={`text-xs ${c.muted}`}>Add active subscriptions in the Sweep tab first.</p>
-            <button onClick={() => setView('sweep')} className={`${c.btnPrimary} px-4 py-2 rounded-lg text-xs font-bold mt-3 min-h-[36px]`}>🧹 Go to Sweep</button>
+            <p className={`text-xs ${c.textMuted}`}>Add active subscriptions in the Sweep tab first.</p>
+            <button onClick={() => setView('sweep')} className={`${c.btnPrimaryPrimary} px-4 py-2 rounded-lg text-xs font-bold mt-3 min-h-[36px]`}>🧹 Go to Sweep</button>
           </div>
         ) : (
           <>
@@ -951,8 +954,8 @@ const SubSweep = () => {
               ))}
             </div>
             <button onClick={runOptimize} disabled={loading}
-              className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-              {loading ? <><span className="animate-spin">⏳</span> Optimizing...</> : <><span>⚡</span> Find Savings</>}
+              className={`w-full ${c.btnPrimaryPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+              {loading ? <><span className="animate-spin">{tool?.icon ?? '⚙️'}</span> Optimizing...</> : <><span>⚡</span> Find Savings</>}
             </button>
           </>
         )}
@@ -963,7 +966,7 @@ const SubSweep = () => {
           {/* Total potential */}
           {optResults.total_potential_savings_annual > 0 && (
             <div className={`${c.success} border-2 rounded-xl p-5 text-center`}>
-              <p className={`text-2xl font-black ${c.successText}`}>{fm((optResults.total_potential_savings_annual || 0).toFixed(0), currency)}/year</p>
+              <p className={`text-2xl font-black ${c.success}`}>{fm((optResults.total_potential_savings_annual || 0).toFixed(0), currency)}/year</p>
               <p className={`text-xs ${isDark ? 'text-emerald-300' : 'text-emerald-700'} mt-1`}>in potential optimization savings</p>
               {optResults.top_move && <p className="text-xs font-bold mt-2">🏆 {optResults.top_move}</p>}
             </div>
@@ -975,21 +978,21 @@ const SubSweep = () => {
               <Section key={idx} icon="💡" title={opt.service} badge={`${opt.opportunities.length} option${opt.opportunities.length !== 1 ? 's' : ''}`} defaultOpen c={c}>
                 <div className="space-y-3">
                   {opt.current_plan && (
-                    <p className={`text-xs ${c.muted}`}>Current: {opt.current_plan} — {fm(opt.current_cost, currency)}/mo</p>
+                    <p className={`text-xs ${c.textMuted}`}>Current: {opt.current_plan} — {fm(opt.current_cost, currency)}/mo</p>
                   )}
                   {opt.opportunities.map((opp, oi) => (
                     <div key={oi} className={`${c.quoteBg} rounded-lg p-3`}>
                       <div className="flex items-start justify-between gap-2">
                         <div>
                           <p className="text-xs font-bold">{opp.description}</p>
-                          <p className={`text-[10px] ${c.muted} mt-0.5`}>{opp.type?.replace(/_/g, ' ')}</p>
+                          <p className={`text-[10px] ${c.textMuted} mt-0.5`}>{opp.type?.replace(/_/g, ' ')}</p>
                         </div>
                         {opp.savings_annual > 0 && (
-                          <span className={`text-xs font-black ${c.successText} whitespace-nowrap`}>-{fm(opp.savings_annual.toFixed(0), currency)}/yr</span>
+                          <span className={`text-xs font-black ${c.success} whitespace-nowrap`}>-{fm(opp.savings_annual.toFixed(0), currency)}/yr</span>
                         )}
                       </div>
-                      {opp.how && <p className={`text-xs ${c.muted} mt-2`}>📋 {opp.how}</p>}
-                      {opp.caveat && <p className={`text-[10px] ${c.warningText} mt-1`}>⚠️ {opp.caveat}</p>}
+                      {opp.how && <p className={`text-xs ${c.textMuted} mt-2`}>📋 {opp.how}</p>}
+                      {opp.caveat && <p className={`text-[10px] ${c.warning} mt-1`}>⚠️ {opp.caveat}</p>}
                     </div>
                   ))}
                 </div>
@@ -1007,8 +1010,8 @@ const SubSweep = () => {
                     <p className={`text-xs ${isDark ? 'text-emerald-300' : 'text-emerald-700'} mt-1`}>
                       {b.services_involved?.join(' + ')} — {fm(b.bundle_cost, currency)}/mo instead of {fm(b.current_separate_cost, currency)}/mo
                     </p>
-                    <p className={`text-xs font-black ${c.successText} mt-1`}>Saves {fm(b.savings_monthly, currency)}/mo</p>
-                    {b.how && <p className={`text-[10px] ${c.muted} mt-1`}>📋 {b.how}</p>}
+                    <p className={`text-xs font-black ${c.success} mt-1`}>Saves {fm(b.savings_monthly, currency)}/mo</p>
+                    {b.how && <p className={`text-[10px] ${c.textMuted} mt-1`}>📋 {b.how}</p>}
                   </div>
                 ))}
               </div>
@@ -1026,7 +1029,7 @@ const SubSweep = () => {
     <div className="space-y-4">
       <div className={`${c.card} border rounded-xl p-5`}>
         <h3 className={`text-sm font-bold ${c.text} mb-1`}>📞 Retention Scripts</h3>
-        <p className={`text-xs ${c.muted} mb-4`}>Get a discount by threatening to cancel. Here's exactly what to say.</p>
+        <p className={`text-xs ${c.textMuted} mb-4`}>Get a discount by threatening to cancel. Here's exactly what to say.</p>
 
         <div className="space-y-3">
           {/* Quick pick from existing subs */}
@@ -1069,8 +1072,8 @@ const SubSweep = () => {
           </div>
 
           <button onClick={runNegotiate} disabled={loading || !negService.trim()}
-            className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-            {loading ? <><span className="animate-spin">⏳</span> Generating script...</> : <><span>📞</span> Get Retention Script</>}
+            className={`w-full ${c.btnPrimaryPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+            {loading ? <><span className="animate-spin">{tool?.icon ?? '⚙️'}</span> Generating script...</> : <><span>📞</span> Get Retention Script</>}
           </button>
         </div>
       </div>
@@ -1079,11 +1082,11 @@ const SubSweep = () => {
         <div className="space-y-4">
           {/* Contact method */}
           {negResults.contact_method && (
-            <div className={`${c.info} border rounded-xl p-4`}>
+            <div className={`${c.cardAlt} border rounded-xl p-4`}>
               <p className={`text-[10px] font-bold ${c.label} uppercase mb-1`}>📞 How to reach retention</p>
               <p className="text-xs">{negResults.contact_method}</p>
               {negResults.best_time_to_call && (
-                <p className={`text-xs ${c.muted} mt-1`}>⏰ Best time: {negResults.best_time_to_call}</p>
+                <p className={`text-xs ${c.textMuted} mt-1`}>⏰ Best time: {negResults.best_time_to_call}</p>
               )}
             </div>
           )}
@@ -1105,8 +1108,8 @@ const SubSweep = () => {
               <div className="space-y-4">
                 {negResults.script_steps.map((step, i) => (
                   <div key={i} className="space-y-2">
-                    <p className={`text-[10px] font-bold ${c.accent}`}>Step {step.step || i + 1}</p>
-                    <div className={`${isDark ? 'bg-blue-900/20 border-blue-800' : 'bg-blue-50 border-blue-200'} border rounded-lg p-3`}>
+                    <p className={`text-[10px] font-bold ${c.textSecondaryondary}`}>Step {step.step || i + 1}</p>
+                    <div className={`${isDark ? 'bg-sky-900/20 border-sky-800' : 'bg-sky-50 border-sky-200'} border rounded-lg p-3`}>
                       <p className={`text-[10px] font-bold ${c.label} mb-0.5`}>YOU SAY:</p>
                       <p className="text-xs font-bold">"{step.you_say}"</p>
                     </div>
@@ -1118,7 +1121,7 @@ const SubSweep = () => {
                       <p className={`text-[10px] font-bold ${c.label} mb-0.5`}>YOUR RESPONSE:</p>
                       <p className="text-xs font-bold">"{step.your_response}"</p>
                     </div>
-                    {step.tip && <p className={`text-[10px] ${c.muted}`}>💡 {step.tip}</p>}
+                    {step.tip && <p className={`text-[10px] ${c.textMuted}`}>💡 {step.tip}</p>}
                   </div>
                 ))}
               </div>
@@ -1139,7 +1142,7 @@ const SubSweep = () => {
                         {offer.should_accept ? '✓ ACCEPT' : '⏸ WAIT'}
                       </span>
                     </div>
-                    <p className={`text-[10px] ${c.muted} mt-0.5`}>Likelihood: {offer.likelihood} — {offer.why}</p>
+                    <p className={`text-[10px] ${c.textMuted} mt-0.5`}>Likelihood: {offer.likelihood} — {offer.why}</p>
                   </div>
                 ))}
               </div>
@@ -1148,7 +1151,7 @@ const SubSweep = () => {
 
           {/* Magic phrases */}
           {negResults.magic_phrases?.length > 0 && (
-            <div className={`${isDark ? 'bg-purple-900/20 border-purple-800' : 'bg-purple-50 border-purple-200'} border rounded-xl p-4`}>
+            <div className={`${isDark ? 'bg-cyan-900/20 border-purple-800' : 'bg-cyan-50 border-purple-200'} border rounded-xl p-4`}>
               <p className={`text-[10px] font-bold ${c.label} uppercase mb-2`}>🪄 Magic phrases</p>
               {negResults.magic_phrases.map((p, i) => (
                 <p key={i} className="text-xs font-bold mb-1">• "{p}"</p>
@@ -1163,13 +1166,13 @@ const SubSweep = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {negResults.walk_away_threshold && (
               <div className={`${c.warning} border rounded-lg p-3`}>
-                <p className={`text-[10px] font-bold ${c.warningText} uppercase mb-1`}>🚶 Walk-away threshold</p>
+                <p className={`text-[10px] font-bold ${c.warning} uppercase mb-1`}>🚶 Walk-away threshold</p>
                 <p className="text-xs">{negResults.walk_away_threshold}</p>
               </div>
             )}
             {negResults.nuclear_option && (
               <div className={`${c.danger} border rounded-lg p-3`}>
-                <p className={`text-[10px] font-bold ${c.dangerText} uppercase mb-1`}>☢️ Nuclear option</p>
+                <p className={`text-[10px] font-bold ${c.danger} uppercase mb-1`}>☢️ Nuclear option</p>
                 <p className="text-xs">{negResults.nuclear_option}</p>
               </div>
             )}
@@ -1199,7 +1202,7 @@ const SubSweep = () => {
       {cancelSavings > 0 && (
         <div className={`${c.success} border-2 rounded-xl p-5 text-center`}>
           <p className="text-3xl mb-1">🎉</p>
-          <p className={`text-3xl font-black ${c.successText}`}>{fm(cancelSavings.toFixed(0), currency)}</p>
+          <p className={`text-3xl font-black ${c.success}`}>{fm(cancelSavings.toFixed(0), currency)}</p>
           <p className={`text-xs ${isDark ? 'text-emerald-300' : 'text-emerald-700'} mt-1`}>
             saved since you started cancelling
           </p>
@@ -1209,10 +1212,10 @@ const SubSweep = () => {
       {/* Status management */}
       <div className={`${c.card} border rounded-xl p-5`}>
         <h3 className={`text-sm font-bold ${c.text} mb-1`}>📋 Subscription Tracker</h3>
-        <p className={`text-xs ${c.muted} mb-4`}>Track status of every subscription. Cancelled subs accumulate savings over time.</p>
+        <p className={`text-xs ${c.textMuted} mb-4`}>Track status of every subscription. Cancelled subs accumulate savings over time.</p>
 
         {subs.length === 0 ? (
-          <p className={`text-xs ${c.muted} text-center py-6`}>No subscriptions yet.</p>
+          <p className={`text-xs ${c.textMuted} text-center py-6`}>No subscriptions yet.</p>
         ) : (
           <div className="space-y-2">
             {subs.map(sub => {
@@ -1232,10 +1235,10 @@ const SubSweep = () => {
                     {sub.name || '(unnamed)'}
                   </span>
                   {sub.cost && (
-                    <span className={`text-xs ${c.muted} whitespace-nowrap`}>{fm(mo.toFixed(2), currency)}/mo</span>
+                    <span className={`text-xs ${c.textMuted} whitespace-nowrap`}>{fm(mo.toFixed(2), currency)}/mo</span>
                   )}
                   {sub.status === 'cancelled' && savedSoFar > 0 && (
-                    <span className={`text-[10px] font-bold ${c.successText}`}>+{fm(savedSoFar.toFixed(0), currency)} saved</span>
+                    <span className={`text-[10px] font-bold ${c.success}`}>+{fm(savedSoFar.toFixed(0), currency)} saved</span>
                   )}
                   <select value={sub.status} onChange={e => updateSub(sub.id, 'status', e.target.value)}
                     className={`px-2 py-1 border rounded text-[10px] font-bold ${c.input}`}>
@@ -1250,14 +1253,14 @@ const SubSweep = () => {
         <div className="flex gap-2 mt-4">
           <div className={`flex-1 text-center py-2 rounded-lg border ${c.card}`}>
             <p className={`text-xs font-black ${c.text}`}>{activeSubs.length}</p>
-            <p className={`text-[10px] ${c.muted}`}>Active</p>
+            <p className={`text-[10px] ${c.textMuted}`}>Active</p>
           </div>
           <div className={`flex-1 text-center py-2 rounded-lg border ${c.success}`}>
-            <p className={`text-xs font-black ${c.successText}`}>{cancelledSubs.filter(s => s.status === 'cancelled').length}</p>
+            <p className={`text-xs font-black ${c.success}`}>{cancelledSubs.filter(s => s.status === 'cancelled').length}</p>
             <p className={`text-[10px] ${isDark ? 'text-emerald-300' : 'text-emerald-700'}`}>Cancelled</p>
           </div>
           <div className={`flex-1 text-center py-2 rounded-lg border ${c.warning}`}>
-            <p className={`text-xs font-black ${c.warningText}`}>{cancelledSubs.filter(s => s.status === 'paused').length}</p>
+            <p className={`text-xs font-black ${c.warning}`}>{cancelledSubs.filter(s => s.status === 'paused').length}</p>
             <p className={`text-[10px] ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>Paused</p>
           </div>
         </div>
@@ -1276,22 +1279,22 @@ const SubSweep = () => {
       <div className="space-y-4">
         <div className={`${c.card} border rounded-xl p-5`}>
           <h3 className={`text-sm font-bold ${c.text} mb-1`}>📈 Spending Timeline</h3>
-          <p className={`text-xs ${c.muted} mb-4`}>
+          <p className={`text-xs ${c.textMuted} mb-4`}>
             Monthly subscription total over time. Snapshots are taken each time you run an analysis.
           </p>
 
           {sortedHistory.length < 2 ? (
             <div className="text-center py-8">
               <p className="text-2xl mb-2">📈</p>
-              <p className={`text-xs ${c.muted} mb-1`}>Need at least 2 snapshots to show a trend.</p>
-              <p className={`text-[10px] ${c.muted}`}>Run an analysis now to take your first snapshot. Come back next month for a comparison.</p>
+              <p className={`text-xs ${c.textMuted} mb-1`}>Need at least 2 snapshots to show a trend.</p>
+              <p className={`text-[10px] ${c.textMuted}`}>Run an analysis now to take your first snapshot. Come back next month for a comparison.</p>
               {sortedHistory.length === 0 && (
-                <button onClick={() => { takeSnapshot(); }} className={`${c.btnPrimary} px-4 py-2 rounded-lg text-xs font-bold mt-3 min-h-[36px]`}>
+                <button onClick={() => { takeSnapshot(); }} className={`${c.btnPrimaryPrimary} px-4 py-2 rounded-lg text-xs font-bold mt-3 min-h-[36px]`}>
                   📸 Take Snapshot Now
                 </button>
               )}
               {sortedHistory.length === 1 && (
-                <p className={`text-xs ${c.accent} font-bold mt-2`}>✓ 1 snapshot recorded ({sortedHistory[0].key})</p>
+                <p className={`text-xs ${c.textSecondaryondary} font-bold mt-2`}>✓ 1 snapshot recorded ({sortedHistory[0].key})</p>
               )}
             </div>
           ) : (
@@ -1307,20 +1310,20 @@ const SubSweep = () => {
                     <div key={snap.key} className="flex-1 flex flex-col items-center justify-end h-full">
                       {/* Diff indicator */}
                       {i > 0 && (
-                        <span className={`text-[8px] font-bold mb-0.5 ${diff > 0 ? c.dangerText : diff < 0 ? c.successText : c.muted}`}>
+                        <span className={`text-[8px] font-bold mb-0.5 ${diff > 0 ? c.danger : diff < 0 ? c.success : c.textMuted}`}>
                           {diff > 0 ? '+' : ''}{fm(diff.toFixed(0), currency)}
                         </span>
                       )}
                       {/* Bar */}
                       <div className={`w-full rounded-t transition-all ${isLatest
-                        ? (isDark ? 'bg-indigo-500' : 'bg-indigo-600')
+                        ? (isDark ? 'bg-cyan-500' : 'bg-cyan-600')
                         : (isDark ? 'bg-zinc-600' : 'bg-slate-300')
                       }`}
                         style={{ height: `${Math.max(pct, 5)}%` }}
                         title={`${snap.key}: ${fm(snap.total, currency)}/mo`}
                       />
                       {/* Label */}
-                      <p className={`text-[8px] ${c.muted} mt-1 text-center`}>
+                      <p className={`text-[8px] ${c.textMuted} mt-1 text-center`}>
                         {snap.key.split('-')[1]}/{snap.key.split('-')[0].slice(2)}
                       </p>
                       <p className={`text-[9px] font-bold ${c.text}`}>{fm(snap.total.toFixed(0), currency)}</p>
@@ -1336,7 +1339,7 @@ const SubSweep = () => {
                 const diff = last.total - first.total;
                 const pctChange = first.total > 0 ? ((diff / first.total) * 100).toFixed(0) : 0;
                 return (
-                  <div className={`mt-4 ${diff > 0 ? c.warning : diff < 0 ? c.success : c.info} border rounded-lg p-3 text-center`}>
+                  <div className={`mt-4 ${diff > 0 ? c.warning : diff < 0 ? c.success : c.cardAlt} border rounded-lg p-3 text-center`}>
                     <p className="text-xs font-bold">
                       {diff > 0
                         ? `📈 Your subs increased by ${fm(Math.abs(diff).toFixed(0), currency)}/mo (${pctChange}%) since ${first.key}`
@@ -1356,9 +1359,9 @@ const SubSweep = () => {
         <div className={`${c.card} border rounded-xl p-4 flex items-center justify-between`}>
           <div>
             <p className={`text-xs font-bold ${c.text}`}>📸 Take a manual snapshot</p>
-            <p className={`text-[10px] ${c.muted}`}>Current: {fm(totalMonthly.toFixed(2), currency)}/mo ({validSubs.length} active subs)</p>
+            <p className={`text-[10px] ${c.textMuted}`}>Current: {fm(totalMonthly.toFixed(2), currency)}/mo ({validSubs.length} active subs)</p>
           </div>
-          <button onClick={takeSnapshot} className={`${c.btnPrimary} px-4 py-2 rounded-lg text-xs font-bold min-h-[36px]`}>
+          <button onClick={takeSnapshot} className={`${c.btnPrimaryPrimary} px-4 py-2 rounded-lg text-xs font-bold min-h-[36px]`}>
             📸 Snapshot
           </button>
         </div>
@@ -1373,13 +1376,13 @@ const SubSweep = () => {
                   setHistory([]);
                   saveStore(STORE_HISTORY, [], MAX_HISTORY);
                 }
-              }} className={`text-[10px] ${c.dangerText} min-h-[24px]`}>🗑️ Clear</button>
+              }} className={`text-[10px] ${c.danger} min-h-[24px]`}>🗑️ Clear</button>
             </div>
             {sortedHistory.map(snap => (
               <div key={snap.key} className="flex items-center justify-between text-xs py-1">
-                <span className={c.muted}>{snap.key}</span>
+                <span className={c.textMuted}>{snap.key}</span>
                 <span className={`font-bold ${c.text}`}>{fm(snap.total, currency)}/mo</span>
-                <span className={c.muted}>{snap.count} subs</span>
+                <span className={c.textMuted}>{snap.count} subs</span>
               </div>
             ))}
           </div>
@@ -1407,10 +1410,10 @@ const SubSweep = () => {
         <div className={`flex items-center gap-2 px-3 py-2 rounded-lg border ${c.card} text-xs`}>
           <span>{catEmoji(sub.category)}</span>
           <span className={`font-bold flex-1 ${c.text}`}>{sub.name}</span>
-          <span className={`font-bold ${urgent ? c.dangerText : c.muted}`}>
+          <span className={`font-bold ${urgent ? c.danger : c.textMuted}`}>
             {sub.daysUntil < 0 ? `${Math.abs(sub.daysUntil)}d ago` : sub.daysUntil === 0 ? 'TODAY' : `${sub.daysUntil}d`}
           </span>
-          <span className={c.muted}>{formatDate(sub.renewalDate)}</span>
+          <span className={c.textMuted}>{formatDate(sub.renewalDate)}</span>
           <span className={`font-bold ${c.text}`}>
             {sub.cycle === 'yearly' ? fm(sub.cost, currency) : fm(mo.toFixed(2), currency)}
           </span>
@@ -1422,25 +1425,25 @@ const SubSweep = () => {
       <div className="space-y-4">
         <div className={`${c.card} border rounded-xl p-5`}>
           <h3 className={`text-sm font-bold ${c.text} mb-1`}>🔔 Renewal Radar</h3>
-          <p className={`text-xs ${c.muted} mb-4`}>Never get surprise-charged again. Add renewal dates in the Sweep tab.</p>
+          <p className={`text-xs ${c.textMuted} mb-4`}>Never get surprise-charged again. Add renewal dates in the Sweep tab.</p>
 
           {renewalAlerts.length === 0 ? (
             <div className="text-center py-8">
               <p className="text-2xl mb-2">🔔</p>
-              <p className={`text-xs ${c.muted}`}>No renewal dates set yet. Add dates to your subs in the Sweep tab.</p>
-              <button onClick={() => setView('sweep')} className={`${c.btnPrimary} px-4 py-2 rounded-lg text-xs font-bold mt-3 min-h-[36px]`}>🧹 Go to Sweep</button>
+              <p className={`text-xs ${c.textMuted}`}>No renewal dates set yet. Add dates to your subs in the Sweep tab.</p>
+              <button onClick={() => setView('sweep')} className={`${c.btnPrimaryPrimary} px-4 py-2 rounded-lg text-xs font-bold mt-3 min-h-[36px]`}>🧹 Go to Sweep</button>
             </div>
           ) : (
             <div className="space-y-4">
               {overdue.length > 0 && (
                 <div>
-                  <p className={`text-[10px] font-bold ${c.dangerText} uppercase mb-2`}>🔴 Past due / recently charged</p>
+                  <p className={`text-[10px] font-bold ${c.danger} uppercase mb-2`}>🔴 Past due / recently charged</p>
                   <div className="space-y-1.5">{overdue.map(s => <RenewalRow key={s.id} sub={s} urgent />)}</div>
                 </div>
               )}
               {thisWeek.length > 0 && (
                 <div>
-                  <p className={`text-[10px] font-bold ${c.warningText} uppercase mb-2`}>⚠️ This week</p>
+                  <p className={`text-[10px] font-bold ${c.warning} uppercase mb-2`}>⚠️ This week</p>
                   <div className="space-y-1.5">{thisWeek.map(s => <RenewalRow key={s.id} sub={s} urgent />)}</div>
                 </div>
               )}
@@ -1452,7 +1455,7 @@ const SubSweep = () => {
               )}
               {later.length > 0 && (
                 <div>
-                  <p className={`text-[10px] font-bold ${c.muted} uppercase mb-2`}>🗓️ Coming up (30-90 days)</p>
+                  <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🗓️ Coming up (30-90 days)</p>
                   <div className="space-y-1.5">{later.map(s => <RenewalRow key={s.id} sub={s} />)}</div>
                 </div>
               )}
@@ -1463,15 +1466,15 @@ const SubSweep = () => {
         {/* Price hike alerts */}
         {priceAlerts.length > 0 && (
           <div className={`${c.warning} border-2 rounded-xl p-5`}>
-            <h3 className={`text-sm font-bold ${c.warningText} mb-3`}>📈 Price Increases Detected</h3>
+            <h3 className={`text-sm font-bold ${c.warning} mb-3`}>📈 Price Increases Detected</h3>
             <div className="space-y-2">
               {priceAlerts.map(s => (
                 <div key={s.id} className="flex items-center gap-2 text-xs">
                   <span className="font-bold">{s.name}</span>
-                  <span className={c.muted}>{fm(s.prevCost, currency)} → {fm(s.cost, currency)}</span>
-                  <span className={`font-black ${c.dangerText}`}>+{s.pctIncrease}%</span>
+                  <span className={c.textMuted}>{fm(s.prevCost, currency)} → {fm(s.cost, currency)}</span>
+                  <span className={`font-black ${c.danger}`}>+{s.pctIncrease}%</span>
                   <button onClick={() => { setNegService(s.name); setNegCost(String(s.cost)); setView('negotiate'); }}
-                    className={`ml-auto text-[10px] font-bold ${c.accent} underline min-h-[24px]`}>
+                    className={`ml-auto text-[10px] font-bold ${c.textSecondaryondary} underline min-h-[24px]`}>
                     📞 Negotiate
                   </button>
                 </div>
@@ -1518,7 +1521,7 @@ const SubSweep = () => {
       <div className="space-y-4">
         <div className={`${c.card} border rounded-xl p-5`}>
           <h3 className={`text-sm font-bold ${c.text} mb-1`}>👥 Split Calculator</h3>
-          <p className={`text-xs ${c.muted} mb-4`}>Track shared subscriptions and who owes what.</p>
+          <p className={`text-xs ${c.textMuted} mb-4`}>Track shared subscriptions and who owes what.</p>
 
           {/* Mark subs as shared */}
           <div className="space-y-2 mb-4">
@@ -1530,7 +1533,7 @@ const SubSweep = () => {
                     onChange={() => updateSub(sub.id, 'shared', !sub.shared)}
                     className="accent-indigo-500" />
                   <span className={`text-xs font-bold flex-1 ${c.text}`}>{sub.name}</span>
-                  <span className={`text-xs ${c.muted}`}>{fm(monthlyEquiv(sub.cost, sub.cycle).toFixed(2), currency)}/mo</span>
+                  <span className={`text-xs ${c.textMuted}`}>{fm(monthlyEquiv(sub.cost, sub.cycle).toFixed(2), currency)}/mo</span>
                 </div>
                 {sub.shared && (
                   <div className="mt-2 ml-6">
@@ -1541,7 +1544,7 @@ const SubSweep = () => {
                           <button onClick={() => {
                             const updated = (sub.sharedWith || []).filter((_, idx) => idx !== i);
                             updateSub(sub.id, 'sharedWith', updated);
-                          }} className={`${c.dangerText} font-bold`}>✕</button>
+                          }} className={`${c.danger} font-bold`}>✕</button>
                         </span>
                       ))}
                     </div>
@@ -1560,7 +1563,7 @@ const SubSweep = () => {
                           updateSub(sub.id, 'sharedWith', [...(sub.sharedWith || []), splitMember.trim()]);
                           setSplitMember('');
                         }
-                      }} className={`${c.btnPrimary} px-2 py-1 rounded text-[10px] font-bold min-h-[24px]`}>+</button>
+                      }} className={`${c.btnPrimaryPrimary} px-2 py-1 rounded text-[10px] font-bold min-h-[24px]`}>+</button>
                     </div>
                   </div>
                 )}
@@ -1578,10 +1581,10 @@ const SubSweep = () => {
                 <div key={name} className={`${c.quoteBg} rounded-lg p-3`}>
                   <div className="flex items-center justify-between mb-1.5">
                     <span className="text-sm font-bold">{name}</span>
-                    <span className={`text-sm font-black ${c.accent}`}>{fm(data.total.toFixed(2), currency)}/mo</span>
+                    <span className={`text-sm font-black ${c.textSecondaryondary}`}>{fm(data.total.toFixed(2), currency)}/mo</span>
                   </div>
                   {data.subs.map((s, i) => (
-                    <p key={i} className={`text-[10px] ${c.muted}`}>• {s.name}: {fm(s.share.toFixed(2), currency)}/mo</p>
+                    <p key={i} className={`text-[10px] ${c.textMuted}`}>• {s.name}: {fm(s.share.toFixed(2), currency)}/mo</p>
                   ))}
                 </div>
               ))}
@@ -1603,8 +1606,8 @@ const SubSweep = () => {
         {/* Your share */}
         {sharedSubs.length > 0 && (
           <div className={`${c.success} border rounded-xl p-4 text-center`}>
-            <p className={`text-[10px] font-bold ${c.successText} uppercase mb-1`}>Your savings from sharing</p>
-            <p className={`text-lg font-black ${c.successText}`}>
+            <p className={`text-[10px] font-bold ${c.success} uppercase mb-1`}>Your savings from sharing</p>
+            <p className={`text-lg font-black ${c.success}`}>
               {fm(sharedSubs.reduce((sum, s) => {
                 const mo = monthlyEquiv(s.cost, s.cycle);
                 const splitCount = (s.sharedWith?.length || 0) + 1;
@@ -1647,7 +1650,7 @@ const SubSweep = () => {
       <div className="space-y-4">
         <div className={`${c.card} border rounded-xl p-5`}>
           <h3 className={`text-sm font-bold ${c.text} mb-1`}>🆓 Free Trial Tracker</h3>
-          <p className={`text-xs ${c.muted} mb-4`}>Track trials so you cancel before getting charged.</p>
+          <p className={`text-xs ${c.textMuted} mb-4`}>Track trials so you cancel before getting charged.</p>
 
           <div className="space-y-3">
             <div className="flex gap-2">
@@ -1658,7 +1661,7 @@ const SubSweep = () => {
             </div>
             <div className="flex gap-2">
               <div className="flex items-center gap-1 flex-1">
-                <span className={`text-xs ${c.muted}`}>{currency}</span>
+                <span className={`text-xs ${c.textMuted}`}>{currency}</span>
                 <input type="number" value={trialCost} onChange={e => setTrialCost(e.target.value)}
                   placeholder="Cost after trial" className={`flex-1 px-2 py-2 border rounded-lg text-xs ${c.input} outline-none`} />
               </div>
@@ -1667,7 +1670,7 @@ const SubSweep = () => {
                 {CYCLE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
               </select>
               <button onClick={addTrial} disabled={!trialName.trim() || !trialEnd}
-                className={`${c.btnPrimary} px-4 py-2 rounded-lg text-xs font-bold min-h-[36px] disabled:opacity-40`}>
+                className={`${c.btnPrimaryPrimary} px-4 py-2 rounded-lg text-xs font-bold min-h-[36px] disabled:opacity-40`}>
                 ➕ Add
               </button>
             </div>
@@ -1691,7 +1694,7 @@ const SubSweep = () => {
                   <div className="flex items-center gap-2 mb-2">
                     <span className="text-sm">{expired ? '⏰' : urgent ? '🔴' : trial.daysLeft <= 7 ? '🟡' : '🟢'}</span>
                     <span className={`text-sm font-bold flex-1 ${c.text}`}>{trial.name}</span>
-                    <span className={`text-xs font-black ${expired ? c.dangerText : urgent ? c.warningText : c.muted}`}>
+                    <span className={`text-xs font-black ${expired ? c.danger : urgent ? c.warning : c.textMuted}`}>
                       {expired ? `Expired ${Math.abs(trial.daysLeft)}d ago` : trial.daysLeft === 0 ? 'LAST DAY' : `${trial.daysLeft}d left`}
                     </span>
                   </div>
@@ -1708,15 +1711,15 @@ const SubSweep = () => {
                     {/* Usage counter */}
                     <div className="flex items-center gap-1">
                       <button onClick={() => updateTrialUsage(trial.id, -1)}
-                        className={`${c.btnSec} w-6 h-6 rounded text-xs font-bold flex items-center justify-center`}>−</button>
+                        className={`${c.btnPrimarySecondary} w-6 h-6 rounded text-xs font-bold flex items-center justify-center`}>−</button>
                       <span className={`text-xs font-bold ${c.text} w-6 text-center`}>{trial.usageCount || 0}</span>
                       <button onClick={() => updateTrialUsage(trial.id, 1)}
-                        className={`${c.btnSec} w-6 h-6 rounded text-xs font-bold flex items-center justify-center`}>+</button>
-                      <span className={`text-[10px] ${c.muted}`}>uses</span>
+                        className={`${c.btnPrimarySecondary} w-6 h-6 rounded text-xs font-bold flex items-center justify-center`}>+</button>
+                      <span className={`text-[10px] ${c.textMuted}`}>uses</span>
                     </div>
 
                     {costPerUse !== null && (
-                      <span className={`text-[10px] font-bold ${costPerUse > 10 ? c.dangerText : costPerUse > 5 ? c.warningText : c.successText}`}>
+                      <span className={`text-[10px] font-bold ${costPerUse > 10 ? c.danger : costPerUse > 5 ? c.warning : c.success}`}>
                         {fm(costPerUse.toFixed(2), currency)}/use if you keep it
                       </span>
                     )}
@@ -1724,16 +1727,16 @@ const SubSweep = () => {
                     <div className="ml-auto flex gap-1">
                       {!expired && (
                         <button onClick={() => convertToSub(trial)}
-                          className={`text-[10px] font-bold ${c.accent} underline min-h-[24px]`}>Keep</button>
+                          className={`text-[10px] font-bold ${c.textSecondaryondary} underline min-h-[24px]`}>Keep</button>
                       )}
                       <button onClick={() => removeTrial(trial.id)}
-                        className={`text-[10px] ${c.dangerText} min-h-[24px]`}>✕</button>
+                        className={`text-[10px] ${c.danger} min-h-[24px]`}>✕</button>
                     </div>
                   </div>
 
                   {/* Verdict */}
                   {!expired && trial.daysLeft <= 7 && (
-                    <div className={`mt-2 text-xs ${c.muted} italic`}>
+                    <div className={`mt-2 text-xs ${c.textMuted} italic`}>
                       {trial.usageCount >= 5 ? `You've used this ${trial.usageCount} times — probably worth keeping.`
                         : trial.usageCount >= 2 ? `${trial.usageCount} uses in the trial. That's ${costPerUse ? fm(costPerUse.toFixed(2), currency) + '/use' : 'marginal'} — think about it.`
                         : trial.usageCount === 1 ? `Only used it once. Cancel unless you plan to use it more.`
@@ -1748,7 +1751,7 @@ const SubSweep = () => {
         )}
 
         {trialAlerts.length === 0 && trials.length === 0 && (
-          <div className={`${c.info} border rounded-lg p-3 text-xs text-center`}>
+          <div className={`${c.cardAlt} border rounded-lg p-3 text-xs text-center`}>
             💡 Pro tip: Add a trial the moment you sign up. Future you will thank present you.
           </div>
         )}
@@ -1766,7 +1769,7 @@ const SubSweep = () => {
       <div className="space-y-4">
         <div className={`${c.card} border rounded-xl p-5`}>
           <h3 className={`text-sm font-bold ${c.text} mb-1`}>📊 Category Budgets</h3>
-          <p className={`text-xs ${c.muted} mb-4`}>Set spending limits by category. See where you're over budget.</p>
+          <p className={`text-xs ${c.textMuted} mb-4`}>Set spending limits by category. See where you're over budget.</p>
 
           {/* Budget inputs */}
           <div className="space-y-2 mb-4">
@@ -1780,13 +1783,13 @@ const SubSweep = () => {
                   <span className="text-sm w-6 text-center">{cat.emoji}</span>
                   <span className={`text-xs flex-1 ${c.text}`}>{cat.label}</span>
                   {spending && (
-                    <span className={`text-[10px] font-bold ${over ? c.dangerText : c.successText}`}>
+                    <span className={`text-[10px] font-bold ${over ? c.danger : c.success}`}>
                       {fm(spending.total.toFixed(2), currency)}
                     </span>
                   )}
-                  <span className={`text-[10px] ${c.muted}`}>/</span>
+                  <span className={`text-[10px] ${c.textMuted}`}>/</span>
                   <div className="flex items-center gap-0.5">
-                    <span className={`text-[10px] ${c.muted}`}>{currency}</span>
+                    <span className={`text-[10px] ${c.textMuted}`}>{currency}</span>
                     <input type="number" value={budget} onChange={e => {
                       const updated = { ...catBudgets, [cat.value]: e.target.value };
                       persistBudgets(updated);
@@ -1817,9 +1820,9 @@ const SubSweep = () => {
                   <div key={cat}>
                     <div className="flex items-center justify-between mb-1">
                       <span className="text-xs font-bold">{catEmoji(cat)} {catLabel(cat)}</span>
-                      <span className={`text-xs font-bold ${over ? c.dangerText : c.text}`}>
+                      <span className={`text-xs font-bold ${over ? c.danger : c.text}`}>
                         {fm(data.total.toFixed(2), currency)}
-                        {budget > 0 && <span className={c.muted}> / {fm(budget, currency)}</span>}
+                        {budget > 0 && <span className={c.textMuted}> / {fm(budget, currency)}</span>}
                       </span>
                     </div>
                     {budget > 0 && (
@@ -1829,7 +1832,7 @@ const SubSweep = () => {
                       </div>
                     )}
                     {over && (
-                      <p className={`text-[10px] ${c.dangerText} mt-0.5`}>
+                      <p className={`text-[10px] ${c.danger} mt-0.5`}>
                         ⚠️ Over by {fm((data.total - budget).toFixed(2), currency)} — worst value: {
                           data.subs.sort((a, b) => monthlyEquiv(b.cost, b.cycle) - monthlyEquiv(a.cost, a.cycle))[0]?.name
                         }
@@ -1871,7 +1874,7 @@ const SubSweep = () => {
               </div>
               <div className="text-right">
                 <p className={`text-[10px] font-bold ${c.label} uppercase`}>Total spending</p>
-                <p className={`text-lg font-black ${totalMonthly > Object.values(catBudgets).reduce((s, v) => s + (Number(v) || 0), 0) ? c.dangerText : c.successText}`}>
+                <p className={`text-lg font-black ${totalMonthly > Object.values(catBudgets).reduce((s, v) => s + (Number(v) || 0), 0) ? c.danger : c.success}`}>
                   {fm(totalMonthly.toFixed(2), currency)}/mo
                 </p>
               </div>
@@ -1905,6 +1908,14 @@ const SubSweep = () => {
       {view === 'budgets' && renderBudgets()}
       {view === 'tracker' && renderTracker()}
       {view === 'timeline' && renderTimeline()}
+        <div className={`mt-6 pt-4 border-t text-sm ${c.border} ${c.textMuted}`}>
+          <p className="mb-2 font-medium">You might also like:</p>
+          <div className="flex flex-wrap gap-2">
+            {[{slug:'bill-rescue',label:'💸 Bill Rescue'},{slug:'buy-wise',label:'💰 Buy Wise'},{slug:'upsell-shield',label:'🛡️ Upsell Shield'}].map(({slug,label})=>(
+              <a key={slug} href={`/tool/${slug}`} className={linkStyle}>{label}</a>
+            ))}
+          </div>
+        </div>
     </div>
   );
 };

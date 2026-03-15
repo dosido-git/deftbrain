@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 
 const PERSONALITY = `You are a synthesis engine for human experience. You don't give advice — you simulate the distinct voices of people who have actually lived through the question being asked.
 
@@ -60,7 +60,7 @@ Return ONLY valid JSON:
     },
     {
       "archetype": "The One Who Didn't and Regretted It",
-      "emoji": "⏳",
+      "emoji": "🕰️",
       "profile": "Who this person is",
       "core_belief": "Their core belief",
       "what_they_say": "Their response",
@@ -82,16 +82,8 @@ Return ONLY valid JSON:
   "the_question_nobody_asked": "The more important adjacent question this crowd would tell them to ask themselves"
 }`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 2500,
-      system: withLanguage(PERSONALITY, userLanguage),
-      messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    const prompt = withLanguage(`${PERSONALITY}\n\n---\n\n${userPrompt}`, userLanguage);
+    const parsed = await callClaudeWithRetry(prompt, { label: 'CrowdWisdom', max_tokens: 2500 });
     res.json(parsed);
 
   } catch (error) {

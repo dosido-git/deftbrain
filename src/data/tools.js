@@ -74,16 +74,15 @@ export const tools = [
     ]
   }
 },
-
 {
-  modified: "2025-03-05",
+  modified: "2026-03-10",
   id: "CrowdWisdom",
   title: "Crowd Wisdom",
   tagline: "Five real perspectives on the choice you can't stop thinking about",
   tags: ['decision', 'advice', 'perspective', 'stuck', 'dilemma', 'choice', 'career', 'relationship', 'life change', 'opinions'],
   icon: "👥",
-  categories: ['Brain Games', 'Veer'],
-  description: "Five life archetypes weigh in on your experience-based question — the Pragmatist, the Risk-Taker, the person who Did It and Regretted It, the one who Didn't and Regretted It, and the Contrarian. See the tension between their views. Find the question nobody asked.",
+  categories: ['Diversions', 'Veer'],
+  description: "Five life archetypes — the Pragmatist, the Risk-Taker, the one who Did It and Regretted It, the one who Didn't, and the Contrarian — each respond to your question from their own experience. See the tension between their views and find the question nobody thought to ask.",
   guide: {
       overview: "Crowd Wisdom channels five distinct life archetypes — each shaped by different values and different outcomes. The goal isn't consensus. It's to surface the tension, the blind spots, and the question you haven't thought to ask yet.",
       howToUse: [
@@ -103,10 +102,14 @@ export const tools = [
         "The 'thing they might miss' section is where the stealth insight lives — don't skip it",
         "The tension between voices is more useful than any single answer",
         "Use this for decisions where you've already heard the obvious advice and need something different"
+      ],
+      pitfalls: [
+        "Don't look for a majority vote — disagreement between voices is the point",
+        "Vague questions get generic voices; the more specific your situation, the sharper the insight",
+        "The 'question nobody asked' section is often the most valuable — don't skip it"
       ]
     }
 },
-
 {
   modified: "2025-03-05",
   id: "FutureProof",
@@ -338,7 +341,7 @@ export const tools = [
   tagline: "Your guiding beliefs, pressure-tested. Where they hold. Where they break.",
   tags: ['belief', 'critical thinking', 'philosophy', 'assumptions', 'test', 'logic', 'values', 'worldview', 'self-awareness', 'bias', 'edge case'],
   icon: "🔬",
-  categories: ['Go Deep', 'Brain Games', 'Me'],
+  categories: ['Go Deep', 'Diversions', 'Me'],
   description: "Pressure-tests the guiding beliefs you live by across multiple dimensions: historical counterexamples, logical edge cases, cultural variations, empirical exceptions. Finds where the belief holds, where it breaks, the psychological function it serves, and the more precise version that actually survives scrutiny.",
   guide: {
       overview: "BeliefStressTest runs your operating beliefs through a battery of tests — not to destroy them, but to find where they're actually true versus where they're a useful simplification that misleads in specific situations. The output is a calibrated upgrade.",
@@ -499,7 +502,7 @@ export const tools = [
   tags: ['explain', 'analogy', 'understand', 'teach', 'simplify', 'metaphor', 'learning', 'teaching', 'communication', 'explanation', 'concept', 'audience', 'clarity'],
   icon: "💡",
   categories: ['Go Deep!', 'Discourse'],
-  description: "Describe a concept and who you're explaining it to — and Analogy Engine generates tailored analogies using their world. Each one includes why it works, where it breaks down, accuracy ratings, and a teaching tip for delivery.",
+  description: "Describe a concept and who you're explaining it to. Analogy Engine generates tailored analogies using their world. Each one includes why it works, where it breaks down, accuracy ratings, and a teaching tip for delivery.",
   guide: {
     overview: "AnalogyEngine creates analogies so tailored that complex ideas become instantly obvious. Tell it what you need to explain and who the audience is — especially their interests and world — and it generates multiple analogies that use concepts your audience already understands. Every analogy shows its accuracy, memorability, where it breaks down, and how to deliver it.",
     howToUse: [
@@ -622,7 +625,7 @@ export const tools = [
 },
 
 {
-  modified: "",
+  modified: "2026-03-11",
   id: "HobbyMatch",
   title: "HobbyMatch",
   tagline: "Discover hobbies you didn't know existed.",
@@ -638,6 +641,11 @@ export const tools = [
       "Add your schedule constraints and budget level",
       "List anything you've already tried so it's excluded",
       "Expand each hobby card for full details and first steps"
+    ],
+    pitfalls: [
+      "Selecting every goal dilutes the results — pick your top two or three for more targeted suggestions",
+      "The 'weird' option is intentional; don't skip it unless the suggestions feel off-brand for you",
+      "Budget filtering is applied in the prompt — results may still mention paid options if they're transformatively better"
     ],
     example: {
       scenario: "Introverted night owl, $50 budget, bad knees, loves building things, already tried woodworking and model kits.",
@@ -1150,7 +1158,7 @@ export const tools = [
   tagline: "Drop a hot take. AI argues both sides.",
   tags: ['debate', 'argue', 'opinion', 'hot take', 'perspective', 'steelman', 'both sides', 'rhetoric', 'critical thinking', 'devil\'s advocate', 'dinner party', 'fun', 'persuasion'],
   icon: "⚔️",
-  categories: ['Brain Games', 'What If?'],
+  categories: ['Diversions', 'What If?'],
   description: "Give any opinion and watch AI steelman the strongest possible case FOR and AGAINST it. Three intensity levels from civil debate to full rhetorical firepower. Includes a judge's verdict and a ready-made dinner party take.",
   guide: {
     overview: "Argument Simulator takes any opinion or hot take and constructs the most compelling steelmanned arguments for both sides. Choose your intensity — civil Oxford-style, heated dinner debate, or fully unhinged — and watch both cases get built with killer points, real evidence, and the uncomfortable truths each side doesn't want to admit. Finishes with a judge's verdict and a nuanced dinner party take you can steal.",
@@ -1182,7 +1190,7 @@ export const tools = [
   tagline: "Find where the logic breaks in any movie, show, book, or game",
   tags: ['plot', 'hole', 'movie', 'show', 'logic', 'mistake', 'continuity', 'film', 'fun'],
   icon: "🕳️",
-  categories: ['Brain Games', 'Detour'],
+  categories: ['Diversions', 'Detour'],
   description: "Name any movie, show, book, or game — AI finds the logical inconsistencies, timeline problems, 'why didn't they just...' moments, and character decisions that make no sense. Each hole is rated by severity (Nitpick to Universe-Breaking) with a fan defense and a Reddit-style one-liner. Swiss Cheese Rating scores overall plot integrity. Two modes: Find Holes (full analysis) and Defend a Hole (build the strongest possible defense of a specific plot hole, courtroom-style).",
   guide: {
     overview: "PlotHole is a narrative logic analyst that finds exactly where stories break. Not vague complaints — specific scenes, character knowledge problems, and 'wait actually...' moments, each rated by how badly they damage the story.",
@@ -1597,16 +1605,19 @@ export const tools = [
     ]
   }
 },
+// ── DecoderRing tools.js entry ──
+// Replace the existing entry (search for id: "DecoderRing")
+// Changes: modified date, pitfalls added, description trimmed to 1 sentence
 
 {
-  modified: "",
+  modified: "2026-03-11",
   id: "DecoderRing",
   title: "Decoder Ring",
   tagline: "Decode what they actually mean beneath what they said",
   tags: ['message', 'subtext', 'passive aggressive', 'email', 'text', 'meaning', 'tone', 'confusing'],
   icon: "🔍",
   categories: ['Read the Room', 'Humans'],
-  description: "Paste any confusing message — passive-aggressive email, vague text, corporate HR notice, cryptic DM — and get a layer-by-layer breakdown of the subtext, emotional undercurrent, what they actually want, red/green flags, and 3 response strategies with copyable examples.",
+  description: "Paste any confusing message and get a layer-by-layer breakdown of the subtext, emotional undercurrent, what they actually want, red/green flags, and 3 response strategies with copyable examples.",
   guide: {
     overview: "Decoder Ring uses AI to analyze the pragmatics, subtext, and emotional undercurrent beneath any message. It identifies passive aggression, hedging, power moves, emotional bids, non-answers, and genuine warmth — then generates response strategies tailored to your situation.",
     howToUse: [
@@ -1626,10 +1637,14 @@ export const tools = [
       "Adding relationship context dramatically improves accuracy for ambiguous messages",
       "Confidence ratings help you know when to trust the read vs. take it with a grain of salt",
       "Response strategies include risk assessments — check the downsides before sending"
+    ],
+    pitfalls: [
+      "Don't paste paraphrased versions — exact wording is what reveals passive aggression, hedging, and tone",
+      "The tool reads the message in isolation; wildly different backstory context can change the read significantly",
+      "Response strategies are starting points, not scripts — adapt them to your voice"
     ]
   }
 },
-
 {
   modified: "",
   id: "PlotTwist",
@@ -1768,18 +1783,50 @@ export const tools = [
     ]
   }
 },
+// ── DopamineMenuBuilder tools.js entry ──
+// Replace existing entry (id: "DopamineMenuBuilder")
+// Changes: modified date, description trimmed to 1 sentence, tags 7→10, pitfalls added
+
+// ── DopamineMenuBuilder tools.js entry ──
+// Replace existing entry (id: "DopamineMenuBuilder")
+// Changes: modified date, description trimmed to 1 sentence, tags 7→10, pitfalls added
 
 {
-  modified: "",
+  modified: "2026-03-11",
   id: "DopamineMenuBuilder",
   title: 'Dopamine Menu',
   tagline: 'Energy management — recharge, budget, forecast, track',
-  tags: ['energy', 'dopamine', 'recharge', 'motivation', 'burnout', 'mood', 'focus'],
+  tags: ['energy', 'dopamine', 'recharge', 'motivation', 'burnout', 'mood', 'focus', 'routine', 'self-care', 'rest'],
   icon: '✨',
   categories: ['Energy'],
-  description: "Your complete energy management system — 5 modes in one tool. Recharge: build a personalized menu of activities that actually restore (not numb), with mood-aware suggestions, guided sequences, pattern tracking, and recharge debt monitoring. Budget: map today's tasks against available energy and see what actually fits — with explicit permission to drop what doesn't. Forecast: input your week's social and work events, get a battery drain prediction showing exactly when you'll hit empty, with recovery windows and polite decline scripts. Radar: 15-second daily check-in tracking sleep, mood, productivity, and social energy — spots burnout patterns by detecting when multiple signals decline simultaneously. Disruption: when life blows up your routine (sick day, travel, emergency), get a temporary adapted structure with keep/simplify/drop decisions and return-to-normal triggers."
+  description: "5-mode energy management system: build a personalized recharge menu with pattern tracking, map tasks against your available energy, forecast battery drain across your week, spot burnout early with 15-second daily check-ins, and get adapted routines when life disrupts your schedule.",
+  guide: {
+    overview: "The Dopamine Menu Builder is your complete energy management system. Recharge mode builds a personalized activity menu based on your current energy, mood, and environment. Budget mode maps your tasks against available energy to show what actually fits. Forecast mode predicts battery drain from your week's events. Radar mode tracks daily wellbeing signals to catch burnout patterns early. Disruption mode gives you an adapted structure when sick, traveling, or in an emergency.",
+    howToUse: [
+      "Recharge: set your energy level (1-10), mood, environment, and available time — get a personalized menu with a top pick, quick hits, and deep resets",
+      "Budget: list today's tasks with energy costs and priorities — see what you can actually do and get explicit permission to drop the rest",
+      "Forecast: add upcoming events for the week, set your energy type (introvert/extrovert), and get a battery drain prediction with recovery windows",
+      "Radar: log 4 daily signals (sleep, mood, productivity, social energy) for 30 seconds — patterns appear after a few days",
+      "Disruption: select what's happening (sick day, travel, emergency), describe your normal routine, and get a simplified adapted structure"
+    ],
+    example: {
+      scenario: "It's 3pm. You've been in back-to-back meetings. Energy is 3/10, you have 45 minutes, you're at the office and feeling drained.",
+      action: "Set energy to 3, mood to 'drained', environment to 'office', time to '30 minutes'. Click Build Menu.",
+      result: "Top pick: 10-minute walk outside. Quick hits: cold water splash, 5-minute breathing, close tabs and tidy desk. Avoid right now: social media doom-scroll, long creative tasks. First step: stand up and walk to the window."
+    },
+    tips: [
+      "The 'Been doing?' field is powerful — it prevents the AI from suggesting more screen time when you've been staring at screens all day",
+      "Rate activities after doing them to build a personalized menu that actually works for you",
+      "Use Radar mode consistently for a week — patterns become visible faster than you'd expect",
+      "The Budget mode 'permissions' section is the real value — explicit permission to drop or defer things"
+    ],
+    pitfalls: [
+      "Quick hits are for buying time, not restoring energy — deep resets are what actually refill the tank",
+      "Forecasting works best when you're honest about your energy type; ambivert is the most common default but may not be accurate",
+      "Radar trends only appear after 5+ check-ins — the tool gets smarter the more you use it"
+    ]
+  }
 },
-
 {
   modified: "",
   id: "BatchFlow",
@@ -1862,7 +1909,7 @@ export const tools = [
 },
 
 {
-  modified: "",
+  modified: "2026-03-11",
   id: "JargonAssassin",
   title: "Jargon Assassin",
   tagline: "Confusing documents → plain language → what to do about it",
@@ -1885,6 +1932,11 @@ export const tools = [
         "📁 Dossier: Add 2+ related documents (lease + building rules, contract + handbook) and cross-reference them for conflicts, dependencies, and gaps between documents",
         "✉️ Letter: Generate a professional response letter — dispute, negotiate, accept with conditions — that references specific clauses, with tone selection and send-via recommendation"
       ],
+    pitfalls: [
+      "The 'ELI5' level is deliberately simplified — it strips nuance; use '5th Grade' or 'Professional' for legal or medical decisions",
+      "Red flags are flagged by pattern, not legal expertise — always have a qualified professional review anything with 'danger' flags before signing",
+      "The comparison feature needs both versions of the full document, not just the changed clauses, for accurate scoring"
+    ],
 
       example: {
         scenario: "You receive a new apartment lease renewal. The rent went up, some terms changed, and there's a new clause about 'property access' that sounds invasive. You also need to explain the changes to your roommate who panics about everything.",
@@ -1904,46 +1956,44 @@ export const tools = [
       ]
     }
 },
-
 {
-  modified: "",
+  modified: "2026-03-10",
   id: "DebateMe",
   title: "Debate Me",
-  tagline: "Find out how strong your position really is",
-  tags: ['debate', 'argue', 'logic', 'steelman', 'critical thinking', 'opinion', 'persuade'],
+  tagline: "State your position. Face the strongest opposing case.",
+  tags: ['debate', 'argue', 'logic', 'steelman', 'critical thinking', 'opinion', 'persuade', 'fallacy', 'rhetoric'],
   icon: "🥊",
-  categories: ['Brain Games', 'What If?'],
-  description: "The complete intellectual sparring system. 8 modes with 13 AI endpoints. Full Debate: state any position and face the steelman — the strongest possible opposing case with real evidence and real thinkers, not strawmen. Multi-turn with concessions, fallacy flags, mid-debate coaching, source checks, and strategic concession buttons. 5 debate formats (Freeform, Lincoln-Douglas, Cross-Examination, Oxford, Socratic). 3 challenge levels adjustable mid-debate. Switch sides for perspective-taking. Post-debate scorecard with Audience Verdict (third-party persuasion judgment) and Argument Map (visual tree of claim/counter-claim structure with defended/abandoned branches). Devil's Advocate Prep drills you for real meetings with audience-specific objections and recovery strategies. Fallacy Gym trains you to spot logical fallacies with streak tracking and difficulty scaling. Rematch targets your documented blind spots from previous debates. Highlight Reel analyzes patterns across all your debates and assigns a Debater Type archetype. Quick Spar for single-round challenges. 12 topic starters. Full transcript saves with replay. Stats dashboard with trend analysis.",
+  categories: ['Diversions', 'What If?'],
+  description: "The complete intellectual sparring system. State any position and face the steelman — the strongest possible opposing case, not a strawman. Multi-turn debate with fallacy flags, coaching angles, source checks, and strategic concession. Five formats (Freeform, Lincoln-Douglas, Cross-Exam, Oxford, Socratic). Devil's Advocate Prep drills you for real meetings. Fallacy Gym trains pattern recognition. Rematch targets your documented blind spots. Highlight Reel analyzes patterns across all debates and assigns a Debater Type.",
   guide: {
-      overview: "DebateMe is a complete system for sharpening how you think. At its core: state any position and face the strongest possible counter-argument — not a caricature, but what a thoughtful, well-informed person who genuinely disagrees would actually say. Around that core: five structured debate formats (including Socratic method where the AI only asks questions), a coaching system that suggests angles without writing your arguments, source-checking for any claim, audience judgment that scores persuasiveness rather than correctness, and an argument map that visualizes the structure of your thinking. Outside of debates: Devil's Advocate Prep drills you for real-world meetings with audience-specific objections, and Fallacy Gym trains you to spot logical errors. Everything compounds — your debate log feeds a Highlight Reel that reveals persistent patterns, assigns a Debater Type, and prescribes specific exercises for your weaknesses.",
-
-      howToUse: [
-        "🥊 Full Debate: State position, pick format (Freeform/Lincoln-Douglas/Cross-Exam/Oxford/Socratic), set challenge level, go. Use 🤝 to concede strategically, 🧑‍🏫 for coaching angles, 🔍 to source-check claims, 🔄 to switch sides. Adjust difficulty mid-debate",
-        "📊 Scorecard + Extras: After 2+ exchanges, end for sharpness score, blind spots, fallacy analysis, coaching note. Then unlock Audience Verdict (who was more persuasive to an undecided observer?) and Argument Map (visual tree of your claims with defended/abandoned branches)",
-        "🎯 Devil's Advocate Prep: Enter your position, audience, context, and stakes. Get the 5 hardest questions they'll ask, with angles, landmines to avoid, openers, and worst-case recovery. Jump to a full practice debate from any prep",
-        "🧩 Fallacy Gym: Spot logical fallacies at easy/medium/hard difficulty. Streak tracking. Get specific feedback on why you were right or wrong. Builds the skill that makes you better in actual debates",
-        "🔁 Rematch: From your log, rematch any previous debate. The AI targets your documented blind spots and sets traps for your habitual fallacies. Forces genuine growth",
-        "🏆 Highlight Reel: After 3+ debates, generate a cross-debate analysis — your Debater Type archetype, persistent strengths and weaknesses, most common fallacy with exercises, growth trajectory, and suggested topics to stretch your weakest areas"
-      ],
-
-      example: {
-        scenario: "You need to defend switching to remote-first at Thursday's board meeting. The CEO is risk-averse and the company lost revenue last quarter.",
-        action: "Devil's Advocate Prep: enter your position, describe the board, note the revenue context, set stakes to 'career-defining.' Get drilled on the 5 hardest questions. Then jump to a full debate in Oxford format at Rigorous. Use Cross-Exam format for a round to practice answering tough questions. Mid-debate, source-check the productivity data you're citing. Hit Coach when stuck on the innovation objection. After 5 turns, switch sides to understand the board's perspective. End & Score.",
-        result: "Prep gave you the 'but what about our culture' question you hadn't prepared for, plus a landmine to avoid ('don't mention competitor layoffs'). Debate scorecard: 7/10, blind spot on junior employee development. Audience Verdict: you were slightly more persuasive but lost them during the cost analysis. Argument Map shows you built wide but not deep — lots of claims, thin evidence. Rematch available targeting those exact weaknesses. Highlight Reel across 8 debates: you're an 'Intuitive Framer' who relies too heavily on appeal to authority — exercise prescribed."
-      },
-
-      tips: [
-        "Devil's Advocate Prep before any important meeting, presentation, or difficult conversation — it's the highest-ROI mode",
-        "Try Socratic format at least once — being questioned without the AI asserting anything forces you to examine your own assumptions in a way nothing else does",
-        "Source Check your own claims, not just the AI's — discovering your own weak evidence mid-debate is better than discovering it in the real conversation",
-        "The Fallacy Gym streak is addictive and genuinely useful — try 5 minutes a day at increasing difficulty",
-        "Rematch is where real growth happens — same topic, but the AI remembers your blind spots and specifically targets them",
-        "Your Highlight Reel Debater Type is revealing — share it and challenge friends to find theirs",
-        "Cross-Exam format develops the hardest debate skill: asking questions that expose weaknesses without making assertions"
-      ]
-    }
+    overview: "DebateMe is a complete system for sharpening how you think. At its core: state any position and face the strongest possible counter-argument — not a caricature, but what a thoughtful, well-informed person who genuinely disagrees would actually say. Around that core: five structured debate formats (including Socratic method where the AI only asks questions), a coaching system that suggests angles without writing your arguments, source-checking for any claim, audience judgment that scores persuasiveness rather than correctness, and an argument map that visualizes the structure of your thinking. Outside of debates: Devil's Advocate Prep drills you for real-world meetings with audience-specific objections, and Fallacy Gym trains you to spot logical errors. Everything compounds — your debate log feeds a Highlight Reel that reveals persistent patterns, assigns a Debater Type, and prescribes specific exercises for your weaknesses.",
+    howToUse: [
+      "🥊 Full Debate: State position, pick format (Freeform/Lincoln-Douglas/Cross-Exam/Oxford/Socratic), set challenge level, go. Use 🤝 to concede strategically, 🧑‍🏫 for coaching angles, 🔍 to source-check claims, 🔄 to switch sides. Adjust difficulty mid-debate",
+      "📊 Scorecard + Extras: After 2+ exchanges, end for sharpness score, blind spots, fallacy analysis, coaching note. Then unlock Audience Verdict (who was more persuasive to an undecided observer?) and Argument Map (visual tree of your claims with defended/abandoned branches)",
+      "🎯 Devil's Advocate Prep: Enter your position, audience, context, and stakes. Get the 5 hardest questions they'll ask, with angles, landmines to avoid, openers, and worst-case recovery. Jump to a full practice debate from any prep",
+      "🧩 Fallacy Gym: Spot logical fallacies at easy/medium/hard difficulty. Streak tracking. Get specific feedback on why you were right or wrong. Builds the skill that makes you better in actual debates",
+      "🔁 Rematch: From your log, rematch any previous debate. The AI targets your documented blind spots and sets traps for your habitual fallacies. Forces genuine growth",
+      "🏆 Highlight Reel: After 3+ debates, generate a cross-debate analysis — your Debater Type archetype, persistent strengths and weaknesses, most common fallacy with exercises, growth trajectory, and suggested topics to stretch your weakest areas"
+    ],
+    example: {
+      scenario: "You need to defend switching to remote-first at Thursday's board meeting. The CEO is risk-averse and the company lost revenue last quarter.",
+      action: "Devil's Advocate Prep: enter your position, describe the board, note the revenue context, set stakes to 'career-defining.' Get drilled on the 5 hardest questions. Then jump to a full debate in Oxford format at Rigorous. Use Cross-Exam format for a round to practice answering tough questions. Mid-debate, source-check the productivity data you're citing. Hit Coach when stuck on the innovation objection. After 5 turns, switch sides to understand the board's perspective. End & Score.",
+      result: "Prep gave you the 'but what about our culture' question you hadn't prepared for, plus a landmine to avoid ('don't mention competitor layoffs'). Debate scorecard: 7/10, blind spot on junior employee development. Audience Verdict: you were slightly more persuasive but lost them during the cost analysis. Argument Map shows you built wide but not deep — lots of claims, thin evidence. Rematch available targeting those exact weaknesses."
+    },
+    tips: [
+      "Devil's Advocate Prep before any important meeting, presentation, or difficult conversation — it's the highest-ROI mode",
+      "Try Socratic format at least once — being questioned without the AI asserting anything forces you to examine your own assumptions in a way nothing else does",
+      "Source Check your own claims, not just the AI's — discovering your own weak evidence mid-debate is better than discovering it in the real conversation",
+      "The Fallacy Gym streak is addictive and genuinely useful — try 5 minutes a day at increasing difficulty",
+      "Rematch is where real growth happens — same topic, but the AI remembers your blind spots and specifically targets them"
+    ],
+    pitfalls: [
+      "The AI argues its assigned position forcefully — that's the point, not a bug. The goal is to strengthen your thinking, not to 'win'",
+      "Scorecard reflects reasoning quality, not factual correctness — a well-argued wrong position can score higher than a sloppy right one",
+      "Devil's Advocate Prep simulates an audience based on your description — the more detail you give, the more accurate the simulation"
+    ]
+  }
 },
-
 {
   modified: "",
   id: "PaperDigest",
@@ -2094,17 +2144,21 @@ export const tools = [
 },
 
 {
-  modified: "",
+  modified: "2026-03-11",
   id: "HistoryToday",
   title: "HistoryToday",
   tagline: "Find the structural historical parallel — not the obvious one",
   tags: ['history', 'current events', 'parallels', 'context', 'analysis', 'pattern', 'news'],
   icon: "📰",
-  categories: ['Brain Games', 'What If?'],
+  categories: ['Diversions', 'What If?'],
   description: "Enter any current event, trend, or controversy. AI finds 2-3 structural historical parallels — not surface-level ('this is like Rome falling') but deep structural matches based on power dynamics, institutional behavior, and how similar situations actually played out. Each parallel includes what happened, how contemporaries understood it (and how they were wrong), what happened next, and specifically where the analogy breaks down. Dig deeper into any parallel for full timelines, turning points, echoing quotes, and information environment analysis. Get a counter-example showing when similar conditions led to a different outcome. Plus synthesis, predictions, and further reading.",
   guide: {
     overview: "Most historical analogies are lazy: 'This is just like the fall of Rome.' HistoryToday goes deeper. It finds structural parallels — situations where the underlying mechanisms (regulatory capture, information asymmetry, institutional decay, public sentiment shifts) match the current moment. For each parallel, you get the full picture: what happened, how people at the time understood it, what they got wrong, what happened next, and crucially — where the analogy breaks down. That last part is the most valuable: every parallel is imperfect, and the differences predict what will be different this time. Dig Deeper expands any parallel into a full timeline with turning points, echoing quotes, and lessons. The Counter-Example finds a case where similar starting conditions produced a completely different outcome.",
-    
+        pitfalls: [
+      "The parallels are structural, not superficial — if you're looking for 'other times X happened', a search engine is faster",
+      "The counter-narrative feature deliberately challenges the parallel; this is a feature, not a bug",
+      "Context is optional but meaningful — the same event reads differently in a political, cultural, or personal context"
+    ],    
     howToUse: [
       "Describe any current event, trend, or controversy — be as specific or broad as you want",
       "Optionally add a specific angle ('I'm interested in the labor dynamics' or 'What about the regulatory side?')",
@@ -2382,50 +2436,49 @@ export const tools = [
       ]
     }
 },
+// ── DifficultTalkCoach tools.js entry ──
+// Replace existing entry (id: "DifficultTalkCoach")
+// Changes: modified date, description trimmed, tags 6→9, duplicate tips removed, pitfalls added
 
 {
-  modified: "",
+  modified: "2026-03-11",
   id: "DifficultTalkCoach",
   title: "Difficult Talk Coach",
   tagline: "Practice hard conversations before they happen",
-  tags: ['difficult conversation', 'hard talk', 'confrontation', 'feedback', 'conflict', 'nervous'],
+  tags: ['difficult conversation', 'hard talk', 'confrontation', 'feedback', 'conflict', 'nervous', 'boundary', 'script', 'rehearse'],
   icon: "🗣️",
   categories: ['Read the Room', 'Humans'],
-  description: "Practice scripts and strategies for challenging conversations. Get multiple strategic approaches with specific phrases, predicted responses, and counter-scripts. Includes emotional grounding techniques and preparation steps. Built for anyone who finds difficult conversations anxiety-inducing.",
+  description: "Generates multiple strategic approaches with exact scripts, predicted pushback, and counter-responses for any hard conversation — setting boundaries, giving feedback, saying no, or addressing disrespect. Includes a live practice mode where AI responds in character with real-time coaching.",
   guide: {
-      overview: "The Difficult Talk Coach helps you prepare for hard conversations by generating multiple strategic approaches with exact scripts, predicted pushback, and counter-responses. Whether you need to set a boundary, request a change, address conflict, or give feedback, you'll get concrete phrases to use, body language tips, and emotional regulation strategies. Perfect for preparing conversations with partners, family, friends, bosses, coworkers, or employees.",
-      howToUse: [
-        "Describe the conversation you need to have - the more specific you are, the better your strategy",
-        "Select who it's with, your goals (set boundary, say no, address disrespect, push back, request change, give feedback, etc.), their expected resistance level, and your communication style",
-        "Check any fears you have about the conversation (they'll get angry, guilt-trip you, cry, deny everything, etc.) and add custom fears in the text field",
-        "For a much stronger strategy: fill in their likely perspective and any previous attempts",
-        "Review the Situation Reading to understand their mindset and likely defense mechanisms",
-        "Study the Emotional Landmines - these are the moments that will derail you if you're not ready",
-        "Choose a conversation approach, practice the opening out loud, and review the anticipated responses",
-        "Switch to the Practice tab to run the conversation live â€” the AI responds in character with real-time coaching",
-        "After the real conversation, use the Debrief tab to process what happened and identify growth areas"
-      ],
-      example: {
-        scenario: "You need to tell your boss that a coworker is taking credit for your work. You're afraid your boss will think you're being petty or a 'bad team player,' and the coworker has more seniority.",
-        action: "Describe the situation, select Boss, set resistance to 60%, goals: 'Give feedback' and 'Request a change.' In the optional fields: biggest fear = 'They'll tell me to just let it go,' their perspective = 'My boss values team harmony and may not want to pick sides,' previous attempts = 'Hinted once but my boss changed the subject.'",
-        result: "You get: a Situation Reading noting your boss likely prioritizes team stability over individual credit disputes. 4 emotional landmines including 'That's just how collaboration works' with strategic responses. 3 approaches from documentation-based (come with specific examples) to direct (name the pattern). Each includes 6-8 anticipated responses with emotional triggers flagged. Then you practice the conversation live — the AI-as-boss pushes back realistically while a coach helps you refine your delivery in real time."
-      },
-      tips: [
-        "Practice the opening line out loud 3-5 times before the actual conversation - hearing yourself say it reduces anxiety and helps you sound more natural",
-        "Choose the approach that feels most authentic to you, not the one you think you 'should' use - forced approaches come across as inauthentic",
-        "Use the grounding technique (deep breath: in for 4, hold for 4, out for 6) right before starting the conversation to activate your calm nervous system",
-        "Remember the exit strategy if you get overwhelmed - it's okay to pause and say 'I need a moment to collect my thoughts, can we continue in 5 minutes?'"
-      ],
-      tips: [
-        "The 'biggest fear' field is the most important optional input — it directly shapes the emotional landmine analysis, which is the most valuable part of the strategy",
-        "Practice mode calibrates to your resistance slider — start at 40% to build confidence, then crank it to 70-80% for stress testing",
-        "The opening line is the hardest part — practice saying it out loud 3-5 times before the real conversation",
-        "If you get overwhelmed in practice mode, that's useful information — it tells you which moments need more preparation",
-        "The debrief is more useful if you do it within 24 hours while the conversation is still fresh"
+    overview: "The Difficult Talk Coach helps you prepare for hard conversations by generating multiple strategic approaches with exact scripts, predicted pushback, and counter-responses. Whether you need to set a boundary, request a change, address conflict, or give feedback, you'll get concrete phrases to use, body language tips, and emotional regulation strategies.",
+    howToUse: [
+      "Describe the conversation you need to have — the more specific, the better your strategy",
+      "Select who it's with, your goals, their expected resistance level, and your communication style",
+      "Check any fears you have about the conversation and add custom fears in the text field",
+      "For a much stronger strategy: fill in their likely perspective and any previous attempts",
+      "Review the Situation Reading, Emotional Landmines, and conversation approaches",
+      "Switch to the Practice tab to run the conversation live — AI responds in character with real-time coaching",
+      "After the real conversation, use the Debrief tab to process what happened and identify growth areas"
+    ],
+    example: {
+      scenario: "You need to tell your boss that a coworker is taking credit for your work. You're afraid your boss will think you're being petty, and the coworker has more seniority.",
+      action: "Describe the situation, select Boss, set resistance to 60%, goals: 'Give feedback' and 'Request a change.' Biggest fear = 'They'll tell me to just let it go.'",
+      result: "You get a Situation Reading, 4 emotional landmines with strategic responses, and 3 approaches from documentation-based to direct. Each includes 6-8 anticipated responses with emotional triggers flagged. Then practice live — AI-as-boss pushes back realistically while a coach helps refine your delivery."
+    },
+    tips: [
+      "The 'biggest fear' field is the most important optional input — it directly shapes the emotional landmine analysis",
+      "Practice mode calibrates to your resistance slider — start at 40% to build confidence, then crank it to 70-80% for stress testing",
+      "The opening line is the hardest part — practice saying it out loud 3-5 times before the real conversation",
+      "If you get overwhelmed in practice mode, that's useful information — it tells you which moments need more preparation",
+      "The debrief is more useful if you do it within 24 hours while the conversation is still fresh"
+    ],
+    pitfalls: [
+      "Don't choose an approach that doesn't feel like you — forced scripts come across as inauthentic",
+      "Skipping the 'their perspective' field produces generic strategies; fill it in for the most accurate landmine analysis",
+      "Practice mode is a simulation, not a guarantee — real people are unpredictable, so stay flexible"
     ]
   }
 },
-
 {
   modified: "",
   id: "ComplaintEscalationWriter",
@@ -2578,19 +2631,22 @@ export const tools = [
       ]
     }
 },
+// ── DecisionCoach tools.js entry ──
+// Replace the existing entry (search for id: "DecisionCoach")
+// Changes: modified date added, tags expanded from 7 → 9
 
 {
-  modified: "",
+  modified: "2026-03-11",
   id: "DecisionCoach",
   title: "Decision Coach",
   tagline: "One answer. No second-guessing.",
-  tags: ['decision', 'stuck', 'choice', 'pros cons', 'dilemma', 'options', 'clarity'],
+  tags: ['decision', 'stuck', 'choice', 'pros cons', 'dilemma', 'options', 'clarity', 'paralysis', 'overwhelmed'],
   icon: "🎯",
   categories: ['Veer'],
-  description: "Makes the decision for you when you're too stuck to choose. Applies your constraints and preferences to give you ONE answer with execution steps. No options, no second-guessing.",
+  description: "Makes the decision for you when you're too stuck to choose. Applies your constraints and preferences to give you ONE answer with execution steps — no options, no second-guessing.",
   guide: {
     overview: "Choice paralysis happens when you're too overwhelmed to decide but still know what you want/need. This tool applies your constraints and preferences to make THE decision (singular), removing the burden of choice while respecting your values.",
-    
+
     howToUse: [
       "Pick a decision category (food, task, purchase, activity)",
       "Describe what needs to be decided",
@@ -2598,13 +2654,13 @@ export const tools = [
       "Set your current capacity level",
       "Get ONE decision with step-by-step execution"
     ],
-    
+
     example: {
       scenario: "You're overwhelmed and can't decide what to eat for dinner. You're vegetarian, have no energy to cook, budget is under $15, want comfort food, and nothing spicy today. You've been staring at delivery apps for 20 minutes unable to choose.",
       action: "Decision: 'What to eat for dinner', Preferences: 'Vegetarian, no dairy, under $15, no cooking energy, comfort food, nothing spicy', Capacity: Overwhelmed.",
       result: "DECISION: Order veggie burrito bowl from Chipotle. Why: Meets all constraints - vegetarian, no dairy (skip cheese/sour cream), under $15, delivery (no cooking), comfort food, customizable to avoid spice. Steps: 1. Open Chipotle app, 2. Order burrito bowl with brown rice, black beans, veggies, guac, lettuce, salsa (skip cheese and sour cream), 3. Delivery, 4. Submit. DONE. This choice is FINAL."
     },
-    
+
     tips: [
       "Pre-load preferences clearly (hard constraints like allergies vs preferences like mood)",
       "The tool gives ONE answer intentionally - options would restart the paralysis",
@@ -2612,7 +2668,7 @@ export const tools = [
       "Use this proactively when you feel paralysis starting, not after 30 min of agonizing",
       "The decision is good enough - perfect doesn't exist when you're overwhelmed"
     ],
-    
+
     pitfalls: [
       "Don't ask for 'options' - that defeats the purpose. You need a decision made FOR you",
       "If you second-guess the answer, you're probably not being honest about your preferences",
@@ -2620,7 +2676,6 @@ export const tools = [
     ]
   }
 },
-
 {
   modified: "",
   id: "SixDegreesOfMe",
@@ -2670,7 +2725,7 @@ export const tools = [
   tagline: 'Personalized rabbit holes you can\'t resist',
   tags: ['random', 'interesting', 'curious', 'learn', 'discover', 'bored', 'fun', 'trivia', 'facts', 'knowledge', 'rabbit hole', 'explore', 'learning', 'curiosity', 'deep dive', 'debate', 'digest', 'daily', 'discovery', 'interests', 'spin', 'mind expanding', 'education'],
   icon: '🎲',
-  categories: ['Brain Games', 'Detour'],
+  categories: ['Diversions', 'Detour'],
   description: 'Spin for fascinating rabbit holes tuned to YOUR interests. AI finds the surprising intersections between topics you love — the kind of stuff you can\'t stop thinking about.',
   guide: {
     overview: "Brain Roulette is an AI-powered discovery engine that generates fascinating, personalized rabbit holes. Unlike random fact generators, it finds the unexpected INTERSECTIONS between your interests — where history meets food, where psychology meets technology, where space meets philosophy. Each spin is unique, and a secret wildcard topic gets woven in to keep things unpredictable.",
@@ -3146,42 +3201,45 @@ export const tools = [
       ]
     }
 },
+// ── DreamPatternSpotter tools.js entry ──
+// Replace existing entry (id: "DreamPatternSpotter")
+// Changes: modified date, description trimmed, pitfalls added
 
 {
-  modified: "",
+  modified: "2026-03-11",
   id: "DreamPatternSpotter",
   title: "Dream Pattern Spotter",
-  tagline: "Find the recurring themes hidden in your dreams",
-  tags: ['dreams', 'sleep', 'patterns', 'symbols', 'subconscious', 'journal', 'interpretation'],
+  tagline: "Find recurring themes and emotional patterns in your dreams",
+  tags: ['dreams', 'sleep', 'patterns', 'subconscious', 'psychology', 'reflection', 'themes', 'emotions'],
   icon: "🌙",
-  categories: ['Brain Games', 'Me'],
-  description: "Analyze your dreams for recurring themes, symbols, and emotional patterns. Uses psychological frameworks (Jungian, Freudian, neuroscience) to help you understand what your subconscious might be processing. Two modes: analyze a single dream in depth, or find patterns across multiple dreams. Get reflection questions for journaling or therapy. This is pattern recognition for self-exploration, not fortune-telling.",
+  categories: ['Mind'],
+  description: "Analyzes your dreams using Jungian, Freudian, and neuroscience frameworks to surface recurring themes, emotional patterns, symbolic imagery, and life correlations — with reflection questions to make the insights actionable.",
   guide: {
-      overview: "The Dream Pattern Spotter uses depth psychology to analyze dreams for recurring themes, symbols, emotional patterns, and correlations with life events. It provides insights from Jungian (archetypes, shadow), Freudian (wish fulfillment, repression), and modern neuroscience (memory consolidation, threat simulation) perspectives. The tool promotes self-reflection and therapeutic exploration, not mystical interpretation or fortune-telling.",
-      howToUse: [
-        "Choose your mode: Single Dream (analyze one dream in depth) or Pattern Analysis (find patterns across 2+ dreams)",
-        "For single dream: Describe your dream in detail, select the date, check emotional tones you felt, optionally add what was happening in your life",
-        "For pattern analysis: Add 2+ dreams with descriptions and dates. The more dreams, the better pattern recognition",
-        "Generate analysis to see recurring themes, symbols, emotional patterns, people/figures that appear, life event correlations, and subconscious preoccupations",
-        "Use the reflection questions for journaling or therapy to explore what patterns might mean for YOUR life"
-      ],
-      example: {
-        scenario: "You've been having recurring dreams about being chased. You enter 3 dreams from the past month where you're being pursued, each with context about work stress.",
-        action: "Pattern Analysis mode: Add 3 dreams describing being chased in different scenarios (by unknown person, by animal, through building). Note emotions: anxious, scared. Add context: 'Started high-pressure project at work'",
-        result: "Analysis shows: Recurring theme 'Pursuit/Escape' (3x) suggesting avoidance of something in waking life. Emotional pattern: High anxiety correlating with work project start date. Symbol: Pursuer represents 'pressure/expectations'. Subconscious preoccupation: Fear of failure/not meeting expectations. Reflection questions: 'What in your work life feels like being chased? What are you avoiding confronting? How do you typically respond to pressure?' Insight: Dreams may be processing work anxiety through symbolic pursuit scenarios - common stress dream pattern. Suggests exploring stress management and examining expectations (yours vs others')."
-      },
-      tips: [
-        "Write dreams down immediately upon waking - details fade quickly",
-        "Include ALL details: colors, emotions, people, symbols, actions, even if they seem silly",
-        "For pattern analysis, enter at least 3-5 dreams for meaningful patterns",
-        "Add life context - dreams often process daily experiences symbolically",
-        "Use reflection questions in your journal or with a therapist",
-        "Remember: interpretations are suggestions for self-reflection, not definitive truths. YOU decide what resonates.",
-        "Recurring dreams often indicate unresolved issues - they'll stop once the issue is addressed"
-      ]
-    }
+    overview: "The Dream Pattern Spotter applies psychological frameworks to find patterns in your dream life. Single Dream mode provides deep analysis of one dream. Pattern mode analyzes 2-6 dreams together to find recurring themes, emotional signatures, and correlations to waking life. Not mysticism — pattern recognition for self-reflection.",
+    howToUse: [
+      "Single Dream: describe what happened in as much detail as you remember, note the date, select emotions you felt, and optionally add what's happening in your life right now",
+      "Pattern mode: add 2-6 dreams from recent nights, then analyze them together to find what keeps appearing",
+      "Review the themes, symbols, emotional landscape, and reflection questions",
+      "The reflection questions are the most valuable output — they're designed to connect dream patterns to waking life"
+    ],
+    example: {
+      scenario: "You've been dreaming about being lost in buildings and missing important deadlines for 3 weeks.",
+      action: "Add 3 dreams in pattern mode. Each describes a variation — lost in a school, late for a flight, can't find the right room for a meeting.",
+      result: "Pattern analysis surfaces: core theme of 'being unprepared or inadequate,' recurring symbol of institutional spaces, emotional signature of anxiety about evaluation. Reflection questions: 'Where in your waking life do you feel like you're failing to meet expectations? What would it mean to let go of the standard you're measuring yourself against?'"
+    },
+    tips: [
+      "Write down dreams immediately after waking — they fade fast",
+      "The life context field significantly improves the analysis",
+      "Pattern mode needs at least 2 dreams, but 4-5 gives much richer results",
+      "Don't try to interpret before you see the analysis — your pre-formed interpretation may block deeper patterns"
+    ],
+    pitfalls: [
+      "Vague descriptions like 'I had a weird dream' produce generic analysis — the more detail, the better",
+      "Not every dream is symbolically meaningful; some are just neural noise. Trust what actually resonates",
+      "This is for self-reflection, not diagnosis — a therapist can help go deeper with patterns that feel significant"
+    ]
+  }
 },
-
 {
   modified: "",
   id: "MeetingHijackPreventer",
@@ -3213,38 +3271,46 @@ export const tools = [
       ]
     }
 },
+// ── DoctorVisitTranslator tools.js entry ──
+// Replace existing entry (id: "DoctorVisitTranslator")
+// Changes: modified date, description trimmed to 1 sentence, tags 7→9, pitfalls added
 
 {
-  modified: "",
+  modified: "2026-03-11",
   id: "DoctorVisitTranslator",
   title: "Doctor Visit Translator",
   tagline: "Turn medical jargon into plain English",
-  tags: ['doctor', 'medical', 'jargon', 'health', 'appointment', 'diagnosis', 'plain language'],
+  tags: ['doctor', 'medical', 'jargon', 'health', 'appointment', 'diagnosis', 'plain language', 'prescription', 'lab results'],
   icon: "🩺",
   categories: ['Body'],
-  description: "Translate medical jargon from doctor visits into plain English. Get action checklists, medication explanations, test result interpretations, and questions to ask next time. Perfect for when you're too stressed to process everything during the appointment. Includes medical disclaimer and focuses on health literacy.",
+  description: "Paste any medical document — visit notes, lab results, prescription labels, or billing statements — and get a plain-English summary, prioritized action checklist, medication explanations, and questions to ask at your next appointment.",
   guide: {
-      overview: "The Doctor Visit Translator helps you understand your doctor visits by translating medical terminology into clear, actionable language. Paste your visit notes or describe what the doctor said, and get a plain English summary, medical term definitions, action checklist with priorities, medication explanations with side effects, test result interpretations, follow-up requirements, and questions to ask next time. Built for patients who struggle to process medical information during stressful appointments.",
-      howToUse: [
-        "Paste your visit summary/notes OR write what you remember the doctor saying - include medications, test results, diagnosis, and instructions",
-        "Select your visit type (Diagnosis, Follow-up, Treatment plan, Test results, Preventive care, Urgent care, or Specialist consultation)",
-        "Optionally add your main concerns - what you're worried or confused about",
-        "Click 'Translate to Plain English' to get a comprehensive breakdown with plain language summary, medical terms explained, prioritized action checklist, medication details, test results interpretation, follow-up requirements, and questions for your next visit"
-      ],
-      example: {
-        scenario: "You just left a doctor appointment where they said you have 'hypertension' and prescribed 'lisinopril 10mg.' Your blood pressure was 145/92. You're confused about what this means and worried about taking medication.",
-        action: "Paste: 'Doctor said I have hypertension. BP was 145/92. Prescribed lisinopril 10mg once daily. Need to reduce sodium and exercise. Come back in 3 months.' Add concern: 'Worried about medication side effects and if I'll be on it forever.' Select 'Diagnosis' visit type.",
-        result: "You receive: Plain English summary explaining high blood pressure in simple terms, definition of 'hypertension' and what 145/92 means, action checklist (HIGH: Start medication, MEDIUM: Reduce sodium to under 2300mg/day, MEDIUM: Exercise 30min 5x/week, LOW: Schedule 3-month follow-up), lisinopril explanation (lowers blood pressure by relaxing blood vessels, take in morning, watch for dizziness/dry cough), follow-up requirements (check BP at home weekly, call if systolic >180), and questions to ask (Will I need this forever? Can lifestyle changes alone work? What if I get side effects?)."
-      },
-      tips: [
-        "Bring a copy of this translation to your next appointment - your doctor will appreciate that you're engaged and informed",
-        "Use the 'Questions for Next Visit' section to prepare before your appointment - write them down and bring the list",
-        "If test results show abnormal values, the tool explains what that means AND what typically happens next, reducing anxiety about the unknown",
-        "The action checklist has priority levels (high/medium/low) so you know what's urgent vs what can wait - don't overwhelm yourself trying to do everything at once"
-      ]
-    }
+    overview: "The Doctor Visit Translator helps you understand your doctor visits by translating medical terminology into clear, actionable language. Paste your visit notes or describe what the doctor said, and get a plain English summary, medical term definitions, action checklist with priorities, medication explanations with side effects, test result interpretations, follow-up requirements, and questions to ask next time.",
+    howToUse: [
+      "Paste your visit summary/notes OR write what you remember the doctor saying — include medications, test results, diagnosis, and instructions",
+      "Select what you're translating: visit notes, prescription label, lab report, bill/EOB, or discharge instructions",
+      "Optionally add your main concerns — what you're worried or confused about",
+      "For medication interaction checks, add your current medications in the optional field",
+      "Review your plain English summary, action checklist, and questions to ask next time"
+    ],
+    example: {
+      scenario: "You left a doctor appointment where they said you have 'hypertension' and prescribed 'lisinopril 10mg.' Your blood pressure was 145/92. You're confused about what this means.",
+      action: "Paste: 'Doctor said I have hypertension. BP was 145/92. Prescribed lisinopril 10mg once daily. Need to reduce sodium and exercise. Come back in 3 months.' Add concern: 'Worried about medication side effects.' Select 'Diagnosis' visit type.",
+      result: "You receive a plain English summary, definition of 'hypertension' and what 145/92 means, action checklist (HIGH: Start medication, MEDIUM: Reduce sodium), lisinopril explanation with side effects, follow-up requirements, and questions to ask next visit."
+    },
+    tips: [
+      "The more detail you include, the more accurate the translation — paste the actual notes if possible",
+      "Add your current medications to flag potential drug interactions",
+      "Use the Symptom Journal to track symptoms over time and share trends with your doctor",
+      "Save translations to your health history for comparison across visits"
+    ],
+    pitfalls: [
+      "This tool explains medical information — it does not replace your doctor's advice. Always follow their instructions",
+      "Paraphrasing what you remember is less accurate than pasting actual notes or documents",
+      "Lab result interpretation is general context — your doctor knows your full history and may interpret values differently"
+    ]
+  }
 },
-
 {
   modified: "",
   id: "EmailUrgencyTriager",
@@ -3771,19 +3837,17 @@ export const tools = [
     ]
   }
 },
-
 {
-  modified: "",
+  modified: "2026-03-10",
   id: "DateNight",
-  title: "DateNight",
-  tagline: "Budget-smart evening plans that feel intentional, not improvised",
-  tags: ['date', 'date night', 'couples', 'relationship', 'fun', 'romantic', 'activity'],
+  title: "Date Night",
+  tagline: "A full evening plan, on budget, anywhere",
+  tags: ['date', 'date night', 'couples', 'relationship', 'romantic', 'activity', 'itinerary', 'anniversary', 'first date', 'budget'],
   icon: "💘",
   categories: ['Out & About'],
-  description: "Budget-driven evening planner for two. Pick your currency, set a budget and vibe, get a complete itinerary with timing, cost per stop, budget buffer, transportation, conversation starters, and a Plan B. Works worldwide — adapts to local culture, venues, and pricing.",
+  description: "Budget-driven evening planner for two. Pick your currency, set a budget and vibe, and get a complete itinerary with timing, cost per stop, budget buffer, transportation tips, and a Plan B. Works worldwide — adapts to local culture, venues, and pricing.",
   guide: {
     overview: "DateNight turns 'I dunno, what do you want to do?' into a complete evening with a timeline, per-stop costs, and a built-in budget buffer. Pick your currency and set a hard budget, choose a vibe (casual, romantic, adventurous, first date, anniversary, stay-in), and enter your city. It generates 2-4 stops with culturally appropriate venues — izakayas in Tokyo, tapas bars in Madrid, hawker centres in Singapore — plus conversation starters and a Plan B.",
-    
     howToUse: [
       "Select your currency and set your budget with the slider or quick-pick buttons",
       "Pick a date type — casual, romantic, adventurous, first date, anniversary, or stay-in",
@@ -3792,24 +3856,21 @@ export const tools = [
       "Click 'Plan My Date Night' for a complete evening itinerary",
       "Review the budget breakdown to see cost per stop and your buffer",
       "Expand Conversation Starters and Plan B for extras",
-      "Hit 'New Plan' if you want a different itinerary with the same constraints"
+      "Hit 'Different' if you want a new itinerary with the same constraints"
     ],
-    
     example: {
       scenario: "You have ¥8,000 for a romantic date in Shibuya, Tokyo, starting at 7:00 PM. Your partner doesn't eat seafood and you went to an izakaya last time.",
       action: "Select JPY ¥, set budget to ¥8,000, select Romantic, enter 'Shibuya, Tokyo', add 'no seafood', note 'izakaya' as last time",
       result: "Vibe: 'Neon Glow & Hidden Bars.' 7:00 PM: A standing yakitori bar in a narrow alley near Nonbei Yokocho (~¥2,500). 8:15 PM: A quiet Italian-Japanese fusion restaurant with handmade pasta (~¥3,500). 9:30 PM: Walk through the illuminated streets to Yoyogi Park's edge (free). Total: ~¥6,000, buffer: ~¥2,000 for drinks or dessert. Plus conversation starters, transit tips, and a Plan B ramen shop if the main spot is full."
     },
-    
     tips: [
       "Select your local currency first — presets and slider range adapt automatically",
       "The budget buffer accounts for tips (where customary), transport surcharges, and impulse buys",
       "First Date mode suggests venues with easy conversation and natural exit points",
       "Stay-In mode includes delivery fees and tips in the budget",
-      "Hit 'New Plan' to get a completely different itinerary without changing your inputs",
+      "Hit 'Different' to get a completely different itinerary without changing your inputs",
       "Add what you did last time so the AI avoids repeating it"
     ],
-    
     pitfalls: [
       "Venue suggestions are types, not specific business names — confirm availability before going",
       "Prices are estimates for the area — check actual menus and local pricing",
@@ -3817,44 +3878,48 @@ export const tools = [
     ]
   }
 },
-
 {
-  modified: "",
+  modified: "2026-03-10",
   id: "CrisisPrioritizer",
   title: "Crisis Prioritizer",
   tagline: "Separate real urgency from anxiety urgency",
-    tags: ['crisis', 'emergency', 'prioritize', 'triage', 'urgent', 'overwhelm'],
+  tags: ['crisis', 'emergency', 'prioritize', 'triage', 'urgent', 'overwhelm', 'tasks', 'deadline', 'anxiety', 'burnout'],
   icon: "🚨",
   categories: ['Do It!', 'Energy'],
-  description: "When everything feels urgent, this tool separates real urgency from anxiety urgency. Consequence-based triage ranks tasks by what actually breaks if you skip them. Brain dump mode extracts tasks from panicked thoughts. Time-block generator builds a concrete schedule. 'Only 2 of your 12 tasks actually need to happen today.'",
+  description: "Separates real urgency from anxiety urgency using consequence-based triage — ranks tasks by what actually breaks if you skip them. Three timeframes, brain dump mode, time-blocked schedules, task splitting, delegation drafts, pattern tracking, and a 'Just One Thing' panic button.",
   guide: {
-      overview: "Anxiety inflates urgency. This tool objectively analyzes deadlines, consequences, and who's actually waiting to show what needs attention now vs what can safely wait. Three timeframes (today, this week, multi-week), brain dump extraction, time-blocked schedules, accountability sharing, task splitting, pattern tracking across sessions, and a panic-mode 'Just One Thing' button for when you can't process a full list.",
-      howToUse: [
-        "Pick a timeframe: Right Now (today's triage), This Week (day-by-day), or Few Weeks (sustained crisis plan)",
-        "Use Quick Start templates or enter tasks manually — add deadlines and who's waiting via the ℹ️ button",
-        "Too scattered to list tasks? Toggle Brain Dump mode and paste your stream of consciousness — AI extracts the tasks",
-        "Set your energy, emotional state, and preferred tone (Gentle / Direct / Tough Love)",
-        "Hit 'Prioritize' — after a brief breathing moment, see your reality check, anxiety audit, and ranked priorities",
-        "Use 'Build Schedule' for a concrete time-blocked plan, or 'Just One Thing' when you're paralyzed",
-        "Check off tasks as you go, then hit 'What's next?' for a fresh re-triage of what remains",
-        "Tap 🧩 on any task to split it into concrete sub-tasks, or 📨 to draft a delegation message",
-        "Share your plan with someone via the Accountability Snapshot for follow-through",
-        "Return later — the tool remembers past sessions, offers follow-up calibration, and spots patterns over time"
-      ],
-      example: {
-        scenario: "You're panicking with 8 tasks, low energy, and 3 hours before a meeting. You select 'Right Now', set energy to 'Running on fumes' and emotional state to 'Overwhelmed', and pick 'Direct' tone.",
-        action: "Enter all 8 tasks. Two have real deadlines. Hit Prioritize, then Build Schedule.",
-        result: "Reality check: Of 8 tasks, only 2 are time-sensitive today. Anxiety audit shows 4 tasks feel urgent due to guilt, not consequences. Time-blocked schedule: 9:00–9:25 reply to client (critical), 9:25–9:35 break, 9:35–10:15 prep meeting slides (important), 10:15–10:30 break. Remaining 6 tasks get guilt-free deferral permissions with specific reasoning. After finishing the first two, hit 'What's next?' — the tool says 'You can stop now. Everything else can wait until tomorrow.'"
-      },
-      tips: [
-        "The 'Just One Thing' panic button is there for your worst moments — it cuts through everything and gives you one clear action",
-        "Brain dump mode works great when you can't even organize your thoughts into a list",
-        "Use the voice selector to match what you need — Gentle when fragile, Tough Love when you need a push",
-        "After 3+ sessions, check Pattern Analysis to see if you consistently overrate urgency in certain areas",
-        "The Dashboard tracks your triage history — most people discover 60-70% of their 'urgent' tasks could always wait",
-        "Task splitting (🧩) is powerful for tasks that feel huge — they're usually 3-5 smaller tasks in disguise"
-      ]
-    }
+    overview: "Anxiety inflates urgency. This tool objectively analyzes deadlines, consequences, and who's actually waiting to show what needs attention now vs what can safely wait. Three timeframes (today, this week, multi-week), brain dump extraction, time-blocked schedules, accountability sharing, task splitting, pattern tracking across sessions, and a panic-mode 'Just One Thing' button for when you can't process a full list.",
+    howToUse: [
+      "Pick a timeframe: Right Now (today's triage), This Week (day-by-day), or Few Weeks (sustained crisis plan)",
+      "Use Quick Start templates or enter tasks manually — add deadlines and who's waiting via the ℹ️ button",
+      "Too scattered to list tasks? Toggle Brain Dump mode and paste your stream of consciousness — AI extracts the tasks",
+      "Set your energy, emotional state, and preferred tone (Gentle / Direct / Tough Love)",
+      "Hit 'Prioritize' — after a brief breathing moment, see your reality check, anxiety audit, and ranked priorities",
+      "Use 'Build Schedule' for a concrete time-blocked plan, or 'Just One Thing' when you're paralyzed",
+      "Check off tasks as you go, then hit 'What's next?' for a fresh re-triage of what remains",
+      "Tap 🧩 on any task to split it into concrete sub-tasks, or 📨 to draft a delegation message",
+      "Share your plan with someone via the Accountability Snapshot for follow-through",
+      "Return later — the tool remembers past sessions, offers follow-up calibration, and spots patterns over time"
+    ],
+    example: {
+      scenario: "You're panicking with 8 tasks, low energy, and 3 hours before a meeting. You select 'Right Now', set energy to 'Running on fumes' and emotional state to 'Overwhelmed', and pick 'Direct' tone.",
+      action: "Enter all 8 tasks. Two have real deadlines. Hit Prioritize, then Build Schedule.",
+      result: "Reality check: Of 8 tasks, only 2 are time-sensitive today. Anxiety audit shows 4 tasks feel urgent due to guilt, not consequences. Time-blocked schedule maps 2 must-dos into 90 minutes with breaks. Remaining 6 tasks get guilt-free deferral permissions with specific reasoning."
+    },
+    tips: [
+      "The 'Just One Thing' panic button is there for your worst moments — it cuts through everything and gives you one clear action",
+      "Brain dump mode works great when you can't even organize your thoughts into a list",
+      "Use the voice selector to match what you need — Gentle when fragile, Tough Love when you need a push",
+      "After 3+ sessions, check Pattern Analysis to see if you consistently overrate urgency in certain areas",
+      "The Dashboard tracks your triage history — most people discover 60-70% of their 'urgent' tasks could always wait",
+      "Task splitting (🧩) is powerful for tasks that feel huge — they're usually 3-5 smaller tasks in disguise"
+    ],
+    pitfalls: [
+      "Don't use this tool in the middle of a genuine emergency — do the thing first, triage after",
+      "If every session shows 8+ critical tasks, that's a workload problem, not a prioritization problem",
+      "The delegation draft is a starting point — review before sending"
+    ]
+  }
 },
 
 {

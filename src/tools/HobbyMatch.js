@@ -1,5 +1,6 @@
-import React, { useState, useCallback } from 'react';
-import { CopyBtn } from '../components/ActionButtons';
+import React, { useState, useCallback, useEffect } from 'react';
+import { CopyBtn, ActionBar } from '../components/ActionButtons';
+import { usePersistentState } from '../hooks/usePersistentState';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 
@@ -23,48 +24,51 @@ const LOOKING_FOR = [
   { value: 'weird', label: 'Something weird', emoji: '🦑' },
 ];
 
-const HobbyMatch = () => {
+const HobbyMatch = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
-  const { theme } = useTheme();
-  const isDark = theme === 'dark';
+  const { isDark } = useTheme();
+
+
+
+  const linkStyle = isDark
+    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
+    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
 
   const c = {
-    pageBg:       isDark ? 'bg-[#1a1816]'    : 'bg-[#faf8f5]',
-    card:         isDark ? 'bg-[#2a2623]'     : 'bg-white',
-    cardAlt:      isDark ? 'bg-[#332e2a]'     : 'bg-[#faf8f5]',
-    cardBorder:   isDark ? 'border-[#3d3630]' : 'border-[#e8e1d5]',
-    inputBg:      isDark ? 'bg-[#1a1816]'     : 'bg-[#faf8f5]',
-    inputBorder:  isDark ? 'border-[#3d3630]' : 'border-[#d5cab8]',
-    inputFocus:   isDark ? 'focus:border-[#4a6a8a] focus:ring-[#2c4a6e]/20'
-                         : 'focus:border-[#4a6a8a] focus:ring-[#2c4a6e]/12',
-    text:          isDark ? 'text-[#f0eeea]'  : 'text-[#3d3935]',
-    textSecondary: isDark ? 'text-[#c8c3b9]'  : 'text-[#5a544a]',
-    textMuted:     isDark ? 'text-[#8a8275]'  : 'text-[#8a8275]',
-    heading:       isDark ? 'text-[#f3efe8]'  : 'text-[#1e2a3a]',
-    btnPrimary:    isDark ? 'bg-[#2c4a6e] hover:bg-[#4a6a8a] text-white' : 'bg-[#2c4a6e] hover:bg-[#1e3a58] text-white',
-    btnSecondary:  isDark ? 'bg-[#332e2a] hover:bg-[#3d3630] text-[#c8c3b9] border border-[#3d3630]' : 'bg-[#f3efe8] hover:bg-[#e8e1d5] text-[#5e5042] border border-[#d5cab8]',
-    btnGold:       isDark ? 'bg-[#b06d22] hover:bg-[#c8872e] text-white' : 'bg-[#c8872e] hover:bg-[#b06d22] text-white',
-    badgeNeutral:  isDark ? 'bg-[#3d3630] text-[#c8c3b9]' : 'bg-[#f3efe8] text-[#73614e]',
-    badgeGold:     isDark ? 'bg-[#b06d22]/20 text-[#d9a04e]' : 'bg-[#f9edd8] text-[#93541f]',
-    badgePrimary:  isDark ? 'bg-[#2c4a6e]/30 text-[#a8b9ce]' : 'bg-[#d4dde8] text-[#1e3a58]',
-    divider:       isDark ? 'border-[#3d3630]' : 'border-[#e8e1d5]',
-    link:          isDark ? 'text-[#6e8aaa] hover:text-[#a8b9ce]' : 'text-[#2c4a6e] hover:text-[#1e3a58]',
-    success:       isDark ? 'bg-[#5a8a5c]/15 border-[#5a8a5c]/30 text-[#8abf8c]' : 'bg-[#e8f0e8] border-[#5a8a5c]/20 text-[#3d6b3f]',
-    warning:       isDark ? 'bg-[#c8872e]/15 border-[#c8872e]/30 text-[#d9a04e]' : 'bg-[#fdf3e4] border-[#c8872e]/20 text-[#93541f]',
-    error:         isDark ? 'bg-[#b54a3f]/15 border-[#b54a3f]/30 text-[#e08a82]' : 'bg-[#fceae8] border-[#b54a3f]/20 text-[#8a3530]',
-    pillActive:    isDark ? 'bg-[#2c4a6e] border-[#4a6a8a] text-white' : 'bg-[#2c4a6e] border-[#2c4a6e] text-white',
-    pillInactive:  isDark ? 'bg-[#2a2623] border-[#3d3630] text-[#c8c3b9] hover:border-[#5a544a]' : 'bg-white border-[#e8e1d5] text-[#5a544a] hover:border-[#d5cab8]',
+    card:          isDark ? 'bg-zinc-800' : 'bg-white',
+    cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    text:          isDark ? 'text-zinc-50' : 'text-gray-900',
+    textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
+    textMuted:     isDark ? 'text-zinc-500' : 'text-gray-400',
+    labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
+    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
+    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
+    border:        isDark ? 'border-zinc-700' : 'border-gray-200',
+    success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
+    warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
+    danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
+    infoBox:       isDark ? 'bg-sky-900/20 border-sky-700 text-sky-200' : 'bg-sky-50 border-sky-200 text-sky-800',
+    successBox:    isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-300',
+    successTxt:    isDark ? 'text-emerald-300' : 'text-emerald-800',
+    warningBox:    isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
+    warningTxt:    isDark ? 'text-amber-300' : 'text-amber-800',
+    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
   };
 
   // ─── State ───
-  const [personality, setPersonality] = useState('');
+  const [personality, setPersonality] = usePersistentState('hm-personality', '');
+  const [history, setHistory] = usePersistentState('hobbymatch-history', []);
   const [schedule, setSchedule] = useState('');
   const [budget, setBudget] = useState('');
   const [physical, setPhysical] = useState('');
   const [triedBefore, setTriedBefore] = useState('');
   const [selectedGoals, setSelectedGoals] = useState([]);
-  const [results, setResults] = useState(null);
+  const [results, setResults] = usePersistentState('hobbymatch-result', null);
   const [error, setError] = useState('');
+  const resultsRef = React.useRef(null);
   const [expandedHobby, setExpandedHobby] = useState(null);
 
   const toggleGoal = (value) => {
@@ -90,6 +94,8 @@ const HobbyMatch = () => {
         lookingFor: lookingFor || null,
       });
       setResults(data);
+      setHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: '' }, ...prev].slice(0, 6));
+    setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
     } catch (err) {
       setError(err.message || 'Failed to find hobbies.');
     }
@@ -129,10 +135,10 @@ const HobbyMatch = () => {
     <div className={`space-y-6 ${c.text}`}>
 
       {/* ── HEADER ── */}
-      <div className={`${c.card} border ${c.cardBorder} rounded-xl p-6`}>
-        <div className={`mb-5 pb-4 border-b ${c.divider}`}>
-          <h2 className={`text-2xl font-bold ${c.heading}`}>HobbyMatch 🧬</h2>
-          <p className={`text-sm ${c.textSecondary} mt-1`}>Discover hobbies you didn't know existed</p>
+      <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-6`}>
+        <div className={`mb-5 pb-4 border-b ${c.border}`}>
+          <h2 className={`text-2xl font-bold ${c.text}`}><span className="mr-2">{tool?.icon ?? '🎯'}</span>{tool?.title || 'HobbyMatch'}</h2>
+          <p className={`text-sm ${c.textSecondaryondary} mt-1`}>Discover hobbies you didn't know existed</p>
         </div>
 
         {/* Personality */}
@@ -143,13 +149,13 @@ const HobbyMatch = () => {
             onChange={e => setPersonality(e.target.value)}
             placeholder="e.g., introverted but want to meet people, love building things, easily bored, competitive, curious about science, night owl"
             rows={2}
-            className={`w-full px-4 py-3 border rounded-xl text-sm ${c.inputBg} ${c.inputBorder} ${c.text} ${c.inputFocus} outline-none focus:ring-2 resize-none`}
+            className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} ${c.text} outline-none focus:ring-2 resize-none`}
           />
         </div>
 
         {/* Looking for */}
         <div className="mb-4">
-          <label className={`text-sm font-bold ${c.text} block mb-2`}>What are you looking for? <span className={`font-normal ${c.textMuted}`}>(pick any)</span></label>
+          <label className={`text-sm font-bold ${c.text} block mb-2`}>What are you looking for? <span className={`font-normal ${c.textMuteded}`}>(pick any)</span></label>
           <div className="flex flex-wrap gap-1.5">
             {LOOKING_FOR.map(g => (
               <button
@@ -168,14 +174,14 @@ const HobbyMatch = () => {
         {/* Schedule */}
         <div className="mb-4">
           <label className={`text-sm font-bold ${c.text} block mb-1.5`}>
-            Your free time <span className={`font-normal ${c.textMuted}`}>(optional)</span>
+            Your free time <span className={`font-normal ${c.textMuteded}`}>(optional)</span>
           </label>
           <input
             type="text"
             value={schedule}
             onChange={e => setSchedule(e.target.value)}
             placeholder="e.g., weekday evenings, 2 hours on weekends, random 30-min gaps"
-            className={`w-full px-4 py-3 border rounded-xl text-sm ${c.inputBg} ${c.inputBorder} ${c.text} ${c.inputFocus} outline-none focus:ring-2`}
+            className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} ${c.text} outline-none focus:ring-2`}
           />
         </div>
 
@@ -200,28 +206,28 @@ const HobbyMatch = () => {
         {/* Physical */}
         <div className="mb-4">
           <label className={`text-sm font-bold ${c.text} block mb-1.5`}>
-            Physical limitations <span className={`font-normal ${c.textMuted}`}>(optional)</span>
+            Physical limitations <span className={`font-normal ${c.textMuteded}`}>(optional)</span>
           </label>
           <input
             type="text"
             value={physical}
             onChange={e => setPhysical(e.target.value)}
             placeholder="e.g., bad knees, wheelchair user, recovering from surgery, none"
-            className={`w-full px-4 py-3 border rounded-xl text-sm ${c.inputBg} ${c.inputBorder} ${c.text} ${c.inputFocus} outline-none focus:ring-2`}
+            className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} ${c.text} outline-none focus:ring-2`}
           />
         </div>
 
         {/* Tried before */}
         <div className="mb-5">
           <label className={`text-sm font-bold ${c.text} block mb-1.5`}>
-            Things you've already tried <span className={`font-normal ${c.textMuted}`}>(so I don't suggest them)</span>
+            Things you've already tried <span className={`font-normal ${c.textMuteded}`}>(so I don't suggest them)</span>
           </label>
           <input
             type="text"
             value={triedBefore}
             onChange={e => setTriedBefore(e.target.value)}
             placeholder="e.g., yoga, painting, guitar, running, chess"
-            className={`w-full px-4 py-3 border rounded-xl text-sm ${c.inputBg} ${c.inputBorder} ${c.text} ${c.inputFocus} outline-none focus:ring-2`}
+            className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} ${c.text} outline-none focus:ring-2`}
           />
         </div>
 
@@ -230,16 +236,16 @@ const HobbyMatch = () => {
           <button
             onClick={generate}
             disabled={loading || (!personality.trim() && selectedGoals.length === 0)}
-            className={`flex-1 ${c.btnGold} disabled:opacity-40 disabled:cursor-not-allowed font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-2 min-h-[48px] shadow-lg`}
+            className={`flex-1 ${c.btnPrimary} disabled:opacity-40 disabled:cursor-not-allowed font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-2 min-h-[48px] shadow-lg`}
           >
             {loading ? (
-              <><span className="animate-spin inline-block">⏳</span> Matching hobbies...</>
+              <><span className="animate-spin inline-block">{tool?.icon ?? '🎯'}</span> Matching hobbies...</>
             ) : (
               <><span>🧬</span> Find My Hobbies</>
             )}
           </button>
           {results && (
-            <button onClick={handleReset} className={`px-5 py-3 ${c.btnSecondary} rounded-xl font-medium min-h-[48px]`}>
+            <button onClick={handleReset} className={`px-5 py-3 ${c.btnSecondaryondary} rounded-xl font-medium min-h-[48px]`}>
               New Search
             </button>
           )}
@@ -248,7 +254,7 @@ const HobbyMatch = () => {
 
       {/* Error */}
       {error && (
-        <div className={`${c.error} border rounded-xl p-4 flex items-start gap-3`}>
+        <div ref={resultsRef} className={`${c.danger} border rounded-xl p-4 flex items-start gap-3`}>
           <span className="flex-shrink-0 mt-0.5">⚠️</span>
           <p className="text-sm">{error}</p>
         </div>
@@ -258,16 +264,16 @@ const HobbyMatch = () => {
       {/* RESULTS                                                  */}
       {/* ══════════════════════════════════════════════════════════ */}
       {r && (
-        <div className="space-y-4">
+        <div ref={resultsRef} className="space-y-4">
 
           <div className="flex justify-end">
-            <CopyBtn content={buildFullText()} label="Copy All" />
+            <ActionBar content={buildFullText()} subject="Hobby Matches from HobbyMatch" />
           </div>
 
           {/* ── PROFILE READ ── */}
           {r.profile_read && (
-            <div className={`${c.card} border ${c.cardBorder} rounded-xl p-5`}>
-              <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{r.profile_read}</p>
+            <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-5`}>
+              <p className={`text-sm ${c.textSecondaryondary} leading-relaxed`}>{r.profile_read}</p>
             </div>
           )}
 
@@ -277,7 +283,7 @@ const HobbyMatch = () => {
               {r.hobbies.map((hobby, idx) => {
                 const isExpanded = expandedHobby === idx;
                 return (
-                  <div key={idx} className={`${c.card} border ${c.cardBorder} rounded-xl overflow-hidden`}>
+                  <div key={idx} className={`${c.card} ${c.border} border ${c.border} rounded-xl overflow-hidden`}>
                     {/* Header — always visible */}
                     <button
                       onClick={() => setExpandedHobby(isExpanded ? null : idx)}
@@ -286,8 +292,8 @@ const HobbyMatch = () => {
                       <div className="flex items-start gap-3">
                         <span className="text-2xl flex-shrink-0">{hobby.icon || '🎯'}</span>
                         <div className="flex-1 min-w-0">
-                          <h4 className={`text-sm font-bold ${c.heading}`}>{hobby.name}</h4>
-                          <p className={`text-xs ${c.textSecondary} mt-0.5`}>{hobby.one_liner}</p>
+                          <h4 className={`text-sm font-bold ${c.text}`}>{hobby.name}</h4>
+                          <p className={`text-xs ${c.textSecondaryondary} mt-0.5`}>{hobby.one_liner}</p>
                           <div className="flex flex-wrap gap-1.5 mt-2">
                             <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${c.badgeNeutral}`}>
                               {hobby.energy_type === 'solo' ? '🎧 Solo' : hobby.energy_type === 'social' ? '👥 Social' : '🔄 Both'}
@@ -300,16 +306,16 @@ const HobbyMatch = () => {
                             </span>
                           </div>
                         </div>
-                        <span className={`${c.textMuted} flex-shrink-0`}>{isExpanded ? '▲' : '▼'}</span>
+                        <span className={`${c.textMuteded} flex-shrink-0`}>{isExpanded ? '▲' : '▼'}</span>
                       </div>
                     </button>
 
                     {/* Expanded details */}
                     {isExpanded && (
-                      <div className={`px-5 pb-5 border-t ${c.divider} pt-4 space-y-3`}>
+                      <div className={`px-5 pb-5 border-t ${c.border} pt-4 space-y-3`}>
                         <div>
-                          <p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>What it is</p>
-                          <p className={`text-xs ${c.textSecondary} leading-relaxed`}>{hobby.what_it_is}</p>
+                          <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>What it is</p>
+                          <p className={`text-xs ${c.textSecondaryondary} leading-relaxed`}>{hobby.what_it_is}</p>
                         </div>
                         {hobby.the_hook && (
                           <div className={`${c.warning} border rounded-lg p-3`}>
@@ -319,8 +325,8 @@ const HobbyMatch = () => {
                         )}
                         {hobby.why_you && (
                           <div>
-                            <p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>Why this fits you</p>
-                            <p className={`text-xs ${c.textSecondary} leading-relaxed`}>{hobby.why_you}</p>
+                            <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>Why this fits you</p>
+                            <p className={`text-xs ${c.textSecondaryondary} leading-relaxed`}>{hobby.why_you}</p>
                           </div>
                         )}
                         <div className={`${c.success} border rounded-lg p-3`}>
@@ -329,8 +335,8 @@ const HobbyMatch = () => {
                         </div>
                         {hobby.find_your_people && (
                           <div>
-                            <p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>👥 Find your people</p>
-                            <p className={`text-xs ${c.textSecondary} leading-relaxed`}>{hobby.find_your_people}</p>
+                            <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>👥 Find your people</p>
+                            <p className={`text-xs ${c.textSecondaryondary} leading-relaxed`}>{hobby.find_your_people}</p>
                           </div>
                         )}
                       </div>
@@ -365,7 +371,7 @@ const HobbyMatch = () => {
           )}
 
           {/* ── CROSS-REFERENCES ── */}
-          <div className={`${c.card} border ${c.cardBorder} rounded-xl p-4`}>
+          <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-4`}>
             <p className={`text-xs font-bold ${c.text} mb-2`}>Related tools</p>
             <div className="flex flex-wrap gap-2">
               <a href="/MicroAdventureMapper" target="_blank" rel="noopener noreferrer" className={`text-xs px-3 py-1.5 rounded-lg border ${c.pillInactive} no-underline`}>

@@ -116,6 +116,7 @@ const ContrastReport = ({ tool }) => {
         pathA: pathA.trim().substring(0, 50),
         pathB: pathB.trim().substring(0, 50),
         framed: parsed?.decision_framed?.substring(0, 80) || '',
+        preview: (pathA.trim() + ' vs ' + pathB.trim()).slice(0, 40),
         results: parsed,
       };
       setHistory(prev => [entry, ...prev].slice(0, 6));
@@ -309,7 +310,7 @@ const ContrastReport = ({ tool }) => {
           {/* Timeframe */}
           <div className="space-y-2">
             <label className={`text-sm font-semibold ${c.text}`}>
-              <span className="mr-1.5">⏳</span> How far out?
+              <span className="mr-1.5">{tool?.icon ?? '⚙️'}</span> How far out?
             </label>
             <div className="flex gap-2">
               {TIMEFRAME_OPTIONS.map(t => (
@@ -340,8 +341,7 @@ const ContrastReport = ({ tool }) => {
           </div>
 
           <button
-            onClick={handleSubmit}
-            disabled={!canSubmit}
+            onClick={handleSubmit} disabled={loading || !canSubmit}
             className={`w-full ${c.btnPrimary} py-3 rounded-xl font-semibold text-sm shadow-sm
               disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-2 min-h-[48px]`}>
             {loading
@@ -520,4 +520,5 @@ const ContrastReport = ({ tool }) => {
 };
 
 ContrastReport.displayName = 'ContrastReport';
+
 export default ContrastReport;
