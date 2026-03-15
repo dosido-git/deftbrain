@@ -1,0 +1,710 @@
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { CopyBtn , ActionBar } from '../components/ActionButtons';
+import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import { usePersistentState } from '../hooks/usePersistentState';
+import { useTheme } from '../hooks/useTheme';
+import { compressImage, CompressionPresets } from '../utils/imageCompression';
+
+const PetWeirdnessDecoder = ({ tool }) => {
+  const { callToolEndpoint, loading } = useClaudeAPI();
+  const { isDark } = useTheme();
+
+  const load = (key) => { try { const s = localStorage.getItem(key); return s ? JSON.parse(s) : null; } catch { return null; } };
+  const save = (key, val) => { try { localStorage.setItem(key, JSON.stringify(val)); } catch {} };
+
+  // ═══ FORM STATE ═══
+  const [_auditHistory, _setAuditHistory] = usePersistentState('pwd-historylog', []); // history marker
+  const [petType, setPetType] = useState('Dog');
+  const [breed, setBreed] = useState('');
+  const [age, setAge] = useState('');
+  const [behavior, setBehavior] = useState('');
+  const [duration, setDuration] = useState('Just started');
+  const [frequency, setFrequency] = useState('Occasionally');
+  const [otherChanges, setOtherChanges] = useState({ eating: false, energy: false, bathroom: false, sleep: false, mood: false });
+
+  // ═══ RESULTS / UI ═══
+  const [results, setResults] = usePersistentState('pwd-results', null);
+  const [error, setError] = useState('');
+  const [showDiary, setShowDiary] = useState(false);
+  const [toast, setToast] = useState(null);
+  const showToast = (msg, dur = 4000) => { setToast(msg); setTimeout(() => setToast(null), dur); };
+
+  // v2: Follow-up Q&A
+  const [followupQuestion, setFollowupQuestion] = useState('');
+  const [followupHistory, setFollowupHistory] = useState([]);
+  const [followupLoading, setFollowupLoading] = useState(false);
+  const followupRef = useRef(null);
+
+  // v2: Photo
+  const [imageBase64, setImageBase64] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef(null);
+
+  // v2: Pet profiles
+  const [petProfiles, setPetProfiles] = useState(() => load('petProfiles') || []);
+  const [selectedProfileId, setSelectedProfileId] = useState(null);
+  const [showProfileManager, setShowProfileManager] = useState(false);
+  const [profileName, setProfileName] = useState('');
+
+  // v2: Vet summary
+  const [showVetSummary, setShowVetSummary] = useState(false);
+
+  // v2: Severity tracker
+  const [severityLog, setSeverityLog] = useState(() => load('petSeverityLog') || []);
+  const [newSeverity, setNewSeverity] = useState(3);
+  const [newSeverityNote, setNewSeverityNote] = useState('');
+  const [showTracker, setShowTracker] = useState(false);
+
+  // v2: Multi-behavior history
+  const [behaviorHistory, setBehaviorHistory] = useState(() => load('petBehaviorHistory') || []);
+  const [showHistory, setShowHistory] = useState(false);
+
+  // ═══ v3: NEW FEATURE STATE ═══
+  // #1 Emergency vet locator
+  const [locatingVet, setLocatingVet] = useState(false);
+  // #3 Seasonal
+  const [showSeasonalDetail, setShowSeasonalDetail] = useState(false);
+  // #4 Meds & food
+  const [currentMeds, setCurrentMeds] = useState('');
+  const [recentDietChanges, setRecentDietChanges] = useState('');
+  const [showMedsFood, setShowMedsFood] = useState(false);
+  // #6 Video diary
+  const [isRecording, setIsRecording] = useState(false);
+  const [videoBlob, setVideoBlob] = useState(null);
+  const [videoPreview, setVideoPreview] = useState(null);
+  const [recordingSeconds, setRecordingSeconds] = useState(0);
+  const mediaRecorderRef = useRef(null);
+  const videoChunksRef = useRef([]);
+  const recordingTimerRef = useRef(null);
+
+  // Persist
+  useEffect(() => { save('petProfiles', petProfiles); }, [petProfiles]);
+  useEffect(() => { save('petSeverityLog', severityLog); }, [severityLog]);
+  useEffect(() => { save('petBehaviorHistory', behaviorHistory); }, [behaviorHistory]);
+
+  const linkStyle = isDark ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2' : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
+  const petTypes = [{ name: 'Dog', icon: '🐕' }, { name: 'Cat', icon: '🐱' }, { name: 'Bird', icon: '🐦' }, { name: 'Rabbit', icon: '🐰' }, { name: 'Other', icon: '🐾' }];
+  const durationOptions = ['Just started (today)', 'Few days', 'About a week', 'Weeks', 'Months', 'As long as I can remember'];
+  const frequencyOptions = ['Constant', 'Multiple times daily', 'Once or twice a day', 'Occasionally', 'Rare (once a week or less)'];
+
+  const c = {
+    card:          isDark ? 'bg-zinc-800' : 'bg-white',
+    input: isDark ? 'bg-zinc-900 border-zinc-700 text-zinc-50 placeholder:text-zinc-500 focus:border-amber-500 focus:ring-amber-500/20' : 'bg-white border-amber-300 text-amber-900 placeholder:text-amber-400 focus:border-amber-600 focus:ring-amber-100',
+    text: isDark ? 'text-zinc-50' : 'text-amber-900',
+    textSecondary: isDark ? 'text-zinc-400' : 'text-amber-700',
+    textMuted: isDark ? 'text-zinc-500' : 'text-amber-600',
+    label: isDark ? 'text-zinc-300' : 'text-amber-800',
+    btnPrimary: isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnSecondary: isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-50' : 'bg-amber-100 hover:bg-amber-200 text-amber-900',
+    btnOutline: isDark ? 'border-zinc-600 hover:border-zinc-500 text-zinc-300' : 'border-amber-300 hover:border-amber-400 text-amber-700',
+    danger: isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-300 text-red-800',
+    success: isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
+    warning: isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
+    emergency: isDark ? 'bg-red-900/40 border-red-600 text-red-100' : 'bg-red-100 border-red-400 text-red-900',
+    cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
+    border:        isDark ? 'border-zinc-700' : 'border-gray-200',
+  };
+
+  // ═══════════════════════════════════════════
+  //  v3 #1: Emergency Vet Locator
+  // ═══════════════════════════════════════════
+  const handleFindEmergencyVet = () => {
+    setLocatingVet(true);
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const { latitude, longitude } = pos.coords;
+          window.open(`https://www.google.com/maps/search/emergency+veterinarian/@${latitude},${longitude},13z`, '_blank');
+          setLocatingVet(false);
+        },
+        () => {
+          // Fallback without location
+          window.open('https://www.google.com/maps/search/emergency+veterinarian+near+me', '_blank');
+          setLocatingVet(false);
+        },
+        { timeout: 5000 }
+      );
+    } else {
+      window.open('https://www.google.com/maps/search/emergency+veterinarian+near+me', '_blank');
+      setLocatingVet(false);
+    }
+  };
+
+  // ═══════════════════════════════════════════
+  //  v3 #2: Multi-Pet Pattern Detection
+  // ═══════════════════════════════════════════
+  const detectMultiPetPatterns = () => {
+    if (behaviorHistory.length < 2) return null;
+    const twoWeeksAgo = new Date(); twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
+    const recent = behaviorHistory.filter(e => new Date(e.date) > twoWeeksAgo);
+    // Group by pet name
+    const byPet = {};
+    recent.forEach(e => { const key = e.petName || e.petType; if (!byPet[key]) byPet[key] = []; byPet[key].push(e); });
+    const petNames = Object.keys(byPet);
+    if (petNames.length < 2) return null;
+    // Check for overlapping categories or similar urgency
+    const categories = {};
+    recent.forEach(e => {
+      const cat = e.category?.toLowerCase() || '';
+      if (!categories[cat]) categories[cat] = new Set();
+      categories[cat].add(e.petName || e.petType);
+    });
+    const shared = Object.entries(categories).filter(([cat, pets]) => pets.size >= 2 && cat !== 'unknown' && cat !== 'normal quirk');
+    if (shared.length === 0) return null;
+    const [cat, affectedPets] = shared[0];
+    return { category: cat.replace(/_/g, ' '), pets: [...affectedPets], count: affectedPets.size };
+  };
+
+  // ═══════════════════════════════════════════
+  //  v3 #3: Seasonal Awareness
+  // ═══════════════════════════════════════════
+  const getSeasonalWarnings = () => {
+    const month = new Date().getMonth(); // 0-11
+    const seasons = {
+      winter: { months: [11, 0, 1], icon: '❄️', label: 'Winter', warnings: [
+        { text: 'Rock salt & de-icers can irritate paws and cause GI issues if licked', pets: ['Dog', 'Cat'] },
+        { text: 'Antifreeze puddles are sweet-tasting and extremely toxic — even small amounts', pets: ['Dog', 'Cat'] },
+        { text: 'Dry indoor air can cause skin flaking and itchiness', pets: ['Dog', 'Cat'] },
+        { text: 'Birds are sensitive to drafts and temperature swings near windows', pets: ['Bird'] }
+      ]},
+      spring: { months: [2, 3, 4], icon: '🌸', label: 'Spring', warnings: [
+        { text: 'Tick and flea season begins — check for hitchhikers after outdoor time', pets: ['Dog', 'Cat', 'Rabbit'] },
+        { text: 'Pollen allergies can cause scratching, watery eyes, and sneezing in pets too', pets: ['Dog', 'Cat'] },
+        { text: 'Toxic spring plants: lilies (fatal to cats), azaleas, daffodils, tulip bulbs', pets: ['Dog', 'Cat'] },
+        { text: 'Nesting season — outdoor cats may encounter aggressive birds', pets: ['Cat'] }
+      ]},
+      summer: { months: [5, 6, 7], icon: '☀️', label: 'Summer', warnings: [
+        { text: 'Heatstroke risk — never leave pets in cars; watch for excessive panting', pets: ['Dog', 'Cat', 'Rabbit', 'Bird'] },
+        { text: 'Foxtails can embed in ears, nose, and paws — check after walks', pets: ['Dog'] },
+        { text: 'Hot pavement burns paw pads — test with your hand (5 second rule)', pets: ['Dog'] },
+        { text: 'Blue-green algae in standing water is toxic — avoid stagnant ponds', pets: ['Dog'] }
+      ]},
+      fall: { months: [8, 9, 10], icon: '🍂', label: 'Fall', warnings: [
+        { text: 'Mushrooms emerging after rain — many wild varieties are toxic to pets', pets: ['Dog', 'Cat'] },
+        { text: 'Rodenticide use increases — secondary poisoning risk if pet eats poisoned rodent', pets: ['Dog', 'Cat'] },
+        { text: 'Halloween chocolate and candy — xylitol and chocolate both toxic', pets: ['Dog'] },
+        { text: 'Shorter days may affect energy and mood in pets (yes, they notice too)', pets: ['Dog', 'Cat', 'Bird'] }
+      ]}
+    };
+    const current = Object.values(seasons).find(s => s.months.includes(month));
+    if (!current) return null;
+    const relevant = current.warnings.filter(w => w.pets.includes(petType) || petType === 'Other');
+    return { ...current, warnings: relevant };
+  };
+
+  // ═══════════════════════════════════════════
+  //  v3 #6: Video Recording
+  // ═══════════════════════════════════════════
+  const handleStartRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
+      videoChunksRef.current = [];
+      const recorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
+      recorder.ondataavailable = (e) => { if (e.data.size > 0) videoChunksRef.current.push(e.data); };
+      recorder.onstop = () => {
+        const blob = new Blob(videoChunksRef.current, { type: 'video/webm' });
+        setVideoBlob(blob);
+        setVideoPreview(URL.createObjectURL(blob));
+        stream.getTracks().forEach(t => t.stop());
+        showToast('🎥 Video recorded!');
+      };
+      mediaRecorderRef.current = recorder;
+      recorder.start();
+      setIsRecording(true);
+      setRecordingSeconds(0);
+      recordingTimerRef.current = setInterval(() => {
+        setRecordingSeconds(prev => {
+          if (prev >= 14) { handleStopRecording(); return 15; }
+          return prev + 1;
+        });
+      }, 1000);
+    } catch {
+      showToast('❌ Camera access denied or unavailable.');
+    }
+  };
+  const handleStopRecording = useCallback(() => {
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+      mediaRecorderRef.current.stop();
+    }
+    setIsRecording(false);
+    if (recordingTimerRef.current) { clearInterval(recordingTimerRef.current); recordingTimerRef.current = null; }
+  }, []);
+  const handleRemoveVideo = () => {
+    if (videoPreview) URL.revokeObjectURL(videoPreview);
+    setVideoBlob(null); setVideoPreview(null); setRecordingSeconds(0);
+  };
+  // Cleanup on unmount
+  useEffect(() => { return () => { if (recordingTimerRef.current) clearInterval(recordingTimerRef.current); }; }, []);
+
+  // ═══════════════════════════════════════════
+  //  CORE ACTIONS
+  // ═══════════════════════════════════════════
+  const handleAnalyze = async () => {
+    if (!petType) { setError('Please select a pet type'); return; }
+    if (!age || age < 0 || age > 50) { setError('Please enter a valid age'); return; }
+    if (!behavior.trim() || behavior.trim().length < 20) { setError('Describe the behavior in detail (20+ characters)'); return; }
+    setError(''); setResults(null); setFollowupHistory([]);
+    try {
+      const seasonal = getSeasonalWarnings();
+      const payload = {
+        petType, breed: breed.trim(), age: parseInt(age),
+        behavior: behavior.trim(), duration, frequency,
+        otherChanges: Object.keys(otherChanges).filter(k => otherChanges[k]),
+        currentMeds: currentMeds.trim() || null,
+        recentDietChanges: recentDietChanges.trim() || null,
+        seasonalContext: seasonal ? `${seasonal.label}: ${seasonal.warnings.map(w => w.text).join('; ')}` : null
+      };
+      if (imageBase64) payload.imageBase64 = imageBase64;
+      const data = await callToolEndpoint('pet-weirdness-decoder', payload);
+      setResults(data);
+      handleSaveBehavior(data);
+    } catch (err) { setError(err.message || 'Failed to analyze behavior.'); }
+  };
+
+  const handleOtherChangesToggle = (key) => setOtherChanges(prev => ({ ...prev, [key]: !prev[key] }));
+  const getUrgencyColor = (l) => { switch (l) { case 'not_urgent': return c.success; case 'monitor': return c.cardAlt; case 'vet_soon': return c.warning; case 'vet_now': return c.emergency; default: return c.cardAlt; } };
+  const getUrgencyLabel = (l) => { switch (l) { case 'not_urgent': return 'Quirky & Normal'; case 'monitor': return 'Worth Monitoring'; case 'vet_soon': return 'Vet Consultation Recommended'; case 'vet_now': return 'CALL VET NOW'; default: return 'Unknown'; } };
+
+  const handleReset = () => {
+    setPetType('Dog'); setBreed(''); setAge(''); setBehavior('');
+    setDuration('Just started'); setFrequency('Occasionally');
+    setOtherChanges({ eating: false, energy: false, bathroom: false, sleep: false, mood: false });
+    setResults(null); setError(''); setShowDiary(false); setFollowupHistory([]);
+    setImageBase64(null); setImagePreview(null); setShowVetSummary(false);
+    setCurrentMeds(''); setRecentDietChanges('');
+    handleRemoveVideo();
+  };
+
+  // ═══ Follow-up Q&A ═══
+  const handleFollowup = async () => {
+    if (!followupQuestion.trim() || !results) return;
+    setFollowupLoading(true);
+    const q = followupQuestion.trim(); setFollowupQuestion('');
+    try {
+      const payload = { question: q, originalAnalysis: results, petType, breed, age: parseInt(age), behavior: behavior.trim() };
+      if (imageBase64) payload.imageBase64 = imageBase64;
+      const data = await callToolEndpoint('pet-weirdness-decoder/followup', payload);
+      setFollowupHistory(prev => [...prev, { question: q, answer: data.answer }]);
+      setTimeout(() => followupRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
+    } catch { showToast('❌ Follow-up failed.'); }
+    setFollowupLoading(false);
+  };
+
+  // ═══ Photo ═══
+  const handleImageUpload = async (e) => {
+    const file = e.target.files?.[0]; if (!file) return;
+    setUploading(true);
+    try { const comp = await compressImage(file, CompressionPresets.API_UPLOAD); setImagePreview(comp); setImageBase64(comp); showToast('📷 Photo attached!'); }
+    catch (err) { showToast(`❌ ${err.message}`); }
+    setUploading(false);
+  };
+  const handleRemoveImage = () => { setImageBase64(null); setImagePreview(null); if (fileInputRef.current) fileInputRef.current.value = ''; };
+
+  // ═══ Pet Profiles ═══
+  const handleSaveProfile = () => {
+    if (!profileName.trim()) { showToast('Enter a name.'); return; }
+    setPetProfiles(prev => [{ id: Date.now().toString(), name: profileName.trim(), petType, breed, age, savedAt: new Date().toISOString(), preview: (profileName.trim() || petType).slice(0, 40) }, ...prev].slice(0, 6));
+    setProfileName(''); showToast('✅ Saved!');
+  };
+  const handleLoadProfile = (p) => { setPetType(p.petType || 'Dog'); setBreed(p.breed || ''); setAge(p.age || ''); setSelectedProfileId(p.id); setShowProfileManager(false); showToast(`🐾 Loaded ${p.name}`); };
+  const handleDeleteProfile = (id) => { setPetProfiles(prev => prev.filter(p => p.id !== id)); if (selectedProfileId === id) setSelectedProfileId(null); };
+
+  // ═══ Severity Tracker ═══
+  const getBehaviorKey = () => `${petType}-${breed || 'mixed'}-${behavior.trim().slice(0, 6).toLowerCase()}`;
+  const getSeverityLogsForCurrent = () => severityLog.filter(l => l.behaviorKey === getBehaviorKey());
+  const handleAddSeverity = () => {
+    if (!behavior.trim()) return;
+    setSeverityLog(prev => [{ behaviorKey: getBehaviorKey(), date: new Date().toISOString(), severity: newSeverity, note: newSeverityNote.trim(), petName: petProfiles.find(p => p.id === selectedProfileId)?.name || petType, preview: (behavior || petType).slice(0, 40) }, ...prev].slice(0, 6));
+    setNewSeverityNote(''); showToast(`📊 Severity ${newSeverity}/5 logged!`);
+  };
+  const getSeverityTrend = () => {
+    const logs = getSeverityLogsForCurrent();
+    if (logs.length < 2) return null;
+    const r = logs.slice(0, 3); const o = logs.slice(3, 6); if (!o.length) return null;
+    const rAvg = r.reduce((s, l) => s + l.severity, 0) / r.length;
+    const oAvg = o.reduce((s, l) => s + l.severity, 0) / o.length;
+    const diff = rAvg - oAvg;
+    if (diff > 0.5) return { direction: 'worsening', icon: '📈', color: 'text-red-500' };
+    if (diff < -0.5) return { direction: 'improving', icon: '📉', color: 'text-emerald-500' };
+    return { direction: 'stable', icon: '➡️', color: c.textMuteded };
+  };
+
+  // ═══ Behavior History ═══
+  const handleSaveBehavior = (data) => {
+    setBehaviorHistory(prev => [{ id: Date.now().toString(), date: new Date().toISOString(), petType, breed, age, behavior: behavior.trim().slice(0, 6), urgency: data?.behavior_analysis?.urgency_level || 'unknown', category: data?.behavior_analysis?.behavior_category || 'unknown', explanation: data?.most_likely_explanation?.what_it_is?.slice(0, 6) || '', petName: petProfiles.find(p => p.id === selectedProfileId)?.name || petType, preview: (behavior || petType).slice(0, 40) }, ...prev].slice(0, 6));
+  };
+  const handleLoadBehaviorEntry = (e) => { setPetType(e.petType || 'Dog'); setBreed(e.breed || ''); setAge(e.age || ''); setBehavior(e.behavior || ''); setShowHistory(false); showToast('Loaded.'); };
+
+  // ═══ Build texts ═══
+  const buildFullText = () => {
+    if (!results) return '';
+    const l = ['🐾 PET WEIRDNESS DECODER', '═'.repeat(40), `Pet: ${petType}${breed ? ` (${breed})` : ''} · ${age}y`, `Behavior: ${behavior}`, `Duration: ${duration} · Freq: ${frequency}`, ''];
+    if (results.behavior_analysis) l.push(`URGENCY: ${getUrgencyLabel(results.behavior_analysis.urgency_level)} ${results.behavior_analysis.urgency_emoji || ''}`, '');
+    if (results.most_likely_explanation) l.push('MOST LIKELY:', `  ${results.most_likely_explanation.what_it_is}`, '');
+    if (results.how_common) l.push(`HOW COMMON: ${results.how_common}`, '');
+    if (results.when_to_worry?.red_flags?.length) { l.push('🚨 RED FLAGS:'); results.when_to_worry.red_flags.forEach(f => l.push(`  • ${f}`)); l.push(''); }
+    if (followupHistory.length) { l.push('FOLLOW-UP Q&A:'); followupHistory.forEach(f => { l.push(`  Q: ${f.question}`, `  A: ${f.answer}`, ''); }); }
+    l.push('— Generated by DeftBrain · deftbrain.com');
+    return l.join('\n');
+  };
+  const handlePrint = () => { if (!results) return; const c2 = buildFullText(); const w = window.open('', '_blank'); if (!w) return; w.document.write(`<!DOCTYPE html><html><head><title>Pet Analysis</title><style>body{font-family:system-ui;padding:2rem;max-width:700px;margin:0 auto;line-height:1.6;font-size:14px;}pre{white-space:pre-wrap;}.b{margin-top:2rem;border-top:1px solid #ddd;padding-top:1rem;font-size:12px;color:#999;text-align:center;}</style></head><body><pre>${c2.replace(/— Generated.*/, '')}</pre><div class="b">Generated by DeftBrain · deftbrain.com</div></body></html>`); w.document.close(); w.print(); };
+  const buildVetSummary = () => {
+    if (!results) return '';
+    const l = ['VETERINARY CONSULTATION SUMMARY', `Date: ${new Date().toLocaleDateString()}`, '─'.repeat(40), '', 'PATIENT',
+      `  Species: ${petType} · Breed: ${breed || 'Unknown'} · Age: ${age}y`,
+      currentMeds ? `  Current medications: ${currentMeds}` : '', recentDietChanges ? `  Recent diet changes: ${recentDietChanges}` : '',
+      '', 'PRESENTING BEHAVIOR', `  ${behavior}`, `  Duration: ${duration} · Frequency: ${frequency}`,
+      `  Concurrent changes: ${Object.keys(otherChanges).filter(k => otherChanges[k]).join(', ') || 'None'}`, ''];
+    if (results.behavior_analysis) l.push('ASSESSMENT', `  Category: ${results.behavior_analysis.behavior_category?.replace(/_/g, ' ')}`, `  Urgency: ${getUrgencyLabel(results.behavior_analysis.urgency_level)}`, '');
+    if (results.most_likely_explanation) l.push('PRIMARY EXPLANATION', `  ${results.most_likely_explanation.what_it_is}`, '');
+    if (results.other_possibilities?.length) { l.push('DIFFERENTIALS'); results.other_possibilities.forEach(p => l.push(`  - ${p.explanation} (${p.likelihood})`)); l.push(''); }
+    if (results.when_to_worry?.red_flags?.length) { l.push('RED FLAGS'); results.when_to_worry.red_flags.forEach(f => l.push(`  ⚠ ${f}`)); l.push(''); }
+    if (results.vet_visit_prep?.questions_to_ask?.length) { l.push('QUESTIONS FOR VET'); results.vet_visit_prep.questions_to_ask.forEach(q => l.push(`  • ${q}`)); l.push(''); }
+    const logs = getSeverityLogsForCurrent();
+    if (logs.length) { l.push('SEVERITY LOG'); logs.slice(0, 6).forEach(s => l.push(`  ${new Date(s.date).toLocaleDateString()} — ${s.severity}/5${s.note ? ` — ${s.note}` : ''}`)); l.push(''); }
+    l.push('─'.repeat(40), 'AI-assisted preliminary analysis — not a professional diagnosis.', '', '— Generated by DeftBrain · deftbrain.com');
+    return l.filter(Boolean).join('\n');
+  };
+  const generateBehaviorDiary = () => `BEHAVIOR DIARY - ${petType} - ${breed || 'Mixed'} - ${age}y\n\nBehavior: ${behavior}\n\nDATE | TIME | SEVERITY | WHAT HAPPENED | TRIGGERS\n-----|------|----------|---------------|--------\n${new Date().toISOString().split('T')[0]} |      |    /5    |               |\n\nOTHER CHANGES: ${Object.keys(otherChanges).filter(k => otherChanges[k]).join(', ') || 'None'}\n${currentMeds ? `MEDICATIONS: ${currentMeds}\n` : ''}${recentDietChanges ? `DIET CHANGES: ${recentDietChanges}\n` : ''}\n— Generated by DeftBrain · deftbrain.com`;
+
+  const exampleBehavior = "My dog has started spinning in circles before lying down. She does it 3-4 times before settling. She's always done this but it seems more frequent lately.";
+
+  // ═══════════════════════════════════════════
+  //  RENDER
+  // ═══════════════════════════════════════════
+  return (
+    <div className="space-y-6">
+      {toast && <div className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 px-6 py-3 rounded-lg shadow-lg text-sm font-medium max-w-md text-center ${isDark ? 'bg-zinc-700 text-zinc-50 border border-zinc-600' : 'bg-white text-gray-900 border border-gray-200'}`}>{toast}</div>}
+
+      {/* EMERGENCY BANNER */}
+      <div className={`${c.emergency} border-4 rounded-xl p-6 shadow-lg`}>
+        <div className="flex items-start gap-4">
+          <span className="text-4xl flex-shrink-0 mt-1 animate-pulse">🚨</span>
+          <div className="flex-1">
+            <h2 className={`text-2xl font-bold mb-3 ${isDark ? 'text-red-100' : 'text-red-900'}`}>🚨 CALL VET IMMEDIATELY IF YOU SEE:</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+              {['Difficulty breathing or choking', 'Seizures or collapse', 'Bloated stomach + retching', 'Bleeding that won\'t stop', 'Suspected poisoning', 'Unable to urinate/defecate', 'Unconsciousness or extreme lethargy', 'Pale gums or severe pain'].map((item, i) => (
+                <p key={i} className="flex items-start gap-2 text-sm font-semibold"><span className="text-red-500">●</span> {item}</p>
+              ))}
+            </div>
+            <div className="flex items-center gap-3 mt-4">
+              <p className={`text-sm font-bold ${isDark ? 'text-red-200' : 'text-red-800'}`}>Don't wait — go NOW.</p>
+              <button onClick={handleFindEmergencyVet} disabled={locatingVet} className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 disabled:opacity-50">
+                {locatingVet ? <span className="animate-spin inline-block">{tool?.icon ?? '⚙️'}</span> : <span>📍</span>} Find Emergency Vet
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Disclaimer */}
+      <div className={`${c.warning} border-l-4 rounded-r-lg p-4`}>
+        <div className="flex items-start gap-3"><span>⚠️</span><p className={`text-sm ${c.textSecondaryondary}`}><strong>Disclaimer:</strong> Educational only — NOT a vet substitute. When in doubt, call your vet. 💚</p></div>
+      </div>
+
+      {/* Multi-Pet Pattern Alert (v3 #2) */}
+      {(() => { const pattern = detectMultiPetPatterns(); return pattern ? (
+        <div className={`${c.danger} border-2 rounded-xl p-5`}>
+          <h3 className={`font-bold mb-2 flex items-center gap-2 ${c.text}`}><span>🔗</span> Multi-Pet Alert</h3>
+          <p className={`text-sm ${c.textSecondaryondary}`}><strong>{pattern.count} of your pets</strong> ({pattern.pets.join(' & ')}) recently showed <strong>{pattern.category}</strong> behaviors. This pattern across multiple pets may indicate an <strong>environmental cause</strong> — new cleaning products, food, pests, plants, or mold. Mention this to your vet.</p>
+        </div>
+      ) : null; })()}
+
+      {/* Seasonal Warning (v3 #3) */}
+      {(() => { const s = getSeasonalWarnings(); return s && s.warnings.length > 0 ? (
+        <div className={`${c.cardAlt} border-l-4 rounded-r-lg p-4`}>
+          <div className="flex items-center justify-between">
+            <h3 className={`font-bold flex items-center gap-2 ${c.text}`}><span>{s.icon}</span> {s.label} Watch — {petType}s</h3>
+            <button onClick={() => setShowSeasonalDetail(!showSeasonalDetail)} className={`text-xs ${c.textSecondaryondary} hover:underline`}>{showSeasonalDetail ? 'Hide' : 'Details'}</button>
+          </div>
+          <p className={`text-sm mt-1 ${c.textSecondaryondary}`}>{s.warnings[0].text}</p>
+          {showSeasonalDetail && s.warnings.length > 1 && (
+            <ul className={`mt-2 space-y-1 text-sm ${c.textSecondaryondary}`}>{s.warnings.slice(1).map((w, i) => <li key={i}>• {w.text}</li>)}</ul>
+          )}
+        </div>
+      ) : null; })()}
+
+      {/* ═══ INPUT FORM ═══ */}
+      <div className={`${c.card} border rounded-xl shadow-lg p-6`}>
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <div className={`p-3 rounded-lg ${isDark ? 'bg-amber-900/30' : 'bg-amber-100'}`}><span className="text-2xl">🐾</span></div>
+            <div><h2 className={`text-xl font-bold ${c.text}`}>Pet Weirdness Decoder</h2><p className={`text-sm ${c.textMuteded}`}>Quirky or concerning?</p></div>
+          </div>
+          <div className="flex gap-2">
+            <button onClick={() => setShowProfileManager(!showProfileManager)} className={`${c.btnPrimarySecondaryondary} px-3 py-1.5 rounded text-xs`}>🐾 Pets</button>
+            <button onClick={() => setShowHistory(!showHistory)} className={`${c.btnPrimarySecondaryondary} px-3 py-1.5 rounded text-xs`}>📋 History</button>
+          </div>
+        </div>
+
+        {/* Profile Manager */}
+        {showProfileManager && (
+          <div className={`mb-5 p-4 rounded-lg border ${isDark ? 'bg-zinc-700 border-zinc-600' : 'bg-amber-50 border-amber-200'}`}>
+            <h4 className={`font-bold mb-2 ${c.text}`}>🐾 Saved Pets</h4>
+            {petProfiles.length > 0 ? <div className="space-y-2 mb-3">{petProfiles.map(p => (
+              <div key={p.id} className={`flex items-center justify-between p-2 rounded ${selectedProfileId === p.id ? isDark ? 'bg-amber-900/30' : 'bg-amber-100' : isDark ? 'bg-zinc-800' : 'bg-white'}`}>
+                <span className={c.text}>{p.name} <span className={`text-xs ${c.textMuteded}`}>· {p.petType} · {p.breed || 'Mixed'} · {p.age}y</span></span>
+                <div className="flex gap-2"><button onClick={() => handleLoadProfile(p)} className={`${c.btnPrimarySecondaryondary} px-2 py-1 rounded text-xs`}>Load</button><button onClick={() => handleDeleteProfile(p.id)} className={`text-xs ${c.textMuteded}`}>🗑️</button></div>
+              </div>
+            ))}</div> : <p className={`text-sm ${c.textMuteded} mb-2`}>No saved pets.</p>}
+            <div className="flex gap-2"><input type="text" value={profileName} onChange={e => setProfileName(e.target.value)} placeholder="Pet name..." className={`flex-1 p-2 border rounded text-sm ${c.input}`} onKeyDown={e => { if (e.key === 'Enter') handleSaveProfile(); }} /><button onClick={handleSaveProfile} className={`${c.btnPrimaryPrimary} px-3 py-1.5 rounded text-xs`}>Save</button></div>
+          </div>
+        )}
+
+        {/* History */}
+        {showHistory && (
+          <div className={`mb-5 p-4 rounded-lg border max-h-64 overflow-y-auto ${isDark ? 'bg-zinc-700 border-zinc-600' : 'bg-amber-50 border-amber-200'}`}>
+            <h4 className={`font-bold mb-2 ${c.text}`}>📋 Past Analyses</h4>
+            {behaviorHistory.length > 0 ? <div className="space-y-2">{behaviorHistory.slice(0, 6).map(e => (
+              <div key={e.id} className={`flex items-center justify-between p-2 rounded ${isDark ? 'bg-zinc-800' : 'bg-white'}`}>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2"><span className={`text-xs px-1.5 py-0.5 rounded font-semibold ${e.urgency === 'not_urgent' ? 'bg-emerald-100 text-emerald-700' : e.urgency === 'monitor' ? 'bg-sky-100 text-sky-700' : e.urgency === 'vet_soon' ? 'bg-amber-100 text-amber-700' : 'bg-red-100 text-red-700'}`}>{e.urgency?.replace(/_/g, ' ')}</span><span className={`text-xs ${c.textMuteded}`}>{e.petName} · {new Date(e.date).toLocaleDateString()}</span></div>
+                  <p className={`text-sm truncate ${c.text}`}>{e.behavior}</p>
+                </div>
+                <button onClick={() => handleLoadBehaviorEntry(e)} className={`${c.btnPrimarySecondaryondary} px-2 py-1 rounded text-xs ml-2`}>Load</button>
+              </div>
+            ))}</div> : <p className={`text-sm ${c.textMuteded}`}>No past analyses.</p>}
+          </div>
+        )}
+
+        <div className="space-y-5">
+          {/* Pet Type */}
+          <div>
+            <label className={`block text-sm font-medium ${c.label} mb-2`}>Pet type</label>
+            <div className="grid grid-cols-5 gap-2">
+              {petTypes.map(({ name, icon }) => (
+                <button key={name} onClick={() => setPetType(name)} className={`p-3 rounded-lg border-2 flex flex-col items-center gap-1 ${petType === name ? isDark ? 'border-amber-500 bg-amber-900/30' : 'border-amber-600 bg-amber-100' : isDark ? 'border-zinc-700' : 'border-amber-200'}`}>
+                  <span className="text-xl">{icon}</span><span className={`text-xs ${petType === name ? c.textSecondaryondary : c.textMuteded}`}>{name}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Breed + Age */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div><label className={`block text-sm font-medium ${c.label} mb-1`}>Breed</label><input type="text" value={breed} onChange={e => setBreed(e.target.value)} placeholder="e.g., Golden Retriever" className={`w-full p-3 border rounded-lg ${c.input}`} /></div>
+            <div><label className={`block text-sm font-medium ${c.label} mb-1`}>Age (years)</label><input type="number" min="0" max="50" step="0.5" value={age} onChange={e => setAge(e.target.value)} placeholder="3" className={`w-full p-3 border rounded-lg ${c.input}`} /></div>
+          </div>
+
+          {/* Photo + Video (v2 #2 + v3 #6) */}
+          <div>
+            <label className={`block text-sm font-medium ${c.label} mb-2`}>📷 Photo or video (optional)</label>
+            <div className="flex items-center gap-3 flex-wrap">
+              <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+              <button onClick={() => fileInputRef.current?.click()} disabled={uploading} className={`${c.btnPrimarySecondaryondary} px-3 py-2 rounded text-sm border ${isDark ? 'border-zinc-600' : 'border-amber-300'}`}>
+                {uploading ? <span className="animate-spin inline-block">{tool?.icon ?? '⚙️'}</span> : '📷'} {imagePreview ? 'Change' : 'Photo'}
+              </button>
+              {!isRecording ? (
+                <button onClick={handleStartRecording} className={`${c.btnPrimarySecondaryondary} px-3 py-2 rounded text-sm border ${isDark ? 'border-zinc-600' : 'border-amber-300'}`}>🎥 {videoPreview ? 'Re-record' : 'Record'}</button>
+              ) : (
+                <button onClick={handleStopRecording} className="bg-red-600 text-white px-3 py-2 rounded text-sm flex items-center gap-2">
+                  <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span> Stop ({15 - recordingSeconds}s)
+                </button>
+              )}
+              {imagePreview && <div className="flex items-center gap-2"><img src={imagePreview} alt="Pet" className="w-10 h-10 rounded object-cover border" /><button onClick={handleRemoveImage} className={`text-xs ${c.textMuteded}`}>✕</button></div>}
+              {videoPreview && <div className="flex items-center gap-2"><video src={videoPreview} className="w-16 h-10 rounded object-cover border" controls muted /><button onClick={handleRemoveVideo} className={`text-xs ${c.textMuteded}`}>✕</button></div>}
+            </div>
+            <p className={`text-xs ${c.textMuteded} mt-1`}>15-second video clips are great for showing vets the exact behavior</p>
+          </div>
+
+          {/* Behavior */}
+          <div>
+            <div className="flex justify-between mb-1"><label className={`text-sm font-medium ${c.label}`}>Describe the behavior</label><button onClick={() => setBehavior(exampleBehavior)} className={`text-xs ${c.textSecondaryondary} hover:underline`}>Example</button></div>
+            <textarea value={behavior} onChange={e => setBehavior(e.target.value)} placeholder="Be specific: what happens, when, triggers..." className={`w-full p-4 border rounded-lg ${c.input}`} rows={4} />
+          </div>
+
+          {/* Duration + Frequency */}
+          <div className="grid grid-cols-2 gap-4">
+            <div><label className={`block text-sm font-medium ${c.label} mb-1`}>Duration</label><select value={duration} onChange={e => setDuration(e.target.value)} className={`w-full p-3 border rounded-lg ${c.input}`}>{durationOptions.map(o => <option key={o} value={o}>{o}</option>)}</select></div>
+            <div><label className={`block text-sm font-medium ${c.label} mb-1`}>Frequency</label><select value={frequency} onChange={e => setFrequency(e.target.value)} className={`w-full p-3 border rounded-lg ${c.input}`}>{frequencyOptions.map(o => <option key={o} value={o}>{o}</option>)}</select></div>
+          </div>
+
+          {/* Other Changes */}
+          <div>
+            <label className={`block text-sm font-medium ${c.label} mb-2`}>Other changes?</label>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+              {[['eating', 'Eating'], ['energy', 'Energy'], ['bathroom', 'Bathroom'], ['sleep', 'Sleep'], ['mood', 'Mood']].map(([key, label]) => (
+                <label key={key} className={`p-2.5 rounded-lg border-2 cursor-pointer flex items-center gap-2 ${otherChanges[key] ? isDark ? 'border-amber-500 bg-amber-900/30' : 'border-amber-600 bg-amber-100' : isDark ? 'border-zinc-700' : 'border-amber-200'}`}>
+                  <input type="checkbox" checked={otherChanges[key]} onChange={() => handleOtherChangesToggle(key)} className="w-4 h-4" />
+                  <span className={`text-sm ${otherChanges[key] ? c.textSecondaryondary : c.textMuteded}`}>{label}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          {/* Meds & Food (v3 #4) */}
+          <div>
+            <button onClick={() => setShowMedsFood(!showMedsFood)} className={`flex items-center gap-1 text-sm ${c.textSecondaryondary} hover:underline`}>💊 {showMedsFood ? 'Hide' : 'Add'} medications & diet info</button>
+            {showMedsFood && (
+              <div className={`mt-2 p-4 rounded-lg ${isDark ? 'bg-zinc-700' : 'bg-amber-50'} space-y-3`}>
+                <div><label className={`text-xs font-medium ${c.label} mb-1 block`}>Current medications</label><input type="text" value={currentMeds} onChange={e => setCurrentMeds(e.target.value)} placeholder="e.g., Apoquel, Rimadyl, flea prevention..." className={`w-full p-2 border rounded text-sm ${c.input}`} /></div>
+                <div><label className={`text-xs font-medium ${c.label} mb-1 block`}>Recent diet changes</label><input type="text" value={recentDietChanges} onChange={e => setRecentDietChanges(e.target.value)} placeholder="e.g., Switched to grain-free, new treats..." className={`w-full p-2 border rounded text-sm ${c.input}`} /></div>
+                <p className={`text-xs ${c.textMuteded}`}>Medications and diet changes can cause behavioral side effects</p>
+              </div>
+            )}
+          </div>
+
+          <p className={`text-xs text-center ${c.textMuteded}`}>Vet jargon? <a href="/PlainTalk" target="_blank" rel="noopener noreferrer" className={linkStyle}>PlainTalk</a> translates.</p>
+
+          {/* Submit */}
+          <div className="flex gap-3">
+            <button onClick={handleAnalyze} disabled={loading} className={`flex-1 ${c.btnPrimaryPrimary} disabled:opacity-50 font-medium py-3 rounded-lg flex items-center justify-center gap-2`}>
+              {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '⚙️'}</span> Analyzing...</> : <><span>✨</span> Decode This Weirdness</>}
+            </button>
+            {results && <button onClick={handleReset} className={`px-6 py-3 border-2 ${c.btnPrimaryOutline} rounded-lg`}>New</button>}
+          </div>
+          {error && <div className={`p-4 ${c.danger} border rounded-lg flex items-start gap-3`}><span>⚠️</span><p className="text-sm">{error}</p></div>}
+        </div>
+      </div>
+
+      {/* ═══════════ RESULTS ═══════════ */}
+      {results && (
+        <div className="space-y-6">
+          {/* Action Bar */}
+          <div className={`${c.card} border rounded-xl p-4 flex gap-2 flex-wrap`}>
+            <CopyBtn content={buildFullText()} label="Copy" />
+            <ActionBar copyContent={buildFullText()} copyLabel="Copy" />
+            <button onClick={handlePrint} className={`${c.btnPrimarySecondaryondary} px-3 py-1.5 rounded text-xs`}>🖨️ Print</button>
+            <button onClick={() => setShowDiary(true)} className={`${c.btnPrimarySecondaryondary} px-3 py-1.5 rounded text-xs`}>📄 Diary</button>
+            <button onClick={() => setShowVetSummary(true)} className={`${c.btnPrimarySecondaryondary} px-3 py-1.5 rounded text-xs`}>🩺 Vet Summary</button>
+            <button onClick={() => setShowTracker(!showTracker)} className={`${c.btnPrimarySecondaryondary} px-3 py-1.5 rounded text-xs`}>📊 Track</button>
+          </div>
+
+          {/* Severity Tracker */}
+          {showTracker && (
+            <div className={`${c.card} border rounded-xl p-4`}>
+              <h4 className={`font-bold mb-2 ${c.text}`}>📊 Severity Tracker</h4>
+              {(() => { const t = getSeverityTrend(); return t ? <p className={`text-sm mb-2 font-semibold ${t.color}`}>{t.icon} {t.direction}</p> : null; })()}
+              <div className="flex items-end gap-2 mb-2 flex-wrap">
+                <div className="flex-1 min-w-[100px]"><label className={`text-xs ${c.label} block`}>{newSeverity}/5</label><input type="range" min="1" max="5" value={newSeverity} onChange={e => setNewSeverity(parseInt(e.target.value))} className="w-full" /></div>
+                <input type="text" value={newSeverityNote} onChange={e => setNewSeverityNote(e.target.value)} placeholder="Note..." className={`flex-1 min-w-[100px] p-2 border rounded text-sm ${c.input}`} onKeyDown={e => { if (e.key === 'Enter') handleAddSeverity(); }} />
+                <button onClick={handleAddSeverity} className={`${c.btnPrimaryPrimary} px-3 py-2 rounded text-sm`}>Log</button>
+              </div>
+              {(() => { const logs = getSeverityLogsForCurrent(); return logs.length ? (
+                <div className="flex items-end gap-1 h-12">{logs.slice(0, 6).reverse().map((l, i) => <div key={i} className="flex-1" title={`${new Date(l.date).toLocaleDateString()}: ${l.severity}/5`}><div className={`w-full rounded-t ${l.severity >= 4 ? 'bg-red-500' : l.severity >= 3 ? 'bg-amber-500' : 'bg-emerald-500'}`} style={{ height: `${(l.severity / 5) * 100}%` }} /></div>)}</div>
+              ) : <p className={`text-xs ${c.textMuteded}`}>No logs yet.</p>; })()}
+            </div>
+          )}
+
+          {/* Urgency + Emergency Vet */}
+          {results.behavior_analysis && (
+            <div className={`${getUrgencyColor(results.behavior_analysis.urgency_level)} border-l-4 rounded-r-lg p-6 shadow-lg`}>
+              <div className="flex items-center justify-between flex-wrap gap-3">
+                <div className="flex items-center gap-3">
+                  <span className="text-4xl">{results.behavior_analysis.urgency_emoji}</span>
+                  <div><h3 className="text-2xl font-bold">{getUrgencyLabel(results.behavior_analysis.urgency_level)}</h3><p className="text-sm opacity-75 capitalize">{results.behavior_analysis.behavior_category?.replace(/_/g, ' ')}</p></div>
+                </div>
+                {(results.behavior_analysis.urgency_level === 'vet_now' || results.behavior_analysis.urgency_level === 'vet_soon') && (
+                  <button onClick={handleFindEmergencyVet} className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2">
+                    📍 Find Vet Near Me
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Community Benchmark (v3 #5) */}
+          {results.how_common && (
+            <div className={`${c.card} border rounded-xl p-4`}>
+              <h4 className={`font-bold mb-2 flex items-center gap-2 ${c.text}`}><span>📊</span> How Common Is This?</h4>
+              <p className={`text-sm ${c.textSecondaryondary}`}>{results.how_common}</p>
+            </div>
+          )}
+
+          {/* Breed-Specific */}
+          {results.breed_specific_info && (
+            <div className={`${c.cardAlt} border-l-4 rounded-r-lg p-5`}>
+              <h3 className="font-bold mb-2 flex items-center gap-2"><span>🧬</span> Breed Intelligence</h3>
+              {results.breed_specific_info.is_breed_typical && <p className={`text-sm mb-2 ${c.text}`}><strong>Typical for {breed || petType}s.</strong> {results.breed_specific_info.breed_explanation}</p>}
+              {results.breed_specific_info.genetic_predispositions?.length > 0 && <div className="mb-2"><p className="text-sm font-semibold">Predispositions:</p><ul className="text-sm space-y-1">{results.breed_specific_info.genetic_predispositions.map((g, i) => <li key={i}>• {g}</li>)}</ul></div>}
+              {results.breed_specific_info.common_breed_behaviors?.length > 0 && <div><p className="text-sm font-semibold">Common:</p><ul className="text-sm space-y-1">{results.breed_specific_info.common_breed_behaviors.map((b, i) => <li key={i}>• {b}</li>)}</ul></div>}
+            </div>
+          )}
+
+          {/* Life Stage */}
+          {results.life_stage_context && (
+            <div className={`${c.success} border-l-4 rounded-r-lg p-5`}>
+              <h3 className="font-bold mb-2 flex items-center gap-2"><span>🕐</span> Life Stage</h3>
+              <p className={`text-sm font-semibold ${c.text}`}>{results.life_stage_context.life_stage} ({age}y)</p>
+              <p className="text-sm">{results.life_stage_context.stage_explanation}</p>
+              {results.life_stage_context.age_appropriate && <div className={`mt-2 p-2 rounded ${isDark ? 'bg-emerald-900/20' : 'bg-emerald-100'}`}><p className="text-sm">✅ {results.life_stage_context.age_context}</p></div>}
+            </div>
+          )}
+
+          {/* Most Likely */}
+          {results.most_likely_explanation && (
+            <div className={`${c.card} border rounded-xl p-6`}>
+              <h3 className={`text-lg font-bold ${c.text} mb-3`}>✅ Most Likely</h3>
+              <p className={c.textSecondaryondary}><strong>What:</strong> {results.most_likely_explanation.what_it_is}</p>
+              <p className={`${c.textSecondaryondary} mt-2`}><strong>Why:</strong> {results.most_likely_explanation.why_they_do_it}</p>
+            </div>
+          )}
+
+          {/* Vet Prep */}
+          {results.vet_visit_prep && (results.behavior_analysis?.urgency_level === 'vet_soon' || results.behavior_analysis?.urgency_level === 'vet_now') && (
+            <div className={`${c.warning} border rounded-xl p-5`}>
+              <h3 className="font-bold mb-3 flex items-center gap-2"><span>💬</span> Vet Prep</h3>
+              {results.vet_visit_prep.questions_to_ask?.length > 0 && <div className="mb-3"><p className={`text-sm font-semibold mb-1 ${c.label}`}>❓ Questions:</p><ul className={`text-sm space-y-1 ${c.textSecondaryondary}`}>{results.vet_visit_prep.questions_to_ask.map((q, i) => <li key={i}>• {q}</li>)}</ul></div>}
+              {results.vet_visit_prep.what_to_observe?.length > 0 && <div className="mb-3"><p className={`text-sm font-semibold mb-1 ${c.label}`}>📊 Observe:</p><ul className={`text-sm space-y-1 ${c.textSecondaryondary}`}>{results.vet_visit_prep.what_to_observe.map((o, i) => <li key={i}>• {o}</li>)}</ul></div>}
+              {results.vet_visit_prep.documentation_tips && <p className="text-sm"><strong>📷</strong> {results.vet_visit_prep.documentation_tips}</p>}
+              {videoPreview && <div className="mt-3"><p className={`text-sm font-semibold mb-1 ${c.label}`}>🎥 Your recorded clip:</p><video src={videoPreview} className="w-48 h-auto rounded border" controls /></div>}
+            </div>
+          )}
+
+          {/* When to Worry */}
+          {results.when_to_worry && <div className={`${c.danger} border-l-4 rounded-r-lg p-5`}><h3 className="font-bold mb-2 flex items-center gap-2"><span>⚠️</span> When to Worry</h3>{results.when_to_worry.red_flags?.length > 0 && <ul className="text-sm space-y-2 font-semibold mb-3">{results.when_to_worry.red_flags.map((f, i) => <li key={i} className="flex items-start gap-2"><span className="text-red-500">🚨</span> {f}</li>)}</ul>}{results.when_to_worry.timeline && <div className={`p-2 rounded ${isDark ? 'bg-red-900/30' : 'bg-red-100'}`}><p className="text-sm"><strong>⏰</strong> {results.when_to_worry.timeline}</p></div>}</div>}
+
+          {/* Quirky */}
+          {results.if_its_just_quirky && results.behavior_analysis?.urgency_level === 'not_urgent' && (
+            <div className={`${c.success} border rounded-lg p-5`}>
+              <h3 className="font-bold mb-2">❤️ Just a Quirk!</h3>
+              {results.if_its_just_quirky.why_normal && <p className="text-sm mb-2">{results.if_its_just_quirky.why_normal}</p>}
+              {results.if_its_just_quirky.enrichment_suggestions?.length > 0 && <div className="mb-2"><p className="text-sm font-semibold">Enrichment:</p><ul className="text-sm space-y-1">{results.if_its_just_quirky.enrichment_suggestions.map((s, i) => <li key={i}>• {s}</li>)}</ul></div>}
+              {results.if_its_just_quirky.enjoy_it && <div className={`p-2 rounded ${isDark ? 'bg-emerald-900/20' : 'bg-emerald-100'}`}><p className="text-sm">💚 {results.if_its_just_quirky.enjoy_it}</p></div>}
+            </div>
+          )}
+
+          {/* Other Possibilities */}
+          {results.other_possibilities?.length > 0 && <div className={`${c.card} border rounded-xl p-5`}><h3 className={`font-bold ${c.text} mb-3`}>❓ Other Possibilities</h3>{results.other_possibilities.map((p, i) => <div key={i} className={`p-3 rounded-lg mb-2 ${isDark ? 'bg-zinc-700' : 'bg-amber-50'}`}><div className="flex justify-between mb-1"><span className={`font-semibold ${c.text}`}>{p.explanation}</span><span className={`text-xs px-2 py-0.5 rounded font-semibold ${p.likelihood === 'high' ? 'bg-red-100 text-red-700' : p.likelihood === 'medium' ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'}`}>{p.likelihood}</span></div>{p.signs_that_suggest_this?.length > 0 && <ul className={`text-sm ${c.textSecondaryondary} space-y-1`}>{p.signs_that_suggest_this.map((s, j) => <li key={j}>• {s}</li>)}</ul>}</div>)}</div>}
+
+          {/* Behavioral Mod */}
+          {results.behavioral_modification?.length > 0 && <div className={`${c.card} border rounded-xl p-5`}><h3 className={`font-bold ${c.text} mb-3`}>📈 Change This?</h3>{results.behavioral_modification.map((m, i) => <div key={i} className="space-y-2">{m.if_you_want_to_change_it && <p className={`text-sm ${c.textSecondaryondary}`}>{m.if_you_want_to_change_it}</p>}{m.how && <p className={`text-sm ${c.textSecondaryondary}`}><strong>How:</strong> {m.how}</p>}{m.patience_required && <p className={`text-sm ${c.textMuteded}`}>⏰ {m.patience_required}</p>}</div>)}</div>}
+
+          {/* Stories */}
+          {results.similar_pet_stories && <div className={`${c.cardAlt} border-l-4 rounded-r-lg p-4`}><h3 className="font-bold mb-1 flex items-center gap-2"><span>📖</span> Community</h3><p className="text-sm">{results.similar_pet_stories}</p></div>}
+
+          {/* Follow-up Q&A */}
+          <div className={`${c.card} border rounded-xl p-5`}>
+            <h3 className={`font-bold mb-3 ${c.text}`}>💬 Follow-up Questions</h3>
+            {followupHistory.length > 0 && <div className="space-y-3 mb-4">{followupHistory.map((f, i) => <div key={i} className="space-y-1"><div className={`p-3 rounded ${isDark ? 'bg-amber-900/20' : 'bg-amber-50'}`}><p className={`text-xs font-semibold ${c.textSecondaryondary}`}>You:</p><p className={`text-sm ${c.text}`}>{f.question}</p></div><div className={`p-3 rounded ${isDark ? 'bg-zinc-700' : 'bg-gray-50'}`}><p className={`text-sm ${c.textSecondaryondary}`}>{f.answer}</p></div></div>)}</div>}
+            <div className="flex gap-2" ref={followupRef}>
+              <input type="text" value={followupQuestion} onChange={e => setFollowupQuestion(e.target.value)} placeholder="What if she also starts limping?" className={`flex-1 p-3 border rounded-lg ${c.input}`} onKeyDown={e => { if (e.key === 'Enter') handleFollowup(); }} />
+              <button onClick={handleFollowup} disabled={followupLoading || !followupQuestion.trim()} className={`${c.btnPrimaryPrimary} px-4 py-2 rounded disabled:opacity-50`}>{followupLoading ? <span className="animate-spin inline-block">{tool?.icon ?? '⚙️'}</span> : '➤'}</button>
+            </div>
+          </div>
+
+          <div className="text-center space-y-1">
+            <p className={`text-xs ${c.textMuteded}`}>Translate vet findings → <a href="/DoctorVisitTranslator" target="_blank" rel="noopener noreferrer" className={linkStyle}>Doctor Visit Translator</a></p>
+            <p className={`text-xs ${c.textMuteded}`}>Simplify jargon → <a href="/PlainTalk" target="_blank" rel="noopener noreferrer" className={linkStyle}>PlainTalk</a></p>
+          </div>
+        </div>
+      )}
+
+      {/* ═══ MODALS ═══ */}
+      {showDiary && <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50" onClick={() => setShowDiary(false)}><div className={`${c.card} border rounded-xl p-6 max-w-2xl w-full max-h-[80vh] overflow-auto`} onClick={e => e.stopPropagation()}><h3 className={`font-bold ${c.text} mb-3`}>📄 Behavior Diary</h3><pre className={`${isDark ? 'bg-zinc-900' : 'bg-gray-50'} p-4 rounded text-xs overflow-auto ${c.text}`}>{generateBehaviorDiary()}</pre><div className="flex gap-3 mt-4"><CopyBtn content={generateBehaviorDiary()} label="Copy" /><button onClick={() => setShowDiary(false)} className={`${c.btnPrimarySecondaryondary} px-4 py-2 rounded`}>Close</button></div></div></div>}
+
+      {showVetSummary && <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50" onClick={() => setShowVetSummary(false)}><div className={`${c.card} border rounded-xl p-6 max-w-2xl w-full max-h-[80vh] overflow-auto`} onClick={e => e.stopPropagation()}><h3 className={`font-bold ${c.text} mb-2`}>🩺 Vet-Ready Summary</h3><p className={`text-xs ${c.textMuteded} mb-3`}>Show this to your vet or email it ahead of the appointment.</p><pre className={`${isDark ? 'bg-zinc-900' : 'bg-gray-50'} p-4 rounded text-xs overflow-auto ${c.text} leading-relaxed`}>{buildVetSummary()}</pre><div className="flex gap-3 mt-4"><CopyBtn content={buildVetSummary()} label="Copy for Vet" /><button onClick={() => setShowVetSummary(false)} className={`${c.btnPrimarySecondaryondary} px-4 py-2 rounded`}>Close</button></div></div></div>}
+        <div className={`mt-6 pt-4 border-t text-sm ${c.border} ${c.textMuted}`}>
+          <p className="mb-2 font-medium">You might also like:</p>
+          <div className="flex flex-wrap gap-2">
+            {[{slug:'plant-rescue',label:'🌱 Plant Rescue'},{slug:'bike-medic',label:'🚲 Bike Medic'},{slug:'procedure-probe',label:'🏥 Procedure Probe'}].map(({slug,label})=>(
+              <a key={slug} href={`/tool/${slug}`} className={linkStyle}>{label}</a>
+            ))}
+          </div>
+        </div>
+    </div>
+  );
+};
+
+PetWeirdnessDecoder.displayName = 'PetWeirdnessDecoder';

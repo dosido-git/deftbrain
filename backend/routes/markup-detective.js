@@ -1,6 +1,9 @@
-const express = require('express');
-const router = express.Router();
-const { anthropic, cleanJsonResponse } = require('../lib/claude');
+/* eslint-disable */
+// Server-side only
+// const express = require('express');
+// const router = express.Router();
+// Server-side only — not bundled by webpack
+// const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
 
 // ════════════════════════════════════════════════════════════
 // POST /markup-detective — Price forensics for any product
