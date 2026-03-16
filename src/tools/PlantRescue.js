@@ -77,17 +77,14 @@ const PlantRescue = ({ tool }) => {
     btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
-    success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
-    warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
-    danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
-    infoBox:       isDark ? 'bg-sky-900/20 border-sky-700 text-sky-200' : 'bg-sky-50 border-sky-200 text-sky-800',
-    successBox:    isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-300',
-    successTxt:    isDark ? 'text-emerald-300' : 'text-emerald-800',
-    warningBox:    isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
-    warningTxt:    isDark ? 'text-amber-300' : 'text-amber-800',
+    success:       isDark ? 'border-emerald-600 text-emerald-300' : 'border-emerald-600 text-emerald-700',
+    warning:       isDark ? 'border-amber-500 text-amber-300' : 'border-amber-500 text-amber-700',
+    danger:        isDark ? 'border-red-600 text-red-300' : 'border-red-600 text-red-700',
+    infoBox:       isDark ? 'border-sky-500 text-sky-300' : 'border-sky-600 text-sky-700',
+    warningBox:    isDark ? 'border-amber-500' : 'border-amber-500',
     pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
-  };;
+  };
 
   // ═══ IMAGE HANDLING ═══
   const processImage = async (file) => {
@@ -272,7 +269,7 @@ const PlantRescue = ({ tool }) => {
       {/* Header + Mode Toggle */}
       <div className={`${c.card} border rounded-xl shadow-lg p-6`}>
         <div className="flex items-center justify-between mb-4">
-          <div><h2 className={`text-2xl font-bold ${c.text}`}>Plant Rescue 🪴</h2><p className={`text-sm ${c.textMutededed}`}>Diagnose, identify, care for, and track</p></div>
+          <div><h2 className={`text-2xl font-bold ${c.text}`}>Plant Rescue 🪴</h2><p className={`text-sm ${c.textMuted}`}>Diagnose, identify, care for, and track</p></div>
           <button onClick={() => setShowCollection(!showCollection)} className={`${c.btnSecondary} px-3 py-1.5 rounded text-xs`}>🪴 My Plants ({plantCollection.length})</button>
         </div>
 
@@ -283,8 +280,8 @@ const PlantRescue = ({ tool }) => {
           <button onClick={() => setMode('identify')} className={`flex-1 py-2.5 rounded-lg font-medium text-sm ${mode === 'identify' ? c.btnPrimary : c.btnSecondary}`}>🔍 Identify</button>
         </div>
 
-        <div className={`${isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-300'} border-l-4 rounded-r-lg p-4`}>
-          <p className={`text-sm ${c.textSecondaryondaryondary}`}>{mode === 'rescue' ? 'Upload a photo of your struggling plant. Get diagnosis, rescue plan, and recovery timeline.' : mode === 'care' ? 'Get a personalized care schedule, watering guide, and seasonal calendar.' : 'Upload a photo to identify your plant and get its full care profile.'}</p>
+        <div className={`${c.card} border-l-4 border-gray-300 rounded-r-lg p-4`}>
+          <p className={`text-sm ${c.textSecondary}`}>{mode === 'rescue' ? 'Upload a photo of your struggling plant. Get diagnosis, rescue plan, and recovery timeline.' : mode === 'care' ? 'Get a personalized care schedule, watering guide, and seasonal calendar.' : 'Upload a photo to identify your plant and get its full care profile.'}</p>
         </div>
       </div>
 
@@ -299,42 +296,42 @@ const PlantRescue = ({ tool }) => {
             {plantCollection.map(pl => {
               const ws = getWaterStatus(pl);
               return (
-                <div key={pl.id} className={`p-3 rounded-lg border ${activePlantId === pl.id ? 'border-emerald-500' : isDark ? 'border-zinc-600' : 'border-emerald-200'} ${isDark ? 'bg-zinc-700' : 'bg-emerald-50'}`}>
+                <div key={pl.id} className={`p-3 rounded-lg border ${activePlantId === pl.id ? 'border-emerald-500' : isDark ? 'border-zinc-600' : 'border-gray-200'} ${isDark ? 'bg-zinc-700' : 'bg-white'}`}>
                   <div className="flex items-center justify-between">
                     <div className="min-w-0 flex-1 cursor-pointer" onClick={() => handleLoadPlant(pl)}>
                       <div className="flex items-center gap-2">
                         <h4 className={`font-bold ${c.text} truncate`}>{pl.name}</h4>
-                        <span className={`text-xs px-1.5 py-0.5 rounded font-semibold ${pl.severity === 'critical' ? 'bg-red-100 text-red-700' : pl.severity === 'concerning' ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'}`}>{pl.severity || 'ok'}</span>
+                        <span className={`text-xs px-1.5 py-0.5 rounded font-semibold ${pl.severity === 'critical' ? 'bg-red-100 text-red-700' : pl.severity === 'concerning' ? 'bg-amber-100 text-amber-700' : 'bg-green-100 text-green-700'}`}>{pl.severity || 'ok'}</span>
                       </div>
-                      <p className={`text-xs ${c.textMutededed}`}>{pl.commonName || pl.species || 'Unknown'}</p>
+                      <p className={`text-xs ${c.textMuted}`}>{pl.commonName || pl.species || 'Unknown'}</p>
                     </div>
                     <div className="flex items-center gap-2">
                       {/* Water status indicator (#1) */}
                       {ws ? (
                         <div className="text-center">
-                          <button onClick={(e) => { e.stopPropagation(); handleMarkWatered(pl.id); }} className={`px-2 py-1 rounded text-xs font-bold ${ws.status === 'overdue' ? 'bg-red-100 text-red-700 animate-pulse' : ws.status === 'today' ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'}`}>
+                          <button onClick={(e) => { e.stopPropagation(); handleMarkWatered(pl.id); }} className={`px-2 py-1 rounded text-xs font-bold ${ws.status === 'overdue' ? 'bg-red-100 text-red-700 animate-pulse' : ws.status === 'today' ? 'bg-amber-100 text-amber-700' : 'bg-green-100 text-green-700'}`}>
                             💧 {ws.status === 'overdue' ? 'OVERDUE' : ws.status === 'today' ? 'TODAY' : `${ws.nextIn}d`}
                           </button>
-                          <p className={`text-xs ${c.textMutededed}`}>{ws.daysSince}d ago</p>
+                          <p className={`text-xs ${c.textMuted}`}>{ws.daysSince}d ago</p>
                         </div>
                       ) : pl.lastResults?.care_schedule ? (
                         <button onClick={(e) => { e.stopPropagation(); handleMarkWatered(pl.id); }} className={`${c.btnSecondary} px-2 py-1 rounded text-xs`}>💧 Watered</button>
                       ) : null}
-                      <button onClick={() => handleDeletePlant(pl.id)} className={`text-xs ${c.textMutededed} hover:text-zinc-400`}>✕</button>
+                      <button onClick={() => handleDeletePlant(pl.id)} className={`text-xs ${c.textMuted} hover:text-zinc-400`}>✕</button>
                     </div>
                   </div>
                 </div>
               );
             })}
-          </div> : <p className={`text-sm ${c.textMutededed}`}>No saved plants yet.</p>}
+          </div> : <p className={`text-sm ${c.textMuted}`}>No saved plants yet.</p>}
 
           {/* Companion Results (#4) */}
           {companionResults && (
-            <div className={`mt-4 p-4 rounded-lg border ${isDark ? 'bg-zinc-800 border-zinc-600' : 'bg-white border-emerald-200'}`}>
+            <div className={`mt-4 p-4 rounded-lg border ${isDark ? 'bg-zinc-800 border-zinc-600' : 'bg-white border-gray-200'}`}>
               <h4 className={`font-bold mb-2 ${c.text}`}>🤝 Companion Analysis</h4>
-              {companionResults.groupings?.length > 0 && <div className="space-y-2 mb-3">{companionResults.groupings.map((g, i) => <div key={i} className={`p-2 rounded ${isDark ? 'bg-emerald-900/20' : 'bg-emerald-50'}`}><p className={`text-xs font-bold ${c.accentTxt}`}>{g.group_name}</p><p className={`text-sm ${c.text}`}>{g.plants.join(', ')}</p><p className={`text-xs ${c.textMutededed}`}>{g.reason}</p></div>)}</div>}
-              {companionResults.conflicts?.length > 0 && <div className="space-y-1 mb-3">{companionResults.conflicts.map((cf, i) => <p key={i} className={`text-sm ${c.textSecondaryondaryondary}`}>⚠️ {cf}</p>)}</div>}
-              {companionResults.suggestions?.length > 0 && <div><p className={`text-xs font-bold ${c.label} mb-1`}>💡 Suggestions:</p>{companionResults.suggestions.map((s, i) => <p key={i} className={`text-sm ${c.textSecondaryondaryondary}`}>• {s}</p>)}</div>}
+              {companionResults.groupings?.length > 0 && <div className="space-y-2 mb-3">{companionResults.groupings.map((g, i) => <div key={i} className={`p-2 rounded ${isDark ? 'bg-zinc-800' : 'bg-white'}`}><p className={`text-xs font-bold ${c.accentTxt}`}>{g.group_name}</p><p className={`text-sm ${c.text}`}>{g.plants.join(', ')}</p><p className={`text-xs ${c.textMuted}`}>{g.reason}</p></div>)}</div>}
+              {companionResults.conflicts?.length > 0 && <div className="space-y-1 mb-3">{companionResults.conflicts.map((cf, i) => <p key={i} className={`text-sm ${c.textSecondary}`}>⚠️ {cf}</p>)}</div>}
+              {companionResults.suggestions?.length > 0 && <div><p className={`text-xs font-bold ${c.label} mb-1`}>💡 Suggestions:</p>{companionResults.suggestions.map((s, i) => <p key={i} className={`text-sm ${c.textSecondary}`}>• {s}</p>)}</div>}
             </div>
           )}
         </div>
@@ -351,9 +348,9 @@ const PlantRescue = ({ tool }) => {
           <div>
             <label className={`block text-sm font-medium ${c.label} mb-2`}>📸 {mode === 'rescue' ? 'Plant Photo — whole plant view' : 'Plant Photo'}</label>
             {!imagePreview ? (
-              <div onDragOver={handleDragOver} onDrop={handleDrop} onPaste={handlePaste} className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer ${isDark ? 'border-zinc-600 hover:border-emerald-500 bg-zinc-900/50' : 'border-emerald-300 hover:border-emerald-500 bg-emerald-50/50'}`} onClick={() => fileInputRef.current?.click()}>
+              <div onDragOver={handleDragOver} onDrop={handleDrop} onPaste={handlePaste} className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer ${isDark ? 'border-zinc-600 hover:border-zinc-400 bg-zinc-900/50' : 'border-gray-300 hover:border-gray-400 bg-white'}`} onClick={() => fileInputRef.current?.click()}>
                 <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileUpload} className="hidden" />
-                {uploading ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span><p className={`text-sm ${c.text}`}>Compressing...</p></> : <><span className="text-3xl block mb-2">📤</span><p className={`text-sm ${c.text}`}>Click, drag, or paste</p><p className={`text-xs ${c.textMutededed}`}>JPG, PNG, WEBP</p></>}
+                {uploading ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span><p className={`text-sm ${c.text}`}>Compressing...</p></> : <><span className="text-3xl block mb-2">📤</span><p className={`text-sm ${c.text}`}>Click, drag, or paste</p><p className={`text-xs ${c.textMuted}`}>JPG, PNG, WEBP</p></>}
               </div>
             ) : (
               <div className="relative"><img src={imagePreview} alt="Plant" className="w-full max-h-48 object-contain rounded-lg border" /><button onClick={handleRemoveImage} className={`absolute top-2 right-2 ${c.btnDanger} w-7 h-7 rounded-full flex items-center justify-center text-xs`}>✕</button></div>
@@ -367,9 +364,9 @@ const PlantRescue = ({ tool }) => {
                 <div key={idx}>
                   <label className={`block text-xs font-medium ${c.label} mb-1`}>{label}</label>
                   {!extraPreviews[idx] ? (
-                    <div onClick={() => extraPhotoRefs[idx]?.current?.click()} className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer ${isDark ? 'border-zinc-600 hover:border-emerald-500' : 'border-emerald-300 hover:border-emerald-500'}`}>
+                    <div onClick={() => extraPhotoRefs[idx]?.current?.click()} className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer ${isDark ? 'border-zinc-600 hover:border-zinc-400' : 'border-gray-300 hover:border-gray-400'}`}>
                       <input ref={extraPhotoRefs[idx]} type="file" accept="image/*" onChange={e => handleExtraPhoto(idx, e)} className="hidden" />
-                      <span className="text-xl">📸</span><p className={`text-xs ${c.textMutededed}`}>Optional</p>
+                      <span className="text-xl">📸</span><p className={`text-xs ${c.textMuted}`}>Optional</p>
                     </div>
                   ) : (
                     <div className="relative"><img src={extraPreviews[idx]} alt={`Extra ${idx + 1}`} className="w-full h-24 object-cover rounded-lg border" /><button onClick={() => handleRemoveExtra(idx)} className={`absolute top-1 right-1 ${c.btnDanger} w-5 h-5 rounded-full flex items-center justify-center text-xs`}>✕</button></div>
@@ -385,7 +382,7 @@ const PlantRescue = ({ tool }) => {
               <label className={`block text-sm font-medium ${c.label} mb-2`}>🩺 What do you see? (click all that apply)</label>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                 {symptomOptions.map(s => (
-                  <label key={s.id} className={`p-2.5 rounded-lg border-2 cursor-pointer flex items-center gap-2 text-sm ${selectedSymptoms.includes(s.id) ? isDark ? 'border-emerald-500 bg-emerald-900/30' : 'border-emerald-500 bg-emerald-100' : isDark ? 'border-zinc-700' : 'border-gray-200'}`}>
+                  <label key={s.id} className={`p-2.5 rounded-lg border-2 cursor-pointer flex items-center gap-2 text-sm ${selectedSymptoms.includes(s.id) ? isDark ? 'border-cyan-500 bg-zinc-700' : 'border-cyan-600 bg-slate-50' : isDark ? 'border-zinc-700' : 'border-gray-200'}`}>
                     <input type="checkbox" checked={selectedSymptoms.includes(s.id)} onChange={() => toggleSymptom(s.id)} className="sr-only" />
                     <span>{s.emoji}</span> <span className={selectedSymptoms.includes(s.id) ? 'font-bold' : ''}>{s.label}</span>
                   </label>
@@ -411,13 +408,13 @@ const PlantRescue = ({ tool }) => {
             <div className="flex gap-4"><label className="flex items-center gap-2 cursor-pointer text-sm"><input type="checkbox" checked={hasPets} onChange={e => setHasPets(e.target.checked)} className="w-4 h-4" /> 🐾 Pets</label><label className="flex items-center gap-2 cursor-pointer text-sm"><input type="checkbox" checked={hasChildren} onChange={e => setHasChildren(e.target.checked)} className="w-4 h-4" /> 👶 Children</label></div>
           </>}
 
-          <p className={`text-xs text-center ${c.textMutededed}`}>Bike? <a href="/BikeMedic" target="_blank" rel="noopener noreferrer" className={linkStyle}>Bike Medic</a> diagnoses the same way.</p>
+          <p className={`text-xs text-center ${c.textMuted}`}>Bike? <a href="/BikeMedic" target="_blank" rel="noopener noreferrer" className={linkStyle}>Bike Medic</a> diagnoses the same way.</p>
 
           <div className="flex gap-3">
             <button onClick={handleAnalyze} disabled={loading || uploading || (!imageBase64 && !plantDescription.trim() && selectedSymptoms.length === 0)} className={`flex-1 ${c.btnPrimary} disabled:opacity-50 font-medium py-3 rounded-lg flex items-center justify-center gap-2`}>
               {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> Analyzing...</> : <><span>✨</span> {mode === 'rescue' ? 'Diagnose' : mode === 'identify' ? 'Identify' : 'Get Care Guide'}</>}
             </button>
-            {results && <button onClick={handleReset} className={`px-6 py-3 border-2 ${isDark ? 'border-zinc-600 text-zinc-300' : 'border-emerald-300 text-emerald-700'} rounded-lg`}>🔄</button>}
+            {results && <button onClick={handleReset} className={`px-6 py-3 border-2 ${isDark ? 'border-zinc-600 text-zinc-300' : 'border-gray-300 text-gray-600'} rounded-lg`}>🔄</button>}
           </div>
           {error && <div className={`${c.critical} border rounded-lg p-4 flex items-start gap-3`}><span>⚠️</span><p className="text-sm">{error}</p></div>}
         </div>
@@ -438,15 +435,15 @@ const PlantRescue = ({ tool }) => {
             <div className={`${c.card} border rounded-xl shadow-lg p-6 text-center`}>
               <div className="text-6xl mb-3">{getSeverityEmoji(results.diagnosis.severity)}</div>
               <div className={`text-2xl font-black ${c.text}`}>{getSeverityLabel(results.diagnosis.severity)}</div>
-              <p className={`text-sm ${c.textSecondaryondaryondary}`}>{results.diagnosis.primary_problem}</p>
+              <p className={`text-sm ${c.textSecondary}`}>{results.diagnosis.primary_problem}</p>
               {results.is_saveable !== undefined && <p className={`text-sm mt-2 font-bold ${results.is_saveable ? 'text-emerald-500' : 'text-red-500'}`}>{results.is_saveable ? '✅ Saveable!' : '⚰️ May be beyond saving'}</p>}
-              {results.recovery_timeline && <p className={`text-xs ${c.textMutededed} mt-1`}>📅 {results.recovery_timeline}</p>}
+              {results.recovery_timeline && <p className={`text-xs ${c.textMuted} mt-1`}>📅 {results.recovery_timeline}</p>}
             </div>
           ) : (
             <div className={`${c.card} border rounded-xl shadow-lg p-6 text-center`}>
               <div className="text-6xl mb-3">{mode === 'identify' ? '🔍' : '🌿'}</div>
               <div className={`text-2xl font-black ${c.text}`}>{mode === 'identify' ? 'IDENTIFIED' : 'CARE GUIDE'}</div>
-              <p className={`text-sm ${c.textSecondaryondaryondary}`}>{results.plant_identification?.common_name || results.plant_identification?.species || ''}</p>
+              <p className={`text-sm ${c.textSecondary}`}>{results.plant_identification?.common_name || results.plant_identification?.species || ''}</p>
             </div>
           )}
 
@@ -466,25 +463,25 @@ const PlantRescue = ({ tool }) => {
             <div className={`${c.card} border rounded-xl p-5`}>
               <h3 className={`font-bold mb-2 ${c.text}`}>📷 Identification</h3>
               <p className={`text-lg font-bold ${c.text}`}>{results.plant_identification.species}</p>
-              {results.plant_identification.common_name && <p className={`text-sm ${c.textSecondaryondaryondary}`}>{results.plant_identification.common_name}</p>}
-              <span className={`text-xs px-2 py-1 rounded mt-2 inline-block ${results.plant_identification.confidence === 'high' ? 'bg-emerald-100 text-emerald-700' : results.plant_identification.confidence === 'medium' ? 'bg-amber-100 text-amber-700' : 'bg-red-100 text-red-700'}`}>{results.plant_identification.confidence_score ? `${results.plant_identification.confidence_score}%` : results.plant_identification.confidence?.toUpperCase()}</span>
-              {results.plant_identification.alternative_species?.length > 0 && <div className="mt-2">{results.plant_identification.alternative_species.map((a, i) => <p key={i} className={`text-xs ${c.textMutededed}`}>• {a.common_name || a.species} ({a.likelihood}%)</p>)}</div>}
+              {results.plant_identification.common_name && <p className={`text-sm ${c.textSecondary}`}>{results.plant_identification.common_name}</p>}
+              <span className={`text-xs px-2 py-1 rounded mt-2 inline-block ${results.plant_identification.confidence === 'high' ? 'bg-green-100 text-green-700' : results.plant_identification.confidence === 'medium' ? 'bg-amber-100 text-amber-700' : 'bg-red-100 text-red-700'}`}>{results.plant_identification.confidence_score ? `${results.plant_identification.confidence_score}%` : results.plant_identification.confidence?.toUpperCase()}</span>
+              {results.plant_identification.alternative_species?.length > 0 && <div className="mt-2">{results.plant_identification.alternative_species.map((a, i) => <p key={i} className={`text-xs ${c.textMuted}`}>• {a.common_name || a.species} ({a.likelihood}%)</p>)}</div>}
             </div>
           )}
 
           {/* Care Schedule */}
           {results.care_schedule && (
-            <div className={`${c.success} border-2 rounded-xl p-6`}>
+            <div className={`${c.card} ${c.success} border border-l-4 rounded-xl p-6`}>
               <h3 className={`text-lg font-bold mb-3 ${c.text}`}>💧 Care Schedule</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {results.care_schedule.watering && <div className={`p-3 rounded-lg ${isDark ? 'bg-emerald-900/30' : 'bg-emerald-50'}`}><p className="text-xs font-bold mb-1">💧 Watering</p><p className={`text-sm ${c.text}`}>{results.care_schedule.watering}</p></div>}
-                {results.care_schedule.fertilizing && <div className={`p-3 rounded-lg ${isDark ? 'bg-emerald-900/30' : 'bg-emerald-50'}`}><p className="text-xs font-bold mb-1">🧪 Fertilizing</p><p className={`text-sm ${c.text}`}>{results.care_schedule.fertilizing}</p></div>}
-                {results.care_schedule.misting && <div className={`p-3 rounded-lg ${isDark ? 'bg-emerald-900/30' : 'bg-emerald-50'}`}><p className="text-xs font-bold mb-1">💨 Misting</p><p className={`text-sm ${c.text}`}>{results.care_schedule.misting}</p></div>}
-                {results.care_schedule.rotation && <div className={`p-3 rounded-lg ${isDark ? 'bg-emerald-900/30' : 'bg-emerald-50'}`}><p className="text-xs font-bold mb-1">🔄 Rotation</p><p className={`text-sm ${c.text}`}>{results.care_schedule.rotation}</p></div>}
-                {results.care_schedule.pruning && <div className={`p-3 rounded-lg ${isDark ? 'bg-emerald-900/30' : 'bg-emerald-50'}`}><p className="text-xs font-bold mb-1">✂️ Pruning</p><p className={`text-sm ${c.text}`}>{results.care_schedule.pruning}</p></div>}
-                {results.care_schedule.repot_timing && <div className={`p-3 rounded-lg ${isDark ? 'bg-emerald-900/30' : 'bg-emerald-50'}`}><p className="text-xs font-bold mb-1">🏺 Repotting</p><p className={`text-sm ${c.text}`}>{results.care_schedule.repot_timing}</p></div>}
+                {results.care_schedule.watering && <div className={`p-3 rounded-lg ${isDark ? 'bg-zinc-800' : 'bg-white'}`}><p className="text-xs font-bold mb-1">💧 Watering</p><p className={`text-sm ${c.text}`}>{results.care_schedule.watering}</p></div>}
+                {results.care_schedule.fertilizing && <div className={`p-3 rounded-lg ${isDark ? 'bg-zinc-800' : 'bg-white'}`}><p className="text-xs font-bold mb-1">🧪 Fertilizing</p><p className={`text-sm ${c.text}`}>{results.care_schedule.fertilizing}</p></div>}
+                {results.care_schedule.misting && <div className={`p-3 rounded-lg ${isDark ? 'bg-zinc-800' : 'bg-white'}`}><p className="text-xs font-bold mb-1">💨 Misting</p><p className={`text-sm ${c.text}`}>{results.care_schedule.misting}</p></div>}
+                {results.care_schedule.rotation && <div className={`p-3 rounded-lg ${isDark ? 'bg-zinc-800' : 'bg-white'}`}><p className="text-xs font-bold mb-1">🔄 Rotation</p><p className={`text-sm ${c.text}`}>{results.care_schedule.rotation}</p></div>}
+                {results.care_schedule.pruning && <div className={`p-3 rounded-lg ${isDark ? 'bg-zinc-800' : 'bg-white'}`}><p className="text-xs font-bold mb-1">✂️ Pruning</p><p className={`text-sm ${c.text}`}>{results.care_schedule.pruning}</p></div>}
+                {results.care_schedule.repot_timing && <div className={`p-3 rounded-lg ${isDark ? 'bg-zinc-800' : 'bg-white'}`}><p className="text-xs font-bold mb-1">🏺 Repotting</p><p className={`text-sm ${c.text}`}>{results.care_schedule.repot_timing}</p></div>}
               </div>
-              {results.care_schedule.seasonal_adjustments && <p className={`text-sm mt-3 ${c.textMutededed}`}>🌦️ {results.care_schedule.seasonal_adjustments}</p>}
+              {results.care_schedule.seasonal_adjustments && <p className={`text-sm mt-3 ${c.textMuted}`}>🌦️ {results.care_schedule.seasonal_adjustments}</p>}
             </div>
           )}
 
@@ -496,9 +493,9 @@ const PlantRescue = ({ tool }) => {
                 {results.seasonal_calendar.map((m, i) => {
                   const isNow = months[new Date().getMonth()] === m.month?.slice(0, 3);
                   return (
-                    <div key={i} className={`p-3 rounded-lg border ${isNow ? 'border-emerald-500 ring-2 ring-emerald-500/30' : isDark ? 'border-zinc-600' : 'border-emerald-200'} ${isDark ? 'bg-zinc-700' : 'bg-white'}`}>
-                      <p className={`text-xs font-bold mb-1 ${isNow ? c.accentTxt : c.textMutededed}`}>{isNow ? '📍 ' : ''}{m.month}</p>
-                      <ul className="space-y-0.5">{m.tasks?.map((t, j) => <li key={j} className={`text-xs ${c.textSecondaryondaryondary}`}>• {t}</li>)}</ul>
+                    <div key={i} className={`p-3 rounded-lg border ${isNow ? 'border-emerald-500 ring-2 ring-emerald-500/30' : isDark ? 'border-zinc-600' : 'border-gray-200'} ${isDark ? 'bg-zinc-700' : 'bg-white'}`}>
+                      <p className={`text-xs font-bold mb-1 ${isNow ? c.accentTxt : c.textMuted}`}>{isNow ? '📍 ' : ''}{m.month}</p>
+                      <ul className="space-y-0.5">{m.tasks?.map((t, j) => <li key={j} className={`text-xs ${c.textSecondary}`}>• {t}</li>)}</ul>
                     </div>
                   );
                 })}
@@ -511,8 +508,8 @@ const PlantRescue = ({ tool }) => {
             <div className={`${getSeverityStyles(results.diagnosis.severity)} border-l-4 rounded-r-lg p-5`}>
               <h3 className={`font-bold mb-2 ${c.text}`}>{getSeverityEmoji(results.diagnosis.severity)} Diagnosis</h3>
               <p className={`text-sm ${c.text}`}><strong>Primary:</strong> {results.diagnosis.primary_problem}</p>
-              {results.diagnosis.secondary_issues?.length > 0 && <div className="mt-1">{results.diagnosis.secondary_issues.map((is, i) => <p key={i} className={`text-sm ${c.textSecondaryondaryondary}`}>• {is}</p>)}</div>}
-              {results.diagnosis.uncertainty_note && <p className={`text-xs mt-2 ${c.textMutededed}`}>ℹ️ {results.diagnosis.uncertainty_note}</p>}
+              {results.diagnosis.secondary_issues?.length > 0 && <div className="mt-1">{results.diagnosis.secondary_issues.map((is, i) => <p key={i} className={`text-sm ${c.textSecondary}`}>• {is}</p>)}</div>}
+              {results.diagnosis.uncertainty_note && <p className={`text-xs mt-2 ${c.textMuted}`}>ℹ️ {results.diagnosis.uncertainty_note}</p>}
             </div>
           )}
 
@@ -522,10 +519,10 @@ const PlantRescue = ({ tool }) => {
               <h3 className={`text-lg font-bold ${c.text} mb-3`}>🚑 Action Plan</h3>
               <div className="space-y-3">{results.action_plan.map((a, idx) => (
                 <div key={idx} className={`border-l-4 ${a.priority === 1 ? 'border-red-500' : a.priority === 2 ? 'border-amber-500' : 'border-sky-500'} ${c.cardAlt} border rounded-r-lg p-4`}>
-                  <div className="flex items-center gap-2 mb-1"><span className={`px-2 py-0.5 rounded text-xs font-bold ${a.priority === 1 ? c.critical : a.priority === 2 ? c.concerning : c.minor}`}>P{a.priority}</span><span className={`text-xs ${c.textMutededed}`}>🕐 {a.timing}</span></div>
+                  <div className="flex items-center gap-2 mb-1"><span className={`px-2 py-0.5 rounded text-xs font-bold ${a.priority === 1 ? c.critical : a.priority === 2 ? c.concerning : c.minor}`}>P{a.priority}</span><span className={`text-xs ${c.textMuted}`}>🕐 {a.timing}</span></div>
                   <h4 className={`font-bold ${c.text} mb-1`}>{a.action}</h4>
-                  <p className="text-sm"><strong>Why:</strong> <span className={c.textSecondaryondaryondary}>{a.why}</span></p>
-                  <p className="text-sm"><strong>How:</strong> <span className={c.textSecondaryondaryondary}>{a.how}</span></p>
+                  <p className="text-sm"><strong>Why:</strong> <span className={c.textSecondary}>{a.why}</span></p>
+                  <p className="text-sm"><strong>How:</strong> <span className={c.textSecondary}>{a.how}</span></p>
                 </div>
               ))}</div>
             </div>
@@ -541,8 +538,8 @@ const PlantRescue = ({ tool }) => {
                 {results.repotting_guide.pot_size && <div className={`p-3 rounded ${c.cardAlt}`}><p className="text-xs font-bold mb-1">📐 Size</p><p className={`text-sm ${c.text}`}>{results.repotting_guide.pot_size}</p></div>}
                 {results.repotting_guide.pot_material && <div className={`p-3 rounded ${c.cardAlt}`}><p className="text-xs font-bold mb-1">🏺 Material</p><p className={`text-sm ${c.text}`}>{results.repotting_guide.pot_material}</p></div>}
               </div>
-              {results.repotting_guide.drainage && <p className={`text-sm mt-2 ${c.textSecondaryondaryondary}`}>🕳️ {results.repotting_guide.drainage}</p>}
-              {results.repotting_guide.steps?.length > 0 && <div className="mt-2">{results.repotting_guide.steps.map((s, i) => <p key={i} className={`text-sm ${c.textSecondaryondaryondary}`}>{i + 1}. {s}</p>)}</div>}
+              {results.repotting_guide.drainage && <p className={`text-sm mt-2 ${c.textSecondary}`}>🕳️ {results.repotting_guide.drainage}</p>}
+              {results.repotting_guide.steps?.length > 0 && <div className="mt-2">{results.repotting_guide.steps.map((s, i) => <p key={i} className={`text-sm ${c.textSecondary}`}>{i + 1}. {s}</p>)}</div>}
             </div>
           )}
 
@@ -550,11 +547,11 @@ const PlantRescue = ({ tool }) => {
           {results.propagation_guide && (
             <div className={`${c.propagation} border-2 rounded-xl p-5`}>
               <h3 className={`font-bold mb-2 ${c.text}`}>✂️ {results.is_saveable === false ? "Save Its Legacy" : "Propagation"}</h3>
-              {results.is_saveable === false && <p className={`text-sm mb-2 ${c.textSecondaryondaryondary}`}>The mother plant may not survive, but you can propagate cuttings.</p>}
+              {results.is_saveable === false && <p className={`text-sm mb-2 ${c.textSecondary}`}>The mother plant may not survive, but you can propagate cuttings.</p>}
               <p className={`text-sm font-bold mb-1 ${c.text}`}>Method: {results.propagation_guide.method}</p>
-              {results.propagation_guide.steps?.length > 0 && <div className="space-y-1">{results.propagation_guide.steps.map((s, i) => <div key={i} className={`p-2 rounded ${isDark ? 'bg-cyan-900/30' : 'bg-cyan-50'}`}><p className={`text-sm ${c.text}`}><strong>{i + 1}.</strong> {s}</p></div>)}</div>}
+              {results.propagation_guide.steps?.length > 0 && <div className="space-y-1">{results.propagation_guide.steps.map((s, i) => <div key={i} className={`p-2 rounded ${isDark ? 'bg-zinc-700/50' : 'bg-slate-50'}`}><p className={`text-sm ${c.text}`}><strong>{i + 1}.</strong> {s}</p></div>)}</div>}
               {results.propagation_guide.success_rate && <p className={`text-sm mt-2 font-semibold ${c.accentTxt}`}>📊 {results.propagation_guide.success_rate}</p>}
-              {results.propagation_guide.timeline && <p className={`text-xs ${c.textMutededed}`}>⏱️ {results.propagation_guide.timeline}</p>}
+              {results.propagation_guide.timeline && <p className={`text-xs ${c.textMuted}`}>⏱️ {results.propagation_guide.timeline}</p>}
             </div>
           )}
 
@@ -570,14 +567,14 @@ const PlantRescue = ({ tool }) => {
             </div>
           )}
 
-          {results.prevention_tips?.length > 0 && <div className={`${c.success} border-l-4 rounded-r-lg p-5`}><h3 className="font-bold mb-2">✨ Prevention</h3><ul className="text-sm space-y-1">{results.prevention_tips.map((t, i) => <li key={i}>• {t}</li>)}</ul></div>}
-          {results.climate_recommendations && <div className={`${isDark ? 'bg-sky-900/20 border-sky-700' : 'bg-sky-50 border-sky-300'} border-l-4 rounded-r-lg p-5`}><h3 className={`font-bold mb-2 ${isDark ? 'text-sky-200' : 'text-sky-900'}`}>🌡️ Climate</h3>{results.climate_recommendations.seasonal_note && <p className="text-sm">{results.climate_recommendations.seasonal_note}</p>}{results.climate_recommendations.regional_tips?.length > 0 && <ul className="text-sm space-y-1 mt-1">{results.climate_recommendations.regional_tips.map((t, i) => <li key={i}>• {t}</li>)}</ul>}</div>}
+          {results.prevention_tips?.length > 0 && <div className={`${c.card} ${c.success} border-l-4 rounded-r-lg p-5`}><h3 className="font-bold mb-2">✨ Prevention</h3><ul className="text-sm space-y-1">{results.prevention_tips.map((t, i) => <li key={i}>• {t}</li>)}</ul></div>}
+          {results.climate_recommendations && <div className={`${isDark ? 'bg-zinc-800 border-sky-700' : 'bg-white border-sky-300'} border-l-4 rounded-r-lg p-5`}><h3 className={`font-bold mb-2 ${isDark ? 'text-sky-200' : 'text-sky-900'}`}>🌡️ Climate</h3>{results.climate_recommendations.seasonal_note && <p className="text-sm">{results.climate_recommendations.seasonal_note}</p>}{results.climate_recommendations.regional_tips?.length > 0 && <ul className="text-sm space-y-1 mt-1">{results.climate_recommendations.regional_tips.map((t, i) => <li key={i}>• {t}</li>)}</ul>}</div>}
 
           {/* Progress */}
           {activePlantId && (() => { const ap = getActivePlant()?.progressPhotos || []; return (
             <div className={`${c.card} border rounded-xl p-5`}>
               <div className="flex items-center justify-between mb-3"><h3 className={`font-bold ${c.text}`}>📸 Progress</h3><div><input ref={progressInputRef} type="file" accept="image/*" onChange={handleAddProgressPhoto} className="hidden" /><button onClick={() => progressInputRef.current?.click()} className={`${c.btnSecondary} px-3 py-1.5 rounded text-xs`}>📸 Add</button></div></div>
-              {ap.length > 0 ? <div className="flex gap-3 overflow-x-auto pb-2">{ap.map((p, i) => <div key={i} className="flex-shrink-0 w-24">{p.image ? <img src={p.image} alt={`P${i + 1}`} className="w-24 h-24 object-cover rounded-lg border" /> : <div className={`w-24 h-24 rounded-lg flex items-center justify-center ${isDark ? 'bg-zinc-700' : 'bg-emerald-100'}`}><span className="text-xl">🪴</span></div>}<p className={`text-xs ${c.textMutededed} text-center mt-1`}>{new Date(p.date).toLocaleDateString()}</p></div>)}</div> : <p className={`text-sm ${c.textMutededed}`}>Add photos to track recovery.</p>}
+              {ap.length > 0 ? <div className="flex gap-3 overflow-x-auto pb-2">{ap.map((p, i) => <div key={i} className="flex-shrink-0 w-24">{p.image ? <img src={p.image} alt={`P${i + 1}`} className="w-24 h-24 object-cover rounded-lg border" /> : <div className={`w-24 h-24 rounded-lg flex items-center justify-center ${isDark ? 'bg-zinc-700' : 'bg-emerald-100'}`}><span className="text-xl">🪴</span></div>}<p className={`text-xs ${c.textMuted} text-center mt-1`}>{new Date(p.date).toLocaleDateString()}</p></div>)}</div> : <p className={`text-sm ${c.textMuted}`}>Add photos to track recovery.</p>}
             </div>
           ); })()}
 
@@ -585,12 +582,12 @@ const PlantRescue = ({ tool }) => {
           <div className={`${c.card} border rounded-xl p-5`}>
             <h3 className={`font-bold mb-2 ${c.text}`}>💬 Follow-Up</h3>
             <div className="flex gap-2"><input type="text" value={followUpQuestion} onChange={e => setFollowUpQuestion(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleFollowUp()} placeholder="Ask anything..." className={`flex-1 p-3 border rounded-lg ${c.input}`} /><button onClick={handleFollowUp} disabled={followUpLoading || !followUpQuestion.trim()} className={`${c.btnPrimary} px-4 py-2 rounded disabled:opacity-50`}>{followUpLoading ? (tool?.icon ?? '⚙️') : '❓'}</button></div>
-            {followUpAnswer && <div className={`mt-3 p-4 rounded-lg ${c.cardAlt} border`}><p className={`text-sm ${c.textSecondaryondaryondary} whitespace-pre-wrap`}>{followUpAnswer}</p><div className="mt-2"><CopyBtn content={`Q: ${followUpQuestion}\nA: ${followUpAnswer}\n\n— Generated by DeftBrain · deftbrain.com`} label="Copy" /></div></div>}
+            {followUpAnswer && <div className={`mt-3 p-4 rounded-lg ${c.cardAlt} border`}><p className={`text-sm ${c.textSecondary} whitespace-pre-wrap`}>{followUpAnswer}</p><div className="mt-2"><CopyBtn content={`Q: ${followUpQuestion}\nA: ${followUpAnswer}\n\n— Generated by DeftBrain · deftbrain.com`} label="Copy" /></div></div>}
           </div>
 
           <div className="text-center space-y-1">
-            <p className={`text-xs ${c.textMutededed}`}>Health diagnosis? <a href="/DoctorVisitTranslator" target="_blank" rel="noopener noreferrer" className={linkStyle}>Doctor Visit Translator</a></p>
-            {results.action_plan?.length > 3 && <p className={`text-xs ${c.textMutededed}`}>Overwhelmed? <a href="/TaskAvalancheBreaker" target="_blank" rel="noopener noreferrer" className={linkStyle}>Task Avalanche Breaker</a></p>}
+            <p className={`text-xs ${c.textMuted}`}>Health diagnosis? <a href="/DoctorVisitTranslator" target="_blank" rel="noopener noreferrer" className={linkStyle}>Doctor Visit Translator</a></p>
+            {results.action_plan?.length > 3 && <p className={`text-xs ${c.textMuted}`}>Overwhelmed? <a href="/TaskAvalancheBreaker" target="_blank" rel="noopener noreferrer" className={linkStyle}>Task Avalanche Breaker</a></p>}
           </div>
         </div>
       )}
@@ -599,3 +596,4 @@ const PlantRescue = ({ tool }) => {
 };
 
 PlantRescue.displayName = 'PlantRescue';
+export default PlantRescue;
