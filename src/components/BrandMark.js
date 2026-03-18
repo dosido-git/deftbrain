@@ -45,7 +45,7 @@ const BrandMark = ({
       src={imgSrc}
       alt="DeftBrain"
       className={`${s.img} w-auto block object-contain flex-shrink-0`}
-      style={isDark ? { filter: 'invert(0.85) brightness(1.2)' } : undefined}
+      style={undefined}
     />
   );
 

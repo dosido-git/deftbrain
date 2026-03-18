@@ -12,7 +12,7 @@ RULES:
 - One or two changes max. Not a productivity overhaul. The thing that would actually move the needle.
 - Real talk, warm delivery. Like a friend who's good with time telling you something useful.`;
 
-router.post('/where-did-it-go', async (req, res) => {
+router.post('/where-did-the-time-go', async (req, res) => {
   try {
     const { dayDescription, perceivedBreakdown, timeframe, userLanguage } = req.body;
 
@@ -22,7 +22,7 @@ router.post('/where-did-it-go', async (req, res) => {
 
     const tf = timeframe || 'today';
 
-    const userPrompt = `WHERE DID IT GO — TIME PERCEPTION ANALYSIS
+    const userPrompt = `WHERE DID THE TIME GO — TIME PERCEPTION ANALYSIS
 
 TIMEFRAME: ${tf}
 
@@ -85,7 +85,7 @@ Provide 3-5 activities and 2-4 invisible hour categories.`;
     res.json(parsed);
 
   } catch (error) {
-    console.error('WhereDidItGo error:', error);
+    console.error('WhereDidTheTimeGo error:', error);
     res.status(500).json({ error: error.message || 'Failed to analyze time.' });
   }
 });

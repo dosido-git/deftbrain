@@ -118,7 +118,7 @@ function buildFeedbackContext(outfitFeedback) {
 // ═══════════════════════════════════════════════════
 router.post('/wardrobe-chaos-helper', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
-    const { wardrobeInventory, weather, activities, mood, comfortPriority, sensoryNeeds, outfitFeedback } = req.body;
+    const { wardrobeInventory, weather, activities, mood, comfortPriority, sensoryNeeds, outfitFeedback, userLanguage } = req.body;
 
     if (!wardrobeInventory || typeof wardrobeInventory !== 'object' || Array.isArray(wardrobeInventory)) {
       return res.status(400).json({ error: 'Wardrobe inventory is required' });
@@ -203,7 +203,7 @@ RULES:
 7. If comfort priority is 7+, prefer items with comfort_level 7+
 8. Try to incorporate underutilized items
 9. Learn from user feedback — favor combinations similar to loved outfits, avoid disliked patterns
-10. Capsule suggestions should fill genuine gaps`, req);
+10. Capsule suggestions should fill genuine gaps`, userLanguage || 'en');
 
     const message = await anthropic.messages.create({
       model: 'claude-haiku-4-5-20251001',
@@ -230,7 +230,7 @@ RULES:
 // ═══════════════════════════════════════════════════
 router.post('/wardrobe-chaos-helper/regenerate', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
-    const { wardrobeInventory, weather, activities, mood, comfortPriority, sensoryNeeds, currentOutfit, swapPiece, outfitFeedback } = req.body;
+    const { wardrobeInventory, weather, activities, mood, comfortPriority, sensoryNeeds, currentOutfit, swapPiece, outfitFeedback, userLanguage } = req.body;
 
     if (!wardrobeInventory || !currentOutfit) {
       return res.status(400).json({ error: 'Wardrobe and current outfit are required' });
@@ -279,7 +279,7 @@ Return ONLY valid JSON:
   }
 }
 
-ONLY use items from the wardrobe.`, req);
+ONLY use items from the wardrobe.`, userLanguage || 'en');
 
     const message = await anthropic.messages.create({
       model: 'claude-haiku-4-5-20251001',
@@ -303,7 +303,7 @@ ONLY use items from the wardrobe.`, req);
 // ═══════════════════════════════════════════════════
 router.post('/wardrobe-chaos-helper/pack', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
-    const { wardrobeInventory, destination, days, tripType, outfitFeedback } = req.body;
+    const { wardrobeInventory, destination, days, tripType, outfitFeedback, userLanguage } = req.body;
 
     if (!wardrobeInventory || typeof wardrobeInventory !== 'object') {
       return res.status(400).json({ error: 'Wardrobe inventory is required' });
@@ -380,7 +380,7 @@ RULES:
 3. Include shoes that work across multiple outfits
 4. For ${numDays}+ day trips, plan for laundry mid-trip
 5. Consider destination ${destination} climate
-6. Create one outfit plan entry per day`, req);
+6. Create one outfit plan entry per day`, userLanguage || 'en');
 
     const message = await anthropic.messages.create({
       model: 'claude-haiku-4-5-20251001',

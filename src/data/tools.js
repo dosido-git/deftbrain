@@ -51,6 +51,7 @@ export const tools = [
   tags: ['find tool', 'search', 'which tool', 'help me', 'recommend', 'browse'],
   icon: "🧰",
   categories: ['Humans'],
+  headerColor: "#e0b8b8",
   description: "With 100+ tools, who has time to browse? Describe what you need in plain language and ToolFinder recommends the best DeftBrain tools for your situation, explains why each one fits, and tells you exactly what to enter when you get there. Recommends workflows when multiple tools work together.",
   guide: {
     overview: "ToolFinder is the front door to DeftBrain. Instead of browsing the dashboard, describe your problem — a difficult conversation, a money question, something that broke, a decision you're stuck on — and it matches you with the right tools. Reads between the lines, recommends 1-5 tools ranked by relevance, and explains the fastest path to a solution.",
@@ -82,6 +83,7 @@ export const tools = [
   tags: ['decision', 'advice', 'perspective', 'stuck', 'dilemma', 'choice', 'career', 'relationship', 'life change', 'opinions'],
   icon: "👥",
   categories: ['Diversions', 'Veer'],
+  headerColor: "#b8dcd8",
   description: "Five life archetypes — the Pragmatist, the Risk-Taker, the one who Did It and Regretted It, the one who Didn't, and the Contrarian — each respond to your question from their own experience. See the tension between their views and find the question nobody thought to ask.",
   guide: {
       overview: "Crowd Wisdom channels five distinct life archetypes — each shaped by different values and different outcomes. The goal isn't consensus. It's to surface the tension, the blind spots, and the question you haven't thought to ask yet.",
@@ -118,6 +120,7 @@ export const tools = [
   tags: ['career', 'future', 'skills', 'investment', 'strategy', 'technology', 'automation', 'planning', 'trajectory', 'trend'],
   icon: "🔮",
   categories: ['Pursuits', 'Veer'],
+  headerColor: "#ccdfc4",
   description: "5-year trajectory analysis for a skill, career path, investment, technology, or commitment. Get tailwinds, headwinds, automation risk, adjacent pivot moves, and three scenarios — bull, base, and bear case. Ends with the one action worth taking now.",
   guide: {
       overview: "FutureProof runs a 5-year trajectory analysis on anything you're betting on — a skill, a career path, a technology, or a major commitment. It identifies the structural forces working for and against it, assesses automation risk, maps adjacent moves, and delivers three honest scenarios.",
@@ -150,6 +153,7 @@ export const tools = [
   tags: ['markup', 'pricing', 'cost', 'price breakdown', 'product', 'overpriced', 'why so expensive'],
   icon: "🏷️",
   categories: ["Loot"],
+  headerColor: "#c0d8b8",
   description: "Ever wonder why a $5 coffee costs $5 or hospital aspirin is $25? Describe any product or service and MarkupDetective breaks down the actual cost structure — raw materials, labor, overhead, margin, and the psychological pricing tactics at play. See the markup multiplier, industry secrets, the fair price, and how to pay less.",
   guide: {
     overview: "MarkupDetective is pricing forensics for everyday life. Pick any product or service, and it shows you exactly where your money goes — what percentage is raw materials vs. labor vs. brand premium vs. pure profit. Includes the psychological pricing tactics being used on you, industry secrets about how things are really priced, and specific ways to get the same thing for less.",
@@ -182,6 +186,7 @@ export const tools = [
   tags: ['research', 'health', 'science', 'evidence', 'fact check', 'contradictory', 'study', 'debunked', 'diet', 'finance', 'productivity', 'truth'],
   icon: "📡",
   categories: ['Go Deep!'],
+  headerColor: "#d4dde8",
   description: "Separates established evidence from marketing, ideology, and noise in any health, finance, productivity, or self-improvement topic. Three sections: what we actually know, what's noise and why, and what's genuinely debated. Ends with what to do and what to ignore.",
   guide: {
       overview: "SignalVsNoise is an evidence filter. Paste any contested topic — intermittent fasting, index funds, cold showers, productivity systems — and get a structured breakdown of what the evidence actually supports, what's noise and why, and what's legitimately still debated.",
@@ -214,6 +219,7 @@ export const tools = [
   tags: ['planning', 'strategy', 'failure', 'risk', 'decision', 'startup', 'project', 'business', 'assumptions', 'blind spots', 'career'],
   icon: "💀",
   categories: ['The Office', 'Veer'],
+  headerColor: "#d4dde8",
   description: "A post-mortem written from the future, before you execute. Your plan has already failed — this is the memo explaining why. Get the most likely failure modes with probability ratings, the fatal assumption you're making, the warning signs you'll ignore, and the one thing that actually determines the outcome.",
   guide: {
       overview: "PreMortem runs a cognitive inversion: assume your plan has already failed, then work backward to explain why. This technique — used by NASA, military planners, and venture investors — surfaces risks that forward-thinking misses.",
@@ -246,6 +252,7 @@ export const tools = [
   tags: ['stuck', 'rut', 'routine', 'bored', 'stagnant', 'change', 'habit', 'shake up', 'motivation', 'growth', 'pattern', 'disruption', 'intervention', 'novelty', 'life change', 'burnout', 'monotony'],
   icon: "🎰",
   categories: ['What If?', 'Veer'],
+  headerColor: "#b8dcd8",
   description: "Diagnoses the invisible rut you're stuck in — the behavioral pattern producing stagnation — and designs one specific, strategically uncomfortable disruption to break it. Not random novelty. One surgical intervention with exact timing, a full instruction, and a pre-empted excuse for when you want to skip it.",
   guide: {
       overview: "ChaosPilot diagnoses the pattern producing your stagnation before prescribing anything. The disruption it designs is specific enough to execute today, slightly uncomfortable enough to produce a reaction, and targeted at the exact constraint making your world small.",
@@ -278,6 +285,7 @@ export const tools = [
   tags: ['habit', 'routine', 'productivity', 'compound', 'improvement', 'focus', 'health', 'sleep', 'small change', 'systems', 'optimize'],
   icon: "⚡",
   categories: ['Me', 'Veer'],
+  headerColor: "#e0b8b8",
   description: "Analyzes your daily routine as a system, finds the single bottleneck producing the most constraint, and delivers one specific 1% adjustment with the highest compound effect. Includes the full chain reaction, the actual math, why the tempting alternatives are second-order, and why you haven't done this already.",
   guide: {
       overview: "OnePercenter analyzes your routine the way an engineer analyzes a system — looking for the single chokepoint where a small change produces the most downstream relief. The discipline of this tool is identifying the right 1%, not a menu of 10 things to try.",
@@ -310,6 +318,7 @@ export const tools = [
   tags: ['belief', 'argument', 'critical thinking', 'debate', 'philosophy', 'challenge', 'steelman', 'opinion', 'change my mind', 'bias'],
   icon: "🪦",
   categories: ['Go Deep!', 'Me'],
+  headerColor: "#d4dde8",
   description: "Steelmans your belief in its strongest form, then delivers the single most devastating counter-argument — the one hardest to dismiss. Identifies the hidden assumption the belief depends on, recovers what genuinely survives, and rebuilds a more defensible version you can actually hold.",
   guide: {
       overview: "EgoKiller runs a three-stage process: steelman, demolish, rebuild. It states your belief in its strongest form, attacks with the most devastating (not cheapest) counter-argument available, then identifies what genuinely survives and rebuilds a more precise, defensible version.",
@@ -342,6 +351,7 @@ export const tools = [
   tags: ['belief', 'critical thinking', 'philosophy', 'assumptions', 'test', 'logic', 'values', 'worldview', 'self-awareness', 'bias', 'edge case'],
   icon: "🔬",
   categories: ['Go Deep', 'Diversions', 'Me'],
+  headerColor: "#d4dde8",
   description: "Pressure-tests the guiding beliefs you live by across multiple dimensions: historical counterexamples, logical edge cases, cultural variations, empirical exceptions. Finds where the belief holds, where it breaks, the psychological function it serves, and the more precise version that actually survives scrutiny.",
   guide: {
       overview: "BeliefStressTest runs your operating beliefs through a battery of tests — not to destroy them, but to find where they're actually true versus where they're a useful simplification that misleads in specific situations. The output is a calibrated upgrade.",
@@ -374,6 +384,7 @@ export const tools = [
   tags: ['networking', 'opportunity', 'career', 'luck', 'serendipity', 'visibility', 'connections', 'social', 'growth', 'get noticed', 'community'],
   icon: "🧲",
   categories: ['Pursuits', 'Me'],
+  headerColor: "#ccdfc4",
   description: "Calculates your luck surface area — the percentage of available serendipity you're actually exposed to — and designs five specific asymmetric moves to expand it. Each move is a different mechanism: broadcast a signal, infiltrate a new room, create a serendipity artifact, curate a connection, or compound an existing asset.",
   guide: {
       overview: "Luck surface area is the aggregate exposure to serendipitous collisions with opportunities, people, and ideas. It's not random — it's engineered. LuckSurface audits your current patterns and designs five asymmetric moves: low effort, high serendipity potential.",
@@ -406,6 +417,7 @@ export const tools = [
   tags: ['networking', 'cold outreach', 'mentor', 'investor', 'career', 'relationship', 'connection', 'reach out', 'linkedin', 'introduction', 'warm'],
   icon: "🌀",
   categories: ['Humans'],
+  headerColor: "#e0b8b8",
   description: "A 90-day plan to naturally enter someone's orbit before you ever reach out. Not cold outreach — gravitational pull. Three phases: become findable, enter their periphery, make the connection natural. Ends with the exact first contact message, the timing condition, and the one thing to do today.",
   guide: {
       overview: "GravityWell is built on one insight: cold outreach fails because there's no warm surface. The solution isn't better cold messaging — it's eliminating cold entirely. By building proximity, visibility, and value over 90 days, the first contact feels earned rather than intrusive.",
@@ -438,6 +450,7 @@ export const tools = [
   tags: ['complaint', 'escalate', 'insurance', 'landlord', 'hoa', 'customer service', 'dispute', 'refund', 'bureaucracy', 'rights', 'loophole', 'fight back', 'appeal'],
   icon: "🏴‍☠️",
   categories: ['The Office', 'Loot'],
+  headerColor: "#d4dde8",
   description: "Maps the undocumented paths through any bureaucratic system — the loopholes nobody advertises, the escalation ladder that actually works, the magic phrases that trigger different handling, and the regulatory bodies that have real teeth. For when the official answer is 'nothing we can do' and you know that's wrong.",
   guide: {
       overview: "Every formal system has informal architecture. RulebookBreaker maps it — the exceptions that exist but aren't advertised, the phrases that route your call differently, the regulatory agency that actually investigates, and the escalation path that reaches someone with real authority. Legal leverage only.",
@@ -470,6 +483,7 @@ export const tools = [
   tags: ['honest', 'hard conversation', 'truth', 'unsaid', 'relationship', 'conflict', 'feelings', 'scared', 'say it', 'communication', 'hiding', 'difficult'],
   icon: "💣",
   categories: ['Read the Room', 'Me'],
+  headerColor: "#e0b8b8",
   description: "For the thing you know but won't say — to yourself or someone else. Examines what it's really about, names what hiding it is costing you, explores what would actually happen if you said it, and scripts it three ways: gentle opening, direct statement, and full truth. Ends with permission to not say it — and the honest cost of that choice.",
   guide: {
       overview: "TruthBomb handles the unsaid thing — not with therapy, but with clarity. It examines what's really driving the silence, what it's costing you to maintain it, and what would realistically happen if you said it. Then it scripts three versions: a gentle opening, a direct statement, and the full unfiltered truth.",
@@ -502,6 +516,7 @@ export const tools = [
   tags: ['explain', 'analogy', 'understand', 'teach', 'simplify', 'metaphor', 'learning', 'teaching', 'communication', 'explanation', 'concept', 'audience', 'clarity'],
   icon: "💡",
   categories: ['Go Deep!', 'Discourse'],
+  headerColor: "#d4dde8",
   description: "Describe a concept and who you're explaining it to. Analogy Engine generates tailored analogies using their world. Each one includes why it works, where it breaks down, accuracy ratings, and a teaching tip for delivery.",
   guide: {
     overview: "AnalogyEngine creates analogies so tailored that complex ideas become instantly obvious. Tell it what you need to explain and who the audience is — especially their interests and world — and it generates multiple analogies that use concepts your audience already understands. Every analogy shows its accuracy, memorability, where it breaks down, and how to deliver it.",
@@ -534,6 +549,7 @@ export const tools = [
   tags: ['cold email', 'first message', 'reach out', 'introduction', 'outreach', 'networking', 'linkedin', 'dm', 'twitter', 'instagram', 'pitch', 'mentor', 'collaboration', 'job', 'stranger', 'follow up', 'cold outreach'],
   icon: "📬",
   categories: ['The Office', 'Discourse'],
+  headerColor: "#d4dde8",
   description: "Reaching out to someone you don't know — for networking, a job, a collaboration, or a favor? Describe who and why, and ColdOpenCraft generates 3 openers ranked by boldness (safe, balanced, bold), explains the psychology behind each, includes a follow-up plan, and warns you what NOT to say. Channel-specific for email, LinkedIn, DM, or in-person.",
   guide: {
     overview: "ColdOpenCraft is for anyone who needs to reach out to a stranger and doesn't want to sound like spam. It generates three openers at different boldness levels, each with the psychology explained, estimated response rates, and guidance on when to use which version. Includes a follow-up plan with timing, a backup message, and the 'power move' nuclear option.",
@@ -567,6 +583,7 @@ export const tools = [
   tags: ['toast', 'speech', 'wedding', 'tribute', 'public speaking', 'celebration'],
   icon: "🎙️",
   categories: ['Discourse', 'Humans'],
+  headerColor: "#e0b8b8",
   description: "Need to give a toast, speech, or tribute? Describe the person, the occasion, and any stories you want to include. ToastWriter generates 3 versions at different styles — warm, funny, elegant — each with delivery cues, the opening hook, the closing line, and an emergency closer if you freeze. Because nobody should have to wing it.",
   guide: {
     overview: "ToastWriter takes the panic out of standing up and saying something that matters. Give it details about the person, the occasion, your relationship, and any stories or details — and it generates 3 complete speeches at different warmth/humor levels, each with inline delivery cues like [PAUSE] and [LOOK AT THEM]. Plus delivery tips, common mistakes for this type of event, and a bail-out closer.",
@@ -600,6 +617,7 @@ export const tools = [
   tags: ['what if', 'decision', 'alternate path', 'future', 'imagine', 'scenario', 'choice'],
   icon: "🎲",
   categories: ['What If?', 'Veer'],
+  headerColor: "#b8dcd8",
   description: "Facing a life decision? Pick the option you're NOT leaning toward and WhatIfMachine writes you a vivid, realistic simulation of that path — complete scenes at different time points showing what daily life would actually feel like. Not pros/cons. Not advice. A visceral preview of the future you might be giving up.",
   guide: {
     overview: "WhatIfMachine is a thought experiment tool for big decisions. Instead of listing pros and cons, it writes vivid second-person scenes showing what the other path would actually feel like at different moments — 2 weeks in, 3 months later, 1 year out. Each scene includes sensory details, emotional texture, what's better on this path, and what it costs. The goal: help you feel what you're choosing, not just think about it.",
@@ -632,6 +650,7 @@ export const tools = [
   tags: ['hobby', 'interest', 'bored', 'activity', 'passion', 'discover', 'pastime'],
   icon: "🧬",
   categories: ['Out & About'],
+  headerColor: "#ccdfc4",
   description: "Bored of the usual suggestions? Describe your personality, schedule, budget, and physical situation, and HobbyMatch recommends 5-6 hobbies you've genuinely never considered — with the hook that makes each one addictive, the absolute lowest-barrier first step you can take today, startup costs, and where to find your people.",
   guide: {
     overview: "HobbyMatch goes beyond yoga and painting to find hobbies you didn't know existed. It matches your personality, schedule, budget, and physical situation against an enormous range of activities — from urban sketching to historical fencing to mycology. Each recommendation includes what makes it addictive, a first step you can take tonight, realistic costs, and where to find community.",
@@ -669,6 +688,7 @@ export const tools = [
   tags: ['doctor', 'dentist', 'procedure', 'medical', 'appointment', 'health', 'informed patient', 'surgery', 'root canal', 'insurance', 'second opinion', 'cost', 'questions to ask'],
   icon: "🔬",
   categories: ['Body', 'Money'],
+  headerColor: "#ccdfc4",
   description: "A doctor or dentist just recommended a procedure. Before you schedule, get the briefing: is this standard for your situation? What questions should you ask? What does it typically cost, and what does insurance cover? What are the red flags? What's recovery really like? Empowers you to be an informed patient — not medical advice, but medical literacy.",
   guide: {
     overview: "Procedure Probe helps you understand what you're agreeing to before a medical or dental procedure. It explains the procedure in plain language, tells you whether it's standard for your situation, generates the exact questions to ask your provider, breaks down typical costs and insurance coverage, flags red flags to watch for, and gives you an honest picture of recovery.",
@@ -701,6 +721,7 @@ export const tools = [
   tags: ['upsell', 'sales', 'car dealership', 'pressure', 'negotiate', 'buying', 'pushy'],
   icon: "🧲",
   categories: ['Loot'],
+  headerColor: "#c0d8b8",
   description: "About to visit a car dealership, phone store, furniture showroom, or contractor? Describe what you want and UpsellShield preps you with the exact sales tactics they'll use, the phrases that deflect each one, your walk-away line, and the questions that shift power back to you. Enter prepared, leave with what you actually wanted.",
   guide: {
     overview: "UpsellShield is pre-game preparation for high-pressure sales situations. Tell it where you're going and what you want, and it maps out the specific tactics that industry uses — anchoring, artificial urgency, the good-cop/bad-cop manager routine, add-on bundling — with the exact counter-phrases for each. Includes your walk-away script and the questions that make salespeople respect you.",
@@ -733,6 +754,7 @@ export const tools = [
   tags: ['presentation', 'pitch', 'hard questions', 'objection', 'prepare', 'public speaking'],
   icon: "🎤",
   categories: ['The Office', 'Read the Room'],
+  headerColor: "#d4dde8",
   description: "About to present, pitch, or propose something? Describe your topic and audience, and HecklerPrep generates the 10 hardest questions they'll ask — the skeptical ones, the gotcha ones, the ones you're hoping nobody brings up. Each comes with a coached answer, the psychology behind the question, and what to do if you don't know the answer.",
   guide: {
     overview: "HecklerPrep is like a sparring partner for presentations. Give it your topic, your audience, and what you're proposing, and it generates the toughest questions that audience will throw at you — not softballs, but the real challenges. Each question includes a model answer, the underlying concern the questioner has, and a bail-out strategy if you're caught off guard.",
@@ -765,6 +787,7 @@ export const tools = [
   tags: ['party', 'event', 'host', 'gathering', 'planning', 'celebration', 'social'],
   icon: "🎪",
   categories: ['Out & About', 'Humans'],
+  headerColor: "#ccdfc4",
   description: "Hosting a gathering and want it to not be boring? Describe the guest list, space, budget, and vibe, and PartyArchitect designs the full event flow: arrival experience, conversation catalysts, when to introduce activities, how to mix groups that don't know each other, and when to shift energy. Not a Pinterest board — an event strategy.",
   guide: {
     overview: "PartyArchitect designs the flow of your event so it feels effortless even though it was engineered. Give it your guest count, the space, your budget, who's coming, and the vibe you want — and it builds a timeline with arrival flow, ice-breaking strategies, energy peaks and valleys, activity timing, food/drink pacing, and the techniques for mixing groups that don't know each other.",
@@ -791,12 +814,13 @@ export const tools = [
 
 {
   modified: "",
-  id: "WhereDidItGo",
-  title: "Where Did It Go?",
+  id: "WhereDidTheTimeGo",
+  title: "Where Did the Time Go?",
   tagline: "See the gap between where you think time went and where it actually went.",
   tags: ['time', 'where did time go', 'schedule', 'time audit', 'lost time', 'hours'],
   icon: "⏳",
   categories: ['Me', 'Do It!'],
+  headerColor: "#e0b8b8",
   description: "Describe your day. Optionally guess where the hours went. AI traces the invisible overhead — transitions, recovery, context switches — and shows you the gap between what you think happened and what actually happened. One structural change to get time back. No judgment.",
   guide: {
     overview: "Where Did It Go? is built on a simple truth: you almost certainly overestimate how much focused time you had and underestimate how much time vanished into invisible overhead. Describe your day and optionally estimate where time went, and AI traces the gap — the transitions you didn't count, the recovery time after meetings, the context switches that ate 20 minutes each. Ends with one concrete, structural change (not 'be more disciplined') and an honest read on your actual capacity.",
@@ -829,6 +853,7 @@ export const tools = [
   tags: ['gift', 'present', 'birthday', 'holiday', 'shopping', 'what to buy', 'last minute', 'thoughtful', 'personalized', 'thank you', 'wedding', 'graduation', 'card message'],
   icon: "🎁",
   categories: ['Humans', 'Loot'],
+  headerColor: "#e0b8b8",
   description: "Describe whoever you're shopping for — relationship, interests, personality, constraints — and AI finds specific, personal gift ideas that feel thoughtful, not algorithmic. Every suggestion includes why it works for THIS person, where to get it, a presentation tip, and what to write in the card. Includes a wildcard option and a last-minute save if you need something today.",
   guide: {
     overview: "Giftology connects scattered things you know about a person into gift ideas that feel like you paid attention. The AI moment isn't 'here are popular gifts' — it's the reasoning chain from a specific detail about them to a specific gift that proves you notice things. Every pick includes a card message that makes even a simple gift feel intentional. Wildcard option for something unexpected, last-minute save for panic mode.",
@@ -861,6 +886,7 @@ export const tools = [
   tags: ['conversation', 'awkward', 'small talk', 'social', 'silence', 'chat', 'date', 'networking', 'ice breaker', 'what to say', 'first date', 'elevator', 'coworker'],
   icon: "💬",
   categories: ['Discourse', 'Humans'],
+  headerColor: "#e0b8b8",
   description: "Context-appropriate conversation fillers for awkward silences. 5-7 safe options from environmental observations to light questions. Matched to setting (work/party/date/family). Includes body language tips, exit strategies, and what NOT to say.",
   guide: {
     overview: "Awkward silences happen. This tool provides 5-7 conversation fillers appropriate for your specific context - safe, low-risk things to say that restart conversation without forcing it. Ranges from environmental observations to light questions to polite exits.",
@@ -903,6 +929,7 @@ export const tools = [
   tags: ['remember', 'forgot', 'what is it called', 'tip of tongue', 'word', 'memory', 'describe'],
   icon: "💭",
   categories: ['Go Deep!', 'Detour'],
+  headerColor: "#d4dde8",
   description: "You know the thing — you can almost see it, taste it, hear it — but you can't name it. Describe whatever fragment you remember and AI cross-references sensory details, context, and vibes to identify it. Works for food, music, films, products, scents, colors, places, fabrics, and anything else. Refine mode narrows results based on your feedback.",
   guide: {
     overview: "TipOfTongue takes fragmentary, vibes-based descriptions and identifies what you're thinking of. Pick a category (food, music, film, product, scent, color, place, fabric, or other), describe what you remember however you can, and AI cross-references sensory details, time/place context, and elimination clues to find ranked matches. Each match includes why it fits, a memory trigger to confirm it, how to verify, and where to find it. If the first round is close but not right, refine mode uses your yes/no/close feedback to dramatically narrow the search.",
@@ -935,6 +962,7 @@ export const tools = [
   tags: ['ask', 'script', 'phone', 'negotiate', 'charm', 'request', 'refund', 'upgrade', 'fee waived', 'customer service', 'escalate', 'nuclear', 'legal', 'leverage', 'complaint'],
   icon: "🗣️",
   categories: ['Loot', 'Discourse'],
+  headerColor: "#c0d8b8",
   description: "Tell it what you want — a refund, an upgrade, a free donut, a waived fee, a table at a full restaurant. AI reads the situation, finds your best angle, writes the exact script, and coaches the delivery. Charm, not fraud.",
   guide: {
     overview: "Magic Mouth is for anyone who's ever watched a friend talk their way into something and thought 'how do they do that?' Describe what you want and the situation, and AI analyzes the power dynamics, identifies your strongest angle, writes a natural-sounding script (opener, the ask, what to say if they hesitate, and a graceful exit), and coaches delivery — tone, body language, and the mistakes that kill the ask. Includes a backup angle and a pro tip most people don't know.",
@@ -967,6 +995,7 @@ export const tools = [
   tags: ['emotion', 'game', 'feelings', 'quiz', 'mood', 'fun'],
   icon: "🎭",
   categories: ['Me', 'Energy'],
+  headerColor: "#e0b8b8",
   description: "Describe a feeling you can't quite name — that weird mix of emotions, the thing there should be a word for. AI finds the precise word, whether it's in English, German, Japanese, or any language that nailed it.",
   guide: {
     overview: "Name That Feeling is for the emotions that live between the words you know. Describe what you're feeling in whatever messy way you can, and AI finds the precise word for it — from common English terms you forgot to obscure words from other languages that captured the exact feeling. Because sometimes knowing the name for something makes it easier to carry.",
@@ -999,6 +1028,7 @@ export const tools = [
   tags: ['vibe', 'tone', 'personality', 'writing', 'analysis', 'text', 'fun'],
   icon: "✨",
   categories: ['Read the Room', 'Me'],
+  headerColor: "#e0b8b8",
   description: "Paste your texts, emails, tweets, or messages. AI analyzes your personality and communication style — how you come across, your default tone, your verbal habits, and what people probably think when they read your messages.",
   guide: {
     overview: "What's My Vibe reads your actual writing — texts, emails, social posts, Slack messages — and tells you what you sound like to other people. Not what you intend, but how you land. It picks up on tone patterns, verbal habits, energy levels, and personality signals you probably don't notice yourself.",
@@ -1031,6 +1061,7 @@ export const tools = [
   tags: ['presentation', 'public speaking', 'practice', 'rehearse', 'slides', 'speech', 'qa prep'],
   icon: "🎙️",
   categories: ['Pursuits', 'The Office'],
+  headerColor: "#ccdfc4",
   description: "Paste your presentation and pick a mode: Cut trims it to fit your time limit, Anticipate predicts the toughest Q&A and drafts answers, and Hook rewrites your opening, closing, and transitions to land harder.",
   guide: {
     overview: "The Runthrough is a 3-mode presentation coaching tool. Cut mode trims your content to fit a time limit while preserving the core message. Anticipate mode predicts the hardest questions your audience will ask and drafts strong answers with traps to avoid. Hook mode rewrites your opening, closing, and key transitions to grab attention and stick in memory.",
@@ -1063,6 +1094,7 @@ export const tools = [
   tags: ['decision', 'compare', 'two paths', 'choose', 'future', 'alternative', 'scenario', 'narrative', 'day in the life', 'gut feeling', 'life choice', 'career', 'simulation', 'vivid'],
   icon: "🔮",
   categories: ['Veer'],
+  headerColor: "#f5e0c0",
   description: "Describe two paths you're considering. Instead of a pro/con list, AI writes a vivid 'day in the life' narrative for each path — a plausible Tuesday, set in your future. Your gut reacts before your brain does.",
   guide: {
     overview: "The Contrast Report replaces pro/con lists with emotional simulation. Describe two life paths you're weighing — stay vs. leave, job A vs. job B, city vs. suburbs — and AI writes a vivid, specific 'day in the life' for each future. Not fairy tales or horror stories. Plausible Tuesdays, with sensory detail, mundane moments, honest costs, and the small satisfactions that make a life. Finishes with what the AI noticed: which path carried more energy, what you'd be trading, and the real question underneath.",
@@ -1095,6 +1127,7 @@ export const tools = [
   tags: ['comeback', 'response', 'argument', 'regret', 'witty', 'what to say', 'rehearse', 'roast', 'cathartic', 'insult', 'bully', 'revenge', 'conflict', 'clap back', 'petty'],
   icon: "🍳",
   categories: ['Discourse', 'Humans'],
+  headerColor: "#e0b8b8",
   description: "Describe the moment that's been living rent-free in your head. AI generates the perfect comebacks you wish you'd said — from surgical precision to unbothered royalty. Purely cathartic. No intent to send.",
   guide: {
     overview: "Comeback Cooker is for that moment playing on loop in your brain — the thing someone said, and the devastating response you only thought of hours later. Describe the situation, pick a mood (surgical, witty, petty, or dignified), and get 5 comebacks using different techniques, plus a high road option and a nuclear option kept safely in the fantasy drawer. Each comeback comes with delivery notes so you can rehearse the fantasy properly.",
@@ -1127,6 +1160,7 @@ export const tools = [
   tags: ['history', 'what if', 'alternate timeline', 'counterfactual', 'historical', 'thought experiment'],
   icon: "🌀",
   categories: ['What If?', 'Veer'],
+  headerColor: "#b8dcd8",
   description: "Pick any moment in history and change one detail. Watch the consequences cascade — politics, technology, culture, daily life — all the way to today.",
   guide: {
     overview: "Alternate Path takes a real historical event, changes one key detail, and traces the ripple effects forward through a plausible alternate timeline. Each consequence cascades into the next, showing how one pivot point can reshape politics, culture, technology, and daily life in ways you wouldn't expect.",
@@ -1159,6 +1193,7 @@ export const tools = [
   tags: ['debate', 'argue', 'opinion', 'hot take', 'perspective', 'steelman', 'both sides', 'rhetoric', 'critical thinking', 'devil\'s advocate', 'dinner party', 'fun', 'persuasion'],
   icon: "⚔️",
   categories: ['Diversions', 'What If?'],
+  headerColor: "#b8dcd8",
   description: "Give any opinion and watch AI steelman the strongest possible case FOR and AGAINST it. Three intensity levels from civil debate to full rhetorical firepower. Includes a judge's verdict and a ready-made dinner party take.",
   guide: {
     overview: "Argument Simulator takes any opinion or hot take and constructs the most compelling steelmanned arguments for both sides. Choose your intensity — civil Oxford-style, heated dinner debate, or fully unhinged — and watch both cases get built with killer points, real evidence, and the uncomfortable truths each side doesn't want to admit. Finishes with a judge's verdict and a nuanced dinner party take you can steal.",
@@ -1191,6 +1226,7 @@ export const tools = [
   tags: ['plot', 'hole', 'movie', 'show', 'logic', 'mistake', 'continuity', 'film', 'fun'],
   icon: "🕳️",
   categories: ['Diversions', 'Detour'],
+  headerColor: "#b8dcd8",
   description: "Name any movie, show, book, or game — AI finds the logical inconsistencies, timeline problems, 'why didn't they just...' moments, and character decisions that make no sense. Each hole is rated by severity (Nitpick to Universe-Breaking) with a fan defense and a Reddit-style one-liner. Swiss Cheese Rating scores overall plot integrity. Two modes: Find Holes (full analysis) and Defend a Hole (build the strongest possible defense of a specific plot hole, courtroom-style).",
   guide: {
     overview: "PlotHole is a narrative logic analyst that finds exactly where stories break. Not vague complaints — specific scenes, character knowledge problems, and 'wait actually...' moments, each rated by how badly they damage the story.",
@@ -1222,6 +1258,7 @@ export const tools = [
   tags: ['theory', 'fan', 'conspiracy', 'movie', 'show', 'plot', 'twist', 'evidence', 'fun'],
   icon: "🧵",
   categories: ['What If?', 'Detour'],
+  headerColor: "#b8dcd8",
   description: "Name any movie, show, book, or game — AI generates a wild but internally-consistent fan theory with cited evidence. Six theory directions: Surprise Me, Secret Villain, Shared Universe, Timeline Twist, Dead or Alive, and It's a Simulation. Each theory comes with evidence rated from Compelling to Pure Delusion, a Smoking Gun, counterarguments, and plausibility/mind-blown ratings. Second mode: Grade My Theory — paste your own fan theory and get an academic grade with strengths, weaknesses, and a Reddit performance prediction.",
   guide: {
     overview: "FanTheory generates conspiracy theories for fiction — the kind that make you go 'wait... actually?' Every theory cites specific plot details as evidence and is internally consistent, even when it's a stretch.",
@@ -1252,6 +1289,7 @@ export const tools = [
   tags: ['roast', 'funny', 'comedy', 'humor', 'joke', 'resume', 'dating', 'linkedin', 'burn', 'fun'],
   icon: "🔥",
   categories: ['Out & About', 'Detour'],
+  headerColor: "#ccdfc4",
   description: "Paste your resume, dating profile, LinkedIn bio, email, tweet, or any text and get a personalized comedy roast. Three heat levels: Gentle (playful teasing), Medium (Comedy Central energy), and Scorched Earth (no mercy, still funny). Every roast line targets SPECIFIC content you submitted — zero generic insults. AI detects content type automatically and targets the right things: buzzwords in resumes, clichés in dating profiles, humblebrags on LinkedIn. Includes a 'One Nice Thing' plus a screenshot-worthy 'Share Line' for maximum social media damage.",
   guide: {
     overview: "RoastMe is a comedy writer that reads your content and finds what's specifically, uniquely roastable about it. Not generic insults — targeted humor that lands because it's true.",
@@ -1283,6 +1321,7 @@ export const tools = [
   tags: ['history', 'time', 'historical', 'modern', 'funny', 'ancient', 'medieval', 'comedy', 'fun'],
   icon: "⏰",
   categories: ['What If?', 'Detour'],
+  headerColor: "#b8dcd8",
   description: "Pick any modern concept and any historical period — AI generates the collision. Six formats: Explain It, Review, News Report, Letter, Debate, and Ad. Every piece is historically accurate AND funny — includes real historical footnotes so you learn something while laughing.",
   guide: {
     overview: "Time Warp creates collisions between the modern and historical that are both genuinely funny and surprisingly educational. The AI knows enough real history to make the comedy specific.",
@@ -1313,6 +1352,8 @@ export const tools = [
   tags: ['wrong', 'funny', 'trivia', 'quiz', 'comedy', 'fake', 'humor', 'absurd', 'fun'],
   icon: "🙃",
   categories: ['What If?', 'Detour'],
+  headerColor: "#b8dcd8",
+  headerColor: "#b8dcd8",
   description: "Ask any real question and get a beautifully structured, internally consistent, completely incorrect answer with full expert confidence. Fake studies, invented researchers, nonsense equations that look real. Three seriousness levels: Deadpan, Playful, Unhinged. Includes toggleable real answer for when you want to actually learn something.",
   guide: {
     overview: "Wrong Answers Only is the world's most confidently incorrect expert. Every answer is internally consistent, impressively structured, and completely, beautifully wrong.",
@@ -1343,6 +1384,7 @@ export const tools = [
   tags: ['energy', 'social', 'tired', 'drained', 'exhausted', 'introvert', 'recharge', 'burnout', 'schedule', 'interactions'],
   icon: "⚡",
   categories: ['Humans', 'Energy'],
+  headerColor: "#e0b8b8",
   description: "Log your social and professional interactions with energy-before/after ratings and performance levels (how much you had to be 'on'). The audit calculates your weekly energy budget, identifies your biggest drains and rechargers, finds patterns you can't see yourself, and gives specific restructuring suggestions. Six modes: Weekly Audit (full interaction log → energy score + drains + patterns + restructure plan), Week Planner (upcoming commitments → predicted energy costs per day + danger zones + schedule optimizations), Quick Check ('Should I say yes to this?' → instant verdict with decline script), Daily Check-In (30-second energy snapshot + drain/recharge tracking), Energy Forecast (predict your week's energy curve from templates + check-ins), and Energy Journal (week-over-week tracking with trend visualization, recurring pattern tracker, week comparison, and AI-designed Ideal Week after 3+ weeks of data). Templates let you save your typical week for faster logging. Performance level concept captures the hidden cost of being 'on' — the energy difference between being yourself vs. managing impressions.",
   guide: {
     overview: "Everyone has a limited energy budget. Some interactions cost more than others — and the expensive ones aren't always obvious. A 30-minute call where you're fully 'on' can drain more than a 3-hour dinner where you're relaxed. Social Energy Audit makes the invisible visible: log your interactions, rate your performance level and energy before/after, and the tool finds the patterns, calculates the costs, and helps you restructure your week so you're not running on empty by Thursday.",
@@ -1379,6 +1421,7 @@ export const tools = [
   tags: ['pronounce', 'pronunciation', 'say', 'name', 'food', 'restaurant', 'brand', 'foreign', 'word'],
   icon: "🗣️",
   categories: ['Discourse'],
+  headerColor: "#e0b8b8",
   description: "Enter any word from any language and get a pronunciation guide calibrated to YOUR native language's sound system. Eight categories: Names (Siobhan, Nguyễn), Food/Drink (gnocchi, pho, Gewürztraminer), Places (Reykjavik, Worcestershire), Brands (Hermès, Givenchy), Music/Art (Chopin, Dvořák), Science (acetaminophen, Euler), Foreign Phrases (schadenfreude, coup de grâce), and Other. Each guide includes simplified phonetics with stress markers, IPA notation, syllable breakdown, 'sounds like' comparisons in your language, mouth/tongue positioning for tricky sounds, common mistakes with explanations, category-specific context (what the dish is, who the composer is, where the place is), a confidence script for when you're unsure, and a fun fact. Batch mode handles 2-10 words at once. Supports 18+ native languages.",
   guide: {
     overview: "Say It Right solves a universal problem: you encounter an unfamiliar word and don't know how to say it. Whether it's a coworker's name, a menu item, a city you're visiting, or a composer you're discussing — the tool maps the word's sounds to YOUR native language's sound system. The explanation changes depending on whether you speak English, Spanish, Mandarin, or Arabic, because the tricky sounds are different for each.",
@@ -1414,6 +1457,7 @@ export const tools = [
   tags: ['meeting', 'transcript', 'notes', 'minutes', 'action items', 'decisions', 'follow up', 'standup', 'recap'],
   icon: "📋",
   categories: ['The Office', 'Do It!'],
+  headerColor: "#d4dde8",
   description: "Paste a meeting transcript from Zoom, Teams, Google Meet, or your own notes and get the actionable output without the filler. Three modes: Distill extracts decisions (with context and reversibility), action items (with owners, deadlines, priority, and dependency tracking), open questions, parking lot items, detected tensions, meeting health scores, and a ready-to-send follow-up email. Follow Up drafts a group email, individual nudges (with urgency and best channel), a boss-update summary, and calendar invites to schedule. Series analyzes 2-5 meetings from the same series to find recurring topics, accountability gaps, decisions that got revisited, productivity trends, and a suggested next agenda. Seven meeting types supported: general, standup, planning, retro, 1:1, client, brainstorm.",
   guide: {
     overview: "The Debrief is Recall's professional sibling — same core mechanic (long transcript → extract what matters), but purpose-built for meetings instead of lectures. Where lectures need concepts and testable material, meetings need decisions, owners, deadlines, and accountability. The tool distinguishes between 'someone said we should' (not a decision) and 'we agreed to' (a decision), flags action items with no owner or deadline, detects tensions, and grades meeting health. Series mode is the killer feature — paste your last 3 weekly standups and see which action items disappeared without resolution.",
@@ -1448,6 +1492,7 @@ export const tools = [
   tags: ['memory', 'remember', 'study', 'review', 'retention', 'lecture', 'transcript', 'notes', 'exam', 'flashcards', 'class'],
   icon: "🧠",
   categories: ['Go Deep!'],
+  headerColor: "#d4dde8",
   description: "Paste a lecture transcript from Zoom, Teams, Otter.ai, or your own notes and get the 20% that matters. Four modes: Distill extracts ranked bullet points with testable tags and professor signals. Study Guide builds a structured review with memorize-vs-understand labels, mnemonics, and exam strategy. Test Prep generates practice questions (MC, short answer, essay, T/F, fill-in-blank) with hidden answers, wrong-answer explanations, and grading hints. Connect analyzes 2-5 lectures to find recurring themes, concept chains, and cumulative exam targets.",
   guide: {
     overview: "Recall solves the core lecture problem: 90 minutes of content where maybe 15 minutes is testable. Professors repeat the important stuff, signal it with emphasis phrases, and bury it in tangents and anecdotes. Recall detects those signals and extracts the material you'd highlight if you had perfect attention for the whole session. Four modes cover different study needs — from quick-reference bullets to full practice exams.",
@@ -1482,6 +1527,7 @@ export const tools = [
   tags: ['resume gap', 'career pivot', 'fired', 'explain', 'story', 'interview', 'framing', 'narrative'],
   icon: "🎭",
   categories: ['Pursuits', 'Read the Room'],
+  headerColor: "#ccdfc4",
   description: "Resume gaps, career pivots, short job tenures, firings, frequent moves, dropouts, breakups — everyone has chapters that need careful framing. Tell us the real story, pick your audience (interviewer, landlord, date, in-laws, lender), and get 2-3 strategically different versions of how to tell it. Each version comes with the exact script, follow-up question prep with trap warnings, body language tips, and a nuclear option if the conversation goes sideways. Everything is truthful — you're choosing emphasis, not inventing fiction.",
   guide: {
     overview: "The Alibi takes your real, messy, complicated story and helps you tell it honestly but strategically to a specific audience. The same resume gap told to an interviewer emphasizes growth; told to a date, it emphasizes life experience; told to a lender, it emphasizes current stability. You get multiple versions with different strategic approaches — not just different tones — plus follow-up prep so your story holds up under gentle probing.",
@@ -1515,6 +1561,7 @@ export const tools = [
   tags: ['document', 'filter', 'insurance', 'hoa', 'lease', 'policy', 'relevant', 'eob', 'benefits', 'newsletter'],
   icon: "🔇",
   categories: ['The Office'],
+  headerColor: "#d4dde8",
   description: "Insurance EOBs, HOA notices, school newsletters, corporate policy updates, lease amendments, benefits packets — you receive them, you skim them, you miss the one thing that mattered. Paste the full document and describe your situation ('renter, no kids, have a dog'), and Noise Canceler extracts ONLY what requires your action, costs you money, saves you money, or affects you personally. Not a summarizer — a personalized relevance filter.",
   guide: {
     overview: "Noise Canceler solves a specific problem: dense documents where 90% doesn't apply to you but the 10% that does is buried. It's not a summarizer (you don't need a shorter version of irrelevant info) and it's not a jargon translator. It's a relevance engine that cross-references the document against YOUR specific situation and pulls out only what matters.",
@@ -1548,6 +1595,7 @@ export const tools = [
   tags: ['message', 'audience', 'post', 'social media', 'group chat', 'interpret', 'misread', 'tone', 'send', 'communication', 'misunderstanding', 'context', 'email', 'slack', 'public', 'preview', 'perception'],
   icon: "📢",
   categories: ['Read the Room'],
+  headerColor: "#e0b8b8",
   description: "About to send a text, post something, or make an announcement that multiple people will see? Context Collapse previews how each audience interprets it. Your boss reads it as professional boundary-setting. Your coworker reads it as passive-aggressive. Your mom reads it as a cry for help. See the gaps between your intent and each audience's reading, get risk ratings per audience, and rewrite suggestions that thread the needle. The tool that prevents the social media post that gets you fired and the group chat message that starts a war.",
   guide: {
     overview: "Context Collapse is named after the communication phenomenon where a single message lands completely differently depending on who reads it. It's DecoderRing in reverse — instead of decoding what someone sent you, it previews how your message will be received by each audience before you send it. You define who will see it, and the tool shows you the emotional interpretation, risk level, key triggers, and likely reactions for each person or group.",
@@ -1581,6 +1629,7 @@ export const tools = [
   tags: ['show', 'book', 'game', 'sports', 'recap', 'spoiler', 'abandoned', 'catch up', 'catch-up', 'tv', 'season', 'remember', 'forgotten', 'series', 'chapter', 'binge', 'rewatch', 'pick up', 'return', 'summary', 'plot', 'characters', 'episode', 'where was i'],
   icon: "🔖",
   categories: ['Pursuits', 'Detour'],
+  headerColor: "#ccdfc4",
   description: "Abandoned a show, book, game, or sports season? Get a spoiler-free recap calibrated to exactly where you stopped — character refreshers, active plot threads, vibe checks, and must-watch game flags.",
   guide: {
     overview: "Bookmark solves the problem Google can't: getting caught up on something you abandoned without stumbling into spoilers. Wikis, Reddit threads, and search results are landmines. Bookmark gives you a precision recap — vivid enough to trigger your memory, careful enough to protect everything after your stopping point. Four modes cover TV shows, books, video games, and sports seasons.",
@@ -1617,6 +1666,7 @@ export const tools = [
   tags: ['message', 'subtext', 'passive aggressive', 'email', 'text', 'meaning', 'tone', 'confusing'],
   icon: "🔍",
   categories: ['Read the Room', 'Humans'],
+  headerColor: "#e0b8b8",
   description: "Paste any confusing message and get a layer-by-layer breakdown of the subtext, emotional undercurrent, what they actually want, red/green flags, and 3 response strategies with copyable examples.",
   guide: {
     overview: "Decoder Ring uses AI to analyze the pragmatics, subtext, and emotional undercurrent beneath any message. It identifies passive aggression, hedging, power moves, emotional bids, non-answers, and genuine warmth — then generates response strategies tailored to your situation.",
@@ -1653,6 +1703,7 @@ export const tools = [
   tags: ['decision', 'stuck', 'choose', 'options', 'dilemma', 'career', 'choice', 'pros cons', 'values'],
   icon: "🔀",
   categories: ['Veer', 'What If?'],
+  headerColor: "#f5e0c0",
   description: "Describe any decision you're stuck on and get it analyzed through 6 decision frameworks: pre-mortem, 10/10/10, opportunity cost, reversibility check, values alignment, and the real-question-beneath-the-question. Includes a comparison matrix, gut check reading, stuck pattern diagnosis, and exercises for when you're still frozen.",
   guide: {
     overview: "Plot Twist runs your decision through multiple thinking frameworks that therapists, strategists, and decision scientists use — but applied specifically to YOUR situation. It doesn't tell you what to decide. It shows you angles you're missing so the answer becomes obvious to you.",
@@ -1685,6 +1736,7 @@ export const tools = [
   tags: ['cooking', 'food', 'recipe', 'kitchen', 'ingredients', 'dinner', 'meal prep', 'fridge', 'dietary', 'substitute', 'swap'],
   icon: "🍳",
   categories: ['The Grind'],
+  headerColor: "#d4dde8",
   description: "List your ingredients or snap a photo of your fridge. AI builds a minute-by-minute cooking battle plan with parallel task sequencing, critical timing alerts, technique tips calibrated to your skill level, a quick shopping list, and a leftovers transformation strategy for tomorrow.",
   guide: {
     overview: "Mise en Place is a meal prep strategist, not a recipe finder. It solves the hard part of cooking at home: taking random ingredients and building an optimally sequenced plan that tells you what to do, when, and what to prep during downtime. Like having a sous chef in your ear.",
@@ -1717,6 +1769,7 @@ export const tools = [
   tags: ['recommendation', 'letter', 'reference', 'job', 'linkedin', 'writing', 'grad school', 'scholarship'],
   icon: "✍️",
   categories: ['Pursuits'],
+  headerColor: "#ccdfc4",
   description: "Input who you're recommending, your relationship, their qualities, and a few rough bullet points. Get 3 letter versions (narrative, structured, concise) calibrated to the formality level and context. Each version highlights placeholders to personalize, power phrases to keep, and refinement options to dial in the tone.",
   guide: {
     overview: "Ghost Writer solves one of the most procrastinated writing tasks: recommendation letters. It takes your rough knowledge of someone and produces polished letters that sound like YOU wrote them thoughtfully, with specific anecdotes and persuasive structure that actually moves reviewers.",
@@ -1749,6 +1802,7 @@ export const tools = [
   tags: ['caption', 'social media', 'photo', 'instagram', 'linkedin', 'twitter', 'tiktok', 'facebook', 'threads', 'hashtag', 'post', 'content', 'brand voice', 'alt text'],
   icon: "📸",
   categories: ['Pursuits', 'What If?'],
+  headerColor: "#ccdfc4",
   description: "Turn any photo into engaging social media captions with AI vision. Upload or paste an image, pick your platform and tone, and get 3 distinct caption options with smart hashtags (categorized by reach), character counts, alt text, and engagement tips. Refine any caption with one tap, adapt your winner to every platform at once, remix the best parts of multiple captions, and build a personal brand voice profile that gets smarter over time. Supports Instagram, LinkedIn, Facebook, Twitter/X, TikTok, and Threads.",
   guide: {
     overview: "Caption Magic uses AI vision to look at your actual photo and craft social media captions that sound like a real person, not a brand. Upload any image (drag-and-drop, paste, or describe it), choose your platform and tone, and get 3 distinct caption options with categorized hashtags (trending, niche, branded), character counts against platform limits, alt text, posting schedule recommendations, and engagement tips. Refine any caption instantly with 5 one-tap options. Adapt your winner to all platforms at once. Remix the best parts of multiple captions into a perfect hybrid. After 3+ uses, Caption Magic learns your brand voice and can auto-apply your preferred style. Track which captions perform best with built-in A/B testing insights.",
@@ -1799,6 +1853,7 @@ export const tools = [
   tags: ['energy', 'dopamine', 'recharge', 'motivation', 'burnout', 'mood', 'focus', 'routine', 'self-care', 'rest'],
   icon: '✨',
   categories: ['Energy'],
+  headerColor: "#b8dcd8",
   description: "5-mode energy management system: build a personalized recharge menu with pattern tracking, map tasks against your available energy, forecast battery drain across your week, spot burnout early with 15-second daily check-ins, and get adapted routines when life disrupts your schedule.",
   guide: {
     overview: "The Dopamine Menu Builder is your complete energy management system. Recharge mode builds a personalized activity menu based on your current energy, mood, and environment. Budget mode maps your tasks against available energy to show what actually fits. Forecast mode predicts battery drain from your week's events. Radar mode tracks daily wellbeing signals to catch burnout patterns early. Disruption mode gives you an adapted structure when sick, traveling, or in an emergency.",
@@ -1835,6 +1890,7 @@ export const tools = [
   tags: ['batch', 'tasks', 'focus', 'productivity', 'context switching', 'schedule', 'cognitive', 'todo', 'time management', 'deep work', 'flow state', 'energy', 'batching'],
   icon: '⚡',
   categories: ['Do It!', 'The Office!'],
+  headerColor: "#d4dde8",
   description: 'Batch similar tasks by cognitive mode to minimize context switching and protect your focus. Includes weekly rhythms, A/B schedule comparison, time calibration, location-aware batching, resistance detection, and focus environment presets.',
   guide: {
     overview: "BatchFlow groups your tasks by how your brain needs to work — not just by topic or deadline. Every time you switch between creative thinking, analytical work, social communication, or physical tasks, your brain pays a recovery tax of 15–25 minutes. BatchFlow eliminates unnecessary switches by sorting your tasks into coherent batches, scheduling them around your energy curve and fixed commitments, and giving you a ready-to-execute plan. Add your tasks, tell it what kind of day you're having and when your energy peaks, and get a complete batched schedule — with focus environment tips, break suggestions, and time estimates — in seconds.",
@@ -1872,6 +1928,7 @@ export const tools = [
   tags: ['exercise', 'workout', 'lazy', 'fitness', 'motivation', 'gym'],
   icon: "🧘",
   categories: ['Body', 'Energy'],
+  headerColor: "#ccdfc4",
   description: "Low-barrier movement that meets you where you are — especially when you don't want to exercise. 13 AI endpoints across 9 modes: Right Now builds workouts from energy level, body complaints, AND what happened today (12 context triggers like 'bad sleep', 'long meeting', 'emotional day' that fundamentally change the workout). 2-Minute Floor for when even 5 minutes is too much. Body Relief targets specific problem areas. Environment Stack layers invisible micro-movements onto activities you're already doing (watching TV, cooking, phone calls). Sleep Prep is a pre-bed wind-down optimized for transition to sleep with progressive relaxation and breathing patterns. Recovery is first aid for your body after life events (post-flight, post-crying, post-migraine) addressing physical and emotional residue. My Week plans 7 days as a menu, not a mandate. Breathe mode offers box breathing, 4-7-8, and calm patterns with visual timer. Built-in follow-along timer, exercise swap with memory, movement streaks, invisible progression, saved presets, and a 'Not Today' button for guilt-free skips. History tracks energy shifts, and Prove It analyzes your own data to show whether movement actually helps YOU — with real numbers, not motivation.",
   guide: {
       overview: "LazyWorkoutAdapter is for the moment you know you should move but don't want to. Instead of pretending you have motivation, it starts from your actual energy, what happened today, and where your body hurts — then builds something you can realistically do right now. Context triggers ('bad sleep', 'emotional day', 'been in meetings') change the workout more meaningfully than an energy number alone. Environment Stack eliminates the idea that movement is separate from your day by weaving micro-movements into things you're already doing. Sleep Prep helps you wind down before bed with progressive relaxation. Recovery handles the aftermath of life events — post-flight, post-argument, post-migraine. After enough sessions, Prove It shows your own data back to you: does movement actually raise your energy? By how much? What type works best? Your data convinces you, not motivational quotes.",
@@ -1916,6 +1973,7 @@ export const tools = [
   tags: ['jargon', 'plain language', 'legal', 'medical', 'translate', 'document', 'simplify'],
   icon: "🗡️",
   categories: ['The Office', 'Body'],
+  headerColor: "#d4dde8",
   description: "Translate confusing documents into plain language — then actually do something about them. 11 AI endpoints across 6 modes: translate any legal, medical, financial, insurance, or government document at 4 reading levels (ELI5 through Professional) with instant danger scoring, enforceability flags, and a growing jargon glossary. Ask follow-up questions. Deep-dive any flagged section line-by-line. Compare two document versions to catch every change. Red-Line Markup generates specific suggested edits with negotiation strategy. Template Compare tells you whether your document is normal or aggressive vs. standard documents of its type. Action Plan turns understanding into ordered steps with deadlines. Explain To reframes the content for a specific person (your parent, roommate, teenager). Multi-Document Dossier cross-references related documents to find conflicts and gaps. Letter Generator writes professional responses that reference specific clauses. Saves translations with danger scores for reference.",
   guide: {
       overview: "JargonAssassin is for the moment you're staring at a lease, medical consent form, insurance policy, or employment contract and thinking 'what does this actually mean for me?' Paste the document, pick your reading level, and get it translated with every red flag, deadline, and hidden catch identified. But translation is just the start — the tool completes the full arc from confusion to understanding to action. Red-Line tells you what to push back on with specific alternative language. Template Compare gives you a baseline for what's normal. Action Plan orders your next steps with deadlines pulled from the document. Letter Generator writes your response. And if you need to explain it to someone else — your parent, your roommate, your partner — the Explain To mode reframes everything for that specific person.",
@@ -1964,6 +2022,7 @@ export const tools = [
   tags: ['debate', 'argue', 'logic', 'steelman', 'critical thinking', 'opinion', 'persuade', 'fallacy', 'rhetoric'],
   icon: "🥊",
   categories: ['Diversions', 'What If?'],
+  headerColor: "#b8dcd8",
   description: "The complete intellectual sparring system. State any position and face the steelman — the strongest possible opposing case, not a strawman. Multi-turn debate with fallacy flags, coaching angles, source checks, and strategic concession. Five formats (Freeform, Lincoln-Douglas, Cross-Exam, Oxford, Socratic). Devil's Advocate Prep drills you for real meetings. Fallacy Gym trains pattern recognition. Rematch targets your documented blind spots. Highlight Reel analyzes patterns across all debates and assigns a Debater Type.",
   guide: {
     overview: "DebateMe is a complete system for sharpening how you think. At its core: state any position and face the strongest possible counter-argument — not a caricature, but what a thoughtful, well-informed person who genuinely disagrees would actually say. Around that core: five structured debate formats (including Socratic method where the AI only asks questions), a coaching system that suggests angles without writing your arguments, source-checking for any claim, audience judgment that scores persuasiveness rather than correctness, and an argument map that visualizes the structure of your thinking. Outside of debates: Devil's Advocate Prep drills you for real-world meetings with audience-specific objections, and Fallacy Gym trains you to spot logical errors. Everything compounds — your debate log feeds a Highlight Reel that reveals persistent patterns, assigns a Debater Type, and prescribes specific exercises for your weaknesses.",
@@ -2002,6 +2061,7 @@ export const tools = [
   tags: ['research', 'academic', 'paper', 'science', 'summary', 'study', 'digest'],
   icon: "📄",
   categories: ['Go Deep!'],
+  headerColor: "#d4dde8",
   description: "Translate academic papers into plain language — no PhD required. 5 modes with 5 AI endpoints: digest any paper into a one-sentence finding with methodology description, limitations, jargon decoded, and an honest 'so what' assessment. Media Check compares what the paper actually says to how headlines report it, catching exaggerations, causation-from-correlation claims, and missing context. Compare two papers on the same topic to see where they agree and diverge. 'Does This Apply to Me?' gives personalized relevance based on your situation. Jargon Decoder explains any scientific term with analogies, not textbook definitions. Auto-builds a personal jargon dictionary as you read. Saves digests for reference.",
   guide: {
       overview: "PaperDigest is for the moment you see a headline like 'Scientists prove coffee cures everything' and think 'wait, does it really?' Instead of wading through dense abstracts, paste the paper text and get the actual finding in one sentence, what kind of study it was (described, not judged), what it proves vs. what people think it proves, and a warm honest take you'd hear from a smart friend over coffee. The Media Check is the killer feature — it compares what the paper says to what the headline claims and catches every type of distortion. Every term you encounter gets saved to a personal jargon dictionary that grows as you read.",
@@ -2038,6 +2098,7 @@ export const tools = [
   tags: ['social', 'conversation', 'read the room', 'networking', 'awkward', 'small talk', 'people'],
   icon: "🧠",
   categories: ['Read the Room'],
+  headerColor: "#e0b8b8",
   description: "Social intelligence coach with 12 modes and 13 AI endpoints. Pre-Game event prep with starters, people maps, and worst-case saves. Quick Read for instant tap-and-go lines with refresh. Conversation Recovery for mid-conversation 'I just said something weird' emergencies with damage scoring. Person Prep for one specific person, plus a Recurring Person Tracker that logs interactions and generates fresh strategies from history. Group Dynamics for entering conversations and handling being ignored. Energy Match for bridging the gap when your energy doesn't match the room. Small Talk Ladder for progressing from surface-level to genuine connection. Culture Decoder for cross-cultural situations with etiquette, body language, and a key phrase. Signal Decoder for figuring out what someone meant. Follow-Up message drafter for the post-event text. Debrief that auto-builds a Playbook from wins. Social Autopsy for deep forensic analysis of interactions that went wrong. Persistent Playbook, Saved Game Plans with cheat sheet export, Tracked People with interaction histories.",
   guide: {
       overview: "Room Reader is your social intelligence coach — the clever friend who preps you before the party, rescues you mid-conversation, and debriefs you afterward. Every mode builds your persistent Playbook, which shapes future suggestions. Track recurring people across interactions. Save Game Plans to pull up on your phone at the event. The tool gets smarter the more you use it.",
@@ -2081,6 +2142,7 @@ export const tools = [
   tags: ['money', 'awkward', 'negotiate', 'bill', 'tip', 'salary', 'social'],
   icon: "💵",
   categories: ['Humans', 'Loot'],
+  headerColor: "#e0b8b8",
   description: "Navigate every awkward money situation with confidence. 18 scenario types covering tips, bill splits, Venmo requests, lending, dating, gifts, roommates, salary negotiation, inheritance, group travel, subscriptions, affordability checks, cultural money norms, charity, weddings, family, and coworker collections. Plus 5 bonus modes: instant tip/split calculator, debt tracker with AI nudge messages, conversation practice simulator, usage trends with charts, and a persistent profile so you never re-explain your budget or culture.",
   guide: {
       overview: "Money Diplomat handles the social side of money — the conversations, calculations, and etiquette nobody teaches you. Pick from 18 situation types (tipping, splitting, lending, dating, gifts, salary, inheritance, and more) and get tailored scripts, amounts, and strategies. Use Quick Math for instant tip/split calculations without AI. Track who owes you with They Owe Me and generate tactful nudge messages. Practice high-stakes money conversations in the simulator. Set your profile once (budget, culture, relationship status) and every response adapts automatically.",
@@ -2116,6 +2178,7 @@ export const tools = [
   tags: ['career', 'skills', 'job', 'transition', 'learning', 'gap', 'resume'],
   icon: "🗺️",
   categories: ['Pursuits', 'Veer'],
+  headerColor: "#ccdfc4",
   description: "Map the exact gap between where you are and where you want to be — then close it. 22 tools covering every stage of a career transition: explore roles with day-in-the-life simulations, get a personalized skill gap analysis, build learning timelines, generate proof-of-skill project ideas, decode job postings, practice mock interviews with AI, audit your resume, find target companies, get weekly nudge assignments, and track your progress with milestone celebrations. Includes market pulse, salary economics, mentor matching, networking scripts, and skill adjacency sequencing.",
   guide: {
       overview: "Skill Gap Map is a 22-feature career transition engine. Start by exploring roles or mapping your gap — then unlock a full pipeline: day-in-the-life reality checks, optimal learning sequences, salary economics, proof-of-skill projects, networking strategy with outreach drafts, resume audits, company targeting, job posting decoders, mock interviews with AI, market demand tracking, weekly assignments, milestone celebrations, and mentor matching. It remembers your progress across sessions and adapts as you grow.",
@@ -2151,6 +2214,7 @@ export const tools = [
   tags: ['history', 'current events', 'parallels', 'context', 'analysis', 'pattern', 'news'],
   icon: "📰",
   categories: ['Diversions', 'What If?'],
+  headerColor: "#b8dcd8",
   description: "Enter any current event, trend, or controversy. AI finds 2-3 structural historical parallels — not surface-level ('this is like Rome falling') but deep structural matches based on power dynamics, institutional behavior, and how similar situations actually played out. Each parallel includes what happened, how contemporaries understood it (and how they were wrong), what happened next, and specifically where the analogy breaks down. Dig deeper into any parallel for full timelines, turning points, echoing quotes, and information environment analysis. Get a counter-example showing when similar conditions led to a different outcome. Plus synthesis, predictions, and further reading.",
   guide: {
     overview: "Most historical analogies are lazy: 'This is just like the fall of Rome.' HistoryToday goes deeper. It finds structural parallels — situations where the underlying mechanisms (regulatory capture, information asymmetry, institutional decay, public sentiment shifts) match the current moment. For each parallel, you get the full picture: what happened, how people at the time understood it, what they got wrong, what happened next, and crucially — where the analogy breaks down. That last part is the most valuable: every parallel is imperfect, and the differences predict what will be different this time. Dig Deeper expands any parallel into a full timeline with turning points, echoing quotes, and lessons. The Counter-Example finds a case where similar starting conditions produced a completely different outcome.",
@@ -2203,6 +2267,7 @@ export const tools = [
   tags: ['resume', 'achievements', 'career', 'promotion', 'accomplishments', 'interview', 'linkedin', 'performance review', 'raise', 'salary negotiation', 'job search', 'brag sheet', 'bullets', 'cv', 'job application', 'cover letter', 'behavioral interview', 'confidence', 'work history', 'wins', 'strengths', 'star stories', 'voice match'],
   icon: "🏆",
   categories: ['The Grind', 'The Office', 'Me', 'Humans'],
+  headerColor: "#d4dde8",
   description: "Transforms humble work descriptions into polished achievement statements, then goes further with Strength Radar scoring, JD tailoring, Interview Prep Matrix, Voice Match, raise ammunition, and a meeting script.",
   crossRefs: ['DifficultTalkCoach', 'ColdOpenCraft'],
   guide: {
@@ -2255,6 +2320,7 @@ export const tools = [
   tags: [],
   icon: "✈️",
   categories: ['Out & About'],
+  headerColor: "#ccdfc4",
   description: "Make the most of every layover — 9 tools for every stage of your connection. Get a YES/NO/RISKY verdict with exact time math. Step-by-step gate-to-gate directions. Live delay recalculation. Side-by-side layover comparison for booking decisions. Lounge finder matched to your cards. Context-aware packing lists. Offline-ready survival kits. Risk analysis with worst-case scenarios. Save your frequent airports.",
   guide: {
     overview: "Layover Maximizer is your complete connection toolkit — 9 views covering every stage from booking to landing. Compare layovers before you book. Get a time-math-backed verdict when you have your itinerary. Navigate gate-to-gate transfers. Track delays in real time. Find lounges matched to your credit cards. Pack smart for your specific airport. Generate an offline survival kit. Assess worst-case risks. Save airports you fly through often.",
@@ -2302,6 +2368,7 @@ export const tools = [
   tags: ['argument', 'last word', 'debate', 'win', 'persuade', 'rhetoric'],
   icon: "⚖️",
   categories: ['Discourse', 'Veer'],
+  headerColor: "#e0b8b8",
   description: "The argument-settling, fact-checking, trivia-hosting authority. Four modes in one tool: Quick Answer delivers bold, confident responses to any factual question with confidence ratings. Settle It acts as an impartial referee when two people disagree — enter both sides, get a verdict with accuracy scores, a breakdown of who got what right, and a settlement suggestion. Fact Check gives clear TRUE/FALSE/MISLEADING rulings on any claim with explanations and myth origins. Trivia Night generates quick-fire multiple-choice rounds with team scoring, streak tracking, difficulty settings, and 10 categories — plus an 'Actually...' challenge button if you think the answer is wrong. Voice input supported on all modes.",
   guide: {
       overview: "The Final Word is four tools in one, built for settling debates, answering disputed questions, checking facts, and hosting trivia nights. Quick Answer mode takes any factual question and delivers a bold, confident response with a confidence level (certain → uncertain), supporting facts, and a bonus fun fact. Settle It mode takes two opposing claims (with optional names and context), scores each side's accuracy 0–100, declares a winner, and suggests a fun way to move on. Fact Check mode rates any claim as TRUE, FALSE, MOSTLY TRUE, MOSTLY FALSE, MISLEADING, or IT'S COMPLICATED with an explanation and myth origin. Trivia Night generates multiple-choice questions across 10 categories at 3 difficulty levels, with full team management (1–6 teams), score and streak tracking, and an 'Actually...' challenge system for disputed answers. Voice input works on all text modes.",
@@ -2337,6 +2404,7 @@ export const tools = [
   tags: ['name', 'brand', 'business', 'rename', 'check', 'domain'],
   icon: "🔍",
   categories: ['Pursuits'],
+  headerColor: "#ccdfc4",
   description: "The deepest name analysis you can get without hiring a naming agency. Stress-tests any name across 12 dimensions: phonetics, memorability (including the drunk test), global language scan for unintended meanings, visual analysis, radio test, SEO, competitive landscape, longevity, and emotional resonance. Includes live domain and social handle availability checks. Also has a head-to-head Compare mode for choosing between finalists.",
   guide: {
       overview: "NameAudit is the other half of the naming problem. NameStorm gives you ideas; NameAudit tells you if they're any good. Enter a name you're considering and get a 12-dimension analysis: first impression, phonetic profile (mouth feel, sound psychology, accent compatibility), five memorability tests (day-after, tell-a-friend, phone, drunk, and shout), radio test (can someone spell it from hearing it?), visual analysis (how it looks in different cases, as a URL, as a logo), global language scan across 15+ languages, abbreviation audit, competitive landscape, SEO outlook, longevity check, and emotional resonance. For business and product names, live domain and social handle availability checks run automatically. Use Compare mode to pit 2-4 finalists against each other for a clear winner.",
@@ -2373,6 +2441,7 @@ export const tools = [
   tags: ['name', 'brand', 'brainstorm', 'business', 'product', 'startup'],
   icon: "⚡",
   categories: ['Pursuits', 'What If?'],
+  headerColor: "#ccdfc4",
   description: "AI-powered name generation with linguistic problem flagging, live domain and social handle availability checks, and 'More Like This' variations. Generates names across 15 style categories — from Clever Wordplay to Mythic to Mashup — each with pronunciation guides, Name DNA explaining why it works, and flags for unintended meanings in other languages, phonetic issues, and brand conflicts.",
   guide: {
       overview: "Naming things is hard because you need creativity, cultural awareness, and practical validation all at once. NameStorm generates 25-35 names across the style categories most relevant to what you're naming, then gives you tools to evaluate them: pronunciation guides, Name DNA explaining the linguistic psychology behind each name, problem flags for issues in other languages or phonetic traps, AI-curated Top 5 picks, a Say It Out Loud test, live domain and social handle availability checks, and a 'More Like This' button that generates 8-10 variations of any name you almost love.",
@@ -2410,6 +2479,7 @@ export const tools = [
   tags: ['thank you', 'gratitude', 'owe', 'appreciate', 'thank'],
   icon: "💝",
   categories: ['Discourse', 'Humans'],
+  headerColor: "#e0b8b8",
   description: "Turn your feelings of gratitude into heartfelt, authentic thank-you messages — without the writing paralysis. Perfect for when you genuinely appreciate someone but freeze when trying to express it formally.",
   guide: {
       overview: "The Gratitude Debt Clearer helps you convert bullet points of appreciation into polished thank-you messages. Instead of staring at a blank page wondering how to start, just list what you're grateful for and let AI craft 2-3 message options that sound like you, not a greeting card. Built specifically for people who feel gratitude deeply but struggle with the formality of expressing it in writing.",
@@ -2448,6 +2518,7 @@ export const tools = [
   tags: ['difficult conversation', 'hard talk', 'confrontation', 'feedback', 'conflict', 'nervous', 'boundary', 'script', 'rehearse'],
   icon: "🗣️",
   categories: ['Read the Room', 'Humans'],
+  headerColor: "#e0b8b8",
   description: "Generates multiple strategic approaches with exact scripts, predicted pushback, and counter-responses for any hard conversation — setting boundaries, giving feedback, saying no, or addressing disrespect. Includes a live practice mode where AI responds in character with real-time coaching.",
   guide: {
     overview: "The Difficult Talk Coach helps you prepare for hard conversations by generating multiple strategic approaches with exact scripts, predicted pushback, and counter-responses. Whether you need to set a boundary, request a change, address conflict, or give feedback, you'll get concrete phrases to use, body language tips, and emotional regulation strategies.",
@@ -2487,6 +2558,7 @@ export const tools = [
   tags: ['complaint', 'customer service', 'escalate', 'refund', 'manager', 'dispute', 'letter', 'consumer rights', 'legal', 'chargeback', 'negotiate', 'advocate', 'rights', 'BBB', 'FTC', 'regulate', 'company', 'billing'],
   icon: "📧",
   categories: ['Loot', 'Discourse'],
+  headerColor: "#c0d8b8",
   description: "Builds a complete multi-stage escalation campaign when a company won't make things right. Identifies your legal leverage, writes ready-to-send letters for every stage — from direct complaint to regulatory filing to executive escalation to public pressure to chargeback — with specific laws cited, evidence coaching, and a tactical timeline. Not just a letter writer — a full consumer advocacy strategy.",
   guide: {
     overview: "Most consumer complaints fail because people don't know what leverage they actually have. This tool analyzes your situation, identifies applicable consumer protection laws, and builds a 5-stage escalation campaign — each stage increasing pressure while maintaining professionalism. Every letter, regulatory complaint, social media post, and legal filing is pre-written and ready to copy-paste-send. You start at Stage 1 and only escalate if needed.",
@@ -2526,6 +2598,7 @@ export const tools = [
   tags: ['document', 'plain english', 'translate', 'confusing', 'contract', 'legal', 'medical', 'simplify'],
   icon: '🔍',
   categories: ['Go Deep!'],
+  headerColor: "#d4dde8",
   description: "Most complex text isn't trying to confuse you — it was written for an audience that already shares a context you don't have. Paste anything and PlainTalk bridges the gap: plain-English translation plus a structural X-ray showing how the text is built — its argument, narrative, logic, or obligations — adapted automatically to what you're reading.",
   guide: {
     overview: "PlainTalk is a universal text comprehension tool. Paste any complex text — a contract, a research paper, a chapter of literature, a medical form, a political speech — and get two things: a plain-English translation anyone can understand, and a structural X-ray showing how the text is built, what each section is doing, and what matters most. The analysis adapts automatically to the type of text you provide.",
@@ -2565,6 +2638,7 @@ export const tools = [
   tags: ['focus', 'sound', 'noise', 'concentration', 'music', 'ambient', 'work'],
   icon: " 🎧",
   categories: ['Energy'],
+  headerColor: "#b8dcd8",
   description: "Generate personalized soundscapes for concentration based on your task, environment, and sensory needs. Creates custom mixes of white/pink/brown noise, nature sounds, binaural beats, and ambient music. Get sound layering recipes with individual volume controls and specific personalized tips.",
   guide: {
       overview: "The Focus Sound Architect generates custom soundscape recipes calibrated to your neurotype, task, environment, and auditory sensitivities. Instead of generic focus music, you get a personalized mix of sound elements with scientific explanations for why each helps your specific situation. Built with neurodivergent brains in mind - honors sensory sensitivities, provides consistency when needed, variety when needed, and always explains WHY.",
@@ -2598,6 +2672,7 @@ export const tools = [
   tags: ['focus', 'timer', 'session', 'productivity', 'distraction', 'pomodoro', 'work'],
   icon: "🎩",
   categories: ['Energy', 'Do It!'],
+  headerColor: "#b8dcd8",
   description: "A focus session timer that keeps you on task, then pulls you out when time's up — with escalating urgency if you ignore it.",
   guide: {
       overview: "Focus Pocus manages both sides of attention: it keeps you locked in during your session (FocusWall), then interrupts you when time's up (HyperfocusInterrupter). If you try to quit early, it pushes back. If you go overtime, it escalates. When you finally break, it generates a personalized recovery plan based on what you were doing and how long you went.",
@@ -2643,6 +2718,7 @@ export const tools = [
   tags: ['decision', 'stuck', 'choice', 'pros cons', 'dilemma', 'options', 'clarity', 'paralysis', 'overwhelmed'],
   icon: "🎯",
   categories: ['Veer'],
+  headerColor: "#f5e0c0",
   description: "Makes the decision for you when you're too stuck to choose. Applies your constraints and preferences to give you ONE answer with execution steps — no options, no second-guessing.",
   guide: {
     overview: "Choice paralysis happens when you're too overwhelmed to decide but still know what you want/need. This tool applies your constraints and preferences to make THE decision (singular), removing the burden of choice while respecting your values.",
@@ -2684,6 +2760,7 @@ export const tools = [
   tags: ['connection', 'network', 'path', 'introduction', 'reach', 'who knows who'],
   icon: "🔗",
   categories: ['Go Deep!', 'Me'],
+  headerColor: "#d4dde8",
   description: "Find the hidden connections between any two seemingly unrelated parts of your life. Your college major and your career, your childhood hobby and your friend group, your biggest fear and your favorite food. The chain is always there -- you just can't see it yet.",
   guide: {
     overview: "Everything in your life is connected by threads you've never noticed. This tool traces the chain between any two things -- your philosophy degree and your coding career, your fear of flying and your love of sushi. Build a profile once, then play endlessly.",
@@ -2726,6 +2803,7 @@ export const tools = [
   tags: ['random', 'interesting', 'curious', 'learn', 'discover', 'bored', 'fun', 'trivia', 'facts', 'knowledge', 'rabbit hole', 'explore', 'learning', 'curiosity', 'deep dive', 'debate', 'digest', 'daily', 'discovery', 'interests', 'spin', 'mind expanding', 'education'],
   icon: '🎲',
   categories: ['Diversions', 'Detour'],
+  headerColor: "#b8dcd8",
   description: 'Spin for fascinating rabbit holes tuned to YOUR interests. AI finds the surprising intersections between topics you love — the kind of stuff you can\'t stop thinking about.',
   guide: {
     overview: "Brain Roulette is an AI-powered discovery engine that generates fascinating, personalized rabbit holes. Unlike random fact generators, it finds the unexpected INTERSECTIONS between your interests — where history meets food, where psychology meets technology, where space meets philosophy. Each spin is unique, and a secret wildcard topic gets woven in to keep things unpredictable.",
@@ -2768,6 +2846,7 @@ export const tools = [
   tags: ['legacy', 'estate', 'end of life', 'planning', 'documents', 'death', 'wishes'],
   icon: "📜",
   categories: ['Humans', 'Me'],
+  headerColor: "#e0b8b8",
   description: "AI-guided digital legacy planner that helps you organize accounts, documents, finances, and personal messages into a single printable document for your trusted person.",
   guide: {
       overview: "FinalWish walks you through an AI-guided interview to build a comprehensive digital legacy package — covering accounts, documents, finances, personal messages, and practical wishes. Everything exports as a self-contained, printable HTML document you hand to someone you trust. Nothing is stored.",
@@ -2801,6 +2880,7 @@ export const tools = [
   tags: ['bike', 'bicycle', 'repair', 'maintenance', 'cycling', 'fix', 'mechanic', 'flat', 'tire', 'brakes', 'shifting', 'gears', 'derailleur', 'chain', 'wheel', 'spoke', 'noise', 'trailside', 'DIY'],
   icon: "🚲",
   categories: ['The Grind'],
+  headerColor: "#d4dde8",
   crossRefs: ['BuyWise', 'DecisionCoach'],
   description: "AI-enhanced bicycle troubleshooting with interactive step-by-step fixes, animated visual demos, and expert follow-up when standard repairs don't work.",
   guide: {
@@ -2830,13 +2910,14 @@ export const tools = [
   modified: "",
   id: "WardrobeChaosHelper",
   title: 'Wardrobe Chaos Helper',
-  tagline: "AI picks your outfit so you don't have to",
-  tags: ['clothes', 'outfit', 'closet', 'wardrobe', 'wear', 'fashion'],
+  tagline: "AI picks your outfit. No more decision fatigue.",
+  tags: ['clothes', 'outfit', 'closet', 'wardrobe', 'wear', 'fashion', 'dressing', 'style help', 'packing', 'laundry'],
   icon: '👗👔',
   categories: ['The Grind'],
-  description: 'Stop decision fatigue! AI picks complete outfits from your wardrobe based on weather, activities, mood, and sensory needs. Perfect for anyone overwhelmed by daily choices.',
+  headerColor: "#d4dde8",
+  description: 'AI picks complete outfits from your wardrobe based on weather, activities, mood, and sensory needs. Perfect for anyone overwhelmed by daily choices.',
   guide: {
-    overview: "Decision fatigue is real, especially when it comes to picking outfits. This tool learns your wardrobe and suggests complete outfit combinations based on your day's needs. It considers weather, activities, your mood, comfort preferences, and sensory requirements. Particularly helpful for people who struggle with executive function or sensory sensitivities.",
+    overview: "Decision fatigue is real, especially when it comes to picking outfits. This tool learns your wardrobe and suggests complete outfit combinations based on your day's needs. It considers weather, activities, your mood, comfort preferences, and sensory requirements. Particularly helpful for anyone who finds daily outfit decisions overwhelming.",
     
     howToUse: [
       "STEP 1: Build your wardrobe inventory (one-time setup, then just maintain)",
@@ -2878,6 +2959,7 @@ export const tools = [
   tags: ['plant', 'garden', 'water', 'dying', 'care', 'houseplant'],
   icon: '🪴',
   categories: ['The Grind'],
+  headerColor: "#d4dde8",
   description: 'Diagnose struggling plants and get step-by-step rescue plans. Upload a photo or describe symptoms to identify species, analyze problems (yellowing, wilting, spots), and receive prioritized action plans with recovery timelines.',
   guide: {
     overview: "Your plant is dying and you don't know why. This tool uses AI image analysis to identify your plant species, diagnose problems (overwatering, pests, nutrient deficiency), and provide a prioritized rescue plan. Upload a photo of the affected leaves/stems or describe symptoms, and get expert advice within seconds.",
@@ -2923,6 +3005,7 @@ export const tools = [
   tags: ['text', 'argument', 'fight', 'respond', 'message', 'conflict', 'communication', 'de-escalate', 'anger', 'manipulation', 'gaslighting', 'passive aggressive', 'relationship', 'boundaries', 'texting'],
   icon: "📱",
   categories: ['Discourse', 'Humans'],
+  headerColor: "#e0b8b8",
   description: "Received a tense message? Don't respond reactively. Get de-escalating response suggestions, emotional analysis, and thoughtful strategies. Prevents regrettable texts.",
   guide: {
     overview: "The Conflict Coach helps you respond to tense, upsetting, or confrontational messages without escalating. Paste the message you received, and get emotional analysis, multiple response strategies (validate, set boundaries, disengage gracefully), and warnings about what NOT to say. Built for people who freeze during conflict, escalate when defensive, or struggle to read tone. Includes cooling-off timers and repair strategies.",
@@ -2992,6 +3075,7 @@ export const tools = [
   tags: ['overwhelm', 'todo', 'too much', 'prioritize', 'anxiety', 'procrastination'],
   icon: "⛏️",
   categories: ['Do It!', 'Energy'],
+  headerColor: "#d4dde8",
   description: "Turn overwhelming projects into 5-minute micro-tasks. Built for that 'too big to start' paralysis. No decisions required.",
   guide: {
     overview: "The Task Avalanche Breaker converts overwhelming projects into ultra-specific micro-tasks that require ZERO decision-making. Built specifically for  anyone experiencing 'too big to start' paralysis. Each task is broken down to 2-5 minute chunks with clear completion criteria and momentum-building sequencing.",
@@ -3057,6 +3141,7 @@ export const tools = [
   tags: ['pet', 'dog', 'cat', 'behavior', 'weird', 'animal'],
   icon: "🐾",
   categories: ['The Grind'],
+  headerColor: "#d4dde8",
   description: "Is your pet's weird behavior quirky or concerning? Get AI analysis to distinguish between adorable quirks and symptoms that need a vet visit.",
   guide: {
     overview: "The Pet Weirdness Decoder helps anxious pet parents understand unusual pet behaviors. Using AI analysis of species-specific behaviors, breed tendencies, and age-related patterns, it distinguishes between normal quirks (enjoy them!), behaviors worth monitoring, and symptoms requiring veterinary attention. NOT a replacement for vet advice - designed to reduce anxiety while being responsible about health concerns.",
@@ -3122,6 +3207,7 @@ export const tools = [
   tags: ['review', 'paranoid', 'feedback', 'rating', 'fake', 'trust', 'product'],
   icon: "🔍",
   categories: ['Loot'],
+  headerColor: "#c0d8b8",
   description: "Import reviews from a URL or paste them manually. Computes real statistics, then AI scores each review individually and detects manipulation patterns.",
   guide: {
     overview: "Fake Review Detective uses a two-phase approach: first, JavaScript computes real statistics from your pasted reviews (star distribution, verified %, date clusters, language flags) — instant, no AI needed. Then AI scores each review individually for authenticity (0-100 with red/green flags) and analyzes cross-review patterns (manipulation detection, genuine consensus, purchase recommendation). Every number you see is computed, not hallucinated.",
@@ -3171,6 +3257,7 @@ export const tools = [
   tags: ['burnout', 'energy', 'crash', 'warning', 'fatigue', 'overextended', 'self care'],
   icon: "⚠️",
   categories: ['Energy', 'Me'],
+  headerColor: "#b8dcd8",
   description: "Track daily energy, sleep, and stress to identify YOUR personal burnout patterns before you crash. For people who push through warning signs, mask symptoms, or have poor interoception (can't sense body signals). The tool uses objective data to warn you when a crash is coming - because your feelings might say 'I'm fine' even when the pattern shows you're not. Get specific, actionable interventions prioritized by urgency. Built especially for people who can't trust their own assessment.",
   guide: {
       overview: "Crash Predictor tracks daily metrics (energy, sleep, stress, activities, physical symptoms, warning signs) to identify patterns that precede burnout. It analyzes YOUR specific crash indicators and predicts how many days until likely crash at current trajectory. Provides prioritized interventions with scripts for what to say/do. Designed for people who push through everything and need objective data to override their 'I'm fine' instinct.",
@@ -3213,6 +3300,7 @@ export const tools = [
   tags: ['dreams', 'sleep', 'patterns', 'subconscious', 'psychology', 'reflection', 'themes', 'emotions'],
   icon: "🌙",
   categories: ['Mind'],
+  headerColor: "#b8dcd8",
   description: "Analyzes your dreams using Jungian, Freudian, and neuroscience frameworks to surface recurring themes, emotional patterns, symbolic imagery, and life correlations — with reflection questions to make the insights actionable.",
   guide: {
     overview: "The Dream Pattern Spotter applies psychological frameworks to find patterns in your dream life. Single Dream mode provides deep analysis of one dream. Pattern mode analyzes 2-6 dreams together to find recurring themes, emotional signatures, and correlations to waking life. Not mysticism — pattern recognition for self-reflection.",
@@ -3248,6 +3336,7 @@ export const tools = [
   tags: ['meeting', 'agenda', 'facilitation', 'hijack', 'inclusive', 'structure', 'work'],
   icon: "🛡️",
   categories: ['The Office'],
+  headerColor: "#d4dde8",
   description: "Create structured, inclusive meeting agendas with time-boxed items, facilitator scripts, and anti-hijack strategies. Prevents dominant personalities from derailing discussions and ensures all voices are heard. Built with neurodivergent users in mind.",
   guide: {
       overview: "The Meeting Hijack Preventer generates complete meeting structures that keep discussions focused and productive. It provides time-boxed agenda items, explicit speaking order, facilitator scripts for every scenario, decision-making frameworks, virtual meeting protocols, and ready-to-use follow-up documents. Perfect for preventing tangents, managing dominant speakers, and ensuring quiet participants contribute.",
@@ -3283,6 +3372,7 @@ export const tools = [
   tags: ['doctor', 'medical', 'jargon', 'health', 'appointment', 'diagnosis', 'plain language', 'prescription', 'lab results'],
   icon: "🩺",
   categories: ['Body'],
+  headerColor: "#ccdfc4",
   description: "Paste any medical document — visit notes, lab results, prescription labels, or billing statements — and get a plain-English summary, prioritized action checklist, medication explanations, and questions to ask at your next appointment.",
   guide: {
     overview: "The Doctor Visit Translator helps you understand your doctor visits by translating medical terminology into clear, actionable language. Paste your visit notes or describe what the doctor said, and get a plain English summary, medical term definitions, action checklist with priorities, medication explanations with side effects, test result interpretations, follow-up requirements, and questions to ask next time.",
@@ -3319,6 +3409,7 @@ export const tools = [
   tags: ['email', 'reply', 'urgent', 'inbox', 'prioritize', 'respond'],
   icon: "📬",
   categories: ['The Office', 'Do It!'],
+  headerColor: "#d4dde8",
   description: "Analyze email urgency and cut through inbox anxiety. Find out what actually needs a response today vs what can wait.",
   guide: {
     overview: "The Email Urgency Triager helps you cut through email anxiety by analyzing which messages actually need immediate responses versus which can wait or be ignored entirely. It separates real urgency from perceived urgency, giving you permission to focus on what matters and let the rest wait. Perfect for anyone drowning in their inbox or feeling anxious about unanswered emails.",
@@ -3379,6 +3470,7 @@ export const tools = [
   tags: ['lease', 'rent', 'apartment', 'landlord', 'tenant', 'housing'],
   icon: "🏡",
   categories: ['Loot'],
+  headerColor: "#c0d8b8",
   description: "Analyze rental agreements and identify predatory clauses, illegal provisions, unusual fees, and missing tenant protections. Upload your lease (PDF or text), get color-coded red/yellow/green flags with plain language explanations, negotiation scripts, and comparison to local housing laws. Flags concerning clauses, explains your rights, provides negotiation strategies, and connects you to tenant resources. Built for first-time renters and tenant protection.",
   guide: {
     overview: "Lease Trap Detector analyzes rental agreements to protect tenants from predatory practices. Upload your lease or paste the text, specify your location (for local law comparison), and get comprehensive analysis: RED flags for serious concerns (illegal clauses, landlord overreach, exploitative fees), YELLOW flags for questionable provisions (vague language, missing details), GREEN flags for good tenant protections. Each flag includes the actual clause text, plain-language explanation of the problem, legal status (illegal/unenforceable/exploitative), your rights under local law, and specific negotiation strategies. Also identifies missing protections, unusual fees, and provides negotiation scripts plus local tenant rights resources.",
@@ -3438,6 +3530,7 @@ export const tools = [
   tags: ['friend', 'friendship', 'drift', 'losing touch', 'reconnect', 'relationship'],
   icon: "💔",
   categories: ['Humans'],
+  headerColor: "#e0b8b8",
   description: "Never lose touch with people you care about due to time-blindness. Track important relationships, get alerts when it's been too long, and generate personalized conversation starters. Visual color-coded urgency (red/yellow/green), configurable contact frequencies, snooze for busy periods, and guilt-free reconnection scripts. Built specifically for people who care deeply but struggle with time awareness and executive function. Maintain connections without shame.",
   guide: {
     overview: "Friendship Fade Alerter helps individuals maintain relationships despite time-blindness. Add important people with their ideal contact frequency (weekly, monthly, etc.), and the tool tracks days since last contact, alerts when overdue, and generates personalized conversation starters when you're ready to reach out. Color-coded visual indicators (red = overdue, yellow = coming due, green = recently contacted) remove guesswork. One-click conversation starter generation removes the 'what do I say?' barrier. Guilt-free framing acknowledges that time got away from you - that's okay. Snooze relationships during busy periods. Track successful reconnections. Low-friction design makes maintaining friendships actually doable.",
@@ -3488,6 +3581,7 @@ export const tools = [
   tags: ['sensory', 'overwhelm', 'noise', 'texture', 'environment', 'sensitive'],
   icon: "🎯",
   categories: ['Body', 'Me'],
+  headerColor: "#ccdfc4",
   description: "Comprehensive sensory environment prediction with saved profiles, accessibility integration, visual mapping, community ratings, and post-visit learning. Predict crowd density, noise, lighting, and sensory overwhelm before you go. Get wheelchair access info, service animal policies, accessible bathroom locations, visual escape route maps, real-time check-ins during visit, and track prediction accuracy over time. Built for autistic individuals, sensory processing disorder, migraine sufferers, PTSD, and anxiety. Know before you go, adapt during, learn after.",
   guide: {
     overview: "Enhanced Sensory Minefield Mapper predicts sensory environments with comprehensive features: saved sensory profiles (set once, use always), accessibility integration (wheelchair access, service animals, accessible bathrooms), visual mapping (see quiet zones and escape routes), real-time check-ins during visit ('How are you doing?'), community-sourced ratings from other sensory-sensitive users, and post-visit learning (predicted vs actual comparison improves future predictions). Complete sensory planning system from before-during-after.",
@@ -3542,6 +3636,7 @@ export const tools = [
   tags: ['leverage', 'opportunity', 'resources', 'roi', 'career', 'strategy', 'yield'],
   icon: "⚖️",
   categories: ['The Office', 'Veer'],
+  headerColor: "#d4dde8",
   description: "Identify high-yield opportunities and calculate the force multiplication of your current resources.",
   guide: {
       overview: "LeverageLogic helps you identify opportunities where small inputs create disproportionate outputs. Enter your current resources (time, money, skills, connections) and it calculates which opportunities will give you the highest return on investment.",
@@ -3577,6 +3672,7 @@ export const tools = [
   tags: ['meeting', 'waste time', 'unnecessary', 'decline', 'calendar', 'work'],
   icon: "🔇",
   categories: ['The Office'],
+  headerColor: "#d4dde8",
   description: "Detects whether meetings are necessary or could be emails/async updates. Analyzes red flags like 'status update', 'touch base', no agenda. Provides alternative approaches (Loom, doc, Slack) with time saved estimates and permission to decline.",
   guide: {
     overview: "Most meetings are unnecessary and could be handled asynchronously. This tool analyzes meeting descriptions to detect BS meetings (status updates, FYI info sharing, vague 'syncs') vs legitimate ones (collaborative problem-solving, decisions, conflict resolution). Provides concrete alternatives and scripts to suggest them.",
@@ -3619,6 +3715,7 @@ export const tools = [
   tags: ['cooking', 'food', 'recipe', 'kitchen', 'ingredients', 'dinner'],
   icon: "🍳",
   categories: ['The Grind'],
+  headerColor: "#d4dde8",
   description: "Mid-cook crisis? Missing ingredients, burnt sauce, flat flavor? Get instant rescue solutions, smart substitutions (single or multi-ingredient), recipe scaling with non-linear adjustments, pre-flight readiness checks, flavor fix upgrades, 60-second cooking lessons, a wins journal, and a hands-free Kitchen Companion mode for flour-covered hands.",
   guide: {
     overview: "Recipe Chaos Solver is your cooking emergency room AND your cooking coach. When something goes wrong mid-cook, get instant rescue solutions with science explanations. Before you start, run a Pre-Flight Check to catch problems early. When dinner's just boring, Flavor Fix diagnoses what's missing. Every rescue becomes a learning moment with Teach Me lessons, and your Wins Journal tracks your growing confidence. Kitchen Companion mode gives you hands-free step-by-step guidance while you cook.",
@@ -3668,6 +3765,7 @@ export const tools = [
   tags: ['bill', 'medical bill', 'negotiate', 'reduce', 'lower', 'financial', 'debt', 'collections', 'late fee', 'overdue', 'dispute', 'hardship', 'credit', 'waive', 'fight', 'utilities', 'medical', 'rent', 'insurance', 'phone', 'collections', 'scripts', 'letters'],
   icon: "🧾",
   categories: ['Loot', 'The Grind'],
+  headerColor: "#c0d8b8",
   description: "Turn bill anxiety into a clear action plan with 9 tools: paste or photograph a bill for an AI autopsy, Quick Check any charge in 5 seconds, practice negotiation calls with an AI billing rep, generate 7 types of ready-to-send letters, triage multiple bills by priority, track plans, log call outcomes, view your bill calendar, and celebrate victories with a running savings total.",
   guide: {
     overview: "Bill Rescue is your complete bill-fighting toolkit — 9 views that take you from 'I'm scared to open this' to 'I saved $1,670 this year.' Quick Check any charge instantly. Get full rescue plans with phone scripts, letters, and insider tips. Practice the actual call with an AI billing rep before you dial. Generate dispute letters, goodwill adjustments, insurance appeals, and more. Track everything: plans, call outcomes, follow-ups, and victories.",
@@ -3716,6 +3814,7 @@ export const tools = [
   tags: ['subscription', 'cancel', 'charges', 'recurring', 'money', 'audit'],
   icon: "🧹",
   categories: ['Loot'],
+  headerColor: "#c0d8b8",
   description: "Your complete subscription management toolkit — 9 views. Audit every sub with honest verdicts and cost-per-use math. Get renewal date alerts before surprise charges. Detect price hikes automatically. Optimize plans with annual/family/bundle deals. Get retention scripts to negotiate discounts. Split shared subs and track who owes what. Monitor free trials with usage counters and cancel reminders. Set category budgets with over-limit alerts. Track cancellation savings over time with a spending timeline.",
   guide: {
     overview: "SubSweep manages your entire subscription life — from the moment you start a free trial to the day you cancel and track how much you've saved. 9 views cover auditing, renewals, optimization, negotiation, splits, trials, budgets, tracking, and trends. Your subscription list persists between sessions and gets smarter over time.",
@@ -3762,6 +3861,7 @@ export const tools = [
   tags: ['sorry', 'apology', 'apologize', 'mistake', 'forgiveness', 'conflict', 'over-apologizing', 'repair', 'relationship', 'accountability', 'letter', 'cultural', 'communication'],
   icon: "⚖️",
   categories: ['Humans', 'Discourse'],
+  headerColor: "#e0b8b8",
   description: "Calibrates apology level to actual harm caused. 5 levels: no apology needed, brief acknowledgment, simple apology, full accountability apology, major repair. Stops over-apologizing for existing and under-apologizing for real harm. Templates for each level.",
   guide: {
     overview: "Many people over-apologize for minor things ('sorry to bother you' for legitimate questions) or under-apologize for genuine harm. This tool analyzes actual harm vs your responsibility to determine appropriate apology level (1-5) and provides calibrated templates.",
@@ -3805,6 +3905,7 @@ export const tools = [
   tags: ['bored', 'adventure', 'explore', 'fun', 'weekend', 'activity'],
   icon: "🗺️",
   categories: ['Out & About'],
+  headerColor: "#ccdfc4",
   description: "Plans accessible mini-adventures: 2-4 hours, under $20, in/near your city. Detailed itineraries for urban exploration, nature, culture, social experiences. Creates novelty within ordinary constraints. Removes 'need full day/lots of money' barrier to adventure.",
   guide: {
     overview: "Adventures don't require expensive trips or full days. This tool creates specific micro-adventure plans - 2-4 hours, low/no cost, doable this week. Urban exploration, hidden local spots, photography walks, new neighborhoods. Makes exploration accessible.",
@@ -3845,6 +3946,7 @@ export const tools = [
   tags: ['date', 'date night', 'couples', 'relationship', 'romantic', 'activity', 'itinerary', 'anniversary', 'first date', 'budget'],
   icon: "💘",
   categories: ['Out & About'],
+  headerColor: "#ccdfc4",
   description: "Budget-driven evening planner for two. Pick your currency, set a budget and vibe, and get a complete itinerary with timing, cost per stop, budget buffer, transportation tips, and a Plan B. Works worldwide — adapts to local culture, venues, and pricing.",
   guide: {
     overview: "DateNight turns 'I dunno, what do you want to do?' into a complete evening with a timeline, per-stop costs, and a built-in budget buffer. Pick your currency and set a hard budget, choose a vibe (casual, romantic, adventurous, first date, anniversary, stay-in), and enter your city. It generates 2-4 stops with culturally appropriate venues — izakayas in Tokyo, tapas bars in Madrid, hawker centres in Singapore — plus conversation starters and a Plan B.",
@@ -3886,6 +3988,7 @@ export const tools = [
   tags: ['crisis', 'emergency', 'prioritize', 'triage', 'urgent', 'overwhelm', 'tasks', 'deadline', 'anxiety', 'burnout'],
   icon: "🚨",
   categories: ['Do It!', 'Energy'],
+  headerColor: "#d4dde8",
   description: "Separates real urgency from anxiety urgency using consequence-based triage — ranks tasks by what actually breaks if you skip them. Three timeframes, brain dump mode, time-blocked schedules, task splitting, delegation drafts, pattern tracking, and a 'Just One Thing' panic button.",
   guide: {
     overview: "Anxiety inflates urgency. This tool objectively analyzes deadlines, consequences, and who's actually waiting to show what needs attention now vs what can safely wait. Three timeframes (today, this week, multi-week), brain dump extraction, time-blocked schedules, accountability sharing, task splitting, pattern tracking across sessions, and a panic-mode 'Just One Thing' button for when you can't process a full list.",
@@ -3930,6 +4033,7 @@ export const tools = [
   tags: ['focus', 'productivity', 'body double', 'accountability', 'cowork', 'solo tasks'],
   icon: "👥",
   categories: ['Energy', 'Do It!'],
+  headerColor: "#b8dcd8",
   description: "A quiet coworking companion for solo tasks with 6 session modes that change how your buddy behaves. Choose Deep Work (silent library), Sprint (high-energy burst), Grind (trench warfare solidarity), Creative (non-linear explorer), Avoidance Buster (extra-gentle first steps), or Standard. AI task breakdown, live check-ins with sound chimes and notifications, ambient presence between check-ins, shareable accountability cards at session end, quick-start repeat, mood tracking, 'I'm stuck' with micro-steps, session logging with streaks, and AI-powered insights. Like a coffee shop for your focus — someone's there, no pressure.",
   guide: {
     overview: "Working near another person helps you focus — that's why coffee shops, libraries, and coworking spaces exist. Virtual Body Double recreates that effect digitally with a twist: you pick a session mode that changes your buddy's entire personality. Deep Work mode is a silent library companion. Sprint mode is a high-energy burst partner. Grind mode commiserates with dark humor. Creative mode never judges tangents. Avoidance Buster is extra-gentle for tasks you've been putting off. After each session, generate a shareable accountability card — a visual summary designed to screenshot and text to a friend.",
@@ -3973,6 +4077,7 @@ export const tools = [
   tags: ['waiting mode', 'appointments', 'time block', 'freeze', 'productivity', 'energy'],
   icon: "⏳",
   categories: ['Energy', 'Do It!'],
+  headerColor: "#b8dcd8",
   description: "Reclaims the hours around appointments that would otherwise be lost to 'I have a thing later so I can't start anything.' Add multiple events to map all your free windows. Set energy level for intensity-matched task blocks. 'Start With Me' walks you step-by-step from frozen to doing — a guided 60-second launch into any block with a built-in timer. Pre-appointment anxiety slider builds a history: after a few sessions, the tool proves your anxiety was lying ('Last 4 medical appointments: anxiety 8/10, reality 3/10'). Post-appointment debrief in 3 taps makes every session smarter. Pattern tracking reveals your triggers across sessions.",
   guide: {
     overview: "You have a dentist at 2pm and a dinner at 7pm. It's 10am. You know you should do things, but you're frozen because 'I have stuff later.' This tool does the math you won't: you have 3 free hours across 2 windows, your first prep alarm is at 1:25pm, and until then the dentist doesn't exist. Tell the tool your actual tasks and energy level — it maps them to time blocks with intensity badges (Easy/Medium/Deep). Can't start? 'Start With Me' walks you through the first 60 seconds of any block: 'Open your laptop. Now open the document. Read the first sentence. Good — timer started.' After the appointment, a 3-tap debrief tracks whether your anxiety matched reality. Over time, the tool builds proof that your fears overestimate: 'Your medical appointment anxiety averages 8/10 but outcomes average 3/10.'",
@@ -4018,6 +4123,7 @@ export const tools = [
   tags: ['brain dump', 'overwhelm', 'organize thoughts', 'clarity', 'tasks', 'next step', 'anxiety', 'racing thoughts', 'stressed', 'too much to do', 'prioritize', 'clear head', 'task sorting', 'worry', 'chaos', '3am thoughts', 'can\'t focus', 'voice input', 'emergency mode', 'to-do list', 'mental load', 'structure thoughts', 'productive'],
   icon: "🧠",
   categories: ['Me', 'Do It!'],
+  headerColor: "#e0b8b8",
   description: "Dump everything swirling in your head — typed, rapid-fire, or voice — and AI sorts the chaos into action items, decisions, worries, and things you can drop. Most overwhelm turns out to be 8 real tasks hiding under a lot of noise.",
   guide: {
     overview: "Your head is full. Work tasks blurring into personal worries blurring into vague anxiety. This tool takes the whole mess — no structure required — and sorts it into clear buckets. The key insight: most people in overwhelm have far fewer actual tasks than they think. Then it goes further: Shrink the List negotiates your tasks shorter. Map to My Day turns the list into a schedule. Worry Excavator digs into anxieties to find hidden actionable tasks. Reclassify lets you fix anything the AI miscategorized. Emergency mode strips everything to just 3 things when you can barely function.",
@@ -4070,6 +4176,7 @@ export const tools = [
   tags: ['challenge', 'comfort zone', 'growth', 'push', 'motivation', 'try something new'],
   icon: "🫸",
   categories: ['Body', 'Energy'],
+  headerColor: "#ccdfc4",
   description: "Micro-challenges slightly outside comfort zone, calibrated to current capacity. Achievable but slightly scary. Not aggressive motivation - gentle expansion. Celebrates attempts regardless of outcome. Growth without pressure.",
   guide: {
     overview: "Growth happens at the edge of comfort, but pushing too hard backfires. This tool creates micro-challenges sized to your current capacity - achievable but slightly scary. Success = attempting, not outcome. Gentle expansion, not forced change.",
@@ -4112,6 +4219,7 @@ export const tools = [
   tags: ['music', 'playlist', 'focus', 'mood', 'brain', 'concentration', 'songs', 'study', 'calm', 'energy', 'anxiety', 'stress', 'relaxation', 'productivity', 'ambient', 'lofi', 'spotify', 'bpm', 'tempo', 'headphones', 'transition', 'work', 'meditation', 'flow state'],
   icon: "🎧",
   categories: ['Energy', 'Me'],
+  headerColor: "#b8dcd8",
   description: "Get science-backed music playlists tailored to your current brain state and where you need to be. Goes beyond generic 'focus music' with tempo, complexity, and sensory preference tuning.",
   guide: {
     overview: "Music affects cognitive states through tempo, complexity, and familiarity. This tool creates progressive playlists that transition you from anxious to calm, scattered to focused, or low-energy to motivated. Considers sensory sensitivities like sudden sounds, vocal distraction, bass sensitivity, and need for predictable patterns.",
@@ -4154,6 +4262,7 @@ export const tools = [
   tags: ['anxiety', 'spiral', 'panic', 'worry', 'catastrophize'],
   icon: '🌀',
   categories: ['Energy'],
+  headerColor: "#b8dcd8",
   description: "Emergency intervention for three crisis states. Spiraling: dump your racing thoughts and get immediate grounding, cognitive distortion identification with evidence-based reality checks, and a compassionate anchor statement. Frozen: when you can't start, can't decide, can't move — get one micro-action at a time with clear completion signals and explicit permission to stop. Crashed: when you're completely spent, get a severity-matched recovery protocol with staged instructions, basics checklists, permission statements, and recovery signs. All three modes log episodes persistently, offer post-crisis debriefs, and unlock pattern analysis after 3+ episodes to build your personal intervention toolkit."
 },
 
@@ -4165,6 +4274,7 @@ export const tools = [
   tags: ['negotiate', 'persuade', 'firm', 'boundary', 'pushback', 'assertive'],
   icon: "🔨",
   categories: ['Discourse', 'Loot'],
+  headerColor: "#e0b8b8",
   description: "Transform angry draft messages into professional communication. Type what you really want to say, then get three polished versions that preserve your point while removing the fire.",
   guide: {
     overview: "Velvet Hammer helps you communicate assertively without burning bridges. When you're furious and need to send a professional message, type your raw, unfiltered thoughts—insults, sarcasm, and all. The tool analyzes your legitimate concerns and rewrites them into three professional variants: Collaborative (assumes good faith), Balanced (clear boundaries), and Firm (direct but professional). Your anger gets validated, your point gets preserved, but the inflammatory language disappears.",
@@ -4207,6 +4317,7 @@ export const tools = [
   tags: ['stuck', 'concept', 'confused', 'gap', 'knowledge', 'study', 'struggling', 'fundamentals'],
   icon: "📝",
   categories: ['Go Deep!'],
+  headerColor: "#d4dde8",
   description: "Enter any concept you're struggling with and The Gap traces backwards through the prerequisite chain to find the exact point where your understanding broke. Most people try to re-learn the hard thing — the real fix is usually 2-3 steps back. Interactive prerequisite chain with gap-likelihood ratings, quick self-tests at each node, a focused refresher for the likely gap, a 3-step study plan with time estimates, and a Deep Dive mode with worked examples, practice problems, and common mistakes. Four gap types diagnosed: conceptual (don't get why), procedural (can't do the steps), definitional (don't know what it means), notational (symbols blocking you).",
   guide: {
     overview: "The Gap solves the #1 study mistake: when you're stuck on something, you try to re-read the hard material. But the problem is almost never the hard material itself — it's a prerequisite you're missing. Someone struggling with integrals usually has a limits gap. Someone struggling with limits usually has a functions gap. The Gap traces the dependency chain, diagnoses the gap type, and gives you a focused fix for the specific hole.",
@@ -4242,6 +4353,7 @@ export const tools = [
   tags: ['buy', 'purchase', 'worth it', 'price', 'research', 'shopping', 'impulse', 'regret', 'gift', 'compare', 'budget', 'negotiate', 'deal', 'overpaying'],
   icon: "🧠",
   categories: ['Loot', 'Do It', 'Veer'],
+  headerColor: "#c0d8b8",
   description: "Pre-purchase research assistant. Enter what you're buying and get fair price analysis, timing advice, total cost of ownership, cheaper alternatives, regret predictions, negotiation scripts, and an impulse check. Like having a knowledgeable friend who stops you from overpaying.",
   guide: {
       overview: "BuyWise gives you everything you'd learn from an hour of research in seconds. Enter any product, and it tells you if the price is fair, whether to buy now or wait, the true total cost of ownership (including consumables and maintenance), cheaper alternatives that do 90% of the job, common buyer regrets, where to buy, and negotiation scripts when haggling is realistic. Comparison mode lets you evaluate two products side by side weighted by your priorities. The impulse check is an honest gut-check for purchases you're not sure about.",
@@ -4288,6 +4400,7 @@ export const tools = [
   tags: ['walk', 'safety', 'route', 'night', 'campus', 'street', 'safe'],
   icon: "🚶",
   categories: ['The Grind'],
+  headerColor: "#d4dde8",
   description: "Pre-walk safety planner and active walk companion. AI assesses your route and timing with personalized awareness tips and a checkable prep list — then switches to companion mode with a check-in timer, convincing fake incoming call generator, flashlight, one-tap location sharing, and a loud emergency alarm. Designed for one-handed nighttime phone use.",
   guide: {
     overview: "SafeWalk helps you prepare for walks with an AI safety assessment tailored to your specific route, time of day, and area — then gives you real-time companion tools while you're walking. Plan tab: describe your walk, get watch-for items, a pre-walk checklist, route suggestions, and a copy-paste ETA message. Walking tab: check-in timer with auto-escalation, fake incoming call (with ringtone and vibration), flashlight, GPS location sharing, and emergency alarm. Add emergency contacts in settings for personalized alerts.",
@@ -4333,6 +4446,7 @@ export const tools = [
   tags: ['roommate', 'conflict', 'house', 'chores', 'living situation', 'dispute'],
   icon: "⚖️",
   categories: ['Humans'],
+  headerColor: "#e0b8b8",
   description: "Two tools in one: AI-powered dispute mediation that analyzes fault, surfaces the real underlying conflict, and gives you a word-for-word conversation script — plus a fair chore assignment engine that balances effort across rounds using history, so nobody can claim it's unfair. Includes a 'That's Not Fair!' button that reviews complaints against actual data.",
   guide: {
     overview: "RoommateCourt has two tabs. Dispute Court: describe a roommate conflict, get an impartial AI verdict with fault percentages, the real underlying issue (not just the surface fight), immediate action steps, a copy-paste conversation script, boundaries to set, escalation options tailored to your living situation, and an honest reality check. Chore Roulette: add your household and chores, get AI-balanced assignments weighted by effort (light/medium/heavy) that account for history across rounds — with a 'That's Not Fair!' button that reviews complaints against actual data and either revises assignments or explains with numbers why they're already fair.",
@@ -4375,6 +4489,7 @@ export const tools = [
   tags: ['deposit', 'renter', 'move in', 'apartment', 'damage', 'landlord', 'documentation'],
   icon: "🏦",
   categories: ['Out & About', 'Loot'],
+  headerColor: "#ccdfc4",
   description: "Walk through your apartment room by room on move-in day. Generates a formal condition report, landlord cover letter, photo shot list, and your state-specific deposit rights.",
   guide: {
     overview: "Renter's Deposit Saver is your move-in documentation coach. It walks you through every room with a detailed checklist so you can note the condition of walls, floors, appliances, and fixtures before you unpack. Then it generates a formal condition report, a professional cover letter to send your landlord, a prioritized photo shot list, and a breakdown of your state's security deposit laws. When move-out day comes, you'll have irrefutable proof of what was already there.",
@@ -4420,6 +4535,7 @@ export const tools = [
   tags: ['laundry', 'washing', 'stain', 'clothes', 'fabric', 'clean', 'dryer'],
   icon: "🧺",
   categories: ['The Grind'],
+  headerColor: "#d4dde8",
   description: "Laundry companion with smart timers, AI load advisor, and stain SOS. Set countdown alerts for washer/dryer, get AI care instructions for any load, and get emergency stain treatment steps.",
   guide: {
       overview: "LaundroMat is a three-in-one laundry tool: (1) Smart timers with browser notifications and audio alerts 5 minutes before your cycle ends, (2) AI Load Advisor that tells you exactly how to wash any combination of clothes, and (3) Stain SOS for emergency stain treatment using household supplies.",
@@ -4451,6 +4567,7 @@ export const tools = [
   tags: ['money', 'social', 'bills', 'finances', 'awkward', 'salary', 'budget'],
   icon: '💸',
   categories: ['Loot', 'Humans'],
+  headerColor: "#c0d8b8",
   description: 'Handles social money awkwardness — split bills, can’t afford invitations, salary questions, bill triage, and money talks with partners or family.',
   guide: { overview: '', howToUse: [], tips: [] }
 },
@@ -4463,6 +4580,7 @@ export const tools = [
   tags: ['confidence', 'anxiety', 'interview', 'presentation', 'nervous', 'fear', 'preparation'],
   icon: '💪',
   categories: ['Energy', 'Me'],
+  headerColor: "#b8dcd8",
   description: 'Pre-game toolkit for interviews, presentations, hard conversations, dates, and medical appointments. Breaks down fear, builds a prep plan, and has an SOS mode for live panic.',
   guide: { overview: '', howToUse: [], tips: [] }
 },
@@ -4475,6 +4593,7 @@ export const tools = [
   tags: ['energy', 'introvert', 'social', 'recharge', 'schedule', 'alone time', 'burnout'],
   icon: '🔋',
   categories: ['Humans', 'Energy'],
+  headerColor: "#e0b8b8",
   description: 'Social energy forecaster. Input your weekly events, get an energy cost breakdown, forecast your lowest battery point, and triage recommendations for what to skip, shorten, or modify.',
   guide: { overview: '', howToUse: [], tips: [] }
 },
@@ -4487,6 +4606,7 @@ export const tools = [
   tags: ['subscriptions', 'money', 'cancel', 'budget', 'streaming', 'waste', 'finances'],
   icon: '💳',
   categories: ['Loot'],
+  headerColor: "#c0d8b8",
   description: 'Review your subscriptions manually or by pasting a bank statement. Get keep/cancel verdicts, annual cost view, cancellation scripts, and a prioritized cancel list.',
   guide: { overview: '', howToUse: [], tips: [] }
 }

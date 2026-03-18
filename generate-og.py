@@ -10,7 +10,7 @@ Usage:
   python3 generate-og.py --default-only   # regenerate only default.png
 
 Requirements:
-  pip install Pillow numpy
+  pip install Pillow
   NotoColorEmoji.ttf + DejaVuSans fonts (standard on Ubuntu/Debian)
   Logo files: src/assets/logobrainonlyl.png (or update LOGO_PATH below)
 
@@ -21,22 +21,45 @@ import re
 import os
 import sys
 import json
-import numpy as np
 from pathlib import Path
 from collections import deque
 from PIL import Image, ImageDraw, ImageFont
 
 # ── Configuration ────────────────────────────────────────────────────────────
 
-TOOLS_JS_PATH  = 'src/data/tools.js'
-LOGO_PATH      = 'src/assets/Pbrain-l.png'
-OUTPUT_DIR     = 'public/og'
+_HERE          = Path(__file__).parent.resolve()
+TOOLS_JS_PATH  = str(_HERE / 'src/data/tools.js')
+LOGO_PATH      = str(_HERE / 'src/assets/pBrain-r.png')
+OUTPUT_DIR     = str(_HERE / 'public/og')
 
 BASE_URL       = 'https://deftbrain.com'
 
-FONT_EMOJI     = '/usr/share/fonts/truetype/noto/NotoColorEmoji.ttf'
-FONT_BOLD      = '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf'
-FONT_REG       = '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf'
+def _find_font(candidates):
+    for p in candidates:
+        if os.path.exists(p):
+            return p
+    raise FileNotFoundError(f"None of these fonts found:\n" + "\n".join(f"  {p}" for p in candidates))
+
+FONT_EMOJI = _find_font([
+    '/usr/share/fonts/truetype/noto/NotoColorEmoji.ttf',           # Ubuntu/Debian
+    '/usr/share/fonts/noto/NotoColorEmoji.ttf',
+    '/opt/homebrew/share/fonts/NotoColorEmoji.ttf',                 # Homebrew macOS
+    '/Library/Fonts/NotoColorEmoji.ttf',                            # macOS manual install
+])
+
+FONT_BOLD = _find_font([
+    '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf',         # Ubuntu/Debian
+    '/opt/homebrew/share/fonts/dejavu-fonts/DejaVuSans-Bold.ttf',   # Homebrew macOS
+    '/Library/Fonts/DejaVuSans-Bold.ttf',
+    '/System/Library/Fonts/Helvetica.ttc',                          # macOS fallback
+])
+
+FONT_REG = _find_font([
+    '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',              # Ubuntu/Debian
+    '/opt/homebrew/share/fonts/dejavu-fonts/DejaVuSans.ttf',        # Homebrew macOS
+    '/Library/Fonts/DejaVuSans.ttf',
+    '/System/Library/Fonts/Helvetica.ttc',                          # macOS fallback
+])
 
 W, H   = 1200, 630
 PAD    = 80
@@ -55,39 +78,9 @@ tag_lg     = ImageFont.truetype(FONT_REG,   42)
 # ── Logo preparation ─────────────────────────────────────────────────────────
 
 def make_transparent_logo(path):
-    """Remove white and black background from logo via edge flood-fill."""
+    """Load logo — expects a real RGBA PNG with transparent background."""
     logo = Image.open(path).convert('RGBA')
-    arr  = np.array(logo, dtype=np.uint8)
-    H2, W2 = arr.shape[:2]
-    visited = np.zeros((H2, W2), dtype=bool)
-
-    def flood(seeds_fn, match_fn):
-        queue = deque()
-        for y in range(H2):
-            for x in range(W2):
-                if seeds_fn(x, y) and not visited[y, x] and match_fn(arr[y, x]):
-                    queue.append((x, y))
-                    visited[y, x] = True
-        while queue:
-            x, y = queue.popleft()
-            arr[y, x, 3] = 0
-            for dx, dy in [(1,0),(-1,0),(0,1),(0,-1)]:
-                nx, ny = x+dx, y+dy
-                if 0 <= nx < W2 and 0 <= ny < H2 and not visited[ny, nx] and match_fn(arr[ny, nx]):
-                    visited[ny, nx] = True
-                    queue.append((nx, ny))
-
-    # Remove white background from all edges
-    flood(
-        lambda x, y: x == 0 or x == W2-1 or y == 0 or y == H2-1,
-        lambda p: int(p[0]) > 200 and int(p[1]) > 200 and int(p[2]) > 200
-    )
-    # Remove black artifact from top-left corner
-    flood(
-        lambda x, y: x < 3 and y < 3,
-        lambda p: int(p[0]) < 60 and int(p[1]) < 60 and int(p[2]) < 60
-    )
-    return Image.fromarray(arr)
+    return logo
 
 
 def load_logo(h=90):

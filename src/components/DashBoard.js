@@ -531,7 +531,7 @@ function ToolRow({ tool, isFavorite, onToggleFavorite, onNavigate, showCategory 
       >
         {/* Icon */}
         <div className="w-8 h-8 flex-shrink-0 flex items-center justify-center rounded-lg text-lg"
-             style={{ background: CLR.navy50 }}>
+             style={{ background: tool.headerColor ? tool.headerColor + '22' : CLR.navy50 }}>
           {tool.icon || '✨'}
         </div>
 

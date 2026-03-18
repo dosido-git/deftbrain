@@ -1,5 +1,5 @@
-import React, { useState, useCallback, useEffect } from 'react';
-import { CopyBtn , ActionBar } from '../components/ActionButtons';
+import React, { useState, useCallback } from 'react';
+import { ActionBar } from '../components/ActionButtons';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useTheme } from '../hooks/useTheme';
@@ -22,25 +22,35 @@ const WhatIfMachine = ({ tool }) => {
     : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
 
   const c = {
-    card:          isDark ? 'bg-zinc-800' : 'bg-white',
-    cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
-    text:          isDark ? 'text-zinc-50' : 'text-gray-900',
-    textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
-    textMuted:     isDark ? 'text-zinc-500' : 'text-gray-400',
-    labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
-    btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
-    border:        isDark ? 'border-zinc-700' : 'border-gray-200',
-    success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
-    warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
-    danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
-    pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
-    badge:         isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-100 text-cyan-800',
-    infoBox:       isDark ? 'bg-sky-900/20 border-sky-700 text-sky-200' : 'bg-sky-50 border-sky-200 text-sky-800',
-  };;
+    card:              isDark ? 'bg-zinc-800' : 'bg-white',
+    cardAlt:           isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
+    input:             isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    text:              isDark ? 'text-zinc-50' : 'text-gray-900',
+    textSecondary:     isDark ? 'text-zinc-300' : 'text-gray-600',
+    textMuted:         isDark ? 'text-zinc-500' : 'text-gray-400',
+    accentTxt:         isDark ? 'text-cyan-400' : 'text-cyan-600',
+    btnPrimary:        isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnSecondary:      isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
+    border:            isDark ? 'border-zinc-700' : 'border-gray-200',
+    success:           isDark ? 'border-emerald-600 text-emerald-300' : 'border-emerald-600 text-emerald-700',
+    warning:           isDark ? 'border-amber-500 text-amber-300' : 'border-amber-500 text-amber-700',
+    danger:            isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-100 border-red-200 text-red-800',
+    pillActive:        isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillInactive:      isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
+    badge:             isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-100 text-cyan-800',
+    // Category panel tints — Teal family (What If?)
+    panelTint:         isDark ? 'bg-[#2a5248]/30' : 'bg-[#e4f2f0]',
+    panelTintBorder:   isDark ? 'border-[#3a6e60]' : 'border-[#8cc8c0]',
+    panelStrong:       isDark ? 'bg-[#2a5248]/60' : 'bg-[#b8dcd8]',
+    panelStrongBorder: isDark ? 'border-[#5aaa9e]' : 'border-[#5aaa9e]',
+    // Gold AI insight — all tools
+    panelInsight:       isDark ? 'bg-[#93541f]/25' : 'bg-[#fdf4e8]',
+    panelInsightBorder: isDark ? 'border-[#c8872e]' : 'border-[#e8c98a]',
+    // Tool-specific
+    infoBox:           isDark ? 'bg-[#2a5248]/30 border-[#3a6e60]' : 'bg-[#e4f2f0] border-[#8cc8c0]',
+    sceneBg:           isDark ? 'bg-zinc-700/40' : 'bg-[#f3efe8]',
+    timelineBar:       isDark ? 'bg-zinc-600' : 'bg-zinc-300',
+  };
 
   // ─── State ───
   const [decision, setDecision] = useState('');
@@ -73,7 +83,7 @@ const WhatIfMachine = ({ tool }) => {
     } catch (err) {
       setError(err.message || 'Failed to generate simulation.');
     }
-  }, [decision, optionNotChosen, context, timeframe, callToolEndpoint]);
+  }, [decision, optionNotChosen, context, timeframe, callToolEndpoint, setResults, setHistory]);
 
   const handleReset = useCallback(() => {
     setDecision(''); setOptionNotChosen(''); setContext('');
@@ -113,8 +123,8 @@ const WhatIfMachine = ({ tool }) => {
       {/* ── HEADER ── */}
       <div className={`${c.card} border ${c.border} rounded-xl p-6`}>
         <div className={`mb-5 pb-4 border-b ${c.border}`}>
-          <h2 className={`text-2xl font-bold ${c.text}`}>WhatIfMachine 🎲</h2>
-          <p className={`text-sm ${c.textSecondaryondary} mt-1`}>See the road not taken before you decide</p>
+          <h2 className={`text-2xl font-bold ${c.text}`}><span className="mr-2">{tool?.icon}</span>{tool?.title}</h2>
+          <p className={`text-sm ${c.textSecondary} mt-1`}>{tool?.tagline}</p>
         </div>
 
         {/* Decision */}
@@ -123,6 +133,7 @@ const WhatIfMachine = ({ tool }) => {
           <textarea
             value={decision}
             onChange={e => setDecision(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !loading && decision.trim()) { e.preventDefault(); generate(); } }}
             placeholder="e.g., I'm thinking about quitting my job to freelance, I'm deciding whether to move across the country for a relationship"
             rows={2}
             className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} ${c.border} ${c.text} outline-none focus:ring-2 resize-none`}
@@ -132,7 +143,7 @@ const WhatIfMachine = ({ tool }) => {
         {/* Option not chosen */}
         <div className="mb-4">
           <label className={`text-sm font-bold ${c.text} block mb-1.5`}>
-            Which option should I simulate? <span className={`font-normal ${c.textMuteded}`}>(the path you're NOT leaning toward)</span>
+            Which option should I simulate? <span className={`font-normal ${c.textMuted}`}>(the path you're NOT leaning toward)</span>
           </label>
           <input
             type="text"
@@ -146,7 +157,7 @@ const WhatIfMachine = ({ tool }) => {
         {/* Context */}
         <div className="mb-4">
           <label className={`text-sm font-bold ${c.text} block mb-1.5`}>
-            Context about your life <span className={`font-normal ${c.textMuteded}`}>(optional — makes scenes more realistic)</span>
+            Context about your life <span className={`font-normal ${c.textMuted}`}>(optional — makes scenes more realistic)</span>
           </label>
           <input
             type="text"
@@ -186,24 +197,17 @@ const WhatIfMachine = ({ tool }) => {
             {loading ? (
               <><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> Simulating...</>
             ) : (
-              <><span>🎲</span> Show Me That Future</>
+              <><span>{tool?.icon ?? '🎲'}</span> Show Me That Future</>
             )}
           </button>
           {results && (
-            <button onClick={handleReset} className={`px-5 py-3 ${c.btnSecondaryondary} rounded-xl font-medium min-h-[48px]`}>
+            <button onClick={handleReset} className={`px-5 py-3 ${c.btnSecondary} rounded-xl font-medium min-h-[48px]`}>
               New Decision
             </button>
           )}
         </div>
 
-        {/* Pre-result cross-ref */}
-        {!results && (
-          <div className={`mt-5 pt-4 border-t ${c.border}`}>
-            <p className={`text-xs ${c.textMuteded}`}>
-              🤔 Need help deciding first? <a href="/DecisionCoach" target="_blank" rel="noopener noreferrer" className={`underline ${linkStyle}`}>Decision Coach</a> helps you think it through.
-            </p>
-          </div>
-        )}
+
       </div>
 
       {/* Error */}
@@ -227,7 +231,7 @@ const WhatIfMachine = ({ tool }) => {
           {/* ── DECISION READ ── */}
           {r.decision_read && (
             <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-              <p className={`text-sm ${c.textSecondaryondary} leading-relaxed`}>{r.decision_read}</p>
+              <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{r.decision_read}</p>
             </div>
           )}
 
@@ -246,7 +250,7 @@ const WhatIfMachine = ({ tool }) => {
                 <div key={idx} className="relative">
                   {/* Timeline connector */}
                   {idx < r.scenarios.length - 1 && (
-                    <div className={`absolute left-5 top-full w-0.5 h-4 ${isDark ? 'bg-zinc-500' : 'bg-zinc-500'}`} />
+                    <div className={`absolute left-5 top-full w-0.5 h-4 ${c.timelineBar}`} />
                   )}
 
                   <div className={`${c.card} border ${c.border} rounded-xl overflow-hidden ${idx > 0 ? 'mt-4' : ''}`}>
@@ -299,14 +303,14 @@ const WhatIfMachine = ({ tool }) => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {r.what_you_keep && (
               <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-                <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>🔒 What stays the same</p>
-                <p className={`text-xs ${c.textSecondaryondary} leading-relaxed`}>{r.what_you_keep}</p>
+                <p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>🔒 What stays the same</p>
+                <p className={`text-xs ${c.textSecondary} leading-relaxed`}>{r.what_you_keep}</p>
               </div>
             )}
             {r.what_you_lose && (
               <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-                <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>💔 What you'd miss most</p>
-                <p className={`text-xs ${c.textSecondaryondary} leading-relaxed`}>{r.what_you_lose}</p>
+                <p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>💔 What you'd miss most</p>
+                <p className={`text-xs ${c.textSecondary} leading-relaxed`}>{r.what_you_lose}</p>
               </div>
             )}
           </div>
@@ -314,7 +318,7 @@ const WhatIfMachine = ({ tool }) => {
           {/* ── CLARITY QUESTION ── */}
           {r.clarity_question && (
             <div className={`${c.card} border ${c.border} rounded-xl p-5 text-center`}>
-              <p className={`text-xs font-bold ${c.textMuteded} mb-2`}>❓ The question to ask yourself</p>
+              <p className={`text-xs font-bold ${c.textMuted} mb-2`}>❓ The question to ask yourself</p>
               <p className={`text-base font-bold ${c.text} leading-relaxed`}>{r.clarity_question}</p>
             </div>
           )}
@@ -330,23 +334,7 @@ const WhatIfMachine = ({ tool }) => {
             </div>
           )}
 
-          {/* ── CROSS-REFERENCES ── */}
-          <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-xs font-bold ${c.text} mb-2`}>Related tools</p>
-            <div className="flex flex-wrap gap-2">
-              <a href="/DecisionCoach" target="_blank" rel="noopener noreferrer" className={`text-xs px-3 py-1.5 rounded-lg border ${c.pillInactive} no-underline`}>
-                🤔 Decision Coach
-              </a>
-              <a href="/AlternatePath" target="_blank" rel="noopener noreferrer" className={`text-xs px-3 py-1.5 rounded-lg border ${c.pillInactive} no-underline`}>
-                🔀 Alternate Path
-              </a>
-              <a href="/SpiralStopper" target="_blank" rel="noopener noreferrer" className={`text-xs px-3 py-1.5 rounded-lg border ${c.pillInactive} no-underline`}>
-                🌀 Spiral Stopper
-              </a>
-            </div>
-          </div>
-
-          <p className={`text-[10px] ${c.textMuteded} text-center px-4`}>
+          <p className={`text-[10px] ${c.textMuted} text-center px-4`}>
             This is a thought experiment, not a prediction. Real life is more complex and more surprising than any simulation.
           </p>
         </div>
@@ -372,9 +360,9 @@ const WhatIfMachine = ({ tool }) => {
       <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-2`}>
         <p className={`text-xs font-bold ${c.textMuted} mb-2`}>🔗 Related tools</p>
         <div className="flex flex-wrap gap-3">
-          <a href="/tool/plot-twist" className={`text-xs ${linkStyle}`}>🌀 Plot Twist</a>
-          <a href="/tool/time-warp" className={`text-xs ${linkStyle}`}>⏰ Time Warp</a>
-          <a href="/tool/wrong-answers-only" className={`text-xs ${linkStyle}`}>🎭 Wrong Answers Only</a>
+          <a href="/tool/PlotTwist" className={`text-xs ${linkStyle}`}>🌀 Plot Twist</a>
+          <a href="/tool/TimeWarp" className={`text-xs ${linkStyle}`}>⏰ Time Warp</a>
+          <a href="/tool/WrongAnswersOnly" className={`text-xs ${linkStyle}`}>🎭 Wrong Answers Only</a>
         </div>
       </div>
     </div>

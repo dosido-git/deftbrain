@@ -141,20 +141,18 @@ const ToolPageWrapper = ({ children, tool, toolId }) => {
         
         {/* Main Content Area */}
         <main className="lg:col-span-8">
-          {/* ── Sticky Header ── */}
+          {/* ── Header ── */}
           <header className={`${colors.bg} pb-2 space-y-2`}>
             <div className={`flex items-center gap-3 ${colors.accent} mb-2 pt-4`}>
               <span className={`text-[10px] font-medium uppercase tracking-widest border ${colors.accentBorder} px-3 py-1 rounded-full`}>
-                {detectedTool?.categories?.[0] || "General"}
+                {detectedTool?.categories?.[0] || 'General'}
               </span>
             </div>
-            
             <h1 className={`text-5xl font-light ${colors.text} tracking-tight`}>
-              {detectedTool?.title || "Tool"}
+              {detectedTool?.title || 'Tool'}
             </h1>
-            
             <p className={`${colors.textSecondary} max-w-2xl leading-relaxed`}>
-              {detectedTool?.description || "Strategic intelligence tool"}
+              {detectedTool?.description || 'Strategic intelligence tool'}
             </p>
           </header>
 
@@ -194,7 +192,9 @@ const ToolPageWrapper = ({ children, tool, toolId }) => {
           </div>
 
           <section className={`${colors.surface} border ${colors.border} rounded-2xl shadow-sm overflow-hidden transition-colors duration-200`}>
-            <div className="p-8">
+            <div className="p-8" style={detectedTool?.headerColor ? {
+              background: `linear-gradient(to bottom, ${detectedTool.headerColor} 0%, ${detectedTool.headerColor} 120px, transparent 260px)`
+            } : {}}>
               {children}
             </div>
           </section>

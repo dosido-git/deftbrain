@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { CopyBtn, ActionBar } from '../components/ActionButtons';
@@ -30,25 +30,36 @@ const WhatsMyVibe = ({ tool }) => {
     : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
 
   const c = {
-    card:          isDark ? 'bg-zinc-800' : 'bg-white',
-    cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
-    text:          isDark ? 'text-zinc-50' : 'text-gray-900',
-    textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
-    textMuted:     isDark ? 'text-zinc-500' : 'text-gray-400',
-    labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
-    btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
-    border:        isDark ? 'border-zinc-700' : 'border-gray-200',
-    success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
-    warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
-    danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
-    pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
-    badge:         isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-100 text-cyan-800',
-    infoBox:       isDark ? 'bg-sky-900/20 border-sky-700 text-sky-200' : 'bg-sky-50 border-sky-200 text-sky-800',
-  };;
+    card:              isDark ? 'bg-zinc-800' : 'bg-white',
+    cardAlt:           isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
+    input:             isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    text:              isDark ? 'text-zinc-50' : 'text-gray-900',
+    textSecondary:     isDark ? 'text-zinc-300' : 'text-gray-600',
+    textMuted:         isDark ? 'text-zinc-500' : 'text-gray-400',
+    accentTxt:         isDark ? 'text-cyan-400' : 'text-cyan-600',
+    btnPrimary:        isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnSecondary:      isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
+    border:            isDark ? 'border-zinc-700' : 'border-gray-200',
+    success:           isDark ? 'border-emerald-600 text-emerald-300' : 'border-emerald-600 text-emerald-700',
+    warning:           isDark ? 'border-amber-500 text-amber-300' : 'border-amber-500 text-amber-700',
+    danger:            isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-100 border-red-200 text-red-800',
+    pillActive:        isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillInactive:      isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
+    // Category panel tints — Crimson family (Read the Room)
+    panelTint:         isDark ? 'bg-[#7a2e2e]/30' : 'bg-[#f5eaea]',
+    panelTintBorder:   isDark ? 'border-[#9a4040]' : 'border-[#d4a0a0]',
+    panelStrong:       isDark ? 'bg-[#7a2e2e]/60' : 'bg-[#e0b8b8]',
+    panelStrongBorder: isDark ? 'border-[#b87070]' : 'border-[#b87070]',
+    // Gold AI insight — all tools
+    panelInsight:       isDark ? 'bg-[#93541f]/25' : 'bg-[#fdf4e8]',
+    panelInsightBorder: isDark ? 'border-[#c8872e]' : 'border-[#e8c98a]',
+    // Tool-specific
+    labelText:         isDark ? 'text-zinc-200' : 'text-gray-700',
+    quoteBg:           isDark ? 'bg-zinc-700/40' : 'bg-[#f3efe8]',
+    infoBox:           isDark ? 'bg-[#7a2e2e]/30 border-[#9a4040]' : 'bg-[#f5eaea] border-[#d4a0a0]',
+    vibe:              isDark ? 'bg-[#7a2e2e]/30 border-[#9a4040]' : 'bg-[#f5eaea] border-[#d4a0a0]',
+    insight:           isDark ? 'bg-[#93541f]/25 border-[#c8872e]' : 'bg-[#fdf4e8] border-[#e8c98a]',
+  };
 
   // ── State ──
   const [samples, setSamples] = useState('');
@@ -76,7 +87,7 @@ const WhatsMyVibe = ({ tool }) => {
     } catch (err) {
       setError(err.message || 'Vibe check failed');
     }
-  }, [samples, sourceType, callToolEndpoint]);
+  }, [samples, sourceType, callToolEndpoint, setResults, setHistory]);
 
   // ── Build text ──
   const buildFullText = useCallback(() => {
@@ -93,7 +104,7 @@ const WhatsMyVibe = ({ tool }) => {
       lines.push('');
     }
     if (results.secret_tell) lines.push(`🔮 Secret tell: ${results.secret_tell}`);
-    lines.push('\n— Generated by DeftBrain · deftbrain.com');
+    lines.push(BRAND);
     return lines.join('\n');
   }, [results]);
 
@@ -105,10 +116,8 @@ const WhatsMyVibe = ({ tool }) => {
       {/* ── Input ── */}
       <div className={`${c.card} border rounded-xl p-5`}>
         <div className={`mb-4 pb-3 border-b ${c.border}`}>
-          <h2 className={`text-xl font-bold ${c.text}`}>
-            <span className="mr-2">✨</span>WhatsMyVibe
-          </h2>
-          <p className={`text-sm ${c.textSecondary}`}>Paste your writing — find out what vibe you're actually giving off</p>
+          <h2 className={`text-xl font-bold ${c.text}`}><span className="mr-2">{tool?.icon}</span>{tool?.title}</h2>
+          <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline}</p>
         </div>
 
         {/* Source type */}
@@ -135,11 +144,12 @@ const WhatsMyVibe = ({ tool }) => {
           <textarea
             value={samples}
             onChange={e => setSamples(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !loading && samples.trim()) { e.preventDefault(); runVibe(); } }}
             placeholder={"Paste several texts, emails, tweets, or messages. The more you give me, the better the read.\n\nTip: Copy a bunch of your recent texts or DMs — those show your real voice."}
             rows={8}
             className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2 resize-none`}
           />
-          <p className={`text-[10px] ${c.textMuteded} mt-1`}>
+          <p className={`text-[10px] ${c.textMuted} mt-1`}>
             {samples.length > 0 ? `${samples.split(/\s+/).filter(Boolean).length} words — ${samples.split(/\s+/).filter(Boolean).length < 30 ? 'more is better!' : samples.split(/\s+/).filter(Boolean).length < 80 ? 'good amount' : 'great sample size'}` : 'More text = more accurate vibe read'}
           </p>
         </div>
@@ -151,7 +161,7 @@ const WhatsMyVibe = ({ tool }) => {
         >
           {loading
             ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> Reading your vibe...</>
-            : <><span>✨</span> Check My Vibe</>}
+            : <><span>{tool?.icon ?? '✨'}</span> Check My Vibe</>}
         </button>
       </div>
 
@@ -276,7 +286,7 @@ const WhatsMyVibe = ({ tool }) => {
                 <p className={`text-[10px] font-bold ${c.labelText} uppercase mb-1`}>📸 Your vibe in one line</p>
                 <p className={`text-sm font-bold ${c.text}`}>{results.share_line}</p>
               </div>
-              <CopyBtn content={`My vibe: ${results.share_line}\n\n— Generated by DeftBrain · deftbrain.com`} label="Copy" />
+              <CopyBtn content={`My vibe: ${results.share_line}${BRAND}`} label="Copy" />
             </div>
           )}
 

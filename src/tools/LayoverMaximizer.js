@@ -102,14 +102,6 @@ const LayoverMaximizer = ({ tool }) => {
   // ── View ──
   const resultsRef = React.useRef(null);
 
-  // Global Cmd/Ctrl+Enter submit
-  React.useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !loading) runAnalysis();
-    };
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [runAnalysis, loading]);
   const [view, setView] = useState('plan');
   const [error, setError] = useState('');
 
@@ -360,6 +352,15 @@ const LayoverMaximizer = ({ tool }) => {
     setSavedLayovers(updated);
     saveStore(STORE_LAYOVERS, updated, MAX_SAVED);
   }, [savedLayovers]);
+
+  // Global Cmd/Ctrl+Enter submit
+  React.useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !loading) runAnalysis();
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [runAnalysis, loading]);
 
   // ── Build copy text ──
   const buildPlanText = useCallback(() => {

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DeftBrain Category Color Map</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #faf8f5; color: #3d3935; padding: 40px 32px; max-width: 860px; margin: 0 auto; }
+  h1 { font-size: 22px; font-weight: 500; color: #2c4a6e; margin-bottom: 4px; }
+  .subtitle { font-size: 13px; color: #8a8275; margin-bottom: 32px; }
+  .section-lbl { font-size: 10px; font-weight: 600; color: #bfb09a; text-transform: uppercase; letter-spacing: 0.08em; margin: 0 0 10px; }
+  .family { margin-bottom: 28px; background: #fff; border: 0.5px solid #e8e1d5; border-radius: 10px; padding: 18px 20px; }
+  .family-title { font-size: 14px; font-weight: 600; color: #3d3935; margin: 0 0 2px; }
+  .family-cats { font-size: 11px; color: #8a8275; margin: 0 0 14px; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 0 32px; }
+  .row { display: flex; align-items: center; gap: 10px; margin-bottom: 7px; }
+  .sw { width: 28px; height: 28px; border-radius: 5px; flex-shrink: 0; border: 0.5px solid rgba(0,0,0,0.1); }
+  .row-hex { font-size: 11px; font-weight: 600; color: #3d3935; font-family: 'Courier New', monospace; }
+  .row-label { font-size: 10px; color: #8a8275; margin-top: 1px; }
+  .divider { border: none; border-top: 0.5px solid #e8e1d5; margin: 20px 0 24px; }
+  .hierarchy { background: #fff; border: 0.5px solid #e8e1d5; border-radius: 10px; padding: 18px 20px; margin-bottom: 28px; }
+  .gold-panel { background: #fdf8f0; border: 0.5px solid #e8c98a; border-radius: 10px; padding: 18px 20px; margin-bottom: 28px; }
+  .gold-title { font-size: 14px; font-weight: 600; color: #93541f; margin: 0 0 2px; }
+  .gold-cats { font-size: 11px; color: #b06d22; margin: 0 0 14px; }
+  .footer { font-size: 11px; color: #bfb09a; text-align: center; margin-top: 32px; padding-top: 20px; border-top: 0.5px solid #e8e1d5; }
+</style>
+</head>
+<body>
+
+<h1>DeftBrain Category Color Map</h1>
+<p class="subtitle">Version 2.0 · March 2026 · 6 families · 17 categories</p>
+
+<div class="hierarchy">
+  <p class="section-lbl">Panel hierarchy — universal across all tools</p>
+  <div class="two-col">
+    <div>
+      <div class="row"><div class="sw" style="background:#ffffff;"></div><div><div class="row-hex">#ffffff</div><div class="row-label">L1 white — default panels</div></div></div>
+      <div class="row"><div class="sw" style="background:#f3efe8;"></div><div><div class="row-hex">#f3efe8</div><div class="row-label">L2 sand — content groups</div></div></div>
+    </div>
+    <div>
+      <div class="row"><div class="sw" style="background:#fdf4e8;border-color:#e8c98a;"></div><div><div class="row-hex">#fdf4e8</div><div class="row-label">★ Gold AI insight L3</div></div></div>
+      <div class="row"><div class="sw" style="background:#f5e0c0;border-color:#d9a04e;"></div><div><div class="row-hex">#f5e0c0</div><div class="row-label">★ Gold AI insight L4</div></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="family">
+  <p class="family-title">1. Navy</p>
+  <p class="family-cats">The Grind · The Office · Do It! · Go Deep!</p>
+  <div class="two-col">
+    <div>
+      <div class="row"><div class="sw" style="background:#eef2f7;"></div><div><div class="row-hex">#eef2f7</div><div class="row-label">L3 light tint</div></div></div>
+      <div class="row"><div class="sw" style="background:#c0cfe0;"></div><div><div class="row-hex">#c0cfe0</div><div class="row-label">L3 border</div></div></div>
+      <div class="row"><div class="sw" style="background:#d4dde8;"></div><div><div class="row-hex">#d4dde8</div><div class="row-label">L4 strong tint</div></div></div>
+      <div class="row"><div class="sw" style="background:#a8b9ce;"></div><div><div class="row-hex">#a8b9ce</div><div class="row-label">L4 border</div></div></div>
+    </div>
+    <div>
+      <div class="row"><div class="sw" style="background:#1e2a3a;border-color:rgba(255,255,255,0.1);"></div><div><div class="row-hex">#1e2a3a</div><div class="row-label">Header dark · L4 text</div></div></div>
+      <div class="row"><div class="sw" style="background:#2c4a6e;border-color:rgba(255,255,255,0.1);"></div><div><div class="row-hex">#2c4a6e</div><div class="row-label">Header mid</div></div></div>
+      <div class="row"><div class="sw" style="background:#4a6a8a;border-color:rgba(255,255,255,0.1);"></div><div><div class="row-hex">#4a6a8a</div><div class="row-label">Header light</div></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="family">
+  <p class="family-title">2. Forest</p>
+  <p class="family-cats">Body · Pursuits · Out & About</p>
+  <div class="two-col">
+    <div>
+      <div class="row"><div class="sw" style="background:#edf4e8;"></div><div><div class="row-hex">#edf4e8</div><div class="row-label">L3 light tint</div></div></div>
+      <div class="row"><div class="sw" style="background:#aacca0;"></div><div><div class="row-hex">#aacca0</div><div class="row-label">L3 border</div></div></div>
+      <div class="row"><div class="sw" style="background:#ccdfc4;"></div><div><div class="row-hex">#ccdfc4</div><div class="row-label">L4 strong tint</div></div></div>
+      <div class="row"><div class="sw" style="background:#88b078;"></div><div><div class="row-hex">#88b078</div><div class="row-label">L4 border</div></div></div>
+    </div>
+    <div>
+      <div class="row"><div class="sw" style="background:#2a3820;border-color:rgba(255,255,255,0.1);"></div><div><div class="row-hex">#2a3820</div><div class="row-label">Header dark · L4 text</div></div></div>
+      <div class="row"><div class="sw" style="background:#3d5c2a;border-color:rgba(255,255,255,0.1);"></div><div><div class="row-hex">#3d5c2a</div><div class="row-label">Header mid</div></div></div>
+      <div class="row"><div class="sw" style="background:#567a3a;border-color:rgba(255,255,255,0.1);"></div><div><div class="row-hex">#567a3a</div><div class="row-label">Header light</div></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="family">
+  <p class="family-title">3. Teal</p>
+  <p class="family-cats">Energy · Brain Games · What If?</p>
+  <div class="two-col">
+    <div>
+      <div class="row"><div class="sw" style="background:#e4f2f0;"></div><div><div class="row-hex">#e4f2f0</div><div class="row-label">L3 light tint</div></div></div>
+      <div class="row"><div class="sw" style="background:#8cc8c0;"></div><div><div class="row-hex">#8cc8c0</div><div class="row-label">L3 border</div></div></div>
+      <div class="row"><div class="sw" style="background:#b8dcd8;"></div><div><div class="row-hex">#b8dcd8</div><div class="row-label">L4 strong tint</div></div></div>
+      <div class="row"><div class="sw" style="background:#5aaa9e;"></div><div><div class="row-hex">#5aaa9e</div><div class="row-label">L4 border</div></div></div>
+    </div>
+    <div>
+      <div class="row"><div class="sw" style="background:#1e3030;border-color:rgba(255,255,255,0.1);"></div><div><div class="row-hex">#1e3030</div><div class="row-label">Header dark · L4 text</div></div></div>
+      <div class="row"><div class="sw" style="background:#2a5248;border-color:rgba(255,255,255,0.1);"></div><div><div class="row-hex">#2a5248</div><div class="row-label">Header mid</div></div></div>
+      <div class="row"><div class="sw" style="background:#3a6e60;border-color:rgba(255,255,255,0.1);"></div><div><div class="row-hex">#3a6e60</div><div class="row-label">Header light</div></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="family">
+  <p class="family-title">4. Crimson</p>
+  <p class="family-cats">Humans · Discourse · Me · Read the Room</p>
+  <div class="two-col">
+    <div>
+      <div class="row"><div class="sw" style="background:#f5eaea;"></div><div><div class="row-hex">#f5eaea</div><div class="row-label">L3 light tint</div></div></div>
+      <div class="row"><div class="sw" style="background:#d4a0a0;"></div><div><div class="row-hex">#d4a0a0</div><div class="row-label">L3 border</div></div></div>
+      <div class="row"><div class="sw" style="background:#e0b8b8;"></div><div><div class="row-hex">#e0b8b8</div><div class="row-label">L4 strong tint</div></div></div>
+      <div class="row"><div class="sw" style="background:#b87070;"></div><div><div class="row-hex">#b87070</div><div class="row-label">L4 border</div></div></div>
+    </div>
+    <div>
+      <div class="row"><div class="sw" style="background:#4a1e1e;border-color:rgba(255,255,255,0.1);"></div><div><div class="row-hex">#4a1e1e</div><div class="row-label">Header dark · L4 text</div></div></div>
+      <div class="row"><div class="sw" style="background:#7a2e2e;border-color:rgba(255,255,255,0.1);"></div><div><div class="row-hex">#7a2e2e</div><div class="row-label">Header mid</div></div></div>
+      <div class="row"><div class="sw" style="background:#9a4040;border-color:rgba(255,255,255,0.1);"></div><div><div class="row-hex">#9a4040</div><div class="row-label">Header light</div></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="family">
+  <p class="family-title">5. Amber</p>
+  <p class="family-cats">Veer · Detour</p>
+  <div class="two-col">
+    <div>
+      <div class="row"><div class="sw" style="background:#fdf4e8;border-color:#e8c98a;"></div><div><div class="row-hex">#fdf4e8</div><div class="row-label">L3 light tint</div></div></div>
+      <div class="row"><div class="sw" style="background:#e8c98a;"></div><div><div class="row-hex">#e8c98a</div><div class="row-label">L3 border</div></div></div>
+      <div class="row"><div class="sw" style="background:#f5e0c0;"></div><div><div class="row-hex">#f5e0c0</div><div class="row-label">L4 strong tint</div></div></div>
+      <div class="row"><div class="sw" style="background:#d9a04e;"></div><div><div class="row-hex">#d9a04e</div><div class="row-label">L4 border</div></div></div>
+    </div>
+    <div>
+      <div class="row"><div class="sw" style="background:#7a4010;border-color:rgba(255,255,255,0.1);"></div><div><div class="row-hex">#7a4010</div><div class="row-label">Header dark · L4 text</div></div></div>
+      <div class="row"><div class="sw" style="background:#93541f;border-color:rgba(255,255,255,0.1);"></div><div><div class="row-hex">#93541f</div><div class="row-label">Header mid</div></div></div>
+      <div class="row"><div class="sw" style="background:#b06d22;border-color:rgba(255,255,255,0.1);"></div><div><div class="row-hex">#b06d22</div><div class="row-label">Header light</div></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="family">
+  <p class="family-title">6. Deep Green</p>
+  <p class="family-cats">Loot</p>
+  <div class="two-col">
+    <div>
+      <div class="row"><div class="sw" style="background:#e8f0e4;"></div><div><div class="row-hex">#e8f0e4</div><div class="row-label">L3 light tint</div></div></div>
+      <div class="row"><div class="sw" style="background:#98c090;"></div><div><div class="row-hex">#98c090</div><div class="row-label">L3 border</div></div></div>
+      <div class="row"><div class="sw" style="background:#c0d8b8;"></div><div><div class="row-hex">#c0d8b8</div><div class="row-label">L4 strong tint</div></div></div>
+      <div class="row"><div class="sw" style="background:#6aa060;"></div><div><div class="row-hex">#6aa060</div><div class="row-label">L4 border</div></div></div>
+    </div>
+    <div>
+      <div class="row"><div class="sw" style="background:#1e3020;border-color:rgba(255,255,255,0.1);"></div><div><div class="row-hex">#1e3020</div><div class="row-label">Header dark · L4 text</div></div></div>
+      <div class="row"><div class="sw" style="background:#2a4a2e;border-color:rgba(255,255,255,0.1);"></div><div><div class="row-hex">#2a4a2e</div><div class="row-label">Header mid</div></div></div>
+      <div class="row"><div class="sw" style="background:#3a6040;border-color:rgba(255,255,255,0.1);"></div><div><div class="row-hex">#3a6040</div><div class="row-label">Header light</div></div></div>
+    </div>
+  </div>
+</div>
+
+
+<div style="background:#fff;border:0.5px solid #e8e1d5;border-radius:10px;padding:18px 20px;margin-bottom:28px;">
+  <p style="font-size:10px;font-weight:600;color:#bfb09a;text-transform:uppercase;letter-spacing:0.08em;margin:0 0 12px;">Rules</p>
+  <ol style="font-size:12px;color:#5a544a;line-height:1.8;padding-left:18px;">
+    <li>Every tool has one <strong>primary</strong> category — L3 and L4 panel tints come from that family only. Secondary categories may appear as badge backgrounds or border accents, never panel backgrounds.</li>
+    <li>L3 panels: max 2–3 per results page</li>
+    <li>L4 panels: max 1 per results page</li>
+    <li>Gold AI insight: max 1 per results page — always the DeftBrain interpretation</li>
+    <li>Category tints appear only on results panels — never on input/form areas</li>
+    <li>Dark mode: use opacity variants of the header color (/30 for L3, /60 for L4)</li>
+    <li>Never use category tints for semantic meaning — success/warning/error always use standard semantic colors</li>
+  </ol>
+</div>
+<p class="footer">DeftBrain Category Color Map v2.0 · deftbrain.com</p>
+
+</body>
+</html>

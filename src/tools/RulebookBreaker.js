@@ -24,6 +24,8 @@ const WIN_LIKELIHOOD_CONFIG = {
 const RulebookBreaker = ({ tool }) => {
   const { isDark } = useTheme();
 
+  const { callToolEndpoint, loading } = useClaudeAPI();
+
   useEffect(() => {
     const handler = (e) => {
       const tag = document.activeElement?.tagName;
@@ -33,7 +35,6 @@ const RulebookBreaker = ({ tool }) => {
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
   }, [loading]);
-  const { callToolEndpoint, loading } = useClaudeAPI();
 
 
   const linkStyle = isDark
@@ -52,17 +53,17 @@ const RulebookBreaker = ({ tool }) => {
     btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
-    success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
-    warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
-    danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
-    infoBox:       isDark ? 'bg-sky-900/20 border-sky-700 text-sky-200' : 'bg-sky-50 border-sky-200 text-sky-800',
-    successBox:    isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-300',
+    success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-100 border-emerald-300 text-emerald-800',
+    warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-100 border-amber-300 text-amber-800',
+    danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-100 border-red-200 text-red-800',
+    infoBox:       isDark ? 'bg-sky-900/20 border-sky-700 text-sky-200' : 'bg-sky-100 border-sky-200 text-sky-800',
+    successBox:    isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-100 border-emerald-300',
     successTxt:    isDark ? 'text-emerald-300' : 'text-emerald-800',
-    warningBox:    isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
+    warningBox:    isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-100 border-amber-300',
     warningTxt:    isDark ? 'text-amber-300' : 'text-amber-800',
     pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
-  };;
+  };
 
   const [system, setSystem] = useState('');
   const [problem, setProblem] = useState('');
@@ -123,7 +124,7 @@ const RulebookBreaker = ({ tool }) => {
         <div className="text-center mb-8">
           <div className="text-5xl mb-3">🏴‍☠️</div>
           <h1 className={`text-3xl font-black tracking-tight mb-2 ${c.text}`}>Rulebook Breaker</h1>
-          <p className={`text-sm ${c.textMuteded}`}>The loopholes, magic words, and escalation ladder nobody tells you about.</p>
+          <p className={`text-sm ${c.textMuted}`}>The loopholes, magic words, and escalation ladder nobody tells you about.</p>
         </div>
 
         {!results && (
@@ -143,14 +144,14 @@ const RulebookBreaker = ({ tool }) => {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>What you've already tried <span className={`font-normal ${c.textMuteded}`}>(optional)</span></label>
+                <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>What you've already tried <span className={`font-normal ${c.textMuted}`}>(optional)</span></label>
                 <textarea value={whatTried} onChange={e => setWhatTried(e.target.value)}
                   placeholder="Calls, emails, agents, escalations…"
                   rows={2} maxLength={300}
                   className={`w-full px-4 py-3 rounded-xl border text-sm resize-none ${c.input} `} />
               </div>
               <div>
-                <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>What you want to achieve <span className={`font-normal ${c.textMuteded}`}>(optional)</span></label>
+                <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>What you want to achieve <span className={`font-normal ${c.textMuted}`}>(optional)</span></label>
                 <textarea value={goal} onChange={e => setGoal(e.target.value)}
                   placeholder="Refund, reversal, exception, apology…"
                   rows={2} maxLength={300}
@@ -164,11 +165,11 @@ const RulebookBreaker = ({ tool }) => {
                 {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span>Finding the cheat codes…</> : '🏴‍☠️ Find My Leverage'}
               </button>
               <button onClick={handleExample} disabled={loading}
-                className={`px-4 py-3 rounded-xl text-sm font-medium ${c.btnSecondaryondary}`}>
+                className={`px-4 py-3 rounded-xl text-sm font-medium ${c.btnSecondary}`}>
                 Example
               </button>
             </div>
-            <p className={`text-xs text-center ${c.textMuteded}`}>Legal leverage only. This is not legal advice.</p>
+            <p className={`text-xs text-center ${c.textMuted}`}>Legal leverage only. This is not legal advice.</p>
           </div>
         )}
 
@@ -178,13 +179,13 @@ const RulebookBreaker = ({ tool }) => {
             {/* System analysis */}
             {results.system_analysis && (
               <div className={`rounded-2xl border p-5 ${c.card} ${c.border}`}>
-                <p className={`text-xs font-black uppercase tracking-widest mb-3 ${c.textMuteded}`}>🔍 How This System Actually Works</p>
+                <p className={`text-xs font-black uppercase tracking-widest mb-3 ${c.textMuted}`}>🔍 How This System Actually Works</p>
                 <p className={`text-sm mb-2 ${c.textSecondaryondary}`}>{results.system_analysis.how_it_actually_works}</p>
                 {results.system_analysis.where_the_power_is && (
-                  <p className={`text-xs mb-1 ${c.textMuteded}`}><span className="font-semibold">Where the power is:</span> {results.system_analysis.where_the_power_is}</p>
+                  <p className={`text-xs mb-1 ${c.textMuted}`}><span className="font-semibold">Where the power is:</span> {results.system_analysis.where_the_power_is}</p>
                 )}
                 {results.system_analysis.their_pressure_points && (
-                  <p className={`text-xs ${c.textMuteded}`}><span className="font-semibold">Their pressure points:</span> {results.system_analysis.their_pressure_points}</p>
+                  <p className={`text-xs ${c.textMuted}`}><span className="font-semibold">Their pressure points:</span> {results.system_analysis.their_pressure_points}</p>
                 )}
               </div>
             )}
@@ -195,12 +196,12 @@ const RulebookBreaker = ({ tool }) => {
                 <div className="text-center flex-shrink-0">
                   <p className="text-2xl">{wlcfg?.icon}</p>
                   <p className={`text-xs font-black mt-1 ${wlcfg?.color(isDark)}`}>{wlcfg?.label}</p>
-                  <p className={`text-xs ${c.textMuteded}`}>win odds</p>
+                  <p className={`text-xs ${c.textMuted}`}>win odds</p>
                 </div>
                 <div>
                   <p className={`text-sm font-semibold mb-1 ${c.text}`}>{results.honest_assessment.the_realistic_outcome}</p>
                   {results.honest_assessment.when_to_cut_losses && (
-                    <p className={`text-xs ${c.textMuteded}`}><span className="font-semibold">Cut losses when:</span> {results.honest_assessment.when_to_cut_losses}</p>
+                    <p className={`text-xs ${c.textMuted}`}><span className="font-semibold">Cut losses when:</span> {results.honest_assessment.when_to_cut_losses}</p>
                   )}
                 </div>
               </div>
@@ -209,19 +210,19 @@ const RulebookBreaker = ({ tool }) => {
             {/* Escalation ladder */}
             {results.the_ladder?.length > 0 && (
               <div>
-                <p className={`text-xs font-black uppercase tracking-widest px-1 mb-3 ${c.textMuteded}`}>📶 The Escalation Ladder</p>
+                <p className={`text-xs font-black uppercase tracking-widest px-1 mb-3 ${c.textMuted}`}>📶 The Escalation Ladder</p>
                 <div className="space-y-3">
                   {results.the_ladder.map((rung, i) => (
                     <div key={i} className={`rounded-2xl border overflow-hidden ${c.card} ${c.border}`}>
                       <div className={`px-5 py-3 flex items-center gap-3 ${isDark ? 'bg-cyan-800/10' : 'bg-zinc-500'}`}>
                         <span className={`w-7 h-7 rounded-full flex items-center justify-center text-sm font-black flex-shrink-0 ${isDark ? 'bg-cyan-800 text-white' : 'bg-cyan-800 text-white'}`}>{rung.rung}</span>
                         <p className={`font-bold text-sm ${c.text}`}>{rung.title}</p>
-                        {rung.time_to_try && <span className={`text-xs ml-auto flex-shrink-0 ${c.textMuteded}`}>{rung.time_to_try}</span>}
+                        {rung.time_to_try && <span className={`text-xs ml-auto flex-shrink-0 ${c.textMuted}`}>{rung.time_to_try}</span>}
                       </div>
                       <div className="px-5 py-4 space-y-2">
                         <p className={`text-sm ${c.textSecondaryondary}`}>{rung.action}</p>
                         {rung.the_mechanism && (
-                          <p className={`text-xs italic ${c.textMuteded}`}>{rung.the_mechanism}</p>
+                          <p className={`text-xs italic ${c.textMuted}`}>{rung.the_mechanism}</p>
                         )}
                         {rung.magic_words?.length > 0 && (
                           <div className="flex flex-wrap gap-2 pt-1">
@@ -233,7 +234,7 @@ const RulebookBreaker = ({ tool }) => {
                           </div>
                         )}
                         {rung.expected_outcome && (
-                          <p className={`text-xs ${c.textMuteded}`}><span className="font-semibold">Expected:</span> {rung.expected_outcome}</p>
+                          <p className={`text-xs ${c.textMuted}`}><span className="font-semibold">Expected:</span> {rung.expected_outcome}</p>
                         )}
                       </div>
                     </div>
@@ -247,15 +248,15 @@ const RulebookBreaker = ({ tool }) => {
               <div className={`rounded-2xl border overflow-hidden ${c.card} ${c.border}`}>
                 <button onClick={() => toggle('loopholes')} className="w-full text-left px-5 py-4 flex items-center justify-between">
                   <p className={`text-xs font-bold uppercase tracking-wider ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>🕳️ Loopholes & Hidden Paths</p>
-                  <span className={`text-sm ${c.textMuteded}`}>{expanded.loopholes ? '▲' : '▼'}</span>
+                  <span className={`text-sm ${c.textMuted}`}>{expanded.loopholes ? '▲' : '▼'}</span>
                 </button>
                 {expanded.loopholes && (
                   <div className={`border-t ${c.border}`}>
                     {results.the_loopholes.map((l, i) => (
                       <div key={i} className={`px-5 py-4 ${i > 0 ? `border-t ${c.border}` : ''}`}>
                         <p className={`text-sm font-semibold mb-1 ${c.text}`}>{l.loophole}</p>
-                        <p className={`text-xs mb-1 ${c.textMuteded}`}><span className="font-semibold">How to invoke it:</span> {l.how_to_invoke_it}</p>
-                        {l.why_it_exists && <p className={`text-xs italic ${c.textMuteded}`}>{l.why_it_exists}</p>}
+                        <p className={`text-xs mb-1 ${c.textMuted}`}><span className="font-semibold">How to invoke it:</span> {l.how_to_invoke_it}</p>
+                        {l.why_it_exists && <p className={`text-xs italic ${c.textMuted}`}>{l.why_it_exists}</p>}
                       </div>
                     ))}
                   </div>
@@ -268,15 +269,15 @@ const RulebookBreaker = ({ tool }) => {
               <div className={`rounded-2xl border overflow-hidden ${c.card} ${c.border}`}>
                 <button onClick={() => toggle('phrases')} className="w-full text-left px-5 py-4 flex items-center justify-between">
                   <p className={`text-xs font-bold uppercase tracking-wider ${isDark ? 'text-emerald-400' : 'text-zinc-500'}`}>✨ Magic Phrases</p>
-                  <span className={`text-sm ${c.textMuteded}`}>{expanded.phrases ? '▲' : '▼'}</span>
+                  <span className={`text-sm ${c.textMuted}`}>{expanded.phrases ? '▲' : '▼'}</span>
                 </button>
                 {expanded.phrases && (
                   <div className={`border-t ${c.border}`}>
                     {results.magic_phrases.map((p, i) => (
                       <div key={i} className={`px-5 py-4 ${i > 0 ? `border-t ${c.border}` : ''}`}>
                         <p className={`text-sm font-mono font-semibold mb-1 ${isDark ? 'text-emerald-400' : 'text-zinc-500'}`}>"{p.phrase}"</p>
-                        <p className={`text-xs mb-0.5 ${c.textMuteded}`}><span className="font-semibold">When:</span> {p.when_to_use}</p>
-                        <p className={`text-xs ${c.textMuteded}`}><span className="font-semibold">Why it works:</span> {p.why_it_works}</p>
+                        <p className={`text-xs mb-0.5 ${c.textMuted}`}><span className="font-semibold">When:</span> {p.when_to_use}</p>
+                        <p className={`text-xs ${c.textMuted}`}><span className="font-semibold">Why it works:</span> {p.why_it_works}</p>
                       </div>
                     ))}
                   </div>
@@ -288,8 +289,8 @@ const RulebookBreaker = ({ tool }) => {
             {results.the_regulatory_angle && (
               <div className={`rounded-2xl border overflow-hidden ${c.card} ${c.border}`}>
                 <button onClick={() => toggle('regulatory')} className="w-full text-left px-5 py-4 flex items-center justify-between">
-                  <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuteded}`}>🏛️ The Regulatory Angle</p>
-                  <span className={`text-sm ${c.textMuteded}`}>{expanded.regulatory ? '▲' : '▼'}</span>
+                  <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>🏛️ The Regulatory Angle</p>
+                  <span className={`text-sm ${c.textMuted}`}>{expanded.regulatory ? '▲' : '▼'}</span>
                 </button>
                 {expanded.regulatory && (
                   <div className={`px-5 pb-5 border-t ${c.border} pt-4 space-y-2`}>
@@ -312,16 +313,16 @@ const RulebookBreaker = ({ tool }) => {
               <div className={`rounded-2xl border overflow-hidden ${c.card} ${c.border}`}>
                 <button onClick={() => toggle('nuclear')} className="w-full text-left px-5 py-4 flex items-center justify-between">
                   <p className={`text-xs font-bold uppercase tracking-wider ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>💣 Nuclear Options</p>
-                  <span className={`text-sm ${c.textMuteded}`}>{expanded.nuclear ? '▲' : '▼'}</span>
+                  <span className={`text-sm ${c.textMuted}`}>{expanded.nuclear ? '▲' : '▼'}</span>
                 </button>
                 {expanded.nuclear && (
                   <div className={`border-t ${c.border}`}>
                     {results.the_nuclear_options.map((n, i) => (
                       <div key={i} className={`px-5 py-4 ${i > 0 ? `border-t ${c.border}` : ''}`}>
                         <p className={`text-sm font-semibold mb-1 ${c.text}`}>{n.option}</p>
-                        {n.how_to_execute && <p className={`text-xs mb-0.5 ${c.textMuteded}`}><span className="font-semibold">How:</span> {n.how_to_execute}</p>}
-                        {n.when_to_use_it && <p className={`text-xs mb-0.5 ${c.textMuteded}`}><span className="font-semibold">When:</span> {n.when_to_use_it}</p>}
-                        {n.real_likelihood && <p className={`text-xs italic ${c.textMuteded}`}>{n.real_likelihood}</p>}
+                        {n.how_to_execute && <p className={`text-xs mb-0.5 ${c.textMuted}`}><span className="font-semibold">How:</span> {n.how_to_execute}</p>}
+                        {n.when_to_use_it && <p className={`text-xs mb-0.5 ${c.textMuted}`}><span className="font-semibold">When:</span> {n.when_to_use_it}</p>}
+                        {n.real_likelihood && <p className={`text-xs italic ${c.textMuted}`}>{n.real_likelihood}</p>}
                       </div>
                     ))}
                   </div>
@@ -340,13 +341,13 @@ const RulebookBreaker = ({ tool }) => {
             <div className="flex items-center gap-3 flex-wrap">
               <ActionBar content={buildText()} title="Rulebook Breaker" />
               <button onClick={() => { setResults(null); setSystem(''); setProblem(''); setWhatTried(''); setGoal(''); }}
-                className={`px-4 py-2 rounded-lg text-sm font-medium ${c.btnSecondaryondary}`}>
+                className={`px-4 py-2 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
                 🔄 New Problem
               </button>
             </div>
 
             <div className={`rounded-xl border p-4 ${c.cardAlt} ${c.border}`}>
-              <p className={`text-xs font-semibold uppercase tracking-wide mb-3 ${c.textMuteded}`}>Related tools</p>
+              <p className={`text-xs font-semibold uppercase tracking-wide mb-3 ${c.textMuted}`}>Related tools</p>
               <div className="flex flex-wrap gap-2">
                 {[
                   { id: 'MagicMouth', icon: '🎤', label: 'Script phone calls & conversations' },
@@ -354,7 +355,7 @@ const RulebookBreaker = ({ tool }) => {
                   { id: 'TruthBomb', icon: '💣', label: 'Say the hard thing' },
                 ].map(r => (
                   <a key={r.id} href={`/tool/${r.id}`} target="_blank" rel="noopener noreferrer"
-                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${c.btnSecondaryondary}`}>
+                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${c.btnSecondary}`}>
                     {r.icon} {r.label}
                   </a>
                 ))}

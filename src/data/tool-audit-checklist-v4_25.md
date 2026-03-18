@@ -51,6 +51,26 @@ Score each item: ✅ Pass | ⚠️ Needs Work | ❌ Fail | N/A
   # Verify span with icon comes before title text, not after
   ```
 
+- [ ] 🔍 **Title and tagline are dynamic, not hardcoded** — the component header uses `{tool?.title}` and `{tool?.tagline}` rather than string literals. `tools.js` is the single source of truth for both. Hardcoding them creates a sync hazard: if you update `tools.js`, the component silently stays stale.
+  ```bash
+  grep -n "tool?\.title\|tool?\.tagline" ComponentName.js
+  # Must return at least one result each for title and tagline
+  grep -n "<h[12][^>]*>[^{<]" ComponentName.js
+  # Any h1/h2 containing a bare string (not a JSX expression) is a violation
+  ```
+
+  > ⚠️ **BUG PATTERN — Hardcoded title/tagline in component header (discovered WhatIfMachine audit, v4.24)**
+  > Tools hardcode their title and tagline in JSX: `<h2>WhatIfMachine 🎲</h2>` / `<p>See the road not taken…</p>`. When the tool's `tools.js` entry is updated, the component header never changes. **Fix:** Replace with `{tool?.title}` and `{tool?.tagline}`. The `tool` prop is always available — `ToolPageWrapper` passes it through to every component.
+  > ```jsx
+  > // ❌ WRONG
+  > <h2>WhatIfMachine 🎲</h2>
+  > <p>See the road not taken before you decide</p>
+  >
+  > // ✅ CORRECT
+  > <h2><span className="mr-2">{tool?.icon}</span>{tool?.title}</h2>
+  > <p>{tool?.tagline}</p>
+  > ```
+
 - [ ] 🔍 **Icon is dynamic, not hardcoded** — component renders `{tool?.icon}` in the header AND in all branches of every submit button. `tools.js` is the single source of truth.
   ```bash
   grep -n "tool?\.icon\|tool\.icon" ComponentName.js
@@ -146,6 +166,20 @@ Score each item: ✅ Pass | ⚠️ Needs Work | ❌ Fail | N/A
   grep "card:.*border-" ComponentName.js
   # Must return zero results
   ```
+
+- [ ] 🔍 **All `c.*` references in JSX have a matching definition in the `c` block** — undefined keys silently resolve to `undefined`, producing a className like `"undefined rounded-lg p-3"` with no crash and no warning.
+  ```bash
+  # Extract all c.keyName usages:
+  grep -oP '(?<=c\.)[a-zA-Z]+' ComponentName.js | sort | uniq > /tmp/c_used.txt
+  # Extract all defined keys in the c block:
+  grep -oP '^\s+\K[a-zA-Z]+(?=\s*:)' ComponentName.js | sort | uniq > /tmp/c_defined.txt
+  # Find used-but-not-defined:
+  comm -23 /tmp/c_used.txt /tmp/c_defined.txt
+  # Must return zero results. Any output is a missing or misspelled key.
+  ```
+
+  > ⚠️ **BUG PATTERN — Typo in `c` key name / undefined `c` key (discovered WrongAnswersOnly audit, v4.23)**
+  > `c.textMuteded` (typo for `c.textMuted`) and `c.quoteBg` (used but never defined) both resolve silently to `undefined`. The panel renders with no background — no crash, no React warning, just broken styling. The grep scan above catches both missing keys and typos in one pass. Always fix the definition, not the callsite spelling, unless the key is genuinely wrong everywhere.
 
 - [ ] 🔍 **No local-scope lookup objects hiding banned colors** — `VERDICT_COLORS`, `ratingColors`, and similar inline objects must not use banned color families.
   ```bash
@@ -311,9 +345,9 @@ const linkStyle = isDark
 - [ ] 🧪 **No flash of wrong theme on load.**
 
 ### 1.4 Action Buttons
-> `ActionBar` is the single source of Copy + Print + Share. Never add standalone `PrintBtn`, `ShareBtn`, or `CopyBtn` alongside `ActionBar`.
+> `ActionBar` is the standard output for Copy + Print + Share on the results panel. Standalone `PrintBtn` or `CopyBtn` are allowed alongside `ActionBar` for per-item actions (e.g. per-message print). The absolute rule: **never use `window.open` / `buildPrintHtml` for custom printing** — use `PrintBtn` from ActionButtons instead.
 
-- [ ] 🔍 **Imports from `../components/ActionButtons`** — uses `ActionBar` (and optionally standalone `CopyBtn` for per-field copies).
+- [ ] 🔍 **Imports from `../components/ActionButtons`** — uses `ActionBar` (and optionally standalone `CopyBtn`/`PrintBtn` for per-item actions).
   ```bash
   grep -n "ActionButtons\|ActionBar\|CopyBtn\|PrintBtn\|ShareBtn" ComponentName.js | head -10
   # Must show import from ../components/ActionButtons
@@ -332,10 +366,10 @@ const linkStyle = isDark
   # Must return at least one result
   ```
 
-- [ ] 🔍 **No duplicate action buttons** — `ActionBar` not accompanied by standalone `<PrintBtn` or `<ShareBtn`.
+- [ ] 🔍 **No custom print bypass** — no `window.open`, `buildPrintHtml`, or hardcoded `.branding` div. All printing must go through `ActionBar` or `PrintBtn` from ActionButtons.
   ```bash
-  grep -n "<PrintBtn\|<ShareBtn" ComponentName.js
-  # If ActionBar is present, these must return zero results
+  grep -n "window\.open\|buildPrintHtml\|buildPrintHTML\|class=\"branding\"\|className=\"branding\"" ComponentName.js
+  # Must return zero results
   ```
 
 - [ ] 🔍 **ActionBar placement** — within ~5 lines of the `resultsRef` div opening.
@@ -347,10 +381,15 @@ const linkStyle = isDark
 - [ ] 🔍 **Copy content includes DeftBrain branding** — `BRAND` constant used, ends with `\n\n— Generated by DeftBrain · deftbrain.com`.
   ```bash
   grep -n "BRAND\|deftbrain\.com\|Generated by DeftBrain" ComponentName.js
-  # BRAND constant must be defined; every CopyBtn content prop must append it
-  grep -n "content={" ComponentName.js | grep -v "BRAND\|deftbrain"
-  # Ideally returns zero results (all copy content uses BRAND)
+  # BRAND constant must be defined AND referenced inside a copy content builder function.
+  # A BRAND definition with no usage is a violation — the constant must appear in buildFullText or equivalent.
+  grep -n "const BRAND" ComponentName.js
+  grep -n "BRAND" ComponentName.js | grep -v "const BRAND"
+  # Second grep must return at least one result (BRAND must be used, not just defined)
   ```
+
+  > ⚠️ **BUG PATTERN — `BRAND` defined but not wired (discovered WrongAnswersOnly audit, v4.23)**
+  > `const BRAND` declared at top of file but `buildFullText` hardcoded the branding string directly: `lines.push('\n— Generated by DeftBrain · deftbrain.com')`. This passes the "is BRAND defined?" scan but means any future change to BRAND won't propagate. **Fix:** Replace all hardcoded branding strings with `lines.push(BRAND)`.
 
 - [ ] 🔍 **Print template includes branding div** — printed output identifies the source.
   ```bash
@@ -371,6 +410,16 @@ const linkStyle = isDark
   grep -n "reset\|Start Over" ComponentName.js | grep -i "btn\|class"
   # Confirm reset button uses c.btnSecondary, not c.btnPrimary
   ```
+
+- [ ] 🔍 **"Run again" produces a different result** — tools with a secondary submit ("Different Answer", "Try Again", "Regenerate") must send a variation signal to the API so the model doesn't return identical output.
+  ```bash
+  grep -n "seed\|timestamp\|Date\.now\|Math\.random\|variation\|attempt" ComponentName.js | grep -v "^[[:space:]]*//"
+  # At least one of these must appear in the API payload object passed to callToolEndpoint
+  # If the payload is identical on every call, the backend has no signal to vary its output
+  ```
+
+  > ⚠️ **BUG PATTERN — "Run again" returns identical answer (discovered WrongAnswersOnly audit, v4.23)**
+  > The "Different Wrong Answer" button called `runWrong()` which sent the exact same payload as the first call. The model returned identical output every time. **Fix:** Add `seed: Date.now()` to the API payload. The backend route should pass this through to the Claude prompt (e.g. as `"(variation #${seed})"`) or simply rely on model non-determinism being nudged by the changed input. Either way, the payload must differ on each call.
 
 - [ ] 🔍 **Per-tool history implemented** — `usePersistentState` for history array.
   ```bash
@@ -423,6 +472,28 @@ const linkStyle = isDark
   ```
 
 ### 1.7 Component Patterns
+
+- [ ] 🔍 **No unused imports** — every named import is referenced in the component body. Unused imports produce ESLint warnings that mask real errors.
+  ```bash
+  # Spot-check the most common offenders:
+  grep -n "useEffect\b" ComponentName.js | grep -v "import\|//"
+  # If useEffect appears only in the import line, it's unused — remove it
+  grep -n "\bCopyBtn\b" ComponentName.js | grep -v "import\|//"
+  # If CopyBtn appears only in the import line, it's unused — remove it
+  ```
+
+  > ⚠️ **BUG PATTERN — Unused `useEffect` and `CopyBtn` imports (discovered WrongAnswersOnly audit, v4.23)**
+  > `useEffect` left over from a refactor and `CopyBtn` imported "just in case" both produce ESLint `no-unused-vars` warnings. These are harmless individually but accumulate warning noise that masks real issues. Remove any import not referenced below the import block.
+
+- [ ] 🔍 **`useCallback` dependency arrays are complete** — all `setState` functions from `usePersistentState` that are called inside a `useCallback` must be listed as deps.
+  ```bash
+  grep -n "useCallback" ComponentName.js
+  # For each useCallback, read its dep array and verify every set* called inside is listed.
+  # Missing set* deps create stale closures where the callback captures an outdated setter.
+  ```
+
+  > ⚠️ **BUG PATTERN — Missing `set*` deps in `useCallback` (discovered WrongAnswersOnly audit, v4.23)**
+  > `setResults` and `setHistory` omitted from the `runWrong` dep array created a stale closure — "Different Wrong Answer" never cleared the previous result. ESLint flags this as `react-hooks/exhaustive-deps`. **Fix:** Add all called `set*` functions to the dep array. `usePersistentState` setters are stable references so this is safe.
 
 - [ ] 🔍 **`displayName` set** — last line before `export default`.
   ```bash
@@ -916,6 +987,30 @@ For each tool, capture:
 **(1) Frontend/Backend JSON key mismatch (Section 2.2):** Frontend accesses a JSON key name that differs from what the backend prompt instructs the model to return. Example: frontend renders `analysis.poor_interoception_support` but backend prompt defines the key as `poor_self_awareness_support` — section silently never renders because the key is always undefined. **Scan:** `grep -h "analysis\.\|data\." ComponentName.js | grep -oP '(?<=\.)[a-z_]+(?=\b)' | sort | uniq` then cross-check against all `"key_name":` strings in the corresponding backend .js file. Any mismatch is a silent data loss bug.
 
 **(2) `useTheme` non-standard destructure pattern (Section 1.3):** Some tools use `const { theme } = useTheme(); const isDark = theme === 'dark'` instead of the standard `const { isDark } = useTheme()`. Both work at runtime but the non-standard form adds a manual derivation step, is inconsistent with the family, and adds surface area for bugs if the hook's return shape changes. **Scan:** `grep "const { theme }" ComponentName.js` — must return zero results. If found, replace with `const { isDark } = useTheme()`.*
+
+*v4.25 — Four new checks, discovered during WardrobeChaosHelper audit, March 2026:*
+
+**(1) Custom print bypass (Section 1.4):** Tools must not use `window.open` + hand-built HTML for printing. All print output must go through `PrintBtn` from `ActionButtons`, which provides the full-colour salmon logo header and footer automatically. Standalone `PrintBtn` alongside `ActionBar` is now explicitly permitted for per-item print actions. **Scan:** `grep -n "window\.open\|buildPrintHtml\|buildPrintHTML\|class=\"branding\"" ComponentName.js` — must return zero results.*
+
+**(2) TDZ: plain `const` fn in `useEffect` dep array (Section 1.7):** A plain `const` function declared later in the component body must never appear in a `useEffect` dependency array. React evaluates dep array entries at declaration time — referencing a not-yet-initialized `const` throws a TDZ ReferenceError at mount. Only `useCallback`-wrapped functions are safe in dep arrays. Plain handlers should be listed in an `// eslint-disable-next-line` comment if needed, not in the array. **Scan:** `grep -A2 "useEffect" ComponentName.js | grep -A1 "\}, \["` — check each dep against whether it's a `useCallback` or a plain `const`.*
+
+**(3) `toLocaleString('default')` Safari crash (Section 2.1):** Passing the string `'default'` as a locale argument to `toLocaleString` or `toLocaleDateString` works in Chrome/Firefox but throws `locale.toLowerCase is not a function` in Safari. Use `undefined` (browser's own locale) or `'en'` instead. **Scan:** `grep -n "toLocaleString('default'\|toLocaleDateString('default'" ComponentName.js` — must return zero results.*
+
+**(4) `useState`/`useRef` hooks after `useEffect` (Section 1.7):** All state and ref declarations must appear before any `useEffect` calls. Hooks declared after an effect that references them via closure work at runtime but create confusing ordering and can interact badly with StrictMode's double-invoke. Standard order: all `useState` → all `useRef` → `const` derived values → `useEffect`s → handler functions. **Scan:** check line numbers — any `useState`/`useRef` appearing after the first `useEffect` is a violation.*
+
+*v4.24 — New check added, discovered during WhatIfMachine audit, March 2026:*
+
+**(1) Hardcoded title/tagline in component header (Section 0):** Tools hardcode their title and tagline as JSX string literals rather than reading from `tool?.title` and `tool?.tagline`. When `tools.js` is updated the component header silently stays stale. Fix: always use `{tool?.title}` and `{tool?.tagline}`. Applied retroactively to WhatIfMachine, WhatsMyVibe, WhereDidItGo, and WrongAnswersOnly.*
+
+*v4.23 — Four new checks discovered during WrongAnswersOnly audit, March 2026:*
+
+**(1) Undefined / misspelled `c` keys (Section 1.1):** `c.quoteBg` used in JSX but never defined; `c.textMuteded` typo for `c.textMuted`. Both resolve silently to `undefined` — no crash, no warning, just broken styling. Added cross-reference grep scan: diff all `c.*` usages against defined keys; any delta is a violation.*
+
+**(2) `BRAND` defined but not wired (Section 1.4):** `const BRAND` declared at top of file but copy builder hardcoded the branding string directly. Tightened the branding check to verify BRAND is both defined AND referenced — a definition with no usage is now a violation.*
+
+**(3) Unused imports / ESLint warnings (Section 1.7):** `useEffect` and `CopyBtn` left in import line after refactors. Added spot-check scans for the most common offenders. Unused imports accumulate warning noise that masks real errors.*
+
+**(4) Missing `set*` deps in `useCallback` / "run again" returns same result (Sections 1.5, 1.7):** `setResults` and `setHistory` omitted from dep array caused stale closure — "Different Wrong Answer" never cleared the previous result. Added: any tool with a secondary submit must include a variation signal (`seed: Date.now()`) in the API payload.*
 
 *v4.22 — New bug pattern discovered during CrisisPrioritizer audit, March 2026:*
 
