@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -33,7 +33,8 @@ const FriendshipFadeAlerter = ({ tool }) => {
   const [circles, setCircles] = usePersistentState('ffa-circles', []); // { id, name, icon }
   const [view, setView] = useState('dashboard');
   const [error, setError] = useState('');
-  const resultsRef = React.useRef(null);
+  const resultsRef = useRef(null);
+
   const [activeCircleFilter, setActiveCircleFilter] = useState(null);
 
   // ── Form ──
@@ -66,6 +67,21 @@ const FriendshipFadeAlerter = ({ tool }) => {
   const [reengageResults, setReengageResults] = useState(null);
   const [reengageLoading, setReengageLoading] = useState(false);
 
+  // ── AI Health Insight ──
+  const [insightPerson, setInsightPerson] = useState(null);
+  const [insight, setInsight] = useState(null);
+  const [insightLoading, setInsightLoading] = useState(false);
+  const [insightOpen, setInsightOpen] = useState({}); // { [personId]: bool }
+
+  // ── Say It Coach ──
+  const [sayItPerson, setSayItPerson] = useState(null);
+  const [sayItResults, setSayItResults] = useState(null);
+  const [sayItLoading, setSayItLoading] = useState(false);
+
+  // ── Mark Contacted with note ──
+  const [contactNoteFor, setContactNoteFor] = useState(null); // personId currently being logged
+  const [contactNote, setContactNote] = useState('');
+
   // ── Theme ──
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
@@ -81,7 +97,8 @@ const FriendshipFadeAlerter = ({ tool }) => {
     danger:        isDark ? 'bg-red-900/20 border-red-800/50 text-red-300' : 'bg-red-50 border-red-200 text-red-700',
     warning:       isDark ? 'bg-amber-900/20 border-amber-800/50 text-amber-300' : 'bg-amber-50 border-amber-200 text-amber-700',
     success:       isDark ? 'bg-emerald-900/20 border-emerald-800/50 text-emerald-300' : 'bg-emerald-50 border-emerald-200 text-emerald-700',
-    deleteHover: isDark ? '${c.deleteHover}' : '${c.deleteHover}',
+    streak:        isDark ? 'bg-amber-900/20 text-amber-300' : 'bg-amber-50 text-amber-700',
+    deleteHover:   isDark ? 'text-zinc-500 hover:text-red-400' : 'text-gray-400 hover:text-red-500',
   };
 
   const linkStyle = isDark
@@ -254,6 +271,7 @@ const FriendshipFadeAlerter = ({ tool }) => {
         reciprocity: reciprocity || null,
       });
       setStarters(data);
+      setHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: person.name + ' — starters', result: data }, ...prev].slice(0, 6));
       setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
     } catch (err) { setError(err.message || 'Failed to generate starters'); }
     finally { setStartersLoading(false); }
@@ -334,20 +352,94 @@ const FriendshipFadeAlerter = ({ tool }) => {
     try {
       const data = await callToolEndpoint('friendship-fade-alerter/reengage', reengageForm);
       setReengageResults(data);
+      setHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: reengageForm.personName + ' — re-engage', result: data }, ...prev].slice(0, 6));
     } catch (err) { setError(err.message || 'Failed to generate messages'); }
     finally { setReengageLoading(false); }
   };
+
+  // ════════════════════════════════════════
+  // AI ENHANCEMENTS
+  // ════════════════════════════════════════
+
+  const getHealthInsight = async (person) => {
+    setInsightPerson(person);
+    setInsight(null);
+    setInsightLoading(true);
+    setInsightOpen(prev => ({ ...prev, [person.id]: true }));
+    const reciprocity = getReciprocity(person);
+    const drift = getDrift(person);
+    const status = getStatus(person);
+    try {
+      const data = await callToolEndpoint('friendship-fade-alerter/health-insight', {
+        name: person.name,
+        relationshipType: person.relationshipType,
+        frequency: person.frequency,
+        daysSinceContact: status.days,
+        contactLog: (person.contactLog || []).slice(0, 8),
+        contextNotes: person.contextNotes || null,
+        reciprocity: reciprocity || null,
+        drift: drift || null,
+        upcomingEvents: (person.upcomingEvents || []).filter(e => new Date(e.date) >= new Date()),
+      });
+      setInsight(prev => ({ ...(prev || {}), [person.id]: data }));
+    } catch (err) { setError(err.message || 'Failed to generate insight'); }
+    finally { setInsightLoading(false); }
+  };
+
+  const getSayItCoach = async (person) => {
+    setSayItPerson(person);
+    setSayItResults(null);
+    setSayItLoading(true);
+    setView('sayit');
+    const reciprocity = getReciprocity(person);
+    try {
+      const data = await callToolEndpoint('friendship-fade-alerter/say-it-coach', {
+        name: person.name,
+        relationshipType: person.relationshipType,
+        contactLog: (person.contactLog || []).slice(0, 6),
+        reciprocity: reciprocity || null,
+        contextNotes: person.contextNotes || null,
+      });
+      setSayItResults(data);
+      setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
+    } catch (err) { setError(err.message || 'Failed to generate coaching'); }
+    finally { setSayItLoading(false); }
+  };
+
+  const submitContactNote = (id) => {
+    markContacted(id, contactNote.trim() || 'Reached out', 'you');
+    setContactNoteFor(null);
+    setContactNote('');
+  };
+
+  // Global Cmd/Ctrl+Enter — submits whichever view is active
+  // Placed after all handlers to avoid TDZ on saveRelationship/handleReengage
+  useEffect(() => {
+    const handler = (e) => {
+      if (e.key !== 'Enter' || !(e.metaKey || e.ctrlKey)) return;
+      const tag = document.activeElement?.tagName;
+      if (tag === 'TEXTAREA') return;
+      e.preventDefault();
+      if (view === 'add' && form.name && form.relationshipType && form.frequency && form.lastContact) { saveRelationship(); return; }
+      if (view === 'reengage' && reengageForm.personName.trim() && reengageForm.howLong.trim() && !reengageLoading) { handleReengage(); return; }
+      if (view === 'sayit' && !sayItLoading && sayItPerson) { getSayItCoach(sayItPerson); return; }
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [view, form, reengageForm, reengageLoading, sayItLoading]);
 
   // ═══════════════════════════════════════
   // RENDER
   // ═══════════════════════════════════════
   return (
-    <div className={`min-h-screen ${c.card} ${c.border} p-4 sm:p-6`}>
-      <div className="max-w-3xl mx-auto">
-        <div className="text-center mb-6">
-          <span className="text-5xl block mb-3">💛</span>
-          <h1 className={`text-3xl sm:text-4xl font-black tracking-tight ${c.text}`}><span className='mr-2'>{tool?.icon ?? '👥'}</span>{tool?.title || 'Friendship Fade Alerter'}</h1>
-          <p className={`text-base mt-2 ${c.textSecondaryondary}`}>Keep up with the people who matter</p>
+    <div className={`space-y-6 ${c.text}`}>
+      <div className={`${c.card} border ${c.border} rounded-xl p-6`}>
+        <div className={`mb-6 pb-4 border-b ${c.border}`}>
+          <h2 className={`text-2xl font-bold ${c.text}`}>
+            <span className="mr-2">{tool?.icon ?? '💔'}</span>{tool?.title ?? 'Friendship Fade Alerter'}
+          </h2>
+          <p className={`text-sm ${c.textSecondary} mt-1`}>{tool?.tagline ?? 'Never lose touch with people you care about'}</p>
         </div>
 
         {error && <div className={`p-3 rounded-xl border mb-4 ${c.danger}`}><span className="mr-1">⚠️</span> {error}</div>}
@@ -359,8 +451,8 @@ const FriendshipFadeAlerter = ({ tool }) => {
             {healthStats && healthStats.total > 0 && (
               <div className={`${c.card} ${c.border} border rounded-2xl p-5`}>
                 <div className="flex items-center justify-between mb-3">
-                  <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuteded}`}>📊 Relationship Health</p>
-                  <button onClick={generateDigest} disabled={digestLoading} className={`text-xs font-bold px-3 py-1.5 rounded-lg ${c.btnPrimarySecondaryondary}`}>
+                  <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>📊 Relationship Health</p>
+                  <button onClick={generateDigest} disabled={digestLoading} className={`text-xs font-bold px-3 py-1.5 rounded-lg ${c.btnSecondary}`}>
                     {digestLoading ? <span className="animate-spin inline-block">{tool?.icon ?? '👥'}</span> : '📋 Weekly Digest'}
                   </button>
                 </div>
@@ -374,12 +466,12 @@ const FriendshipFadeAlerter = ({ tool }) => {
                     <div key={i} className={`p-3 rounded-xl ${c.cardAlt} ${c.border} border text-center`}>
                       <span className="text-lg block">{s.icon}</span>
                       <p className={`text-lg font-black ${s.cls || c.text}`}>{s.val}</p>
-                      <p className={`text-[10px] ${c.textMuteded}`}>{s.label}</p>
+                      <p className={`text-[10px] ${c.textMuted}`}>{s.label}</p>
                     </div>
                   ))}
                 </div>
                 {healthStats.neglectedCategory && healthStats.neglectedCategory[1].overdue > 0 && (
-                  <p className={`text-xs ${c.textMuteded} mb-1`}>💡 Your {healthStats.neglectedCategory[0].toLowerCase()} connections need the most attention — {healthStats.neglectedCategory[1].overdue} of {healthStats.neglectedCategory[1].total} overdue</p>
+                  <p className={`text-xs ${c.textMuted} mb-1`}>💡 Your {healthStats.neglectedCategory[0].toLowerCase()} connections need the most attention — {healthStats.neglectedCategory[1].overdue} of {healthStats.neglectedCategory[1].total} overdue</p>
                 )}
                 {healthStats.oneSided?.length > 0 && (
                   <p className={`text-xs ${isDark ? 'text-amber-400' : 'text-amber-600'}`}>↔️ One-sided: you always initiate with {healthStats.oneSided.slice(0, 3).join(', ')}{healthStats.oneSided.length > 3 ? ` +${healthStats.oneSided.length - 3} more` : ''}</p>
@@ -390,9 +482,9 @@ const FriendshipFadeAlerter = ({ tool }) => {
             {/* Circle filter chips */}
             {circles.length > 0 && (
               <div className="flex gap-2 flex-wrap">
-                <button onClick={() => setActiveCircleFilter(null)} className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${!activeCircleFilter ? c.btnPrimaryPrimary : c.btnPrimarySoft}`}>All</button>
+                <button onClick={() => setActiveCircleFilter(null)} className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${!activeCircleFilter ? c.btnPrimary : c.btnSoft}`}>All</button>
                 {circles.map(circ => (
-                  <button key={circ.id} onClick={() => setActiveCircleFilter(activeCircleFilter === circ.id ? null : circ.id)} className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${activeCircleFilter === circ.id ? c.btnPrimaryPrimary : c.btnPrimarySoft}`}>
+                  <button key={circ.id} onClick={() => setActiveCircleFilter(activeCircleFilter === circ.id ? null : circ.id)} className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${activeCircleFilter === circ.id ? c.btnPrimary : c.btnSoft}`}>
                     {circ.icon} {circ.name}
                   </button>
                 ))}
@@ -401,16 +493,16 @@ const FriendshipFadeAlerter = ({ tool }) => {
 
             {/* Action buttons */}
             <div className="flex gap-3 flex-wrap">
-              <button onClick={() => { resetForm(); setView('add'); }} className={`flex-1 py-3 rounded-xl font-bold ${c.btnPrimaryPrimary}`}>
+              <button onClick={() => { resetForm(); setView('add'); }} className={`flex-1 py-3 rounded-xl font-bold ${c.btnPrimary}`}>
                 <span className="mr-2">➕</span> Add Person
               </button>
               {overduePeople.length >= 2 && (
-                <button onClick={runBatch} className={`flex-1 py-3 rounded-xl font-bold ${c.btnPrimarySecondaryondary}`}>
+                <button onClick={runBatch} className={`flex-1 py-3 rounded-xl font-bold ${c.btnSecondary}`}>
                   <span className="mr-2">⚡</span> Catch-up Sprint ({overduePeople.length})
                 </button>
               )}
               <button onClick={() => { setReengageResults(null); setReengageForm({ personName: '', relationship: '', howLong: '', lastContext: '', reason: '' }); setView('reengage'); }}
-                className={`flex-1 py-3 rounded-xl font-bold ${c.btnPrimarySecondaryondary}`}>
+                className={`flex-1 py-3 rounded-xl font-bold ${c.btnSecondary}`}>
                 <span className="mr-2">🕸️</span> Re-engage
               </button>
             </div>
@@ -420,9 +512,9 @@ const FriendshipFadeAlerter = ({ tool }) => {
               <div className={`${c.card} ${c.border} border rounded-2xl p-10 text-center`}>
                 <span className="text-5xl block mb-3">👥</span>
                 <p className={`text-lg font-bold ${c.text} mb-2`}>{activeCircleFilter ? 'No one in this circle yet' : 'No one tracked yet'}</p>
-                <p className={`${c.textSecondaryondary} mb-4`}>{activeCircleFilter ? 'Add people and tag them into this circle' : 'Add the people you want to stay connected with'}</p>
+                <p className={`${c.textSecondary} mb-4`}>{activeCircleFilter ? 'Add people and tag them into this circle' : 'Add the people you want to stay connected with'}</p>
                 {!activeCircleFilter && (
-                  <button onClick={() => { resetForm(); setView('add'); }} className={`${c.btnPrimaryPrimary} px-6 py-3 rounded-xl font-bold`}>
+                  <button onClick={() => { resetForm(); setView('add'); }} className={`${c.btnPrimary} px-6 py-3 rounded-xl font-bold`}>
                     <span className="mr-2">➕</span> Add Your First Person
                   </button>
                 )}
@@ -443,7 +535,7 @@ const FriendshipFadeAlerter = ({ tool }) => {
                           <div>
                             <h3 className={`text-lg font-black ${c.text}`}>{person.name}</h3>
                             <div className="flex items-center gap-2">
-                              <p className={`text-xs ${c.textMuteded}`}>{relLabel(person.relationshipType)} · {FREQUENCIES.find(f => f.value === person.frequency)?.label}</p>
+                              <p className={`text-xs ${c.textMuted}`}>{relLabel(person.relationshipType)} · {FREQUENCIES.find(f => f.value === person.frequency)?.label}</p>
                               {personCircles.map(circ => <span key={circ.id} className={`text-[9px] px-1.5 py-0.5 rounded-full ${isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-zinc-100 text-gray-500'}`}>{circ.icon} {circ.name}</span>)}
                             </div>
                           </div>
@@ -457,13 +549,13 @@ const FriendshipFadeAlerter = ({ tool }) => {
 
                       <div className="grid grid-cols-2 gap-3 mb-3">
                         <div className={`p-2.5 rounded-xl ${c.cardAlt} ${c.border} border`}>
-                          <p className={`text-[10px] font-bold ${c.textMuteded}`}>LAST CONTACT</p>
+                          <p className={`text-[10px] font-bold ${c.textMuted}`}>LAST CONTACT</p>
                           <p className={`text-sm font-bold ${c.text}`}>{status.days} days ago</p>
                         </div>
                         {(person.contactLog || [])[0] && (
                           <div className={`p-2.5 rounded-xl ${c.cardAlt} ${c.border} border`}>
-                            <p className={`text-[10px] font-bold ${c.textMuteded}`}>LAST TOPIC</p>
-                            <p className={`text-xs ${c.textSecondaryondary} truncate`}>{person.contactLog[0].note}</p>
+                            <p className={`text-[10px] font-bold ${c.textMuted}`}>LAST TOPIC</p>
+                            <p className={`text-xs ${c.textSecondary} truncate`}>{person.contactLog[0].note}</p>
                           </div>
                         )}
                       </div>
@@ -472,7 +564,7 @@ const FriendshipFadeAlerter = ({ tool }) => {
                       {reciprocity && (
                         <div className={`flex items-center gap-2 mb-2 p-2 rounded-lg ${reciprocity.balance === 'one_sided' ? (isDark ? 'bg-amber-900/15' : 'bg-amber-50') : reciprocity.balance === 'balanced' ? (isDark ? 'bg-emerald-900/15' : 'bg-emerald-50') : ''}`}>
                           <span className="text-xs">{reciprocity.balance === 'balanced' ? '↔️' : reciprocity.balance === 'mostly_you' ? '➡️' : '➡️'}</span>
-                          <p className={`text-[10px] ${reciprocity.balance === 'one_sided' ? (isDark ? 'text-amber-400' : 'text-amber-700') : reciprocity.balance === 'balanced' ? (isDark ? 'text-emerald-400' : 'text-emerald-700') : c.textMuteded}`}>
+                          <p className={`text-[10px] ${reciprocity.balance === 'one_sided' ? (isDark ? 'text-amber-400' : 'text-amber-700') : reciprocity.balance === 'balanced' ? (isDark ? 'text-emerald-400' : 'text-emerald-700') : c.textMuted}`}>
                             You: {reciprocity.youInitiated} · Them: {reciprocity.theyInitiated} of last {reciprocity.total}
                             {reciprocity.balance === 'one_sided' && ' — always you'}
                             {reciprocity.balance === 'balanced' && ' — balanced'}
@@ -500,26 +592,87 @@ const FriendshipFadeAlerter = ({ tool }) => {
                       {/* Upcoming events */}
                       {(person.upcomingEvents || []).filter(e => daysSince(e.date) <= 0 && daysSince(e.date) > -14).map((e, i) => (
                         <div key={i} className={`p-2 rounded-lg mb-2 ${isDark ? 'bg-cyan-900/20' : 'bg-cyan-50'}`}>
-                          <p className={`text-xs font-bold ${c.textSecondaryondary}`}>📅 {e.label} — {new Date(e.date).toLocaleDateString()}</p>
+                          <p className={`text-xs font-bold ${c.textSecondary}`}>📅 {e.label} — {new Date(e.date).toLocaleDateString()}</p>
                         </div>
                       ))}
 
+                      {/* AI Insight panel (inline, expandable) */}
+                      {insightOpen[person.id] && (
+                        <div className={`mb-3 rounded-xl border p-4 ${isDark ? 'bg-zinc-900/50 border-zinc-700' : 'bg-slate-50 border-slate-200'}`}>
+                          {insightLoading && insightPerson?.id === person.id ? (
+                            <p className={`text-xs ${c.textMuted} flex items-center gap-2`}>
+                              <span className="animate-spin inline-block">{tool?.icon ?? '💔'}</span> Reading the relationship…
+                            </p>
+                          ) : insight?.[person.id] ? (
+                            <div className="space-y-2">
+                              <p className={`text-xs font-bold ${c.text}`}>{insight[person.id].headline}</p>
+                              {insight[person.id].depth_reading && (
+                                <p className={`text-xs ${c.textSecondary} leading-relaxed`}>{insight[person.id].depth_reading}</p>
+                              )}
+                              {insight[person.id].trajectory && (
+                                <p className={`text-xs ${c.textMuted} italic`}>Trajectory: {insight[person.id].trajectory}</p>
+                              )}
+                              {insight[person.id].action_recommendation && (
+                                <div className={`mt-2 p-2 rounded-lg border ${c.success}`}>
+                                  <p className="text-xs font-bold mb-0.5">Recommended action</p>
+                                  <p className="text-xs">{insight[person.id].action_recommendation}</p>
+                                </div>
+                              )}
+                              {insight[person.id].conversation_shift && (
+                                <div className={`mt-1 p-2 rounded-lg border ${c.warning}`}>
+                                  <p className="text-xs font-bold mb-0.5">⚠️ Content shift detected</p>
+                                  <p className="text-xs">{insight[person.id].conversation_shift}</p>
+                                </div>
+                              )}
+                            </div>
+                          ) : null}
+                        </div>
+                      )}
+
+                      {/* Mark contacted with note prompt */}
+                      {contactNoteFor === person.id && (
+                        <div className={`mb-3 rounded-xl border p-3 ${c.cardAlt} ${c.border}`}>
+                          <p className={`text-xs font-bold mb-2 ${c.text}`}>What did you talk about? <span className={`font-normal ${c.textMuted}`}>(optional — helps AI suggestions)</span></p>
+                          <div className="flex gap-2">
+                            <input
+                              type="text"
+                              value={contactNote}
+                              onChange={e => setContactNote(e.target.value)}
+                              onKeyDown={e => e.key === 'Enter' && submitContactNote(person.id)}
+                              placeholder="e.g. new job, upcoming trip, asked about mom…"
+                              autoFocus
+                              className={`flex-1 px-3 py-2 rounded-lg border text-xs ${c.input}`}
+                            />
+                            <button onClick={() => submitContactNote(person.id)} className={`px-3 py-2 rounded-lg text-xs font-bold ${c.btnPrimary}`}>✓</button>
+                            <button onClick={() => { setContactNoteFor(null); setContactNote(''); markContacted(person.id, '', 'you'); }} className={`px-3 py-2 rounded-lg text-xs ${c.btnSoft}`}>Skip</button>
+                          </div>
+                        </div>
+                      )}
+
                       {/* Action buttons */}
                       <div className="flex gap-2 flex-wrap">
-                        <button onClick={() => generateStarters(person)} className={`flex-1 py-2 px-3 rounded-xl text-sm font-bold ${c.btnPrimaryPrimary}`}>
+                        <button onClick={() => generateStarters(person)} className={`flex-1 py-2 px-3 rounded-xl text-sm font-bold ${c.btnPrimary}`}>
                           <span className="mr-1">💬</span> Reach Out
                         </button>
                         {person.pendingOutreach ? (
-                          <button onClick={() => getFollowupAdvice(person)} className={`py-2 px-3 rounded-xl text-sm font-bold ${c.btnPrimarySecondaryondary}`}>
+                          <button onClick={() => getFollowupAdvice(person)} className={`py-2 px-3 rounded-xl text-sm font-bold ${c.btnSecondary}`}>
                             <span className="mr-1">📨</span> No response?
                           </button>
                         ) : (
-                          <button onClick={() => markPendingOutreach(person.id)} className={`py-2 px-3 rounded-xl text-xs font-bold ${c.btnPrimarySoft}`}>📨 Sent</button>
+                          <button onClick={() => { setContactNoteFor(person.id); setContactNote(''); }} className={`py-2 px-3 rounded-xl text-xs font-bold ${c.btnSoft}`}>📨 Sent</button>
                         )}
-                        <button onClick={() => { markContacted(person.id, 'They reached out', 'them'); }} className={`py-2 px-3 rounded-xl text-xs font-bold ${c.btnPrimarySoft}`} title="They contacted you">📥 They texted</button>
-                        <button onClick={() => { setForm({ ...person, upcomingEvents: person.upcomingEvents || [], circleIds: person.circleIds || [] }); setView('add'); }} className={`py-2 px-3 rounded-xl text-xs ${c.btnPrimarySoft}`}>✏️</button>
+                        <button onClick={() => { markContacted(person.id, 'They reached out', 'them'); }} className={`py-2 px-3 rounded-xl text-xs font-bold ${c.btnSoft}`} title="They contacted you">📥 They texted</button>
+                        <button
+                          onClick={() => insightOpen[person.id] ? setInsightOpen(prev => ({ ...prev, [person.id]: false })) : getHealthInsight(person)}
+                          className={`py-2 px-3 rounded-xl text-xs font-bold ${insightOpen[person.id] ? c.btnSecondary : c.btnSoft}`}
+                          title="AI relationship insight"
+                        >🔍 AI Read</button>
+                        {reciprocity?.balance === 'one_sided' && (
+                          <button onClick={() => getSayItCoach(person)} className={`py-2 px-3 rounded-xl text-xs font-bold ${isDark ? 'bg-amber-900/30 text-amber-300 hover:bg-amber-900/50' : 'bg-amber-50 text-amber-700 hover:bg-amber-100'}`} title="Coach you on addressing the one-sidedness">💬 Say It</button>
+                        )}
+                        <button onClick={() => { setForm({ ...person, upcomingEvents: person.upcomingEvents || [], circleIds: person.circleIds || [] }); setView('add'); }} className={`py-2 px-3 rounded-xl text-xs ${c.btnSoft}`}>✏️</button>
                         <div className="relative group">
-                          <button className={`py-2 px-3 rounded-xl text-xs ${c.btnPrimarySoft}`}>😴</button>
+                          <button className={`py-2 px-3 rounded-xl text-xs ${c.btnSoft}`}>😴</button>
                           <div className={`absolute right-0 mt-1 hidden group-hover:block ${isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-zinc-200'} border shadow-lg rounded-xl p-1.5 z-10`}>
                             {[1, 2, 4].map(w => (
                               <button key={w} onClick={() => snooze(person.id, w)} className={`block w-full text-left px-3 py-1.5 rounded-lg text-xs ${isDark ? 'hover:bg-zinc-700 text-zinc-300' : 'hover:bg-zinc-100 text-gray-700'}`}>
@@ -538,11 +691,11 @@ const FriendshipFadeAlerter = ({ tool }) => {
             {/* Snoozed */}
             {snoozed.length > 0 && !activeCircleFilter && (
               <div className={`${c.card} ${c.border} border rounded-2xl p-5`}>
-                <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textMuteded}`}>😴 Snoozed ({snoozed.length})</p>
+                <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textMuted}`}>😴 Snoozed ({snoozed.length})</p>
                 {snoozed.map(p => (
                   <div key={p.id} className={`flex items-center justify-between p-3 rounded-xl ${c.cardAlt} ${c.border} border mb-2`}>
-                    <div><p className={`text-sm font-bold ${c.text}`}>{p.name}</p><p className={`text-xs ${c.textMuteded}`}>Until {new Date(p.snoozedUntil).toLocaleDateString()}</p></div>
-                    <button onClick={() => setRelationships(prev => prev.map(r => r.id === p.id ? { ...r, snoozedUntil: null } : r))} className={`text-xs font-bold ${c.textSecondaryondary}`}>Wake up</button>
+                    <div><p className={`text-sm font-bold ${c.text}`}>{p.name}</p><p className={`text-xs ${c.textMuted}`}>Until {new Date(p.snoozedUntil).toLocaleDateString()}</p></div>
+                    <button onClick={() => setRelationships(prev => prev.map(r => r.id === p.id ? { ...r, snoozedUntil: null } : r))} className={`text-xs font-bold ${c.textSecondary}`}>Wake up</button>
                   </div>
                 ))}
               </div>
@@ -553,15 +706,15 @@ const FriendshipFadeAlerter = ({ tool }) => {
         {/* ════════ ADD / EDIT ════════ */}
         {view === 'add' && (
           <div className="space-y-5">
-            <button onClick={() => { resetForm(); setView('dashboard'); }} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnPrimarySecondaryondary}`}>← Back</button>
+            <button onClick={() => { resetForm(); setView('dashboard'); }} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnSecondary}`}>← Back</button>
             <div className={`${c.card} ${c.border} border rounded-2xl p-5 space-y-4`}>
               <p className={`text-lg font-black ${c.text}`}>{form.id ? '✏️ Edit Person' : '➕ Add Person'}</p>
               <div>
-                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>Name *</label>
+                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>Name *</label>
                 <input type="text" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} onKeyDown={e => { if (e.key === 'Enter' && form.name.trim()) saveRelationship(); }} placeholder="Their name" className={`w-full p-3 border-2 rounded-xl focus:outline-none focus:ring-2 ${c.input}`} />
               </div>
               <div>
-                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>Relationship *</label>
+                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>Relationship *</label>
                 <div className="grid grid-cols-3 gap-2">
                   {REL_TYPES.map(r => (
                     <button key={r.value} onClick={() => setForm({ ...form, relationshipType: r.value })}
@@ -573,7 +726,7 @@ const FriendshipFadeAlerter = ({ tool }) => {
                 </div>
               </div>
               <div>
-                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>Ideal Frequency *</label>
+                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>Ideal Frequency *</label>
                 <div className="flex flex-wrap gap-2">
                   {FREQUENCIES.map(f => (
                     <button key={f.value} onClick={() => setForm({ ...form, frequency: f.value })}
@@ -584,22 +737,22 @@ const FriendshipFadeAlerter = ({ tool }) => {
                 </div>
               </div>
               <div>
-                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>Last Contact *</label>
+                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>Last Contact *</label>
                 <input type="date" value={form.lastContact} onChange={e => setForm({ ...form, lastContact: e.target.value })} max={today} className={`w-full p-3 border-2 rounded-xl focus:outline-none focus:ring-2 ${c.input}`} />
               </div>
               <div>
-                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>Context / shared interests</label>
+                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>Context / shared interests</label>
                 <textarea value={form.contextNotes} onChange={e => setForm({ ...form, contextNotes: e.target.value })} placeholder="e.g., loves hiking, ask about new job, into sci-fi books" rows={2} className={`w-full p-3 border-2 rounded-xl text-sm resize-y focus:outline-none focus:ring-2 ${c.input}`} />
               </div>
 
               {/* Circles */}
               <div>
-                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>🔵 Friend Circles</label>
+                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>🔵 Friend Circles</label>
                 {circles.length > 0 && (
                   <div className="flex flex-wrap gap-2 mb-2">
                     {circles.map(circ => (
                       <button key={circ.id} onClick={() => toggleCircle(circ.id)}
-                        className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${(form.circleIds || []).includes(circ.id) ? c.btnPrimaryPrimary : c.btnPrimarySoft}`}>
+                        className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${(form.circleIds || []).includes(circ.id) ? c.btnPrimary : c.btnSoft}`}>
                         {circ.icon} {circ.name}
                       </button>
                     ))}
@@ -607,12 +760,12 @@ const FriendshipFadeAlerter = ({ tool }) => {
                 )}
                 <div className="flex gap-2">
                   <input type="text" value={newCircleName} onChange={e => setNewCircleName(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && newCircleName.trim()) addCircle(); }} placeholder="New circle (e.g., College crew)" className={`flex-1 p-2.5 border-2 rounded-xl text-sm ${c.input}`} />
-                  <button onClick={addCircle} disabled={!newCircleName.trim()} className={`px-3 py-2.5 rounded-xl text-sm font-bold disabled:opacity-40 ${c.btnPrimarySecondaryondary}`}>+</button>
+                  <button onClick={addCircle} disabled={!newCircleName.trim()} className={`px-3 py-2.5 rounded-xl text-sm font-bold disabled:opacity-40 ${c.btnSecondary}`}>+</button>
                 </div>
                 {circles.length > 0 && (
                   <div className="flex flex-wrap gap-1 mt-1.5">
                     {circles.map(circ => (
-                      <button key={circ.id} onClick={() => deleteCircle(circ.id)} className={`text-[9px] ${c.textMuteded} ${c.deleteHover}`} title={`Delete ${circ.name}`}>✕ {circ.name}</button>
+                      <button key={circ.id} onClick={() => deleteCircle(circ.id)} className={`text-[9px] ${c.textMuted} ${c.deleteHover}`} title={`Delete ${circ.name}`}>✕ {circ.name}</button>
                     ))}
                   </div>
                 )}
@@ -620,23 +773,23 @@ const FriendshipFadeAlerter = ({ tool }) => {
 
               {/* Events */}
               <div>
-                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>📅 Key dates (birthdays, events)</label>
+                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>📅 Key dates (birthdays, events)</label>
                 <div className="flex gap-2 mb-2">
                   <input type="text" value={eventLabel} onChange={e => setEventLabel(e.target.value)} placeholder="e.g., Birthday" className={`flex-1 p-2.5 border-2 rounded-xl text-sm ${c.input}`} />
                   <input type="date" value={eventDate} onChange={e => setEventDate(e.target.value)} className={`p-2.5 border-2 rounded-xl text-sm ${c.input}`} />
-                  <button onClick={addEvent} disabled={!eventLabel.trim() || !eventDate} className={`px-3 py-2.5 rounded-xl text-sm font-bold disabled:opacity-40 ${c.btnPrimarySecondaryondary}`}>+</button>
+                  <button onClick={addEvent} disabled={!eventLabel.trim() || !eventDate} className={`px-3 py-2.5 rounded-xl text-sm font-bold disabled:opacity-40 ${c.btnSecondary}`}>+</button>
                 </div>
                 {(form.upcomingEvents || []).map((e, i) => (
                   <div key={i} className={`flex items-center justify-between p-2 rounded-lg ${c.cardAlt} ${c.border} border mb-1`}>
                     <p className={`text-xs ${c.text}`}>📅 {e.label} — {new Date(e.date).toLocaleDateString()}</p>
-                    <button onClick={() => removeEvent(i)} className={`text-xs ${c.textMuteded} ${c.deleteHover}`}>✕</button>
+                    <button onClick={() => removeEvent(i)} className={`text-xs ${c.textMuted} ${c.deleteHover}`}>✕</button>
                   </div>
                 ))}
               </div>
 
               <div className="flex gap-3">
-                <button onClick={saveRelationship} className={`flex-1 py-3 rounded-xl font-bold ${c.btnPrimaryPrimary}`}>{form.id ? '✓ Update' : '✓ Add Person'}</button>
-                <button onClick={() => { resetForm(); setView('dashboard'); }} className={`py-3 px-6 rounded-xl font-bold ${c.btnPrimarySecondaryondary}`}>Cancel</button>
+                <button onClick={saveRelationship} className={`flex-1 py-3 rounded-xl font-bold ${c.btnPrimary}`}>{form.id ? '✓ Update' : '✓ Add Person'}</button>
+                <button onClick={() => { resetForm(); setView('dashboard'); }} className={`py-3 px-6 rounded-xl font-bold ${c.btnSecondary}`}>Cancel</button>
                 {form.id && <button onClick={() => { deletePerson(form.id); resetForm(); setView('dashboard'); }} className="py-3 px-4 rounded-xl text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20">Delete</button>}
               </div>
             </div>
@@ -646,7 +799,7 @@ const FriendshipFadeAlerter = ({ tool }) => {
         {/* ════════ STARTERS VIEW ════════ */}
         {view === 'starters' && selectedPerson && (
           <div ref={resultsRef} className="space-y-5">
-            <button onClick={() => { setView('dashboard'); setStarters(null); }} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnPrimarySecondaryondary}`}>← Back</button>
+            <button onClick={() => { setView('dashboard'); setStarters(null); }} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnSecondary}`}>← Back</button>
 
             {startersLoading && (
               <div className={`${c.card} ${c.border} border rounded-2xl p-12 text-center`}>
@@ -657,6 +810,12 @@ const FriendshipFadeAlerter = ({ tool }) => {
 
             {starters && (
               <div className="space-y-5">
+                <div ref={resultsRef} />
+                <ActionBar content={(() => {
+                  if (!starters) return '';
+                  const msgs = starters.starters?.map(s => `[${s.tone}] ${s.message}`).join('\n\n') || '';
+                  return `💛 Conversation starters for ${selectedPerson?.name}\n\n${msgs}\n\n— Generated by DeftBrain · deftbrain.com`;
+                })()} copyLabel="Copy All" printContent={null} printTitle="Friendship Fade Alerter" />
                 {starters.encouragement && (
                   <div className={`${c.card} ${c.border} border-2 rounded-2xl p-5 ${isDark ? 'border-emerald-700/50' : 'border-emerald-300'}`}>
                     <p className={`text-sm ${c.text}`}>💛 {starters.encouragement}</p>
@@ -665,12 +824,12 @@ const FriendshipFadeAlerter = ({ tool }) => {
 
                 {/* Freshness note */}
                 {getUsedTopics(selectedPerson).length > 2 && (
-                  <p className={`text-xs ${c.textMuteded}`}>🔄 These avoid topics you've already used: {getUsedTopics(selectedPerson).slice(0, 3).map(t => `"${t.slice(0, 6)}…"`).join(', ')}</p>
+                  <p className={`text-xs ${c.textMuted}`}>🔄 These avoid topics you've already used: {getUsedTopics(selectedPerson).slice(0, 3).map(t => `"${t.slice(0, 6)}…"`).join(', ')}</p>
                 )}
 
                 {starters.starters?.length > 0 && (
                   <div className={`${c.card} ${c.border} border rounded-2xl p-5`}>
-                    <p className={`text-xs font-bold uppercase tracking-wider mb-4 ${c.textSecondaryondary}`}>💬 Ready-to-Send Messages</p>
+                    <p className={`text-xs font-bold uppercase tracking-wider mb-4 ${c.textSecondary}`}>💬 Ready-to-Send Messages</p>
                     <div className="space-y-4">
                       {starters.starters.map((s, i) => (
                         <div key={i} className={`border-l-4 border-cyan-500 pl-4 p-3 rounded-xl ${c.cardAlt} ${c.border} border`}>
@@ -679,15 +838,15 @@ const FriendshipFadeAlerter = ({ tool }) => {
                             <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-cyan-900/40 text-cyan-300' : 'bg-cyan-100 text-cyan-700'}`}>{s.tone}</span>
                             <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${s.effort === 'low' ? (isDark ? 'bg-emerald-900/40 text-emerald-300' : 'bg-emerald-100 text-emerald-700') : s.effort === 'high' ? (isDark ? 'bg-cyan-900/40 text-cyan-300' : 'bg-cyan-100 text-cyan-700') : (isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-zinc-100 text-gray-600')}`}>{s.effort} effort</span>
                           </div>
-                          <p className={`text-xs ${c.textMuteded} mb-2`}>{s.why_it_works}</p>
+                          <p className={`text-xs ${c.textMuted} mb-2`}>{s.why_it_works}</p>
                           {s.follow_ups?.length > 0 && (
                             <div className={`p-2 rounded-lg ${isDark ? 'bg-zinc-700/50' : 'bg-zinc-50'}`}>
-                              <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>FOLLOW-UP IDEAS:</p>
-                              {s.follow_ups.map((f, fi) => <p key={fi} className={`text-xs ${c.textSecondaryondary}`}>• {f}</p>)}
+                              <p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>FOLLOW-UP IDEAS:</p>
+                              {s.follow_ups.map((f, fi) => <p key={fi} className={`text-xs ${c.textSecondary}`}>• {f}</p>)}
                             </div>
                           )}
                           <div className="mt-2"><CopyBtn content={s.message} label="Copy" />
-            <ActionBar copyContent={s.message} copyLabel="Copy" /></div>
+            </div>
                         </div>
                       ))}
                     </div>
@@ -696,15 +855,15 @@ const FriendshipFadeAlerter = ({ tool }) => {
 
                 {starters.approaches?.length > 0 && (
                   <div className={`${c.card} ${c.border} border rounded-2xl p-5`}>
-                    <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textSecondaryondary}`}>🎯 Different Approaches</p>
+                    <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textSecondary}`}>🎯 Different Approaches</p>
                     {starters.approaches.map((a, i) => (
                       <div key={i} className={`p-3 rounded-xl ${c.cardAlt} ${c.border} border mb-2`}>
                         <div className="flex items-start justify-between mb-1">
                           <p className={`text-sm font-bold ${c.text}`}>{a.name}</p>
                           <CopyBtn content={a.message} label="Copy" />
                         </div>
-                        <p className={`text-sm italic ${c.textSecondaryondary} mb-1`}>"{a.message}"</p>
-                        <p className={`text-[10px] ${c.textMuteded}`}>{a.best_for}</p>
+                        <p className={`text-sm italic ${c.textSecondary} mb-1`}>"{a.message}"</p>
+                        <p className={`text-[10px] ${c.textMuted}`}>{a.best_for}</p>
                       </div>
                     ))}
                   </div>
@@ -712,11 +871,11 @@ const FriendshipFadeAlerter = ({ tool }) => {
 
                 {starters.context_hooks?.length > 0 && (
                   <div className={`${c.card} ${c.border} border rounded-2xl p-5`}>
-                    <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textSecondaryondary}`}>🪝 Conversation Hooks</p>
+                    <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textSecondary}`}>🪝 Conversation Hooks</p>
                     {starters.context_hooks.map((h, i) => (
                       <div key={i} className={`p-3 rounded-xl ${c.cardAlt} ${c.border} border mb-2`}>
                         <p className={`text-sm font-bold ${c.text}`}>{h.topic}</p>
-                        <p className={`text-xs ${c.textSecondaryondary}`}>{h.angle}</p>
+                        <p className={`text-xs ${c.textSecondary}`}>{h.angle}</p>
                       </div>
                     ))}
                   </div>
@@ -724,19 +883,19 @@ const FriendshipFadeAlerter = ({ tool }) => {
 
                 {/* Mark contacted with initiator */}
                 <div className={`${c.card} ${c.border} border-2 rounded-2xl p-5 ${isDark ? 'border-cyan-700/50' : 'border-cyan-300'}`}>
-                  <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textSecondaryondary}`}>✅ Mark as Contacted</p>
+                  <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textSecondary}`}>✅ Mark as Contacted</p>
                   <input type="text" value={logNote} onChange={e => setLogNote(e.target.value)} placeholder="What did you talk about? (optional)" className={`w-full p-3 border-2 rounded-xl text-sm mb-3 ${c.input}`} />
                   <div className="flex gap-2">
                     <button onClick={() => {
                       markContacted(selectedPerson.id, logNote.trim() || 'Reached out', 'you');
                       setLogNote(''); setView('dashboard'); setStarters(null);
-                    }} className={`flex-1 py-3 rounded-xl font-bold ${c.btnPrimaryPrimary}`}>
+                    }} className={`flex-1 py-3 rounded-xl font-bold ${c.btnPrimary}`}>
                       ✓ I Reached Out
                     </button>
                     <button onClick={() => {
                       markContacted(selectedPerson.id, logNote.trim() || 'They reached out', 'them');
                       setLogNote(''); setView('dashboard'); setStarters(null);
-                    }} className={`flex-1 py-3 rounded-xl font-bold ${c.btnPrimarySecondaryondary}`}>
+                    }} className={`flex-1 py-3 rounded-xl font-bold ${c.btnSecondary}`}>
                       📥 They Reached Out
                     </button>
                   </div>
@@ -745,12 +904,12 @@ const FriendshipFadeAlerter = ({ tool }) => {
                 {/* Contact history */}
                 {(selectedPerson.contactLog || []).length > 0 && (
                   <div className={`${c.card} ${c.border} border rounded-2xl p-5`}>
-                    <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textMuteded}`}>📋 Contact History</p>
+                    <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textMuted}`}>📋 Contact History</p>
                     {selectedPerson.contactLog.slice(0, 6).map((l, i) => (
                       <div key={i} className={`flex items-center gap-3 p-2 rounded-lg ${i === 0 ? c.cardAlt + ' border' : ''} mb-1`}>
                         <span className="text-xs">{l.initiator === 'them' ? '📥' : '📤'}</span>
-                        <span className={`text-xs font-mono ${c.textMuteded}`}>{new Date(l.date).toLocaleDateString()}</span>
-                        <p className={`text-xs ${c.textSecondaryondary} flex-1`}>{l.note}</p>
+                        <span className={`text-xs font-mono ${c.textMuted}`}>{new Date(l.date).toLocaleDateString()}</span>
+                        <p className={`text-xs ${c.textSecondary} flex-1`}>{l.note}</p>
                       </div>
                     ))}
                   </div>
@@ -763,7 +922,7 @@ const FriendshipFadeAlerter = ({ tool }) => {
         {/* ════════ BATCH VIEW ════════ */}
         {view === 'batch' && (
           <div className="space-y-5">
-            <button onClick={() => { setView('dashboard'); setBatchResults(null); }} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnPrimarySecondaryondary}`}>← Back</button>
+            <button onClick={() => { setView('dashboard'); setBatchResults(null); }} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnSecondary}`}>← Back</button>
 
             {batchLoading && (
               <div className={`${c.card} ${c.border} border rounded-2xl p-12 text-center`}>
@@ -774,9 +933,14 @@ const FriendshipFadeAlerter = ({ tool }) => {
 
             {batchResults && (
               <div className="space-y-5">
+                <ActionBar content={(() => {
+                  if (!batchResults) return '';
+                  const msgs = batchResults.messages?.map(m => `${m.name}: "${m.message}"`).join('\n\n') || '';
+                  return `⚡ Catch-up Sprint\n\n${msgs}\n\n— Generated by DeftBrain · deftbrain.com`;
+                })()} copyLabel="Copy All" printContent={null} printTitle="Catch-up Sprint" />
                 <div className={`${c.card} ${c.border} border-2 rounded-2xl p-5 ${isDark ? 'border-amber-700/50' : 'border-amber-300'}`}>
                   <p className={`text-lg font-black ${c.text} mb-1`}>⚡ Catch-up Sprint</p>
-                  {batchResults.sprint_encouragement && <p className={`text-sm ${c.textSecondaryondary}`}>{batchResults.sprint_encouragement}</p>}
+                  {batchResults.sprint_encouragement && <p className={`text-sm ${c.textSecondary}`}>{batchResults.sprint_encouragement}</p>}
                 </div>
 
                 {batchResults.messages?.map((m, i) => {
@@ -793,13 +957,13 @@ const FriendshipFadeAlerter = ({ tool }) => {
                       <div className={`p-3 rounded-xl ${c.cardAlt} ${c.border} border mb-3`}>
                         <p className={`text-sm ${c.text}`}>"{m.message}"</p>
                       </div>
-                      {m.tip && <p className={`text-xs ${c.textMuteded} mb-2`}>💡 {m.tip}</p>}
+                      {m.tip && <p className={`text-xs ${c.textMuted} mb-2`}>💡 {m.tip}</p>}
                       <div className="flex gap-2">
                         <CopyBtn content={m.message} label="Copy" />
                         {person && (
                           <button onClick={() => {
                             markContacted(person.id, `Batch: ${m.message.slice(0, 6)}...`, 'you');
-                          }} className={`text-xs font-bold px-3 py-1.5 rounded-lg ${c.btnPrimarySecondaryondary}`}>
+                          }} className={`text-xs font-bold px-3 py-1.5 rounded-lg ${c.btnSecondary}`}>
                             ✓ Sent
                           </button>
                         )}
@@ -808,7 +972,7 @@ const FriendshipFadeAlerter = ({ tool }) => {
                   );
                 })}
 
-                <button onClick={() => { setView('dashboard'); setBatchResults(null); }} className={`w-full py-3 rounded-xl font-bold ${c.btnPrimarySecondaryondary}`}>← Back to Dashboard</button>
+                <button onClick={() => { setView('dashboard'); setBatchResults(null); }} className={`w-full py-3 rounded-xl font-bold ${c.btnSecondary}`}>← Back to Dashboard</button>
               </div>
             )}
           </div>
@@ -817,7 +981,7 @@ const FriendshipFadeAlerter = ({ tool }) => {
         {/* ════════ FOLLOWUP ADVICE ════════ */}
         {view === 'followup' && followupPerson && (
           <div className="space-y-5">
-            <button onClick={() => { setView('dashboard'); setFollowupAdvice(null); }} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnPrimarySecondaryondary}`}>← Back</button>
+            <button onClick={() => { setView('dashboard'); setFollowupAdvice(null); }} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnSecondary}`}>← Back</button>
 
             {followupLoading && (
               <div className={`${c.card} ${c.border} border rounded-2xl p-12 text-center`}>
@@ -828,25 +992,30 @@ const FriendshipFadeAlerter = ({ tool }) => {
 
             {followupAdvice && (
               <div className="space-y-5">
+                <div ref={resultsRef} />
+                <ActionBar content={(() => {
+                  if (!followupAdvice) return '';
+                  return `📨 Follow-up advice for ${followupPerson?.name}\n\n${followupAdvice.assessment || ''}\nRecommendation: ${followupAdvice.recommendation || ''}${followupAdvice.follow_up_message ? `\n\nSuggested: "${followupAdvice.follow_up_message}"` : ''}\n\n— Generated by DeftBrain · deftbrain.com`;
+                })()} copyLabel="Copy Advice" printContent={null} printTitle="Follow-up Advice" />
                 <div className={`${c.card} ${c.border} border rounded-2xl p-5`}>
-                  <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuteded}`}>📨 No Response from {followupPerson.name}</p>
+                  <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuted}`}>📨 No Response from {followupPerson.name}</p>
                   <p className={`text-sm ${c.text}`}>You reached out {daysSince(followupPerson.pendingOutreach)} days ago</p>
                 </div>
 
                 <div className={`${c.card} ${c.border} border-2 rounded-2xl p-5 ${followupAdvice.recommendation === 'follow_up' ? (isDark ? 'border-cyan-700/50' : 'border-cyan-300') : followupAdvice.recommendation === 'wait' ? (isDark ? 'border-amber-700/50' : 'border-amber-300') : (isDark ? 'border-zinc-600' : 'border-zinc-300')}`}>
                   <p className={`text-sm ${c.text} mb-3`}>{followupAdvice.assessment}</p>
                   <div className={`p-3 rounded-xl ${c.cardAlt} ${c.border} border`}>
-                    <p className={`text-[10px] font-bold ${c.textMuteded}`}>RECOMMENDATION</p>
+                    <p className={`text-[10px] font-bold ${c.textMuted}`}>RECOMMENDATION</p>
                     <p className={`text-sm font-bold ${c.text}`}>
                       {followupAdvice.recommendation === 'follow_up' ? '💬 Follow up' : followupAdvice.recommendation === 'wait' ? '⏰ Give it more time' : '🌊 Let it go for now'}
                     </p>
-                    {followupAdvice.follow_up_timing && <p className={`text-xs ${c.textSecondaryondary} mt-1`}>{followupAdvice.follow_up_timing}</p>}
+                    {followupAdvice.follow_up_timing && <p className={`text-xs ${c.textSecondary} mt-1`}>{followupAdvice.follow_up_timing}</p>}
                   </div>
                 </div>
 
                 {followupAdvice.follow_up_message && (
                   <div className={`${c.card} ${c.border} border rounded-2xl p-5`}>
-                    <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textSecondaryondary}`}>💬 Suggested Follow-up</p>
+                    <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textSecondary}`}>💬 Suggested Follow-up</p>
                     <div className={`p-3 rounded-xl ${c.cardAlt} ${c.border} border mb-3`}>
                       <p className={`text-sm ${c.text}`}>"{followupAdvice.follow_up_message}"</p>
                     </div>
@@ -862,8 +1031,8 @@ const FriendshipFadeAlerter = ({ tool }) => {
 
                 {followupAdvice.if_still_no_response && (
                   <div className={`${c.card} ${c.border} border rounded-2xl p-5`}>
-                    <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuteded}`}>IF STILL NO RESPONSE</p>
-                    <p className={`text-sm ${c.textSecondaryondary}`}>{followupAdvice.if_still_no_response}</p>
+                    <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuted}`}>IF STILL NO RESPONSE</p>
+                    <p className={`text-sm ${c.textSecondary}`}>{followupAdvice.if_still_no_response}</p>
                   </div>
                 )}
 
@@ -871,11 +1040,11 @@ const FriendshipFadeAlerter = ({ tool }) => {
                   <button onClick={() => {
                     markContacted(followupPerson.id, 'Followed up (no response to first message)', 'you');
                     setView('dashboard'); setFollowupAdvice(null);
-                  }} className={`flex-1 py-3 rounded-xl font-bold ${c.btnPrimaryPrimary}`}>✓ Followed Up</button>
+                  }} className={`flex-1 py-3 rounded-xl font-bold ${c.btnPrimary}`}>✓ Followed Up</button>
                   <button onClick={() => {
                     setRelationships(prev => prev.map(p => p.id === followupPerson.id ? { ...p, pendingOutreach: null } : p));
                     setView('dashboard'); setFollowupAdvice(null);
-                  }} className={`flex-1 py-3 rounded-xl font-bold ${c.btnPrimarySecondaryondary}`}>Clear Pending</button>
+                  }} className={`flex-1 py-3 rounded-xl font-bold ${c.btnSecondary}`}>Clear Pending</button>
                 </div>
               </div>
             )}
@@ -885,7 +1054,7 @@ const FriendshipFadeAlerter = ({ tool }) => {
         {/* ════════ DIGEST VIEW ════════ */}
         {view === 'digest' && (
           <div className="space-y-5">
-            <button onClick={() => { setView('dashboard'); setDigest(null); }} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnPrimarySecondaryondary}`}>← Back</button>
+            <button onClick={() => { setView('dashboard'); setDigest(null); }} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnSecondary}`}>← Back</button>
 
             {digestLoading && (
               <div className={`${c.card} ${c.border} border rounded-2xl p-12 text-center`}>
@@ -909,7 +1078,7 @@ const FriendshipFadeAlerter = ({ tool }) => {
                 <div className="space-y-5">
                   <div className={`${c.card} ${c.border} border-2 rounded-2xl p-5 ${isDark ? 'border-cyan-700/50' : 'border-cyan-300'}`}>
                     <div className="flex items-center justify-between mb-3">
-                      <p className={`text-xs font-bold uppercase tracking-wider ${c.textSecondaryondary}`}>📋 Weekly Digest</p>
+                      <p className={`text-xs font-bold uppercase tracking-wider ${c.textSecondary}`}>📋 Weekly Digest</p>
                       <div className="flex gap-2">
                         <CopyBtn content={digestText} label="Copy" />
                         <ShareBtn content={digestText} title="Weekly Relationship Digest" />
@@ -933,45 +1102,174 @@ const FriendshipFadeAlerter = ({ tool }) => {
 
                     {digest.next_week_priorities?.length > 0 && (
                       <div className={`p-3 rounded-xl mb-3 ${c.cardAlt} ${c.border} border`}>
-                        <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>🎯 NEXT WEEK</p>
+                        <p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>🎯 NEXT WEEK</p>
                         {digest.next_week_priorities.map((p, i) => <p key={i} className={`text-xs ${c.text}`}>{i + 1}. {p}</p>)}
                       </div>
                     )}
 
                     {digest.streak_note && (
-                      <div className={`p-3 rounded-xl mb-3 ${isDark ? 'bg-orange-900/20' : 'bg-orange-50'}`}>
-                        <p className={`text-xs font-bold ${isDark ? 'text-orange-400' : 'text-orange-700'}`}>🔥 {digest.streak_note}</p>
+                      <div className={`p-3 rounded-xl mb-3 ${c.streak}`}>
+                        <p className="text-xs font-bold">🔥 {digest.streak_note}</p>
                       </div>
                     )}
 
                     {digest.one_liner && (
-                      <p className={`text-sm ${c.textSecondaryondary} italic mt-3`}>💛 {digest.one_liner}</p>
+                      <p className={`text-sm ${c.textSecondary} italic mt-3`}>💛 {digest.one_liner}</p>
                     )}
                   </div>
+
+                  {/* Proactive priorities — AI-reasoned action plan */}
+                  {digest.proactive_priorities?.length > 0 && (
+                    <div className={`${c.card} ${c.border} border rounded-2xl p-5`}>
+                      <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textMuted}`}>🎯 This Week — With Reasoning</p>
+                      <div className="space-y-3">
+                        {digest.proactive_priorities.map((item, i) => (
+                          <div key={i} className={`rounded-xl border p-3 ${c.cardAlt} ${c.border}`}>
+                            <div className="flex items-start gap-2">
+                              <span className={`text-xs font-black px-2 py-0.5 rounded-full flex-shrink-0 mt-0.5 ${c.btnPrimary}`}>{i + 1}</span>
+                              <div>
+                                <p className={`text-sm font-bold ${c.text}`}>{item.name}</p>
+                                <p className={`text-xs ${c.textSecondary} mt-0.5`}>{item.reason}</p>
+                                {item.suggested_action && (
+                                  <p className={`text-xs mt-1 font-medium ${isDark ? 'text-cyan-300' : 'text-cyan-700'}`}>→ {item.suggested_action}</p>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Relationship risk flags */}
+                  {digest.risk_flags?.length > 0 && (
+                    <div className={`${c.danger} border rounded-2xl p-4`}>
+                      <p className="text-xs font-bold uppercase tracking-wider mb-2">⚠️ At Risk</p>
+                      <div className="space-y-1">
+                        {digest.risk_flags.map((flag, i) => (
+                          <p key={i} className="text-xs">• {flag}</p>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               );
             })()}
           </div>
         )}
 
+        {/* ════════ SAY IT COACH ════════ */}
+        {view === 'sayit' && sayItPerson && (
+          <div className="space-y-5">
+            <button onClick={() => { setView('dashboard'); setSayItResults(null); }} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnSecondary}`}>← Back</button>
+
+            <div className={`${c.card} ${c.border} border rounded-2xl p-5`}>
+              <h2 className={`text-xl font-black tracking-tight mb-1 ${c.text}`}>Say It</h2>
+              <p className={`text-sm mb-1 ${c.textSecondary}`}>
+                You've been carrying most of this friendship with <span className="font-bold">{sayItPerson.name}</span>. Here's how to address that — without making it weird.
+              </p>
+            </div>
+
+            {sayItLoading && (
+              <div className={`${c.card} ${c.border} border rounded-2xl p-12 text-center`}>
+                <span className="text-4xl block mb-3 animate-bounce">💬</span>
+                <p className={`${c.text} font-bold`}>Thinking this through…</p>
+              </div>
+            )}
+
+            {sayItResults && (
+              <div className="space-y-4" ref={resultsRef}>
+                <ActionBar content={(() => {
+                  const r = sayItResults;
+                  let t = `💬 Say It — ${sayItPerson?.name}
+
+`;
+                  if (r.situation_read) t += `${r.situation_read}
+
+`;
+                  if (r.the_script) t += `The script:
+"${r.the_script}"
+
+`;
+                  if (r.what_to_expect) t += `What to expect: ${r.what_to_expect}`;
+                  return t + BRANDING;
+                })()} copyLabel="Copy All" printContent={null} printTitle="Say It Coach" />
+
+                {sayItResults.situation_read && (
+                  <div className={`${c.card} ${c.border} border rounded-2xl p-5`}>
+                    <p className={`text-sm ${c.textSecondary} leading-relaxed`}>💛 {sayItResults.situation_read}</p>
+                  </div>
+                )}
+
+                {sayItResults.whether_to_say_it && (
+                  <div className={`rounded-2xl border p-4 ${sayItResults.worth_saying ? c.success : c.warning}`}>
+                    <p className="text-xs font-bold uppercase tracking-wider mb-1">{sayItResults.worth_saying ? '✅ Worth saying' : '⚖️ Consider carefully'}</p>
+                    <p className="text-sm">{sayItResults.whether_to_say_it}</p>
+                  </div>
+                )}
+
+                {sayItResults.the_script && (
+                  <div className={`${c.card} ${c.border} border rounded-2xl p-5`}>
+                    <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textMuted}`}>💬 The Script</p>
+                    <div className={`p-4 rounded-xl ${c.cardAlt} ${c.border} border mb-3`}>
+                      <p className={`text-sm font-medium leading-relaxed italic ${c.text}`}>"{sayItResults.the_script}"</p>
+                    </div>
+                    <CopyBtn content={sayItResults.the_script + BRANDING} label="Copy script" />
+                  </div>
+                )}
+
+                {sayItResults.tone_notes && (
+                  <div className={`${c.card} ${c.border} border rounded-2xl p-4`}>
+                    <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuted}`}>🎭 Tone & Delivery</p>
+                    <p className={`text-sm ${c.textSecondary}`}>{sayItResults.tone_notes}</p>
+                  </div>
+                )}
+
+                {sayItResults.what_to_expect && (
+                  <div className={`${c.card} ${c.border} border rounded-2xl p-4`}>
+                    <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuted}`}>🔮 What to Expect</p>
+                    <p className={`text-sm ${c.textSecondary}`}>{sayItResults.what_to_expect}</p>
+                  </div>
+                )}
+
+                {sayItResults.if_they_get_defensive && (
+                  <div className={`${c.warning} border rounded-2xl p-4`}>
+                    <p className="text-xs font-bold uppercase tracking-wider mb-2">If they get defensive</p>
+                    <p className="text-sm">{sayItResults.if_they_get_defensive}</p>
+                  </div>
+                )}
+
+                {sayItResults.alternative && (
+                  <div className={`${c.card} ${c.border} border rounded-2xl p-4`}>
+                    <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuted}`}>↩ Alternative (if you don't want to say it directly)</p>
+                    <p className={`text-sm italic ${c.textSecondary}`}>"{sayItResults.alternative}"</p>
+                  </div>
+                )}
+
+                <button onClick={() => { setSayItResults(null); setView('dashboard'); }} className={`w-full py-2.5 rounded-xl text-sm font-semibold ${c.btnSecondary}`}>← Back to dashboard</button>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* ════════ RE-ENGAGE ════════ */}
         {view === 'reengage' && (
           <div className="space-y-5">
-            <button onClick={() => { setView('dashboard'); setReengageResults(null); }} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnPrimarySecondaryondary}`}>← Back</button>
+            <button onClick={() => { setView('dashboard'); setReengageResults(null); }} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnSecondary}`}>← Back</button>
             <div className={`${c.card} ${c.border} border rounded-2xl p-5`}>
-              <h2 className={`text-xl font-black tracking-tight mb-1 ${c.text}`}>🕸️ Re-engage</h2>
-              <p className={`text-sm mb-5 ${c.textSecondaryondary}`}>The silence got awkward. Get a natural message that dissolves it — without making it weirder.</p>
+              <h2 className={`text-xl font-black tracking-tight mb-1 ${c.text}`}>Re-engage</h2>
+              <p className={`text-sm mb-5 ${c.textSecondary}`}>The silence got awkward. Get a natural message that dissolves it — without making it weirder.</p>
 
               <div className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className={`block text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuteded}`}>Who is it? <span className="text-red-400">*</span></label>
+                    <label className={`block text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuted}`}>Who is it? <span className="text-red-400">*</span></label>
                     <input type="text" value={reengageForm.personName} onChange={e => setReengageForm(p => ({ ...p, personName: e.target.value }))}
                       placeholder="Their name"
                       className={`w-full p-3 border rounded-xl text-sm outline-none ${c.input}`} />
                   </div>
                   <div>
-                    <label className={`block text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuteded}`}>Relationship</label>
+                    <label className={`block text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuted}`}>Relationship</label>
                     <select value={reengageForm.relationship} onChange={e => setReengageForm(p => ({ ...p, relationship: e.target.value }))}
                       className={`w-full p-3 border rounded-xl text-sm outline-none ${c.input}`}>
                       <option value="">Select…</option>
@@ -981,14 +1279,14 @@ const FriendshipFadeAlerter = ({ tool }) => {
                 </div>
 
                 <div>
-                  <label className={`block text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuteded}`}>How long has it been? <span className="text-red-400">*</span></label>
+                  <label className={`block text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuted}`}>How long has it been? <span className="text-red-400">*</span></label>
                   <input type="text" value={reengageForm.howLong} onChange={e => setReengageForm(p => ({ ...p, howLong: e.target.value }))}
                     placeholder="e.g. 4 months, almost a year, since last summer…"
                     className={`w-full p-3 border rounded-xl text-sm outline-none ${c.input}`} />
                 </div>
 
                 <div>
-                  <label className={`block text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuteded}`}>Last context <span className={`font-normal normal-case ${c.textMuteded}`}>(optional but helpful)</span></label>
+                  <label className={`block text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuted}`}>Last context <span className={`font-normal normal-case ${c.textMuted}`}>(optional but helpful)</span></label>
                   <textarea value={reengageForm.lastContext} onChange={e => setReengageForm(p => ({ ...p, lastContext: e.target.value }))}
                     placeholder="What were you last talking about? What was going on in their life? What do you know about them now?"
                     rows={2}
@@ -996,16 +1294,19 @@ const FriendshipFadeAlerter = ({ tool }) => {
                 </div>
 
                 <div>
-                  <label className={`block text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuteded}`}>Why did the silence start? <span className={`font-normal normal-case ${c.textMuteded}`}>(optional)</span></label>
+                  <label className={`block text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuted}`}>Why did the silence start? <span className={`font-normal normal-case ${c.textMuted}`}>(optional)</span></label>
                   <input type="text" value={reengageForm.reason} onChange={e => setReengageForm(p => ({ ...p, reason: e.target.value }))}
                     placeholder="Life got busy, slight awkwardness, moved away, nothing specific…"
                     className={`w-full p-3 border rounded-xl text-sm outline-none ${c.input}`} />
                 </div>
 
                 <button onClick={handleReengage} disabled={reengageLoading || !reengageForm.personName.trim() || !reengageForm.howLong.trim()}
-                  className={`w-full py-3 rounded-xl font-bold disabled:opacity-50 ${c.btnPrimaryPrimary}`}>
-                  {reengageLoading ? <><span className="animate-spin inline-block mr-2">{tool?.icon ?? '👥'}</span>Writing…</> : '🕸️ Write My Re-engagement Messages'}
+                  className={`w-full py-3 rounded-xl font-bold disabled:opacity-50 min-h-[48px] flex items-center justify-center gap-2 ${c.btnPrimary}`}>
+                  {reengageLoading
+                    ? <><span className="animate-spin inline-block">{tool?.icon ?? '💔'}</span> Writing…</>
+                    : <><span>{tool?.icon ?? '💔'}</span> Write My Re-engagement Messages</>}
                 </button>
+                <p className={`text-xs text-center ${c.textMuted}`}>AI-generated — review before sending.</p>
               </div>
             </div>
 
@@ -1013,18 +1314,18 @@ const FriendshipFadeAlerter = ({ tool }) => {
               <div className="space-y-4">
                 {reengageResults.situation_read && (
                   <div className={`${c.card} ${c.border} border rounded-2xl p-4`}>
-                    <p className={`text-sm italic ${c.textSecondaryondary}`}>💡 {reengageResults.situation_read}</p>
+                    <p className={`text-sm italic ${c.textSecondary}`}>💡 {reengageResults.situation_read}</p>
                   </div>
                 )}
 
                 {reengageResults.messages?.map((msg, i) => (
                   <div key={i} className={`${c.card} ${c.border} border rounded-2xl p-5`}>
                     <div className="flex items-center justify-between mb-1 flex-wrap gap-2">
-                      <span className={`text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${c.btnPrimarySecondaryondary}`}>{msg.style_label}</span>
-                      <span className={`text-xs ${c.textMuteded}`}>{msg.best_for}</span>
+                      <span className={`text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${c.btnSecondary}`}>{msg.style_label}</span>
+                      <span className={`text-xs ${c.textMuted}`}>{msg.best_for}</span>
                     </div>
                     <p className={`text-sm leading-relaxed mt-3 p-3 rounded-xl ${isDark ? 'bg-zinc-700/50' : 'bg-zinc-50'} ${c.text}`}>{msg.message}</p>
-                    <p className={`text-xs mt-2 ${c.textMuteded}`}>{msg.why_it_works}</p>
+                    <p className={`text-xs mt-2 ${c.textMuted}`}>{msg.why_it_works}</p>
                     <div className="mt-3">
                       <CopyBtn content={`${msg.message}${BRANDING}`} label="Copy Message" />
                     </div>
@@ -1033,12 +1334,12 @@ const FriendshipFadeAlerter = ({ tool }) => {
 
                 {reengageResults.what_NOT_to_say?.length > 0 && (
                   <div className={`${c.card} ${c.border} border rounded-2xl p-4`}>
-                    <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textMuteded}`}>🚫 Avoid These</p>
+                    <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textMuted}`}>🚫 Avoid These</p>
                     <div className="space-y-2">
                       {reengageResults.what_NOT_to_say.map((w, i) => (
                         <div key={i} className={`p-2 rounded-xl text-sm border ${c.danger}`}>
                           <p className="font-medium">"{w.phrase}"</p>
-                          <p className={`text-xs mt-0.5 ${c.textMuteded}`}>{w.why}</p>
+                          <p className={`text-xs mt-0.5 ${c.textMuted}`}>{w.why}</p>
                         </div>
                       ))}
                     </div>
@@ -1048,20 +1349,20 @@ const FriendshipFadeAlerter = ({ tool }) => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {reengageResults.if_they_dont_respond && (
                     <div className={`${c.card} ${c.border} border rounded-2xl p-4`}>
-                      <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuteded}`}>📭 If They Don't Respond</p>
-                      <p className={`text-sm ${c.textSecondaryondary}`}>{reengageResults.if_they_dont_respond}</p>
+                      <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuted}`}>📭 If They Don't Respond</p>
+                      <p className={`text-sm ${c.textSecondary}`}>{reengageResults.if_they_dont_respond}</p>
                     </div>
                   )}
                   {reengageResults.timing_tip && (
                     <div className={`${c.card} ${c.border} border rounded-2xl p-4`}>
-                      <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuteded}`}>⏰ Timing Tip</p>
-                      <p className={`text-sm ${c.textSecondaryondary}`}>{reengageResults.timing_tip}</p>
+                      <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuted}`}>⏰ Timing Tip</p>
+                      <p className={`text-sm ${c.textSecondary}`}>{reengageResults.timing_tip}</p>
                     </div>
                   )}
                 </div>
 
                 <button onClick={() => { setReengageResults(null); setReengageForm({ personName: '', relationship: '', howLong: '', lastContext: '', reason: '' }); }}
-                  className={`w-full py-2.5 rounded-xl text-sm font-semibold ${c.btnPrimarySecondaryondary}`}>
+                  className={`w-full py-2.5 rounded-xl text-sm font-semibold ${c.btnSecondary}`}>
                   🔄 Try Another
                 </button>
               </div>
@@ -1073,8 +1374,8 @@ const FriendshipFadeAlerter = ({ tool }) => {
         <div className={`mt-6 pt-4 border-t text-sm ${c.border} ${c.textMuted}`}>
           <p className="mb-2 font-medium">You might also like:</p>
           <div className="flex flex-wrap gap-2">
-            {[{slug:'gentle-push-generator',label:'🫸 Gentle Push'},{slug:'gratitude-debt-clearer',label:'🙏 Gratitude Debt'},{slug:'six-degrees-of-me',label:'6️⃣ Six Degrees'}].map(({slug,label})=>(
-              <a key={slug} href={`/tool/${slug}`} className={linkStyle}>{label}</a>
+            {[{slug:'GentlePushGenerator',label:'🫸 Gentle Push'},{slug:'GratitudeDebtClearer',label:'🙏 Gratitude Debt'},{slug:'SixDegreesOfMe',label:'6️⃣ Six Degrees'}].map(({slug,label})=>(
+              <a key={slug} href={`/${slug}`} className={linkStyle}>{label}</a>
             ))}
           </div>
         </div>

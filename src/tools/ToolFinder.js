@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { CopyBtn, ActionBar } from '../components/ActionButtons';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -39,78 +39,55 @@ const ToolFinder = ({ tool }) => {
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-500' : 'text-gray-400',
-    labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-amber-400' : 'text-amber-700',
     btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
     success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
     warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
     badge:         isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-100 text-cyan-800',
-    tipBg:         isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
-    tipText:       isDark ? 'text-amber-300' : 'text-amber-800',
-    successBox:    isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-300',
-    successTxt:    isDark ? 'text-emerald-300' : 'text-emerald-800',
-    warningBox:    isDark ? 'bg-red-900/20 border-red-700' : 'bg-red-50 border-red-200',
-    warningTxt:    isDark ? 'text-red-300' : 'text-red-700',
-    infoBox:       isDark ? 'bg-sky-900/20 border-sky-700' : 'bg-sky-50 border-sky-200',
-    infoTxt:       isDark ? 'text-sky-300' : 'text-sky-800',
-    histBg:        isDark ? 'bg-sky-900/20 border-sky-700/30' : 'bg-sky-50 border-sky-200',
-  };;
+    cardHover:     isDark ? 'group-hover:border-cyan-600' : 'group-hover:border-cyan-400',
+  };
 
   // ─── State ───
-  const [problem, setProblem] = useState('');
+  const [problem, setProblem] = usePersistentState('toolfinder-problem', '');
   const [results, setResults] = usePersistentState('toolfinder-result', null);
   const [error, setError] = useState('');
   const [history, setHistory] = usePersistentState('toolfinder-history', []);
+  const resultsRef = useRef(null);
 
-  useEffect(() => {
-    const handler = (e) => {
-      const tag = document.activeElement?.tagName;
-      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
-      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !loading) findTools(problem);
-    };
-    document.addEventListener('keydown', handler);
-    return () => document.removeEventListener('keydown', handler);
-  }, [loading]);
-
-  // ─── Actions ───
+  // ─── Actions (declared before useEffect to avoid stale closures) ───
   const findTools = useCallback(async (text) => {
-    const query = text || problem;
+    const query = (text !== undefined ? text : problem);
     if (!query.trim()) return;
-
     setError('');
     setResults(null);
-
     try {
-      const data = await callToolEndpoint('tool-finder', {
-        problem: query.trim(),
-      });
+      const data = await callToolEndpoint('tool-finder', { problem: query.trim() });
       setResults(data);
       setHistory(prev => [{
         id: Date.now(), date: new Date().toISOString(),
-        preview: problem.trim().slice(0, 40),
+        preview: query.trim().slice(0, 40),
+        result: data,
       }, ...prev].slice(0, 6));
+      setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
     } catch (err) {
       setError(err.message || 'Something went wrong. Try again.');
     }
-  }, [problem, callToolEndpoint]);
+  }, [problem, callToolEndpoint, setError, setResults, setHistory]);
 
   const handleQuickPick = useCallback((label) => {
     setProblem(label);
     findTools(label);
-  }, [findTools]);
+  }, [findTools, setProblem]);
 
   const handleReset = useCallback(() => {
     setProblem('');
     setResults(null);
     setError('');
-  }, []);
+  }, [setProblem, setResults, setError]);
 
-  // ─── Build copyable text ───
   const buildFullText = useCallback(() => {
     if (!results) return '';
     let text = '🧰 ToolFinder Results\n';
@@ -126,6 +103,17 @@ const ToolFinder = ({ tool }) => {
     return text + BRAND;
   }, [results]);
 
+  // Global Cmd/Ctrl+Enter listener — after all handlers to avoid TDZ
+  useEffect(() => {
+    const handler = (e) => {
+      const tag = document.activeElement?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !loading) findTools(problem);
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [loading]);
+
   const r = results;
 
   // ════════════════════════════════════════════════════════════
@@ -137,10 +125,10 @@ const ToolFinder = ({ tool }) => {
       {/* ── HEADER ── */}
       <div className={`${c.card} border ${c.border} rounded-xl p-6`}>
         <div className={`mb-5 pb-4 border-b ${c.border}`}>
-          <h2 className={`text-2xl font-bold ${c.text}`}>ToolFinder 🧰</h2>
-          <p className={`text-sm ${c.textSecondaryondary} mt-1`}>
-            Describe your problem — I'll find the right tools for you
-          </p>
+          <h2 className={`text-2xl font-bold ${c.text}`}>
+            <span className="mr-2">{tool?.icon ?? '🧰'}</span>{tool?.title ?? 'ToolFinder'}
+          </h2>
+          <p className={`text-sm ${c.textSecondary} mt-1`}>{tool?.tagline ?? "Describe your problem — I'll find the right tools for you"}</p>
         </div>
 
         {/* ── PROBLEM INPUT ── */}
@@ -153,14 +141,14 @@ const ToolFinder = ({ tool }) => {
             onChange={e => setProblem(e.target.value)}
             placeholder="e.g., My landlord is trying to keep my security deposit and I think it's unfair..."
             rows={3}
-            className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} ${c.border} ${c.text} outline-none focus:ring-2 resize-none placeholder:${c.textMuteded}`}
+            className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} ${c.border} ${c.text} outline-none focus:ring-2 resize-none placeholder:${c.textMuted}`}
           />
         </div>
 
         {/* ── QUICK PICKS ── */}
         {!results && (
           <div className="mb-5">
-            <p className={`text-xs font-bold ${c.textMuteded} mb-2`}>Or jump in:</p>
+            <p className={`text-xs font-bold ${c.textMuted} mb-2`}>Or jump in:</p>
             <div className="flex flex-wrap gap-1.5">
               {QUICK_PICKS.map(qp => (
                 <button
@@ -183,16 +171,14 @@ const ToolFinder = ({ tool }) => {
             disabled={loading || !problem.trim()}
             className={`flex-1 ${c.btnPrimary} disabled:opacity-40 disabled:cursor-not-allowed font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-2 min-h-[48px] shadow-lg transition-all`}
           >
-            {loading ? (
-              <><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span>{tool?.icon ?? '⚙️'} Searching...</>
-            ) : (
-              <><span>🔍</span> Find My Tools</>
-            )}
+            {loading
+              ? <><span className="inline-block animate-spin">{tool?.icon ?? '🧰'}</span> Searching…</>
+              : <><span>{tool?.icon ?? '🧰'}</span> Find My Tools</>}
           </button>
           {results && (
             <button
               onClick={handleReset}
-              className={`px-5 py-3 ${c.btnSecondaryondary} rounded-xl font-medium min-h-[48px]`}
+              className={`px-5 py-3 ${c.btnSecondary} rounded-xl font-medium min-h-[48px]`}
             >
               New Search
             </button>
@@ -213,11 +199,13 @@ const ToolFinder = ({ tool }) => {
       {/* ══════════════════════════════════════════════════════════ */}
       {r && (
         <div className="space-y-4">
+          <div ref={resultsRef} />
+          <ActionBar content={buildFullText()} copyLabel="Copy All" printContent={buildFullText()} printTitle="ToolFinder Results" />
 
           {/* ── UNDERSTANDING ── */}
           {r.understanding && (
             <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-              <p className={`text-sm ${c.textSecondaryondary} leading-relaxed`}>
+              <p className={`text-sm ${c.textSecondary} leading-relaxed`}>
                 <span className={`font-bold ${c.text}`}>I hear you: </span>
                 {r.understanding}
               </p>
@@ -231,7 +219,7 @@ const ToolFinder = ({ tool }) => {
                 <h3 className={`text-sm font-bold ${c.text}`}>
                   {r.recommendations.length === 1 ? 'Your best tool:' : `Your top ${r.recommendations.length} tools:`}
                 </h3>
-                <ActionBar content={buildFullText()} title="ToolFinder" />
+
               </div>
 
               {r.recommendations.map((rec, idx) => (
@@ -242,9 +230,7 @@ const ToolFinder = ({ tool }) => {
                   rel="noopener noreferrer"
                   className="block no-underline group"
                 >
-                  <div className={`${c.card} border ${c.border} rounded-xl p-5 transition-all group-hover:shadow-md ${
-                    isDark ? 'group-hover:border-sky-500' : 'group-hover:border-sky-400'
-                  }`}>
+                  <div className={`${c.card} border ${c.border} rounded-xl p-5 transition-all group-hover:shadow-md ${c.cardHover}`}>
                     {/* Tool header */}
                     <div className="flex items-start gap-3 mb-3">
                       <span className="text-2xl flex-shrink-0">{rec.icon || '🔧'}</span>
@@ -258,23 +244,23 @@ const ToolFinder = ({ tool }) => {
                               BEST MATCH
                             </span>
                           )}
-                          <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${c.badgeNeutral}`}>
+                          <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${c.badge}`}>
                             {rec.category}
                           </span>
                         </div>
                       </div>
-                      <span className={`text-sm ${c.textMuteded} group-hover:translate-x-1 transition-transform flex-shrink-0`}>→</span>
+                      <span className={`text-sm ${c.textMuted} group-hover:translate-x-1 transition-transform flex-shrink-0`}>→</span>
                     </div>
 
                     {/* Why this tool */}
-                    <p className={`text-sm ${c.textSecondaryondary} leading-relaxed mb-2`}>
+                    <p className={`text-sm ${c.textSecondary} leading-relaxed mb-2`}>
                       {rec.why}
                     </p>
 
                     {/* What to do */}
                     {rec.what_to_do && (
                       <div className={`${c.cardAlt} rounded-lg px-3 py-2 mt-2`}>
-                        <p className={`text-xs ${c.textMuteded}`}>
+                        <p className={`text-xs ${c.textMuted}`}>
                           <span className="font-bold">Quick start:</span> {rec.what_to_do}
                         </p>
                       </div>
@@ -299,22 +285,23 @@ const ToolFinder = ({ tool }) => {
           {/* ── NO PERFECT FIT ── */}
           {r.no_perfect_fit && (
             <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-              <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>Closest match note:</p>
-              <p className={`text-sm ${c.textSecondaryondary}`}>{r.no_perfect_fit}</p>
+              <p className={`text-xs font-bold ${c.textMuted} mb-1`}>Closest match note:</p>
+              <p className={`text-sm ${c.textSecondary}`}>{r.no_perfect_fit}</p>
             </div>
           )}
 
           {/* ── CLARIFICATION ── */}
           {r.clarification && (
             <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-              <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>💡 Want better results?</p>
-              <p className={`text-sm ${c.textSecondaryondary}`}>{r.clarification}</p>
+              <p className={`text-xs font-bold ${c.textMuted} mb-1`}>💡 Want better results?</p>
+              <p className={`text-sm ${c.textSecondary}`}>{r.clarification}</p>
             </div>
           )}
 
           {/* ── BROWSE ALL ── */}
+          <p className={`text-xs text-center ${c.textMuted}`}>AI-generated — results may not include every suitable tool.</p>
           <div className={`text-center pt-2`}>
-            <p className={`text-xs ${c.textMuteded} mb-2`}>Didn't find what you need?</p>
+            <p className={`text-xs ${c.textMuted} mb-2`}>Didn't find what you need?</p>
             <a
               href="/"
               className={`text-sm font-bold underline ${linkStyle}`}
@@ -325,13 +312,21 @@ const ToolFinder = ({ tool }) => {
         </div>
       )}
 
-      {/* Cross-tool links */}
-      <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
+      {/* Conditional cross-ref — only after results */}
+      {r?.workflow && (
+        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+          <p className={`text-xs font-bold ${c.textMuted} mb-2`}>🔗 Multi-step workflow? Also useful</p>
+          <div className="flex flex-wrap gap-3">
+            <a href="/TheRunthrough" className={`text-xs ${linkStyle}`}>🎤 The Runthrough — rehearse what you'll say</a>
+          </div>
+        </div>
+      )}
+      {/* Always-on related tools */}
+      <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
         <p className={`text-xs font-bold ${c.textMuted} mb-2`}>🔗 Related tools</p>
         <div className="flex flex-wrap gap-3">
-          <a href="/tool/skill-gap-map" className={`text-xs ${linkStyle}`}>🗺️ Skill Gap Map</a>
-          <a href="/tool/one-percenter" className={`text-xs ${linkStyle}`}>💡 One Percenter</a>
-          <a href="/tool/the-runthrough" className={`text-xs ${linkStyle}`}>🎤 The Runthrough</a>
+          <a href="/SkillGapMap" className={`text-xs ${linkStyle}`}>🗺️ Skill Gap Map</a>
+          <a href="/OnePercenter" className={`text-xs ${linkStyle}`}>💡 One Percenter</a>
         </div>
       </div>
       {/* Session history */}

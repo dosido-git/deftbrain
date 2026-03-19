@@ -20,7 +20,7 @@ function safeParseJSON(text) {
 
 router.post('/friendship-fade-alerter', async (req, res) => {
   try {
-    const { name, relationshipType, daysSinceContact, contextNotes, contactLog, upcomingEvents, usedTopics, reciprocity } = req.body;
+    const { name, relationshipType, daysSinceContact, contextNotes, contactLog, upcomingEvents, usedTopics, reciprocity, userLanguage } = req.body;
 
     if (!name?.trim()) return res.status(400).json({ error: 'Name is required' });
     if (!relationshipType) return res.status(400).json({ error: 'Relationship type is required' });
@@ -101,6 +101,7 @@ Return ONLY valid JSON.`;
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 1200,
+      system: withLanguage('You are a helpful assistant that responds in the same language as the user.', userLanguage),
       messages: [{ role: 'user', content: prompt }],
     });
 
@@ -120,7 +121,7 @@ Return ONLY valid JSON.`;
 
 router.post('/friendship-fade-alerter/batch', async (req, res) => {
   try {
-    const { people } = req.body;
+    const { people, userLanguage } = req.body;
 
     if (!people?.length) return res.status(400).json({ error: 'No people provided' });
     if (people.length > 8) return res.status(400).json({ error: 'Max 8 people per batch' });
@@ -161,6 +162,7 @@ Return ONLY valid JSON.`;
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 1500,
+      system: withLanguage('You are a helpful assistant that responds in the same language as the user.', userLanguage),
       messages: [{ role: 'user', content: prompt }],
     });
 
@@ -180,7 +182,7 @@ Return ONLY valid JSON.`;
 
 router.post('/friendship-fade-alerter/followup-advice', async (req, res) => {
   try {
-    const { name, relationshipType, daysSinceOutreach, originalMessage, contextNotes } = req.body;
+    const { name, relationshipType, daysSinceOutreach, originalMessage, contextNotes, userLanguage } = req.body;
 
     if (!name?.trim()) return res.status(400).json({ error: 'Name is required' });
 
@@ -211,6 +213,7 @@ Return ONLY valid JSON.`;
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 800,
+      system: withLanguage('You are a helpful assistant that responds in the same language as the user.', userLanguage),
       messages: [{ role: 'user', content: prompt }],
     });
 
@@ -230,7 +233,7 @@ Return ONLY valid JSON.`;
 
 router.post('/friendship-fade-alerter/digest', async (req, res) => {
   try {
-    const { stats } = req.body;
+    const { stats, userLanguage } = req.body;
 
     if (!stats) return res.status(400).json({ error: 'Stats are required' });
 
@@ -253,6 +256,14 @@ Return ONLY valid JSON:
   "wins": ["Something positive from this week", "Another win if applicable"],
   "attention_needed": ["Specific person or pattern that needs attention"],
   "next_week_priorities": ["Top priority for next week", "Secondary priority"],
+  "proactive_priorities": [
+    {
+      "name": "Person's name",
+      "reason": "Specific, non-generic reason why this person is the priority this week — what's the window, what's the context, what's at stake",
+      "suggested_action": "One concrete thing to do or say — not 'reach out' but the actual approach"
+    }
+  ],
+  "risk_flags": ["Any relationship showing signs of permanent fade — name + specific pattern that concerns you. Leave empty array if none."],
   "streak_note": "Comment on their consistency streak (encouraging if good, motivating if broken)",
   "one_liner": "One warm closing sentence"
 }
@@ -264,6 +275,7 @@ Return ONLY valid JSON.`;
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 800,
+      system: withLanguage('You are a helpful assistant that responds in the same language as the user.', userLanguage),
       messages: [{ role: 'user', content: prompt }],
     });
 
@@ -349,6 +361,133 @@ Return ONLY valid JSON:
   } catch (error) {
     console.error('[FriendshipFade/reengage] Error:', error);
     res.status(500).json({ error: error.message || 'Failed to generate re-engagement messages' });
+  }
+});
+
+// ════════════════════════════════════════════════════════════
+// POST /friendship-fade-alerter/health-insight
+// Qualitative AI read on a single relationship
+// ════════════════════════════════════════════════════════════
+router.post('/friendship-fade-alerter/health-insight', async (req, res) => {
+  try {
+    const { name, relationshipType, frequency, daysSinceContact, contactLog, contextNotes, reciprocity, drift, upcomingEvents, userLanguage } = req.body;
+    if (!name?.trim()) return res.status(400).json({ error: 'Name is required' });
+
+    const logBlock = contactLog?.length
+      ? `
+CONTACT LOG (most recent first):
+${contactLog.map(l => `- ${l.date}: "${l.note || 'Reached out'}"${l.initiator === 'them' ? ' (they initiated)' : ''}`).join('
+')}`
+      : '';
+
+    const reciprocityBlock = reciprocity
+      ? `
+RECIPROCITY: You initiated ${reciprocity.youInitiated}/${reciprocity.total} contacts (${reciprocity.balance})`
+      : '';
+
+    const driftBlock = drift
+      ? `
+DRIFT: Averaging every ${drift.avgInterval} days vs ${drift.target}d target — ${drift.drifted ? 'drifting' : 'on track'}`
+      : '';
+
+    const prompt = `You are a thoughtful relationship coach reading between the lines of someone's contact history with a person in their life. Give them genuine insight — not just summaries of numbers, but qualitative interpretation of what the pattern means.
+
+PERSON: ${name}
+RELATIONSHIP TYPE: ${relationshipType}
+TARGET FREQUENCY: ${frequency}
+DAYS SINCE LAST CONTACT: ${daysSinceContact}
+${contextNotes ? `CONTEXT / SHARED INTERESTS: ${contextNotes}` : ''}
+${logBlock}
+${reciprocityBlock}
+${driftBlock}
+${upcomingEvents?.length ? `
+UPCOMING EVENTS: ${upcomingEvents.map(e => e.label + ' on ' + e.date).join(', ')}` : ''}
+
+Read this relationship honestly. Look for:
+- Patterns in what they talk about vs what they used to talk about
+- Whether the quality of connection seems to be deepening, stable, or fading
+- What the reciprocity pattern says about the dynamic (not just the numbers)
+- Any specific recommended action based on the full picture — not generic advice
+
+Return ONLY valid JSON:
+{
+  "headline": "One punchy sentence capturing the real state of this relationship — honest, not harsh",
+  "depth_reading": "2-3 sentences of qualitative insight beyond the numbers. What do the patterns actually mean? What's the real dynamic here?",
+  "trajectory": "improving / stable / drifting / at_risk — and one sentence explaining why",
+  "conversation_shift": "If the contact log shows a change in conversation depth or topics over time, describe it specifically. If not enough data or no shift, return null.",
+  "action_recommendation": "One specific, actionable recommendation based on the full picture — not 'reach out more' but something concrete like what to say, what to address, or what to stop doing",
+  "worth_a_deeper_check": true/false
+}`;
+
+    const message = await anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 900,
+      system: withLanguage('You are a thoughtful relationship coach. Be honest, specific, and avoid generic advice.', userLanguage),
+      messages: [{ role: 'user', content: prompt }],
+    });
+
+    const raw = message.content.find(b => b.type === 'text')?.text || '';
+    const parsed = safeParseJSON(raw);
+    res.json(parsed);
+
+  } catch (error) {
+    console.error('[FriendshipFade/health-insight] Error:', error);
+    res.status(500).json({ error: error.message || 'Failed to generate insight' });
+  }
+});
+
+// ════════════════════════════════════════════════════════════
+// POST /friendship-fade-alerter/say-it-coach
+// Scripts for addressing one-sided relationship dynamics
+// ════════════════════════════════════════════════════════════
+router.post('/friendship-fade-alerter/say-it-coach', async (req, res) => {
+  try {
+    const { name, relationshipType, contactLog, reciprocity, contextNotes, userLanguage } = req.body;
+    if (!name?.trim()) return res.status(400).json({ error: 'Name is required' });
+
+    const logBlock = contactLog?.length
+      ? `
+RECENT INTERACTIONS:
+${contactLog.map(l => `- ${l.date}: "${l.note || 'Reached out'}" (${l.initiator === 'them' ? 'they initiated' : 'you initiated'})`).join('
+')}`
+      : '';
+
+    const prompt = `Someone has noticed they always initiate contact with a person in their life. They want help deciding whether to address it — and if so, how.
+
+PERSON: ${name}
+RELATIONSHIP: ${relationshipType}
+${contextNotes ? `CONTEXT: ${contextNotes}` : ''}
+${reciprocity ? `INITIATION PATTERN: ${reciprocity.youInitiated} of last ${reciprocity.total} contacts initiated by them. They initiated ${reciprocity.theyInitiated}.` : ''}
+${logBlock}
+
+Be honest about whether this is worth addressing. Sometimes one-sidedness is normal (e.g., one person is a natural initiator), sometimes it signals a fading interest. Read the specific data and give real advice.
+
+Return ONLY valid JSON:
+{
+  "situation_read": "1-2 sentences honestly reading what this pattern likely means in this specific relationship — not generic",
+  "worth_saying": true/false,
+  "whether_to_say_it": "Honest assessment of whether addressing this is likely to help or just create awkwardness — and why",
+  "the_script": "If worth saying: the actual words to use. Natural, non-accusatory, opens a conversation rather than making a statement. If not worth saying: null.",
+  "tone_notes": "How to deliver this — timing, setting, tone of voice, what to avoid",
+  "what_to_expect": "Realistic outcome — what they'll probably say, how it typically goes",
+  "if_they_get_defensive": "What to say if the immediate reaction is defensive or dismissive",
+  "alternative": "If they don't want to say it directly: a behavioural shift that might naturally change the dynamic without the conversation"
+}`;
+
+    const message = await anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1000,
+      system: withLanguage('You are a direct, honest relationship coach. No fluff — give specific, actionable guidance.', userLanguage),
+      messages: [{ role: 'user', content: prompt }],
+    });
+
+    const raw = message.content.find(b => b.type === 'text')?.text || '';
+    const parsed = safeParseJSON(raw);
+    res.json(parsed);
+
+  } catch (error) {
+    console.error('[FriendshipFade/say-it-coach] Error:', error);
+    res.status(500).json({ error: error.message || 'Failed to generate coaching' });
   }
 });
 

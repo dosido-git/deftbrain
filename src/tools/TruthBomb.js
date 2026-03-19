@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useTheme } from '../hooks/useTheme';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
@@ -10,10 +10,11 @@ const WHO_OPTIONS = [
   'myself', 'a partner', 'a friend', 'a family member', 'a colleague', 'a boss', 'a client', 'no one yet — just myself',
 ];
 
+// Fixed: replaced banned 'sky' with 'cyan'; dot uses theme-aware className, not raw hex
 const DIRECTNESS_COLORS = [
-  { border: 'amber', bg: (d) => d ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300', text: (d) => d ? 'text-amber-300' : 'text-amber-700', label: 'Gentle' },
-  { border: 'sky', bg: (d) => d ? 'bg-sky-900/20 border-sky-700' : 'bg-sky-50 border-sky-200', text: (d) => d ? 'text-sky-300' : 'text-sky-700', label: 'Direct' },
-  { border: 'red', bg: (d) => d ? 'bg-red-900/20 border-red-700' : 'bg-red-50 border-red-200', text: (d) => d ? 'text-red-300' : 'text-red-700', label: 'Full Truth' },
+  { bg: (d) => d ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300', text: (d) => d ? 'text-amber-300' : 'text-amber-700', dot: (d) => d ? 'bg-amber-400' : 'bg-amber-500' },
+  { bg: (d) => d ? 'bg-cyan-900/20 border-cyan-700'  : 'bg-cyan-50 border-cyan-200',   text: (d) => d ? 'text-cyan-300'  : 'text-cyan-700',  dot: (d) => d ? 'bg-cyan-400'  : 'bg-cyan-500'  },
+  { bg: (d) => d ? 'bg-red-900/20 border-red-700'    : 'bg-red-50 border-red-200',     text: (d) => d ? 'text-red-300'   : 'text-red-700',   dot: (d) => d ? 'bg-red-400'   : 'bg-red-500'   },
 ];
 
 const TruthBomb = ({ tool }) => {
@@ -31,49 +32,30 @@ const TruthBomb = ({ tool }) => {
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-500' : 'text-gray-400',
-    labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-amber-400' : 'text-amber-700',
     btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
     success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
     warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
-    badge:         isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-100 text-cyan-800',
-    tipBg:         isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
-    tipText:       isDark ? 'text-amber-300' : 'text-amber-800',
-    successBox:    isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-300',
-    successTxt:    isDark ? 'text-emerald-300' : 'text-emerald-800',
-    warningBox:    isDark ? 'bg-red-900/20 border-red-700' : 'bg-red-50 border-red-200',
-    warningTxt:    isDark ? 'text-red-300' : 'text-red-700',
-    infoBox:       isDark ? 'bg-sky-900/20 border-sky-700' : 'bg-sky-50 border-sky-200',
-    infoTxt:       isDark ? 'text-sky-300' : 'text-sky-800',
-    histBg:        isDark ? 'bg-sky-900/20 border-sky-700/30' : 'bg-sky-50 border-sky-200',
-  };;
+    hook:          isDark ? 'bg-cyan-900/20 border-cyan-700 text-cyan-200' : 'bg-cyan-50 border-cyan-200 text-cyan-800',
+  };
 
-  const [theUnsaidThing, setTheUnsaidThing] = useState('');
+  // All useState / useRef before any useEffect
+  const [theUnsaidThing, setTheUnsaidThing] = usePersistentState('truthbomb-unsaid', '');
   const [whoItsAbout, setWhoItsAbout] = useState('');
   const [whyNotSaying, setWhyNotSaying] = useState('');
   const [relationshipContext, setRelationshipContext] = useState('');
   const [results, setResults] = usePersistentState('truthbomb-result', null);
   const [error, setError] = useState('');
   const [history, setHistory] = usePersistentState('truthbomb-history', []);
-
-  useEffect(() => {
-    const handler = (e) => {
-      const tag = document.activeElement?.tagName;
-      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
-      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !loading) handleSubmit();
-    };
-    document.addEventListener('keydown', handler);
-    return () => document.removeEventListener('keydown', handler);
-  }, [loading]);
   const [expanded, setExpanded] = useState({ timing: false, permission: false });
-  const toggle = (k) => setExpanded(p => ({ ...p, [k]: !p[k] }));
+  const resultsRef = useRef(null);
 
-  const handleSubmit = async () => {
+  const toggle = useCallback((k) => setExpanded(p => ({ ...p, [k]: !p[k] })), []);
+
+  const handleSubmit = useCallback(async () => {
     if (!theUnsaidThing.trim()) return;
     setError(''); setResults(null);
     try {
@@ -87,11 +69,24 @@ const TruthBomb = ({ tool }) => {
       setHistory(prev => [{
         id: Date.now(), date: new Date().toISOString(),
         preview: theUnsaidThing.trim().slice(0, 40),
+        result: data,
       }, ...prev].slice(0, 6));
     } catch (e) { setError(e.message || 'Failed to process the truth.'); }
-  };
+  }, [theUnsaidThing, whoItsAbout, whyNotSaying, relationshipContext, callToolEndpoint, setError, setResults, setHistory]);
 
-  const buildText = () => {
+  // Cmd/Ctrl+Enter submits from anywhere
+  useEffect(() => {
+    const handler = (e) => {
+      const tag = document.activeElement?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !loading) handleSubmit();
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading, handleSubmit]);
+
+  const buildText = useCallback(() => {
     if (!results) return '';
     let t = `💣 TRUTH BOMB\n\nThe thing: "${theUnsaidThing}"\n\n`;
     if (results.the_thing_examined) {
@@ -103,231 +98,236 @@ const TruthBomb = ({ tool }) => {
       t += `${v.version} (directness ${v.directness}/3)\n"${v.the_words}"\n${v.what_it_accomplishes}\n\n`;
     });
     return t + BRAND;
-  };
+  }, [results, theUnsaidThing]);
+
+  const handleReset = useCallback(() => {
+    setResults(null); setTheUnsaidThing(''); setWhoItsAbout('');
+    setWhyNotSaying(''); setRelationshipContext(''); setError('');
+  }, [setResults, setTheUnsaidThing, setError]);
 
   return (
-    <div className={`min-h-screen py-8 px-4 ${c.cardAlt}`}>
-      <div className="max-w-2xl mx-auto">
+    <div className={`space-y-6 ${c.text}`}>
 
-        <div className="text-center mb-8">
-          <div className="text-5xl mb-3">💣</div>
-          <h1 className={`text-3xl font-black tracking-tight mb-2 ${c.text}`}>Truth Bomb</h1>
-          <p className={`text-sm ${c.textMuteded}`}>The thing you know but won't say. Explored, costed, and scripted three ways.</p>
+      {/* Input card */}
+      <div className={`${c.card} border ${c.border} rounded-xl p-6`}>
+        <div className={`mb-5 pb-4 border-b ${c.border}`}>
+          <h2 className={`text-2xl font-bold ${c.text}`}>
+            <span className="mr-2">{tool?.icon ?? '💣'}</span>{tool?.title ?? 'Truth Bomb'}
+          </h2>
+          <p className={`text-sm ${c.textSecondary} mt-1`}>{tool?.tagline ?? "The thing you know but won't say — explored, costed, and scripted three ways"}</p>
         </div>
 
-        {!results && (
-          <div className={`rounded-2xl border p-6 shadow-sm space-y-4 ${c.card} ${c.border}`}>
-            <div className={`p-3 rounded-xl border text-sm ${isDark ? 'bg-sky-900/20 border-sky-700 text-sky-300' : 'bg-sky-50 border-sky-200 text-sky-800'}`}>
-              This is private. No judgment here — just clarity.
-            </div>
+        {/* Opening hook */}
+        <div className={`p-3 rounded-xl border text-sm mb-4 ${c.hook}`}>
+          This is private. No judgment here — just clarity.
+        </div>
 
-            <div>
-              <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>
-                The thing you know but won't say <span className="text-red-400">*</span>
-              </label>
-              <textarea value={theUnsaidThing} onChange={e => setTheUnsaidThing(e.target.value)}
-                placeholder="Type the thing you're hiding — to yourself or someone else. Be honest. It stays here."
-                rows={4} maxLength={600}
-                className={`w-full px-4 py-3 rounded-xl border text-sm resize-none ${c.input}`} />
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>Who it's about or to <span className={`font-normal ${c.textMuteded}`}>(optional)</span></label>
-                <div className="flex flex-wrap gap-1.5 mb-2">
-                  {WHO_OPTIONS.map(w => (
-                    <button key={w} onClick={() => setWhoItsAbout(whoItsAbout === w ? '' : w)}
-                      className={`px-2.5 py-1 rounded-lg text-xs border transition-all ${
-                        whoItsAbout === w ? c.btnPrimary : c.btnSecondary
-                      }`}>
-                      {w}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>Why you haven't said it <span className={`font-normal ${c.textMuteded}`}>(optional)</span></label>
-                <textarea value={whyNotSaying} onChange={e => setWhyNotSaying(e.target.value)}
-                  placeholder="Fear of their reaction, not ready, not sure it's true…"
-                  rows={3} maxLength={300}
-                  className={`w-full px-4 py-3 rounded-xl border text-sm resize-none ${c.input}`} />
-              </div>
-            </div>
-
-            <div>
-              <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>Relationship context <span className={`font-normal ${c.textMuteded}`}>(optional)</span></label>
-              <input type="text" value={relationshipContext} onChange={e => setRelationshipContext(e.target.value)}
-                placeholder="How long you've known them, what the relationship is like, history…"
-                className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input}`} />
-            </div>
-
-            {error && <div className={`p-3 rounded-xl border text-sm ${c.danger}`}><span className="mr-1">⚠️</span>{error}</div>}
-
-            <button onClick={handleSubmit} disabled={loading || !theUnsaidThing.trim()}
-              className={`w-full py-3 rounded-xl font-bold disabled:opacity-40 ${c.btnPrimary}`}>
-              {loading ? <><span className="inline-block animate-spin mr-2">{tool?.icon ?? '⚙️'}</span>Processing…</> : '💣 Handle the Truth'}
-            </button>
-          <p className={`text-xs text-center ${c.textMuted}`}>AI-generated — use your judgment.</p>
+        <div className="space-y-4">
+          <div>
+            <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>
+              The thing you know but won't say <span className={c.textMuted}>*</span>
+            </label>
+            <textarea value={theUnsaidThing} onChange={e => setTheUnsaidThing(e.target.value)}
+              placeholder="Type the thing you're hiding — to yourself or someone else. Be honest. It stays here."
+              rows={4} maxLength={600}
+              className={`w-full px-4 py-3 rounded-xl border text-sm resize-none ${c.input}`} />
           </div>
-        )}
 
-        {results && (
-          <div className="space-y-4">
-
-            {/* What it's really about */}
-            {results.the_thing_examined && (
-              <div className={`rounded-2xl border p-5 space-y-3 ${c.card} ${c.border}`}>
-                <p className={`text-xs font-black uppercase tracking-widest ${c.textMuteded}`}>🔍 What It's Really About</p>
-                {results.the_thing_examined.what_its_really_about && (
-                  <p className={`text-sm leading-relaxed ${c.textSecondaryondary}`}>{results.the_thing_examined.what_its_really_about}</p>
-                )}
-                {results.the_thing_examined.why_its_hard_to_say && (
-                  <p className={`text-xs ${c.textMuteded}`}><span className="font-semibold">Why it's hard:</span> {results.the_thing_examined.why_its_hard_to_say}</p>
-                )}
-                {results.the_thing_examined.what_hiding_it_costs && (
-                  <div className={`p-3 rounded-xl border ${isDark ? 'bg-red-900/20 border-red-700' : 'bg-red-50 border-red-200'}`}>
-                    <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${isDark ? 'text-red-300' : 'text-red-800'}`}>What hiding it costs</p>
-                    <p className={`text-sm ${c.textSecondaryondary}`}>{results.the_thing_examined.what_hiding_it_costs}</p>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* What would actually happen */}
-            {results.what_would_actually_happen && (
-              <div className={`rounded-2xl border p-5 space-y-3 ${isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-300'}`}>
-                <p className={`text-xs font-black uppercase tracking-widest ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>🌿 What Would Actually Happen</p>
-                {results.what_would_actually_happen.most_likely_scenario && (
-                  <p className={`text-sm ${c.textSecondaryondary}`}>{results.what_would_actually_happen.most_likely_scenario}</p>
-                )}
-                {results.what_would_actually_happen.the_fear_vs_reality_gap && (
-                  <p className={`text-xs ${c.textMuteded}`}><span className="font-semibold">The gap:</span> {results.what_would_actually_happen.the_fear_vs_reality_gap}</p>
-                )}
-                {results.what_would_actually_happen.what_it_would_change && (
-                  <p className={`text-xs ${c.textMuteded}`}><span className="font-semibold">What changes:</span> {results.what_would_actually_happen.what_it_would_change}</p>
-                )}
-              </div>
-            )}
-
-            {/* Three ways to say it */}
-            {results.three_ways_to_say_it?.length > 0 && (
-              <div className="space-y-3">
-                <p className={`text-xs font-black uppercase tracking-widest px-1 ${c.textMuteded}`}>🗣️ Three Ways to Say It</p>
-                {results.three_ways_to_say_it.map((v, i) => {
-                  const dcfg = DIRECTNESS_COLORS[i] || DIRECTNESS_COLORS[0];
-                  return (
-                    <div key={i} className={`rounded-2xl border p-5 space-y-3 ${dcfg.bg(isDark)}`}>
-                      <div className="flex items-center justify-between">
-                        <p className={`text-xs font-black uppercase tracking-widest ${dcfg.text(isDark)}`}>{v.version}</p>
-                        <div className="flex gap-1">
-                          {[1, 2, 3].map(n => (
-                            <div key={n} className={`w-2 h-2 rounded-full ${n <= v.directness ? `opacity-100` : 'opacity-20'}`}
-                              style={{ backgroundColor: dcfg.border }} />
-                          ))}
-                        </div>
-                      </div>
-                      {v.when_to_use && (
-                        <p className={`text-xs ${c.textMuteded}`}><span className="font-semibold">When:</span> {v.when_to_use}</p>
-                      )}
-                      {v.the_words && (
-                        <div className={`p-4 rounded-xl ${isDark ? 'bg-zinc-900/60' : 'bg-white/80'} border ${isDark ? 'border-zinc-700' : 'border-gray-200'}`}>
-                          <p className={`text-sm font-medium leading-relaxed ${c.text}`} style={{ fontStyle: 'italic' }}>
-                            "{v.the_words}"
-                          </p>
-                        </div>
-                      )}
-                      {v.what_it_accomplishes && (
-                        <p className={`text-xs ${c.textMuteded}`}>{v.what_it_accomplishes}</p>
-                      )}
-                      <CopyBtn content={v.the_words + BRAND} label="Copy this version" />
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-
-            {/* Timing */}
-            {results.the_timing && (
-              <div className={`rounded-2xl border overflow-hidden ${c.card} ${c.border}`}>
-                <button onClick={() => toggle('timing')} className="w-full text-left px-5 py-4 flex items-center justify-between">
-                  <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuteded}`}>🕐 Timing & Handling the Reaction</p>
-                  <span className={`text-sm ${c.textMuteded}`}>{expanded.timing ? '▲' : '▼'}</span>
-                </button>
-                {expanded.timing && (
-                  <div className={`px-5 pb-5 space-y-2 border-t ${c.border} pt-4`}>
-                    {[
-                      { key: 'when_to_say_it', label: 'Best moment' },
-                      { key: 'what_to_avoid', label: 'Avoid' },
-                      { key: 'if_they_dont_respond_well', label: 'If they don\'t respond well' },
-                    ].map(row => results.the_timing[row.key] && (
-                      <p key={row.key} className={`text-sm ${c.textSecondaryondary}`}>
-                        <span className={`font-semibold ${c.text}`}>{row.label}:</span> {results.the_timing[row.key]}
-                      </p>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Permission to not say it */}
-            {results.permission_to_not_say_it && (
-              <div className={`rounded-2xl border overflow-hidden ${c.card} ${c.border}`}>
-                <button onClick={() => toggle('permission')} className="w-full text-left px-5 py-4 flex items-center justify-between">
-                  <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuteded}`}>🤫 Permission to Not Say It</p>
-                  <span className={`text-sm ${c.textMuteded}`}>{expanded.permission ? '▲' : '▼'}</span>
-                </button>
-                {expanded.permission && (
-                  <div className={`px-5 pb-5 space-y-2 border-t ${c.border} pt-4`}>
-                    {results.permission_to_not_say_it.when_silence_is_okay && (
-                      <p className={`text-sm ${c.textSecondaryondary}`}>
-                        <span className={`font-semibold ${c.text}`}>When silence is okay:</span> {results.permission_to_not_say_it.when_silence_is_okay}
-                      </p>
-                    )}
-                    {results.permission_to_not_say_it.the_honest_cost && (
-                      <p className={`text-sm ${c.textSecondaryondary}`}>
-                        <span className={`font-semibold ${c.text}`}>The cost you're accepting:</span> {results.permission_to_not_say_it.the_honest_cost}
-                      </p>
-                    )}
-                  </div>
-                )}
-              </div>
-            )}
-
-            <div className="flex items-center gap-3 flex-wrap">
-              <ActionBar content={buildText()} title="Truth Bomb" />
-              <button onClick={() => { setResults(null); setTheUnsaidThing(''); setWhoItsAbout(''); setWhyNotSaying(''); setRelationshipContext(''); }}
-                className={`px-4 py-2 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
-                🔄 New Truth
-              </button>
-            </div>
-
-            <div className={`rounded-xl border p-4 ${c.cardAlt} ${c.border}`}>
-              <p className={`text-xs font-semibold uppercase tracking-wide mb-3 ${c.textMuteded}`}>Related tools</p>
-              <div className="flex flex-wrap gap-2">
-                {[
-                  { id: 'ApologyCalibrator', icon: '🤝', label: 'Fix an apology that didn\'t land' },
-                  { id: 'EgoKiller', icon: '🪦', label: 'Challenge what you believe' },
-                  { id: 'MagicMouth', icon: '🎤', label: 'Script a hard conversation' },
-                ].map(r => (
-                  <a key={r.id} href={`/tool/${r.id}`} target="_blank" rel="noopener noreferrer"
-                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${c.btnSecondary}`}>
-                    {r.icon} {r.label}
-                  </a>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>Who it's about or to <span className={`font-normal ${c.textMuted}`}>(optional)</span></label>
+              <div className="flex flex-wrap gap-1.5 mb-2">
+                {WHO_OPTIONS.map(w => (
+                  <button key={w} onClick={() => setWhoItsAbout(whoItsAbout === w ? '' : w)}
+                    className={`px-2.5 py-1 rounded-lg text-xs border transition-all ${
+                      whoItsAbout === w ? c.btnPrimary : c.btnSecondary
+                    }`}>
+                    {w}
+                  </button>
                 ))}
               </div>
             </div>
+            <div>
+              <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>Why you haven't said it <span className={`font-normal ${c.textMuted}`}>(optional)</span></label>
+              <textarea value={whyNotSaying} onChange={e => setWhyNotSaying(e.target.value)}
+                placeholder="Fear of their reaction, not ready, not sure it's true…"
+                rows={3} maxLength={300}
+                className={`w-full px-4 py-3 rounded-xl border text-sm resize-none ${c.input}`} />
+            </div>
           </div>
-        )}
+
+          <div>
+            <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>Relationship context <span className={`font-normal ${c.textMuted}`}>(optional)</span></label>
+            <input type="text" value={relationshipContext} onChange={e => setRelationshipContext(e.target.value)}
+              placeholder="How long you've known them, what the relationship is like, history…"
+              className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input}`} />
+          </div>
+
+          {error && <div className={`p-3 rounded-xl border text-sm ${c.danger}`}><span className="mr-1">⚠️</span>{error}</div>}
+
+          <button onClick={handleSubmit} disabled={loading || !theUnsaidThing.trim()}
+            className={`w-full py-3 rounded-xl font-bold disabled:opacity-40 min-h-[48px] flex items-center justify-center gap-2 ${c.btnPrimary}`}>
+            {loading
+              ? <><span className="inline-block animate-spin">{tool?.icon ?? '💣'}</span> Processing…</>
+              : <><span>{tool?.icon ?? '💣'}</span> Handle the Truth</>}
+          </button>
+          <p className={`text-xs text-center ${c.textMuted}`}>AI-generated — use your judgment.</p>
+        </div>
       </div>
 
+      {/* Results */}
+      {results && (
+        <div className="space-y-4">
+          <div ref={resultsRef} />
+          <ActionBar content={buildText()} copyLabel="Copy All" printContent={buildText()} printTitle="Truth Bomb" />
+
+          {/* What it's really about */}
+          {results.the_thing_examined && (
+            <div className={`rounded-xl border p-5 space-y-3 ${c.card} ${c.border}`}>
+              <p className={`text-xs font-black uppercase tracking-widest ${c.textMuted}`}>🔍 What It's Really About</p>
+              {results.the_thing_examined.what_its_really_about && (
+                <p className={`text-sm leading-relaxed ${c.textSecondary}`}>{results.the_thing_examined.what_its_really_about}</p>
+              )}
+              {results.the_thing_examined.why_its_hard_to_say && (
+                <p className={`text-xs ${c.textMuted}`}><span className="font-semibold">Why it's hard:</span> {results.the_thing_examined.why_its_hard_to_say}</p>
+              )}
+              {results.the_thing_examined.what_hiding_it_costs && (
+                <div className={`p-3 rounded-xl border ${c.danger}`}>
+                  <p className="text-xs font-bold uppercase tracking-wide mb-1">What hiding it costs</p>
+                  <p className="text-sm">{results.the_thing_examined.what_hiding_it_costs}</p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* What would actually happen */}
+          {results.what_would_actually_happen && (
+            <div className={`rounded-xl border p-5 space-y-3 ${c.success}`}>
+              <p className="text-xs font-black uppercase tracking-widest">🌿 What Would Actually Happen</p>
+              {results.what_would_actually_happen.most_likely_scenario && (
+                <p className="text-sm">{results.what_would_actually_happen.most_likely_scenario}</p>
+              )}
+              {results.what_would_actually_happen.the_fear_vs_reality_gap && (
+                <p className="text-xs"><span className="font-semibold">The gap:</span> {results.what_would_actually_happen.the_fear_vs_reality_gap}</p>
+              )}
+              {results.what_would_actually_happen.what_it_would_change && (
+                <p className="text-xs"><span className="font-semibold">What changes:</span> {results.what_would_actually_happen.what_it_would_change}</p>
+              )}
+            </div>
+          )}
+
+          {/* Three ways to say it */}
+          {results.three_ways_to_say_it?.length > 0 && (
+            <div className="space-y-3">
+              <p className={`text-xs font-black uppercase tracking-widest px-1 ${c.textMuted}`}>🗣️ Three Ways to Say It</p>
+              {results.three_ways_to_say_it.map((v, i) => {
+                const dcfg = DIRECTNESS_COLORS[i] || DIRECTNESS_COLORS[0];
+                return (
+                  <div key={i} className={`rounded-xl border p-5 space-y-3 ${dcfg.bg(isDark)}`}>
+                    <div className="flex items-center justify-between">
+                      <p className={`text-xs font-black uppercase tracking-widest ${dcfg.text(isDark)}`}>{v.version}</p>
+                      <div className="flex gap-1">
+                        {[1, 2, 3].map(n => (
+                          <div key={n} className={`w-2 h-2 rounded-full ${dcfg.dot(isDark)} ${n <= v.directness ? 'opacity-100' : 'opacity-20'}`} />
+                        ))}
+                      </div>
+                    </div>
+                    {v.when_to_use && (
+                      <p className={`text-xs ${c.textMuted}`}><span className="font-semibold">When:</span> {v.when_to_use}</p>
+                    )}
+                    {v.the_words && (
+                      <div className={`p-4 rounded-xl ${c.card} border ${c.border}`}>
+                        <p className={`text-sm font-medium leading-relaxed italic ${c.text}`}>
+                          "{v.the_words}"
+                        </p>
+                      </div>
+                    )}
+                    {v.what_it_accomplishes && (
+                      <p className={`text-xs ${c.textMuted}`}>{v.what_it_accomplishes}</p>
+                    )}
+                    <CopyBtn content={v.the_words + BRAND} label="Copy this version" />
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Timing */}
+          {results.the_timing && (
+            <div className={`rounded-xl border overflow-hidden ${c.card} ${c.border}`}>
+              <button onClick={() => toggle('timing')} className="w-full text-left px-5 py-4 flex items-center justify-between min-h-[44px]">
+                <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>🕐 Timing & Handling the Reaction</p>
+                <span className={`text-sm ${c.textMuted}`}>{expanded.timing ? '▲' : '▼'}</span>
+              </button>
+              {expanded.timing && (
+                <div className={`px-5 pb-5 space-y-2 border-t ${c.border} pt-4`}>
+                  {[
+                    { key: 'when_to_say_it', label: 'Best moment' },
+                    { key: 'what_to_avoid', label: 'Avoid' },
+                    { key: 'if_they_dont_respond_well', label: "If they don't respond well" },
+                  ].map(row => results.the_timing[row.key] && (
+                    <p key={row.key} className={`text-sm ${c.textSecondary}`}>
+                      <span className={`font-semibold ${c.text}`}>{row.label}:</span> {results.the_timing[row.key]}
+                    </p>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Permission to not say it */}
+          {results.permission_to_not_say_it && (
+            <div className={`rounded-xl border overflow-hidden ${c.card} ${c.border}`}>
+              <button onClick={() => toggle('permission')} className="w-full text-left px-5 py-4 flex items-center justify-between min-h-[44px]">
+                <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>🤫 Permission to Not Say It</p>
+                <span className={`text-sm ${c.textMuted}`}>{expanded.permission ? '▲' : '▼'}</span>
+              </button>
+              {expanded.permission && (
+                <div className={`px-5 pb-5 space-y-2 border-t ${c.border} pt-4`}>
+                  {results.permission_to_not_say_it.when_silence_is_okay && (
+                    <p className={`text-sm ${c.textSecondary}`}>
+                      <span className={`font-semibold ${c.text}`}>When silence is okay:</span> {results.permission_to_not_say_it.when_silence_is_okay}
+                    </p>
+                  )}
+                  {results.permission_to_not_say_it.the_honest_cost && (
+                    <p className={`text-sm ${c.textSecondary}`}>
+                      <span className={`font-semibold ${c.text}`}>The cost you're accepting:</span> {results.permission_to_not_say_it.the_honest_cost}
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Conditional cross-ref — shown only when scripts are ready */}
+          {results.three_ways_to_say_it?.length > 0 && (
+            <div className={`rounded-xl border p-4 ${c.cardAlt} ${c.border}`}>
+              <p className={`text-xs font-semibold uppercase tracking-wide mb-2 ${c.textMuted}`}>Ready to say it?</p>
+              <a href="/MagicMouth" className={`text-xs ${linkStyle}`}>🎤 MagicMouth — script the full conversation</a>
+            </div>
+          )}
+
+          {/* Always-on related tools */}
+          <div className={`rounded-xl border p-4 ${c.cardAlt} ${c.border}`}>
+            <p className={`text-xs font-semibold uppercase tracking-wide mb-3 ${c.textMuted}`}>Related tools</p>
+            <div className="flex flex-wrap gap-3">
+              <a href="/ApologyCalibrator" className={`text-xs ${linkStyle}`}>🤝 Fix an apology that didn't land</a>
+              <a href="/EgoKiller" className={`text-xs ${linkStyle}`}>🪦 Challenge what you believe</a>
+            </div>
+          </div>
+
+          <button onClick={handleReset}
+            className={`px-4 py-2 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
+            ↩ New Truth
+          </button>
+        </div>
+      )}
+
       {/* Session history */}
-      {/* eslint-disable-next-line no-restricted-globals */}
       {history.length > 0 && (
-        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
+        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
           <p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 Recent sessions</p>
           <div className="space-y-1">
-            {/* eslint-disable-next-line no-restricted-globals */}
-
             {history.map(s => (
               <div key={s.id} className="flex items-center justify-between">
                 <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || 'Session'}</span>

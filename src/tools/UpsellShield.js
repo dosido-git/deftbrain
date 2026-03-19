@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { CopyBtn, ActionBar } from '../components/ActionButtons';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -13,7 +13,7 @@ const SITUATIONS = [
   { label: 'Contractor / home repair quote', emoji: '🔨' },
   { label: 'Gym membership', emoji: '🏋️' },
   { label: 'Timeshare presentation', emoji: '🏖️' },
-  { label: 'Insurance agent', emoji: '🛡️' },
+  { label: 'Insurance agent', emoji: '📋' },
   { label: 'Real estate open house', emoji: '🏠' },
 ];
 
@@ -32,29 +32,17 @@ const UpsellShield = ({ tool }) => {
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-500' : 'text-gray-400',
-    labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-amber-400' : 'text-amber-700',
     btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
     success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
     warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
     badge:         isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-100 text-cyan-800',
-    tipBg:         isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
-    tipText:       isDark ? 'text-amber-300' : 'text-amber-800',
-    successBox:    isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-300',
-    successTxt:    isDark ? 'text-emerald-300' : 'text-emerald-800',
-    warningBox:    isDark ? 'bg-red-900/20 border-red-700' : 'bg-red-50 border-red-200',
-    warningTxt:    isDark ? 'text-red-300' : 'text-red-700',
-    infoBox:       isDark ? 'bg-sky-900/20 border-sky-700' : 'bg-sky-50 border-sky-200',
-    infoTxt:       isDark ? 'text-sky-300' : 'text-sky-800',
-    histBg:        isDark ? 'bg-sky-900/20 border-sky-700/30' : 'bg-sky-50 border-sky-200',
-  };;
+  };
 
-  const [situation, setSituation] = useState('');
+  const [situation, setSituation] = usePersistentState('upsellshield-situation', '');
   const [whatYouWant, setWhatYouWant] = useState('');
   const [budget, setBudget] = useState('');
   const [concerns, setConcerns] = useState('');
@@ -62,11 +50,27 @@ const UpsellShield = ({ tool }) => {
   const [error, setError] = useState('');
   const [history, setHistory] = usePersistentState('upsellshield-history', []);
 
+  const resultsRef = useRef(null);
   const [expandedSections, setExpandedSections] = useState({ playbook: true });
 
   const toggleSection = useCallback((key) => {
     setExpandedSections(p => ({ ...p, [key]: !p[key] }));
   }, []);
+
+  // Cmd/Ctrl+Enter submits from anywhere
+  React.useEffect(() => {
+    const handler = (e) => {
+      if (e.key !== 'Enter' || !(e.metaKey || e.ctrlKey)) return;
+      const tag = document.activeElement?.tagName;
+      if (tag === 'TEXTAREA') return;
+      if (!situation.trim() || loading) return;
+      e.preventDefault();
+      generate();
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [situation, loading]);
 
   const generate = useCallback(async (quickSit) => {
     const sit = quickSit || situation;
@@ -83,15 +87,16 @@ const UpsellShield = ({ tool }) => {
       setResults(data);
       setHistory(prev => [{
         id: Date.now(), date: new Date().toISOString(),
-        preview: situation.trim().slice(0, 40),
+        preview: sit.trim().slice(0, 40),
+        result: data,
       }, ...prev].slice(0, 6));
     } catch (err) { setError(err.message || 'Failed to generate defense plan.'); }
-  }, [situation, whatYouWant, budget, concerns, callToolEndpoint]);
+  }, [situation, whatYouWant, budget, concerns, callToolEndpoint, setError, setResults, setSituation, setWhatYouWant, setBudget, setConcerns, setHistory]);
 
   const handleReset = useCallback(() => {
     setSituation(''); setWhatYouWant(''); setBudget('');
     setConcerns(''); setResults(null); setError('');
-  }, []);
+  }, [setSituation, setWhatYouWant, setBudget, setConcerns, setResults, setError]);
 
   const buildFullText = useCallback(() => {
     if (!results) return '';
@@ -121,20 +126,33 @@ const UpsellShield = ({ tool }) => {
     <div className={`space-y-6 ${c.text}`}>
       <div className={`${c.card} border ${c.border} rounded-xl p-6`}>
         <div className={`mb-5 pb-4 border-b ${c.border}`}>
-          <h2 className={`text-2xl font-bold ${c.text}`}>UpsellShield 🧲</h2>
-          <p className={`text-sm ${c.textSecondaryondary} mt-1`}>Walk into high-pressure sales prepared</p>
+          <h2 className={`text-2xl font-bold ${c.text}`}>
+            <span className="mr-2">{tool?.icon ?? '🧲'}</span>{tool?.title ?? 'UpsellShield'}
+          </h2>
+          <p className={`text-sm ${c.textSecondary} mt-1`}>{tool?.tagline ?? 'Walk into high-pressure sales prepared'}</p>
+        </div>
+
+        {/* Opening hook */}
+        <div className="rounded-xl p-4 mb-4" style={{
+          background: isDark ? 'rgba(8,51,68,0.6)' : '#ecfeff',
+          border: `1px solid ${isDark ? '#164e63' : '#a5f3fc'}`,
+        }}>
+          <p className={`text-sm font-medium ${isDark ? 'text-cyan-200' : 'text-cyan-800'}`}>
+            Sales environments are scripted. The anchoring, the urgency, the manager routine — it's all rehearsed. UpsellShield maps the exact playbook they'll run and puts the counter-moves in your hands before you walk in the door.
+          </p>
         </div>
 
         <div className="mb-4">
           <label className={`text-sm font-bold ${c.text} block mb-1.5`}>What sales situation are you walking into?</label>
           <input type="text" value={situation} onChange={e => setSituation(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && situation.trim() && !loading && generate()}
             placeholder="e.g., buying a used car, getting a roofing quote, phone store upgrade"
             className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} ${c.border} ${c.text} outline-none focus:ring-2`} />
         </div>
 
         {!results && (
           <div className="mb-4">
-            <p className={`text-xs font-bold ${c.textMuteded} mb-2`}>Common situations:</p>
+            <p className={`text-xs font-bold ${c.textMuted} mb-2`}>Common situations:</p>
             <div className="flex flex-wrap gap-1.5">
               {SITUATIONS.map(s => (
                 <button key={s.label} onClick={() => generate(s.label)} disabled={loading}
@@ -147,21 +165,21 @@ const UpsellShield = ({ tool }) => {
         )}
 
         <div className="mb-4">
-          <label className={`text-sm font-bold ${c.text} block mb-1.5`}>What do you actually want? <span className={`font-normal ${c.textMuteded}`}>(optional)</span></label>
+          <label className={`text-sm font-bold ${c.text} block mb-1.5`}>What do you actually want? <span className={`font-normal ${c.textMuted}`}>(optional)</span></label>
           <input type="text" value={whatYouWant} onChange={e => setWhatYouWant(e.target.value)}
             placeholder="e.g., a reliable sedan under $20k, basic phone plan no extras"
             className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} ${c.border} ${c.text} outline-none focus:ring-2`} />
         </div>
 
         <div className="mb-4">
-          <label className={`text-sm font-bold ${c.text} block mb-1.5`}>Budget <span className={`font-normal ${c.textMuteded}`}>(optional)</span></label>
+          <label className={`text-sm font-bold ${c.text} block mb-1.5`}>Budget <span className={`font-normal ${c.textMuted}`}>(optional)</span></label>
           <input type="text" value={budget} onChange={e => setBudget(e.target.value)}
             placeholder="e.g., $18,000 max, $50/month"
             className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} ${c.border} ${c.text} outline-none focus:ring-2`} />
         </div>
 
         <div className="mb-5">
-          <label className={`text-sm font-bold ${c.text} block mb-1.5`}>Concerns <span className={`font-normal ${c.textMuteded}`}>(optional)</span></label>
+          <label className={`text-sm font-bold ${c.text} block mb-1.5`}>Concerns <span className={`font-normal ${c.textMuted}`}>(optional)</span></label>
           <input type="text" value={concerns} onChange={e => setConcerns(e.target.value)}
             placeholder='e.g., "I always cave under pressure", "they quoted way more than online price"'
             className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} ${c.border} ${c.text} outline-none focus:ring-2`} />
@@ -170,10 +188,11 @@ const UpsellShield = ({ tool }) => {
         <div className="flex gap-3">
           <button onClick={() => generate()} disabled={loading || !situation.trim()}
             className={`flex-1 ${c.btnPrimary} disabled:opacity-40 disabled:cursor-not-allowed font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-2 min-h-[48px] shadow-lg`}>
-            {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> {tool?.icon ?? '⚙️'} Arming you...</> : <><span>🛡️</span> Prepare Me</>}
+            {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '🧲'}</span> Arming you...</> : <><span>{tool?.icon ?? '🧲'}</span> Prepare Me</>}
           </button>
-          {results && <button onClick={handleReset} className={`px-5 py-3 ${c.btnSecondaryondary} rounded-xl font-medium min-h-[48px]`}>New</button>}
+          {results && <button onClick={handleReset} className={`px-5 py-3 ${c.btnSecondary} rounded-xl font-medium min-h-[48px]`}>New</button>}
         </div>
+        <p className={`text-xs text-center ${c.textMuted} mt-1`}>AI-generated — review before using in any negotiation.</p>
       </div>
 
       {error && (
@@ -184,11 +203,12 @@ const UpsellShield = ({ tool }) => {
 
       {r && (
         <div className="space-y-4">
-          <div className="flex justify-end"><ActionBar content={buildFullText()} title="UpsellShield" /></div>
+          <div ref={resultsRef} />
+          <ActionBar content={buildFullText()} copyLabel="Copy All" printContent={buildFullText()} printTitle="UpsellShield Defense Plan" />
 
           {r.situation_read && (
             <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-              <p className={`text-sm ${c.textSecondaryondary} leading-relaxed`}>{r.situation_read}</p>
+              <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{r.situation_read}</p>
             </div>
           )}
 
@@ -212,7 +232,7 @@ const UpsellShield = ({ tool }) => {
                   <span>🎯</span> Their Playbook
                   <span className={`text-[9px] px-2 py-0.5 rounded-full ${c.badge}`}>{r.their_playbook.length} tactics</span>
                 </h3>
-                <span className={c.textMuteded}>{expandedSections.playbook ? '▲' : '▼'}</span>
+                <span className={c.textMuted}>{expandedSections.playbook ? '▲' : '▼'}</span>
               </button>
               {expandedSections.playbook && (
                 <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-4`}>
@@ -221,11 +241,11 @@ const UpsellShield = ({ tool }) => {
                       <div className="flex items-start justify-between mb-2">
                         <h4 className={`text-xs font-bold ${c.text}`}>{i + 1}. {tactic.tactic_name}</h4>
                         {tactic.when_to_expect && (
-                          <span className={`text-[9px] px-2 py-0.5 rounded-full ${c.badgeNeutral}`}>{tactic.when_to_expect}</span>
+                          <span className={`text-[9px] px-2 py-0.5 rounded-full ${c.textMuted}`}>{tactic.when_to_expect}</span>
                         )}
                       </div>
-                      <p className={`text-xs ${c.textSecondaryondary} mb-2`}><span className="font-bold">They'll do:</span> {tactic.what_they_do}</p>
-                      <p className={`text-xs ${c.textMuteded} mb-2 italic`}><span className="font-bold">Psychology:</span> {tactic.the_psychology}</p>
+                      <p className={`text-xs ${c.textSecondary} mb-2`}><span className="font-bold">They'll do:</span> {tactic.what_they_do}</p>
+                      <p className={`text-xs ${c.textMuted} mb-2 italic`}><span className="font-bold">Psychology:</span> {tactic.the_psychology}</p>
                       <div className={`${c.success} border rounded-lg p-3 flex items-start justify-between gap-2`}>
                         <div>
                           <p className="text-[10px] font-bold mb-0.5">🛡️ Your counter:</p>
@@ -246,14 +266,14 @@ const UpsellShield = ({ tool }) => {
               <button onClick={() => toggleSection('power')}
                 className="w-full p-4 flex items-center justify-between text-left min-h-[44px]">
                 <h3 className={`text-sm font-bold ${c.text} flex items-center gap-2`}><span>💪</span> Power Questions</h3>
-                <span className={c.textMuteded}>{expandedSections.power ? '▲' : '▼'}</span>
+                <span className={c.textMuted}>{expandedSections.power ? '▲' : '▼'}</span>
               </button>
               {expandedSections.power && (
                 <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-3`}>
                   {r.power_questions.map((q, i) => (
                     <div key={i} className={`${c.cardAlt} rounded-lg p-3`}>
                       <p className={`text-xs font-bold ${c.text} mb-1`}>"{q.question}"</p>
-                      <p className={`text-xs ${c.textMuteded} italic`}>{q.what_it_signals}</p>
+                      <p className={`text-xs ${c.textMuted} italic`}>{q.what_it_signals}</p>
                     </div>
                   ))}
                 </div>
@@ -273,8 +293,8 @@ const UpsellShield = ({ tool }) => {
                   ['Best timing', r.the_real_deal.timing_advantage],
                 ].filter(([, v]) => v).map(([label, value], i) => (
                   <div key={i}>
-                    <p className={`text-[10px] font-bold ${c.textMuteded}`}>{label}</p>
-                    <p className={`text-xs ${c.textSecondaryondary}`}>{value}</p>
+                    <p className={`text-[10px] font-bold ${c.textMuted}`}>{label}</p>
+                    <p className={`text-xs ${c.textSecondary}`}>{value}</p>
                   </div>
                 ))}
               </div>
@@ -287,7 +307,7 @@ const UpsellShield = ({ tool }) => {
               <p className={`text-xs font-bold ${c.text} mb-2`}>📋 Before you go</p>
               <div className="space-y-1.5">
                 {r.pre_visit_checklist.map((item, i) => (
-                  <p key={i} className={`text-xs ${c.textSecondaryondary}`}>☐ {item}</p>
+                  <p key={i} className={`text-xs ${c.textSecondary}`}>☐ {item}</p>
                 ))}
               </div>
             </div>
@@ -299,7 +319,7 @@ const UpsellShield = ({ tool }) => {
               <p className={`text-xs font-bold ${c.text} mb-2`}>🧍 Body language</p>
               <div className="space-y-1.5">
                 {r.body_language.map((tip, i) => (
-                  <p key={i} className={`text-xs ${c.textSecondaryondary}`}>• {tip}</p>
+                  <p key={i} className={`text-xs ${c.textSecondary}`}>• {tip}</p>
                 ))}
               </div>
             </div>
@@ -316,14 +336,17 @@ const UpsellShield = ({ tool }) => {
             </div>
           )}
 
-          <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-xs font-bold ${c.text} mb-2`}>Related tools</p>
-            <div className="flex flex-wrap gap-2">
-              <a href="/BuyWise" target="_blank" rel="noopener noreferrer" className={`text-xs px-3 py-1.5 rounded-lg border ${c.pillInactive} no-underline`}>🛒 BuyWise</a>
-              <a href="/LeverageLogic" target="_blank" rel="noopener noreferrer" className={`text-xs px-3 py-1.5 rounded-lg border ${c.pillInactive} no-underline`}>⚖️ Leverage Logic</a>
-              <a href="/MarkupDetective" target="_blank" rel="noopener noreferrer" className={`text-xs px-3 py-1.5 rounded-lg border ${c.pillInactive} no-underline`}>🏷️ MarkupDetective</a>
+          {/* Conditional cross-ref: if they have a real deal section, surface finance tools */}
+          {r.the_real_deal && (
+            <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+              <p className={`text-xs font-bold ${c.textMuted} mb-2`}>💡 Also useful</p>
+              <div className="flex flex-wrap gap-3">
+                <a href="/MarkupDetective" className={`text-xs ${linkStyle}`}>🔍 Markup Detective — spot inflated prices</a>
+              </div>
             </div>
-          </div>
+          )}
+
+
         </div>
       )}
 
@@ -331,9 +354,9 @@ const UpsellShield = ({ tool }) => {
       <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
         <p className={`text-xs font-bold ${c.textMuted} mb-2`}>🔗 Related tools</p>
         <div className="flex flex-wrap gap-3">
-          <a href="/tool/subscription-guilt-trip" className={`text-xs ${linkStyle}`}>💳 Subscription Guilt Trip</a>
-          <a href="/tool/money-moves" className={`text-xs ${linkStyle}`}>💰 Money Moves</a>
-          <a href="/tool/fake-review-detective" className={`text-xs ${linkStyle}`}>🔍 Fake Review Detective</a>
+          <a href="/SubscriptionGuiltTrip" className={`text-xs ${linkStyle}`}>💳 Subscription Guilt Trip</a>
+          <a href="/MoneyMoves" className={`text-xs ${linkStyle}`}>💰 Money Moves</a>
+          <a href="/FakeReviewDetective" className={`text-xs ${linkStyle}`}>🔍 Fake Review Detective</a>
         </div>
       </div>
       {/* Session history */}

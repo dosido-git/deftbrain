@@ -562,6 +562,34 @@ const linkStyle = isDark
   # 2. If tool has add-items pattern: does Enter on empty field also submit?
   # An onKeyDown that ONLY calls addItem() with no submit path is a FAIL.
   ```
+
+- [ ] 🔍 🚨 **Global `Cmd/Ctrl+Enter` listener present** — every tool must have a document-level keydown listener that triggers submit when `Cmd+Enter` (Mac) or `Ctrl+Enter` (Windows) is pressed from anywhere on the page. An `onKeyDown` on a single input field is insufficient — it only fires when that field has focus.
+  ```bash
+  grep -n "document.addEventListener.*keydown\|document.addEventListener.*'keydown'" ComponentName.js
+  # Must return at least one result — global listener is required in every tool
+  grep -n "metaKey\|ctrlKey" ComponentName.js
+  # Must return at least one result confirming Cmd/Ctrl is checked
+  grep -n "metaKey.*ctrlKey\|ctrlKey.*metaKey" ComponentName.js
+  # Must show both metaKey AND ctrlKey checked together (cross-platform)
+  ```
+  > **Required pattern** (in a `useEffect` with cleanup):
+  > ```js
+  > useEffect(() => {
+  >   const handler = (e) => {
+  >     if (e.key !== 'Enter' || !(e.metaKey || e.ctrlKey)) return;
+  >     const tag = document.activeElement?.tagName;
+  >     if (tag === 'TEXTAREA') return; // let textarea handle its own newlines
+  >     if (!canSubmit || loading) return;
+  >     e.preventDefault();
+  >     handleSubmit();
+  >   };
+  >   document.addEventListener('keydown', handler);
+  >   return () => document.removeEventListener('keydown', handler);
+  > // eslint-disable-next-line react-hooks/exhaustive-deps
+  > }, [loading, handleSubmit]);
+  > ```
+  > Note: TEXTAREA inputs should be excluded from the global listener (they may have their own Cmd+Enter behavior). INPUT fields do not need exclusion — the global listener covers them.
+
 ⚠️ BUG PATTERN — Pill-only inputs never receive Enter (discovered BrainStateDeejay/BrainRoulette)
 Tools whose primary inputs are pill buttons or dropdowns (no text field) have no natural keyboard path to submit — clicking a pill leaves focus on the button, which doesn't propagate to any onKeyDown handler.
 Fix: Add a document-level listener inside a no-dep-array useEffect. Guard against firing when an INPUT or TEXTAREA is focused (to avoid double-firing on tools that also have text fields).
@@ -1004,6 +1032,10 @@ For each tool, capture:
 **(1) Frontend/Backend JSON key mismatch (Section 2.2):** Frontend accesses a JSON key name that differs from what the backend prompt instructs the model to return. Example: frontend renders `analysis.poor_interoception_support` but backend prompt defines the key as `poor_self_awareness_support` — section silently never renders because the key is always undefined. **Scan:** `grep -h "analysis\.\|data\." ComponentName.js | grep -oP '(?<=\.)[a-z_]+(?=\b)' | sort | uniq` then cross-check against all `"key_name":` strings in the corresponding backend .js file. Any mismatch is a silent data loss bug.
 
 **(2) `useTheme` non-standard destructure pattern (Section 1.3):** Some tools use `const { theme } = useTheme(); const isDark = theme === 'dark'` instead of the standard `const { isDark } = useTheme()`. Both work at runtime but the non-standard form adds a manual derivation step, is inconsistent with the family, and adds surface area for bugs if the hook's return shape changes. **Scan:** `grep "const { theme }" ComponentName.js` — must return zero results. If found, replace with `const { isDark } = useTheme()`.*
+
+*v4.27 — Hardened: Global `Cmd/Ctrl+Enter` listener is now a 🚨 mandatory mechanical check (Section 2.1). The existing Enter/Return check only verified that *some* `onKeyDown` exists — it did not enforce the document-level global listener that covers pill-only inputs, dropdowns, and focus-anywhere scenarios. New check requires: (1) `document.addEventListener('keydown', ...)` present, (2) `metaKey` checked, (3) `ctrlKey` checked, (4) both checked together for cross-platform support. This has been the intended standard all along; the check now enforces it mechanically. March 2026.*
+
+*v4.26 — Clarified: `callClaudeWithRetry` vs `anthropic.messages.create` (Section 2.2). The 🚨 rule "never raw `anthropic.messages.create`" has a documented exception: routes that return structured JSON must use `anthropic.messages.create` + `cleanJsonResponse` because `callClaudeWithRetry(prompt, options)` returns already-parsed JSON directly and has an incompatible call signature. Attempting to substitute `callClaudeWithRetry` on a JSON route silently breaks parsing. **Rule clarified to:** use `callClaudeWithRetry` for plain-text routes; use `anthropic.messages.create` + `cleanJsonResponse` + `JSON.parse` for JSON-returning routes. Both are acceptable — the violation is mixing them incorrectly. Discovered UpsellShield audit, March 2026.*
 
 *v4.25 — Four new checks, discovered during WardrobeChaosHelper audit, March 2026:*
 
