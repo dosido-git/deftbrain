@@ -126,36 +126,39 @@ const VelvetHammer = ({ tool }) => {
     <div className="max-w-xl mx-auto space-y-5">
 
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className={`text-2xl font-bold ${c.text}`}>
-            <span className="mr-2">{tool?.icon ?? '🔨'}</span>{tool?.title ?? 'Velvet Hammer'}
-          </h2>
-          <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Transform furious drafts into professional messages'}</p>
-        </div>
-        {history.length > 0 && (
-          <button onClick={() => setShowHistory(!showHistory)}
-            className={`text-xs font-bold px-3 py-1.5 rounded-lg ${c.btnSecondary}`}>
-            📋 {history.length}
-          </button>
-        )}
-      </div>
 
-      {/* History panel */}
-      {showHistory && history.length > 0 && (
-        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 space-y-2`}>
-          <p className={`text-xs font-bold ${c.textMuted} mb-1`}>Recent transforms</p>
-          {history.map(h => (
-            <div key={h.id} className={`flex items-center justify-between text-xs ${c.textSecondary}`}>
-              <span className="truncate">{h.preview}</span>
-              <span className={`ml-2 shrink-0 ${c.textMuted}`}>{new Date(h.date).toLocaleDateString()}</span>
-            </div>
-          ))}
-        </div>
-      )}
 
       {/* Input card */}
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
+
+        {/* Header inside card */}
+        <div className={`flex items-center justify-between pb-3 border-b ${c.border}`}>
+          <div>
+            <h2 className={`text-2xl font-bold ${c.text}`}>
+              <span className="mr-2">{tool?.icon ?? '🔨'}</span>{tool?.title ?? 'Velvet Hammer'}
+            </h2>
+            <p className={`text-sm ${c.textSecondary} mt-0.5`}>{tool?.tagline ?? 'Transform furious drafts into professional messages'}</p>
+          </div>
+          {history.length > 0 && (
+            <button onClick={() => setShowHistory(!showHistory)}
+              className={`text-xs font-bold px-3 py-1.5 rounded-lg ${c.btnSecondary} shrink-0`}>
+              📋 {history.length}
+            </button>
+          )}
+        </div>
+
+        {/* History panel */}
+        {showHistory && history.length > 0 && (
+          <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 space-y-2`}>
+            <p className={`text-xs font-bold ${c.textMuted} mb-1`}>Recent transforms</p>
+            {history.map(h => (
+              <div key={h.id} className={`flex items-center justify-between text-xs ${c.textSecondary}`}>
+                <span className="truncate">{h.preview}</span>
+                <span className={`ml-2 shrink-0 ${c.textMuted}`}>{new Date(h.date).toLocaleDateString()}</span>
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* Rage box */}
         <div>

@@ -45,11 +45,28 @@ Score each item: ✅ Pass | ⚠️ Needs Work | ❌ Fail | N/A
   # Check if icon is ✨ 🔧 ⚡ 💡 🌀 ❓ — if so, flag for reconsideration
   ```
 
-- [ ] 🔍 **Icon placement is consistent** — icon appears *before* the title in the component `<h2>`: `<span>icon</span> Tool Name`. Never after.
+- [ ] 🔍 **Icon placement is consistent** — icon appears *before* the title in the component `<h2>`: `<span className="mr-2">{tool?.icon}</span>{tool?.title}`. Never after, never hardcoded.
   ```bash
   grep -n "<h2" ComponentName.js
-  # Verify span with icon comes before title text, not after
+  # Must show: <span className="mr-2">{tool?.icon ...}</span>{tool?.title ...}
+  # Icon span must come BEFORE title text
+  grep -n 'mr-2' ComponentName.js | head -5
+  # Must return a result showing the mr-2 span on the icon — this is the required pattern
+  grep -n '<h[12][^>]*>[^{<]' ComponentName.js
+  # Must return zero results — any h1/h2 with a bare string is a violation
+  grep -n 'tool?.icon' ComponentName.js | grep -i 'h[12]\|header\|mr-2'
+  # Must return at least one result confirming tool?.icon is in the header
   ```
+
+  > ⚠️ **BUG PATTERN — Icon after title or hardcoded in header (discovered UpsellShield audit, v4.25)**
+  > Tools write `<h2>UpsellShield 🧲</h2>` — icon hardcoded after the tool name. Two violations at once: title is hardcoded (sync hazard) AND icon is in the wrong position.
+  > The required pattern is: `<span className="mr-2">{tool?.icon ?? 'fallback'}</span>{tool?.title ?? 'Fallback'}` — always dynamic, always icon-first.
+  > ```bash
+  > # Quick combined scan — all three must pass:
+  > grep -n 'mr-2.*tool.*icon\|tool.*icon.*mr-2' ComponentName.js  # must return result
+  > grep -c 'tool?.icon' ComponentName.js                          # must be ≥ 2 (header + submit)
+  > grep -n '<h[12][^>]*>[^{<]' ComponentName.js                   # must return zero
+  > ```
 
 - [ ] 🔍 **Title and tagline are dynamic, not hardcoded** — the component header uses `{tool?.title}` and `{tool?.tagline}` rather than string literals. `tools.js` is the single source of truth for both. Hardcoding them creates a sync hazard: if you update `tools.js`, the component silently stays stale.
   ```bash
@@ -997,6 +1014,8 @@ For each tool, capture:
 **(3) `toLocaleString('default')` Safari crash (Section 2.1):** Passing the string `'default'` as a locale argument to `toLocaleString` or `toLocaleDateString` works in Chrome/Firefox but throws `locale.toLowerCase is not a function` in Safari. Use `undefined` (browser's own locale) or `'en'` instead. **Scan:** `grep -n "toLocaleString('default'\|toLocaleDateString('default'" ComponentName.js` — must return zero results.*
 
 **(4) `useState`/`useRef` hooks after `useEffect` (Section 1.7):** All state and ref declarations must appear before any `useEffect` calls. Hooks declared after an effect that references them via closure work at runtime but create confusing ordering and can interact badly with StrictMode's double-invoke. Standard order: all `useState` → all `useRef` → `const` derived values → `useEffect`s → handler functions. **Scan:** check line numbers — any `useState`/`useRef` appearing after the first `useEffect` is a violation.*
+
+*v4.25 — Strengthened: Icon placement check (Section 0). Added mandatory grep scans with three tests: (1) `mr-2` pattern present on icon span, (2) `tool?.icon` appears in header, (3) no bare string in h1/h2. Also added bug pattern: icon hardcoded after title name (e.g. `<h2>UpsellShield 🧲</h2>`). Discovered UpsellShield audit, March 2026.*
 
 *v4.24 — New check added, discovered during WhatIfMachine audit, March 2026:*
 

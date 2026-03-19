@@ -15,7 +15,7 @@ REQUIRED_KEYS = ['card', 'cardAlt', 'text', 'textSecondary', 'textMuted',
 BANNED_COLORS = ['bg-blue', 'text-blue', 'border-blue', 'bg-purple', 'text-purple',
                  'bg-violet', 'text-violet', 'bg-indigo', 'text-indigo',
                  'bg-teal', 'text-teal', 'bg-stone', 'text-stone', 'bg-yellow', 'text-yellow']
-SKIP = {'crowd-wisdom','debate-me','usePersistentState','tools','ActionButtons','printBranding','BrandMark','GlobalHeader','ToolPageWrapper'}
+SKIP = {'crowd-wisdom','debate-me','usePersistentState','tools','ActionButtons','printBranding','BrandMark','GlobalHeader','ToolPageWrapper','server','index','rateLimiter','useTheme','useDocumentHead','useSurvivalMath','usePersistentState','imageCompression'}
 
 def get_c_block(content):
     c_start = content.find('const c = {')
@@ -66,6 +66,22 @@ for name, fpath in tools:
             if 'tool?.icon' not in window:
                 fails.append('S0: animate-spin without tool?.icon nearby')
                 break
+
+    # S0: icon placement — must be inline before title with mr-2, dynamic not hardcoded
+    import re as _re
+    # Check 1: h1/h2 must not contain bare string (non-JSX expression)
+    # Only flag bare h1/h2 strings when tool?.title is absent (avoids flagging internal view headings)
+    if 'tool?.title' not in content:
+        bare_h = [m for m in _re.findall(r'<h[12][^>]*>([^\n{<]{3,})', content) if m.strip()]
+        if bare_h:
+            fails.append(f'S0: hardcoded text in h1/h2 (must use {{tool?.title}}): {bare_h[:2]}')
+    # Check 2: mr-2 + tool?.icon must both exist somewhere in the file (multiline headers)
+    if 'mr-2' not in content or 'tool?.icon' not in content:
+        fails.append('S0: header missing icon pattern — use <span className="mr-2">{tool?.icon ?? fallback}</span>{tool?.title}')
+    # Check 3: tool?.icon must appear at least twice (header + submit button)
+    icon_count = content.count('tool?.icon')
+    if icon_count < 2:
+        fails.append(f'S0: tool?.icon appears only {icon_count} time(s) — must be in header AND submit button(s)')
 
     # S1.1: no hex values (non-comment lines, skip print template HTML strings and inline style/SVG attrs)
     for m in re.finditer(r'#[0-9a-fA-F]{6}|#[0-9a-fA-F]{3}\b', content):
