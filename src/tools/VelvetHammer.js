@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -50,19 +50,15 @@ const VelvetHammer = ({ tool }) => {
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-500' : 'text-gray-400',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
     btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
-    success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
     warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
-    pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
     rageBg:        isDark ? 'bg-red-900/10 border-red-800/30' : 'bg-red-50 border-red-200',
   };
 
-  const [draft, setDraft] = useState('');
+  const [draft, setDraft] = usePersistentState('velvethammer-draft', '');
   const [relationship, setRelationship] = useState('colleague');
   const [goal, setGoal] = useState('behavior_change');
   const [power, setPower] = useState('neutral');
@@ -70,17 +66,7 @@ const VelvetHammer = ({ tool }) => {
   const [error, setError] = useState('');
   const [history, setHistory] = usePersistentState('velvethammer-history', []);
   const [showHistory, setShowHistory] = useState(false);
-
-  useEffect(() => {
-    const handler = (e) => {
-      const tag = document.activeElement?.tagName;
-      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
-      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !loading) handleTransform();
-    };
-    document.addEventListener('keydown', handler);
-    return () => document.removeEventListener('keydown', handler);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loading]);
+  const resultsRef = useRef(null);
 
   const handleTransform = async () => {
     if (!draft.trim()) return;
@@ -94,11 +80,23 @@ const VelvetHammer = ({ tool }) => {
       setHistory(prev => [{
         id: Date.now(), date: new Date().toISOString(),
         preview: draft.trim().slice(0, 40),
+        result: data,
       }, ...prev].slice(0, 6));
     } catch (err) {
       setError(err.message || 'Failed to transform. Try again.');
     }
   };
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    const handler = (e) => {
+      const tag = document.activeElement?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !loading && draft.trim()) handleTransform();
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [loading, draft]); // eslint-disable-line
 
   const handleReset = () => { setResults(null); setError(''); setDraft(''); };
 
@@ -133,7 +131,7 @@ const VelvetHammer = ({ tool }) => {
           <h2 className={`text-2xl font-bold ${c.text}`}>
             <span className="mr-2">{tool?.icon ?? '🔨'}</span>{tool?.title ?? 'Velvet Hammer'}
           </h2>
-          <p className={`text-sm ${c.textMuted}`}>{tool?.tagline ?? 'Transform furious drafts into professional messages'}</p>
+          <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Transform furious drafts into professional messages'}</p>
         </div>
         {history.length > 0 && (
           <button onClick={() => setShowHistory(!showHistory)}
@@ -205,7 +203,7 @@ const VelvetHammer = ({ tool }) => {
           className={`w-full py-3 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all disabled:opacity-40 ${c.btnPrimary}`}>
           {loading
             ? <><span className="inline-block animate-spin">{tool?.icon ?? '🔨'}</span> Transforming…</>
-            : <><span>🔨</span> Transform Message</>}
+            : <><span>{tool?.icon ?? '🔨'}</span> Transform Message</>}
         </button>
         <p className={`text-xs text-center ${c.textMuted}`}>AI-generated — review before sending.</p>
 
@@ -215,6 +213,8 @@ const VelvetHammer = ({ tool }) => {
       {/* Results */}
       {results && (
         <div className="space-y-4">
+          <div ref={resultsRef} />
+          <ActionBar content={buildAllText()} copyLabel="Copy All" printContent={buildAllText()} printTitle="Velvet Hammer Transforms" />
 
           {/* Rage audit */}
           {results.rage_audit && (
@@ -247,16 +247,13 @@ const VelvetHammer = ({ tool }) => {
             </div>
           ))}
 
-          {/* Actions */}
-          <ActionBar content={buildAllText()} title="Velvet Hammer Transforms" />
-
           {/* Cross-tool links */}
           <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
             <p className={`text-xs font-bold ${c.textMuted} mb-2`}>🔗 Related tools</p>
             <div className="flex flex-wrap gap-3">
-              <a href="/tool/difficult-talk-coach" className={`text-xs ${linkStyle}`}>💬 Difficult Talk Coach</a>
-              <a href="/tool/conflict-coach" className={`text-xs ${linkStyle}`}>⚔️ Conflict Coach</a>
-              <a href="/tool/comeback-cooker" className={`text-xs ${linkStyle}`}>🗣️ Comeback Cooker</a>
+              <a href="/DifficultTalkCoach" className={`text-xs ${linkStyle}`}>💬 Difficult Talk Coach</a>
+              <a href="/ConflictCoach" className={`text-xs ${linkStyle}`}>⚔️ Conflict Coach</a>
+              <a href="/ComebackCooker" className={`text-xs ${linkStyle}`}>🗣️ Comeback Cooker</a>
             </div>
           </div>
 

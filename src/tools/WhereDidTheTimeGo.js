@@ -250,6 +250,10 @@ const WhereDidTheTimeGo = ({ tool }) => {
         {/* Results */}
         {results && (
           <div ref={resultsRef} className="space-y-5">
+            <ActionBar
+              content={buildFullText()}
+              title="Where Did the Time Go?"
+            />
 
             {/* Validation first */}
             {results.what_you_actually_did && (
@@ -386,19 +390,15 @@ const WhereDidTheTimeGo = ({ tool }) => {
               </div>
             )}
 
-            {/* Actions */}
-            <div className="flex flex-wrap items-center gap-2">
-              <ActionBar
-                content={buildFullText()}
-                title="Where Did the Time Go?"
-              />
-              <button
-                onClick={handleReset}
-                className={`${c.btnSecondary} px-4 py-2 rounded-lg text-sm transition-colors flex items-center gap-1.5`}
-              >
-                <span>🔄</span> Analyze another {timeframe === 'today' ? 'day' : 'period'}
-              </button>
-            </div>
+
+
+            {/* Reset */}
+            <button
+              onClick={handleReset}
+              className={`w-full ${c.btnSecondary} py-3 rounded-xl text-sm font-medium transition-colors flex items-center justify-center gap-2`}
+            >
+              <span>🔄</span> Analyze another {timeframe === 'today' ? 'day' : 'period'}
+            </button>
 
             {/* Cross-references — results */}
             <div className={`${c.cardAlt} ${c.border} border rounded-xl p-4 space-y-2`}>

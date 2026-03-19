@@ -1,9 +1,6 @@
-/* eslint-disable */
-// Server-side only
-// const express = require('express');
-// const router = express.Router();
-// Server-side only — not bundled by webpack
-// const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const express = require('express');
+const router = express.Router();
+const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
 
 // ════════════════════════════════════════════════════════════
 // POST /velvet-hammer — Transform angry drafts into professional messages
@@ -101,10 +98,10 @@ Return ONLY valid JSON:
 }`;
 
     const response = await anthropic.messages.create({
-      model: 'claude-opus-4-5',
+      model: 'claude-sonnet-4-20250514',
       max_tokens: 1200,
       messages: [{ role: 'user', content: userPrompt }],
-      system: systemPrompt,
+      system: withLanguage(systemPrompt, req.body.userLanguage),
     });
 
     const raw = response.content[0]?.text || '';

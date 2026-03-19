@@ -125,7 +125,10 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
   const [sortMode, setSortMode]             = useState('alpha');
   const [favorites, setFavorites]           = useState(() => loadFromStorage(STORAGE_KEYS.favorites));
   const [recents, setRecents]               = useState(() => loadFromStorage(STORAGE_KEYS.recents));
-  const searchRef = useRef(null);
+  const searchRef     = useRef(null);
+  const resultsRef    = useRef(null);
+  const stripScrollRef = useRef(null);
+  const pillRefsMap    = useRef({});
 
   // ⌘K shortcut
   useEffect(() => {
@@ -236,7 +239,19 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
   }, []);
   const selectCategory = useCallback((cat) => {
     setActiveCategory(cat);
-    window.scrollTo({ top: 0, behavior: 'instant' });
+    if (cat !== 'All') {
+      setTimeout(() => {
+        // Scroll the strip to show the active pill
+        const scroll = stripScrollRef.current;
+        const pill   = pillRefsMap.current[cat];
+        if (scroll && pill) {
+          scroll.scrollTo({ left: pill.offsetLeft - 8, behavior: 'smooth' });
+        }
+        resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 50);
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   }, []);
 
   const isSearching  = searchTerm.trim().length > 0;
@@ -245,6 +260,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
   return (
     <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 pb-16"
          style={{ background: CLR.sand50, minHeight: '100vh' }}>
+      <style>{`.db-strip-scroll::-webkit-scrollbar{display:none}`}</style>
 
       {/* ═══════════ HEADER ═══════════ */}
       <header className="w-full py-3" style={{ borderBottom: `1px solid ${CLR.sand200}` }}>
@@ -299,85 +315,133 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
         )}
       </div>
 
-      {/* ═══════════ CATEGORY TILES ═══════════ */}
-      <section className="mb-8">
-        <div className="flex items-center gap-3 mb-3">
-          <p className="text-[10px] font-extrabold uppercase tracking-[0.15em] flex-shrink-0"
-             style={{ color: CLR.sand300 }}>
-            Browse by category
-          </p>
-          <div className="flex-1 h-px" style={{ background: CLR.sand200 }} />
-          {/* All Tools + Favorites pills */}
-          <div className="flex gap-1.5">
-            <TilePill
-              label="All"
-              emoji="🏠"
-              count={toolsWithCategories.length}
-              isActive={activeCategory === 'All'}
-              onClick={() => selectCategory('All')}
-            />
-            <TilePill
-              label="Faves"
-              emoji="⭐"
-              count={favorites.length}
-              isActive={activeCategory === 'Favorites'}
-              onClick={() => selectCategory('Favorites')}
-            />
+      {/* ═══════════ CATEGORY STRIP ═══════════ */}
+      <div className="flex items-center mb-1" style={{ paddingLeft: 12 }}>
+        <div style={{ width: 163, flexShrink: 0 }} />
+        <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]"
+           style={{ color: CLR.warm500 }}>Categories</p>
+      </div>
+      <div className="mb-3" style={{
+        background: CLR.navy500,
+        borderRadius: 14,
+        padding: '10px 12px',
+        boxShadow: `0 2px 12px ${CLR.navy500}40`,
+        overflow: 'hidden',
+      }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+        {/* Fixed anchors — never scroll */}
+        <div style={{ display: 'flex', gap: 5, flexShrink: 0, alignItems: 'center' }}>
+          <TilePill label="ALL"   emoji="🏠" count={toolsWithCategories.length} hideCount highlight
+            isActive={activeCategory === 'All'}       onClick={() => selectCategory('All')} />
+          <TilePill label="Faves" emoji="⭐" count={favorites.length}
+            isActive={activeCategory === 'Favorites'} onClick={() => selectCategory('Favorites')} />
+          <div style={{ width: 1, background: 'rgba(255,255,255,0.12)', flexShrink: 0, margin: '0 3px', alignSelf: 'stretch' }} />
+        </div>
+        {/* Scrollable categories + fade hint */}
+        <div style={{ position: 'relative', flex: 1, minWidth: 0, overflow: 'hidden' }}>
+          <div ref={stripScrollRef} className="db-strip-scroll" style={{
+            display: 'flex',
+            gap: 5,
+            overflowX: 'auto',
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none',
+            paddingRight: 40,
+          }}>
+            {CATEGORY_META.map(cat => {
+              const count = categoryCounts[cat.name] || 0;
+              if (!count) return null;
+              return (
+                <span key={cat.name} ref={el => { if (el) pillRefsMap.current[cat.name] = el; }}
+                      style={{ display: 'inline-flex', flexShrink: 0 }}>
+                  <TilePill
+                    label={cat.name}
+                    emoji={cat.emoji}
+                    count={count}
+                    isActive={activeCategory === cat.name}
+                    onClick={() => selectCategory(activeCategory === cat.name ? 'All' : cat.name)}
+                  />
+                </span>
+              );
+            })}
+          </div>
+          {/* Fade-to-container + chevron scroll hint */}
+          <div style={{
+            position: 'absolute', right: 0, top: 0, bottom: 0, width: 48,
+            background: `linear-gradient(to right, ${CLR.navy500}00, ${CLR.navy500} 65%)`,
+            pointerEvents: 'none', zIndex: 2,
+            display: 'flex', alignItems: 'center', justifyContent: 'flex-end',
+            paddingRight: 2,
+          }}>
+            <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', lineHeight: 1 }}>›</span>
           </div>
         </div>
-
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(128px, 1fr))',
-          gap: 6,
-        }}>
-          {CATEGORY_META.map(cat => {
-            const isActive = activeCategory === cat.name;
-            const count    = categoryCounts[cat.name] || 0;
-            return (
-              <CategoryTile
-                key={cat.name}
-                cat={cat}
-                count={count}
-                isActive={isActive}
-                isEmpty={count === 0}
-                onClick={() => { if (count > 0) selectCategory(isActive ? 'All' : cat.name); }}
-              />
-            );
-          })}
-        </div>
-      </section>
+      </div>
+      </div>
 
       {/* ═══════════ RESULTS HEADER ═══════════ */}
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2">
-          {activeCategory === 'All'       && <span className="text-base">🏠</span>}
-          {activeCategory === 'Favorites' && <span className="text-base">⭐</span>}
-          {activeMeta                     && <span className="text-base">{activeMeta.emoji}</span>}
-          <h2 className="text-sm font-extrabold tracking-tight" style={{ color: CLR.navy700 }}>
-            {activeCategory === 'All' ? 'All Tools' : activeCategory}
-          </h2>
-          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded"
-                style={{ background: CLR.sand100, color: CLR.warm500 }}>
-            {filteredTools.length}
-          </span>
-          {isSearching && (
-            <span className="text-[11px] font-medium" style={{ color: CLR.warm500 }}>
-              for "{searchTerm}"
-            </span>
-          )}
-        </div>
+      <div ref={resultsRef} style={{ scrollMarginTop: 16 }}>
 
-        {/* Sort */}
-        <button
-          onClick={() => setSortMode(prev => prev === 'alpha' ? 'mostUsed' : 'alpha')}
-          className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold transition-colors"
-          style={{ color: CLR.warm700 }}
-          title={sortMode === 'alpha' ? 'Sorted A–Z' : 'Sorted by most used'}
-        >
-          <span className="text-xs">↕️</span>
-          {sortMode === 'alpha' ? 'A–Z' : 'Most Used'}
-        </button>
+        {/* Search result count — only when searching */}
+        {isSearching && (
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-[11px] font-semibold" style={{ color: CLR.warm500 }}>
+              {filteredTools.length === 0
+                ? 'No tools found — try different words'
+                : `${filteredTools.length} tool${filteredTools.length !== 1 ? 's' : ''} for "${searchTerm}"`}
+            </p>
+            <SortBtn sortMode={sortMode} setSortMode={setSortMode} />
+          </div>
+        )}
+
+        {/* Category banner — only when a real category is active */}
+        {!isSearching && activeCategory !== 'All' && (
+          <div className="flex items-center justify-between mb-4 pb-3"
+               style={{ borderBottom: `2px solid ${CLR.sand200}` }}>
+            <div className="flex items-center gap-3">
+              <span style={{ fontSize: 28, lineHeight: 1 }}>
+                {activeCategory === 'Favorites' ? '⭐' : activeMeta?.emoji}
+              </span>
+              <button
+                onClick={() => selectCategory('All')}
+                title="Clear filter"
+                style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', textAlign: 'left' }}
+              >
+                <h2 className="text-base font-extrabold leading-tight tracking-tight"
+                    style={{ color: CLR.navy700 }}>
+                  {activeCategory}
+                </h2>
+                {activeMeta?.sub && (
+                  <p className="text-[11px] mt-0.5" style={{ color: CLR.warm500 }}>
+                    {activeMeta.sub}
+                  </p>
+                )}
+              </button>
+              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded ml-1"
+                    style={{ background: CLR.navy500 + '18', color: CLR.navy500 }}>
+                {filteredTools.length}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <SortBtn sortMode={sortMode} setSortMode={setSortMode} />
+              <button
+                onClick={() => selectCategory('All')}
+                className="flex items-center gap-1 px-2 py-1.5 rounded-lg text-[11px] font-semibold transition-colors"
+                style={{ color: CLR.warm500 }}
+                title="Clear filter"
+              >
+                <span>✕</span>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Sort button for plain All view */}
+        {!isSearching && activeCategory === 'All' && (
+          <div className="flex justify-end mb-3">
+            <SortBtn sortMode={sortMode} setSortMode={setSortMode} />
+          </div>
+        )}
+
       </div>
 
       {/* ═══════════ EMPTY STATES ═══════════ */}
@@ -405,11 +469,17 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
         groupedTools.map(group => (
           <div key={group.name} className="mb-6">
             <div className="flex items-center gap-2 mb-1.5 mt-2">
-              <span className="text-sm">{group.emoji}</span>
-              <h3 className="text-[10px] font-extrabold uppercase tracking-wider"
-                  style={{ color: CLR.warm500 }}>{group.name}</h3>
-              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded"
-                    style={{ color: CLR.warm500, background: CLR.sand100 }}>{group.tools.length}</span>
+              <button
+                onClick={() => selectCategory(group.name)}
+                title={`Filter by ${group.name}`}
+                style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}
+              >
+                <span className="text-sm">{group.emoji}</span>
+                <h3 className="text-[10px] font-extrabold uppercase tracking-wider"
+                    style={{ color: CLR.warm500 }}>{group.name}</h3>
+                <span className="text-[9px] font-bold px-1.5 py-0.5 rounded"
+                      style={{ color: CLR.warm500, background: CLR.sand100 }}>{group.tools.length}</span>
+              </button>
               <div className="flex-1 h-px" style={{ background: CLR.sand200 }} />
             </div>
             <div className={`${group.tools.length > 3 ? 'md:columns-2' : ''} gap-x-4`}>
@@ -438,48 +508,22 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
   );
 }
 
+
+
+
 // ════════════════════════════════════════════════════════════
-// CATEGORY TILE
+// SORT BUTTON
 // ════════════════════════════════════════════════════════════
-function CategoryTile({ cat, count, isActive, isEmpty, onClick }) {
-  const [hovered, setHovered] = useState(false);
+function SortBtn({ sortMode, setSortMode }) {
   return (
     <button
-      onClick={onClick}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      style={{
-        background:   isActive ? CLR.navy500 : hovered && !isEmpty ? CLR.navy50 : '#fff',
-        border:       `1.5px solid ${isActive ? CLR.navy500 : hovered && !isEmpty ? CLR.navy200 : CLR.sand200}`,
-        borderRadius: 10,
-        padding:      '8px 10px',
-        textAlign:    'left',
-        cursor:       isEmpty ? 'default' : 'pointer',
-        transition:   'all 0.13s',
-        opacity:      isEmpty ? 0.4 : 1,
-        boxShadow:    isActive ? `0 3px 12px ${CLR.navy500}28` : hovered && !isEmpty ? `0 2px 6px ${CLR.navy100}` : 'none',
-      }}
+      onClick={() => setSortMode(prev => prev === 'alpha' ? 'mostUsed' : 'alpha')}
+      className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold transition-colors"
+      style={{ color: CLR.warm700 }}
+      title={sortMode === 'alpha' ? 'Sorted A–Z' : 'Sorted by most used'}
     >
-      {/* Emoji + count */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
-        <span style={{ fontSize: 16, lineHeight: 1 }}>{cat.emoji}</span>
-        <span style={{
-          fontSize: 9, fontWeight: 800, lineHeight: 1.6,
-          padding: '1px 5px', borderRadius: 4,
-          color:      isActive ? CLR.navy700 : CLR.warm500,
-          background: isActive ? CLR.gold300  : CLR.sand100,
-        }}>{count}</span>
-      </div>
-      {/* Name */}
-      <div style={{
-        fontSize: 11, fontWeight: 800, lineHeight: 1.25, marginBottom: 2,
-        color: isActive ? '#fff' : CLR.navy700,
-      }}>{cat.name}</div>
-      {/* Sub */}
-      <div style={{
-        fontSize: 9, lineHeight: 1.35,
-        color: isActive ? 'rgba(255,255,255,0.6)' : CLR.warm500,
-      }}>{cat.sub}</div>
+      <span className="text-xs">↕️</span>
+      {sortMode === 'alpha' ? 'A–Z' : 'Most Used'}
     </button>
   );
 }
@@ -487,25 +531,24 @@ function CategoryTile({ cat, count, isActive, isEmpty, onClick }) {
 // ════════════════════════════════════════════════════════════
 // TILE PILL (All / Favorites)
 // ════════════════════════════════════════════════════════════
-function TilePill({ label, emoji, count, isActive, onClick }) {
+function TilePill({ label, emoji, count, isActive, onClick, hideCount = false, highlight = false }) {
   return (
     <button
       onClick={onClick}
-      className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all"
+      className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all flex-shrink-0"
       style={{
-        background: isActive ? CLR.navy500 : CLR.sand100,
-        color:      isActive ? '#fff'       : CLR.warm700,
-        border:     `1.5px solid ${isActive ? CLR.navy500 : CLR.sand200}`,
+        background: isActive ? CLR.gold300   : CLR.navy600,
+        color:      isActive ? CLR.navy700   : 'rgba(255,255,255,0.85)',
+        border:     `1.5px solid ${isActive ? CLR.gold500 : highlight ? CLR.gold500 : 'rgba(255,255,255,0.08)'}`,
       }}
     >
-      <span>{emoji}</span>
-      <span>{label}</span>
-      <span style={{
+      <span style={{ whiteSpace: 'nowrap' }}>{emoji} {label}</span>
+      {!hideCount && <span style={{
         fontSize: 9, fontWeight: 800, padding: '0 4px',
         borderRadius: 4,
-        background: isActive ? CLR.gold300  : CLR.sand200,
-        color:      isActive ? CLR.navy700  : CLR.warm500,
-      }}>{count}</span>
+        background: isActive ? CLR.gold500           : 'rgba(255,255,255,0.12)',
+        color:      isActive ? '#fff'                : 'rgba(255,255,255,0.55)',
+      }}>{count}</span>}
     </button>
   );
 }

@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { ActionBar } from '../components/ActionButtons';
@@ -103,6 +103,8 @@ const WrongAnswersOnly = ({ tool }) => {
     }
   }, [question, category, seriousness, callToolEndpoint, setResults, setHistory]);
 
+  // Run with an explicit question value — avoids stale closure from pill clicks
+
   // ── Copy text builder ──
   const buildFullText = useCallback(() => {
     if (!results) return '';
@@ -119,6 +121,25 @@ const WrongAnswersOnly = ({ tool }) => {
     lines.push(BRAND);
     return lines.join('\n');
   }, [results]);
+
+  // ── Keyboard shortcuts ──
+  useEffect(() => {
+    const handler = (e) => {
+      if (e.key !== 'Enter') return;
+      if (!question.trim() || loading) return;
+      const tag = document.activeElement?.tagName;
+      // Cmd/Ctrl+Enter from anywhere; plain Enter only when not in a text field
+      if (e.metaKey || e.ctrlKey) {
+        e.preventDefault();
+        runWrong();
+      } else if (tag !== 'INPUT' && tag !== 'TEXTAREA') {
+        e.preventDefault();
+        runWrong();
+      }
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [question, loading, runWrong]);
 
   // ── Wrongness bar ──
   const wrongnessLevel = results?.wrongness_level || 0;
@@ -141,8 +162,15 @@ const WrongAnswersOnly = ({ tool }) => {
           <label className={`text-[10px] font-bold ${c.labelText} uppercase block mb-2`}>Try one</label>
           <div className="flex flex-wrap gap-1.5">
             {QUICK_QUESTIONS.map((q, i) => (
-              <button key={i} onClick={() => { setQuestion(q); setResults(null); }}
-                className={`${c.btnSecondary} px-2.5 py-1.5 rounded-lg text-[11px] font-medium min-h-[28px]`}>
+              <button key={i} onClick={() => {
+                  setQuestion(q);
+                  setResults(null);
+                  setShowReal(false);
+                  setError('');
+                }}
+                className={`px-2.5 py-1.5 rounded-lg text-[11px] font-medium min-h-[28px] border transition-colors ${
+                  question === q ? c.pillActive : c.btnSecondary
+                }`}>
                 {q}
               </button>
             ))}

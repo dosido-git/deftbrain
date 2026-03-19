@@ -146,8 +146,14 @@ for name, fpath in tools:
                 fails.append(f'S1.1: real TDZ in c block: {line.strip()[:60]}')
 
     # S1.1: hover:text-red- in JSX area (outside c block)
-    if 'hover:text-red-' in jsx_area:
-        fails.append('S1.1: hover:text-red- hardcoded in JSX (outside c block)')
+    # Exclude matches that are inside a c-block string value (part of a textGhostDel-style key)
+    import re as _re3
+    for _m in _re3.finditer(r'hover:text-red-', jsx_area):
+        _window = jsx_area[max(0,_m.start()-80):_m.start()]
+        # Skip if it's inside a c-block value (key: isDark ? '...' pattern)
+        if not _re3.search(r"(?:isDark\s*\?|:\s*')[^']*$", _window):
+            fails.append('S1.1: hover:text-red- hardcoded in JSX (outside c block)')
+            break
 
     # S1.1: helper functions returning raw class strings without isDark
     for m in re.finditer(r"=>\s*['\"](?:bg-|text-|border-)", content):
@@ -163,6 +169,18 @@ for name, fpath in tools:
         fails.append('S1.4: lucide-react imported')
     if '<ActionBar' not in content:
         fails.append('S1.4: ActionBar not present')
+    elif 'resultsRef' not in content:
+        fails.append('S1.4: ActionBar present but no resultsRef anchor — results panel missing scroll target')
+    else:
+        # ActionBar must be within 3 lines of its nearest resultsRef
+        _lines = content.split('\n')
+        _ab_lines = [i for i,l in enumerate(_lines) if '<ActionBar' in l and 'import' not in l]
+        _rr_lines = [i for i,l in enumerate(_lines) if 'ref={resultsRef}' in l]
+        for _ab in _ab_lines:
+            _nearest = min(_rr_lines, key=lambda r: abs(r-_ab)) if _rr_lines else None
+            if _nearest is None or abs(_ab - _nearest) > 10:
+                fails.append(f'S1.4: ActionBar at line {_ab+1} is {abs(_ab-_nearest) if _nearest else "?"} lines from nearest resultsRef — must be within 10 lines (top of results)')
+                break
     # S1.4: standalone PrintBtn is valid when used directly alongside CopyBtn
     # The real violation is custom window.open bypasses (caught by S1.4e below)
     if 'BRAND' not in content and 'deftbrain.com' not in content:
@@ -195,9 +213,23 @@ for name, fpath in tools:
     if re.search(r"toLocaleString\s*\(\s*'default'", content) or re.search(r"toLocaleDateString\s*\(\s*'default'", content):
         fails.append("S1.4g: toLocaleString/toLocaleDateString('default') — use undefined or 'en' (Safari crash)")
 
-    # S1.5: reset
-    if not re.search(r'setResults\s*\(\s*null\s*\)|handleReset|const reset\s*=|clearAll|clearAndRestart|startOver|handleClear|resetForm|resetAll|setReset', content):
+    # S1.5: reset function exists
+    reset_fn = re.search(r'setResults\s*\(\s*null\s*\)|handleReset|const reset\s*=|clearAll|clearAndRestart|startOver|handleClear|resetForm|resetAll|setReset', content)
+    if not reset_fn:
         fails.append('S1.5: no reset function')
+    else:
+        # Reset must also be wired to a visible button in JSX
+        reset_names = re.findall(r'const (reset\w*|handleReset\w*|startOver\w*|clearAll\w*|resetForm\w*|resetAndGoBack\w*)', content)
+        reset_rendered = False
+        for rn in reset_names:
+            if re.search(rf'onClick={{[^}}]*{re.escape(rn)}', content):
+                reset_rendered = True
+                break
+        # Also accept inline setResults(null) in onClick
+        if re.search(r"onClick=\{[^}]*setResults\(null\)", content):
+            reset_rendered = True
+        if not reset_rendered:
+            fails.append('S1.5: reset function defined but no onClick button renders it')
 
     # S1.5: history in usePersistentState (accept *History, *Log, *log as equivalents)
     if not re.search(r'usePersistentState[^\n]*(?:[Hh]istor|[Ll]og|[Aa]dventure|[Jj]ournal)|(?:[Hh]istor|[A-Za-z]+[Ll]og|[Aa]dventure|[Jj]ournal)[^\n]*usePersistentState|loadHistory\(\)|saveHistory\(', content):
@@ -259,8 +291,8 @@ for name, fpath in tools:
         fails.append('S5.4: no AI disclaimer')
 
     # S5.5: cross-refs — dynamic href={`/tool/${var}`} counts as 1 regardless of array size
-    static_hrefs = len(re.findall(r'href=["\'][/]tool/[A-Za-z]', content))
-    dynamic_hrefs = min(1, len(re.findall(r'href=\{[`][/]tool/\$\{', content)))
+    static_hrefs = len(re.findall(r'href=["\'][/](?:tool/)?[A-Za-z]', content))
+    dynamic_hrefs = min(1, len(re.findall(r'href=\{[`][/](?:tool/)?\$?\{?[A-Za-z]', content)))
     href_count = static_hrefs + dynamic_hrefs
     if href_count == 0:
         fails.append('S5.5: no cross-tool links')

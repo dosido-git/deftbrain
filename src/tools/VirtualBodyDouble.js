@@ -60,8 +60,8 @@ const SESSION_MODES = [
 
 // Mode-specific color accents for active session
 const MODE_COLORS = {
-  default:          { bar: 'bg-sky-500',     glow: 'shadow-sky-500/20',     badge: 'bg-sky-500' },
-  deep_work:        { bar: 'bg-sky-500',  glow: 'shadow-sky-500/20',  badge: 'bg-sky-500' },
+  default:          { bar: 'bg-cyan-500',    glow: 'shadow-cyan-500/20',    badge: 'bg-cyan-500' },
+  deep_work:        { bar: 'bg-cyan-600',    glow: 'shadow-cyan-600/20',    badge: 'bg-cyan-600' },
   sprint:           { bar: 'bg-orange-500',  glow: 'shadow-orange-500/20',  badge: 'bg-orange-500' },
   grind:            { bar: 'bg-zinc-500',    glow: 'shadow-zinc-500/20',    badge: 'bg-zinc-600' },
   creative:         { bar: 'bg-cyan-500',  glow: 'shadow-cyan-500/20',  badge: 'bg-cyan-500' },
@@ -99,10 +99,6 @@ const VirtualBodyDouble = ({ tool }) => {
   const { isDark } = useTheme();
 
   // ─── Color config ───
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
-
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
@@ -118,26 +114,31 @@ const VirtualBodyDouble = ({ tool }) => {
     success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
     warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
+    // ── Bespoke keys ──
+    tag:            isDark ? 'bg-zinc-700 text-zinc-300 hover:bg-zinc-600 border-zinc-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200 border-gray-200',
+    tagActive:      isDark ? 'bg-cyan-900/40 text-cyan-200 border-cyan-600' : 'bg-cyan-100 text-cyan-800 border-cyan-400',
+    cardHover:      isDark ? 'hover:bg-zinc-700' : 'hover:bg-gray-50',
+    accentHover:    isDark ? 'hover:bg-cyan-700' : 'hover:bg-cyan-700',
+    accentLight:    isDark ? 'bg-cyan-900/25 border-cyan-700' : 'bg-cyan-50 border-cyan-200',
+    accentLightText: isDark ? 'text-cyan-300' : 'text-cyan-800',
+    errorText:      isDark ? 'text-red-300' : 'text-red-700',
+    textGhostDel:   isDark ? 'text-zinc-500 hover:text-red-400' : 'text-gray-400 hover:text-red-500',
+    bubbleBg:       isDark ? 'bg-zinc-700' : 'bg-gray-100',
+    bubbleText:     isDark ? 'text-zinc-100' : 'text-gray-800',
     pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
     badge:         isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-100 text-cyan-800',
-    infoBox:       isDark ? 'bg-sky-900/20 border-sky-700 text-sky-200' : 'bg-sky-50 border-sky-200 text-sky-800',
-  };;
+    infoBox:       isDark ? 'bg-cyan-900/20 border-cyan-700 text-cyan-200' : 'bg-cyan-50 border-cyan-200 text-cyan-800',
+  };
+  const linkStyle = isDark
+    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
+    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
+
 
   // ─── State: View ───
   const [view, setView] = useState('setup');
   const [error, setError] = useState('');
-  const [history, setHistory] = usePersistentState('virtualbodydouble-history', []);
-
-  useEffect(() => {
-    const handler = (e) => {
-      const tag = document.activeElement?.tagName;
-      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
-      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !loading) handleStart();
-    };
-    document.addEventListener('keydown', handler);
-    return () => document.removeEventListener('keydown', handler);
-  }, [loading]);
+  const [history, _setHistory] = usePersistentState('virtualbodydouble-history', []);
 
   // ─── State: Setup ───
   const [task, setTask] = useState('');
@@ -190,6 +191,7 @@ const VirtualBodyDouble = ({ tool }) => {
   // ─── Refs ───
   const timerRef = useRef(null);
   const breakTimerRef = useRef(null);
+  const resultsRef = useRef(null);
   const ambientTimerRef = useRef(null);
   const chatEndRef = useRef(null);
   const nextCheckInRef = useRef(0);
@@ -235,9 +237,6 @@ const VirtualBodyDouble = ({ tool }) => {
       }, 600 + Math.random() * 800);
     }, delay);
   }, [addChat]);
-
-  // Keep completeRef in sync
-  useEffect(() => { completeRef.current = handleSessionComplete; }, [handleSessionComplete]);
 
   // ─── Timer logic ───
   useEffect(() => {
@@ -413,6 +412,20 @@ const VirtualBodyDouble = ({ tool }) => {
     }
   }, [task, actualDuration, checkInsDone, totalCheckIns, mood, moodAfter, sessionLog, subTasks, subTasksCompleted, soundEnabled, notificationsEnabled, sessionMode, callToolEndpoint]);
 
+  // ─── Keep completeRef current (must be after handleSessionComplete) ───
+  useEffect(() => { completeRef.current = handleSessionComplete; }, [handleSessionComplete]);
+
+  // ─── Keyboard shortcut (must be after handleStart) ───
+  useEffect(() => {
+    const handler = (e) => {
+      const tag = document.activeElement?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !loading) handleStart();
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [loading]); // handleStart omitted: plain async fn re-created each render, cleanup on loading change ensures fresh closure
+
   // ─── Generate accountability card (v4) ───
   const handleGenerateCard = async () => {
     setShowCard(true);
@@ -518,20 +531,25 @@ const VirtualBodyDouble = ({ tool }) => {
         <div className="max-w-xl mx-auto space-y-5">
 
           {/* Header */}
-          <div className="text-center mb-2">
-            <span className="text-4xl">👥</span>
-            <h1 className={`text-2xl font-bold ${c.text} mt-2`}>Virtual Body Double</h1>
-            <p className={`${c.textSecondaryondary} text-sm mt-1`}>A quiet coworking partner for solo tasks</p>
+          <div className="mb-2">
+            <h1 className={`text-2xl font-bold ${c.text}`}>
+              <span className="mr-2">{tool?.icon ?? '👥'}</span>{tool?.title}
+            </h1>
+            <p className={`${c.textSecondary} text-sm mt-1`}>{tool?.tagline}</p>
+          </div>
+          <div className={`px-4 py-3 rounded-xl ${c.accentLight} border text-sm ${c.accentLightText} leading-relaxed`}>
+            <span className="font-bold">Working alone is hard. Working near someone else is easier.</span> That's body doubling — the focus effect of another person's presence. This tool simulates it with an AI companion who checks in, cheers you on, and stays with you until the timer ends. Pick a mode, set a task, and you're not alone anymore.
           </div>
 
-          {/* Status bar */}
+          {/* Status bar — only when there is something to show */}
+          {sessionLog.length > 0 && (
           <div className={`${c.card} border rounded-xl p-4`}>
             <div className="flex items-center justify-between flex-wrap gap-2">
               <div>
                 {sessionLog.length > 0 && (
                   <span className={`text-sm font-medium ${c.text}`}>
                     <span>📊</span> {sessionLog.length} session{sessionLog.length !== 1 ? 's' : ''} ·{' '}
-                    <span className={`text-xs ${c.textMuteded}`}>
+                    <span className={`text-xs ${c.textMuted}`}>
                       {Math.round(sessionLog.reduce((sum, s) => sum + (s.minutesWorked || 0), 0) / 60 * 10) / 10}h total
                     </span>
                   </span>
@@ -554,6 +572,7 @@ const VirtualBodyDouble = ({ tool }) => {
               </div>
             </div>
           </div>
+          )}
 
           {/* Session Mode selector (v4) */}
           <div className={`${c.card} border rounded-xl p-5 space-y-3`}>
@@ -570,7 +589,7 @@ const VirtualBodyDouble = ({ tool }) => {
                   <span className="text-lg">{m.icon}</span>
                   <div>
                     <span className="text-sm font-medium block">{m.label}</span>
-                    <span className={`text-xs ${sessionMode === m.id ? 'text-white/70' : c.textMuteded}`}>{m.desc}</span>
+                    <span className={`text-xs ${sessionMode === m.id ? 'text-white/70' : c.textMuted}`}>{m.desc}</span>
                   </div>
                 </button>
               ))}
@@ -585,7 +604,7 @@ const VirtualBodyDouble = ({ tool }) => {
                 <input type="text" value={task}
                   onChange={e => { setTask(e.target.value); setShowBreakdown(false); setSubTasks([]); }}
                   placeholder="Writing report, cleaning kitchen, studying chapter 5..."
-                  className={`flex-1 p-3 rounded-lg border ${c.input} focus:ring-2 focus:ring-sky-400 outline-none`}
+                  className={`flex-1 p-3 rounded-lg border ${c.input} outline-none`}
                   onKeyDown={e => e.key === 'Enter' && handleStart()} />
                 {task.trim().length > 3 && (
                   <button onClick={handleBreakdown} disabled={loading}
@@ -603,7 +622,7 @@ const VirtualBodyDouble = ({ tool }) => {
                 <div className="flex items-center justify-between">
                   <p className={`text-xs font-bold ${c.accentLightText} uppercase tracking-wider`}><span>✂️</span> Task breakdown</p>
                   <button onClick={() => { setShowBreakdown(false); setSubTasks([]); setBreakdownData(null); }}
-                    className={`text-xs ${c.textMuteded}`}>✕ Clear</button>
+                    className={`text-xs ${c.textMuted}`}>✕ Clear</button>
                 </div>
                 {breakdownData.strategy_note && <p className={`text-xs ${c.accentLightText} italic`}>{breakdownData.strategy_note}</p>}
                 {breakdownData.sub_tasks?.map((st, i) => (
@@ -611,8 +630,8 @@ const VirtualBodyDouble = ({ tool }) => {
                     <span className={`text-xs font-bold ${c.accentLightText} mt-0.5 w-4`}>{i + 1}</span>
                     <div className="flex-1">
                       <span className={`text-sm ${c.text}`}>{st.label}</span>
-                      <span className={`text-xs ${c.textMuteded} ml-2`}>~{st.estimated_minutes}m</span>
-                      {st.tip && <p className={`text-xs ${c.textMuteded} mt-0.5`}>💡 {st.tip}</p>}
+                      <span className={`text-xs ${c.textMuted} ml-2`}>~{st.estimated_minutes}m</span>
+                      {st.tip && <p className={`text-xs ${c.textMuted} mt-0.5`}>💡 {st.tip}</p>}
                     </div>
                     <span className={`text-xs px-1.5 py-0.5 rounded ${
                       st.difficulty === 'easy' ? 'bg-emerald-100 text-emerald-700' :
@@ -657,9 +676,9 @@ const VirtualBodyDouble = ({ tool }) => {
 
           {/* Optional context */}
           <div className={`${c.card} border rounded-xl p-5 space-y-4`}>
-            <p className={`text-xs font-medium ${c.textMuteded} uppercase tracking-wider`}>Optional context</p>
+            <p className={`text-xs font-medium ${c.textMuted} uppercase tracking-wider`}>Optional context</p>
             <div>
-              <label className={`block text-sm font-medium ${c.textSecondaryondary} mb-2`}>Where are you?</label>
+              <label className={`block text-sm font-medium ${c.textSecondary} mb-2`}>Where are you?</label>
               <div className="flex flex-wrap gap-2">
                 {ENVIRONMENTS.map(e => (
                   <button key={e.id} onClick={() => setEnvironment(environment === e.id ? '' : e.id)}
@@ -670,7 +689,7 @@ const VirtualBodyDouble = ({ tool }) => {
               </div>
             </div>
             <div>
-              <label className={`block text-sm font-medium ${c.textSecondaryondary} mb-2`}>Current mood</label>
+              <label className={`block text-sm font-medium ${c.textSecondary} mb-2`}>Current mood</label>
               <div className="flex flex-wrap gap-2">
                 {MOODS.map(m => (
                   <button key={m.id} onClick={() => setMood(mood === m.id ? '' : m.id)}
@@ -681,10 +700,10 @@ const VirtualBodyDouble = ({ tool }) => {
               </div>
             </div>
             <div>
-              <label className={`block text-sm font-medium ${c.textSecondaryondary} mb-2`}>Session goal (optional)</label>
+              <label className={`block text-sm font-medium ${c.textSecondary} mb-2`}>Session goal (optional)</label>
               <input type="text" value={goals} onChange={e => setGoals(e.target.value)}
                 placeholder="Finish first draft, clear inbox, organize notes..."
-                className={`w-full p-3 rounded-lg border ${c.input} focus:ring-2 focus:ring-sky-400 outline-none text-sm`} />
+                className={`w-full p-3 rounded-lg border ${c.input} outline-none text-sm`} />
             </div>
           </div>
 
@@ -704,9 +723,11 @@ const VirtualBodyDouble = ({ tool }) => {
             </div>
           )}
 
+          <p className={`text-center text-xs ${c.textMuted}`}>AI-generated session plan — buddy persona and suggestions are illustrative.</p>
+
           {/* Cross-references */}
           <div className={`${c.card} border rounded-xl p-4`}>
-            <p className={`text-xs font-medium ${c.textMuteded} mb-2`}>Related tools</p>
+            <p className={`text-xs font-medium ${c.textMuted} mb-2`}>Related tools</p>
             <div className="flex flex-wrap gap-2">
               {[
                 { id: 'BatchFlow', icon: '🔀', label: 'BatchFlow' },
@@ -733,7 +754,7 @@ const VirtualBodyDouble = ({ tool }) => {
                         <span className="text-xs">{SESSION_MODES.find(m => m.id === s.mode)?.icon || '👥'}</span>
                         <span className={`text-sm font-medium ${c.text} truncate`}>{s.task}</span>
                       </div>
-                      <span className={`text-xs ${c.textMuteded}`}>
+                      <span className={`text-xs ${c.textMuted}`}>
                         {s.minutesWorked}m · {new Date(s.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                         {s.subTasksCompleted !== undefined ? ` · ${s.subTasksCompleted}/${s.totalSubTasks} tasks` : ''}
                       </span>
@@ -770,7 +791,7 @@ const VirtualBodyDouble = ({ tool }) => {
             <div className="flex items-center justify-center gap-2 mb-3">
               <span className="text-xs">{SESSION_MODES.find(m => m.id === sessionMode)?.icon}</span>
               <div className={`w-2 h-2 rounded-full ${modeColors.bar} animate-pulse`} />
-              <span className={`text-xs font-medium ${c.textMuteded}`}>
+              <span className={`text-xs font-medium ${c.textMuted}`}>
                 {sessionPlan?.session_personality?.name || 'Buddy'} is here
                 {sessionPlan?.session_personality?.style ? ` · ${sessionPlan.session_personality.style}` : ''}
               </span>
@@ -779,7 +800,7 @@ const VirtualBodyDouble = ({ tool }) => {
             <div className={`text-5xl font-mono font-bold ${c.text} mb-2`}>
               {isOnBreak ? formatTime(breakSecondsRemaining) : formatTime(secondsRemaining)}
             </div>
-            <p className={`text-sm ${c.textMuteded}`}>{isOnBreak ? '☕ Break time' : task}</p>
+            <p className={`text-sm ${c.textMuted}`}>{isOnBreak ? '☕ Break time' : task}</p>
 
             {/* Mode-colored progress bar */}
             <div className={`mt-3 h-2 rounded-full ${isDark ? 'bg-zinc-700' : 'bg-gray-200'} overflow-hidden`}>
@@ -809,7 +830,7 @@ const VirtualBodyDouble = ({ tool }) => {
           {/* Sub-task checklist */}
           {subTasks.length > 0 && (
             <div className={`${c.card} border rounded-xl p-4`}>
-              <p className={`text-xs font-bold ${c.textMuteded} uppercase tracking-wider mb-2`}>
+              <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wider mb-2`}>
                 <span>✂️</span> Sub-tasks · {subTasksCompleted}/{subTasks.length}
               </p>
               <div className="space-y-1.5">
@@ -819,7 +840,7 @@ const VirtualBodyDouble = ({ tool }) => {
                       subTaskChecked[i]
                         ? (isDark ? 'bg-emerald-900/30 text-emerald-300 line-through opacity-60' : 'bg-emerald-50 text-emerald-700 line-through opacity-60')
                         : (i === subTasks.findIndex((_, j) => !subTaskChecked[j])
-                          ? (isDark ? 'bg-sky-900/30 text-sky-200' : 'bg-sky-50 text-sky-800')
+                          ? `${c.accentLight} ${c.accentLightText}`
                           : `${isDark ? 'bg-zinc-700/40 text-zinc-300' : 'bg-gray-50 text-gray-600'}`)
                     }`}>
                     <span>{subTaskChecked[i] ? '✅' : (i === subTasks.findIndex((_, j) => !subTaskChecked[j]) ? '👉' : '⬜')}</span>
@@ -837,12 +858,12 @@ const VirtualBodyDouble = ({ tool }) => {
                 <div key={i} className={`flex ${msg.from === 'user' ? 'justify-end' : 'justify-start'}`}>
                   <div className={`max-w-[85%] rounded-2xl px-4 py-2.5 ${
                     msg.from === 'user'
-                      ? (isDark ? 'bg-sky-600 text-white' : 'bg-sky-500 text-white')
+                      ? (isDark ? 'bg-cyan-700 text-white' : 'bg-cyan-500 text-white')
                       : `${c.bubbleBg} ${c.bubbleText}`
                   }`}>
                     {msg.emoji && msg.from === 'buddy' && <span className="mr-1">{msg.emoji}</span>}
                     <span className="text-sm">{msg.message}</span>
-                    <div className={`text-[10px] mt-1 ${msg.from === 'user' ? 'text-sky-200' : c.textMuteded}`}>{msg.time}</div>
+                    <div className={`text-[10px] mt-1 ${msg.from === 'user' ? 'text-cyan-200' : c.textMuted}`}>{msg.time}</div>
                   </div>
                 </div>
               ))}
@@ -900,12 +921,12 @@ const VirtualBodyDouble = ({ tool }) => {
               <h3 className={`text-sm font-bold ${c.text}`}><span>🔧</span> Unstick Plan</h3>
               {stuckData.micro_steps?.map((step, i) => (
                 <div key={i} className={`flex items-start gap-2 p-2 rounded-lg ${isDark ? 'bg-zinc-700/50' : 'bg-gray-50'}`}>
-                  <span className={`text-xs font-bold ${c.textMuteded} mt-0.5`}>{i + 1}</span>
+                  <span className={`text-xs font-bold ${c.textMuted} mt-0.5`}>{i + 1}</span>
                   <span className={`text-sm ${c.text}`}>{step}</span>
                 </div>
               ))}
-              {stuckData.environment_shift && <p className={`text-sm ${c.textSecondaryondary}`}><span>🔄</span> Try: {stuckData.environment_shift}</p>}
-              {stuckData.bailout_option && <p className={`text-xs ${c.textMuteded} italic`}>Or: {stuckData.bailout_option}</p>}
+              {stuckData.environment_shift && <p className={`text-sm ${c.textSecondary}`}><span>🔄</span> Try: {stuckData.environment_shift}</p>}
+              {stuckData.bailout_option && <p className={`text-xs ${c.textMuted} italic`}>Or: {stuckData.bailout_option}</p>}
             </div>
           )}
 
@@ -915,7 +936,7 @@ const VirtualBodyDouble = ({ tool }) => {
               <h3 className={`text-sm font-bold ${c.text}`}><span>👋</span> Invite a Coworking Buddy</h3>
               {inviteData.messages?.map((msg, i) => (
                 <div key={i} className="space-y-1">
-                  <p className={`text-xs font-medium ${c.textMuteded} capitalize`}>{msg.tone}</p>
+                  <p className={`text-xs font-medium ${c.textMuted} capitalize`}>{msg.tone}</p>
                   <div className={`p-3 rounded-lg ${isDark ? 'bg-zinc-700' : 'bg-gray-50'}`}>
                     <p className={`text-sm ${c.text}`}>{msg.text}</p>
                   </div>
@@ -937,6 +958,10 @@ const VirtualBodyDouble = ({ tool }) => {
       <div className={`min-h-screen ${c.cardAlt} py-6 px-4`}>
         <div className="max-w-xl mx-auto space-y-5">
 
+          {/* Results anchor for ActionBar */}
+          <div ref={resultsRef} />
+          <ActionBar copyContent={buildSessionText()} copyLabel="Copy Summary" printContent={buildSessionText()} printTitle="Coworking Session" />
+
           {/* Celebration */}
           <div className={`${c.success} border rounded-xl p-6 text-center`}>
             <span className="text-4xl block mb-3">🎉</span>
@@ -954,21 +979,21 @@ const VirtualBodyDouble = ({ tool }) => {
             <div className={`grid ${subTasks.length > 0 ? 'grid-cols-4' : 'grid-cols-3'} gap-3 text-center`}>
               <div>
                 <p className={`text-2xl font-bold ${c.text}`}>{Math.floor(secondsElapsed / 60)}</p>
-                <p className={`text-xs ${c.textMuteded}`}>minutes</p>
+                <p className={`text-xs ${c.textMuted}`}>minutes</p>
               </div>
               <div>
                 <p className={`text-2xl font-bold ${c.text}`}>{checkInsDone}</p>
-                <p className={`text-xs ${c.textMuteded}`}>check-ins</p>
+                <p className={`text-xs ${c.textMuted}`}>check-ins</p>
               </div>
               {subTasks.length > 0 && (
                 <div>
                   <p className={`text-2xl font-bold ${c.text}`}>{subTasksCompleted}/{subTasks.length}</p>
-                  <p className={`text-xs ${c.textMuteded}`}>sub-tasks</p>
+                  <p className={`text-xs ${c.textMuted}`}>sub-tasks</p>
                 </div>
               )}
               <div>
                 <p className={`text-2xl font-bold ${c.text}`}>{sessionLog.length + 1}</p>
-                <p className={`text-xs ${c.textMuteded}`}>total</p>
+                <p className={`text-xs ${c.textMuted}`}>total</p>
               </div>
             </div>
           </div>
@@ -1002,29 +1027,29 @@ const VirtualBodyDouble = ({ tool }) => {
                 <p className="text-sm opacity-80 mt-1">{modeLabel} mode</p>
               </div>
               <div className={`${isDark ? 'bg-zinc-800' : 'bg-white'} p-5 space-y-3`}>
-                <p className={`text-center text-sm italic ${c.textSecondaryondary}`}>
+                <p className={`text-center text-sm italic ${c.textSecondary}`}>
                   "{completionData?.card_quote || 'Another one done.'}"
                 </p>
                 <div className="flex justify-center gap-6 text-center">
                   <div>
                     <p className={`text-lg font-bold ${c.text}`}>{Math.floor(secondsElapsed / 60)}</p>
-                    <p className={`text-[10px] ${c.textMuteded} uppercase`}>min</p>
+                    <p className={`text-[10px] ${c.textMuted} uppercase`}>min</p>
                   </div>
                   {subTasks.length > 0 && (
                     <div>
                       <p className={`text-lg font-bold ${c.text}`}>{subTasksCompleted}/{subTasks.length}</p>
-                      <p className={`text-[10px] ${c.textMuteded} uppercase`}>tasks</p>
+                      <p className={`text-[10px] ${c.textMuted} uppercase`}>tasks</p>
                     </div>
                   )}
                   <div>
                     <p className={`text-lg font-bold ${c.text}`}>
                       {MOODS.find(m => m.id === mood)?.icon || '😐'} → {MOODS.find(m => m.id === moodAfter)?.icon || '😐'}
                     </p>
-                    <p className={`text-[10px] ${c.textMuteded} uppercase`}>mood</p>
+                    <p className={`text-[10px] ${c.textMuted} uppercase`}>mood</p>
                   </div>
                 </div>
                 <div className={`text-center pt-2 border-t ${c.border}`}>
-                  <p className={`text-[10px] ${c.textMuteded}`}>
+                  <p className={`text-[10px] ${c.textMuted}`}>
                     {sessionPlan?.session_personality?.name || 'Buddy'} was here · deftbrain.com
                   </p>
                 </div>
@@ -1056,22 +1081,25 @@ const VirtualBodyDouble = ({ tool }) => {
 
           {/* Rest permission */}
           {completionData?.rest_permission && (
-            <div className={`${isDark ? 'bg-cyan-900/30 border-cyan-700' : 'bg-cyan-50 border-cyan-200'} border rounded-xl p-4`}>
-              <p className={`text-sm ${isDark ? 'text-cyan-300' : 'text-cyan-800'}`}><span>💜</span> {completionData.rest_permission}</p>
+            <div className={`${c.accentLight} border rounded-xl p-4`}>
+              <p className={`text-sm ${c.accentLightText}`}><span>💜</span> {completionData.rest_permission}</p>
             </div>
           )}
 
           {/* Actions */}
           <div className="flex gap-3">
-            <button onClick={saveSession} className={`flex-1 py-3.5 rounded-xl font-bold ${c.accentTxt} ${c.accentHover} ${c.accentTxt}`}>
+            <button onClick={saveSession} className={`flex-1 py-3.5 rounded-xl font-bold ${c.btnPrimary}`}>
               <span>💾</span> Save & Done
             </button>
             <button onClick={() => handleExtend(15)} disabled={loading} className={`flex-1 py-3.5 rounded-xl font-bold border ${c.tag}`}>
               <span>🔄</span> +15 min
             </button>
           </div>
+          <button onClick={() => { setView('setup'); resetForm(); }}
+            className={`w-full py-2.5 rounded-xl text-sm font-medium ${c.btnSecondary}`}>
+            ↩ Start Over
+          </button>
 
-          <ActionBar copyContent={buildSessionText()} copyLabel="Copy Summary" printContent={buildSessionText()} printTitle="Coworking Session" />
         </div>
       </div>
     );
@@ -1095,15 +1123,15 @@ const VirtualBodyDouble = ({ tool }) => {
                 <div className="grid grid-cols-3 gap-3 text-center">
                   <div>
                     <p className={`text-2xl font-bold ${c.text}`}>{reviewData.total_sessions}</p>
-                    <p className={`text-xs ${c.textMuteded}`}>sessions</p>
+                    <p className={`text-xs ${c.textMuted}`}>sessions</p>
                   </div>
                   <div>
                     <p className={`text-2xl font-bold ${c.text}`}>{reviewData.total_minutes}</p>
-                    <p className={`text-xs ${c.textMuteded}`}>minutes</p>
+                    <p className={`text-xs ${c.textMuted}`}>minutes</p>
                   </div>
                   <div>
                     <p className={`text-2xl font-bold ${c.text}`}>{reviewData.completion_rate}</p>
-                    <p className={`text-xs ${c.textMuteded}`}>completed</p>
+                    <p className={`text-xs ${c.textMuted}`}>completed</p>
                   </div>
                 </div>
               </div>
@@ -1124,7 +1152,7 @@ const VirtualBodyDouble = ({ tool }) => {
                     {reviewData.patterns.map((p, i) => (
                       <div key={i} className={`p-3 rounded-lg ${isDark ? 'bg-zinc-700/50' : 'bg-gray-50'}`}>
                         <p className={`text-sm font-medium ${c.text}`}>{p.observation}</p>
-                        <p className={`text-xs ${c.textSecondaryondary} mt-1`}>→ {p.suggestion}</p>
+                        <p className={`text-xs ${c.textSecondary} mt-1`}>→ {p.suggestion}</p>
                       </div>
                     ))}
                   </div>
@@ -1150,7 +1178,7 @@ const VirtualBodyDouble = ({ tool }) => {
           ) : (
             <div className={`${c.card} border rounded-xl p-8 text-center`}>
               <span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span>
-              <p className={`text-sm ${c.textMuteded} mt-2`}>Analyzing your sessions...</p>
+              <p className={`text-sm ${c.textMuted} mt-2`}>Analyzing your sessions...</p>
             </div>
           )}
         </div>
@@ -1175,9 +1203,8 @@ const VirtualBodyDouble = ({ tool }) => {
       <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-2`}>
         <p className={`text-xs font-bold ${c.textMuted} mb-2`}>🔗 Related tools</p>
         <div className="flex flex-wrap gap-3">
-          <a href="/tool/task-avalanche-breaker" className={`text-xs ${linkStyle}`}>⚡ Task Avalanche Breaker</a>
-          <a href="/tool/batch-flow" className={`text-xs ${linkStyle}`}>🔄 Batch Flow</a>
-          <a href="/tool/dopamine-menu-builder" className={`text-xs ${linkStyle}`}>🎯 Dopamine Menu Builder</a>
+          <a href="/TaskAvalancheBreaker" className={`text-xs ${linkStyle}`}>⚡ Task Avalanche Breaker</a>
+          <a href="/DopamineMenuBuilder" className={`text-xs ${linkStyle}`}>🎯 Dopamine Menu Builder</a>
         </div>
       </div>
       </div>
