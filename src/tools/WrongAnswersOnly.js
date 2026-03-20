@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { ActionBar } from '../components/ActionButtons';
@@ -76,6 +76,7 @@ const WrongAnswersOnly = ({ tool }) => {
   const [seriousness, setSeriousness] = useState('playful');
   const [results, setResults] = usePersistentState('wronganswersonly-result', null);
   const [error, setError] = useState('');
+  const resultsRef = useRef(null);
   const [history, setHistory] = usePersistentState('wronganswersonly-history', []);
 
   const [showReal, setShowReal] = useState(false);
@@ -100,8 +101,7 @@ const WrongAnswersOnly = ({ tool }) => {
       }, ...prev].slice(0, 6));
     } catch (err) {
       setError(err.message || 'Even the wrong answers failed');
-    }
-  }, [question, category, seriousness, callToolEndpoint, setResults, setHistory]);
+    } }, [question, category, seriousness, callToolEndpoint, setResults, setHistory]);
 
   // Run with an explicit question value — avoids stale closure from pill clicks
 
@@ -115,8 +115,7 @@ const WrongAnswersOnly = ({ tool }) => {
       lines.push('SOURCES:');
       results.supporting_evidence.forEach(e => lines.push(`  📎 ${e.fake_fact} — ${e.fake_source}`));
       lines.push('');
-    }
-    if (results.expert_tip) lines.push(`💡 Expert tip: ${results.expert_tip}`);
+    } if (results.expert_tip) lines.push(`💡 Expert tip: ${results.expert_tip}`);
     lines.push('\n(All answers are intentionally, beautifully wrong)');
     lines.push(BRAND);
     return lines.join('\n');
@@ -135,8 +134,7 @@ const WrongAnswersOnly = ({ tool }) => {
       } else if (tag !== 'INPUT' && tag !== 'TEXTAREA') {
         e.preventDefault();
         runWrong();
-      }
-    };
+      } };
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
   }, [question, loading, runWrong]);
@@ -148,105 +146,76 @@ const WrongAnswersOnly = ({ tool }) => {
   // ════════════════════════════════════════════════════════════
   // RENDER
   // ════════════════════════════════════════════════════════════
-  return (
-    <div className={`space-y-4 ${c.text}`}>
-      {/* Input */}
-      <div className={`${c.card} border rounded-xl p-5`}>
+  return (<div className={`space-y-4 ${c.text}`}>
+      {/* Input */} <div className={`${c.card} border rounded-xl p-5`}>
         <div className={`mb-4 pb-3 border-b ${isDark ? 'border-zinc-500' : 'border-zinc-500'}`}>
           <h2 className={`text-xl font-bold ${c.text}`}><span className="mr-2">{tool?.icon}</span>{tool?.title}</h2>
           <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline}</p>
         </div>
 
-        {/* Quick questions */}
-        <div className="mb-4">
+        {/* Quick questions */} <div className="mb-4">
           <label className={`text-[10px] font-bold ${c.labelText} uppercase block mb-2`}>Try one</label>
           <div className="flex flex-wrap gap-1.5">
-            {QUICK_QUESTIONS.map((q, i) => (
-              <button key={i} onClick={() => {
+            {QUICK_QUESTIONS.map((q, i) => (<button key={i} onClick={() => {
                   setQuestion(q);
                   setResults(null);
                   setShowReal(false);
                   setError('');
-                }}
-                className={`px-2.5 py-1.5 rounded-lg text-[11px] font-medium min-h-[28px] border transition-colors ${
+                }} className={`px-2.5 py-1.5 rounded-lg text-[11px] font-medium min-h-[28px] border transition-colors ${
                   question === q ? c.pillActive : c.btnSecondary
                 }`}>
-                {q}
-              </button>
-            ))}
-          </div>
+                {q} </button>
+            ))} </div>
         </div>
 
-        {/* Question */}
-        <div className="mb-4">
+        {/* Question */} <div className="mb-4">
           <label className={`text-xs font-bold ${c.labelText} block mb-1.5`}>Your question</label>
-          <input type="text" value={question} onChange={e => setQuestion(e.target.value)}
-            placeholder="Ask me anything — I'll get it spectacularly wrong..."
-            className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`}
-            onKeyDown={e => e.key === 'Enter' && question.trim() && runWrong()}
-          />
+          <input type="text" value={question} onChange={e => setQuestion(e.target.value)} placeholder="Ask me anything — I'll get it spectacularly wrong..."
+            className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} onKeyDown={e => e.key === 'Enter' && question.trim() && runWrong()} />
         </div>
 
-        {/* Category + Seriousness */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
+        {/* Category + Seriousness */} <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
           <div>
             <label className={`text-xs font-bold ${c.labelText} uppercase block mb-2`}>Category</label>
             <div className="flex flex-wrap gap-1.5">
-              {CATEGORIES.map(cat => (
-                <button key={cat.value} onClick={() => setCategory(cat.value)}
-                  className={`px-2.5 py-1.5 rounded-lg text-[11px] font-bold border transition-colors min-h-[30px] ${
+              {CATEGORIES.map(cat => (<button key={cat.value} onClick={() => setCategory(cat.value)} className={`px-2.5 py-1.5 rounded-lg text-[11px] font-bold border transition-colors min-h-[30px] ${
                     category === cat.value ? c.pillActive : c.pillInactive
                   }`}>
-                  <span className="mr-1">{cat.icon}</span>{cat.label}
-                </button>
-              ))}
-            </div>
+                  <span className="mr-1">{cat.icon}</span>{cat.label} </button>
+              ))} </div>
           </div>
           <div>
             <label className={`text-xs font-bold ${c.labelText} uppercase block mb-2`}>How serious?</label>
             <div className="flex gap-2">
-              {SERIOUSNESS.map(s => (
-                <button key={s.value} onClick={() => setSeriousness(s.value)}
-                  className={`flex-1 py-2 rounded-lg border text-center transition-colors min-h-[44px] ${
+              {SERIOUSNESS.map(s => (<button key={s.value} onClick={() => setSeriousness(s.value)} className={`flex-1 py-2 rounded-lg border text-center transition-colors min-h-[44px] ${
                     seriousness === s.value ? c.pillActive : c.pillInactive
                   }`}>
                   <span className="text-sm block">{s.icon}</span>
                   <span className="text-[10px] font-bold block">{s.label}</span>
                 </button>
-              ))}
-            </div>
+              ))} </div>
           </div>
         </div>
 
-        <button onClick={runWrong} disabled={!question.trim() || loading}
-          className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+        <button onClick={runWrong} disabled={!question.trim() || loading} className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
           {loading
             ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> Making things up...</>
-            : <><span>🙃</span> Wrong Answers Only</>}
-        </button>
+            : <><span>🙃</span> Wrong Answers Only</>} </button>
       </div>
 
-      {/* Error */}
-      {error && (
-        <div className={`${c.danger} border rounded-lg p-4 flex items-start gap-3`}>
+      {/* Error */} {error && (<div className={`${c.danger} border rounded-lg p-4 flex items-start gap-3`}>
           <span>⚠️</span><p className="text-sm">{error}</p>
         </div>
-      )}
-
-      {/* Results */}
-      {results && (
-        <div className="space-y-4">
+      )} {/* Results */} {results && (<div className="space-y-4">
           <div className="flex justify-end">
-            <ActionBar content={buildFullText()} title="Wrong Answers Only" />
+            <div ref={resultsRef} data-results-anchor />
+          <ActionBar content={buildFullText()} title="Wrong Answers Only" />
           </div>
 
-          {/* Question + Wrongness meter */}
-          {results.question_rephrased && (
-            <div className={`${c.infoBox} border-2 rounded-xl p-5`}>
+          {/* Question + Wrongness meter */} {results.question_rephrased && (<div className={`${c.infoBox} border-2 rounded-xl p-5`}>
               <p className={`text-xs ${c.textMuted} mb-1`}>You asked:</p>
               <p className={`text-sm font-bold ${c.text} mb-3`}>{results.question_rephrased}</p>
-              {wrongnessLevel > 0 && (
-                <div>
+              {wrongnessLevel > 0 && (<div>
                   <div className="flex justify-between mb-1">
                     <span className={`text-[9px] font-bold ${c.labelText}`}>WRONGNESS LEVEL</span>
                     <span className={`text-[9px] font-bold ${c.accentTxt}`}>{wrongnessLevel}/10</span>
@@ -256,95 +225,52 @@ const WrongAnswersOnly = ({ tool }) => {
                       style={{ width: wrongnessWidth }} />
                   </div>
                 </div>
-              )}
-            </div>
-          )}
-
-          {/* The wrong answer */}
-          {results.confident_answer && (
-            <div className={`${c.card} border rounded-xl p-5`}>
+              )} </div>
+          )} {/* The wrong answer */} {results.confident_answer && (<div className={`${c.card} border rounded-xl p-5`}>
               <h3 className={`text-sm font-bold ${c.text} mb-2`}>🎓 The Expert Answer</h3>
               <p className={`text-sm ${c.textSecondary} leading-relaxed whitespace-pre-line`}>{results.confident_answer}</p>
             </div>
-          )}
-
-          {/* Fake evidence */}
-          {results.supporting_evidence?.length > 0 && (
-            <div className={`${c.card} border rounded-xl p-4`}>
+          )} {/* Fake evidence */} {results.supporting_evidence?.length > 0 && (<div className={`${c.card} border rounded-xl p-4`}>
               <h3 className={`text-sm font-bold ${c.text} mb-3`}>📎 Supporting "Evidence"</h3>
               <div className="space-y-2">
-                {results.supporting_evidence.map((e, i) => (
-                  <div key={i} className={`${c.quoteBg} rounded-lg p-3`}>
+                {results.supporting_evidence.map((e, i) => (<div key={i} className={`${c.quoteBg} rounded-lg p-3`}>
                     <p className={`text-xs ${c.text} font-medium mb-1`}>{e.fake_fact}</p>
                     <p className={`text-[10px] ${c.textMuted} italic`}>— {e.fake_source}</p>
-                    {showReal && e.how_wrong && (
-                      <p className={`text-[10px] ${isDark ? 'text-zinc-500' : 'text-zinc-500'} mt-1`}>❌ Reality: {e.how_wrong}</p>
-                    )}
-                  </div>
-                ))}
-              </div>
+                    {showReal && e.how_wrong && (<p className={`text-[10px] ${isDark ? 'text-zinc-500' : 'text-zinc-500'} mt-1`}>❌ Reality: {e.how_wrong}</p>
+                    )} </div>
+                ))} </div>
             </div>
-          )}
-
-          {/* Common "misconception" (actually the real answer) */}
-          {results.common_misconception && (
-            <div className={`${c.warning} border rounded-xl p-4`}>
+          )} {/* Common "misconception" (actually the real answer) */} {results.common_misconception && (<div className={`${c.warning} border rounded-xl p-4`}>
               <p className={`text-[10px] font-bold uppercase mb-1`}>⚠️ Common Misconception</p>
               <p className={`text-xs`}>{results.common_misconception}</p>
               <p className={`text-[9px] ${c.textMuted} mt-1 italic`}>(This is probably the actual answer)</p>
             </div>
-          )}
-
-          {/* Expert tip */}
-          {results.expert_tip && (
-            <div className={`${c.quoteBg} border ${isDark ? 'border-zinc-500' : 'border-zinc-500'} rounded-xl p-4`}>
+          )} {/* Expert tip */} {results.expert_tip && (<div className={`${c.quoteBg} border ${isDark ? 'border-zinc-500' : 'border-zinc-500'} rounded-xl p-4`}>
               <p className={`text-[10px] font-bold ${c.accentTxt} uppercase mb-1`}>💡 Expert Tip</p>
               <p className={`text-sm font-medium ${c.text}`}>{results.expert_tip}</p>
             </div>
-          )}
-
-          {/* Real answer hint (toggled) */}
-          {results.real_answer_hint && (
-            <div className="flex gap-2">
-              <button onClick={() => setShowReal(p => !p)}
-                className={`${c.btnSecondary} px-4 py-2 rounded-lg text-xs font-bold min-h-[36px]`}>
-                {showReal ? '🙈 Hide Real Answer' : '👀 Show Real Answer'}
-              </button>
+          )} {/* Real answer hint (toggled) */} {results.real_answer_hint && (<div className="flex gap-2">
+              <button onClick={() => setShowReal(p => !p)} className={`${c.btnSecondary} px-4 py-2 rounded-lg text-xs font-bold min-h-[36px]`}>
+                {showReal ? '🙈 Hide Real Answer' : '👀 Show Real Answer'} </button>
             </div>
-          )}
-          {showReal && results.real_answer_hint && (
-            <div className={`${c.success} border rounded-xl p-4`}>
+          )} {showReal && results.real_answer_hint && (<div className={`${c.success} border rounded-xl p-4`}>
               <p className={`text-[10px] font-bold uppercase mb-1`}>✅ Actually...</p>
               <p className="text-xs">{results.real_answer_hint}</p>
             </div>
-          )}
-
-          {/* Again */}
-          <button onClick={runWrong} disabled={loading || !question.trim()}
-            className={`w-full ${c.btnSecondary} font-bold py-3 rounded-lg min-h-[44px] disabled:opacity-40`}>
+          )} {/* Again */} <button onClick={runWrong} disabled={loading || !question.trim()} className={`w-full ${c.btnSecondary} font-bold py-3 rounded-lg min-h-[44px] disabled:opacity-40`}>
             🙃 Different Wrong Answer
           </button>
         </div>
-      )}
-
-      {/* eslint-disable-next-line no-restricted-globals */}
-      {history.length > 0 && (
-        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
+      )} {/* eslint-disable-next-line no-restricted-globals */} {history.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
           <p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 Recent sessions</p>
           <div className="space-y-1">
-            {/* eslint-disable-next-line no-restricted-globals */}
-
-            {history.map(s => (
-              <div key={s.id} className="flex items-center justify-between">
+            {/* eslint-disable-next-line no-restricted-globals */} {history.map(s => (<div key={s.id} className="flex items-center justify-between">
                 <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || 'Session'}</span>
                 <span className={`text-xs ${c.textMuted} ml-2`}>{new Date(s.date).toLocaleDateString()}</span>
               </div>
-            ))}
-          </div>
+            ))} </div>
         </div>
-      )}
-      {/* Related tools */}
-      <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-2`}>
+      )} {/* Related tools */} <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-2`}>
         <p className={`text-xs font-bold ${c.textMuted} mb-2`}>🔗 Related tools</p>
         <div className="flex flex-wrap gap-3">
           <a href="/tool/time-warp" className={`text-xs ${linkStyle}`}>⏰ Time Warp</a>

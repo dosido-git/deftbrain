@@ -112,10 +112,61 @@ const ToolPageWrapper = ({ children, tool, toolId }) => {
   };
 
   return (
-    <div className={`min-h-screen ${colors.bg} ${colors.text} font-sans transition-colors duration-200`}>
+    <div data-print-shell className={`min-h-screen ${colors.bg} ${colors.text} font-sans transition-colors duration-200`}>
+
+      <style>{`
+        @media print {
+          /* 1. Explicitly white on all layout shell elements — no print-color-adjust here
+                so the browser doesn't "helpfully" preserve the dark theme colors */
+          html,
+          body,
+          [data-print-shell] {
+            background: white !important;
+            background-color: white !important;
+            color: #1a1a1a !important;
+          }
+
+          /* 2. Opt-in to exact color rendering ONLY inside the tool card content
+                so panel colours (amber, green, blue etc.) print correctly */
+          [data-print-card],
+          [data-print-card] * {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+
+          /* 3. Hide chrome */
+          [data-print-hide] {
+            display: none !important;
+          }
+
+          /* 4. Main content full width */
+          [data-print-main] {
+            grid-column: 1 / -1 !important;
+            width: 100% !important;
+          }
+
+          /* 5. Collapse the grid */
+          [data-print-grid] {
+            display: block !important;
+            padding: 0 !important;
+            max-width: 100% !important;
+          }
+
+          /* 6. Clean up tool card wrapper chrome */
+          [data-print-card] {
+            border: none !important;
+            border-radius: 0 !important;
+            padding: 0 !important;
+            box-shadow: none !important;
+          }
+
+          @page { margin: 1.5cm 2cm; }
+          body { font-size: 12pt !important; }
+        }
+      `}</style>
       
       {/* ── Compact Logo Bar ── */}
-      <div className={`w-full px-3 sm:px-6 py-4 ${colors.bg} sticky top-0 z-20 border-b ${colors.border}`}>
+      <div data-print-hide className={`w-full px-3 sm:px-6 py-4 ${colors.bg} sticky top-0 z-20 border-b ${colors.border}`}>
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-2">
           <button 
             onClick={() => navigate('/')}
@@ -137,12 +188,12 @@ const ToolPageWrapper = ({ children, tool, toolId }) => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 pb-8 pt-0 grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div data-print-shell data-print-grid className="max-w-7xl mx-auto px-4 pb-8 pt-0 grid grid-cols-1 lg:grid-cols-12 gap-8">
         
         {/* Main Content Area */}
-        <main className="lg:col-span-8">
+        <main data-print-shell data-print-main className="lg:col-span-8">
           {/* ── Header ── */}
-          <header className={`${colors.bg} pb-2 space-y-2`}>
+          <header data-print-hide className={`${colors.bg} pb-2 space-y-2`}>
             <div className={`flex items-center gap-3 ${colors.accent} mb-2 pt-4`}>
               <span className={`text-[10px] font-medium uppercase tracking-widest border ${colors.accentBorder} px-3 py-1 rounded-full`}>
                 {detectedTool?.categories?.[0] || 'General'}
@@ -157,7 +208,7 @@ const ToolPageWrapper = ({ children, tool, toolId }) => {
           </header>
 
           {/* Bookmark hint + Theme Toggle (above card, right-aligned) */}
-          <div className="flex justify-end mb-2 gap-2 relative">
+          <div data-print-hide className="flex justify-end mb-2 gap-2 relative">
             <button
               onClick={handleBookmarkHint}
               className={`flex items-center gap-1.5 px-3 py-2 rounded-lg transition-all ${colors.toggleBg} ${colors.toggleText}`}
@@ -191,7 +242,7 @@ const ToolPageWrapper = ({ children, tool, toolId }) => {
             </button>
           </div>
 
-          <section className={`${colors.surface} border ${colors.border} rounded-2xl shadow-sm overflow-hidden transition-colors duration-200`}>
+          <section data-print-card className={`${colors.surface} border ${colors.border} rounded-2xl shadow-sm overflow-hidden transition-colors duration-200`}>
             <div className="p-8" style={detectedTool?.headerColor ? {
               background: `linear-gradient(to bottom, ${detectedTool.headerColor} 0%, ${detectedTool.headerColor} 120px, transparent 260px)`
             } : {}}>
@@ -201,7 +252,7 @@ const ToolPageWrapper = ({ children, tool, toolId }) => {
         </main>
 
         {/* Right Column: Ad Panel + Guide Sidebar */}
-        <aside className="lg:col-span-4 space-y-6 relative z-0">
+        <aside data-print-hide className="lg:col-span-4 space-y-6 relative z-0">
           {/* ── Ad Panel Placeholder ── */}
           <div className={`${colors.surfaceAlt} border ${colors.border} rounded-2xl overflow-hidden transition-colors duration-200`}>
             <div className="h-[200px] flex items-center justify-center">

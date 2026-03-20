@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { CopyBtn, ActionBar } from '../components/ActionButtons';
@@ -66,6 +66,7 @@ const WhatsMyVibe = ({ tool }) => {
   const [sourceType, setSourceType] = useState('texts');
   const [results, setResults] = usePersistentState('whatsmyvibe-result', null);
   const [error, setError] = useState('');
+  const resultsRef = useRef(null);
   const [history, setHistory] = usePersistentState('whatsmyvibe-history', []);
 
 
@@ -86,8 +87,7 @@ const WhatsMyVibe = ({ tool }) => {
       }, ...prev].slice(0, 6));
     } catch (err) {
       setError(err.message || 'Vibe check failed');
-    }
-  }, [samples, sourceType, callToolEndpoint, setResults, setHistory]);
+    } }, [samples, sourceType, callToolEndpoint, setResults, setHistory]);
 
   // ── Build text ──
   const buildFullText = useCallback(() => {
@@ -102,8 +102,7 @@ const WhatsMyVibe = ({ tool }) => {
       lines.push('QUIRKS:');
       results.quirks.forEach(q => lines.push(`  → ${q}`));
       lines.push('');
-    }
-    if (results.secret_tell) lines.push(`🔮 Secret tell: ${results.secret_tell}`);
+    } if (results.secret_tell) lines.push(`🔮 Secret tell: ${results.secret_tell}`);
     lines.push(BRAND);
     return lines.join('\n');
   }, [results]);
@@ -111,213 +110,128 @@ const WhatsMyVibe = ({ tool }) => {
   // ════════════════════════════════════════════════════════════
   // RENDER
   // ════════════════════════════════════════════════════════════
-  return (
-    <div className={`space-y-4 ${c.text}`}>
-      {/* ── Input ── */}
-      <div className={`${c.card} border rounded-xl p-5`}>
+  return (<div className={`space-y-4 ${c.text}`}>
+      {/* ── Input ── */} <div className={`${c.card} border rounded-xl p-5`}>
         <div className={`mb-4 pb-3 border-b ${c.border}`}>
           <h2 className={`text-xl font-bold ${c.text}`}><span className="mr-2">{tool?.icon}</span>{tool?.title}</h2>
           <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline}</p>
         </div>
 
-        {/* Source type */}
-        <div className="mb-4">
+        {/* Source type */} <div className="mb-4">
           <p className={`text-[10px] font-bold ${c.labelText} uppercase mb-2`}>Where's this from?</p>
           <div className="flex flex-wrap gap-1.5">
-            {SOURCE_TYPES.map(s => (
-              <button
-                key={s.value}
-                onClick={() => setSourceType(s.value)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors min-h-[36px] flex items-center gap-1.5 ${
+            {SOURCE_TYPES.map(s => (<button
+                key={s.value} onClick={() => setSourceType(s.value)} className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors min-h-[36px] flex items-center gap-1.5 ${
                   sourceType === s.value ? c.pillActive : c.pillInactive
-                }`}
-              >
-                <span>{s.icon}</span> {s.label}
-              </button>
-            ))}
-          </div>
+                }`} >
+                <span>{s.icon}</span> {s.label} </button>
+            ))} </div>
         </div>
 
-        {/* Samples */}
-        <div className="mb-5">
+        {/* Samples */} <div className="mb-5">
           <label className={`text-sm font-bold ${c.labelText} block mb-1.5`}>Your writing samples</label>
           <textarea
-            value={samples}
-            onChange={e => setSamples(e.target.value)}
-            onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !loading && samples.trim()) { e.preventDefault(); runVibe(); } }}
-            placeholder={"Paste several texts, emails, tweets, or messages. The more you give me, the better the read.\n\nTip: Copy a bunch of your recent texts or DMs — those show your real voice."}
-            rows={8}
-            className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2 resize-none`}
-          />
+            value={samples} onChange={e => setSamples(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !loading && samples.trim()) { e.preventDefault(); runVibe(); } }} placeholder={"Paste several texts, emails, tweets, or messages. The more you give me, the better the read.\n\nTip: Copy a bunch of your recent texts or DMs — those show your real voice."} rows={8} className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2 resize-none`} />
           <p className={`text-[10px] ${c.textMuted} mt-1`}>
-            {samples.length > 0 ? `${samples.split(/\s+/).filter(Boolean).length} words — ${samples.split(/\s+/).filter(Boolean).length < 30 ? 'more is better!' : samples.split(/\s+/).filter(Boolean).length < 80 ? 'good amount' : 'great sample size'}` : 'More text = more accurate vibe read'}
-          </p>
+            {samples.length > 0 ? `${samples.split(/\s+/).filter(Boolean).length} words — ${samples.split(/\s+/).filter(Boolean).length < 30 ? 'more is better!' : samples.split(/\s+/).filter(Boolean).length < 80 ? 'good amount' : 'great sample size'}` : 'More text = more accurate vibe read'} </p>
         </div>
 
         <button
-          onClick={runVibe}
-          disabled={!samples.trim() || loading}
-          className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}
-        >
+          onClick={runVibe} disabled={!samples.trim() || loading} className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`} >
           {loading
             ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> Reading your vibe...</>
-            : <><span>{tool?.icon ?? '✨'}</span> Check My Vibe</>}
-        </button>
+            : <><span>{tool?.icon ?? '✨'}</span> Check My Vibe</>} </button>
       </div>
 
-      {/* ── Error ── */}
-      {error && (
-        <div className={`${c.danger} border rounded-lg p-4 flex items-start gap-3`}>
+      {/* ── Error ── */} {error && (<div className={`${c.danger} border rounded-lg p-4 flex items-start gap-3`}>
           <span className="flex-shrink-0">⚠️</span>
           <p className="text-sm">{error}</p>
         </div>
-      )}
-
-      {/* ── Results ── */}
-      {results && (
-        <div className="space-y-4">
+      )} {/* ── Results ── */} {results && (<div className="space-y-4">
           <div className="flex justify-end">
-            <ActionBar content={buildFullText()} title="WhatsMyVibe Results" />
+            <div ref={resultsRef} data-results-anchor />
+          <ActionBar content={buildFullText()} title="WhatsMyVibe Results" />
           </div>
 
-          {/* Vibe title */}
-          {results.vibe_title && (
-            <div className={`${c.vibe} border-2 rounded-xl p-6 text-center`}>
+          {/* Vibe title */} {results.vibe_title && (<div className={`${c.vibe} border-2 rounded-xl p-6 text-center`}>
               <span className="text-4xl block mb-3">✨</span>
               <p className={`text-2xl font-black ${c.text} mb-2`}>{results.vibe_title}</p>
-              {results.vibe_description && <p className={`text-sm ${c.textSecondary} max-w-md mx-auto`}>{results.vibe_description}</p>}
-            </div>
-          )}
-
-          {/* Energy + sounds like */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {results.energy && (
-              <div className={`${c.quoteBg} rounded-xl p-4`}>
+              {results.vibe_description && <p className={`text-sm ${c.textSecondary} max-w-md mx-auto`}>{results.vibe_description}</p>} </div>
+          )} {/* Energy + sounds like */} <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {results.energy && (<div className={`${c.quoteBg} rounded-xl p-4`}>
                 <p className={`text-[10px] font-bold ${c.labelText} uppercase mb-1`}>⚡ Energy</p>
                 <p className={`text-sm font-bold ${c.text}`}>{results.energy}</p>
               </div>
-            )}
-            {results.sounds_like && (
-              <div className={`${c.quoteBg} rounded-xl p-4`}>
+            )} {results.sounds_like && (<div className={`${c.quoteBg} rounded-xl p-4`}>
                 <p className={`text-[10px] font-bold ${c.labelText} uppercase mb-1`}>🔊 Sounds like</p>
                 <p className={`text-sm font-bold ${c.text}`}>{results.sounds_like}</p>
               </div>
-            )}
-          </div>
+            )} </div>
 
-          {/* Punctuation + vocabulary */}
-          {(results.punctuation_personality || results.vocabulary_read) && (
-            <div className={`${c.card} border rounded-xl p-4 space-y-3`}>
-              {results.punctuation_personality && (
-                <div>
+          {/* Punctuation + vocabulary */} {(results.punctuation_personality || results.vocabulary_read) && (<div className={`${c.card} border rounded-xl p-4 space-y-3`}>
+              {results.punctuation_personality && (<div>
                   <p className={`text-[10px] font-bold ${c.labelText} uppercase mb-1`}>✏️ Punctuation personality</p>
                   <p className={`text-sm ${c.textSecondary}`}>{results.punctuation_personality}</p>
                 </div>
-              )}
-              {results.vocabulary_read && (
-                <div>
+              )} {results.vocabulary_read && (<div>
                   <p className={`text-[10px] font-bold ${c.labelText} uppercase mb-1`}>📚 Vocabulary read</p>
                   <p className={`text-sm ${c.textSecondary}`}>{results.vocabulary_read}</p>
                 </div>
-              )}
-            </div>
-          )}
-
-          {/* Emotional temperature */}
-          {results.emotional_temperature && (
-            <div className={`${c.card} border rounded-xl p-4`}>
+              )} </div>
+          )} {/* Emotional temperature */} {results.emotional_temperature && (<div className={`${c.card} border rounded-xl p-4`}>
               <h3 className={`text-sm font-bold ${c.text} mb-3`}>🌡️ Emotional Temperature</h3>
               <div className="space-y-2">
-                {results.emotional_temperature.surface && (
-                  <div className={`${c.quoteBg} rounded-lg p-3`}>
+                {results.emotional_temperature.surface && (<div className={`${c.quoteBg} rounded-lg p-3`}>
                     <p className={`text-[10px] font-bold ${c.labelText} mb-0.5`}>On the surface</p>
                     <p className={`text-xs ${c.textSecondary}`}>{results.emotional_temperature.surface}</p>
                   </div>
-                )}
-                {results.emotional_temperature.underneath && (
-                  <div className={`${c.quoteBg} rounded-lg p-3`}>
+                )} {results.emotional_temperature.underneath && (<div className={`${c.quoteBg} rounded-lg p-3`}>
                     <p className={`text-[10px] font-bold ${c.labelText} mb-0.5`}>Underneath</p>
                     <p className={`text-xs ${c.textSecondary}`}>{results.emotional_temperature.underneath}</p>
                   </div>
-                )}
-                {results.emotional_temperature.gap_read && (
-                  <div className={`${c.infoBox} border rounded-lg p-3`}>
+                )} {results.emotional_temperature.gap_read && (<div className={`${c.infoBox} border rounded-lg p-3`}>
                     <p className={`text-[10px] font-bold ${c.accentTxt} mb-0.5`}>The gap</p>
                     <p className={`text-xs ${c.text}`}>{results.emotional_temperature.gap_read}</p>
                   </div>
-                )}
-              </div>
+                )} </div>
             </div>
-          )}
-
-          {/* Quirks */}
-          {results.quirks?.length > 0 && (
-            <div className={`${c.card} border rounded-xl p-4`}>
+          )} {/* Quirks */} {results.quirks?.length > 0 && (<div className={`${c.card} border rounded-xl p-4`}>
               <h3 className={`text-sm font-bold ${c.text} mb-3`}>🔍 Your Quirks</h3>
               <div className="space-y-2">
-                {results.quirks.map((q, i) => (
-                  <p key={i} className={`text-xs ${c.textSecondary} p-2.5 rounded-lg ${c.quoteBg}`}>→ {q}</p>
-                ))}
-              </div>
+                {results.quirks.map((q, i) => (<p key={i} className={`text-xs ${c.textSecondary} p-2.5 rounded-lg ${c.quoteBg}`}>→ {q}</p>
+                ))} </div>
             </div>
-          )}
-
-          {/* Text-back energy */}
-          {results.text_back_energy && (
-            <div className={`${c.quoteBg} rounded-xl p-4`}>
+          )} {/* Text-back energy */} {results.text_back_energy && (<div className={`${c.quoteBg} rounded-xl p-4`}>
               <p className={`text-[10px] font-bold ${c.labelText} uppercase mb-1`}>📱 What getting a text from you feels like</p>
               <p className={`text-sm ${c.text}`}>{results.text_back_energy}</p>
             </div>
-          )}
-
-          {/* Secret tell */}
-          {results.secret_tell && (
-            <div className={`${c.insight} border-2 rounded-xl p-5 text-center`}>
+          )} {/* Secret tell */} {results.secret_tell && (<div className={`${c.insight} border-2 rounded-xl p-5 text-center`}>
               <span className="text-2xl block mb-2">🔮</span>
               <p className={`text-[10px] font-bold uppercase mb-1`}>The thing you don't realize you're broadcasting</p>
               <p className={`text-sm font-bold`}>{results.secret_tell}</p>
             </div>
-          )}
-
-          {/* Share line */}
-          {results.share_line && (
-            <div className={`${c.card} border rounded-xl p-4 flex items-center justify-between gap-3`}>
+          )} {/* Share line */} {results.share_line && (<div className={`${c.card} border rounded-xl p-4 flex items-center justify-between gap-3`}>
               <div>
                 <p className={`text-[10px] font-bold ${c.labelText} uppercase mb-1`}>📸 Your vibe in one line</p>
                 <p className={`text-sm font-bold ${c.text}`}>{results.share_line}</p>
               </div>
               <CopyBtn content={`My vibe: ${results.share_line}${BRAND}`} label="Copy" />
             </div>
-          )}
-
-          {/* Go again */}
-          <button
-            onClick={() => { setResults(null); setSamples(''); }}
-            className={`${c.btnSecondary} px-4 py-2 rounded-lg text-xs font-bold min-h-[36px]`}
-          >
+          )} {/* Go again */} <button
+            onClick={() => { setResults(null); setSamples(''); }} className={`${c.btnSecondary} px-4 py-2 rounded-lg text-xs font-bold min-h-[36px]`} >
             🔄 Check another vibe
           </button>
         </div>
-      )}
-
-      {/* eslint-disable-next-line no-restricted-globals */}
-      {history.length > 0 && (
-        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
+      )} {/* eslint-disable-next-line no-restricted-globals */} {history.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
           <p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 Recent sessions</p>
           <div className="space-y-1">
-            {/* eslint-disable-next-line no-restricted-globals */}
-
-            {history.map(s => (
-              <div key={s.id} className="flex items-center justify-between">
+            {/* eslint-disable-next-line no-restricted-globals */} {history.map(s => (<div key={s.id} className="flex items-center justify-between">
                 <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || 'Session'}</span>
                 <span className={`text-xs ${c.textMuted} ml-2`}>{new Date(s.date).toLocaleDateString()}</span>
               </div>
-            ))}
-          </div>
+            ))} </div>
         </div>
-      )}
-      {/* Related tools */}
-      <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-2`}>
+      )} {/* Related tools */} <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-2`}>
         <p className={`text-xs font-bold ${c.textMuted} mb-2`}>🔗 Related tools</p>
         <div className="flex flex-wrap gap-3">
           <a href="/tool/wardrobe-chaos-helper" className={`text-xs ${linkStyle}`}>👗 Wardrobe Chaos Helper</a>

@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { CopyBtn, ActionBar } from '../components/ActionButtons';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -48,8 +48,6 @@ const ToastWriter = ({ tool }) => {
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-500' : 'text-gray-400',
-    labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-amber-400' : 'text-amber-700',
     btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
@@ -59,19 +57,10 @@ const ToastWriter = ({ tool }) => {
     pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
     badge:         isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-100 text-cyan-800',
-    tipBg:         isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
-    tipText:       isDark ? 'text-amber-300' : 'text-amber-800',
-    successBox:    isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-300',
-    successTxt:    isDark ? 'text-emerald-300' : 'text-emerald-800',
-    warningBox:    isDark ? 'bg-red-900/20 border-red-700' : 'bg-red-50 border-red-200',
-    warningTxt:    isDark ? 'text-red-300' : 'text-red-700',
-    infoBox:       isDark ? 'bg-sky-900/20 border-sky-700' : 'bg-sky-50 border-sky-200',
-    infoTxt:       isDark ? 'text-sky-300' : 'text-sky-800',
-    histBg:        isDark ? 'bg-sky-900/20 border-sky-700/30' : 'bg-sky-50 border-sky-200',
-  };;
+  };
 
   // ─── State ───
-  const [person, setPerson] = useState('');
+  const [person, setPerson] = usePersistentState('toastwriter-person', '');
   const [occasion, setOccasion] = useState('');
   const [relationship, setRelationship] = useState('');
   const [stories, setStories] = useState('');
@@ -81,8 +70,8 @@ const ToastWriter = ({ tool }) => {
   const [results, setResults] = usePersistentState('toastwriter-result', null);
   const [error, setError] = useState('');
   const [history, setHistory] = usePersistentState('toastwriter-history', []);
-
   const [activeVersion, setActiveVersion] = useState(0);
+  const resultsRef = useRef(null);
 
   // ─── Actions ───
   const generate = useCallback(async () => {
@@ -104,18 +93,19 @@ const ToastWriter = ({ tool }) => {
       setResults(data);
       setHistory(prev => [{
         id: Date.now(), date: new Date().toISOString(),
-        preview: occasion.trim().slice(0, 40),
+        preview: (person.trim() + ' — ' + occasion).slice(0, 40),
+        result: data,
       }, ...prev].slice(0, 6));
+      setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
     } catch (err) {
       setError(err.message || 'Failed to write toast.');
-    }
-  }, [person, occasion, relationship, stories, tone, duration, avoid, callToolEndpoint]);
+    } }, [person, occasion, relationship, stories, tone, duration, avoid, callToolEndpoint, setError, setResults, setHistory]);
 
   const handleReset = useCallback(() => {
     setPerson(''); setOccasion(''); setRelationship('');
     setStories(''); setTone('warm_and_funny'); setDuration('2_minutes');
     setAvoid(''); setResults(null); setError(''); setActiveVersion(0);
-  }, []);
+  }, [setPerson, setResults, setError]);
 
   // ─── Build text ───
   const buildSpeechText = useCallback((v) => {
@@ -131,10 +121,24 @@ const ToastWriter = ({ tool }) => {
     if (results.delivery_tips?.length) {
       text += '\n\n— Delivery Tips —\n';
       results.delivery_tips.forEach(t => { text += `\n• ${t}`; });
-    }
-    if (results.emergency_closer) text += `\n\n🆘 Emergency closer: ${results.emergency_closer}`;
+    } if (results.emergency_closer) text += `\n\n🆘 Emergency closer: ${results.emergency_closer}`;
     return text + BRAND;
   }, [results, occasion, person]);
+
+  // Global Cmd/Ctrl+Enter listener
+  useEffect(() => {
+    const handler = (e) => {
+      if (e.key !== 'Enter' || !(e.metaKey || e.ctrlKey)) return;
+      const tag = document.activeElement?.tagName;
+      if (tag === 'TEXTAREA') return;
+      if (!person.trim() || !occasion || loading) return;
+      e.preventDefault();
+      generate();
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [person, occasion, loading]);
 
   const r = results;
   const activeV = r?.versions?.[activeVersion];
@@ -142,313 +146,184 @@ const ToastWriter = ({ tool }) => {
   // ════════════════════════════════════════════════════════════
   // RENDER
   // ════════════════════════════════════════════════════════════
-  return (
-    <div className={`space-y-6 ${c.text}`}>
+  return (<div className={`space-y-6 ${c.text}`}>
 
-      {/* ── HEADER ── */}
-      <div className={`${c.card} border ${c.border} rounded-xl p-6`}>
+      {/* ── HEADER ── */} <div className={`${c.card} border ${c.border} rounded-xl p-6`}>
         <div className={`mb-5 pb-4 border-b ${c.border}`}>
-          <h2 className={`text-2xl font-bold ${c.text}`}>ToastWriter 🎙️</h2>
-          <p className={`text-sm ${c.textSecondaryondary} mt-1`}>Toasts, speeches, and tributes that land</p>
+          <h2 className={`text-2xl font-bold ${c.text}`}>
+            <span className="mr-2">{tool?.icon ?? '🎙️'}</span>{tool?.title ?? 'ToastWriter'} </h2>
+          <p className={`text-sm ${c.textSecondary} mt-1`}>{tool?.tagline ?? 'Toasts, speeches, and tributes that land'}</p>
         </div>
 
-        {/* Person */}
-        <div className="mb-4">
+        {/* Person */} <div className="mb-4">
           <label className={`text-sm font-bold ${c.text} block mb-1.5`}>Who is this for?</label>
           <input
             type="text"
-            value={person}
-            onChange={e => setPerson(e.target.value)}
-            placeholder="e.g., my best friend Sarah, my dad, my coworker Mike"
-            className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} ${c.border} ${c.text} outline-none focus:ring-2`}
-          />
+            value={person} onChange={e => setPerson(e.target.value)} placeholder="e.g., my best friend Sarah, my dad, my coworker Mike"
+            className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} ${c.border} ${c.text} outline-none focus:ring-2`} />
         </div>
 
-        {/* Occasion */}
-        <div className="mb-4">
+        {/* Occasion */} <div className="mb-4">
           <label className={`text-sm font-bold ${c.text} block mb-2`}>The occasion</label>
           <div className="flex flex-wrap gap-1.5">
-            {OCCASIONS.map(o => (
-              <button
-                key={o.value}
-                onClick={() => setOccasion(occasion === o.value ? '' : o.value)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors min-h-[32px] ${
+            {OCCASIONS.map(o => (<button
+                key={o.value} onClick={() => setOccasion(occasion === o.value ? '' : o.value)} className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors min-h-[32px] ${
                   occasion === o.value ? c.pillActive : c.pillInactive
-                }`}
-              >
-                {o.emoji} {o.label}
-              </button>
-            ))}
-          </div>
+                }`} >
+                {o.emoji} {o.label} </button>
+            ))} </div>
         </div>
 
-        {/* Relationship */}
-        <div className="mb-4">
+        {/* Relationship */} <div className="mb-4">
           <label className={`text-sm font-bold ${c.text} block mb-1.5`}>
-            Your relationship <span className={`font-normal ${c.textMuteded}`}>(optional)</span>
+            Your relationship <span className={`font-normal ${c.textMuted}`}>(optional)</span>
           </label>
           <input
             type="text"
-            value={relationship}
-            onChange={e => setRelationship(e.target.value)}
-            placeholder="e.g., best man, daughter, team lead, college roommate"
-            className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} ${c.border} ${c.text} outline-none focus:ring-2`}
-          />
+            value={relationship} onChange={e => setRelationship(e.target.value)} placeholder="e.g., best man, daughter, team lead, college roommate"
+            className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} ${c.border} ${c.text} outline-none focus:ring-2`} />
         </div>
 
-        {/* Stories */}
-        <div className="mb-4">
+        {/* Stories */} <div className="mb-4">
           <label className={`text-sm font-bold ${c.text} block mb-1.5`}>
-            Stories or details to include <span className={`font-normal ${c.textMuteded}`}>(the more detail, the better the toast)</span>
+            Stories or details to include <span className={`font-normal ${c.textMuted}`}>(the more detail, the better the toast)</span>
           </label>
           <textarea
-            value={stories}
-            onChange={e => setStories(e.target.value)}
-            placeholder="e.g., the time we got lost in Tokyo, how she always brings snacks to meetings, the fact that he still can't parallel park after 30 years"
-            rows={3}
-            className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} ${c.border} ${c.text} outline-none focus:ring-2 resize-none`}
-          />
+            value={stories} onChange={e => setStories(e.target.value)} placeholder="e.g., the time we got lost in Tokyo, how she always brings snacks to meetings, the fact that he still can't parallel park after 30 years"
+            rows={3} className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} ${c.border} ${c.text} outline-none focus:ring-2 resize-none`} />
         </div>
 
-        {/* Tone */}
-        <div className="mb-4">
+        {/* Tone */} <div className="mb-4">
           <label className={`text-sm font-bold ${c.text} block mb-2`}>Tone</label>
           <div className="flex gap-2">
-            {TONES.map(t => (
-              <button
-                key={t.value}
-                onClick={() => setTone(t.value)}
-                className={`flex-1 py-2.5 rounded-xl text-[11px] font-bold border transition-colors min-h-[40px] flex flex-col items-center gap-0.5 ${
+            {TONES.map(t => (<button
+                key={t.value} onClick={() => setTone(t.value)} className={`flex-1 py-2.5 rounded-xl text-[11px] font-bold border transition-colors min-h-[40px] flex flex-col items-center gap-0.5 ${
                   tone === t.value ? c.pillActive : c.pillInactive
-                }`}
-              >
+                }`} >
                 <span className="text-base">{t.emoji}</span>
-                {t.label}
-              </button>
-            ))}
-          </div>
+                {t.label} </button>
+            ))} </div>
         </div>
 
-        {/* Duration */}
-        <div className="mb-4">
+        {/* Duration */} <div className="mb-4">
           <label className={`text-sm font-bold ${c.text} block mb-2`}>Length</label>
           <div className="flex gap-2">
-            {DURATIONS.map(d => (
-              <button
-                key={d.value}
-                onClick={() => setDuration(d.value)}
-                className={`flex-1 py-2 rounded-xl text-[11px] font-bold border transition-colors min-h-[36px] ${
+            {DURATIONS.map(d => (<button
+                key={d.value} onClick={() => setDuration(d.value)} className={`flex-1 py-2 rounded-xl text-[11px] font-bold border transition-colors min-h-[36px] ${
                   duration === d.value ? c.pillActive : c.pillInactive
-                }`}
-              >
-                {d.emoji} {d.label}
-              </button>
-            ))}
-          </div>
+                }`} >
+                {d.emoji} {d.label} </button>
+            ))} </div>
         </div>
 
-        {/* Avoid */}
-        <div className="mb-5">
+        {/* Avoid */} <div className="mb-5">
           <label className={`text-sm font-bold ${c.text} block mb-1.5`}>
-            Topics to avoid <span className={`font-normal ${c.textMuteded}`}>(optional)</span>
+            Topics to avoid <span className={`font-normal ${c.textMuted}`}>(optional)</span>
           </label>
           <input
             type="text"
-            value={avoid}
-            onChange={e => setAvoid(e.target.value)}
-            placeholder='e.g., "the divorce", "that time in Vegas", "anything about weight"'
-            className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} ${c.border} ${c.text} outline-none focus:ring-2`}
-          />
+            value={avoid} onChange={e => setAvoid(e.target.value)} placeholder='e.g., "the divorce", "that time in Vegas", "anything about weight"'
+            className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} ${c.border} ${c.text} outline-none focus:ring-2`} />
         </div>
 
-        {/* Actions */}
+        {/* Actions */} <p className={`text-xs ${c.textMuted} mb-2`}>AI-generated — review and personalise before delivery.</p>
         <div className="flex gap-3">
           <button
-            onClick={generate}
-            disabled={loading || !person.trim() || !occasion}
-            className={`flex-1 ${c.btnPrimary} disabled:opacity-40 disabled:cursor-not-allowed font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-2 min-h-[48px] shadow-lg`}
-          >
-            {loading ? (
-              <><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> Writing your toast...</>
-            ) : (
-              <><span>🎙️</span> Write My Toast</>
-            )}
-          </button>
-          {results && (
-            <button onClick={handleReset} className={`px-5 py-3 ${c.btnSecondary} rounded-xl font-medium min-h-[48px]`}>
+            onClick={generate} disabled={loading || !person.trim() || !occasion} className={`flex-1 ${c.btnPrimary} disabled:opacity-40 disabled:cursor-not-allowed font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-2 min-h-[48px] shadow-lg`} >
+            {loading
+              ? <><span className="inline-block animate-spin">{tool?.icon ?? '🎙️'}</span> Writing your toast…</>
+              : <><span>{tool?.icon ?? '🎙️'}</span> Write My Toast</>} </button>
+          {results && (<button onClick={handleReset} className={`px-5 py-3 ${c.btnSecondary} rounded-xl font-medium min-h-[48px]`}>
               Start Over
             </button>
-          )}
-        </div>
+          )} </div>
       </div>
 
-      {/* Error */}
-      {error && (
-        <div className={`${c.danger} border rounded-xl p-4 flex items-start gap-3`}>
+      {/* Error */} {error && (<div className={`${c.danger} border rounded-xl p-4 flex items-start gap-3`}>
           <span className="flex-shrink-0 mt-0.5">⚠️</span>
           <p className="text-sm">{error}</p>
         </div>
-      )}
+      )} {/* ══════════════════════════════════════════════════════════ */} {/* RESULTS                                                  */} {/* ══════════════════════════════════════════════════════════ */} {r && (<div className="space-y-4">
+          <div ref={resultsRef} data-results-anchor />
+          <ActionBar content={buildFullText()} title="ToastWriter Speech" copyLabel="Copy All" />
 
-      {/* ══════════════════════════════════════════════════════════ */}
-      {/* RESULTS                                                  */}
-      {/* ══════════════════════════════════════════════════════════ */}
-      {r && (
-        <div className="space-y-4">
-
-          <div className="flex justify-end">
-            <ActionBar content={buildFullText()} title="ToastWriter" />
-          </div>
-
-          {/* ── OCCASION READ ── */}
-          {r.occasion_read && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-              <p className={`text-sm ${c.textSecondaryondary} leading-relaxed`}>{r.occasion_read}</p>
+          {/* ── OCCASION READ ── */} {r.occasion_read && (<div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+              <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{r.occasion_read}</p>
             </div>
-          )}
-
-          {/* ── VERSION TABS ── */}
-          {r.versions?.length > 1 && (
-            <div className="flex gap-2">
-              {r.versions.map((v, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setActiveVersion(idx)}
-                  className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-bold border transition-colors min-h-[40px] ${
+          )} {/* ── VERSION TABS ── */} {r.versions?.length > 1 && (<div className="flex gap-2">
+              {r.versions.map((v, idx) => (<button
+                  key={idx} onClick={() => setActiveVersion(idx)} className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-bold border transition-colors min-h-[40px] ${
                     activeVersion === idx ? c.pillActive : c.pillInactive
-                  }`}
-                >
-                  {v.label}
-                  <span className={`block text-[9px] font-normal mt-0.5 ${activeVersion === idx ? 'opacity-80' : c.textMuteded}`}>
-                    {v.style}
-                  </span>
+                  }`} >
+                  {v.label} <span className={`block text-[9px] font-normal mt-0.5 ${activeVersion === idx ? 'opacity-80' : c.textMuted}`}>
+                    {v.style} </span>
                 </button>
-              ))}
-            </div>
-          )}
-
-          {/* ── ACTIVE SPEECH ── */}
-          {activeV && (
-            <div className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
+              ))} </div>
+          )} {/* ── ACTIVE SPEECH ── */} {activeV && (<div className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
               <div className="p-5">
-                {/* Header */}
-                <div className="flex items-start justify-between mb-4">
+                {/* Header */} <div className="flex items-start justify-between mb-4">
                   <div>
                     <h3 className={`text-base font-bold ${c.text}`}>{activeV.label}</h3>
                     <div className="flex gap-2 mt-1">
-                      <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${c.badgeNeutral}`}>{activeV.style}</span>
-                      {activeV.estimated_time && (
-                        <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${c.badge}`}>⏱️ {activeV.estimated_time}</span>
-                      )}
-                    </div>
+                      <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${c.badge}`}>{activeV.style}</span>
+                      {activeV.estimated_time && (<span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${c.badge}`}>⏱️ {activeV.estimated_time}</span>
+                      )} </div>
                   </div>
                   <CopyBtn content={buildSpeechText(activeV)} label="Copy Speech" />
                 </div>
 
-                {/* Opening line highlight */}
-                {activeV.opening_line && (
-                  <div className={`${c.warning} border rounded-lg p-3 mb-4`}>
+                {/* Opening line highlight */} {activeV.opening_line && (<div className={`${c.warning} border rounded-lg p-3 mb-4`}>
                     <p className={`text-[10px] font-bold mb-1`}>🎯 Your opening line (the hook):</p>
                     <p className={`text-sm font-bold leading-relaxed`}>"{activeV.opening_line}"</p>
                   </div>
-                )}
-
-                {/* The speech */}
-                <div className={`${c.cardAlt} rounded-xl p-5 mb-4`}>
+                )} {/* The speech */} <div className={`${c.cardAlt} rounded-xl p-5 mb-4`}>
                   <p className={`text-sm ${c.text} leading-[1.8] whitespace-pre-line`}>{activeV.speech}</p>
                 </div>
 
-                {/* Closing line highlight */}
-                {activeV.closing_line && (
-                  <div className={`${c.success} border rounded-lg p-3`}>
+                {/* Closing line highlight */} {activeV.closing_line && (<div className={`${c.success} border rounded-lg p-3`}>
                     <p className={`text-[10px] font-bold mb-1`}>🎬 Your closing line (the landing):</p>
                     <p className={`text-sm font-bold leading-relaxed`}>"{activeV.closing_line}"</p>
                   </div>
-                )}
-              </div>
+                )} </div>
             </div>
-          )}
-
-          {/* ── DELIVERY TIPS ── */}
-          {r.delivery_tips?.length > 0 && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+          )} {/* ── DELIVERY TIPS ── */} {r.delivery_tips?.length > 0 && (<div className={`${c.card} border ${c.border} rounded-xl p-4`}>
               <p className={`text-xs font-bold ${c.text} mb-2`}>🎯 Delivery tips</p>
               <div className="space-y-2">
-                {r.delivery_tips.map((tip, i) => (
-                  <p key={i} className={`text-xs ${c.textSecondaryondary} leading-relaxed`}>• {tip}</p>
-                ))}
-              </div>
+                {r.delivery_tips.map((tip, i) => (<p key={i} className={`text-xs ${c.textSecondary} leading-relaxed`}>• {tip}</p>
+                ))} </div>
             </div>
-          )}
-
-          {/* ── COMMON MISTAKES ── */}
-          {r.common_mistakes?.length > 0 && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+          )} {/* ── COMMON MISTAKES ── */} {r.common_mistakes?.length > 0 && (<div className={`${c.card} border ${c.border} rounded-xl p-4`}>
               <p className={`text-xs font-bold ${c.text} mb-2`}>🚫 Mistakes to avoid</p>
               <div className="space-y-2">
-                {r.common_mistakes.map((m, i) => (
-                  <p key={i} className={`text-xs ${c.textSecondaryondary} leading-relaxed`}>• {m}</p>
-                ))}
-              </div>
+                {r.common_mistakes.map((m, i) => (<p key={i} className={`text-xs ${c.textSecondary} leading-relaxed`}>• {m}</p>
+                ))} </div>
             </div>
-          )}
-
-          {/* ── EMERGENCY CLOSER ── */}
-          {r.emergency_closer && (
-            <div className={`${c.warning} border rounded-xl p-4 flex items-start gap-3`}>
+          )} {/* ── EMERGENCY CLOSER ── */} {r.emergency_closer && (<div className={`${c.warning} border rounded-xl p-4 flex items-start gap-3`}>
               <span className="flex-shrink-0 mt-0.5">🆘</span>
               <div>
                 <p className="text-xs font-bold mb-1">If you freeze, say this:</p>
                 <p className="text-sm font-medium leading-relaxed">"{r.emergency_closer}"</p>
               </div>
             </div>
-          )}
-
-          {/* ── CROSS-REFERENCES ── */}
-          <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-xs font-bold ${c.text} mb-2`}>Related tools</p>
-            <div className="flex flex-wrap gap-2">
-              <a href="/GhostWriter" target="_blank" rel="noopener noreferrer" className={`text-xs px-3 py-1.5 rounded-lg border ${c.pillInactive} no-underline`}>
-                👻 GhostWriter
-              </a>
-              <a href="/AwkwardSilenceFiller" target="_blank" rel="noopener noreferrer" className={`text-xs px-3 py-1.5 rounded-lg border ${c.pillInactive} no-underline`}>
-                💬 Awkward Silence Filler
-              </a>
-              <a href="/CaptionMagic" target="_blank" rel="noopener noreferrer" className={`text-xs px-3 py-1.5 rounded-lg border ${c.pillInactive} no-underline`}>
-                ✨ Caption Magic
-              </a>
-            </div>
+          )} {/* ── CROSS-REFERENCES — conditional on results ── */} <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+            <p className={`text-xs font-bold ${c.textMuted} mb-2`}>🔗 Related tools</p>
+            <div className="flex flex-wrap gap-3">
+              <a href="/VelvetHammer" className={`text-xs ${linkStyle}`}>🔨 Velvet Hammer — say hard things gently</a>
+              {occasion === 'roast' && (<a href="/RoastMe" className={`text-xs ${linkStyle}`}>🔥 Roast Me — more roast material</a>
+              )} {(occasion === 'wedding' || occasion === 'farewell') && (<a href="/MagicMouth" className={`text-xs ${linkStyle}`}>🎤 MagicMouth — rehearse the delivery</a>
+              )} </div>
           </div>
         </div>
-      )}
-
-      {/* Cross-tool links */}
-      <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
-        <p className={`text-xs font-bold ${c.textMuted} mb-2`}>🔗 Related tools</p>
-        <div className="flex flex-wrap gap-3">
-          <a href="/tool/ghost-writer" className={`text-xs ${linkStyle}`}>✍️ Ghost Writer</a>
-          <a href="/tool/velvet-hammer" className={`text-xs ${linkStyle}`}>🔨 Velvet Hammer</a>
-          <a href="/tool/the-alibi" className={`text-xs ${linkStyle}`}>🎭 The Alibi</a>
-        </div>
-      </div>
-      {/* Session history */}
-      {/* eslint-disable-next-line no-restricted-globals */}
-      {history.length > 0 && (
-        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
+      )} {/* Session history */} {/* eslint-disable-next-line no-restricted-globals */} {history.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
           <p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 Recent sessions</p>
           <div className="space-y-1">
-            {/* eslint-disable-next-line no-restricted-globals */}
-
-            {history.map(s => (
-              <div key={s.id} className="flex items-center justify-between">
+            {/* eslint-disable-next-line no-restricted-globals */} {history.map(s => (<div key={s.id} className="flex items-center justify-between">
                 <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || 'Session'}</span>
                 <span className={`text-xs ${c.textMuted} ml-2 shrink-0`}>{new Date(s.date).toLocaleDateString()}</span>
               </div>
-            ))}
-          </div>
+            ))} </div>
         </div>
-      )}
-    </div>
+      )} </div>
   );
 };
 

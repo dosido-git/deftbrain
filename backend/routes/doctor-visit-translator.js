@@ -1,17 +1,17 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { anthropic } = require('../lib/claude');
 
 router.post('/doctor-visit-translator', async (req, res) => {
   try {
     const {
       doctorNotes, visitType, concerns, currentMedications,
-      language, documentType, knownMedications
+      language, documentType, knownMedications, pdfData
     } = req.body;
 
-    // Validation
-    if (!doctorNotes || !doctorNotes.trim()) {
-      return res.status(400).json({ error: 'Doctor notes or visit summary is required' });
+    // Validation — require either notes or a PDF
+    if ((!doctorNotes || !doctorNotes.trim()) && !pdfData) {
+      return res.status(400).json({ error: 'Doctor notes or a PDF document is required' });
     }
 
     const concernsContext = concerns ? `\n\nPATIENT'S MAIN CONCERNS: ${concerns}` : '';
@@ -40,11 +40,16 @@ router.post('/doctor-visit-translator', async (req, res) => {
       ? `\n\nBILINGUAL OUTPUT: For the following fields, provide BOTH English AND ${langName[language]} translations. Format each as "English text ||| ${langName[language]} translation":\n- plain_english_summary.diagnosis\n- plain_english_summary.treatment_plan\n- plain_english_summary.prognosis\n- plain_english_summary.timeline\n- Each action in action_checklist (the "action" and "how" fields)\n- Each medication's "purpose" and "how_to_take" fields\n- follow_up_requirements.next_appointment\n- All items in follow_up_requirements.when_to_call_doctor and warning_signs_immediate\n\nKeep all other fields in English only. Use the ||| separator so the app can split and display both languages.`
       : '';
 
+    const notesSection = doctorNotes?.trim()
+      ? `DOCTOR'S NOTES/VISIT SUMMARY:\n${doctorNotes}`
+      : pdfData
+        ? `DOCUMENT SOURCE: PDF uploaded by patient (see attached document)`
+        : '';
+
     const prompt = `You are a medical interpreter helping patients understand their doctor visits. Translate medical jargon into clear, understandable language WITHOUT oversimplifying or losing important details.
 
 VISIT TYPE: ${visitType}
-DOCTOR'S NOTES/VISIT SUMMARY:
-${doctorNotes}${concernsContext}${medsContext}${knownMedsContext}${documentContext}${bilingualInstructions}
+${notesSection}${concernsContext}${medsContext}${knownMedsContext}${documentContext}${bilingualInstructions}
 
 CRITICAL RULES:
 1. Use clear, plain English but maintain medical accuracy
@@ -196,10 +201,21 @@ INSURANCE GUIDANCE:
 
 Return ONLY the JSON object.`;
 
+    // Build message content — include PDF as a document if provided
+    const userContent = pdfData
+      ? [
+          {
+            type: 'document',
+            source: { type: 'base64', media_type: 'application/pdf', data: pdfData },
+          },
+          { type: 'text', text: prompt },
+        ]
+      : prompt;
+
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 4500,
-      messages: [{role: 'user', content: prompt}]
+      messages: [{ role: 'user', content: userContent }]
     });
 
     let jsonText = message.content[0].text.trim();

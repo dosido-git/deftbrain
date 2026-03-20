@@ -48,9 +48,9 @@ export const tools = [
   id: "ToolFinder",
   title: "ToolFinder",
   tagline: "Describe your problem — I'll find the right tool.",
-  tags: ['find tool', 'search', 'which tool', 'help me', 'recommend', 'browse'],
+  tags: ['find tool', 'search', 'which tool', 'help me', 'recommend', 'browse', 'discover', 'guide', 'navigate', 'right tool', 'suggest', 'match'],
   icon: "🧰",
-  categories: ['Humans'],
+  categories: ['Do It!'],
   headerColor: "#e0b8b8",
   description: "With 100+ tools, who has time to browse? Describe what you need in plain language and ToolFinder recommends the best DeftBrain tools for your situation, explains why each one fits, and tells you exactly what to enter when you get there. Recommends workflows when multiple tools work together.",
   guide: {
@@ -580,8 +580,8 @@ export const tools = [
   id: "ToastWriter",
   title: "ToastWriter",
   tagline: "Toasts, speeches, and tributes that land.",
-  tags: ['toast', 'speech', 'wedding', 'tribute', 'public speaking', 'celebration'],
-  icon: "🎙️",
+  tags: ['toast', 'speech', 'wedding', 'tribute', 'public speaking', 'celebration', 'best man', 'retirement', 'birthday', 'roast', 'memorial', 'farewell'],
+  icon: "🥂",
   categories: ['Discourse', 'Humans'],
   headerColor: "#e0b8b8",
   description: "Need to give a toast, speech, or tribute? Describe the person, the occasion, and any stories you want to include. ToastWriter generates 3 versions at different styles — warm, funny, elegant — each with delivery cues, the opening hook, the closing line, and an emergency closer if you freeze. Because nobody should have to wing it.",
@@ -2217,11 +2217,6 @@ export const tools = [
   description: "Enter any current event, trend, or controversy. AI finds 2-3 structural historical parallels — not surface-level ('this is like Rome falling') but deep structural matches based on power dynamics, institutional behavior, and how similar situations actually played out. Each parallel includes what happened, how contemporaries understood it (and how they were wrong), what happened next, and specifically where the analogy breaks down. Dig deeper into any parallel for full timelines, turning points, echoing quotes, and information environment analysis. Get a counter-example showing when similar conditions led to a different outcome. Plus synthesis, predictions, and further reading.",
   guide: {
     overview: "Most historical analogies are lazy: 'This is just like the fall of Rome.' HistoryToday goes deeper. It finds structural parallels — situations where the underlying mechanisms (regulatory capture, information asymmetry, institutional decay, public sentiment shifts) match the current moment. For each parallel, you get the full picture: what happened, how people at the time understood it, what they got wrong, what happened next, and crucially — where the analogy breaks down. That last part is the most valuable: every parallel is imperfect, and the differences predict what will be different this time. Dig Deeper expands any parallel into a full timeline with turning points, echoing quotes, and lessons. The Counter-Example finds a case where similar starting conditions produced a completely different outcome.",
-        pitfalls: [
-      "The parallels are structural, not superficial — if you're looking for 'other times X happened', a search engine is faster",
-      "The counter-narrative feature deliberately challenges the parallel; this is a feature, not a bug",
-      "Context is optional but meaningful — the same event reads differently in a political, cultural, or personal context"
-    ],    
     howToUse: [
       "Describe any current event, trend, or controversy — be as specific or broad as you want",
       "Optionally add a specific angle ('I'm interested in the labor dynamics' or 'What about the regulatory side?')",
@@ -3530,9 +3525,9 @@ export const tools = [
   icon: "💔",
   categories: ['Humans'],
   headerColor: "#e0b8b8",
-  description: "Track important relationships, get alerts when it's been too long, and generate personalized conversation starters. Color-coded urgency, configurable contact frequencies, snooze for busy periods, and natural reconnection scripts — so you never lose touch with the people who matter.",
+  description: "Never lose touch with people you care about due to time-blindness. Track important relationships, get alerts when it's been too long, and generate personalized conversation starters. Visual color-coded urgency (red/yellow/green), configurable contact frequencies, snooze for busy periods, and guilt-free reconnection scripts. Built specifically for people who care deeply but struggle with time awareness and executive function. Maintain connections without shame.",
   guide: {
-    overview: "Friendship Fade Alerter helps you stay connected with the people who matter. Add contacts with their ideal frequency, and the tool tracks when you're overdue and generates personalized conversation starters when you're ready to reach out. Color-coded urgency (red = overdue, yellow = coming due, green = on track), one-click message generation, snooze for busy periods, and drift detection so small gaps don't become permanent distance.",
+    overview: "Friendship Fade Alerter helps individuals maintain relationships despite time-blindness. Add important people with their ideal contact frequency (weekly, monthly, etc.), and the tool tracks days since last contact, alerts when overdue, and generates personalized conversation starters when you're ready to reach out. Color-coded visual indicators (red = overdue, yellow = coming due, green = recently contacted) remove guesswork. One-click conversation starter generation removes the 'what do I say?' barrier. Guilt-free framing acknowledges that time got away from you - that's okay. Snooze relationships during busy periods. Track successful reconnections. Low-friction design makes maintaining friendships actually doable.",
     
     howToUse: [
       "ADD RELATIONSHIPS: Click 'Add Person', enter name, relationship type (close friend, family, mentor), ideal contact frequency (weekly to semi-annually), last contact date, and optional context notes (shared interests, ongoing topics).",

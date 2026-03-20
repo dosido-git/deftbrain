@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { CopyBtn, ActionBar } from '../components/ActionButtons';
+import { ActionBar } from '../components/ActionButtons';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useTheme } from '../hooks/useTheme';
@@ -74,8 +74,7 @@ const ToolFinder = ({ tool }) => {
       setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
     } catch (err) {
       setError(err.message || 'Something went wrong. Try again.');
-    }
-  }, [problem, callToolEndpoint, setError, setResults, setHistory]);
+    } }, [problem, callToolEndpoint, setError, setResults, setHistory]);
 
   const handleQuickPick = useCallback((label) => {
     setProblem(label);
@@ -98,8 +97,7 @@ const ToolFinder = ({ tool }) => {
         text += `\n${i + 1}. ${rec.icon || '🔧'} ${rec.title} — ${rec.why}`;
         if (rec.what_to_do) text += `\n   → ${rec.what_to_do}`;
       });
-    }
-    if (results.workflow) text += `\n\nWorkflow: ${results.workflow}`;
+    } if (results.workflow) text += `\n\nWorkflow: ${results.workflow}`;
     return text + BRAND;
   }, [results]);
 
@@ -112,241 +110,152 @@ const ToolFinder = ({ tool }) => {
     };
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
-  }, [loading]);
+  }, [loading, findTools, problem]);
 
   const r = results;
 
   // ════════════════════════════════════════════════════════════
   // RENDER
   // ════════════════════════════════════════════════════════════
-  return (
-    <div className={`space-y-6 ${c.text}`}>
+  return (<div className={`space-y-6 ${c.text}`}>
 
-      {/* ── HEADER ── */}
-      <div className={`${c.card} border ${c.border} rounded-xl p-6`}>
+      {/* ── HEADER ── */} <div className={`${c.card} border ${c.border} rounded-xl p-6`}>
         <div className={`mb-5 pb-4 border-b ${c.border}`}>
           <h2 className={`text-2xl font-bold ${c.text}`}>
-            <span className="mr-2">{tool?.icon ?? '🧰'}</span>{tool?.title ?? 'ToolFinder'}
-          </h2>
+            <span className="mr-2">{tool?.icon ?? '🧰'}</span>{tool?.title ?? 'ToolFinder'} </h2>
           <p className={`text-sm ${c.textSecondary} mt-1`}>{tool?.tagline ?? "Describe your problem — I'll find the right tools for you"}</p>
         </div>
 
-        {/* ── PROBLEM INPUT ── */}
-        <div className="mb-4">
+        {/* ── PROBLEM INPUT ── */} <div className="mb-4">
           <label className={`text-sm font-bold ${c.text} block mb-1.5`}>
             What do you need help with?
           </label>
           <textarea
-            value={problem}
-            onChange={e => setProblem(e.target.value)}
-            placeholder="e.g., My landlord is trying to keep my security deposit and I think it's unfair..."
-            rows={3}
-            className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} ${c.border} ${c.text} outline-none focus:ring-2 resize-none placeholder:${c.textMuted}`}
-          />
+            value={problem} onChange={e => setProblem(e.target.value)} placeholder="e.g., My landlord is trying to keep my security deposit and I think it's unfair..."
+            rows={3} className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} ${c.border} ${c.text} outline-none focus:ring-2 resize-none placeholder:${c.textMuted}`} />
         </div>
 
-        {/* ── QUICK PICKS ── */}
-        {!results && (
-          <div className="mb-5">
+        {/* ── QUICK PICKS ── */} {!results && (<div className="mb-5">
             <p className={`text-xs font-bold ${c.textMuted} mb-2`}>Or jump in:</p>
             <div className="flex flex-wrap gap-1.5">
-              {QUICK_PICKS.map(qp => (
-                <button
-                  key={qp.label}
-                  onClick={() => handleQuickPick(qp.label)}
-                  disabled={loading}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors min-h-[32px] ${c.pillInactive} disabled:opacity-40`}
-                >
-                  {qp.emoji} {qp.label}
-                </button>
-              ))}
-            </div>
+              {QUICK_PICKS.map(qp => (<button
+                  key={qp.label} onClick={() => handleQuickPick(qp.label)} disabled={loading} className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors min-h-[32px] ${c.pillInactive} disabled:opacity-40`} >
+                  {qp.emoji} {qp.label} </button>
+              ))} </div>
           </div>
-        )}
-
-        {/* ── SUBMIT ── */}
-        <div className="flex gap-3">
+        )} {/* ── SUBMIT ── */} <div className="flex gap-3">
           <button
-            onClick={() => findTools()}
-            disabled={loading || !problem.trim()}
-            className={`flex-1 ${c.btnPrimary} disabled:opacity-40 disabled:cursor-not-allowed font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-2 min-h-[48px] shadow-lg transition-all`}
-          >
+            onClick={() => findTools()} disabled={loading || !problem.trim()} className={`flex-1 ${c.btnPrimary} disabled:opacity-40 disabled:cursor-not-allowed font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-2 min-h-[48px] shadow-lg transition-all`} >
             {loading
               ? <><span className="inline-block animate-spin">{tool?.icon ?? '🧰'}</span> Searching…</>
-              : <><span>{tool?.icon ?? '🧰'}</span> Find My Tools</>}
-          </button>
-          {results && (
-            <button
-              onClick={handleReset}
-              className={`px-5 py-3 ${c.btnSecondary} rounded-xl font-medium min-h-[48px]`}
-            >
+              : <><span>{tool?.icon ?? '🧰'}</span> Find My Tools</>} </button>
+          {results && (<button
+              onClick={handleReset} className={`px-5 py-3 ${c.btnSecondary} rounded-xl font-medium min-h-[48px]`} >
               New Search
             </button>
-          )}
-        </div>
+          )} </div>
       </div>
 
-      {/* Error */}
-      {error && (
-        <div className={`${c.danger} border rounded-xl p-4 flex items-start gap-3`}>
+      {/* Error */} {error && (<div className={`${c.danger} border rounded-xl p-4 flex items-start gap-3`}>
           <span className="flex-shrink-0 mt-0.5">⚠️</span>
           <p className="text-sm">{error}</p>
         </div>
-      )}
+      )} {/* ══════════════════════════════════════════════════════════ */} {/* RESULTS                                                  */} {/* ══════════════════════════════════════════════════════════ */} {r && (<div className="space-y-4">
+          <div ref={resultsRef} data-results-anchor />
+          <ActionBar content={buildFullText()} copyLabel="Copy All" />
 
-      {/* ══════════════════════════════════════════════════════════ */}
-      {/* RESULTS                                                  */}
-      {/* ══════════════════════════════════════════════════════════ */}
-      {r && (
-        <div className="space-y-4">
-          <div ref={resultsRef} />
-          <ActionBar content={buildFullText()} copyLabel="Copy All" printContent={buildFullText()} printTitle="ToolFinder Results" />
-
-          {/* ── UNDERSTANDING ── */}
-          {r.understanding && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+          {/* ── UNDERSTANDING ── */} {r.understanding && (<div className={`${c.card} border ${c.border} rounded-xl p-5`}>
               <p className={`text-sm ${c.textSecondary} leading-relaxed`}>
                 <span className={`font-bold ${c.text}`}>I hear you: </span>
-                {r.understanding}
-              </p>
+                {r.understanding} </p>
             </div>
-          )}
-
-          {/* ── RECOMMENDATIONS ── */}
-          {r.recommendations && r.recommendations.length > 0 && (
-            <div className="space-y-3">
+          )} {/* ── RECOMMENDATIONS ── */} {r.recommendations && r.recommendations.length > 0 && (<div className="space-y-3">
               <div className="flex items-center justify-between">
                 <h3 className={`text-sm font-bold ${c.text}`}>
-                  {r.recommendations.length === 1 ? 'Your best tool:' : `Your top ${r.recommendations.length} tools:`}
-                </h3>
+                  {r.recommendations.length === 1 ? 'Your best tool:' : `Your top ${r.recommendations.length} tools:`} </h3>
 
               </div>
 
-              {r.recommendations.map((rec, idx) => (
-                <a
-                  key={rec.id}
-                  href={`/${rec.id}`}
-                  target="_blank"
+              {r.recommendations.map((rec, idx) => (<a
+                  key={rec.id} href={`/${rec.id}`} target="_blank"
                   rel="noopener noreferrer"
                   className="block no-underline group"
                 >
                   <div className={`${c.card} border ${c.border} rounded-xl p-5 transition-all group-hover:shadow-md ${c.cardHover}`}>
-                    {/* Tool header */}
-                    <div className="flex items-start gap-3 mb-3">
+                    {/* Tool header */} <div className="flex items-start gap-3 mb-3">
                       <span className="text-2xl flex-shrink-0">{rec.icon || '🔧'}</span>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
                           <h4 className={`text-base font-bold ${c.text} group-hover:underline`}>
-                            {rec.title}
-                          </h4>
-                          {idx === 0 && r.recommendations.length > 1 && (
-                            <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${c.badge}`}>
+                            {rec.title} </h4>
+                          {idx === 0 && r.recommendations.length > 1 && (<span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${c.badge}`}>
                               BEST MATCH
                             </span>
-                          )}
-                          <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${c.badge}`}>
-                            {rec.category}
-                          </span>
+                          )} <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${c.badge}`}>
+                            {rec.category} </span>
                         </div>
                       </div>
                       <span className={`text-sm ${c.textMuted} group-hover:translate-x-1 transition-transform flex-shrink-0`}>→</span>
                     </div>
 
-                    {/* Why this tool */}
-                    <p className={`text-sm ${c.textSecondary} leading-relaxed mb-2`}>
-                      {rec.why}
-                    </p>
+                    {/* Why this tool */} <p className={`text-sm ${c.textSecondary} leading-relaxed mb-2`}>
+                      {rec.why} </p>
 
-                    {/* What to do */}
-                    {rec.what_to_do && (
-                      <div className={`${c.cardAlt} rounded-lg px-3 py-2 mt-2`}>
+                    {/* What to do */} {rec.what_to_do && (<div className={`${c.cardAlt} rounded-lg px-3 py-2 mt-2`}>
                         <p className={`text-xs ${c.textMuted}`}>
-                          <span className="font-bold">Quick start:</span> {rec.what_to_do}
-                        </p>
+                          <span className="font-bold">Quick start:</span> {rec.what_to_do} </p>
                       </div>
-                    )}
-                  </div>
+                    )} </div>
                 </a>
-              ))}
-            </div>
-          )}
-
-          {/* ── WORKFLOW ── */}
-          {r.workflow && (
-            <div className={`${c.success} border rounded-xl p-4 flex items-start gap-3`}>
+              ))} </div>
+          )} {/* ── WORKFLOW ── */} {r.workflow && (<div className={`${c.success} border rounded-xl p-4 flex items-start gap-3`}>
               <span className="flex-shrink-0 mt-0.5">🔗</span>
               <div>
                 <p className={`text-xs font-bold mb-1`}>Recommended workflow:</p>
                 <p className={`text-sm leading-relaxed`}>{r.workflow}</p>
               </div>
             </div>
-          )}
-
-          {/* ── NO PERFECT FIT ── */}
-          {r.no_perfect_fit && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+          )} {/* ── NO PERFECT FIT ── */} {r.no_perfect_fit && (<div className={`${c.card} border ${c.border} rounded-xl p-4`}>
               <p className={`text-xs font-bold ${c.textMuted} mb-1`}>Closest match note:</p>
               <p className={`text-sm ${c.textSecondary}`}>{r.no_perfect_fit}</p>
             </div>
-          )}
-
-          {/* ── CLARIFICATION ── */}
-          {r.clarification && (
-            <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+          )} {/* ── CLARIFICATION ── */} {r.clarification && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
               <p className={`text-xs font-bold ${c.textMuted} mb-1`}>💡 Want better results?</p>
               <p className={`text-sm ${c.textSecondary}`}>{r.clarification}</p>
             </div>
-          )}
-
-          {/* ── BROWSE ALL ── */}
-          <p className={`text-xs text-center ${c.textMuted}`}>AI-generated — results may not include every suitable tool.</p>
+          )} {/* ── BROWSE ALL ── */} <p className={`text-xs text-center ${c.textMuted}`}>AI-generated — results may not include every suitable tool.</p>
           <div className={`text-center pt-2`}>
             <p className={`text-xs ${c.textMuted} mb-2`}>Didn't find what you need?</p>
             <a
               href="/"
-              className={`text-sm font-bold underline ${linkStyle}`}
-            >
+              className={`text-sm font-bold underline ${linkStyle}`} >
               Browse all tools →
             </a>
           </div>
         </div>
-      )}
-
-      {/* Conditional cross-ref — only after results */}
-      {r?.workflow && (
-        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+      )} {/* Conditional cross-ref — only after results */} {r?.workflow && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
           <p className={`text-xs font-bold ${c.textMuted} mb-2`}>🔗 Multi-step workflow? Also useful</p>
           <div className="flex flex-wrap gap-3">
             <a href="/TheRunthrough" className={`text-xs ${linkStyle}`}>🎤 The Runthrough — rehearse what you'll say</a>
           </div>
         </div>
-      )}
-      {/* Always-on related tools */}
-      <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+      )} {/* Always-on related tools */} <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
         <p className={`text-xs font-bold ${c.textMuted} mb-2`}>🔗 Related tools</p>
         <div className="flex flex-wrap gap-3">
           <a href="/SkillGapMap" className={`text-xs ${linkStyle}`}>🗺️ Skill Gap Map</a>
           <a href="/OnePercenter" className={`text-xs ${linkStyle}`}>💡 One Percenter</a>
         </div>
       </div>
-      {/* Session history */}
-      {/* eslint-disable-next-line no-restricted-globals */}
-      {history.length > 0 && (
-        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
+      {/* Session history */} {/* eslint-disable-next-line no-restricted-globals */} {history.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
           <p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 Recent sessions</p>
           <div className="space-y-1">
-            {/* eslint-disable-next-line no-restricted-globals */}
-
-            {history.map(s => (
-              <div key={s.id} className="flex items-center justify-between">
+            {/* eslint-disable-next-line no-restricted-globals */} {history.map(s => (<div key={s.id} className="flex items-center justify-between">
                 <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || 'Session'}</span>
                 <span className={`text-xs ${c.textMuted} ml-2 shrink-0`}>{new Date(s.date).toLocaleDateString()}</span>
               </div>
-            ))}
-          </div>
+            ))} </div>
         </div>
-      )}
-    </div>
+      )} </div>
   );
 };
 

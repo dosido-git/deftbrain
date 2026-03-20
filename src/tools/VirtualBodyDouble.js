@@ -90,8 +90,7 @@ const sendNotification = (title, body) => {
   try {
     if (Notification.permission === 'granted') {
       new Notification(title, { body, icon: '👥' });
-    }
-  } catch (e) { /* notifications not available */ }
+    } } catch (e) { /* notifications not available */ }
 };
 
 const VirtualBodyDouble = ({ tool }) => {
@@ -138,7 +137,7 @@ const VirtualBodyDouble = ({ tool }) => {
   // ─── State: View ───
   const [view, setView] = useState('setup');
   const [error, setError] = useState('');
-  const [history, _setHistory] = usePersistentState('virtualbodydouble-history', []);
+  const [history] = usePersistentState('virtualbodydouble-history', []);
 
   // ─── State: Setup ───
   const [task, setTask] = useState('');
@@ -163,7 +162,7 @@ const VirtualBodyDouble = ({ tool }) => {
   const [isPaused, setIsPaused] = useState(false);
   const [checkInsDone, setCheckInsDone] = useState(0);
   const [showCheckIn, setShowCheckIn] = useState(false);
-  const [checkInResponse, setCheckInResponse] = useState(null);
+  const [, setCheckInResponse] = useState(null);
   const [checkInNote, setCheckInNote] = useState('');
   const [chatLog, setChatLog] = useState([]);
   const [isOnBreak, setIsOnBreak] = useState(false);
@@ -172,7 +171,7 @@ const VirtualBodyDouble = ({ tool }) => {
   const [completionNote, setCompletionNote] = useState('');
   const [completionData, setCompletionData] = useState(null);
   const [stuckData, setStuckData] = useState(null);
-  const [extendData, setExtendData] = useState(null);
+  const [, setExtendData] = useState(null);
   const [inviteData, setInviteData] = useState(null);
   const [reviewData, setReviewData] = useState(null);
 
@@ -214,8 +213,7 @@ const VirtualBodyDouble = ({ tool }) => {
   useEffect(() => {
     if (notificationsEnabled && typeof Notification !== 'undefined' && Notification.permission === 'default') {
       Notification.requestPermission();
-    }
-  }, [notificationsEnabled]);
+    } }, [notificationsEnabled]);
 
   // ─── Helpers ───
   const formatTime = (secs) => {
@@ -243,8 +241,7 @@ const VirtualBodyDouble = ({ tool }) => {
     if (view !== 'active' || isPaused || isOnBreak) return;
     timerRef.current = setInterval(() => {
       setSecondsRemaining(prev => {
-        if (prev <= 1) { clearInterval(timerRef.current); completeRef.current?.(); return 0; }
-        return prev - 1;
+        if (prev <= 1) { clearInterval(timerRef.current); completeRef.current?.(); return 0; } return prev - 1;
       });
       setSecondsElapsed(prev => {
         const next = prev + 1;
@@ -254,8 +251,7 @@ const VirtualBodyDouble = ({ tool }) => {
           setShowCheckIn(true);
           if (soundEnabled) playChime();
           if (notificationsEnabled) sendNotification('Check-in time 👋', 'How\'s your session going?');
-        }
-        return next;
+        } return next;
       });
     }, 1000);
     return () => clearInterval(timerRef.current);
@@ -295,8 +291,7 @@ const VirtualBodyDouble = ({ tool }) => {
           if (soundEnabled) playChime();
           addChat('buddy', sessionPlan?.break_suggestion?.return_message || 'Break\'s over — welcome back! 🙌');
           return 0;
-        }
-        return prev - 1;
+        } return prev - 1;
       });
     }, 1000);
     return () => clearInterval(breakTimerRef.current);
@@ -304,21 +299,18 @@ const VirtualBodyDouble = ({ tool }) => {
 
   // ─── API: Task breakdown ───
   const handleBreakdown = async () => {
-    if (!task.trim()) { setError('Enter a task first.'); return; }
-    setError('');
+    if (!task.trim()) { setError('Enter a task first.'); return; } setError('');
     try {
       const data = await callToolEndpoint('virtual-body-double', { action: 'breakdown', task: task.trim(), duration: actualDuration, mood });
       setBreakdownData(data);
       setSubTasks(data.sub_tasks?.map(s => s.label) || []);
       setSubTaskChecked({});
       setShowBreakdown(true);
-    } catch (err) { setError(err.message || 'Couldn\'t break down the task.'); }
-  };
+    } catch (err) { setError(err.message || 'Couldn\'t break down the task.'); } };
 
   // ─── API: Start session ───
   const handleStart = async () => {
-    if (!task.trim()) { setError('What are you working on?'); return; }
-    setError('');
+    if (!task.trim()) { setError('What are you working on?'); return; } setError('');
     try {
       const data = await callToolEndpoint('virtual-body-double', {
         action: 'start', task: task.trim(), duration: actualDuration, checkInFrequency: checkInFreq,
@@ -335,8 +327,7 @@ const VirtualBodyDouble = ({ tool }) => {
       addBuddyMessage(data.kickoff?.greeting, '👋', 500);
       if (data.kickoff?.first_step) addBuddyMessage(`First step: ${data.kickoff.first_step}`, '🎯', 2500);
       if (data.kickoff?.environment_tip) addBuddyMessage(data.kickoff.environment_tip, '💡', 4500);
-    } catch (err) { setError(err.message || 'Couldn\'t start session.'); }
-  };
+    } catch (err) { setError(err.message || 'Couldn\'t start session.'); } };
 
   // ─── Quick-start from past session ───
   const handleRepeat = (session) => {
@@ -362,8 +353,7 @@ const VirtualBodyDouble = ({ tool }) => {
       setCheckInResponse(data);
       addBuddyMessage(data.response, data.emoji);
       if (data.suggestion) addBuddyMessage(`💡 ${data.suggestion}`, null, 1500);
-    } catch (err) { addChat('buddy', 'Still here with you. Keep going! 💪'); }
-  };
+    } catch (err) { addChat('buddy', 'Still here with you. Keep going! 💪'); } };
 
   // ─── API: Stuck ───
   const handleStuck = async () => {
@@ -377,8 +367,7 @@ const VirtualBodyDouble = ({ tool }) => {
       addBuddyMessage(data.diagnosis, '🔍');
       addBuddyMessage(`→ ${data.immediate_action}`, '🎯', 1200);
       if (data.permission) addBuddyMessage(data.permission, '💚', 2400);
-    } catch (err) { addChat('buddy', 'That\'s okay — try doing just the tiniest piece. Even one sentence counts.'); }
-  };
+    } catch (err) { addChat('buddy', 'That\'s okay — try doing just the tiniest piece. Even one sentence counts.'); } };
 
   // ─── API: Break ───
   const handleBreakAction = async () => {
@@ -389,8 +378,7 @@ const VirtualBodyDouble = ({ tool }) => {
         action: 'break', task, minutesWorked: Math.floor(secondsElapsed / 60), breakDuration: 5, environment, mood,
       });
       addBuddyMessage(data.activity, '🌿');
-    } catch (err) { addChat('buddy', 'Good call. Step away for a few minutes.'); }
-  };
+    } catch (err) { addChat('buddy', 'Good call. Step away for a few minutes.'); } };
 
   // ─── Session complete ───
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -409,13 +397,13 @@ const VirtualBodyDouble = ({ tool }) => {
       setCompletionData(data);
     } catch (err) {
       setCompletionData({ celebration: 'You did it! Session complete. 🎉', accomplishment_reframe: 'Every minute of focused work adds up.', card_quote: 'Another session in the books.' });
-    }
-  }, [task, actualDuration, checkInsDone, totalCheckIns, mood, moodAfter, sessionLog, subTasks, subTasksCompleted, soundEnabled, notificationsEnabled, sessionMode, callToolEndpoint]);
+    } }, [task, actualDuration, checkInsDone, totalCheckIns, mood, moodAfter, sessionLog, subTasks, subTasksCompleted, soundEnabled, notificationsEnabled, sessionMode, callToolEndpoint]);
 
   // ─── Keep completeRef current (must be after handleSessionComplete) ───
   useEffect(() => { completeRef.current = handleSessionComplete; }, [handleSessionComplete]);
 
   // ─── Keyboard shortcut (must be after handleStart) ───
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     const handler = (e) => {
       const tag = document.activeElement?.tagName;
@@ -441,8 +429,7 @@ const VirtualBodyDouble = ({ tool }) => {
       setCardData(data);
     } catch (err) {
       setCardData({ achievement_title: 'Session Complete', share_line: `Just finished ${actualDuration} min on "${task}"!`, badge_emoji: '🎉' });
-    }
-  };
+    } };
 
   // ─── End early ───
   const handleEndEarly = () => {
@@ -472,25 +459,21 @@ const VirtualBodyDouble = ({ tool }) => {
       nextCheckInRef.current = 0; setCheckInsDone(0); setView('active');
       addBuddyMessage(data.extension_message, '🔄');
       if (data.mini_goal) addBuddyMessage(`Goal: ${data.mini_goal}`, '🎯', 1200);
-    } catch (err) { setSecondsRemaining(extraMin * 60); setView('active'); addChat('buddy', 'Round 2 — let\'s go! 🔄'); }
-  };
+    } catch (err) { setSecondsRemaining(extraMin * 60); setView('active'); addChat('buddy', 'Round 2 — let\'s go! 🔄'); } };
 
   // ─── Invite ───
   const handleInvite = async () => {
     try {
       const data = await callToolEndpoint('virtual-body-double', { action: 'invite', task, duration: `${actualDuration} minutes`, platform: 'text' });
       setInviteData(data);
-    } catch (err) { setError('Couldn\'t generate invite.'); }
-  };
+    } catch (err) { setError('Couldn\'t generate invite.'); } };
 
   // ─── Review ───
   const handleReview = async () => {
-    if (sessionLog.length < 3) { setError('Need at least 3 sessions to see patterns.'); return; }
-    try {
+    if (sessionLog.length < 3) { setError('Need at least 3 sessions to see patterns.'); return; } try {
       const data = await callToolEndpoint('virtual-body-double', { action: 'review', sessionLog: sessionLog.slice(0, 20) });
       setReviewData(data); setView('insights');
-    } catch (err) { setError('Couldn\'t analyze sessions.'); }
-  };
+    } catch (err) { setError('Couldn\'t analyze sessions.'); } };
 
   const resetForm = () => {
     setTask(''); setGoals(''); setMood(''); setEnvironment('');
@@ -526,62 +509,40 @@ const VirtualBodyDouble = ({ tool }) => {
   // RENDER: SETUP
   // ══════════════════════════════════════════════════
   if (view === 'setup') {
-    return (
-      <div className={`min-h-screen ${c.cardAlt} py-6 px-4`}>
+    return (<div className={`min-h-screen ${c.cardAlt} py-6 px-4`}>
         <div className="max-w-xl mx-auto space-y-5">
 
-          {/* Header */}
-          <div className="mb-2">
+          {/* Header */} <div className="mb-2">
             <h1 className={`text-2xl font-bold ${c.text}`}>
-              <span className="mr-2">{tool?.icon ?? '👥'}</span>{tool?.title}
-            </h1>
+              <span className="mr-2">{tool?.icon ?? '👥'}</span>{tool?.title} </h1>
             <p className={`${c.textSecondary} text-sm mt-1`}>{tool?.tagline}</p>
           </div>
           <div className={`px-4 py-3 rounded-xl ${c.accentLight} border text-sm ${c.accentLightText} leading-relaxed`}>
             <span className="font-bold">Working alone is hard. Working near someone else is easier.</span> That's body doubling — the focus effect of another person's presence. This tool simulates it with an AI companion who checks in, cheers you on, and stays with you until the timer ends. Pick a mode, set a task, and you're not alone anymore.
           </div>
 
-          {/* Status bar — only when there is something to show */}
-          {sessionLog.length > 0 && (
-          <div className={`${c.card} border rounded-xl p-4`}>
+          {/* Status bar — only when there is something to show */} {sessionLog.length > 0 && (<div className={`${c.card} border rounded-xl p-4`}>
             <div className="flex items-center justify-between flex-wrap gap-2">
               <div>
-                {sessionLog.length > 0 && (
-                  <span className={`text-sm font-medium ${c.text}`}>
-                    <span>📊</span> {sessionLog.length} session{sessionLog.length !== 1 ? 's' : ''} ·{' '}
-                    <span className={`text-xs ${c.textMuted}`}>
+                {sessionLog.length > 0 && (<span className={`text-sm font-medium ${c.text}`}>
+                    <span>📊</span> {sessionLog.length} session{sessionLog.length !== 1 ? 's' : ''} ·{' '} <span className={`text-xs ${c.textMuted}`}>
                       {Math.round(sessionLog.reduce((sum, s) => sum + (s.minutesWorked || 0), 0) / 60 * 10) / 10}h total
                     </span>
                   </span>
-                )}
-              </div>
+                )} </div>
               <div className="flex items-center gap-2">
-                <button onClick={() => setSoundEnabled(!soundEnabled)}
-                  className={`text-xs px-2.5 py-1.5 rounded-lg ${soundEnabled ? c.tagActive : c.tag}`}
-                  title={soundEnabled ? 'Sound on' : 'Sound off'}>{soundEnabled ? '🔔' : '🔕'}</button>
-                <button onClick={() => setNotificationsEnabled(!notificationsEnabled)}
-                  className={`text-xs px-2.5 py-1.5 rounded-lg ${notificationsEnabled ? c.tagActive : c.tag}`}
-                  title={notificationsEnabled ? 'Notifications on' : 'Notifications off'}>{notificationsEnabled ? '📳' : '📴'}</button>
-                {sessionLog.length >= 3 && (
-                  <button onClick={handleReview} disabled={loading} className={`text-xs px-3 py-1.5 rounded-lg font-medium ${c.tagActive}`}>
+                <button onClick={() => setSoundEnabled(!soundEnabled)} className={`text-xs px-2.5 py-1.5 rounded-lg ${soundEnabled ? c.tagActive : c.tag}`} title={soundEnabled ? 'Sound on' : 'Sound off'}>{soundEnabled ? '🔔' : '🔕'}</button>
+                <button onClick={() => setNotificationsEnabled(!notificationsEnabled)} className={`text-xs px-2.5 py-1.5 rounded-lg ${notificationsEnabled ? c.tagActive : c.tag}`} title={notificationsEnabled ? 'Notifications on' : 'Notifications off'}>{notificationsEnabled ? '📳' : '📴'}</button>
+                {sessionLog.length >= 3 && (<button onClick={handleReview} disabled={loading} className={`text-xs px-3 py-1.5 rounded-lg font-medium ${c.tagActive}`}>
                     <span>📈</span> Insights</button>
-                )}
-                {sessionLog.length > 0 && (
-                  <button onClick={() => setSessionLog([])} className={`text-xs px-2.5 py-1.5 rounded-lg ${c.tag}`}>🗑️</button>
-                )}
-              </div>
+                )} {sessionLog.length > 0 && (<button onClick={() => setSessionLog([])} className={`text-xs px-2.5 py-1.5 rounded-lg ${c.tag}`}>🗑️</button>
+                )} </div>
             </div>
           </div>
-          )}
-
-          {/* Session Mode selector (v4) */}
-          <div className={`${c.card} border rounded-xl p-5 space-y-3`}>
+          )} {/* Session Mode selector (v4) */} <div className={`${c.card} border rounded-xl p-5 space-y-3`}>
             <label className={`block text-sm font-semibold ${c.text}`}>Session mode</label>
             <div className="grid grid-cols-2 gap-2">
-              {SESSION_MODES.map(m => (
-                <button key={m.id}
-                  onClick={() => { setSessionMode(m.id); setCheckInFreq(m.defaultFreq); }}
-                  className={`flex items-start gap-2.5 p-3 rounded-xl text-left transition-all border ${
+              {SESSION_MODES.map(m => (<button key={m.id} onClick={() => { setSessionMode(m.id); setCheckInFreq(m.defaultFreq); }} className={`flex items-start gap-2.5 p-3 rounded-xl text-left transition-all border ${
                     sessionMode === m.id
                       ? `${MODE_COLORS[m.id].badge} text-white border-transparent shadow-lg`
                       : `${c.tag} ${isDark ? 'border-zinc-600' : 'border-gray-200'} ${c.cardHover}`
@@ -592,251 +553,168 @@ const VirtualBodyDouble = ({ tool }) => {
                     <span className={`text-xs ${sessionMode === m.id ? 'text-white/70' : c.textMuted}`}>{m.desc}</span>
                   </div>
                 </button>
-              ))}
-            </div>
+              ))} </div>
           </div>
 
-          {/* Task input + breakdown */}
-          <div className={`${c.card} border rounded-xl p-5 space-y-4`}>
+          {/* Task input + breakdown */} <div className={`${c.card} border rounded-xl p-5 space-y-4`}>
             <div>
               <label className={`block text-sm font-semibold ${c.text} mb-2`}>What are you working on?</label>
               <div className="flex gap-2">
-                <input type="text" value={task}
-                  onChange={e => { setTask(e.target.value); setShowBreakdown(false); setSubTasks([]); }}
-                  placeholder="Writing report, cleaning kitchen, studying chapter 5..."
-                  className={`flex-1 p-3 rounded-lg border ${c.input} outline-none`}
-                  onKeyDown={e => e.key === 'Enter' && handleStart()} />
-                {task.trim().length > 3 && (
-                  <button onClick={handleBreakdown} disabled={loading}
-                    className={`px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap ${subTasks.length > 0 ? c.tagActive : c.tag} transition-all`}
-                    title="Break task into sub-tasks">
+                <input type="text" value={task} onChange={e => { setTask(e.target.value); setShowBreakdown(false); setSubTasks([]); }} placeholder="Writing report, cleaning kitchen, studying chapter 5..."
+                  className={`flex-1 p-3 rounded-lg border ${c.input} outline-none`} onKeyDown={e => e.key === 'Enter' && handleStart()} />
+                {task.trim().length > 3 && (<button onClick={handleBreakdown} disabled={loading} className={`px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap ${subTasks.length > 0 ? c.tagActive : c.tag} transition-all`} title="Break task into sub-tasks">
                     {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> : '✂️'} Split
                   </button>
-                )}
-              </div>
+                )} </div>
             </div>
 
-            {/* Sub-task breakdown */}
-            {showBreakdown && breakdownData && (
-              <div className={`${c.accentLight} border rounded-xl p-4 space-y-2`}>
+            {/* Sub-task breakdown */} {showBreakdown && breakdownData && (<div className={`${c.accentLight} border rounded-xl p-4 space-y-2`}>
                 <div className="flex items-center justify-between">
                   <p className={`text-xs font-bold ${c.accentLightText} uppercase tracking-wider`}><span>✂️</span> Task breakdown</p>
-                  <button onClick={() => { setShowBreakdown(false); setSubTasks([]); setBreakdownData(null); }}
-                    className={`text-xs ${c.textMuted}`}>✕ Clear</button>
+                  <button onClick={() => { setShowBreakdown(false); setSubTasks([]); setBreakdownData(null); }} className={`text-xs ${c.textMuted}`}>✕ Clear</button>
                 </div>
-                {breakdownData.strategy_note && <p className={`text-xs ${c.accentLightText} italic`}>{breakdownData.strategy_note}</p>}
-                {breakdownData.sub_tasks?.map((st, i) => (
-                  <div key={i} className={`flex items-start gap-2 p-2 rounded-lg ${isDark ? 'bg-zinc-700/40' : 'bg-white/70'}`}>
+                {breakdownData.strategy_note && <p className={`text-xs ${c.accentLightText} italic`}>{breakdownData.strategy_note}</p>} {breakdownData.sub_tasks?.map((st, i) => (<div key={i} className={`flex items-start gap-2 p-2 rounded-lg ${isDark ? 'bg-zinc-700/40' : 'bg-white/70'}`}>
                     <span className={`text-xs font-bold ${c.accentLightText} mt-0.5 w-4`}>{i + 1}</span>
                     <div className="flex-1">
                       <span className={`text-sm ${c.text}`}>{st.label}</span>
                       <span className={`text-xs ${c.textMuted} ml-2`}>~{st.estimated_minutes}m</span>
-                      {st.tip && <p className={`text-xs ${c.textMuted} mt-0.5`}>💡 {st.tip}</p>}
-                    </div>
+                      {st.tip && <p className={`text-xs ${c.textMuted} mt-0.5`}>💡 {st.tip}</p>} </div>
                     <span className={`text-xs px-1.5 py-0.5 rounded ${
                       st.difficulty === 'easy' ? 'bg-emerald-100 text-emerald-700' :
                       st.difficulty === 'hard' ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'
                     }`}>{st.difficulty}</span>
                   </div>
-                ))}
-                {breakdownData.momentum_starter && (
-                  <p className={`text-xs ${c.accentLightText} mt-1`}><span>🎯</span> Start: {breakdownData.momentum_starter}</p>
-                )}
-              </div>
-            )}
-
-            {/* Duration */}
-            <div>
+                ))} {breakdownData.momentum_starter && (<p className={`text-xs ${c.accentLightText} mt-1`}><span>🎯</span> Start: {breakdownData.momentum_starter}</p>
+                )} </div>
+            )} {/* Duration */} <div>
               <label className={`block text-sm font-semibold ${c.text} mb-2`}>How long?</label>
               <div className="flex flex-wrap gap-2">
-                {DURATIONS.map(d => (
-                  <button key={d.min} onClick={() => { setDuration(d.min); setCustomDuration(''); }}
-                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${duration === d.min && !customDuration ? c.tagActive : c.tag}`}>
-                    <span>{d.icon}</span> {d.label}
-                  </button>
-                ))}
-                <input type="number" value={customDuration} onChange={e => setCustomDuration(e.target.value)}
-                  placeholder="Custom" className={`w-20 px-3 py-2 rounded-lg border text-sm ${c.input}`} min="5" max="180" />
+                {DURATIONS.map(d => (<button key={d.min} onClick={() => { setDuration(d.min); setCustomDuration(''); }} className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${duration === d.min && !customDuration ? c.tagActive : c.tag}`}>
+                    <span>{d.icon}</span> {d.label} </button>
+                ))} <input type="number" value={customDuration} onChange={e => setCustomDuration(e.target.value)} placeholder="Custom" className={`w-20 px-3 py-2 rounded-lg border text-sm ${c.input}`} min="5" max="180" />
               </div>
             </div>
 
-            {/* Check-in frequency */}
-            <div>
+            {/* Check-in frequency */} <div>
               <label className={`block text-sm font-semibold ${c.text} mb-2`}>Check-in frequency</label>
               <div className="flex flex-wrap gap-2">
-                {CHECK_IN_FREQS.map(f => (
-                  <button key={f.min} onClick={() => setCheckInFreq(f.min)}
-                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${checkInFreq === f.min ? c.tagActive : c.tag}`}>
-                    {f.label}
-                  </button>
-                ))}
-              </div>
+                {CHECK_IN_FREQS.map(f => (<button key={f.min} onClick={() => setCheckInFreq(f.min)} className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${checkInFreq === f.min ? c.tagActive : c.tag}`}>
+                    {f.label} </button>
+                ))} </div>
             </div>
           </div>
 
-          {/* Optional context */}
-          <div className={`${c.card} border rounded-xl p-5 space-y-4`}>
+          {/* Optional context */} <div className={`${c.card} border rounded-xl p-5 space-y-4`}>
             <p className={`text-xs font-medium ${c.textMuted} uppercase tracking-wider`}>Optional context</p>
             <div>
               <label className={`block text-sm font-medium ${c.textSecondary} mb-2`}>Where are you?</label>
               <div className="flex flex-wrap gap-2">
-                {ENVIRONMENTS.map(e => (
-                  <button key={e.id} onClick={() => setEnvironment(environment === e.id ? '' : e.id)}
-                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${environment === e.id ? c.tagActive : c.tag}`}>
-                    <span>{e.icon}</span> {e.label}
-                  </button>
-                ))}
-              </div>
+                {ENVIRONMENTS.map(e => (<button key={e.id} onClick={() => setEnvironment(environment === e.id ? '' : e.id)} className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${environment === e.id ? c.tagActive : c.tag}`}>
+                    <span>{e.icon}</span> {e.label} </button>
+                ))} </div>
             </div>
             <div>
               <label className={`block text-sm font-medium ${c.textSecondary} mb-2`}>Current mood</label>
               <div className="flex flex-wrap gap-2">
-                {MOODS.map(m => (
-                  <button key={m.id} onClick={() => setMood(mood === m.id ? '' : m.id)}
-                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${mood === m.id ? c.tagActive : c.tag}`}>
-                    <span>{m.icon}</span> {m.label}
-                  </button>
-                ))}
-              </div>
+                {MOODS.map(m => (<button key={m.id} onClick={() => setMood(mood === m.id ? '' : m.id)} className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${mood === m.id ? c.tagActive : c.tag}`}>
+                    <span>{m.icon}</span> {m.label} </button>
+                ))} </div>
             </div>
             <div>
               <label className={`block text-sm font-medium ${c.textSecondary} mb-2`}>Session goal (optional)</label>
-              <input type="text" value={goals} onChange={e => setGoals(e.target.value)}
-                placeholder="Finish first draft, clear inbox, organize notes..."
+              <input type="text" value={goals} onChange={e => setGoals(e.target.value)} placeholder="Finish first draft, clear inbox, organize notes..."
                 className={`w-full p-3 rounded-lg border ${c.input} outline-none text-sm`} />
             </div>
           </div>
 
-          {/* Start button */}
-          <button onClick={handleStart} disabled={loading || !task.trim()}
-            className={`w-full py-4 rounded-xl font-bold text-lg ${modeColors.badge} ${c.accentTxt} disabled:opacity-40 transition-all shadow-lg hover:opacity-90`}>
-            {loading ? (
-              <span><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> Setting up...</span>
-            ) : (
-              <span><span>{SESSION_MODES.find(m => m.id === sessionMode)?.icon || '▶️'}</span> Start {modeLabel} Session</span>
-            )}
-          </button>
+          {/* Start button */} <button onClick={handleStart} disabled={loading || !task.trim()} className={`w-full py-4 rounded-xl font-bold text-lg ${modeColors.badge} ${c.accentTxt} disabled:opacity-40 transition-all shadow-lg hover:opacity-90`}>
+            {loading ? (<span><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> Setting up...</span>
+            ) : (<span><span>{SESSION_MODES.find(m => m.id === sessionMode)?.icon || '▶️'}</span> Start {modeLabel} Session</span>
+            )} </button>
 
-          {error && (
-            <div className={`${c.danger} border rounded-xl p-4`}>
+          {error && (<div className={`${c.danger} border rounded-xl p-4`}>
               <p className={`text-sm ${c.errorText}`}><span>⚠️</span> {error}</p>
             </div>
-          )}
+          )} <p className={`text-center text-xs ${c.textMuted}`}>AI-generated session plan — buddy persona and suggestions are illustrative.</p>
 
-          <p className={`text-center text-xs ${c.textMuted}`}>AI-generated session plan — buddy persona and suggestions are illustrative.</p>
-
-          {/* Cross-references */}
-          <div className={`${c.card} border rounded-xl p-4`}>
+          {/* Cross-references */} <div className={`${c.card} border rounded-xl p-4`}>
             <p className={`text-xs font-medium ${c.textMuted} mb-2`}>Related tools</p>
             <div className="flex flex-wrap gap-2">
               {[
                 { id: 'BatchFlow', icon: '🔀', label: 'BatchFlow' },
                 { id: 'BrainStateDeejay', icon: '🎧', label: 'BrainState Deejay' },
                 { id: 'DopamineMenuBuilder', icon: '🎯', label: 'Dopamine Menu' },
-              ].map(t => (
-                <a key={t.id} href={`/${t.id}`} target="_blank" rel="noopener noreferrer"
+              ].map(t => (<a key={t.id} href={`/${t.id}`} target="_blank" rel="noopener noreferrer"
                   className={`text-xs px-3 py-1.5 rounded-lg ${c.tag} ${c.cardHover} transition-colors`}>
-                  <span>{t.icon}</span> {t.label}
-                </a>
-              ))}
-            </div>
+                  <span>{t.icon}</span> {t.label} </a>
+              ))} </div>
           </div>
 
-          {/* Recent sessions */}
-          {sessionLog.length > 0 && (
-            <div className={`${c.card} border rounded-xl p-5`}>
+          {/* Recent sessions */} {sessionLog.length > 0 && (<div className={`${c.card} border rounded-xl p-5`}>
               <h3 className={`text-sm font-bold ${c.text} mb-3`}><span>🕐</span> Recent Sessions</h3>
               <div className="space-y-2">
-                {sessionLog.slice(0, 5).map(s => (
-                  <div key={s.id} className={`flex items-center justify-between p-2.5 rounded-lg ${isDark ? 'bg-zinc-700/50' : 'bg-gray-50'}`}>
+                {sessionLog.slice(0, 5).map(s => (<div key={s.id} className={`flex items-center justify-between p-2.5 rounded-lg ${isDark ? 'bg-zinc-700/50' : 'bg-gray-50'}`}>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1.5">
                         <span className="text-xs">{SESSION_MODES.find(m => m.id === s.mode)?.icon || '👥'}</span>
                         <span className={`text-sm font-medium ${c.text} truncate`}>{s.task}</span>
                       </div>
                       <span className={`text-xs ${c.textMuted}`}>
-                        {s.minutesWorked}m · {new Date(s.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-                        {s.subTasksCompleted !== undefined ? ` · ${s.subTasksCompleted}/${s.totalSubTasks} tasks` : ''}
-                      </span>
+                        {s.minutesWorked}m · {new Date(s.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} {s.subTasksCompleted !== undefined ? ` · ${s.subTasksCompleted}/${s.totalSubTasks} tasks` : ''} </span>
                     </div>
                     <div className="flex items-center gap-2 ml-2 flex-shrink-0">
-                      {s.completed && <span className="text-xs">✅</span>}
-                      <button onClick={() => handleRepeat(s)}
-                        className={`text-xs px-2.5 py-1.5 rounded-lg ${c.tag} ${c.cardHover} transition-colors font-medium`}
-                        title="Repeat this session">🔁</button>
+                      {s.completed && <span className="text-xs">✅</span>} <button onClick={() => handleRepeat(s)} className={`text-xs px-2.5 py-1.5 rounded-lg ${c.tag} ${c.cardHover} transition-colors font-medium`} title="Repeat this session">🔁</button>
                     </div>
                   </div>
-                ))}
-              </div>
+                ))} </div>
             </div>
-          )}
-        </div>
+          )} </div>
       </div>
     );
-  }
-
-  // ══════════════════════════════════════════════════
+  } // ══════════════════════════════════════════════════
   // RENDER: ACTIVE SESSION
   // ══════════════════════════════════════════════════
   if (view === 'active') {
     const progress = actualDuration > 0 ? ((actualDuration * 60 - secondsRemaining) / (actualDuration * 60)) * 100 : 0;
 
-    return (
-      <div className={`min-h-screen ${c.cardAlt} py-6 px-4`}>
+    return (<div className={`min-h-screen ${c.cardAlt} py-6 px-4`}>
         <div className="max-w-xl mx-auto space-y-4">
 
-          {/* Timer header with mode-colored bar */}
-          <div className={`${c.card} border rounded-xl p-5 text-center ${modeColors.glow} shadow-lg`}>
-            {/* Mode badge + presence */}
-            <div className="flex items-center justify-center gap-2 mb-3">
+          {/* Timer header with mode-colored bar */} <div className={`${c.card} border rounded-xl p-5 text-center ${modeColors.glow} shadow-lg`}>
+            {/* Mode badge + presence */} <div className="flex items-center justify-center gap-2 mb-3">
               <span className="text-xs">{SESSION_MODES.find(m => m.id === sessionMode)?.icon}</span>
               <div className={`w-2 h-2 rounded-full ${modeColors.bar} animate-pulse`} />
               <span className={`text-xs font-medium ${c.textMuted}`}>
                 {sessionPlan?.session_personality?.name || 'Buddy'} is here
-                {sessionPlan?.session_personality?.style ? ` · ${sessionPlan.session_personality.style}` : ''}
-              </span>
+                {sessionPlan?.session_personality?.style ? ` · ${sessionPlan.session_personality.style}` : ''} </span>
             </div>
 
             <div className={`text-5xl font-mono font-bold ${c.text} mb-2`}>
-              {isOnBreak ? formatTime(breakSecondsRemaining) : formatTime(secondsRemaining)}
-            </div>
+              {isOnBreak ? formatTime(breakSecondsRemaining) : formatTime(secondsRemaining)} </div>
             <p className={`text-sm ${c.textMuted}`}>{isOnBreak ? '☕ Break time' : task}</p>
 
-            {/* Mode-colored progress bar */}
-            <div className={`mt-3 h-2 rounded-full ${isDark ? 'bg-zinc-700' : 'bg-gray-200'} overflow-hidden`}>
-              <div className={`h-full rounded-full transition-all duration-1000 ${isOnBreak ? 'bg-emerald-500' : modeColors.bar}`}
-                style={{ width: `${isOnBreak ? ((300 - breakSecondsRemaining) / 300 * 100) : progress}%` }} />
+            {/* Mode-colored progress bar */} <div className={`mt-3 h-2 rounded-full ${isDark ? 'bg-zinc-700' : 'bg-gray-200'} overflow-hidden`}>
+              <div className={`h-full rounded-full transition-all duration-1000 ${isOnBreak ? 'bg-emerald-500' : modeColors.bar}`} style={{ width: `${isOnBreak ? ((300 - breakSecondsRemaining) / 300 * 100) : progress}%` }} />
             </div>
 
-            {/* Controls */}
-            <div className="flex items-center justify-center gap-3 mt-4">
-              {!isOnBreak ? (
-                <>
+            {/* Controls */} <div className="flex items-center justify-center gap-3 mt-4">
+              {!isOnBreak ? (<>
                   <button onClick={() => setIsPaused(!isPaused)} className={`px-4 py-2 rounded-lg text-sm font-medium ${c.tag}`}>
                     {isPaused ? '▶️ Resume' : '⏸️ Pause'}</button>
                   <button onClick={handleBreakAction} disabled={loading} className={`px-4 py-2 rounded-lg text-sm font-medium ${c.tag}`}>
                     ☕ Break</button>
-                  <button onClick={handleEndEarly}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium ${isDark ? 'bg-zinc-700 text-red-400' : 'bg-red-50 text-red-600'}`}>
+                  <button onClick={handleEndEarly} className={`px-4 py-2 rounded-lg text-sm font-medium ${isDark ? 'bg-zinc-700 text-red-400' : 'bg-red-50 text-red-600'}`}>
                     ⏹ End</button>
                 </>
-              ) : (
-                <button onClick={() => { setIsOnBreak(false); clearInterval(breakTimerRef.current); addChat('buddy', 'Back at it! 🙌'); }}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium ${c.tagActive}`}>▶️ End break early</button>
-              )}
-            </div>
+              ) : (<button onClick={() => { setIsOnBreak(false); clearInterval(breakTimerRef.current); addChat('buddy', 'Back at it! 🙌'); }} className={`px-4 py-2 rounded-lg text-sm font-medium ${c.tagActive}`}>▶️ End break early</button>
+              )} </div>
           </div>
 
-          {/* Sub-task checklist */}
-          {subTasks.length > 0 && (
-            <div className={`${c.card} border rounded-xl p-4`}>
+          {/* Sub-task checklist */} {subTasks.length > 0 && (<div className={`${c.card} border rounded-xl p-4`}>
               <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wider mb-2`}>
-                <span>✂️</span> Sub-tasks · {subTasksCompleted}/{subTasks.length}
-              </p>
+                <span>✂️</span> Sub-tasks · {subTasksCompleted}/{subTasks.length} </p>
               <div className="space-y-1.5">
-                {subTasks.map((st, i) => (
-                  <button key={i} onClick={() => setSubTaskChecked(prev => ({ ...prev, [i]: !prev[i] }))}
-                    className={`w-full flex items-center gap-2 p-2 rounded-lg text-left text-sm transition-all ${
+                {subTasks.map((st, i) => (<button key={i} onClick={() => setSubTaskChecked(prev => ({ ...prev, [i]: !prev[i] }))} className={`w-full flex items-center gap-2 p-2 rounded-lg text-left text-sm transition-all ${
                       subTaskChecked[i]
                         ? (isDark ? 'bg-emerald-900/30 text-emerald-300 line-through opacity-60' : 'bg-emerald-50 text-emerald-700 line-through opacity-60')
                         : (i === subTasks.findIndex((_, j) => !subTaskChecked[j])
@@ -844,31 +722,22 @@ const VirtualBodyDouble = ({ tool }) => {
                           : `${isDark ? 'bg-zinc-700/40 text-zinc-300' : 'bg-gray-50 text-gray-600'}`)
                     }`}>
                     <span>{subTaskChecked[i] ? '✅' : (i === subTasks.findIndex((_, j) => !subTaskChecked[j]) ? '👉' : '⬜')}</span>
-                    {st}
-                  </button>
-                ))}
-              </div>
+                    {st} </button>
+                ))} </div>
             </div>
-          )}
-
-          {/* Chat log */}
-          <div className={`${c.card} border rounded-xl p-4`} style={{ maxHeight: '360px', overflowY: 'auto' }}>
+          )} {/* Chat log */} <div className={`${c.card} border rounded-xl p-4`} style={{ maxHeight: '360px', overflowY: 'auto' }}>
             <div className="space-y-3">
-              {chatLog.map((msg, i) => (
-                <div key={i} className={`flex ${msg.from === 'user' ? 'justify-end' : 'justify-start'}`}>
+              {chatLog.map((msg, i) => (<div key={i} className={`flex ${msg.from === 'user' ? 'justify-end' : 'justify-start'}`}>
                   <div className={`max-w-[85%] rounded-2xl px-4 py-2.5 ${
                     msg.from === 'user'
                       ? (isDark ? 'bg-cyan-700 text-white' : 'bg-cyan-500 text-white')
                       : `${c.bubbleBg} ${c.bubbleText}`
                   }`}>
-                    {msg.emoji && msg.from === 'buddy' && <span className="mr-1">{msg.emoji}</span>}
-                    <span className="text-sm">{msg.message}</span>
+                    {msg.emoji && msg.from === 'buddy' && <span className="mr-1">{msg.emoji}</span>} <span className="text-sm">{msg.message}</span>
                     <div className={`text-[10px] mt-1 ${msg.from === 'user' ? 'text-cyan-200' : c.textMuted}`}>{msg.time}</div>
                   </div>
                 </div>
-              ))}
-              {buddyTyping && (
-                <div className="flex justify-start">
+              ))} {buddyTyping && (<div className="flex justify-start">
                   <div className={`rounded-2xl px-4 py-3 ${c.bubbleBg}`}>
                     <div className="flex gap-1">
                       <span className={`w-2 h-2 rounded-full ${modeColors.bar} animate-bounce`} style={{ animationDelay: '0ms' }} />
@@ -877,105 +746,67 @@ const VirtualBodyDouble = ({ tool }) => {
                     </div>
                   </div>
                 </div>
-              )}
-              <div ref={chatEndRef} />
+              )} <div ref={chatEndRef} />
             </div>
           </div>
 
-          {/* Check-in prompt */}
-          {showCheckIn && !isOnBreak && (
-            <div className={`${c.accentLight} border rounded-xl p-5 space-y-3`}>
+          {/* Check-in prompt */} {showCheckIn && !isOnBreak && (<div className={`${c.accentLight} border rounded-xl p-5 space-y-3`}>
               <p className={`text-sm font-semibold ${c.accentLightText}`}>
-                <span>👋</span> Check-in #{checkInsDone + 1} — {sessionMode === 'creative' ? 'What are you exploring?' : 'How\'s it going?'}
-              </p>
+                <span>👋</span> Check-in #{checkInsDone + 1} — {sessionMode === 'creative' ? 'What are you exploring?' : 'How\'s it going?'} </p>
               <div className="flex flex-wrap gap-2">
-                {STATUS_OPTIONS.map(s => (
-                  <button key={s.id} onClick={() => handleCheckIn(s.id)} disabled={loading}
-                    className={`px-3 py-2 rounded-lg text-sm font-medium ${c.tag} ${c.cardHover} transition-all`}>
-                    <span>{s.icon}</span> {s.label}
-                  </button>
-                ))}
-              </div>
-              <input type="text" value={checkInNote} onChange={e => setCheckInNote(e.target.value)}
-                placeholder="Add a note (optional)" className={`w-full p-2 rounded-lg border text-sm ${c.input}`} />
+                {STATUS_OPTIONS.map(s => (<button key={s.id} onClick={() => handleCheckIn(s.id)} disabled={loading} className={`px-3 py-2 rounded-lg text-sm font-medium ${c.tag} ${c.cardHover} transition-all`}>
+                    <span>{s.icon}</span> {s.label} </button>
+                ))} </div>
+              <input type="text" value={checkInNote} onChange={e => setCheckInNote(e.target.value)} placeholder="Add a note (optional)" className={`w-full p-2 rounded-lg border text-sm ${c.input}`} />
             </div>
-          )}
-
-          {/* Stuck + Invite buttons */}
-          {!isOnBreak && !showCheckIn && (
-            <div className="flex gap-3">
-              <button onClick={handleStuck} disabled={loading}
-                className={`flex-1 py-3 rounded-xl text-sm font-medium ${c.warning} border ${c.warning} transition-all`}>
+          )} {/* Stuck + Invite buttons */} {!isOnBreak && !showCheckIn && (<div className="flex gap-3">
+              <button onClick={handleStuck} disabled={loading} className={`flex-1 py-3 rounded-xl text-sm font-medium ${c.warning} border ${c.warning} transition-all`}>
                 {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> : <span>🧱</span>} I'm stuck
               </button>
-              <button onClick={handleInvite} disabled={loading}
-                className={`flex-1 py-3 rounded-xl text-sm font-medium ${c.tag} transition-all`}>
+              <button onClick={handleInvite} disabled={loading} className={`flex-1 py-3 rounded-xl text-sm font-medium ${c.tag} transition-all`}>
                 <span>👋</span> Invite a friend
               </button>
             </div>
-          )}
-
-          {/* Stuck data */}
-          {stuckData && (
-            <div className={`${c.card} border rounded-xl p-5 space-y-3`}>
+          )} {/* Stuck data */} {stuckData && (<div className={`${c.card} border rounded-xl p-5 space-y-3`}>
               <h3 className={`text-sm font-bold ${c.text}`}><span>🔧</span> Unstick Plan</h3>
-              {stuckData.micro_steps?.map((step, i) => (
-                <div key={i} className={`flex items-start gap-2 p-2 rounded-lg ${isDark ? 'bg-zinc-700/50' : 'bg-gray-50'}`}>
+              {stuckData.micro_steps?.map((step, i) => (<div key={i} className={`flex items-start gap-2 p-2 rounded-lg ${isDark ? 'bg-zinc-700/50' : 'bg-gray-50'}`}>
                   <span className={`text-xs font-bold ${c.textMuted} mt-0.5`}>{i + 1}</span>
                   <span className={`text-sm ${c.text}`}>{step}</span>
                 </div>
-              ))}
-              {stuckData.environment_shift && <p className={`text-sm ${c.textSecondary}`}><span>🔄</span> Try: {stuckData.environment_shift}</p>}
-              {stuckData.bailout_option && <p className={`text-xs ${c.textMuted} italic`}>Or: {stuckData.bailout_option}</p>}
-            </div>
-          )}
-
-          {/* Invite data */}
-          {inviteData && (
-            <div className={`${c.card} border rounded-xl p-5 space-y-3`}>
+              ))} {stuckData.environment_shift && <p className={`text-sm ${c.textSecondary}`}><span>🔄</span> Try: {stuckData.environment_shift}</p>} {stuckData.bailout_option && <p className={`text-xs ${c.textMuted} italic`}>Or: {stuckData.bailout_option}</p>} </div>
+          )} {/* Invite data */} {inviteData && (<div className={`${c.card} border rounded-xl p-5 space-y-3`}>
               <h3 className={`text-sm font-bold ${c.text}`}><span>👋</span> Invite a Coworking Buddy</h3>
-              {inviteData.messages?.map((msg, i) => (
-                <div key={i} className="space-y-1">
+              {inviteData.messages?.map((msg, i) => (<div key={i} className="space-y-1">
                   <p className={`text-xs font-medium ${c.textMuted} capitalize`}>{msg.tone}</p>
                   <div className={`p-3 rounded-lg ${isDark ? 'bg-zinc-700' : 'bg-gray-50'}`}>
                     <p className={`text-sm ${c.text}`}>{msg.text}</p>
                   </div>
                   <CopyBtn content={`${msg.text}${BRAND}`} label="Copy" />
                 </div>
-              ))}
-            </div>
-          )}
-        </div>
+              ))} </div>
+          )} </div>
       </div>
     );
-  }
-
-  // ══════════════════════════════════════════════════
+  } // ══════════════════════════════════════════════════
   // RENDER: COMPLETE
   // ══════════════════════════════════════════════════
   if (view === 'complete') {
-    return (
-      <div className={`min-h-screen ${c.cardAlt} py-6 px-4`}>
+    return (<div className={`min-h-screen ${c.cardAlt} py-6 px-4`}>
         <div className="max-w-xl mx-auto space-y-5">
 
-          {/* Results anchor for ActionBar */}
-          <div ref={resultsRef} />
-          <ActionBar copyContent={buildSessionText()} copyLabel="Copy Summary" printContent={buildSessionText()} printTitle="Coworking Session" />
+          {/* Results anchor for ActionBar */} <div ref={resultsRef} data-results-anchor />
+          <ActionBar content={buildSessionText()} copyLabel="Copy Summary" />
 
-          {/* Celebration */}
-          <div className={`${c.success} border rounded-xl p-6 text-center`}>
+          {/* Celebration */} <div className={`${c.success} border rounded-xl p-6 text-center`}>
             <span className="text-4xl block mb-3">🎉</span>
             <h2 className={`text-xl font-bold ${c.accentTxt}`}>Session Complete!</h2>
-            {completionData && (
-              <div className="mt-3 space-y-2">
+            {completionData && (<div className="mt-3 space-y-2">
                 <p className={`text-sm ${c.accentTxt}`}>{completionData.celebration}</p>
                 <p className={`text-sm ${c.accentTxt} opacity-80`}>{completionData.accomplishment_reframe}</p>
               </div>
-            )}
-          </div>
+            )} </div>
 
-          {/* Stats */}
-          <div className={`${c.card} border rounded-xl p-5`}>
+          {/* Stats */} <div className={`${c.card} border rounded-xl p-5`}>
             <div className={`grid ${subTasks.length > 0 ? 'grid-cols-4' : 'grid-cols-3'} gap-3 text-center`}>
               <div>
                 <p className={`text-2xl font-bold ${c.text}`}>{Math.floor(secondsElapsed / 60)}</p>
@@ -985,43 +816,28 @@ const VirtualBodyDouble = ({ tool }) => {
                 <p className={`text-2xl font-bold ${c.text}`}>{checkInsDone}</p>
                 <p className={`text-xs ${c.textMuted}`}>check-ins</p>
               </div>
-              {subTasks.length > 0 && (
-                <div>
+              {subTasks.length > 0 && (<div>
                   <p className={`text-2xl font-bold ${c.text}`}>{subTasksCompleted}/{subTasks.length}</p>
                   <p className={`text-xs ${c.textMuted}`}>sub-tasks</p>
                 </div>
-              )}
-              <div>
+              )} <div>
                 <p className={`text-2xl font-bold ${c.text}`}>{sessionLog.length + 1}</p>
                 <p className={`text-xs ${c.textMuted}`}>total</p>
               </div>
             </div>
           </div>
 
-          {/* Pattern / streak */}
-          {completionData?.pattern_note && (
-            <div className={`${c.accentLight} border rounded-xl p-4`}>
+          {/* Pattern / streak */} {completionData?.pattern_note && (<div className={`${c.accentLight} border rounded-xl p-4`}>
               <p className={`text-sm ${c.accentLightText}`}><span>📊</span> {completionData.pattern_note}</p>
             </div>
-          )}
-          {completionData?.streak_message && (
-            <div className={`${c.warning} border rounded-xl p-4`}>
+          )} {completionData?.streak_message && (<div className={`${c.warning} border rounded-xl p-4`}>
               <p className={`text-sm ${c.warning}`}><span>🔥</span> {completionData.streak_message}</p>
             </div>
-          )}
-
-          {/* ═══ ACCOUNTABILITY CARD (v4) ═══ */}
-          {!showCard && completionData && (
-            <button onClick={handleGenerateCard} disabled={loading}
-              className={`w-full py-3 rounded-xl text-sm font-bold ${modeColors.badge} text-white transition-all hover:opacity-90`}>
+          )} {/* ═══ ACCOUNTABILITY CARD (v4) ═══ */} {!showCard && completionData && (<button onClick={handleGenerateCard} disabled={loading} className={`w-full py-3 rounded-xl text-sm font-bold ${modeColors.badge} text-white transition-all hover:opacity-90`}>
               {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> : <span>🏆</span>} Generate Session Card
             </button>
-          )}
-
-          {showCard && (
-            <div className={`border rounded-2xl overflow-hidden ${isDark ? 'border-zinc-600' : 'border-gray-200'}`}>
-              {/* Card visual — designed for screenshots */}
-              <div className={`${modeColors.badge} p-6 text-center text-white`}>
+          )} {showCard && (<div className={`border rounded-2xl overflow-hidden ${isDark ? 'border-zinc-600' : 'border-gray-200'}`}>
+              {/* Card visual — designed for screenshots */} <div className={`${modeColors.badge} p-6 text-center text-white`}>
                 <span className="text-3xl block mb-2">{cardData?.badge_emoji || SESSION_MODES.find(m => m.id === sessionMode)?.icon || '🎉'}</span>
                 <h3 className="text-lg font-bold">{cardData?.achievement_title || 'Session Complete'}</h3>
                 <p className="text-sm opacity-80 mt-1">{modeLabel} mode</p>
@@ -1035,16 +851,13 @@ const VirtualBodyDouble = ({ tool }) => {
                     <p className={`text-lg font-bold ${c.text}`}>{Math.floor(secondsElapsed / 60)}</p>
                     <p className={`text-[10px] ${c.textMuted} uppercase`}>min</p>
                   </div>
-                  {subTasks.length > 0 && (
-                    <div>
+                  {subTasks.length > 0 && (<div>
                       <p className={`text-lg font-bold ${c.text}`}>{subTasksCompleted}/{subTasks.length}</p>
                       <p className={`text-[10px] ${c.textMuted} uppercase`}>tasks</p>
                     </div>
-                  )}
-                  <div>
+                  )} <div>
                     <p className={`text-lg font-bold ${c.text}`}>
-                      {MOODS.find(m => m.id === mood)?.icon || '😐'} → {MOODS.find(m => m.id === moodAfter)?.icon || '😐'}
-                    </p>
+                      {MOODS.find(m => m.id === mood)?.icon || '😐'} → {MOODS.find(m => m.id === moodAfter)?.icon || '😐'} </p>
                     <p className={`text-[10px] ${c.textMuted} uppercase`}>mood</p>
                   </div>
                 </div>
@@ -1055,39 +868,24 @@ const VirtualBodyDouble = ({ tool }) => {
                 </div>
                 <div className="flex gap-2 pt-1">
                   <CopyBtn content={buildCardText()} label="Copy Card" />
-                  {cardData?.share_line && (
-                    <CopyBtn content={`${cardData.share_line}${BRAND}`} label="Copy Share Text" />
-                  )}
-                </div>
+                  {cardData?.share_line && (<CopyBtn content={`${cardData.share_line}${BRAND}`} label="Copy Share Text" />
+                  )} </div>
               </div>
             </div>
-          )}
-
-          {/* Post-session mood */}
-          <div className={`${c.card} border rounded-xl p-5 space-y-3`}>
+          )} {/* Post-session mood */} <div className={`${c.card} border rounded-xl p-5 space-y-3`}>
             <p className={`text-sm font-medium ${c.text}`}>How do you feel now?</p>
             <div className="flex flex-wrap gap-2">
-              {MOODS.map(m => (
-                <button key={m.id} onClick={() => setMoodAfter(m.id)}
-                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${moodAfter === m.id ? c.tagActive : c.tag}`}>
-                  <span>{m.icon}</span> {m.label}
-                </button>
-              ))}
-            </div>
-            <input type="text" value={completionNote} onChange={e => setCompletionNote(e.target.value)}
-              placeholder="Notes on what you accomplished..."
+              {MOODS.map(m => (<button key={m.id} onClick={() => setMoodAfter(m.id)} className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${moodAfter === m.id ? c.tagActive : c.tag}`}>
+                  <span>{m.icon}</span> {m.label} </button>
+              ))} </div>
+            <input type="text" value={completionNote} onChange={e => setCompletionNote(e.target.value)} placeholder="Notes on what you accomplished..."
               className={`w-full p-3 rounded-lg border ${c.input} text-sm`} />
           </div>
 
-          {/* Rest permission */}
-          {completionData?.rest_permission && (
-            <div className={`${c.accentLight} border rounded-xl p-4`}>
+          {/* Rest permission */} {completionData?.rest_permission && (<div className={`${c.accentLight} border rounded-xl p-4`}>
               <p className={`text-sm ${c.accentLightText}`}><span>💜</span> {completionData.rest_permission}</p>
             </div>
-          )}
-
-          {/* Actions */}
-          <div className="flex gap-3">
+          )} {/* Actions */} <div className="flex gap-3">
             <button onClick={saveSession} className={`flex-1 py-3.5 rounded-xl font-bold ${c.btnPrimary}`}>
               <span>💾</span> Save & Done
             </button>
@@ -1095,30 +893,25 @@ const VirtualBodyDouble = ({ tool }) => {
               <span>🔄</span> +15 min
             </button>
           </div>
-          <button onClick={() => { setView('setup'); resetForm(); }}
-            className={`w-full py-2.5 rounded-xl text-sm font-medium ${c.btnSecondary}`}>
+          <button onClick={() => { setView('setup'); resetForm(); }} className={`w-full py-2.5 rounded-xl text-sm font-medium ${c.btnSecondary}`}>
             ↩ Start Over
           </button>
 
         </div>
       </div>
     );
-  }
-
-  // ══════════════════════════════════════════════════
+  } // ══════════════════════════════════════════════════
   // RENDER: INSIGHTS
   // ══════════════════════════════════════════════════
   if (view === 'insights') {
-    return (
-      <div className={`min-h-screen ${c.cardAlt} py-6 px-4`}>
+    return (<div className={`min-h-screen ${c.cardAlt} py-6 px-4`}>
         <div className="max-w-xl mx-auto space-y-5">
           <div className="flex items-center justify-between">
             <h2 className={`text-xl font-bold ${c.text}`}><span>📈</span> Session Insights</h2>
             <button onClick={() => setView('setup')} className={`text-sm px-3 py-1.5 rounded-lg ${c.tag}`}>← Back</button>
           </div>
 
-          {reviewData ? (
-            <>
+          {reviewData ? (<>
               <div className={`${c.card} border rounded-xl p-5`}>
                 <div className="grid grid-cols-3 gap-3 text-center">
                   <div>
@@ -1136,71 +929,42 @@ const VirtualBodyDouble = ({ tool }) => {
                 </div>
               </div>
 
-              {reviewData.sweet_spot && (
-                <div className={`${c.accentLight} border rounded-xl p-5`}>
+              {reviewData.sweet_spot && (<div className={`${c.accentLight} border rounded-xl p-5`}>
                   <h3 className={`text-sm font-bold ${c.accentLightText} mb-2`}><span>🎯</span> Your Sweet Spot</h3>
-                  {reviewData.sweet_spot.best_duration && <p className={`text-sm ${c.accentLightText}`}>Best duration: {reviewData.sweet_spot.best_duration}</p>}
-                  {reviewData.sweet_spot.best_time && <p className={`text-sm ${c.accentLightText}`}>Best time: {reviewData.sweet_spot.best_time}</p>}
-                  {reviewData.sweet_spot.best_task_type && <p className={`text-sm ${c.accentLightText}`}>Strongest with: {reviewData.sweet_spot.best_task_type}</p>}
-                </div>
-              )}
-
-              {reviewData.patterns?.length > 0 && (
-                <div className={`${c.card} border rounded-xl p-5`}>
+                  {reviewData.sweet_spot.best_duration && <p className={`text-sm ${c.accentLightText}`}>Best duration: {reviewData.sweet_spot.best_duration}</p>} {reviewData.sweet_spot.best_time && <p className={`text-sm ${c.accentLightText}`}>Best time: {reviewData.sweet_spot.best_time}</p>} {reviewData.sweet_spot.best_task_type && <p className={`text-sm ${c.accentLightText}`}>Strongest with: {reviewData.sweet_spot.best_task_type}</p>} </div>
+              )} {reviewData.patterns?.length > 0 && (<div className={`${c.card} border rounded-xl p-5`}>
                   <h3 className={`text-sm font-bold ${c.text} mb-3`}><span>🔍</span> Patterns</h3>
                   <div className="space-y-3">
-                    {reviewData.patterns.map((p, i) => (
-                      <div key={i} className={`p-3 rounded-lg ${isDark ? 'bg-zinc-700/50' : 'bg-gray-50'}`}>
+                    {reviewData.patterns.map((p, i) => (<div key={i} className={`p-3 rounded-lg ${isDark ? 'bg-zinc-700/50' : 'bg-gray-50'}`}>
                         <p className={`text-sm font-medium ${c.text}`}>{p.observation}</p>
                         <p className={`text-xs ${c.textSecondary} mt-1`}>→ {p.suggestion}</p>
                       </div>
-                    ))}
-                  </div>
+                    ))} </div>
                 </div>
-              )}
-
-              {reviewData.streak && (
-                <div className={`${c.warning} border rounded-xl p-4`}>
+              )} {reviewData.streak && (<div className={`${c.warning} border rounded-xl p-4`}>
                   <p className={`text-sm font-medium ${c.warning}`}>
-                    <span>🔥</span> Streak: {reviewData.streak.current} day{reviewData.streak.current !== 1 ? 's' : ''}
-                    {reviewData.streak.longest > reviewData.streak.current ? ` (best: ${reviewData.streak.longest})` : ''}
-                  </p>
-                  {reviewData.streak.message && <p className={`text-xs ${c.warning} mt-1`}>{reviewData.streak.message}</p>}
-                </div>
-              )}
-
-              {reviewData.encouragement && (
-                <div className={`${c.success} border rounded-xl p-4`}>
+                    <span>🔥</span> Streak: {reviewData.streak.current} day{reviewData.streak.current !== 1 ? 's' : ''} {reviewData.streak.longest > reviewData.streak.current ? ` (best: ${reviewData.streak.longest})` : ''} </p>
+                  {reviewData.streak.message && <p className={`text-xs ${c.warning} mt-1`}>{reviewData.streak.message}</p>} </div>
+              )} {reviewData.encouragement && (<div className={`${c.success} border rounded-xl p-4`}>
                   <p className={`text-sm ${c.accentTxt}`}><span>💚</span> {reviewData.encouragement}</p>
                 </div>
-              )}
-            </>
-          ) : (
-            <div className={`${c.card} border rounded-xl p-8 text-center`}>
+              )} </>
+          ) : (<div className={`${c.card} border rounded-xl p-8 text-center`}>
               <span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span>
               <p className={`text-sm ${c.textMuted} mt-2`}>Analyzing your sessions...</p>
             </div>
-          )}
-        </div>
+          )} </div>
 
-      {/* eslint-disable-next-line no-restricted-globals */}
-      {history.length > 0 && (
-        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
+      {/* eslint-disable-next-line no-restricted-globals */} {history.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
           <p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 Recent sessions</p>
           <div className="space-y-1">
-            {/* eslint-disable-next-line no-restricted-globals */}
-
-            {history.map(s => (
-              <div key={s.id} className="flex items-center justify-between">
+            {/* eslint-disable-next-line no-restricted-globals */} {history.map(s => (<div key={s.id} className="flex items-center justify-between">
                 <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || 'Session'}</span>
                 <span className={`text-xs ${c.textMuted} ml-2`}>{new Date(s.date).toLocaleDateString()}</span>
               </div>
-            ))}
-          </div>
+            ))} </div>
         </div>
-      )}
-      {/* Related tools */}
-      <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-2`}>
+      )} {/* Related tools */} <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-2`}>
         <p className={`text-xs font-bold ${c.textMuted} mb-2`}>🔗 Related tools</p>
         <div className="flex flex-wrap gap-3">
           <a href="/TaskAvalancheBreaker" className={`text-xs ${linkStyle}`}>⚡ Task Avalanche Breaker</a>
@@ -1209,9 +973,7 @@ const VirtualBodyDouble = ({ tool }) => {
       </div>
       </div>
     );
-  }
-
-  return null;
+  } return null;
 };
 
 VirtualBodyDouble.displayName = 'VirtualBodyDouble';

@@ -91,9 +91,7 @@ const parseTimeInput = (input, dayOffset = 0) => {
     if (ampm === 'pm' && hours < 12) hours += 12;
     if (ampm === 'am' && hours === 12) hours = 0;
     if (!ampm && hours < 7) hours += 12;
-  }
-
-  const d = new Date();
+  } const d = new Date();
   d.setDate(d.getDate() + (dayOffset || 0));
   d.setHours(hours, minutes, 0, 0);
   return d;
@@ -256,11 +254,8 @@ const WaitingModeLiberator = ({ tool }) => {
           try {
             if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
               new Notification('⏰ Time to get ready!', { body: 'Your prep window starts now.' });
-            }
-          } catch (e) { /* ok */ }
-          return 0;
-        }
-        return prev - 1;
+            } } catch (e) { /* ok */ } return 0;
+        } return prev - 1;
       });
     }, 1000);
     return () => clearInterval(countdownRef.current);
@@ -278,10 +273,8 @@ const WaitingModeLiberator = ({ tool }) => {
           // Mark block complete
           if (launchBlockIdx !== null) {
             setCompletedBlocks(p => ({ ...p, [launchBlockIdx]: true }));
-          }
-          return 0;
-        }
-        return prev - 1;
+          } return 0;
+        } return prev - 1;
       });
     }, 1000);
     return () => clearInterval(blockTimerRef.current);
@@ -297,8 +290,7 @@ const WaitingModeLiberator = ({ tool }) => {
     if (blockTimerSecs === halfwayMark && blockTimerSecs > 0) {
       setShowMidCheck(true);
       setTimeout(() => setShowMidCheck(false), 8000);
-    }
-  }, [blockTimerSecs, blockTimerRunning, launchBlockIdx, results]);
+    } }, [blockTimerSecs, blockTimerRunning, launchBlockIdx, results]);
 
   // ─── Helpers ───
   const formatCountdown = (secs) => {
@@ -317,8 +309,7 @@ const WaitingModeLiberator = ({ tool }) => {
       if (!parseTimeInput(ev.time, ev.dayOffset)) return `Couldn't understand "${ev.time}". Try "2pm", "noon", or "3:30 PM".`;
       const parsed = parseTimeInput(ev.time, ev.dayOffset);
       if (ev.dayOffset === 0 && parsed <= new Date()) return `${ev.time} has already passed — pick a future time or choose "Tomorrow".`;
-    }
-    return null;
+    } return null;
   };
 
   const intensityBadge = (intensity) => {
@@ -335,9 +326,7 @@ const WaitingModeLiberator = ({ tool }) => {
   // ─── API: Liberate ───
   const handleLiberate = async () => {
     const validationError = validateEvents();
-    if (validationError) { setError(validationError); return; }
-
-    setError(''); setResults(null); setReframes(null); setOneThingData(null);
+    if (validationError) { setError(validationError); return; } setError(''); setResults(null); setReframes(null); setOneThingData(null);
     setCompletedBlocks({}); setShowPrepAlert(false); setLaunchData(null); setDebriefData(null);
     setDebriefUsedTime(''); setDebriefReality(''); setDebriefNote('');
 
@@ -352,10 +341,7 @@ const WaitingModeLiberator = ({ tool }) => {
       const alarm = new Date(ev.parsed.getTime() - totalPrep * 60 * 1000);
       if (alarm > now && (!earliestPrepAlarm || alarm < earliestPrepAlarm)) {
         earliestPrepAlarm = alarm;
-      }
-    }
-
-    try {
+      } } try {
       const data = await callToolEndpoint('waiting-mode-liberator', {
         action: 'liberate',
         events: sortedEvents.map(ev => ({ name: ev.name || '', time: ev.dayOffset > 0 ? `${ev.dayOffset === 1 ? 'Tomorrow' : `In ${ev.dayOffset} days`}, ${formatTimeShort(ev.parsed)}` : formatTimeShort(ev.parsed), type: ev.type === 'other' && ev.customType ? ev.customType : (ev.type || ev.name || 'general'), prepMinutes: ev.prepMinutes, travelMinutes: ev.travelMinutes })),
@@ -369,8 +355,7 @@ const WaitingModeLiberator = ({ tool }) => {
       if (earliestPrepAlarm) setCountdownSeconds(Math.max(0, Math.floor((earliestPrepAlarm - now) / 1000)));
       setView('active');
       if (typeof Notification !== 'undefined' && Notification.permission === 'default') Notification.requestPermission();
-    } catch (err) { setError(err.message || 'Couldn\'t calculate your free time.'); }
-  };
+    } catch (err) { setError(err.message || 'Couldn\'t calculate your free time.'); } };
 
   // ─── API: Start With Me (v4) ───
   const handleStartWithMe = async (blockIdx) => {
@@ -387,8 +372,7 @@ const WaitingModeLiberator = ({ tool }) => {
       setBlockTimerRunning(false);
       setShowMidCheck(false);
       setView('launching');
-    } catch (err) { setError('Couldn\'t generate guided launch.'); }
-  };
+    } catch (err) { setError('Couldn\'t generate guided launch.'); } };
 
   // ─── API: Reframes ───
   const handleReframes = async () => {
@@ -399,8 +383,7 @@ const WaitingModeLiberator = ({ tool }) => {
         anxietyLevel: APPT_TYPES.find(a => a.id === primaryType)?.anxietyDefault || 'moderate', energy,
       });
       setReframes(data);
-    } catch (err) { /* bonus */ }
-  };
+    } catch (err) { /* bonus */ } };
 
   // ─── API: One thing ───
   const handleOneThing = async () => {
@@ -410,8 +393,7 @@ const WaitingModeLiberator = ({ tool }) => {
         appointmentType: events[0]?.type || '', energy,
       });
       setOneThingData(data);
-    } catch (err) { setError('Couldn\'t pick a task.'); }
-  };
+    } catch (err) { setError('Couldn\'t pick a task.'); } };
 
   // ─── API: Debrief (v4) ───
   const handleDebrief = async () => {
@@ -427,17 +409,14 @@ const WaitingModeLiberator = ({ tool }) => {
       setDebriefData(data);
     } catch (err) {
       setDebriefData({ time_reflection: 'Great job using this tool.', anxiety_check: { before: anxietyBefore, reality_assessment: 'Reflect on how it went.', insight: null }, takeaway: 'Keep tracking — patterns emerge over time.', encouragement: 'You showed up. That counts.' });
-    }
-  };
+    } };
 
   // ─── API: Review ───
   const handleReview = async () => {
-    if (sessionLog.length < 3) { setError('Need at least 3 sessions for patterns.'); return; }
-    try {
+    if (sessionLog.length < 3) { setError('Need at least 3 sessions for patterns.'); return; } try {
       const data = await callToolEndpoint('waiting-mode-liberator', { action: 'review', sessionLog: sessionLog.slice(0, 20) });
       setReviewData(data); setView('insights');
-    } catch (err) { setError('Couldn\'t analyze sessions.'); }
-  };
+    } catch (err) { setError('Couldn\'t analyze sessions.'); } };
 
   // ─── Quick-repeat ───
   const handleRepeat = (session) => {
@@ -501,6 +480,7 @@ const WaitingModeLiberator = ({ tool }) => {
   const hasAnyTime = events.length > 0;
 
   // ─── Keyboard shortcuts ───
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     const handler = (e) => {
       if (e.key !== 'Enter') return;
@@ -508,14 +488,11 @@ const WaitingModeLiberator = ({ tool }) => {
       if (tag === 'TEXTAREA' || tag === 'SELECT') return;
       if (loading) return;
       if (e.metaKey || e.ctrlKey) {
-        if (view === 'setup') { e.preventDefault(); handleLiberate(); }
-        else if (view === 'insights') { e.preventDefault(); handleReview(); }
-      } else if (tag !== 'INPUT') {
-        if (view === 'setup' && hasAnyTime) { e.preventDefault(); handleLiberate(); }
-      }
-    };
+        if (view === 'setup') { e.preventDefault(); handleLiberate(); } else if (view === 'insights') { e.preventDefault(); handleReview(); } } else if (tag !== 'INPUT') {
+        if (view === 'setup' && hasAnyTime) { e.preventDefault(); handleLiberate(); } } };
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading, view, hasAnyTime]);
 
   // ══════════════════════════════════════════════════
@@ -525,16 +502,13 @@ const WaitingModeLiberator = ({ tool }) => {
     const draftParsed = parseTimeInput(draftTime, draftDayOffset);
     const canCommit   = !!draftParsed;
 
-    return (
-      <div className={`min-h-screen ${c.cardAlt} py-6 px-4`}>
+    return (<div className={`min-h-screen ${c.cardAlt} py-6 px-4`}>
         <div className="max-w-xl mx-auto space-y-4">
 
-          {/* Header */}
-          <div className="pt-2 pb-1">
+          {/* Header */} <div className="pt-2 pb-1">
             <div>
               <h1 className={`text-2xl font-bold ${c.text}`}>
-                <span className="mr-2">{tool?.icon ?? '🔓'}</span>{tool?.title}
-              </h1>
+                <span className="mr-2">{tool?.icon ?? '🔓'}</span>{tool?.title} </h1>
               <p className={`${c.textSecondary} text-sm mt-1`}>{tool?.tagline}</p>
             </div>
             <div className={`mt-4 px-4 py-3 rounded-xl ${c.accentLight} border text-sm ${c.accentLightText} leading-relaxed`}>
@@ -542,355 +516,231 @@ const WaitingModeLiberator = ({ tool }) => {
             </div>
           </div>
 
-          {/* Session stats bar */}
-          {sessionLog.length > 0 && (
-            <div className={`${c.card} border rounded-xl px-4 py-2.5 flex items-center justify-between`}>
+          {/* Session stats bar */} {sessionLog.length > 0 && (<div className={`${c.card} border rounded-xl px-4 py-2.5 flex items-center justify-between`}>
               <span className={`text-sm ${c.textSecondary}`}>
                 <span>📊</span> {sessionLog.length} session{sessionLog.length !== 1 ? 's' : ''} · <span className={c.textMuted}>~{Math.round(sessionLog.reduce((sum, s) => sum + (s.freeMinutes || 0), 0) / 60 * 10) / 10}h reclaimed</span>
               </span>
               <div className="flex gap-2">
-                {sessionLog.length >= 3 && (
-                  <button onClick={handleReview} disabled={loading} className={`text-xs px-2.5 py-1.5 rounded-lg font-medium ${c.tagActive}`}>📈 Patterns</button>
-                )}
-                <button onClick={() => setSessionLog([])} className={`text-xs px-2 py-1.5 rounded-lg ${c.tag}`} title="Clear history">🗑️</button>
+                {sessionLog.length >= 3 && (<button onClick={handleReview} disabled={loading} className={`text-xs px-2.5 py-1.5 rounded-lg font-medium ${c.tagActive}`}>📈 Patterns</button>
+                )} <button onClick={() => setSessionLog([])} className={`text-xs px-2 py-1.5 rounded-lg ${c.tag}`} title="Clear history">🗑️</button>
               </div>
             </div>
-          )}
-
-          {/* ── EVENT ENTRY ── */}
-          <div className={`${c.card} border rounded-xl p-4 space-y-3`}>
+          )} {/* ── EVENT ENTRY ── */} <div className={`${c.card} border rounded-xl p-4 space-y-3`}>
             <p className={`text-sm font-semibold ${c.text}`}>What's on your calendar today?</p>
             <p className={`text-xs ${c.textMuted} -mt-1`}>Add each appointment that's making it hard to start anything.</p>
 
-            {/* Name + Type */}
-            <div className="space-y-2">
+            {/* Name + Type */} <div className="space-y-2">
               <input
                 type="text"
-                value={draftName}
-                onChange={e => setDraftName(e.target.value)}
-                onKeyDown={e => { if (e.key === 'Enter') timeInputRef.current?.focus(); }}
-                placeholder="What is it? (dentist, standup, school pickup…)"
-                className={`w-full px-3 py-2.5 rounded-xl border ${c.input} text-sm outline-none`}
-              />
+                value={draftName} onChange={e => setDraftName(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') timeInputRef.current?.focus(); }} placeholder="What is it? (dentist, standup, school pickup…)"
+                className={`w-full px-3 py-2.5 rounded-xl border ${c.input} text-sm outline-none`} />
               <div className="flex flex-wrap gap-1.5">
-                {APPT_TYPES.map(a => (
-                  <button
-                    key={a.id}
-                    onClick={() => setDraftType(prev => prev === a.id ? '' : a.id)}
-                    className={`flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs font-medium border transition-all ${draftType === a.id ? c.tagActive : c.tag}`}
-                  >
+                {APPT_TYPES.map(a => (<button
+                    key={a.id} onClick={() => setDraftType(prev => prev === a.id ? '' : a.id)} className={`flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs font-medium border transition-all ${draftType === a.id ? c.tagActive : c.tag}`} >
                     <span>{a.icon}</span><span>{a.label}</span>
                   </button>
-                ))}
-              </div>
+                ))} </div>
             </div>
 
-            {/* Time + Add button */}
-            <div className="space-y-2">
+            {/* Time + Add button */} <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <p className={`text-xs font-medium ${c.textSecondary}`}>When?</p>
                 <div className="flex gap-1">
-                  {[{offset:0,label:'Today'},{offset:1,label:'Tomorrow'},{offset:2,label:'+2 days'}].map(d => (
-                    <button key={d.offset} onClick={() => setDraftDayOffset(d.offset)}
-                      className={`px-2.5 py-1 rounded-lg text-xs font-medium border transition-all ${draftDayOffset === d.offset ? c.tagActive : c.tag}`}>
-                      {d.label}
-                    </button>
-                  ))}
-                </div>
+                  {[{offset:0,label:'Today'},{offset:1,label:'Tomorrow'},{offset:2,label:'+2 days'}].map(d => (<button key={d.offset} onClick={() => setDraftDayOffset(d.offset)} className={`px-2.5 py-1 rounded-lg text-xs font-medium border transition-all ${draftDayOffset === d.offset ? c.tagActive : c.tag}`}>
+                      {d.label} </button>
+                  ))} </div>
               </div>
               <div className="flex gap-2">
                 <input
-                  ref={timeInputRef}
-                  type="text"
-                  value={draftTime}
-                  onChange={e => setDraftTime(e.target.value)}
-                  onKeyDown={e => { if (e.key === 'Enter' && canCommit) commitDraft(); }}
-                  placeholder="2pm, noon, 3:30 PM, midnight…"
-                  className={`flex-1 px-3 py-2.5 rounded-xl border ${c.input} text-sm outline-none`}
-                />
+                  ref={timeInputRef} type="text"
+                  value={draftTime} onChange={e => setDraftTime(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && canCommit) commitDraft(); }} placeholder="2pm, noon, 3:30 PM, midnight…"
+                  className={`flex-1 px-3 py-2.5 rounded-xl border ${c.input} text-sm outline-none`} />
                 <button
-                  onClick={commitDraft}
-                  disabled={!canCommit}
-                  className={`px-4 py-2.5 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-30 transition-all`}
-                >
+                  onClick={commitDraft} disabled={!canCommit} className={`px-4 py-2.5 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-30 transition-all`} >
                   Add
                 </button>
               </div>
-              {draftTime.trim() && !draftParsed && (
-                <p className={`text-xs ${c.textMuted}`}>Try "2pm", "noon", "midnight", or "3:30 PM"</p>
-              )}
-            </div>
+              {draftTime.trim() && !draftParsed && (<p className={`text-xs ${c.textMuted}`}>Try "2pm", "noon", "midnight", or "3:30 PM"</p>
+              )} </div>
 
-            {/* ── ADDED EVENTS LIST ── */}
-            {events.length > 0 && (
-              <div className="space-y-2 pt-1">
+            {/* ── ADDED EVENTS LIST ── */} {events.length > 0 && (<div className="space-y-2 pt-1">
                 <p className={`text-[10px] font-bold uppercase tracking-wider ${c.textMuted}`}>Your events</p>
                 {events.map((ev, idx) => {
                   const typeObj   = APPT_TYPES.find(a => a.id === ev.type);
                   const typeLabel = ev.type === 'other' && ev.customType ? ev.customType : (typeObj?.label || '');
                   const typeIcon  = typeObj?.icon || '📌';
                   const isExpanded = expandedEventId === ev.id;
-                  return (
-                    <div key={ev.id} ref={idx === events.length - 1 ? newEventRef : null}>
-                      {/* Row */}
-                      <div
-                        className={`flex items-center gap-2 px-3 py-2.5 rounded-xl border cursor-pointer transition-all ${isExpanded ? `${c.tagActive}` : `${c.blockBg} border-transparent hover:border-gray-200`}`}
-                        onClick={() => setExpandedEventId(isExpanded ? null : ev.id)}
-                      >
+                  return (<div key={ev.id} ref={idx === events.length - 1 ? newEventRef : null}>
+                      {/* Row */} <div
+                        className={`flex items-center gap-2 px-3 py-2.5 rounded-xl border cursor-pointer transition-all ${isExpanded ? `${c.tagActive}` : `${c.blockBg} border-transparent hover:border-gray-200`}`} onClick={() => setExpandedEventId(isExpanded ? null : ev.id)} >
                         <span className="text-base flex-shrink-0">{typeIcon}</span>
                         <div className="flex-1 min-w-0">
                           <span className={`text-sm font-semibold ${c.text}`}>
-                            {ev.name || typeLabel || 'Appointment'}
-                          </span>
-                          {ev.dayOffset > 0 && (
-                            <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ml-1.5 ${c.badge}`}>
-                              {ev.dayOffset === 1 ? 'Tomorrow' : `+${ev.dayOffset}d`}
-                            </span>
-                          )}
-                          <span className={`text-xs ${c.textMuted} ml-1.5`}>· {ev.time}</span>
+                            {ev.name || typeLabel || 'Appointment'} </span>
+                          {ev.dayOffset > 0 && (<span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ml-1.5 ${c.badge}`}>
+                              {ev.dayOffset === 1 ? 'Tomorrow' : `+${ev.dayOffset}d`} </span>
+                          )} <span className={`text-xs ${c.textMuted} ml-1.5`}>· {ev.time}</span>
                           <span className={`text-xs ${c.textMuted} ml-1`}>· prep {ev.prepMinutes}m · travel {ev.travelMinutes}m</span>
                         </div>
                         <span className={`text-xs ${c.textMuted}`}>{isExpanded ? '✏️' : '✏️'}</span>
                         <button
-                          onClick={e => { e.stopPropagation(); removeEvent(ev.id); if (expandedEventId === ev.id) setExpandedEventId(null); }}
-                          className={`text-sm ${c.textGhostDel} transition-colors ml-1 flex-shrink-0`}
-                          title="Remove"
+                          onClick={e => { e.stopPropagation(); removeEvent(ev.id); if (expandedEventId === ev.id) setExpandedEventId(null); }} className={`text-sm ${c.textGhostDel} transition-colors ml-1 flex-shrink-0`} title="Remove"
                         >✕</button>
                       </div>
 
-                      {/* Expanded: full edit form */}
-                      {isExpanded && (
-                        <div className={`mt-1 px-3 py-3 rounded-xl ${isDark ? 'bg-zinc-700/40' : 'bg-gray-50'} space-y-3`}>
+                      {/* Expanded: full edit form */} {isExpanded && (<div className={`mt-1 px-3 py-3 rounded-xl ${isDark ? 'bg-zinc-700/40' : 'bg-gray-50'} space-y-3`}>
 
-                          {/* Day */}
-                          <div>
+                          {/* Day */} <div>
                             <p className={`text-[10px] font-bold uppercase ${c.textMuted} mb-1`}>Day</p>
                             <div className="flex gap-1">
-                              {[{offset:0,label:'Today'},{offset:1,label:'Tomorrow'},{offset:2,label:'+2 days'}].map(d => (
-                                <button key={d.offset}
-                                  onClick={e => { e.stopPropagation(); updateEvent(ev.id, 'dayOffset', d.offset); }}
-                                  className={`px-2 py-1 rounded text-[10px] font-medium border transition-all ${ev.dayOffset === d.offset ? c.tagActive : c.tag}`}>
-                                  {d.label}
-                                </button>
-                              ))}
-                            </div>
+                              {[{offset:0,label:'Today'},{offset:1,label:'Tomorrow'},{offset:2,label:'+2 days'}].map(d => (<button key={d.offset} onClick={e => { e.stopPropagation(); updateEvent(ev.id, 'dayOffset', d.offset); }} className={`px-2 py-1 rounded text-[10px] font-medium border transition-all ${ev.dayOffset === d.offset ? c.tagActive : c.tag}`}>
+                                  {d.label} </button>
+                              ))} </div>
                           </div>
 
-                          {/* Name + time */}
-                          <div className="grid grid-cols-2 gap-2">
+                          {/* Name + time */} <div className="grid grid-cols-2 gap-2">
                             <div>
                               <p className={`text-[10px] font-bold uppercase ${c.textMuted} mb-1`}>Name</p>
                               <input
                                 type="text"
-                                value={ev.name}
-                                onChange={e => updateEvent(ev.id, 'name', e.target.value)}
-                                placeholder="Dentist, standup…"
-                                className={`w-full px-2.5 py-1.5 rounded-lg border ${c.input} text-xs outline-none`}
-                                onClick={e => e.stopPropagation()}
-                              />
+                                value={ev.name} onChange={e => updateEvent(ev.id, 'name', e.target.value)} placeholder="Dentist, standup…"
+                                className={`w-full px-2.5 py-1.5 rounded-lg border ${c.input} text-xs outline-none`} onClick={e => e.stopPropagation()} />
                             </div>
                             <div>
                               <p className={`text-[10px] font-bold uppercase ${c.textMuted} mb-1`}>Time</p>
                               <input
                                 type="text"
-                                value={ev.time}
-                                onChange={e => updateEvent(ev.id, 'time', e.target.value)}
-                                placeholder="2pm, 3:30 PM…"
-                                className={`w-full px-2.5 py-1.5 rounded-lg border ${c.input} text-xs outline-none ${!parseTimeInput(ev.time, ev.dayOffset) && ev.time.trim() ? 'border-red-400' : ''}`}
-                                onClick={e => e.stopPropagation()}
-                              />
-                              {!parseTimeInput(ev.time, ev.dayOffset) && ev.time.trim() && (
-                                <p className={`text-[10px] text-red-400 mt-0.5`}>Try "2pm" or "3:30 PM"</p>
-                              )}
-                            </div>
+                                value={ev.time} onChange={e => updateEvent(ev.id, 'time', e.target.value)} placeholder="2pm, 3:30 PM…"
+                                className={`w-full px-2.5 py-1.5 rounded-lg border ${c.input} text-xs outline-none ${!parseTimeInput(ev.time, ev.dayOffset) && ev.time.trim() ? 'border-red-400' : ''}`} onClick={e => e.stopPropagation()} />
+                              {!parseTimeInput(ev.time, ev.dayOffset) && ev.time.trim() && (<p className={`text-[10px] text-red-400 mt-0.5`}>Try "2pm" or "3:30 PM"</p>
+                              )} </div>
                           </div>
 
-                          {/* Type pills */}
-                          <div>
+                          {/* Type pills */} <div>
                             <p className={`text-[10px] font-bold uppercase ${c.textMuted} mb-1`}>Type</p>
                             <div className="flex flex-wrap gap-1">
-                              {APPT_TYPES.map(a => (
-                                <button key={a.id}
-                                  onClick={e => { e.stopPropagation(); updateEvent(ev.id, 'type', ev.type === a.id ? '' : a.id); }}
-                                  className={`flex items-center gap-1 px-2 py-1 rounded text-[10px] font-medium border transition-all ${ev.type === a.id ? c.tagActive : c.tag}`}>
+                              {APPT_TYPES.map(a => (<button key={a.id} onClick={e => { e.stopPropagation(); updateEvent(ev.id, 'type', ev.type === a.id ? '' : a.id); }} className={`flex items-center gap-1 px-2 py-1 rounded text-[10px] font-medium border transition-all ${ev.type === a.id ? c.tagActive : c.tag}`}>
                                   <span>{a.icon}</span><span>{a.label}</span>
                                 </button>
-                              ))}
-                            </div>
+                              ))} </div>
                           </div>
 
-                          {/* Prep + travel */}
-                          <div className="grid grid-cols-2 gap-3">
+                          {/* Prep + travel */} <div className="grid grid-cols-2 gap-3">
                             <div>
                               <p className={`text-[10px] font-bold uppercase ${c.textMuted} mb-1`}>Prep time</p>
                               <div className="flex flex-wrap gap-1">
-                                {PREP_PRESETS.map(p => (
-                                  <button key={p.min} onClick={e => { e.stopPropagation(); updateEvent(ev.id, 'prepMinutes', p.min); }}
-                                    className={`px-2 py-1 rounded text-[10px] font-medium transition-all ${ev.prepMinutes === p.min ? c.tagActive : c.tag}`}>{p.label}</button>
-                                ))}
-                              </div>
+                                {PREP_PRESETS.map(p => (<button key={p.min} onClick={e => { e.stopPropagation(); updateEvent(ev.id, 'prepMinutes', p.min); }} className={`px-2 py-1 rounded text-[10px] font-medium transition-all ${ev.prepMinutes === p.min ? c.tagActive : c.tag}`}>{p.label}</button>
+                                ))} </div>
                             </div>
                             <div>
                               <p className={`text-[10px] font-bold uppercase ${c.textMuted} mb-1`}>Travel time</p>
                               <div className="flex flex-wrap gap-1">
-                                {TRAVEL_PRESETS.map(t => (
-                                  <button key={t.min} onClick={e => { e.stopPropagation(); updateEvent(ev.id, 'travelMinutes', t.min); }}
-                                    className={`px-2 py-1 rounded text-[10px] font-medium transition-all ${ev.travelMinutes === t.min ? c.tagActive : c.tag}`}>{t.label}</button>
-                                ))}
-                              </div>
+                                {TRAVEL_PRESETS.map(t => (<button key={t.min} onClick={e => { e.stopPropagation(); updateEvent(ev.id, 'travelMinutes', t.min); }} className={`px-2 py-1 rounded text-[10px] font-medium transition-all ${ev.travelMinutes === t.min ? c.tagActive : c.tag}`}>{t.label}</button>
+                                ))} </div>
                             </div>
                           </div>
 
-                          {/* Done button */}
-                          <button
-                            onClick={e => { e.stopPropagation(); setExpandedEventId(null); }}
-                            className={`w-full py-1.5 rounded-lg text-xs font-semibold ${c.btnSecondary} transition-all`}>
+                          {/* Done button */} <button
+                            onClick={e => { e.stopPropagation(); setExpandedEventId(null); }} className={`w-full py-1.5 rounded-lg text-xs font-semibold ${c.btnSecondary} transition-all`}>
                             Done editing
                           </button>
                         </div>
-                      )}
-                    </div>
+                      )} </div>
                   );
-                })}
-              </div>
-            )}
-          </div>
+                })} </div>
+            )} </div>
 
-          {/* ── CONTEXT CARD (collapsible) ── */}
-          <div className={`${c.card} border rounded-xl overflow-hidden`}>
+          {/* ── CONTEXT CARD (collapsible) ── */} <div className={`${c.card} border rounded-xl overflow-hidden`}>
             <button
-              onClick={() => setContextOpen(o => !o)}
-              className={`w-full flex items-center justify-between px-4 py-3 text-sm font-semibold ${c.text}`}
-            >
+              onClick={() => setContextOpen(o => !o)} className={`w-full flex items-center justify-between px-4 py-3 text-sm font-semibold ${c.text}`} >
               <span>
                 <span className="mr-2">⚙️</span>
                 Energy · To-do list · Anxiety
-                {!contextOpen && <span className={`ml-2 text-xs font-normal ${c.textMuted}`}>({ENERGY_LEVELS.find(e => e.id === energy)?.label}, {anxietyBefore}/10)</span>}
-              </span>
+                {!contextOpen && <span className={`ml-2 text-xs font-normal ${c.textMuted}`}>({ENERGY_LEVELS.find(e => e.id === energy)?.label}, {anxietyBefore}/10)</span>} </span>
               <span className={`text-xs ${c.textMuted}`}>{contextOpen ? '▲' : '▼'}</span>
             </button>
 
-            {contextOpen && (
-              <div className="px-4 pb-4 space-y-4 border-t" style={{ borderColor: 'inherit' }}>
-                {/* Energy */}
-                <div className="space-y-2 pt-3">
+            {contextOpen && (<div className="px-4 pb-4 space-y-4 border-t" style={{ borderColor: 'inherit' }}>
+                {/* Energy */} <div className="space-y-2 pt-3">
                   <p className={`text-xs font-semibold ${c.textSecondary}`}>How's your energy?</p>
                   <div className="flex gap-1.5">
-                    {ENERGY_LEVELS.map(e => (
-                      <button key={e.id} onClick={() => setEnergy(e.id)}
-                        className={`flex-1 py-2 rounded-xl text-center transition-all ${energy === e.id ? c.tagActive : c.tag}`}>
+                    {ENERGY_LEVELS.map(e => (<button key={e.id} onClick={() => setEnergy(e.id)} className={`flex-1 py-2 rounded-xl text-center transition-all ${energy === e.id ? c.tagActive : c.tag}`}>
                         <span className="block text-base">{e.icon}</span>
                         <span className={`block text-[9px] font-medium mt-0.5 ${energy === e.id ? '' : c.textMuted}`}>{e.label}</span>
                       </button>
-                    ))}
-                  </div>
+                    ))} </div>
                   <p className={`text-xs ${c.textMuted} text-center`}>{ENERGY_LEVELS.find(e => e.id === energy)?.desc}</p>
                 </div>
 
-                {/* Anxiety slider */}
-                <div className="space-y-2">
+                {/* Anxiety slider */} <div className="space-y-2">
                   <p className={`text-xs font-semibold ${c.textSecondary}`}>
                     How anxious are you? <span>{anxietyBefore <= 3 ? '😌' : anxietyBefore <= 6 ? '😐' : anxietyBefore <= 8 ? '😰' : '😫'}</span>
                   </p>
-                  <input type="range" min="1" max="10" value={anxietyBefore}
-                    onChange={e => setAnxietyBefore(parseInt(e.target.value))}
-                    className="w-full accent-cyan-500" />
+                  <input type="range" min="1" max="10" value={anxietyBefore} onChange={e => setAnxietyBefore(parseInt(e.target.value))} className="w-full accent-cyan-500" />
                   <div className="flex justify-between">
                     <span className={`text-[10px] ${c.textMuted}`}>Totally chill</span>
                     <span className={`text-sm font-bold ${c.text}`}>{anxietyBefore}/10</span>
                     <span className={`text-[10px] ${c.textMuted}`}>Dreading it</span>
                   </div>
-                  {pastDebriefs.length > 0 && (
-                    <p className={`text-xs ${c.accentLightText} ${c.accentLight} rounded-lg px-3 py-2 border`}>
+                  {pastDebriefs.length > 0 && (<p className={`text-xs ${c.accentLightText} ${c.accentLight} rounded-lg px-3 py-2 border`}>
                       <span>📊</span> Last {Math.min(pastDebriefs.length, 5)} {events[0]?.type || ''} appointments: avg anxiety {Math.round(pastDebriefs.slice(0, 5).reduce((s, d) => s + (d.anxietyBefore || 5), 0) / Math.min(pastDebriefs.length, 5))}/10 — most turned out {pastDebriefs.filter(d => ['fine','okay'].includes(d.appointmentReality)).length > pastDebriefs.length / 2 ? 'fine' : 'manageable'}.
                     </p>
-                  )}
-                </div>
+                  )} </div>
 
-                {/* Tasks */}
-                <div className="space-y-1.5">
+                {/* Tasks */} <div className="space-y-1.5">
                   <p className={`text-xs font-semibold ${c.textSecondary}`}>What do you want to get done in the gaps? <span className={c.textMuted}>(optional)</span></p>
                   <p className={`text-xs ${c.textMuted} -mt-1`}>Skip this and we'll suggest tasks based on your energy level.</p>
-                  <textarea value={userTasks} onChange={e => setUserTasks(e.target.value)}
-                    placeholder="Write the report, answer emails, clean the kitchen…"
+                  <textarea value={userTasks} onChange={e => setUserTasks(e.target.value)} placeholder="Write the report, answer emails, clean the kitchen…"
                     rows={3} className={`w-full p-3 rounded-lg border ${c.input} outline-none text-sm resize-none`} />
                 </div>
               </div>
-            )}
-          </div>
+            )} </div>
 
-          {/* ── SUBMIT ── */}
-          <button onClick={handleLiberate} disabled={loading || !hasAnyTime}
-            className={`w-full py-4 rounded-xl font-bold text-lg ${c.btnPrimary} disabled:opacity-40 transition-all shadow-lg`}>
+          {/* ── SUBMIT ── */} <button onClick={handleLiberate} disabled={loading || !hasAnyTime} className={`w-full py-4 rounded-xl font-bold text-lg ${c.btnPrimary} disabled:opacity-40 transition-all shadow-lg`}>
             {loading
               ? <span><span className="inline-block animate-spin">{tool?.icon ?? '🔓'}</span> Calculating free time…</span>
-              : <span>{tool?.icon ?? '🔓'} Liberate My Time</span>}
-          </button>
+              : <span>{tool?.icon ?? '🔓'} Liberate My Time</span>} </button>
 
-          {!hasAnyTime && (
-            <p className={`text-center text-xs ${c.textMuted}`}>Add at least one event above to get started</p>
-          )}
+          {!hasAnyTime && (<p className={`text-center text-xs ${c.textMuted}`}>Add at least one event above to get started</p>
+          )} {error && <div className={`${c.danger} border rounded-xl p-4`}><p className={`text-sm ${c.errorText}`}>⚠️ {error}</p></div>} <p className={`text-center text-xs ${c.textMuted}`}>AI-generated plan — review before relying on it.</p>
 
-          {error && <div className={`${c.danger} border rounded-xl p-4`}><p className={`text-sm ${c.errorText}`}>⚠️ {error}</p></div>}
-
-          <p className={`text-center text-xs ${c.textMuted}`}>AI-generated plan — review before relying on it.</p>
-
-          {/* Cross-refs */}
-          <div className={`${c.card} border rounded-xl p-4`}>
+          {/* Cross-refs */} <div className={`${c.card} border rounded-xl p-4`}>
             <p className={`text-xs font-medium ${c.textMuted} mb-2`}>Related tools</p>
             <div className="flex flex-wrap gap-2">
-              {[{ id: 'VirtualBodyDouble', icon: '👥', label: 'Virtual Body Double' }, { id: 'CrisisPrioritizer', icon: '🚨', label: 'Crisis Prioritizer' }, { id: 'DopamineMenuBuilder', icon: '🎯', label: 'Dopamine Menu' }].map(t => (
-                <a key={t.id} href={`/${t.id}`} target="_blank" rel="noopener noreferrer"
+              {[{ id: 'VirtualBodyDouble', icon: '👥', label: 'Virtual Body Double' }, { id: 'CrisisPrioritizer', icon: '🚨', label: 'Crisis Prioritizer' }, { id: 'DopamineMenuBuilder', icon: '🎯', label: 'Dopamine Menu' }].map(t => (<a key={t.id} href={`/${t.id}`} target="_blank" rel="noopener noreferrer"
                   className={`text-xs px-3 py-1.5 rounded-lg ${c.tag} ${c.cardHover} transition-colors`}>
-                  <span>{t.icon}</span> {t.label}
-                </a>
-              ))}
-            </div>
+                  <span>{t.icon}</span> {t.label} </a>
+              ))} </div>
           </div>
 
-          {/* Recent sessions */}
-          {sessionLog.length > 0 && (
-            <div className={`${c.card} border rounded-xl p-4`}>
+          {/* Recent sessions */} {sessionLog.length > 0 && (<div className={`${c.card} border rounded-xl p-4`}>
               <h3 className={`text-sm font-bold ${c.text} mb-3`}>🕐 Recent Sessions</h3>
               <div className="space-y-2">
                 {sessionLog.slice(0, 5).map(s => {
                   const typeIcon = APPT_TYPES.find(a => a.id === s.events?.[0]?.type)?.icon || '📌';
-                  return (
-                    <div key={s.id} className={`flex items-center justify-between p-2.5 rounded-lg ${isDark ? 'bg-zinc-700/50' : 'bg-gray-50'}`}>
+                  return (<div key={s.id} className={`flex items-center justify-between p-2.5 rounded-lg ${isDark ? 'bg-zinc-700/50' : 'bg-gray-50'}`}>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-1.5">
                           <span className="text-xs">{typeIcon}</span>
                           <span className={`text-sm font-medium ${c.text}`}>
-                            {s.events?.map(e => e.name || (APPT_TYPES.find(a => a.id === e.type)?.label) || e.time).join(', ') || '—'}
-                          </span>
+                            {s.events?.map(e => e.name || (APPT_TYPES.find(a => a.id === e.type)?.label) || e.time).join(', ') || '—'} </span>
                           <span className={`text-xs ${c.textMuted}`}>
-                            {s.events?.map(e => e.time).join(', ')}
-                          </span>
-                          {s.events?.length > 1 && <span className={`text-[10px] px-1.5 py-0.5 rounded ${c.tag}`}>{s.events.length} events</span>}
-                        </div>
+                            {s.events?.map(e => e.time).join(', ')} </span>
+                          {s.events?.length > 1 && <span className={`text-[10px] px-1.5 py-0.5 rounded ${c.tag}`}>{s.events.length} events</span>} </div>
                         <span className={`text-xs ${c.textMuted}`}>
-                          ~{s.freeMinutes}m · {s.blocksCompleted}/{s.totalBlocks} blocks · {ENERGY_LEVELS.find(e => e.id === s.energy)?.icon || '😐'}
-                          {s.debrief ? ` · ${REALITY_OPTIONS.find(r => r.id === s.debrief.reality)?.icon || ''}` : ''}
-                          · {new Date(s.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-                        </span>
+                          ~{s.freeMinutes}m · {s.blocksCompleted}/{s.totalBlocks} blocks · {ENERGY_LEVELS.find(e => e.id === s.energy)?.icon || '😐'} {s.debrief ? ` · ${REALITY_OPTIONS.find(r => r.id === s.debrief.reality)?.icon || ''}` : ''} · {new Date(s.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} </span>
                       </div>
                       <div className="flex items-center gap-2 ml-2 flex-shrink-0">
-                        {s.blocksCompleted > 0 && <span className="text-xs">✅</span>}
-                        <button onClick={() => handleRepeat(s)} className={`text-xs px-2.5 py-1.5 rounded-lg ${c.tag} font-medium`} title="Repeat">🔁</button>
+                        {s.blocksCompleted > 0 && <span className="text-xs">✅</span>} <button onClick={() => handleRepeat(s)} className={`text-xs px-2.5 py-1.5 rounded-lg ${c.tag} font-medium`} title="Repeat">🔁</button>
                       </div>
                     </div>
                   );
-                })}
-              </div>
+                })} </div>
             </div>
-          )}
-
-        </div>
+          )} </div>
       </div>
     );
-  }
-
-  // ══════════════════════════════════════════════════
+  } // ══════════════════════════════════════════════════
   // RENDER: LAUNCHING (Start With Me) — v4
   // ══════════════════════════════════════════════════
   if (view === 'launching' && launchData) {
@@ -899,17 +749,13 @@ const WaitingModeLiberator = ({ tool }) => {
     const currentStepData = steps[launchStep];
     const blockDone = blockTimerSecs <= 0 && blockTimerRunning === false && launchStep >= steps.length;
 
-    return (
-      <div className={`min-h-screen ${c.cardAlt} py-6 px-4`}>
+    return (<div className={`min-h-screen ${c.cardAlt} py-6 px-4`}>
         <div className="max-w-xl mx-auto space-y-5">
 
-          {/* Guided launch header */}
-          <div className={`${c.launch} border-2 rounded-2xl p-6 text-center shadow-lg`}>
-            {isGuiding ? (
-              <>
+          {/* Guided launch header */} <div className={`${c.launch} border-2 rounded-2xl p-6 text-center shadow-lg`}>
+            {isGuiding ? (<>
                 <p className={`text-xs font-medium ${c.launchAccent} uppercase tracking-wider mb-2`}>
-                  Step {launchStep + 1} of {steps.length}
-                </p>
+                  Step {launchStep + 1} of {steps.length} </p>
                 <span className="text-3xl block mb-3">{currentStepData?.emoji || '👉'}</span>
                 <p className={`text-lg font-medium ${c.launchText}`}>{currentStepData?.instruction}</p>
                 <button onClick={() => {
@@ -919,145 +765,95 @@ const WaitingModeLiberator = ({ tool }) => {
                     setBlockTimerRunning(true);
                   } else {
                     setLaunchStep(launchStep + 1);
-                  }
-                }} className={`mt-4 px-6 py-2.5 rounded-xl font-bold ${c.btnPrimary} transition-all`}>
-                  {launchStep + 1 >= steps.length ? '▶️ Done — Start Timer' : '✅ Done — Next'}
-                </button>
+                  } }} className={`mt-4 px-6 py-2.5 rounded-xl font-bold ${c.btnPrimary} transition-all`}>
+                  {launchStep + 1 >= steps.length ? '▶️ Done — Start Timer' : '✅ Done — Next'} </button>
               </>
-            ) : blockTimerRunning ? (
-              <>
+            ) : blockTimerRunning ? (<>
                 <p className={`text-xs font-medium ${c.launchAccent} uppercase tracking-wider mb-1`}>
-                  {results?.time_blocks?.[launchBlockIdx]?.task}
-                </p>
+                  {results?.time_blocks?.[launchBlockIdx]?.task} </p>
                 <div className={`text-5xl font-mono font-bold ${c.launchText} my-3`}>
-                  {formatCountdown(blockTimerSecs)}
-                </div>
+                  {formatCountdown(blockTimerSecs)} </div>
                 <p className={`text-sm ${c.launchAccent}`}>You're doing it. Keep going.</p>
-                <button onClick={() => { setBlockTimerRunning(false); clearInterval(blockTimerRef.current); }}
-                  className={`mt-3 text-xs ${c.launchAccent} underline`}>End block early</button>
+                <button onClick={() => { setBlockTimerRunning(false); clearInterval(blockTimerRef.current); }} className={`mt-3 text-xs ${c.launchAccent} underline`}>End block early</button>
               </>
-            ) : blockDone ? (
-              <>
+            ) : blockDone ? (<>
                 <span className="text-3xl block mb-2">🎉</span>
                 <h2 className={`text-xl font-bold ${c.launchText}`}>Block Complete!</h2>
                 <p className={`text-sm ${c.launchAccent} mt-2`}>{launchData.block_done}</p>
-                {launchData.next_nudge && <p className={`text-xs ${c.launchAccent} mt-2 opacity-70`}>{launchData.next_nudge}</p>}
-              </>
-            ) : (
-              <>
+                {launchData.next_nudge && <p className={`text-xs ${c.launchAccent} mt-2 opacity-70`}>{launchData.next_nudge}</p>} </>
+            ) : (<>
                 <p className={`text-lg font-medium ${c.launchText}`}>{launchData.launch_line}</p>
                 <button onClick={() => null} className={`mt-3 text-xs ${c.launchAccent}`}>Starting...</button>
               </>
-            )}
-          </div>
+            )} </div>
 
-          {/* Mid-check popup */}
-          {showMidCheck && launchData.mid_check && (
-            <div className={`${c.accentLight} border rounded-xl p-4 text-center`}>
+          {/* Mid-check popup */} {showMidCheck && launchData.mid_check && (<div className={`${c.accentLight} border rounded-xl p-4 text-center`}>
               <p className={`text-sm font-medium ${c.accentLightText}`}>👋 {launchData.mid_check}</p>
             </div>
-          )}
-
-          {/* Step progress dots */}
-          {steps.length > 0 && (
-            <div className="flex justify-center gap-2">
-              {steps.map((_, i) => (
-                <div key={i} className={`w-3 h-3 rounded-full transition-all ${
+          )} {/* Step progress dots */} {steps.length > 0 && (<div className="flex justify-center gap-2">
+              {steps.map((_, i) => (<div key={i} className={`w-3 h-3 rounded-full transition-all ${
                   i < launchStep ? (isDark ? 'bg-cyan-400' : 'bg-cyan-500')
                     : i === launchStep && isGuiding ? (isDark ? 'bg-cyan-400 animate-pulse' : 'bg-cyan-500 animate-pulse')
                     : (isDark ? 'bg-zinc-600' : 'bg-gray-300')
                 }`} />
-              ))}
-            </div>
-          )}
-
-          {/* Back to plan */}
-          <button onClick={() => setView('active')} className={`w-full py-3 rounded-xl text-sm font-medium border ${c.tag}`}>
+              ))} </div>
+          )} {/* Back to plan */} <button onClick={() => setView('active')} className={`w-full py-3 rounded-xl text-sm font-medium border ${c.tag}`}>
             ← Back to plan
           </button>
         </div>
       </div>
     );
-  }
-
-  // ══════════════════════════════════════════════════
+  } // ══════════════════════════════════════════════════
   // RENDER: ACTIVE
   // ══════════════════════════════════════════════════
   if (view === 'active' && results) {
     const blocksCompleted = Object.values(completedBlocks).filter(Boolean).length;
     const totalBlocks = results.time_blocks?.length || 0;
 
-    return (
-      <div className={`min-h-screen ${c.cardAlt} py-6 px-4`}>
+    return (<div className={`min-h-screen ${c.cardAlt} py-6 px-4`}>
         <div className="max-w-xl mx-auto space-y-5">
 
-          {/* Results anchor for ActionBar */}
-          <div ref={resultsRef} />
-          <ActionBar copyContent={buildSummaryText()} copyLabel="Copy Plan" printContent={buildSummaryText()} printTitle="Waiting Mode Liberator" />
+          {/* Results anchor for ActionBar */} <div ref={resultsRef} data-results-anchor />
+          <ActionBar content={buildSummaryText()} copyLabel="Copy Plan" />
 
-          {/* Hero countdown */}
-          <div className={`${c.hero} border-2 rounded-2xl p-6 text-center shadow-lg`}>
-            {showPrepAlert ? (
-              <>
+          {/* Hero countdown */} <div className={`${c.hero} border-2 rounded-2xl p-6 text-center shadow-lg`}>
+            {showPrepAlert ? (<>
                 <span className="text-3xl block mb-2">⏰</span>
                 <h2 className={`text-xl font-bold ${c.heroText}`}>Time to get ready!</h2>
                 <p className={`text-sm ${c.heroAccent} mt-2`}>Start prep now → {results.first_prep_alarm || results.events_summary?.[0]?.prep_alarm}</p>
               </>
-            ) : (
-              <>
+            ) : (<>
                 <p className={`text-xs font-medium ${c.heroAccent} uppercase tracking-wider mb-1`}>You don't need to think about {events.length > 1 ? 'any of this' : 'this'} for</p>
                 <div className={`text-5xl font-mono font-bold ${c.heroText} my-3`}>{formatCountdown(countdownSeconds)}</div>
                 <p className={`text-sm ${c.heroAccent}`}>First prep alarm at <span className="font-bold">{results.first_prep_alarm || '—'}</span></p>
               </>
-            )}
-          </div>
+            )} </div>
 
-          {/* Event timeline */}
-          {results.events_summary?.length > 0 && (
-            <div className={`${c.card} border rounded-xl p-4`}>
+          {/* Event timeline */} {results.events_summary?.length > 0 && (<div className={`${c.card} border rounded-xl p-4`}>
               <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wider mb-2`}><span>📅</span> Today's Events</p>
               <div className="space-y-2">
-                {results.events_summary.map((ev, i) => (
-                  <div key={i} className={`flex items-center gap-3 p-2.5 rounded-lg ${c.blockBg}`}>
+                {results.events_summary.map((ev, i) => (<div key={i} className={`flex items-center gap-3 p-2.5 rounded-lg ${c.blockBg}`}>
                     <span className="text-sm">{APPT_TYPES.find(a => a.id === ev.type)?.icon || '📌'}</span>
                     <div className="flex-1"><span className={`text-sm font-medium ${c.text}`}>{ev.time}</span><span className={`text-xs ${c.textMuted} ml-2`}>{ev.type || 'event'}</span></div>
                     <span className={`text-xs ${c.textMuted}`}>prep at {ev.prep_alarm}</span>
                   </div>
-                ))}
-              </div>
+                ))} </div>
             </div>
-          )}
-
-          {/* Permission */}
-          {results.permission && (
-            <div className={`${c.accentLight} border rounded-xl p-5`}>
+          )} {/* Permission */} {results.permission && (<div className={`${c.accentLight} border rounded-xl p-5`}>
               <p className={`text-sm font-medium ${c.accentLightText} leading-relaxed`}><span className="text-lg mr-1">🔓</span> {results.permission}</p>
             </div>
-          )}
-
-          {/* Reframe */}
-          {results.reframe && !reframes && (
-            <div className={`${c.card} border rounded-xl p-4`}>
+          )} {/* Reframe */} {results.reframe && !reframes && (<div className={`${c.card} border rounded-xl p-4`}>
               <p className={`text-sm ${c.textSecondary} italic`}>💡 {results.reframe}</p>
               <button onClick={handleReframes} disabled={loading} className={`text-xs ${c.textMuted} mt-2 underline`}>More reframes →</button>
             </div>
-          )}
-          {reframes && (
-            <div className={`${c.card} border rounded-xl p-5 space-y-3`}>
+          )} {reframes && (<div className={`${c.card} border rounded-xl p-5 space-y-3`}>
               <h3 className={`text-xs font-bold ${c.textMuted} uppercase tracking-wider`}><span>🔄</span> Perspective Shifts</h3>
-              {reframes.reframes?.map((r, i) => (
-                <div key={i} className={`p-3 rounded-lg ${c.blockBg}`}>
+              {reframes.reframes?.map((r, i) => (<div key={i} className={`p-3 rounded-lg ${c.blockBg}`}>
                   <p className={`text-xs font-medium ${c.textMuted} mb-1`}>{r.emoji} {r.angle}</p>
                   <p className={`text-sm ${c.text}`}>{r.text}</p>
                 </div>
-              ))}
-              {reframes.truth_bomb && <p className={`text-xs ${c.textMuted} italic border-t ${c.border} pt-2 mt-2`}>🎯 {reframes.truth_bomb}</p>}
-            </div>
-          )}
-
-          {/* Time blocks with "Start With Me" button (v4) */}
-          {results.time_blocks?.length > 0 && (
-            <div className={`${c.card} border rounded-xl p-5 space-y-3`}>
+              ))} {reframes.truth_bomb && <p className={`text-xs ${c.textMuted} italic border-t ${c.border} pt-2 mt-2`}>🎯 {reframes.truth_bomb}</p>} </div>
+          )} {/* Time blocks with "Start With Me" button (v4) */} {results.time_blocks?.length > 0 && (<div className={`${c.card} border rounded-xl p-5 space-y-3`}>
               <div className="flex items-center justify-between">
                 <h3 className={`text-sm font-bold ${c.text}`}><span>📋</span> Your Plan · {blocksCompleted}/{totalBlocks}</h3>
                 <span className={`text-xs ${c.textMuted}`}>{results.free_until}</span>
@@ -1066,12 +862,10 @@ const WaitingModeLiberator = ({ tool }) => {
                 {results.time_blocks.map((block, i) => {
                   const isCompleted = completedBlocks[i];
                   const badge = intensityBadge(block.intensity);
-                  return (
-                    <div key={i} className={`p-4 rounded-xl border-2 transition-all ${isCompleted ? (isDark ? 'bg-emerald-900/30 border-emerald-700 opacity-60' : 'bg-emerald-50 border-emerald-200 opacity-60') : `${c.blockBg} ${isDark ? 'border-zinc-600' : 'border-gray-200'}`}`}>
+                  return (<div key={i} className={`p-4 rounded-xl border-2 transition-all ${isCompleted ? (isDark ? 'bg-emerald-900/30 border-emerald-700 opacity-60' : 'bg-emerald-50 border-emerald-200 opacity-60') : `${c.blockBg} ${isDark ? 'border-zinc-600' : 'border-gray-200'}`}`}>
                       <div className="flex items-start gap-3">
                         <button onClick={() => setCompletedBlocks(prev => ({ ...prev, [i]: !prev[i] }))} className="text-lg mt-0.5">
-                          {isCompleted ? '✅' : '⬜'}
-                        </button>
+                          {isCompleted ? '✅' : '⬜'} </button>
                         <div className="flex-1">
                           <div className="flex items-center justify-between mb-1">
                             <span className={`text-xs font-mono font-medium ${c.textMuted}`}>{block.start} – {block.end}</span>
@@ -1081,32 +875,19 @@ const WaitingModeLiberator = ({ tool }) => {
                             </div>
                           </div>
                           <p className={`text-sm font-medium ${isCompleted ? 'line-through' : ''} ${c.text}`}>{block.task}</p>
-                          {block.why_it_fits && <p className={`text-xs ${c.textMuted} mt-1`}>{block.why_it_fits}</p>}
-                        </div>
+                          {block.why_it_fits && <p className={`text-xs ${c.textMuted} mt-1`}>{block.why_it_fits}</p>} </div>
                       </div>
-                      {/* Start With Me button (v4) */}
-                      {!isCompleted && (
-                        <button onClick={() => handleStartWithMe(i)} disabled={loading}
-                          className={`mt-2 w-full py-2 rounded-lg text-xs font-medium ${c.accentLight} ${c.launchAccent} transition-all`}>
+                      {/* Start With Me button (v4) */} {!isCompleted && (<button onClick={() => handleStartWithMe(i)} disabled={loading} className={`mt-2 w-full py-2 rounded-lg text-xs font-medium ${c.accentLight} ${c.launchAccent} transition-all`}>
                           {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> : <span>🚀</span>} Start this block with me
                         </button>
-                      )}
-                    </div>
+                      )} </div>
                   );
-                })}
-              </div>
+                })} </div>
             </div>
-          )}
-
-          {/* One thing */}
-          {!oneThingData && (
-            <button onClick={handleOneThing} disabled={loading}
-              className={`w-full py-3 rounded-xl text-sm font-medium ${c.warning} border ${c.warning} transition-all`}>
+          )} {/* One thing */} {!oneThingData && (<button onClick={handleOneThing} disabled={loading} className={`w-full py-3 rounded-xl text-sm font-medium ${c.warning} border ${c.warning} transition-all`}>
               {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> : <span>🎯</span>} Can't do the whole plan? Just pick one thing
             </button>
-          )}
-          {oneThingData && (
-            <div className={`${c.warning} border-2 rounded-xl p-5 space-y-3`}>
+          )} {oneThingData && (<div className={`${c.warning} border-2 rounded-xl p-5 space-y-3`}>
               <h3 className={`text-sm font-bold ${c.warning}`}><span>🎯</span> Just This One Thing</h3>
               <p className={`text-base font-medium ${c.warning}`}>{oneThingData.the_one_thing}</p>
               <div className={`p-3 rounded-lg ${isDark ? 'bg-amber-900/30' : 'bg-amber-100/50'}`}>
@@ -1117,42 +898,25 @@ const WaitingModeLiberator = ({ tool }) => {
                 <span className={`text-xs ${c.warning}`}>⏱️ {oneThingData.time_needed}</span>
                 <span className={`text-xs ${c.warning}`}>{oneThingData.why_this_one}</span>
               </div>
-              {oneThingData.escape_hatch && <p className={`text-xs ${c.warning} italic`}>🚪 {oneThingData.escape_hatch}</p>}
-              {oneThingData.momentum_hook && <p className={`text-xs ${c.warning} opacity-70`}>→ {oneThingData.momentum_hook}</p>}
-            </div>
-          )}
-
-          {/* Prep plans */}
-          {results.prep_plans?.map((pp, i) => (
-            <div key={i} className={`${c.card} border rounded-xl p-5 space-y-2`}>
+              {oneThingData.escape_hatch && <p className={`text-xs ${c.warning} italic`}>🚪 {oneThingData.escape_hatch}</p>} {oneThingData.momentum_hook && <p className={`text-xs ${c.warning} opacity-70`}>→ {oneThingData.momentum_hook}</p>} </div>
+          )} {/* Prep plans */} {results.prep_plans?.map((pp, i) => (<div key={i} className={`${c.card} border rounded-xl p-5 space-y-2`}>
               <h3 className={`text-xs font-bold ${c.textMuted} uppercase tracking-wider`}><span>⏰</span> Prep for {pp.event_time} — alarm at {pp.alarm_time}</h3>
-              {pp.steps?.map((step, j) => (
-                <div key={j} className={`flex items-start gap-2 p-2 rounded-lg ${c.blockBg}`}>
+              {pp.steps?.map((step, j) => (<div key={j} className={`flex items-start gap-2 p-2 rounded-lg ${c.blockBg}`}>
                   <span className={`text-xs font-bold ${c.textMuted} mt-0.5`}>{j + 1}</span>
                   <span className={`text-sm ${c.text}`}>{step}</span>
                 </div>
-              ))}
-            </div>
-          ))}
-
-          {results.worst_case && <div className={`${c.card} border rounded-xl p-4`}><p className={`text-xs ${c.textMuted}`}>🛡️ Safety net: {results.worst_case}</p></div>}
-
-          {/* Actions — go to debrief instead of direct save (v4) */}
-          <div className="flex gap-3">
-            <button onClick={() => setView('debrief')}
-              className={`flex-1 py-3.5 rounded-xl font-bold ${c.btnPrimary}`}>
+              ))} </div>
+          ))} {results.worst_case && <div className={`${c.card} border rounded-xl p-4`}><p className={`text-xs ${c.textMuted}`}>🛡️ Safety net: {results.worst_case}</p></div>} {/* Actions — go to debrief instead of direct save (v4) */} <div className="flex gap-3">
+            <button onClick={() => setView('debrief')} className={`flex-1 py-3.5 rounded-xl font-bold ${c.btnPrimary}`}>
               <span>📝</span> Done — Debrief
             </button>
             <button onClick={resetAndGoBack} className={`flex-1 py-3.5 rounded-xl font-bold border ${c.tag}`}><span>←</span> New Session</button>
           </div>
 
-          {error && <div className={`${c.danger} border rounded-xl p-4`}><p className={`text-sm ${c.errorText}`}><span>⚠️</span> {error}</p></div>}
-        </div>
+          {error && <div className={`${c.danger} border rounded-xl p-4`}><p className={`text-sm ${c.errorText}`}><span>⚠️</span> {error}</p></div>} </div>
       </div>
     );
-  }
-
-  // ══════════════════════════════════════════════════
+  } // ══════════════════════════════════════════════════
   // RENDER: DEBRIEF (v4)
   // ══════════════════════════════════════════════════
   if (view === 'debrief') {
@@ -1161,8 +925,7 @@ const WaitingModeLiberator = ({ tool }) => {
       || events[0]?.time
       || 'the appointment';
 
-    return (
-      <div className={`min-h-screen ${c.cardAlt} py-6 px-4`}>
+    return (<div className={`min-h-screen ${c.cardAlt} py-6 px-4`}>
         <div className="max-w-xl mx-auto space-y-5">
           <div className="text-center mb-2">
             <span className="text-3xl">📝</span>
@@ -1170,79 +933,48 @@ const WaitingModeLiberator = ({ tool }) => {
             <p className={`${c.textMuted} text-sm`}>3 taps and you're done — this makes the next session smarter</p>
           </div>
 
-          {/* Q1: Did you use the time? */}
-          <div className={`${c.card} border rounded-xl p-5 space-y-3`}>
+          {/* Q1: Did you use the time? */} <div className={`${c.card} border rounded-xl p-5 space-y-3`}>
             <p className={`text-sm font-semibold ${c.text}`}>Did you use your free time?</p>
             <div className="grid grid-cols-2 gap-2">
-              {TIME_USAGE_OPTIONS.map(o => (
-                <button key={o.id} onClick={() => setDebriefUsedTime(o.id)}
-                  className={`p-3 rounded-xl text-center transition-all border ${debriefUsedTime === o.id ? `${c.tagActive} border-transparent` : `${c.tag} ${isDark ? 'border-zinc-600' : 'border-gray-200'}`}`}>
+              {TIME_USAGE_OPTIONS.map(o => (<button key={o.id} onClick={() => setDebriefUsedTime(o.id)} className={`p-3 rounded-xl text-center transition-all border ${debriefUsedTime === o.id ? `${c.tagActive} border-transparent` : `${c.tag} ${isDark ? 'border-zinc-600' : 'border-gray-200'}`}`}>
                   <span className="text-lg block">{o.icon}</span>
                   <span className="text-xs font-medium">{o.label}</span>
                 </button>
-              ))}
-            </div>
+              ))} </div>
           </div>
 
-          {/* Q2: How was the specific event? */}
-          <div className={`${c.card} border rounded-xl p-5 space-y-3`}>
+          {/* Q2: How was the specific event? */} <div className={`${c.card} border rounded-xl p-5 space-y-3`}>
             <p className={`text-sm font-semibold ${c.text}`}>How was <span className="italic">{firstEventLabel}</span> actually?</p>
             <div className="flex gap-2">
-              {REALITY_OPTIONS.map(o => (
-                <button key={o.id} onClick={() => setDebriefReality(o.id)}
-                  className={`flex-1 py-3 rounded-xl text-center transition-all ${debriefReality === o.id ? c.tagActive : c.tag}`}>
+              {REALITY_OPTIONS.map(o => (<button key={o.id} onClick={() => setDebriefReality(o.id)} className={`flex-1 py-3 rounded-xl text-center transition-all ${debriefReality === o.id ? c.tagActive : c.tag}`}>
                   <span className="block text-lg">{o.icon}</span>
                   <span className="block text-[10px] font-medium mt-0.5">{o.label}</span>
                 </button>
-              ))}
-            </div>
+              ))} </div>
           </div>
 
-          {/* Optional note */}
-          <div className={`${c.card} border rounded-xl p-5`}>
+          {/* Optional note */} <div className={`${c.card} border rounded-xl p-5`}>
             <p className={`text-sm font-medium ${c.textSecondary} mb-2`}>Anything else? (optional)</p>
-            <input type="text" value={debriefNote} onChange={e => setDebriefNote(e.target.value)}
-              placeholder="The appointment was nothing, I worried for no reason..."
+            <input type="text" value={debriefNote} onChange={e => setDebriefNote(e.target.value)} placeholder="The appointment was nothing, I worried for no reason..."
               className={`w-full p-3 rounded-lg border ${c.input} text-sm`} />
           </div>
 
-          {/* Anxiety comparison banner */}
-          {anxietyBefore >= 6 && (
-            <div className={`${c.accentLight} border rounded-xl p-4`}>
+          {/* Anxiety comparison banner */} {anxietyBefore >= 6 && (<div className={`${c.accentLight} border rounded-xl p-4`}>
               <p className={`text-sm ${c.accentLightText}`}>
                 <span>🧠</span> You were <span className="font-bold">{anxietyBefore}/10</span> anxious about {firstEventLabel}. How did that compare to what actually happened?
               </p>
             </div>
-          )}
-
-          {/* Generate debrief */}
-          {!debriefData && (
-            <button onClick={handleDebrief} disabled={loading || (!debriefUsedTime && !debriefReality)}
-              className={`w-full py-4 rounded-xl font-bold text-lg ${c.btnPrimary} disabled:opacity-40 transition-all`}>
-              {loading ? <span><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> Reflecting...</span> : <span><span>🔍</span> Get My Debrief</span>}
-            </button>
-          )}
-
-          {/* Debrief results */}
-          {debriefData && (
-            <div className="space-y-4">
-              <div ref={resultsRef} />
+          )} {/* Generate debrief */} {!debriefData && (<button onClick={handleDebrief} disabled={loading || (!debriefUsedTime && !debriefReality)} className={`w-full py-4 rounded-xl font-bold text-lg ${c.btnPrimary} disabled:opacity-40 transition-all`}>
+              {loading ? <span><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> Reflecting...</span> : <span><span>🔍</span> Get My Debrief</span>} </button>
+          )} {/* Debrief results */} {debriefData && (<div className="space-y-4">
+              <div ref={resultsRef} data-results-anchor />
               <ActionBar
-                copyContent={buildDebriefText()}
-                copyLabel="Copy Debrief"
-                printContent={buildDebriefText()}
-                printTitle="Waiting Mode Debrief"
+               content={buildDebriefText()} copyLabel="Copy Debrief"
               />
-              {/* Time reflection */}
-              {debriefData.time_reflection && (
-                <div className={`${c.accentLight} border rounded-xl p-5`}>
+              {/* Time reflection */} {debriefData.time_reflection && (<div className={`${c.accentLight} border rounded-xl p-5`}>
                   <p className={`text-sm ${c.accentLightText}`}><span>⏱️</span> {debriefData.time_reflection}</p>
                 </div>
-              )}
-
-              {/* Anxiety reality check */}
-              {debriefData.anxiety_check && (
-                <div className={`${c.card} border rounded-xl p-5 space-y-3`}>
+              )} {/* Anxiety reality check */} {debriefData.anxiety_check && (<div className={`${c.card} border rounded-xl p-5 space-y-3`}>
                   <h3 className={`text-sm font-bold ${c.text}`}><span>🧠</span> Anxiety vs. Reality</h3>
                   <div className="flex items-center justify-center gap-6">
                     <div className="text-center">
@@ -1255,72 +987,44 @@ const WaitingModeLiberator = ({ tool }) => {
                       <p className={`text-[10px] ${c.textMuted} uppercase`}>What happened</p>
                     </div>
                   </div>
-                  {debriefData.anxiety_check.reality_assessment && (
-                    <p className={`text-sm ${c.textSecondary} text-center`}>{debriefData.anxiety_check.reality_assessment}</p>
-                  )}
-                  {debriefData.anxiety_check.trend && (
-                    <div className={`${c.warning} border rounded-lg p-3`}>
+                  {debriefData.anxiety_check.reality_assessment && (<p className={`text-sm ${c.textSecondary} text-center`}>{debriefData.anxiety_check.reality_assessment}</p>
+                  )} {debriefData.anxiety_check.trend && (<div className={`${c.warning} border rounded-lg p-3`}>
                       <p className={`text-xs font-medium ${c.warning}`}>📊 Trend: {debriefData.anxiety_check.trend}</p>
                     </div>
-                  )}
-                  {debriefData.anxiety_check.insight && (
-                    <p className={`text-sm font-medium ${c.text} text-center italic`}>💡 {debriefData.anxiety_check.insight}</p>
-                  )}
-                </div>
-              )}
-
-              {/* Takeaway */}
-              {debriefData.takeaway && (
-                <div className={`${c.card} border rounded-xl p-4`}>
+                  )} {debriefData.anxiety_check.insight && (<p className={`text-sm font-medium ${c.text} text-center italic`}>💡 {debriefData.anxiety_check.insight}</p>
+                  )} </div>
+              )} {/* Takeaway */} {debriefData.takeaway && (<div className={`${c.card} border rounded-xl p-4`}>
                   <p className={`text-sm ${c.text}`}><span>🎯</span> Next time: {debriefData.takeaway}</p>
                 </div>
-              )}
-
-              {/* Encouragement */}
-              {debriefData.encouragement && (
-                <div className={`${c.success} border rounded-xl p-4`}>
+              )} {/* Encouragement */} {debriefData.encouragement && (<div className={`${c.success} border rounded-xl p-4`}>
                   <p className={`text-sm ${c.accentTxt}`}><span>💚</span> {debriefData.encouragement}</p>
                 </div>
-              )}
-
-              {/* Save */}
-              <button onClick={saveSession} className={`w-full py-4 rounded-xl font-bold text-lg ${c.btnPrimary}`}>
+              )} {/* Save */} <button onClick={saveSession} className={`w-full py-4 rounded-xl font-bold text-lg ${c.btnPrimary}`}>
                 <span>💾</span> Save Session
               </button>
               <button
-                onClick={resetAndGoBack}
-                className={`w-full py-2.5 rounded-xl text-sm font-medium ${c.btnSecondary}`}
-              >
+                onClick={resetAndGoBack} className={`w-full py-2.5 rounded-xl text-sm font-medium ${c.btnSecondary}`} >
                 ↩ Start Over
               </button>
             </div>
-          )}
-
-          {/* Skip debrief */}
-          {!debriefData && (
-            <button onClick={saveSession} className={`w-full py-2 rounded-lg text-xs ${c.textMuted} underline`}>
+          )} {/* Skip debrief */} {!debriefData && (<button onClick={saveSession} className={`w-full py-2 rounded-lg text-xs ${c.textMuted} underline`}>
               Skip debrief and save
             </button>
-          )}
-        </div>
+          )} </div>
       </div>
     );
-  }
-
-  // ══════════════════════════════════════════════════
+  } // ══════════════════════════════════════════════════
   // RENDER: INSIGHTS
   // ══════════════════════════════════════════════════
   if (view === 'insights') {
-    return (
-      <div className={`min-h-screen ${c.cardAlt} py-6 px-4`}>
+    return (<div className={`min-h-screen ${c.cardAlt} py-6 px-4`}>
         <div className="max-w-xl mx-auto space-y-5">
           <div className="flex items-center justify-between">
             <h2 className={`text-xl font-bold ${c.text}`}><span>📈</span> Waiting Mode Patterns</h2>
             <button onClick={() => setView('setup')} className={`text-sm px-3 py-1.5 rounded-lg ${c.tag}`}>← Back</button>
           </div>
 
-          {reviewData ? (
-            <>
+          {reviewData ? (<>
               <div className={`${c.card} border rounded-xl p-5`}>
                 <div className="grid grid-cols-2 gap-4 text-center">
                   <div><p className={`text-2xl font-bold ${c.text}`}>{reviewData.total_sessions}</p><p className={`text-xs ${c.textMuted}`}>sessions</p></div>
@@ -1328,78 +1032,41 @@ const WaitingModeLiberator = ({ tool }) => {
                 </div>
               </div>
 
-              {reviewData.trigger_patterns && (
-                <div className={`${c.card} border rounded-xl p-5 space-y-2`}>
+              {reviewData.trigger_patterns && (<div className={`${c.card} border rounded-xl p-5 space-y-2`}>
                   <h3 className={`text-sm font-bold ${c.text} mb-2`}><span>🔍</span> What Triggers You</h3>
-                  {reviewData.trigger_patterns.worst_trigger && <div className={`p-3 rounded-lg ${c.danger} border`}><p className={`text-xs font-medium ${c.danger}`}>Biggest freeze</p><p className={`text-sm ${c.text}`}>{reviewData.trigger_patterns.worst_trigger}</p></div>}
-                  {reviewData.trigger_patterns.easiest && <div className={`p-3 rounded-lg ${c.success} border`}><p className={`text-xs font-medium ${c.accentLightText}`}>Easiest</p><p className={`text-sm ${c.text}`}>{reviewData.trigger_patterns.easiest}</p></div>}
-                  {reviewData.trigger_patterns.observation && <p className={`text-sm ${c.textSecondary} mt-2`}>{reviewData.trigger_patterns.observation}</p>}
-                </div>
-              )}
-
-              {/* Anxiety trends (v4) */}
-              {reviewData.anxiety_trends && (
-                <div className={`${c.accentLight} border rounded-xl p-5 space-y-2`}>
+                  {reviewData.trigger_patterns.worst_trigger && <div className={`p-3 rounded-lg ${c.danger} border`}><p className={`text-xs font-medium ${c.danger}`}>Biggest freeze</p><p className={`text-sm ${c.text}`}>{reviewData.trigger_patterns.worst_trigger}</p></div>} {reviewData.trigger_patterns.easiest && <div className={`p-3 rounded-lg ${c.success} border`}><p className={`text-xs font-medium ${c.accentLightText}`}>Easiest</p><p className={`text-sm ${c.text}`}>{reviewData.trigger_patterns.easiest}</p></div>} {reviewData.trigger_patterns.observation && <p className={`text-sm ${c.textSecondary} mt-2`}>{reviewData.trigger_patterns.observation}</p>} </div>
+              )} {/* Anxiety trends (v4) */} {reviewData.anxiety_trends && (<div className={`${c.accentLight} border rounded-xl p-5 space-y-2`}>
                   <h3 className={`text-sm font-bold ${c.accentLightText} mb-2`}><span>🧠</span> Anxiety vs. Reality</h3>
-                  {reviewData.anxiety_trends.gap && <p className={`text-sm ${c.accentLightText}`}>Gap: {reviewData.anxiety_trends.gap}</p>}
-                  {reviewData.anxiety_trends.insight && <p className={`text-sm font-medium ${c.launchAccent}`}>💡 {reviewData.anxiety_trends.insight}</p>}
-                </div>
-              )}
-
-              {reviewData.time_insights && (
-                <div className={`${c.accentLight} border rounded-xl p-5 space-y-2`}>
+                  {reviewData.anxiety_trends.gap && <p className={`text-sm ${c.accentLightText}`}>Gap: {reviewData.anxiety_trends.gap}</p>} {reviewData.anxiety_trends.insight && <p className={`text-sm font-medium ${c.launchAccent}`}>💡 {reviewData.anxiety_trends.insight}</p>} </div>
+              )} {reviewData.time_insights && (<div className={`${c.accentLight} border rounded-xl p-5 space-y-2`}>
                   <h3 className={`text-sm font-bold ${c.accentLightText} mb-2`}><span>⏱️</span> Time Usage</h3>
-                  {reviewData.time_insights.avg_free_time && <p className={`text-sm ${c.accentLightText}`}>Avg free time: {reviewData.time_insights.avg_free_time}</p>}
-                  {reviewData.time_insights.utilization && <p className={`text-sm ${c.accentLightText}`}>Utilization: {reviewData.time_insights.utilization}</p>}
-                </div>
-              )}
-
-              {reviewData.energy_patterns && (
-                <div className={`${c.card} border rounded-xl p-5 space-y-2`}>
+                  {reviewData.time_insights.avg_free_time && <p className={`text-sm ${c.accentLightText}`}>Avg free time: {reviewData.time_insights.avg_free_time}</p>} {reviewData.time_insights.utilization && <p className={`text-sm ${c.accentLightText}`}>Utilization: {reviewData.time_insights.utilization}</p>} </div>
+              )} {reviewData.energy_patterns && (<div className={`${c.card} border rounded-xl p-5 space-y-2`}>
                   <h3 className={`text-sm font-bold ${c.text} mb-2`}><span>🔋</span> Energy</h3>
-                  {reviewData.energy_patterns.avg_energy && <p className={`text-sm ${c.textSecondary}`}>Typical: {reviewData.energy_patterns.avg_energy}</p>}
-                  {reviewData.energy_patterns.observation && <p className={`text-sm ${c.textSecondary}`}>{reviewData.energy_patterns.observation}</p>}
-                </div>
-              )}
-
-              {reviewData.recommendations?.length > 0 && (
-                <div className={`${c.card} border rounded-xl p-5`}>
+                  {reviewData.energy_patterns.avg_energy && <p className={`text-sm ${c.textSecondary}`}>Typical: {reviewData.energy_patterns.avg_energy}</p>} {reviewData.energy_patterns.observation && <p className={`text-sm ${c.textSecondary}`}>{reviewData.energy_patterns.observation}</p>} </div>
+              )} {reviewData.recommendations?.length > 0 && (<div className={`${c.card} border rounded-xl p-5`}>
                   <h3 className={`text-sm font-bold ${c.text} mb-3`}><span>💡</span> Recommendations</h3>
                   <div className="space-y-3">
-                    {reviewData.recommendations.map((r, i) => (
-                      <div key={i} className={`p-3 rounded-lg ${c.blockBg}`}>
+                    {reviewData.recommendations.map((r, i) => (<div key={i} className={`p-3 rounded-lg ${c.blockBg}`}>
                         <p className={`text-sm font-medium ${c.text}`}>{r.insight}</p>
                         <p className={`text-xs ${c.textSecondary} mt-1`}>→ {r.suggestion}</p>
                       </div>
-                    ))}
-                  </div>
+                    ))} </div>
                 </div>
-              )}
-              {reviewData.encouragement && <div className={`${c.success} border rounded-xl p-4`}><p className={`text-sm ${c.accentTxt}`}><span>💚</span> {reviewData.encouragement}</p></div>}
-            </>
-          ) : (
-            <div className={`${c.card} border rounded-xl p-8 text-center`}><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span><p className={`text-sm ${c.textMuted} mt-2`}>Analyzing patterns...</p></div>
-          )}
-        </div>
+              )} {reviewData.encouragement && <div className={`${c.success} border rounded-xl p-4`}><p className={`text-sm ${c.accentTxt}`}><span>💚</span> {reviewData.encouragement}</p></div>} </>
+          ) : (<div className={`${c.card} border rounded-xl p-8 text-center`}><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span><p className={`text-sm ${c.textMuted} mt-2`}>Analyzing patterns...</p></div>
+          )} </div>
 
-      {/* eslint-disable-next-line no-restricted-globals */}
-      {history.length > 0 && (
-        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
+      {/* eslint-disable-next-line no-restricted-globals */} {history.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
           <p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 Recent sessions</p>
           <div className="space-y-1">
-            {/* eslint-disable-next-line no-restricted-globals */}
-
-            {history.map(s => (
-              <div key={s.id} className="flex items-center justify-between">
+            {/* eslint-disable-next-line no-restricted-globals */} {history.map(s => (<div key={s.id} className="flex items-center justify-between">
                 <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || 'Session'}</span>
                 <span className={`text-xs ${c.textMuted} ml-2`}>{new Date(s.date).toLocaleDateString()}</span>
               </div>
-            ))}
-          </div>
+            ))} </div>
         </div>
-      )}
-      {/* Related tools */}
-      <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-2`}>
+      )} {/* Related tools */} <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-2`}>
         <p className={`text-xs font-bold ${c.textMuted} mb-2`}>🔗 Related tools</p>
         <div className="flex flex-wrap gap-3">
           <a href="/TaskAvalancheBreaker" className={`text-xs ${linkStyle}`}>⚡ Task Avalanche Breaker</a>
@@ -1408,9 +1075,7 @@ const WaitingModeLiberator = ({ tool }) => {
       </div>
       </div>
     );
-  }
-
-  return null;
+  } return null;
 };
 
 WaitingModeLiberator.displayName = 'WaitingModeLiberator';

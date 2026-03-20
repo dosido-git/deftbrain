@@ -81,8 +81,7 @@ const WhereDidTheTimeGo = ({ tool }) => {
       }, ...prev].slice(0, 6));
     } catch (err) {
       setError(err.message || 'Failed to analyze time.');
-    }
-  }, [dayDescription, perceivedBreakdown, timeframe, callToolEndpoint, setResults, setHistory]);
+    } }, [dayDescription, perceivedBreakdown, timeframe, callToolEndpoint, setResults, setHistory]);
 
   const handleReset = () => {
     setDayDescription('');
@@ -100,8 +99,7 @@ const WhereDidTheTimeGo = ({ tool }) => {
         // Cmd/Ctrl+Enter fires regardless of which element has focus
         if (!loading) handleSubmit();
         return;
-      }
-      // Plain Enter: only fire outside text fields
+      } // Plain Enter: only fire outside text fields
       const tag = document.activeElement?.tagName;
       if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
       if (!loading) handleSubmit();
@@ -114,8 +112,7 @@ const WhereDidTheTimeGo = ({ tool }) => {
   useEffect(() => {
     if (results && resultsRef.current) {
       setTimeout(() => resultsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' }), 250);
-    }
-  }, [results]);
+    } }, [results]);
 
   // ─── Build copy text ───
   const buildFullText = useCallback(() => {
@@ -132,157 +129,97 @@ const WhereDidTheTimeGo = ({ tool }) => {
         t += `  You think: ${a.perceived_time} → Likely: ${a.likely_actual_time}\n`;
         t += `  Hidden: ${a.hidden_overhead}\n\n`;
       });
-    }
-
-    if (r.the_invisible_hours?.where_it_went?.length) {
+    } if (r.the_invisible_hours?.where_it_went?.length) {
       t += `━━ THE INVISIBLE HOURS (~${r.the_invisible_hours.total_unaccounted}) ━━\n\n`;
       r.the_invisible_hours.where_it_went.forEach(h => {
         t += `${h.category} (~${h.estimated_time})\n`;
         t += `  ${h.why_you_didnt_see_it}\n\n`;
       });
-    }
-
-    if (r.the_perception_gap) {
+    } if (r.the_perception_gap) {
       t += `━━ THE BIGGEST GAP ━━\n${r.the_perception_gap.biggest_gap}\n`;
       t += `${r.the_perception_gap.why_this_is_normal}\n\n`;
-    }
-
-    if (r.the_one_thing) {
+    } if (r.the_one_thing) {
       t += `━━ THE ONE THING ━━\n${r.the_one_thing.change}\n`;
       t += `${r.the_one_thing.why_it_works}\n`;
       t += `Time reclaimed: ${r.the_one_thing.time_reclaimed}\n\n`;
-    }
-
-    if (r.honest_capacity) t += `━━ HONEST CAPACITY ━━\n${r.honest_capacity}\n\n`;
+    } if (r.honest_capacity) t += `━━ HONEST CAPACITY ━━\n${r.honest_capacity}\n\n`;
 
     t += BRAND;
     return t;
   }, [results, timeframe]);
 
   // ─── Render ───
-  return (
-    <div className={`space-y-4 ${c.text}`}>
+  return (<div className={`space-y-4 ${c.text}`}>
 
-        {/* Input */}
-        {!results && (
-          <div className={`${c.card} ${c.border} border rounded-2xl p-6 shadow-sm space-y-5`}>
+        {/* Input */} {!results && (<div className={`${c.card} ${c.border} border rounded-2xl p-6 shadow-sm space-y-5`}>
 
-            {/* Header */}
-            <div className={`mb-4 pb-3 border-b ${c.border}`}>
+            {/* Header */} <div className={`mb-4 pb-3 border-b ${c.border}`}>
               <h2 className={`text-xl font-bold ${c.text}`}><span className="mr-2">{tool?.icon}</span>{tool?.title}</h2>
               <p className={`text-sm ${c.textSecondary} mt-1`}>{tool?.tagline}</p>
             </div>
 
-            {/* Timeframe */}
-            <div className="space-y-2">
+            {/* Timeframe */} <div className="space-y-2">
               <label className={`text-sm font-semibold ${c.text}`}>Timeframe</label>
               <div className="flex gap-2">
-                {TIMEFRAME_OPTIONS.map(t => (
-                  <button
-                    key={t.id}
-                    onClick={() => setTimeframe(t.id)}
-                    className={`flex-1 ${timeframe === t.id ? c.pillActive : c.pillInactive} border rounded-xl py-2 text-sm font-medium text-center transition-all duration-150`}
-                  >
-                    {t.label}
-                  </button>
-                ))}
-              </div>
+                {TIMEFRAME_OPTIONS.map(t => (<button
+                    key={t.id} onClick={() => setTimeframe(t.id)} className={`flex-1 ${timeframe === t.id ? c.pillActive : c.pillInactive} border rounded-xl py-2 text-sm font-medium text-center transition-all duration-150`} >
+                    {t.label} </button>
+                ))} </div>
             </div>
 
-            {/* Day description */}
-            <div className="space-y-2">
+            {/* Day description */} <div className="space-y-2">
               <label className={`text-sm font-semibold ${c.text}`}>
                 <span className="mr-1.5">📋</span> What did you do {timeframe}?
               </label>
               <textarea
-                value={dayDescription}
-                onChange={(e) => setDayDescription(e.target.value)}
-                placeholder={"Describe your day as you remember it — meetings, tasks, breaks, whatever comes to mind.\n\ne.g. Had a team standup at 9, then worked on the presentation until lunch. Afternoon was mostly emails and a 1-on-1 with my manager. Tried to write the report but kept getting pulled into Slack..."}
-                rows={5}
-                maxLength={1000}
-                className={`w-full px-4 py-3 rounded-xl text-sm ${c.input} ${c.border} border ${c.text} resize-none outline-none transition-colors`}
-              />
+                value={dayDescription} onChange={(e) => setDayDescription(e.target.value)} placeholder={"Describe your day as you remember it — meetings, tasks, breaks, whatever comes to mind.\n\ne.g. Had a team standup at 9, then worked on the presentation until lunch. Afternoon was mostly emails and a 1-on-1 with my manager. Tried to write the report but kept getting pulled into Slack..."} rows={5} maxLength={1000} className={`w-full px-4 py-3 rounded-xl text-sm ${c.input} ${c.border} border ${c.text} resize-none outline-none transition-colors`} />
             </div>
 
-            {/* Perceived breakdown */}
-            <div className="space-y-2">
+            {/* Perceived breakdown */} <div className="space-y-2">
               <label className={`text-sm font-semibold ${c.text}`}>
                 <span className="mr-1.5">🤔</span> Where do you <em>think</em> time went? <span className={`font-normal ${c.textMuted}`}>(optional — makes the gap analysis much better)</span>
               </label>
               <textarea
-                value={perceivedBreakdown}
-                onChange={(e) => setPerceivedBreakdown(e.target.value)}
-                placeholder="e.g. Maybe 4 hours of real work, 2 hours of meetings, 1 hour of email, 1 hour of lunch..."
-                rows={2}
-                maxLength={400}
-                className={`w-full px-4 py-3 rounded-xl text-sm ${c.input} ${c.border} border ${c.text} resize-none outline-none transition-colors`}
-              />
+                value={perceivedBreakdown} onChange={(e) => setPerceivedBreakdown(e.target.value)} placeholder="e.g. Maybe 4 hours of real work, 2 hours of meetings, 1 hour of email, 1 hour of lunch..."
+                rows={2} maxLength={400} className={`w-full px-4 py-3 rounded-xl text-sm ${c.input} ${c.border} border ${c.text} resize-none outline-none transition-colors`} />
             </div>
 
-            {/* Submit */}
-            <button
-              onClick={handleSubmit}
-              disabled={loading || !dayDescription.trim()}
-              className={`w-full ${c.btnPrimary} py-3 rounded-xl font-semibold text-sm shadow-md
-                disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-2`}
-            >
-              {loading ? (
-                <>
+            {/* Submit */} <button
+              onClick={handleSubmit} disabled={loading || !dayDescription.trim()} className={`w-full ${c.btnPrimary} py-3 rounded-xl font-semibold text-sm shadow-md
+                disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-2`} >
+              {loading ? (<>
                   <span className="inline-block animate-spin">{tool?.icon ?? '🕰️'}</span>
                   Tracing the hours...
                 </>
-              ) : (
-                <>
+              ) : (<>
                   <span>{tool?.icon ?? '🕰️'}</span> Where did the time go?
                 </>
-              )}
-            </button>
+              )} </button>
           </div>
-        )}
-
-        {/* Error */}
-        {error && (
-          <div className={`${c.danger} border rounded-xl p-4 text-sm flex items-center gap-2`}>
-            <span>⚠️</span> {error}
-          </div>
-        )}
-
-        {/* Results */}
-        {results && (
-          <div ref={resultsRef} className="space-y-5">
+        )} {/* Error */} {error && (<div className={`${c.danger} border rounded-xl p-4 text-sm flex items-center gap-2`}>
+            <span>⚠️</span> {error} </div>
+        )} {/* Results */} {results && (<div ref={resultsRef} data-results-anchor className="space-y-5">
             <ActionBar
-              content={buildFullText()}
-              title="Where Did the Time Go?"
+             content={buildFullText()} title="Where Did the Time Go?"
             />
 
-            {/* Validation first */}
-            {results.what_you_actually_did && (
-              <div className={`${c.card} ${c.success} border border-l-4 rounded-2xl p-5`}>
+            {/* Validation first */} {results.what_you_actually_did && (<div className={`${c.card} ${c.success} border border-l-4 rounded-2xl p-5`}>
                 <p className={`text-xs font-semibold uppercase tracking-wider mb-2 flex items-center gap-1.5`}>
                   <span>✅</span> What you actually did
                 </p>
                 <p className={`text-sm ${c.text} leading-relaxed`}>
-                  {results.what_you_actually_did}
-                </p>
+                  {results.what_you_actually_did} </p>
               </div>
-            )}
-
-            {/* The visible day */}
-            {results.the_visible_day?.activities?.length > 0 && (
-              <div className={`${c.card} ${c.border} border rounded-2xl p-5`}>
+            )} {/* The visible day */} {results.the_visible_day?.activities?.length > 0 && (<div className={`${c.card} ${c.border} border rounded-2xl p-5`}>
                 <div className="flex items-center justify-between mb-4">
                   <h3 className={`font-bold ${c.text} flex items-center gap-2`}>
                     <span>📊</span> The Visible Day
                   </h3>
-                  {results.the_visible_day.total_hours_described && (
-                    <span className={`text-xs font-bold ${c.goldText} px-2 py-1 rounded-lg ${c.goldBg}`}>
-                      ~{results.the_visible_day.total_hours_described}
-                    </span>
-                  )}
-                </div>
+                  {results.the_visible_day.total_hours_described && (<span className={`text-xs font-bold ${c.goldText} px-2 py-1 rounded-lg ${c.goldBg}`}>
+                      ~{results.the_visible_day.total_hours_described} </span>
+                  )} </div>
                 <div className="space-y-3">
-                  {results.the_visible_day.activities.map((a, i) => (
-                    <div key={i} className={`${c.cardAlt} ${c.border} border rounded-xl p-4`}>
+                  {results.the_visible_day.activities.map((a, i) => (<div key={i} className={`${c.cardAlt} ${c.border} border rounded-xl p-4`}>
                       <p className={`text-sm font-semibold ${c.text} mb-2`}>{a.activity}</p>
                       <div className="flex items-center gap-3 mb-2">
                         <div className="flex items-center gap-1.5">
@@ -296,112 +233,65 @@ const WhereDidTheTimeGo = ({ tool }) => {
                         </div>
                       </div>
                       <p className={`text-xs ${c.textMuted} italic`}>
-                        <span className="mr-1">👻</span> {a.hidden_overhead}
-                      </p>
+                        <span className="mr-1">👻</span> {a.hidden_overhead} </p>
                     </div>
-                  ))}
-                </div>
+                  ))} </div>
               </div>
-            )}
-
-            {/* The invisible hours */}
-            {results.the_invisible_hours?.where_it_went?.length > 0 && (
-              <div>
-                {!showInvisible ? (
-                  <button
-                    onClick={() => setShowInvisible(true)}
-                    className={`w-full ${c.btnSecondary} py-3 rounded-xl text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2`}
-                  >
+            )} {/* The invisible hours */} {results.the_invisible_hours?.where_it_went?.length > 0 && (<div>
+                {!showInvisible ? (<button
+                    onClick={() => setShowInvisible(true)} className={`w-full ${c.btnSecondary} py-3 rounded-xl text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2`} >
                     <span>👻</span> Show the invisible hours
-                    {results.the_invisible_hours.total_unaccounted && (
-                      <span className={`text-xs ${c.textMuted}`}>(~{results.the_invisible_hours.total_unaccounted})</span>
-                    )}
-                  </button>
-                ) : (
-                  <div className={`${c.panelStrong} border ${c.panelStrongBorder} rounded-2xl p-5`}>
+                    {results.the_invisible_hours.total_unaccounted && (<span className={`text-xs ${c.textMuted}`}>(~{results.the_invisible_hours.total_unaccounted})</span>
+                    )} </button>
+                ) : (<div className={`${c.panelStrong} border ${c.panelStrongBorder} rounded-2xl p-5`}>
                     <div className="flex items-center justify-between mb-4">
                       <p className={`text-xs font-semibold uppercase tracking-wider ${c.textSecondary} flex items-center gap-1.5`}>
                         <span>👻</span> The invisible hours
                       </p>
-                      {results.the_invisible_hours.total_unaccounted && (
-                        <span className={`text-xs font-bold ${c.textSecondary}`}>
-                          ~{results.the_invisible_hours.total_unaccounted}
-                        </span>
-                      )}
-                    </div>
+                      {results.the_invisible_hours.total_unaccounted && (<span className={`text-xs font-bold ${c.textSecondary}`}>
+                          ~{results.the_invisible_hours.total_unaccounted} </span>
+                      )} </div>
                     <div className="space-y-3">
-                      {results.the_invisible_hours.where_it_went.map((h, i) => (
-                        <div key={i} className={`${c.card} rounded-xl p-4`}>
+                      {results.the_invisible_hours.where_it_went.map((h, i) => (<div key={i} className={`${c.card} rounded-xl p-4`}>
                           <div className="flex items-center justify-between mb-1">
                             <p className={`text-sm font-semibold ${c.text}`}>{h.category}</p>
                             <span className={`text-xs font-bold ${c.goldText}`}>~{h.estimated_time}</span>
                           </div>
                           <p className={`text-xs ${c.textMuted} leading-relaxed`}>{h.why_you_didnt_see_it}</p>
                         </div>
-                      ))}
-                    </div>
+                      ))} </div>
                   </div>
-                )}
-              </div>
-            )}
-
-            {/* The perception gap */}
-            {results.the_perception_gap && (
-              <div className={`${c.panelTint} border ${c.panelTintBorder} rounded-2xl p-5`}>
+                )} </div>
+            )} {/* The perception gap */} {results.the_perception_gap && (<div className={`${c.panelTint} border ${c.panelTintBorder} rounded-2xl p-5`}>
                 <p className={`text-xs font-semibold uppercase tracking-wider ${c.goldText} mb-2 flex items-center gap-1.5`}>
                   <span>🔍</span> The biggest gap
                 </p>
                 <p className={`text-sm font-medium ${c.text} leading-relaxed mb-2`}>
-                  {results.the_perception_gap.biggest_gap}
-                </p>
+                  {results.the_perception_gap.biggest_gap} </p>
                 <p className={`text-xs ${c.textMuted} italic`}>
-                  {results.the_perception_gap.why_this_is_normal}
-                </p>
+                  {results.the_perception_gap.why_this_is_normal} </p>
               </div>
-            )}
-
-            {/* The one thing — Gold AI insight panel */}
-            {results.the_one_thing && (
-              <div className={`${c.panelInsight} border ${c.panelInsightBorder} rounded-2xl p-6`}>
+            )} {/* The one thing — Gold AI insight panel */} {results.the_one_thing && (<div className={`${c.panelInsight} border ${c.panelInsightBorder} rounded-2xl p-6`}>
                 <p className={`text-xs font-semibold uppercase tracking-wider ${c.accentTxt} mb-3 text-center`}>
                   The one thing that would actually help
                 </p>
                 <p className={`text-base font-bold ${c.text} text-center leading-relaxed mb-3`}>
-                  {results.the_one_thing.change}
-                </p>
+                  {results.the_one_thing.change} </p>
                 <p className={`text-sm ${c.textSecondary} text-center mb-2`}>
-                  {results.the_one_thing.why_it_works}
-                </p>
-                {results.the_one_thing.time_reclaimed && (
-                  <p className={`text-xs font-semibold ${c.goldText} text-center`}>
-                    ⏱️ Potential time reclaimed: {results.the_one_thing.time_reclaimed}
-                  </p>
-                )}
-              </div>
-            )}
-
-            {/* Honest capacity */}
-            {results.honest_capacity && (
-              <div className={`${c.cardAlt} ${c.border} border rounded-xl p-4 text-center`}>
+                  {results.the_one_thing.why_it_works} </p>
+                {results.the_one_thing.time_reclaimed && (<p className={`text-xs font-semibold ${c.goldText} text-center`}>
+                    ⏱️ Potential time reclaimed: {results.the_one_thing.time_reclaimed} </p>
+                )} </div>
+            )} {/* Honest capacity */} {results.honest_capacity && (<div className={`${c.cardAlt} ${c.border} border rounded-xl p-4 text-center`}>
                 <p className={`text-xs font-semibold uppercase tracking-wider ${c.textMuted} mb-2`}>Honest capacity</p>
                 <p className={`text-sm ${c.text} leading-relaxed italic max-w-md mx-auto`}>
-                  {results.honest_capacity}
-                </p>
+                  {results.honest_capacity} </p>
               </div>
-            )}
+            )} {/* Reset */} <button
+              onClick={handleReset} className={`w-full ${c.btnSecondary} py-3 rounded-xl text-sm font-medium transition-colors flex items-center justify-center gap-2`} >
+              <span>🔄</span> Analyze another {timeframe === 'today' ? 'day' : 'period'} </button>
 
-
-
-            {/* Reset */}
-            <button
-              onClick={handleReset}
-              className={`w-full ${c.btnSecondary} py-3 rounded-xl text-sm font-medium transition-colors flex items-center justify-center gap-2`}
-            >
-              <span>🔄</span> Analyze another {timeframe === 'today' ? 'day' : 'period'}
-            </button>
-
-            {/* Cross-references — results */}
-            <div className={`${c.cardAlt} ${c.border} border rounded-xl p-4 space-y-2`}>
+            {/* Cross-references — results */} <div className={`${c.cardAlt} ${c.border} border rounded-xl p-4 space-y-2`}>
               <p className={`text-xs font-semibold ${c.textMuted} uppercase tracking-wider`}>
                 Related tools
               </p>
@@ -410,39 +300,24 @@ const WhereDidTheTimeGo = ({ tool }) => {
                   { id: 'CrashPredictor', icon: '📉', label: 'Check your burnout risk' },
                   { id: 'ContrastReport', icon: '🔮', label: 'Compare two paths' },
                   { id: 'MirrorTest',     icon: '🪞', label: 'Test what you believe' },
-                ].map(ref => (
-                  <a
-                    key={ref.id}
-                    href={`/tool/${ref.id}`}
-                    target="_blank"
+                ].map(ref => (<a
+                    key={ref.id} href={`/tool/${ref.id}`} target="_blank"
                     rel="noopener noreferrer"
-                    className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs transition-colors flex items-center gap-1.5`}
-                  >
-                    <span>{ref.icon}</span> {ref.label}
-                  </a>
-                ))}
-              </div>
+                    className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs transition-colors flex items-center gap-1.5`} >
+                    <span>{ref.icon}</span> {ref.label} </a>
+                ))} </div>
             </div>
           </div>
-        )}
-
-        {/* History */}
-        {history.length > 0 && (
-          <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+        )} {/* History */} {history.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
             <p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 Recent sessions</p>
             <div className="space-y-1">
-              {history.map(s => (
-                <div key={s.id} className="flex items-center justify-between">
+              {history.map(s => (<div key={s.id} className="flex items-center justify-between">
                   <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || 'Session'}</span>
                   <span className={`text-xs ${c.textMuted} ml-2`}>{new Date(s.date).toLocaleDateString()}</span>
                 </div>
-              ))}
-            </div>
+              ))} </div>
           </div>
-        )}
-
-        {/* Related tools */}
-        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+        )} {/* Related tools */} <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
           <p className={`text-xs font-bold ${c.textMuted} mb-2`}>🔗 Related tools</p>
           <div className="flex flex-wrap gap-3">
             <a href="/tool/FocusPocus" className={`text-xs ${linkStyle}`}>🎯 Focus Pocus</a>

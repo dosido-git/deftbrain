@@ -178,8 +178,8 @@ const TruthBomb = ({ tool }) => {
       {/* Results */}
       {results && (
         <div className="space-y-4">
-          <div ref={resultsRef} />
-          <ActionBar content={buildText()} copyLabel="Copy All" printContent={buildText()} printTitle="Truth Bomb" />
+          <div ref={resultsRef} data-results-anchor />
+          <ActionBar content={buildText()} resultsRef={resultsRef} copyLabel="Copy All" />
 
           {/* What it's really about */}
           {results.the_thing_examined && (

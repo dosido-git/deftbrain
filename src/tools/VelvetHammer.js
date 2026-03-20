@@ -84,8 +84,7 @@ const VelvetHammer = ({ tool }) => {
       }, ...prev].slice(0, 6));
     } catch (err) {
       setError(err.message || 'Failed to transform. Try again.');
-    }
-  };
+    } };
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
@@ -122,124 +121,80 @@ const VelvetHammer = ({ tool }) => {
     return isDark ? 'bg-red-900/20 border-red-700' : 'bg-red-50 border-red-200';
   };
 
-  return (
-    <div className="max-w-xl mx-auto space-y-5">
+  return (<div className="max-w-xl mx-auto space-y-5">
 
-      {/* Header */}
+      {/* Header */} {/* Input card */} <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
 
-
-      {/* Input card */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
-
-        {/* Header inside card */}
-        <div className={`flex items-center justify-between pb-3 border-b ${c.border}`}>
+        {/* Header inside card */} <div className={`flex items-center justify-between pb-3 border-b ${c.border}`}>
           <div>
             <h2 className={`text-2xl font-bold ${c.text}`}>
-              <span className="mr-2">{tool?.icon ?? '🔨'}</span>{tool?.title ?? 'Velvet Hammer'}
-            </h2>
+              <span className="mr-2">{tool?.icon ?? '🔨'}</span>{tool?.title ?? 'Velvet Hammer'} </h2>
             <p className={`text-sm ${c.textSecondary} mt-0.5`}>{tool?.tagline ?? 'Transform furious drafts into professional messages'}</p>
           </div>
-          {history.length > 0 && (
-            <button onClick={() => setShowHistory(!showHistory)}
-              className={`text-xs font-bold px-3 py-1.5 rounded-lg ${c.btnSecondary} shrink-0`}>
-              📋 {history.length}
-            </button>
-          )}
-        </div>
+          {history.length > 0 && (<button onClick={() => setShowHistory(!showHistory)} className={`text-xs font-bold px-3 py-1.5 rounded-lg ${c.btnSecondary} shrink-0`}>
+              📋 {history.length} </button>
+          )} </div>
 
-        {/* History panel */}
-        {showHistory && history.length > 0 && (
-          <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 space-y-2`}>
+        {/* History panel */} {showHistory && history.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 space-y-2`}>
             <p className={`text-xs font-bold ${c.textMuted} mb-1`}>Recent transforms</p>
-            {history.map(h => (
-              <div key={h.id} className={`flex items-center justify-between text-xs ${c.textSecondary}`}>
+            {history.map(h => (<div key={h.id} className={`flex items-center justify-between text-xs ${c.textSecondary}`}>
                 <span className="truncate">{h.preview}</span>
                 <span className={`ml-2 shrink-0 ${c.textMuted}`}>{new Date(h.date).toLocaleDateString()}</span>
               </div>
-            ))}
-          </div>
-        )}
-
-        {/* Rage box */}
-        <div>
+            ))} </div>
+        )} {/* Rage box */} <div>
           <label className={`text-sm font-semibold ${c.text} block mb-2`}>
             🤬 What you <em>want</em> to say
           </label>
           <p className={`text-xs ${c.textMuted} mb-2`}>Don't hold back. Vent it out. This stays private.</p>
           <textarea
-            value={draft}
-            onChange={e => setDraft(e.target.value)}
-            placeholder="You absolute moron, I cannot believe you did this AGAIN…"
-            rows={5}
-            className={`w-full p-3 border rounded-lg text-sm resize-none outline-none focus:ring-2 transition-colors ${c.input} ${c.rageBg}`}
-          />
+            value={draft} onChange={e => setDraft(e.target.value)} placeholder="You absolute moron, I cannot believe you did this AGAIN…"
+            rows={5} className={`w-full p-3 border rounded-lg text-sm resize-none outline-none focus:ring-2 transition-colors ${c.input} ${c.rageBg}`} />
         </div>
 
-        {/* Context row */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        {/* Context row */} <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
             <label className={`text-xs font-semibold ${c.labelText} block mb-1.5`}>Recipient</label>
-            <select value={relationship} onChange={e => setRelationship(e.target.value)}
-              className={`w-full p-2.5 border rounded-lg text-sm outline-none ${c.input}`}>
-              {RELATIONSHIPS.map(r => <option key={r.value} value={r.value}>{r.label}</option>)}
-            </select>
+            <select value={relationship} onChange={e => setRelationship(e.target.value)} className={`w-full p-2.5 border rounded-lg text-sm outline-none ${c.input}`}>
+              {RELATIONSHIPS.map(r => <option key={r.value} value={r.value}>{r.label}</option>)} </select>
           </div>
           <div>
             <label className={`text-xs font-semibold ${c.labelText} block mb-1.5`}>Goal</label>
-            <select value={goal} onChange={e => setGoal(e.target.value)}
-              className={`w-full p-2.5 border rounded-lg text-sm outline-none ${c.input}`}>
-              {GOALS.map(g => <option key={g.value} value={g.value}>{g.label}</option>)}
-            </select>
+            <select value={goal} onChange={e => setGoal(e.target.value)} className={`w-full p-2.5 border rounded-lg text-sm outline-none ${c.input}`}>
+              {GOALS.map(g => <option key={g.value} value={g.value}>{g.label}</option>)} </select>
           </div>
           <div>
             <label className={`text-xs font-semibold ${c.labelText} block mb-1.5`}>Power dynamic</label>
-            <select value={power} onChange={e => setPower(e.target.value)}
-              className={`w-full p-2.5 border rounded-lg text-sm outline-none ${c.input}`}>
-              {POWER.map(p => <option key={p.value} value={p.value}>{p.label}</option>)}
-            </select>
+            <select value={power} onChange={e => setPower(e.target.value)} className={`w-full p-2.5 border rounded-lg text-sm outline-none ${c.input}`}>
+              {POWER.map(p => <option key={p.value} value={p.value}>{p.label}</option>)} </select>
           </div>
         </div>
 
         <button
-          onClick={handleTransform}
-          disabled={loading || !draft.trim()}
-          className={`w-full py-3 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all disabled:opacity-40 ${c.btnPrimary}`}>
+          onClick={handleTransform} disabled={loading || !draft.trim()} className={`w-full py-3 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all disabled:opacity-40 ${c.btnPrimary}`}>
           {loading
             ? <><span className="inline-block animate-spin">{tool?.icon ?? '🔨'}</span> Transforming…</>
-            : <><span>{tool?.icon ?? '🔨'}</span> Transform Message</>}
-        </button>
+            : <><span>{tool?.icon ?? '🔨'}</span> Transform Message</>} </button>
         <p className={`text-xs text-center ${c.textMuted}`}>AI-generated — review before sending.</p>
 
-        {error && <div className={`p-3 rounded-lg border text-sm ${c.danger}`}>⚠️ {error}</div>}
-      </div>
+        {error && <div className={`p-3 rounded-lg border text-sm ${c.danger}`}>⚠️ {error}</div>} </div>
 
-      {/* Results */}
-      {results && (
-        <div className="space-y-4">
-          <div ref={resultsRef} />
-          <ActionBar content={buildAllText()} copyLabel="Copy All" printContent={buildAllText()} printTitle="Velvet Hammer Transforms" />
+      {/* Results */} {results && (<div className="space-y-4">
+          <div ref={resultsRef} data-results-anchor />
+          <ActionBar content={buildAllText()} copyLabel="Copy All" />
 
-          {/* Rage audit */}
-          {results.rage_audit && (
-            <div className={`${c.warning} border rounded-xl p-4`}>
+          {/* Rage audit */} {results.rage_audit && (<div className={`${c.warning} border rounded-xl p-4`}>
               <p className={`text-xs font-bold mb-1`}>🔬 Rage audit</p>
               <p className={`text-sm`}>{results.rage_audit}</p>
             </div>
-          )}
-
-          {/* Variants */}
-          {results.variants?.map((variant, i) => (
-            <div key={i} className={`${c.card} border ${c.border} rounded-xl p-5 space-y-3`}>
+          )} {/* Variants */} {results.variants?.map((variant, i) => (<div key={i} className={`${c.card} border ${c.border} rounded-xl p-5 space-y-3`}>
               <div className="flex items-center justify-between">
                 <div>
                   <span className={`text-sm font-bold ${toneColor(variant.tone)}`}>{variant.label}</span>
-                  {variant.when_to_use && (
-                    <p className={`text-xs ${c.textMuted} mt-0.5`}>{variant.when_to_use}</p>
-                  )}
-                </div>
+                  {variant.when_to_use && (<p className={`text-xs ${c.textMuted} mt-0.5`}>{variant.when_to_use}</p>
+                  )} </div>
                 <span className={`text-xs px-2 py-1 rounded-full border font-medium ${toneBg(variant.tone)}`}>
-                  {variant.tone}
-                </span>
+                  {variant.tone} </span>
               </div>
               <div className={`${isDark ? 'bg-zinc-900/50' : 'bg-slate-100'} rounded-lg p-4`}>
                 <p className={`text-sm ${c.text} whitespace-pre-wrap leading-relaxed`}>{variant.message}</p>
@@ -248,10 +203,7 @@ const VelvetHammer = ({ tool }) => {
                 <CopyBtn content={buildCopyText(variant)} label="Copy" />
               </div>
             </div>
-          ))}
-
-          {/* Cross-tool links */}
-          <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+          ))} {/* Cross-tool links */} <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
             <p className={`text-xs font-bold ${c.textMuted} mb-2`}>🔗 Related tools</p>
             <div className="flex flex-wrap gap-3">
               <a href="/DifficultTalkCoach" className={`text-xs ${linkStyle}`}>💬 Difficult Talk Coach</a>
@@ -260,13 +212,11 @@ const VelvetHammer = ({ tool }) => {
             </div>
           </div>
 
-          <button onClick={handleReset}
-            className={`w-full py-2 rounded-xl text-sm font-semibold ${c.btnSecondary}`}>
+          <button onClick={handleReset} className={`w-full py-2 rounded-xl text-sm font-semibold ${c.btnSecondary}`}>
             🔨 New transform
           </button>
         </div>
-      )}
-    </div>
+      )} </div>
   );
 };
 

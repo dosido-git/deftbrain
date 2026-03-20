@@ -203,8 +203,8 @@ const UpsellShield = ({ tool }) => {
 
       {r && (
         <div className="space-y-4">
-          <div ref={resultsRef} />
-          <ActionBar content={buildFullText()} copyLabel="Copy All" printContent={buildFullText()} printTitle="UpsellShield Defense Plan" />
+          <div ref={resultsRef} data-results-anchor />
+          <ActionBar content={buildFullText()} resultsRef={resultsRef} copyLabel="Copy All" />
 
           {r.situation_read && (
             <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
