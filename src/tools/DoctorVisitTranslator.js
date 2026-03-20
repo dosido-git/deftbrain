@@ -61,8 +61,59 @@ const BiText = ({ text, c }) => {
 };
 
 // ════════════════════════════════════════════════════════════
-// MAIN COMPONENT
+// DIAGRAM GENERATOR
 // ════════════════════════════════════════════════════════════
+function DiagramBtn({ description, diagramType, isDark, c }) {
+  const { callToolEndpoint } = useClaudeAPI();
+  const [state, setState] = useState('idle'); // idle | loading | done | error
+  const [output, setOutput] = useState(null); // { html, type }
+  const [err, setErr] = useState('');
+
+  const generate = async () => {
+    setState('loading');
+    setErr('');
+    try {
+      const data = await callToolEndpoint('generate-diagram', { description, diagramType });
+      if (!data.html) throw new Error('No diagram in response');
+      setOutput(data);
+      setState('done');
+    } catch (e) {
+      console.error('DiagramBtn error:', e);
+      setErr(e.message || 'Could not generate diagram. Try again.');
+      setState('error');
+    }
+  };
+
+  if (state === 'done' && output) {
+    return (
+      <div className="mt-3">
+        <div
+          className={`rounded-lg overflow-hidden border ${isDark ? 'border-zinc-600 bg-zinc-900' : 'border-gray-200 bg-white'} p-2`}
+          dangerouslySetInnerHTML={{ __html: output.html }}
+        />
+        <button onClick={() => { setOutput(null); setState('idle'); }}
+          className={`text-[10px] ${c.textMuted} mt-1 hover:underline`}>↩ Regenerate</button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-2">
+      {state === 'error' && <p className="text-[10px] text-red-500 mb-1">{err}</p>}
+      <button
+        onClick={generate}
+        disabled={state === 'loading'}
+        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-all disabled:opacity-50
+          ${isDark ? 'border-zinc-600 bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'border-gray-300 bg-gray-50 hover:bg-gray-100 text-gray-700'}`}>
+        {state === 'loading'
+          ? <><span className="animate-spin inline-block">🖼️</span> Generating…</>
+          : <><span>🖼️</span> Generate Visual</>}
+      </button>
+    </div>
+  );
+}
+
+
 const DoctorVisitTranslator = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { isDark } = useTheme();
@@ -403,7 +454,10 @@ const DoctorVisitTranslator = ({ tool }) => {
           </div>
 
           <div>
-            <label className={`text-sm font-semibold ${c.textSecondary} block mb-1.5`}>{DOC_TYPES.find(d => d.id === documentType)?.label || 'Notes'} *</label>
+            <label className={`text-sm font-semibold ${c.textSecondary} block mb-1.5`}>
+              {DOC_TYPES.find(d => d.id === documentType)?.label || 'Notes'}
+              {pdfFile ? <span className={`ml-1 text-[10px] font-normal ${c.textMuted}`}>(optional — PDF is the primary source)</span> : <span className="ml-0.5">*</span>}
+            </label>
 
             {/* PDF upload zone */}
             {pdfFile ? (
@@ -554,7 +608,12 @@ const DoctorVisitTranslator = ({ tool }) => {
                 <div key={i} className={`${c.cardAlt} border rounded-lg p-4`}>
                   <h4 className={`font-bold text-sm ${c.text} mb-1`}>{t.term}</h4><p className={`text-sm ${c.textSecondary} mb-2`}>{t.definition}</p>
                   <div className={`${c.highlight} border rounded p-3`}><p className="text-[10px] font-bold mb-0.5">For you:</p><p className="text-xs">{t.what_it_means_for_you}</p></div>
-                  {t.visual_aid_suggestion && <p className={`text-[10px] ${c.textMuted} mt-2`}>🖼️ {t.visual_aid_suggestion}</p>}
+                  {t.visual_aid_suggestion && (
+                    <div className="mt-2">
+                      <p className={`text-[10px] ${c.textMuted}`}>🖼️ {t.visual_aid_suggestion}</p>
+                      <DiagramBtn description={t.visual_aid_suggestion} diagramType="anatomy" isDark={isDark} c={c} />
+                    </div>
+                  )}
                 </div>
               ))}</div>
             </Sec>
@@ -563,8 +622,12 @@ const DoctorVisitTranslator = ({ tool }) => {
           {/* Visual Aids */}
           {results.visual_aids_recommended && (
             <Sec icon="🖼️" title="Visual Aids" open={secs.visualAids} onToggle={() => tog('visualAids')} c={c}>
-              <div className="space-y-3">{[{ k: 'body_diagram_description', l: 'Body', i: '🫀' }, { k: 'treatment_timeline', l: 'Timeline', i: '📅' }, { k: 'medication_schedule', l: 'Schedule', i: '⏰' }, { k: 'test_results_visualization', l: 'Scale', i: '📊' }].map(f => results.visual_aids_recommended[f.k] && (
-                <div key={f.k} className={`${c.cardAlt} border rounded-lg p-4`}><h4 className={`font-semibold text-sm ${c.text} mb-1`}>{f.i} {f.l}</h4><p className={`text-sm ${c.textSecondary}`}>{results.visual_aids_recommended[f.k]}</p></div>
+              <div className="space-y-3">{[{ k: 'body_diagram_description', l: 'Body', i: '🫀', t: 'anatomy' }, { k: 'treatment_timeline', l: 'Timeline', i: '📅', t: 'treatment_timeline' }, { k: 'medication_schedule', l: 'Schedule', i: '⏰', t: 'medication_schedule' }, { k: 'test_results_visualization', l: 'Scale', i: '📊', t: 'test_results_visualization' }].map(f => results.visual_aids_recommended[f.k] && (
+                <div key={f.k} className={`${c.cardAlt} border rounded-lg p-4`}>
+                  <h4 className={`font-semibold text-sm ${c.text} mb-1`}>{f.i} {f.l}</h4>
+                  <p className={`text-sm ${c.textSecondary}`}>{results.visual_aids_recommended[f.k]}</p>
+                  <DiagramBtn description={results.visual_aids_recommended[f.k]} diagramType={f.t} isDark={isDark} c={c} />
+                </div>
               ))}</div>
             </Sec>
           )}

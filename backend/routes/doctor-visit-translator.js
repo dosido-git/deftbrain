@@ -40,11 +40,17 @@ router.post('/doctor-visit-translator', async (req, res) => {
       ? `\n\nBILINGUAL OUTPUT: For the following fields, provide BOTH English AND ${langName[language]} translations. Format each as "English text ||| ${langName[language]} translation":\n- plain_english_summary.diagnosis\n- plain_english_summary.treatment_plan\n- plain_english_summary.prognosis\n- plain_english_summary.timeline\n- Each action in action_checklist (the "action" and "how" fields)\n- Each medication's "purpose" and "how_to_take" fields\n- follow_up_requirements.next_appointment\n- All items in follow_up_requirements.when_to_call_doctor and warning_signs_immediate\n\nKeep all other fields in English only. Use the ||| separator so the app can split and display both languages.`
       : '';
 
-    const notesSection = doctorNotes?.trim()
-      ? `DOCTOR'S NOTES/VISIT SUMMARY:\n${doctorNotes}`
-      : pdfData
-        ? `DOCUMENT SOURCE: PDF uploaded by patient (see attached document)`
-        : '';
+    // Build the notes/document section of the prompt
+    let notesSection = '';
+    if (pdfData && doctorNotes?.trim()) {
+      // Both PDF and notes provided — tell Claude to read both
+      notesSection = `ATTACHED DOCUMENT: A PDF has been uploaded. Read it in full and use its contents as the primary source of medical information to translate.\n\nADDITIONAL CONTEXT FROM PATIENT:\n${doctorNotes}`;
+    } else if (pdfData) {
+      // PDF only — instruct Claude to read it as the sole source
+      notesSection = `ATTACHED DOCUMENT: A PDF has been uploaded (${documentType !== 'visit' ? (docTypeContext[documentType] ? documentType.replace('-', ' ') : 'medical document') : 'medical document'}). Read it in full. Extract and translate ALL medical information it contains — diagnoses, test results, medications, instructions, billing codes, or whatever is present. Do not say the document is unavailable or unreadable; use everything you can see in it.`;
+    } else {
+      notesSection = `DOCTOR'S NOTES/VISIT SUMMARY:\n${doctorNotes}`;
+    }
 
     const prompt = `You are a medical interpreter helping patients understand their doctor visits. Translate medical jargon into clear, understandable language WITHOUT oversimplifying or losing important details.
 
@@ -201,20 +207,21 @@ INSURANCE GUIDANCE:
 
 Return ONLY the JSON object.`;
 
-    // Build message content — include PDF as a document if provided
+    // Build message content — when a PDF is present, send it as a native document
+    // The text prompt comes first so Claude reads the instructions before the document
     const userContent = pdfData
       ? [
+          { type: 'text', text: prompt },
           {
             type: 'document',
             source: { type: 'base64', media_type: 'application/pdf', data: pdfData },
           },
-          { type: 'text', text: prompt },
         ]
       : prompt;
 
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
-      max_tokens: 4500,
+      max_tokens: 5000,
       messages: [{ role: 'user', content: userContent }]
     });
 
@@ -258,5 +265,74 @@ Return ONLY the JSON object.`;
   }
 });
 
+
+// ── Diagram generator ─────────────────────────────────────────────────────────
+router.post('/generate-diagram', async (req, res) => {
+  try {
+    const { description, diagramType } = req.body;
+    if (!description?.trim()) {
+      return res.status(400).json({ error: 'Description is required' });
+    }
+
+    const isDataViz = ['treatment_timeline', 'medication_schedule', 'test_results_visualization'].includes(diagramType);
+
+    const prompt = isDataViz
+      ? `Create a polished HTML visual for a patient based on this description:
+
+"${description}"
+
+Rules:
+- Output ONLY a single self-contained <div> element — no explanation, no markdown, no code fences
+- No <html>, <body>, <head>, or <script> tags. No external resources. Inline styles only.
+- Width 100%, height auto. Clean sans-serif font, 13px base.
+- Color palette: #1565c0 dark blue, #1e88e5 mid blue, #42a5f5 light blue, #43a047 green, #ef5350 red, #ffb74d amber, #546e7a gray, #37474f dark text, #eceff1 very light bg, white
+- For timelines: a vertical timeline — large numbered circles (32px, filled #1e88e5, white number) connected by a 2px #90caf9 line, each step has a bold title and 1-2 lines of description. Good whitespace.
+- For medication schedules: a styled table or card grid grouped by time of day. Each row has a time label badge on the left and medication name(s) on the right. Use light color backgrounds per row.
+- For test result scales: a horizontal gradient bar (green→amber→red) 400px wide, with a triangle marker showing patient value, numeric ticks below, "Normal range" bracketed, and a clear "Your result" callout above the marker.
+- Every element must be clearly readable by a non-medical patient.
+- Start your response with <div and end with </div>`
+
+      : `Create a detailed, realistic SVG medical illustration for a patient based on this description:
+
+"${description}"
+
+Requirements:
+- Output ONLY the raw SVG — nothing else, no explanation, no markdown, no code fences
+- Start with <svg and end with </svg>
+- viewBox="0 0 520 340" width="100%" height="auto"
+- Define a <defs> block with linearGradient elements for 3D shading on anatomical structures
+- Anatomical accuracy: draw structures with realistic proportions and curvature using <path> elements with bezier curves, not just rectangles/circles
+- Shading: use gradients on every filled structure to give a 3D/rounded appearance. Bones should look cylindrical, muscles should look rounded and fleshy.
+- Injury/problem areas: use a dashed red ellipse outline with a semi-transparent red fill (#ef535033) to highlight damage. Add small jagged lines inside to suggest tissue disruption.
+- Labels: use leader lines (thin 1px #546e7a lines from structure to label text). Labels must NOT overlap structures. Place labels in clear space. Use font-weight="600" for structure names.
+- Color palette: #cfd8dc/#b0bec5 bone with gradient shading, #a5d6a7/#66bb6a muscle/tendon green with gradient, #ef5350 injury red, #1e88e5/#42a5f5 joint/fluid blue, #ffcc80 cartilage amber, #37474f dark text, #546e7a secondary text
+- Title: include a <text> element at top-left, font-size="13" font-weight="700" fill="#37474f" with a short descriptive title
+- All styles inline — no CSS classes, no <style> blocks
+- Every structure named in the description must be drawn and labeled
+- The illustration should look like something from a patient-education brochure, not a programmer's sketch`;
+
+    const message = await anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 3500,
+      messages: [{ role: 'user', content: prompt }],
+    });
+
+    const text = message.content[0]?.text?.trim() || '';
+
+    if (isDataViz) {
+      const match = text.match(/<div[\s\S]*<\/div>/i);
+      if (!match) throw new Error('Model did not return a <div> element');
+      res.json({ html: match[0], type: 'html' });
+    } else {
+      const match = text.match(/<svg[\s\S]*<\/svg>/i);
+      if (!match) throw new Error('Model did not return an <svg> element');
+      res.json({ html: match[0], type: 'svg' });
+    }
+
+  } catch (error) {
+    console.error('Diagram generation error:', error);
+    res.status(500).json({ error: 'Failed to generate diagram', details: error.message });
+  }
+});
 
 module.exports = router;
