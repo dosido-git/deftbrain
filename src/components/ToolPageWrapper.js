@@ -13,7 +13,46 @@ const ToolPageWrapper = ({ children, tool, toolId }) => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [location.pathname]);
-  
+
+  // Inject @media print into <head> — works for both system Cmd+P and the DeftBrain button
+  useEffect(() => {
+    const id = 'db-wrapper-print-css';
+    if (document.getElementById(id)) return;
+    const s = document.createElement('style');
+    s.id = id;
+    s.textContent = `
+      [data-print-show-flex] { display: none; }
+      @media print {
+        /* Hide chrome */
+        [data-print-hide] { display: none !important; }
+        /* Show print-only branding */
+        [data-print-show-flex] { display: flex !important; }
+        /* Collapse sidebar grid to single column */
+        [data-print-grid] { display: block !important; }
+        [data-print-main] { grid-column: 1 / -1 !important; max-width: 100% !important; }
+        /* White page background — works for both light and dark mode */
+        html, body { background: white !important; background-color: white !important; }
+        /* The outer wrapper (min-h-screen bg-zinc-900 in dark mode) */
+        [data-print-wrapper] { background: white !important; background-color: white !important; }
+        /* THE KEY FIX: the tool card section and its immediate child (the p-8 gradient div).
+           In dark mode these are bg-zinc-800 / transparent-over-zinc-800.
+           Setting them white removes the black gaps between content cards. */
+        [data-print-section],
+        [data-print-section] > div {
+          background: white !important;
+          background-color: white !important;
+          overflow: visible !important;
+          border: none !important;
+          box-shadow: none !important;
+          border-radius: 0 !important;
+        }
+        /* Suppress transitions during print capture */
+        * { transition: none !important; animation: none !important; }
+      }
+    `;
+    document.head.appendChild(s);
+  }, []);
+
   // Auto-detect tool in priority order:
   let detectedTool = tool;
   
@@ -112,58 +151,7 @@ const ToolPageWrapper = ({ children, tool, toolId }) => {
   };
 
   return (
-    <div data-print-shell className={`min-h-screen ${colors.bg} ${colors.text} font-sans transition-colors duration-200`}>
-
-      <style>{`
-        @media print {
-          /* 1. Explicitly white on all layout shell elements — no print-color-adjust here
-                so the browser doesn't "helpfully" preserve the dark theme colors */
-          html,
-          body,
-          [data-print-shell] {
-            background: white !important;
-            background-color: white !important;
-            color: #1a1a1a !important;
-          }
-
-          /* 2. Opt-in to exact color rendering ONLY inside the tool card content
-                so panel colours (amber, green, blue etc.) print correctly */
-          [data-print-card],
-          [data-print-card] * {
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-          }
-
-          /* 3. Hide chrome */
-          [data-print-hide] {
-            display: none !important;
-          }
-
-          /* 4. Main content full width */
-          [data-print-main] {
-            grid-column: 1 / -1 !important;
-            width: 100% !important;
-          }
-
-          /* 5. Collapse the grid */
-          [data-print-grid] {
-            display: block !important;
-            padding: 0 !important;
-            max-width: 100% !important;
-          }
-
-          /* 6. Clean up tool card wrapper chrome */
-          [data-print-card] {
-            border: none !important;
-            border-radius: 0 !important;
-            padding: 0 !important;
-            box-shadow: none !important;
-          }
-
-          @page { margin: 1.5cm 2cm; }
-          body { font-size: 12pt !important; }
-        }
-      `}</style>
+    <div data-print-wrapper className={`min-h-screen ${colors.bg} ${colors.text} font-sans transition-colors duration-200`}>
       
       {/* ── Compact Logo Bar ── */}
       <div data-print-hide className={`w-full px-3 sm:px-6 py-4 ${colors.bg} sticky top-0 z-20 border-b ${colors.border}`}>
@@ -188,12 +176,15 @@ const ToolPageWrapper = ({ children, tool, toolId }) => {
         </div>
       </div>
 
-      <div data-print-shell data-print-grid className="max-w-7xl mx-auto px-4 pb-8 pt-0 grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div data-print-grid className="max-w-7xl mx-auto px-4 pb-8 pt-0 grid grid-cols-1 lg:grid-cols-12 gap-8">
         
         {/* Main Content Area */}
-        <main data-print-shell data-print-main className="lg:col-span-8">
+        <main data-print-main className="lg:col-span-8">
+
+          {/* Print-only header */}
+          <div data-print-show-flex style={{display:'none',alignItems:'center',gap:'10px',paddingBottom:'14px',marginBottom:'16px',borderBottom:'2px solid #e5e7eb'}}><div><div style={{fontFamily:'Georgia,serif',fontSize:'20px',fontWeight:'bold',color:'#1a1a1a'}}><span style={{color:'#c8872e'}}>D</span>eftBrain</div><div style={{fontSize:'11px',color:'#6b7280'}}>Intelligence on Demand · deftbrain.com</div></div></div>
           {/* ── Header ── */}
-          <header data-print-hide className={`${colors.bg} pb-2 space-y-2`}>
+          <header className={`${colors.bg} pb-2 space-y-2`}>
             <div className={`flex items-center gap-3 ${colors.accent} mb-2 pt-4`}>
               <span className={`text-[10px] font-medium uppercase tracking-widest border ${colors.accentBorder} px-3 py-1 rounded-full`}>
                 {detectedTool?.categories?.[0] || 'General'}
@@ -242,13 +233,15 @@ const ToolPageWrapper = ({ children, tool, toolId }) => {
             </button>
           </div>
 
-          <section data-print-card className={`${colors.surface} border ${colors.border} rounded-2xl shadow-sm overflow-hidden transition-colors duration-200`}>
+          <section data-print-section className={`${colors.surface} border ${colors.border} rounded-2xl shadow-sm overflow-hidden transition-colors duration-200`}>
             <div className="p-8" style={detectedTool?.headerColor ? {
               background: `linear-gradient(to bottom, ${detectedTool.headerColor} 0%, ${detectedTool.headerColor} 120px, transparent 260px)`
             } : {}}>
               {children}
             </div>
           </section>
+          {/* Print-only footer */}
+          <div data-print-show-flex style={{display:'none',justifyContent:'center',paddingTop:'10px',marginTop:'20px',borderTop:'1px solid #e5e7eb'}}><span style={{fontFamily:'Georgia,serif',fontSize:'12px',color:'#9ca3af'}}><span style={{color:'#c8872e',fontWeight:'bold'}}>D</span>eftBrain · deftbrain.com</span></div>
         </main>
 
         {/* Right Column: Ad Panel + Guide Sidebar */}

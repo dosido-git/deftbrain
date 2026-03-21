@@ -87,12 +87,17 @@ function DiagramBtn({ description, diagramType, isDark, c }) {
   if (state === 'done' && output) {
     return (
       <div className="mt-3">
-        <div
-          className={`rounded-lg overflow-hidden border ${isDark ? 'border-zinc-600 bg-zinc-900' : 'border-gray-200 bg-white'} p-2`}
-          dangerouslySetInnerHTML={{ __html: output.html }}
-        />
-        <button onClick={() => { setOutput(null); setState('idle'); }}
-          className={`text-[10px] ${c.textMuted} mt-1 hover:underline`}>↩ Regenerate</button>
+        <div className={`rounded-lg overflow-hidden border ${isDark ? 'border-zinc-600 bg-zinc-900' : 'border-gray-200 bg-white'} p-2 relative`}>
+          <button
+            onClick={() => { setOutput(null); setState('idle'); }}
+            title="Close"
+            className={`absolute top-1.5 right-1.5 w-5 h-5 flex items-center justify-center rounded text-xs leading-none
+              ${isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-300' : 'bg-gray-100 hover:bg-gray-200 text-gray-500'}`}>
+            ✕
+          </button>
+          <div dangerouslySetInnerHTML={{ __html: output.html }} />
+        </div>
+        <button onClick={generate} className={`text-[10px] ${c.textMuted} mt-1 hover:underline`}>↩ Regenerate</button>
       </div>
     );
   }
@@ -166,6 +171,7 @@ const DoctorVisitTranslator = ({ tool }) => {
     secondOpinion: false, advocacy: false, insurance: false, tips: false, comparison: false,
   });
   const tog = (k) => setSecs(p => ({ ...p, [k]: !p[k] }));
+  const [saved, setSaved] = useState(false);
 
   // PERSISTENT STORES
   const [history, setHistory] = usePersistentState('doctor-visit-history', []);
@@ -536,7 +542,11 @@ const DoctorVisitTranslator = ({ tool }) => {
         <div ref={resultsRef} className="space-y-4">
           <div className="flex items-center justify-between flex-wrap gap-2">
             <div className="flex flex-wrap gap-2">
-              <button onClick={saveToHistory} className={`${c.btnSecondary} py-2 px-4 rounded-lg text-sm font-semibold`}>💾 Save</button>
+              <button
+                onClick={() => { saveToHistory(); setSaved(true); setTimeout(() => setSaved(false), 2500); }}
+                className={`${saved ? c.success : c.btnSecondary} py-2 px-4 rounded-lg text-sm font-semibold border transition-colors`}>
+                {saved ? '✅ Saved to History' : '💾 Save to History'}
+              </button>
               <button onClick={handleReset} className={`${c.btnSecondary} py-2 px-3 rounded-lg text-sm`}>✨ New</button>
             </div>
             <ActionBar content={buildFullExport()} title="Doctor Visit Translation" />
