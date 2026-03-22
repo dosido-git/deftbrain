@@ -119,7 +119,7 @@ app.use('/api', (req, res, next) => {
 app.use((req, res, next) => {
   // Only apply to non-API, non-static asset paths
   if (req.path.startsWith('/api') || req.path.includes('.')) return next();
-  const slug = req.path.slice(1); // strip leading /
+  const slug = req.path.slice(1).replace(/\/$/, ''); // strip leading / and trailing /
   if (!slug) return next();       // skip homepage
   const canonical = toolIdMap[slug.toLowerCase()];
   if (canonical && canonical !== slug) {
