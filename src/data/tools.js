@@ -4578,18 +4578,37 @@ export const tools = [
       ]
     }
 },
-
 {
   modified: "",
   id: 'MoneyMoves',
   title: 'Money Moves',
-  tagline: "What’s the money situation? I’ll tell you what to do.",
+  tagline: "What's the money situation? I'll tell you what to do.",
   tags: ['money', 'social', 'bills', 'finances', 'awkward', 'salary', 'budget'],
   icon: '💸',
   categories: ['Loot', 'Humans'],
   headerColor: "#c0d8b8",
-  description: 'Handles social money awkwardness — split bills, can’t afford invitations, salary questions, bill triage, and money talks with partners or family.',
-  guide: { overview: '', howToUse: [], tips: [] }
+  description: 'Handles social money awkwardness — split bills, can\'t afford invitations, salary questions, bill triage, and money talks with partners or family.',
+  guide: {
+    overview: "Money Moves is your advisor for the money situations nobody teaches you how to handle. When someone asks what you make, when you can\'t afford the group trip, when a friend owes you money and it\'s getting weird — Money Moves gives you the exact words and the strategy. Covers 6 core situations: social affordability, bill splits, salary questions, money talks with partners, asking for money back, and emergency bill triage. No judgment, just practical guidance.",
+    howToUse: [
+      "Pick the situation type that matches what you\'re dealing with",
+      "Fill in the specifics — who\'s involved, what the amount is, your relationship to them",
+      "Optionally add context about your comfort level or what you\'ve already tried",
+      "Get a tailored script, strategy, and fallback options",
+      "Copy the script directly or adapt it to your voice"
+    ],
+    example: {
+      scenario: "Your friend group is planning a destination bachelorette weekend that costs $800. You genuinely can\'t afford it but you don\'t want to lie or make it awkward.",
+      action: "Select \'Can\'t afford the invite\', enter the situation details and your relationship to the group.",
+      result: "You get a warm, honest opt-out script that doesn\'t over-explain or apologize, a counter-offer for a local celebration you can actually attend, and a note on timing — when to send it so it doesn\'t derail planning."
+    },
+    tips: [
+      "The salary question situation is one of the most searched — use it before interviews, not just after someone asks",
+      "For partner money talks, add as much context as you can — the more it knows about the dynamic, the more useful the script",
+      "Bill triage mode works best when you list everything you owe — prioritization only works with the full picture",
+      "If the first script feels too formal or too casual, say so — describe your voice and it adjusts"
+    ]
+  }
 },
 
 {
@@ -4602,20 +4621,60 @@ export const tools = [
   categories: ['Energy', 'Me'],
   headerColor: "#b8dcd8",
   description: 'Pre-game toolkit for interviews, presentations, hard conversations, dates, and medical appointments. Breaks down fear, builds a prep plan, and has an SOS mode for live panic.',
-  guide: { overview: '', howToUse: [], tips: [] }
+  guide: {
+    overview: "Nerve Check is a pre-event confidence builder for any high-stakes moment. It works in two modes: Prep (before the event) and SOS (during live panic). In Prep mode, you describe what you\'re facing and get a fear breakdown — what\'s a real risk vs. what your brain is inflating — plus a custom preparation plan, a confidence anchor, and a \'worst case + survive it\' walkthrough. SOS mode is for when you\'re already in it: a 60-second reset sequence calibrated to your situation.",
+    howToUse: [
+      "Choose Prep mode for advance preparation (day before, morning of) or SOS mode if you need help right now",
+      "Describe the event: what it is, who\'s involved, what outcome you need",
+      "Add what specifically scares you — the more honest, the better the breakdown",
+      "In Prep mode: review your fear analysis, prep plan, and confidence anchor",
+      "In SOS mode: follow the real-time reset sequence step by step"
+    ],
+    example: {
+      scenario: "You have a panel interview at a company you really want. You bombed an interview six months ago and now your confidence is shot.",
+      action: "Select Interview, describe the role and format, add \'I bombed my last interview and I\'m scared of freezing up again\'.",
+      result: "Fear breakdown shows the freeze fear is based on a single data point, not a pattern. Prep plan covers the three most common panel questions for your field, how to pause gracefully when you need a moment, and a physical warm-up for the morning. Confidence anchor is a specific moment from your past work history the AI surfaces from your description."
+    },
+    tips: [
+      "The fear breakdown is the most valuable part — read it carefully. Most fears are real but inflated, and seeing that in writing changes your relationship to them",
+      "SOS mode works best if you\'ve done Prep mode first — it references your anchor",
+      "For medical appointments, add your specific concern (getting bad news, not being heard) — generic prep misses the point",
+      "Run Prep mode 24 hours before, not 5 minutes before — give yourself time to actually absorb the plan"
+    ]
+  }
 },
 
 {
   modified: "",
   id: 'RechargeRadar',
   title: 'Recharge Radar',
-  tagline: 'Predict when you’ll need alone time this week.',
+  tagline: 'Predict when you\'ll need alone time this week.',
   tags: ['energy', 'introvert', 'social', 'recharge', 'schedule', 'alone time', 'burnout'],
   icon: '🔋',
   categories: ['Humans', 'Energy'],
   headerColor: "#e0b8b8",
   description: 'Social energy forecaster. Input your weekly events, get an energy cost breakdown, forecast your lowest battery point, and triage recommendations for what to skip, shorten, or modify.',
-  guide: { overview: '', howToUse: [], tips: [] }
+  guide: {
+    overview: "Recharge Radar treats your social energy like a battery with a real charge level. Enter your week\'s events — work meetings, social plans, obligations, commutes — and it calculates the energy cost of each one, forecasts your lowest point, identifies the day you\'re most likely to hit empty, and recommends what to protect, shorten, skip, or reorder. It also spots recovery windows you might not have noticed and flags if you\'re heading into a deficit with no planned recharge.",
+    howToUse: [
+      "List your events for the week — include work obligations, social plans, travel, and any event you\'re dreading",
+      "Rate your starting energy level and flag which events feel draining vs. energizing",
+      "Optionally note any recovery time already built in (solo mornings, quiet evenings)",
+      "Review the energy forecast — your predicted low point, highest-drain day, and deficit risk",
+      "Apply the triage recommendations: what to cut, shorten, move, or protect"
+    ],
+    example: {
+      scenario: "You have a full work week, a friend\'s birthday dinner Wednesday, a family lunch Saturday, and a work happy hour Friday. You\'re already tired.",
+      action: "Enter all five categories of events, set starting energy to \'low\', flag the happy hour as optional.",
+      result: "Forecast shows you hit near-empty Friday afternoon before the happy hour. Radar recommends: protect Thursday evening as a recovery window, shorten Saturday lunch if possible (or leave early), skip or do a 30-minute appearance at the happy hour instead of 2 hours. Wednesday dinner is flagged as energizing because it\'s a close friend — keep it."
+    },
+    tips: [
+      "Be honest about your starting energy — the forecast is only as accurate as your input",
+      "Commutes count. A 45-minute packed subway ride before a big event is energy cost, not free time",
+      "Energizing events are real — a coffee with someone you love can offset a draining meeting if you sequence them right",
+      "Run Radar on Sunday evening as a weekly ritual — catching a deficit before it hits is much better than recovering from burnout"
+    ]
+  }
 },
 {
   id: "SubscriptionGuiltTrip",
@@ -4627,7 +4686,6 @@ export const tools = [
   
   guide: {
     overview: "Subscriptions accumulate because canceling feels wasteful ('I might use it later') or difficult (retention tactics). This tool calculates actual usage cost, identifies which to cancel, and provides exact scripts to overcome guilt trips from retention agents. Math-based, no shame.",
-    
     howToUse: [
       "List all subscriptions with monthly cost and actual usage",
       "Get cost-per-use analysis (brutal honesty)",
@@ -4636,7 +4694,6 @@ export const tools = [
       "Learn cancellation difficulty (easy/medium/hard)",
       "Get permission statements to cancel without guilt"
     ],
-    
     example: {
       scenario: "Subscriptions: Gym ($60/month, use 1x/month), Netflix ($15, watch 5hrs/month), Spotify ($10, use daily), Adobe ($20, haven't used in 3 months), Meal kit ($120, use 2x/month).",
       action: "Input all subscriptions with usage.",
@@ -4650,7 +4707,6 @@ export const tools = [
       "Retention agents are trained to guilt trip - stick to the script",
       "Some subscriptions are worth it even if expensive - this tool identifies which"
     ],
-    
     pitfalls: [
       "Don't keep subscriptions because you 'should' use them - you won't start suddenly",
       "Don't fall for 'pause for 3 months' retention offers unless you'll actually resume",
