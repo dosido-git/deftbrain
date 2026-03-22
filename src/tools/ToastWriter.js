@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { CopyBtn, ActionBar } from '../components/ActionButtons';
+import { CopyBtn } from '../components/ActionButtons';
+import { useRegisterActions } from '../components/ActionBarContext';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useTheme } from '../hooks/useTheme';
@@ -37,10 +38,6 @@ const ToastWriter = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { isDark } = useTheme();
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
-
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
@@ -58,6 +55,10 @@ const ToastWriter = ({ tool }) => {
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
     badge:         isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-100 text-cyan-800',
   };
+
+  const linkStyle = isDark
+    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
+    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
 
   // ─── State ───
   const [person, setPerson] = usePersistentState('toastwriter-person', '');
@@ -96,7 +97,6 @@ const ToastWriter = ({ tool }) => {
         preview: (person.trim() + ' — ' + occasion).slice(0, 40),
         result: data,
       }, ...prev].slice(0, 6));
-      setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
     } catch (err) {
       setError(err.message || 'Failed to write toast.');
     } }, [person, occasion, relationship, stories, tone, duration, avoid, callToolEndpoint, setError, setResults, setHistory]);
@@ -125,12 +125,22 @@ const ToastWriter = ({ tool }) => {
     return text + BRAND;
   }, [results, occasion, person]);
 
+  // ─── Register export content ───
+  useRegisterActions(results ? buildFullText() : '', tool?.title);
+
+  // ─── Scroll to results ───
+  useEffect(() => {
+    if (!results) return;
+    const t = setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+    return () => clearTimeout(t);
+  }, [results]);
+
   // Global Cmd/Ctrl+Enter listener
   useEffect(() => {
     const handler = (e) => {
       if (e.key !== 'Enter' || !(e.metaKey || e.ctrlKey)) return;
       const tag = document.activeElement?.tagName;
-      if (tag === 'TEXTAREA') return;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
       if (!person.trim() || !occasion || loading) return;
       e.preventDefault();
       generate();
@@ -227,6 +237,9 @@ const ToastWriter = ({ tool }) => {
         </div>
 
         {/* Actions */} <p className={`text-xs ${c.textMuted} mb-2`}>AI-generated — review and personalise before delivery.</p>
+        <p className={`text-xs ${c.textMuted} mb-3`}>
+          Nervous about delivering it? <a href="/MagicMouth" className={linkStyle}>MagicMouth</a> helps you rehearse.
+        </p>
         <div className="flex gap-3">
           <button
             onClick={generate} disabled={loading || !person.trim() || !occasion} className={`flex-1 ${c.btnPrimary} disabled:opacity-40 disabled:cursor-not-allowed font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-2 min-h-[48px] shadow-lg`} >
@@ -245,8 +258,6 @@ const ToastWriter = ({ tool }) => {
         </div>
       )} {/* ══════════════════════════════════════════════════════════ */} {/* RESULTS                                                  */} {/* ══════════════════════════════════════════════════════════ */} {r && (<div className="space-y-4">
           <div ref={resultsRef} data-results-anchor />
-          <ActionBar content={buildFullText()} title="ToastWriter Speech" copyLabel="Copy All" />
-
           {/* ── OCCASION READ ── */} {r.occasion_read && (<div className={`${c.card} border ${c.border} rounded-xl p-5`}>
               <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{r.occasion_read}</p>
             </div>
@@ -310,7 +321,6 @@ const ToastWriter = ({ tool }) => {
             <div className="flex flex-wrap gap-3">
               <a href="/VelvetHammer" className={`text-xs ${linkStyle}`}>🔨 Velvet Hammer — say hard things gently</a>
               {occasion === 'roast' && (<a href="/RoastMe" className={`text-xs ${linkStyle}`}>🔥 Roast Me — more roast material</a>
-              )} {(occasion === 'wedding' || occasion === 'farewell') && (<a href="/MagicMouth" className={`text-xs ${linkStyle}`}>🎤 MagicMouth — rehearse the delivery</a>
               )} </div>
           </div>
         </div>

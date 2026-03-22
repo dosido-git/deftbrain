@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { ActionBar } from '../components/ActionButtons';
+import { useRegisterActions } from '../components/ActionBarContext';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useTheme } from '../hooks/useTheme';
@@ -28,10 +28,6 @@ const ToolFinder = ({ tool }) => {
   const { isDark } = useTheme();
 
   // ─── Navy & Gold palette ───
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
-
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
@@ -49,6 +45,10 @@ const ToolFinder = ({ tool }) => {
     badge:         isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-100 text-cyan-800',
     cardHover:     isDark ? 'group-hover:border-cyan-600' : 'group-hover:border-cyan-400',
   };
+
+  const linkStyle = isDark
+    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
+    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
 
   // ─── State ───
   const [problem, setProblem] = usePersistentState('toolfinder-problem', '');
@@ -71,7 +71,6 @@ const ToolFinder = ({ tool }) => {
         preview: query.trim().slice(0, 40),
         result: data,
       }, ...prev].slice(0, 6));
-      setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
     } catch (err) {
       setError(err.message || 'Something went wrong. Try again.');
     } }, [problem, callToolEndpoint, setError, setResults, setHistory]);
@@ -99,6 +98,16 @@ const ToolFinder = ({ tool }) => {
       });
     } if (results.workflow) text += `\n\nWorkflow: ${results.workflow}`;
     return text + BRAND;
+  }, [results]);
+
+  // ─── Register export content ───
+  useRegisterActions(results ? buildFullText() : '', tool?.title);
+
+  // ─── Scroll to results ───
+  useEffect(() => {
+    if (!results) return;
+    const t = setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+    return () => clearTimeout(t);
   }, [results]);
 
   // Global Cmd/Ctrl+Enter listener — after all handlers to avoid TDZ
@@ -154,6 +163,9 @@ const ToolFinder = ({ tool }) => {
               New Search
             </button>
           )} </div>
+        <p className={`text-xs text-center ${c.textMuted} mt-2`}>
+          Not sure what you need? <a href="/SkillGapMap" className={linkStyle}>Skill Gap Map</a> helps if it's a career question.
+        </p>
       </div>
 
       {/* Error */} {error && (<div className={`${c.danger} border rounded-xl p-4 flex items-start gap-3`}>
@@ -162,8 +174,6 @@ const ToolFinder = ({ tool }) => {
         </div>
       )} {/* ══════════════════════════════════════════════════════════ */} {/* RESULTS                                                  */} {/* ══════════════════════════════════════════════════════════ */} {r && (<div className="space-y-4">
           <div ref={resultsRef} data-results-anchor />
-          <ActionBar content={buildFullText()} copyLabel="Copy All" />
-
           {/* ── UNDERSTANDING ── */} {r.understanding && (<div className={`${c.card} border ${c.border} rounded-xl p-5`}>
               <p className={`text-sm ${c.textSecondary} leading-relaxed`}>
                 <span className={`font-bold ${c.text}`}>I hear you: </span>
@@ -242,7 +252,7 @@ const ToolFinder = ({ tool }) => {
       )} {/* Always-on related tools */} <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
         <p className={`text-xs font-bold ${c.textMuted} mb-2`}>🔗 Related tools</p>
         <div className="flex flex-wrap gap-3">
-          <a href="/SkillGapMap" className={`text-xs ${linkStyle}`}>🗺️ Skill Gap Map</a>
+          <a href="/DecisionCoach" className={`text-xs ${linkStyle}`}>🤔 Decision Coach</a>
           <a href="/OnePercenter" className={`text-xs ${linkStyle}`}>💡 One Percenter</a>
         </div>
       </div>

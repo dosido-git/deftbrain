@@ -39,6 +39,29 @@ if (IS_PRODUCTION) {
   });
 }
 
+// ── Tool ID map (used by renamed, legacy, and case-insensitive redirects) ──
+const fs = require('fs');
+const toolIdMap = {};
+try {
+  const buildDir = path.join(__dirname, '..', 'build');
+  if (fs.existsSync(buildDir)) {
+    fs.readdirSync(buildDir, { withFileTypes: true })
+      .filter(d => d.isDirectory() && !d.name.startsWith('.'))
+      .forEach(d => { toolIdMap[d.name.toLowerCase()] = d.name; });
+    console.log(`Tool ID map loaded from build/: ${Object.keys(toolIdMap).length} tools`);
+  } else {
+    const toolsContent = fs.readFileSync(path.join(__dirname, '..', 'src', 'data', 'tools.js'), 'utf8');
+    const idRegex = /\bid:\s*['"]([^'"]*)['"]/g;
+    let m;
+    while ((m = idRegex.exec(toolsContent)) !== null) {
+      if (m[1]) toolIdMap[m[1].toLowerCase()] = m[1];
+    }
+    console.log(`Tool ID map loaded from tools.js: ${Object.keys(toolIdMap).length} tools`);
+  }
+} catch (e) {
+  console.warn('Could not load tool ID map:', e.message);
+}
+
 // ── Renamed tool redirects (301 permanent — preserves SEO equity) ──
 // Keys are lowercase for case-insensitive matching.
 // Add future renames here: '/oldtoolname': '/NewToolName'
@@ -92,31 +115,7 @@ app.use('/api', (req, res, next) => {
 });
 
 // ── Case-insensitive tool route redirect ──
-// Reads canonical IDs from prerendered build/ subdirectories in production
-// (src/ is not deployed to Railway). Falls back to parsing tools.js in dev.
 // Redirects /namestorm → /NameStorm, /plantrescue → /PlantRescue, etc.
-const fs = require('fs');
-const toolIdMap = {};
-try {
-  const buildDir = path.join(__dirname, '..', 'build');
-  if (fs.existsSync(buildDir)) {
-    fs.readdirSync(buildDir, { withFileTypes: true })
-      .filter(d => d.isDirectory() && !d.name.startsWith('.'))
-      .forEach(d => { toolIdMap[d.name.toLowerCase()] = d.name; });
-    console.log(`Tool ID map loaded from build/: ${Object.keys(toolIdMap).length} tools`);
-  } else {
-    const toolsContent = fs.readFileSync(path.join(__dirname, '..', 'src', 'data', 'tools.js'), 'utf8');
-    const idRegex = /\bid:\s*['"]([^'"]*)['"]/g;
-    let m;
-    while ((m = idRegex.exec(toolsContent)) !== null) {
-      if (m[1]) toolIdMap[m[1].toLowerCase()] = m[1];
-    }
-    console.log(`Tool ID map loaded from tools.js: ${Object.keys(toolIdMap).length} tools`);
-  }
-} catch (e) {
-  console.warn('Could not load tool ID map:', e.message);
-}
-
 app.use((req, res, next) => {
   // Only apply to non-API, non-static asset paths
   if (req.path.startsWith('/api') || req.path.includes('.')) return next();
