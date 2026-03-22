@@ -40,12 +40,35 @@ if (IS_PRODUCTION) {
 }
 
 // ── Renamed tool redirects (301 permanent — preserves SEO equity) ──
+// Keys are lowercase for case-insensitive matching.
+// Add future renames here: '/oldtoolname': '/NewToolName'
 const RENAMED_TOOLS = {
-  '/WhatIfMachine': '/WhatIf',
+  '/whatifmachine':         '/WhatIf',
+  '/plothole':              '/PlotTwist',
+  '/roommatecourtroom':     '/RoommateCourt',
+  '/fridgealchemy':         '/MiseEnPlace',
+  '/foodswap':              '/MiseEnPlace',
+  '/pdf-fixer':             '/PlainTalk',
+  '/timevanishingexplainer':'/WhereDidTheTimeGo',
+  '/wherediditgo':          '/WhereDidTheTimeGo',
 };
 app.use((req, res, next) => {
-  const redirect = RENAMED_TOOLS[req.path];
+  const redirect = RENAMED_TOOLS[req.path.toLowerCase()];
   if (redirect) return res.redirect(301, redirect);
+  next();
+});
+
+// ── Legacy /tool/kebab-case → /PascalCase redirect ──
+// Handles old URL format e.g. /tool/renters-deposit-saver → /RentersDepositSaver
+app.use((req, res, next) => {
+  if (!req.path.startsWith('/tool/')) return next();
+  const kebab = req.path.slice(6); // strip '/tool/'
+  const pascal = kebab
+    .split('-')
+    .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+    .join('');
+  const canonical = toolIdMap[pascal.toLowerCase()];
+  if (canonical) return res.redirect(301, `/${canonical}`);
   next();
 });
 

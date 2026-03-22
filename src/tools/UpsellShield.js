@@ -1,5 +1,6 @@
-import React, { useState, useCallback, useRef } from 'react';
-import { CopyBtn, ActionBar } from '../components/ActionButtons';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { CopyBtn } from '../components/ActionButtons';
+import { useRegisterActions } from '../components/ActionBarContext';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useTheme } from '../hooks/useTheme';
@@ -21,10 +22,6 @@ const UpsellShield = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { isDark } = useTheme();
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
-
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
@@ -40,7 +37,14 @@ const UpsellShield = ({ tool }) => {
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
     badge:         isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-100 text-cyan-800',
+    // Tool-specific
+    hookBg:        isDark ? 'bg-cyan-900/30 border-cyan-800' : 'bg-cyan-50 border-cyan-200',
+    hookText:      isDark ? 'text-cyan-200' : 'text-cyan-800',
   };
+
+  const linkStyle = isDark
+    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
+    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
 
   const [situation, setSituation] = usePersistentState('upsellshield-situation', '');
   const [whatYouWant, setWhatYouWant] = useState('');
@@ -58,7 +62,7 @@ const UpsellShield = ({ tool }) => {
   }, []);
 
   // Cmd/Ctrl+Enter submits from anywhere
-  React.useEffect(() => {
+  useEffect(() => {
     const handler = (e) => {
       if (e.key !== 'Enter' || !(e.metaKey || e.ctrlKey)) return;
       const tag = document.activeElement?.tagName;
@@ -120,6 +124,16 @@ const UpsellShield = ({ tool }) => {
     return text + BRAND;
   }, [results, situation]);
 
+  // ─── Register export content (component-level hook) ───
+  useRegisterActions(results ? buildFullText() : '', tool?.title);
+
+  // ─── Scroll to results ───
+  useEffect(() => {
+    if (!results) return;
+    const t = setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+    return () => clearTimeout(t);
+  }, [results]);
+
   const r = results;
 
   return (
@@ -133,11 +147,8 @@ const UpsellShield = ({ tool }) => {
         </div>
 
         {/* Opening hook */}
-        <div className="rounded-xl p-4 mb-4" style={{
-          background: isDark ? 'rgba(8,51,68,0.6)' : '#ecfeff',
-          border: `1px solid ${isDark ? '#164e63' : '#a5f3fc'}`,
-        }}>
-          <p className={`text-sm font-medium ${isDark ? 'text-cyan-200' : 'text-cyan-800'}`}>
+        <div className={`${c.hookBg} border rounded-xl p-4 mb-4`}>
+          <p className={`text-sm font-medium ${c.hookText}`}>
             Sales environments are scripted. The anchoring, the urgency, the manager routine — it's all rehearsed. UpsellShield maps the exact playbook they'll run and puts the counter-moves in your hands before you walk in the door.
           </p>
         </div>
@@ -193,6 +204,9 @@ const UpsellShield = ({ tool }) => {
           {results && <button onClick={handleReset} className={`px-5 py-3 ${c.btnSecondary} rounded-xl font-medium min-h-[48px]`}>New</button>}
         </div>
         <p className={`text-xs text-center ${c.textMuted} mt-1`}>AI-generated — review before using in any negotiation.</p>
+        <p className={`text-xs text-center ${c.textMuted} mt-2`}>
+          Spotted a dodgy review on the way in? <a href="/FakeReviewDetective" className={linkStyle}>Fake Review Detective</a> helps you filter the noise.
+        </p>
       </div>
 
       {error && (
@@ -204,7 +218,6 @@ const UpsellShield = ({ tool }) => {
       {r && (
         <div className="space-y-4">
           <div ref={resultsRef} data-results-anchor />
-          <ActionBar content={buildFullText()} resultsRef={resultsRef} copyLabel="Copy All" />
 
           {r.situation_read && (
             <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
@@ -350,15 +363,7 @@ const UpsellShield = ({ tool }) => {
         </div>
       )}
 
-      {/* Cross-tool links */}
-      <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
-        <p className={`text-xs font-bold ${c.textMuted} mb-2`}>🔗 Related tools</p>
-        <div className="flex flex-wrap gap-3">
-          <a href="/SubscriptionGuiltTrip" className={`text-xs ${linkStyle}`}>💳 Subscription Guilt Trip</a>
-          <a href="/MoneyMoves" className={`text-xs ${linkStyle}`}>💰 Money Moves</a>
-          <a href="/FakeReviewDetective" className={`text-xs ${linkStyle}`}>🔍 Fake Review Detective</a>
-        </div>
-      </div>
+
       {/* Session history */}
       {/* eslint-disable-next-line no-restricted-globals */}
       {history.length > 0 && (

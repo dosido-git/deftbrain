@@ -2,7 +2,8 @@ import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react'
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useTheme } from '../hooks/useTheme';
-import { CopyBtn, ActionBar } from '../components/ActionButtons';
+import { CopyBtn } from '../components/ActionButtons';
+import { useRegisterActions } from '../components/ActionBarContext';
 
 // ════════════════════════════════════════════════════════════
 // CONSTANTS
@@ -149,32 +150,13 @@ const SubSweep = ({ tool }) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [results]);
 
-  useEffect(() => {
-    const handler = (e) => {
-      if (e.key !== 'Enter' || !(e.metaKey || e.ctrlKey)) return;
-      const tag = document.activeElement?.tagName;
-      if (tag === 'INPUT' || tag === 'SELECT') return;
-      if (loading) return;
-      if (view === 'sweep') runAnalysis();
-      else if (view === 'optimize') runOptimize();
-      else if (view === 'negotiate') runNegotiate();
-    };
-    document.addEventListener('keydown', handler);
-    return () => document.removeEventListener('keydown', handler);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loading, view]);
-
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
-
     const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     input: isDark
       ? 'bg-zinc-900 border-zinc-600 text-zinc-50 placeholder:text-zinc-500 focus:border-cyan-500 focus:ring-indigo-500/20'
       : 'bg-white border-slate-300 text-slate-900 placeholder:text-slate-400 focus:border-cyan-500 focus:ring-indigo-100',
     text: isDark ? 'text-zinc-50' : 'text-slate-900',
-    label: isDark ? 'text-zinc-300' : 'text-slate-700',
+    labelText: isDark ? 'text-zinc-300' : 'text-slate-700',
     btnPrimary: isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
     btnDanger: isDark ? 'bg-red-900/30 hover:bg-red-900/50 text-red-300 border-red-700/50' : 'bg-red-50 hover:bg-red-100 text-red-700 border-red-200',
     danger: isDark ? 'bg-red-900/20 border-red-700/50 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
@@ -193,6 +175,10 @@ const SubSweep = ({ tool }) => {
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
   };
+
+  const linkStyle = isDark
+    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
+    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
 
   // ── View ──
   const [view, setView] = useState('sweep');
@@ -552,6 +538,26 @@ const SubSweep = ({ tool }) => {
 
   const isRunning = loading || scanning;
 
+  // ─── Register export content ───
+  useRegisterActions(buildSummaryText(), tool?.title);
+
+  // ─── Global Cmd/Ctrl+Enter — placed after all state/functions to avoid TDZ ───
+  useEffect(() => {
+    const handler = (e) => {
+      if (e.key !== 'Enter' || !(e.metaKey || e.ctrlKey)) return;
+      const tag = document.activeElement?.tagName;
+      if (tag === 'INPUT' || tag === 'SELECT') return;
+      if (loading) return;
+      if (view === 'sweep') runAnalysis();
+      else if (view === 'optimize') runOptimize();
+      else if (view === 'negotiate') runNegotiate();
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading, view]);
+
+
   // ════════════════════════════════════════════════════════════
   // NAV
   // ════════════════════════════════════════════════════════════
@@ -612,14 +618,14 @@ const SubSweep = ({ tool }) => {
         {inputMode === 'scan' && (
           <div className="mb-4 space-y-3">
             <div>
-              <label className={`text-xs font-bold ${c.label} block mb-1.5`}>Paste your bank or credit card statement</label>
+              <label className={`text-xs font-bold ${c.labelText} block mb-1.5`}>Paste your bank or credit card statement</label>
               <textarea value={statementText} onChange={e => setStatementText(e.target.value)}
                 placeholder={"03/01 NETFLIX.COM          15.49\n03/01 SPOTIFY USA           11.99\n03/03 AMZN*Prime            14.99\n..."}
                 className={`w-full p-3 border rounded-lg ${c.input} outline-none focus:ring-2 font-mono text-xs`} rows={6} />
               <p className={`text-[10px] ${c.textMuted} mt-1`}>We never store your data. The AI reads it once to find subscriptions, then forgets it.</p>
             </div>
             <button onClick={scanStatement} disabled={!statementText.trim() || scanning}
-              className={`${c.btnPrimaryPrimary} disabled:opacity-40 font-bold py-2.5 px-5 rounded-lg flex items-center gap-2 text-xs min-h-[40px]`}>
+              className={`${c.btnPrimary} disabled:opacity-40 font-bold py-2.5 px-5 rounded-lg flex items-center gap-2 text-xs min-h-[40px]`}>
               {scanning ? <span className="animate-spin">{tool?.icon ?? '⚙️'}</span> : <span>🔍</span>}
               {scanning ? 'Scanning...' : 'Find Subscriptions'}
             </button>
@@ -632,7 +638,7 @@ const SubSweep = ({ tool }) => {
             {/* Quick add */}
             <div>
               <button onClick={() => setShowQuickAdd(p => !p)}
-                className={`text-xs font-bold ${c.textSecondaryondary} flex items-center gap-1 min-h-[28px]`}>
+                className={`text-xs font-bold ${c.textSecondary} flex items-center gap-1 min-h-[28px]`}>
                 <span>⚡</span> Quick add common services <span>{showQuickAdd ? '▲' : '▼'}</span>
               </button>
               {showQuickAdd && (
@@ -671,7 +677,7 @@ const SubSweep = ({ tool }) => {
                       {USAGE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.emoji} {o.label}</option>)}
                     </select>
                     <button onClick={() => removeSub(sub.id)} disabled={subs.length === 1}
-                      className={`px-2 py-2 rounded-lg ${c.btnPrimaryDanger} border min-h-[36px] text-xs`}>
+                      className={`px-2 py-2 rounded-lg ${c.btnDanger} border min-h-[36px] text-xs`}>
                       🗑️
                     </button>
                   </div>
@@ -694,7 +700,7 @@ const SubSweep = ({ tool }) => {
               ))}
             </div>
 
-            <button onClick={addSub} className={`${c.btnPrimarySecondary} font-bold py-2 px-4 rounded-lg flex items-center gap-1.5 text-xs min-h-[36px]`}>
+            <button onClick={addSub} className={`${c.btnSecondary} font-bold py-2 px-4 rounded-lg flex items-center gap-1.5 text-xs min-h-[36px]`}>
               ➕ Add another
             </button>
           </div>
@@ -703,7 +709,7 @@ const SubSweep = ({ tool }) => {
         {/* Analyze button */}
         <div className="flex gap-3 mt-5">
           <button onClick={runAnalysis} disabled={validSubs.length === 0 || isRunning}
-            className={`flex-1 ${c.btnPrimaryPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+            className={`flex-1 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
             {loading && !scanning ? <><span className="animate-spin">{tool?.icon ?? '⚙️'}</span> Analyzing...</> : <><span className="mr-1">{tool?.icon ?? '✂️'}</span> Analyze My Subscriptions</>}
           </button>
           {results && (
@@ -717,7 +723,6 @@ const SubSweep = ({ tool }) => {
       {/* ── RESULTS ── */}
       {results && (
         <div ref={resultsRef} className="space-y-5">
-          <ActionBar content={buildSummaryText()} title={tool?.title || 'Sub Sweep'} />
           {/* Summary cards */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <div className={`${c.card} border rounded-xl p-4 text-center`}>
@@ -877,7 +882,7 @@ const SubSweep = ({ tool }) => {
                         )}
                         {sub.cancellation_steps && (
                           <div>
-                            <p className={`text-[10px] font-bold ${c.label} uppercase mb-1`}>How to cancel:</p>
+                            <p className={`text-[10px] font-bold ${c.labelText} uppercase mb-1`}>How to cancel:</p>
                             <p className={`text-xs ${c.textMuted} leading-relaxed`}>{sub.cancellation_steps}</p>
                             {sub.cancellation_script && (
                               <div className={`mt-2 ${c.quoteBg} rounded-lg p-3`}>
@@ -968,18 +973,18 @@ const SubSweep = ({ tool }) => {
           <div className="text-center py-6">
             <p className="text-2xl mb-2">⚡</p>
             <p className={`text-xs ${c.textMuted}`}>Add active subscriptions in the Sweep tab first.</p>
-            <button onClick={() => setView('sweep')} className={`${c.btnPrimaryPrimary} px-4 py-2 rounded-lg text-xs font-bold mt-3 min-h-[36px]`}>🧹 Go to Sweep</button>
+            <button onClick={() => setView('sweep')} className={`${c.btnPrimary} px-4 py-2 rounded-lg text-xs font-bold mt-3 min-h-[36px]`}>🧹 Go to Sweep</button>
           </div>
         ) : (
           <>
             <div className={`${c.quoteBg} rounded-lg p-3 mb-4`}>
-              <p className={`text-[10px] font-bold ${c.label} uppercase mb-1.5`}>Your active subs</p>
+              <p className={`text-[10px] font-bold ${c.labelText} uppercase mb-1.5`}>Your active subs</p>
               {validSubs.map((s, i) => (
                 <p key={i} className="text-xs">{s.name} — {fm(s.cost, currency)}/{s.cycle}</p>
               ))}
             </div>
             <button onClick={runOptimize} disabled={loading}
-              className={`w-full ${c.btnPrimaryPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+              className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
               {loading ? <><span className="animate-spin">{tool?.icon ?? '⚙️'}</span> Optimizing...</> : <><span>⚡</span> Find Savings</>}
             </button>
           </>
@@ -1060,7 +1065,7 @@ const SubSweep = ({ tool }) => {
           {/* Quick pick from existing subs */}
           {validSubs.length > 0 && (
             <div>
-              <p className={`text-[10px] font-bold ${c.label} uppercase mb-1.5`}>Pick from your subs</p>
+              <p className={`text-[10px] font-bold ${c.labelText} uppercase mb-1.5`}>Pick from your subs</p>
               <div className="flex flex-wrap gap-1.5">
                 {validSubs.map(s => (
                   <button key={s.id} onClick={() => { setNegService(s.name); setNegCost(String(s.cost)); setNegCycle(s.cycle); }}
@@ -1075,7 +1080,7 @@ const SubSweep = ({ tool }) => {
           )}
 
           <div>
-            <label className={`text-xs font-bold ${c.label} block mb-1.5`}>Service name *</label>
+            <label className={`text-xs font-bold ${c.labelText} block mb-1.5`}>Service name *</label>
             <input value={negService} onChange={e => setNegService(e.target.value)}
               placeholder="e.g. Netflix, Comcast, AT&T"
               className={`w-full px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
@@ -1083,12 +1088,12 @@ const SubSweep = ({ tool }) => {
 
           <div className="flex gap-2">
             <div className="flex-1">
-              <label className={`text-xs font-bold ${c.label} block mb-1.5`}>Current cost</label>
+              <label className={`text-xs font-bold ${c.labelText} block mb-1.5`}>Current cost</label>
               <input type="number" value={negCost} onChange={e => setNegCost(e.target.value)} placeholder="Optional"
                 className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
             </div>
             <div className="flex-1">
-              <label className={`text-xs font-bold ${c.label} block mb-1.5`}>Billing cycle</label>
+              <label className={`text-xs font-bold ${c.labelText} block mb-1.5`}>Billing cycle</label>
               <select value={negCycle} onChange={e => setNegCycle(e.target.value)}
                 className={`w-full py-1.5 px-2 border rounded-lg text-xs ${c.input}`}>
                 {CYCLE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
@@ -1097,7 +1102,7 @@ const SubSweep = ({ tool }) => {
           </div>
 
           <button onClick={runNegotiate} disabled={loading || !negService.trim()}
-            className={`w-full ${c.btnPrimaryPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+            className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
             {loading ? <><span className="animate-spin">{tool?.icon ?? '⚙️'}</span> Generating script...</> : <><span>📞</span> Get Retention Script</>}
           </button>
         </div>
@@ -1107,19 +1112,10 @@ const SubSweep = ({ tool }) => {
         <div ref={negResultsRef} className="space-y-4">
           {/* eslint-disable-next-line no-unused-vars */}
           <span ref={resultsRef} className="sr-only" aria-hidden="true" />
-          <ActionBar content={
-            `RETENTION SCRIPT — ${negResults.service || negService}\n\n` +
-            `Opening: "${negResults.opening_line || ''}"\n\n` +
-            (negResults.script_steps || []).map(s =>
-              `Step ${s.step}: You say: "${s.you_say}"\nThey say: "${s.they_will_say}"\nYou respond: "${s.your_response}"`
-            ).join('\n\n') +
-            (negResults.magic_phrases?.length ? `\n\nMagic phrases:\n${negResults.magic_phrases.map(p => `• "${p}"`).join('\n')}` : '') +
-            '\n\n— Generated by DeftBrain · deftbrain.com'
-          } title={tool?.title || 'Sub Sweep'} />
           {/* Contact method */}
           {negResults.contact_method && (
             <div className={`${c.cardAlt} border rounded-xl p-4`}>
-              <p className={`text-[10px] font-bold ${c.label} uppercase mb-1`}>📞 How to reach retention</p>
+              <p className={`text-[10px] font-bold ${c.labelText} uppercase mb-1`}>📞 How to reach retention</p>
               <p className="text-xs">{negResults.contact_method}</p>
               {negResults.best_time_to_call && (
                 <p className={`text-xs ${c.textMuted} mt-1`}>⏰ Best time: {negResults.best_time_to_call}</p>
@@ -1130,7 +1126,7 @@ const SubSweep = ({ tool }) => {
           {/* Opening line */}
           {negResults.opening_line && (
             <div className={`${c.card} border rounded-xl p-4`}>
-              <p className={`text-[10px] font-bold ${c.label} uppercase mb-1`}>Your opening line</p>
+              <p className={`text-[10px] font-bold ${c.labelText} uppercase mb-1`}>Your opening line</p>
               <p className="text-sm font-bold italic">"{negResults.opening_line}"</p>
               <div className="mt-2">
                 <CopyBtn content={negResults.opening_line + '\n\n— Generated by DeftBrain · deftbrain.com'} label="Copy" />
@@ -1144,17 +1140,17 @@ const SubSweep = ({ tool }) => {
               <div className="space-y-4">
                 {negResults.script_steps.map((step, i) => (
                   <div key={i} className="space-y-2">
-                    <p className={`text-[10px] font-bold ${c.textSecondaryondary}`}>Step {step.step || i + 1}</p>
+                    <p className={`text-[10px] font-bold ${c.textSecondary}`}>Step {step.step || i + 1}</p>
                     <div className={`${isDark ? 'bg-sky-900/20 border-sky-800' : 'bg-sky-50 border-sky-200'} border rounded-lg p-3`}>
-                      <p className={`text-[10px] font-bold ${c.label} mb-0.5`}>YOU SAY:</p>
+                      <p className={`text-[10px] font-bold ${c.labelText} mb-0.5`}>YOU SAY:</p>
                       <p className="text-xs font-bold">"{step.you_say}"</p>
                     </div>
                     <div className={`${c.quoteBg} rounded-lg p-3`}>
-                      <p className={`text-[10px] font-bold ${c.label} mb-0.5`}>THEY'LL SAY:</p>
+                      <p className={`text-[10px] font-bold ${c.labelText} mb-0.5`}>THEY'LL SAY:</p>
                       <p className="text-xs italic">{step.they_will_say}</p>
                     </div>
                     <div className={`${isDark ? 'bg-green-900/20 border-green-800' : 'bg-green-50 border-green-200'} border rounded-lg p-3`}>
-                      <p className={`text-[10px] font-bold ${c.label} mb-0.5`}>YOUR RESPONSE:</p>
+                      <p className={`text-[10px] font-bold ${c.labelText} mb-0.5`}>YOUR RESPONSE:</p>
                       <p className="text-xs font-bold">"{step.your_response}"</p>
                     </div>
                     {step.tip && <p className={`text-[10px] ${c.textMuted}`}>💡 {step.tip}</p>}
@@ -1188,7 +1184,7 @@ const SubSweep = ({ tool }) => {
           {/* Magic phrases */}
           {negResults.magic_phrases?.length > 0 && (
             <div className={`${isDark ? 'bg-cyan-900/20 border-purple-800' : 'bg-cyan-50 border-purple-200'} border rounded-xl p-4`}>
-              <p className={`text-[10px] font-bold ${c.label} uppercase mb-2`}>🪄 Magic phrases</p>
+              <p className={`text-[10px] font-bold ${c.labelText} uppercase mb-2`}>🪄 Magic phrases</p>
               {negResults.magic_phrases.map((p, i) => (
                 <p key={i} className="text-xs font-bold mb-1">• "{p}"</p>
               ))}
@@ -1316,12 +1312,12 @@ const SubSweep = ({ tool }) => {
               <p className={`text-xs ${c.textMuted} mb-1`}>Need at least 2 snapshots to show a trend.</p>
               <p className={`text-[10px] ${c.textMuted}`}>Run an analysis now to take your first snapshot. Come back next month for a comparison.</p>
               {sortedHistory.length === 0 && (
-                <button onClick={() => { takeSnapshot(); }} className={`${c.btnPrimaryPrimary} px-4 py-2 rounded-lg text-xs font-bold mt-3 min-h-[36px]`}>
+                <button onClick={() => { takeSnapshot(); }} className={`${c.btnPrimary} px-4 py-2 rounded-lg text-xs font-bold mt-3 min-h-[36px]`}>
                   📸 Take Snapshot Now
                 </button>
               )}
               {sortedHistory.length === 1 && (
-                <p className={`text-xs ${c.textSecondaryondary} font-bold mt-2`}>✓ 1 snapshot recorded ({sortedHistory[0].key})</p>
+                <p className={`text-xs ${c.textSecondary} font-bold mt-2`}>✓ 1 snapshot recorded ({sortedHistory[0].key})</p>
               )}
             </div>
           ) : (
@@ -1388,7 +1384,7 @@ const SubSweep = ({ tool }) => {
             <p className={`text-xs font-bold ${c.text}`}>📸 Take a manual snapshot</p>
             <p className={`text-[10px] ${c.textMuted}`}>Current: {fm(totalMonthly.toFixed(2), currency)}/mo ({validSubs.length} active subs)</p>
           </div>
-          <button onClick={takeSnapshot} className={`${c.btnPrimaryPrimary} px-4 py-2 rounded-lg text-xs font-bold min-h-[36px]`}>
+          <button onClick={takeSnapshot} className={`${c.btnPrimary} px-4 py-2 rounded-lg text-xs font-bold min-h-[36px]`}>
             📸 Snapshot
           </button>
         </div>
@@ -1397,7 +1393,7 @@ const SubSweep = ({ tool }) => {
         {sortedHistory.length > 0 && (
           <div className={`${c.card} border rounded-xl p-4`}>
             <div className="flex items-center justify-between mb-2">
-              <p className={`text-[10px] font-bold ${c.label} uppercase`}>Snapshot history</p>
+              <p className={`text-[10px] font-bold ${c.labelText} uppercase`}>Snapshot history</p>
               <button onClick={() => {
                 if (window.confirm('Clear all timeline history?')) {
                   setHistory([]);
@@ -1458,7 +1454,7 @@ const SubSweep = ({ tool }) => {
             <div className="text-center py-8">
               <p className="text-2xl mb-2">🔔</p>
               <p className={`text-xs ${c.textMuted}`}>No renewal dates set yet. Add dates to your subs in the Sweep tab.</p>
-              <button onClick={() => setView('sweep')} className={`${c.btnPrimaryPrimary} px-4 py-2 rounded-lg text-xs font-bold mt-3 min-h-[36px]`}>🧹 Go to Sweep</button>
+              <button onClick={() => setView('sweep')} className={`${c.btnPrimary} px-4 py-2 rounded-lg text-xs font-bold mt-3 min-h-[36px]`}>🧹 Go to Sweep</button>
             </div>
           ) : (
             <div className="space-y-4">
@@ -1476,7 +1472,7 @@ const SubSweep = ({ tool }) => {
               )}
               {thisMonth.length > 0 && (
                 <div>
-                  <p className={`text-[10px] font-bold ${c.label} uppercase mb-2`}>📅 This month</p>
+                  <p className={`text-[10px] font-bold ${c.labelText} uppercase mb-2`}>📅 This month</p>
                   <div className="space-y-1.5">{thisMonth.map(s => <RenewalRow key={s.id} sub={s} />)}</div>
                 </div>
               )}
@@ -1501,7 +1497,7 @@ const SubSweep = ({ tool }) => {
                   <span className={c.textMuted}>{fm(s.prevCost, currency)} → {fm(s.cost, currency)}</span>
                   <span className={`font-black ${c.danger}`}>+{s.pctIncrease}%</span>
                   <button onClick={() => { setNegService(s.name); setNegCost(String(s.cost)); setView('negotiate'); }}
-                    className={`ml-auto text-[10px] font-bold ${c.textSecondaryondary} underline min-h-[24px]`}>
+                    className={`ml-auto text-[10px] font-bold ${c.textSecondary} underline min-h-[24px]`}>
                     📞 Negotiate
                   </button>
                 </div>
@@ -1513,7 +1509,7 @@ const SubSweep = ({ tool }) => {
         {/* Upcoming cost summary */}
         {renewalAlerts.length > 0 && (
           <div className={`${c.card} border rounded-xl p-4`}>
-            <p className={`text-[10px] font-bold ${c.label} uppercase mb-2`}>Next 30 days total</p>
+            <p className={`text-[10px] font-bold ${c.labelText} uppercase mb-2`}>Next 30 days total</p>
             <p className={`text-xl font-black ${c.text}`}>
               {fm([...overdue, ...thisWeek, ...thisMonth].reduce((sum, s) => {
                 return sum + (s.cycle === 'yearly' ? Number(s.cost) : monthlyEquiv(s.cost, s.cycle));
@@ -1552,7 +1548,7 @@ const SubSweep = ({ tool }) => {
 
           {/* Mark subs as shared */}
           <div className="space-y-2 mb-4">
-            <p className={`text-[10px] font-bold ${c.label} uppercase`}>Your active subscriptions</p>
+            <p className={`text-[10px] font-bold ${c.labelText} uppercase`}>Your active subscriptions</p>
             {activeSubs.filter(s => s.name.trim()).map(sub => (
               <div key={sub.id} className={`px-3 py-2 rounded-lg border ${c.card}`}>
                 <div className="flex items-center gap-2">
@@ -1590,7 +1586,7 @@ const SubSweep = ({ tool }) => {
                           updateSub(sub.id, 'sharedWith', [...(sub.sharedWith || []), splitMember.trim()]);
                           setSplitMember('');
                         }
-                      }} className={`${c.btnPrimaryPrimary} px-2 py-1 rounded text-[10px] font-bold min-h-[24px]`}>+</button>
+                      }} className={`${c.btnPrimary} px-2 py-1 rounded text-[10px] font-bold min-h-[24px]`}>+</button>
                     </div>
                   </div>
                 )}
@@ -1608,7 +1604,7 @@ const SubSweep = ({ tool }) => {
                 <div key={name} className={`${c.quoteBg} rounded-lg p-3`}>
                   <div className="flex items-center justify-between mb-1.5">
                     <span className="text-sm font-bold">{name}</span>
-                    <span className={`text-sm font-black ${c.textSecondaryondary}`}>{fm(data.total.toFixed(2), currency)}/mo</span>
+                    <span className={`text-sm font-black ${c.textSecondary}`}>{fm(data.total.toFixed(2), currency)}/mo</span>
                   </div>
                   {data.subs.map((s, i) => (
                     <p key={i} className={`text-[10px] ${c.textMuted}`}>• {s.name}: {fm(s.share.toFixed(2), currency)}/mo</p>
@@ -1697,7 +1693,7 @@ const SubSweep = ({ tool }) => {
                 {CYCLE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
               </select>
               <button onClick={addTrial} disabled={!trialName.trim() || !trialEnd}
-                className={`${c.btnPrimaryPrimary} px-4 py-2 rounded-lg text-xs font-bold min-h-[36px] disabled:opacity-40`}>
+                className={`${c.btnPrimary} px-4 py-2 rounded-lg text-xs font-bold min-h-[36px] disabled:opacity-40`}>
                 ➕ Add
               </button>
             </div>
@@ -1738,10 +1734,10 @@ const SubSweep = ({ tool }) => {
                     {/* Usage counter */}
                     <div className="flex items-center gap-1">
                       <button onClick={() => updateTrialUsage(trial.id, -1)}
-                        className={`${c.btnPrimarySecondary} w-6 h-6 rounded text-xs font-bold flex items-center justify-center`}>−</button>
+                        className={`${c.btnSecondary} w-6 h-6 rounded text-xs font-bold flex items-center justify-center`}>−</button>
                       <span className={`text-xs font-bold ${c.text} w-6 text-center`}>{trial.usageCount || 0}</span>
                       <button onClick={() => updateTrialUsage(trial.id, 1)}
-                        className={`${c.btnPrimarySecondary} w-6 h-6 rounded text-xs font-bold flex items-center justify-center`}>+</button>
+                        className={`${c.btnSecondary} w-6 h-6 rounded text-xs font-bold flex items-center justify-center`}>+</button>
                       <span className={`text-[10px] ${c.textMuted}`}>uses</span>
                     </div>
 
@@ -1754,7 +1750,7 @@ const SubSweep = ({ tool }) => {
                     <div className="ml-auto flex gap-1">
                       {!expired && (
                         <button onClick={() => convertToSub(trial)}
-                          className={`text-[10px] font-bold ${c.textSecondaryondary} underline min-h-[24px]`}>Keep</button>
+                          className={`text-[10px] font-bold ${c.textSecondary} underline min-h-[24px]`}>Keep</button>
                       )}
                       <button onClick={() => removeTrial(trial.id)}
                         className={`text-[10px] ${c.danger} min-h-[24px]`}>✕</button>
@@ -1800,7 +1796,7 @@ const SubSweep = ({ tool }) => {
 
           {/* Budget inputs */}
           <div className="space-y-2 mb-4">
-            <p className={`text-[10px] font-bold ${c.label} uppercase`}>Set monthly limits</p>
+            <p className={`text-[10px] font-bold ${c.labelText} uppercase`}>Set monthly limits</p>
             {CATEGORIES.map(cat => {
               const spending = categorySpending[cat.value];
               const budget = catBudgets[cat.value] || '';
@@ -1894,13 +1890,13 @@ const SubSweep = ({ tool }) => {
           <div className={`${c.card} border rounded-xl p-4`}>
             <div className="flex items-center justify-between">
               <div>
-                <p className={`text-[10px] font-bold ${c.label} uppercase`}>Total budget</p>
+                <p className={`text-[10px] font-bold ${c.labelText} uppercase`}>Total budget</p>
                 <p className={`text-lg font-black ${c.text}`}>
                   {fm(Object.values(catBudgets).reduce((sum, v) => sum + (Number(v) || 0), 0), currency)}/mo
                 </p>
               </div>
               <div className="text-right">
-                <p className={`text-[10px] font-bold ${c.label} uppercase`}>Total spending</p>
+                <p className={`text-[10px] font-bold ${c.labelText} uppercase`}>Total spending</p>
                 <p className={`text-lg font-black ${totalMonthly > Object.values(catBudgets).reduce((s, v) => s + (Number(v) || 0), 0) ? c.danger : c.success}`}>
                   {fm(totalMonthly.toFixed(2), currency)}/mo
                 </p>
@@ -1941,9 +1937,9 @@ const SubSweep = ({ tool }) => {
         <div className={`mt-6 pt-4 border-t text-sm ${c.border} ${c.textMuted}`}>
           <p className="mb-2 font-medium">You might also like:</p>
           <div className="flex flex-wrap gap-2">
-            {[{slug:'bill-rescue',label:'💸 Bill Rescue'},{slug:'buy-wise',label:'💰 Buy Wise'},{slug:'upsell-shield',label:'🛡️ Upsell Shield'}].map(({slug,label})=>(
-              <a key={slug} href={`${slug}`} className={linkStyle}>{label}</a>
-            ))}
+            <a href="/BillRescue" className={linkStyle}>💸 Bill Rescue</a>
+            <a href="/BuyWise" className={linkStyle}>💰 Buy Wise</a>
+            <a href="/UpsellShield" className={linkStyle}>🛡️ Upsell Shield</a>
           </div>
         </div>
     </div>
