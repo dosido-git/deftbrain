@@ -3,9 +3,9 @@ const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
 
 // ════════════════════════════════════════════════════════════
-// POST /what-if-machine — The Road Not Taken
+// POST /what-if — The Road Not Taken
 // ════════════════════════════════════════════════════════════
-router.post('/what-if-machine', async (req, res) => {
+router.post('/what-if', async (req, res) => {
   try {
     const { decision, optionNotChosen, context, timeframe, userLanguage } = req.body;
 
@@ -71,7 +71,7 @@ Generate ${timeframe === 'five_years' ? '4-5' : timeframe === 'one_month' ? '2-3
     return res.json(parsed);
 
   } catch (error) {
-    console.error('WhatIfMachine error:', error);
+    console.error('WhatIf error:', error);
     res.status(500).json({ error: error.message || 'Failed to generate simulation' });
   }
 });

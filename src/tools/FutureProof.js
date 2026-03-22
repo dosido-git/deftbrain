@@ -342,7 +342,7 @@ const FutureProof = ({ tool }) => {
                   { id: 'SignalVsNoise', icon: '📡', label: 'Cut through conflicting advice' },
                   { id: 'EgoKiller', icon: '🪦', label: 'Challenge your assumptions' },
                 ].map(r => (
-                  <a key={r.id} href={`/tool/${r.id}`} target="_blank" rel="noopener noreferrer"
+                  <a key={r.id} href={`${r.id}`} target="_blank" rel="noopener noreferrer"
                     className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${c.btnSecondaryondary}`}>
                     {r.icon} {r.label}
                   </a>

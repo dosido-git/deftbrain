@@ -695,7 +695,7 @@ const MagicMouth = ({ tool }) => {
                 ].map(ref => (
                   <a
                     key={ref.id}
-                    href={`/tool/${ref.id}`}
+                    href={`${ref.id}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className={`${c.btnSecondaryondary} px-3 py-1.5 rounded-lg text-xs transition-colors flex items-center gap-1.5`}
@@ -896,7 +896,7 @@ const MagicMouth = ({ tool }) => {
                   { id: 'LeaseTrapDetector', icon: '🔍', label: 'Spot traps in contracts' },
                   { id: 'TruthBomb', icon: '💣', label: 'Say the hard thing' },
                 ].map(ref => (
-                  <a key={ref.id} href={`/tool/${ref.id}`} target="_blank" rel="noopener noreferrer"
+                  <a key={ref.id} href={`${ref.id}`} target="_blank" rel="noopener noreferrer"
                     className={`${c.btnSecondaryondary} px-3 py-1.5 rounded-lg text-xs transition-colors flex items-center gap-1.5`}>
                     <span>{ref.icon}</span> {ref.label}
                   </a>

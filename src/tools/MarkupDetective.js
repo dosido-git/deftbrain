@@ -308,9 +308,9 @@ const MarkupDetective = ({ tool }) => {
           <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
             <p className={`text-xs font-bold ${c.textMuted} mb-2`}>🔗 Related tools</p>
             <div className="flex flex-wrap gap-3">
-              <a href="/tool/buy-wise" className={`text-xs ${linkStyle}`}>🛒 Should you buy it? Try BuyWise</a>
-              <a href="/tool/fake-review-detective" className={`text-xs ${linkStyle}`}>🕵️ Spot fake reviews first</a>
-              <a href="/tool/sub-sweep" className={`text-xs ${linkStyle}`}>💳 Check subscription costs</a>
+              <a href="buy-wise" className={`text-xs ${linkStyle}`}>🛒 Should you buy it? Try BuyWise</a>
+              <a href="fake-review-detective" className={`text-xs ${linkStyle}`}>🕵️ Spot fake reviews first</a>
+              <a href="sub-sweep" className={`text-xs ${linkStyle}`}>💳 Check subscription costs</a>
             </div>
           </div>
 

@@ -924,7 +924,7 @@ const CrashPredictor = ({ tool }) => {
           <p className="mb-2 font-medium">You might also like:</p>
           <div className="flex flex-wrap gap-2">
             {[{slug:'pre-mortem',label:'💀 Pre-Mortem'},{slug:'chaos-pilot',label:'🌪️ Chaos Pilot'},{slug:'leverage-logic',label:'⚖️ Leverage Logic'}].map(({slug,label})=>(
-              <a key={slug} href={`/tool/${slug}`} className={linkStyle}>{label}</a>
+              <a key={slug} href={`${slug}`} className={linkStyle}>{label}</a>
             ))}
           </div>
         </div>

@@ -94,6 +94,10 @@ const parseTimeInput = (input, dayOffset = 0) => {
   } const d = new Date();
   d.setDate(d.getDate() + (dayOffset || 0));
   d.setHours(hours, minutes, 0, 0);
+  // Auto-advance: if no explicit dayOffset and time is already past, assume tomorrow
+  if (!dayOffset && d <= new Date()) {
+    d.setDate(d.getDate() + 1);
+  }
   return d;
 };
 
@@ -220,6 +224,7 @@ const WaitingModeLiberator = ({ tool }) => {
   const countdownRef  = useRef(null);
   const blockTimerRef = useRef(null);
   const newEventRef   = useRef(null);
+  const nameInputRef  = useRef(null);
   const timeInputRef  = useRef(null);
   const resultsRef    = useRef(null);
 
@@ -235,7 +240,7 @@ const WaitingModeLiberator = ({ tool }) => {
     setDraftName(''); setDraftTime(''); setDraftType(''); setDraftCustomType(''); setDraftDayOffset(0);
     setTimeout(() => {
       newEventRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      timeInputRef.current?.focus();
+      nameInputRef.current?.focus();
     }, 50);
   };
   const removeEvent = (id) => {
@@ -308,7 +313,7 @@ const WaitingModeLiberator = ({ tool }) => {
       if (!ev.time.trim()) return 'Every event needs a time.';
       if (!parseTimeInput(ev.time, ev.dayOffset)) return `Couldn't understand "${ev.time}". Try "2pm", "noon", or "3:30 PM".`;
       const parsed = parseTimeInput(ev.time, ev.dayOffset);
-      if (ev.dayOffset === 0 && parsed <= new Date()) return `${ev.time} has already passed — pick a future time or choose "Tomorrow".`;
+
     } return null;
   };
 
@@ -532,7 +537,7 @@ const WaitingModeLiberator = ({ tool }) => {
             {/* Name + Type */} <div className="space-y-2">
               <input
                 type="text"
-                value={draftName} onChange={e => setDraftName(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') timeInputRef.current?.focus(); }} placeholder="What is it? (dentist, standup, school pickup…)"
+                ref={nameInputRef} value={draftName} onChange={e => setDraftName(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') timeInputRef.current?.focus(); }} placeholder="What is it? (dentist, standup, school pickup…)"
                 className={`w-full px-3 py-2.5 rounded-xl border ${c.input} text-sm outline-none`} />
               <div className="flex flex-wrap gap-1.5">
                 {APPT_TYPES.map(a => (<button

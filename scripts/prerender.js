@@ -38,7 +38,7 @@ const TOOL_OG_SLUGS = {
   ChaosPilot: 'chaos-pilot', OnePercenter: 'one-percenter', EgoKiller: 'ego-killer',
   BeliefStressTest: 'belief-stress-test', LuckSurface: 'luck-surface', GravityWell: 'gravity-well',
   RulebookBreaker: 'rulebook-breaker', TruthBomb: 'truth-bomb', AnalogyEngine: 'analogy-engine',
-  ColdOpenCraft: 'cold-open-craft', ToastWriter: 'toast-writer', WhatIfMachine: 'what-if-machine',
+  ColdOpenCraft: 'cold-open-craft', ToastWriter: 'toast-writer', WhatIf: 'what-if-machine',
   HobbyMatch: 'hobby-match', BeforeYouBook: 'before-you-book', UpsellShield: 'upsell-shield',
   HecklerPrep: 'heckler-prep', PartyArchitect: 'party-architect', WhereDidItGo: 'where-did-it-go',
   AntiGiftPanic: 'anti-gift-panic', AwkwardSilenceFiller: 'awkward-silence-filler',

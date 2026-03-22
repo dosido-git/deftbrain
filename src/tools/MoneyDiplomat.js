@@ -1529,7 +1529,7 @@ const MoneyDiplomat = ({ tool }) => {
             <p className={`text-[10px] font-bold ${c.textMuted} mb-2`}>🔗 Related Tools</p>
             <div className="flex flex-wrap gap-2">
               {[{slug:'buy-wise',label:'🛒 Buy Wise'},{slug:'bill-rescue',label:'💸 Bill Rescue'},{slug:'difficult-talk-coach',label:'🗣️ Difficult Talk Coach'}].map(({slug,label})=>(
-                <a key={slug} href={`/tool/${slug}`} className={linkStyle}>{label}</a>
+                <a key={slug} href={`${slug}`} className={linkStyle}>{label}</a>
               ))}
             </div>
           </div>

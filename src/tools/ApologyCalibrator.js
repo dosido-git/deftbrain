@@ -2546,7 +2546,7 @@ const ApologyCalibrator = ({ tool }) => {
           <p className="mb-2 font-medium">You might also like:</p>
           <div className="flex flex-wrap gap-2">
             {[{slug:'conflict-coach',label:'🤝 Conflict Coach'},{slug:'say-it-right',label:'🗣️ Say It Right'},{slug:'difficult-talk-coach',label:'💬 Difficult Talk'}].map(({slug,label})=>(
-              <a key={slug} href={`/tool/${slug}`} className={linkStyle}>{label}</a>
+              <a key={slug} href={`${slug}`} className={linkStyle}>{label}</a>
             ))}
           </div>
         </div>

@@ -325,7 +325,7 @@ const SignalVsNoise = ({ tool }) => {
                   { id: 'TheFinalWord', icon: '⚖️', label: 'Fact-check a specific claim' },
                   { id: 'FutureProof', icon: '🔮', label: 'Assess a 5-year trajectory' },
                 ].map(r => (
-                  <a key={r.id} href={`/tool/${r.id}`} target="_blank" rel="noopener noreferrer"
+                  <a key={r.id} href={`${r.id}`} target="_blank" rel="noopener noreferrer"
                     className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${c.btnSecondaryondary}`}>
                     {r.icon} {r.label}
                   </a>

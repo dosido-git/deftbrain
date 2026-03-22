@@ -537,8 +537,8 @@ const RechargeRadar = ({ tool }) => {
             )}
 
             <div className={`text-center text-xs ${c.textMuteded} space-y-1`}>
-              <p>Burned out? Try <a href="/tool/BurnoutBreadcrumbTracker" target="_blank" rel="noopener noreferrer" className={`underline ${c.textSecondaryondary}`}>Burnout Breadcrumb Tracker</a></p>
-              <p>Need help saying no? Try <a href="/tool/ConfrontationCoach" target="_blank" rel="noopener noreferrer" className={`underline ${c.textSecondaryondary}`}>Confrontation Coach</a></p>
+              <p>Burned out? Try <a href="BurnoutBreadcrumbTracker" target="_blank" rel="noopener noreferrer" className={`underline ${c.textSecondaryondary}`}>Burnout Breadcrumb Tracker</a></p>
+              <p>Need help saying no? Try <a href="ConfrontationCoach" target="_blank" rel="noopener noreferrer" className={`underline ${c.textSecondaryondary}`}>Confrontation Coach</a></p>
             </div>
           </div>
         )}
@@ -877,7 +877,7 @@ const RechargeRadar = ({ tool }) => {
               <span className="mr-2">🔄</span> New Forecast
             </button>
             <p className={`text-center text-xs ${c.textMuteded}`}>
-              Need to decline? Try <a href="/tool/BelievableExcuseGenerator" target="_blank" rel="noopener noreferrer" className={`underline ${c.textSecondaryondary}`}>Believable Excuse Generator</a>
+              Need to decline? Try <a href="BelievableExcuseGenerator" target="_blank" rel="noopener noreferrer" className={`underline ${c.textSecondaryondary}`}>Believable Excuse Generator</a>
             </p>
           </div>
         )}

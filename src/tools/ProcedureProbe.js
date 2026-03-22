@@ -496,7 +496,7 @@ const ProcedureProbe = ({ tool }) => {
           <p className="mb-2 font-medium">You might also like:</p>
           <div className="flex flex-wrap gap-2">
             {[{slug:'doctor-visit-translator',label:'🩺 Doctor Visit'},{slug:'complaint-escalation-writer',label:'📝 Complaint Writer'},{slug:'final-wish',label:'📜 Final Wish'}].map(({slug,label})=>(
-              <a key={slug} href={`/tool/${slug}`} className={linkStyle}>{label}</a>
+              <a key={slug} href={`${slug}`} className={linkStyle}>{label}</a>
             ))}
           </div>
         </div>

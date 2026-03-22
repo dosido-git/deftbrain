@@ -44,6 +44,15 @@ for fpath in sorted(glob.glob('/mnt/user-data/outputs/*.js')):
     if os.path.exists(f'/mnt/project/{name}.js'):
         tools.append((name, fpath))
 
+# Load valid tool IDs from tools.js for cross-ref link validation
+VALID_TOOL_IDS = set()
+tools_js_path = '/mnt/project/tools.js'
+if os.path.exists(tools_js_path):
+    import re as _re2
+    with open(tools_js_path) as f:
+        _tools_js = f.read()
+    VALID_TOOL_IDS = set(_re2.findall(r'id:\s*["\']([A-Za-z][A-Za-z0-9]+)["\']', _tools_js))
+
 results = {}
 
 for name, fpath in tools:
@@ -82,6 +91,21 @@ for name, fpath in tools:
     icon_count = content.count('tool?.icon')
     if icon_count < 2:
         fails.append(f'S0: tool?.icon appears only {icon_count} time(s) — must be in header AND submit button(s)')
+
+    # S1.2: left-alignment — text-center banned on the tool page header (h2/tagline area)
+    # Allowed on: result cards, metric callouts, verdict displays
+    # Only flag text-center that is within the first 30 lines of the JSX return statement
+    _lines_lc = content.split('\n')
+    return_line = next((i for i, l in enumerate(_lines_lc) if 'return (' in l and i > len(_lines_lc)//3), None)
+    if return_line:
+        header_zone = _lines_lc[return_line:return_line+30]
+        for i, line in enumerate(header_zone):
+            if 'text-center' not in line or line.strip().startswith('//'):
+                continue
+            ctx = '\n'.join(header_zone[max(0,i-3):i+4])
+            if re.search(r'<h[12]\b|tool\?\.title|tool\?\.tagline|tagline|<p[^>]*textSecondary', ctx):
+                fails.append(f'S1.2: text-center near header/tagline at line {return_line+i+1} — page header must be left-aligned')
+                break
 
     # S1.1: no hex values (non-comment lines, skip print template HTML strings and inline style/SVG attrs)
     for m in re.finditer(r'#[0-9a-fA-F]{6}|#[0-9a-fA-F]{3}\b', content):
@@ -178,25 +202,31 @@ for name, fpath in tools:
             fails.append(f'S1.1: helper fn raw class string without isDark')
             break
 
+    # S1.2: tool must not set background on root element — ToolPageWrapper owns the frame
+    # Look for min-h-screen or bg-* on the first JSX return div (the tool's outermost element)
+    return_match = re.search(r'return\s*\([\s\n]*<div\s+className=\{?[`"\']([^`"\'>{]+)', content)
+    if return_match:
+        root_classes = return_match.group(1)
+        if re.search(r'min-h-screen|bg-white|bg-zinc|bg-slate|bg-gray|bg-stone|bg-gradient', root_classes):
+            fails.append(f'S1.2: root div sets background color — remove it; ToolPageWrapper provides the frame (found: {root_classes[:60]})')
+
     # S1.4: ActionButtons
     if '../components/ActionButtons' not in content:
         fails.append('S1.4: ActionButtons not imported')
     if 'lucide-react' in content:
         fails.append('S1.4: lucide-react imported')
-    if '<ActionBar' not in content:
-        fails.append('S1.4: ActionBar not present')
-    elif 'resultsRef' not in content:
-        fails.append('S1.4: ActionBar present but no resultsRef anchor — results panel missing scroll target')
-    else:
-        # ActionBar must be within 3 lines of its nearest resultsRef
-        _lines = content.split('\n')
-        _ab_lines = [i for i,l in enumerate(_lines) if '<ActionBar' in l and 'import' not in l]
-        _rr_lines = [i for i,l in enumerate(_lines) if 'ref={resultsRef}' in l]
-        for _ab in _ab_lines:
-            _nearest = min(_rr_lines, key=lambda r: abs(r-_ab)) if _rr_lines else None
-            if _nearest is None or abs(_ab - _nearest) > 10:
-                fails.append(f'S1.4: ActionBar at line {_ab+1} is {abs(_ab-_nearest) if _nearest else "?"} lines from nearest resultsRef — must be within 10 lines (top of results)')
-                break
+    # S1.4: ActionBar via useRegisterActions (v4.28+ standard)
+    # ActionBar lives in ToolPageWrapper header — tools register content via hook, no inline <ActionBar>
+    has_register = 'useRegisterActions' in content
+    has_actionbar_import = 'ActionBarContext' in content
+    has_inline_actionbar = bool(re.search(r'<ActionBar\b', content.replace('import', '')))
+
+    if not has_register:
+        fails.append('S1.4: useRegisterActions not called — ActionBar must be registered via useRegisterActions(content, title)')
+    if not has_actionbar_import:
+        fails.append('S1.4: ActionBarContext not imported — add: import { useRegisterActions } from \'../components/ActionBarContext\'')
+    if has_inline_actionbar:
+        fails.append('S1.4: inline <ActionBar> found in tool JSX — remove it; ToolPageWrapper renders ActionBar in the header via useRegisterActions')
     # S1.4: standalone PrintBtn is valid when used directly alongside CopyBtn
     # The real violation is custom window.open bypasses (caught by S1.4e below)
     if 'BRAND' not in content and 'deftbrain.com' not in content:
@@ -281,9 +311,29 @@ for name, fpath in tools:
     if res_state and res_state.group(2) == 'useState' and persistent_count < 3:
         fails.append('S1.7: results uses useState (should be usePersistentState)')
 
-    # S2.1: Enter key
-    if 'onKeyDown' not in content and 'addEventListener' not in content:
-        fails.append('S2.1: no Enter key handler')
+    # S2.1: Enter key — global document listener required
+    has_global_listener = bool(re.search(r"document\.addEventListener\s*\(\s*['\"]keydown['\"]", content))
+    has_meta = 'metaKey' in content
+    has_ctrl = 'ctrlKey' in content
+    if not has_global_listener:
+        fails.append('S2.1: no global keydown listener — document.addEventListener(\'keydown\',...) required')
+    elif not has_meta or not has_ctrl:
+        fails.append('S2.1: global keydown listener missing metaKey and/or ctrlKey check (must handle both Mac and Windows)')
+    else:
+        # S2.1: TEXTAREA guard bug — handler must NOT block Cmd/Ctrl+Enter from textareas.
+        # Bad pattern: TEXTAREA in an unconditional early-return (no metaKey/ctrlKey check on same line)
+        # Good pattern: if (tag === 'TEXTAREA' && !e.metaKey && !e.ctrlKey) return;  ← already gated
+        for m in re.finditer(r"if\s*\([^)]*TEXTAREA[^)]*\)\s*return", content):
+            guard_line = content[m.start():m.end()]
+            # If the guard itself contains metaKey or ctrlKey, it's already properly gated — skip
+            if 'metaKey' in guard_line or 'ctrlKey' in guard_line:
+                continue
+            # Verify this is inside a keydown handler context
+            window_start = max(0, m.start() - 600)
+            window = content[window_start:m.start()]
+            if 'keydown' in window or 'metaKey' in window or 'ctrlKey' in window:
+                fails.append('S2.1: TEXTAREA included in unconditional early-return guard — Cmd/Ctrl+Enter is blocked from textareas. Use: if (tag === \'TEXTAREA\' && !e.metaKey && !e.ctrlKey) return;')
+                break
 
     # S2.1: submit disabled while loading
     if not re.search(r'disabled=\{[^}]*[Ll]oading', content):
@@ -306,14 +356,45 @@ for name, fpath in tools:
     if not re.search(r'ai.generated|not a lawyer|not financial|not medical|consult a|for entertainment|AI.generated|informational only|results? are|generated by', content, re.IGNORECASE):
         fails.append('S5.4: no AI disclaimer')
 
-    # S5.5: cross-refs — dynamic href={`/tool/${var}`} counts as 1 regardless of array size
-    static_hrefs = len(re.findall(r'href=["\'][/](?:tool/)?[A-Za-z]', content))
-    dynamic_hrefs = min(1, len(re.findall(r'href=\{[`][/](?:tool/)?\$?\{?[A-Za-z]', content)))
-    href_count = static_hrefs + dynamic_hrefs
-    if href_count == 0:
-        fails.append('S5.5: no cross-tool links')
-    elif href_count > 3:
-        fails.append(f'S5.5: {href_count} cross-refs (max 3)')
+    # S5.5: cross-refs
+    # Split at the first JSX results conditional block (not state declarations).
+    # Look for patterns like: {results && (, results && (, {result && ( — JSX conditionals
+    href_pattern = r'href=["\'][/][A-Za-z]|href=\{[`][/]\$?\{?[A-Za-z]'
+
+    # Find JSX results conditional — must be followed by ( or <, not = or ,
+    results_jsx = re.search(r'\{?\s*(?:\(\s*)?(?<![!])(?:results|result)\b[^=\n]{0,40}&&\s*[(<r]', content)
+    if results_jsx:
+        pre_content = content[:results_jsx.start()]
+        post_content = content[results_jsx.start():]
+    else:
+        pre_content = content
+        post_content = ''
+
+    pre_hrefs = len(re.findall(href_pattern, pre_content))
+    post_hrefs_raw = re.findall(href_pattern, post_content)
+    # Dynamic array refs count as 1
+    dynamic_count = len(re.findall(r'href=\{[`][/]\$?\{?[A-Za-z]', post_content))
+    post_hrefs = (len(post_hrefs_raw) - dynamic_count) + min(1, dynamic_count)
+
+    total_hrefs = pre_hrefs + post_hrefs
+
+    if total_hrefs == 0:
+        fails.append('S5.5: no cross-tool links at all — add pre-result and post-result refs')
+    else:
+        if pre_hrefs == 0:
+            fails.append('S5.5: no pre-result cross-ref — add a tool link visible before submit (e.g. "Need X first? Try [Tool]")')
+        if post_hrefs == 0:
+            fails.append('S5.5: no post-result cross-ref — add a tool link inside the results block (e.g. "Next step: [Tool]")')
+        if total_hrefs > 3:
+            fails.append(f'S5.5: {total_hrefs} cross-refs (max 3 total)')
+
+
+    # S5.5: cross-ref link validity — check all static /ToolId hrefs resolve to a real tool in tools.js
+    # Only checks plain string hrefs (href="/ToolId"), not template literals
+    if VALID_TOOL_IDS:
+        for tool_id in re.findall(r'href=["\'][/]([A-Za-z][A-Za-z0-9]+)["\']', content):
+            if tool_id not in VALID_TOOL_IDS:
+                fails.append(f'S5.5: cross-ref link /{tool_id} does not exist in tools.js — broken link')
 
     # Known bugs
     if re.search(r'\$\{\}', content):

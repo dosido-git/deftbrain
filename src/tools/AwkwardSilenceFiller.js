@@ -646,7 +646,7 @@ const AwkwardSilenceFiller = ({ tool }) => {
           <p className="mb-2 font-medium">You might also like:</p>
           <div className="flex flex-wrap gap-2">
             {[{slug:'comeback-cooker',label:'🥊 Comeback Cooker'},{slug:'conflict-coach',label:'🤝 Conflict Coach'},{slug:'say-it-right',label:'🗣️ Say It Right'}].map(({slug,label})=>(
-              <a key={slug} href={`/tool/${slug}`} className={linkStyle}>{label}</a>
+              <a key={slug} href={`${slug}`} className={linkStyle}>{label}</a>
             ))}
           </div>
         </div>

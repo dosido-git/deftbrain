@@ -136,6 +136,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
         searchRef.current?.focus();
+        searchRef.current?.select();
       }
       if (e.key === 'Escape') setSearchTerm('');
     };

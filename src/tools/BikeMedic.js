@@ -1365,7 +1365,7 @@ const BikeMedic = ({ tool }) => {
           <p className="mb-2 font-medium">You might also like:</p>
           <div className="flex flex-wrap gap-2">
             {[{slug:'plant-rescue',label:'🌱 Plant Rescue'},{slug:'crash-predictor',label:'💥 Crash Predictor'},{slug:'procedure-probe',label:'🏥 Procedure Probe'}].map(({slug,label})=>(
-              <a key={slug} href={`/tool/${slug}`} className={linkStyle}>{label}</a>
+              <a key={slug} href={`${slug}`} className={linkStyle}>{label}</a>
             ))}
           </div>
         </div>

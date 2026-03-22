@@ -332,8 +332,8 @@ const PlotHole = ({ tool }) => {
       <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
         <p className={`text-xs font-bold ${c.textMuted} mb-2`}>🔗 Related tools</p>
         <div className="flex flex-wrap gap-3">
-          <a href="/tool/plot-twist" className={`text-xs ${linkStyle}`}>🔀 Plot Twist</a>
-          <a href="/tool/fan-theory" className={`text-xs ${linkStyle}`}>🔭 Fan Theory</a>
+          <a href="plot-twist" className={`text-xs ${linkStyle}`}>🔀 Plot Twist</a>
+          <a href="fan-theory" className={`text-xs ${linkStyle}`}>🔭 Fan Theory</a>
         </div>
       </div>
     </div>

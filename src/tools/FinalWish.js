@@ -1842,7 +1842,7 @@ async function decrypt(){
           <p className="mb-2 font-medium">You might also like:</p>
           <div className="flex flex-wrap gap-2">
             {[{slug:'procedure-probe',label:'🏥 Procedure Probe'},{slug:'complaint-escalation-writer',label:'📝 Complaint Writer'},{slug:'difficult-talk-coach',label:'💬 Difficult Talk'}].map(({slug,label})=>(
-              <a key={slug} href={`/tool/${slug}`} className={linkStyle}>{label}</a>
+              <a key={slug} href={`${slug}`} className={linkStyle}>{label}</a>
             ))}
           </div>
         </div>

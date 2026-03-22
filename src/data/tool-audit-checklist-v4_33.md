@@ -1,4 +1,4 @@
-# Tool Audit Checklist v4.22
+# Tool Audit Checklist v4.33
 ### DeftBrain — Pre-Ship Quality & Consistency Standard
 
 Score each item: ✅ Pass | ⚠️ Needs Work | ❌ Fail | N/A
@@ -76,11 +76,11 @@ Score each item: ✅ Pass | ⚠️ Needs Work | ❌ Fail | N/A
   # Any h1/h2 containing a bare string (not a JSX expression) is a violation
   ```
 
-  > ⚠️ **BUG PATTERN — Hardcoded title/tagline in component header (discovered WhatIfMachine audit, v4.24)**
-  > Tools hardcode their title and tagline in JSX: `<h2>WhatIfMachine 🎲</h2>` / `<p>See the road not taken…</p>`. When the tool's `tools.js` entry is updated, the component header never changes. **Fix:** Replace with `{tool?.title}` and `{tool?.tagline}`. The `tool` prop is always available — `ToolPageWrapper` passes it through to every component.
+  > ⚠️ **BUG PATTERN — Hardcoded title/tagline in component header (discovered WhatIf audit, v4.24)**
+  > Tools hardcode their title and tagline in JSX: `<h2>WhatIf 🎲</h2>` / `<p>See the road not taken…</p>`. When the tool's `tools.js` entry is updated, the component header never changes. **Fix:** Replace with `{tool?.title}` and `{tool?.tagline}`. The `tool` prop is always available — `ToolPageWrapper` passes it through to every component.
   > ```jsx
   > // ❌ WRONG
-  > <h2>WhatIfMachine 🎲</h2>
+  > <h2>WhatIf 🎲</h2>
   > <p>See the road not taken before you decide</p>
   >
   > // ✅ CORRECT
@@ -314,6 +314,29 @@ const linkStyle = isDark
 
 ### 1.2 Layout & Header Pattern
 
+- [ ] 🔍 **Tool card uses the standard color frame** — the `ToolPageWrapper` renders every tool inside a `<section>` with `headerColor` as a top-heavy gradient background (solid for ~60px, fading to transparent by ~220px) and the tool's content inside a white inner div with **`m-8 rounded-xl p-6`** (32px margin). This creates a thick colored frame that is heaviest at the top and fades away — identical across all tools. **This is controlled entirely by `ToolPageWrapper.js` and `tools.js` — tools themselves must never set their own background color on their outermost wrapper div.**
+
+  **Critical `ToolPageWrapper` values — never change without visual QA:**
+  | Element | Class/Style | Effect if changed |
+  |---------|------------|-------------------|
+  | `<header>` | `pb-6 space-y-2` | Bottom spacing before bookmark row |
+  | `<section>` gradient | `solid 0%, solid 60px, transparent 220px` | Frame height / fade shape |
+  | Inner div | `m-8 rounded-xl p-6` | Frame thickness (m-8 = 32px — must not shrink) |
+  | Bookmark row | `mt-4 mb-2` | Spacing between description and buttons |
+
+  ```bash
+  grep -n "min-h-screen\|bg-white\|bg-zinc\|background:" ComponentName.js | head -10
+  # Must return zero results for any background color set on the outermost wrapper div
+  grep -n "headerColor" tools.js | grep "ToolId"
+  # Confirm headerColor is set and matches the tool's category color family (see CATEGORY-COLOR-MAP-2.md)
+  ```
+
+  > ⚠️ **BUG PATTERN — Tool sets its own background color on root div (v4.31)**
+  > Some tools set `min-h-screen` + a background color on their outermost div (e.g. `<div className="min-h-screen bg-slate-50 ...">`). This overrides the `ToolPageWrapper` frame entirely — the category color disappears and the tool looks like a bare white page, inconsistent with the family. The tool component's root element must be a plain `<div>` with no background. All background styling comes from `ToolPageWrapper`.
+
+  > ⚠️ **BUG PATTERN — ToolPageWrapper change regresses frame or spacing (v4.32)**
+  > When `ToolPageWrapper.js` is edited, two regressions are common: (1) the inner div margin shrinks (e.g. `m-3` instead of `m-8`), making the colored frame visibly thin; (2) `mt-4` is dropped from the bookmark/dark mode row, collapsing the spacing between the description and the buttons. Both are invisible to the audit script. **Rule: any edit to `ToolPageWrapper.js` must be followed by a live visual check of at least two tools — one with results loaded, one without.**
+
 - [ ] 🔍 **Input area is a card** — wrapped in `${c.card} rounded-xl shadow-lg`. Not a bare div.
   ```bash
   grep -n "rounded-xl shadow-lg" ComponentName.js | head -5
@@ -321,12 +344,22 @@ const linkStyle = isDark
   # Confirm the primary input container uses c.card + rounded-xl shadow-lg
   ```
 
-- [ ] 🔍 **Header follows standard pattern** — card opens with a `border-b ${c.border}` div containing `<h2>` (icon first, then title) and a subtitle `<p>` in `c.textSecondary`.
+- [ ] 🔍 **Header follows standard pattern** — card opens with a `border-b ${c.border}` div containing `<h2>` (icon first, then title) and a subtitle `<p>` in `c.textSecondary`. Both are left-aligned — no `text-center` on the header or tagline.
   ```bash
   grep -n "border-b\|c\.border\|c\.textSecondary" ComponentName.js | head -10
   grep -n "<h2" ComponentName.js
   # Verify: border-b and c.border appear near <h2>; icon span precedes title text
   ```
+
+- [ ] 🔍 **Header and content are left-aligned** — `text-center` is banned on the tool `<h2>`, tagline `<p>`, and input card content. Left-alignment is the unconditional standard across all tools; centered headers create visual inconsistency in the family.
+  ```bash
+  grep -n "text-center" ComponentName.js | head -20
+  # Flag any text-center on: the h2, tagline p, input labels, or card-level wrappers
+  # Allowed only on: stat/score display numbers, isolated metric callouts inside result cards
+  ```
+
+  > ⚠️ **BUG PATTERN — Centered tool header (discovered session 88, v4.29)**
+  > Some tools wrap the `<h2>` block in `<div className="text-center ...">` — a pattern inherited from landing-page-style layouts. This creates inconsistency across the family, where most tools use left-aligned card headers. The correct pattern is always left-aligned: `<h2 className={...}><span className="mr-2">{tool?.icon}</span>{tool?.title}</h2>`. Remove any `text-center` ancestor of the header block.
 
 - [ ] 🔍 **Primary submit button is full-width** — uses `w-full`, `min-h-[48px]` (or `py-3`+), and `c.btnPrimary`.
   ```bash
@@ -362,13 +395,27 @@ const linkStyle = isDark
 - [ ] 🧪 **No flash of wrong theme on load.**
 
 ### 1.4 Action Buttons
-> `ActionBar` is the standard output for Copy + Print + Share on the results panel. Standalone `PrintBtn` or `CopyBtn` are allowed alongside `ActionBar` for per-item actions (e.g. per-message print). The absolute rule: **never use `window.open` / `buildPrintHtml` for custom printing** — use `PrintBtn` from ActionButtons instead.
+> `ActionBar` lives in the **`ToolPageWrapper` persistent header row** — right side, with bookmark and dark/light mode buttons on the left. Tools register their export content via `useRegisterActions(content, title)` — the wrapper renders the ActionBar automatically when content is available. An inline `<ActionBar>` remaining in tool JSX is a duplicate violation. Standalone `CopyBtn` or `PrintBtn` are still allowed inside a tool for per-item actions (e.g. copy a single question). The absolute rule: **never use `window.open` / `buildPrintHtml` for custom printing** — use `PrintBtn` from ActionButtons instead.
 
-- [ ] 🔍 **Imports from `../components/ActionButtons`** — uses `ActionBar` (and optionally standalone `CopyBtn`/`PrintBtn` for per-item actions).
+- [ ] 🔍 **Imports `useRegisterActions` from `../components/ActionBarContext`** — and calls it with the tool's export content and title.
   ```bash
-  grep -n "ActionButtons\|ActionBar\|CopyBtn\|PrintBtn\|ShareBtn" ComponentName.js | head -10
-  # Must show import from ../components/ActionButtons
-  # Must NOT import from lucide-react
+  grep -n "useRegisterActions\|ActionBarContext" ComponentName.js
+  # Must show: import { useRegisterActions } from '../components/ActionBarContext'
+  # Must show: useRegisterActions(...) called in the component body
+  ```
+
+- [ ] 🔍 **No inline `<ActionBar>` in results output** — the wrapper header renders it. An `<ActionBar>` still in the tool JSX is a duplicate and must be removed.
+  ```bash
+  grep -n "<ActionBar" ComponentName.js
+  # Must return zero results (ActionBar is now rendered by ToolPageWrapper, not the tool)
+  # Exception: standalone CopyBtn/PrintBtn for per-item actions are still fine
+  ```
+
+- [ ] 🔍 **`useRegisterActions` called with correct content** — passes the tool's full export string (e.g. `buildFullExport()`) and `tool?.title`. Content must include `BRAND` so copy output ends with the DeftBrain attribution line.
+  ```bash
+  grep -n "useRegisterActions" ComponentName.js
+  # Must show content builder function (buildFullExport, buildText, etc.) passed as first arg
+  # Must NOT pass an empty string or null — that hides the ActionBar entirely
   ```
 
 - [ ] 🔍 **No `lucide-react` imports** — all icons are emojis in `<span>` tags.
@@ -377,29 +424,14 @@ const linkStyle = isDark
   # Must return zero results
   ```
 
-- [ ] 🔍 **`ActionBar` is present in the component.**
-  ```bash
-  grep -n "<ActionBar" ComponentName.js
-  # Must return at least one result
-  ```
-
-- [ ] 🔍 **No custom print bypass** — no `window.open`, `buildPrintHtml`, or hardcoded `.branding` div. All printing must go through `ActionBar` or `PrintBtn` from ActionButtons.
+- [ ] 🔍 **No custom print bypass** — no `window.open`, `buildPrintHtml`, or hardcoded `.branding` div. All printing must go through `PrintBtn` from ActionButtons (called via ActionBar in the wrapper).
   ```bash
   grep -n "window\.open\|buildPrintHtml\|buildPrintHTML\|class=\"branding\"\|className=\"branding\"" ComponentName.js
   # Must return zero results
   ```
 
-- [ ] 🔍 **ActionBar placement** — within ~5 lines of the `resultsRef` div opening.
-  ```bash
-  grep -n "resultsRef\|<ActionBar" ComponentName.js
-  # ActionBar line number must be within ~5 lines of the resultsRef div
-  ```
-
 - [ ] 🔍 **Copy content includes DeftBrain branding** — `BRAND` constant used, ends with `\n\n— Generated by DeftBrain · deftbrain.com`.
   ```bash
-  grep -n "BRAND\|deftbrain\.com\|Generated by DeftBrain" ComponentName.js
-  # BRAND constant must be defined AND referenced inside a copy content builder function.
-  # A BRAND definition with no usage is a violation — the constant must appear in buildFullText or equivalent.
   grep -n "const BRAND" ComponentName.js
   grep -n "BRAND" ComponentName.js | grep -v "const BRAND"
   # Second grep must return at least one result (BRAND must be used, not just defined)
@@ -407,12 +439,6 @@ const linkStyle = isDark
 
   > ⚠️ **BUG PATTERN — `BRAND` defined but not wired (discovered WrongAnswersOnly audit, v4.23)**
   > `const BRAND` declared at top of file but `buildFullText` hardcoded the branding string directly: `lines.push('\n— Generated by DeftBrain · deftbrain.com')`. This passes the "is BRAND defined?" scan but means any future change to BRAND won't propagate. **Fix:** Replace all hardcoded branding strings with `lines.push(BRAND)`.
-
-- [ ] 🔍 **Print template includes branding div** — printed output identifies the source.
-  ```bash
-  grep -n "printContent\|printTemplate\|deftbrain" ComponentName.js | head -10
-  # Confirm branding is included in print template
-  ```
 
 ### 1.5 Navigation & State — Reset, Rerun, History
 
@@ -873,16 +899,23 @@ useEffect(() => {
 
 ### 5.5 Cross-Tool Links
 
-- [ ] 🔍 **Pre-result cross-ref present** — complementary tool mentioned before/alongside input.
+> **Placement standard:** Cross-refs live at the *bottom* of their section — never immediately under the title or tagline.
+> - **Pre-result:** below the submit button, at the bottom of the input area
+> - **Post-result:** below the results content, at the bottom of the results section
+> - Both must be plain `{results && ...}` or similar inline JSX conditionals in the main return — **not** inside render helper functions (the audit script cannot see inside them)
+
+- [ ] 🔍 **Pre-result cross-ref present** — a complementary tool linked at the **bottom of the input area**, below the submit button. Answers "what would a user want before or instead of this tool?"
   ```bash
   grep -n "href=.*linkStyle\|linkStyle.*href" ComponentName.js | head -10
-  # Confirm at least one cross-ref exists in the pre-results (input) area
+  # Confirm at least one cross-ref exists — then manually verify it sits below the submit button,
+  # not near the header/tagline
   ```
 
-- [ ] 🔍 **Post-result cross-ref present** — logical next-step tool shown after results load.
+- [ ] 🔍 **Post-result cross-ref present** — a logical next-step tool linked at the **bottom of the results section**. Answers "what would a user naturally want to do after seeing these results?"
   ```bash
   grep -n "href=.*linkStyle\|linkStyle.*href" ComponentName.js
-  # Confirm at least one cross-ref exists inside a results-conditional block
+  # Confirm at least one cross-ref exists inside a results-conditional block ({results && ...})
+  # in the main return statement — not inside a renderResults() helper
   ```
 
 - [ ] 🔍 **At least one conditional cross-ref** — a reference that appears only when a specific result condition is met.
@@ -906,6 +939,18 @@ useEffect(() => {
   grep -c "href=\"/" ComponentName.js
   # Count — flag if > 3
   ```
+
+- [ ] 🔍 **All cross-ref links resolve to real tools** — every `href="/ToolId"` or `href='/ToolId'` must match a real `id:` entry in `tools.js`. A broken link silently 404s with no build error. Template literal hrefs (`href={\`/${ref.id}\`}`) are exempt from static analysis but the ID values fed into them must still be valid.
+  ```bash
+  # Extract all static  hrefs and verify each against tools.js:
+  grep -oP 'href=["\'][/]\K[A-Za-z][A-Za-z0-9]+(?=["\'\])' ComponentName.js
+  # For each ID found, verify it exists:
+  grep 'id: "FoundId"' tools.js
+  # Must return a result for every ID — zero results = broken link
+  ```
+
+  > ⚠️ **BUG PATTERN — Broken cross-ref link (discovered WhereDidTheTimeGo audit, v4.33)**
+  > `href="/MirrorTest"` was a dead link — `MirrorTest` does not exist in `tools.js`. The tool was probably renamed or never shipped. No build error, no runtime error, just a silent 404 for the user. The audit script now validates all static tool hrefs against `tools.js` at scan time.
 
 - [ ] 🔍 **Bidirectional check** — Tool B mentions this tool if this tool mentions Tool B.
   ```bash
@@ -1033,6 +1078,14 @@ For each tool, capture:
 
 **(2) `useTheme` non-standard destructure pattern (Section 1.3):** Some tools use `const { theme } = useTheme(); const isDark = theme === 'dark'` instead of the standard `const { isDark } = useTheme()`. Both work at runtime but the non-standard form adds a manual derivation step, is inconsistent with the family, and adds surface area for bugs if the hook's return shape changes. **Scan:** `grep "const { theme }" ComponentName.js` — must return zero results. If found, replace with `const { isDark } = useTheme()`.*
 
+*v4.28 — Redesigned: ActionBar moved to persistent wrapper header (Section 1.4), March 2026.*
+
+**(1) ActionBar now lives in `ToolPageWrapper`, not inside tool components.** `ToolPageWrapper` renders `<ActionBar>` in the header row (right side, alongside bookmark/dark mode on the left) via `ActionBarContext`. Tools register their export content with `useRegisterActions(content, title)` — a single hook call that updates the header ActionBar whenever results change. The old pattern of placing `<ActionBar>` inside the results JSX is now a violation — it creates a duplicate. **Migration:** add `import { useRegisterActions } from '../components/ActionBarContext'`, call `useRegisterActions(buildFullExport(), tool?.title)` near the top of the component body, and remove any `<ActionBar>` from the results section. Tools not yet migrated simply show no ActionBar in the header — they continue to work as before during the transition.*
+
+**(3) Bookmark toast must use `left-0`, not `right-0`.** The bookmark button moved to the left side of the header row when ActionBar was added on the right. The toast popup (`absolute top-full mt-2`) is positioned relative to its parent — `left-0` drops it below the bookmark button correctly. `right-0` sends it to the far right of the row, away from the button that triggered it. **Scan in `ToolPageWrapper.js`:** `grep "showBookmarkToast" ToolPageWrapper.js` — the toast div must have `left-0`, not `right-0`.*
+
+**(2) `useRegisterActions` must use `useEffect` internally** — calling `registerActions` (which calls `setState`) directly on every render creates an infinite loop that freezes the UI. The hook wraps the call in `useEffect([content, title])` so it only fires when content actually changes. Any direct call to `registerActions` outside a `useEffect` is a violation.*
+
 *v4.27 — Hardened: Global `Cmd/Ctrl+Enter` listener is now a 🚨 mandatory mechanical check (Section 2.1). The existing Enter/Return check only verified that *some* `onKeyDown` exists — it did not enforce the document-level global listener that covers pill-only inputs, dropdowns, and focus-anywhere scenarios. New check requires: (1) `document.addEventListener('keydown', ...)` present, (2) `metaKey` checked, (3) `ctrlKey` checked, (4) both checked together for cross-platform support. This has been the intended standard all along; the check now enforces it mechanically. March 2026.*
 
 *v4.26 — Clarified: `callClaudeWithRetry` vs `anthropic.messages.create` (Section 2.2). The 🚨 rule "never raw `anthropic.messages.create`" has a documented exception: routes that return structured JSON must use `anthropic.messages.create` + `cleanJsonResponse` because `callClaudeWithRetry(prompt, options)` returns already-parsed JSON directly and has an incompatible call signature. Attempting to substitute `callClaudeWithRetry` on a JSON route silently breaks parsing. **Rule clarified to:** use `callClaudeWithRetry` for plain-text routes; use `anthropic.messages.create` + `cleanJsonResponse` + `JSON.parse` for JSON-returning routes. Both are acceptable — the violation is mixing them incorrectly. Discovered UpsellShield audit, March 2026.*
@@ -1049,9 +1102,9 @@ For each tool, capture:
 
 *v4.25 — Strengthened: Icon placement check (Section 0). Added mandatory grep scans with three tests: (1) `mr-2` pattern present on icon span, (2) `tool?.icon` appears in header, (3) no bare string in h1/h2. Also added bug pattern: icon hardcoded after title name (e.g. `<h2>UpsellShield 🧲</h2>`). Discovered UpsellShield audit, March 2026.*
 
-*v4.24 — New check added, discovered during WhatIfMachine audit, March 2026:*
+*v4.24 — New check added, discovered during WhatIf audit, March 2026:*
 
-**(1) Hardcoded title/tagline in component header (Section 0):** Tools hardcode their title and tagline as JSX string literals rather than reading from `tool?.title` and `tool?.tagline`. When `tools.js` is updated the component header silently stays stale. Fix: always use `{tool?.title}` and `{tool?.tagline}`. Applied retroactively to WhatIfMachine, WhatsMyVibe, WhereDidItGo, and WrongAnswersOnly.*
+**(1) Hardcoded title/tagline in component header (Section 0):** Tools hardcode their title and tagline as JSX string literals rather than reading from `tool?.title` and `tool?.tagline`. When `tools.js` is updated the component header silently stays stale. Fix: always use `{tool?.title}` and `{tool?.tagline}`. Applied retroactively to WhatIf, WhatsMyVibe, WhereDidItGo, and WrongAnswersOnly.*
 
 *v4.23 — Four new checks discovered during WrongAnswersOnly audit, March 2026:*
 
@@ -1070,3 +1123,41 @@ For each tool, capture:
 **(2) `btnPrimary` defaulting to a bespoke theme color instead of cyan (Section 1.1):** Crisis-themed or urgency-themed tools sometimes set `btnPrimary` (or its alias `pri:`) to `bg-red-600` to match the tool's urgency palette. This violates the family standard: `btnPrimary` must always be cyan. The tool's urgency palette belongs in bespoke keys like `panic:`, `crit:`, etc. — never in `btnPrimary`. **Scan:** `grep "btnPrimary:" ComponentName.js` — value must contain `bg-cyan-` in both branches. If it contains any other color family, replace.*
 
 **(3) History cap above 6 requires documented exception (Section 1.5):** The standard caps history at 5–6 entries. Tools with pattern-analysis features that require larger history sets (e.g., CrisisPrioritizer's pattern analysis uses up to 20 sessions) may exceed this cap, but must document it explicitly in the component as a comment and in the audit notes. **Scan:** `grep "\.slice(0, [0-9]" ComponentName.js | grep -i "journal\|history\|setHistory"` — any cap above 6 without a documented exception comment is a violation.*
+
+*v4.33 — Cross-ref link validity check added (Section 5.5), March 2026:*
+
+**All static cross-ref hrefs must resolve to a real tool ID in `tools.js`.** During the WhereDidTheTimeGo audit, `href="/MirrorTest"` was found to be a dead link — the tool does not exist. No build error, no warning, just a silent 404. New check added to Section 5.5 and to `audit_v2-3.py`.
+
+**Rule:** Every plain-string `href="/ToolId"` or `href='/ToolId'` in the component must match an `id:` entry in `tools.js`. Template literal hrefs are exempt from static analysis but must still reference valid IDs. The audit script checks this automatically when `tools.js` is present.
+
+*v4.32 — ToolPageWrapper change discipline (Section 1.2), March 2026:*
+
+**Two specific regressions documented as bug patterns.** Both were introduced during the `ToolPageWrapper` color frame fix and are invisible to the audit script:
+
+**(1) Inner div margin shrank** — `m-8` (32px) was changed to `m-3` (12px), making the colored frame visibly thin. The correct value is `m-8`. Any value less than this is a regression.
+
+**(2) Bookmark row spacing collapsed** — `mt-4` was dropped from the bookmark/dark mode button row, collapsing the breathing room between the tool description and the buttons. The correct class is `mt-4 mb-2`.
+
+**Rule added:** Any edit to `ToolPageWrapper.js` must be followed by a live visual check of at least two tools — one with results loaded, one without. The audit script cannot catch visual regressions in the wrapper.
+
+*v4.31 — Tool card frame standard codified (Section 1.2), March 2026:*
+
+**Tool card color frame is controlled entirely by `ToolPageWrapper`, not individual tool components.** `ToolPageWrapper` wraps every tool in a `<section>` with `headerColor` as a gradient background (solid for ~60px at top, fading to transparent by ~220px). The tool content sits inside a white inner div (`${colors.surface} m-3 rounded-xl p-6`). This produces a consistent top-heavy colored frame across all tools.
+
+**The violation pattern:** Tools that set `min-h-screen` + a background color on their outermost div override the wrapper frame entirely. The category color disappears and the tool renders as a bare white/grey page, breaking family consistency. Fix: remove all background color from the tool component's root element. The tool root must be a plain `<div>` — no `min-h-screen`, no `bg-*`, no `background:` inline style.
+
+**`headerColor` in `tools.js`** must be set for every tool and must match the tool's primary category color family per `CATEGORY-COLOR-MAP-2.md`. Missing or wrong `headerColor` values produce no frame or the wrong family color.
+
+*v4.30 — Cross-ref placement codified (Section 5.5), March 2026:*
+
+**(1) Pre-result cross-refs belong at the bottom of the input area** — below the submit button, not near the title or tagline. Placing them at the top of the page before the user has engaged with the tool is premature and feels like an ad. Below the submit button is the natural "or alternatively..." moment.
+
+**(2) Post-result cross-refs belong at the bottom of the results section** — after the user has absorbed the output, as a natural "what next?" The bottom of the results section is when the user's task is complete and they are most receptive to a next step.*
+
+**(3) Cross-refs must be inline in the main return, not inside render helper functions** — `{results && <p>...<a href="/X">...</a></p>}` in the main JSX is detectable by the audit script. A cross-ref buried inside `renderResults()` or a sub-component is invisible to the script and harder to audit manually.*
+
+*v4.29 — Two new standards, March 2026:*
+
+**(1) Header is left-aligned (Section 1.2):** `text-center` is banned on the tool `<h2>`, tagline `<p>`, and input card content. Left-alignment is the unconditional standard across all tools. Some older tools wrap the header block in `<div className="text-center ...">` — a pattern inherited from landing-page-style layouts that creates visual inconsistency. Centered alignment is only acceptable for isolated metric callout numbers inside result cards (e.g. a large score display). **Scan:** `grep -n "text-center" ComponentName.js` — flag any `text-center` on the h2, tagline, input labels, or card-level wrappers. Result-card metric callouts are exempt.*
+
+**(2) ActionBar placement is the `ToolPageWrapper` persistent header — not inline in tool JSX (Section 1.4):** The ActionBar sits to the right of the bookmark and dark/light mode buttons in the wrapper header row. Tools register content via `useRegisterActions(content, title)`. An inline `<ActionBar>` remaining in tool JSX is a duplicate and must be removed. The audit script (`audit_v2.py`) still checks for inline ActionBar proximity to `resultsRef` — **that check is now outdated and should be updated** to verify `useRegisterActions` import and call instead.*

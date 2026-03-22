@@ -1031,7 +1031,7 @@ const CrisisPrioritizer = ({ tool }) => {
           <p className="mb-2 font-medium">You might also like:</p>
           <div className="flex flex-wrap gap-2">
             {[{slug:'decision-coach',label:'🧭 Decision Coach'},{slug:'chaos-pilot',label:'✈️ Chaos Pilot'},{slug:'crash-predictor',label:'💥 Crash Predictor'}].map(({slug,label})=>(
-              <a key={slug} href={`/tool/${slug}`} className={linkStyle}>{label}</a>
+              <a key={slug} href={`${slug}`} className={linkStyle}>{label}</a>
             ))}
           </div>
         </div>

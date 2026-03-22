@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from 'react';
+import { ActionBarProvider, useActionBar } from './ActionBarContext';
+import { ActionBar } from './ActionButtons';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { getToolById, tools } from '../data/tools';
 import { useTheme } from '../hooks/useTheme';
 import BrandMark from './BrandMark';
 
-const ToolPageWrapper = ({ children, tool, toolId }) => {
+// Inner component — has access to ActionBarContext
+const ToolPageWrapperInner = ({ children, tool, toolId }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { theme, toggleTheme } = useTheme();
+  const { actions } = useActionBar();
 
   // Scroll to top when a new tool page opens
   useEffect(() => {
@@ -46,6 +50,8 @@ const ToolPageWrapper = ({ children, tool, toolId }) => {
           box-shadow: none !important;
           border-radius: 0 !important;
         }
+        /* Firefox: prevent page break between header and tool card */
+        [data-print-main] > header { break-after: avoid !important; page-break-after: avoid !important; }
         /* Suppress transitions during print capture */
         * { transition: none !important; animation: none !important; }
       }
@@ -182,9 +188,20 @@ const ToolPageWrapper = ({ children, tool, toolId }) => {
         <main data-print-main className="lg:col-span-8">
 
           {/* Print-only header */}
-          <div data-print-show-flex style={{display:'none',alignItems:'center',gap:'10px',paddingBottom:'14px',marginBottom:'16px',borderBottom:'2px solid #e5e7eb'}}><div><div style={{fontFamily:'Georgia,serif',fontSize:'20px',fontWeight:'bold',color:'#1a1a1a'}}><span style={{color:'#c8872e'}}>D</span>eftBrain</div><div style={{fontSize:'11px',color:'#6b7280'}}>Intelligence on Demand · deftbrain.com</div></div></div>
+          <div data-print-show-flex style={{display:'none',flexDirection:'column',gap:'6px',paddingBottom:'14px',marginBottom:'16px',borderBottom:'2px solid #e5e7eb'}}>
+            <div style={{display:'flex',alignItems:'center',gap:'10px'}}>
+              <img src="/pBrain-r.png" alt="DeftBrain" style={{height:'40px',width:'auto'}} />
+              <div><div style={{fontFamily:'Georgia,serif',fontSize:'20px',fontWeight:'bold',color:'#1a1a1a'}}><span style={{color:'#c8872e'}}>D</span>eftBrain</div><div style={{fontSize:'11px',color:'#6b7280'}}>Intelligence on Demand · deftbrain.com</div></div>
+            </div>
+            {detectedTool && (
+              <div style={{marginTop:'8px'}}>
+                <div style={{fontSize:'22px',fontWeight:'700',color:'#1a1a1a'}}>{detectedTool.title}</div>
+                <div style={{fontSize:'13px',color:'#4b5563',marginTop:'4px',lineHeight:'1.5'}}>{detectedTool.description}</div>
+              </div>
+            )}
+          </div>
           {/* ── Header ── */}
-          <header className={`${colors.bg} pb-2 space-y-2`}>
+          <header data-print-hide className={`${colors.bg} pb-6 space-y-2`}>
             <div className={`flex items-center gap-3 ${colors.accent} mb-2 pt-4`}>
               <span className={`text-[10px] font-medium uppercase tracking-widest border ${colors.accentBorder} px-3 py-1 rounded-full`}>
                 {detectedTool?.categories?.[0] || 'General'}
@@ -199,7 +216,8 @@ const ToolPageWrapper = ({ children, tool, toolId }) => {
           </header>
 
           {/* Bookmark hint + Theme Toggle (above card, right-aligned) */}
-          <div data-print-hide className="flex justify-end mb-2 gap-2 relative">
+          <div data-print-hide className="flex items-center justify-between mt-4 mb-2 gap-2 relative">
+            <div className="flex gap-2">
             <button
               onClick={handleBookmarkHint}
               className={`flex items-center gap-1.5 px-3 py-2 rounded-lg transition-all ${colors.toggleBg} ${colors.toggleText}`}
@@ -210,7 +228,7 @@ const ToolPageWrapper = ({ children, tool, toolId }) => {
               <span className="text-xs font-medium">Bookmark</span>
             </button>
             {showBookmarkToast && (
-              <div className={`absolute right-0 top-full mt-2 px-4 py-2.5 rounded-lg shadow-lg border text-sm font-medium whitespace-nowrap z-50 ${
+              <div className={`absolute left-0 top-full mt-2 px-4 py-2.5 rounded-lg shadow-lg border text-sm font-medium whitespace-nowrap z-50 ${
                 isDark ? 'bg-zinc-800 border-zinc-600 text-zinc-100' : 'bg-white border-stone-200 text-stone-800'
               }`}>
                 Press <kbd className={`px-1.5 py-0.5 rounded text-xs font-bold border ${
@@ -231,17 +249,28 @@ const ToolPageWrapper = ({ children, tool, toolId }) => {
                 : <><span className="text-base leading-none">🌙</span><span className="text-xs font-medium">Dark Mode</span></>
               }
             </button>
+            </div>
+            {actions.content && (
+              <ActionBar content={actions.content} title={actions.title} />
+            )}
           </div>
 
-          <section data-print-section className={`${colors.surface} border ${colors.border} rounded-2xl shadow-sm overflow-hidden transition-colors duration-200`}>
-            <div className="p-8" style={detectedTool?.headerColor ? {
-              background: `linear-gradient(to bottom, ${detectedTool.headerColor} 0%, ${detectedTool.headerColor} 120px, transparent 260px)`
-            } : {}}>
+          <section data-print-section className={`border ${colors.border} rounded-2xl shadow-sm overflow-hidden transition-colors duration-200`} style={{
+              ...(detectedTool?.headerColor ? {
+                background: `linear-gradient(to bottom, ${detectedTool.headerColor} 0%, ${detectedTool.headerColor} 60px, transparent 220px)`
+              } : { background: isDark ? '#27272a' : '#ffffff' }),
+              breakBefore: 'avoid',
+              pageBreakBefore: 'avoid',
+            }}>
+            <div className={`${colors.surface} m-8 rounded-xl p-6`}>
               {children}
             </div>
           </section>
           {/* Print-only footer */}
-          <div data-print-show-flex style={{display:'none',justifyContent:'center',paddingTop:'10px',marginTop:'20px',borderTop:'1px solid #e5e7eb'}}><span style={{fontFamily:'Georgia,serif',fontSize:'12px',color:'#9ca3af'}}><span style={{color:'#c8872e',fontWeight:'bold'}}>D</span>eftBrain · deftbrain.com</span></div>
+          <div data-print-show-flex style={{display:'none',justifyContent:'center',alignItems:'center',gap:'8px',paddingTop:'10px',marginTop:'20px',borderTop:'1px solid #e5e7eb'}}>
+            <span style={{fontFamily:'Georgia,serif',fontSize:'12px',color:'#9ca3af'}}><span style={{color:'#c8872e',fontWeight:'bold'}}>D</span>eftBrain · deftbrain.com</span>
+            <img src="/pBrain-l.png" alt="DeftBrain" style={{height:'28px',width:'auto'}} />
+          </div>
         </main>
 
         {/* Right Column: Ad Panel + Guide Sidebar */}
@@ -393,5 +422,13 @@ const ToolPageWrapper = ({ children, tool, toolId }) => {
     </div>
   );
 };
+
+const ToolPageWrapper = ({ children, tool, toolId }) => (
+  <ActionBarProvider>
+    <ToolPageWrapperInner tool={tool} toolId={toolId}>
+      {children}
+    </ToolPageWrapperInner>
+  </ActionBarProvider>
+);
 
 export default ToolPageWrapper;

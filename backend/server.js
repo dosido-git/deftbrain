@@ -39,6 +39,16 @@ if (IS_PRODUCTION) {
   });
 }
 
+// ── Renamed tool redirects (301 permanent — preserves SEO equity) ──
+const RENAMED_TOOLS = {
+  '/WhatIfMachine': '/WhatIf',
+};
+app.use((req, res, next) => {
+  const redirect = RENAMED_TOOLS[req.path];
+  if (redirect) return res.redirect(301, redirect);
+  next();
+});
+
 // ── Security headers (production) ──
 if (IS_PRODUCTION) {
   app.use((req, res, next) => {

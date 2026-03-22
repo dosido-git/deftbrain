@@ -259,7 +259,7 @@ const AlternatePath = ({ tool }) => {
           <p className="mb-2 font-medium">You might also like:</p>
           <div className="flex flex-wrap gap-2">
             {[{slug:'what-if-machine',label:'🌀 What If Machine'},{slug:'fan-theory',label:'🎬 Fan Theory'},{slug:'future-proof',label:'🔭 Future Proof'}].map(({slug,label})=>(
-              <a key={slug} href={`/tool/${slug}`} className={linkStyle}>{label}</a>
+              <a key={slug} href={`${slug}`} className={linkStyle}>{label}</a>
             ))}
           </div>
         </div>

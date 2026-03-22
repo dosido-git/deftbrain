@@ -1,5 +1,5 @@
-import React, { useState, useCallback, useRef } from 'react';
-import { ActionBar } from '../components/ActionButtons';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
+import { useRegisterActions } from '../components/ActionBarContext';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useTheme } from '../hooks/useTheme';
@@ -13,13 +13,9 @@ const TIMEFRAMES = [
   { value: 'five_years', label: '5 years', emoji: '🌍' },
 ];
 
-const WhatIfMachine = ({ tool }) => {
+const WhatIf = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { isDark } = useTheme();
-
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
 
   const c = {
     card:              isDark ? 'bg-zinc-800' : 'bg-white',
@@ -28,12 +24,11 @@ const WhatIfMachine = ({ tool }) => {
     text:              isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary:     isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:         isDark ? 'text-zinc-500' : 'text-gray-400',
-    accentTxt:         isDark ? 'text-cyan-400' : 'text-cyan-600',
     btnPrimary:        isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
     btnSecondary:      isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:            isDark ? 'border-zinc-700' : 'border-gray-200',
-    success:           isDark ? 'border-emerald-600 text-emerald-300' : 'border-emerald-600 text-emerald-700',
-    warning:           isDark ? 'border-amber-500 text-amber-300' : 'border-amber-500 text-amber-700',
+    success:           isDark ? 'bg-emerald-900/20 border-emerald-600 text-emerald-300' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
+    warning:           isDark ? 'bg-amber-900/20 border-amber-500 text-amber-300' : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:            isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-100 border-red-200 text-red-800',
     pillActive:        isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
     pillInactive:      isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
@@ -52,16 +47,19 @@ const WhatIfMachine = ({ tool }) => {
     timelineBar:       isDark ? 'bg-zinc-600' : 'bg-zinc-300',
   };
 
+  const linkStyle = isDark
+    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
+    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
+
   // ─── State ───
-  const [decision, setDecision] = useState('');
+  const [decision, setDecision] = usePersistentState('whatif-decision', '');
   const [optionNotChosen, setOptionNotChosen] = useState('');
   const [context, setContext] = useState('');
   const [timeframe, setTimeframe] = useState('one_year');
-  const [results, setResults] = usePersistentState('whatifmachine-result', null);
+  const [results, setResults] = usePersistentState('whatif-result', null);
   const resultsRef = useRef(null);
   const [error, setError] = useState('');
-  const [history, setHistory] = usePersistentState('whatifmachine-history', []);
-
+  const [history, setHistory] = usePersistentState('whatif-history', []);
 
   // ─── Actions ───
   const generate = useCallback(async () => {
@@ -70,7 +68,7 @@ const WhatIfMachine = ({ tool }) => {
     setResults(null);
 
     try {
-      const data = await callToolEndpoint('what-if-machine', {
+      const data = await callToolEndpoint('what-if', {
         decision: decision.trim(),
         optionNotChosen: optionNotChosen.trim() || null,
         context: context.trim() || null,
@@ -83,7 +81,8 @@ const WhatIfMachine = ({ tool }) => {
       }, ...prev].slice(0, 6));
     } catch (err) {
       setError(err.message || 'Failed to generate simulation.');
-    } }, [decision, optionNotChosen, context, timeframe, callToolEndpoint, setResults, setHistory]);
+    }
+  }, [decision, optionNotChosen, context, timeframe, callToolEndpoint, setResults, setHistory]);
 
   const handleReset = useCallback(() => {
     setDecision(''); setOptionNotChosen(''); setContext('');
@@ -94,7 +93,7 @@ const WhatIfMachine = ({ tool }) => {
   const buildFullText = useCallback(() => {
     if (!results) return '';
     const r = results;
-    let text = `🎲 WhatIfMachine: The Road Not Taken\n`;
+    let text = `🎲 WhatIf: The Road Not Taken\n`;
     if (r.decision_read) text += `\n${r.decision_read}\n`;
     if (r.the_path_not_taken) text += `\nPath simulated: ${r.the_path_not_taken}\n`;
     if (r.scenarios?.length) {
@@ -103,7 +102,8 @@ const WhatIfMachine = ({ tool }) => {
         if (s.the_good) text += `\n✅ ${s.the_good}`;
         if (s.the_cost) text += `\n💔 ${s.the_cost}`;
       });
-    } if (r.the_surprise) text += `\n\n⚡ The surprise: ${r.the_surprise}`;
+    }
+    if (r.the_surprise) text += `\n\n⚡ The surprise: ${r.the_surprise}`;
     if (r.what_you_keep) text += `\n🔒 What stays: ${r.what_you_keep}`;
     if (r.what_you_lose) text += `\n💔 What you'd miss: ${r.what_you_lose}`;
     if (r.clarity_question) text += `\n\n❓ ${r.clarity_question}`;
@@ -111,171 +111,282 @@ const WhatIfMachine = ({ tool }) => {
     return text + BRAND;
   }, [results]);
 
+  // ─── Register actions ───
+  useRegisterActions(buildFullText(), tool?.title);
+
+  // ─── Scroll to results ───
+  useEffect(() => {
+    if (!results) return;
+    const t = setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+    return () => clearTimeout(t);
+  }, [results]);
+
+  // ─── Global Cmd/Ctrl+Enter ───
+  useEffect(() => {
+    const handler = (e) => {
+      if (e.key !== 'Enter' || !(e.metaKey || e.ctrlKey)) return;
+      const tag = document.activeElement?.tagName;
+      if (tag === 'TEXTAREA') return;
+      if (!decision.trim() || loading) return;
+      e.preventDefault();
+      generate();
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading, decision, generate]);
+
   const r = results;
 
   // ════════════════════════════════════════════════════════════
   // RENDER
   // ════════════════════════════════════════════════════════════
-  return (<div className={`space-y-6 ${c.text}`}>
+  return (
+    <div className={`space-y-6 ${c.text}`}>
 
-      {/* ── HEADER ── */} <div className={`${c.card} border ${c.border} rounded-xl p-6`}>
+      {/* ── INPUT CARD ── */}
+      <div className={`${c.card} border ${c.border} rounded-xl shadow-lg p-6`}>
         <div className={`mb-5 pb-4 border-b ${c.border}`}>
           <h2 className={`text-2xl font-bold ${c.text}`}><span className="mr-2">{tool?.icon}</span>{tool?.title}</h2>
           <p className={`text-sm ${c.textSecondary} mt-1`}>{tool?.tagline}</p>
         </div>
 
-        {/* Decision */} <div className="mb-4">
+        {/* Decision */}
+        <div className="mb-4">
           <label className={`text-sm font-bold ${c.text} block mb-1.5`}>What decision are you facing?</label>
           <textarea
-            value={decision} onChange={e => setDecision(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !loading && decision.trim()) { e.preventDefault(); generate(); } }} placeholder="e.g., I'm thinking about quitting my job to freelance, I'm deciding whether to move across the country for a relationship"
-            rows={2} className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} ${c.border} ${c.text} outline-none focus:ring-2 resize-none`} />
+            value={decision}
+            onChange={e => setDecision(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !loading && decision.trim()) { e.preventDefault(); generate(); } }}
+            placeholder="e.g., I'm thinking about quitting my job to freelance, I'm deciding whether to move across the country for a relationship"
+            rows={2}
+            className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} ${c.border} ${c.text} outline-none focus:ring-2 resize-none`} />
         </div>
 
-        {/* Option not chosen */} <div className="mb-4">
+        {/* Option not chosen */}
+        <div className="mb-4">
           <label className={`text-sm font-bold ${c.text} block mb-1.5`}>
             Which option should I simulate? <span className={`font-normal ${c.textMuted}`}>(the path you're NOT leaning toward)</span>
           </label>
           <input
             type="text"
-            value={optionNotChosen} onChange={e => setOptionNotChosen(e.target.value)} placeholder="e.g., staying at my job, not moving, saying no"
+            value={optionNotChosen}
+            onChange={e => setOptionNotChosen(e.target.value)}
+            placeholder="e.g., staying at my job, not moving, saying no"
             className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} ${c.border} ${c.text} outline-none focus:ring-2`} />
         </div>
 
-        {/* Context */} <div className="mb-4">
+        {/* Context */}
+        <div className="mb-4">
           <label className={`text-sm font-bold ${c.text} block mb-1.5`}>
             Context about your life <span className={`font-normal ${c.textMuted}`}>(optional — makes scenes more realistic)</span>
           </label>
           <input
             type="text"
-            value={context} onChange={e => setContext(e.target.value)} placeholder="e.g., 32, live in Denver, partner works remotely, have a dog, savings for 6 months"
+            value={context}
+            onChange={e => setContext(e.target.value)}
+            placeholder="e.g., 32, live in Denver, partner works remotely, have a dog, savings for 6 months"
             className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} ${c.border} ${c.text} outline-none focus:ring-2`} />
         </div>
 
-        {/* Timeframe */} <div className="mb-5">
+        {/* Timeframe */}
+        <div className="mb-5">
           <label className={`text-sm font-bold ${c.text} block mb-2`}>How far into the future?</label>
           <div className="flex gap-2">
-            {TIMEFRAMES.map(t => (<button
-                key={t.value} onClick={() => setTimeframe(t.value)} className={`flex-1 py-2.5 rounded-xl text-[11px] font-bold border transition-colors min-h-[40px] flex flex-col items-center gap-0.5 ${
+            {TIMEFRAMES.map(t => (
+              <button
+                key={t.value}
+                onClick={() => setTimeframe(t.value)}
+                className={`flex-1 py-2.5 rounded-xl text-[11px] font-bold border transition-colors min-h-[40px] flex flex-col items-center gap-0.5 ${
                   timeframe === t.value ? c.pillActive : c.pillInactive
-                }`} >
+                }`}>
                 <span className="text-base">{t.emoji}</span>
-                {t.label} </button>
-            ))} </div>
+                {t.label}
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* Actions */} <div className="flex gap-3">
+        {/* Actions */}
+        <div className="flex gap-3">
           <button
-            onClick={generate} disabled={loading || !decision.trim()} className={`flex-1 ${c.btnPrimary} disabled:opacity-40 disabled:cursor-not-allowed font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-2 min-h-[48px] shadow-lg`} >
-            {loading ? (<><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> Simulating...</>
-            ) : (<><span>{tool?.icon ?? '🎲'}</span> Show Me That Future</>
-            )} </button>
-          {results && (<button onClick={handleReset} className={`px-5 py-3 ${c.btnSecondary} rounded-xl font-medium min-h-[48px]`}>
+            onClick={generate}
+            disabled={loading || !decision.trim()}
+            className={`flex-1 ${c.btnPrimary} disabled:opacity-40 disabled:cursor-not-allowed font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-2 min-h-[48px] shadow-lg`}>
+            {loading
+              ? (<><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> Simulating...</>)
+              : (<><span>{tool?.icon ?? '🎲'}</span> Show Me That Future</>)
+            }
+          </button>
+          {results && (
+            <button onClick={handleReset} className={`px-5 py-3 ${c.btnSecondary} rounded-xl font-medium min-h-[48px]`}>
               New Decision
             </button>
-          )} </div>
+          )}
+        </div>
 
-
+        {/* Pre-result cross-ref */}
+        <p className={`text-xs ${c.textMuted} mt-3`}>
+          Want to stress-test your thinking first? <a href="/WrongAnswersOnly" className={linkStyle}>Wrong Answers Only</a> uses reverse logic to reveal hidden assumptions.
+        </p>
       </div>
 
-      {/* Error */} {error && (<div className={`${c.danger} border rounded-xl p-4 flex items-start gap-3`}>
+      {/* Error */}
+      {error && (
+        <div className={`${c.danger} border rounded-xl p-4 flex items-start gap-3`}>
           <span className="flex-shrink-0 mt-0.5">⚠️</span>
           <p className="text-sm">{error}</p>
         </div>
-      )} {/* ══════════════════════════════════════════════════════════ */} {/* RESULTS                                                  */} {/* ══════════════════════════════════════════════════════════ */} {r && (<div className="space-y-4">
+      )}
 
-          <div className="flex justify-end">
-            <div ref={resultsRef} data-results-anchor />
-          <ActionBar content={buildFullText()} title="What-If" />
-          </div>
+      {/* ══════════════════════════════════════════════════════════ */}
+      {/* RESULTS                                                    */}
+      {/* ══════════════════════════════════════════════════════════ */}
+      {r && (
+        <div className="space-y-4">
 
-          {/* ── DECISION READ ── */} {r.decision_read && (<div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+          <div ref={resultsRef} data-results-anchor />
+
+          {/* ── DECISION READ ── */}
+          {r.decision_read && (
+            <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
               <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{r.decision_read}</p>
             </div>
-          )} {/* ── PATH LABEL ── */} {r.the_path_not_taken && (<div className={`${c.infoBox} border rounded-xl p-4 text-center`}>
+          )}
+
+          {/* ── PATH LABEL ── */}
+          {r.the_path_not_taken && (
+            <div className={`${c.infoBox} border rounded-xl p-4 text-center`}>
               <p className="text-xs font-bold mb-0.5">Simulating the path where you chose:</p>
               <p className="text-sm font-bold">{r.the_path_not_taken}</p>
             </div>
-          )} {/* ── SCENARIOS / TIMELINE ── */} {r.scenarios?.length > 0 && (<div className="space-y-0">
-              {r.scenarios.map((scene, idx) => (<div key={idx} className="relative">
-                  {/* Timeline connector */} {idx < r.scenarios.length - 1 && (<div className={`absolute left-5 top-full w-0.5 h-4 ${c.timelineBar}`} />
-                  )} <div className={`${c.card} border ${c.border} rounded-xl overflow-hidden ${idx > 0 ? 'mt-4' : ''}`}>
-                    {/* Timepoint header */} <div className={`px-5 py-3 border-b ${c.border} flex items-center gap-2`}>
+          )}
+
+          {/* ── SCENARIOS / TIMELINE ── */}
+          {r.scenarios?.length > 0 && (
+            <div className="space-y-0">
+              {r.scenarios.map((scene, idx) => (
+                <div key={idx} className="relative">
+                  {/* Timeline connector */}
+                  {idx < r.scenarios.length - 1 && (
+                    <div className={`absolute left-5 top-full w-0.5 h-4 ${c.timelineBar}`} />
+                  )}
+                  <div className={`${c.card} border ${c.border} rounded-xl overflow-hidden ${idx > 0 ? 'mt-4' : ''}`}>
+                    {/* Timepoint header */}
+                    <div className={`px-5 py-3 border-b ${c.border} flex items-center gap-2`}>
                       <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${c.badge}`}>
-                        {scene.timepoint} </span>
+                        {scene.timepoint}
+                      </span>
                     </div>
 
-                    {/* The scene */} <div className={`p-5`}>
-                      <div className={`${c.sceneBg} border rounded-xl p-5 mb-4`}>
+                    {/* The scene */}
+                    <div className="p-5">
+                      <div className={`${c.sceneBg} border ${c.border} rounded-xl p-5 mb-4`}>
                         <p className={`text-sm ${c.text} leading-[1.9] italic`}>{scene.scene}</p>
                       </div>
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        {scene.the_good && (<div className={`${c.success} border rounded-lg p-3`}>
+                        {scene.the_good && (
+                          <div className={`${c.success} border rounded-lg p-3`}>
                             <p className="text-[10px] font-bold mb-1">✅ What's better</p>
                             <p className="text-xs leading-relaxed">{scene.the_good}</p>
                           </div>
-                        )} {scene.the_cost && (<div className={`${c.warning} border rounded-lg p-3`}>
+                        )}
+                        {scene.the_cost && (
+                          <div className={`${c.warning} border rounded-lg p-3`}>
                             <p className="text-[10px] font-bold mb-1">💔 What it costs</p>
                             <p className="text-xs leading-relaxed">{scene.the_cost}</p>
                           </div>
-                        )} </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
-              ))} </div>
-          )} {/* ── THE SURPRISE ── */} {r.the_surprise && (<div className={`${c.warning} border rounded-xl p-4 flex items-start gap-3`}>
+              ))}
+            </div>
+          )}
+
+          {/* ── THE SURPRISE ── */}
+          {r.the_surprise && (
+            <div className={`${c.warning} border rounded-xl p-4 flex items-start gap-3`}>
               <span className="flex-shrink-0 mt-0.5">⚡</span>
               <div>
                 <p className="text-xs font-bold mb-1">The surprise you wouldn't expect</p>
                 <p className="text-sm leading-relaxed">{r.the_surprise}</p>
               </div>
             </div>
-          )} {/* ── KEEP / LOSE ── */} <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {r.what_you_keep && (<div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+          )}
+
+          {/* ── KEEP / LOSE ── */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {r.what_you_keep && (
+              <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
                 <p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>🔒 What stays the same</p>
                 <p className={`text-xs ${c.textSecondary} leading-relaxed`}>{r.what_you_keep}</p>
               </div>
-            )} {r.what_you_lose && (<div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+            )}
+            {r.what_you_lose && (
+              <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
                 <p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>💔 What you'd miss most</p>
                 <p className={`text-xs ${c.textSecondary} leading-relaxed`}>{r.what_you_lose}</p>
               </div>
-            )} </div>
+            )}
+          </div>
 
-          {/* ── CLARITY QUESTION ── */} {r.clarity_question && (<div className={`${c.card} border ${c.border} rounded-xl p-5 text-center`}>
+          {/* ── CLARITY QUESTION ── */}
+          {r.clarity_question && (
+            <div className={`${c.card} border ${c.border} rounded-xl p-5 text-center`}>
               <p className={`text-xs font-bold ${c.textMuted} mb-2`}>❓ The question to ask yourself</p>
               <p className={`text-base font-bold ${c.text} leading-relaxed`}>{r.clarity_question}</p>
             </div>
-          )} {/* ── HONEST TAKE ── */} {r.honest_take && (<div className={`${c.success} border rounded-xl p-4 flex items-start gap-3`}>
+          )}
+
+          {/* ── HONEST TAKE ── */}
+          {r.honest_take && (
+            <div className={`${c.success} border rounded-xl p-4 flex items-start gap-3`}>
               <span className="flex-shrink-0 mt-0.5">🎯</span>
               <div>
                 <p className="text-xs font-bold mb-1">Honest take</p>
                 <p className="text-sm leading-relaxed">{r.honest_take}</p>
               </div>
             </div>
-          )} <p className={`text-[10px] ${c.textMuted} text-center px-4`}>
+          )}
+
+          <p className={`text-[10px] ${c.textMuted} text-center px-4`}>
             This is a thought experiment, not a prediction. Real life is more complex and more surprising than any simulation.
           </p>
+
+          {/* Post-result cross-refs */}
+          <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+            <p className={`text-xs font-bold ${c.textMuted} mb-2`}>🔗 What next?</p>
+            <div className="flex flex-wrap gap-3">
+              <a href="/PlotTwist" className={`text-xs ${linkStyle}`}>🌀 Plot Twist</a>
+              <a href="/TimeWarp" className={`text-xs ${linkStyle}`}>⏰ Time Warp</a>
+            </div>
+          </div>
+
         </div>
-      )} {/* eslint-disable-next-line no-restricted-globals */} {history.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
+      )}
+
+      {/* History */}
+      {/* eslint-disable-next-line no-restricted-globals */}
+      {history.length > 0 && (
+        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
           <p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 Recent sessions</p>
           <div className="space-y-1">
-            {/* eslint-disable-next-line no-restricted-globals */} {history.map(s => (<div key={s.id} className="flex items-center justify-between">
+            {history.map(s => (
+              <div key={s.id} className="flex items-center justify-between">
                 <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || 'Session'}</span>
                 <span className={`text-xs ${c.textMuted} ml-2`}>{new Date(s.date).toLocaleDateString()}</span>
               </div>
-            ))} </div>
+            ))}
+          </div>
         </div>
-      )} {/* Related tools */} <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-2`}>
-        <p className={`text-xs font-bold ${c.textMuted} mb-2`}>🔗 Related tools</p>
-        <div className="flex flex-wrap gap-3">
-          <a href="/tool/PlotTwist" className={`text-xs ${linkStyle}`}>🌀 Plot Twist</a>
-          <a href="/tool/TimeWarp" className={`text-xs ${linkStyle}`}>⏰ Time Warp</a>
-          <a href="/tool/WrongAnswersOnly" className={`text-xs ${linkStyle}`}>🎭 Wrong Answers Only</a>
-        </div>
-      </div>
+      )}
+
     </div>
   );
 };
 
-WhatIfMachine.displayName = 'WhatIfMachine';
-export default WhatIfMachine;
+WhatIf.displayName = 'WhatIf';
+export default WhatIf;

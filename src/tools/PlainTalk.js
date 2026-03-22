@@ -1421,8 +1421,8 @@ const PlainTalk = ({ tool }) => {
       <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
         <p className={`text-xs font-bold ${c.textMuted} mb-2`}>🔗 Related tools</p>
         <div className="flex flex-wrap gap-3">
-          <a href="/tool/plain-talk" className={`text-xs ${linkStyle}`}>📝 Plain Talk</a>
-          <a href="/tool/noise-canceler" className={`text-xs ${linkStyle}`}>🔇 Noise Canceler</a>
+          <a href="plain-talk" className={`text-xs ${linkStyle}`}>📝 Plain Talk</a>
+          <a href="noise-canceler" className={`text-xs ${linkStyle}`}>🔇 Noise Canceler</a>
         </div>
       </div>
     </div>

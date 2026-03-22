@@ -153,7 +153,7 @@ const CrowdWisdom = ({ tool }) => {
         {!results && (
           <p className={`text-xs text-center ${c.textMuteded}`}>
             Want to stress-test the belief driving this first?{' '}
-            <a href="/tool/BeliefStressTest" className={linkStyle}>BeliefStressTest</a>
+            <a href="BeliefStressTest" className={linkStyle}>BeliefStressTest</a>
           </p>
         )}
 
@@ -320,7 +320,7 @@ const CrowdWisdom = ({ tool }) => {
             {results.voices?.length >= 4 && (
               <p className={`text-xs text-center ${c.textMuteded}`}>
                 Still weighing the options?{' '}
-                <a href="/tool/DecisionCoach" className={linkStyle}>DecisionCoach</a>{' '}
+                <a href="DecisionCoach" className={linkStyle}>DecisionCoach</a>{' '}
                 walks you through a structured decision framework.
               </p>
             )}

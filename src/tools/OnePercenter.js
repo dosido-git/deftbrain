@@ -267,7 +267,7 @@ const OnePercenter = ({ tool }) => {
                   { id: 'PreMortem', icon: '💀', label: 'Why your plan might fail' },
                   { id: 'FutureProof', icon: '🔮', label: '5-year trajectory check' },
                 ].map(r => (
-                  <a key={r.id} href={`/tool/${r.id}`} target="_blank" rel="noopener noreferrer"
+                  <a key={r.id} href={`${r.id}`} target="_blank" rel="noopener noreferrer"
                     className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${c.btnSecondaryondary}`}>
                     {r.icon} {r.label}
                   </a>

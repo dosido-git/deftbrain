@@ -441,7 +441,7 @@ const JargonAssassin = ({ tool }) => {
           <p className="mb-2 font-medium">You might also like:</p>
           <div className="flex flex-wrap gap-2">
             {[{slug:'plain-talk',label:'💬 Plain Talk'},{slug:'analogy-engine',label:'💡 Analogy Engine'},{slug:'say-it-right',label:'🗣️ Say It Right'}].map(({slug,label})=>(
-              <a key={slug} href={`/tool/${slug}`} className={linkStyle}>{label}</a>
+              <a key={slug} href={`${slug}`} className={linkStyle}>{label}</a>
             ))}
           </div>
         </div>

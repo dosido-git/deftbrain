@@ -21,6 +21,8 @@ import re
 import os
 import sys
 import json
+import io
+import urllib.request
 from pathlib import Path
 from collections import deque
 from PIL import Image, ImageDraw, ImageFont
@@ -29,7 +31,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 _HERE          = Path(__file__).parent.resolve()
 TOOLS_JS_PATH  = str(_HERE / 'src/data/tools.js')
-LOGO_PATH      = str(_HERE / 'src/assets/pBrain-r.png')
+LOGO_PATH      = str(_HERE / 'src/assets/pBrain-l.png')
 OUTPUT_DIR     = str(_HERE / 'public/og')
 
 BASE_URL       = 'https://deftbrain.com'
@@ -128,12 +130,100 @@ def wrap_text(draw, text, font, max_w):
 
 # ── Card renderers ────────────────────────────────────────────────────────────
 
-def make_tool_card(emoji, title, tagline, out_path, logo_img, logo_w):
+EMOJI_CACHE_DIR  = str(_HERE / 'og-emoji-cache')
+TWEMOJI_LOCAL    = str(_HERE / 'public/twemoji/svg')   # SVGs bundled with the app
+TWEMOJI_LOCAL_72 = str(_HERE / 'public/twemoji/72x72') # PNGs if present
+
+
+def emoji_to_twemoji_filename(emoji):
+    """Convert emoji string to Twemoji filename stem (handles VS-16 and ZWJ sequences)."""
+    codepoints = []
+    for char in emoji:
+        cp = ord(char)
+        if cp == 0xFE0F:   # VS-16 variation selector — Twemoji omits it
+            continue
+        codepoints.append(f'{cp:x}')
+    return '-'.join(codepoints)
+
+
+def draw_emoji_twemoji(canvas, emoji, x, y, size=109, verbose=False):
+    """
+    Draw an emoji using a Twemoji PNG — reliable on all platforms.
+
+    Resolution order:
+      1. og-emoji-cache/   — previously downloaded PNGs
+      2. public/twemoji/   — PNGs or SVGs already bundled with the app
+      3. CDN download      — jsdelivr, saved to cache for next run
+      4. Font rendering    — last resort (unreliable on macOS)
+    """
+    os.makedirs(EMOJI_CACHE_DIR, exist_ok=True)
+    filename = emoji_to_twemoji_filename(emoji)
+    cache_path = os.path.join(EMOJI_CACHE_DIR, f'{filename}.png')
+
+    img = None
+    source = None
+
+    # 1. Try download cache
+    if os.path.exists(cache_path):
+        try:
+            img = Image.open(cache_path).convert('RGBA')
+            source = f'cache ({cache_path})'
+        except Exception:
+            img = None
+
+    # 2. Try local bundled twemoji (PNG 72x72 first, then SVG)
+    if img is None:
+        for local_dir, ext in [(TWEMOJI_LOCAL_72, '.png'), (TWEMOJI_LOCAL, '.svg')]:
+            local_path = os.path.join(local_dir, f'{filename}{ext}')
+            if os.path.exists(local_path) and ext == '.png':
+                try:
+                    img = Image.open(local_path).convert('RGBA')
+                    source = f'local ({local_path})'
+                    img.save(cache_path)  # cache it for next time
+                    break
+                except Exception:
+                    pass
+
+    # 3. Try CDN download
+    if img is None:
+        url = f'https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/72x72/{filename}.png'
+        try:
+            with urllib.request.urlopen(url, timeout=8) as resp:
+                data = resp.read()
+            img = Image.open(io.BytesIO(data)).convert('RGBA')
+            img.save(cache_path)
+            source = f'CDN ({url})'
+        except Exception as e:
+            print(f'  ⚠️  CDN download failed for \'{emoji}\' ({filename}): {e}')
+
+    # 4. Fall back to font rendering (unreliable on macOS)
+    if img is None:
+        if verbose:
+            print(f'  ⚠️  All PNG sources failed for \'{emoji}\' — trying font fallback')
+        try:
+            overlay = Image.new('RGBA', canvas.size, (0, 0, 0, 0))
+            odraw   = ImageDraw.Draw(overlay)
+            odraw.text((x, y), emoji, font=emoji_font, embedded_color=True)
+            canvas.alpha_composite(overlay)
+        except Exception as e:
+            print(f'  ❌  Font fallback also failed for \'{emoji}\': {e}')
+        return
+
+    if verbose:
+        print(f'  ✓  Emoji \'{emoji}\' loaded from {source}')
+
+    # Scale to desired size and paste
+    img = img.resize((size, size), Image.LANCZOS)
+    canvas.paste(img, (x, y), img)
+
+
+def make_tool_card(emoji, title, tagline, out_path, logo_img, logo_w, verbose=False):
     canvas = make_canvas()
     draw   = ImageDraw.Draw(canvas)
 
-    # Emoji
-    draw.text((PAD, PAD - 10), emoji, font=emoji_font, embedded_color=True)
+    # Emoji — use Twemoji PNG (reliable on all platforms)
+    draw_emoji_twemoji(canvas, emoji, PAD, PAD - 10, verbose=verbose)
+    draw = ImageDraw.Draw(canvas)  # re-acquire after paste
 
     # Title — shrink font if too wide
     tfont  = title_font if draw.textlength(title, font=title_font) < W - PAD*2 - 20 else title_sm
@@ -158,8 +248,17 @@ def make_default_card(out_path, logo_img, logo_w):
     canvas = make_canvas()
     draw   = ImageDraw.Draw(canvas)
 
-    # Brain emoji
-    draw.text((PAD, PAD - 10), '🧠', font=emoji_font, embedded_color=True)
+    # Top-left brain — right-facing salmon brain image (pBrain-r.png), NOT an emoji
+    top_brain_path = str(_HERE / 'src/assets/pBrain-r.png')
+    try:
+        top_brain = Image.open(top_brain_path).convert('RGBA')
+        tb_h = 90
+        tb_w = int(top_brain.width * (tb_h / top_brain.height))
+        top_brain = top_brain.resize((tb_w, tb_h), Image.LANCZOS)
+        canvas.paste(top_brain, (PAD, PAD - 10), top_brain)
+        draw = ImageDraw.Draw(canvas)  # re-acquire after paste
+    except Exception as e:
+        print(f"  ⚠️  Top-left brain logo failed ({top_brain_path}): {e}")
 
     # Wordmark
     draw.text((PAD, PAD + 120), 'DeftBrain', font=head_font, fill=(255, 255, 255, 255))
@@ -244,7 +343,7 @@ def main():
     slug_map = {}
     for i, tool in enumerate(tools):
         out_path = os.path.join(OUTPUT_DIR, f"{tool['slug']}.png")
-        make_tool_card(tool['icon'], tool['title'], tool['tagline'], out_path, logo_img, logo_w)
+        make_tool_card(tool['icon'], tool['title'], tool['tagline'], out_path, logo_img, logo_w, verbose=bool(filter_ids))
         slug_map[tool['id']] = tool['slug']
         if (i+1) % 10 == 0 or filter_ids:
             print(f'  ✓ {tool["slug"]}  ({i+1}/{len(tools)})')

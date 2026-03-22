@@ -2024,7 +2024,7 @@ const MoneyMoves = ({ tool }) => {
 
       {/* eslint-disable-next-line no-restricted-globals */}
       {history.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}><p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 Recent</p><div className="space-y-1">{history.map(s => (<div key={s.id} className="flex items-center justify-between"><span className={`text-xs ${c.textSecondary} truncate`}>{s.preview}</span><span className={`text-xs ${c.textMuted} ml-2`}>{new Date(s.date).toLocaleDateString()}</span></div>))}</div></div>)}
-      <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}><p className={`text-xs font-bold ${c.textMuted} mb-2`}>🔗 Related tools</p><div className="flex flex-wrap gap-3"><a href="/tool/subscription-guilt-trip" className={`text-xs ${linkStyle}`}>💳 Subscription Guilt Trip</a><a href="/tool/where-did-it-go" className={`text-xs ${linkStyle}`}>💸 Where Did It Go</a></div></div>
+      <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}><p className={`text-xs font-bold ${c.textMuted} mb-2`}>🔗 Related tools</p><div className="flex flex-wrap gap-3"><a href="subscription-guilt-trip" className={`text-xs ${linkStyle}`}>💳 Subscription Guilt Trip</a><a href="where-did-it-go" className={`text-xs ${linkStyle}`}>💸 Where Did It Go</a></div></div>
 // no reset needed
     </div>
   );

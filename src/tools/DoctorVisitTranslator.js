@@ -2,7 +2,8 @@ import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react'
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
-import { CopyBtn, ActionBar } from '../components/ActionButtons';
+import { CopyBtn } from '../components/ActionButtons';
+import { useRegisterActions } from '../components/ActionBarContext';
 
 // ════════════════════════════════════════════════════════════
 // CONSTANTS
@@ -394,6 +395,13 @@ const DoctorVisitTranslator = ({ tool }) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode, doctorNotes, loading]);
 
+  // Register export content with the wrapper's persistent ActionBar
+  // Uses buildFullExport when in results mode, buildPrepExport in prep mode
+  useRegisterActions(
+    mode === 'prep' ? buildPrepExport() : buildFullExport(),
+    tool?.title || 'Doctor Visit Translation'
+  );
+
   // ════════════════════════════════════════════════════════════
   // RENDER
   // ════════════════════════════════════════════════════════════
@@ -406,12 +414,13 @@ const DoctorVisitTranslator = ({ tool }) => {
 
       {/* MODE TABS */}
       <div className={`${c.card} border rounded-xl p-4`}>
-        <div className="grid grid-cols-5 gap-2">
+        <div className="grid grid-cols-6 gap-2">
           {[
             { id: 'input', icon: '✏️', label: 'Translate' },
             { id: 'results', icon: '📋', label: 'Results', disabled: !results },
             { id: 'journal', icon: '📓', label: `Journal (${journal.length})` },
             { id: 'health', icon: '💊', label: 'Health' },
+            { id: 'history', icon: '📚', label: `History${history.length > 0 ? ` (${history.length})` : ''}` },
             { id: 'prep', icon: '📝', label: 'Prep' },
           ].map(m => (
             <button key={m.id} onClick={() => !m.disabled && setMode(m.id)} disabled={m.disabled}
@@ -549,7 +558,6 @@ const DoctorVisitTranslator = ({ tool }) => {
               </button>
               <button onClick={handleReset} className={`${c.btnSecondary} py-2 px-3 rounded-lg text-sm`}>✨ New</button>
             </div>
-            <ActionBar content={buildFullExport()} title="Doctor Visit Translation" />
           </div>
 
           {/* F3: Interaction banner */}
@@ -857,15 +865,20 @@ const DoctorVisitTranslator = ({ tool }) => {
               </div>
             ))}</div>}{medList.filter(m => !m.active).length > 0 && <div><p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>PAST</p>{medList.filter(m => !m.active).map(m => <div key={m.id} className="flex items-center justify-between opacity-60 mb-0.5"><span className={`text-xs ${c.text}`}>{m.name} <span className={`text-[10px] ${c.textMuted}`}>{m.prescribedDate}</span></span><div className="flex gap-1"><button onClick={() => setMedList(p => p.map(mm => mm.id === m.id ? { ...mm, active: true } : mm))} className={`text-[10px] ${c.textSecondary}`}>Reactivate</button><button onClick={() => setMedList(p => p.filter(mm => mm.id !== m.id))} className={`text-[10px] ${c.textMuted} ${c.deleteHover}`}>🗑️</button></div></div>)}</div>}</>}
           </div>
+        </div>
+      )}
 
-          {/* History */}
+
+      {/* ══════════ HISTORY MODE ══════════ */}
+      {mode === 'history' && (
+        <div className="space-y-4">
           <div className={`${c.card} border rounded-xl p-5`}>
             <div className="flex items-center justify-between mb-3"><h3 className={`text-sm font-bold ${c.text}`}>📚 Visits ({history.length})</h3>{history.length > 0 && <button onClick={() => { if (window.confirm('Clear?')) setHistory([]); }} className={`text-xs ${c.textMuted} ${c.deleteHover}`}>Clear</button>}</div>
-            {history.length === 0 ? <p className={`text-sm ${c.textSecondary} text-center py-3`}>Save translations to build history.</p>
-            : <div className="space-y-2 max-h-80 overflow-y-auto">{history.map(e => (
+            {history.length === 0 ? <p className={`text-sm ${c.textSecondary} text-center py-4`}>No visits saved yet. Translate a document and click Save to History.</p>
+            : <div className="space-y-2 max-h-[32rem] overflow-y-auto">{history.map(e => (
               <div key={e.id} className={`${c.cardAlt} border rounded-lg p-3`}>
                 <div className="flex items-center gap-1.5 mb-0.5 flex-wrap"><span className={`text-xs font-semibold ${c.text}`}>{e.date}</span><span className={`${c.highlight} border text-[9px] font-bold px-1.5 py-0.5 rounded`}>{e.visitType}</span>{e.doctorName !== 'Unknown' && <span className={`${c.pillGray} border text-[9px] px-1.5 py-0.5 rounded`}>🩺 {e.doctorName}</span>}{e.language && e.language !== 'en' && <span className={`${c.warning} border text-[9px] px-1.5 py-0.5 rounded`}>🌐</span>}{e.documentType && e.documentType !== 'visit' && <span className={`${c.pillGray} border text-[9px] px-1.5 py-0.5 rounded`}>{DOC_TYPES.find(d => d.id === e.documentType)?.label?.split(' ')[0]}</span>}</div>
-                <p className={`text-xs ${c.text} line-clamp-1`}>{e.results?.plain_english_summary?.diagnosis?.split('|||')[0]?.slice(0, 6) || e.doctorNotes.slice(0, 6)}</p>
+                <p className={`text-xs ${c.text} line-clamp-1`}>{e.results?.plain_english_summary?.diagnosis?.split('|||')[0]?.slice(0, 60) || e.doctorNotes.slice(0, 60)}</p>
                 {e.results?.medications?.length > 0 && <div className="flex flex-wrap gap-1 mt-0.5">{e.results.medications.slice(0, 3).map((m, i) => <span key={i} className={`${c.warning} border text-[9px] px-1 py-0.5 rounded`}>💊 {m.name.split(' ')[0]}</span>)}</div>}
                 <div className="flex gap-2 mt-1.5"><button onClick={() => viewEntry(e)} className={`${c.btnSecondary} text-xs px-3 py-1 rounded-lg`}>👁️ View</button><button onClick={() => setHistory(p => p.filter(h => h.id !== e.id))} className={`text-xs ${c.textMuted} ${c.deleteHover} px-1`}>🗑️</button></div>
               </div>
@@ -873,7 +886,19 @@ const DoctorVisitTranslator = ({ tool }) => {
           </div>
 
           {history.length >= 2 && (
-            <div className={`${c.card} border rounded-xl p-5`}><h3 className={`text-sm font-bold ${c.text} mb-3`}>📈 Timeline</h3><div className={`relative pl-4 border-l-2 space-y-2 ${isDark ? "border-zinc-700" : "border-gray-300"}`}>{history.slice(0, 6).map(e => (<div key={e.id} className="relative"><div className="absolute -left-[21px] w-3 h-3 rounded-full bg-cyan-500" /><p className={`text-[10px] font-bold ${c.textMuted}`}>{e.date} · {e.visitType}</p><p className={`text-xs ${c.text}`}>{e.results?.plain_english_summary?.diagnosis?.split('|||')[0]?.slice(0, 6) || 'Visit'}</p>{e.results?.medications?.length > 0 && <p className={`text-[10px] ${c.textSecondary}`}>💊 {e.results.medications.map(m => m.name.split(' ')[0]).join(', ')}</p>}</div>))}</div></div>
+            <div className={`${c.card} border rounded-xl p-5`}>
+              <h3 className={`text-sm font-bold ${c.text} mb-3`}>📈 Timeline</h3>
+              <div className={`relative pl-4 border-l-2 space-y-2 ${isDark ? 'border-zinc-700' : 'border-gray-300'}`}>
+                {history.slice(0, 6).map(e => (
+                  <div key={e.id} className="relative">
+                    <div className="absolute -left-[21px] w-3 h-3 rounded-full bg-cyan-500" />
+                    <p className={`text-[10px] font-bold ${c.textMuted}`}>{e.date} · {e.visitType}</p>
+                    <p className={`text-xs ${c.text}`}>{e.results?.plain_english_summary?.diagnosis?.split('|||')[0]?.slice(0, 60) || 'Visit'}</p>
+                    {e.results?.medications?.length > 0 && <p className={`text-[10px] ${c.textSecondary}`}>💊 {e.results.medications.map(m => m.name.split(' ')[0]).join(', ')}</p>}
+                  </div>
+                ))}
+              </div>
+            </div>
           )}
         </div>
       )}
@@ -897,14 +922,13 @@ const DoctorVisitTranslator = ({ tool }) => {
 
           <div className={`${c.card} border rounded-xl p-5`}><h3 className={`text-sm font-bold ${c.text} mb-2`}>🎒 Bring</h3>{['Insurance card & ID','Medication list','This prep sheet','Notebook','Recent test results','Questions list'].map((item, i) => <div key={i} className="flex items-start gap-2 mb-0.5"><span>☑️</span><p className={`text-xs ${c.textSecondary}`}>{item}</p></div>)}</div>
 
-          <ActionBar content={buildPrepExport()} title="Appointment Prep" />
         </div>
       )}
         <div className={`mt-6 pt-4 border-t text-sm ${c.border} ${c.textMuted}`}>
           <p className="mb-2 font-medium">You might also like:</p>
           <div className="flex flex-wrap gap-2">
             {[{slug:'procedure-probe',label:'🔬 Procedure Probe'},{slug:'plain-talk',label:'💬 Plain Talk'},{slug:'jargon-assassin',label:'🗡️ Jargon Assassin'}].map(({slug,label})=>(
-              <a key={slug} href={`/tool/${slug}`} className={linkStyle}>{label}</a>
+              <a key={slug} href={`${slug}`} className={linkStyle}>{label}</a>
             ))}
           </div>
         </div>

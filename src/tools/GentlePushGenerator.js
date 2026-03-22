@@ -1569,7 +1569,7 @@ const GentlePushGenerator = ({ tool }) => {
             <p className="mb-2 font-medium">You might also like:</p>
             <div className="flex flex-wrap gap-2">
               {[{slug:'belief-stress-test',label:'🧪 Belief Stress Test'},{slug:'conflict-coach',label:'🤝 Conflict Coach'},{slug:'ego-killer',label:'🪞 Ego Killer'}].map(({slug,label})=>(
-                <a key={slug} href={`/tool/${slug}`} className={linkStyle}>{label}</a>
+                <a key={slug} href={`${slug}`} className={linkStyle}>{label}</a>
               ))}
             </div>
           </div>

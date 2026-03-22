@@ -881,7 +881,7 @@ const DreamPatternSpotter = ({ tool }) => {
           <p className="mb-2 font-medium">You might also like:</p>
           <div className="flex flex-wrap gap-2">
             {[{slug:'recall',label:'🧠 Recall'},{slug:'brain-dump-buddy',label:'📤 Brain Dump Buddy'},{slug:'spiral-stopper',label:'🌀 Spiral Stopper'}].map(({slug,label})=>(
-              <a key={slug} href={`/tool/${slug}`} className={linkStyle}>{label}</a>
+              <a key={slug} href={`${slug}`} className={linkStyle}>{label}</a>
             ))}
           </div>
         </div>

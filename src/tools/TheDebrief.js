@@ -107,7 +107,20 @@ const TheDebrief = ({ tool }) => {
     if (results && resultsRef.current) {
       setTimeout(() => resultsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' }), 200);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [results]);
+
+  useEffect(() => {
+    const handler = (e) => {
+      if (!(e.metaKey || e.ctrlKey) || e.key !== 'Enter') return;
+      const tag = document.activeElement?.tagName;
+      if (tag === 'INPUT' || tag === 'SELECT') return;
+      if (!loading && canSubmit) submit();
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading, canSubmit]);
 
   const charCount = useMemo(() => {
     if (mode === 'series') return meetings.reduce((sum, m) => sum + (m.transcript?.length || 0), 0);
@@ -200,6 +213,12 @@ const TheDebrief = ({ tool }) => {
     lines.push(BRAND);
     return lines.join('\n');
   }, [results]);
+
+  const buildCopy = useCallback(() => {
+    if (mode === 'distill') return buildDistillCopy();
+    if (mode === 'followup') return buildFollowupCopy();
+    return buildDistillCopy();
+  }, [mode, buildDistillCopy, buildFollowupCopy]);
 
   // ── Shared ──
   const Pill = ({ active, onClick, children }) => (
@@ -321,7 +340,7 @@ const TheDebrief = ({ tool }) => {
       <button onClick={submit} disabled={loading || !canSubmit}
         className={'w-full py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all ' + (loading || !canSubmit ? c.btnDis : c.btnPrimary)}>
         {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '📋'}</span> Processing meeting...</>
-          : mode === 'distill' ? <><span>📋</span> Extract Decisions & Actions</>
+          : mode === 'distill' ? <><span className="mr-1">{tool?.icon ?? '📋'}</span> Extract Decisions & Actions</>
           : mode === 'followup' ? <><span>📨</span> Draft Follow-Ups</>
           : <><span>🔄</span> Analyze Series</>}
       </button>
@@ -459,7 +478,7 @@ const TheDebrief = ({ tool }) => {
           </Section>
         )}
 
-        <ActionBar content={buildDistillCopy()} title="Meeting Debrief" />
+
       </div>
     );
   };
@@ -532,7 +551,7 @@ const TheDebrief = ({ tool }) => {
           </Section>
         )}
 
-        <ActionBar content={buildFollowupCopy()} title="Meeting Follow-Ups" />
+
       </div>
     );
   };
@@ -673,13 +692,16 @@ const TheDebrief = ({ tool }) => {
     <div>
       <div className="flex items-center gap-3 mb-5">
         <div>
-          <h2 className={'text-2xl font-bold ' + c.text}>The Debrief <span className="text-xl">📋</span></h2>
-          <p className={'text-sm ' + c.textMuted}>Paste a meeting transcript — get decisions, actions, and follow-ups</p>
+          <h2 className={'text-2xl font-bold ' + c.text}>
+            <span className="mr-2">{tool?.icon ?? '📋'}</span>{tool?.title ?? 'The Debrief'}
+          </h2>
+          <p className={'text-sm ' + c.textMuted}>{tool?.tagline ?? 'Paste a meeting transcript — get decisions, actions, and follow-ups'}</p>
         </div>
       </div>
       {!results && renderInput()}
       {results && (
         <div ref={resultsRef} className="space-y-4 mt-4">
+          <ActionBar content={buildCopy()} title={tool?.title || 'The Debrief'} />
           {mode === 'distill' && renderDistill()}
           {mode === 'followup' && renderFollowup()}
           {mode === 'series' && renderSeries()}
@@ -696,8 +718,8 @@ const TheDebrief = ({ tool }) => {
           <div className={'p-4 rounded-2xl border ' + c.card}>
             <p className={'text-xs font-bold ' + c.textMuted + ' uppercase tracking-wide mb-2'}>🔗 Related Tools</p>
             <div className={'space-y-1.5 text-xs ' + c.textSecondary}>
-              <p>Need to send a difficult follow-up? <a href="/tool/velvet-hammer" target="_blank" rel="noopener noreferrer" className={linkStyle}>Velvet Hammer</a> crafts the words.</p>
-              <p>Drafting a longer recap or report? <a href="/tool/ghost-writer" target="_blank" rel="noopener noreferrer" className={linkStyle}>Ghost Writer</a> does the heavy lifting.</p>
+              <p>Need to send a difficult follow-up? <a href="velvet-hammer" target="_blank" rel="noopener noreferrer" className={linkStyle}>Velvet Hammer</a> crafts the words.</p>
+              <p>Drafting a longer recap or report? <a href="ghost-writer" target="_blank" rel="noopener noreferrer" className={linkStyle}>Ghost Writer</a> does the heavy lifting.</p>
             </div>
           </div>
         </div>

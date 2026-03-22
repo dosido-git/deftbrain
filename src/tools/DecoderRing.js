@@ -466,8 +466,8 @@ const DecoderRing = ({ tool }) => {
         {/* Cross-references */}
         <div className={`p-4 rounded-2xl border ${c.border} ${isDark ? 'bg-zinc-800/60' : 'bg-slate-50'}`}>
           <p className={`text-xs ${c.textMuted}`}>
-            💡 Need a tough reply?{' '}<a href="/tool/velvet-hammer" target="_blank" rel="noopener noreferrer" className={linkStyle}>Velvet Hammer</a>{' '}
-            turns angry drafts into assertive messages. Stuck in a bigger decision?{' '}<a href="/tool/context-collapse" target="_blank" rel="noopener noreferrer" className={linkStyle}>Context Collapse</a>{' '}
+            💡 Need a tough reply?{' '}<a href="velvet-hammer" target="_blank" rel="noopener noreferrer" className={linkStyle}>Velvet Hammer</a>{' '}
+            turns angry drafts into assertive messages. Stuck in a bigger decision?{' '}<a href="context-collapse" target="_blank" rel="noopener noreferrer" className={linkStyle}>Context Collapse</a>{' '}
             shows how your message lands on different people.
           </p>
         </div>

@@ -2387,7 +2387,7 @@ const FocusPocus = ({ tool }) => {
           <p className="mb-2 font-medium">You might also like:</p>
           <div className="flex flex-wrap gap-2">
             {[{slug:'focus-sound-architect',label:'🎵 Focus Sound'},{slug:'virtual-body-double',label:'👥 Virtual Body Double'},{slug:'brain-state-deejay',label:'🎵 Brain Deejay'}].map(({slug,label})=>(
-              <a key={slug} href={`/tool/${slug}`} className={linkStyle}>{label}</a>
+              <a key={slug} href={`${slug}`} className={linkStyle}>{label}</a>
             ))}
           </div>
         </div>

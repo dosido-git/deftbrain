@@ -295,8 +295,8 @@ const NameThatFeeling = ({ tool }) => {
       <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
         <p className={`text-xs font-bold ${c.textMuted} mb-2`}>🔗 Related tools</p>
         <div className="flex flex-wrap gap-3">
-          <a href="/tool/decision-coach" className={`text-xs ${linkStyle}`}>🎯 Decision Coach</a>
-          <a href="/tool/spiral-stopper" className={`text-xs ${linkStyle}`}>🌀 Spiral Stopper</a>
+          <a href="decision-coach" className={`text-xs ${linkStyle}`}>🎯 Decision Coach</a>
+          <a href="spiral-stopper" className={`text-xs ${linkStyle}`}>🌀 Spiral Stopper</a>
         </div>
       </div>
       {/* eslint-disable-next-line no-restricted-globals */}

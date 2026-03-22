@@ -85,11 +85,12 @@ const TheAlibi = ({ tool }) => {
   useEffect(() => {
     const handler = (e) => {
       const tag = document.activeElement?.tagName;
-      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      if (tag === 'INPUT' || tag === 'SELECT') return; // TEXTAREA allowed for Cmd/Ctrl+Enter
       if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !loading) frame();
     };
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading]);
 
   // Input
@@ -127,15 +128,18 @@ const TheAlibi = ({ tool }) => {
       const entry = { id: 'ali_' + Date.now(), date: new Date().toISOString(), audience: label, situation: situation.trim().substring(0, 60) + '...', preview: situation.trim().slice(0, 40), results: data };
       setHistory(prev => [entry, ...prev].slice(0, 6));
     } catch (err) { setError(err.message || 'Failed to frame your story.'); }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [situation, audience, customAudience, tone, concerns, context, callToolEndpoint, setHistory]);
 
   const handleReset = useCallback(() => {
     setSituation(''); setConcerns(''); setContext(''); setCustomAudience('');
     setResults(null); setError('');
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadExample = useCallback((ex) => {
     setSituation(ex.situation); setAudience(ex.audience); setResults(null); setError('');
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const buildCopy = useCallback(() => {
@@ -152,6 +156,7 @@ const TheAlibi = ({ tool }) => {
     }
     lines.push(BRAND);
     return lines.join('\n');
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [results]);
 
   const versionBg = (idx) => idx === 0 ? c.safeBg : idx === 1 ? c.midBg : c.boldBg;
@@ -236,7 +241,7 @@ const TheAlibi = ({ tool }) => {
 
       <button onClick={frame} disabled={loading || !situation.trim()}
         className={'w-full py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all ' + (loading || !situation.trim() ? c.btnDis : c.btnPrimary)}>
-        {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '🎭'}</span> Framing your story...</> : <><span>🎭</span> Frame My Story</>}
+        {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '🎭'}</span> Framing your story...</> : <><span className="mr-1">{tool?.icon ?? '🎭'}</span> Frame My Story</>}
       </button>
     </div>
   );
@@ -248,6 +253,10 @@ const TheAlibi = ({ tool }) => {
     if (!results) return null;
     return (
       <div ref={resultsRef} className="space-y-4 mt-4">
+        <div className="flex gap-2">
+          <div className="flex-1"><ActionBar content={buildCopy()} title={tool?.title || 'The Alibi'} /></div>
+          <button onClick={handleReset} className={'flex-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 ' + c.btnSecondary}><span>🔄</span> New Story</button>
+        </div>
         {/* Situation read */}
         {results.situation_read && (
           <div className={'p-5 rounded-2xl border-2 ' + c.tipBg}>
@@ -356,17 +365,13 @@ const TheAlibi = ({ tool }) => {
         )}
 
         <p className={"text-xs text-center " + c.textMuted}>AI-generated framings — use your own judgment about what to share.</p>
-        <div className="flex gap-2">
-          <div className="flex-1"><ActionBar content={buildCopy()} title="Your Framed Story" /></div>
-          <button onClick={handleReset} className={'flex-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 ' + c.btnPrimary}><span>🎭</span> New Story</button>
-        </div>
 
         {/* Cross-refs */}
         <div className={'p-4 rounded-2xl border ' + c.card}>
           <p className={'text-xs font-bold ' + c.textMuted + ' uppercase tracking-wide mb-2'}>🔗 Related Tools</p>
           <div className={'space-y-1.5 text-xs ' + c.textSecondary}>
-            <p>Rehearsing for an interview? <a href="/tool/velvet-hammer" target="_blank" rel="noopener noreferrer" className={linkStyle}>Velvet Hammer</a> crafts firm, diplomatic messages.</p>
-            <p>Need a recommendation letter? <a href="/tool/ghost-writer" target="_blank" rel="noopener noreferrer" className={linkStyle}>Ghost Writer</a> builds compelling ones from scratch.</p>
+            <p>Rehearsing for an interview? <a href="velvet-hammer" target="_blank" rel="noopener noreferrer" className={linkStyle}>Velvet Hammer</a> crafts firm, diplomatic messages.</p>
+            <p>Need a recommendation letter? <a href="ghost-writer" target="_blank" rel="noopener noreferrer" className={linkStyle}>Ghost Writer</a> builds compelling ones from scratch.</p>
           </div>
         </div>
       </div>
@@ -409,7 +414,9 @@ const TheAlibi = ({ tool }) => {
     <div>
       <div className="flex items-center gap-3 mb-5">
         <div>
-          <h2 className={'text-2xl font-bold ' + c.text}>The Alibi <span className="text-xl">🎭</span></h2>
+          <h2 className={'text-2xl font-bold ' + c.text}>
+            <span className="mr-2">{tool?.icon ?? '🎭'}</span>{tool?.title ?? 'The Alibi'}
+          </h2>
           <p className={'text-sm ' + c.textMuted}>Frame your story right — honest but strategic</p>
         </div>
       </div>

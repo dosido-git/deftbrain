@@ -10,6 +10,7 @@ const SubscriptionGuiltTrip = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { isDark } = useTheme();
   const fileInputRef = useRef(null);
+  const resultsRef = useRef(null);
 
   // Persistent audit history
   const [auditLog, setAuditLog] = usePersistentState('subscription-audit-log', []);
@@ -19,16 +20,24 @@ const SubscriptionGuiltTrip = ({ tool }) => {
     : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
 
   // Enter key handler
+  const [results, setResults] = usePersistentState('subscription-audit-results', null);
   useEffect(() => {
     const handler = (e) => {
       const tag = document.activeElement?.tagName;
-      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      if (tag === 'INPUT' || tag === 'SELECT') return; // TEXTAREA allowed for Cmd/Ctrl+Enter
       if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !loading) handleAnalyze();
     };
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading]);
+
+  useEffect(() => {
+    if (results && resultsRef.current) {
+      setTimeout(() => resultsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' }), 200);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [results]);
 
   // Input mode
   const [inputMode, setInputMode] = useState('manual'); // 'manual', 'paste', 'upload'
@@ -46,7 +55,6 @@ const SubscriptionGuiltTrip = ({ tool }) => {
   const [parsedTransactions, setParsedTransactions] = useState(null);
 
   // Results
-  const [results, setResults] = usePersistentState('subscription-audit-results', null);
   const [error, setError] = useState('');
   const [expandedCards, setExpandedCards] = useState({});
   const [selectedForCancel, setSelectedForCancel] = useState({});
@@ -358,15 +366,12 @@ const SubscriptionGuiltTrip = ({ tool }) => {
         {/* ── Header ── */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-3 mb-2">
-            <div className={`p-3 rounded-2xl ${isDark ? 'bg-cyan-900/40' : 'bg-cyan-100'}`}>
-              <span className="text-2xl">💳</span>
-            </div>
-            <h1 className={`text-3xl font-bold ${c.text}`} style={{ fontFamily: "'Georgia', serif" }}>
-              Subscription Guilt Trip
-            </h1>
+            <h2 className={`text-3xl font-bold ${c.text}`} style={{ fontFamily: "'Georgia', serif" }}>
+              <span className="mr-2">{tool?.icon ?? '💳'}</span>{tool?.title ?? 'Subscription Guilt Trip'}
+            </h2>
           </div>
           <p className={c.textSecondary}>
-            Audit your subscriptions, spot the waste, and cancel guilt-free
+            {tool?.tagline ?? 'Audit your subscriptions, spot the waste, and cancel guilt-free'}
           </p>
         </div>
 
@@ -556,7 +561,7 @@ const SubscriptionGuiltTrip = ({ tool }) => {
             {loading ? (
               <><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> Analyzing your subscriptions...</>
             ) : (
-              <>📊 Audit My Subscriptions</>
+              <><span className="mr-1">{tool?.icon ?? '📊'}</span> Audit My Subscriptions</>
             )}
           </button>
           <p className={`text-xs text-center mt-2 ${c.textMuted}`}>AI-generated suggestions — review before canceling anything.</p>
@@ -571,7 +576,8 @@ const SubscriptionGuiltTrip = ({ tool }) => {
 
         {/* ══════════════════ RESULTS ══════════════════ */}
         {results && (
-          <div className="space-y-6">
+          <div ref={resultsRef} className="space-y-6">
+            <ActionBar content={buildSummaryText()} title={tool?.title || 'Subscription Guilt Trip'} />
 
             {/* ── Total Savings Banner ── */}
             {results.total_savings_if_cancel_recommended && (
@@ -849,7 +855,6 @@ const SubscriptionGuiltTrip = ({ tool }) => {
 
             {/* ── Action Bar ── */}
             <div className={`${c.card} border ${c.cardBorderClass} rounded-2xl shadow-sm p-4 flex flex-wrap items-center gap-3 justify-center`}>
-              <ActionBar content={buildSummaryText()} title="Subscription Audit" />
               <button onClick={exportCSV} className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition-colors ${c.btnSecondary}`}>
                 ⬇️ Export as CSV
               </button>
@@ -888,9 +893,9 @@ const SubscriptionGuiltTrip = ({ tool }) => {
             <div className={`${c.card} border ${c.cardBorderClass} rounded-xl p-4 space-y-2`}>
               <p className={`text-xs font-bold ${c.textMuted}`}>You might also find helpful:</p>
               <div className="flex flex-wrap gap-3">
-                <a href="/tool/where-did-it-go" className={`text-xs ${linkStyle}`}>💸 Track where money went</a>
-                <a href="/tool/upsell-shield" className={`text-xs ${linkStyle}`}>🛡️ Resist upsells when canceling</a>
-                <a href="/tool/money-moves" className={`text-xs ${linkStyle}`}>📈 Find smarter money moves</a>
+                <a href="where-did-it-go" className={`text-xs ${linkStyle}`}>💸 Track where money went</a>
+                <a href="upsell-shield" className={`text-xs ${linkStyle}`}>🛡️ Resist upsells when canceling</a>
+                <a href="money-moves" className={`text-xs ${linkStyle}`}>📈 Find smarter money moves</a>
               </div>
             </div>
           </div>

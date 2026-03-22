@@ -275,7 +275,7 @@ const LuckSurface = ({ tool }) => {
                   { id: 'ChaosPilot', icon: '🎰', label: 'One calculated disruption' },
                   { id: 'RulebookBreaker', icon: '🏴‍☠️', label: 'Find the cheat codes in any system' },
                 ].map(r => (
-                  <a key={r.id} href={`/tool/${r.id}`} target="_blank" rel="noopener noreferrer"
+                  <a key={r.id} href={`${r.id}`} target="_blank" rel="noopener noreferrer"
                     className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${c.btnPrimarySecondaryondary}`}>
                     {r.icon} {r.label}
                   </a>

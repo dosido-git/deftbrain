@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -29,6 +29,7 @@ const SEVERITY_OPTS = [
 const SpiralStopper = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { isDark } = useTheme();
+  const resultsRef = useRef(null);
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
@@ -37,26 +38,19 @@ const SpiralStopper = ({ tool }) => {
     const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    text: isDark ? 'text-zinc-50' : 'text-gray-900', ts: isDark ? 'text-zinc-300' : 'text-gray-600', tm: isDark ? 'text-zinc-500' : 'text-gray-400',
-    input: isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder-zinc-400' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
-    sec: isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
-    border: isDark ? 'border-zinc-700' : 'border-gray-200',
-    chip: (a) => a ? (isDark ? 'bg-emerald-900/40 border-emerald-500 text-emerald-200' : 'bg-emerald-100 border-emerald-400 text-emerald-800') : (isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-200 text-gray-500 hover:border-gray-300'),
-    success: isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
-    warn: isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
-    danger: isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
-    // removed: isDark ? 'bg-cyan-900/20 border-purple-700 text-cyan-200' : 'bg-cyan-50 border-purple-200 text-cyan-800',
-    teal: isDark ? 'bg-emerald-900/20 border-teal-700 text-emerald-200' : 'bg-emerald-50 border-teal-300 text-emerald-800',
-    hero: isDark ? 'bg-gradient-to-r from-purple-900/40 to-emerald-900/40 border-purple-700' : 'bg-gradient-to-r from-purple-50 to-emerald-50 border-purple-200',
+    text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-500' : 'text-gray-400',
+    input:         isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder-zinc-400' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400',
+    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
     success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
     warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    chip: (a) => a ? (isDark ? 'bg-emerald-900/40 border-emerald-500 text-emerald-200' : 'bg-emerald-100 border-emerald-400 text-emerald-800') : (isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-200 text-gray-500 hover:border-gray-300'),
+    teal:          isDark ? 'bg-emerald-900/20 border-teal-700 text-emerald-200' : 'bg-emerald-50 border-teal-300 text-emerald-800',
+    hero:          isDark ? 'bg-gradient-to-r from-purple-900/40 to-emerald-900/40 border-purple-700' : 'bg-gradient-to-r from-purple-50 to-emerald-50 border-purple-200',
   };
 
   // ─── State ───
@@ -93,6 +87,13 @@ const SpiralStopper = ({ tool }) => {
 
   // ─── Persistent ───
   const [episodeLog, setEpisodeLog] = usePersistentState('spiral-episodes', []);
+
+  useEffect(() => {
+    if ((spiralResult || crashResult) && resultsRef.current) {
+      setTimeout(() => resultsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' }), 200);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [spiralResult, crashResult]);
 
   // ─── Computed ───
   const stats = useMemo(() => {
@@ -234,7 +235,7 @@ const SpiralStopper = ({ tool }) => {
   useEffect(() => {
     const handler = (e) => {
       const tag = document.activeElement?.tagName;
-      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      if (tag === 'INPUT' || tag === 'SELECT') return; // TEXTAREA allowed for Cmd/Ctrl+Enter
       if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !loading) handleSpiral();
     };
     document.addEventListener('keydown', handler);
@@ -244,10 +245,10 @@ const SpiralStopper = ({ tool }) => {
   return (
     <div className="max-w-xl mx-auto space-y-5">
       <div className="flex items-center justify-between">
-        <div><h2 className={`text-2xl font-bold ${c.text}`}>Spiral Stopper 🌀</h2><p className={`text-sm ${c.tm}`}>Emergency intervention for spirals, freezes, and crashes</p></div>
+        <div><h2 className={`text-2xl font-bold ${c.text}`}><span className="mr-2">{tool?.icon ?? '🌀'}</span>{tool?.title ?? 'Spiral Stopper'}</h2><p className={`text-sm ${c.textMuted}`}>{tool?.tagline ?? 'Emergency intervention for spirals, freezes, and crashes'}</p></div>
         <div className="flex gap-2">
-          {episodeLog.length > 0 && view !== 'history' && <button onClick={() => { setView('history'); setMode(null); }} className={`text-xs font-bold px-3 py-1.5 rounded-lg ${c.sec}`}>📊 {episodeLog.length}</button>}
-          {(mode || view !== 'input') && <button onClick={resetAll} className={`text-xs font-bold px-3 py-1.5 rounded-lg ${c.sec}`}>🏠</button>}
+          {episodeLog.length > 0 && view !== 'history' && <button onClick={() => { setView('history'); setMode(null); }} className={`text-xs font-bold px-3 py-1.5 rounded-lg ${c.btnSecondary}`}>📊 {episodeLog.length}</button>}
+          {(mode || view !== 'input') && <button onClick={resetAll} className={`text-xs font-bold px-3 py-1.5 rounded-lg ${c.btnSecondary}`}>🏠</button>}
         </div>
       </div>
 
@@ -255,28 +256,28 @@ const SpiralStopper = ({ tool }) => {
       {mode && view === 'input' && (
         <div className={`${c.teal} border-2 rounded-xl p-4 text-center`}>
           <p className={`font-semibold text-sm ${c.text}`}>Before anything else: three slow breaths.</p>
-          <p className={`text-xs ${c.ts} mt-1`}>In for 4... hold for 4... out for 6. You're safe right now.</p>
+          <p className={`text-xs ${c.textSecondary} mt-1`}>In for 4... hold for 4... out for 6. You're safe right now.</p>
         </div>
       )}
 
       {/* ═══ MODE CHOOSER ═══ */}
       {!mode && view !== 'history' && view !== 'debrief' && (
         <div className="space-y-3">
-          <p className={`text-sm text-center ${c.ts}`}>What's happening right now?</p>
+          <p className={`text-sm text-center ${c.textSecondary}`}>What's happening right now?</p>
           {MODES.map(m => (
             <button key={m.id} onClick={() => { setMode(m.id); setView('input'); }}
               className={`w-full ${c.card} border-2 ${c.border} rounded-xl p-5 text-left transition-all ${isDark ? 'hover:border-emerald-600' : 'hover:border-emerald-400'}`}>
               <div className="flex items-center gap-4">
                 <span className="text-3xl">{m.icon}</span>
-                <div><h3 className={`font-bold text-lg ${c.text}`}>{m.label}</h3><p className={`text-sm ${c.ts}`}>{m.desc}</p></div>
+                <div><h3 className={`font-bold text-lg ${c.text}`}>{m.label}</h3><p className={`text-sm ${c.textSecondary}`}>{m.desc}</p></div>
               </div>
             </button>
           ))}
           {stats && <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 flex items-center justify-around text-center`}>
-            <div><span className={`text-lg font-bold ${c.text}`}>{stats.total}</span><p className={`text-xs ${c.tm}`}>episodes</p></div>
-            <div><span className={`text-lg font-bold ${c.text}`}>🌀 {stats.spirals}</span><p className={`text-xs ${c.tm}`}>spirals</p></div>
-            <div><span className={`text-lg font-bold ${c.text}`}>❄️ {stats.freezes}</span><p className={`text-xs ${c.tm}`}>freezes</p></div>
-            <div><span className={`text-lg font-bold ${c.text}`}>🔋 {stats.crashes}</span><p className={`text-xs ${c.tm}`}>crashes</p></div>
+            <div><span className={`text-lg font-bold ${c.text}`}>{stats.total}</span><p className={`text-xs ${c.textMuted}`}>episodes</p></div>
+            <div><span className={`text-lg font-bold ${c.text}`}>🌀 {stats.spirals}</span><p className={`text-xs ${c.textMuted}`}>spirals</p></div>
+            <div><span className={`text-lg font-bold ${c.text}`}>❄️ {stats.freezes}</span><p className={`text-xs ${c.textMuted}`}>freezes</p></div>
+            <div><span className={`text-lg font-bold ${c.text}`}>🔋 {stats.crashes}</span><p className={`text-xs ${c.textMuted}`}>crashes</p></div>
           </div>}
         </div>
       )}
@@ -284,32 +285,36 @@ const SpiralStopper = ({ tool }) => {
       {/* ═══ SPIRAL MODE ═══ */}
       {mode === 'spiral' && view === 'input' && (
         <div className={`${c.card} rounded-xl shadow-lg p-5 space-y-4`}>
-          <div><label className={`font-bold text-sm ${c.text}`}>What's going through your head?</label><p className={`text-xs ${c.ts} mb-2`}>Don't filter. Let the spiral out.</p>
+          <div><label className={`font-bold text-sm ${c.text}`}>What's going through your head?</label><p className={`text-xs ${c.textSecondary} mb-2`}>Don't filter. Let the spiral out.</p>
             <textarea value={thoughts} onChange={e => setThoughts(e.target.value)} placeholder="e.g., 'I made a mistake at work and now everyone thinks I'm incompetent and I'll get fired and...'" rows={5} className={`w-full p-3 border rounded-lg text-sm ${c.input}`} autoFocus />
           </div>
           <div className="grid grid-cols-2 gap-3">
-            <div><label className={`text-xs font-bold ${c.ts}`}>Trigger? (optional)</label><input value={trigger} onChange={e => setTrigger(e.target.value)} placeholder="What started this?" className={`w-full p-2.5 border rounded-lg text-sm ${c.input}`} /></div>
-            <div><label className={`text-xs font-bold ${c.ts}`}>Physical symptoms?</label><input value={symptoms} onChange={e => setSymptoms(e.target.value)} placeholder="Racing heart, tight chest..." className={`w-full p-2.5 border rounded-lg text-sm ${c.input}`} /></div>
+            <div><label className={`text-xs font-bold ${c.textSecondary}`}>Trigger? (optional)</label><input value={trigger} onChange={e => setTrigger(e.target.value)} placeholder="What started this?" className={`w-full p-2.5 border rounded-lg text-sm ${c.input}`} /></div>
+            <div><label className={`text-xs font-bold ${c.textSecondary}`}>Physical symptoms?</label><input value={symptoms} onChange={e => setSymptoms(e.target.value)} placeholder="Racing heart, tight chest..." className={`w-full p-2.5 border rounded-lg text-sm ${c.input}`} /></div>
           </div>
-          <div><label className={`text-xs font-bold ${c.ts}`}>Intensity: {intensity}/5</label>
-            <div className="flex gap-1 mt-1">{[1, 2, 3, 4, 5].map(n => <button key={n} onClick={() => setIntensity(n)} className={`flex-1 py-3 rounded-lg text-sm font-bold border-2 transition-all ${n <= intensity ? (isDark ? 'bg-red-900/40 border-red-500 text-red-200' : 'bg-red-100 border-red-400 text-red-800') : `${c.cardAlt} ${c.border} ${c.tm}`}`}>{n}</button>)}</div>
+          <div><label className={`text-xs font-bold ${c.textSecondary}`}>Intensity: {intensity}/5</label>
+            <div className="flex gap-1 mt-1">{[1, 2, 3, 4, 5].map(n => <button key={n} onClick={() => setIntensity(n)} className={`flex-1 py-3 rounded-lg text-sm font-bold border-2 transition-all ${n <= intensity ? (isDark ? 'bg-red-900/40 border-red-500 text-red-200' : 'bg-red-100 border-red-400 text-red-800') : `${c.cardAlt} ${c.border} ${c.textMuted}`}`}>{n}</button>)}</div>
           </div>
-          <button onClick={handleSpiral} disabled={loading || !thoughts.trim()} className={`w-full py-4 rounded-xl font-semibold text-lg ${loading || !thoughts.trim() ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : c.btnPrimary}`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '⚙️'}</span> Analyzing...</> : <>🛡️ Stop the spiral</>}</button>
+          <button onClick={handleSpiral} disabled={loading || !thoughts.trim()} className={`w-full py-4 rounded-xl font-semibold text-lg ${loading || !thoughts.trim() ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : c.btnPrimary}`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '⚙️'}</span> Analyzing...</> : <><span className="mr-1">{tool?.icon ?? '🛡️'}</span> Stop the spiral</>}</button>
         </div>
       )}
 
       {mode === 'spiral' && view === 'result' && spiralResult && (
-        <div className="space-y-4">
+        <div ref={resultsRef} className="space-y-4">
+          <div className="flex gap-3">
+            <ActionBar content={buildSpiralText()} title={tool?.title || 'Spiral Stopper'} />
+            <button onClick={() => setView('debrief')} className={`px-4 py-2 rounded-lg text-sm font-bold ${c.btnSecondary}`}>📝 Debrief</button>
+          </div>
           {/* Immediate action */}
-          {spiralResult.immediate_action && <div className={`${c.warn} border-2 rounded-xl p-5`}>
+          {spiralResult.immediate_action && <div className={`${c.warning} border-2 rounded-xl p-5`}>
             <h4 className={`font-bold text-sm mb-2`}>⚡ Do this right now</h4>
             <p className={`text-lg font-bold ${c.text}`}>{spiralResult.immediate_action.instruction}</p>
-            <p className={`text-xs ${c.ts} mt-1`}>{spiralResult.immediate_action.why}</p>
+            <p className={`text-xs ${c.textSecondary} mt-1`}>{spiralResult.immediate_action.why}</p>
           </div>}
 
           {/* Intensity + distortion */}
           <div className={`${c.card} rounded-xl shadow-lg p-5`}>
-            <div className="flex items-center justify-between mb-3"><span className={`text-sm ${c.ts}`}>{spiralResult.intensity_read}</span><span className={`text-xs px-2 py-1 rounded-full ${c.warn} border font-bold`}>{spiralResult.distortion_label || spiralResult.primary_distortion}</span></div>
+            <div className="flex items-center justify-between mb-3"><span className={`text-sm ${c.textSecondary}`}>{spiralResult.intensity_read}</span><span className={`text-xs px-2 py-1 rounded-full ${c.warning} border font-bold`}>{spiralResult.distortion_label || spiralResult.primary_distortion}</span></div>
           </div>
 
           {/* Thought breakdown */}
@@ -317,8 +322,8 @@ const SpiralStopper = ({ tool }) => {
             <h4 className={`font-bold text-sm ${c.text}`}>🧠 Your thoughts vs reality</h4>
             {spiralResult.thought_breakdown.map((t, i) => (
               <div key={i} className="space-y-2">
-                <div className={`${c.danger} border rounded-lg p-3`}><p className={`text-xs font-bold ${c.tm} mb-1`}>Anxiety says:</p><p className="text-sm">{t.anxious_thought}</p><p className={`text-xs ${c.ts} mt-1`}>↳ {t.distortion}</p></div>
-                <div className={`${c.success} border rounded-lg p-3`}><p className={`text-xs font-bold ${c.tm} mb-1`}>Actually:</p><p className="text-sm">{t.reality_check}</p></div>
+                <div className={`${c.danger} border rounded-lg p-3`}><p className={`text-xs font-bold ${c.textMuted} mb-1`}>Anxiety says:</p><p className="text-sm">{t.anxious_thought}</p><p className={`text-xs ${c.textSecondary} mt-1`}>↳ {t.distortion}</p></div>
+                <div className={`${c.success} border rounded-lg p-3`}><p className={`text-xs font-bold ${c.textMuted} mb-1`}>Actually:</p><p className="text-sm">{t.reality_check}</p></div>
                 <p className={`text-xs ${isDark ? 'text-emerald-300' : 'text-emerald-600'}`}>→ {t.reframe}</p>
               </div>
             ))}
@@ -326,7 +331,7 @@ const SpiralStopper = ({ tool }) => {
 
           {/* Grounding */}
           {spiralResult.grounding && <div className={`${c.teal} border-2 rounded-xl p-5 space-y-3`}>
-            <h4 className="font-bold text-sm">🌿 {spiralResult.grounding.name} <span className={`font-normal ${c.tm}`}>({spiralResult.grounding.duration})</span></h4>
+            <h4 className="font-bold text-sm">🌿 {spiralResult.grounding.name} <span className={`font-normal ${c.textMuted}`}>({spiralResult.grounding.duration})</span></h4>
             {(spiralResult.grounding.steps || []).map((step, i) => <div key={i} className="flex items-start gap-2"><span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${isDark ? 'bg-emerald-900/60 text-emerald-300' : 'bg-emerald-100 text-emerald-700'}`}>{i + 1}</span><p className="text-sm">{step}</p></div>)}
           </div>}
 
@@ -334,25 +339,20 @@ const SpiralStopper = ({ tool }) => {
           {spiralResult.compassionate_reality && <div className={`${c.hero} border-2 rounded-xl p-5`}><p className={`text-lg font-bold ${c.text}`}>💜 {spiralResult.compassionate_reality}</p></div>}
 
           {spiralResult.pattern_note && <div className={`${c.cardAlt} border rounded-xl p-4`}><p className="text-sm">📊 {spiralResult.pattern_note}</p></div>}
-          {spiralResult.after_spiral && <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}><p className={`text-sm ${c.ts}`}>Next: {spiralResult.after_spiral}</p></div>}
-
-          <div className="flex gap-3">
-            <ActionBar content={buildSpiralText()} title="Spiral Stopped" />
-            <button onClick={() => setView('debrief')} className={`px-4 py-2 rounded-lg text-sm font-bold ${c.sec}`}>📝 Debrief</button>
-          </div>
+          {spiralResult.after_spiral && <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}><p className={`text-sm ${c.textSecondary}`}>Next: {spiralResult.after_spiral}</p></div>}
         </div>
       )}
 
       {/* ═══ FROZEN MODE ═══ */}
       {mode === 'frozen' && view === 'input' && !freezeResult && (
         <div className={`${c.card} rounded-xl shadow-lg p-5 space-y-4`}>
-          <div><h3 className={`font-bold text-lg ${c.text}`}>❄️ You're frozen. That's okay.</h3><p className={`text-sm ${c.ts}`}>I'll give you one tiny thing at a time. No plans. No decisions.</p></div>
+          <div><h3 className={`font-bold text-lg ${c.text}`}>❄️ You're frozen. That's okay.</h3><p className={`text-sm ${c.textSecondary}`}>I'll give you one tiny thing at a time. No plans. No decisions.</p></div>
           <input value={stuckOn} onChange={e => setStuckOn(e.target.value)} placeholder="What are you stuck on? (optional — leave blank if you don't know)" className={`w-full p-3 border rounded-lg text-sm ${c.input}`} />
           <div className="flex gap-2">
             <button onClick={() => setCanMove(true)} className={`flex-1 py-3 rounded-lg border-2 text-sm font-semibold ${c.chip(canMove)}`}>🧍 I can get up</button>
             <button onClick={() => setCanMove(false)} className={`flex-1 py-3 rounded-lg border-2 text-sm font-semibold ${c.chip(!canMove)}`}>🛏️ I can't move</button>
           </div>
-          <button onClick={handleUnfreeze} disabled={loading} className={`w-full py-5 rounded-xl font-semibold text-lg ${loading ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : c.btnPrimary}`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '⚙️'}</span></> : <>❄️ Give me one thing</>}</button>
+          <button onClick={handleUnfreeze} disabled={loading} className={`w-full py-5 rounded-xl font-semibold text-lg ${loading ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : c.btnPrimary}`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '⚙️'}</span></> : <><span className="mr-1">{tool?.icon ?? '❄️'}</span> Give me one thing</>}</button>
         </div>
       )}
 
@@ -360,7 +360,7 @@ const SpiralStopper = ({ tool }) => {
         <div className="space-y-4">
           {/* Completed steps */}
           {freezeSteps.length > 0 && <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 space-y-1`}>
-            {freezeSteps.map((s, i) => <div key={i} className="flex items-center gap-2"><span className={`w-5 h-5 rounded-full flex items-center justify-center text-xs ${isDark ? 'bg-emerald-900/40 text-emerald-400' : 'bg-emerald-100 text-emerald-700'}`}>✓</span><span className={`text-sm line-through ${c.tm}`}>{s.instruction}</span></div>)}
+            {freezeSteps.map((s, i) => <div key={i} className="flex items-center gap-2"><span className={`w-5 h-5 rounded-full flex items-center justify-center text-xs ${isDark ? 'bg-emerald-900/40 text-emerald-400' : 'bg-emerald-100 text-emerald-700'}`}>✓</span><span className={`text-sm line-through ${c.textMuted}`}>{s.instruction}</span></div>)}
           </div>}
 
           {/* Current step */}
@@ -369,7 +369,7 @@ const SpiralStopper = ({ tool }) => {
               <span className={`w-10 h-10 rounded-full flex items-center justify-center text-lg font-bold ${isDark ? 'bg-sky-900/40 text-sky-300' : 'bg-sky-100 text-sky-700'}`}>{freezeResult.step_number}</span>
               <p className={`text-lg font-bold ${c.text}`}>{freezeResult.instruction}</p>
             </div>
-            <p className={`text-sm ${c.ts}`}>{freezeResult.why_this}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{freezeResult.why_this}</p>
             <p className={`text-xs ${isDark ? 'text-sky-300' : 'text-sky-600'}`}>✓ Done when: {freezeResult.completion_signal}</p>
           </div>
 
@@ -379,47 +379,51 @@ const SpiralStopper = ({ tool }) => {
           {/* Actions */}
           <div className="grid grid-cols-2 gap-3">
             <button onClick={completeFreeze} disabled={loading} className={`py-4 rounded-xl font-semibold text-sm ${loading ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : c.btnPrimary}`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '⚙️'}</span></> : <>✅ Done — next</>}</button>
-            <button onClick={finishFreeze} className={`py-4 rounded-xl font-semibold text-sm ${c.sec}`}>🏁 I'm done for now</button>
+            <button onClick={finishFreeze} className={`py-4 rounded-xl font-semibold text-sm ${c.btnSecondary}`}>🏁 I'm done for now</button>
           </div>
 
-          {freezeResult.encouragement && <p className={`text-center text-sm ${c.ts}`}>{freezeResult.encouragement}</p>}
+          {freezeResult.encouragement && <p className={`text-center text-sm ${c.textSecondary}`}>{freezeResult.encouragement}</p>}
         </div>
       )}
 
       {/* ═══ CRASHED MODE ═══ */}
       {mode === 'crashed' && view === 'input' && (
         <div className={`${c.card} rounded-xl shadow-lg p-5 space-y-4`}>
-          <div><h3 className={`font-bold text-lg ${c.text}`}>🔋 You've crashed.</h3><p className={`text-sm ${c.ts}`}>That's your system protecting you. Let's figure out the absolute minimum.</p></div>
+          <div><h3 className={`font-bold text-lg ${c.text}`}>🔋 You've crashed.</h3><p className={`text-sm ${c.textSecondary}`}>That's your system protecting you. Let's figure out the absolute minimum.</p></div>
 
-          <div><label className={`text-xs font-bold ${c.ts}`}>What happened?</label><div className="space-y-2 mt-1">
-            {CRASH_TYPES.map(t => <button key={t.v} onClick={() => setCrashType(t.v)} className={`w-full text-left px-4 py-3 rounded-lg border-2 ${c.chip(crashType === t.v)}`}><span className="text-sm font-semibold">{t.l}</span><span className={`text-xs ${c.ts} ml-2`}>{t.desc}</span></button>)}
+          <div><label className={`text-xs font-bold ${c.textSecondary}`}>What happened?</label><div className="space-y-2 mt-1">
+            {CRASH_TYPES.map(t => <button key={t.v} onClick={() => setCrashType(t.v)} className={`w-full text-left px-4 py-3 rounded-lg border-2 ${c.chip(crashType === t.v)}`}><span className="text-sm font-semibold">{t.l}</span><span className={`text-xs ${c.textSecondary} ml-2`}>{t.desc}</span></button>)}
           </div></div>
 
-          <div><label className={`text-xs font-bold ${c.ts}`}>Severity</label><div className="flex gap-2 mt-1">
+          <div><label className={`text-xs font-bold ${c.textSecondary}`}>Severity</label><div className="flex gap-2 mt-1">
             {SEVERITY_OPTS.map(s => <button key={s.v} onClick={() => setSeverity(s.v)} className={`flex-1 py-3 rounded-lg border-2 text-xs font-semibold text-center ${c.chip(severity === s.v)}`}>{s.l}</button>)}
           </div></div>
 
           <div className="grid grid-cols-2 gap-3">
-            <div><label className={`text-xs font-bold ${c.ts}`}>How long?</label><input value={crashDuration} onChange={e => setCrashDuration(e.target.value)} placeholder="Just started, 2 days..." className={`w-full p-2.5 border rounded-lg text-sm ${c.input}`} /></div>
-            <div><label className={`text-xs font-bold ${c.ts}`}>What can you do?</label><input value={canDo} onChange={e => setCanDo(e.target.value)} placeholder="I can sit up, read my phone..." className={`w-full p-2.5 border rounded-lg text-sm ${c.input}`} /></div>
+            <div><label className={`text-xs font-bold ${c.textSecondary}`}>How long?</label><input value={crashDuration} onChange={e => setCrashDuration(e.target.value)} placeholder="Just started, 2 days..." className={`w-full p-2.5 border rounded-lg text-sm ${c.input}`} /></div>
+            <div><label className={`text-xs font-bold ${c.textSecondary}`}>What can you do?</label><input value={canDo} onChange={e => setCanDo(e.target.value)} placeholder="I can sit up, read my phone..." className={`w-full p-2.5 border rounded-lg text-sm ${c.input}`} /></div>
           </div>
 
-          <button onClick={handleCrash} disabled={loading || !crashType} className={`w-full py-4 rounded-xl font-semibold text-lg ${loading || !crashType ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : c.btnPrimary}`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '⚙️'}</span> Building protocol...</> : <>🔋 Get recovery protocol</>}</button>
+          <button onClick={handleCrash} disabled={loading || !crashType} className={`w-full py-4 rounded-xl font-semibold text-lg ${loading || !crashType ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : c.btnPrimary}`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '⚙️'}</span> Building protocol...</> : <><span className="mr-1">{tool?.icon ?? '🔋'}</span> Get recovery protocol</>}</button>
         </div>
       )}
 
       {mode === 'crashed' && view === 'result' && crashResult && (
-        <div className="space-y-4">
+        <div ref={resultsRef} className="space-y-4">
+          <div className="flex gap-3">
+            <ActionBar content={buildCrashText()} title={tool?.title || 'Spiral Stopper'} />
+            <button onClick={() => setView('debrief')} className={`px-4 py-2 rounded-lg text-sm font-bold ${c.btnSecondary}`}>📝 Debrief</button>
+          </div>
           {/* Acknowledgment */}
           <div className={`${c.hero} border-2 rounded-xl p-5`}><p className={`text-lg ${c.text}`}>{crashResult.acknowledgment}</p></div>
-          {crashResult.current_read && <p className={`text-sm ${c.ts}`}>{crashResult.current_read}</p>}
+          {crashResult.current_read && <p className={`text-sm ${c.textSecondary}`}>{crashResult.current_read}</p>}
 
           {/* Stages */}
           {(crashResult.stages || []).map((stage, i) => {
-            const stageColor = i === 0 ? c.danger : i === 1 ? c.warn : i === 2 ? c.cardAlt : c.success;
+            const stageColor = i === 0 ? c.danger : i === 1 ? c.warning : i === 2 ? c.cardAlt : c.success;
             return <div key={i} className={`${stageColor} border-2 rounded-xl p-5 space-y-3`}>
               <h4 className="font-bold text-sm">{stage.name}</h4>
-              <p className={`text-xs ${c.ts}`}>{stage.description}</p>
+              <p className={`text-xs ${c.textSecondary}`}>{stage.description}</p>
               <div className="space-y-2">{(stage.steps || []).map((step, j) => <div key={j} className="flex items-start gap-2"><span className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${c.cardAlt}`}>{j + 1}</span><p className="text-sm">{step}</p></div>)}</div>
               <div className={`${c.success} border rounded-lg p-3`}><p className="text-sm font-bold">✓ Enough: {stage.enough_statement}</p></div>
             </div>;
@@ -429,7 +433,7 @@ const SpiralStopper = ({ tool }) => {
           {crashResult.permissions?.length > 0 && <div className={`${c.teal} border rounded-xl p-5 space-y-2`}><h4 className="font-bold text-sm">💚 Permissions</h4>{crashResult.permissions.map((p, i) => <p key={i} className="text-sm">{p}</p>)}</div>}
 
           {/* Basics checklist */}
-          {crashResult.basics_checklist?.length > 0 && <div className={`${c.card} rounded-xl shadow-lg p-5`}><h4 className={`font-bold text-sm ${c.text} mb-2`}>🛡️ Basics</h4>{crashResult.basics_checklist.map((b, i) => <div key={i} className={`flex items-center gap-2 py-1`}><span className={`w-4 h-4 rounded border-2 ${c.border} flex-shrink-0`} /><span className={`text-sm ${c.ts}`}>{b}</span></div>)}</div>}
+          {crashResult.basics_checklist?.length > 0 && <div className={`${c.card} rounded-xl shadow-lg p-5`}><h4 className={`font-bold text-sm ${c.text} mb-2`}>🛡️ Basics</h4>{crashResult.basics_checklist.map((b, i) => <div key={i} className={`flex items-center gap-2 py-1`}><span className={`w-4 h-4 rounded border-2 ${c.border} flex-shrink-0`} /><span className={`text-sm ${c.textSecondary}`}>{b}</span></div>)}</div>}
 
           {/* When to reach out */}
           {crashResult.when_to_reach_out && <div className={`${c.btnSecondary} border rounded-xl p-4`}><h4 className="font-bold text-sm mb-1">🤝 When to reach out</h4><p className="text-sm">{crashResult.when_to_reach_out}</p></div>}
@@ -439,21 +443,16 @@ const SpiralStopper = ({ tool }) => {
 
           {/* Anchor */}
           {crashResult.gentle_reminder && <div className={`${c.hero} border-2 rounded-xl p-5 text-center`}><p className={`text-lg font-bold ${c.text}`}>{crashResult.gentle_reminder}</p></div>}
-
-          <div className="flex gap-3">
-            <ActionBar content={buildCrashText()} title="Recovery Protocol" />
-            <button onClick={() => setView('debrief')} className={`px-4 py-2 rounded-lg text-sm font-bold ${c.sec}`}>📝 Debrief</button>
-          </div>
         </div>
       )}
 
       {/* ═══ DEBRIEF VIEW ═══ */}
       {view === 'debrief' && (
         <div className={`${c.card} rounded-xl shadow-lg p-5 space-y-4`}>
-          <div><h3 className={`font-bold text-lg ${c.text}`}>📝 Quick debrief</h3><p className={`text-xs ${c.ts}`}>Optional but powerful — helps spot patterns over time</p></div>
+          <div><h3 className={`font-bold text-lg ${c.text}`}>📝 Quick debrief</h3><p className={`text-xs ${c.textSecondary}`}>Optional but powerful — helps spot patterns over time</p></div>
 
           <div><label className={`text-sm font-semibold ${c.text}`}>How are you now? {debriefIntensity}/5</label>
-            <div className="flex gap-1 mt-1">{[1, 2, 3, 4, 5].map(n => <button key={n} onClick={() => setDebriefIntensity(n)} className={`flex-1 py-2.5 rounded-lg text-sm font-bold border-2 transition-all ${n <= debriefIntensity ? (isDark ? 'bg-emerald-900/40 border-emerald-500 text-emerald-200' : 'bg-emerald-100 border-emerald-400 text-emerald-800') : `${c.cardAlt} ${c.border} ${c.tm}`}`}>{n === 1 ? '😌' : n === 2 ? '🙂' : n === 3 ? '😐' : n === 4 ? '😟' : '😰'}</button>)}</div>
+            <div className="flex gap-1 mt-1">{[1, 2, 3, 4, 5].map(n => <button key={n} onClick={() => setDebriefIntensity(n)} className={`flex-1 py-2.5 rounded-lg text-sm font-bold border-2 transition-all ${n <= debriefIntensity ? (isDark ? 'bg-emerald-900/40 border-emerald-500 text-emerald-200' : 'bg-emerald-100 border-emerald-400 text-emerald-800') : `${c.cardAlt} ${c.border} ${c.textMuted}`}`}>{n === 1 ? '😌' : n === 2 ? '🙂' : n === 3 ? '😐' : n === 4 ? '😟' : '😰'}</button>)}</div>
           </div>
 
           <input value={whatHelped} onChange={e => setWhatHelped(e.target.value)} placeholder="What helped most? (grounding, reality check, time...)" className={`w-full p-2.5 border rounded-lg text-sm ${c.input}`} />
@@ -463,11 +462,11 @@ const SpiralStopper = ({ tool }) => {
           {debriefResult && <div className="space-y-3">
             <div className={`${c.success} border rounded-xl p-4`}><p className="text-sm">{debriefResult.reflection}</p></div>
             {debriefResult.pattern_insight && <div className={`${c.cardAlt} border rounded-xl p-4`}><p className="text-sm">📊 {debriefResult.pattern_insight}</p></div>}
-            {debriefResult.prevention_tip && <div className={`${c.warn} border rounded-xl p-4`}><p className="text-sm">🛡️ Next time: {debriefResult.prevention_tip}</p></div>}
+            {debriefResult.prevention_tip && <div className={`${c.warning} border rounded-xl p-4`}><p className="text-sm">🛡️ Next time: {debriefResult.prevention_tip}</p></div>}
             {debriefResult.strength_noted && <div className={`${c.btnSecondary} border rounded-xl p-4`}><p className="text-sm">💪 {debriefResult.strength_noted}</p></div>}
           </div>}
 
-          <button onClick={resetAll} className={`w-full py-2 rounded-lg text-sm font-bold ${c.sec}`}>← Home</button>
+          <button onClick={resetAll} className={`w-full py-2 rounded-lg text-sm font-bold ${c.btnSecondary}`}>← Home</button>
         </div>
       )}
 
@@ -486,12 +485,12 @@ const SpiralStopper = ({ tool }) => {
               <div key={ep.id} className={`${c.cardAlt} border ${c.border} rounded-lg p-3`}>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2"><span>{ep.type === 'spiral' ? '🌀' : ep.type === 'frozen' ? '❄️' : '🔋'}</span><span className={`text-sm font-bold ${c.text}`}>{ep.trigger || ep.type}</span></div>
-                  <span className={`text-xs ${c.tm}`}>{new Date(ep.date).toLocaleDateString()}</span>
+                  <span className={`text-xs ${c.textMuted}`}>{new Date(ep.date).toLocaleDateString()}</span>
                 </div>
                 <div className="flex gap-3 mt-1">
-                  {ep.primary_distortion && <span className={`text-xs ${c.ts}`}>↳ {ep.primary_distortion}</span>}
-                  {ep.intensity_before != null && <span className={`text-xs ${c.ts}`}>Intensity: {ep.intensity_before}/5{ep.intensity_after != null ? ` → ${ep.intensity_after}/5` : ''}</span>}
-                  {ep.steps_completed != null && <span className={`text-xs ${c.ts}`}>{ep.steps_completed} steps</span>}
+                  {ep.primary_distortion && <span className={`text-xs ${c.textSecondary}`}>↳ {ep.primary_distortion}</span>}
+                  {ep.intensity_before != null && <span className={`text-xs ${c.textSecondary}`}>Intensity: {ep.intensity_before}/5{ep.intensity_after != null ? ` → ${ep.intensity_after}/5` : ''}</span>}
+                  {ep.steps_completed != null && <span className={`text-xs ${c.textSecondary}`}>{ep.steps_completed} steps</span>}
                   {ep.what_helped && <span className={`text-xs ${isDark ? 'text-emerald-300' : 'text-emerald-600'}`}>💊 {ep.what_helped}</span>}
                 </div>
               </div>
@@ -500,25 +499,26 @@ const SpiralStopper = ({ tool }) => {
 
           {/* Pattern analysis */}
           {patternResult && <div className="space-y-3">
+            <span ref={resultsRef} className="sr-only" aria-hidden="true" />
+            <ActionBar content={`SPIRAL STOPPER PATTERNS\n\n${patternResult.biggest_insight || ''}\n\nTrigger patterns:\n${(patternResult.trigger_patterns || []).join('\n')}\n\nToolkit:\n${(patternResult.personalized_toolkit || []).map(t => `${t.trigger}: ${t.best_response}`).join('\n')}\n\n${patternResult.encouragement || ''}${BRAND}`} title={tool?.title || 'Spiral Stopper'} />
             <div className={`${c.card} rounded-xl shadow-lg p-5 space-y-3`}>
               <h4 className={`font-bold text-sm ${c.text}`}>🔍 Pattern analysis</h4>
-              <div className="grid grid-cols-3 gap-3">{[['Most common', patternResult.most_common_type], ['Top distortion', patternResult.most_common_distortion], ['Trend', patternResult.improvement_trend]].map(([l, v], i) => <div key={i} className={`${c.cardAlt} border ${c.border} rounded-lg p-2 text-center`}><span className={`text-xs ${c.tm}`}>{l}</span><br /><span className={`text-sm font-bold ${c.text}`}>{v || '?'}</span></div>)}</div>
-              {patternResult.trigger_patterns?.length > 0 && <div><p className={`text-xs font-bold ${c.text} mb-1`}>🎯 Trigger patterns:</p>{patternResult.trigger_patterns.map((t, i) => <p key={i} className={`text-sm ${c.ts}`}>• {t}</p>)}</div>}
-              {patternResult.biggest_insight && <div className={`${c.warn} border rounded-lg p-3`}><p className="text-sm font-bold">💡 {patternResult.biggest_insight}</p></div>}
-              {patternResult.personalized_toolkit?.length > 0 && <div className={`${c.success} border rounded-lg p-3 space-y-2`}><p className="text-xs font-bold">🧰 Your personal toolkit:</p>{patternResult.personalized_toolkit.map((t, i) => <div key={i}><span className={`text-xs font-bold ${c.text}`}>{t.trigger}:</span><span className={`text-xs ${c.ts} ml-1`}>{t.best_response}</span></div>)}</div>}
+              <div className="grid grid-cols-3 gap-3">{[['Most common', patternResult.most_common_type], ['Top distortion', patternResult.most_common_distortion], ['Trend', patternResult.improvement_trend]].map(([l, v], i) => <div key={i} className={`${c.cardAlt} border ${c.border} rounded-lg p-2 text-center`}><span className={`text-xs ${c.textMuted}`}>{l}</span><br /><span className={`text-sm font-bold ${c.text}`}>{v || '?'}</span></div>)}</div>
+              {patternResult.trigger_patterns?.length > 0 && <div><p className={`text-xs font-bold ${c.text} mb-1`}>🎯 Trigger patterns:</p>{patternResult.trigger_patterns.map((t, i) => <p key={i} className={`text-sm ${c.textSecondary}`}>• {t}</p>)}</div>}
+              {patternResult.biggest_insight && <div className={`${c.warning} border rounded-lg p-3`}><p className="text-sm font-bold">💡 {patternResult.biggest_insight}</p></div>}
+              {patternResult.personalized_toolkit?.length > 0 && <div className={`${c.success} border rounded-lg p-3 space-y-2`}><p className="text-xs font-bold">🧰 Your personal toolkit:</p>{patternResult.personalized_toolkit.map((t, i) => <div key={i}><span className={`text-xs font-bold ${c.text}`}>{t.trigger}:</span><span className={`text-xs ${c.textSecondary} ml-1`}>{t.best_response}</span></div>)}</div>}
               {patternResult.encouragement && <p className={`text-sm ${isDark ? 'text-emerald-300' : 'text-emerald-600'}`}>✨ {patternResult.encouragement}</p>}
             </div>
-            <ActionBar content={`SPIRAL STOPPER PATTERNS\n\n${patternResult.biggest_insight || ''}\n\nTrigger patterns:\n${(patternResult.trigger_patterns || []).join('\n')}\n\nToolkit:\n${(patternResult.personalized_toolkit || []).map(t => `${t.trigger}: ${t.best_response}`).join('\n')}\n\n${patternResult.encouragement || ''}${BRAND}`} title="Spiral Patterns" />
           </div>}
 
-          <button onClick={resetAll} className={`w-full py-2 rounded-lg text-sm font-bold ${c.sec}`}>← Home</button>
+          <button onClick={resetAll} className={`w-full py-2 rounded-lg text-sm font-bold ${c.btnSecondary}`}>← Home</button>
         </div>
       )}
         <div className={`mt-6 pt-4 border-t text-sm ${c.border} ${c.textMuted}`}>
           <p className="mb-2 font-medium">You might also like:</p>
           <div className="flex flex-wrap gap-2">
             {[{slug:'brain-dump-buddy',label:'🧠 Brain Dump Buddy'},{slug:'focus-pocus',label:'🎯 Focus Pocus'},{slug:'recharge-radar',label:'🔋 Recharge Radar'}].map(({slug,label})=>(
-              <a key={slug} href={`/tool/${slug}`} className={linkStyle}>{label}</a>
+              <a key={slug} href={`${slug}`} className={linkStyle}>{label}</a>
             ))}
           </div>
         </div>

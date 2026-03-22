@@ -659,9 +659,9 @@ const DebateMe = ({ tool }) => {
       {(mode === 'scorecard' || quickData || prepData) && <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
         <p className={`text-xs ${c.textMuteded} mb-2`}>Also try:</p>
         <div className="flex flex-wrap gap-3">
-          <a href="/tool/BeliefStressTest" target="_blank" rel="noopener noreferrer" className={linkStyle}>🧪 Belief Stress Test</a>
-          <a href="/tool/ArgumentSimulator" target="_blank" rel="noopener noreferrer" className={linkStyle}>⚔️ Argument Simulator</a>
-          <a href="/tool/DecisionCoach" target="_blank" rel="noopener noreferrer" className={linkStyle}>🎯 Decision Coach</a>
+          <a href="BeliefStressTest" target="_blank" rel="noopener noreferrer" className={linkStyle}>🧪 Belief Stress Test</a>
+          <a href="ArgumentSimulator" target="_blank" rel="noopener noreferrer" className={linkStyle}>⚔️ Argument Simulator</a>
+          <a href="DecisionCoach" target="_blank" rel="noopener noreferrer" className={linkStyle}>🎯 Decision Coach</a>
         </div>
       </div>}
     </div>

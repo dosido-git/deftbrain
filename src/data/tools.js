@@ -410,7 +410,7 @@ export const tools = [
 },
 
 {
-  modified: "2025-03-05",
+  modified: "2026-03-11",
   id: "GravityWell",
   title: "Gravity Well",
   tagline: "A 90-day plan to pull someone into your orbit — before you ever reach out",
@@ -438,7 +438,12 @@ export const tools = [
         "The 'value offer' section tells you what to lead with — don't skip it",
         "The 'what they avoid' section is as important as the positive strategy",
         "Works for investors, mentors, potential employers, collaborators, and creative partners"
-      ]
+      ],
+          pitfalls: [
+      "The gravity score is illustrative, not a measurement — it reflects what the AI infers from your description, not an objective assessment",
+      "The 'First Step' action is calibrated to your current score; skipping straight to Phase 3 tactics before Phase 1 is complete usually backfires",
+      "Being vague about your background produces generic approach scripts — include one specific achievement or shared interest"
+    ]
     }
 },
 
@@ -611,16 +616,16 @@ export const tools = [
 
 {
   modified: "",
-  id: "WhatIfMachine",
-  title: "WhatIfMachine",
+  id: "WhatIf",
+  title: "What If?",
   tagline: "See the road not taken before you decide.",
   tags: ['what if', 'decision', 'alternate path', 'future', 'imagine', 'scenario', 'choice'],
   icon: "🎲",
   categories: ['What If?', 'Veer'],
   headerColor: "#b8dcd8",
-  description: "Facing a life decision? Pick the option you're NOT leaning toward and WhatIfMachine writes you a vivid, realistic simulation of that path — complete scenes at different time points showing what daily life would actually feel like. Not pros/cons. Not advice. A visceral preview of the future you might be giving up.",
+  description: "Facing a life decision? Pick the option you're NOT leaning toward and What If? writes you a vivid, realistic simulation of that path — complete scenes at different time points showing what daily life would actually feel like. Not pros/cons. Not advice. A visceral preview of the future you might be giving up.",
   guide: {
-    overview: "WhatIfMachine is a thought experiment tool for big decisions. Instead of listing pros and cons, it writes vivid second-person scenes showing what the other path would actually feel like at different moments — 2 weeks in, 3 months later, 1 year out. Each scene includes sensory details, emotional texture, what's better on this path, and what it costs. The goal: help you feel what you're choosing, not just think about it.",
+    overview: "What If is a thought experiment tool for big decisions. Instead of listing pros and cons, it writes vivid second-person scenes showing what the other path would actually feel like at different moments — 2 weeks in, 3 months later, 1 year out. Each scene includes sensory details, emotional texture, what's better on this path, and what it costs. The goal: help you feel what you're choosing, not just think about it.",
     howToUse: [
       "Describe the decision you're facing",
       "Tell it which option to simulate — usually the one you're NOT leaning toward",
@@ -747,7 +752,7 @@ export const tools = [
 },
 
 {
-  modified: "",
+  modified: "2026-03-11",
   id: "HecklerPrep",
   title: "HecklerPrep",
   tagline: "Anticipate the hardest questions before they land.",
@@ -775,7 +780,13 @@ export const tools = [
       "The 'real concern' behind each question tells you what they actually want to hear",
       "Practice answering out loud, not just reading the model answers",
       "The bail-out strategies are for genuine unknowns — don't fake answers"
-    ]
+    ],
+    pitfalls: [
+      "The questions are harder when you include your actual proposal — generic topic inputs produce generic objections",
+      "'Brutal' difficulty questions are calibrated for board or investor pressure; they may feel discouraging for a team meeting setting",
+      "The model answers are starting points — adapt them to your voice before practicing"
+    ],
+
   }
 },
 
@@ -846,7 +857,7 @@ export const tools = [
 },
 
 {
-  modified: "",
+  modified: "2026-03-11",
   id: "Giftology",
   title: "Giftology",
   tagline: "The perfect gift for the hardest person to shop for.",
@@ -874,7 +885,12 @@ export const tools = [
       "Mention things they've said offhand — 'she once mentioned wanting to learn pottery' is gold",
       "The card message is the secret weapon — it makes any gift feel intentional",
       "Use the wildcard when you want to surprise someone who's hard to shop for"
-    ]
+    ],
+        pitfalls: [
+      "Generic descriptions produce generic gifts — describe the person's quirks, not just their hobbies",
+      "The 'wildcard' suggestion is intentionally outside the obvious options; don't dismiss it before reading the reasoning",
+      "Budget filtering happens in the AI prompt, not a filter — if results feel off-range, try resubmitting"
+    ],
   }
 },
 
@@ -1320,7 +1336,7 @@ export const tools = [
   tagline: "Collide anything modern with any historical period",
   tags: ['history', 'time', 'historical', 'modern', 'funny', 'ancient', 'medieval', 'comedy', 'fun'],
   icon: "⏰",
-  categories: ['What If?', 'Detour'],
+  categories: ['What If?', 'Detour', 'Diversions'],
   headerColor: "#b8dcd8",
   description: "Pick any modern concept and any historical period — AI generates the collision. Six formats: Explain It, Review, News Report, Letter, Debate, and Ad. Every piece is historically accurate AND funny — includes real historical footnotes so you learn something while laughing.",
   guide: {
@@ -1353,7 +1369,7 @@ export const tools = [
   icon: "🙃",
   categories: ['What If?', 'Detour'],
   headerColor: "#b8dcd8",
-  description: "Ask any real question and get a beautifully structured, internally consistent, completely incorrect answer with full expert confidence. Fake studies, invented researchers, nonsense equations that look real. Three seriousness levels: Deadpan, Playful, Unhinged. Includes toggleable real answer for when you want to actually learn something.",
+  description: "Ask any real question and get a beautifully structured, internally consistent, completely incorrect answer with full expert confidence. Fake studies, invented researchers, nonsense equations that look real. Three seriousness levels: Deadpan, Playful, Unhinged. Includes real answer toggle for when you want to actually learn something.",
   guide: {
     overview: "Wrong Answers Only is the world's most confidently incorrect expert. Every answer is internally consistent, impressively structured, and completely, beautifully wrong.",
     howToUse: [
@@ -1761,7 +1777,7 @@ export const tools = [
 },
 
 {
-  modified: "",
+  modified: "2026-03-11",
   id: "GhostWriter",
   title: "Ghost Writer",
   tagline: "Turn rough notes into polished recommendation letters in seconds",
@@ -1789,6 +1805,11 @@ export const tools = [
       "Placeholders in [BRACKETS] are flagged so you know exactly what to personalize",
       "The Refine button lets you adjust tone, length, or add specific details after generation",
       "Power Phrases section shows which lines carry the most persuasive weight — keep those"
+    ],
+        pitfalls: [
+      "Vaguer inputs produce generic letters — the more specific the bullet points about the person, the stronger the output",
+      "The tool generates three style variations; reviewers often respond better to the 'warm' version than the 'formal' one",
+      "AI-generated reference letters should always be reviewed and personalised by the actual recommender before sending"
     ]
   }
 },
@@ -2307,7 +2328,7 @@ export const tools = [
 },
 
 {
-  modified: "",
+  modified: "2026-03-11",
   id: "LayoverMaximizer",
   title: "Layover Maximizer",
   tagline: "Turn dead time into the best part of your trip",
@@ -2466,7 +2487,7 @@ export const tools = [
 },
 
 {
-  modified: "",
+  modified: "2026-03-11",
   id: "GratitudeDebtClearer",
   title: "Gratitude Debt Clearer",
   tagline: "Helps you convert bullet points into polished thank yous.",
@@ -2497,7 +2518,12 @@ export const tools = [
         "The 'awkwardness acknowledgment' box at the top is there for a reason — it's totally normal to feel weird about formal thank-yous. The tool validates this while helping you do it anyway.",
         "Use the delivery suggestions! The AI recommends the best method (text, email, handwritten card) and timing based on your context. A post-interview thank-you should go out within 24 hours, but a friend who helped you move can get a card a few days later.",
         "Save the personalization tips — they're gold. They suggest specific details you could add to make the message even more meaningful, like mentioning how their help affected you or what you learned from them."
-      ]
+      ],
+          pitfalls: [
+      "Vague gratitude ('you've always been there for me') produces generic messages — list one to three specific moments instead",
+      "The 'awkwardness acknowledgment' section only appears if the AI detects the delay or situation is emotionally complicated",
+      "Handwritten card templates are intentionally shorter and simpler than the full message — that's by design"
+    ],
     }
 },
 // ── DifficultTalkCoach tools.js entry ──
@@ -4028,7 +4054,7 @@ export const tools = [
   icon: "👥",
   categories: ['Energy', 'Do It!'],
   headerColor: "#b8dcd8",
-  description: "A quiet coworking companion for solo tasks with 6 session modes that change how your buddy behaves. Choose Deep Work (silent library), Sprint (high-energy burst), Grind (trench warfare solidarity), Creative (non-linear explorer), Avoidance Buster (extra-gentle first steps), or Standard. AI task breakdown, live check-ins with sound chimes and notifications, ambient presence between check-ins, shareable accountability cards at session end, quick-start repeat, mood tracking, 'I'm stuck' with micro-steps, session logging with streaks, and AI-powered insights. Like a coffee shop for your focus — someone's there, no pressure.",
+  description: "An AI coworking companion that stays with you through a focus session — checking in, cheering you on, and helping you get unstuck. Pick from 6 modes (Deep Work, Sprint, Grind, Creative, Avoidance Buster, or Standard) and it adapts its whole personality to match. Like having someone else in the room, without the small talk.",
   guide: {
     overview: "Working near another person helps you focus — that's why coffee shops, libraries, and coworking spaces exist. Virtual Body Double recreates that effect digitally with a twist: you pick a session mode that changes your buddy's entire personality. Deep Work mode is a silent library companion. Sprint mode is a high-energy burst partner. Grind mode commiserates with dark humor. Creative mode never judges tangents. Avoidance Buster is extra-gentle for tasks you've been putting off. After each session, generate a shareable accountability card — a visual summary designed to screenshot and text to a friend.",
 
@@ -4072,9 +4098,9 @@ export const tools = [
   icon: "⏳",
   categories: ['Energy', 'Do It!'],
   headerColor: "#b8dcd8",
-  description: "Reclaims the hours around appointments that would otherwise be lost to 'I have a thing later so I can't start anything.' Add multiple events to map all your free windows. Set energy level for intensity-matched task blocks. 'Start With Me' walks you step-by-step from frozen to doing — a guided 60-second launch into any block with a built-in timer. Pre-appointment anxiety slider builds a history: after a few sessions, the tool proves your anxiety was lying ('Last 4 medical appointments: anxiety 8/10, reality 3/10'). Post-appointment debrief in 3 taps makes every session smarter. Pattern tracking reveals your triggers across sessions.",
+  description: "Maps your free windows around appointments and matches tasks to your energy level so 'I have a thing later' doesn't freeze your whole day. Includes a guided launch to get you started on any block, and tracks pre-appointment anxiety against reality so you can see — over time — how much your brain overprepares for nothing.",
   guide: {
-    overview: "You have a dentist at 2pm and a dinner at 7pm. It's 10am. You know you should do things, but you're frozen because 'I have stuff later.' This tool does the math you won't: you have 3 free hours across 2 windows, your first prep alarm is at 1:25pm, and until then the dentist doesn't exist. Tell the tool your actual tasks and energy level — it maps them to time blocks with intensity badges (Easy/Medium/Deep). Can't start? 'Start With Me' walks you through the first 60 seconds of any block: 'Open your laptop. Now open the document. Read the first sentence. Good — timer started.' After the appointment, a 3-tap debrief tracks whether your anxiety matched reality. Over time, the tool builds proof that your fears overestimate: 'Your medical appointment anxiety averages 8/10 but outcomes average 3/10.'",
+    overview: "You have a dentist at 2pm and a dinner at 7pm. It's 10am. You know you should do things, but you're frozen because 'I have stuff later.' This tool does the math you won't: you have 3 free hours across 2 windows, your first prep alarm is at 1:25pm, and until then the dentist doesn't exist. Enter your tasks and energy level — it assigns each one to a window it can actually fit. After the appointment, a 3-tap debrief compares your pre-appointment anxiety to how it actually went. Over sessions, the pattern becomes undeniable.",
 
     howToUse: [
       "Add events with time, type, prep, and travel. Tap + for multiple events.",
@@ -4163,7 +4189,7 @@ export const tools = [
 },
 
 {
-  modified: "",
+  modified: "2026-03-11",
   id: "GentlePushGenerator",
   title: "Gentle Push Generator",
   tagline: "Micro-challenges just outside your comfort zone",
@@ -4309,10 +4335,10 @@ export const tools = [
   title: "The Gap",
   tagline: "Stuck on a concept? We'll find where your understanding broke.",
   tags: ['stuck', 'concept', 'confused', 'gap', 'knowledge', 'study', 'struggling', 'fundamentals'],
-  icon: "📝",
+  icon: "🔍",
   categories: ['Go Deep!'],
   headerColor: "#d4dde8",
-  description: "Enter any concept you're struggling with and The Gap traces backwards through the prerequisite chain to find the exact point where your understanding broke. Most people try to re-learn the hard thing — the real fix is usually 2-3 steps back. Interactive prerequisite chain with gap-likelihood ratings, quick self-tests at each node, a focused refresher for the likely gap, a 3-step study plan with time estimates, and a Deep Dive mode with worked examples, practice problems, and common mistakes. Four gap types diagnosed: conceptual (don't get why), procedural (can't do the steps), definitional (don't know what it means), notational (symbols blocking you).",
+  description: "Enter any concept you're struggling with and The Gap traces backwards through the prerequisite chain to find the exact point where your understanding broke.  Four gap types diagnosed: conceptual (don't get why), procedural (can't do the steps), definitional (don't know what it means), notational (symbols blocking you).",
   guide: {
     overview: "The Gap solves the #1 study mistake: when you're stuck on something, you try to re-read the hard material. But the problem is almost never the hard material itself — it's a prerequisite you're missing. Someone struggling with integrals usually has a limits gap. Someone struggling with limits usually has a functions gap. The Gap traces the dependency chain, diagnoses the gap type, and gives you a focused fix for the specific hole.",
     howToUse: [

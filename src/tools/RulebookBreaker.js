@@ -354,7 +354,7 @@ const RulebookBreaker = ({ tool }) => {
                   { id: 'LeaseTrapDetector', icon: '🔍', label: 'Find traps in contracts' },
                   { id: 'TruthBomb', icon: '💣', label: 'Say the hard thing' },
                 ].map(r => (
-                  <a key={r.id} href={`/tool/${r.id}`} target="_blank" rel="noopener noreferrer"
+                  <a key={r.id} href={`${r.id}`} target="_blank" rel="noopener noreferrer"
                     className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${c.btnSecondary}`}>
                     {r.icon} {r.label}
                   </a>

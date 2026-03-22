@@ -531,7 +531,7 @@ const EmailUrgencyTriager = ({ tool }) => {
 
           <div className={`${c.cardAlt} border rounded-xl p-4`}><p className={`text-[10px] font-bold ${c.textMuted} mb-2`}>RELATED TOOLS</p><div className="flex flex-wrap gap-2">
             {[{ s: 'confrontation-coach', l: '🥊 Confrontation Coach' }, { s: 'apology-calibrator', l: '🙏 Apology Calibrator' }, { s: 'jargon-assassin', l: '🗡️ Jargon Assassin' }, { s: 'brain-dump-structurer', l: '🧠 Brain Dump' }].map(t => (
-              <a key={t.s} href={`/tool/${t.s}`} target="_blank" rel="noopener noreferrer" className={`${c.pillGray} border text-[10px] px-2 py-1 rounded hover:opacity-80`}>{t.l}</a>
+              <a key={t.s} href={`${t.s}`} target="_blank" rel="noopener noreferrer" className={`${c.pillGray} border text-[10px] px-2 py-1 rounded hover:opacity-80`}>{t.l}</a>
             ))}
           </div></div>
         </div>

@@ -363,7 +363,7 @@ const DateNight = ({ tool }) => {
       {/* Pre-result cross-ref */}
       {!results && (
         <p className={`text-xs ${c.textMuteded}`}>
-          Need ideas first? <a href="/tool/CrowdWisdom" className={linkStyle}>CrowdWisdom</a> can help you decide what kind of evening fits the moment.
+          Need ideas first? <a href="CrowdWisdom" className={linkStyle}>CrowdWisdom</a> can help you decide what kind of evening fits the moment.
         </p>
       )}
 
@@ -820,7 +820,7 @@ const DateNight = ({ tool }) => {
             {isAnni && (
               <p className={`text-xs text-center ${c.textMuteded}`}>
                 Capturing the memory?{' '}
-                <a href="/tool/CaptionMagic" className={linkStyle}>CaptionMagic</a> can write the perfect caption for your photos tonight.
+                <a href="CaptionMagic" className={linkStyle}>CaptionMagic</a> can write the perfect caption for your photos tonight.
               </p>
             )}
 
@@ -829,8 +829,8 @@ const DateNight = ({ tool }) => {
               <p className={`text-xs ${c.textMuteded} mb-2`}>Related:</p>
               <div className="flex flex-wrap gap-2">
                 {[
-                  ['/tool/FridgeAlchemy', '🍳', 'cook together instead'],
-                  ['/tool/CaptionMagic', '📸', 'caption the photos'],
+                  ['FridgeAlchemy', '🍳', 'cook together instead'],
+                  ['CaptionMagic', '📸', 'caption the photos'],
                 ].map(([href, ico, d]) => (
                   <a key={href} href={href} target="_blank" rel="noopener noreferrer" className={linkStyle}>{ico} {d}</a>
                 ))}
