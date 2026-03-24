@@ -4,7 +4,6 @@ import { ActionBar } from './ActionButtons';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { getToolById, tools } from '../data/tools';
 import { useTheme } from '../hooks/useTheme';
-import BrandMark from './BrandMark';
 
 // Inner component — has access to ActionBarContext
 const ToolPageWrapperInner = ({ children, tool, toolId }) => {
@@ -170,13 +169,14 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
             <span className="text-xs font-semibold uppercase tracking-wide">Dashboard</span>
           </button>
           <Link to="/" title="Back to Dashboard" className="flex-shrink-0">
-            {/* Mobile: compact with tagline at tighter tracking */}
-            <div className="block sm:hidden">
-              <BrandMark direction="right" size="sm" isDark={isDark} showTagline={true} />
-            </div>
-            {/* Desktop: full size with tagline */}
-            <div className="hidden sm:block">
-              <BrandMark direction="right" size="md" isDark={isDark} showTagline={true} />
+            <div className="flex items-center gap-2">
+              <img src="/pBrain-r.png" alt="DeftBrain" className="h-8 w-auto" />
+              <div className="leading-tight">
+                <div className={`font-bold text-sm tracking-tight ${isDark ? 'text-zinc-50' : 'text-stone-900'}`}>
+                  <span className={colors.accent}>D</span>eftBrain
+                </div>
+                <div className={`text-[10px] ${colors.textMuted}`}>Intelligence on Demand</div>
+              </div>
             </div>
           </Link>
         </div>
@@ -216,7 +216,7 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
           </header>
 
           {/* Bookmark hint + Theme Toggle (above card, right-aligned) */}
-          <div data-print-hide className="flex items-center justify-between mt-4 mb-2 gap-2 relative">
+          <div data-print-hide className="flex items-center justify-between flex-wrap mt-4 mb-2 gap-2 relative">
             <div className="flex gap-2">
             <button
               onClick={handleBookmarkHint}
