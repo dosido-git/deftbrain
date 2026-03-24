@@ -163,7 +163,8 @@ const PronounceItRight = ({ tool }) => {
     if (!results?.word) return;
     setAudioLoading(true); setAudioUrl(null); setError('');
     try {
-      const res = await fetch('/api/tools/pronounce-it-right/audio', {
+      const base = process.env.REACT_APP_API_URL || 'http://localhost:3001';
+      const res = await fetch(`${base}/api/pronounce-it-right-audio`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ word: results.word, languageOfOrigin: results.language_of_origin || null }),

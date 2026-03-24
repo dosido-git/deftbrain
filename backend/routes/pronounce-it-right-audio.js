@@ -5,7 +5,7 @@ const https = require('https');
 // ═══════════════════════════════════════════════════════════════
 // AUDIO — Generate spoken pronunciation via ElevenLabs
 //
-// POST /api/tools/pronounce-it-right/audio
+// POST /api/pronounce-it-right-audio
 // Body: { word: string, languageOfOrigin?: string }
 // Returns: audio/mpeg binary
 //
@@ -19,7 +19,7 @@ const https = require('https');
 // Sarah — clear, neutral, works well across languages
 const VOICE_ID = 'EXAVITQu4vr4xnSDxMaL';
 
-router.post('/audio', async (req, res) => {
+router.post('/pronounce-it-right-audio', async (req, res) => {
   const { word, languageOfOrigin } = req.body;
 
   if (!word?.trim()) {
