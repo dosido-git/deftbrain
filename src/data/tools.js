@@ -1427,43 +1427,43 @@ export const tools = [
     ]
   }
 },
-
 {
-  modified: "",
-  id: "SayItRight",
-  title: "Pronounce This!",
+  modified: "2026-03-24",
+  id: "PronounceItRight",
+  title: "Pronounce It Right",
   tagline: "Names, food, places, brands — never mispronounce anything again",
-  tags: ['pronounce', 'pronunciation', 'say', 'name', 'food', 'restaurant', 'brand', 'foreign', 'word'],
+  tags: [
+    'pronounce', 'pronunciation', 'how to say', 'mispronounce', 'phonetics',
+    'ipa', 'name', 'food', 'restaurant', 'menu', 'brand', 'foreign', 'word',
+    'travel', 'place', 'language', 'accent', 'batch', 'syllables', 'stress'
+  ],
   icon: "🗣️",
   categories: ['Discourse'],
-  headerColor: "#e0b8b8",
-  description: "Enter any word from any language and get a pronunciation guide calibrated to YOUR native language's sound system. Eight categories: Names (Siobhan, Nguyễn), Food/Drink (gnocchi, pho, Gewürztraminer), Places (Reykjavik, Worcestershire), Brands (Hermès, Givenchy), Music/Art (Chopin, Dvořák), Science (acetaminophen, Euler), Foreign Phrases (schadenfreude, coup de grâce), and Other. Each guide includes simplified phonetics with stress markers, IPA notation, syllable breakdown, 'sounds like' comparisons in your language, mouth/tongue positioning for tricky sounds, common mistakes with explanations, category-specific context (what the dish is, who the composer is, where the place is), a confidence script for when you're unsure, and a fun fact. Batch mode handles 2-10 words at once. Supports 18+ native languages.",
+  headerColor: "#9a4040",
+  description: "Type any word — a name, dish, brand, place, or phrase — and get a pronunciation guide calibrated to your native language. Covers phonetic spelling, syllable stress, mouth-position tips, common mistakes with fixes, and a confidence script for uncertain moments. Batch mode handles up to 10 words at once.",
   guide: {
-    overview: "Say It Right solves a universal problem: you encounter an unfamiliar word and don't know how to say it. Whether it's a coworker's name, a menu item, a city you're visiting, or a composer you're discussing — the tool maps the word's sounds to YOUR native language's sound system. The explanation changes depending on whether you speak English, Spanish, Mandarin, or Arabic, because the tricky sounds are different for each.",
+    overview: "Pronounce It Right maps unfamiliar words to sounds you already know in your native language. The guidance changes depending on whether you speak English, Spanish, Mandarin, or Arabic — because the tricky parts are different for each speaker.",
     howToUse: [
-      "Pick a category (Name, Food, Place, Brand, Music/Art, Science, Phrase, or Other)",
-      "Type the word you want to pronounce",
-      "Select your native language — this calibrates the phonetic guide to sounds YOU already know",
-      "Optionally add context (e.g., 'ordering at a French restaurant', 'introducing a new coworker')",
-      "Review the pronunciation guide: phonetic spelling, syllable breakdown, common mistakes, and context info",
-      "Use Batch mode to look up multiple words at once (great for restaurant menus or travel prep)"
+      "Pick a category: Name, Food/Drink, Place, Brand, Music/Art, Science, Phrase, or Other.",
+      "Type the word and select your native language — this calibrates the phonetic guide to your ear.",
+      "Add optional context (e.g. 'ordering at a French restaurant', 'coworker's name') for tailored tips.",
+      "Review the guide: phonetic spelling, syllable breakdown, common mistakes, and a confidence script.",
+      "Use Batch mode to look up 2–10 words at once — great for travel prep or restaurant menus.",
+      "Tap any word in your history to re-look it up instantly."
     ],
     example: {
-      scenario: "You're going to an Italian restaurant tonight and want to order without embarrassing yourself.",
-      action: "Switch to Batch mode, select Food/Drink category, enter: Gnocchi, Bruschetta, Prosciutto, Chianti. Set native language to English (American).",
-      result: "Four pronunciation cards: Gnocchi = 'NYOH-kee' (not 'noh-chee' — the G is silent and the CH is a K sound), Bruschetta = 'broo-SKET-tah' (not 'broo-shetta' — the SCH is a hard SK in Italian), Prosciutto = 'pro-SHOO-toh' (the SCI makes a SH sound), Chianti = 'kee-AHN-tee' (the CH is a hard K). Each with the #1 mistake and a fun fact."
+      scenario: "You're going to an Italian restaurant and want to order without second-guessing yourself.",
+      action: "Switch to Batch mode, select Food/Drink, enter: Gnocchi, Bruschetta, Prosciutto, Chianti.",
+      result: "Four pronunciation cards with phonetic spelling, the #1 mistake for each word, and the sounds that trip up English speakers specifically."
     },
     tips: [
-      "Your native language changes everything — a Spanish speaker needs different guidance than a Korean speaker for the same word",
-      "Category selection helps the AI provide the right context (cultural etiquette for names, ordering confidence for food, etc.)",
-      "Batch mode is perfect for travel prep or restaurant menus — do 5-10 words at once",
-      "The 'confidence script' gives you something natural to say when you're unsure — better than just guessing",
-      "History saves your lookups as clickable pills — great for reviewing before an event",
-      "The IPA notation is hidden by default but available if you read IPA"
+      "Your native language selection matters — a Spanish speaker needs different guidance than a Korean speaker for the same word.",
+      "Category selection gives the AI the right context: etiquette tips for names, ordering confidence for food.",
+      "The confidence script gives you a natural thing to say when you're still unsure — better than guessing silently.",
+      "IPA notation is hidden by default but available if you read it — tap 'Show IPA' in the result."
     ]
   }
 },
-
 {
   modified: "",
   id: "TheDebrief",
@@ -3594,60 +3594,42 @@ export const tools = [
 },
 
 {
-  modified: "",
+  modified: "2026-03-24",
   id: "SensoryMinefieldMapper",
   title: "Sensory Minefield Mapper",
   tagline: "Predict and avoid overwhelming sensory environments",
-  tags: ['sensory', 'overwhelm', 'noise', 'texture', 'environment', 'sensitive'],
-  icon: "🎯",
+  tags: [
+    'sensory', 'overwhelm', 'noise', 'crowds', 'lighting', 'smells',
+    'environment', 'planning', 'location', 'scouting', 'map', 'visit',
+    'sensitive', 'anxiety', 'temperature', 'place', 'before you go', 'overload'
+  ],
+  icon: "🗺️",
   categories: ['Body', 'Me'],
-  headerColor: "#ccdfc4",
-  description: "Comprehensive sensory environment prediction with saved profiles, accessibility integration, visual mapping, community ratings, and post-visit learning. Predict crowd density, noise, lighting, and sensory overwhelm before you go. Get wheelchair access info, service animal policies, accessible bathroom locations, visual escape route maps, real-time check-ins during visit, and track prediction accuracy over time. Built for autistic individuals, sensory processing disorder, migraine sufferers, PTSD, and anxiety. Know before you go, adapt during, learn after.",
+  headerColor: "#2a3820",
+  description: "Scout any location before you go — predict crowd density, noise, lighting, temperature, and sensory intensity by time of day. Get a tailored game plan, layout intel, accommodation scripts, comfort kit, and live rescan if conditions shift once you're there.",
   guide: {
-    overview: "Enhanced Sensory Minefield Mapper predicts sensory environments with comprehensive features: saved sensory profiles (set once, use always), accessibility integration (wheelchair access, service animals, accessible bathrooms), visual mapping (see quiet zones and escape routes), real-time check-ins during visit ('How are you doing?'), community-sourced ratings from other sensory-sensitive users, and post-visit learning (predicted vs actual comparison improves future predictions). Complete sensory planning system from before-during-after.",
-    
+    overview: "Sensory Minefield Mapper helps you predict what a location will feel like before you arrive. Enter where you're going, when, and what you're sensitive to — and get a full breakdown of expected conditions, the best time to visit, quiet spots and exit routes, scripts for asking staff for accommodations, and a comfort kit checklist. Use the live rescan if reality doesn't match the prediction.",
     howToUse: [
-      "FIRST TIME: Create your sensory profile - select sensitivities, accessibility needs, triggers, warning signs, successful coping strategies. Save it - you'll never need to re-enter.",
-      "For each visit: Enter location, date/time, place type. Your saved profile auto-applies (or edit for this specific visit).",
-      "Review predictions: sensory factors, accessibility info, visual map with escape routes, optimal time, preparation strategies.",
-      "DURING VISIT: Use check-in feature if needed - 'How are you doing?' with emergency protocols if worse than predicted.",
-      "AFTER VISIT: Submit 'How did it go?' report - rate predicted vs actual, share with community, improve future predictions.",
-      "Browse community ratings to see what other sensory-sensitive people say about locations you're considering.",
-      "Track your success rate over time - see which predictions were accurate, which places work for you."
+      "Save a concern profile — select your sensitivities once and load them every visit with one tap.",
+      "Enter your destination, date, time, and place type.",
+      "Review the prediction: intensity rating, factor-by-factor breakdown, and best time to go.",
+      "Open Game Plan for before/during strategies and an exit plan if things get overwhelming.",
+      "Use Live Rescan if you're already there and conditions are worse than predicted.",
+      "Rate the visit afterward — your ratings improve future predictions for that location."
     ],
-    
     example: {
-      scenario: "You're autistic, use a wheelchair, and have high sensitivity to fluorescent lights and crowds. You need groceries. You've used the tool before and saved your sensory profile. Last time you visited Target at 6pm Saturday it was overwhelming and you left after 5 minutes. You want to try again but prepared this time.",
-      action: "Enter 'Target on Main Street', select 'Tomorrow 2pm Tuesday', choose 'Grocery Store'. Toggle 'Use saved profile' (loads: wheelchair access needed, service animal, sensitive to lights/crowds, triggers: flickering lights, warning sign: jaw tension, coping: sunglasses work). Click Analyze.",
-      result: "Prediction: MODERATE (manageable with preparation). Accessibility: Wheelchair accessible (automatic doors, wide aisles, accessible checkout, accessible bathroom near customer service). Noise: 60-70 dB (moderate). Crowds: 40% capacity (vs 85% Saturday 6pm = 53% reduction). Lights: Bright fluorescent throughout (HIGH sensitivity match - sunglasses recommended, ask for dimmer aisle if available). Visual map shows: Quietest area = garden section (back left), Escape routes = (1) Garden section, (2) Accessible bathroom (customer service), (3) Outdoor exit (east side). Optimal time: 10am Tuesday = 70% less crowded. Preparation: Bring sunglasses, noise-canceling headphones, service animal welcome, accessible parking spots available. During-visit check-ins enabled. After visit: You can submit 'How did it go?' to help improve predictions and help community."
+      scenario: "You need to pick up a prescription at a large pharmacy on a Saturday afternoon.",
+      action: "Enter the location, select Saturday 2pm, choose Pharmacy/Medical, flag noise and crowds.",
+      result: "Prediction: HIGH intensity — weekend rush, pharmacy counter waits, intercom announcements. Best time: Tuesday 9am (LOW). Game plan includes: call ahead to confirm prescription is ready, use self-checkout, bring headphones. Quiet spot: far end of the greeting card aisle."
     },
-    
     tips: [
-      "SAVE YOUR PROFILE on first use - you'll never need to re-enter sensitivities, accessibility needs, triggers, warning signs again",
-      "Check community ratings before new locations - see what other autistic/sensory-sensitive users say",
-      "Visual maps show actual escape routes - screenshot them before you go so you have them offline",
-      "Use check-in feature during visit if you're struggling - it provides emergency protocols and nearby recovery locations",
-      "Submit post-visit reports even for successful trips - helps improve predictions and helps community",
-      "Accessibility info is integrated: wheelchair access, service animal policies, accessible bathrooms, elevator locations all in one place",
-      "Your post-visit reports improve YOUR future predictions - the tool learns which factors matter most to you",
-      "Community intelligence builds over time - the more users submit reports, the better predictions get for everyone",
-      "Visual map includes parking-to-entrance route if you need accessible parking proximity",
-      "Real-time adaptation: if it's worse than predicted, tool provides emergency exit strategies and nearby quiet recovery locations"
-    ],
-    
-    pitfalls: [
-      "Don't skip saving your profile thinking you'll remember - sensory needs are consistent, set it once and benefit always",
-      "Community ratings need YOUR contribution - submit reports to help other sensory-sensitive people",
-      "Visual maps require location-specific data - generic place types won't have detailed maps, but named locations will",
-      "Post-visit reports are anonymous but valuable - your experience helps others, no personal info shared",
-      "Accessibility info relies on business reporting - if missing, tool provides typical patterns for place type but may not be specific",
-      "Check-in feature during visit requires keeping phone/tool accessible - plan for this before you go",
-      "Don't ignore 'worse than predicted' protocols - if it's more overwhelming than expected, use emergency exit strategies immediately",
-      "Saved profiles are device-specific (localStorage) - if you use multiple devices, you'll need to save profile on each"
+      "The more specific your location name, the better the prediction — 'CVS on Main St' beats 'pharmacy'.",
+      "Use Challenge Mode in the Route Planner to see which stops to cut if energy runs low.",
+      "The Comfort Kit feature generates a personalized packing list based on your specific concerns and place type.",
+      "Save locations you visit regularly as Favorites — one tap to re-scout with updated conditions."
     ]
   }
 },
-
 {
   modified: "",
   id: "LeverageLogic",

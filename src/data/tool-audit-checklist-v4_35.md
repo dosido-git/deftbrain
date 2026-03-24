@@ -1,4 +1,4 @@
-# Tool Audit Checklist v4.34
+# Tool Audit Checklist v4.35
 ### DeftBrain — Pre-Ship Quality & Consistency Standard
 
 Score each item: ✅ Pass | ⚠️ Needs Work | ❌ Fail | N/A
@@ -1176,3 +1176,319 @@ For each tool, capture:
 **(2) Header wrapped in a card blocks the gradient frame (Section 1.2):** Wrapping the `<h2>` + tagline in `<div className="${c.card} border ...">` places a white/dark card directly over the `ToolPageWrapper` gradient, making the tool card border appear white and the category color invisible. The header must be bare — just `<h2>` and `<p>` with no card wrapper — so the gradient shows through. **Scan:** `grep -n "c\.card" ComponentName.js | head -5` — if the first result is near the `<h2>`, it is a violation. The first `c.card` in the component should be an input card or results card, never the header.*
 
 **(3) Stale closure on keyboard `useEffect` (Section 1.7):** When `handleSubmit` (or any async submit function) is not memoized with `useCallback`, the keyboard `useEffect` captures a stale closure that always sees the initial empty state — causing the handler to fire validation errors even with valid input. The button click works because it always reads fresh state directly. **Fix:** Use a ref pattern — assign `handleRef.current = handleSubmit` outside any effect (on every render), then call `handleRef.current?.()` inside the handler. This ensures the keyboard always invokes the freshest version of the function. **Scan:** Any keyboard `useEffect` that calls a non-memoized `const handle*` function is a candidate — verify the function reads state that could be stale.*
+
+*v4.35 — Coverage completeness rules: keyboard, copy content, and scroll (March 2026)*
+
+**Root cause:** The audit checklist verifies that patterns are *correctly implemented* but does not verify that those patterns have *complete coverage* across all views, tabs, and submit surfaces. A tool can pass every PF-6/PF-7/PF-8 scan while silently missing keyboard support for a secondary tab, leaving a secondary result out of the copy content, or failing to scroll to a result that appears outside the primary results area. These rules close that gap.
+
+---
+
+**(1) Keyboard handler must cover every submit-capable view (Section 1.7 / PF-6):**
+
+The existing PF-6 scan verifies the ref pattern and `canSubmitRef` are present — but only checks the *primary* submit handler. Tools with multiple views (`'form'`, `'route'`, `'settings'`) or multiple tabs may have additional submit actions that are completely unreachable by keyboard.
+
+**The failure mode:** A tool passes PF-6 because `analyzeLocationRef` + `canSubmitRef` + `analyzeLocationRef.current?.()` are all present. But the Route Planner tab has its own `planRoute` handler and its own disabled condition — and Cmd+Enter on the Route tab calls `analyzeLocation` (which silently does nothing) instead of `planRoute`. Zero crashes. Zero warnings. Just a broken keyboard shortcut on a whole tab.
+
+**Fix — multi-view tools must track view via ref and route inside the handler:**
+```js
+const viewRef = useRef(null);
+viewRef.current = view; // updated every render
+
+// Per-view handlers and canSubmit refs:
+const analyzeRef = useRef(null);
+const planRouteRef = useRef(null);
+const canSubmitRef = useRef(false);
+const canRouteRef = useRef(false);
+analyzeRef.current = analyzeLocation;
+planRouteRef.current = planRoute;
+canSubmitRef.current = !!(location.trim() && visitDate && placeType);
+canRouteRef.current = routeStops.filter(s => s.location.trim() && s.placeType).length >= 2;
+
+useEffect(() => {
+  const handler = (e) => {
+    const tag = document.activeElement?.tagName;
+    if (tag === 'SELECT') return;
+    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+      if (viewRef.current === 'route' && !routeLoading && canRouteRef.current)
+        planRouteRef.current?.();
+      else if (viewRef.current === 'form' && !analysisLoading && canSubmitRef.current)
+        analyzeRef.current?.();
+    }
+  };
+  document.addEventListener('keydown', handler);
+  return () => document.removeEventListener('keydown', handler);
+// eslint-disable-next-line react-hooks/exhaustive-deps
+}, [analysisLoading, routeLoading]); // include ALL loading states
+```
+
+**Scan:**
+```bash
+# Step 1 — count distinct submit-capable views
+grep -n "view === '\|activeTab === '" ComponentName.js | grep -v "//" | sort -u
+# For each view that has a submit button, verify it has a corresponding handler ref
+
+# Step 2 — verify viewRef or tabRef is used in the keyboard handler
+grep -n "viewRef\|tabRef\|modeRef" ComponentName.js
+# If tool has multiple views/tabs, at least one of these must appear
+
+# Step 3 — verify the keyboard handler routes to all submit handlers, not just one
+grep -n "useEffect" ComponentName.js -A 15 | grep -A 15 "keydown"
+# Handler body must contain branches for each submit-capable view
+```
+
+> ⚠️ **Why this passes existing scans without routing:** PF-6 greps for `handleSubmitRef`, `canSubmitRef`, and `handleSubmitRef.current?.()` — all three are present even when only the primary view is wired. The secondary handler and its canRef simply never appear in the grep results because the audit doesn't look for them.
+
+---
+
+**(2) `buildFullText` must include results from every output-producing view (Section 1.4 / PF-8):**
+
+The existing PF-8 scan verifies `useRegisterActions` is called after `buildFullText` is declared. It does not verify that `buildFullText` actually captures all results the tool can produce.
+
+**The failure mode:** A tool has three result states — `result` (main chain), `betweenResult` (Between Us tab), `storyResult` (Story tab). `buildFullText` only checks `if (!result) return ''` and builds the chain output. Between Us and Story results are never included. The ActionBar disappears entirely when the user is on those tabs (because `result` is null), and even when it appears it only copies the chain. Zero crashes. Zero warnings. Silent data loss from copy.
+
+**Fix:** `buildFullText` must check all result state variables the tool produces and include whichever are populated:
+```js
+const buildFullText = useCallback(() => {
+  if (!result && !betweenResult && !storyResult) return ''; // gate on ANY result
+  const lines = ['Tool Name', ''];
+  if (result) { /* ... primary result ... */ }
+  if (betweenResult) { /* ... secondary result ... */ }
+  if (storyResult) { /* ... tertiary result ... */ }
+  lines.push(BRAND);
+  return lines.join('\n');
+}, [result, betweenResult, storyResult]); // ALL result vars in deps
+```
+
+**Scan:**
+```bash
+# Step 1 — find all result state variables
+grep -n "const \[.*result\|const \[.*Result\|usePersistentState.*result" ComponentName.js | grep -v "//"
+# Note every *result variable (e.g. result, betweenResult, routeResults, storyResult)
+
+# Step 2 — verify buildFullText references all of them
+grep -n "buildFullText\|buildText\|buildCopy\|buildFull" ComponentName.js -A 20 | head -40
+# Every result variable found in Step 1 must appear inside buildFullText
+
+# Step 3 — verify the early-return gate checks all results, not just one
+grep -n "if (!result) return ''" ComponentName.js
+# If this is the only gate and there are other result vars, it's a violation
+# Correct: if (!result && !betweenResult && !storyResult) return ''
+```
+
+---
+
+**(3) Scroll `useEffect` must target every result area that can appear below the fold (Section 1.7 / PF-7):**
+
+The existing PF-7 scan checks that every `setTimeout` has `clearTimeout`. It does not check whether secondary result areas have their own scroll effects.
+
+**The failure mode:** A tool has a `resultsRef` on the main result and a `useEffect([result])` to scroll to it. It also has a `betweenResult` that renders in the Between Us tab. The user submits Between Us, the result renders below the fold, and nothing scrolls. The user sees a spinning icon that stops with no visible output change. It looks like nothing happened.
+
+**Fix:** Every independently-rendered result area that could appear below the fold needs its own ref and scroll effect:
+```js
+const resultsRef = useRef(null);
+const betweenResultRef = useRef(null);
+
+useEffect(() => {
+  if (!result || !resultsRef.current) return;
+  const t = setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 200);
+  return () => clearTimeout(t);
+}, [result]);
+
+useEffect(() => {
+  if (!betweenResult || !betweenResultRef.current) return;
+  const t = setTimeout(() => betweenResultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 200);
+  return () => clearTimeout(t);
+}, [betweenResult]);
+```
+
+**Scan:**
+```bash
+# Step 1 — find all result state variables (same as PF-8 Step 1)
+grep -n "const \[.*result\|const \[.*Result" ComponentName.js | grep -v "//"
+
+# Step 2 — verify each has a matching scroll useEffect
+grep -n "scrollIntoView\|resultsRef\|Ref\.current" ComponentName.js
+# Number of scrollIntoView calls must match number of independently-rendered result areas
+
+# Step 3 — verify each result container has ref= attached
+grep -n "ref={.*Ref}" ComponentName.js
+# Count must match number of result areas that need scrolling
+```
+
+---
+
+**Summary — the three coverage completeness rules:**
+
+| Rule | What was missed | Correct scan question |
+|------|-----------------|-----------------------|
+| PF-6 multi-view | Are ALL submit-capable views reachable by keyboard? | Count views with submit buttons; verify each is handled in keyboard `useEffect` |
+| PF-8 full content | Does `buildFullText` capture ALL result variables? | Count `*result` state vars; verify each appears inside `buildFullText` |
+| PF-7 all scrolls | Does every result area scroll into view after loading? | Count independently-rendered result areas; verify each has ref + scroll effect |
+
+**General principle added to audit protocol:** After confirming a pattern is *correct* on the primary surface, always ask: *"Does this tool have other views, tabs, or result areas where the same pattern needs to apply?"* Pattern correctness is necessary but not sufficient. Coverage completeness is the second required check.
+
+*v4.35 — Completeness gap: audit checks presence, not coverage (March 2026):*
+
+**Root cause documented.** The v4.34 audit of SensoryMinefieldMapper passed keyboard handler checks (PF-6) despite the Route Planner tab being completely unwired for keyboard submit. The checklist verified the pattern was *correct* for the handler it found — but never asked whether *all* submit actions across all views were covered. The same completeness gap exists in four other areas. All five are addressed below.
+
+---
+
+**(1) Multi-view keyboard routing — all views must be wired (Section 2.1)**
+
+The keyboard handler audit passes if ANY global listener exists with the correct ref pattern. For tools with multiple views or tabs (e.g. `view === 'form'` / `view === 'route'`), the handler must route by current view via a `viewRef`, and **every view that has a submit action must be covered**. A handler that only wires the primary view silently does nothing on all other views.
+
+**Scan:**
+```bash
+# Step 1 — does this tool have multiple views or tabs?
+grep -c "setView\|view ===\|setActiveTab\|activeTab ===" ComponentName.js
+# If result > 3, the tool is multi-view — proceed with the completeness checks below.
+
+# Step 2 — count distinct async submit handlers:
+grep -n "const handle[A-Z][a-zA-Z]* = async\|async function handle[A-Z]" ComponentName.js | grep -v "//\|fetch\|Alt\|companion\|kit\|rating\|rescan"
+# Each distinct submit action (not secondary panel fetches) needs a corresponding ref.
+
+# Step 3 — verify a view/mode ref routes the handler:
+grep -n "viewRef\|modeRef\|activeTabRef" ComponentName.js
+# Must return at least one result for multi-view tools.
+# If zero results AND multiple views — FAIL.
+
+# Step 4 — verify the keyboard handler branches by view/mode:
+grep -n "viewRef\.current\|modeRef\.current\|activeTabRef\.current" ComponentName.js | grep -v "useRef\|\.current ="
+# Must return results inside the keyboard handler body showing routing logic.
+```
+
+**Correct pattern for multi-view tools:**
+```js
+const analyzeRef  = useRef(null);  // form view submit
+const planRouteRef = useRef(null); // route view submit
+const viewRef     = useRef(null);
+const canSubmitRef = useRef(false);
+const canRouteRef  = useRef(false);
+
+analyzeRef.current   = analyzeLocation;
+planRouteRef.current = planRoute;
+viewRef.current      = view;
+canSubmitRef.current = !!(location.trim() && date && time && placeType && concerns.length > 0);
+canRouteRef.current  = routeStops.filter(s => s.location.trim() && s.placeType).length >= 2;
+
+useEffect(() => {
+  const handler = (e) => {
+    const tag = document.activeElement?.tagName;
+    if (tag === 'SELECT') return;
+    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+      if (viewRef.current === 'route' && !routeLoading && canRouteRef.current)
+        planRouteRef.current?.();
+      else if (viewRef.current === 'form' && !analysisLoading && canSubmitRef.current)
+        analyzeRef.current?.();
+      // views with no submit action (home, results, checkin) intentionally have no branch
+    }
+  };
+  document.addEventListener('keydown', handler);
+  return () => document.removeEventListener('keydown', handler);
+// eslint-disable-next-line react-hooks/exhaustive-deps
+}, [analysisLoading, routeLoading]);
+```
+
+> ⚠️ **BUG PATTERN — Multi-view tool wires only the primary view (discovered SensoryMinefieldMapper audit, v4.35)**
+> SensoryMinefieldMapper had a correct keyboard handler for the form/analyze view, but the Route Planner tab (a completely separate view with its own `planRoute` submit) was never wired. Pressing Cmd+Enter on the Route tab silently called `analyzeLocation` which failed validation and did nothing. The audit passed because the checklist only verified the *pattern was correct* — not that *all views were covered*. The fix is: enumerate every view with a submit action, create a ref for each, and add a branch in the keyboard handler. Views with no submit (home, results display, check-in) need no branch.
+
+---
+
+**(2) `buildFullText` must cover all result states for multi-result tools (Section 1.4)**
+
+The current check verifies `buildFullText` exists and is called via `useRegisterActions`. It does not verify that the function covers all result states the tool can produce. A multi-result tool (main analysis + route results + companion messages, etc.) where `buildFullText` only covers the primary result produces an incomplete ActionBar copy — secondary results are silently omitted.
+
+**Scan:**
+```bash
+# Step 1 — find all result state variables:
+grep -n "const \[.*[Rr]esult\b\|const \[results\b\|const \[route[A-Z]" ComponentName.js | grep "usePersistentState\|useState" | grep -v "Loading\|Ref\|setRes"
+
+# Step 2 — check each appears in the build function:
+grep -n "buildFullText\|buildText\|buildCopy\|buildFull" ComponentName.js
+# Read the build function body (use view tool) — verify each result variable found in Step 1
+# appears inside the function.
+# Any result variable absent from the build function = that content is never copyable.
+```
+
+> ⚠️ **BUG PATTERN — `buildFullText` covers only primary results (discovered SensoryMinefieldMapper audit, v4.35)**
+> SensoryMinefieldMapper had `results`, `routeResults`, `companionSummary`, and `rescan` as result states. `buildFullText` only covered `results`. Route plans, companion messages, and rescan strategies were all silently excluded from the ActionBar copy. **Fix:** For each result state variable that produces user-visible output, add a conditional block in `buildFullText` that appends its content when present.
+
+---
+
+**(3) Scroll `useEffect` must cover secondary result panels (Section 1.7)**
+
+The checklist checks that at least one scroll `useEffect` exists on `[results]`. For tools with secondary result panels that appear below the fold (betweenResult, routeResults, companion panels, etc.), each panel needs its own `ref` and scroll effect — otherwise the user submits and nothing visibly happens.
+
+**Scan:**
+```bash
+# Count result state variables that render below the fold:
+grep -n "const \[.*[Rr]esult\b" ComponentName.js | grep "usePersistentState\|useState" | grep -v "Loading\|Ref" | wc -l
+
+# Count scroll useEffects:
+grep -n "scrollIntoView" ComponentName.js | wc -l
+
+# If result variable count > scroll effect count, flag each un-scrolled result for review.
+# Not every result needs scroll (e.g. results that render above the fold or replace the form),
+# but any result that appears below existing content and has no scroll is a likely UX bug.
+```
+
+> ⚠️ **BUG PATTERN — Secondary result panel has no scroll (pattern first seen SixDegreesOfMe, v4.35)**
+> SixDegreesOfMe's "Between Us" tab submitted successfully but results appeared far below the fold with no scroll — it looked like nothing happened. Fix: add a `betweenResultRef = useRef(null)`, attach `ref={betweenResultRef}` to the result container, and add `useEffect(() => { ... scrollIntoView ... }, [betweenResult])`.
+
+---
+
+**(4) `canSubmitRef` must mirror all submit buttons' disabled conditions (Section 2.1)**
+
+The checklist checks that `canSubmitRef` mirrors *a* button's disabled condition. For multi-view tools, each view's keyboard branch must have its own `can*Ref` that mirrors that view's button's disabled condition exactly. A single `canSubmitRef` that checks the form's disabled condition will incorrectly block or allow submission on other views.
+
+**Scan:**
+```bash
+# For each keyboard branch (identified in check #1 above), verify a distinct canRef:
+grep -n "canSubmitRef\|canRouteRef\|can[A-Z][a-zA-Z]*Ref" ComponentName.js
+
+# For each canRef, verify it mirrors its button's disabled condition:
+# Read the submit button for that view:
+grep -n "disabled={" ComponentName.js | grep -v "loading\b" | head -10
+# Each non-trivial disabled condition (beyond just "loading") must have a matching canRef.
+```
+
+---
+
+**(5) No duplicate `usePersistentState` keys (Section 1.7)**
+
+Two `usePersistentState` calls with the same key string both read and write the same localStorage entry. Any write from one will overwrite the other's data on the next render — producing unpredictable state corruption that is silent and hard to debug.
+
+**Scan:**
+```bash
+grep -oP "usePersistentState\('\K[^']+(?=')" ComponentName.js | sort | uniq -d
+# Must return zero results.
+# Any duplicate key is a storage conflict — rename one to a unique key.
+```
+
+> ⚠️ **BUG PATTERN — Two `usePersistentState` calls with the same key (watchlist, v4.35)**
+> Not confirmed in production yet but the risk is real any time a component manages two conceptually similar history stores (e.g. `visitHistory` for place ratings and `history` for session history). Always verify keys are unique within a component. Suggested naming convention: `toolId-concept` (e.g. `'smm-visit-history'`, `'smm-session-history'`).
+
+---
+
+*v4.35 — Mandatory post-fix read-through (discovered PronounceItRight audit, March 2026):*
+
+**(6) Read the entire fixed file before output — no exceptions (Section 6: Output Gate)**
+
+Before outputting any file, read the entire fixed file from line 1 to the last line — no skipping, no skimming. Automated scans verify that required patterns are present; they cannot detect artifacts of the editing process itself. A full read-through is the only way to catch: stray syntax left by regex or string replacement (orphaned `};`, unclosed tags, duplicate lines); CSS classes that were intended but never actually inserted; layout structure bugs where elements ended up outside their containing div; and logical errors where individually correct pieces interact incorrectly.
+
+When reading, ask of every block: *Does this render what I think it renders? Does this close what it opened? Does every className string contain what I think it contains?*
+
+Any bug found during the read-through must be fixed and the affected section re-read before output.
+
+> ⚠️ **BUG PATTERN — Stray `};` after regex hook removal (discovered PronounceItRight audit, v4.35)**
+> When the external `useColors` hook was stripped via regex, the closing `};` of the function body was left behind as an orphan at module scope — a fatal syntax error. The file passed every grep scan cleanly. Only the read-through caught it. **Rule: any file that has undergone bulk regex/replace must be read in full before output. A file that passes every scan but has not been read is not ready to ship.**
+
+> ⚠️ **BUG PATTERN — Intended className never inserted (discovered PronounceItRight audit, v4.35)**
+> A `disabled:opacity-40` class was added to the replacement string for a button's `className`, but the `old_str` being replaced didn't match the exact whitespace/string in the file — so the replacement silently did nothing and the class was never applied. The button had a `disabled` prop with no visual feedback. **Rule: after any string replacement that adds a class, read the target element in the fixed file and confirm the class is actually present.**
+
+**Scan — run as the final step before output, after all other checks pass:**
+```bash
+# There is no mechanical scan for this check.
+# The requirement is a human read of the entire file.
+# Mark ✅ only after completing the full read-through and confirming zero issues.
+```

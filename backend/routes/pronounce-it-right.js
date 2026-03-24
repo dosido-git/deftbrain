@@ -35,10 +35,10 @@ EXTRA CONTEXT TO PROVIDE:
   brand: `CATEGORY: Brand or Fashion House
 EXTRA CONTEXT TO PROVIDE:
 - What the brand is (fashion, luxury, etc.) and country of origin
-- How sales associates and fashion professionals say it
+- How sales associates and fashion professionals pronounce it
 - Whether there's an accepted anglicized version or if the original is expected
 - Common wrong versions you hear and why they're wrong
-- How to say it naturally in a sentence without sounding forced`,
+- How to pronounce it naturally in a sentence without sounding forced`,
 
   music_art: `CATEGORY: Music, Art, or Cultural Figure
 EXTRA CONTEXT TO PROVIDE:
@@ -175,7 +175,7 @@ Keep common_mistakes to 2-3 entries. Keep dont_confuse_with to 0-2 entries. Keep
     res.json(parsed);
 
   } catch (error) {
-    console.error('SayItRight error:', error);
+    console.error('PronounceItRight error:', error);
     res.status(500).json({ error: error.message || 'Pronunciation guide failed' });
   }
 });
@@ -234,7 +234,7 @@ For each word, return a concise pronunciation guide. Return ONLY valid JSON:
     res.json(parsed);
 
   } catch (error) {
-    console.error('SayItRight batch error:', error);
+    console.error('PronounceItRight batch error:', error);
     res.status(500).json({ error: error.message || 'Batch pronunciation failed' });
   }
 });
