@@ -1492,3 +1492,43 @@ Any bug found during the read-through must be fixed and the affected section re-
 # The requirement is a human read of the entire file.
 # Mark ✅ only after completing the full read-through and confirming zero issues.
 ```
+
+*v4.35 — Header-only card anti-pattern (discovered PronounceItRight / SensoryMinefieldMapper audit, March 2026):*
+
+**(7) Header must be inside the input card, not in a separate card before it (Section 1.2 / PF-3)**
+
+There are two distinct header card violations. The existing checklist documented only the first. Both must be checked:
+
+**Violation A — Gradient blocker (documented v4.34):** `<h2>` wrapped in a `c.card` that sits as the very first element in the component, with no inputs inside it. The card sits over the ToolPageWrapper gradient making the category color invisible. **Fix:** Remove the card entirely — bare `<h2>` + `<p>` only.
+
+**Violation B — Header-only card (new, v4.35):** `<h2>` wrapped in a `c.card` that closes immediately before a separate input card. The gradient is not blocked (the card is styled correctly) but two cards are produced where one belongs — the tool's identity is separated from its action. **This passes the existing PF-4 gradient-blocker scan** because the `<h2>` IS inside a `c.card`. Only a read of the code or an improved scan catches it.
+
+**Correct pattern:** Header inside the input card, separated by `border-b border-zinc-500`. One card. Header at top, inputs below.
+
+**Scan for Violation B:**
+```bash
+grep -n "border-b border-zinc-500" ComponentName.js
+# Note the line number N. View lines N through N+6 in the file.
+# If the sequence is: </div> (closes header) → </div> (closes card) → blank/comment → <div className=...card
+# with no input elements in between — the header is isolated. FAIL.
+```
+
+> ⚠️ **Root cause documented:** The v4.34 rule "header must be bare, no card wrapper" was intended to prevent Violation A (gradient blocking). It was misread as "header must not be inside any card" — producing Violation B instead. The two violations look superficially similar (both use `c.card` near `<h2>`) but are different problems. The correct mental model is: **the header is always the top section of the input card.** It is never a standalone element, and it is never in a card of its own.
+
+*v4.35 — Input controls must not precede the header (discovered PronounceItRight audit, March 2026):*
+
+**(8) Nothing may appear before the header inside the gradient frame (Section 1.2 / PF-3)**
+
+The header (`<h2>` + tagline, with `border-b border-zinc-500`) is always the first visible element inside the gradient frame. No input, picker, tab strip, navigation button, or category selector may appear above it. These elements must all live inside the input card, below the divider.
+
+**Scan:**
+```bash
+# Find the opening of the return statement's first rendered element:
+grep -n "return (" ComponentName.js | tail -1
+# Read 5-10 lines after that point.
+# The first non-wrapper element inside the root div must be the input card
+# (or an error banner). Any other element — buttons, pickers, chips — is a violation.
+```
+
+> ⚠️ **BUG PATTERN — Category picker rendered above the title (discovered PronounceItRight audit, v4.35)**
+> A `<div className="flex gap-1.5 overflow-x-auto">` category picker was placed as a sibling element before the input card in `renderInput()`. Inside the gradient frame, it appeared first — above the card containing the title. Users saw input controls before they saw what tool they were using. **Fix:** Move all such elements inside the input card, below the `border-b border-zinc-500` header divider. The header is always first.

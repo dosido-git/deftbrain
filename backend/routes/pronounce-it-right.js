@@ -74,7 +74,7 @@ EXTRA CONTEXT TO PROVIDE:
 // ════════════════════════════════════════════════════════════
 // POST /say-it-right — Main pronunciation guide
 // ════════════════════════════════════════════════════════════
-router.post('/say-it-right', async (req, res) => {
+router.post('/pronounce-it-right', async (req, res) => {
   try {
     const {
       word,            // The word/name/phrase to pronounce
@@ -181,9 +181,9 @@ Keep common_mistakes to 2-3 entries. Keep dont_confuse_with to 0-2 entries. Keep
 });
 
 // ════════════════════════════════════════════════════════════
-// POST /say-it-right/batch — Multiple words at once
+// POST /pronounce-it-right/batch — Multiple words at once
 // ════════════════════════════════════════════════════════════
-router.post('/say-it-right/batch', async (req, res) => {
+router.post('/pronounce-it-right/batch', async (req, res) => {
   try {
     const { words, category, nativeLang, userLanguage } = req.body;
 

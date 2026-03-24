@@ -387,16 +387,7 @@ const SensoryMinefieldMapper = ({ tool }) => {
   return (
     <div className={`space-y-4 ${c.text}`}>
       <div className="max-w-3xl mx-auto">
-        <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
-          <div className="pb-3 border-b border-zinc-500">
-            <h2 className={`text-xl font-bold ${c.text}`}>
-              <span className="mr-2">{tool?.icon ?? '📍'}</span>{tool?.title ?? 'Sensory Minefield Mapper'}
-            </h2>
-            <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Preview any place before you go'}</p>
-          </div>
-        </div>
-
-        {error && <div className={`p-3 rounded-xl border mb-4 ${c.danger}`}><span className="mr-1">⚠️</span> {error}</div>}
+        {error && <div className={`p-3 rounded-xl border ${c.danger}`}><span className="mr-1">⚠️</span> {error}</div>}
 
         {/* ════════ HOME ════════ */}
         {view === 'home' && (
@@ -490,7 +481,13 @@ const SensoryMinefieldMapper = ({ tool }) => {
         {view === 'form' && (
           <div className="space-y-5">
             <button onClick={() => { setView('home'); setShowProfileForm(false); }} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnSecondary}`}>← Back</button>
-            <div className={`${c.card} border rounded-2xl p-5 space-y-5`}>
+            <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-5`}>
+              <div className="pb-3 border-b border-zinc-500">
+                <h2 className={`text-xl font-bold ${c.text}`}>
+                  <span className="mr-2">{tool?.icon ?? '📍'}</span>{tool?.title ?? 'Sensory Minefield Mapper'}
+                </h2>
+                <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Preview any place before you go'}</p>
+              </div>
               {/* Profile quick-load */}
               {profiles.length > 0 && (
                 <div>

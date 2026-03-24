@@ -92,7 +92,7 @@ const PronounceItRight = ({ tool }) => {
 
   const resultsRef = useRef(null);
 
-  const [history, setHistory] = usePersistentState('say-it-right-history', []);
+  const [history, setHistory] = usePersistentState('pronounce-it-right-history', []);
   const [showHistory, setShowHistory] = useState(false);
 
   // Input
@@ -112,6 +112,10 @@ const PronounceItRight = ({ tool }) => {
   const [error, setError] = useState('');
   const [expandedSections, setExpandedSections] = useState({});
 
+  // Audio
+  const [audioUrl, setAudioUrl] = useState(null);
+  const [audioLoading, setAudioLoading] = useState(false);
+
   useEffect(() => {
     if (!(results || batchResults) || !resultsRef.current) return;
     const t = setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 200);
@@ -129,7 +133,7 @@ const PronounceItRight = ({ tool }) => {
       if (batchMode) {
         const words = batchWords.split(/[,\n]/).map(w => w.trim()).filter(Boolean);
         if (words.length < 2) { setError('Enter at least 2 words, separated by commas or newlines'); return; }
-        const data = await callToolEndpoint('say-it-right/batch', { words, category, nativeLang });
+        const data = await callToolEndpoint('pronounce-it-right/batch', { words, category, nativeLang });
         setBatchResults(data);
         words.forEach(w => {
           const entry = { id: 'sir_' + Date.now() + Math.random(), date: new Date().toISOString(), word: w, category, emoji: activeCat.emoji };
@@ -137,7 +141,7 @@ const PronounceItRight = ({ tool }) => {
         });
       } else {
         if (!word.trim()) { setError('Enter a word to pronounce'); return; }
-        const data = await callToolEndpoint('say-it-right', { word: word.trim(), category, context: context.trim() || null, nativeLang });
+        const data = await callToolEndpoint('pronounce-it-right', { word: word.trim(), category, context: context.trim() || null, nativeLang });
         setResults(data);
         const entry = { id: 'sir_' + Date.now(), date: new Date().toISOString(), word: word.trim(), category, emoji: activeCat.emoji, phonetic: data?.pronunciation?.phonetic };
         setHistory(prev => [entry, ...prev].slice(0, 6));
@@ -147,13 +151,30 @@ const PronounceItRight = ({ tool }) => {
 
   const handleReset = useCallback(() => {
     setWord(''); setContext(''); setResults(null); setBatchResults(null); setError('');
-    setBatchWords(''); setExpandedSections({});
+    setBatchWords(''); setExpandedSections({}); setAudioUrl(null);
   }, []);
 
   const loadExample = useCallback((ex) => {
     setWord(ex.word); setCategory(ex.category);
-    setResults(null); setBatchResults(null); setError(''); setBatchMode(false);
+    setResults(null); setBatchResults(null); setError(''); setBatchMode(false); setAudioUrl(null);
   }, []);
+
+  const fetchAudio = useCallback(async () => {
+    if (!results?.word) return;
+    setAudioLoading(true); setAudioUrl(null); setError('');
+    try {
+      const res = await fetch('/api/tools/pronounce-it-right/audio', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ word: results.word, languageOfOrigin: results.language_of_origin || null }),
+      });
+      if (!res.ok) throw new Error('Audio unavailable');
+      const blob = await res.blob();
+      setAudioUrl(URL.createObjectURL(blob));
+    } catch {
+      setError('Audio unavailable for this word — try the phonetic guide above');
+    } finally { setAudioLoading(false); }
+  }, [results]);
 
   const buildCopy = useCallback(() => {
     if (!results) return '';
@@ -327,9 +348,30 @@ const PronounceItRight = ({ tool }) => {
         <div className={'p-6 rounded-2xl border-2 ' + c.phonBg + ' text-center'}>
           <p className={'text-xs font-bold ' + c.textMuted + ' uppercase mb-1'}>{results.language_of_origin || 'Pronunciation'}</p>
           <p className={'text-3xl font-black tracking-wide ' + c.text + ' mb-2'}>{results.word}</p>
-          <p className={'text-xl font-bold ' + c.tipText + ' mb-1'}>{p?.phonetic}</p>
+          <p className={'text-xl font-bold ' + c.tipText + ' mb-3'}>{p?.phonetic}</p>
+
+          {/* Hear it */}
+          <div className="flex flex-col items-center gap-2">
+            {!audioUrl ? (
+              <button onClick={fetchAudio} disabled={audioLoading}
+                className={'text-sm font-bold px-4 py-2 rounded-xl border disabled:opacity-40 ' + c.btnSecondary}>
+                {audioLoading
+                  ? <><span className="inline-block animate-spin mr-1">{tool?.icon ?? '🗣️'}</span> Loading...</>
+                  : '🔊 Hear it'}
+              </button>
+            ) : (
+              <div className="flex flex-col items-center gap-1.5">
+                <audio controls autoPlay src={audioUrl} className="h-8 w-48"
+                  onEnded={() => { URL.revokeObjectURL(audioUrl); setAudioUrl(null); }} />
+                <button onClick={() => { URL.revokeObjectURL(audioUrl); setAudioUrl(null); }}
+                  className={'text-[10px] ' + c.textMuted}>✕ close</button>
+              </div>
+            )}
+            <p className={'text-[10px] ' + c.textMuted}>AI-generated — phonetic guide above is more reliable for edge cases</p>
+          </div>
+
           {p?.ipa && (
-            <button onClick={() => setShowIPA(!showIPA)} className={'text-xs ' + linkStyle}>
+            <button onClick={() => setShowIPA(!showIPA)} className={'text-xs mt-3 block mx-auto ' + linkStyle}>
               {showIPA ? `IPA: ${p.ipa}` : 'Show IPA'}
             </button>
           )}
@@ -557,7 +599,7 @@ const PronounceItRight = ({ tool }) => {
             <button onClick={handleReset} className={'flex-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 ' + c.btnPrimary}>
               <span>🗣️</span> New Word
             </button>
-            <button onClick={() => { setResults(null); setBatchResults(null); setError(''); }}
+            <button onClick={() => { setResults(null); setBatchResults(null); setError(''); setAudioUrl(null); }}
               className={'flex-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 ' + c.btnSecondary}>
               <span>✏️</span> Edit Input
             </button>
