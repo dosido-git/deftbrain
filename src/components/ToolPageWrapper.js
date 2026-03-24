@@ -170,13 +170,16 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
           </button>
           <Link to="/" title="Back to Dashboard" className="flex-shrink-0">
             <div className="flex items-center gap-2">
-              <img src="/pBrain-r.png" alt="DeftBrain" className="h-8 w-auto" />
-              <div className="leading-tight">
-                <div className={`font-bold text-sm tracking-tight ${isDark ? 'text-zinc-50' : 'text-stone-900'}`}>
-                  <span className={colors.accent}>D</span>eftBrain
-                </div>
-                <div className={`text-[10px] ${colors.textMuted}`}>Intelligence on Demand</div>
+              <div className="flex flex-col justify-center">
+                <span className="text-xl sm:text-2xl font-extrabold leading-none tracking-tight" style={{ fontFamily: "'DM Sans', system-ui, sans-serif" }}>
+                  <span className={isDark ? 'text-[#d9a04e]' : 'text-[#c8872e]'}>D</span>
+                  <span className={isDark ? 'text-[#a8b9ce]' : 'text-[#2c4a6e]'}>eftBrain</span>
+                </span>
+                <p className={`text-[9px] tracking-[0.18em] font-black uppercase leading-none mt-1.5 ${isDark ? 'text-[#8a8275]' : 'text-[#a8a196]'}`}>
+                  Intelligence on Demand
+                </p>
               </div>
+              <img src="/pBrain-l.png" alt="DeftBrain" className="h-14 sm:h-16 w-auto block object-contain flex-shrink-0" />
             </div>
           </Link>
         </div>
