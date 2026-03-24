@@ -18,13 +18,6 @@ const SubscriptionGuiltTrip = ({ tool }) => {
 
   const [results, setResults] = usePersistentState('subscription-audit-results', null);
 
-  useEffect(() => {
-    if (results && resultsRef.current) {
-      setTimeout(() => resultsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' }), 200);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [results]);
-
   // Input mode
   const [inputMode, setInputMode] = useState('manual'); // 'manual', 'paste', 'upload'
 
@@ -45,6 +38,15 @@ const SubscriptionGuiltTrip = ({ tool }) => {
   const [expandedCards, setExpandedCards] = useState({});
   const [selectedForCancel, setSelectedForCancel] = useState({});
   const [showEmails, setShowEmails] = useState({});
+  const [isDragging, setIsDragging] = useState(false);
+
+  // ─── Scroll to results ───
+  useEffect(() => {
+    if (!results) return;
+    const t = setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 200);
+    return () => clearTimeout(t);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [results]);
 
   const c = {
     card: isDark ? 'bg-zinc-800' : 'bg-white',
@@ -189,8 +191,6 @@ const SubscriptionGuiltTrip = ({ tool }) => {
   };
 
   // ── Drag and drop ──
-  const [isDragging, setIsDragging] = useState(false);
-
   const handleDragOver = (e) => { e.preventDefault(); setIsDragging(true); };
   const handleDragLeave = (e) => { e.preventDefault(); setIsDragging(false); };
   const handleDrop = (e) => {
@@ -272,9 +272,6 @@ const SubscriptionGuiltTrip = ({ tool }) => {
       .join('\n\n') + BRAND;
   };
 
-  // ─── Register export content ───
-  useRegisterActions(results ? buildSummaryText() : '', tool?.title);
-
   // ── Build full summary for ActionBar ──
   const buildSummaryText = () => {
     if (!results) return '';
@@ -294,16 +291,23 @@ const SubscriptionGuiltTrip = ({ tool }) => {
     return lines.join('\n');
   };
 
-  // ─── Global Cmd/Ctrl+Enter — placed after handleAnalyze to avoid TDZ ───
+  // ─── Register export content (after buildSummaryText — TDZ-safe) ───
+  useRegisterActions(results ? buildSummaryText() : '', tool?.title);
+
+  // ─── Keep handleAnalyze ref fresh so keyboard handler never stales ───
+  const handleAnalyzeRef = useRef(null);
+  handleAnalyzeRef.current = handleAnalyze;
+
+  // ─── Global Cmd/Ctrl+Enter ───
   useEffect(() => {
     const handler = (e) => {
       const tag = document.activeElement?.tagName;
-      if (tag === 'INPUT' || tag === 'SELECT') return;
-      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !loading) handleAnalyze();
+      if (tag === 'SELECT') return;
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !loading)
+        handleAnalyzeRef.current?.();
     };
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading]);
 
   // ── Toggle helpers ──
@@ -387,15 +391,13 @@ const SubscriptionGuiltTrip = ({ tool }) => {
     <div className="space-y-6">
 
         {/* ── Header ── */}
-        <div className={`${c.card} border ${c.border} rounded-xl p-6 mb-6`}>
-          <div className={`pb-4 mb-4 border-b ${c.border}`}>
-            <h2 className={`text-2xl font-bold ${c.text}`}>
-              <span className="mr-2">{tool?.icon ?? '💳'}</span>{tool?.title ?? 'Subscription Guilt Trip'}
-            </h2>
-            <p className={`text-sm ${c.textSecondary} mt-1`}>
-              {tool?.tagline ?? 'Audit your subscriptions, spot the waste, and cancel guilt-free'}
-            </p>
-          </div>
+        <div className="pb-2 mb-2">
+          <h2 className={`text-2xl font-bold ${c.text}`}>
+            <span className="mr-2">{tool?.icon ?? '💳'}</span>{tool?.title ?? 'Subscription Guilt Trip'}
+          </h2>
+          <p className={`text-sm ${c.textSecondary} mt-1`}>
+            {tool?.tagline ?? 'Audit your subscriptions, spot the waste, and cancel guilt-free'}
+          </p>
         </div>
 
         {/* ── Privacy Badge ── */}
@@ -432,13 +434,33 @@ const SubscriptionGuiltTrip = ({ tool }) => {
                 List your subscriptions
               </label>
               <div className="space-y-3 mb-4">
-                {subscriptions.map((sub, index) => (
-                  <div key={index} className={`rounded-xl p-4 border-2 ${c.subRow}`}>
+                {subscriptions.map((sub, index) => {
+                  const isLastRow = index === subscriptions.length - 1;
+                  const advanceRow = (e) => {
+                    if (e.key !== 'Enter') return;
+                    e.preventDefault();
+                    const row = e.target.closest('[data-sub-row]');
+                    const fields = [...row.querySelectorAll('input, select')];
+                    const idx = fields.indexOf(e.target);
+                    if (idx < fields.length - 1) {
+                      fields[idx + 1].focus();
+                    } else if (isLastRow) {
+                      addSubscription();
+                      // Focus first field of new row after state update
+                      setTimeout(() => {
+                        const rows = document.querySelectorAll('[data-sub-row]');
+                        rows[rows.length - 1]?.querySelector('input')?.focus();
+                      }, 0);
+                    }
+                  };
+                  return (
+                  <div key={index} data-sub-row className={`rounded-xl p-4 border-2 ${c.subRow}`}>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                       <input
                         type="text"
                         value={sub.name}
                         onChange={(e) => updateSubscription(index, 'name', e.target.value)}
+                        onKeyDown={advanceRow}
                         placeholder="Service name (e.g. Netflix)"
                         className={`p-3 border rounded-lg outline-none text-sm ${c.input}`}
                       />
@@ -446,6 +468,7 @@ const SubscriptionGuiltTrip = ({ tool }) => {
                         type="text"
                         value={sub.monthlyCost}
                         onChange={(e) => updateSubscription(index, 'monthlyCost', e.target.value)}
+                        onKeyDown={advanceRow}
                         placeholder="Monthly cost (e.g. $15.99)"
                         className={`p-3 border rounded-lg outline-none text-sm ${c.input}`}
                       />
@@ -453,6 +476,7 @@ const SubscriptionGuiltTrip = ({ tool }) => {
                         type="text"
                         value={sub.usage}
                         onChange={(e) => updateSubscription(index, 'usage', e.target.value)}
+                        onKeyDown={advanceRow}
                         placeholder="Usage (e.g. 3x/month, daily)"
                         className={`p-3 border rounded-lg outline-none text-sm ${c.input}`}
                       />
@@ -460,6 +484,7 @@ const SubscriptionGuiltTrip = ({ tool }) => {
                         <select
                           value={sub.category}
                           onChange={(e) => updateSubscription(index, 'category', e.target.value)}
+                          onKeyDown={advanceRow}
                           className={`flex-1 p-3 border rounded-lg outline-none text-sm ${c.input}`}
                         >
                           <option value="">Category</option>
@@ -485,7 +510,8 @@ const SubscriptionGuiltTrip = ({ tool }) => {
                       </div>
                     </div>
                   </div>
-                ))}
+                  );
+                })}
               </div>
               <button
                 onClick={addSubscription}
@@ -589,7 +615,7 @@ const SubscriptionGuiltTrip = ({ tool }) => {
           </button>
           <p className={`text-xs text-center mt-2 ${c.textMuted}`}>AI-generated suggestions — review before canceling anything.</p>
           <p className={`text-xs text-center mt-1 ${c.textMuted}`}>
-            Tracking every subscription manually? <a href="/SubSweep" className={linkStyle}>Sub Sweep</a> is built for that.
+            Tracking every subscription manually? <a href="/SubSweep" className={linkStyle}>🧹 SubSweep</a> is built for that.
           </p>
 
           {error && (

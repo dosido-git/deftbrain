@@ -1234,7 +1234,7 @@ const GratitudeDebtClearer = ({ tool }) => {
                 <button
                   key={option.id}
                   onClick={() => setTone(option.label)}
-                  className={`p-3 rounded-lg border-2 transition-all text-center ${c.toneChip(tone === option.label)}`}
+                  className={`p-3 rounded-lg border-2 transition-all text-center ${tone === option.label ? c.pillActive : c.pillInactive}`}
                   aria-pressed={tone === option.label}
                 >
                   <div className="text-2xl mb-1">{option.icon}</div>

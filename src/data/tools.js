@@ -1400,7 +1400,7 @@ export const tools = [
   icon: "⚡",
   categories: ['Humans', 'Energy'],
   headerColor: "#e0b8b8",
-  description: "Log your social and professional interactions with energy-before/after ratings and performance levels (how much you had to be 'on'). The audit calculates your weekly energy budget, identifies your biggest drains and rechargers, finds patterns you can't see yourself, and gives specific restructuring suggestions. Six modes: Weekly Audit (full interaction log → energy score + drains + patterns + restructure plan), Week Planner (upcoming commitments → predicted energy costs per day + danger zones + schedule optimizations), Quick Check ('Should I say yes to this?' → instant verdict with decline script), Daily Check-In (30-second energy snapshot + drain/recharge tracking), Energy Forecast (predict your week's energy curve from templates + check-ins), and Energy Journal (week-over-week tracking with trend visualization, recurring pattern tracker, week comparison, and AI-designed Ideal Week after 3+ weeks of data). Templates let you save your typical week for faster logging. Performance level concept captures the hidden cost of being 'on' — the energy difference between being yourself vs. managing impressions.",
+  description: "Log social and professional interactions with before/after energy ratings and performance levels (how much you had to be 'on'). Six modes: Weekly Audit, Week Planner, Quick Check, Daily Check-In (30-second energy snapshot), Energy Forecast, and Energy Journal. Save your typical week as a template for faster logging",
   guide: {
     overview: "Everyone has a limited energy budget. Some interactions cost more than others — and the expensive ones aren't always obvious. A 30-minute call where you're fully 'on' can drain more than a 3-hour dinner where you're relaxed. Social Energy Audit makes the invisible visible: log your interactions, rate your performance level and energy before/after, and the tool finds the patterns, calculates the costs, and helps you restructure your week so you're not running on empty by Thursday.",
     howToUse: [
@@ -1473,7 +1473,7 @@ export const tools = [
   icon: "📋",
   categories: ['The Office', 'Do It!'],
   headerColor: "#d4dde8",
-  description: "Paste a meeting transcript from Zoom, Teams, Google Meet, or your own notes and get the actionable output without the filler. Three modes: Distill extracts decisions (with context and reversibility), action items (with owners, deadlines, priority, and dependency tracking), open questions, parking lot items, detected tensions, meeting health scores, and a ready-to-send follow-up email. Follow Up drafts a group email, individual nudges (with urgency and best channel), a boss-update summary, and calendar invites to schedule. Series analyzes 2-5 meetings from the same series to find recurring topics, accountability gaps, decisions that got revisited, productivity trends, and a suggested next agenda. Seven meeting types supported: general, standup, planning, retro, 1:1, client, brainstorm.",
+  description: "Paste any meeting transcript and get decisions, action items with owners and deadlines, follow-up drafts, and cross-meeting pattern analysis — without digging through the notes yourself.",
   guide: {
     overview: "The Debrief is Recall's professional sibling — same core mechanic (long transcript → extract what matters), but purpose-built for meetings instead of lectures. Where lectures need concepts and testable material, meetings need decisions, owners, deadlines, and accountability. The tool distinguishes between 'someone said we should' (not a decision) and 'we agreed to' (a decision), flags action items with no owner or deadline, detects tensions, and grades meeting health. Series mode is the killer feature — paste your last 3 weekly standups and see which action items disappeared without resolution.",
     howToUse: [
@@ -1543,7 +1543,7 @@ export const tools = [
   icon: "🎭",
   categories: ['Pursuits', 'Read the Room'],
   headerColor: "#ccdfc4",
-  description: "Resume gaps, career pivots, short job tenures, firings, frequent moves, dropouts, breakups — everyone has chapters that need careful framing. Tell us the real story, pick your audience (interviewer, landlord, date, in-laws, lender), and get 2-3 strategically different versions of how to tell it. Each version comes with the exact script, follow-up question prep with trap warnings, body language tips, and a nuclear option if the conversation goes sideways. Everything is truthful — you're choosing emphasis, not inventing fiction.",
+  description: "Tell the real story — messy, complicated, unflattering — and get 2-3 strategically framed versions tailored to your audience, each with an exact script, follow-up prep, trap warnings, and a nuclear option if it goes sideways. Truthful framing, not fiction.",
   guide: {
     overview: "The Alibi takes your real, messy, complicated story and helps you tell it honestly but strategically to a specific audience. The same resume gap told to an interviewer emphasizes growth; told to a date, it emphasizes life experience; told to a lender, it emphasizes current stability. You get multiple versions with different strategic approaches — not just different tones — plus follow-up prep so your story holds up under gentle probing.",
     howToUse: [
@@ -2199,7 +2199,7 @@ export const tools = [
   icon: "🗺️",
   categories: ['Pursuits', 'Veer'],
   headerColor: "#ccdfc4",
-  description: "Map the exact gap between where you are and where you want to be — then close it. 22 tools covering every stage of a career transition: explore roles with day-in-the-life simulations, get a personalized skill gap analysis, build learning timelines, generate proof-of-skill project ideas, decode job postings, practice mock interviews with AI, audit your resume, find target companies, get weekly nudge assignments, and track your progress with milestone celebrations. Includes market pulse, salary economics, mentor matching, networking scripts, and skill adjacency sequencing.",
+  description: "Map the exact skill gap between your current role and your target — then close the gap. 22 tools covering every stage of a career transition: skill gap analysis, learning timeline, proof-of-skill projects, job posting decoder, mock interviews, resume audit, target company finder, day-in-the-life simulations, market pulse, salary economics, mentor matching, networking scripts, weekly nudges, and progress tracking with milestone celebrations.",
   guide: {
       overview: "Skill Gap Map is a 22-feature career transition engine. Start by exploring roles or mapping your gap — then unlock a full pipeline: day-in-the-life reality checks, optimal learning sequences, salary economics, proof-of-skill projects, networking strategy with outreach drafts, resume audits, company targeting, job posting decoders, mock interviews with AI, market demand tracking, weekly assignments, milestone celebrations, and mentor matching. It remembers your progress across sessions and adapts as you grow.",
 
@@ -3835,7 +3835,7 @@ export const tools = [
   icon: "🧹",
   categories: ['Loot'],
   headerColor: "#c0d8b8",
-  description: "Your complete subscription management toolkit — 9 views. Audit every sub with honest verdicts and cost-per-use math. Get renewal date alerts before surprise charges. Detect price hikes automatically. Optimize plans with annual/family/bundle deals. Get retention scripts to negotiate discounts. Split shared subs and track who owes what. Monitor free trials with usage counters and cancel reminders. Set category budgets with over-limit alerts. Track cancellation savings over time with a spending timeline.",
+  description: "Subscription management across 9 views: honest keep/cancel verdicts with cost-per-use math, renewal alerts, price hike detection, plan optimization, retention scripts to negotiate discounts, shared-cost splitting, free trial tracking, category budgets, and a cancellation savings timeline.",
   guide: {
     overview: "SubSweep manages your entire subscription life — from the moment you start a free trial to the day you cancel and track how much you've saved. 9 views cover auditing, renewals, optimization, negotiation, splits, trials, budgets, tracking, and trends. Your subscription list persists between sessions and gets smarter over time.",
 
@@ -4275,17 +4275,48 @@ export const tools = [
 },
 
 {
-  modified: "",
+  modified: "2026-03-23",
   id: "SpiralStopper",
-  title: 'Spiral Stopper',
+  title: "Spiral Stopper",
   tagline: "Emergency intervention for spirals, freezes, and crashes",
-  tags: ['anxiety', 'spiral', 'panic', 'worry', 'catastrophize'],
-  icon: '🌀',
-  categories: ['Energy'],
-  headerColor: "#b8dcd8",
-  description: "Emergency intervention for three crisis states. Spiraling: dump your racing thoughts and get immediate grounding, cognitive distortion identification with evidence-based reality checks, and a compassionate anchor statement. Frozen: when you can't start, can't decide, can't move — get one micro-action at a time with clear completion signals and explicit permission to stop. Crashed: when you're completely spent, get a severity-matched recovery protocol with staged instructions, basics checklists, permission statements, and recovery signs. All three modes log episodes persistently, offer post-crisis debriefs, and unlock pattern analysis after 3+ episodes to build your personal intervention toolkit."
+  tags: [
+    'anxiety', 'spiral', 'panic', 'worry', 'catastrophize', 'frozen', 'stuck',
+    'overwhelmed', 'crashed', 'burnout', 'grounding', 'racing thoughts', 'crisis',
+    'distortion', 'reality check', 'cant start', 'cant move', 'exhausted', 'shutdown'
+  ],
+  icon: "🌀",
+  categories: ['Energy', 'Me'],
+  headerColor: "#2a5248",
+  description: "Three-mode crisis tool for when your brain goes sideways. Spiraling gets you grounded with reality checks and a distortion-busting anchor statement. Frozen gets you unstuck with one micro-action at a time and explicit permission to stop. Crashed gets you a severity-matched recovery protocol with basics checklists and staged instructions. All three log episodes and unlock pattern analysis after 3+ entries.",
+  guide: {
+    overview: "SpiralStopper is an in-the-moment intervention tool — not a therapy replacement, but a structured first responder for the three most common mental crisis states. Spiraling uses cognitive distortion identification and evidence-based reality checks. Frozen delivers one micro-action at a time with no plans, no decisions, and explicit permission to stop after any step. Crashed matches a recovery protocol to your severity level and crash type, with staged instructions so you only have to do the absolute minimum. All three modes log episodes persistently and unlock pattern analysis after 3+ entries, helping you spot your triggers and build a personal intervention toolkit over time.",
+    howToUse: [
+      "Choose your current state: Spiraling (racing thoughts), Frozen (can't move or start), or Crashed (completely spent)",
+      "Spiraling: dump your thoughts unfiltered, optionally add your trigger and physical symptoms, rate intensity 1-5, then hit Stop the Spiral",
+      "Frozen: optionally say what you're stuck on, indicate if you can physically get up, then tap 'Give me one thing' — complete it, tap Done, get the next one",
+      "Crashed: select what happened (exhaustion, emotional overload, burnout, overwhelm collapse, sensory overload), set severity, and get a staged recovery protocol",
+      "After any mode, do the optional debrief — 3 taps that update your episode log and improve future interventions",
+      "After 3+ episodes, tap the history counter to run pattern analysis and see your personal toolkit"
+    ],
+    example: {
+      scenario: "It's 11pm. You made an error at work, your thoughts are spiraling into 'I'm going to get fired and everyone thinks I'm incompetent', your chest is tight, and you can't stop.",
+      action: "Select Spiraling. Dump everything: 'I messed up the report, my boss is going to notice, I'll get fired, I've always been bad at this...' Add trigger: 'work mistake'. Physical: 'tight chest, can't stop thinking'. Intensity: 4/5.",
+      result: "Immediate action: box breathing, right now, why explained. Distortion identified: catastrophizing + mind reading. Reality checks for each anxious thought. Grounding exercise with timed steps. Compassionate anchor: a single statement that reframes the whole spiral. Pattern note if you've been here before. After-spiral suggestion for what to do next."
+    },
+    tips: [
+      "Don't filter your thoughts in Spiral mode — the messier and more catastrophic, the better the reality checks",
+      "In Frozen mode, each step is designed to be completable even if you're barely functional — trust the size of the action",
+      "The debrief takes 30 seconds and dramatically improves pattern analysis — do it even if you feel better",
+      "Pattern analysis after 3+ episodes is where this tool gets genuinely useful — your personal toolkit is built from your actual history",
+      "Crashed mode has a 'what can you do right now?' field — be honest, even if the answer is 'nothing'"
+    ],
+    pitfalls: [
+      "This is a first-responder tool, not a replacement for professional support — if crises are frequent, please talk to someone",
+      "Don't skip the Frozen mode steps to 'do more' — one thing at a time is the entire point",
+      "The episode log caps at 6 — if you want longer pattern history, use it consistently and run analysis before the log rolls over"
+    ]
+  }
 },
-
 {
   modified: "",
   id: "VelvetHammer",
@@ -4589,18 +4620,18 @@ export const tools = [
   headerColor: "#c0d8b8",
   description: 'Handles social money awkwardness — split bills, can\'t afford invitations, salary questions, bill triage, and money talks with partners or family.',
   guide: {
-    overview: "Money Moves is your advisor for the money situations nobody teaches you how to handle. When someone asks what you make, when you can\'t afford the group trip, when a friend owes you money and it\'s getting weird — Money Moves gives you the exact words and the strategy. Covers 6 core situations: social affordability, bill splits, salary questions, money talks with partners, asking for money back, and emergency bill triage. No judgment, just practical guidance.",
+    overview: "Money Moves is your advisor for the money situations nobody teaches you how to handle. When someone asks what you make, when you can't afford the group trip, when a friend owes you money and it's getting weird — Money Moves gives you the exact words and the strategy. Covers 6 core situations: social affordability, bill splits, salary questions, money talks with partners, asking for money back, and emergency bill triage. No judgment, just practical guidance.",
     howToUse: [
-      "Pick the situation type that matches what you\'re dealing with",
-      "Fill in the specifics — who\'s involved, what the amount is, your relationship to them",
-      "Optionally add context about your comfort level or what you\'ve already tried",
+      "Pick the situation type that matches what you're dealing with",
+      "Fill in the specifics — who's involved, what the amount is, your relationship to them",
+      "Optionally add context about your comfort level or what you've already tried",
       "Get a tailored script, strategy, and fallback options",
       "Copy the script directly or adapt it to your voice"
     ],
     example: {
-      scenario: "Your friend group is planning a destination bachelorette weekend that costs $800. You genuinely can\'t afford it but you don\'t want to lie or make it awkward.",
-      action: "Select \'Can\'t afford the invite\', enter the situation details and your relationship to the group.",
-      result: "You get a warm, honest opt-out script that doesn\'t over-explain or apologize, a counter-offer for a local celebration you can actually attend, and a note on timing — when to send it so it doesn\'t derail planning."
+      scenario: "Your friend group is planning a destination bachelorette weekend that costs $800. You genuinely can't afford it but you don't want to lie or make it awkward.",
+      action: "Select 'Can't afford the invite', enter the situation details and your relationship to the group.",
+      result: "You get a warm, honest opt-out script that doesn't over-explain or apologize, a counter-offer for a local celebration you can actually attend, and a note on timing — when to send it so it doesn't derail planning."
     },
     tips: [
       "The salary question situation is one of the most searched — use it before interviews, not just after someone asks",
@@ -4622,22 +4653,22 @@ export const tools = [
   headerColor: "#b8dcd8",
   description: 'Pre-game toolkit for interviews, presentations, hard conversations, dates, and medical appointments. Breaks down fear, builds a prep plan, and has an SOS mode for live panic.',
   guide: {
-    overview: "Nerve Check is a pre-event confidence builder for any high-stakes moment. It works in two modes: Prep (before the event) and SOS (during live panic). In Prep mode, you describe what you\'re facing and get a fear breakdown — what\'s a real risk vs. what your brain is inflating — plus a custom preparation plan, a confidence anchor, and a \'worst case + survive it\' walkthrough. SOS mode is for when you\'re already in it: a 60-second reset sequence calibrated to your situation.",
+    overview: "Nerve Check is a pre-event confidence builder for any high-stakes moment. It works in two modes: Prep (before the event) and SOS (during live panic). In Prep mode, you describe what you're facing and get a fear breakdown — what's a real risk vs. what your brain is inflating — plus a custom preparation plan, a confidence anchor, and a 'worst case + survive it' walkthrough. SOS mode is for when you're already in it: a 60-second reset sequence calibrated to your situation.",
     howToUse: [
       "Choose Prep mode for advance preparation (day before, morning of) or SOS mode if you need help right now",
-      "Describe the event: what it is, who\'s involved, what outcome you need",
+      "Describe the event: what it is, who's involved, what outcome you need",
       "Add what specifically scares you — the more honest, the better the breakdown",
       "In Prep mode: review your fear analysis, prep plan, and confidence anchor",
       "In SOS mode: follow the real-time reset sequence step by step"
     ],
     example: {
       scenario: "You have a panel interview at a company you really want. You bombed an interview six months ago and now your confidence is shot.",
-      action: "Select Interview, describe the role and format, add \'I bombed my last interview and I\'m scared of freezing up again\'.",
+      action: "Select Interview, describe the role and format, add 'I bombed my last interview and I'm scared of freezing up again'.",
       result: "Fear breakdown shows the freeze fear is based on a single data point, not a pattern. Prep plan covers the three most common panel questions for your field, how to pause gracefully when you need a moment, and a physical warm-up for the morning. Confidence anchor is a specific moment from your past work history the AI surfaces from your description."
     },
     tips: [
       "The fear breakdown is the most valuable part — read it carefully. Most fears are real but inflated, and seeing that in writing changes your relationship to them",
-      "SOS mode works best if you\'ve done Prep mode first — it references your anchor",
+      "SOS mode works best if you've done Prep mode first — it references your anchor",
       "For medical appointments, add your specific concern (getting bad news, not being heard) — generic prep misses the point",
       "Run Prep mode 24 hours before, not 5 minutes before — give yourself time to actually absorb the plan"
     ]
@@ -4655,18 +4686,18 @@ export const tools = [
   headerColor: "#e0b8b8",
   description: 'Social energy forecaster. Input your weekly events, get an energy cost breakdown, forecast your lowest battery point, and triage recommendations for what to skip, shorten, or modify.',
   guide: {
-    overview: "Recharge Radar treats your social energy like a battery with a real charge level. Enter your week\'s events — work meetings, social plans, obligations, commutes — and it calculates the energy cost of each one, forecasts your lowest point, identifies the day you\'re most likely to hit empty, and recommends what to protect, shorten, skip, or reorder. It also spots recovery windows you might not have noticed and flags if you\'re heading into a deficit with no planned recharge.",
+    overview: "Recharge Radar treats your social energy like a battery with a real charge level. Enter your week's events — work meetings, social plans, obligations, commutes — and it calculates the energy cost of each one, forecasts your lowest point, identifies the day you're most likely to hit empty, and recommends what to protect, shorten, skip, or reorder. It also spots recovery windows you might not have noticed and flags if you're heading into a deficit with no planned recharge.",
     howToUse: [
-      "List your events for the week — include work obligations, social plans, travel, and any event you\'re dreading",
+      "List your events for the week — include work obligations, social plans, travel, and any event you're dreading",
       "Rate your starting energy level and flag which events feel draining vs. energizing",
       "Optionally note any recovery time already built in (solo mornings, quiet evenings)",
       "Review the energy forecast — your predicted low point, highest-drain day, and deficit risk",
       "Apply the triage recommendations: what to cut, shorten, move, or protect"
     ],
     example: {
-      scenario: "You have a full work week, a friend\'s birthday dinner Wednesday, a family lunch Saturday, and a work happy hour Friday. You\'re already tired.",
-      action: "Enter all five categories of events, set starting energy to \'low\', flag the happy hour as optional.",
-      result: "Forecast shows you hit near-empty Friday afternoon before the happy hour. Radar recommends: protect Thursday evening as a recovery window, shorten Saturday lunch if possible (or leave early), skip or do a 30-minute appearance at the happy hour instead of 2 hours. Wednesday dinner is flagged as energizing because it\'s a close friend — keep it."
+      scenario: "You have a full work week, a friend's birthday dinner Wednesday, a family lunch Saturday, and a work happy hour Friday. You're already tired.",
+      action: "Enter all five categories of events, set starting energy to 'low', flag the happy hour as optional.",
+      result: "Forecast shows you hit near-empty Friday afternoon before the happy hour. Radar recommends: protect Thursday evening as a recovery window, shorten Saturday lunch if possible (or leave early), skip or do a 30-minute appearance at the happy hour instead of 2 hours. Wednesday dinner is flagged as energizing because it's a close friend — keep it."
     },
     tips: [
       "Be honest about your starting energy — the forecast is only as accurate as your input",
@@ -4677,13 +4708,14 @@ export const tools = [
   }
 },
 {
-  id: "SubscriptionGuiltTrip",
+ modified: "2026-03-23",
+ id: "SubscriptionGuiltTrip",
   title: "Subscription Guilt Trip",
-  category: "Money",
+  categories: "Loot",
   icon: "💳",
   description: "Audits subscriptions by actual usage vs cost. Calculates cost-per-use, identifies duplicates, provides cancellation difficulty ratings and scripts to overcome retention tactics. Guilt-free permission to cancel. 'You use gym 1x/month = $60/visit.'",
-  tagline: "Find out what your unused subscriptions really cost",
-  
+  tagline: "Cancel what you don't use. Negotiate what you keep.",
+  headerColor: "#1e3020",  
   guide: {
     overview: "Subscriptions accumulate because canceling feels wasteful ('I might use it later') or difficult (retention tactics). This tool calculates actual usage cost, identifies which to cancel, and provides exact scripts to overcome guilt trips from retention agents. Math-based, no shame.",
     howToUse: [

@@ -590,10 +590,6 @@ const SubSweep = ({ tool }) => {
       <div className={`${c.card} border rounded-xl p-5`}>
         {/* Currency selector */}
         <div className="flex items-center justify-between mb-4">
-          <div>
-            <h3 className={`text-sm font-bold ${c.text}`}>🧹 Subscription Sweep</h3>
-            <p className={`text-xs ${c.textMuted}`}>Add your subs, get the honest truth</p>
-          </div>
           <select value={currency} onChange={e => setCurrency(e.target.value)}
             className={`py-1 px-2 border rounded-lg text-xs font-bold ${c.input} outline-none`}>
             {CURRENCIES.map(cur => <option key={cur} value={cur}>{cur}</option>)}
@@ -1913,9 +1909,12 @@ const SubSweep = ({ tool }) => {
   // ════════════════════════════════════════════════════════════
   return (
     <div className={`space-y-1 ${c.text}`}>
-      <h2 className="sr-only">
-        <span className="mr-2">{tool?.icon ?? '✂️'}</span>{tool?.title ?? 'Sub Sweep'}
-      </h2>
+      <div className="mb-4">
+        <h2 className={`text-2xl font-bold ${c.text}`}>
+          <span className="mr-2">{tool?.icon ?? '🧹'}</span>{tool?.title ?? 'SubSweep'}
+        </h2>
+        <p className={`text-sm ${c.textMuted} mt-1`}>{tool?.tagline ?? 'Cancel what you don\'t use. Negotiate what you keep.'}</p>
+      </div>
       {renderNav()}
 
       {error && (

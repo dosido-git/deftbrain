@@ -2,7 +2,8 @@ import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react'
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
-import { CopyBtn, ActionBar } from '../components/ActionButtons';
+import { CopyBtn } from '../components/ActionButtons';
+import { useRegisterActions } from '../components/ActionBarContext';
 
 
 // ════════════════════════════════════════════════════════════
@@ -87,10 +88,6 @@ const SocialEnergyAudit = ({ tool }) => {
 
   // ── Theme ──
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
-
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
@@ -113,18 +110,22 @@ const SocialEnergyAudit = ({ tool }) => {
     warningTxt:    isDark ? 'text-amber-300' : 'text-amber-800',
     pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
+    quoteBg:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
+    verdict:       isDark ? 'bg-zinc-800' : 'bg-white',
   };
   // Aliases for legacy usages in this component
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
+  const linkStyle = isDark
+    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
+    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
+
   // ── Views ──
   const [view, setView] = useState('log'); // log | results | plan | recharge | journal
 
   // ── Interaction Logger ──
-  const [interactions, setInteractions] = useState([
-    { situation: '', category: 'work', performance: 5, energyBefore: 7, energyAfter: 5, duration: '' },
-  ]);
+  const [interactions, setInteractions] = useState([]);
   const [weekLabel, setWeekLabel] = useState('');
 
   // ── Results ──
@@ -176,27 +177,42 @@ const SocialEnergyAudit = ({ tool }) => {
   // ── Ideal Week ──
   const [idealWeekResults, setIdealWeekResults] = useState(null);
 
+  // ── Other / custom interaction entry ──
+  const [otherText, setOtherText] = useState('');
+  const [showOther, setShowOther] = useState(false);
+  const otherInputRef = useRef(null);
+
+  const addFromOther = () => {
+    const val = otherText.trim();
+    if (!val) return;
+    setInteractions(p => [...p, { situation: val, category: 'work', performance: 5, energyBefore: 7, energyAfter: 5, duration: '', custom: true }]);
+    setOtherText('');
+    setShowOther(false);
+  };
+
   // ── Scroll to results + reset ──
   useEffect(() => {
-    if (results && resultsRef.current) {
-      setTimeout(() => resultsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' }), 200);
-    }
+    if (!results || !resultsRef.current) return;
+    const t = setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 200);
+    return () => clearTimeout(t);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [results]);
 
   useEffect(() => {
-    if (rechargeResults && rechargeResultsRef.current) {
-      setTimeout(() => rechargeResultsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' }), 200);
-    }
+    if (!rechargeResults || !rechargeResultsRef.current) return;
+    const t = setTimeout(() => rechargeResultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 200);
+    return () => clearTimeout(t);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rechargeResults]);
+
+  const runAuditRef = useRef(null);
 
   useEffect(() => {
     const handler = (e) => {
       if (e.key !== 'Enter' || !(e.metaKey || e.ctrlKey)) return;
       const tag = document.activeElement?.tagName;
-      if (tag === 'INPUT' || tag === 'SELECT') return;
-      if (!loading) runAudit();
+      if (tag === 'SELECT') return;
+      if (!loading) runAuditRef.current?.();
     };
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
@@ -225,6 +241,7 @@ const SocialEnergyAudit = ({ tool }) => {
       energyBefore: 7,
       energyAfter: 5,
       duration: '',
+      custom: false,
     }]);
   };
 
@@ -433,45 +450,6 @@ const SocialEnergyAudit = ({ tool }) => {
     setUpcoming(p => p.map((item, idx) => idx === i ? { ...item, [field]: val } : item));
   };
 
-  // ── API: Main Audit ──
-  const runAudit = useCallback(async () => {
-    const valid = interactions.filter(i => i.situation.trim());
-    if (valid.length === 0) { setError('Log at least one interaction'); return; }
-    setError('');
-    setResults(null);
-
-    try {
-      const data = await callToolEndpoint('social-energy-audit', {
-        interactions: valid,
-        weekLabel: weekLabel.trim() || undefined,
-      });
-      setResults(data);
-      setHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: (weekLabel || '').slice(0, 40) }, ...prev].slice(0, 6));
-      setView('results');
-
-      // Save to journal (update if editing, prepend if new)
-      const entry = {
-        id: editingEntryId || Date.now(),
-        date: new Date().toISOString(),
-        label: weekLabel.trim() || `Week of ${new Date().toLocaleDateString()}`,
-        interactionCount: valid.length,
-        energyScore: data.energy_score?.total_energy_spent,
-        verdict: data.energy_score?.sustainability_verdict,
-        oneLiner: data.energy_score?.one_liner,
-        interactions: valid,
-      };
-      let updated;
-      if (editingEntryId) {
-        updated = journal.map(j => j.id === editingEntryId ? entry : j);
-        setEditingEntryId(null);
-      } else {
-        updated = [entry, ...journal].slice(0, MAX_WEEKS);
-      }
-      setJournal(updated);
-    } catch (err) {
-      setError(err.message || 'Audit failed');
-    }
-  }, [interactions, weekLabel, callToolEndpoint, journal]);
 
   // ── API: Week Planner ──
   const runPlan = useCallback(async () => {
@@ -543,6 +521,51 @@ const SocialEnergyAudit = ({ tool }) => {
     lines.push('\n— Generated by DeftBrain · deftbrain.com');
     return lines.join('\n');
   }, [results]);
+
+  // Wire runAuditRef every render so keyboard handler always has the latest closure
+  const runAudit = async () => {
+    const valid = interactions.filter(i => i.situation.trim());
+    if (valid.length === 0) { setError('Log at least one interaction'); return; }
+    setError('');
+    setResults(null);
+
+    try {
+      const data = await callToolEndpoint('social-energy-audit', {
+        interactions: valid,
+        weekLabel: weekLabel.trim() || undefined,
+      });
+      setResults(data);
+      setHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: (weekLabel || '').slice(0, 40) }, ...prev].slice(0, 6));
+      setView('results');
+
+      // Save to journal (update if editing, prepend if new)
+      const entry = {
+        id: editingEntryId || Date.now(),
+        date: new Date().toISOString(),
+        label: weekLabel.trim() || `Week of ${new Date().toLocaleDateString()}`,
+        interactionCount: valid.length,
+        energyScore: data.energy_score?.total_energy_spent,
+        verdict: data.energy_score?.sustainability_verdict,
+        oneLiner: data.energy_score?.one_liner,
+        interactions: valid,
+      };
+      let updated;
+      if (editingEntryId) {
+        updated = journal.map(j => j.id === editingEntryId ? entry : j);
+        setEditingEntryId(null);
+      } else {
+        updated = [entry, ...journal].slice(0, MAX_WEEKS);
+      }
+      setJournal(updated);
+    } catch (err) {
+      setError(err.message || 'Audit failed');
+    }
+  };
+  runAuditRef.current = runAudit;
+
+  // Register content for the ActionBar in the wrapper header
+  const actionContent = view === 'recharge' ? buildRechargeText() : buildFullText();
+  useRegisterActions(actionContent, tool?.title || 'Social Energy Audit');
 
   // ── Journal stats + trends ──
   const journalStats = useMemo(() => {
@@ -640,12 +663,6 @@ const SocialEnergyAudit = ({ tool }) => {
   const renderLog = () => (
     <div className="space-y-4">
       <div className={`${c.card} border rounded-xl p-5`}>
-        <div className={`mb-4 pb-3 border-b ${c.border}`}>
-          <h2 className={`text-xl font-bold ${c.text}`}>
-            <span className="mr-2">{tool?.icon ?? '⚡'}</span>{tool?.title ?? 'Social Energy Audit'}
-          </h2>
-          <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Log your interactions — see where your energy actually goes'}</p>
-        </div>
 
         {/* Week label */}
         <div className="mb-4">
@@ -668,7 +685,7 @@ const SocialEnergyAudit = ({ tool }) => {
             <button
               onClick={() => {
                 setEditingEntryId(null);
-                setInteractions([{ situation: '', category: 'work', performance: 5, energyBefore: 7, energyAfter: 5, duration: '' }]);
+                setInteractions([]);
                 setWeekLabel('');
               }}
               className={`text-xs font-bold ${c.accentTxt} min-h-[28px] ml-2`}
@@ -706,47 +723,96 @@ const SocialEnergyAudit = ({ tool }) => {
           )}
         </div>
 
-        {/* Quick presets */}
-        <div className="mb-4">
-          <p className={`text-[10px] font-bold ${c.label} uppercase mb-2`}>Quick add</p>
+        {/* Quick add */}
+        <div className="mb-2">
+          <p className={`text-[10px] font-bold ${c.label} uppercase mb-2`}>Quick add — tap to add to your week</p>
           <div className="flex flex-wrap gap-1.5">
-            {QUICK_PRESETS.map((preset, i) => (
-              <button
-                key={i}
-                onClick={() => addFromPreset(preset)}
-                className={`${c.btnSecondary} px-2.5 py-1.5 rounded-lg text-[11px] font-medium min-h-[32px] flex items-center gap-1`}
-              >
-                <span>{preset.icon}</span> {preset.situation}
-              </button>
-            ))}
+            {QUICK_PRESETS.map((preset, i) => {
+              const count = interactions.filter(int => int.situation === preset.situation).length;
+              return (
+                <button
+                  key={i}
+                  onClick={() => addFromPreset(preset)}
+                  className={`${c.btnSecondary} px-2.5 py-1.5 rounded-lg text-[11px] font-medium min-h-[32px] flex items-center gap-1 border transition-colors`}
+                >
+                  <span>{preset.icon}</span> {preset.situation}
+                  {count > 0 && (
+                    <span className={`ml-1 text-[9px] font-black px-1.5 py-0.5 rounded-full ${c.pillActive}`}>
+                      {count}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+            <button
+              onClick={() => { setShowOther(p => !p); setTimeout(() => otherInputRef.current?.focus(), 50); }}
+              className={`px-2.5 py-1.5 rounded-lg text-[11px] font-medium min-h-[32px] flex items-center gap-1 border transition-colors ${showOther ? c.pillActive : c.btnSecondary}`}
+            >
+              ✏️ Other
+            </button>
           </div>
+          {showOther && (
+            <div className="flex gap-2 mt-2">
+              <input
+                ref={otherInputRef}
+                type="text"
+                value={otherText}
+                onChange={e => setOtherText(e.target.value)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter') { addFromOther(); }
+                  if (e.key === 'Escape') { setShowOther(false); setOtherText(''); }
+                }}
+                placeholder="Describe the situation..."
+                className={`flex-1 px-3 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`}
+              />
+              <button
+                onClick={addFromOther}
+                disabled={!otherText.trim()}
+                className={`${c.btnPrimary} px-3 py-2 rounded-lg text-xs font-bold min-h-[36px] disabled:opacity-40`}
+              >
+                Add
+              </button>
+            </div>
+          )}
         </div>
 
-        {/* Interactions */}
-        <div className="space-y-3 mb-4">
-          {interactions.map((int, i) => (
-            <div key={i} className={`${c.quoteBg} rounded-xl p-4 space-y-3`}>
-              <div className="flex items-start gap-2">
-                <span className={`text-xs font-bold ${c.textMuteded} mt-2.5 w-5 text-center flex-shrink-0`}>{i + 1}</span>
-                <div className="flex-1 space-y-3">
-                  {/* Situation + category row */}
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={int.situation}
-                      onChange={e => updateInteraction(i, 'situation', e.target.value)}
-                      placeholder="What was the situation?"
-                      className={`flex-1 px-3 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`}
-                    />
-                    <select
-                      value={int.category}
-                      onChange={e => updateInteraction(i, 'category', e.target.value)}
-                      className={`w-28 px-2 py-2 border rounded-lg text-xs ${c.input} outline-none`}
-                    >
-                      {CATEGORIES.map(cat => (
-                        <option key={cat.value} value={cat.value}>{cat.icon} {cat.label}</option>
-                      ))}
-                    </select>
+        {/* Your week so far */}
+        {interactions.length > 0 && (
+          <div className="mb-4">
+            <div className={`flex items-center justify-between mb-2 pt-3 border-t ${c.border}`}>
+              <p className={`text-[10px] font-bold ${c.label} uppercase`}>
+                Your week so far <span className={`font-normal ${c.textMuteded}`}>({interactions.length} item{interactions.length !== 1 ? 's' : ''}) — adjust ratings below</span>
+              </p>
+            </div>
+            <div className="space-y-3">
+              {interactions.map((int, i) => (
+                <div key={i} className={`${c.quoteBg} rounded-xl p-4 space-y-3`}>
+                  <div className="flex items-center justify-between gap-2">
+                    <div className={`flex items-center gap-1.5 text-sm font-medium ${c.text}`}>
+                      <span>{QUICK_PRESETS.find(p => p.situation === int.situation)?.icon ?? '📌'}</span>
+                      {int.custom ? (
+                        <input
+                          type="text"
+                          value={int.situation}
+                          onChange={e => updateInteraction(i, 'situation', e.target.value)}
+                          className={`px-2 py-1 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`}
+                        />
+                      ) : (
+                        <span>{int.situation}</span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      <select
+                        value={int.category}
+                        onChange={e => updateInteraction(i, 'category', e.target.value)}
+                        className={`w-24 px-2 py-1 border rounded-lg text-xs ${c.input} outline-none`}
+                      >
+                        {CATEGORIES.map(cat => (
+                          <option key={cat.value} value={cat.value}>{cat.icon} {cat.label}</option>
+                        ))}
+                      </select>
+                      <button onClick={() => removeInteraction(i)} className={`text-sm ${c.warningTxt} min-h-[28px] px-1`}>✕</button>
+                    </div>
                   </div>
 
                   {/* Duration */}
@@ -769,60 +835,40 @@ const SocialEnergyAudit = ({ tool }) => {
                     <div>
                       <div className="flex justify-between mb-0.5">
                         <label className={`text-[10px] font-bold ${c.label}`}>Performance</label>
-                        <span className={`text-[10px] font-bold ${int.performance >= 7 ? c.warningTxt : int.performance <= 3 ? c.successTxt : c.warningTxt}`}>
-                          {int.performance}/10
-                        </span>
+                        <span className={`text-[10px] font-bold ${int.performance >= 7 ? c.warningTxt : c.successTxt}`}>{int.performance}/10</span>
                       </div>
-                      <input
-                        type="range" min="1" max="10" value={int.performance}
+                      <input type="range" min="1" max="10" value={int.performance}
                         onChange={e => updateInteraction(i, 'performance', Number(e.target.value))}
-                        className="w-full accent-zinc-500"
-                      />
-                      <div className={`flex justify-between text-[8px] ${c.textMuteded}`}>
-                        <span>Natural</span><span>Full "on"</span>
-                      </div>
+                        className="w-full accent-zinc-500" />
+                      <div className={`flex justify-between text-[8px] ${c.textMuteded}`}><span>Natural</span><span>Full "on"</span></div>
                     </div>
                     <div>
                       <div className="flex justify-between mb-0.5">
                         <label className={`text-[10px] font-bold ${c.label}`}>Energy before</label>
                         <span className={`text-[10px] font-bold ${c.accentTxt}`}>{int.energyBefore}/10</span>
                       </div>
-                      <input
-                        type="range" min="1" max="10" value={int.energyBefore}
+                      <input type="range" min="1" max="10" value={int.energyBefore}
                         onChange={e => updateInteraction(i, 'energyBefore', Number(e.target.value))}
-                        className="w-full accent-zinc-500"
-                      />
-                      <div className={`flex justify-between text-[8px] ${c.textMuteded}`}>
-                        <span>Empty</span><span>Full</span>
-                      </div>
+                        className="w-full accent-zinc-500" />
+                      <div className={`flex justify-between text-[8px] ${c.textMuteded}`}><span>Empty</span><span>Full</span></div>
                     </div>
                     <div>
                       <div className="flex justify-between mb-0.5">
                         <label className={`text-[10px] font-bold ${c.label}`}>Energy after</label>
                         <span className={`text-[10px] font-bold ${int.energyAfter < int.energyBefore ? c.warningTxt : c.successTxt}`}>{int.energyAfter}/10</span>
                       </div>
-                      <input
-                        type="range" min="1" max="10" value={int.energyAfter}
+                      <input type="range" min="1" max="10" value={int.energyAfter}
                         onChange={e => updateInteraction(i, 'energyAfter', Number(e.target.value))}
-                        className="w-full accent-zinc-500"
-                      />
-                      <div className={`flex justify-between text-[8px] ${c.textMuteded}`}>
-                        <span>Empty</span><span>Full</span>
-                      </div>
+                        className="w-full accent-zinc-500" />
+                      <div className={`flex justify-between text-[8px] ${c.textMuteded}`}><span>Empty</span><span>Full</span></div>
                     </div>
                   </div>
                 </div>
-                {interactions.length > 1 && (
-                  <button onClick={() => removeInteraction(i)} className={`text-sm ${c.warningTxt} min-h-[32px] px-1 mt-1.5`}>✕</button>
-                )}
-              </div>
+              ))}
             </div>
-          ))}
-        </div>
+          </div>
+        )}
 
-        <button onClick={addInteraction} className={`text-xs font-bold ${c.accentTxt} mb-4 min-h-[32px] flex items-center gap-1`}>
-          ➕ Add interaction
-        </button>
 
         <button
           onClick={runAudit}
@@ -850,10 +896,7 @@ const SocialEnergyAudit = ({ tool }) => {
       <div ref={resultsRef} className="space-y-4">
         <div className="flex items-center justify-between flex-wrap gap-2">
           <button onClick={() => setView('log')} className={`text-xs font-bold ${c.accentTxt} min-h-[32px]`}>← Back to log</button>
-          <div className="flex gap-2 items-center">
-            <ActionBar content={buildFullText()} title={tool?.title || 'Social Energy Audit'} />
-            <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold`}>🔄 Start Over</button>
-          </div>
+          <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold`}>🔄 Start Over</button>
         </div>
 
         {/* Energy Score */}
@@ -1006,9 +1049,9 @@ const SocialEnergyAudit = ({ tool }) => {
           <p className={`text-[10px] font-bold ${c.label} uppercase mb-2`}>Related tools</p>
           <div className="flex flex-wrap gap-2">
             {CROSS_REFS.map(ref => (
-              <a key={ref.id} href={`/?tool=${ref.id}`} target="_blank" rel="noopener noreferrer"
+              <a key={ref.id} href={`/${ref.id}`}
                 className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 min-h-[32px]`}>
-                <span>{ref.icon}</span> {ref.label}
+                <span>{ref.icon}</span> {ref.id.replace(/([A-Z])/g, ' $1').trim()}
               </a>
             ))}
           </div>
@@ -1184,8 +1227,6 @@ const SocialEnergyAudit = ({ tool }) => {
       {/* Recharge Results */}
       {rechargeResults && (
         <div ref={rechargeResultsRef} className="space-y-4">
-          <span ref={resultsRef} className="sr-only" aria-hidden="true" />
-          <ActionBar content={buildRechargeText()} title={tool?.title || 'Social Energy Audit'} />
           {rechargeResults.energy_assessment && (
             <div className={`${c.verdict} border-2 rounded-xl p-5`}>
               <span className="text-3xl block mb-2 text-center">🔋</span>
@@ -1969,7 +2010,17 @@ const SocialEnergyAudit = ({ tool }) => {
   // ════════════════════════════════════════════════════════════
   return (
     <div className={`space-y-4 ${c.text}`}>
-      {renderNav()}
+      <div className={`${c.card} border rounded-xl p-5`}>
+        <div className={`mb-0 pb-3 border-b ${c.border}`}>
+          <h2 className={`text-xl font-bold ${c.text}`}>
+            <span className="mr-2">{tool?.icon ?? '⚡'}</span>{tool?.title ?? 'Social Energy Audit'}
+          </h2>
+          <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Log your interactions — see where your energy actually goes'}</p>
+        </div>
+        <div className="pt-3">
+          {renderNav()}
+        </div>
+      </div>
 
       {error && (
         <div className={`${c.danger} border rounded-lg p-4 flex items-start gap-3`}>
@@ -1989,7 +2040,6 @@ const SocialEnergyAudit = ({ tool }) => {
 
       {/* eslint-disable-next-line no-restricted-globals */}
       {history.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}><p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 Recent</p><div className="space-y-1">{history.map(s => (<div key={s.id} className="flex items-center justify-between"><span className={`text-xs ${c.textSecondary} truncate`}>{s.preview||'Session'}</span><span className={`text-xs ${c.textMuted} ml-2`}>{new Date(s.date).toLocaleDateString()}</span></div>))}</div></div>)}
-      <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}><p className={`text-xs font-bold ${c.textMuted} mb-2`}>🔗 Related tools</p><div className="flex flex-wrap gap-3"><a href="decision-coach" className={`text-xs ${linkStyle}`}>🎯 Decision Coach</a><a href="spiral-stopper" className={`text-xs ${linkStyle}`}>🌀 Spiral Stopper</a></div></div>
     </div>
   );
 };

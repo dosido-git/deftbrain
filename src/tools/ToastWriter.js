@@ -140,7 +140,7 @@ const ToastWriter = ({ tool }) => {
     const handler = (e) => {
       if (e.key !== 'Enter' || !(e.metaKey || e.ctrlKey)) return;
       const tag = document.activeElement?.tagName;
-      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      if (tag === 'TEXTAREA' || tag === 'SELECT') return;
       if (!person.trim() || !occasion || loading) return;
       e.preventDefault();
       generate();

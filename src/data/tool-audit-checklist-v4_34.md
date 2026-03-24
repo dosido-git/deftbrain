@@ -1,4 +1,4 @@
-# Tool Audit Checklist v4.33
+# Tool Audit Checklist v4.34
 ### DeftBrain — Pre-Ship Quality & Consistency Standard
 
 Score each item: ✅ Pass | ⚠️ Needs Work | ❌ Fail | N/A
@@ -76,11 +76,11 @@ Score each item: ✅ Pass | ⚠️ Needs Work | ❌ Fail | N/A
   # Any h1/h2 containing a bare string (not a JSX expression) is a violation
   ```
 
-  > ⚠️ **BUG PATTERN — Hardcoded title/tagline in component header (discovered WhatIf audit, v4.24)**
-  > Tools hardcode their title and tagline in JSX: `<h2>WhatIf 🎲</h2>` / `<p>See the road not taken…</p>`. When the tool's `tools.js` entry is updated, the component header never changes. **Fix:** Replace with `{tool?.title}` and `{tool?.tagline}`. The `tool` prop is always available — `ToolPageWrapper` passes it through to every component.
+  > ⚠️ **BUG PATTERN — Hardcoded title/tagline in component header (discovered WhatIfMachine audit, v4.24)**
+  > Tools hardcode their title and tagline in JSX: `<h2>WhatIfMachine 🎲</h2>` / `<p>See the road not taken…</p>`. When the tool's `tools.js` entry is updated, the component header never changes. **Fix:** Replace with `{tool?.title}` and `{tool?.tagline}`. The `tool` prop is always available — `ToolPageWrapper` passes it through to every component.
   > ```jsx
   > // ❌ WRONG
-  > <h2>WhatIf 🎲</h2>
+  > <h2>WhatIfMachine 🎲</h2>
   > <p>See the road not taken before you decide</p>
   >
   > // ✅ CORRECT
@@ -319,7 +319,6 @@ const linkStyle = isDark
   **Critical `ToolPageWrapper` values — never change without visual QA:**
   | Element | Class/Style | Effect if changed |
   |---------|------------|-------------------|
-  | `<header>` | `pb-6 space-y-2` | Bottom spacing before bookmark row |
   | `<section>` gradient | `solid 0%, solid 60px, transparent 220px` | Frame height / fade shape |
   | Inner div | `m-8 rounded-xl p-6` | Frame thickness (m-8 = 32px — must not shrink) |
   | Bookmark row | `mt-4 mb-2` | Spacing between description and buttons |
@@ -395,6 +394,14 @@ const linkStyle = isDark
 - [ ] 🧪 **No flash of wrong theme on load.**
 
 ### 1.4 Action Buttons
+
+> 🚨 **SHARED INFRASTRUCTURE FILES ARE READ-ONLY DURING AUDITS**
+> `ToolPageWrapper.js`, `ActionBarContext.js`, `ActionButtons.js`, `useTheme.js`, `App.js`, and all other shared components must **never** be modified during a tool audit unless explicitly requested by the user. These files govern the layout and behavior of every tool on the site. A one-line change to any of them can break every tool simultaneously.
+>
+> **If a visual problem is reported:** The cause is always in the tool file — not the wrapper. The first diagnostic question is always: *"Has the audited tool file been deployed?"* — not *"Is there a layout bug in the wrapper?"*
+>
+> **The ActionBar position is fixed by design:** It sits to the RIGHT of the Bookmark and Dark Mode buttons in the `ToolPageWrapper` header row, right-aligned by the `justify-between` outer flex container. This position was intentionally designed. Do not move it, do not propose changes to the wrapper structure, do not "fix" it without being explicitly asked.
+
 > `ActionBar` lives in the **`ToolPageWrapper` persistent header row** — right side, with bookmark and dark/light mode buttons on the left. Tools register their export content via `useRegisterActions(content, title)` — the wrapper renders the ActionBar automatically when content is available. An inline `<ActionBar>` remaining in tool JSX is a duplicate violation. Standalone `CopyBtn` or `PrintBtn` are still allowed inside a tool for per-item actions (e.g. copy a single question). The absolute rule: **never use `window.open` / `buildPrintHtml` for custom printing** — use `PrintBtn` from ActionButtons instead.
 
 - [ ] 🔍 **Imports `useRegisterActions` from `../components/ActionBarContext`** — and calls it with the tool's export content and title.
@@ -940,17 +947,13 @@ useEffect(() => {
   # Count — flag if > 3
   ```
 
-- [ ] 🔍 **All cross-ref links resolve to real tools** — every `href="/ToolId"` or `href='/ToolId'` must match a real `id:` entry in `tools.js`. A broken link silently 404s with no build error. Template literal hrefs (`href={\`/${ref.id}\`}`) are exempt from static analysis but the ID values fed into them must still be valid.
+- [ ] 🔍 **Cross-ref links include the tool's icon** — every `<a>` cross-reference must include the target tool's emoji before the name. A bare text link with no icon fails this check.
   ```bash
-  # Extract all static  hrefs and verify each against tools.js:
-  grep -oP 'href=["\'][/]\K[A-Za-z][A-Za-z0-9]+(?=["\'\])' ComponentName.js
-  # For each ID found, verify it exists:
-  grep 'id: "FoundId"' tools.js
-  # Must return a result for every ID — zero results = broken link
+  grep -n "href=\"/" ComponentName.js
+  # For each result, confirm the link text starts with an emoji before the tool name
+  # e.g. ✅ <a href="/VelvetHammer" className={linkStyle}>🔨 Velvet Hammer</a>
+  # e.g. ❌ <a href="/VelvetHammer" className={linkStyle}>Velvet Hammer</a>
   ```
-
-  > ⚠️ **BUG PATTERN — Broken cross-ref link (discovered WhereDidTheTimeGo audit, v4.33)**
-  > `href="/MirrorTest"` was a dead link — `MirrorTest` does not exist in `tools.js`. The tool was probably renamed or never shipped. No build error, no runtime error, just a silent 404 for the user. The audit script now validates all static tool hrefs against `tools.js` at scan time.
 
 - [ ] 🔍 **Bidirectional check** — Tool B mentions this tool if this tool mentions Tool B.
   ```bash
@@ -1102,9 +1105,9 @@ For each tool, capture:
 
 *v4.25 — Strengthened: Icon placement check (Section 0). Added mandatory grep scans with three tests: (1) `mr-2` pattern present on icon span, (2) `tool?.icon` appears in header, (3) no bare string in h1/h2. Also added bug pattern: icon hardcoded after title name (e.g. `<h2>UpsellShield 🧲</h2>`). Discovered UpsellShield audit, March 2026.*
 
-*v4.24 — New check added, discovered during WhatIf audit, March 2026:*
+*v4.24 — New check added, discovered during WhatIfMachine audit, March 2026:*
 
-**(1) Hardcoded title/tagline in component header (Section 0):** Tools hardcode their title and tagline as JSX string literals rather than reading from `tool?.title` and `tool?.tagline`. When `tools.js` is updated the component header silently stays stale. Fix: always use `{tool?.title}` and `{tool?.tagline}`. Applied retroactively to WhatIf, WhatsMyVibe, WhereDidItGo, and WrongAnswersOnly.*
+**(1) Hardcoded title/tagline in component header (Section 0):** Tools hardcode their title and tagline as JSX string literals rather than reading from `tool?.title` and `tool?.tagline`. When `tools.js` is updated the component header silently stays stale. Fix: always use `{tool?.title}` and `{tool?.tagline}`. Applied retroactively to WhatIfMachine, WhatsMyVibe, WhereDidItGo, and WrongAnswersOnly.*
 
 *v4.23 — Four new checks discovered during WrongAnswersOnly audit, March 2026:*
 
@@ -1124,11 +1127,15 @@ For each tool, capture:
 
 **(3) History cap above 6 requires documented exception (Section 1.5):** The standard caps history at 5–6 entries. Tools with pattern-analysis features that require larger history sets (e.g., CrisisPrioritizer's pattern analysis uses up to 20 sessions) may exceed this cap, but must document it explicitly in the component as a comment and in the audit notes. **Scan:** `grep "\.slice(0, [0-9]" ComponentName.js | grep -i "journal\|history\|setHistory"` — any cap above 6 without a documented exception comment is a violation.*
 
-*v4.33 — Cross-ref link validity check added (Section 5.5), March 2026:*
+*v4.33 — Shared infrastructure read-only rule + TDZ audit patterns, March 2026:*
 
-**All static cross-ref hrefs must resolve to a real tool ID in `tools.js`.** During the WhereDidTheTimeGo audit, `href="/MirrorTest"` was found to be a dead link — the tool does not exist. No build error, no warning, just a silent 404. New check added to Section 5.5 and to `audit_v2-3.py`.
+**(1) Shared infrastructure files are read-only during audits (Section 1.4):** `ToolPageWrapper.js`, `ActionBarContext.js`, `ActionButtons.js`, `useTheme.js` and all shared components must never be modified during a tool audit. The ActionBar position (right of Bookmark/Dark Mode, in the `ToolPageWrapper` header row) is fixed by design and must not be moved. When a visual problem is reported, the diagnosis is always: "Has the audited tool file been deployed?" — not a wrapper layout bug.*
 
-**Rule:** Every plain-string `href="/ToolId"` or `href='/ToolId'` in the component must match an `id:` entry in `tools.js`. Template literal hrefs are exempt from static analysis but must still reference valid IDs. The audit script checks this automatically when `tools.js` is present.
+**(2) TDZ crash pattern — `useRegisterActions` called before `buildFullText` declared (Section 1.4):** `useRegisterActions(buildFullText(), ...)` placed before `const buildFullText = () => {...}` causes a "Cannot access uninitialized variable" crash on mount in production. `useRegisterActions` must be called AFTER the function it invokes is declared. This is distinct from the `useEffect` TDZ pattern (hooks before state) — here the issue is a hook that synchronously calls a `const` function that hasn't been initialized yet. **Scan:** `grep -n "useRegisterActions\|const buildFullText\|const buildText\|const buildCopy\|const buildFull" ComponentName.js` — the `useRegisterActions` call line number must be greater than the `const build*` line number.*
+
+**(3) `useRegisterActions` called inside a `useCallback` (Section 1.4):** Placing `useRegisterActions(...)` or `useEffect(...)` inside a `useCallback` block causes React's rules-of-hooks violation ("React Hook cannot be called inside a callback"). These must always be at the top level of the component function body. **Scan:** `grep -n "useRegisterActions\|useEffect" ComponentName.js` — if either appears inside a `useCallback(() => {` block, it is a violation.*
+
+**(4) Scroll `setTimeout` without `clearTimeout` cleanup (Section 1.7):** A bare `setTimeout(() => ref.current?.scrollIntoView(...), 100)` inside a `useCallback` or API handler has no cleanup path — if the component unmounts before the timeout fires, it throws. The correct pattern is a `useEffect` on `[results]` with a ref: `const t = setTimeout(...); return () => clearTimeout(t)`. **Scan:** `grep -n "setTimeout" ComponentName.js | grep -v "clearTimeout"` — any hit that isn't paired with a clearTimeout return is a violation.*
 
 *v4.32 — ToolPageWrapper change discipline (Section 1.2), March 2026:*
 
@@ -1154,10 +1161,18 @@ For each tool, capture:
 
 **(2) Post-result cross-refs belong at the bottom of the results section** — after the user has absorbed the output, as a natural "what next?" The bottom of the results section is when the user's task is complete and they are most receptive to a next step.*
 
-**(3) Cross-refs must be inline in the main return, not inside render helper functions** — `{results && <p>...<a href="/X">...</a></p>}` in the main JSX is detectable by the audit script. A cross-ref buried inside `renderResults()` or a sub-component is invisible to the script and harder to audit manually.*
+**(3) Cross-refs must be inline in the main return, not inside render helper functions** — `{results && <p>...<a href="/tool/X">...</a></p>}` in the main JSX is detectable by the audit script. A cross-ref buried inside `renderResults()` or a sub-component is invisible to the script and harder to audit manually.*
 
 *v4.29 — Two new standards, March 2026:*
 
 **(1) Header is left-aligned (Section 1.2):** `text-center` is banned on the tool `<h2>`, tagline `<p>`, and input card content. Left-alignment is the unconditional standard across all tools. Some older tools wrap the header block in `<div className="text-center ...">` — a pattern inherited from landing-page-style layouts that creates visual inconsistency. Centered alignment is only acceptable for isolated metric callout numbers inside result cards (e.g. a large score display). **Scan:** `grep -n "text-center" ComponentName.js` — flag any `text-center` on the h2, tagline, input labels, or card-level wrappers. Result-card metric callouts are exempt.*
 
 **(2) ActionBar placement is the `ToolPageWrapper` persistent header — not inline in tool JSX (Section 1.4):** The ActionBar sits to the right of the bookmark and dark/light mode buttons in the wrapper header row. Tools register content via `useRegisterActions(content, title)`. An inline `<ActionBar>` remaining in tool JSX is a duplicate and must be removed. The audit script (`audit_v2.py`) still checks for inline ActionBar proximity to `resultsRef` — **that check is now outdated and should be updated** to verify `useRegisterActions` import and call instead.*
+
+*v4.34 — Cross-ref icon standard added (Section 5.5), March 2026:*
+
+**(1) Cross-ref links must include the target tool's icon (Section 5.5):** Every `<a>` cross-reference must include the target tool's emoji immediately before the tool name inside the link text. A bare text link with no emoji fails this check. **Correct:** `<a href="/VelvetHammer" className={linkStyle}>🔨 Velvet Hammer</a>`. **Incorrect:** `<a href="/VelvetHammer" className={linkStyle}>Velvet Hammer</a>`. Icons make links visually scannable and consistent with DeftBrain's emoji-forward design language. **Scan:** `grep -n 'href="/' ComponentName.js` — for each result, confirm the link text starts with an emoji before the tool name.*
+
+**(2) Header wrapped in a card blocks the gradient frame (Section 1.2):** Wrapping the `<h2>` + tagline in `<div className="${c.card} border ...">` places a white/dark card directly over the `ToolPageWrapper` gradient, making the tool card border appear white and the category color invisible. The header must be bare — just `<h2>` and `<p>` with no card wrapper — so the gradient shows through. **Scan:** `grep -n "c\.card" ComponentName.js | head -5` — if the first result is near the `<h2>`, it is a violation. The first `c.card` in the component should be an input card or results card, never the header.*
+
+**(3) Stale closure on keyboard `useEffect` (Section 1.7):** When `handleSubmit` (or any async submit function) is not memoized with `useCallback`, the keyboard `useEffect` captures a stale closure that always sees the initial empty state — causing the handler to fire validation errors even with valid input. The button click works because it always reads fresh state directly. **Fix:** Use a ref pattern — assign `handleRef.current = handleSubmit` outside any effect (on every render), then call `handleRef.current?.()` inside the handler. This ensures the keyboard always invokes the freshest version of the function. **Scan:** Any keyboard `useEffect` that calls a non-memoized `const handle*` function is a candidate — verify the function reads state that could be stale.*
