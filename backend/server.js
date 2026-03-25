@@ -74,6 +74,7 @@ const RENAMED_TOOLS = {
   '/pdf-fixer':             '/PlainTalk',
   '/timevanishingexplainer':'/WhereDidTheTimeGo',
   '/wherediditgo':          '/WhereDidTheTimeGo',
+  '/sayitright':            '/PronounceItRight',
 };
 app.use((req, res, next) => {
   const redirect = RENAMED_TOOLS[req.path.toLowerCase()];

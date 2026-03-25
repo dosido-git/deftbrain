@@ -4,6 +4,23 @@
 
 ---
 
+## ⚡ MANDATORY PRE-WRITE PROTOCOL (new tools and significant edits)
+
+Before writing the first line of any new tool component, or making structural changes to an existing one, complete ALL of the following steps in order. Do not skip or abbreviate.
+
+1. **Read this entire file** (CONVENTIONS.md). Do not reconstruct patterns from memory.
+2. **State the header pattern** you will use: persistent `<h2>` + tagline, inset `border-b`, inside padded wrapper.
+3. **State the c block source**: copied verbatim from PF-2, not reconstructed.
+4. **State the hook order**: useClaudeAPI → useTheme → c block → linkStyle → useState → useRef → usePersistentState → handlers → buildFullText → useRegisterActions → useEffect scroll → useEffect keyboard → render helpers → return.
+5. **Confirm cross-ref count** will be ≤ 3, with emoji before name, no `target="_blank"`.
+6. **Confirm the root div** is `<div className={\`space-y-4 \${c.text}\`}>` with no background color.
+
+Only after all six steps are confirmed may writing begin.
+
+> This protocol exists because patterns reconstructed from memory drift. The conventions file is the only authoritative source. Reading it takes 90 seconds. Not reading it costs hours of correction.
+
+---
+
 ## ⚡ PRE-FLIGHT CORRECTIONS
 Run these checks on every file before doing anything else. Each one has a deterministic fix — no judgment required. Resolving these first eliminates the majority of recurring audit violations.
 
@@ -159,9 +176,31 @@ This passes the gradient-blocking scan (because `<h2>` IS inside a `c.card`) but
 | `c.textSecondary` on tagline | Not `c.textMuted` |
 | Inputs inside the same card | Never in a separate card below the header card |
 | Header is the **first** thing inside the card | No input elements, pickers, tabs, or navigation may appear before the header — they must all follow the `border-b` divider |
+| `border-b border-zinc-500` is on an **inner div**, not the outer card div | The outer card has `px-5` padding; the `border-b` div sits inside it — so the divider line is inset from the card edges, not edge-to-edge |
 
 > ⚠️ **BUG PATTERN — Input controls rendered before the header (discovered PronounceItRight audit, v4.35)**
 > A category picker strip was placed as its own element *before* the input card, making it the first visible UI inside the gradient frame — above the tool title. The fix is to move all input controls inside the card, below the `border-b border-zinc-500` divider. Nothing should precede the header inside the gradient frame.
+
+**❌ Wrong pattern — border-b placed on the outer padded div (edge-to-edge divider):**
+```jsx
+{/* WRONG — border runs wall-to-wall, visually heavy */}
+<div className="flex items-start justify-between px-5 pt-5 pb-3 border-b border-zinc-500">
+  <h2>...</h2>
+</div>
+```
+
+**✅ Correct pattern — border-b on an inner div, inside the padded container (inset divider):**
+```jsx
+{/* CORRECT — padding wraps both the header content and the border */}
+<div className="px-5 pt-5">
+  <div className="flex items-start justify-between pb-3 border-b border-zinc-500">
+    <h2>...</h2>
+  </div>
+</div>
+```
+
+> ⚠️ **BUG PATTERN — Edge-to-edge header divider (discovered DriveHome / SafeWalk, March 2026)**
+> Placing `border-b border-zinc-500` on the same div that carries `px-5` padding causes the border to run from card edge to card edge — visually heavy and inconsistent with all other tools. The `border-b` must always be on a child div, inside the padded wrapper, so the line is naturally inset.
 
 ---
 

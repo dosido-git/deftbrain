@@ -44,6 +44,54 @@ template:
 ]}},**/
 export const tools = [
 {
+  modified: "2026-03-24",
+  id: "DriveHome",
+  title: "DriveHome",
+  tagline: "Your safety net for every drive",
+  tags: [
+    'drive', 'driving', 'safety', 'car', 'night driving', 'solo drive',
+    'check-in', 'timer', 'emergency', 'bad weather', 'snow', 'rain',
+    'location sharing', 'watch for me', 'nervous driving', 'road safety',
+    'long drive', 'late night', 'highway', 'inclement weather'
+  ],
+  icon: "🚗",
+  categories: ['The Grind'],
+  headerColor: "#1e2a3a",
+  description: "AI safety companion for solo drives — assess your route and conditions before you leave, then activate the check-in timer so someone always knows you made it.",
+  guide: {
+    overview: "DriveHome is a safety net for solo drives, not a navigation app. Setup tab: enter your from/to locations, select conditions, road type, and how you're feeling — the AI assesses your specific drive with watch-for items, a pre-drive checklist, and an honest take if you're tired or anxious. Then set a check-in timer and copy a Watch-For-Me message to send before you leave. Drive tab: the timer counts down and asks 'Are you safe?' when it expires. If you don't respond within 30 seconds, the emergency alarm triggers automatically. Share Location and one-tap Emergency are always available. Emergency contacts are shared with SafeWalk — set once, used in both.",
+
+    howToUse: [
+      "SETUP TAB: Enter where you're driving from and to (include city and state). Select time of day, road conditions, road type, and how you're feeling. Tap 'Assess My Drive' for a tailored safety briefing.",
+      "Review the checklist and check off items. If you're tired or anxious, read the Honest Take — it's there for a reason.",
+      "Set your check-in timer (how long the drive should take), copy the Watch-For-Me message and send it to your primary contact, then tap 'Start Drive'.",
+      "DRIVE TAB: The timer counts down. When it expires, tap 'I'm Safe' to confirm you arrived. If you need more time, tap +15 or +30 min. If you don't respond within 30 seconds, the alarm triggers automatically.",
+      "Use Share Location to copy your GPS coordinates into a ready-to-send text at any point during the drive.",
+      "SETTINGS: Add emergency contacts — the primary contact's name appears in alerts and the Watch-For-Me message. Contacts are shared with SafeWalk."
+    ],
+
+    example: {
+      scenario: "Driving home from a friend's house at midnight in a snowstorm, about 45 minutes on the highway.",
+      action: "Enter 'From: 45 Elm St, Brookline, MA', 'To: Home, Arlington, MA'. Select 'Late night', 'Snow / Ice', 'Highway', and 'Fine'. Tap Assess.",
+      result: "AI flags reduced visibility and longer stopping distances on the specific highway, recommends a checklist item for tires and wipers, and generates an ETA message. You copy the Watch-For-Me message to your partner, set a 55-minute timer (buffer built in), and start the drive. When the timer expires, you tap 'I'm Safe' from the parking lot."
+    },
+
+    tips: [
+      "Add a primary emergency contact in Settings — their name appears in the Watch-For-Me message and emergency alerts",
+      "Set the timer slightly longer than your expected drive — you can always tap 'I'm Safe' early",
+      "The 30-second auto-alarm countdown appears when the timer expires — tap any button to stop it",
+      "Share Location copies your GPS as a Google Maps link — paste it into any messaging app in one tap",
+      "Contacts set in DriveHome are also available in SafeWalk, and vice versa"
+    ],
+
+    pitfalls: [
+      "DriveHome does not have real-time traffic or road condition data — the AI assessment uses the conditions you select",
+      "Location sharing requires browser location permission — grant it before starting the drive, not mid-drive",
+      "The check-in timer runs in-browser — keep the tab open or the timer may not fire on some mobile browsers"
+    ]
+  }
+},
+{
   modified: "",
   id: "ToolFinder",
   title: "ToolFinder",
@@ -1306,7 +1354,7 @@ export const tools = [
   icon: "🔥",
   categories: ['Out & About', 'Detour'],
   headerColor: "#ccdfc4",
-  description: "Paste your resume, dating profile, LinkedIn bio, email, tweet, or any text and get a personalized comedy roast. Three heat levels: Gentle (playful teasing), Medium (Comedy Central energy), and Scorched Earth (no mercy, still funny). Every roast line targets SPECIFIC content you submitted — zero generic insults. AI detects content type automatically and targets the right things: buzzwords in resumes, clichés in dating profiles, humblebrags on LinkedIn. Includes a 'One Nice Thing' plus a screenshot-worthy 'Share Line' for maximum social media damage.",
+  description: "Paste your resume, dating profile, LinkedIn bio, email, tweet, or any text and get a personalized comedy roast. Three heat levels: Gentle, Medium, and Scorched Earth. Every roast line targets SPECIFIC content you submitted — zero generic insults. AI detects content type automatically and targets the right things: buzzwords in resumes, clichés in dating profiles, humblebrags on LinkedIn. Includes a 'One Nice Thing' plus a screenshot-worthy 'Share Line' for maximum social media damage.",
   guide: {
     overview: "RoastMe is a comedy writer that reads your content and finds what's specifically, uniquely roastable about it. Not generic insults — targeted humor that lands because it's true.",
     howToUse: [
@@ -2116,10 +2164,10 @@ export const tools = [
   title: "Room Reader",
   tagline: "Read the room before you walk in",
   tags: ['social', 'conversation', 'read the room', 'networking', 'awkward', 'small talk', 'people'],
-  icon: "🧠",
+  icon: "🎭",
   categories: ['Read the Room'],
   headerColor: "#e0b8b8",
-  description: "Social intelligence coach with 12 modes and 13 AI endpoints. Pre-Game event prep with starters, people maps, and worst-case saves. Quick Read for instant tap-and-go lines with refresh. Conversation Recovery for mid-conversation 'I just said something weird' emergencies with damage scoring. Person Prep for one specific person, plus a Recurring Person Tracker that logs interactions and generates fresh strategies from history. Group Dynamics for entering conversations and handling being ignored. Energy Match for bridging the gap when your energy doesn't match the room. Small Talk Ladder for progressing from surface-level to genuine connection. Culture Decoder for cross-cultural situations with etiquette, body language, and a key phrase. Signal Decoder for figuring out what someone meant. Follow-Up message drafter for the post-event text. Debrief that auto-builds a Playbook from wins. Social Autopsy for deep forensic analysis of interactions that went wrong. Persistent Playbook, Saved Game Plans with cheat sheet export, Tracked People with interaction histories.",
+  description: "A 12-mode social coach for every stage of a social situation — prep, navigate, recover, and debrief. Modes include event prep, quick tap-and-go lines, conversation recovery, person and group prep, energy matching, small talk depth, culture decoding, signal decoding, follow-up drafting, and post-event analysis. Builds a persistent Playbook from your wins and tracks recurring people over time.",
   guide: {
       overview: "Room Reader is your social intelligence coach — the clever friend who preps you before the party, rescues you mid-conversation, and debriefs you afterward. Every mode builds your persistent Playbook, which shapes future suggestions. Track recurring people across interactions. Save Game Plans to pull up on your phone at the event. The tool gets smarter the more you use it.",
 
@@ -4424,17 +4472,16 @@ export const tools = [
       ]
     }
 },
-
 {
-  modified: "",
+  modified: "2026-03-24",
   id: "SafeWalk",
-  title: "Safe Walk",
+  title: "SafeWalk",
   tagline: "Prepare smart, walk safe",
-  tags: ['walk', 'safety', 'route', 'night', 'campus', 'street', 'safe'],
+  tags: ['walk', 'safety', 'route', 'night', 'campus', 'street', 'safe', 'solo', 'walking home', 'emergency', 'alarm', 'fake call', 'flashlight', 'location sharing', 'check-in', 'timer', 'personal safety', 'nighttime'],
   icon: "🚶",
   categories: ['The Grind'],
-  headerColor: "#d4dde8",
-  description: "Pre-walk safety planner and active walk companion. AI assesses your route and timing with personalized awareness tips and a checkable prep list — then switches to companion mode with a check-in timer, convincing fake incoming call generator, flashlight, one-tap location sharing, and a loud emergency alarm. Designed for one-handed nighttime phone use.",
+  headerColor: "#1e2a3a",
+  description: "AI safety coach for solo walks — assess your route before you go, then use the Walking tab for a check-in timer, convincing fake incoming call, GPS location sharing, and a one-tap emergency alarm.",
   guide: {
     overview: "SafeWalk helps you prepare for walks with an AI safety assessment tailored to your specific route, time of day, and area — then gives you real-time companion tools while you're walking. Plan tab: describe your walk, get watch-for items, a pre-walk checklist, route suggestions, and a copy-paste ETA message. Walking tab: check-in timer with auto-escalation, fake incoming call (with ringtone and vibration), flashlight, GPS location sharing, and emergency alarm. Add emergency contacts in settings for personalized alerts.",
 
@@ -4459,18 +4506,16 @@ export const tools = [
       "Set the check-in timer slightly longer than your expected walk — you can always tap 'I'm Safe' early",
       "Share Location copies your GPS coordinates as a Google Maps link — paste it into any messaging app",
       "The AI assessment doesn't have real-time crime data — it helps you think through your walk, not guarantee safety",
-      "The alarm is LOUD — it uses your phone's speaker at maximum. Use it to draw attention if needed"
+      "The alarm is LOUD — it uses your phone's speaker at maximum output. Use it only in a genuine emergency."
     ],
 
     pitfalls: [
-      "Don't rely on this tool as your only safety measure — tell someone where you're going in person too",
-      "Flashlight uses the torch API on Android but falls back to a white screen on iOS — use Control Center for the real flashlight on iPhone",
-      "The AI can't tell you if a specific street is dangerous right now — it applies general urban safety principles to your scenario",
-      "Don't skip the check-in timer — it's the feature that actually prompts someone to look for you if something goes wrong"
+      "The AI assessment is general awareness, not real-time crime or traffic data",
+      "Flashlight requires camera permission — if denied, the tool uses a white-screen fallback",
+      "Location sharing requires browser location permission — grant it before your walk, not during"
     ]
   }
 },
-
 {
   modified: "",
   id: "RoommateCourt",
@@ -4693,7 +4738,7 @@ export const tools = [
  modified: "2026-03-23",
  id: "SubscriptionGuiltTrip",
   title: "Subscription Guilt Trip",
-  categories: "Loot",
+  categories: ["Loot"],
   icon: "💳",
   description: "Audits subscriptions by actual usage vs cost. Calculates cost-per-use, identifies duplicates, provides cancellation difficulty ratings and scripts to overcome retention tactics. Guilt-free permission to cancel. 'You use gym 1x/month = $60/visit.'",
   tagline: "Cancel what you don't use. Negotiate what you keep.",

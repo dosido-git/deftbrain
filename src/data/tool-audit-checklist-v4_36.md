@@ -1,4 +1,4 @@
-# Tool Audit Checklist v4.35
+# Tool Audit Checklist v4.36
 ### DeftBrain — Pre-Ship Quality & Consistency Standard
 
 Score each item: ✅ Pass | ⚠️ Needs Work | ❌ Fail | N/A
@@ -1532,3 +1532,66 @@ grep -n "return (" ComponentName.js | tail -1
 
 > ⚠️ **BUG PATTERN — Category picker rendered above the title (discovered PronounceItRight audit, v4.35)**
 > A `<div className="flex gap-1.5 overflow-x-auto">` category picker was placed as a sibling element before the input card in `renderInput()`. Inside the gradient frame, it appeared first — above the card containing the title. Users saw input controls before they saw what tool they were using. **Fix:** Move all such elements inside the input card, below the `border-b border-zinc-500` header divider. The header is always first.
+
+---
+
+*v4.36 — Pre-write protocol and border-inset standard (discovered DriveHome build, March 2026):*
+
+**(9) Read CONVENTIONS.md before writing any new tool component — no exceptions (Pre-Write Gate)**
+
+Patterns reconstructed from memory drift. Before writing the first line of any new component, or making structural edits to an existing one:
+
+1. Read CONVENTIONS.md in full
+2. State the header pattern (persistent h2, inset border-b, inside padded wrapper)
+3. State the c block source (copied verbatim from PF-2)
+4. State the hook order
+5. Confirm cross-ref rules (≤3, emoji before name, no target="_blank")
+6. Confirm root div pattern
+
+Only after all six are confirmed may writing begin. This is not optional. The correct patterns exist in writing. There is no acceptable reason to reconstruct them from memory.
+
+> ⚠️ **BUG PATTERN — New tool built from memory (discovered DriveHome, v4.36)**
+> DriveHome was written without reading CONVENTIONS.md first. Result: edge-to-edge header divider (wrong), title buried inside tab content (wrong), both requiring correction passes. Both violations are explicitly documented in CONVENTIONS.md PF-3. Reading the file would have prevented both in a single pass.
+
+**Scan — run before writing begins:**
+```bash
+# There is no mechanical scan for this check.
+# The requirement is: read CONVENTIONS.md, then confirm the 6 items above before proceeding.
+# Mark ✅ only after all 6 are confirmed.
+```
+
+---
+
+*v4.36 — Header divider must be inset, not edge-to-edge (discovered DriveHome build, March 2026):*
+
+**(10) The `border-b border-zinc-500` header divider must be on an inner div, never on the outer padded div (Section 1.2 / PF-3)**
+
+The header divider line must be visually inset from the card edges. This is achieved by placing `border-b border-zinc-500` on a child div that sits inside a padded wrapper (`px-5 pt-5`), NOT on the div that carries the padding itself.
+
+**✅ Correct — inset divider:**
+```jsx
+<div className="px-5 pt-5">
+  <div className="flex items-start justify-between pb-3 border-b border-zinc-500">
+    <div>
+      <h2 ...>{tool?.icon} {tool?.title}</h2>
+      <p ...>{tool?.tagline}</p>
+    </div>
+    <button>⚙️</button>
+  </div>
+</div>
+```
+
+**❌ Wrong — edge-to-edge divider:**
+```jsx
+<div className="flex items-start justify-between px-5 pt-5 pb-3 border-b border-zinc-500">
+  <h2>...</h2>
+</div>
+```
+
+**Scan:**
+```bash
+grep -n "border-b border-zinc-500" ComponentName.js
+# For each result, read that line.
+# If the same div also has px-* padding classes → edge-to-edge violation. FAIL.
+# The border-b div must NOT carry horizontal padding — padding belongs on its parent.
+```
