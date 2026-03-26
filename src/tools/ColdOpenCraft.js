@@ -156,7 +156,7 @@ const ColdOpenCraft = ({ tool }) => {
           <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
             <span>{tool?.icon ?? '📬'}</span>{tool?.title ?? 'Cold Open Craft'}
           </h2>
-          <p className={`text-sm ${c.textSecondaryondary}`}>{tool?.tagline ?? 'First messages that actually get responses.'}</p>
+          <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'First messages that actually get responses.'}</p>
         </div>
 
         {/* Pre-result cross-ref */}
@@ -324,7 +324,7 @@ const ColdOpenCraft = ({ tool }) => {
           {r.situation_read && (
             <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
               <p className={`text-xs font-bold uppercase tracking-wide ${c.textMuteded} mb-2`}>🎯 Situation Read</p>
-              <p className={`text-sm ${c.textSecondaryondary} leading-relaxed`}>{r.situation_read}</p>
+              <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{r.situation_read}</p>
             </div>
           )}
 
@@ -364,7 +364,7 @@ const ColdOpenCraft = ({ tool }) => {
                     </div>
 
                     {opener.why_it_works && (
-                      <p className={`text-xs ${c.textSecondaryondary} mb-1`}>
+                      <p className={`text-xs ${c.textSecondary} mb-1`}>
                         <span className="font-bold">Why it works:</span> {opener.why_it_works}
                       </p>
                     )}
@@ -383,7 +383,7 @@ const ColdOpenCraft = ({ tool }) => {
               <p className={`text-xs font-bold ${c.text} mb-2`}>🚫 What NOT to say</p>
               <div className="space-y-1.5">
                 {r.what_not_to_say.map((item, i) => (
-                  <p key={i} className={`text-xs ${c.textSecondaryondary} leading-relaxed`}>• {item}</p>
+                  <p key={i} className={`text-xs ${c.textSecondary} leading-relaxed`}>• {item}</p>
                 ))}
               </div>
             </div>
@@ -396,7 +396,7 @@ const ColdOpenCraft = ({ tool }) => {
               <div className="space-y-3">
                 <div>
                   <p className={`text-[10px] font-bold ${c.textMuteded} mb-0.5`}>When to follow up</p>
-                  <p className={`text-xs ${c.textSecondaryondary}`}>{r.follow_up_plan.when}</p>
+                  <p className={`text-xs ${c.textSecondary}`}>{r.follow_up_plan.when}</p>
                 </div>
                 {r.follow_up_plan.message && (
                   <div className={`${c.cardAlt} rounded-lg p-3`}>
@@ -406,7 +406,7 @@ const ColdOpenCraft = ({ tool }) => {
                 )}
                 <div>
                   <p className={`text-[10px] font-bold ${c.textMuteded} mb-0.5`}>When to stop</p>
-                  <p className={`text-xs ${c.textSecondaryondary}`}>{r.follow_up_plan.when_to_stop}</p>
+                  <p className={`text-xs ${c.textSecondary}`}>{r.follow_up_plan.when_to_stop}</p>
                 </div>
               </div>
             </div>

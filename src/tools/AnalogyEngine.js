@@ -133,12 +133,12 @@ const AnalogyEngine = ({ tool }) => {
       <div className={`${c.card} border ${c.border} rounded-xl shadow-lg p-5`}>
         <div className={`mb-4 pb-3 border-b ${c.border}`}>
           <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}><span>{tool?.icon}</span> Analogy Engine</h2>
-          <p className={`text-sm ${c.textSecondaryondary} mt-1`}>Explain anything to anyone — using their world</p>
+          <p className={`text-sm ${c.textSecondary} mt-1`}>Explain anything to anyone — using their world</p>
         </div>
 
         {/* Concept */}
         <div className="mb-4">
-          <label className={`text-xs font-bold ${c.textSecondaryondary} block mb-1.5`}>What do you need to explain? <span className="text-zinc-400">*</span></label>
+          <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>What do you need to explain? <span className="text-zinc-400">*</span></label>
           <input
             type="text"
             value={concept}
@@ -151,7 +151,7 @@ const AnalogyEngine = ({ tool }) => {
 
         {/* Audience */}
         <div className="mb-4">
-          <label className={`text-xs font-bold ${c.textSecondaryondary} block mb-1.5`}>Who are you explaining it to?</label>
+          <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Who are you explaining it to?</label>
           <input
             type="text"
             value={audience}
@@ -163,7 +163,7 @@ const AnalogyEngine = ({ tool }) => {
         </div>
 
         <div className="mb-4">
-          <label className={`text-xs font-bold ${c.textSecondaryondary} block mb-1.5`}>
+          <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>
             Their interests or world <span className={`font-normal ${c.textMuteded}`}>(optional — makes analogies way better)</span>
           </label>
           <input
@@ -177,7 +177,7 @@ const AnalogyEngine = ({ tool }) => {
         </div>
 
         <div className="mb-4">
-          <label className={`text-xs font-bold ${c.textSecondaryondary} uppercase block mb-2`}>How deep?</label>
+          <label className={`text-xs font-bold ${c.textSecondary} uppercase block mb-2`}>How deep?</label>
           <div className="flex gap-2">
             {DEPTH_LEVELS.map(d => (
               <button
@@ -291,7 +291,7 @@ const AnalogyEngine = ({ tool }) => {
                       <p className={`text-sm ${c.text} leading-relaxed`}>{analogy.analogy}</p>
                     </div>
                     {analogy.why_it_works && (
-                      <p className={`text-xs ${c.textSecondaryondary} mb-2`}>
+                      <p className={`text-xs ${c.textSecondary} mb-2`}>
                         <span className="font-bold">Why it works:</span> {analogy.why_it_works}
                       </p>
                     )}
@@ -319,7 +319,7 @@ const AnalogyEngine = ({ tool }) => {
               <p className={`text-xs font-bold ${c.text} mb-2`}>🚫 Common misconceptions</p>
               <div className="space-y-2">
                 {r.common_misconceptions.map((m, i) => (
-                  <p key={i} className={`text-xs ${c.textSecondaryondary} leading-relaxed`}>• {m}</p>
+                  <p key={i} className={`text-xs ${c.textSecondary} leading-relaxed`}>• {m}</p>
                 ))}
               </div>
             </div>
@@ -329,13 +329,13 @@ const AnalogyEngine = ({ tool }) => {
             {r.go_deeper && (
               <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
                 <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>📚 Go deeper</p>
-                <p className={`text-xs ${c.textSecondaryondary} leading-relaxed`}>{r.go_deeper}</p>
+                <p className={`text-xs ${c.textSecondary} leading-relaxed`}>{r.go_deeper}</p>
               </div>
             )}
             {r.teaching_tip && (
               <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
                 <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>🎓 Teaching tip</p>
-                <p className={`text-xs ${c.textSecondaryondary} leading-relaxed`}>{r.teaching_tip}</p>
+                <p className={`text-xs ${c.textSecondary} leading-relaxed`}>{r.teaching_tip}</p>
               </div>
             )}
           </div>

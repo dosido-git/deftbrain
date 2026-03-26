@@ -368,7 +368,7 @@ const LeverageLogic = ({ tool }) => {
             {results.your_leverage?.length > 0 && (
               <div className={`${c.card} border rounded-2xl p-5`}>
                 <button onClick={() => toggle('yourLev')} className="w-full flex items-center justify-between">
-                  <p className={`text-xs font-bold uppercase tracking-wider ${c.textSecondaryondary}`}>🃏 Your Cards</p>
+                  <p className={`text-xs font-bold uppercase tracking-wider ${c.textSecondary}`}>🃏 Your Cards</p>
                   <span className={`text-xs ${c.textMuteded}`}>{expandedSections.yourLev ? '▼' : '▶'} {results.your_leverage.length}</span>
                 </button>
                 {expandedSections.yourLev !== false && (
@@ -393,7 +393,7 @@ const LeverageLogic = ({ tool }) => {
             {results.their_leverage?.length > 0 && (
               <div className={`${c.card} border rounded-2xl p-5`}>
                 <button onClick={() => toggle('theirLev')} className="w-full flex items-center justify-between">
-                  <p className={`text-xs font-bold uppercase tracking-wider ${c.textSecondaryondary}`}>🎯 Their Cards (& How to Neutralize)</p>
+                  <p className={`text-xs font-bold uppercase tracking-wider ${c.textSecondary}`}>🎯 Their Cards (& How to Neutralize)</p>
                   <span className={`text-xs ${c.textMuteded}`}>{expandedSections.theirLev ? '▼' : '▶'}</span>
                 </button>
                 {expandedSections.theirLev && (
@@ -415,7 +415,7 @@ const LeverageLogic = ({ tool }) => {
             {/* Strategy */}
             {results.strategy && (
               <div className={`${c.card} border-2 rounded-2xl p-5 ${isDark ? 'border-amber-700/50' : 'border-amber-300'}`}>
-                <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textSecondaryondary}`}>🎯 Strategy: {results.strategy.approach}</p>
+                <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textSecondary}`}>🎯 Strategy: {results.strategy.approach}</p>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
                   <div className={`p-3 rounded-xl ${isDark ? 'bg-emerald-900/20' : 'bg-emerald-50'}`}>
                     <p className={`text-[10px] font-bold ${c.textMuteded}`}>OPEN AT</p>
@@ -452,7 +452,7 @@ const LeverageLogic = ({ tool }) => {
             {/* Anchoring Calculator */}
             <div className={`${c.card} border rounded-2xl p-5`}>
               <button onClick={() => toggle('anchor')} className="w-full flex items-center justify-between">
-                <p className={`text-xs font-bold uppercase tracking-wider ${c.textSecondaryondary}`}>🧮 Anchoring Calculator</p>
+                <p className={`text-xs font-bold uppercase tracking-wider ${c.textSecondary}`}>🧮 Anchoring Calculator</p>
                 <span className={`text-xs ${c.textMuteded}`}>{expandedSections.anchor ? '▼' : '▶'}</span>
               </button>
               {expandedSections.anchor && (
@@ -524,12 +524,12 @@ const LeverageLogic = ({ tool }) => {
             {/* Scripts */}
             {results.scripts?.length > 0 && (
               <div className={`${c.card} border rounded-2xl p-5`}>
-                <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textSecondaryondary}`}>🎬 Word-for-Word Scripts</p>
+                <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textSecondary}`}>🎬 Word-for-Word Scripts</p>
                 <div className="space-y-3">
                   {results.scripts.map((s, i) => (
                     <div key={i} className={`${c.cardAlt} border rounded-xl p-3.5`}>
                       <div className="flex items-center justify-between mb-1.5">
-                        <p className={`text-[10px] font-bold ${c.textSecondaryondary}`}>{s.moment}</p>
+                        <p className={`text-[10px] font-bold ${c.textSecondary}`}>{s.moment}</p>
                         <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-zinc-100 text-gray-600'}`}>{s.tone}</span>
                       </div>
                       <p className={`text-sm font-bold ${c.text} mb-1.5`}>"{s.say_this}"</p>
@@ -547,7 +547,7 @@ const LeverageLogic = ({ tool }) => {
             {results.traps_to_avoid?.length > 0 && (
               <div className={`${c.card} border rounded-2xl p-5`}>
                 <button onClick={() => toggle('traps')} className="w-full flex items-center justify-between">
-                  <p className={`text-xs font-bold uppercase tracking-wider ${c.textSecondaryondary}`}>🚫 Traps to Avoid</p>
+                  <p className={`text-xs font-bold uppercase tracking-wider ${c.textSecondary}`}>🚫 Traps to Avoid</p>
                   <span className={`text-xs ${c.textMuteded}`}>{expandedSections.traps ? '▼' : '▶'}</span>
                 </button>
                 {expandedSections.traps && (
@@ -567,7 +567,7 @@ const LeverageLogic = ({ tool }) => {
             {/* BATNA */}
             {results.batna && (
               <div className={`${c.card} border rounded-2xl p-5`}>
-                <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.textSecondaryondary}`}>🛡️ BATNA (Your Plan B)</p>
+                <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.textSecondary}`}>🛡️ BATNA (Your Plan B)</p>
                 <p className={`text-sm font-bold ${c.text} mb-1`}>{results.batna.best_alternative}</p>
                 <div className="flex items-center gap-2 mb-2">
                   <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${strengthColor(results.batna.how_strong === 'decent' ? 'medium' : results.batna.how_strong)}`}>{results.batna.how_strong} fallback</span>
@@ -581,7 +581,7 @@ const LeverageLogic = ({ tool }) => {
             {results.body_language && (
               <div className={`${c.card} border rounded-2xl p-5`}>
                 <button onClick={() => toggle('body')} className="w-full flex items-center justify-between">
-                  <p className={`text-xs font-bold uppercase tracking-wider ${c.textSecondaryondary}`}>🧍 Body Language</p>
+                  <p className={`text-xs font-bold uppercase tracking-wider ${c.textSecondary}`}>🧍 Body Language</p>
                   <span className={`text-xs ${c.textMuteded}`}>{expandedSections.body ? '▼' : '▶'}</span>
                 </button>
                 {expandedSections.body && (
@@ -595,7 +595,7 @@ const LeverageLogic = ({ tool }) => {
 
             {/* ── Timeline Tracker ── */}
             <div className={`${c.card} border-2 rounded-2xl p-5 ${isDark ? 'border-purple-700/50' : 'border-purple-300'}`}>
-              <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textSecondaryondary}`}>📜 Negotiation Timeline</p>
+              <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textSecondary}`}>📜 Negotiation Timeline</p>
               <p className={`text-xs ${c.textSecondary} mb-3`}>Log each round. This feeds into your counter-moves, simulations, and email drafts.</p>
               {timeline.length > 0 && (
                 <div className="space-y-1.5 mb-3">
@@ -654,7 +654,7 @@ const LeverageLogic = ({ tool }) => {
               <div className="space-y-4">
                 <div className={`${c.card} border rounded-2xl p-5`}>
                   <div className="flex items-center gap-2 mb-2">
-                    <p className={`text-xs font-bold uppercase tracking-wider ${c.textSecondaryondary}`}>🔍 Reading the Room</p>
+                    <p className={`text-xs font-bold uppercase tracking-wider ${c.textSecondary}`}>🔍 Reading the Room</p>
                     <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${dangerColor(counterResults.danger_level)}`}>{counterResults.danger_level}</span>
                   </div>
                   <p className={`text-sm font-bold ${c.text} mb-1`}>{counterResults.read}</p>
@@ -665,7 +665,7 @@ const LeverageLogic = ({ tool }) => {
                     {counterResults.responses.map((r, i) => (
                       <div key={i} className={`${c.card} border-2 rounded-2xl p-5 ${i === 0 ? (isDark ? 'border-amber-700/50' : 'border-amber-300') : ''}`}>
                         <div className="flex items-center justify-between mb-2">
-                          <p className={`text-xs font-bold ${c.textSecondaryondary}`}>{i === 0 ? '⭐ ' : ''}{r.approach}</p>
+                          <p className={`text-xs font-bold ${c.textSecondary}`}>{i === 0 ? '⭐ ' : ''}{r.approach}</p>
                           <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${strengthColor(r.risk === 'low' ? 'strong' : r.risk === 'medium' ? 'medium' : 'weak')}`}>{r.risk} risk</span>
                         </div>
                         <p className={`text-sm font-bold ${c.text} mb-2`}>"{r.say_this}"</p>
@@ -734,7 +734,7 @@ const LeverageLogic = ({ tool }) => {
                       <div className="mt-1"><CopyBtn content={sc.your_counter} label="Copy" /></div>
                     </div>
                     <p className={`text-xs ${c.textSecondary}`}>→ Then: {sc.then_expect}</p>
-                    <p className={`text-[10px] font-bold ${c.textSecondaryondary} mt-1`}>End state: {sc.end_state}</p>
+                    <p className={`text-[10px] font-bold ${c.textSecondary} mt-1`}>End state: {sc.end_state}</p>
                   </div>
                 ))}
                 {simResults.wild_card && (
@@ -792,7 +792,7 @@ const LeverageLogic = ({ tool }) => {
                 {emailResults.drafts?.map((draft, i) => (
                   <div key={i} className={`${c.card} border-2 rounded-2xl p-5 ${i === 0 ? (isDark ? 'border-amber-700/50' : 'border-amber-300') : ''}`}>
                     <div className="flex items-center justify-between mb-2">
-                      <p className={`text-xs font-bold ${c.textSecondaryondary}`}>{draft.version}</p>
+                      <p className={`text-xs font-bold ${c.textSecondary}`}>{draft.version}</p>
                       <CopyBtn content={`Subject: ${draft.subject_line}\n\n${draft.body}${BRANDING}`} label="Copy" />
                     </div>
                     <div className={`p-2 rounded-lg ${isDark ? 'bg-zinc-700/50' : 'bg-zinc-100'} mb-2`}>
@@ -959,14 +959,14 @@ const LeverageLogic = ({ tool }) => {
                       {debriefResults.value_left_on_table.likely === 'yes' ? '💰 Value left on the table' : debriefResults.value_left_on_table.likely === 'maybe' ? '🤔 Possibly left value' : '✅ Got a solid deal'}
                     </p>
                     <p className={`text-xs ${c.textSecondary}`}>{debriefResults.value_left_on_table.explanation}</p>
-                    {debriefResults.value_left_on_table.how_to_capture && <p className={`text-[10px] ${c.textSecondaryondary} mt-1`}>→ {debriefResults.value_left_on_table.how_to_capture}</p>}
+                    {debriefResults.value_left_on_table.how_to_capture && <p className={`text-[10px] ${c.textSecondary} mt-1`}>→ {debriefResults.value_left_on_table.how_to_capture}</p>}
                   </div>
                 )}
 
                 {/* For next time */}
                 {debriefResults.for_next_time && (
                   <div className={`${c.card} border-2 rounded-2xl p-5 ${isDark ? 'border-cyan-700/50' : 'border-cyan-300'}`}>
-                    <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textSecondaryondary}`}>🎯 For Next Time</p>
+                    <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textSecondary}`}>🎯 For Next Time</p>
                     <div className="space-y-2">
                       {debriefResults.for_next_time.do_more && <p className={`text-xs ${c.textSecondary}`}><span className={`font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>↑ More:</span> {debriefResults.for_next_time.do_more}</p>}
                       {debriefResults.for_next_time.do_less && <p className={`text-xs ${c.textSecondary}`}><span className={`font-bold ${isDark ? 'text-red-400' : 'text-red-700'}`}>↓ Less:</span> {debriefResults.for_next_time.do_less}</p>}

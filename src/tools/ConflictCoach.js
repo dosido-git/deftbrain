@@ -294,8 +294,8 @@ const ConflictCoach = ({ tool }) => {
         return p ? (
           <div className={`${c.manipulation} border-2 rounded-xl p-5`}>
             <h3 className={`font-bold mb-2 ${c.text}`}>🔗 Pattern Detected</h3>
-            <p className={`text-sm ${c.textSecondaryondary}`}>You've logged <strong>{p.count} conflicts</strong> with <strong>{p.person}</strong> in the past {p.timeframe}.</p>
-            {p.repeatedTactics.length > 0 && <p className={`text-sm mt-1 ${c.textSecondaryondary}`}>Recurring tactics: <strong>{p.repeatedTactics.join(', ')}</strong>. This is a pattern, not an incident.</p>}
+            <p className={`text-sm ${c.textSecondary}`}>You've logged <strong>{p.count} conflicts</strong> with <strong>{p.person}</strong> in the past {p.timeframe}.</p>
+            {p.repeatedTactics.length > 0 && <p className={`text-sm mt-1 ${c.textSecondary}`}>Recurring tactics: <strong>{p.repeatedTactics.join(', ')}</strong>. This is a pattern, not an incident.</p>}
             <p className={`text-xs mt-2 ${c.textMuteded}`}>Consider whether this relationship dynamic needs professional support.</p>
           </div>
         ) : null;
@@ -315,8 +315,8 @@ const ConflictCoach = ({ tool }) => {
       {showGoalClarification && !actualGoal && (
         <div className={`${c.highlight} border-4 rounded-xl p-6`}>
           <h3 className={`text-lg font-bold mb-4 ${c.text}`}>🎯 What Do You Actually Want?</h3>
-          <p className={`text-sm mb-3 ${c.textSecondaryondary}`}>Not "what do I want to say" — what <em>outcome</em> do I want?</p>
-          <div className={`space-y-2 mb-4 text-sm ${c.textSecondaryondary}`}>
+          <p className={`text-sm mb-3 ${c.textSecondary}`}>Not "what do I want to say" — what <em>outcome</em> do I want?</p>
+          <div className={`space-y-2 mb-4 text-sm ${c.textSecondary}`}>
             <p>Examples:</p>
             <ul className="list-disc list-inside space-y-1">
               <li>"I want them to understand how this affected me"</li>
@@ -341,7 +341,7 @@ const ConflictCoach = ({ tool }) => {
               <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
                 <span>{tool?.icon ?? '💬'}</span>{tool?.title ?? 'Conflict Coach'}
               </h2>
-              <p className={`text-sm ${c.textSecondaryondary}`}>{tool?.tagline ?? 'Stop, breathe, and craft the right response'}</p>
+              <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Stop, breathe, and craft the right response'}</p>
             </div>
             <button onClick={() => setShowHistory(!showHistory)} className={`${c.btnSecondaryondary} px-3 py-1.5 rounded-lg text-xs`}>
               📋 History
@@ -352,7 +352,7 @@ const ConflictCoach = ({ tool }) => {
         {/* Warning notice */}
         <div className={`${c.warning} border-l-4 rounded-r-lg p-4 mb-4`}>
           <p className={`text-sm font-semibold ${c.text}`}>⚠️ Before you send that message — STOP.</p>
-          <p className={`text-xs ${c.textSecondaryondary} mt-1`}>Includes cooling periods, manipulation detection, draft analysis, and goal clarification. Not a replacement for therapy. For abusive situations, seek professional help.</p>
+          <p className={`text-xs ${c.textSecondary} mt-1`}>Includes cooling periods, manipulation detection, draft analysis, and goal clarification. Not a replacement for therapy. For abusive situations, seek professional help.</p>
         </div>
 
         {/* History panel */}
@@ -534,7 +534,7 @@ const ConflictCoach = ({ tool }) => {
             <div className={`${c.card} border ${c.border} rounded-xl shadow-lg p-6 text-center`}>
               <div className="text-6xl mb-3">{tempEmoji(results.message_analysis.emotional_temperature)}</div>
               <div className={`text-2xl font-black ${c.text} mb-1`}>{results.message_analysis.emotional_temperature?.toUpperCase()} TEMPERATURE</div>
-              <p className={`text-sm ${c.textSecondaryondary}`}>Primary: <strong>{results.message_analysis.primary_emotion_detected}</strong></p>
+              <p className={`text-sm ${c.textSecondary}`}>Primary: <strong>{results.message_analysis.primary_emotion_detected}</strong></p>
               {results.message_analysis.underlying_need && <p className={`text-xs ${c.textMuteded} mt-1`}>Need: {results.message_analysis.underlying_need}</p>}
             </div>
           )}
@@ -543,12 +543,12 @@ const ConflictCoach = ({ tool }) => {
           {results.manipulation_tactics?.length > 0 && (
             <div className={`${c.manipulation} border-2 rounded-xl p-6`}>
               <h3 className={`text-lg font-bold mb-4 flex items-center gap-2 ${c.text}`}><span>🎭</span> Manipulation Tactics Detected</h3>
-              <p className={`text-sm mb-4 ${c.textSecondaryondary}`}>These patterns in their message may be attempts to control the conversation:</p>
+              <p className={`text-sm mb-4 ${c.textSecondary}`}>These patterns in their message may be attempts to control the conversation:</p>
               <div className="space-y-3">
                 {results.manipulation_tactics.map((t, i) => (
                   <div key={i} className={`p-4 rounded-lg ${c.manipulationInner}`}>
                     <div className="flex items-center gap-2 mb-1"><span className="text-lg">{t.icon || '🚩'}</span><h4 className={`font-bold ${c.text}`}>{t.tactic}</h4></div>
-                    <p className={`text-sm mb-2 ${c.textSecondaryondary}`}>{t.description}</p>
+                    <p className={`text-sm mb-2 ${c.textSecondary}`}>{t.description}</p>
                     {t.example_phrase && <p className={`text-xs italic ${c.textMuteded}`}>From their message: "{t.example_phrase}"</p>}
                     {t.healthy_response && <p className={`text-sm mt-2 font-semibold ${c.text}`}>💡 Healthy response: {t.healthy_response}</p>}
                   </div>
@@ -585,7 +585,7 @@ const ConflictCoach = ({ tool }) => {
           {results.draft_analysis && userDraft && (
             <div className={`${c.card} border ${c.border} rounded-xl p-6`}>
               <h3 className={`text-lg font-bold mb-3 ${c.text}`}>🚨 Your Draft — Honest Analysis</h3>
-              <p className={`text-sm mb-3 ${c.textSecondaryondary}`}>{results.draft_analysis.overall_assessment}</p>
+              <p className={`text-sm mb-3 ${c.textSecondary}`}>{results.draft_analysis.overall_assessment}</p>
               {results.draft_analysis.tone_flags?.length > 0 && (
                 <div className="mb-3">
                   <p className={`text-sm font-bold mb-2 ${c.text}`}>Tone Flags:</p>
@@ -626,7 +626,7 @@ const ConflictCoach = ({ tool }) => {
                     <div className={`p-3 rounded ${c.strategyText} mb-2`}>
                       <p className={`${c.text} font-medium`}>"{s.response_text}"</p>
                     </div>
-                    {s.what_this_does && <p className={`text-sm ${c.textSecondaryondary} mb-1`}><strong>Effect:</strong> {s.what_this_does}</p>}
+                    {s.what_this_does && <p className={`text-sm ${c.textSecondary} mb-1`}><strong>Effect:</strong> {s.what_this_does}</p>}
                     {s.risks && <p className={`text-sm ${c.textMuteded}`}><strong>⚠️ Risk:</strong> {s.risks}</p>}
 
                     {!delayActive && (
@@ -693,7 +693,7 @@ const ConflictCoach = ({ tool }) => {
                     {results.what_NOT_to_say.map((it, i) => (
                       <div key={i} className={`p-3 rounded ${c.landminePhrase}`}>
                         <p className={`font-semibold text-sm ${c.text}`}>"{it.phrase}"</p>
-                        <p className={`text-sm ${c.textSecondaryondary}`}>{it.why_avoid}</p>
+                        <p className={`text-sm ${c.textSecondary}`}>{it.why_avoid}</p>
                       </div>
                     ))}
                   </div>
@@ -702,13 +702,13 @@ const ConflictCoach = ({ tool }) => {
               {results.timing_landmines?.length > 0 && (
                 <div className="mb-4">
                   <p className={`text-sm font-bold mb-2 ${c.text}`}>⏰ Timing:</p>
-                  <ul className="space-y-1">{results.timing_landmines.map((t, i) => <li key={i} className={`text-sm ${c.textSecondaryondary}`}>⏰ {t}</li>)}</ul>
+                  <ul className="space-y-1">{results.timing_landmines.map((t, i) => <li key={i} className={`text-sm ${c.textSecondary}`}>⏰ {t}</li>)}</ul>
                 </div>
               )}
               {results.channel_landmines?.length > 0 && (
                 <div>
                   <p className={`text-sm font-bold mb-2 ${c.text}`}>📱 Channel:</p>
-                  <ul className="space-y-1">{results.channel_landmines.map((ch, i) => <li key={i} className={`text-sm ${c.textSecondaryondary}`}>📱 {ch}</li>)}</ul>
+                  <ul className="space-y-1">{results.channel_landmines.map((ch, i) => <li key={i} className={`text-sm ${c.textSecondary}`}>📱 {ch}</li>)}</ul>
                 </div>
               )}
             </div>
@@ -746,7 +746,7 @@ const ConflictCoach = ({ tool }) => {
                       <p className={`text-sm ${c.text}`}>{f.question}</p>
                     </div>
                     <div className={`p-3 rounded ${c.cardAlt}`}>
-                      <p className={`text-sm ${c.textSecondaryondary}`}>{f.answer}</p>
+                      <p className={`text-sm ${c.textSecondary}`}>{f.answer}</p>
                     </div>
                   </div>
                 ))}

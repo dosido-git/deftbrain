@@ -144,7 +144,7 @@ const CrowdWisdom = ({ tool }) => {
           <h2 className={`text-3xl font-black tracking-tight mb-1 ${c.text}`}>
             <span className="mr-2">{tool?.icon ?? '👥'}</span>{tool?.title ?? 'Crowd Wisdom'}
           </h2>
-          <p className={`text-sm ${c.textSecondaryondary}`}>
+          <p className={`text-sm ${c.textSecondary}`}>
             {tool?.tagline ?? 'Five real perspectives on the choice you can\'t stop thinking about'}
           </p>
         </div>
@@ -161,7 +161,7 @@ const CrowdWisdom = ({ tool }) => {
         <div className={`rounded-xl shadow-lg border p-6 space-y-4 ${c.card} ${c.border}`}>
           <div className={`border-b ${c.border} pb-4`}>
             <h3 className={`font-semibold text-sm ${c.text}`}>{tool?.icon ?? '👥'} Your question</h3>
-            <p className={`text-xs ${c.textSecondaryondary}`}>Five people who've lived it. Five different answers.</p>
+            <p className={`text-xs ${c.textSecondary}`}>Five people who've lived it. Five different answers.</p>
           </div>
 
           <div>
@@ -227,7 +227,7 @@ const CrowdWisdom = ({ tool }) => {
               <button
                 key={i}
                 onClick={() => { setQuestion(h.question); setContext(h.context); setResults(h.result); setExpanded({}); setError(''); }}
-                className={`w-full text-left px-3 py-2 rounded-lg text-xs ${c.cardAlt} ${c.textSecondaryondary} hover:opacity-80`}
+                className={`w-full text-left px-3 py-2 rounded-lg text-xs ${c.cardAlt} ${c.textSecondary} hover:opacity-80`}
               >
                 {h.preview}{h.preview.length >= 40 ? '…' : ''}
               </button>
@@ -247,7 +247,7 @@ const CrowdWisdom = ({ tool }) => {
               <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuteded}`}>The question</p>
               <p className={`text-base font-semibold ${c.text}`}>"{question}"</p>
               {results.question_reframed && (
-                <p className={`text-sm mt-2 italic ${c.textSecondaryondary}`}>
+                <p className={`text-sm mt-2 italic ${c.textSecondary}`}>
                   The deeper question: {results.question_reframed}
                 </p>
               )}
@@ -271,7 +271,7 @@ const CrowdWisdom = ({ tool }) => {
                       <span className={`flex-shrink-0 text-sm mt-1 ${c.textMuteded}`}>{isOpen ? '▲' : '▼'}</span>
                     </div>
                     {!isOpen && (
-                      <p className={`text-sm mt-3 leading-relaxed line-clamp-2 ${c.textSecondaryondary}`}>
+                      <p className={`text-sm mt-3 leading-relaxed line-clamp-2 ${c.textSecondary}`}>
                         {voice.what_they_say}
                       </p>
                     )}
@@ -285,7 +285,7 @@ const CrowdWisdom = ({ tool }) => {
                       </div>
                       <div className={`p-3 rounded-xl ${c.quoteInner}`}>
                         <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuteded}`}>🔦 What only they can see</p>
-                        <p className={`text-sm ${c.textSecondaryondary}`}>{voice.the_truth_only_they_see}</p>
+                        <p className={`text-sm ${c.textSecondary}`}>{voice.the_truth_only_they_see}</p>
                       </div>
                       <div className={`text-xs ${c.textMuteded} italic`}>
                         <span className="font-semibold not-italic">Blind spot:</span> {voice.the_thing_they_might_miss}
@@ -305,13 +305,13 @@ const CrowdWisdom = ({ tool }) => {
               {results.the_tension && (
                 <div className={`rounded-xl border p-4 ${c.tensionBg}`}>
                   <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.tensionLabel}`}>⚡ The Real Tension</p>
-                  <p className={`text-sm ${c.textSecondaryondary}`}>{results.the_tension}</p>
+                  <p className={`text-sm ${c.textSecondary}`}>{results.the_tension}</p>
                 </div>
               )}
               {results.the_question_nobody_asked && (
                 <div className={`rounded-xl border p-4 ${c.card} ${c.border}`}>
                   <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuteded}`}>❓ The question nobody asked</p>
-                  <p className={`text-sm italic ${c.textSecondaryondary}`}>{results.the_question_nobody_asked}</p>
+                  <p className={`text-sm italic ${c.textSecondary}`}>{results.the_question_nobody_asked}</p>
                 </div>
               )}
             </div>

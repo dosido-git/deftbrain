@@ -1368,11 +1368,11 @@ const FocusSoundArchitect = ({ tool }) => {
                     <p className={`text-sm font-bold ${isDark ? 'text-cyan-300' : 'text-cyan-700'}`}>🤖 AI Scene Designer</p>
                     <button onClick={() => setShowAISceneForm(false)} className={`text-xs ${c.textMuteded}`}>✕</button>
                   </div>
-                  <p className={`text-xs ${c.textSecondaryondary} mb-3`}>
+                  <p className={`text-xs ${c.textSecondary} mb-3`}>
                     Uses your task, environment & preferences below to design a custom evolving soundscape
                   </p>
                   <div className="mb-3">
-                    <label className={`text-xs font-bold ${c.textSecondaryondary} mb-1.5 block`}>Session duration</label>
+                    <label className={`text-xs font-bold ${c.textSecondary} mb-1.5 block`}>Session duration</label>
                     <div className="flex flex-wrap gap-1.5">
                       {AI_SCENE_DURATIONS.map(d => (
                         <button key={d.min} onClick={() => setAiSceneDuration(d.min)}
@@ -1449,7 +1449,7 @@ const FocusSoundArchitect = ({ tool }) => {
           {focusCorrelation && (
             <div className={`${c.card} ${c.border} border rounded-2xl shadow-lg p-5`}>
               <h4 className={`text-sm font-bold ${c.text} mb-3`}>🎯 Sound × Focus Score</h4>
-              <p className={`text-xs ${c.textSecondaryondary} mb-3`}>
+              <p className={`text-xs ${c.textSecondary} mb-3`}>
                 How your soundscapes correlate with focus performance (from {focusCorrelation.totalMatches} matched sessions)
               </p>
               <div className="grid grid-cols-2 gap-3 mb-3">
@@ -1466,7 +1466,7 @@ const FocusSoundArchitect = ({ tool }) => {
               </div>
               {focusCorrelation.layerAvgs.length > 0 && (
                 <div>
-                  <p className={`text-xs font-bold ${c.textSecondaryondary} mb-2`}>Best-performing sounds</p>
+                  <p className={`text-xs font-bold ${c.textSecondary} mb-2`}>Best-performing sounds</p>
                   <div className="space-y-1">
                     {focusCorrelation.layerAvgs.map(la => (
                       <div key={la.type} className={`flex items-center gap-2 p-2 rounded-lg ${isDark ? 'bg-zinc-700/30' : 'bg-zinc-50/80'}`}>
@@ -1555,7 +1555,7 @@ const FocusSoundArchitect = ({ tool }) => {
               </div>
             </div>
             <button onClick={() => document.getElementById('fsa-sens')?.classList.toggle('hidden')}
-              className={`flex items-center gap-1.5 text-xs font-bold ${c.textSecondaryondary}`}>
+              className={`flex items-center gap-1.5 text-xs font-bold ${c.textSecondary}`}>
               ▼ Sensitivities (optional)
             </button>
             <div id="fsa-sens" className="hidden mt-3 flex flex-wrap gap-2">
@@ -1628,7 +1628,7 @@ const FocusSoundArchitect = ({ tool }) => {
               </button>
               <div className="flex-1">
                 <h3 className={`text-lg font-bold ${c.text}`}>{recipe.soundscape_name || 'Your Soundscape'}</h3>
-                <p className={`text-xs ${c.textSecondaryondary}`}>
+                <p className={`text-xs ${c.textSecondary}`}>
                   {isPlaying
                     ? timerRemainingSec !== null
                       ? `Playing · ${fmt(timerRemainingSec)} remaining`
@@ -1747,7 +1747,7 @@ const FocusSoundArchitect = ({ tool }) => {
                 })}
               </div>
 
-              <p className={`text-xs ${c.textSecondaryondary} text-center`}>
+              <p className={`text-xs ${c.textSecondary} text-center`}>
                 Phase: {sceneProgress.phaseName} · {fmt(sceneProgress.phaseRemainingSec)} remaining
               </p>
             </div>
@@ -1939,7 +1939,7 @@ const FocusSoundArchitect = ({ tool }) => {
               {showTips && (
                 <div className="mt-4 space-y-3">
                   {recipe.usage_tips?.map((tip, i) => (
-                    <div key={i} className={`flex items-start gap-2 text-sm ${c.textSecondaryondary}`}>
+                    <div key={i} className={`flex items-start gap-2 text-sm ${c.textSecondary}`}>
                       <span className={isDark ? 'text-cyan-400' : 'text-cyan-600'}>•</span>
                       <span>{tip}</span>
                     </div>
@@ -1949,19 +1949,19 @@ const FocusSoundArchitect = ({ tool }) => {
                       {recipe.adjustment_guide.if_too_distracting && (
                         <div className={`p-3 rounded-xl border text-xs ${isDark ? 'bg-zinc-700/50 border-zinc-600' : 'bg-zinc-50 border-zinc-200'}`}>
                           <span className={`font-bold block mb-1 ${isDark ? 'text-amber-400' : 'text-amber-600'}`}>Too distracting?</span>
-                          <span className={c.textSecondaryondary}>{recipe.adjustment_guide.if_too_distracting}</span>
+                          <span className={c.textSecondary}>{recipe.adjustment_guide.if_too_distracting}</span>
                         </div>
                       )}
                       {recipe.adjustment_guide.if_not_enough && (
                         <div className={`p-3 rounded-xl border text-xs ${isDark ? 'bg-zinc-700/50 border-zinc-600' : 'bg-zinc-50 border-zinc-200'}`}>
                           <span className={`font-bold block mb-1 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>Not enough?</span>
-                          <span className={c.textSecondaryondary}>{recipe.adjustment_guide.if_not_enough}</span>
+                          <span className={c.textSecondary}>{recipe.adjustment_guide.if_not_enough}</span>
                         </div>
                       )}
                       {recipe.adjustment_guide.after_30_minutes && (
                         <div className={`p-3 rounded-xl border text-xs ${isDark ? 'bg-zinc-700/50 border-zinc-600' : 'bg-zinc-50 border-zinc-200'}`}>
                           <span className={`font-bold block mb-1 ${isDark ? 'text-cyan-400' : 'text-cyan-600'}`}>After 30 min</span>
-                          <span className={c.textSecondaryondary}>{recipe.adjustment_guide.after_30_minutes}</span>
+                          <span className={c.textSecondary}>{recipe.adjustment_guide.after_30_minutes}</span>
                         </div>
                       )}
                     </div>

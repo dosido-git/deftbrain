@@ -169,7 +169,7 @@ const ComebackCooker = ({ tool }) => {
           <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
             <span>{tool?.icon ?? '🍳'}</span>{tool?.title ?? 'Comeback Cooker'}
           </h2>
-          <p className={`text-sm ${c.textSecondaryondary}`}>{tool?.tagline ?? 'The perfect response you thought of three hours too late.'}</p>
+          <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'The perfect response you thought of three hours too late.'}</p>
         </div>
 
         {/* Pre-result cross-ref */}
@@ -355,11 +355,11 @@ const ComebackCooker = ({ tool }) => {
                       <div className={`px-5 pb-5 space-y-3 border-t ${c.border} pt-3 ml-8`}>
                         <div>
                           <p className={`text-xs font-semibold ${c.textMuteded} mb-1`}>Why it works</p>
-                          <p className={`text-sm ${c.textSecondaryondary} leading-relaxed`}>{cb.why_it_works}</p>
+                          <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{cb.why_it_works}</p>
                         </div>
                         <div className={`${c.deliveryBg} rounded-xl p-3`}>
                           <p className={`text-xs font-semibold ${c.deliveryText} mb-1`}>🎬 Delivery</p>
-                          <p className={`text-sm ${c.textSecondaryondary} leading-relaxed italic`}>{cb.delivery_note}</p>
+                          <p className={`text-sm ${c.textSecondary} leading-relaxed italic`}>{cb.delivery_note}</p>
                         </div>
                         <div className="pt-1">
                           <CopyBtn
@@ -385,7 +385,7 @@ const ComebackCooker = ({ tool }) => {
                  style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
                 "{r.the_high_road.line}"
               </p>
-              <p className={`text-sm ${c.textSecondaryondary} leading-relaxed italic`}>
+              <p className={`text-sm ${c.textSecondary} leading-relaxed italic`}>
                 {r.the_high_road.why_its_devastating}
               </p>
               <div className="mt-3">

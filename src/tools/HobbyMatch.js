@@ -138,7 +138,7 @@ const HobbyMatch = ({ tool }) => {
       <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-6`}>
         <div className={`mb-5 pb-4 border-b ${c.border}`}>
           <h2 className={`text-2xl font-bold ${c.text}`}><span className="mr-2">{tool?.icon ?? '🎯'}</span>{tool?.title || 'HobbyMatch'}</h2>
-          <p className={`text-sm ${c.textSecondaryondary} mt-1`}>Discover hobbies you didn't know existed</p>
+          <p className={`text-sm ${c.textSecondary} mt-1`}>Discover hobbies you didn't know existed</p>
         </div>
 
         {/* Personality */}
@@ -273,7 +273,7 @@ const HobbyMatch = ({ tool }) => {
           {/* ── PROFILE READ ── */}
           {r.profile_read && (
             <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-5`}>
-              <p className={`text-sm ${c.textSecondaryondary} leading-relaxed`}>{r.profile_read}</p>
+              <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{r.profile_read}</p>
             </div>
           )}
 
@@ -293,7 +293,7 @@ const HobbyMatch = ({ tool }) => {
                         <span className="text-2xl flex-shrink-0">{hobby.icon || '🎯'}</span>
                         <div className="flex-1 min-w-0">
                           <h4 className={`text-sm font-bold ${c.text}`}>{hobby.name}</h4>
-                          <p className={`text-xs ${c.textSecondaryondary} mt-0.5`}>{hobby.one_liner}</p>
+                          <p className={`text-xs ${c.textSecondary} mt-0.5`}>{hobby.one_liner}</p>
                           <div className="flex flex-wrap gap-1.5 mt-2">
                             <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${c.badgeNeutral}`}>
                               {hobby.energy_type === 'solo' ? '🎧 Solo' : hobby.energy_type === 'social' ? '👥 Social' : '🔄 Both'}
@@ -315,7 +315,7 @@ const HobbyMatch = ({ tool }) => {
                       <div className={`px-5 pb-5 border-t ${c.border} pt-4 space-y-3`}>
                         <div>
                           <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>What it is</p>
-                          <p className={`text-xs ${c.textSecondaryondary} leading-relaxed`}>{hobby.what_it_is}</p>
+                          <p className={`text-xs ${c.textSecondary} leading-relaxed`}>{hobby.what_it_is}</p>
                         </div>
                         {hobby.the_hook && (
                           <div className={`${c.warning} border rounded-lg p-3`}>
@@ -326,7 +326,7 @@ const HobbyMatch = ({ tool }) => {
                         {hobby.why_you && (
                           <div>
                             <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>Why this fits you</p>
-                            <p className={`text-xs ${c.textSecondaryondary} leading-relaxed`}>{hobby.why_you}</p>
+                            <p className={`text-xs ${c.textSecondary} leading-relaxed`}>{hobby.why_you}</p>
                           </div>
                         )}
                         <div className={`${c.success} border rounded-lg p-3`}>
@@ -336,7 +336,7 @@ const HobbyMatch = ({ tool }) => {
                         {hobby.find_your_people && (
                           <div>
                             <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>👥 Find your people</p>
-                            <p className={`text-xs ${c.textSecondaryondary} leading-relaxed`}>{hobby.find_your_people}</p>
+                            <p className={`text-xs ${c.textSecondary} leading-relaxed`}>{hobby.find_your_people}</p>
                           </div>
                         )}
                       </div>

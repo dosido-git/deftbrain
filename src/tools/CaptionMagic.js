@@ -422,7 +422,7 @@ const CaptionMagic = ({ tool }) => {
         <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
           <span>{tool?.icon || '📸'}</span> {tool?.title || 'Caption Magic'}
         </h2>
-        <p className={`text-sm ${c.textSecondaryondary}`}>{tool?.tagline || 'Turn any photo into engaging social media captions'}</p>
+        <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline || 'Turn any photo into engaging social media captions'}</p>
       </div>
     </div>
   );
@@ -432,7 +432,7 @@ const CaptionMagic = ({ tool }) => {
   // ══════════════════════════════════════════
   const renderImageUpload = () => (
     <div className={`p-5 rounded-2xl border ${c.border} ${c.card}`}>
-      <label className={`text-xs font-bold ${c.textSecondaryondary} uppercase tracking-wide mb-3 block`}>📷 Your photo</label>
+      <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-3 block`}>📷 Your photo</label>
       {compressing ? (
         <div className={`border-2 border-dashed rounded-xl p-8 text-center ${c.dropActive}`}>
           <span className="animate-spin inline-block text-2xl mb-3">{tool?.icon ?? '📸'}</span>
@@ -469,24 +469,24 @@ const CaptionMagic = ({ tool }) => {
       {renderImageUpload()}
 
       <div className={`p-5 rounded-2xl border ${c.border} ${c.card}`}>
-        <label className={`text-xs font-bold ${c.textSecondaryondary} uppercase tracking-wide mb-2 block`}>📱 Platform</label>
+        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>📱 Platform</label>
         {renderPills(PLATFORMS, platform, setPlatform)}
         <p className={`text-xs ${c.textMuteded} mt-2`}>Character limit: {PLATFORMS.find(p => p.value === platform)?.limit?.toLocaleString()}</p>
       </div>
 
       <div className={`p-5 rounded-2xl border ${c.border} ${c.card}`}>
-        <label className={`text-xs font-bold ${c.textSecondaryondary} uppercase tracking-wide mb-1 block`}>🎭 Tone</label>
+        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1 block`}>🎭 Tone</label>
         <p className={`text-xs ${c.textMuteded} mb-2`}>Pick up to 3</p>
         {renderPills(TONES, selectedTones, toggleTone, true)}
       </div>
 
       <div className={`p-5 rounded-2xl border ${c.border} ${c.card}`}>
-        <label className={`text-xs font-bold ${c.textSecondaryondary} uppercase tracking-wide mb-2 block`}>📏 Caption Length</label>
+        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>📏 Caption Length</label>
         {renderPills(LENGTH_OPTIONS, captionLength, setCaptionLength)}
       </div>
 
       <div className={`p-5 rounded-2xl border ${c.border} ${c.card}`}>
-        <label className={`text-xs font-bold ${c.textSecondaryondary} uppercase tracking-wide mb-1 block`}>💬 Context</label>
+        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1 block`}>💬 Context</label>
         <p className={`text-xs ${c.textMuteded} mb-2`}>Optional — backstory helps craft better captions</p>
         <input type="text" value={context} onChange={e => setContext(e.target.value)}
           placeholder="e.g., 'Team retreat in Colorado' or 'First time making sourdough'"
@@ -562,7 +562,7 @@ const CaptionMagic = ({ tool }) => {
 
     return (
       <div className="mb-3">
-        <div className={`text-xs font-semibold ${c.textSecondaryondary} mb-1.5`}>Hashtags</div>
+        <div className={`text-xs font-semibold ${c.textSecondary} mb-1.5`}>Hashtags</div>
         {hasCats ? (
           <div className="space-y-1.5">
             {Object.entries(grouped).filter(([,tags]) => tags.length > 0).map(([cat, tags]) => {
@@ -673,7 +673,7 @@ const CaptionMagic = ({ tool }) => {
     return (
       <div className={`p-4 rounded-2xl border ${c.border} ${c.card}`}>
         <button onClick={() => setShowRemix(!showRemix)}
-          className={`flex items-center gap-2 text-xs font-bold ${c.textSecondaryondary} w-full text-left`}>
+          className={`flex items-center gap-2 text-xs font-bold ${c.textSecondary} w-full text-left`}>
           <span>{showRemix ? '▲' : '▼'}</span>
           <span>🎰 Remix Captions</span>
         </button>
@@ -775,7 +775,7 @@ const CaptionMagic = ({ tool }) => {
               {caption.char_count != null && renderCharCount(caption.char_count)}
               {caption.best_for && <span className={`text-xs ${c.textMuteded}`}>· {caption.best_for}</span>}
             </div>
-            {caption.why_it_works && <p className={`text-xs ${c.textSecondaryondary} mb-3 italic`}>{caption.why_it_works}</p>}
+            {caption.why_it_works && <p className={`text-xs ${c.textSecondary} mb-3 italic`}>{caption.why_it_works}</p>}
             {caption.revision_note && <p className={`text-xs ${c.textCaution} mb-2`}>🎛️ {caption.revision_note}</p>}
 
             {/* Caption text */}
@@ -860,7 +860,7 @@ const CaptionMagic = ({ tool }) => {
   const renderCrossRefs = () => (
     <div className={`p-4 rounded-2xl border ${c.border} ${c.card} mt-2`}>
       <p className={`text-xs font-bold ${c.textMuteded} uppercase tracking-wide mb-2`}>🔗 Related Tools</p>
-      <div className={`space-y-1.5 text-xs ${c.textSecondaryondary}`}>
+      <div className={`space-y-1.5 text-xs ${c.textSecondary}`}>
         {results?.captions?.some(cap => cap.tone?.toLowerCase().includes('professional')) && (
           <p>For professional posts, <a href="/BragSheetBuilder" className={linkStyle}>Brag Sheet Builder</a> turns your wins into polished LinkedIn-ready copy.</p>
         )}

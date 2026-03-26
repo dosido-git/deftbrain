@@ -207,7 +207,7 @@ const JargonAssassin = ({ tool }) => {
       {/* Header */}
       <div>
         <h1 className={`text-2xl font-bold ${c.text}`}>Jargon Assassin 🗡️</h1>
-        <p className={`text-sm ${c.textSecondaryondary} mt-1`}>Confusing documents → plain language → what to do about it</p>
+        <p className={`text-sm ${c.textSecondary} mt-1`}>Confusing documents → plain language → what to do about it</p>
       </div>
 
       {/* Nav */}
@@ -230,7 +230,7 @@ const JargonAssassin = ({ tool }) => {
       {mode === 'input' && <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-5 space-y-5`}>
         <div><h3 className={`font-bold text-lg ${c.text}`}>🗡️ What needs translating?</h3><p className={`text-sm ${c.textMuteded} mt-1`}>Paste any confusing document. We'll turn it into plain language and flag anything concerning.</p></div>
         <div><p className={`text-xs font-bold ${c.text} mb-2`}>Document Type</p><div className="flex flex-wrap gap-1.5">{DOC_TYPES.map(dt => <button key={dt.id} onClick={() => setDocType(dt.id)} className={`px-3 py-1.5 rounded-lg text-xs font-medium border ${docType === dt.id ? c.pillOn : `${c.pillOff} ${c.border}`}`}>{dt.icon} {dt.label}</button>)}</div></div>
-        <div><p className={`text-xs font-bold ${c.text} mb-2`}>Reading Level</p><div className="grid grid-cols-2 sm:grid-cols-4 gap-2">{LEVELS.map(rl => <button key={rl.id} onClick={() => setReadLevel(rl.id)} className={`p-2 rounded-xl border text-center ${readLevel === rl.id ? `${c.textSecondaryondaryCard} border-emerald-500` : `${c.cardAlt} ${c.border}`}`}><span className="text-lg">{rl.icon}</span><p className={`text-xs font-bold ${c.text}`}>{rl.label}</p><p className={`text-xs ${c.textMuteded}`}>{rl.d}</p></button>)}</div></div>
+        <div><p className={`text-xs font-bold ${c.text} mb-2`}>Reading Level</p><div className="grid grid-cols-2 sm:grid-cols-4 gap-2">{LEVELS.map(rl => <button key={rl.id} onClick={() => setReadLevel(rl.id)} className={`p-2 rounded-xl border text-center ${readLevel === rl.id ? `${c.textSecondaryCard} border-emerald-500` : `${c.cardAlt} ${c.border}`}`}><span className="text-lg">{rl.icon}</span><p className={`text-xs font-bold ${c.text}`}>{rl.label}</p><p className={`text-xs ${c.textMuteded}`}>{rl.d}</p></button>)}</div></div>
         <div className={`${c.cardAlt} border-2 border-dashed ${c.border} rounded-xl p-4 text-center`}><input ref={fileRef} type="file" accept=".txt" onChange={handleFile} className="hidden" id="ja-f" />{fileName && <div className="mb-2"><span className={`text-xs px-3 py-1 rounded-full ${c.success} border`}>✅ {fileName}</span></div>}<label htmlFor="ja-f" className={`inline-block px-4 py-2 rounded-lg text-xs font-bold cursor-pointer ${c.btnPrimaryPrimary}`}>{fileName ? 'Change' : '📄 Upload .txt'}</label></div>
         <textarea value={docText} onChange={e => setDocText(e.target.value)} placeholder="Paste your document here..." rows={8} className={`w-full px-3 py-2 rounded-lg border text-sm font-mono ${c.input}`} />
         <div className="flex justify-between"><span className={`text-xs ${c.textMuteded}`}>{docText.length.toLocaleString()} chars</span>{docText.length > 12000 && <span className={`text-xs ${c.danger} border rounded px-2 py-0.5`}>⚠️ May truncate</span>}</div>
@@ -240,9 +240,9 @@ const JargonAssassin = ({ tool }) => {
       {/* ═══ RESULTS ═══ */}
       {mode === 'results' && results && <div ref={resultsRef} className="space-y-4">
         {/* Summary + Danger */}
-        <div className={`${c.textSecondaryondaryCard} border rounded-xl p-5`}>
-          <div className="flex items-start justify-between gap-3"><div className="flex-1"><h3 className={`font-bold ${c.textSecondaryondary} text-sm`}>📖 Summary</h3><p className={`text-sm ${c.text} mt-1`}>{results.summary}</p></div><div className="flex flex-col items-end gap-1">{results.reading_level && <span className={`text-xs px-2 py-0.5 rounded-full ${c.highlight} border`}>📖 {results.reading_level}</span>}{results.danger_score && <span className={`text-xs px-2 py-0.5 rounded-full ${results.danger_score.level === 'safe' ? c.success : results.danger_score.level === 'caution' ? c.warning : c.danger} border`}>{DANGER[results.danger_score.level]} {results.danger_score.level}</span>}</div></div>
-          {results.danger_score?.explanation && results.danger_score.level !== 'safe' && <p className={`text-xs ${c.textSecondaryondary} mt-2`}>{results.danger_score.explanation}</p>}
+        <div className={`${c.textSecondaryCard} border rounded-xl p-5`}>
+          <div className="flex items-start justify-between gap-3"><div className="flex-1"><h3 className={`font-bold ${c.textSecondary} text-sm`}>📖 Summary</h3><p className={`text-sm ${c.text} mt-1`}>{results.summary}</p></div><div className="flex flex-col items-end gap-1">{results.reading_level && <span className={`text-xs px-2 py-0.5 rounded-full ${c.highlight} border`}>📖 {results.reading_level}</span>}{results.danger_score && <span className={`text-xs px-2 py-0.5 rounded-full ${results.danger_score.level === 'safe' ? c.success : results.danger_score.level === 'caution' ? c.warning : c.danger} border`}>{DANGER[results.danger_score.level]} {results.danger_score.level}</span>}</div></div>
+          {results.danger_score?.explanation && results.danger_score.level !== 'safe' && <p className={`text-xs ${c.textSecondary} mt-2`}>{results.danger_score.explanation}</p>}
         </div>
 
         {/* Actions */}
@@ -267,14 +267,14 @@ const JargonAssassin = ({ tool }) => {
         </div>
 
         {/* Translation */}
-        {activeTab === 'translation' && <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-5`}><div className="flex items-center justify-between mb-3"><h3 className={`font-bold ${c.text}`}>📖 Translation</h3><CopyBtn content={results.translation + BRAND} label="Copy" /></div><div className={`${c.textSecondaryondaryCard} border rounded-lg p-4 ${FS[fontSize]}`}><p className={`${c.text} leading-relaxed whitespace-pre-wrap`}>{results.translation}</p></div>
-          {results.jargon_highlights?.length > 0 && <div className="mt-3"><p className={`text-xs font-bold ${c.textSecondaryondary} mb-1`}>🔤 Jargon Replaced ({results.jargon_highlights.length})</p><div className="flex flex-wrap gap-1.5">{results.jargon_highlights.map((j, i) => <span key={i} className={`text-xs px-2 py-0.5 rounded-full ${c.cardAlt} border ${c.border}`} title={`→ ${j.replaced_with}`}><s className={c.textMuteded}>{j.original}</s> → {j.replaced_with}</span>)}</div></div>}
+        {activeTab === 'translation' && <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-5`}><div className="flex items-center justify-between mb-3"><h3 className={`font-bold ${c.text}`}>📖 Translation</h3><CopyBtn content={results.translation + BRAND} label="Copy" /></div><div className={`${c.textSecondaryCard} border rounded-lg p-4 ${FS[fontSize]}`}><p className={`${c.text} leading-relaxed whitespace-pre-wrap`}>{results.translation}</p></div>
+          {results.jargon_highlights?.length > 0 && <div className="mt-3"><p className={`text-xs font-bold ${c.textSecondary} mb-1`}>🔤 Jargon Replaced ({results.jargon_highlights.length})</p><div className="flex flex-wrap gap-1.5">{results.jargon_highlights.map((j, i) => <span key={i} className={`text-xs px-2 py-0.5 rounded-full ${c.cardAlt} border ${c.border}`} title={`→ ${j.replaced_with}`}><s className={c.textMuteded}>{j.original}</s> → {j.replaced_with}</span>)}</div></div>}
         </div>}
 
         {/* Side-by-Side */}
         {activeTab === 'side-by-side' && <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-4`}><h3 className={`font-bold text-sm ${c.text} mb-2`}>Original</h3><div className={`${c.cardAlt} rounded-lg p-3 max-h-96 overflow-y-auto ${FS[fontSize]}`}><pre className={`whitespace-pre-wrap font-sans ${c.textSecondaryondary}`}>{docText}</pre></div></div>
-          <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-4`}><div className="flex justify-between mb-2"><h3 className={`font-bold text-sm ${c.text}`}>Translated</h3><CopyBtn content={results.translation + BRAND} label="Copy" /></div><div className={`${c.textSecondaryondaryCard} border rounded-lg p-3 max-h-96 overflow-y-auto ${FS[fontSize]}`}><p className={`${c.text} whitespace-pre-wrap`}>{results.translation}</p></div></div>
+          <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-4`}><h3 className={`font-bold text-sm ${c.text} mb-2`}>Original</h3><div className={`${c.cardAlt} rounded-lg p-3 max-h-96 overflow-y-auto ${FS[fontSize]}`}><pre className={`whitespace-pre-wrap font-sans ${c.textSecondary}`}>{docText}</pre></div></div>
+          <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-4`}><div className="flex justify-between mb-2"><h3 className={`font-bold text-sm ${c.text}`}>Translated</h3><CopyBtn content={results.translation + BRAND} label="Copy" /></div><div className={`${c.textSecondaryCard} border rounded-lg p-3 max-h-96 overflow-y-auto ${FS[fontSize]}`}><p className={`${c.text} whitespace-pre-wrap`}>{results.translation}</p></div></div>
         </div>}
 
         {/* Key Sections */}
@@ -284,17 +284,17 @@ const JargonAssassin = ({ tool }) => {
             <div className="flex items-center gap-2"><span>{FLAG[s.type]?.i}</span><span className="text-xs font-bold">{FLAG[s.type]?.l}</span><span className="font-bold text-sm">{s.title}</span></div>
             <p className="text-xs italic">"{s.original_text}"</p><p className="text-sm">{s.simplified}</p><p className="text-xs"><strong>Why:</strong> {s.why_it_matters}</p>
             {s.enforceability_note && <div className={`${c.highlight} border rounded-lg p-2`}><p className="text-xs">⚖️ {s.enforceability_note}</p></div>}
-            <button onClick={() => handleSection(s.original_text)} disabled={loading} className={`text-xs font-bold ${c.textSecondaryondary}`}>🔍 Deep-dive →</button>
+            <button onClick={() => handleSection(s.original_text)} disabled={loading} className={`text-xs font-bold ${c.textSecondary}`}>🔍 Deep-dive →</button>
           </div>;
         })}</div>}
 
         {/* Glossary */}
-        {activeTab === 'glossary' && <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-5`}><h3 className={`font-bold ${c.text} mb-3`}>📚 Glossary</h3>{!results.glossary?.length ? <p className={`text-sm ${c.textMuteded}`}>No technical terms.</p> : <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">{results.glossary.map((g, i) => <div key={i} className={`${c.cardAlt} rounded-lg p-3`}><p className={`text-sm font-bold ${c.text}`}>{g.term}</p><p className={`text-xs ${c.textSecondaryondary}`}>{g.definition}</p>{g.context && <p className={`text-xs ${c.textMuteded}`}>{g.context}</p>}</div>)}</div>}</div>}
+        {activeTab === 'glossary' && <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-5`}><h3 className={`font-bold ${c.text} mb-3`}>📚 Glossary</h3>{!results.glossary?.length ? <p className={`text-sm ${c.textMuteded}`}>No technical terms.</p> : <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">{results.glossary.map((g, i) => <div key={i} className={`${c.cardAlt} rounded-lg p-3`}><p className={`text-sm font-bold ${c.text}`}>{g.term}</p><p className={`text-xs ${c.textSecondary}`}>{g.definition}</p>{g.context && <p className={`text-xs ${c.textMuteded}`}>{g.context}</p>}</div>)}</div>}</div>}
 
         {/* Q&A */}
         {activeTab === 'qa' && <div className="space-y-4">
           <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-4 space-y-3`}><h3 className={`font-bold ${c.text}`}>❓ Ask About This Document</h3><div className="flex gap-2"><input value={question} onChange={e => setQuestion(e.target.value)} placeholder="Can I sublease? What if I miss a payment?" className={`flex-1 px-3 py-2 rounded-lg border text-sm ${c.input}`} onKeyDown={e => { if (e.key === 'Enter') handleAsk(); }} /><button onClick={handleAsk} disabled={loading || !question.trim()} className={`px-4 py-2 rounded-lg text-xs font-bold ${c.btnPrimaryPrimary} disabled:opacity-50`}>Ask</button></div></div>
-          {qaHistory.map((qa, i) => <div key={i} className="space-y-2"><div className={`${c.textSecondaryondaryCard} border rounded-xl p-3`}><p className={`text-sm font-medium ${c.text}`}>❓ {qa.q}</p></div><div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-4 space-y-2`}><p className={`text-sm ${c.textSecondaryondary}`}>{qa.a.answer}</p>{qa.a.warning && <div className={`${c.danger} border rounded-lg p-2`}><p className="text-xs">⚠️ {qa.a.warning}</p></div>}{qa.a.who_to_ask && <p className={`text-xs ${c.textMuteded}`}>👤 Ask: {qa.a.who_to_ask}</p>}{qa.a.follow_up && <button onClick={() => setQuestion(qa.a.follow_up)} className={`text-xs ${c.textSecondaryondary}`}>→ {qa.a.follow_up}</button>}</div></div>)}
+          {qaHistory.map((qa, i) => <div key={i} className="space-y-2"><div className={`${c.textSecondaryCard} border rounded-xl p-3`}><p className={`text-sm font-medium ${c.text}`}>❓ {qa.q}</p></div><div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-4 space-y-2`}><p className={`text-sm ${c.textSecondary}`}>{qa.a.answer}</p>{qa.a.warning && <div className={`${c.danger} border rounded-lg p-2`}><p className="text-xs">⚠️ {qa.a.warning}</p></div>}{qa.a.who_to_ask && <p className={`text-xs ${c.textMuteded}`}>👤 Ask: {qa.a.who_to_ask}</p>}{qa.a.follow_up && <button onClick={() => setQuestion(qa.a.follow_up)} className={`text-xs ${c.textSecondary}`}>→ {qa.a.follow_up}</button>}</div></div>)}
         </div>}
 
         {/* Explain To */}
@@ -307,7 +307,7 @@ const JargonAssassin = ({ tool }) => {
             <button onClick={handleExplainTo} disabled={loading} className={`w-full py-2.5 rounded-xl font-bold text-sm ${c.btnPrimaryPrimary} disabled:opacity-50`}>{loading ? (tool?.icon ?? '✂️') : <><span className='mr-1'>{tool?.icon ?? '✂️'}</span> Reframe for Them</>}</button>
           </div>
           {expData && <div className="space-y-3">
-            <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-5`}><p className={`text-sm ${c.textSecondaryondary} whitespace-pre-line`}>{expData.explanation}</p></div>
+            <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-5`}><p className={`text-sm ${c.textSecondary} whitespace-pre-line`}>{expData.explanation}</p></div>
             {expData.their_main_concern && <div className={`${c.warning} border rounded-xl p-4`}><p className="text-xs font-bold">😟 Their main concern</p><p className="text-sm mt-1">{expData.their_main_concern}</p></div>}
             {expData.skip && <div className={`${c.success} border rounded-xl p-4`}><p className="text-xs font-bold">😌 Tell them not to worry about</p><p className="text-sm mt-1">{expData.skip}</p></div>}
             {expData.key_points_for_them?.length > 0 && <div className={`${c.highlight} border rounded-xl p-4`}><p className="text-xs font-bold mb-1">🎯 Key points for them</p>{expData.key_points_for_them.map((p, i) => <p key={i} className="text-xs">• {p}</p>)}</div>}
@@ -321,31 +321,31 @@ const JargonAssassin = ({ tool }) => {
 
         {/* Suggested Questions */}
         {sugData && <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-5 space-y-3`}><h3 className={`font-bold ${c.text}`}>🤔 Questions You Should Ask</h3>
-          {sugData.must_ask?.map((q, i) => <div key={i} className={`${c.danger} border rounded-lg p-3`}><p className="text-sm font-medium">{q.question}</p><p className="text-xs">{q.why} · 👤 {q.who_to_ask}</p>{q.what_good_looks_like && <p className={`text-xs ${c.textSecondaryondary}`}>✅ Good answer: {q.what_good_looks_like}</p>}</div>)}
+          {sugData.must_ask?.map((q, i) => <div key={i} className={`${c.danger} border rounded-lg p-3`}><p className="text-sm font-medium">{q.question}</p><p className="text-xs">{q.why} · 👤 {q.who_to_ask}</p>{q.what_good_looks_like && <p className={`text-xs ${c.textSecondary}`}>✅ Good answer: {q.what_good_looks_like}</p>}</div>)}
           {sugData.negotiate?.map((n, i) => <div key={i} className={`${c.highlight} border rounded-lg p-3`}><p className="text-sm font-medium">💪 {n.point}</p><p className="text-xs">Now: {n.current} → Ask: {n.better}</p><p className={`text-xs ${isDark ? 'text-cyan-300' : 'text-cyan-700'}`}>How: {n.how_to_ask}</p></div>)}
-          {sugData.overall_advice && <div className={`${c.textSecondaryondaryCard} border rounded-lg p-3`}><p className={`text-sm ${c.textSecondaryondary}`}>☕ {sugData.overall_advice}</p></div>}
+          {sugData.overall_advice && <div className={`${c.textSecondaryCard} border rounded-lg p-3`}><p className={`text-sm ${c.textSecondary}`}>☕ {sugData.overall_advice}</p></div>}
         </div>}
 
         {/* Red-Line */}
         {rlData && <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-5 space-y-3`}>
           <div className="flex items-center justify-between"><h3 className={`font-bold ${c.text}`}>✏️ Red-Line Markup</h3>{rlData.fairness_score && <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${rlData.fairness_score.score <= 3 ? c.danger : rlData.fairness_score.score <= 6 ? c.warning : c.success} border`}>{rlData.fairness_score.score}/10 {rlData.fairness_score.label}</span>}</div>
           <p className={`text-xs ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>⚖️ Educational guidance, not legal advice.</p>
-          {rlData.overview && <p className={`text-sm ${c.textSecondaryondary}`}>{rlData.overview}</p>}
+          {rlData.overview && <p className={`text-sm ${c.textSecondary}`}>{rlData.overview}</p>}
           {rlData.redlines?.map((r, i) => <div key={i} className={`${PRI_COLORS[r.priority] || c.highlight} border rounded-lg p-3 space-y-1`}>
             <div className="flex items-center gap-2"><span className={`text-xs font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-zinc-600 text-zinc-200' : 'bg-gray-200 text-gray-700'}`}>{r.priority}</span></div>
             <p className="text-sm font-medium">{r.problem}</p>
-            <p className={`text-xs ${c.textSecondaryondary}`}>Current: {r.current_text}</p>
+            <p className={`text-xs ${c.textSecondary}`}>Current: {r.current_text}</p>
             <div className={`${c.success} border rounded p-2`}><p className="text-xs">✏️ Change to: {r.suggested_change}</p></div>
             {r.negotiation_tip && <p className={`text-xs ${c.textMuteded}`}>💡 {r.negotiation_tip}</p>}
           </div>)}
           {rlData.add_these?.length > 0 && <div className={`${c.highlight} border rounded-lg p-3`}><p className="text-xs font-bold mb-1">➕ Add these protections:</p>{rlData.add_these.map((a, i) => <div key={i} className="mt-1"><p className="text-xs font-medium">{a.what}</p><p className="text-xs">{a.why}</p></div>)}</div>}
-          {rlData.overall_strategy && <div className={`${c.textSecondaryondaryCard} border rounded-lg p-3`}><p className={`text-xs font-bold ${c.textSecondaryondary}`}>🎯 Strategy</p><p className={`text-sm ${c.text}`}>{rlData.overall_strategy}</p></div>}
+          {rlData.overall_strategy && <div className={`${c.textSecondaryCard} border rounded-lg p-3`}><p className={`text-xs font-bold ${c.textSecondary}`}>🎯 Strategy</p><p className={`text-sm ${c.text}`}>{rlData.overall_strategy}</p></div>}
         </div>}
 
         {/* Template Compare */}
         {tplData && <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-5 space-y-3`}>
           <div className="flex items-center justify-between"><h3 className={`font-bold ${c.text}`}>📊 vs. What's Normal</h3>{tplData.normal_score && <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${tplData.normal_score.score <= 3 ? c.danger : tplData.normal_score.score <= 6 ? c.warning : c.success} border`}>{tplData.normal_score.score}/10 {tplData.normal_score.label}</span>}</div>
-          {tplData.overall_assessment && <p className={`text-sm ${c.textSecondaryondary}`}>{tplData.overall_assessment}</p>}
+          {tplData.overall_assessment && <p className={`text-sm ${c.textSecondary}`}>{tplData.overall_assessment}</p>}
           {tplData.comparisons?.map((comp, i) => <div key={i} className={`${VER_COLORS[comp.verdict] || c.cardAlt} border ${c.border} rounded-lg p-3 space-y-1`}>
             <div className="flex items-center gap-2"><span className="text-sm font-bold">{comp.clause_area}</span><span className={`text-xs px-2 py-0.5 rounded-full ${comp.verdict === 'red_flag' ? (isDark ? 'bg-red-900/40 text-red-200' : 'bg-red-100 text-red-700') : comp.verdict === 'better_than_usual' ? (isDark ? 'bg-green-900/40 text-green-200' : 'bg-green-100 text-green-700') : (isDark ? 'bg-zinc-600 text-zinc-200' : 'bg-gray-200 text-gray-700')}`}>{comp.verdict.replace(/_/g, ' ')}</span></div>
             <p className="text-xs">This doc: {comp.this_document}</p>
@@ -354,23 +354,23 @@ const JargonAssassin = ({ tool }) => {
           </div>)}
           {tplData.missing_protections?.length > 0 && <div className={`${c.danger} border rounded-lg p-3`}><p className="text-xs font-bold mb-1">🚫 Missing protections:</p>{tplData.missing_protections.map((m, i) => <p key={i} className="text-xs">• {m}</p>)}</div>}
           {tplData.unusually_good?.length > 0 && <div className={`${c.success} border rounded-lg p-3`}><p className="text-xs font-bold mb-1">✅ Better than usual:</p>{tplData.unusually_good.map((g, i) => <p key={i} className="text-xs">• {g}</p>)}</div>}
-          {tplData.bottom_line && <div className={`${c.textSecondaryondaryCard} border rounded-lg p-3`}><p className={`text-sm ${c.textSecondaryondary}`}>☕ {tplData.bottom_line}</p></div>}
+          {tplData.bottom_line && <div className={`${c.textSecondaryCard} border rounded-lg p-3`}><p className={`text-sm ${c.textSecondary}`}>☕ {tplData.bottom_line}</p></div>}
         </div>}
 
         {/* Action Plan */}
         {apData && <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-5 space-y-3`}>
           <h3 className={`font-bold ${c.text}`}>📋 Action Plan</h3>
-          {apData.summary && <p className={`text-sm ${c.textSecondaryondary}`}>{apData.summary}</p>}
+          {apData.summary && <p className={`text-sm ${c.textSecondary}`}>{apData.summary}</p>}
           {apData.quick_wins?.length > 0 && <div className={`${c.success} border rounded-lg p-3`}><p className="text-xs font-bold">⚡ Quick wins (under 5 min):</p>{apData.quick_wins.map((w, i) => <p key={i} className="text-xs">• {w}</p>)}</div>}
           {apData.steps?.map((s, i) => <div key={i} className={`${c.cardAlt} border ${c.border} rounded-lg p-3 space-y-1`}>
             <div className="flex items-center gap-2"><span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${c.pillOn}`}>{s.order}</span><span className={`text-sm font-bold ${c.text}`}>{s.action}</span></div>
-            <p className={`text-xs ${c.textSecondaryondary}`}>{s.why}</p>
-            {s.deadline && <p className={`text-xs font-bold ${c.textSecondaryondary}`}>⏰ {s.deadline}</p>}
+            <p className={`text-xs ${c.textSecondary}`}>{s.why}</p>
+            {s.deadline && <p className={`text-xs font-bold ${c.textSecondary}`}>⏰ {s.deadline}</p>}
             {s.how && <p className={`text-xs ${c.textMuteded}`}>How: {s.how}</p>}
             {s.template && <div className={`${c.highlight} border rounded p-2 mt-1`}><p className="text-xs font-bold">📝 Script:</p><p className="text-xs">{s.template}</p></div>}
           </div>)}
           {apData.if_you_do_nothing && <div className={`${c.danger} border rounded-lg p-3`}><p className="text-xs font-bold">⚠️ If you do nothing:</p><p className="text-xs">{apData.if_you_do_nothing}</p></div>}
-          {apData.timeline && <p className={`text-xs ${c.textSecondaryondary}`}>📅 Timeline: {apData.timeline}</p>}
+          {apData.timeline && <p className={`text-xs ${c.textSecondary}`}>📅 Timeline: {apData.timeline}</p>}
         </div>}
 
         <ActionBar content={buildText()} title="Jargon Assassin" />
@@ -378,9 +378,9 @@ const JargonAssassin = ({ tool }) => {
 
       {/* ═══ SECTION DRILL ═══ */}
       {mode === 'section' && secData && <div className="space-y-4">
-        <button onClick={() => setMode('results')} className={`text-xs ${c.textSecondaryondary} font-bold`}>← Back</button>
-        <div className={`${c.textSecondaryondaryCard} border rounded-xl p-4`}><p className={`text-sm ${c.text}`}>{secData.section_summary}</p></div>
-        {secData.line_by_line?.map((l, i) => <div key={i} className={`${c.card} ${c.border} border ${c.border} rounded-xl p-4 space-y-2`}><p className={`text-xs ${c.textMuteded} italic`}>"{l.original}"</p><p className={`text-sm ${c.text}`}>{l.meaning}</p><p className={`text-xs ${c.textSecondaryondary}`}>→ {l.implication}</p>{l.hidden_catch && <div className={`${c.danger} border rounded-lg p-2`}><p className="text-xs">🔍 {l.hidden_catch}</p></div>}</div>)}
+        <button onClick={() => setMode('results')} className={`text-xs ${c.textSecondary} font-bold`}>← Back</button>
+        <div className={`${c.textSecondaryCard} border rounded-xl p-4`}><p className={`text-sm ${c.text}`}>{secData.section_summary}</p></div>
+        {secData.line_by_line?.map((l, i) => <div key={i} className={`${c.card} ${c.border} border ${c.border} rounded-xl p-4 space-y-2`}><p className={`text-xs ${c.textMuteded} italic`}>"{l.original}"</p><p className={`text-sm ${c.text}`}>{l.meaning}</p><p className={`text-xs ${c.textSecondary}`}>→ {l.implication}</p>{l.hidden_catch && <div className={`${c.danger} border rounded-lg p-2`}><p className="text-xs">🔍 {l.hidden_catch}</p></div>}</div>)}
         {secData.what_this_means_for_you && <div className={`${c.highlight} border rounded-xl p-4`}><p className="text-sm">{secData.what_this_means_for_you}</p></div>}
       </div>}
 
@@ -399,11 +399,11 @@ const JargonAssassin = ({ tool }) => {
         <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-5 space-y-4`}>
           <div><h3 className={`font-bold ${c.text}`}>📁 Multi-Document Dossier</h3><p className={`text-sm ${c.textMuteded}`}>Cross-reference related documents — find conflicts, gaps, and dependencies.</p></div>
           {dossDocs.map((d, i) => <div key={i} className={`${c.cardAlt} border ${c.border} rounded-lg p-3 space-y-2`}><div className="flex gap-2"><input value={d.title} onChange={e => setDossDocs(prev => prev.map((p, j) => j === i ? { ...p, title: e.target.value } : p))} placeholder={`Document ${i + 1} title`} className={`flex-1 px-2 py-1 rounded border text-xs ${c.input}`} /><select value={d.type} onChange={e => setDossDocs(prev => prev.map((p, j) => j === i ? { ...p, type: e.target.value } : p))} className={`px-2 py-1 rounded border text-xs ${c.input}`}>{DOC_TYPES.map(dt => <option key={dt.id} value={dt.id}>{dt.label}</option>)}</select></div><textarea value={d.text} onChange={e => setDossDocs(prev => prev.map((p, j) => j === i ? { ...p, text: e.target.value } : p))} placeholder="Paste document text..." rows={3} className={`w-full px-2 py-1 rounded border text-xs font-mono ${c.input}`} /></div>)}
-          <button onClick={() => setDossDocs(prev => [...prev, { title: '', text: '', type: 'general' }])} className={`text-xs ${c.textSecondaryondary} font-bold`}>➕ Add document</button>
+          <button onClick={() => setDossDocs(prev => [...prev, { title: '', text: '', type: 'general' }])} className={`text-xs ${c.textSecondary} font-bold`}>➕ Add document</button>
           <button onClick={handleDossier} disabled={loading} className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimaryPrimary} disabled:opacity-50`}>{loading ? (tool?.icon ?? '✂️') : <><span className='mr-1'>{tool?.icon ?? '✂️'}</span> Cross-Reference</>}</button>
         </div>
         {dossData && <div className="space-y-3">
-          {dossData.relationship && <div className={`${c.textSecondaryondaryCard} border rounded-xl p-4`}><p className={`text-sm ${c.text}`}>{dossData.relationship}</p></div>}
+          {dossData.relationship && <div className={`${c.textSecondaryCard} border rounded-xl p-4`}><p className={`text-sm ${c.text}`}>{dossData.relationship}</p></div>}
           {dossData.conflicts?.length > 0 && <div className={`${c.danger} border rounded-xl p-4 space-y-2`}><h3 className="font-bold text-sm">⚡ Conflicts</h3>{dossData.conflicts.map((con, i) => <div key={i}><p className="text-sm">{con.conflict}</p><p className="text-xs">{con.doc1} vs {con.doc2} · {con.which_wins}</p><p className="text-xs">Risk: {con.risk}</p></div>)}</div>}
           {dossData.gaps?.length > 0 && <div className={`${c.warning} border rounded-xl p-4`}><p className="text-xs font-bold">🚫 Gaps:</p>{dossData.gaps.map((g, i) => <p key={i} className="text-xs">• {g}</p>)}</div>}
           {dossData.overall && <div className={`${c.highlight} border rounded-xl p-4`}><p className="text-sm">{dossData.overall}</p></div>}
@@ -421,7 +421,7 @@ const JargonAssassin = ({ tool }) => {
         </div>
         {ltrData && <div className="space-y-3">
           {ltrData.subject_line && <div className={`${c.cardAlt} border ${c.border} rounded-lg p-3`}><p className={`text-xs font-bold ${c.text}`}>Subject: {ltrData.subject_line}</p></div>}
-          <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-5`}><div className="flex justify-between mb-2"><h3 className={`font-bold ${c.text}`}>Your Letter</h3><CopyBtn content={ltrData.letter + BRAND} label="Copy" /></div><p className={`text-sm ${c.textSecondaryondary} whitespace-pre-line`}>{ltrData.letter}</p></div>
+          <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-5`}><div className="flex justify-between mb-2"><h3 className={`font-bold ${c.text}`}>Your Letter</h3><CopyBtn content={ltrData.letter + BRAND} label="Copy" /></div><p className={`text-sm ${c.textSecondary} whitespace-pre-line`}>{ltrData.letter}</p></div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             {ltrData.send_to && <div className={`${c.cardAlt} rounded-lg p-2 text-center`}><p className={`text-xs ${c.textMuteded}`}>To</p><p className={`text-xs font-bold ${c.text}`}>{ltrData.send_to}</p></div>}
             {ltrData.send_via && <div className={`${c.cardAlt} rounded-lg p-2 text-center`}><p className={`text-xs ${c.textMuteded}`}>Via</p><p className={`text-xs font-bold ${c.text}`}>{ltrData.send_via}</p></div>}

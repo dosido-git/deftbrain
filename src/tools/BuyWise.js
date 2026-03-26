@@ -583,7 +583,7 @@ const BuyWise = ({ tool }) => {
             <h2 className={`text-xl sm:text-2xl font-bold ${c.text} flex items-center gap-2`}>
               <span>{tool?.icon || '🧠'}</span>{tool?.title || 'Buy Wise'}
             </h2>
-            <p className={`text-sm ${c.textSecondaryondary}`}>{tool?.tagline || "The research you'd do if you had an hour — done in seconds"}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline || "The research you'd do if you had an hour — done in seconds"}</p>
           </div>
           <select
             value={currency}
@@ -597,7 +597,7 @@ const BuyWise = ({ tool }) => {
 
       {/* Product */}
       <div className="mb-4">
-        <label className={`text-sm font-bold ${c.textSecondaryondary} block mb-1.5`}>What are you buying? <span className={c.textMuteded}>*</span></label>
+        <label className={`text-sm font-bold ${c.textSecondary} block mb-1.5`}>What are you buying? <span className={c.textMuteded}>*</span></label>
         <div className="relative">
           <span className={`absolute left-3 top-1/2 -translate-y-1/2 text-sm`}>🛒</span>
           <input
@@ -614,7 +614,7 @@ const BuyWise = ({ tool }) => {
       {/* Price + Urgency */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
         <div>
-          <label className={`text-sm font-bold ${c.textSecondaryondary} block mb-1.5`}>
+          <label className={`text-sm font-bold ${c.textSecondary} block mb-1.5`}>
             Price you've seen <span className={`font-normal ${c.textMuteded}`}>(optional)</span>
           </label>
           <div className="flex items-center gap-1">
@@ -629,7 +629,7 @@ const BuyWise = ({ tool }) => {
           </div>
         </div>
         <div>
-          <label className={`text-sm font-bold ${c.textSecondaryondary} block mb-1.5`}>How soon?</label>
+          <label className={`text-sm font-bold ${c.textSecondary} block mb-1.5`}>How soon?</label>
           <div className="flex gap-1.5">
             {URGENCY.map(u => (
               <button
@@ -648,7 +648,7 @@ const BuyWise = ({ tool }) => {
 
       {/* Priority */}
       <div className="mb-4">
-        <label className={`text-sm font-bold ${c.textSecondaryondary} block mb-1.5`}>What matters most?</label>
+        <label className={`text-sm font-bold ${c.textSecondary} block mb-1.5`}>What matters most?</label>
         <div className="flex flex-wrap gap-1.5">
           {PRIORITIES.map(p => (
             <button
@@ -706,7 +706,7 @@ const BuyWise = ({ tool }) => {
       {/* Gift recipient */}
       {isGift && (
         <div className="mb-4">
-          <label className={`text-sm font-bold ${c.textSecondaryondary} block mb-1.5`}>
+          <label className={`text-sm font-bold ${c.textSecondary} block mb-1.5`}>
             Who is it for? <span className={`font-normal ${c.textMuteded}`}>(optional — helps tailor advice)</span>
           </label>
           <input
@@ -762,7 +762,7 @@ const BuyWise = ({ tool }) => {
 
       {/* Extra context */}
       <div className="mb-5">
-        <label className={`text-sm font-bold ${c.textSecondaryondary} block mb-1.5`}>
+        <label className={`text-sm font-bold ${c.textSecondary} block mb-1.5`}>
           Anything else? <span className={`font-normal ${c.textMuteded}`}>(optional)</span>
         </label>
         <input
@@ -831,7 +831,7 @@ const BuyWise = ({ tool }) => {
               <span className="text-2xl flex-shrink-0">{r.verdict_emoji || '🧠'}</span>
               <div>
                 <h3 className={`text-base font-black ${c.text} mb-1`}>{r.verdict}</h3>
-                <p className={`text-sm ${c.textSecondaryondary}`}>{r.verdict_summary}</p>
+                <p className={`text-sm ${c.textSecondary}`}>{r.verdict_summary}</p>
               </div>
             </div>
           </div>
@@ -869,15 +869,15 @@ const BuyWise = ({ tool }) => {
         {r.gift_analysis && (
           <Section icon="🎁" title="Gift Analysis" defaultOpen={true} c={c}>
             <div className="space-y-2">
-              {r.gift_analysis.wow_factor && <p className={`text-sm ${c.textSecondaryondary}`}><strong className={c.text}>Wow Factor:</strong> {r.gift_analysis.wow_factor}</p>}
-              {r.gift_analysis.practical_vs_fun && <p className={`text-sm ${c.textSecondaryondary}`}><strong className={c.text}>Type:</strong> {r.gift_analysis.practical_vs_fun}</p>}
-              {r.gift_analysis.perceived_value && <p className={`text-sm ${c.textSecondaryondary}`}><strong className={c.text}>Perceived Value:</strong> {r.gift_analysis.perceived_value}</p>}
+              {r.gift_analysis.wow_factor && <p className={`text-sm ${c.textSecondary}`}><strong className={c.text}>Wow Factor:</strong> {r.gift_analysis.wow_factor}</p>}
+              {r.gift_analysis.practical_vs_fun && <p className={`text-sm ${c.textSecondary}`}><strong className={c.text}>Type:</strong> {r.gift_analysis.practical_vs_fun}</p>}
+              {r.gift_analysis.perceived_value && <p className={`text-sm ${c.textSecondary}`}><strong className={c.text}>Perceived Value:</strong> {r.gift_analysis.perceived_value}</p>}
               {r.gift_analysis.risk_level && (
                 <div className={`${r.gift_analysis.risk_level.includes('HIGH') ? c.danger : r.gift_analysis.risk_level.includes('LOW') ? c.success : c.warning} border rounded-lg p-3`}>
                   <p className={`text-xs font-bold`}>Risk: {r.gift_analysis.risk_level}</p>
                 </div>
               )}
-              {r.gift_analysis.alternatives_at_price && <p className={`text-sm ${c.textSecondaryondary}`}><strong className={c.text}>Alternatives:</strong> {r.gift_analysis.alternatives_at_price}</p>}
+              {r.gift_analysis.alternatives_at_price && <p className={`text-sm ${c.textSecondary}`}><strong className={c.text}>Alternatives:</strong> {r.gift_analysis.alternatives_at_price}</p>}
               {r.gift_analysis.presentation_tip && <p className={`text-xs ${c.textMuteded}`}>🎀 {r.gift_analysis.presentation_tip}</p>}
             </div>
           </Section>
@@ -886,14 +886,14 @@ const BuyWise = ({ tool }) => {
         {/* Fair Price */}
         {r.fair_price && (
           <Section icon="💲" title="Is This Price Fair?" badge={r.fair_price.verdict_badge} badgeClass={badgeColor(r.fair_price.verdict_badge)} defaultOpen={true} c={c}>
-            <p className={`text-sm ${c.textSecondaryondary}`}>{r.fair_price.analysis}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{r.fair_price.analysis}</p>
             {r.fair_price.typical_range && (
               <div className={`${c.quoteBg} rounded-lg p-3`}>
                 <p className={`text-xs font-bold ${c.text}`}>Typical range: {r.fair_price.typical_range}</p>
               </div>
             )}
             {r.fair_price.where_to_find_cheaper && (
-              <p className={`text-xs ${c.textSecondaryondary}`}>💡 {r.fair_price.where_to_find_cheaper}</p>
+              <p className={`text-xs ${c.textSecondary}`}>💡 {r.fair_price.where_to_find_cheaper}</p>
             )}
           </Section>
         )}
@@ -901,7 +901,7 @@ const BuyWise = ({ tool }) => {
         {/* Timing */}
         {r.timing && (
           <Section icon="📅" title="Buy Now or Wait?" badge={r.timing.verdict_badge} badgeClass={badgeColor(r.timing.verdict_badge)} c={c}>
-            <p className={`text-sm ${c.textSecondaryondary}`}>{r.timing.analysis}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{r.timing.analysis}</p>
             {r.timing.next_sale && (
               <div className={`${c.success} border rounded-lg p-3`}>
                 <p className={`text-xs font-bold`}>📅 Next likely sale: {r.timing.next_sale}</p>
@@ -914,7 +914,7 @@ const BuyWise = ({ tool }) => {
         {/* Total Cost */}
         {r.total_cost && (
           <Section icon="📊" title="Total Cost of Ownership" c={c}>
-            <p className={`text-sm ${c.textSecondaryondary}`}>{r.total_cost.summary}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{r.total_cost.summary}</p>
             {r.total_cost.breakdown?.length > 0 && (
               <div className="space-y-1.5">
                 {r.total_cost.breakdown.map((item, i) => (
@@ -946,7 +946,7 @@ const BuyWise = ({ tool }) => {
         {/* Cheaper Alternative */}
         {r.cheaper_alternative && (
           <Section icon="✨" title="The Cheaper Version" c={c}>
-            <p className={`text-sm ${c.textSecondaryondary}`}>{r.cheaper_alternative.suggestion}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{r.cheaper_alternative.suggestion}</p>
             {r.cheaper_alternative.tradeoffs && (
               <p className={`text-xs ${c.textMuteded}`}>⚖️ Tradeoffs: {r.cheaper_alternative.tradeoffs}</p>
             )}
@@ -963,17 +963,17 @@ const BuyWise = ({ tool }) => {
           <Section icon="♻️" title="Used & Refurbished Guide" c={c}>
             {r.used_refurb_deep_dive.where_to_buy_used?.length > 0 && (
               <div>
-                <p className={`text-[10px] font-bold ${c.textSecondaryondary} uppercase mb-1`}>Where to buy used:</p>
+                <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-1`}>Where to buy used:</p>
                 {r.used_refurb_deep_dive.where_to_buy_used.map((p, i) => (
-                  <p key={i} className={`text-xs ${c.textSecondaryondary}`}>→ {p}</p>
+                  <p key={i} className={`text-xs ${c.textSecondary}`}>→ {p}</p>
                 ))}
               </div>
             )}
             {r.used_refurb_deep_dive.what_to_inspect?.length > 0 && (
               <div>
-                <p className={`text-[10px] font-bold ${c.textSecondaryondary} uppercase mb-1`}>What to inspect:</p>
+                <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-1`}>What to inspect:</p>
                 {r.used_refurb_deep_dive.what_to_inspect.map((p, i) => (
-                  <p key={i} className={`text-xs ${c.textSecondaryondary}`}>✓ {p}</p>
+                  <p key={i} className={`text-xs ${c.textSecondary}`}>✓ {p}</p>
                 ))}
               </div>
             )}
@@ -983,13 +983,13 @@ const BuyWise = ({ tool }) => {
               </div>
             )}
             {r.used_refurb_deep_dive.risk_assessment && (
-              <p className={`text-xs ${c.textSecondaryondary}`}>⚠️ {r.used_refurb_deep_dive.risk_assessment}</p>
+              <p className={`text-xs ${c.textSecondary}`}>⚠️ {r.used_refurb_deep_dive.risk_assessment}</p>
             )}
             {r.used_refurb_deep_dive.platform_trust?.length > 0 && (
               <div className="space-y-1">
-                <p className={`text-[10px] font-bold ${c.textSecondaryondary} uppercase`}>Platform trust:</p>
+                <p className={`text-[10px] font-bold ${c.textSecondary} uppercase`}>Platform trust:</p>
                 {r.used_refurb_deep_dive.platform_trust.map((pt, i) => (
-                  <div key={i} className={`flex items-center gap-2 text-xs ${c.textSecondaryondary}`}>
+                  <div key={i} className={`flex items-center gap-2 text-xs ${c.textSecondary}`}>
                     <span className={`font-bold ${pt.trust === 'HIGH' ? c.textOk : pt.trust === 'LOW' ? c.textDanger : c.textCaution}`}>
                       {pt.trust}
                     </span>
@@ -1005,9 +1005,9 @@ const BuyWise = ({ tool }) => {
         {/* Warranty & Returns */}
         {r.warranty_returns && (
           <Section icon="🛡️" title="Warranty & Returns" c={c}>
-            {r.warranty_returns.typical_warranty && <p className={`text-sm ${c.textSecondaryondary}`}>{r.warranty_returns.typical_warranty}</p>}
-            {r.warranty_returns.extended_worth_it && <p className={`text-xs ${c.textSecondaryondary}`}>📋 {r.warranty_returns.extended_worth_it}</p>}
-            {r.warranty_returns.return_tips && <p className={`text-xs ${c.textSecondaryondary}`}>↩️ {r.warranty_returns.return_tips}</p>}
+            {r.warranty_returns.typical_warranty && <p className={`text-sm ${c.textSecondary}`}>{r.warranty_returns.typical_warranty}</p>}
+            {r.warranty_returns.extended_worth_it && <p className={`text-xs ${c.textSecondary}`}>📋 {r.warranty_returns.extended_worth_it}</p>}
+            {r.warranty_returns.return_tips && <p className={`text-xs ${c.textSecondary}`}>↩️ {r.warranty_returns.return_tips}</p>}
             {r.warranty_returns.credit_card_protection && (
               <div className={`${c.highlight} border rounded-lg p-3`}>
                 <p className={`text-xs`}>💳 {r.warranty_returns.credit_card_protection}</p>
@@ -1019,7 +1019,7 @@ const BuyWise = ({ tool }) => {
         {/* Buy vs Subscribe */}
         {r.buy_vs_subscribe && (
           <Section icon="🔄" title="Buy vs Subscribe vs Rent" c={c}>
-            <p className={`text-sm ${c.textSecondaryondary}`}>{r.buy_vs_subscribe.analysis}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{r.buy_vs_subscribe.analysis}</p>
             {r.buy_vs_subscribe.breakeven && (
               <div className={`${c.quoteBg} rounded-lg p-3`}>
                 <p className={`text-xs font-bold ${c.text}`}>⏱️ {r.buy_vs_subscribe.breakeven}</p>
@@ -1034,7 +1034,7 @@ const BuyWise = ({ tool }) => {
         {/* Quality Tier */}
         {r.quality_tier && (
           <Section icon="🏷️" title="Quality Tier Advice" badge={r.quality_tier.recommended_tier} badgeClass={c.highlightBg} c={c}>
-            <p className={`text-sm ${c.textSecondaryondary}`}>{r.quality_tier.analysis}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{r.quality_tier.analysis}</p>
             {r.quality_tier.spend_vs_save && <p className={`text-xs ${c.textMuteded}`}>{r.quality_tier.spend_vs_save}</p>}
           </Section>
         )}
@@ -1042,14 +1042,14 @@ const BuyWise = ({ tool }) => {
         {/* Regret Predictor */}
         {r.regret_predictor && (
           <Section icon="⚠️" title="Regret Predictor" c={c}>
-            <p className={`text-sm ${c.textSecondaryondary}`}>{r.regret_predictor.common_regrets}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{r.regret_predictor.common_regrets}</p>
             {r.regret_predictor.usage_reality && (
               <div className={`${c.warning} border rounded-lg p-3`}>
                 <p className={`text-xs`}>📊 {r.regret_predictor.usage_reality}</p>
               </div>
             )}
             {r.regret_predictor.avoid_regret_tip && (
-              <p className={`text-xs ${c.textSecondaryondary}`}>✓ {r.regret_predictor.avoid_regret_tip}</p>
+              <p className={`text-xs ${c.textSecondary}`}>✓ {r.regret_predictor.avoid_regret_tip}</p>
             )}
           </Section>
         )}
@@ -1059,7 +1059,7 @@ const BuyWise = ({ tool }) => {
           <Section icon="🚩" title="Watch Out For" c={c}>
             <div className="space-y-2">
               {r.watch_out.map((item, i) => (
-                <p key={i} className={`text-xs ${c.textSecondaryondary}`}>⚠️ {item}</p>
+                <p key={i} className={`text-xs ${c.textSecondary}`}>⚠️ {item}</p>
               ))}
             </div>
           </Section>
@@ -1068,7 +1068,7 @@ const BuyWise = ({ tool }) => {
         {/* Negotiation */}
         {r.negotiation && (
           <Section icon="⚡" title="Negotiation Playbook" c={c}>
-            <p className={`text-sm ${c.textSecondaryondary}`}>{r.negotiation.context}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{r.negotiation.context}</p>
             {r.negotiation.script && (
               <div className={`${c.quoteBg} rounded-lg p-3`}>
                 <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>Say this:</p>
@@ -1080,9 +1080,9 @@ const BuyWise = ({ tool }) => {
             )}
             {r.negotiation.leverage_points?.length > 0 && (
               <div className="space-y-1">
-                <p className={`text-[10px] font-bold ${c.textSecondaryondary} uppercase`}>Your leverage:</p>
+                <p className={`text-[10px] font-bold ${c.textSecondary} uppercase`}>Your leverage:</p>
                 {r.negotiation.leverage_points.map((lp, i) => (
-                  <p key={i} className={`text-xs ${c.textSecondaryondary}`}>• {lp}</p>
+                  <p key={i} className={`text-xs ${c.textSecondary}`}>• {lp}</p>
                 ))}
               </div>
             )}
@@ -1092,7 +1092,7 @@ const BuyWise = ({ tool }) => {
         {/* Comparison */}
         {r.comparison && (
           <Section icon="⚖️" title="Comparison" badge={r.comparison.winner} badgeClass={c.success} defaultOpen={true} c={c}>
-            <p className={`text-sm ${c.textSecondaryondary}`}>{r.comparison.analysis}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{r.comparison.analysis}</p>
             {r.comparison.for_your_priority && (
               <div className={`${c.highlightBg} border rounded-lg p-3`}>
                 <p className={`text-xs font-bold ${c.textCyan}`}>Based on your priority ({priority}): {r.comparison.for_your_priority}</p>
@@ -1114,11 +1114,11 @@ const BuyWise = ({ tool }) => {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <p className={`text-[10px] font-bold ${c.textOk} uppercase mb-1`}>{product}</p>
-                  {r.comparison.pros_a.map((p, i) => <p key={i} className={`text-[11px] ${c.textSecondaryondary}`}>+ {p}</p>)}
+                  {r.comparison.pros_a.map((p, i) => <p key={i} className={`text-[11px] ${c.textSecondary}`}>+ {p}</p>)}
                 </div>
                 <div>
                   <p className={`text-[10px] font-bold ${c.textOk} uppercase mb-1`}>{comparisons[0]?.product}</p>
-                  {r.comparison.pros_b?.map((p, i) => <p key={i} className={`text-[11px] ${c.textSecondaryondary}`}>+ {p}</p>)}
+                  {r.comparison.pros_b?.map((p, i) => <p key={i} className={`text-[11px] ${c.textSecondary}`}>+ {p}</p>)}
                 </div>
               </div>
             )}
@@ -1149,7 +1149,7 @@ const BuyWise = ({ tool }) => {
               <span className={`text-xl flex-shrink-0`}>👍</span>
               <div>
                 <h3 className={`text-sm font-bold mb-1`}>Bottom Line</h3>
-                <p className={`text-sm ${c.textSecondaryondary}`}>{r.bottom_line}</p>
+                <p className={`text-sm ${c.textSecondary}`}>{r.bottom_line}</p>
               </div>
             </div>
           </div>
@@ -1202,7 +1202,7 @@ const BuyWise = ({ tool }) => {
                   <div key={i} className={`${c.quoteBg} rounded-lg p-3 space-y-2`}>
                     <p className={`text-xs font-bold ${c.textCyan}`}>Q: {fu.question}</p>
                     {fu.key_takeaway && <p className={`text-sm font-bold ${c.text}`}>{fu.key_takeaway}</p>}
-                    {fu.answer && <p className={`text-xs ${c.textSecondaryondary} leading-relaxed`}>{fu.answer}</p>}
+                    {fu.answer && <p className={`text-xs ${c.textSecondary} leading-relaxed`}>{fu.answer}</p>}
                     {fu.sources_to_check?.length > 0 && (
                       <p className={`text-[10px] ${c.textMuteded}`}>📚 Check: {fu.sources_to_check.join(', ')}</p>
                     )}
@@ -1235,7 +1235,7 @@ const BuyWise = ({ tool }) => {
               <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-4`}>
                 <div>
                   <div className="flex items-center justify-between mb-1">
-                    <label className={`text-xs font-bold ${c.textSecondaryondary}`}>How often will you use it?</label>
+                    <label className={`text-xs font-bold ${c.textSecondary}`}>How often will you use it?</label>
                     <span className={`text-xs font-bold ${c.textCyan}`}>{ppuFrequency}× / month</span>
                   </div>
                   <input
@@ -1249,7 +1249,7 @@ const BuyWise = ({ tool }) => {
                 </div>
                 <div>
                   <div className="flex items-center justify-between mb-1">
-                    <label className={`text-xs font-bold ${c.textSecondaryondary}`}>How long will you keep it?</label>
+                    <label className={`text-xs font-bold ${c.textSecondary}`}>How long will you keep it?</label>
                     <span className={`text-xs font-bold ${c.textCyan}`}>{ppuLifespan} year{ppuLifespan !== 1 ? 's' : ''}</span>
                   </div>
                   <input
@@ -1264,7 +1264,7 @@ const BuyWise = ({ tool }) => {
                 {pricePerUse && (
                   <div className={`${Number(pricePerUse) < 1 ? c.success : Number(pricePerUse) > 10 ? c.danger : c.warning} border-2 rounded-xl p-4 text-center`}>
                     <p className={`text-3xl font-black ${c.text}`}>{currency}{pricePerUse}</p>
-                    <p className={`text-xs ${c.textSecondaryondary}`}>per use over {ppuLifespan} year{ppuLifespan !== 1 ? 's' : ''}</p>
+                    <p className={`text-xs ${c.textSecondary}`}>per use over {ppuLifespan} year{ppuLifespan !== 1 ? 's' : ''}</p>
                     <p className={`text-[10px] ${c.textMuteded} mt-1`}>
                       {ppuFrequency * 12 * ppuLifespan} total uses · {currency}{price} ÷ {ppuFrequency * 12 * ppuLifespan}
                     </p>
@@ -1326,7 +1326,7 @@ const BuyWise = ({ tool }) => {
         {/* Convince My Partner — quick launch from results */}
         {r.verdict && product.trim() && (
           <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-[10px] font-bold ${c.textSecondaryondary} uppercase mb-2`}>Need backup?</p>
+            <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-2`}>Need backup?</p>
             <div className="flex gap-2 flex-wrap">
               <button
                 onClick={() => { setConvinceDirection('for'); setView('convince'); }}
@@ -1346,7 +1346,7 @@ const BuyWise = ({ tool }) => {
 
         {/* Cross References */}
         <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-          <p className={`text-[10px] font-bold ${c.textSecondaryondary} uppercase mb-2`}>Related tools</p>
+          <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-2`}>Related tools</p>
           <div className="flex flex-wrap gap-x-4 gap-y-1">
             <a href="/FakeReviewDetective" className={linkStyle}>
               🔍 Fake Review Detective
@@ -1386,87 +1386,87 @@ const BuyWise = ({ tool }) => {
           <div className="text-center py-4">
             <span className="text-5xl block mb-4">{r.verdict_emoji || '🧠'}</span>
             <h3 className={`text-lg font-black ${c.text} mb-2`}>{r.verdict}</h3>
-            <p className={`text-sm ${c.textSecondaryondary}`}>{r.verdict_summary}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{r.verdict_summary}</p>
           </div>
         );
         case 'impulse': return (
           <div className="space-y-3">
-            {r.impulse_check.do_you_need_it && <p className={`text-sm ${c.textSecondaryondary}`}><strong className={c.text}>Need it?</strong> {r.impulse_check.do_you_need_it}</p>}
-            {r.impulse_check.what_else_could_you_do && <p className={`text-sm ${c.textSecondaryondary}`}><strong className={c.text}>Opportunity cost:</strong> {r.impulse_check.what_else_could_you_do}</p>}
+            {r.impulse_check.do_you_need_it && <p className={`text-sm ${c.textSecondary}`}><strong className={c.text}>Need it?</strong> {r.impulse_check.do_you_need_it}</p>}
+            {r.impulse_check.what_else_could_you_do && <p className={`text-sm ${c.textSecondary}`}><strong className={c.text}>Opportunity cost:</strong> {r.impulse_check.what_else_could_you_do}</p>}
             {r.impulse_check.wait_recommendation && <p className={`text-sm font-bold ${c.textCaution}`}>{r.impulse_check.wait_recommendation}</p>}
           </div>
         );
         case 'gift': return (
           <div className="space-y-2">
-            {r.gift_analysis.wow_factor && <p className={`text-sm ${c.textSecondaryondary}`}><strong className={c.text}>Wow Factor:</strong> {r.gift_analysis.wow_factor}</p>}
-            {r.gift_analysis.risk_level && <p className={`text-sm ${c.textSecondaryondary}`}><strong className={c.text}>Risk:</strong> {r.gift_analysis.risk_level}</p>}
-            {r.gift_analysis.presentation_tip && <p className={`text-sm ${c.textSecondaryondary}`}>🎀 {r.gift_analysis.presentation_tip}</p>}
+            {r.gift_analysis.wow_factor && <p className={`text-sm ${c.textSecondary}`}><strong className={c.text}>Wow Factor:</strong> {r.gift_analysis.wow_factor}</p>}
+            {r.gift_analysis.risk_level && <p className={`text-sm ${c.textSecondary}`}><strong className={c.text}>Risk:</strong> {r.gift_analysis.risk_level}</p>}
+            {r.gift_analysis.presentation_tip && <p className={`text-sm ${c.textSecondary}`}>🎀 {r.gift_analysis.presentation_tip}</p>}
           </div>
         );
         case 'fair_price': return (
           <div className="space-y-2">
             <div className={`inline-block px-3 py-1 rounded-full text-xs font-black ${badgeColor(r.fair_price.verdict_badge)}`}>{r.fair_price.verdict_badge}</div>
-            <p className={`text-sm ${c.textSecondaryondary}`}>{r.fair_price.analysis}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{r.fair_price.analysis}</p>
             {r.fair_price.typical_range && <p className={`text-sm font-bold ${c.text}`}>{r.fair_price.typical_range}</p>}
           </div>
         );
         case 'timing': return (
           <div className="space-y-2">
             <div className={`inline-block px-3 py-1 rounded-full text-xs font-black ${badgeColor(r.timing.verdict_badge)}`}>{r.timing.verdict_badge}</div>
-            <p className={`text-sm ${c.textSecondaryondary}`}>{r.timing.analysis}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{r.timing.analysis}</p>
             {r.timing.next_sale && <p className={`text-sm font-bold ${c.textOk}`}>📅 {r.timing.next_sale}</p>}
           </div>
         );
         case 'total_cost': return (
           <div className="space-y-2">
-            <p className={`text-sm ${c.textSecondaryondary}`}>{r.total_cost.summary}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{r.total_cost.summary}</p>
             {r.total_cost.year_1_total && <p className={`text-lg font-black ${c.textCyan}`}>{r.total_cost.year_1_total}</p>}
           </div>
         );
         case 'cheaper': return (
           <div className="space-y-2">
-            <p className={`text-sm ${c.textSecondaryondary}`}>{r.cheaper_alternative.suggestion}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{r.cheaper_alternative.suggestion}</p>
             {r.cheaper_alternative.tradeoffs && <p className={`text-xs ${c.textMuteded}`}>⚖️ {r.cheaper_alternative.tradeoffs}</p>}
           </div>
         );
         case 'used': return (
           <div className="space-y-2">
-            <p className={`text-sm ${c.textSecondaryondary}`}>{r.used_refurb_deep_dive.risk_assessment}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{r.used_refurb_deep_dive.risk_assessment}</p>
             {r.used_refurb_deep_dive.typical_used_price && <p className={`text-sm font-bold ${c.text}`}>Used: {r.used_refurb_deep_dive.typical_used_price}</p>}
           </div>
         );
         case 'warranty': return (
           <div className="space-y-2">
-            {r.warranty_returns.typical_warranty && <p className={`text-sm ${c.textSecondaryondary}`}>{r.warranty_returns.typical_warranty}</p>}
-            {r.warranty_returns.extended_worth_it && <p className={`text-xs ${c.textSecondaryondary}`}>{r.warranty_returns.extended_worth_it}</p>}
+            {r.warranty_returns.typical_warranty && <p className={`text-sm ${c.textSecondary}`}>{r.warranty_returns.typical_warranty}</p>}
+            {r.warranty_returns.extended_worth_it && <p className={`text-xs ${c.textSecondary}`}>{r.warranty_returns.extended_worth_it}</p>}
           </div>
         );
         case 'subscribe': return (
           <div className="space-y-2">
-            <p className={`text-sm ${c.textSecondaryondary}`}>{r.buy_vs_subscribe.analysis}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{r.buy_vs_subscribe.analysis}</p>
             {r.buy_vs_subscribe.recommendation && <p className={`text-sm font-bold ${c.textCyan}`}>→ {r.buy_vs_subscribe.recommendation}</p>}
           </div>
         );
         case 'quality': return (
           <div className="space-y-2">
             <div className={`inline-block px-3 py-1 rounded-full text-xs font-black ${c.highlightBg}`}>{r.quality_tier.recommended_tier}</div>
-            <p className={`text-sm ${c.textSecondaryondary}`}>{r.quality_tier.analysis}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{r.quality_tier.analysis}</p>
           </div>
         );
         case 'regret': return (
           <div className="space-y-2">
-            <p className={`text-sm ${c.textSecondaryondary}`}>{r.regret_predictor.common_regrets}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{r.regret_predictor.common_regrets}</p>
             {r.regret_predictor.usage_reality && <p className={`text-xs ${c.textCaution}`}>📊 {r.regret_predictor.usage_reality}</p>}
           </div>
         );
         case 'watchout': return (
           <div className="space-y-2">
-            {r.watch_out.map((item, i) => <p key={i} className={`text-sm ${c.textSecondaryondary}`}>⚠️ {item}</p>)}
+            {r.watch_out.map((item, i) => <p key={i} className={`text-sm ${c.textSecondary}`}>⚠️ {item}</p>)}
           </div>
         );
         case 'negotiation': return (
           <div className="space-y-2">
-            <p className={`text-sm ${c.textSecondaryondary}`}>{r.negotiation.context}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{r.negotiation.context}</p>
             {r.negotiation.script && (
               <div className={`${c.quoteBg} rounded-lg p-3`}>
                 <p className={`text-xs ${c.text}`}>{r.negotiation.script}</p>
@@ -1477,7 +1477,7 @@ const BuyWise = ({ tool }) => {
         case 'comparison': return (
           <div className="space-y-2">
             <p className={`text-sm font-bold ${c.text}`}>Winner: {r.comparison.winner}</p>
-            <p className={`text-sm ${c.textSecondaryondary}`}>{r.comparison.for_your_priority || r.comparison.analysis}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{r.comparison.for_your_priority || r.comparison.analysis}</p>
           </div>
         );
         case 'where': return (
@@ -1555,11 +1555,11 @@ const BuyWise = ({ tool }) => {
     <div className="space-y-4">
       <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
         <h2 className={`text-lg font-bold ${c.text} mb-1`}>💰 Budget Mode</h2>
-        <p className={`text-sm ${c.textSecondaryondary} mb-4`}>Tell me your budget and I'll find the best option</p>
+        <p className={`text-sm ${c.textSecondary} mb-4`}>Tell me your budget and I'll find the best option</p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
           <div>
-            <label className={`text-sm font-bold ${c.textSecondaryondary} block mb-1.5`}>Budget</label>
+            <label className={`text-sm font-bold ${c.textSecondary} block mb-1.5`}>Budget</label>
             <div className="flex items-center gap-1">
               <span className={`text-sm font-bold ${c.textMuteded}`}>{currency}</span>
               <input
@@ -1572,7 +1572,7 @@ const BuyWise = ({ tool }) => {
             </div>
           </div>
           <div>
-            <label className={`text-sm font-bold ${c.textSecondaryondary} block mb-1.5`}>Category</label>
+            <label className={`text-sm font-bold ${c.textSecondary} block mb-1.5`}>Category</label>
             <select
               value={budgetCategory}
               onChange={e => setBudgetCategory(e.target.value)}
@@ -1585,7 +1585,7 @@ const BuyWise = ({ tool }) => {
         </div>
 
         <div className="mb-4">
-          <label className={`text-sm font-bold ${c.textSecondaryondary} block mb-1.5`}>
+          <label className={`text-sm font-bold ${c.textSecondary} block mb-1.5`}>
             What do you need it for? <span className={`font-normal ${c.textMuteded}`}>(optional)</span>
           </label>
           <input
@@ -1611,7 +1611,7 @@ const BuyWise = ({ tool }) => {
         <div className="space-y-4">
           {budgetResults.budget_verdict && (
             <div className={`${c.highlight} border rounded-xl p-4`}>
-              <p className={`text-sm ${c.textSecondaryondary}`}>{budgetResults.budget_verdict}</p>
+              <p className={`text-sm ${c.textSecondary}`}>{budgetResults.budget_verdict}</p>
             </div>
           )}
 
@@ -1624,7 +1624,7 @@ const BuyWise = ({ tool }) => {
               </div>
               <p className={`text-sm font-bold ${c.text}`}>{budgetResults.top_pick.product}</p>
               <p className={`text-sm font-bold ${c.textCyan} mb-1`}>{budgetResults.top_pick.price}</p>
-              <p className={`text-xs ${c.textSecondaryondary}`}>{budgetResults.top_pick.why}</p>
+              <p className={`text-xs ${c.textSecondary}`}>{budgetResults.top_pick.why}</p>
               {budgetResults.top_pick.where && <p className={`text-xs ${c.textMuteded} mt-1`}>🛒 {budgetResults.top_pick.where}</p>}
               <div className="mt-2">
                 <button
@@ -1646,7 +1646,7 @@ const BuyWise = ({ tool }) => {
               </div>
               <p className={`text-sm font-bold ${c.text}`}>{budgetResults.runner_up.product}</p>
               <p className={`text-xs font-bold ${c.textCyan}`}>{budgetResults.runner_up.price}</p>
-              <p className={`text-xs ${c.textSecondaryondary} mt-1`}>{budgetResults.runner_up.why}</p>
+              <p className={`text-xs ${c.textSecondary} mt-1`}>{budgetResults.runner_up.why}</p>
             </div>
           )}
 
@@ -1665,7 +1665,7 @@ const BuyWise = ({ tool }) => {
               </div>
               <p className={`text-sm font-bold ${c.text}`}>{budgetResults.stretch_pick.product}</p>
               <p className={`text-xs font-bold ${c.textCyan}`}>{budgetResults.stretch_pick.price}</p>
-              <p className={`text-xs ${c.textSecondaryondary} mt-1`}>{budgetResults.stretch_pick.why}</p>
+              <p className={`text-xs ${c.textSecondary} mt-1`}>{budgetResults.stretch_pick.why}</p>
             </div>
           )}
 
@@ -1696,7 +1696,7 @@ const BuyWise = ({ tool }) => {
     <div className="space-y-4">
       <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
         <h2 className={`text-lg font-bold ${c.text} mb-1`}>📅 Deal Season Calendar</h2>
-        <p className={`text-sm ${c.textSecondaryondary} mb-4`}>Best and worst times to buy, by category</p>
+        <p className={`text-sm ${c.textSecondary} mb-4`}>Best and worst times to buy, by category</p>
 
         <div className="flex gap-2 mb-4">
           <select
@@ -1751,7 +1751,7 @@ const BuyWise = ({ tool }) => {
                         : c.calBadgeAvg
                       }`}>{m.rating}</span>
                     </div>
-                    <p className={`text-[10px] ${c.textSecondaryondary} leading-tight`}>{m.events}</p>
+                    <p className={`text-[10px] ${c.textSecondary} leading-tight`}>{m.events}</p>
                     {m.typical_discount && (
                       <p className={`text-[10px] font-bold ${c.textCyan} mt-1`}>{m.typical_discount}</p>
                     )}
@@ -1775,7 +1775,7 @@ const BuyWise = ({ tool }) => {
               <h3 className={`text-sm font-bold ${c.text} mb-2`}>💡 Insider Tips</h3>
               <div className="space-y-2">
                 {calResults.pro_tips.map((tip, i) => (
-                  <p key={i} className={`text-xs ${c.textSecondaryondary}`}>→ {tip}</p>
+                  <p key={i} className={`text-xs ${c.textSecondary}`}>→ {tip}</p>
                 ))}
               </div>
             </div>
@@ -1795,7 +1795,7 @@ const BuyWise = ({ tool }) => {
         <div className="flex items-center justify-between mb-3">
           <div>
             <h2 className={`text-lg font-bold ${c.text}`}>📜 Purchase History</h2>
-            <p className={`text-sm ${c.textSecondaryondary}`}>Your past research and decision journal</p>
+            <p className={`text-sm ${c.textSecondary}`}>Your past research and decision journal</p>
           </div>
           {history.length > 0 && (
             <button
@@ -1850,7 +1850,7 @@ const BuyWise = ({ tool }) => {
                       {new Date(entry.date).toLocaleDateString()}
                       {entry.price ? ` · ${entry.currency || currency}${entry.price}` : ''}
                     </p>
-                    {entry.verdict && <p className={`text-xs ${c.textSecondaryondary} mt-0.5 line-clamp-1`}>{entry.verdict}</p>}
+                    {entry.verdict && <p className={`text-xs ${c.textSecondary} mt-0.5 line-clamp-1`}>{entry.verdict}</p>}
                   </div>
                 </div>
                 <div className="flex gap-1 flex-shrink-0">
@@ -1867,7 +1867,7 @@ const BuyWise = ({ tool }) => {
               {/* Decision journal */}
               {entry.bought === null ? (
                 <div className={`mt-3 pt-3 border-t ${c.border}`}>
-                  <p className={`text-[10px] font-bold ${c.textSecondaryondary} mb-1.5`}>Did you buy it?</p>
+                  <p className={`text-[10px] font-bold ${c.textSecondary} mb-1.5`}>Did you buy it?</p>
                   <div className="flex gap-2">
                     <button
                       onClick={() => updateHistoryEntry(entry.id, { bought: true })}
@@ -1885,7 +1885,7 @@ const BuyWise = ({ tool }) => {
                 </div>
               ) : entry.bought === true && entry.satisfaction === null ? (
                 <div className={`mt-3 pt-3 border-t ${c.border}`}>
-                  <p className={`text-[10px] font-bold ${c.textSecondaryondary} mb-1.5`}>How happy are you? (1-5)</p>
+                  <p className={`text-[10px] font-bold ${c.textSecondary} mb-1.5`}>How happy are you? (1-5)</p>
                   <div className="flex gap-1.5">
                     {[1, 2, 3, 4, 5].map(n => (
                       <button
@@ -1928,7 +1928,7 @@ const BuyWise = ({ tool }) => {
     <div className="space-y-4">
       <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
         <h2 className={`text-lg font-bold ${c.text} mb-1`}>📸 Photo ID</h2>
-        <p className={`text-sm ${c.textSecondaryondary} mb-4`}>Snap a photo of any product — I'll identify it and tell you what it's worth</p>
+        <p className={`text-sm ${c.textSecondary} mb-4`}>Snap a photo of any product — I'll identify it and tell you what it's worth</p>
 
         <label className={`block cursor-pointer`}>
           <div className={`border-2 border-dashed rounded-xl p-8 text-center transition-colors ${c.checkBorder} hover:border-cyan-500`}>
@@ -1944,7 +1944,7 @@ const BuyWise = ({ tool }) => {
             {loading && (
               <div className="flex items-center justify-center gap-2 mt-2">
                 <span className="animate-spin inline-block">{tool?.icon ?? '🧠'}</span>
-                <span className={`text-sm ${c.textSecondaryondary}`}>Identifying product...</span>
+                <span className={`text-sm ${c.textSecondary}`}>Identifying product...</span>
               </div>
             )}
           </div>
@@ -1982,14 +1982,14 @@ const BuyWise = ({ tool }) => {
                     {photoResults.confidence} confidence
                   </span>
                 </div>
-                {photoResults.condition && <p className={`text-xs ${c.textSecondaryondary} mb-1`}>Condition: {photoResults.condition}</p>}
+                {photoResults.condition && <p className={`text-xs ${c.textSecondary} mb-1`}>Condition: {photoResults.condition}</p>}
                 {photoResults.estimated_value && (
                   <div className={`${c.quoteBg} rounded-lg p-3 my-2`}>
                     <p className={`text-sm font-black ${c.textCyan}`}>{photoResults.estimated_value}</p>
                     <p className={`text-[10px] ${c.textMuteded}`}>Estimated market value</p>
                   </div>
                 )}
-                {photoResults.quick_verdict && <p className={`text-sm ${c.textSecondaryondary}`}>{photoResults.quick_verdict}</p>}
+                {photoResults.quick_verdict && <p className={`text-sm ${c.textSecondary}`}>{photoResults.quick_verdict}</p>}
               </div>
 
               {/* Red flags */}
@@ -2041,7 +2041,7 @@ const BuyWise = ({ tool }) => {
     <div className="space-y-4">
       <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
         <h2 className={`text-lg font-bold ${c.text} mb-1`}>💬 Convince My Partner</h2>
-        <p className={`text-sm ${c.textSecondaryondary} mb-4`}>
+        <p className={`text-sm ${c.textSecondary} mb-4`}>
           {product.trim()
             ? `Build the case ${convinceDirection === 'for' ? 'for' : 'against'} buying: ${product}`
             : 'Generate a persuasive (but honest) argument to share'}
@@ -2069,7 +2069,7 @@ const BuyWise = ({ tool }) => {
 
         {!product.trim() && (
           <div className="mb-4">
-            <label className={`text-sm font-bold ${c.textSecondaryondary} block mb-1.5`}>What product?</label>
+            <label className={`text-sm font-bold ${c.textSecondary} block mb-1.5`}>What product?</label>
             <input
               type="text"
               value={product}
@@ -2081,7 +2081,7 @@ const BuyWise = ({ tool }) => {
         )}
 
         <div className="mb-4">
-          <label className={`text-sm font-bold ${c.textSecondaryondary} block mb-1.5`}>
+          <label className={`text-sm font-bold ${c.textSecondary} block mb-1.5`}>
             Context <span className={`font-normal ${c.textMuteded}`}>(optional — helps tailor the argument)</span>
           </label>
           <input
@@ -2114,20 +2114,20 @@ const BuyWise = ({ tool }) => {
 
           {/* Arguments */}
           <Section icon="🧮" title="The Practical Case" defaultOpen={true} c={c}>
-            <p className={`text-sm ${c.textSecondaryondary}`}>{convinceResults.practical_case}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{convinceResults.practical_case}</p>
           </Section>
 
           <Section icon="❤️" title="The Emotional Case" defaultOpen={true} c={c}>
-            <p className={`text-sm ${c.textSecondaryondary}`}>{convinceResults.emotional_case}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{convinceResults.emotional_case}</p>
           </Section>
 
           <Section icon="💰" title="The Financial Case" defaultOpen={true} c={c}>
-            <p className={`text-sm ${c.textSecondaryondary}`}>{convinceResults.financial_case}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{convinceResults.financial_case}</p>
           </Section>
 
           {convinceResults.counter_argument && (
             <Section icon="⚖️" title="Anticipating Pushback" c={c}>
-              <p className={`text-sm ${c.textSecondaryondary}`}>{convinceResults.counter_argument}</p>
+              <p className={`text-sm ${c.textSecondary}`}>{convinceResults.counter_argument}</p>
             </Section>
           )}
 
@@ -2141,7 +2141,7 @@ const BuyWise = ({ tool }) => {
           {/* One-liner to text */}
           {convinceResults.one_liner && (
             <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-              <p className={`text-[10px] font-bold ${c.textSecondaryondary} uppercase mb-2`}>The one-liner to text them</p>
+              <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-2`}>The one-liner to text them</p>
               <div className={`${c.quoteBg} rounded-lg p-3 mb-2`}>
                 <p className={`text-sm ${c.text} leading-relaxed`}>{convinceResults.one_liner}</p>
               </div>
@@ -2169,7 +2169,7 @@ const BuyWise = ({ tool }) => {
     <div className="space-y-4">
       <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
         <h2 className={`text-lg font-bold ${c.text} mb-1`}>🛍️ Haul Review</h2>
-        <p className={`text-sm ${c.textSecondaryondary} mb-4`}>Add everything you're planning to buy — I'll review the whole list</p>
+        <p className={`text-sm ${c.textSecondary} mb-4`}>Add everything you're planning to buy — I'll review the whole list</p>
 
         {/* Items */}
         <div className="space-y-2 mb-4">
@@ -2214,7 +2214,7 @@ const BuyWise = ({ tool }) => {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
           <div>
-            <label className={`text-sm font-bold ${c.textSecondaryondary} block mb-1.5`}>
+            <label className={`text-sm font-bold ${c.textSecondary} block mb-1.5`}>
               Budget <span className={`font-normal ${c.textMuteded}`}>(optional)</span>
             </label>
             <div className="flex items-center gap-1">
@@ -2229,7 +2229,7 @@ const BuyWise = ({ tool }) => {
             </div>
           </div>
           <div>
-            <label className={`text-sm font-bold ${c.textSecondaryondary} block mb-1.5`}>
+            <label className={`text-sm font-bold ${c.textSecondary} block mb-1.5`}>
               Occasion <span className={`font-normal ${c.textMuteded}`}>(optional)</span>
             </label>
             <input
@@ -2288,7 +2288,7 @@ const BuyWise = ({ tool }) => {
                           : c.warning
                         }`}>{item.verdict}</span>
                       </div>
-                      <p className={`text-[11px] ${c.textSecondaryondary} mt-0.5`}>{item.note}</p>
+                      <p className={`text-[11px] ${c.textSecondary} mt-0.5`}>{item.note}</p>
                       {item.better_alternative && item.better_alternative !== 'null' && (
                         <p className={`text-[10px] ${c.textCyan} mt-0.5`}>→ Better: {item.better_alternative}</p>
                       )}
@@ -2332,7 +2332,7 @@ const BuyWise = ({ tool }) => {
                 {haulResults.priority_order.map((item, i) => (
                   <div key={i} className={`flex items-center gap-2 p-2 rounded-lg ${i === 0 ? c.highlightBg : c.quoteBg}`}>
                     <span className={`text-xs font-black ${i === 0 ? c.textCyan : c.textMuteded} w-5 text-center`}>#{i + 1}</span>
-                    <span className={`text-xs ${i === 0 ? `font-bold ${c.text}` : c.textSecondaryondary}`}>{item}</span>
+                    <span className={`text-xs ${i === 0 ? `font-bold ${c.text}` : c.textSecondary}`}>{item}</span>
                   </div>
                 ))}
               </div>
@@ -2342,7 +2342,7 @@ const BuyWise = ({ tool }) => {
           {/* Budget note */}
           {haulResults.budget_note && (
             <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-              <p className={`text-xs ${c.textSecondaryondary}`}>💰 {haulResults.budget_note}</p>
+              <p className={`text-xs ${c.textSecondary}`}>💰 {haulResults.budget_note}</p>
             </div>
           )}
 
@@ -2373,7 +2373,7 @@ const BuyWise = ({ tool }) => {
 
         <div className="space-y-3">
           <div>
-            <label className={`text-sm font-bold ${c.textSecondaryondary} block mb-1.5`}>What service were you quoted for?</label>
+            <label className={`text-sm font-bold ${c.textSecondary} block mb-1.5`}>What service were you quoted for?</label>
             <input type="text" value={quoteService} onChange={e => setQuoteService(e.target.value)}
               placeholder="e.g., furnace replacement, wedding photographer, roof repair, math tutor..."
               className={`w-full px-4 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
@@ -2381,7 +2381,7 @@ const BuyWise = ({ tool }) => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className={`text-sm font-bold ${c.textSecondaryondary} block mb-1.5`}>
+              <label className={`text-sm font-bold ${c.textSecondary} block mb-1.5`}>
                 Quote amount <span className={`font-normal ${c.textMuteded}`}>(optional)</span>
               </label>
               <div className="flex items-center gap-1">
@@ -2391,7 +2391,7 @@ const BuyWise = ({ tool }) => {
               </div>
             </div>
             <div>
-              <label className={`text-sm font-bold ${c.textSecondaryondary} block mb-1.5`}>
+              <label className={`text-sm font-bold ${c.textSecondary} block mb-1.5`}>
                 Location <span className={`font-normal ${c.textMuteded}`}>(optional)</span>
               </label>
               <input type="text" value={quoteLocation} onChange={e => setQuoteLocation(e.target.value)}
@@ -2401,7 +2401,7 @@ const BuyWise = ({ tool }) => {
           </div>
 
           <div>
-            <label className={`text-sm font-bold ${c.textSecondaryondary} block mb-1.5`}>
+            <label className={`text-sm font-bold ${c.textSecondary} block mb-1.5`}>
               Quote details <span className={`font-normal ${c.textMuteded}`}>(paste the line items or describe what's included)</span>
             </label>
             <textarea value={quoteDetails} onChange={e => setQuoteDetails(e.target.value)}
@@ -2410,7 +2410,7 @@ const BuyWise = ({ tool }) => {
           </div>
 
           <div>
-            <label className={`text-sm font-bold ${c.textSecondaryondary} block mb-1.5`}>How urgent?</label>
+            <label className={`text-sm font-bold ${c.textSecondary} block mb-1.5`}>How urgent?</label>
             <div className="flex gap-1.5">
               {URGENCY.map(u => (
                 <button key={u.value} onClick={() => setQuoteUrgency(u.value)}
@@ -2437,7 +2437,7 @@ const BuyWise = ({ tool }) => {
               <span className="text-2xl">{quoteResults.verdict_emoji || '📋'}</span>
               <div>
                 <h3 className={`text-base font-black ${c.text} mb-1`}>{quoteResults.verdict}</h3>
-                <p className={`text-sm ${c.textSecondaryondary}`}>{quoteResults.verdict_summary}</p>
+                <p className={`text-sm ${c.textSecondary}`}>{quoteResults.verdict_summary}</p>
               </div>
             </div>
           </div>
@@ -2447,7 +2447,7 @@ const BuyWise = ({ tool }) => {
             <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
               <p className={`text-xs font-bold ${c.textMuteded} uppercase mb-2`}>💲 Typical range for this service</p>
               <p className={`text-base font-bold ${c.text} mb-1`}>{quoteResults.fair_range.range}</p>
-              <p className={`text-xs ${c.textSecondaryondary}`}>{quoteResults.fair_range.what_drives_cost}</p>
+              <p className={`text-xs ${c.textSecondary}`}>{quoteResults.fair_range.what_drives_cost}</p>
               {quoteResults.fair_range.regional_note && (
                 <p className={`text-xs ${c.textMuteded} mt-1 italic`}>📍 {quoteResults.fair_range.regional_note}</p>
               )}
@@ -2471,7 +2471,7 @@ const BuyWise = ({ tool }) => {
                           item.verdict === 'fair' ? c.success : item.verdict === 'high' ? c.warning : item.verdict === 'red_flag' ? c.danger : c.highlightBg
                         }`}>{item.verdict === 'fair' ? 'FAIR' : item.verdict === 'high' ? 'HIGH' : item.verdict === 'red_flag' ? 'RED FLAG' : 'INFO'}</span>
                       </div>
-                      <p className={`text-[11px] ${c.textSecondaryondary} mt-0.5`}>{item.note}</p>
+                      <p className={`text-[11px] ${c.textSecondary} mt-0.5`}>{item.note}</p>
                     </div>
                   </div>
                 ))}
@@ -2486,7 +2486,7 @@ const BuyWise = ({ tool }) => {
                 {quoteResults.negotiable.map((n, i) => (
                   <div key={i} className={`p-3 rounded-lg ${c.quoteBg}`}>
                     <p className={`text-xs font-bold ${c.text}`}>{n.item}</p>
-                    <p className={`text-[11px] ${c.textSecondaryondary} mt-0.5`}>{n.how_to_negotiate}</p>
+                    <p className={`text-[11px] ${c.textSecondary} mt-0.5`}>{n.how_to_negotiate}</p>
                     {n.typical_discount && <p className={`text-[10px] ${c.textCyan} mt-0.5`}>💰 Typical savings: {n.typical_discount}</p>}
                   </div>
                 ))}
@@ -2529,7 +2529,7 @@ const BuyWise = ({ tool }) => {
           {quoteResults.competing_quotes && (
             <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
               <p className={`text-xs font-bold ${c.textMuteded} uppercase mb-2`}>📞 Getting competing quotes</p>
-              <p className={`text-xs ${c.textSecondaryondary}`}>{quoteResults.competing_quotes.how_many}</p>
+              <p className={`text-xs ${c.textSecondary}`}>{quoteResults.competing_quotes.how_many}</p>
               {quoteResults.competing_quotes.where_to_look && (
                 <p className={`text-xs ${c.textCyan} mt-1`}>→ {quoteResults.competing_quotes.where_to_look}</p>
               )}

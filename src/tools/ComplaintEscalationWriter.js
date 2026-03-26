@@ -376,7 +376,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
                     <p className={`text-sm leading-relaxed ${c.text}`}>{responseAnalysis.assessment}</p>
                   </div>
 
-                  <p className={`text-sm leading-relaxed ${c.textSecondaryondary}`}>{responseAnalysis.recommendation_explanation}</p>
+                  <p className={`text-sm leading-relaxed ${c.textSecondary}`}>{responseAnalysis.recommendation_explanation}</p>
 
                   {responseAnalysis.tactics_used?.length > 0 && (
                     <div>
@@ -396,7 +396,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
                         <div><span className={c.textMuteded}>Offered: </span><span className={`font-bold ${c.text}`}>{responseAnalysis.offer_analysis.what_they_offered}</span></div>
                         <div><span className={c.textMuteded}>You asked: </span><span className={`font-bold ${c.text}`}>{responseAnalysis.offer_analysis.what_you_asked_for}</span></div>
                         {responseAnalysis.offer_analysis.gap && <div className="col-span-2"><span className={c.textMuteded}>Gap: </span><span className={`font-bold ${c.issueTip}`}>{responseAnalysis.offer_analysis.gap}</span></div>}
-                        {responseAnalysis.offer_analysis.fair_market_value && <div className="col-span-2"><span className={c.textMuteded}>Fair value: </span><span className={c.textSecondaryondary}>{responseAnalysis.offer_analysis.fair_market_value}</span></div>}
+                        {responseAnalysis.offer_analysis.fair_market_value && <div className="col-span-2"><span className={c.textMuteded}>Fair value: </span><span className={c.textSecondary}>{responseAnalysis.offer_analysis.fair_market_value}</span></div>}
                       </div>
                     </div>
                   )}
@@ -407,21 +407,21 @@ const ComplaintEscalationWriter = ({ tool }) => {
                         <p className={`text-xs font-bold ${c.counterBoxHd}`}>🤝 Suggested Counter-Offer</p>
                         <CopyBtn content={responseAnalysis.if_counter.counter_offer_text + BRAND} label="Copy" />
                       </div>
-                      <div className={`whitespace-pre-wrap text-xs ${c.textSecondaryondary} leading-relaxed`}>{responseAnalysis.if_counter.counter_offer_text}</div>
+                      <div className={`whitespace-pre-wrap text-xs ${c.textSecondary} leading-relaxed`}>{responseAnalysis.if_counter.counter_offer_text}</div>
                     </div>
                   )}
 
                   {responseAnalysis.red_flags?.length > 0 && (
                     <div className={`p-3 rounded-lg ${c.redFlagsBox}`}>
                       <p className="text-xs font-bold mb-1">🚩 Red Flags in Their Response</p>
-                      {responseAnalysis.red_flags.map((f, i) => <p key={i} className={`text-xs ${c.textSecondaryondary}`}>• {f}</p>)}
+                      {responseAnalysis.red_flags.map((f, i) => <p key={i} className={`text-xs ${c.textSecondary}`}>• {f}</p>)}
                     </div>
                   )}
 
                   {responseAnalysis.things_to_get_in_writing?.length > 0 && (
                     <div className={`p-3 rounded-lg ${c.cardAlt}`}>
                       <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>📝 Get In Writing</p>
-                      {responseAnalysis.things_to_get_in_writing.map((t, i) => <p key={i} className={`text-xs ${c.textSecondaryondary}`}>• {t}</p>)}
+                      {responseAnalysis.things_to_get_in_writing.map((t, i) => <p key={i} className={`text-xs ${c.textSecondary}`}>• {t}</p>)}
                     </div>
                   )}
 
@@ -581,7 +581,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
               <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
                 <span>{tool?.icon ?? '📧'}</span>{tool?.title ?? 'Complaint Escalation Writer'}
               </h2>
-              <p className={`text-sm ${c.textSecondaryondary}`}>{tool?.tagline ?? 'Full escalation campaigns that companies can\'t ignore'}</p>
+              <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Full escalation campaigns that companies can\'t ignore'}</p>
             </div>
             {complaintHistory.length > 0 && (
               <button onClick={() => setShowHistory(!showHistory)} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnSecondaryondary}`}>
@@ -602,7 +602,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
         {!hasVisited && (
           <div className={`${c.cardAlt} rounded-xl p-5 mb-4`}>
             <h3 className={`text-base font-bold ${c.text} mb-2`}>Your escalation strategist 📨</h3>
-            <p className={`text-sm ${c.textSecondaryondary} mb-4`}>Builds a complete multi-stage campaign to resolve complaints that companies are ignoring.</p>
+            <p className={`text-sm ${c.textSecondary} mb-4`}>Builds a complete multi-stage campaign to resolve complaints that companies are ignoring.</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-4">
               {[
                 { emoji: '📨', title: '5-stage escalation ladder', desc: 'Direct → Regulatory → Executive → Public → Legal' },
@@ -747,12 +747,12 @@ const ComplaintEscalationWriter = ({ tool }) => {
                 <div className="flex items-start justify-between flex-wrap gap-3 mb-3">
                   <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${sev.bg} ${sev.color} border ${sev.border}`}>{sev.label}</span>
                   <div className="flex gap-3 text-sm">
-                    {results.situation_assessment.legal_strength && <span className={c.textSecondaryondary}>Legal position: <strong className={c.text}>{results.situation_assessment.legal_strength}</strong></span>}
-                    {results.situation_assessment.estimated_resolution_likelihood && <span className={c.textSecondaryondary}>Success est: <strong className={c.text}>{results.situation_assessment.estimated_resolution_likelihood}</strong></span>}
+                    {results.situation_assessment.legal_strength && <span className={c.textSecondary}>Legal position: <strong className={c.text}>{results.situation_assessment.legal_strength}</strong></span>}
+                    {results.situation_assessment.estimated_resolution_likelihood && <span className={c.textSecondary}>Success est: <strong className={c.text}>{results.situation_assessment.estimated_resolution_likelihood}</strong></span>}
                   </div>
                 </div>
                 <p className={`font-semibold ${c.text} mb-2`}>{results.situation_assessment.key_insight}</p>
-                {results.situation_assessment.company_reputation && <p className={`text-sm ${c.textSecondaryondary}`}>{results.situation_assessment.company_reputation}</p>}
+                {results.situation_assessment.company_reputation && <p className={`text-sm ${c.textSecondary}`}>{results.situation_assessment.company_reputation}</p>}
               </div>
             );
           })()}
@@ -772,7 +772,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
                         <p className={`font-bold ${c.text} text-sm`}>{law.law_or_regulation}</p>
                         <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${legalStrengthBadge[law.strength] || legalStrengthDefault}`}>{law.strength}</span>
                       </div>
-                      <p className={`text-sm ${c.textSecondaryondary} mb-1`}>{law.how_it_applies}</p>
+                      <p className={`text-sm ${c.textSecondary} mb-1`}>{law.how_it_applies}</p>
                       <p className={`text-xs ${c.textMuteded}`}>Company risk: {law.consequence_for_company}</p>
                       {law.time_limit_days && (
                         <div className={`mt-2 flex items-center gap-2 px-2.5 py-1.5 rounded-lg ${timeLimitBg(law.time_limit_days)}`}>
@@ -810,7 +810,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
                           <p className={`text-sm font-semibold ${isEvidenceChecked(idx) ? `${c.textMuteded} line-through` : c.text}`}>{item.item}</p>
                           <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold uppercase ${evidencePriority[item.priority] || evidencePriorityDefault}`}>{item.priority}</span>
                         </div>
-                        <p className={`text-xs ${c.textSecondaryondary} mt-0.5`}>{item.how}</p>
+                        <p className={`text-xs ${c.textSecondary} mt-0.5`}>{item.how}</p>
                       </div>
                     </div>
                   ))}
@@ -822,7 +822,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
           {/* ── ESCALATION LADDER ── */}
           <div className={`${c.card} border ${c.border} rounded-xl shadow-lg p-6`}>
             <h3 className={`font-bold ${c.text} mb-4 flex items-center gap-2`}><span>⚡</span> Escalation Ladder</h3>
-            <p className={`text-sm ${c.textSecondaryondary} mb-5`}>Start at Stage 1. Only move to the next stage if the previous one fails.</p>
+            <p className={`text-sm ${c.textSecondary} mb-5`}>Start at Stage 1. Only move to the next stage if the previous one fails.</p>
 
             {/* Stage Tabs */}
             <div className="flex gap-1 mb-6 overflow-x-auto pb-1">
@@ -881,7 +881,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
                         </div>
                       </div>
                     ) : (
-                      <div className={`whitespace-pre-wrap text-sm ${c.textSecondaryondary} leading-relaxed`}>{letterText}
+                      <div className={`whitespace-pre-wrap text-sm ${c.textSecondary} leading-relaxed`}>{letterText}
                         {editedLetters[stageKey] && editedLetters[stageKey] !== s.letter_body && <p className={`text-[10px] mt-2 ${c.issueTip}`}>✏️ You've edited this letter</p>}
                       </div>
                     )}
@@ -890,7 +890,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
                     <div className={`p-4 rounded-lg ${stageColors('blue', 'bg')}`}>
                       <p className={`text-xs font-bold ${stageColors('blue', 'accent')} mb-2`}>SEND TO</p>
                       {s.send_to.map((r, i) => (
-                        <div key={i} className={`text-sm ${c.textSecondaryondary} mb-2`}>
+                        <div key={i} className={`text-sm ${c.textSecondary} mb-2`}>
                           <span className={`font-semibold ${c.text}`}>{r.role}</span> — {r.how_to_find}
                           {r.email_pattern && <span className={`ml-1 ${c.textMuteded}`}>({r.email_pattern})</span>}
                         </div>
@@ -898,8 +898,8 @@ const ComplaintEscalationWriter = ({ tool }) => {
                     </div>
                   )}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {s.send_via && <div className={`p-3 rounded-lg ${c.cardAlt}`}><p className={`text-xs font-bold ${c.textMuteded} mb-1`}>SEND VIA</p><p className={`text-sm ${c.textSecondaryondary}`}>{s.send_via}</p></div>}
-                    {s.deadline_to_set && <div className={`p-3 rounded-lg ${c.cardAlt}`}><p className={`text-xs font-bold ${c.textMuteded} mb-1`}>RESPONSE DEADLINE</p><p className={`text-sm ${c.textSecondaryondary}`}>{s.deadline_to_set}</p></div>}
+                    {s.send_via && <div className={`p-3 rounded-lg ${c.cardAlt}`}><p className={`text-xs font-bold ${c.textMuteded} mb-1`}>SEND VIA</p><p className={`text-sm ${c.textSecondary}`}>{s.send_via}</p></div>}
+                    {s.deadline_to_set && <div className={`p-3 rounded-lg ${c.cardAlt}`}><p className={`text-xs font-bold ${c.textMuteded} mb-1`}>RESPONSE DEADLINE</p><p className={`text-sm ${c.textSecondary}`}>{s.deadline_to_set}</p></div>}
                   </div>
                   {s.leverage_points_used?.length > 0 && (
                     <div className="flex flex-wrap gap-2">
@@ -941,7 +941,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
                     <p className={`text-xs font-bold ${stageColors('purple', 'accent')} mb-1`}>FILE WITH</p>
                     <p className={`font-bold ${c.text} text-lg`}>{s.agency}</p>
                     {s.agency_url && <p className={`text-sm ${stageColors('purple', 'accent')} mt-1`}>{s.agency_url}</p>}
-                    <p className={`text-sm ${c.textSecondaryondary} mt-2`}>{s.why_this_agency}</p>
+                    <p className={`text-sm ${c.textSecondary} mt-2`}>{s.why_this_agency}</p>
                   </div>
                   <div className={`rounded-xl p-5 border ${c.letterBox}`}>
                     <p className={`text-xs font-bold ${c.textMuteded} mb-2`}>PRE-WRITTEN COMPLAINT TEXT</p>
@@ -954,13 +954,13 @@ const ComplaintEscalationWriter = ({ tool }) => {
                         </div>
                       </div>
                     ) : (
-                      <div className={`whitespace-pre-wrap text-sm ${c.textSecondaryondary} leading-relaxed`}>{complaintText}
+                      <div className={`whitespace-pre-wrap text-sm ${c.textSecondary} leading-relaxed`}>{complaintText}
                         {editedLetters[stageKey] && editedLetters[stageKey] !== s.complaint_text && <p className={`text-[10px] mt-2 ${c.issueTip}`}>✏️ You've edited this text</p>}
                       </div>
                     )}
                   </div>
-                  {s.what_happens_after && <div className={`p-4 rounded-lg ${c.cardAlt}`}><p className={`text-xs font-bold ${c.textMuteded} mb-1`}>WHAT HAPPENS AFTER FILING</p><p className={`text-sm ${c.textSecondaryondary}`}>{s.what_happens_after}</p></div>}
-                  {s.company_impact && <div className={`p-4 rounded-lg ${c.cardAlt}`}><p className={`text-xs font-bold ${c.textMuteded} mb-1`}>WHY COMPANIES TAKE THIS SERIOUSLY</p><p className={`text-sm ${c.textSecondaryondary}`}>{s.company_impact}</p></div>}
+                  {s.what_happens_after && <div className={`p-4 rounded-lg ${c.cardAlt}`}><p className={`text-xs font-bold ${c.textMuteded} mb-1`}>WHAT HAPPENS AFTER FILING</p><p className={`text-sm ${c.textSecondary}`}>{s.what_happens_after}</p></div>}
+                  {s.company_impact && <div className={`p-4 rounded-lg ${c.cardAlt}`}><p className={`text-xs font-bold ${c.textMuteded} mb-1`}>WHY COMPANIES TAKE THIS SERIOUSLY</p><p className={`text-sm ${c.textSecondary}`}>{s.company_impact}</p></div>}
                   <StageActionBar stageNum={2} sentLabel="Mark as Filed" nextStage={3} />
                 </div>
               );
@@ -1004,7 +1004,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
                         </div>
                       </div>
                     ) : (
-                      <div className={`whitespace-pre-wrap text-sm ${c.textSecondaryondary} leading-relaxed`}>{letterText}
+                      <div className={`whitespace-pre-wrap text-sm ${c.textSecondary} leading-relaxed`}>{letterText}
                         {editedLetters[stageKey] && editedLetters[stageKey] !== s.letter_body && <p className={`text-[10px] mt-2 ${c.issueTip}`}>✏️ You've edited this letter</p>}
                       </div>
                     )}
@@ -1013,7 +1013,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
                     <div className={`p-4 rounded-lg ${stageColors('orange', 'bg')} border ${stageColors('orange', 'border')}`}>
                       <p className={`text-xs font-bold ${stageColors('orange', 'accent')} mb-2`}>TARGET CONTACTS</p>
                       {s.target_contacts.map((tc, i) => (
-                        <div key={i} className={`text-sm ${c.textSecondaryondary} mb-2`}>
+                        <div key={i} className={`text-sm ${c.textSecondary} mb-2`}>
                           <span className={`font-semibold ${c.text}`}>{tc.title}</span>
                           {tc.email_pattern && <span className={`ml-2 font-mono text-xs ${c.textMuteded}`}>{tc.email_pattern}</span>}
                           {tc.why && <p className={`text-xs ${c.textMuteded} mt-0.5`}>{tc.why}</p>}
@@ -1021,7 +1021,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
                       ))}
                     </div>
                   )}
-                  {s.timing && <div className={`p-3 rounded-lg ${c.cardAlt}`}><p className={`text-xs font-bold ${c.textMuteded} mb-1`}>TIMING</p><p className={`text-sm ${c.textSecondaryondary}`}>{s.timing}</p></div>}
+                  {s.timing && <div className={`p-3 rounded-lg ${c.cardAlt}`}><p className={`text-xs font-bold ${c.textMuteded} mb-1`}>TIMING</p><p className={`text-sm ${c.textSecondary}`}>{s.timing}</p></div>}
                   <StageActionBar stageNum={3} sentLabel="Mark as Sent" nextStage={4} />
                 </div>
               );
@@ -1060,25 +1060,25 @@ const ComplaintEscalationWriter = ({ tool }) => {
                         <p className={`text-xs font-bold ${c.textMuteded}`}>DETAILED POST (Facebook / LinkedIn / Reddit)</p>
                         <CopyBtn content={s.social_media_long} label="Copy" />
                       </div>
-                      <div className={`whitespace-pre-wrap text-sm ${c.textSecondaryondary} leading-relaxed`}>{s.social_media_long}</div>
+                      <div className={`whitespace-pre-wrap text-sm ${c.textSecondary} leading-relaxed`}>{s.social_media_long}</div>
                     </div>
                   )}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {s.platforms_to_target?.length > 0 && (
                       <div className={`p-4 rounded-lg ${stageColors('pink', 'bg')} border ${stageColors('pink', 'border')}`}>
                         <p className={`text-xs font-bold ${stageColors('pink', 'accent')} mb-2`}>POST ON</p>
-                        {s.platforms_to_target.map((p, i) => <p key={i} className={`text-sm ${c.textSecondaryondary}`}>• {p}</p>)}
+                        {s.platforms_to_target.map((p, i) => <p key={i} className={`text-sm ${c.textSecondary}`}>• {p}</p>)}
                       </div>
                     )}
                     {s.review_sites?.length > 0 && (
                       <div className={`p-4 rounded-lg ${stageColors('pink', 'bg')} border ${stageColors('pink', 'border')}`}>
                         <p className={`text-xs font-bold ${stageColors('pink', 'accent')} mb-2`}>LEAVE REVIEWS ON</p>
-                        {s.review_sites.map((r, i) => <p key={i} className={`text-sm ${c.textSecondaryondary}`}>• {r}</p>)}
+                        {s.review_sites.map((r, i) => <p key={i} className={`text-sm ${c.textSecondary}`}>• {r}</p>)}
                       </div>
                     )}
                   </div>
                   {s.hashtags?.length > 0 && <div className="flex flex-wrap gap-2">{s.hashtags.map((h, i) => <span key={i} className={`px-2 py-1 rounded-full text-xs font-medium ${stageColors('pink', 'badge')}`}>{h}</span>)}</div>}
-                  {s.media_tip && <div className={`p-3 rounded-lg ${c.cardAlt}`}><p className={`text-xs font-bold ${c.textMuteded} mb-1`}>📺 MEDIA TIP</p><p className={`text-sm ${c.textSecondaryondary}`}>{s.media_tip}</p></div>}
+                  {s.media_tip && <div className={`p-3 rounded-lg ${c.cardAlt}`}><p className={`text-xs font-bold ${c.textMuteded} mb-1`}>📺 MEDIA TIP</p><p className={`text-sm ${c.textSecondary}`}>{s.media_tip}</p></div>}
                   <StageActionBar stageNum={4} sentLabel="Mark as Posted" nextStage={5} />
                 </div>
               );
@@ -1108,9 +1108,9 @@ const ComplaintEscalationWriter = ({ tool }) => {
                         {s.chargeback.reason_code && <div><p className={`text-xs ${c.textMuteded}`}>Reason Code</p><p className={`text-sm font-semibold ${c.text}`}>{s.chargeback.reason_code}</p></div>}
                         {s.chargeback.time_window && <div><p className={`text-xs ${c.textMuteded}`}>Time Window</p><p className={`text-sm font-semibold ${c.text}`}>{s.chargeback.time_window}</p></div>}
                       </div>
-                      {s.chargeback.how_to_file && <p className={`text-sm ${c.textSecondaryondary} mb-2`}><strong>How to file:</strong> {s.chargeback.how_to_file}</p>}
-                      {s.chargeback.documentation_needed && <p className={`text-sm ${c.textSecondaryondary} mb-2`}><strong>Documentation:</strong> {s.chargeback.documentation_needed}</p>}
-                      {s.chargeback.success_likelihood && <p className={`text-sm ${c.textSecondaryondary}`}><strong>Likelihood:</strong> {s.chargeback.success_likelihood}</p>}
+                      {s.chargeback.how_to_file && <p className={`text-sm ${c.textSecondary} mb-2`}><strong>How to file:</strong> {s.chargeback.how_to_file}</p>}
+                      {s.chargeback.documentation_needed && <p className={`text-sm ${c.textSecondary} mb-2`}><strong>Documentation:</strong> {s.chargeback.documentation_needed}</p>}
+                      {s.chargeback.success_likelihood && <p className={`text-sm ${c.textSecondary}`}><strong>Likelihood:</strong> {s.chargeback.success_likelihood}</p>}
                     </div>
                   )}
                   {s.small_claims?.applicable && (
@@ -1121,15 +1121,15 @@ const ComplaintEscalationWriter = ({ tool }) => {
                         {s.small_claims.max_claim_amount && <div><p className={`text-xs ${c.textMuteded}`}>Max Claim</p><p className={`text-sm font-semibold ${c.text}`}>{s.small_claims.max_claim_amount}</p></div>}
                         {s.small_claims.jurisdiction && <div><p className={`text-xs ${c.textMuteded}`}>Jurisdiction</p><p className={`text-sm font-semibold ${c.text}`}>{s.small_claims.jurisdiction}</p></div>}
                       </div>
-                      {s.small_claims.typical_outcome && <p className={`text-sm ${c.textSecondaryondary} mb-1`}><strong>Typical outcome:</strong> {s.small_claims.typical_outcome}</p>}
-                      {s.small_claims.company_response && <p className={`text-sm ${c.textSecondaryondary}`}><strong>Company usually:</strong> {s.small_claims.company_response}</p>}
+                      {s.small_claims.typical_outcome && <p className={`text-sm ${c.textSecondary} mb-1`}><strong>Typical outcome:</strong> {s.small_claims.typical_outcome}</p>}
+                      {s.small_claims.company_response && <p className={`text-sm ${c.textSecondary}`}><strong>Company usually:</strong> {s.small_claims.company_response}</p>}
                     </div>
                   )}
                   {s.attorney_general?.applicable && (
                     <div className={`p-5 rounded-xl border ${c.border} ${c.cardAlt}`}>
                       <p className={`text-xs font-bold ${stageColors('red', 'accent')} mb-2`}>🏛️ STATE ATTORNEY GENERAL</p>
-                      {s.attorney_general.how_to_file && <p className={`text-sm ${c.textSecondaryondary} mb-1`}><strong>How to file:</strong> {s.attorney_general.how_to_file}</p>}
-                      {s.attorney_general.what_it_triggers && <p className={`text-sm ${c.textSecondaryondary}`}><strong>What it triggers:</strong> {s.attorney_general.what_it_triggers}</p>}
+                      {s.attorney_general.how_to_file && <p className={`text-sm ${c.textSecondary} mb-1`}><strong>How to file:</strong> {s.attorney_general.how_to_file}</p>}
+                      {s.attorney_general.what_it_triggers && <p className={`text-sm ${c.textSecondary}`}><strong>What it triggers:</strong> {s.attorney_general.what_it_triggers}</p>}
                     </div>
                   )}
                   <StageActionBar stageNum={5} sentLabel="Mark as Filed" nextStage={null} />
@@ -1140,7 +1140,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
             {/* Preview next stage nudge */}
             {activeStage < 5 && !getStageStatus(activeStage) && (
               <div className="flex justify-end mt-4">
-                <button onClick={() => setActiveStage(activeStage + 1)} className={`flex items-center gap-1.5 text-sm font-medium ${c.textSecondaryondary} transition-colors`}>
+                <button onClick={() => setActiveStage(activeStage + 1)} className={`flex items-center gap-1.5 text-sm font-medium ${c.textSecondary} transition-colors`}>
                   Preview Stage {activeStage + 1} <span>→</span>
                 </button>
               </div>
@@ -1157,7 +1157,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
                   <div key={key} className="relative mb-4 last:mb-0">
                     <div className={`absolute -left-4 top-1 w-3 h-3 rounded-full border-2 ${idx === 0 ? 'bg-green-500 border-green-300' : c.timelineDotRest}`} />
                     <p className={`text-xs font-bold uppercase tracking-wide ${idx === 0 ? c.resolvedText : c.textMuteded} mb-0.5`}>{key.replace(/_/g, ' ')}</p>
-                    <p className={`text-sm ${c.textSecondaryondary}`}>{value}</p>
+                    <p className={`text-sm ${c.textSecondary}`}>{value}</p>
                   </div>
                 ))}
               </div>
@@ -1168,7 +1168,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
           {results.quick_tips?.length > 0 && (
             <div className={`${c.card} border ${c.border} rounded-xl shadow-lg p-6`}>
               <h3 className={`font-bold ${c.text} mb-3 flex items-center gap-2`}><span>⚡</span> Tactical Tips</h3>
-              {results.quick_tips.map((tip, idx) => <p key={idx} className={`text-sm ${c.textSecondaryondary} mb-2`}>• {tip}</p>)}
+              {results.quick_tips.map((tip, idx) => <p key={idx} className={`text-sm ${c.textSecondary} mb-2`}>• {tip}</p>)}
             </div>
           )}
 
@@ -1202,7 +1202,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
                       {results.call_script.things_to_avoid_saying.map((phrase, i) => (
                         <div key={i} className={`flex items-start gap-2 mb-2 p-2 rounded-lg ${c.callAvoidBox}`}>
                           <span className="text-xs mt-0.5">✕</span>
-                          <p className={`text-sm ${c.textSecondaryondary}`}>"{phrase}"</p>
+                          <p className={`text-sm ${c.textSecondary}`}>"{phrase}"</p>
                         </div>
                       ))}
                     </div>
@@ -1246,7 +1246,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
                           {entry.sentDate && <span className={`text-xs ${c.textMuteded}`}>Sent {new Date(entry.sentDate).toLocaleDateString()}</span>}
                           {entry.outcome && <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${outcomeBadge[entry.outcome] || ''}`}>{entry.outcome}</span>}
                         </div>
-                        {entry.companyResponse && <p className={`text-xs ${c.textSecondaryondary} mt-1`}>📨 Response: {entry.companyResponse.slice(0, 120)}…</p>}
+                        {entry.companyResponse && <p className={`text-xs ${c.textSecondary} mt-1`}>📨 Response: {entry.companyResponse.slice(0, 120)}…</p>}
                         {entry.analysisResult?.recommendation && <p className={`text-xs ${c.textMuteded} mt-0.5`}>AI said: {entry.analysisResult.recommendation} — {entry.analysisResult.assessment?.slice(0, 100)}…</p>}
                       </div>
                     );
@@ -1259,7 +1259,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
           {/* Cross-references (post-result, one conditional) */}
           <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
             <p className={`text-xs font-semibold ${c.textMuteded} uppercase tracking-wider mb-2`}>While you're at it</p>
-            <p className={`text-sm ${c.textSecondaryondary}`}>
+            <p className={`text-sm ${c.textSecondary}`}>
               Trying to negotiate the outcome?{' '}
               <a href="/LeverageLogic" className={linkStyle}>Leverage Logic</a>{' '}
               maps your negotiating power before you make an offer.

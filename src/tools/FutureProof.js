@@ -198,7 +198,7 @@ const FutureProof = ({ tool }) => {
             {/* The Pattern */}
             <div className={`rounded-2xl border p-5 ${c.card} ${c.border}`}>
               <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuteded}`}>📊 The Pattern</p>
-              <p className={`text-sm leading-relaxed ${c.textSecondaryondary}`}>{results.the_pattern}</p>
+              <p className={`text-sm leading-relaxed ${c.textSecondary}`}>{results.the_pattern}</p>
             </div>
 
             {/* Tailwinds + Headwinds */}
@@ -252,12 +252,12 @@ const FutureProof = ({ tool }) => {
                       </span>
                     </div>
                     {results.the_automation_question.what_gets_automated && (
-                      <p className={`text-sm ${c.textSecondaryondary}`}><span className={`font-semibold ${c.text}`}>Gets automated:</span> {results.the_automation_question.what_gets_automated}</p>
+                      <p className={`text-sm ${c.textSecondary}`}><span className={`font-semibold ${c.text}`}>Gets automated:</span> {results.the_automation_question.what_gets_automated}</p>
                     )}
                     {results.the_automation_question.what_doesnt && (
-                      <p className={`text-sm ${c.textSecondaryondary}`}><span className={`font-semibold ${c.text}`}>Hard to automate:</span> {results.the_automation_question.what_doesnt}</p>
+                      <p className={`text-sm ${c.textSecondary}`}><span className={`font-semibold ${c.text}`}>Hard to automate:</span> {results.the_automation_question.what_doesnt}</p>
                     )}
-                    <p className={`text-sm ${c.textSecondaryondary}`}>{results.the_automation_question.net_effect}</p>
+                    <p className={`text-sm ${c.textSecondary}`}>{results.the_automation_question.net_effect}</p>
                   </div>
                 )}
               </div>
@@ -268,7 +268,7 @@ const FutureProof = ({ tool }) => {
               <div className={`rounded-2xl border p-5 ${isDark ? 'bg-amber-900/10 border-amber-700/30' : 'bg-amber-50 border-amber-200'}`}>
                 <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${isDark ? 'text-amber-300' : 'text-amber-800'}`}>🎯 The Version Worth Pursuing</p>
                 {results.the_pivot.the_version_worth_pursuing && (
-                  <p className={`text-sm leading-relaxed mb-3 ${c.textSecondaryondary}`}>{results.the_pivot.the_version_worth_pursuing}</p>
+                  <p className={`text-sm leading-relaxed mb-3 ${c.textSecondary}`}>{results.the_pivot.the_version_worth_pursuing}</p>
                 )}
                 {results.the_pivot.adjacent_moves?.length > 0 && (
                   <div className="space-y-2">
@@ -300,7 +300,7 @@ const FutureProof = ({ tool }) => {
                     ].map(s => results.scenarios[s.key] && (
                       <div key={s.key} className={`p-3 rounded-xl border ${s.bg}`}>
                         <p className={`text-xs font-bold mb-1 ${c.textMuteded}`}>{s.label}</p>
-                        <p className={`text-sm ${c.textSecondaryondary}`}>{results.scenarios[s.key]}</p>
+                        <p className={`text-sm ${c.textSecondary}`}>{results.scenarios[s.key]}</p>
                       </div>
                     ))}
                   </div>
@@ -312,7 +312,7 @@ const FutureProof = ({ tool }) => {
             {results.the_honest_take && (
               <div className={`rounded-2xl border p-5 ${c.card} ${c.border}`}>
                 <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuteded}`}>💬 The Honest Take</p>
-                <p className={`text-sm leading-relaxed ${c.textSecondaryondary}`}>{results.the_honest_take}</p>
+                <p className={`text-sm leading-relaxed ${c.textSecondary}`}>{results.the_honest_take}</p>
               </div>
             )}
 

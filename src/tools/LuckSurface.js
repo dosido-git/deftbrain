@@ -171,11 +171,11 @@ const LuckSurface = ({ tool }) => {
                       background: 'linear-gradient(90deg, #c8872e, #d9a04e)',
                     }} />
                 </div>
-                <p className={`text-sm leading-relaxed mb-3 ${c.textSecondaryondary}`}>{results.audit.the_diagnosis}</p>
+                <p className={`text-sm leading-relaxed mb-3 ${c.textSecondary}`}>{results.audit.the_diagnosis}</p>
                 {results.audit.the_invisible_wall && (
                   <div className={`p-3 rounded-xl border ${isDark ? 'bg-[rgb(181,74,63)]/10 border-[rgb(181,74,63)]/30' : 'bg-[rgb(252,234,232)] border-[rgb(212,144,138)]'}`}>
                     <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${isDark ? 'text-[rgb(232,169,163)]' : 'text-[rgb(138,48,40)]'}`}>🧱 The Invisible Wall</p>
-                    <p className={`text-sm ${c.textSecondaryondary}`}>{results.audit.the_invisible_wall}</p>
+                    <p className={`text-sm ${c.textSecondary}`}>{results.audit.the_invisible_wall}</p>
                   </div>
                 )}
                 {results.audit.what_theyre_good_at && (
@@ -243,7 +243,7 @@ const LuckSurface = ({ tool }) => {
                   <div className="h-full rounded-full" style={{ width: results.the_target.new_surface_area, background: 'linear-gradient(90deg, rgb(44,74,110), #4a6a8a)' }} />
                 </div>
                 {results.the_target.what_becomes_possible && (
-                  <p className={`text-sm mb-2 ${c.textSecondaryondary}`}>{results.the_target.what_becomes_possible}</p>
+                  <p className={`text-sm mb-2 ${c.textSecondary}`}>{results.the_target.what_becomes_possible}</p>
                 )}
                 {results.the_target.the_compound_effect && (
                   <p className={`text-xs italic ${c.textMuteded}`}>{results.the_target.the_compound_effect}</p>

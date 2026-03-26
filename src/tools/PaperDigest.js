@@ -192,7 +192,7 @@ const PaperDigest = ({ tool }) => {
       {/* Header */}
       <div>
         <h1 className={`text-2xl font-bold ${c.text}`}>Paper Digest 📄</h1>
-        <p className={`text-sm ${c.textSecondaryondary} mt-1`}>What this paper actually says — and whether what you read about it is true</p>
+        <p className={`text-sm ${c.textSecondary} mt-1`}>What this paper actually says — and whether what you read about it is true</p>
       </div>
 
       {/* Mode Tabs */}
@@ -205,7 +205,7 @@ const PaperDigest = ({ tool }) => {
       {/* ─── Saved Panel ─── */}
       {showSaved && <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-3`}>
         <h3 className={`font-bold ${c.text}`}>💾 Saved Digests</h3>
-        {savedDigests.length === 0 ? <p className={`text-sm ${c.textMuteded}`}>Digest a paper and save it for reference.</p> : savedDigests.map((sd, i) => <div key={i} className={`${c.cardAlt} rounded-lg p-3 flex items-start justify-between`}><div className="flex-1"><p className={`text-sm font-bold ${c.text}`}>{sd.title}</p><p className={`text-xs ${c.textSecondaryondary}`}>{sd.data.one_sentence}</p><p className={`text-xs ${c.textMuteded}`}>{new Date(sd.timestamp).toLocaleDateString()}</p></div><button onClick={() => setSavedDigests(prev => prev.filter((_, idx) => idx !== i))} className={`text-xs ${c.textMuteded} ml-2`}>🗑️</button></div>)}
+        {savedDigests.length === 0 ? <p className={`text-sm ${c.textMuteded}`}>Digest a paper and save it for reference.</p> : savedDigests.map((sd, i) => <div key={i} className={`${c.cardAlt} rounded-lg p-3 flex items-start justify-between`}><div className="flex-1"><p className={`text-sm font-bold ${c.text}`}>{sd.title}</p><p className={`text-xs ${c.textSecondary}`}>{sd.data.one_sentence}</p><p className={`text-xs ${c.textMuteded}`}>{new Date(sd.timestamp).toLocaleDateString()}</p></div><button onClick={() => setSavedDigests(prev => prev.filter((_, idx) => idx !== i))} className={`text-xs ${c.textMuteded} ml-2`}>🗑️</button></div>)}
       </div>}
 
       {/* ─── Dictionary Panel ─── */}
@@ -213,7 +213,7 @@ const PaperDigest = ({ tool }) => {
         <h3 className={`font-bold ${c.text}`}>📖 Your Jargon Dictionary ({jargonDict.length})</h3>
         <p className={`text-xs ${c.textMuteded}`}>Auto-grows as you digest papers. Your personal science glossary.</p>
         <input value={dictSearch} onChange={e => setDictSearch(e.target.value)} placeholder="Search terms..." className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
-        {filteredDict.length === 0 ? <p className={`text-sm ${c.textMuteded}`}>{jargonDict.length === 0 ? 'Digest a paper to start building your dictionary.' : 'No matches.'}</p> : filteredDict.slice(0, 20).map((d, i) => <div key={i} className={`${c.cardAlt} rounded-lg p-3`}><div className="flex items-start justify-between"><div><span className={`text-sm font-bold ${c.text}`}>{d.term}</span><p className={`text-xs ${c.textSecondaryondary}`}>{d.meaning}</p>{d.why && <p className={`text-xs ${c.textMuteded}`}>{d.why}</p>}</div><button onClick={() => setJargonDict(prev => prev.filter((_, idx) => idx !== jargonDict.indexOf(d)))} className={`text-xs ${c.textMuteded}`}>✕</button></div></div>)}
+        {filteredDict.length === 0 ? <p className={`text-sm ${c.textMuteded}`}>{jargonDict.length === 0 ? 'Digest a paper to start building your dictionary.' : 'No matches.'}</p> : filteredDict.slice(0, 20).map((d, i) => <div key={i} className={`${c.cardAlt} rounded-lg p-3`}><div className="flex items-start justify-between"><div><span className={`text-sm font-bold ${c.text}`}>{d.term}</span><p className={`text-xs ${c.textSecondary}`}>{d.meaning}</p>{d.why && <p className={`text-xs ${c.textMuteded}`}>{d.why}</p>}</div><button onClick={() => setJargonDict(prev => prev.filter((_, idx) => idx !== jargonDict.indexOf(d)))} className={`text-xs ${c.textMuteded}`}>✕</button></div></div>)}
       </div>}
 
       {/* ═══ DIGEST MODE ═══ */}
@@ -259,10 +259,10 @@ const PaperDigest = ({ tool }) => {
             </div>
 
             {/* Limitations */}
-            {r.limitations?.length > 0 && <Section id="limits" title="🧱 Limitations">{r.limitations.map((l, i) => <p key={i} className={`text-sm ${c.textSecondaryondary}`}>• {l}</p>)}</Section>}
+            {r.limitations?.length > 0 && <Section id="limits" title="🧱 Limitations">{r.limitations.map((l, i) => <p key={i} className={`text-sm ${c.textSecondary}`}>• {l}</p>)}</Section>}
 
             {/* Jargon */}
-            {r.jargon_decoded?.length > 0 && <Section id="jargon" title={`🔤 Jargon Decoded (${r.jargon_decoded.length} terms saved to dictionary)`}>{r.jargon_decoded.map((j, i) => <div key={i} className={`${c.cardAlt} rounded-lg p-3`}><p className={`text-sm font-bold ${c.text}`}>{j.term}</p><p className={`text-xs ${c.textSecondaryondary}`}>{j.meaning}</p>{j.why_it_matters && <p className={`text-xs ${c.textMuteded}`}>{j.why_it_matters}</p>}</div>)}</Section>}
+            {r.jargon_decoded?.length > 0 && <Section id="jargon" title={`🔤 Jargon Decoded (${r.jargon_decoded.length} terms saved to dictionary)`}>{r.jargon_decoded.map((j, i) => <div key={i} className={`${c.cardAlt} rounded-lg p-3`}><p className={`text-sm font-bold ${c.text}`}>{j.term}</p><p className={`text-xs ${c.textSecondary}`}>{j.meaning}</p>{j.why_it_matters && <p className={`text-xs ${c.textMuteded}`}>{j.why_it_matters}</p>}</div>)}</Section>}
 
             {/* Field Context */}
             {r.field_context && <div className={`${c.purpleBg} border rounded-xl p-4`}><h3 className="font-bold text-sm">🗺️ Bigger Picture</h3><p className="text-sm mt-1">{r.field_context}</p></div>}
@@ -308,7 +308,7 @@ const PaperDigest = ({ tool }) => {
             </div>}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {r.paper_actually_says && <div className={`${c.success} border rounded-xl p-4`}><h3 className="font-bold text-sm">📄 Paper says</h3><p className="text-sm mt-1">{r.paper_actually_says}</p></div>}
-              {r.media_says && <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}><h3 className={`font-bold text-sm ${c.text}`}>📰 Media says</h3><p className={`text-sm mt-1 ${c.textSecondaryondary}`}>{r.media_says}</p></div>}
+              {r.media_says && <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}><h3 className={`font-bold text-sm ${c.text}`}>📰 Media says</h3><p className={`text-sm mt-1 ${c.textSecondary}`}>{r.media_says}</p></div>}
             </div>
             {r.distortions?.length > 0 && <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-3`}><h3 className={`font-bold ${c.text}`}>🔍 Distortions Found</h3>{r.distortions.map((d, i) => <div key={i} className={`${c.danger} border rounded-lg p-3 space-y-1`}><div className="flex items-center gap-2"><span className={`text-xs font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-red-900/40 text-red-200' : 'bg-red-100 text-red-700'}`}>{d.distortion_type}</span></div><p className="text-sm"><strong>Media:</strong> {d.what_media_said}</p><p className="text-sm"><strong>Paper:</strong> {d.what_paper_said}</p><p className={`text-xs ${c.textMuteded}`}>{d.why_it_matters}</p></div>)}</div>}
             {r.what_they_got_right?.length > 0 && <div className={`${c.success} border rounded-xl p-4`}><h3 className="font-bold text-sm">✅ What They Got Right</h3>{r.what_they_got_right.map((g, i) => <p key={i} className="text-sm mt-1">• {g}</p>)}</div>}
@@ -332,11 +332,11 @@ const PaperDigest = ({ tool }) => {
         {compareResults && (() => { const r = compareResults; return (
           <div className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}><h3 className={`font-bold text-sm ${c.text}`}>📄 Paper 1</h3><p className={`text-sm ${c.textSecondaryondary} mt-1`}>{r.paper1_says}</p></div>
-              <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}><h3 className={`font-bold text-sm ${c.text}`}>📄 Paper 2</h3><p className={`text-sm ${c.textSecondaryondary} mt-1`}>{r.paper2_says}</p></div>
+              <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}><h3 className={`font-bold text-sm ${c.text}`}>📄 Paper 1</h3><p className={`text-sm ${c.textSecondary} mt-1`}>{r.paper1_says}</p></div>
+              <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}><h3 className={`font-bold text-sm ${c.text}`}>📄 Paper 2</h3><p className={`text-sm ${c.textSecondary} mt-1`}>{r.paper2_says}</p></div>
             </div>
             {r.do_they_agree && <div className={`${r.do_they_agree.verdict === 'Yes' ? c.success : r.do_they_agree.verdict === 'No' ? c.danger : c.warning} border rounded-xl p-5`}><h3 className="font-bold text-lg">{r.do_they_agree.verdict === 'Yes' ? '✅' : r.do_they_agree.verdict === 'No' ? '❌' : '🤔'} {r.do_they_agree.verdict}</h3><p className="text-sm mt-1">{r.do_they_agree.explanation}</p></div>}
-            {r.why_different?.length > 0 && <Section id="whydiff" title="🔍 Why They Differ">{r.why_different.map((w, i) => <p key={i} className={`text-sm ${c.textSecondaryondary}`}>• {w}</p>)}</Section>}
+            {r.why_different?.length > 0 && <Section id="whydiff" title="🔍 Why They Differ">{r.why_different.map((w, i) => <p key={i} className={`text-sm ${c.textSecondary}`}>• {w}</p>)}</Section>}
             {r.which_to_trust_more && <div className={`${c.warningBox} border rounded-xl p-5`}><h3 className={`font-bold ${c.accentTxt} text-sm`}>🏆 Which to Trust?</h3><p className={`text-sm ${c.text} mt-1`}>{r.which_to_trust_more.assessment}</p>{r.which_to_trust_more.caveats && <p className={`text-xs ${c.textMuteded} mt-2`}>{r.which_to_trust_more.caveats}</p>}</div>}
             {r.the_takeaway && <div className={`${c.success} border rounded-xl p-4`}><p className="text-sm">🎯 <strong>Takeaway:</strong> {r.the_takeaway}</p></div>}
             {r.what_we_still_dont_know && <div className={`${c.infoBox} border rounded-xl p-4`}><p className="text-sm">❓ <strong>Still unknown:</strong> {r.what_we_still_dont_know}</p></div>}
@@ -357,8 +357,8 @@ const PaperDigest = ({ tool }) => {
 
         {relResults && (() => { const r = relResults; return (
           <div className="space-y-4">
-            {r.applies_to_you && <div className={`${r.applies_to_you.verdict === 'Yes directly' ? c.success : r.applies_to_you.verdict === 'Not really' ? c.cardAlt : c.warning} border rounded-xl p-5`}><h3 className={`font-bold ${c.text} text-lg`}>{r.applies_to_you.verdict === 'Yes directly' ? '✅' : r.applies_to_you.verdict === 'Not really' ? '🤷' : '🤔'} {r.applies_to_you.verdict}</h3><p className={`text-sm ${c.textSecondaryondary} mt-1`}>{r.applies_to_you.explanation}</p></div>}
-            {r.should_you_change && <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-2`}><h3 className={`font-bold ${c.text}`}>🔄 Should You Change?</h3><p className={`text-sm ${c.textSecondaryondary}`}>{r.should_you_change.behavior}</p><p className={`text-sm ${c.textSecondaryondary}`}>📊 <strong>Confidence:</strong> {r.should_you_change.confidence}</p>{r.should_you_change.cost_of_waiting && <p className={`text-sm ${c.textMuteded}`}>⏱️ Cost of waiting: {r.should_you_change.cost_of_waiting}</p>}</div>}
+            {r.applies_to_you && <div className={`${r.applies_to_you.verdict === 'Yes directly' ? c.success : r.applies_to_you.verdict === 'Not really' ? c.cardAlt : c.warning} border rounded-xl p-5`}><h3 className={`font-bold ${c.text} text-lg`}>{r.applies_to_you.verdict === 'Yes directly' ? '✅' : r.applies_to_you.verdict === 'Not really' ? '🤷' : '🤔'} {r.applies_to_you.verdict}</h3><p className={`text-sm ${c.textSecondary} mt-1`}>{r.applies_to_you.explanation}</p></div>}
+            {r.should_you_change && <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-2`}><h3 className={`font-bold ${c.text}`}>🔄 Should You Change?</h3><p className={`text-sm ${c.textSecondary}`}>{r.should_you_change.behavior}</p><p className={`text-sm ${c.textSecondary}`}>📊 <strong>Confidence:</strong> {r.should_you_change.confidence}</p>{r.should_you_change.cost_of_waiting && <p className={`text-sm ${c.textMuteded}`}>⏱️ Cost of waiting: {r.should_you_change.cost_of_waiting}</p>}</div>}
             {r.talk_to && <div className={`${c.infoBox} border rounded-xl p-4`}><p className="text-sm">👩‍⚕️ {r.talk_to}</p></div>}
             {r.the_bottom_line && <div className={`${c.success} border rounded-xl p-5`}><p className={`text-sm font-medium ${isDark ? 'text-green-200' : 'text-green-800'}`}>☕ {r.the_bottom_line}</p></div>}
           </div>
@@ -378,7 +378,7 @@ const PaperDigest = ({ tool }) => {
         {jargonResults?.terms?.map((t, i) => (
           <div key={i} className={`${c.card} border ${c.border} rounded-xl p-5 space-y-2`}>
             <h3 className={`font-bold ${c.text}`}>{t.term}</h3>
-            <p className={`text-sm ${c.textSecondaryondary}`}>{t.plain_english}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{t.plain_english}</p>
             {t.why_it_matters && <p className={`text-sm ${c.textMuteded}`}>💡 {t.why_it_matters}</p>}
             {t.watch_out && <div className={`${c.warning} border rounded-lg p-3`}><p className="text-xs">⚠️ {t.watch_out}</p></div>}
             {t.example && <p className={`text-xs ${c.textMuteded}`}>📝 {t.example}</p>}

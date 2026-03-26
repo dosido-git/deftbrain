@@ -899,7 +899,7 @@ async function decrypt(){
         <div className="flex items-center gap-3">
           <span className={`text-xs ${c.textMuteded}`}>Auto-saved</span>
           <button onClick={() => { setScreen('interview'); if (!currentInterviewQ) askNextQuestion(); }}
-            className={`text-xs font-semibold ${c.textSecondaryondary}`}>🧠 AI Interview</button>
+            className={`text-xs font-semibold ${c.textSecondary}`}>🧠 AI Interview</button>
         </div>
         <button onClick={clearAllAndRestart} className={`text-xs ${c.textMuteded} ${c.deleteHover} transition-colors`}>🗑️ Start Over</button>
       </div>
@@ -927,7 +927,7 @@ async function decrypt(){
   const renderLoading = (msg) => (
     <div className="flex items-center gap-3 py-6 justify-center">
       <span className="animate-spin inline-block">{tool?.icon ?? '📋'}</span>
-      <span className={`text-sm ${c.textSecondaryondaryondary} animate-pulse`}>{msg || 'Thinking...'}</span>
+      <span className={`text-sm ${c.textSecondaryondary} animate-pulse`}>{msg || 'Thinking...'}</span>
     </div>
   );
 
@@ -970,12 +970,12 @@ async function decrypt(){
 
       <div className="space-y-4 mb-6">
         <div>
-          <label className={`text-xs font-bold ${c.textSecondaryondaryondary} uppercase tracking-wide mb-2 block`}>Your Name</label>
+          <label className={`text-xs font-bold ${c.textSecondaryondary} uppercase tracking-wide mb-2 block`}>Your Name</label>
           <input type="text" value={userName} onChange={e => setUserName(e.target.value)} placeholder="How you'd sign a letter"
             className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none transition-colors`} />
         </div>
         <div>
-          <label className={`text-xs font-bold ${c.textSecondaryondaryondary} uppercase tracking-wide mb-2 block`}>Primary Trusted Person</label>
+          <label className={`text-xs font-bold ${c.textSecondaryondary} uppercase tracking-wide mb-2 block`}>Primary Trusted Person</label>
           <input type="text" value={primaryPerson?.name || ''} onChange={e => updateTrustedPerson(primaryPerson?.id, 'name', e.target.value)}
             placeholder='e.g. "My partner Alex", "My sister Maria"'
             className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none transition-colors`} />
@@ -988,7 +988,7 @@ async function decrypt(){
             <button onClick={() => removeTrustedPerson(tp.id)} className={`px-3 rounded-xl ${c.btnSecondary} text-sm`}>✕</button>
           </div>
         ))}
-        <button onClick={addTrustedPerson} className={`flex items-center gap-1.5 text-xs font-semibold ${c.textSecondaryondary}`}>➕ Add another trusted person</button>
+        <button onClick={addTrustedPerson} className={`flex items-center gap-1.5 text-xs font-semibold ${c.textSecondary}`}>➕ Add another trusted person</button>
         {trustedPeople.length > 1 && <p className={`text-xs ${c.textMuteded}`}>With multiple people, you control which sections each sees.</p>}
       </div>
 
@@ -1027,9 +1027,9 @@ async function decrypt(){
       <div className={`mt-4 p-4 rounded-xl ${c.cardAltInset}`}>
         <p className={`text-xs ${c.textMuteded} mb-2`}>Related tools:</p>
         <div className="flex flex-wrap gap-2">
-          <a href="/GratitudeDebtClearer" target="_blank" rel="noopener" className={`text-xs font-semibold ${c.textSecondaryondary} ${c.cardAltHover} px-2 py-1 rounded-lg`}>❤️ Gratitude Debt Clearer</a>
-          <a href="/BrainDumpStructurer" target="_blank" rel="noopener" className={`text-xs font-semibold ${c.textSecondaryondary} ${c.cardAltHover} px-2 py-1 rounded-lg`}>🧠 Brain Dump Structurer</a>
-          <a href="/DecisionCoach" target="_blank" rel="noopener" className={`text-xs font-semibold ${c.textSecondaryondary} ${c.cardAltHover} px-2 py-1 rounded-lg`}>🤔 Decision Coach</a>
+          <a href="/GratitudeDebtClearer" target="_blank" rel="noopener" className={`text-xs font-semibold ${c.textSecondary} ${c.cardAltHover} px-2 py-1 rounded-lg`}>❤️ Gratitude Debt Clearer</a>
+          <a href="/BrainDumpStructurer" target="_blank" rel="noopener" className={`text-xs font-semibold ${c.textSecondary} ${c.cardAltHover} px-2 py-1 rounded-lg`}>🧠 Brain Dump Structurer</a>
+          <a href="/DecisionCoach" target="_blank" rel="noopener" className={`text-xs font-semibold ${c.textSecondary} ${c.cardAltHover} px-2 py-1 rounded-lg`}>🤔 Decision Coach</a>
         </div>
       </div>
       <p className={`text-xs ${c.textMuteded} mt-6 text-center`}>⚠️ This is not a legal document. Consult an attorney for legal estate planning.</p>
@@ -1049,11 +1049,11 @@ async function decrypt(){
           <button onClick={() => setScreen('welcome')} className={`text-sm font-semibold ${c.btnSecondary}`}>← Back</button>
         </div>
       </div>
-      <p className={`text-sm ${c.textSecondaryondaryondary} mb-5`}>I'll ask questions to help you build your document. Just answer naturally — I'll organize everything.</p>
+      <p className={`text-sm ${c.textSecondaryondary} mb-5`}>I'll ask questions to help you build your document. Just answer naturally — I'll organize everything.</p>
 
       {/* Interview progress */}
       <div className={`flex items-center gap-3 mb-5 p-3 rounded-xl ${c.cardAltInset}`}>
-        <span className={`text-xs font-bold ${c.textSecondaryondaryondary}`}>{interviewHistory.length} questions answered</span>
+        <span className={`text-xs font-bold ${c.textSecondaryondary}`}>{interviewHistory.length} questions answered</span>
         <span className={`text-xs ${c.textMuteded}`}>·</span>
         <span className={`text-xs ${c.textMuteded}`}>{accounts.length} accounts · {financialAccounts.length} financial · {messages.filter(m => m.hasDraft).length} messages</span>
       </div>
@@ -1063,7 +1063,7 @@ async function decrypt(){
         <div className="space-y-3 mb-5">
           {interviewHistory.slice(-5).map((h, i) => (
             <div key={i} className={`p-4 rounded-xl border ${c.border} ${c.card}`}>
-              <p className={`text-xs font-bold ${c.textSecondaryondary} mb-1`}>Q: {h.question}</p>
+              <p className={`text-xs font-bold ${c.textSecondary} mb-1`}>Q: {h.question}</p>
               <p className={`text-sm ${c.text}`}>{h.answer}</p>
             </div>
           ))}
@@ -1114,7 +1114,7 @@ async function decrypt(){
           <h2 className={`text-xl font-bold ${c.text}`}>🚨 Emergency Quick Plan</h2>
           <button onClick={() => setScreen('welcome')} className={`text-sm font-semibold ${c.btnSecondary}`}>← Back</button>
         </div>
-        <p className={`text-sm ${c.textSecondaryondaryondary} mb-5`}>Just the essentials for {tp}. Under 5 minutes.</p>
+        <p className={`text-sm ${c.textSecondaryondary} mb-5`}>Just the essentials for {tp}. Under 5 minutes.</p>
 
         <div className={`p-5 rounded-2xl border-2 ${c.borderWarm} ${c.warmBg} mb-5`}>
           <h3 className={`text-sm font-bold ${c.textWarm} mb-2`}>🔑 Top Critical Accounts</h3>
@@ -1145,7 +1145,7 @@ async function decrypt(){
 
         <div className={`p-5 rounded-2xl border ${c.border} ${c.card} mb-5`}>
           <div className="flex items-center justify-between mb-3"><h3 className={`text-sm font-bold ${c.text}`}>📞 Emergency Contacts</h3>
-            <button onClick={addEmergencyContact} className={`text-xs font-semibold ${c.textSecondaryondary}`}>➕ Add</button></div>
+            <button onClick={addEmergencyContact} className={`text-xs font-semibold ${c.textSecondary}`}>➕ Add</button></div>
           {emergencyContacts.length === 0 && <p className={`text-xs ${c.textMuteded}`}>Add key contacts.</p>}
           {emergencyContacts.map(ec => (
             <div key={ec.id} className="flex gap-2 mb-2">
@@ -1190,7 +1190,7 @@ async function decrypt(){
     return (
       <div>
         <h3 className={`text-lg font-bold ${c.text} mb-1`}>🔑 Digital Accounts & Access</h3>
-        <p className={`text-sm ${c.textSecondaryondaryondary} mb-5`}>What accounts would {tp} need to know about?</p>
+        <p className={`text-sm ${c.textSecondaryondary} mb-5`}>What accounts would {tp} need to know about?</p>
         {accounts.length === 0 && !showFollowUps && (
           <div className={`p-5 rounded-2xl border-2 ${c.borderWarm} ${c.warmBg} mb-5`}>
             <p className={`text-sm ${c.textWarm} mb-3`}>What are the 3–5 accounts {tp} would need first?</p>
@@ -1207,8 +1207,8 @@ async function decrypt(){
         {accounts.length > 0 && (
           <div className="mb-5">
             <div className="flex items-center justify-between mb-3">
-              <span className={`text-xs font-bold ${c.textSecondaryondaryondary} uppercase`}>{accounts.length} accounts</span>
-              <button onClick={addManualAccount} className={`flex items-center gap-1.5 text-xs font-semibold ${c.textSecondaryondary}`}>➕ Add manually</button>
+              <span className={`text-xs font-bold ${c.textSecondaryondary} uppercase`}>{accounts.length} accounts</span>
+              <button onClick={addManualAccount} className={`flex items-center gap-1.5 text-xs font-semibold ${c.textSecondary}`}>➕ Add manually</button>
             </div>
             <div className="space-y-3">
               {accounts.map(acc => (
@@ -1273,7 +1273,7 @@ async function decrypt(){
     return (
       <div>
         <h3 className={`text-lg font-bold ${c.text} mb-1`}>📄 Important Documents & Files</h3>
-        <p className={`text-sm ${c.textSecondaryondaryondary} mb-5`}>Where would {tp} find the things that matter?</p>
+        <p className={`text-sm ${c.textSecondaryondary} mb-5`}>Where would {tp} find the things that matter?</p>
         <div className="space-y-3 mb-6">
           {DOC_CHECKLIST.map(doc => {
             const checked = documents[doc.id]?.checked || false;
@@ -1286,7 +1286,7 @@ async function decrypt(){
                     {checked && <span className="text-xs">✓</span>}
                   </button>
                   <div className="flex-1">
-                    <span className={`text-sm font-medium ${checked ? c.text : c.textSecondaryondaryondary}`}>{doc.icon} {doc.label}</span>
+                    <span className={`text-sm font-medium ${checked ? c.text : c.textSecondaryondary}`}>{doc.icon} {doc.label}</span>
                     {checked && <input type="text" value={location} onChange={e => setDocuments(prev => ({ ...prev, [doc.id]: { ...prev[doc.id], location: e.target.value } }))} placeholder="Where is it?" className={`w-full mt-2 px-3 py-2 rounded-lg border text-xs ${c.input} outline-none`} />}
                   </div>
                 </div>
@@ -1295,7 +1295,7 @@ async function decrypt(){
           })}
         </div>
         <div>
-          <label className={`text-xs font-bold ${c.textSecondaryondaryondary} uppercase tracking-wide mb-2 block`}>Anything else {tp} would need to find?</label>
+          <label className={`text-xs font-bold ${c.textSecondaryondary} uppercase tracking-wide mb-2 block`}>Anything else {tp} would need to find?</label>
           <textarea value={docNotes} onChange={e => setDocNotes(e.target.value)} placeholder="Keys, safe combinations, storage units..." rows={3} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none`} />
         </div>
         {renderNavButtons()}
@@ -1311,7 +1311,7 @@ async function decrypt(){
     return (
       <div>
         <h3 className={`text-lg font-bold ${c.text} mb-1`}>💰 Financial Snapshot</h3>
-        <p className={`text-sm ${c.textSecondaryondaryondary} mb-2`}>A high-level map — not dollar amounts, just what exists and where.</p>
+        <p className={`text-sm ${c.textSecondaryondary} mb-2`}>A high-level map — not dollar amounts, just what exists and where.</p>
         <p className={`text-xs ${c.textMuteded} mb-5`}>Just enough for {tp} to know what accounts exist.</p>
         {financialAccounts.length === 0 && (
           <div className={`p-5 rounded-2xl border-2 ${c.borderWarm} ${c.warmBg} mb-5`}>
@@ -1327,8 +1327,8 @@ async function decrypt(){
         {financialAccounts.length > 0 && (
           <div className="mb-5">
             <div className="flex items-center justify-between mb-3">
-              <span className={`text-xs font-bold ${c.textSecondaryondaryondary} uppercase`}>{financialAccounts.length} items</span>
-              <button onClick={addManualFinancial} className={`flex items-center gap-1.5 text-xs font-semibold ${c.textSecondaryondary}`}>➕ Add manually</button>
+              <span className={`text-xs font-bold ${c.textSecondaryondary} uppercase`}>{financialAccounts.length} items</span>
+              <button onClick={addManualFinancial} className={`flex items-center gap-1.5 text-xs font-semibold ${c.textSecondary}`}>➕ Add manually</button>
             </div>
             <div className="space-y-3">
               {financialAccounts.map(fin => (
@@ -1353,7 +1353,7 @@ async function decrypt(){
           </div>
         )}
         <div className="mt-4">
-          <label className={`text-xs font-bold ${c.textSecondaryondaryondary} uppercase tracking-wide mb-2 block`}>Recurring Bills / Auto-Pay</label>
+          <label className={`text-xs font-bold ${c.textSecondaryondary} uppercase tracking-wide mb-2 block`}>Recurring Bills / Auto-Pay</label>
           <textarea value={recurringBills} onChange={e => setRecurringBills(e.target.value)} placeholder="Auto-pay items that would need cancellation or transfer..." rows={3} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none`} />
         </div>
         {renderError()}
@@ -1378,7 +1378,7 @@ async function decrypt(){
 
     const renderMessageList = () => (
       <div>
-        <p className={`text-sm ${c.textSecondaryondaryondary} mb-5`}>Who would you want to receive a personal message from you?</p>
+        <p className={`text-sm ${c.textSecondaryondary} mb-5`}>Who would you want to receive a personal message from you?</p>
         {messages.length > 0 && (
           <div className="space-y-3 mb-5">
             {messages.map((msg, i) => (
@@ -1388,7 +1388,7 @@ async function decrypt(){
                   <span className="text-2xl">{msg.hasDraft ? '✉️' : '📝'}</span>
                   <div className="flex-1"><span className={`text-sm font-bold ${c.text}`}>{msg.recipientName}</span>
                     {msg.relationship && <span className={`block text-xs ${c.textMuteded}`}>{msg.relationship}</span>}
-                    {msg.translatedLang && <span className={`block text-xs ${c.textSecondaryondary}`}>🌍 {msg.translatedLang}</span>}
+                    {msg.translatedLang && <span className={`block text-xs ${c.textSecondary}`}>🌍 {msg.translatedLang}</span>}
                   </div>
                   {msg.hasDraft && <span className="text-emerald-500">✅</span>}
                   <span className={c.textMuteded}>→</span>
@@ -1406,7 +1406,7 @@ async function decrypt(){
         </div>
         {messages.length > 0 && (
           <div className={`mt-4 p-3 rounded-lg ${c.cardAltInset}`}>
-            <p className={`text-xs ${c.textMuteded}`}>Need help expressing something? <a href="/GratitudeDebtClearer" target="_blank" rel="noopener" className={`font-semibold ${c.textSecondaryondary}`}>Gratitude Debt Clearer</a> can help.</p>
+            <p className={`text-xs ${c.textMuteded}`}>Need help expressing something? <a href="/GratitudeDebtClearer" target="_blank" rel="noopener" className={`font-semibold ${c.textSecondary}`}>Gratitude Debt Clearer</a> can help.</p>
           </div>
         )}
       </div>
@@ -1437,7 +1437,7 @@ async function decrypt(){
         <div className={`p-5 rounded-2xl border-2 ${c.borderWarm} ${c.warmBg}`}>
           <p className={`text-sm font-semibold ${c.textWarm} mb-3`}>Shared memories, advice, inside jokes? <span className={`font-normal ${c.textMuteded}`}>(optional)</span></p>
           <textarea value={msg.memories} onChange={e => updateMessageField(idx, 'memories', e.target.value)} placeholder="e.g. that road trip, how they make everyone laugh..." rows={3} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none mb-4`} />
-          <p className={`text-xs font-bold ${c.textSecondaryondaryondary} uppercase tracking-wide mb-2`}>Tone</p>
+          <p className={`text-xs font-bold ${c.textSecondaryondary} uppercase tracking-wide mb-2`}>Tone</p>
           <div className="flex flex-wrap gap-2 mb-4">
             {['warm', 'funny', 'heartfelt', 'direct', 'pep talk'].map(t => (
               <button key={t} onClick={() => updateMessageField(idx, 'tone', t)} className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all capitalize ${msg.tone === t ? (isDark ? 'border-amber-500 bg-amber-900/30 text-amber-300' : 'border-amber-400 bg-amber-50 text-amber-700') : `${c.border} ${c.textMuteded}`}`}>{t}</button>
@@ -1445,7 +1445,7 @@ async function decrypt(){
           </div>
           {allPeopleNames.length > 1 && (
             <div className="mb-4">
-              <p className={`text-xs font-bold ${c.textSecondaryondaryondary} uppercase tracking-wide mb-2`}>Visible To</p>
+              <p className={`text-xs font-bold ${c.textSecondaryondary} uppercase tracking-wide mb-2`}>Visible To</p>
               <select value={msg.visibleTo || 'all'} onChange={e => updateMessageField(idx, 'visibleTo', e.target.value)} className={`px-3 py-1.5 rounded-lg border text-xs ${c.input} outline-none`}>
                 {getVisibilityOptions().map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
               </select>
@@ -1534,11 +1534,11 @@ async function decrypt(){
   const renderChapterWishes = () => (
     <div>
       <h3 className={`text-lg font-bold ${c.text} mb-1`}>🏠 Practical Wishes & Instructions</h3>
-      <p className={`text-sm ${c.textSecondaryondaryondary} mb-5`}>Anything else that would help.</p>
+      <p className={`text-sm ${c.textSecondaryondary} mb-5`}>Anything else that would help.</p>
 
       <div className="mb-6">
         <div className="flex items-center justify-between mb-3"><span className={`text-sm font-bold ${c.text} flex items-center gap-2`}>📞 Emergency Contacts</span>
-          <button onClick={addEmergencyContact} className={`flex items-center gap-1.5 text-xs font-semibold ${c.textSecondaryondary}`}>➕ Add</button></div>
+          <button onClick={addEmergencyContact} className={`flex items-center gap-1.5 text-xs font-semibold ${c.textSecondary}`}>➕ Add</button></div>
         {emergencyContacts.length === 0 && <p className={`text-xs ${c.textMuteded} mb-3`}>Key people to call — family, lawyer, financial advisor.</p>}
         {emergencyContacts.map(ec => (
           <div key={ec.id} className="flex gap-2 mb-2">
@@ -1552,7 +1552,7 @@ async function decrypt(){
 
       <div className="mb-6">
         <div className="flex items-center justify-between mb-3"><span className={`text-sm font-bold ${c.text}`}>🐾 Pets</span>
-          <button onClick={addPet} className={`flex items-center gap-1.5 text-xs font-semibold ${c.textSecondaryondary}`}>➕ Add pet</button></div>
+          <button onClick={addPet} className={`flex items-center gap-1.5 text-xs font-semibold ${c.textSecondary}`}>➕ Add pet</button></div>
         {pets.length === 0 && <p className={`text-xs ${c.textMuteded} mb-3`}>No pets added.</p>}
         {pets.map(pet => (
           <div key={pet.id} className={`p-4 rounded-xl border ${c.border} ${c.card} mb-3`}>
@@ -1575,7 +1575,7 @@ async function decrypt(){
       <div className="mb-6"><label className={`text-sm font-bold ${c.text} mb-2 block`}>📱 Devices</label>
         <textarea value={deviceNotes} onChange={e => setDeviceNotes(e.target.value)} placeholder="Phone unlock, laptop password, what to do with hardware..." rows={3} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none`} /></div>
       <div className="mb-6">
-        <button onClick={() => setShowMemorial(!showMemorial)} className={`flex items-center gap-2 text-sm font-semibold ${c.textSecondaryondaryondary} ${c.cardAltHover} px-3 py-2 rounded-lg`}>
+        <button onClick={() => setShowMemorial(!showMemorial)} className={`flex items-center gap-2 text-sm font-semibold ${c.textSecondaryondary} ${c.cardAltHover} px-3 py-2 rounded-lg`}>
           {showMemorial ? '▲' : '▼'} 🎵 Memorial Preferences <span className={`text-xs ${c.textMuteded}`}>(optional)</span>
         </button>
         {showMemorial && <textarea value={memorialWishes} onChange={e => setMemorialWishes(e.target.value)} placeholder="Songs, readings, vibes? Or 'no strong preferences'" rows={3} className={`w-full mt-3 px-4 py-3 rounded-xl border text-sm ${c.input} outline-none`} />}
@@ -1612,7 +1612,7 @@ async function decrypt(){
     return (
       <div>
         <h3 className={`text-lg font-bold ${c.text} mb-1`}>📋 Review & Export</h3>
-        <p className={`text-sm ${c.textSecondaryondaryondary} mb-5`}>Your document for {tp} is ready.</p>
+        <p className={`text-sm ${c.textSecondaryondary} mb-5`}>Your document for {tp} is ready.</p>
 
         {/* Completeness */}
         <div className={`p-5 rounded-2xl border ${c.border} ${c.card} mb-5`}>
@@ -1625,7 +1625,7 @@ async function decrypt(){
               <div key={i} className="flex items-center justify-between">
                 <span className={`text-sm ${s.count > 0 ? c.text : c.textMuteded}`}>{s.count > 0 ? '✅ ' : '  '}{s.label}</span>
                 <div className="flex items-center gap-2"><span className={`text-xs ${c.textMuteded}`}>{s.count > 0 ? `${s.count} ${s.unit}` : 'skipped'}</span>
-                  <button onClick={() => goToChapter(s.chapter)} className={`text-xs font-semibold ${c.textSecondaryondary}`}>{s.count > 0 ? 'Edit' : 'Add'}</button></div>
+                  <button onClick={() => goToChapter(s.chapter)} className={`text-xs font-semibold ${c.textSecondary}`}>{s.count > 0 ? 'Edit' : 'Add'}</button></div>
               </div>
             ))}
           </div>
@@ -1651,7 +1651,7 @@ async function decrypt(){
                     <span className="text-sm flex-shrink-0">{gap.severity === 'critical' ? '🔴' : gap.severity === 'important' ? '🟡' : '🟢'}</span>
                     <div><p className={`text-sm ${c.text}`}>{gap.finding}</p><p className={`text-xs ${c.textMuteded} mt-1`}>💡 {gap.suggestion}</p>
                       <button onClick={() => goToChapter(CHAPTERS.findIndex(ch => ch.id === gap.section) >= 0 ? CHAPTERS.findIndex(ch => ch.id === gap.section) : 0)}
-                        className={`text-xs font-semibold ${c.textSecondaryondary} mt-1`}>Fix this →</button></div>
+                        className={`text-xs font-semibold ${c.textSecondary} mt-1`}>Fix this →</button></div>
                   </div>
                 </div>
               ))}
@@ -1662,7 +1662,7 @@ async function decrypt(){
         {/* Filter for multiple people */}
         {allPeopleNames.length > 1 && (
           <div className={`p-4 rounded-xl border ${c.border} ${c.card} mb-4`}>
-            <p className={`text-xs font-bold ${c.textSecondaryondaryondary} uppercase tracking-wide mb-2`}>Export for specific person</p>
+            <p className={`text-xs font-bold ${c.textSecondaryondary} uppercase tracking-wide mb-2`}>Export for specific person</p>
             <select value={exportFilter} onChange={e => setExportFilter(e.target.value)} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input} outline-none`}>
               {getVisibilityOptions().map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
             </select>
@@ -1754,11 +1754,11 @@ async function decrypt(){
         <div className={`mt-4 p-4 rounded-xl ${c.cardAltInset}`}>
           <p className={`text-xs ${c.textMuteded} mb-2`}>Finished? You might also want:</p>
           <div className="flex flex-wrap gap-2">
-            <a href="/GratitudeDebtClearer" target="_blank" rel="noopener" className={`text-xs font-semibold ${c.textSecondaryondary}`}>❤️ Clear gratitude debts</a>
+            <a href="/GratitudeDebtClearer" target="_blank" rel="noopener" className={`text-xs font-semibold ${c.textSecondary}`}>❤️ Clear gratitude debts</a>
             <span className={`text-xs ${c.textMuteded}`}>·</span>
-            <a href="/DifficultTalkCoach" target="_blank" rel="noopener" className={`text-xs font-semibold ${c.textSecondaryondary}`}>💬 Prepare a difficult conversation</a>
+            <a href="/DifficultTalkCoach" target="_blank" rel="noopener" className={`text-xs font-semibold ${c.textSecondary}`}>💬 Prepare a difficult conversation</a>
             <span className={`text-xs ${c.textMuteded}`}>·</span>
-            <a href="/BrainDumpStructurer" target="_blank" rel="noopener" className={`text-xs font-semibold ${c.textSecondaryondary}`}>🧠 Organize your thoughts</a>
+            <a href="/BrainDumpStructurer" target="_blank" rel="noopener" className={`text-xs font-semibold ${c.textSecondary}`}>🧠 Organize your thoughts</a>
           </div>
         </div>
 
@@ -1783,7 +1783,7 @@ async function decrypt(){
           <h2 className={`text-xl font-bold ${c.text}`}>📅 Annual Review — What's Changed</h2>
           <button onClick={() => { setImportedData(null); setScreen('welcome'); }} className={`text-sm font-semibold ${c.btnSecondary}`}>✕ Close</button>
         </div>
-        {diff.prevDate && <p className={`text-sm ${c.textSecondaryondaryondary} mb-5`}>Comparing to backup from <strong>{new Date(diff.prevDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</strong></p>}
+        {diff.prevDate && <p className={`text-sm ${c.textSecondaryondary} mb-5`}>Comparing to backup from <strong>{new Date(diff.prevDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</strong></p>}
         {!diff.hasChanges ? (
           <div className={`p-5 rounded-2xl ${c.success} border mb-6`}><p className="text-sm font-semibold">✅ No changes detected — document is up to date.</p></div>
         ) : (
@@ -1797,7 +1797,7 @@ async function decrypt(){
             {diff.textChanges.length > 0 && (
               <div className={`p-4 rounded-xl border ${c.diffChg}`}>
                 <p className="text-sm font-bold mb-2">✏️ Text Fields Updated</p>
-                {diff.textChanges.map((ch, i) => <p key={i} className={`text-sm ${c.textSecondaryondaryondary}`}>• {ch}</p>)}
+                {diff.textChanges.map((ch, i) => <p key={i} className={`text-sm ${c.textSecondaryondary}`}>• {ch}</p>)}
               </div>
             )}
           </div>

@@ -105,7 +105,7 @@ const HecklerPrep = ({ tool }) => {
       <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-6`}>
         <div className={`mb-5 pb-4 border-b ${c.border}`}>
           <h2 className={`text-2xl font-bold ${c.text}`}>HecklerPrep 🎤</h2>
-          <p className={`text-sm ${c.textSecondaryondary} mt-1`}>Anticipate the hardest questions before they land</p>
+          <p className={`text-sm ${c.textSecondary} mt-1`}>Anticipate the hardest questions before they land</p>
         </div>
 
         <div className="mb-4">
@@ -181,7 +181,7 @@ const HecklerPrep = ({ tool }) => {
 
           {r.situation_read && (
             <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-5`}>
-              <p className={`text-sm ${c.textSecondaryondary} leading-relaxed`}>{r.situation_read}</p>
+              <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{r.situation_read}</p>
             </div>
           )}
 
@@ -229,7 +229,7 @@ const HecklerPrep = ({ tool }) => {
                       <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-3`}>
                         <div>
                           <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>Real concern behind this question:</p>
-                          <p className={`text-xs ${c.textSecondaryondary} italic`}>{q.real_concern}</p>
+                          <p className={`text-xs ${c.textSecondary} italic`}>{q.real_concern}</p>
                         </div>
                         <div className={`${c.cardAlt} rounded-lg p-4`}>
                           <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>✅ Model answer:</p>
@@ -244,7 +244,7 @@ const HecklerPrep = ({ tool }) => {
                         {q.bail_out && (
                           <div>
                             <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>🆘 If you don't know:</p>
-                            <p className={`text-xs ${c.textSecondaryondary}`}>"{q.bail_out}"</p>
+                            <p className={`text-xs ${c.textSecondary}`}>"{q.bail_out}"</p>
                           </div>
                         )}
                         <CopyBtn content={`Q: ${q.question}\nA: ${q.model_answer}${BRAND}`} label="Copy Q&A" />

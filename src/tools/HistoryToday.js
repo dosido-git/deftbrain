@@ -161,7 +161,7 @@ const HistoryToday = ({ tool }) => {
                 className={`w-full p-3 border rounded-xl outline-none text-sm resize-y focus:ring-2 focus:ring-cyan-500/30 ${c.input}`} />
             </div>
             <div>
-              <label className={`block text-sm font-semibold ${c.textSecondaryondary} mb-1.5`}>
+              <label className={`block text-sm font-semibold ${c.textSecondary} mb-1.5`}>
                 Specific angle <span className={`font-normal ${c.textMuteded}`}>(optional)</span>
               </label>
               <input type="text" value={context} onChange={e => setContext(e.target.value)}
@@ -252,7 +252,7 @@ const HistoryToday = ({ tool }) => {
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className={`text-xs font-black ${c.textSecondaryondary}`}>PARALLEL {idx + 1}</span>
+                      <span className={`text-xs font-black ${c.textSecondary}`}>PARALLEL {idx + 1}</span>
                       <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${p.structural_match_score >= 70 ? c.success : p.structural_match_score >= 50 ? c.warning : c.highlight} border`}>
                         {p.structural_match_score}% match
                       </span>
@@ -279,14 +279,14 @@ const HistoryToday = ({ tool }) => {
                     <div className="space-y-2">
                       {p.structural_similarities.map((s, si) => (
                         <div key={si} className={`p-3 rounded-lg border ${c.border}`}>
-                          <p className={`text-xs font-bold ${c.textSecondaryondary} mb-1.5`}>{s.mechanism}</p>
+                          <p className={`text-xs font-bold ${c.textSecondary} mb-1.5`}>{s.mechanism}</p>
                           <div className="grid grid-cols-2 gap-2">
                             <div className={`p-2 rounded ${isDark ? 'bg-zinc-700/50' : 'bg-gray-50'}`}>
                               <p className={`text-[9px] font-bold ${c.textMuteded}`}>THEN</p>
-                              <p className={`text-xs ${c.textSecondaryondary}`}>{s.then}</p>
+                              <p className={`text-xs ${c.textSecondary}`}>{s.then}</p>
                             </div>
                             <div className={`p-2 rounded ${isDark ? 'bg-cyan-900/20' : 'bg-cyan-50/80'}`}>
-                              <p className={`text-[9px] font-bold ${c.textSecondaryondary}`}>NOW</p>
+                              <p className={`text-[9px] font-bold ${c.textSecondary}`}>NOW</p>
                               <p className={`text-xs ${c.text}`}>{s.now}</p>
                             </div>
                           </div>
@@ -334,7 +334,7 @@ const HistoryToday = ({ tool }) => {
                       <div className="flex flex-wrap gap-2 mt-2">
                         {p.key_figures.map((kf, fi) => (
                           <div key={fi} className={`text-[10px] px-2.5 py-1 rounded-lg ${c.cardAlt} border ${c.border}`}>
-                            <span className={c.textSecondaryondary}>{kf.historical}</span>
+                            <span className={c.textSecondary}>{kf.historical}</span>
                             <span className={c.textMuteded}> ↔ </span>
                             <span className={c.text}>{kf.modern_parallel}</span>
                           </div>
@@ -368,7 +368,7 @@ const HistoryToday = ({ tool }) => {
               {/* ─── DEEPER EXPANSION ─── */}
               {deeperData[idx] && (
                 <div className={`border-t-2 ${isDark ? 'border-cyan-700' : 'border-cyan-200'} p-5 space-y-4 ${isDark ? 'bg-zinc-800/80' : 'bg-cyan-50/30'}`}>
-                  <h4 className={`font-bold ${c.textSecondaryondary} flex items-center gap-2`}><span>🔍</span> Deep Dive: {deeperData[idx].title}</h4>
+                  <h4 className={`font-bold ${c.textSecondary} flex items-center gap-2`}><span>🔍</span> Deep Dive: {deeperData[idx].title}</h4>
 
                   {/* Detailed narrative */}
                   {deeperData[idx].detailed_narrative && (
@@ -389,7 +389,7 @@ const HistoryToday = ({ tool }) => {
                           {deeperData[idx].timeline.map((t, ti) => (
                             <div key={ti} className="pl-4 pb-3 relative">
                               <div className={`absolute -left-[5px] top-1.5 w-2 h-2 rounded-full ${t.modern_echo ? (isDark ? 'bg-cyan-400' : 'bg-cyan-500') : (isDark ? 'bg-zinc-500' : 'bg-gray-400')}`} />
-                              <p className={`text-[10px] font-bold ${c.textSecondaryondary}`}>{t.date}</p>
+                              <p className={`text-[10px] font-bold ${c.textSecondary}`}>{t.date}</p>
                               <p className={`text-xs font-semibold ${c.text}`}>{t.event}</p>
                               <p className={`text-[10px] ${c.textMuteded}`}>{t.significance}</p>
                               {t.modern_echo && <p className={`text-[10px] ${isDark ? 'text-cyan-400' : 'text-cyan-600'} mt-0.5 italic`}>↪ Today: {t.modern_echo}</p>}
@@ -408,9 +408,9 @@ const HistoryToday = ({ tool }) => {
                         {deeperData[idx].turning_points.map((tp, ti) => (
                           <div key={ti} className={`p-3 rounded-lg border ${c.border}`}>
                             <p className={`text-xs font-bold ${c.text} mb-1`}>{tp.moment}</p>
-                            <p className={`text-xs ${c.textSecondaryondary}`}><span className="font-semibold">Happened:</span> {tp.what_actually_happened}</p>
+                            <p className={`text-xs ${c.textSecondary}`}><span className="font-semibold">Happened:</span> {tp.what_actually_happened}</p>
                             <p className={`text-xs ${c.textMuteded}`}><span className="font-semibold">Could have:</span> {tp.alternative}</p>
-                            <p className={`text-[10px] ${c.textSecondaryondary} mt-1`}>Why: {tp.why_it_went_this_way}</p>
+                            <p className={`text-[10px] ${c.textSecondary} mt-1`}>Why: {tp.why_it_went_this_way}</p>
                           </div>
                         ))}
                       </div>
@@ -450,7 +450,7 @@ const HistoryToday = ({ tool }) => {
                           <div key={qi} className={`${c.cardAlt} border rounded-lg p-3`}>
                             <p className={`text-sm italic ${c.text}`}>"{q.quote}"</p>
                             <p className={`text-[10px] ${c.textMuteded} mt-1`}>— {q.speaker}, {q.date}</p>
-                            <p className={`text-[10px] ${c.textSecondaryondary} mt-1`}>↪ {q.modern_resonance}</p>
+                            <p className={`text-[10px] ${c.textSecondary} mt-1`}>↪ {q.modern_resonance}</p>
                           </div>
                         ))}
                       </div>
@@ -508,13 +508,13 @@ const HistoryToday = ({ tool }) => {
                 {counterData.why_it_diverged && (
                   <div className={`p-4 rounded-lg border-2 ${isDark ? 'border-amber-700 bg-amber-900/10' : 'border-amber-200 bg-amber-50'}`}>
                     <p className={`text-xs font-bold ${c.text} mb-1`}>🔑 {counterData.why_it_diverged.key_difference}</p>
-                    <p className={`text-xs ${c.textSecondaryondary}`}>{counterData.why_it_diverged.structural_reason}</p>
+                    <p className={`text-xs ${c.textSecondary}`}>{counterData.why_it_diverged.structural_reason}</p>
                     <p className={`text-[10px] ${c.textMuteded} mt-1 italic`}>{counterData.why_it_diverged.was_it_luck_or_choice}</p>
                   </div>
                 )}
                 {counterData.implication_for_today && (
                   <div className={`${c.cardAlt} border rounded-lg p-3`}>
-                    <p className={`text-[10px] font-bold ${c.textSecondaryondary} mb-1`}>FOR TODAY</p>
+                    <p className={`text-[10px] font-bold ${c.textSecondary} mb-1`}>FOR TODAY</p>
                     <p className={`text-xs ${c.text}`}>{counterData.implication_for_today}</p>
                   </div>
                 )}
@@ -534,7 +534,7 @@ const HistoryToday = ({ tool }) => {
               )}
               {results.synthesis.consensus_prediction && (
                 <div className={`${c.cardAlt} border rounded-lg p-4`}>
-                  <p className={`text-[10px] font-bold ${c.textSecondaryondary} mb-1`}>IF HISTORY RHYMES</p>
+                  <p className={`text-[10px] font-bold ${c.textSecondary} mb-1`}>IF HISTORY RHYMES</p>
                   <p className={`text-sm font-semibold ${c.text}`}>{results.synthesis.consensus_prediction}</p>
                 </div>
               )}
@@ -564,7 +564,7 @@ const HistoryToday = ({ tool }) => {
                     <div>
                       <p className={`text-sm font-semibold ${c.text}`}>{fr.title}</p>
                       <p className={`text-xs ${c.textMuteded}`}>by {fr.author}</p>
-                      <p className={`text-xs ${c.textSecondaryondary} mt-0.5`}>{fr.why}</p>
+                      <p className={`text-xs ${c.textSecondary} mt-0.5`}>{fr.why}</p>
                     </div>
                   </div>
                 ))}

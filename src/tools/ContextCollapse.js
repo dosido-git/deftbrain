@@ -204,7 +204,7 @@ const ContextCollapse = ({ tool }) => {
 
           {/* Platform */}
           <div>
-            <label className={`text-xs font-bold ${c.textSecondaryondary} uppercase tracking-wide mb-2 block`}>📱 Platform</label>
+            <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>📱 Platform</label>
             <div className="flex flex-wrap gap-1.5">
               {PLATFORMS.map(p => (
                 <Pill key={p.value} active={platform === p.value} onClick={() => setPlatform(p.value)}>{p.label}</Pill>
@@ -214,7 +214,7 @@ const ContextCollapse = ({ tool }) => {
 
           {/* Audiences */}
           <div>
-            <label className={`text-xs font-bold ${c.textSecondaryondary} uppercase tracking-wide mb-2 block`}>👥 Who will see this?</label>
+            <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>👥 Who will see this?</label>
             <div className="space-y-3">
               {audiences.map((a, idx) => (
                 <div key={idx} className={`p-3 rounded-xl border ${c.border} ${c.cardAlt} space-y-2`}>
@@ -256,7 +256,7 @@ const ContextCollapse = ({ tool }) => {
 
           {/* Intent */}
           <div>
-            <label className={`text-xs font-bold ${c.textSecondaryondary} uppercase tracking-wide mb-1 block`}>🎯 What are you trying to say?</label>
+            <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1 block`}>🎯 What are you trying to say?</label>
             <input
               type="text" value={intent}
               onChange={e => setIntent(e.target.value)}
@@ -267,7 +267,7 @@ const ContextCollapse = ({ tool }) => {
 
           {/* Concerns */}
           <div>
-            <label className={`text-xs font-bold ${c.textSecondaryondary} uppercase tracking-wide mb-1 block`}>😰 What are you worried about? (optional)</label>
+            <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1 block`}>😰 What are you worried about? (optional)</label>
             <input
               type="text" value={concerns}
               onChange={e => setConcerns(e.target.value)}
@@ -332,7 +332,7 @@ const ContextCollapse = ({ tool }) => {
               <p className={`text-xs font-bold ${c.textMuteded} uppercase mb-2`}>🔍 Tone detected</p>
               <p className={`text-sm ${c.text} mb-2`}>{results.message_analysis.tone_detected}</p>
               {results.message_analysis.subtext && (
-                <p className={`text-xs ${c.textSecondaryondary} mb-2`}>💭 Subtext: {results.message_analysis.subtext}</p>
+                <p className={`text-xs ${c.textSecondary} mb-2`}>💭 Subtext: {results.message_analysis.subtext}</p>
               )}
               {results.message_analysis.ambiguous_elements?.length > 0 && (
                 <div className="flex flex-wrap gap-1 mt-2">
@@ -355,7 +355,7 @@ const ContextCollapse = ({ tool }) => {
                   <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${c.badge}`}>{r.risk_level?.replace('_', ' ')}</span>
                 </div>
                 <p className={`text-sm ${c.text} mb-2`}>{r.reads_as}</p>
-                {r.emotional_impact && <p className={`text-xs ${c.textSecondaryondary} mb-1`}>💭 Feels: {r.emotional_impact}</p>}
+                {r.emotional_impact && <p className={`text-xs ${c.textSecondary} mb-1`}>💭 Feels: {r.emotional_impact}</p>}
                 {r.key_trigger && <p className={`text-xs font-semibold ${c.text} mb-1`}>⚡ Trigger: "{r.key_trigger}"</p>}
                 {r.what_they_might_do && <p className={`text-xs ${c.textMuteded} italic`}>→ They might: {r.what_they_might_do}</p>}
               </div>
@@ -366,7 +366,7 @@ const ContextCollapse = ({ tool }) => {
           {results.intent_vs_reality && (
             <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
               <p className={`text-xs font-bold ${c.textMuteded} uppercase mb-2`}>🎯 Intent vs. Reality</p>
-              <p className={`text-xs ${c.textSecondaryondary} mb-2`}>{results.intent_vs_reality.gap_analysis}</p>
+              <p className={`text-xs ${c.textSecondary} mb-2`}>{results.intent_vs_reality.gap_analysis}</p>
               {results.intent_vs_reality.biggest_risk && (
                 <div className={`p-3 rounded-lg border ${c.warning}`}>
                   <p className="text-xs font-bold">⚠️ Biggest risk: {results.intent_vs_reality.biggest_risk}</p>
@@ -418,7 +418,7 @@ const ContextCollapse = ({ tool }) => {
                         <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${c.badge}`}>{n.likelihood}</span>
                         <span className="text-xs font-bold">{n.scenario}</span>
                       </div>
-                      <p className={`text-xs ${c.textSecondaryondary}`}>Mitigation: {n.mitigation}</p>
+                      <p className={`text-xs ${c.textSecondary}`}>Mitigation: {n.mitigation}</p>
                     </div>
                   ))}
                 </div>
@@ -436,7 +436,7 @@ const ContextCollapse = ({ tool }) => {
           {/* Cross-refs */}
           <div className={`p-4 rounded-2xl border ${c.card} ${c.border}`}>
             <p className={`text-xs font-bold ${c.textMuteded} uppercase tracking-wide mb-2`}>🔗 Related Tools</p>
-            <div className={`space-y-1.5 text-xs ${c.textSecondaryondary}`}>
+            <div className={`space-y-1.5 text-xs ${c.textSecondary}`}>
               <p>Got a tense reply back? <a href="/ConflictCoach" rel="noopener noreferrer" className={linkStyle}>Conflict Coach</a> helps craft your response.</p>
               <p>Writing something firm but diplomatic? <a href="/VelvetHammer" rel="noopener noreferrer" className={linkStyle}>Velvet Hammer</a> crafts it.</p>
             </div>

@@ -419,16 +419,16 @@ const DecisionCoach = ({ tool }) => {
 
       {/* Standard / Devils / Chain input */}
       {['standard','devils','chain'].includes(decideMode) && (<>
-        {decideMode !== 'chain' && (<div className={`p-5 rounded-2xl border ${c.card}`}><label className={`text-xs font-bold ${c.textSecondaryondary} uppercase tracking-wide mb-1 block`}>🏷️ Category</label>{renderPills(DECISION_CATEGORIES, category, setCategory)}</div>)}
+        {decideMode !== 'chain' && (<div className={`p-5 rounded-2xl border ${c.card}`}><label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1 block`}>🏷️ Category</label>{renderPills(DECISION_CATEGORIES, category, setCategory)}</div>)}
         <div className={`p-5 rounded-2xl border ${c.card}`}>
-          <label className={`text-xs font-bold ${c.textSecondaryondary} uppercase tracking-wide mb-2 block`}>{decideMode === 'chain' ? '🔗 Primary decision' : '❓ What needs deciding?'}</label>
+          <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>{decideMode === 'chain' ? '🔗 Primary decision' : '❓ What needs deciding?'}</label>
           <input type="text" value={decisionNeeded} onChange={e => setDecisionNeeded(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); if (decideMode === 'devils') handleDevilsAdvocate(); else if (decideMode === 'chain') handleChain(); else generate([]); } }}
             placeholder={decideMode === 'chain' ? "e.g., 'Should I cook or go out?'" : "e.g., 'What to eat for dinner'"} className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
         </div>
         {decideMode === 'devils' && (
           <div className={`p-5 rounded-2xl border ${c.card}`}>
-            <label className={`text-xs font-bold ${c.textSecondaryondary} uppercase tracking-wide mb-2 block`}>🎭 Your gut instinct</label>
+            <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>🎭 Your gut instinct</label>
             <input type="text" value={gutInstinct} onChange={e => setGutInstinct(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') handleDevilsAdvocate(); }}
               placeholder="e.g., 'I think sushi'" className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
             <p className={`text-[10px] ${c.textMuteded} mt-1`}>I'll challenge it, then tell you if you're right.</p>
@@ -439,7 +439,7 @@ const DecisionCoach = ({ tool }) => {
       {/* Pros & cons input */}
       {decideMode === 'proscons' && (
         <div className={`p-5 rounded-2xl border ${c.card}`}>
-          <label className={`text-xs font-bold ${c.textSecondaryondary} uppercase tracking-wide mb-2 block`}>⚖️ Options (2-4)</label>
+          <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>⚖️ Options (2-4)</label>
           <div className="space-y-2">
             {prosOptions.map((o, i) => (<div key={i} className="flex gap-2"><input type="text" value={o} onChange={e => { const n=[...prosOptions]; n[i]=e.target.value; setProsOptions(n); }} placeholder={`Option ${i+1}`} className={`flex-1 px-3 py-2 rounded-lg border text-sm ${c.input} outline-none`} />{prosOptions.length > 2 && <button onClick={() => setProsOptions(p => p.filter((_,j) => j!==i))} className={`px-2 text-xs ${c.btnSecondary}`}>✕</button>}</div>))}
             {prosOptions.length < 4 && <button onClick={() => setProsOptions(p => [...p, ''])} className={`text-xs font-semibold ${c.histAccent}`}>➕ Add option</button>}
@@ -450,11 +450,11 @@ const DecisionCoach = ({ tool }) => {
 
       {/* Constraints + Capacity */}
       <div className={`p-5 rounded-2xl border ${c.card}`}>
-        <label className={`text-xs font-bold ${c.textSecondaryondary} uppercase tracking-wide mb-1 block`}>⚡ Constraints</label>
+        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1 block`}>⚡ Constraints</label>
         {renderPills(QUICK_CONSTRAINTS, constraints, toggleConstraint, true)}
         <input type="text" value={extraContext} onChange={e => setExtraContext(e.target.value)} placeholder="Anything else?" className={`w-full mt-3 px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
       </div>
-      {decideMode !== 'devils' && (<div className={`p-5 rounded-2xl border ${c.card}`}><label className={`text-xs font-bold ${c.textSecondaryondary} uppercase tracking-wide mb-2 block`}>🔋 Capacity</label>{renderPills(CAPACITY_OPTIONS, capacity, setCapacity)}</div>)}
+      {decideMode !== 'devils' && (<div className={`p-5 rounded-2xl border ${c.card}`}><label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>🔋 Capacity</label>{renderPills(CAPACITY_OPTIONS, capacity, setCapacity)}</div>)}
 
       {/* Timer (standard only) */}
       {decideMode === 'standard' && (
@@ -476,7 +476,7 @@ const DecisionCoach = ({ tool }) => {
       {/* Template save + prefs */}
       <div className={`p-4 rounded-2xl border ${c.hintBg}`}>
         <div className="flex items-center gap-2 mb-2">
-          <label className={`text-[10px] font-bold ${c.textSecondaryondary} uppercase flex-1`}>💾 Saved preferences</label>
+          <label className={`text-[10px] font-bold ${c.textSecondary} uppercase flex-1`}>💾 Saved preferences</label>
           <button onClick={() => setShowTemplateSave(!showTemplateSave)} className={`text-[10px] font-semibold ${c.histAccent}`}>{showTemplateSave ? '▲' : '📱 Save template'}</button>
         </div>
         <input type="text" value={savedPreferences} onChange={e => setSavedPreferences(e.target.value)} placeholder="e.g., 'vegetarian, budget-conscious'" className={`w-full px-3 py-2 rounded-lg border text-xs ${c.input} outline-none`} />
@@ -540,7 +540,7 @@ const DecisionCoach = ({ tool }) => {
           {d.why && <p className={`text-sm ${c.decisionText}`}><strong>Why:</strong> {d.why}</p>}
         </div>
         {renderSteps(steps)}
-        {alts.length > 0 && (<div className={`p-5 rounded-2xl border ${c.card}`}><h3 className={`text-sm font-bold mb-2 ${c.text}`}>🚫 Ruled out</h3>{alts.map((a, i) => <p key={i} className={`text-xs ${c.textSecondaryondary}`}><span className="line-through opacity-60">{a}</span></p>)}</div>)}
+        {alts.length > 0 && (<div className={`p-5 rounded-2xl border ${c.card}`}><h3 className={`text-sm font-bold mb-2 ${c.text}`}>🚫 Ruled out</h3>{alts.map((a, i) => <p key={i} className={`text-xs ${c.textSecondary}`}><span className="line-through opacity-60">{a}</span></p>)}</div>)}
         {results.no_second_guessing && (<div className={`p-5 rounded-2xl border ${c.warning}`}><p className={`text-sm font-bold ${c.warnTitle} mb-1`}>⚠️ No Second-Guessing</p><p className={`text-sm ${c.warnText}`}>{results.no_second_guessing}</p></div>)}
         <div className="flex flex-wrap gap-2">
           {!timerLocked && <button onClick={handleNotThat} disabled={loading} className={`flex-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 border ${c.btnDanger}`}><span>🚫</span> Not That</button>}
@@ -566,7 +566,7 @@ const DecisionCoach = ({ tool }) => {
           <div key={i} className={`p-4 rounded-2xl border ${isW ? c.prosWinner : c.prosLoser}`}>
             <div className="flex items-center gap-3 mb-2"><span>{isW ? '🏆' : '💤'}</span><p className={`text-sm font-bold flex-1 ${c.text}`}>{o.option}</p><span className={`text-xs font-bold ${isW ? c.prosWinText : c.textMuteded}`}>{o.score}/100</span></div>
             <div className={`h-2 rounded-full mb-3 ${c.prosBarBg}`}><div className={`h-full rounded-full ${isW ? 'bg-emerald-500' : c.prosBar}`} style={{ width: `${(o.score / mx) * 100}%` }} /></div>
-            <div className="grid grid-cols-2 gap-2"><div>{o.pros?.map((p, j) => <p key={j} className={`text-xs ${c.textSecondaryondary} mb-0.5`}>✅ {p}</p>)}</div><div>{o.cons?.map((x, j) => <p key={j} className={`text-xs ${c.textMuteded} mb-0.5`}>❌ {x}</p>)}</div></div>
+            <div className="grid grid-cols-2 gap-2"><div>{o.pros?.map((p, j) => <p key={j} className={`text-xs ${c.textSecondary} mb-0.5`}>✅ {p}</p>)}</div><div>{o.cons?.map((x, j) => <p key={j} className={`text-xs ${c.textMuteded} mb-0.5`}>❌ {x}</p>)}</div></div>
           </div>);
         })}
         {prosResult.tie_breaker && <div className={`p-4 rounded-xl border ${c.hintBg}`}><p className={`text-xs font-bold ${c.text} mb-1`}>⚖️ Tie Breaker</p><p className={`text-xs ${c.hintText}`}>{prosResult.tie_breaker}</p></div>}
@@ -612,7 +612,7 @@ const DecisionCoach = ({ tool }) => {
         {chainResult.downstream?.map((ds, i) => (
           <div key={i} className={`p-4 rounded-xl border ${c.chainBg}`}><div className="flex items-start gap-3">
             <div className={`w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-black ${c.chainArrow}`}>↳</div>
-            <div className="flex-1"><p className={`text-xs font-bold ${c.chainText} mb-0.5`}>{ds.question}</p><p className={`text-sm font-bold ${c.text} mb-1`}>→ {ds.choice}</p><p className={`text-[10px] ${c.textMuteded}`}>{ds.depends_on}</p>{ds.step && <p className={`text-xs ${c.textSecondaryondary} mt-1`}>📋 {ds.step}</p>}</div>
+            <div className="flex-1"><p className={`text-xs font-bold ${c.chainText} mb-0.5`}>{ds.question}</p><p className={`text-sm font-bold ${c.text} mb-1`}>→ {ds.choice}</p><p className={`text-[10px] ${c.textMuteded}`}>{ds.depends_on}</p>{ds.step && <p className={`text-xs ${c.textSecondary} mt-1`}>📋 {ds.step}</p>}</div>
           </div></div>
         ))}
         {chainResult.full_plan && <div className={`p-4 rounded-xl border ${c.hintBg}`}><p className={`text-xs font-bold ${c.text} mb-1`}>📝 Full Plan</p><p className={`text-xs ${c.hintText}`}>{chainResult.full_plan}</p></div>}
@@ -660,11 +660,11 @@ const DecisionCoach = ({ tool }) => {
   const renderGroupTab = () => (
     <div className="space-y-4">
       <div className={`p-5 rounded-2xl border ${c.card}`}>
-        <label className={`text-xs font-bold ${c.textSecondaryondary} uppercase tracking-wide mb-2 block`}>❓ Group decision</label>
+        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>❓ Group decision</label>
         <input type="text" value={groupDecision} onChange={e => setGroupDecision(e.target.value)} placeholder="e.g., 'Where to eat'" className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
       </div>
       <div className={`p-5 rounded-2xl border ${c.card}`}>
-        <label className={`text-xs font-bold ${c.textSecondaryondary} uppercase tracking-wide mb-3 block`}>👥 People</label>
+        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-3 block`}>👥 People</label>
         {groupPeople.map((p, i) => (
           <div key={i} className={`p-3 rounded-xl border ${c.groupPerson} mb-2`}>
             <div className="flex gap-2 mb-2"><input type="text" value={p.name} onChange={e => { const n=[...groupPeople]; n[i]={...n[i],name:e.target.value}; setGroupPeople(n); }} placeholder={`Person ${i+1}`} className={`flex-1 px-3 py-1.5 rounded-lg border text-sm ${c.input} outline-none`} />{groupPeople.length > 2 && <button onClick={() => setGroupPeople(prev => prev.filter((_,j)=>j!==i))} className={`px-2 text-xs ${c.btnSecondary}`}>✕</button>}</div>
@@ -688,7 +688,7 @@ const DecisionCoach = ({ tool }) => {
             <div key={i} className={`p-4 rounded-xl border ${c.card}`}>
               <div className="flex items-center gap-2 mb-2"><span>👤</span><p className={`text-sm font-bold flex-1 ${c.text}`}>{p.name}</p><span className={`text-xs font-bold ${p.happiness>=70 ? c.prosWinText : c.textMuteded}`}>{p.happiness}%</span></div>
               <div className={`h-1.5 rounded-full mb-2 ${c.prosBarBg}`}><div className={`h-full rounded-full ${p.happiness>=70?'bg-emerald-500':p.happiness>=50?c.prosBar:'bg-red-400'}`} style={{width:`${p.happiness}%`}} /></div>
-              <div className="grid grid-cols-2 gap-1"><div>{p.satisfied?.map((s,j)=><p key={j} className={`text-[10px] ${c.textSecondaryondary}`}>✅ {s}</p>)}</div><div>{p.compromised?.map((x,j)=><p key={j} className={`text-[10px] ${c.textMuteded}`}>⚠️ {x}</p>)}</div></div>
+              <div className="grid grid-cols-2 gap-1"><div>{p.satisfied?.map((s,j)=><p key={j} className={`text-[10px] ${c.textSecondary}`}>✅ {s}</p>)}</div><div>{p.compromised?.map((x,j)=><p key={j} className={`text-[10px] ${c.textMuteded}`}>⚠️ {x}</p>)}</div></div>
             </div>
           ))}
           {groupResult.diplomatic_pitch && <div className={`p-4 rounded-xl border ${c.hintBg}`}><p className={`text-xs font-bold ${c.text} mb-1`}>🎤 How to pitch it</p><p className={`text-xs ${c.hintText}`}>{groupResult.diplomatic_pitch}</p></div>}
@@ -710,15 +710,15 @@ const DecisionCoach = ({ tool }) => {
           <button onClick={handleDNA} disabled={dnaLoading} className={`px-5 py-2 rounded-xl text-xs font-bold ${c.btnDecide} disabled:opacity-40 mb-3`}>{dnaLoading ? <><span className="animate-spin">{tool?.icon ?? '🎯'}</span> Analyzing...</> : dnaResult ? '🔄 Re-analyze' : '🧬 Build DNA'}</button>
           {dnaResult && (<div className="space-y-3">
             <div className={`p-5 rounded-2xl border ${c.dnaBg}`}>
-              <div className="flex items-center gap-3 mb-3"><span className="text-3xl">{dnaResult.archetype?.emoji || '🧬'}</span><div><p className={`text-lg font-bold ${c.text}`}>{dnaResult.archetype?.name}</p><p className={`text-xs ${c.textSecondaryondary}`}>{dnaResult.archetype?.description}</p></div></div>
+              <div className="flex items-center gap-3 mb-3"><span className="text-3xl">{dnaResult.archetype?.emoji || '🧬'}</span><div><p className={`text-lg font-bold ${c.text}`}>{dnaResult.archetype?.name}</p><p className={`text-xs ${c.textSecondary}`}>{dnaResult.archetype?.description}</p></div></div>
               <div className="grid grid-cols-2 gap-3">
-                <div><p className={`text-[10px] font-bold ${c.prosWinText} mb-1`}>Strengths</p>{dnaResult.archetype?.strengths?.map((s,i)=><p key={i} className={`text-xs ${c.textSecondaryondary}`}>✅ {s}</p>)}</div>
-                <div><p className={`text-[10px] font-bold ${c.warnTitle} mb-1`}>Blind Spots</p>{dnaResult.archetype?.blindspots?.map((b,i)=><p key={i} className={`text-xs ${c.textSecondaryondary}`}>⚠️ {b}</p>)}</div>
+                <div><p className={`text-[10px] font-bold ${c.prosWinText} mb-1`}>Strengths</p>{dnaResult.archetype?.strengths?.map((s,i)=><p key={i} className={`text-xs ${c.textSecondary}`}>✅ {s}</p>)}</div>
+                <div><p className={`text-[10px] font-bold ${c.warnTitle} mb-1`}>Blind Spots</p>{dnaResult.archetype?.blindspots?.map((b,i)=><p key={i} className={`text-xs ${c.textSecondary}`}>⚠️ {b}</p>)}</div>
               </div>
             </div>
-            {dnaResult.stated_vs_real && (<div className={`p-4 rounded-xl border ${c.patternHighlight}`}><p className={`text-[10px] font-bold ${c.textMuteded} mb-2`}>🎭 Say vs Do</p><p className={`text-xs ${c.textSecondaryondary} mb-1`}><strong>Say:</strong> {dnaResult.stated_vs_real.stated}</p><p className={`text-xs ${c.textSecondaryondary} mb-1`}><strong>Do:</strong> {dnaResult.stated_vs_real.real}</p><p className={`text-xs font-semibold ${c.dnaAccent} mt-1`}>{dnaResult.stated_vs_real.gap_insight}</p></div>)}
+            {dnaResult.stated_vs_real && (<div className={`p-4 rounded-xl border ${c.patternHighlight}`}><p className={`text-[10px] font-bold ${c.textMuteded} mb-2`}>🎭 Say vs Do</p><p className={`text-xs ${c.textSecondary} mb-1`}><strong>Say:</strong> {dnaResult.stated_vs_real.stated}</p><p className={`text-xs ${c.textSecondary} mb-1`}><strong>Do:</strong> {dnaResult.stated_vs_real.real}</p><p className={`text-xs font-semibold ${c.dnaAccent} mt-1`}>{dnaResult.stated_vs_real.gap_insight}</p></div>)}
             {dnaResult.domain_velocity?.length > 0 && (<div className={`p-4 rounded-xl border ${c.card}`}><p className={`text-[10px] font-bold ${c.textMuteded} mb-2`}>⚡ Speed by Domain</p>{dnaResult.domain_velocity.map((d,i)=>(<div key={i} className="flex items-center gap-2 mb-1.5"><span className={`text-xs font-bold w-14 ${c.text}`}>{d.domain}</span><div className={`flex-1 h-2 rounded-full ${c.prosBarBg}`}><div className={`h-full rounded-full ${d.avg_rejections<=1.5?'bg-emerald-500':d.avg_rejections<=3?c.prosBar:'bg-red-400'}`} style={{width:`${Math.min((d.avg_rejections/8)*100,100)}%`}} /></div><span className={`text-[10px] ${c.textMuteded} w-20 text-right`}>{d.verdict}</span></div>))}</div>)}
-            {dnaResult.growth && (<div className={`p-4 rounded-xl border ${dnaResult.growth.trajectory==='improving'?c.prosWinner:c.card}`}><p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>📈 Growth</p><div className="flex items-center gap-3"><span className={`text-sm font-bold ${c.textMuteded}`}>{dnaResult.growth.early_avg_rejections}</span><span>→</span><span className={`text-sm font-bold ${dnaResult.growth.trajectory==='improving'?c.prosWinText:c.text}`}>{dnaResult.growth.recent_avg_rejections}</span><span className={`text-xs ${dnaResult.growth.trajectory==='improving'?c.prosWinText:c.textMuteded}`}>{dnaResult.growth.trajectory==='improving'?'📈 More decisive!':dnaResult.growth.trajectory==='declining'?'📉':'➡️ Stable'}</span></div><p className={`text-xs ${c.textSecondaryondary} mt-1`}>{dnaResult.growth.insight}</p></div>)}
+            {dnaResult.growth && (<div className={`p-4 rounded-xl border ${dnaResult.growth.trajectory==='improving'?c.prosWinner:c.card}`}><p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>📈 Growth</p><div className="flex items-center gap-3"><span className={`text-sm font-bold ${c.textMuteded}`}>{dnaResult.growth.early_avg_rejections}</span><span>→</span><span className={`text-sm font-bold ${dnaResult.growth.trajectory==='improving'?c.prosWinText:c.text}`}>{dnaResult.growth.recent_avg_rejections}</span><span className={`text-xs ${dnaResult.growth.trajectory==='improving'?c.prosWinText:c.textMuteded}`}>{dnaResult.growth.trajectory==='improving'?'📈 More decisive!':dnaResult.growth.trajectory==='declining'?'📉':'➡️ Stable'}</span></div><p className={`text-xs ${c.textSecondary} mt-1`}>{dnaResult.growth.insight}</p></div>)}
             {dnaResult.core_blocker && <div className={`p-4 rounded-xl border ${c.warning}`}><p className={`text-xs font-bold ${c.warnTitle} mb-1`}>🔒 Core Blocker</p><p className={`text-xs ${c.warnText}`}>{dnaResult.core_blocker}</p></div>}
             {dnaResult.prescription && <div className={`p-4 rounded-xl border ${c.welcomeBg}`}><p className={`text-xs font-bold ${c.welcomeText} mb-1`}>💊 Prescription</p><p className={`text-xs ${c.welcomeText} opacity-80`}>{dnaResult.prescription}</p></div>}
             <ActionBar content={`🧬 Decision DNA\n\n${dnaResult.archetype?.name}\n${dnaResult.archetype?.description}\n\n🔒 ${dnaResult.core_blocker}\n💊 ${dnaResult.prescription}${BRANDING}`} title="Decision DNA" />
@@ -734,8 +734,8 @@ const DecisionCoach = ({ tool }) => {
           {patternsResult && (<div className="space-y-3">
             <div className={`p-5 rounded-2xl border-2 ${c.decisionBg}`}><p className={`text-lg font-bold ${c.decisionHighlight}`}>{patternsResult.headline_insight}</p></div>
             {patternsResult.stats && (<div className="grid grid-cols-2 sm:grid-cols-3 gap-2">{[['📊','Total',patternsResult.stats.total_decisions],['🏷️','Top',patternsResult.stats.most_common_category],['🚫','Avg rej.',patternsResult.stats.avg_rejections],['✅','1st try',patternsResult.stats.acceptance_rate_first_try],['🕐','Peak',patternsResult.stats.peak_time]].filter(([,,v])=>v!=null).map(([e,l,v])=>(<div key={l} className={`p-3 rounded-xl border ${c.patternCard}`}><span>{e}</span><p className={`text-xs ${c.textMuteded} mt-1`}>{l}</p><p className={`text-sm font-bold ${c.text}`}>{v}</p></div>))}</div>)}
-            {patternsResult.patterns?.map((p,i)=>(<div key={i} className={`p-4 rounded-xl border ${c.patternCard}`}><div className="flex items-start gap-2"><span>{p.emoji}</span><div><p className={`text-sm font-bold ${c.text}`}>{p.title}</p><p className={`text-xs ${c.textSecondaryondary} mt-1`}>{p.description}</p></div></div></div>))}
-            {patternsResult.blind_spot && <div className={`p-4 rounded-xl border ${c.patternHighlight}`}><p className={`text-xs font-bold ${c.text} mb-1`}>🙈 Blind Spot</p><p className={`text-xs ${c.textSecondaryondary}`}>{patternsResult.blind_spot}</p></div>}
+            {patternsResult.patterns?.map((p,i)=>(<div key={i} className={`p-4 rounded-xl border ${c.patternCard}`}><div className="flex items-start gap-2"><span>{p.emoji}</span><div><p className={`text-sm font-bold ${c.text}`}>{p.title}</p><p className={`text-xs ${c.textSecondary} mt-1`}>{p.description}</p></div></div></div>))}
+            {patternsResult.blind_spot && <div className={`p-4 rounded-xl border ${c.patternHighlight}`}><p className={`text-xs font-bold ${c.text} mb-1`}>🙈 Blind Spot</p><p className={`text-xs ${c.textSecondary}`}>{patternsResult.blind_spot}</p></div>}
           </div>)}
         </>)}
       </div>
@@ -799,7 +799,7 @@ const DecisionCoach = ({ tool }) => {
                       {followUpOutcome && <button onClick={handleFollowUp} disabled={loading||(followUpOutcome==='changed'&&!followUpActual.trim())} className={`w-full py-2 rounded-lg text-xs font-bold ${c.btnDecide} disabled:opacity-40`}>{loading?<span className="animate-spin">{tool?.icon ?? '🎯'}</span>:'💬 Get Feedback'}</button>}
                       {followUpResult && (
                         <div className={`mt-2 p-3 rounded-lg border ${c.card}`}>
-                          <p className={`text-xs ${c.textSecondaryondary} mb-2`}>{followUpResult.response}</p>
+                          <p className={`text-xs ${c.textSecondary} mb-2`}>{followUpResult.response}</p>
                           {followUpResult.insight && <p className={`text-[10px] font-semibold ${c.histAccent}`}>💡 {followUpResult.insight}</p>}
                           {followUpResult.preference_learned && <p className={`text-[10px] ${c.textMuteded} mt-1`}>🧠 {followUpResult.preference_learned}</p>}
                           {followUpResult.encouragement && <p className={`text-[10px] ${c.prosWinText} mt-1`}>💪 {followUpResult.encouragement}</p>}

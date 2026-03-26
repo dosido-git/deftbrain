@@ -220,7 +220,7 @@ const AwkwardSilenceFiller = ({ tool }) => {
           <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
             <span>{tool.icon}</span> Awkward Silence Filler
           </h2>
-          <p className={`text-sm ${c.textSecondaryondary}`}>Context-smart things to say when conversation stalls</p>
+          <p className={`text-sm ${c.textSecondary}`}>Context-smart things to say when conversation stalls</p>
         </div>
 
         {/* ── PANIC MODE BUTTON ── */}
@@ -247,12 +247,12 @@ const AwkwardSilenceFiller = ({ tool }) => {
             {panicResult.they_say && (
               <div className={`${isDark ? 'bg-zinc-700/50' : 'bg-white/70'} rounded-lg p-3 mb-2`}>
                 <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>They'll probably say:</p>
-                <p className={`text-xs ${c.textSecondaryondary} italic`}>"{panicResult.they_say}"</p>
+                <p className={`text-xs ${c.textSecondary} italic`}>"{panicResult.they_say}"</p>
               </div>
             )}
             {panicResult.follow_up && (
               <div className={`${c.chainBg} border rounded-lg p-3 mb-2`}>
-                <p className={`text-[10px] font-bold ${c.textSecondaryondary} mb-1`}>Then you say:</p>
+                <p className={`text-[10px] font-bold ${c.textSecondary} mb-1`}>Then you say:</p>
                 <p className={`text-sm font-semibold ${c.text}`}>"{panicResult.follow_up}"</p>
               </div>
             )}
@@ -418,7 +418,7 @@ const AwkwardSilenceFiller = ({ tool }) => {
               <span className="flex-shrink-0 mt-0.5 text-lg">🔇</span>
               <div>
                 <h3 className={`text-sm font-bold ${c.text} mb-1`}>First: Is This Silence Actually a Problem?</h3>
-                <p className={`text-sm ${c.textSecondaryondary}`}>{r.silence_reframe}</p>
+                <p className={`text-sm ${c.textSecondary}`}>{r.silence_reframe}</p>
               </div>
             </div>
           )}
@@ -430,7 +430,7 @@ const AwkwardSilenceFiller = ({ tool }) => {
                 <span className="flex-shrink-0 mt-0.5">👥</span>
                 <div>
                   <p className={`text-xs font-bold ${c.label} mb-1`}>Read the Room</p>
-                  <p className={`text-sm ${c.textSecondaryondary}`}>{r.read_the_room}</p>
+                  <p className={`text-sm ${c.textSecondary}`}>{r.read_the_room}</p>
                 </div>
               </div>
             </div>
@@ -464,7 +464,7 @@ const AwkwardSilenceFiller = ({ tool }) => {
                       {/* YOUR OPENER */}
                       <div className="flex items-start gap-2 mt-2">
                         <div className={`flex-1 ${c.quoteBg} rounded-lg p-3`}>
-                          <p className={`text-[10px] font-bold ${c.textSecondaryondary} mb-1`}>You say:</p>
+                          <p className={`text-[10px] font-bold ${c.textSecondary} mb-1`}>You say:</p>
                           <p className={`text-sm font-semibold ${c.text}`}>"{chain.opener}"</p>
                         </div>
                         <CopyBtn content={`${chain.opener}${BRAND}`} label="Copy" />
@@ -474,7 +474,7 @@ const AwkwardSilenceFiller = ({ tool }) => {
                       {(chain.likely_response || chain.your_follow_up) && (
                         <button
                           onClick={() => toggleSection(`chain-${idx}`)}
-                          className={`mt-2 text-[10px] font-bold ${c.textSecondaryondary} flex items-center gap-1`}
+                          className={`mt-2 text-[10px] font-bold ${c.textSecondary} flex items-center gap-1`}
                         >
                           <span>{expanded ? '▲' : '▼'}</span>
                           {expanded ? 'Hide conversation flow' : 'See how it plays out →'}
@@ -488,7 +488,7 @@ const AwkwardSilenceFiller = ({ tool }) => {
                         {chain.likely_response && (
                           <div className={`${isDark ? 'bg-zinc-700/50' : 'bg-gray-100'} rounded-lg p-3`}>
                             <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>They'll probably say something like:</p>
-                            <p className={`text-xs ${c.textSecondaryondary} italic`}>"{chain.likely_response}"</p>
+                            <p className={`text-xs ${c.textSecondary} italic`}>"{chain.likely_response}"</p>
                           </div>
                         )}
                         <div className={`flex justify-center ${c.textMuteded}`}>
@@ -497,7 +497,7 @@ const AwkwardSilenceFiller = ({ tool }) => {
                         {chain.your_follow_up && (
                           <div className="flex items-start gap-2">
                             <div className={`flex-1 ${c.chainBg} border rounded-lg p-3`}>
-                              <p className={`text-[10px] font-bold ${c.textSecondaryondary} mb-1`}>Then you say:</p>
+                              <p className={`text-[10px] font-bold ${c.textSecondary} mb-1`}>Then you say:</p>
                               <p className={`text-xs font-semibold ${c.text}`}>"{chain.your_follow_up}"</p>
                             </div>
                             <CopyBtn content={`${chain.your_follow_up}${BRAND}`} label="Copy" />
@@ -532,7 +532,7 @@ const AwkwardSilenceFiller = ({ tool }) => {
               {expandedSections.body && (
                 <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-2`}>
                   {r.body_language.map((tip, i) => (
-                    <p key={i} className={`text-xs ${c.textSecondaryondary}`}>• {tip}</p>
+                    <p key={i} className={`text-xs ${c.textSecondary}`}>• {tip}</p>
                   ))}
                 </div>
               )}
@@ -582,7 +582,7 @@ const AwkwardSilenceFiller = ({ tool }) => {
               {expandedSections.avoid && (
                 <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-2`}>
                   {r.what_not_to_say.map((item, i) => (
-                    <p key={i} className={`text-xs ${c.textSecondaryondary}`}>⚠️ {item}</p>
+                    <p key={i} className={`text-xs ${c.textSecondary}`}>⚠️ {item}</p>
                   ))}
                 </div>
               )}

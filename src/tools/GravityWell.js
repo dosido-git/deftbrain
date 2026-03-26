@@ -197,7 +197,7 @@ const GravityWell = ({ tool }) => {
                 <div className={`h-2.5 rounded-full mb-3 ${isDark ? 'bg-zinc-700' : 'bg-gray-200'}`}>
                   <div className="h-full rounded-full bg-gradient-to-r from-red-600 to-red-400" style={{ width: results.your_gravity_score.current }} />
                 </div>
-                <p className={`text-sm mb-2 ${c.textSecondaryondary}`}>{results.your_gravity_score.the_gap}</p>
+                <p className={`text-sm mb-2 ${c.textSecondary}`}>{results.your_gravity_score.the_gap}</p>
                 {results.your_gravity_score.your_natural_advantages && (
                   <p className={`text-xs ${c.textMuteded}`}><span className="font-semibold">Your advantage:</span> {results.your_gravity_score.your_natural_advantages}</p>
                 )}
@@ -219,7 +219,7 @@ const GravityWell = ({ tool }) => {
                       { key: 'what_they_avoid', label: 'What marks you as not worth their time' },
                       { key: 'their_world', label: 'Where they already exist' },
                     ].map(row => results.target_profile[row.key] && (
-                      <p key={row.key} className={`text-sm ${c.textSecondaryondary}`}>
+                      <p key={row.key} className={`text-sm ${c.textSecondary}`}>
                         <span className={`font-semibold ${c.text}`}>{row.label}:</span> {results.target_profile[row.key]}
                       </p>
                     ))}
@@ -257,13 +257,13 @@ const GravityWell = ({ tool }) => {
               <div className={`rounded-2xl border p-5 ${c.card} ${c.border}`}>
                 <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textMuteded}`}>✉️ The First Contact</p>
                 {results.the_first_contact.when_to_reach_out && (
-                  <p className={`text-sm mb-2 ${c.textSecondaryondary}`}><span className={`font-semibold ${c.text}`}>When to reach out:</span> {results.the_first_contact.when_to_reach_out}</p>
+                  <p className={`text-sm mb-2 ${c.textSecondary}`}><span className={`font-semibold ${c.text}`}>When to reach out:</span> {results.the_first_contact.when_to_reach_out}</p>
                 )}
                 {results.the_first_contact.the_frame && (
-                  <p className={`text-sm mb-3 ${c.textSecondaryondary}`}><span className={`font-semibold ${c.text}`}>The frame:</span> {results.the_first_contact.the_frame}</p>
+                  <p className={`text-sm mb-3 ${c.textSecondary}`}><span className={`font-semibold ${c.text}`}>The frame:</span> {results.the_first_contact.the_frame}</p>
                 )}
                 {results.the_first_contact.what_to_say && (
-                  <div className={`p-3 rounded-xl border font-mono text-sm mb-2 ${isDark ? 'bg-zinc-900 border-zinc-700' : 'bg-slate-50 border-gray-200'} ${c.textSecondaryondary}`}>
+                  <div className={`p-3 rounded-xl border font-mono text-sm mb-2 ${isDark ? 'bg-zinc-900 border-zinc-700' : 'bg-slate-50 border-gray-200'} ${c.textSecondary}`}>
                     {results.the_first_contact.what_to_say}
                   </div>
                 )}
@@ -292,7 +292,7 @@ const GravityWell = ({ tool }) => {
                       { key: 'why_its_genuine', label: 'Why it\'s genuine' },
                       { key: 'the_asymmetry', label: 'The asymmetry' },
                     ].map(row => results.the_value_offer[row.key] && (
-                      <p key={row.key} className={`text-sm ${c.textSecondaryondary}`}>
+                      <p key={row.key} className={`text-sm ${c.textSecondary}`}>
                         <span className={`font-semibold ${c.text}`}>{row.label}:</span> {results.the_value_offer[row.key]}
                       </p>
                     ))}

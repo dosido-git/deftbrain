@@ -166,7 +166,7 @@ const ChaosPilot = ({ tool }) => {
             <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
               <span>{tool?.icon ?? '🎰'}</span>{tool?.title ?? 'Chaos Pilot'}
             </h2>
-            <p className={`text-sm ${c.textSecondaryondary}`}>{tool?.tagline ?? 'One calculated disruption. Not random — strategically chaotic.'}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'One calculated disruption. Not random — strategically chaotic.'}</p>
           </div>
 
           {/* Pre-result cross-ref */}
@@ -301,7 +301,7 @@ const ChaosPilot = ({ tool }) => {
               <p className={`text-xs font-black uppercase tracking-widest mb-3 ${c.textMuteded}`}>🔍 The Invisible Rut</p>
               <p className={`text-base font-bold mb-2 ${c.text}`}>{results.pattern_diagnosis?.the_invisible_rut}</p>
               {results.pattern_diagnosis?.why_its_invisible && (
-                <p className={`text-sm mb-2 ${c.textSecondaryondary}`}>{results.pattern_diagnosis.why_its_invisible}</p>
+                <p className={`text-sm mb-2 ${c.textSecondary}`}>{results.pattern_diagnosis.why_its_invisible}</p>
               )}
               {results.pattern_diagnosis?.what_its_costing && (
                 <div className={`mt-3 p-3 rounded-xl border ${c.danger}`}>
@@ -323,20 +323,20 @@ const ChaosPilot = ({ tool }) => {
                 </div>
                 <div className="px-6 py-5 space-y-4">
                   {results.the_disruption.the_full_instruction && (
-                    <p className={`text-sm leading-relaxed italic ${c.textSecondaryondary}`}>
+                    <p className={`text-sm leading-relaxed italic ${c.textSecondary}`}>
                       "{results.the_disruption.the_full_instruction}"
                     </p>
                   )}
                   {results.the_disruption.the_slight_discomfort && (
                     <div className={`p-3 rounded-xl border ${c.disruptionSub}`}>
                       <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${c.textMuteded}`}>😬 The friction you'll feel</p>
-                      <p className={`text-sm ${c.textSecondaryondary}`}>{results.the_disruption.the_slight_discomfort}</p>
+                      <p className={`text-sm ${c.textSecondary}`}>{results.the_disruption.the_slight_discomfort}</p>
                     </div>
                   )}
                   {results.the_disruption.why_this_one && (
                     <div>
                       <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${c.textMuteded}`}>Why this one specifically</p>
-                      <p className={`text-sm ${c.textSecondaryondary}`}>{results.the_disruption.why_this_one}</p>
+                      <p className={`text-sm ${c.textSecondary}`}>{results.the_disruption.why_this_one}</p>
                     </div>
                   )}
                 </div>
@@ -356,7 +356,7 @@ const ChaosPilot = ({ tool }) => {
                     <span className="flex-shrink-0 text-lg">{row.icon}</span>
                     <div>
                       <p className={`text-xs font-bold uppercase tracking-wide mb-0.5 ${c.textMuteded}`}>{row.label}</p>
-                      <p className={`text-sm ${c.textSecondaryondary}`}>{results.the_downstream_effect[row.key]}</p>
+                      <p className={`text-sm ${c.textSecondary}`}>{results.the_downstream_effect[row.key]}</p>
                     </div>
                   </div>
                 ))}

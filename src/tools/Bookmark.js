@@ -195,7 +195,7 @@ const Bookmark = ({ tool }) => {
       {/* Main inputs */}
       <div className={c.card + ' ' + c.border + ' border rounded-xl p-5 space-y-3'}>
         <div>
-          <label className={'text-xs font-bold ' + c.textSecondaryondary + ' uppercase tracking-wide mb-1 block'}>
+          <label className={'text-xs font-bold ' + c.textSecondary + ' uppercase tracking-wide mb-1 block'}>
             {mediaType === 'sports' ? '🏟️ Team or league' : mt.label.split(' ')[0] + ' Title'}
           </label>
           <input type="text" value={title} onChange={e => setTitle(e.target.value)}
@@ -203,7 +203,7 @@ const Bookmark = ({ tool }) => {
             placeholder={mt.placeholder} className={'w-full px-4 py-3 border-2 rounded-xl ' + c.input + ' outline-none focus:ring-2 text-base'} />
         </div>
         <div>
-          <label className={'text-xs font-bold ' + c.textSecondaryondary + ' uppercase tracking-wide mb-1 block'}>
+          <label className={'text-xs font-bold ' + c.textSecondary + ' uppercase tracking-wide mb-1 block'}>
             {mediaType === 'sports' ? '📅 When did you stop following?' : '🔖 Where did you stop?'}
           </label>
           <input type="text" value={stoppedAt} onChange={e => setStoppedAt(e.target.value)}
@@ -211,12 +211,12 @@ const Bookmark = ({ tool }) => {
             placeholder={mt.stoppedPlaceholder} className={'w-full px-4 py-2.5 rounded-xl border text-sm ' + c.input + ' outline-none'} />
         </div>
         <div>
-          <label className={'text-xs font-bold ' + c.textSecondaryondary + ' uppercase tracking-wide mb-1 block'}>🧠 What do you remember? (optional)</label>
+          <label className={'text-xs font-bold ' + c.textSecondary + ' uppercase tracking-wide mb-1 block'}>🧠 What do you remember? (optional)</label>
           <input type="text" value={whatYouRemember} onChange={e => setWhatYouRemember(e.target.value)}
             placeholder="Anything you recall — helps us calibrate the recap" className={'w-full px-4 py-2.5 rounded-xl border text-sm ' + c.input + ' outline-none'} />
         </div>
         <div>
-          <label className={'text-xs font-bold ' + c.textSecondaryondary + ' uppercase tracking-wide mb-1 block'}>❓ Specific questions? (optional)</label>
+          <label className={'text-xs font-bold ' + c.textSecondary + ' uppercase tracking-wide mb-1 block'}>❓ Specific questions? (optional)</label>
           <input type="text" value={specificQuestions} onChange={e => setSpecificQuestions(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter' && title.trim() && stoppedAt.trim() && !loading) recall(); }}
             placeholder={mediaType === 'sports' ? 'e.g., "Did they make any trades?"' : 'e.g., "Who is the guy with the scar?"'}
@@ -226,12 +226,12 @@ const Bookmark = ({ tool }) => {
 
       {/* Spoiler level */}
       <div className={c.card + ' ' + c.border + ' border rounded-xl p-5'}>
-        <label className={'text-xs font-bold ' + c.textSecondaryondary + ' uppercase tracking-wide mb-2 block'}>🛡️ Spoiler level</label>
+        <label className={'text-xs font-bold ' + c.textSecondary + ' uppercase tracking-wide mb-2 block'}>🛡️ Spoiler level</label>
         <div className="grid grid-cols-3 gap-2">
           {SPOILER_LEVELS.map(s => (
             <button key={s.value} onClick={() => setSpoilerLevel(s.value)}
               className={'p-3 rounded-xl border-2 text-left transition-all ' + (spoilerLevel === s.value ? c.pillActive : c.card + ' ' + c.border + ' hover:border-gray-400')}>
-              <span className={'text-sm font-medium block ' + (spoilerLevel === s.value ? '' : c.textSecondaryondary)}>{s.label}</span>
+              <span className={'text-sm font-medium block ' + (spoilerLevel === s.value ? '' : c.textSecondary)}>{s.label}</span>
               <span className={'text-[10px] ' + c.textMuteded}>{s.desc}</span>
             </button>
           ))}
@@ -311,7 +311,7 @@ const Bookmark = ({ tool }) => {
               {results.characters.map((ch, idx) => (
                 <div key={idx} className={'p-4 rounded-xl border ' + c.border + ' ' + c.charCard}>
                   <p className={'text-sm font-bold ' + c.text + ' mb-1'}>{ch.name}</p>
-                  <p className={'text-xs ' + c.textSecondaryondary + ' mb-1'}>{ch.refresher}</p>
+                  <p className={'text-xs ' + c.textSecondary + ' mb-1'}>{ch.refresher}</p>
                   {ch.relationships && <p className={'text-xs ' + c.textMuteded}>🔗 {ch.relationships}</p>}
                   {ch.last_seen && <p className={'text-xs ' + c.textMuteded + ' mt-1'}>📍 Last seen: {ch.last_seen}</p>}
                 </div>
@@ -327,7 +327,7 @@ const Bookmark = ({ tool }) => {
               {results.active_threads.map((t, idx) => (
                 <div key={idx} className={'p-4 rounded-xl border ' + c.border + ' ' + c.threadCard}>
                   <p className={'text-sm font-bold ' + c.text + ' mb-1'}>{t.thread}</p>
-                  <p className={'text-xs ' + c.textSecondaryondary}>{t.status}</p>
+                  <p className={'text-xs ' + c.textSecondary}>{t.status}</p>
                   {t.tension && <p className={'text-xs ' + c.tipFg + ' mt-1 italic'}>❓ {t.tension}</p>}
                 </div>
               ))}
@@ -368,7 +368,7 @@ const Bookmark = ({ tool }) => {
               {results.key_storylines.map((s, idx) => (
                 <div key={idx} className={'p-4 rounded-xl border ' + c.border + ' ' + c.threadCard}>
                   <p className={'text-sm font-bold ' + c.text + ' mb-1'}>{s.storyline}</p>
-                  <p className={'text-xs ' + c.textSecondaryondary}>{s.what_happened}</p>
+                  <p className={'text-xs ' + c.textSecondary}>{s.what_happened}</p>
                   {s.why_it_matters && <p className={'text-xs ' + c.tipFg + ' mt-1'}>💡 {s.why_it_matters}</p>}
                 </div>
               ))}
@@ -461,7 +461,7 @@ const Bookmark = ({ tool }) => {
         {/* Cross-references */}
         <div className={'p-4 rounded-2xl border ' + c.border + ' ' + c.card}>
           <p className={'text-xs font-bold ' + c.textMuteded + ' uppercase tracking-wide mb-2'}>🔗 Related Tools</p>
-          <div className={'space-y-1.5 text-xs ' + c.textSecondaryondary}>
+          <div className={'space-y-1.5 text-xs ' + c.textSecondary}>
             {(results.media_type === 'show' || results.media_type === 'game') && (
               <p>Trying to decide if it's worth finishing? <a href="/PlotTwist" className={linkStyle}>Plot Twist</a> untangles tough "should I quit or keep going" decisions.</p>
             )}
@@ -516,7 +516,7 @@ const Bookmark = ({ tool }) => {
             <span className="text-3xl">{tool?.icon ?? '🔖'}</span>
             <div>
               <h2 className={'text-xl font-bold ' + c.text}>{tool?.title ?? 'Bookmark'}</h2>
-              <p className={'text-sm ' + c.textSecondaryondary}>{tool?.tagline ?? 'Pick up where you left off — without spoilers'}</p>
+              <p className={'text-sm ' + c.textSecondary}>{tool?.tagline ?? 'Pick up where you left off — without spoilers'}</p>
             </div>
           </div>
         </div>

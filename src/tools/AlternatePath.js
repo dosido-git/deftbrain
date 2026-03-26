@@ -99,11 +99,11 @@ const AlternatePath = ({ tool }) => {
       <div className={`${c.card} border ${c.border} rounded-xl shadow-lg p-5`}>
         <div className={`mb-4 pb-3 border-b ${c.border}`}>
           <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}><span>{tool.icon}</span> Alternate Path</h2>
-          <p className={`text-sm ${c.textSecondaryondary}`}>What if history went differently? Watch the dominoes fall.</p>
+          <p className={`text-sm ${c.textSecondary}`}>What if history went differently? Watch the dominoes fall.</p>
         </div>
 
         <div className="mb-3">
-          <label className={`text-[10px] font-bold ${c.textSecondaryondary} uppercase block mb-2`}>Try one</label>
+          <label className={`text-[10px] font-bold ${c.textSecondary} uppercase block mb-2`}>Try one</label>
           <div className="flex flex-wrap gap-1.5">
             {QUICK_PROMPTS.map((q, i) => (
               <button key={i} onClick={() => { setWhatIf(q); setResults(null); }}
@@ -113,7 +113,7 @@ const AlternatePath = ({ tool }) => {
         </div>
 
         <div className="mb-3">
-          <label className={`text-xs font-bold ${c.textSecondaryondary} block mb-1.5`}>What if... <span className="text-zinc-400">*</span></label>
+          <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>What if... <span className="text-zinc-400">*</span></label>
           <input type="text" value={whatIf} onChange={e => setWhatIf(e.target.value)}
             placeholder="e.g., The internet was invented in 1920..."
             className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`}
@@ -121,7 +121,7 @@ const AlternatePath = ({ tool }) => {
         </div>
 
         <div className="mb-4">
-          <label className={`text-xs font-bold ${c.textSecondaryondary} block mb-1.5`}>Year or context <span className={`font-normal ${c.textMuteded}`}>(optional)</span></label>
+          <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Year or context <span className={`font-normal ${c.textMuteded}`}>(optional)</span></label>
           <input type="text" value={yearOrContext} onChange={e => setYearOrContext(e.target.value)}
             placeholder="e.g., 1920, during WWI, instead of..."
             className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`}
@@ -129,7 +129,7 @@ const AlternatePath = ({ tool }) => {
         </div>
 
         <div className="mb-5">
-          <label className={`text-xs font-bold ${c.textSecondaryondary} uppercase block mb-2`}>Depth</label>
+          <label className={`text-xs font-bold ${c.textSecondary} uppercase block mb-2`}>Depth</label>
           <div className="flex gap-2">
             {DEPTHS.map(d => (
               <button key={d.value} onClick={() => setDepth(d.value)}
@@ -205,7 +205,7 @@ const AlternatePath = ({ tool }) => {
             {results.butterfly_moment && (
               <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
                 <p className={`text-[10px] font-bold ${c.cardAlt} uppercase mb-1`}>🦋 Butterfly Moment</p>
-                <p className={`text-xs ${c.textSecondaryondary}`}>{results.butterfly_moment}</p>
+                <p className={`text-xs ${c.textSecondary}`}>{results.butterfly_moment}</p>
               </div>
             )}
           </div>

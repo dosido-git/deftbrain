@@ -258,7 +258,7 @@ const MagicMouth = ({ tool }) => {
         <div className="text-center space-y-2">
           <div className="text-4xl">🗣️</div>
           <h1 className={`text-2xl font-bold ${c.text}`}>Magic Mouth</h1>
-          <p className={`text-sm ${c.textSecondaryondary} max-w-sm mx-auto`}>
+          <p className={`text-sm ${c.textSecondary} max-w-sm mx-auto`}>
             {mode === 'ask' ? 'Tell me what you want. I\'ll find the angle and write the script.'
               : mode === 'phone' ? 'Crack the phone tree. Get a human who can actually help.'
               : 'Nice has failed. Time for maximum legal leverage.'}
@@ -346,7 +346,7 @@ const MagicMouth = ({ tool }) => {
                     <p className={`text-sm font-medium ${c.text}`}>{phoneResults.menu_navigation.skip_ahead}</p>
                   </div>
                 )}
-                <p className={`text-sm mb-3 ${c.text}`}><span className="font-semibold">Opening move:</span> <span className={c.textSecondaryondary}>{phoneResults.menu_navigation.opening_move}</span></p>
+                <p className={`text-sm mb-3 ${c.text}`}><span className="font-semibold">Opening move:</span> <span className={c.textSecondary}>{phoneResults.menu_navigation.opening_move}</span></p>
                 {phoneResults.menu_navigation.sequence?.length > 0 && (
                   <div className="space-y-2">
                     {phoneResults.menu_navigation.sequence.map((s, i) => (
@@ -411,7 +411,7 @@ const MagicMouth = ({ tool }) => {
                 {phoneResults.power_move && (
                   <div className={`${c.card} ${c.border} border rounded-2xl p-4`}>
                     <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${c.goldText}`}>⚡ Power Move</p>
-                    <p className={`text-sm ${c.textSecondaryondary}`}>{phoneResults.power_move}</p>
+                    <p className={`text-sm ${c.textSecondary}`}>{phoneResults.power_move}</p>
                   </div>
                 )}
                 {phoneResults.script_opener && (
@@ -432,7 +432,7 @@ const MagicMouth = ({ tool }) => {
                 <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuteded}`}>📎 Have Ready Before You Call</p>
                 <ul className="space-y-1">
                   {phoneResults.things_to_have_ready.map((t, i) => (
-                    <li key={i} className={`text-sm flex gap-2 ${c.textSecondaryondary}`}><span>•</span>{t}</li>
+                    <li key={i} className={`text-sm flex gap-2 ${c.textSecondary}`}><span>•</span>{t}</li>
                   ))}
                 </ul>
               </div>
@@ -574,11 +574,11 @@ const MagicMouth = ({ tool }) => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   <div className={`${c.card} rounded-lg p-3`}>
                     <p className={`text-xs font-semibold ${c.textMuteded} mb-1`}>👤 Who to ask</p>
-                    <p className={`text-sm ${c.textSecondaryondary}`}>{results.best_angle.who_to_ask}</p>
+                    <p className={`text-sm ${c.textSecondary}`}>{results.best_angle.who_to_ask}</p>
                   </div>
                   <div className={`${c.card} rounded-lg p-3`}>
                     <p className={`text-xs font-semibold ${c.textMuteded} mb-1`}>⏰ When to ask</p>
-                    <p className={`text-sm ${c.textSecondaryondary}`}>{results.best_angle.when_to_ask}</p>
+                    <p className={`text-sm ${c.textSecondary}`}>{results.best_angle.when_to_ask}</p>
                   </div>
                 </div>
               </div>
@@ -612,15 +612,15 @@ const MagicMouth = ({ tool }) => {
                   <div className="mt-4 space-y-3">
                     <div className={`${c.warningBox} rounded-xl p-3`}>
                       <p className={`text-xs font-semibold ${c.accentTxt} mb-1`}>🎤 Tone</p>
-                      <p className={`text-sm ${c.textSecondaryondary} leading-relaxed`}>{results.delivery_notes.tone}</p>
+                      <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{results.delivery_notes.tone}</p>
                     </div>
                     <div className={`${c.greenBg} rounded-xl p-3`}>
                       <p className={`text-xs font-semibold ${c.greenText} mb-1`}>🧍 Body language</p>
-                      <p className={`text-sm ${c.textSecondaryondary} leading-relaxed`}>{results.delivery_notes.body_language}</p>
+                      <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{results.delivery_notes.body_language}</p>
                     </div>
                     <div className={`${c.errorBg} rounded-xl p-3`}>
                       <p className={`text-xs font-semibold ${isDark ? 'text-zinc-500' : 'text-red-900'} mb-1`}>🚫 Don't do this</p>
-                      <p className={`text-sm ${c.textSecondaryondary} leading-relaxed`}>{results.delivery_notes.dont_do_this}</p>
+                      <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{results.delivery_notes.dont_do_this}</p>
                     </div>
                   </div>
                 )}
@@ -787,7 +787,7 @@ const MagicMouth = ({ tool }) => {
                       <p className={`font-bold text-sm ${c.text}`}>{rung.title}</p>
                     </div>
                     <div className="px-5 py-4 space-y-2">
-                      <p className={`text-sm ${c.textSecondaryondary}`}>{rung.action}</p>
+                      <p className={`text-sm ${c.textSecondary}`}>{rung.action}</p>
                       {/* Rung-specific fields */}
                       {rung.the_email_formula && (
                         <div className={`p-2 rounded-lg border font-mono text-xs ${isDark ? 'bg-zinc-900 border-zinc-700 text-zinc-300' : 'bg-slate-50 border-zinc-300 text-zinc-500'}`}>
@@ -798,7 +798,7 @@ const MagicMouth = ({ tool }) => {
                         <p className={`text-xs ${c.textMuteded}`}><span className="font-semibold">Subject:</span> {rung.subject_line}</p>
                       )}
                       {rung.opening_paragraph && (
-                        <div className={`p-3 rounded-xl border italic text-sm ${isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-slate-50 border-zinc-200'} ${c.textSecondaryondary}`}>
+                        <div className={`p-3 rounded-xl border italic text-sm ${isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-slate-50 border-zinc-200'} ${c.textSecondary}`}>
                           "{rung.opening_paragraph}"
                           <div className="mt-2 not-italic">
                             <CopyBtn content={`${rung.opening_paragraph}\n\n— Generated by DeftBrain · deftbrain.com`} label="Copy opener" />
@@ -812,7 +812,7 @@ const MagicMouth = ({ tool }) => {
                         <p className={`text-xs ${c.textMuteded}`}>{rung.why_it_works}</p>
                       )}
                       {rung.demand_letter_opener && (
-                        <div className={`p-3 rounded-xl border italic text-sm ${isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-slate-50 border-zinc-200'} ${c.textSecondaryondary}`}>
+                        <div className={`p-3 rounded-xl border italic text-sm ${isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-slate-50 border-zinc-200'} ${c.textSecondary}`}>
                           "{rung.demand_letter_opener}"
                         </div>
                       )}
@@ -860,14 +860,14 @@ const MagicMouth = ({ tool }) => {
               <div className={`rounded-2xl border-2 p-5 ${isDark ? 'border-cyan-700 bg-cyan-700/10' : 'border-cyan-700 bg-zinc-500'}`}>
                 <p className={`text-xs font-black uppercase tracking-widest mb-2 ${isDark ? 'text-zinc-500' : 'text-cyan-700'}`}>⚡ Start Here — Today</p>
                 <p className={`text-sm font-semibold mb-1 ${c.text}`}>Step {nuclearResults.the_one_to_start.rung}: {nuclearResults.the_one_to_start.why}</p>
-                <p className={`text-sm ${c.textSecondaryondary}`}>{nuclearResults.the_one_to_start.first_action_today}</p>
+                <p className={`text-sm ${c.textSecondary}`}>{nuclearResults.the_one_to_start.first_action_today}</p>
               </div>
             )}
             {nuclearResults.honest_assessment && (
               <div className={`${c.card} ${c.border} border rounded-2xl p-4 space-y-1`}>
                 <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuteded}`}>📊 Honest Assessment</p>
                 {nuclearResults.honest_assessment.most_likely_outcome && (
-                  <p className={`text-sm ${c.textSecondaryondary}`}><span className={`font-semibold ${c.text}`}>Likely outcome:</span> {nuclearResults.honest_assessment.most_likely_outcome}</p>
+                  <p className={`text-sm ${c.textSecondary}`}><span className={`font-semibold ${c.text}`}>Likely outcome:</span> {nuclearResults.honest_assessment.most_likely_outcome}</p>
                 )}
                 {nuclearResults.honest_assessment.time_investment && (
                   <p className={`text-xs ${c.textMuteded}`}><span className="font-semibold">Time:</span> {nuclearResults.honest_assessment.time_investment}</p>

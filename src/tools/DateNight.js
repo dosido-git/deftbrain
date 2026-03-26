@@ -355,7 +355,7 @@ const DateNight = ({ tool }) => {
         <h2 className={`text-2xl font-bold ${c.text}`}>
           <span className="mr-1">{tool?.icon ?? '💘'}</span>{tool?.title ?? 'Date Night'}
         </h2>
-        <p className={`text-sm ${c.textSecondaryondary} mt-1`}>
+        <p className={`text-sm ${c.textSecondary} mt-1`}>
           {tool?.tagline ?? 'Budget-smart evening plans that feel intentional, not improvised'}
         </p>
       </div>
@@ -379,11 +379,11 @@ const DateNight = ({ tool }) => {
       {rutResult && (
         <div className={`${c.altCard} border rounded-xl p-4 space-y-2`}>
           <div className="flex justify-between"><h4 className={`font-bold text-sm ${c.text}`}>🔍 Date Pattern Analysis</h4><button onClick={() => setRutResult(null)} className={`text-xs ${c.textMuteded}`}>✕</button></div>
-          <p className={`text-sm ${c.textSecondaryondary}`}>{rutResult.pattern_summary}</p>
+          <p className={`text-sm ${c.textSecondary}`}>{rutResult.pattern_summary}</p>
           {rutResult.rut_detected && <div className={`${c.warning} border rounded-lg p-3 text-xs`}>⚠️ {rutResult.rut_description}</div>}
-          {rutResult.missing_categories?.length > 0 && <p className={`text-xs ${c.textSecondaryondary}`}>Missing: {rutResult.missing_categories.join(', ')}</p>}
-          {(rutResult.suggestions || []).map((s, i) => <div key={i} className={`text-xs ${c.textSecondaryondary}`}>💡 {s.idea} — {s.why}</div>)}
-          {rutResult.encouragement && <p className={`text-xs italic ${c.textSecondaryondary}`}>{rutResult.encouragement}</p>}
+          {rutResult.missing_categories?.length > 0 && <p className={`text-xs ${c.textSecondary}`}>Missing: {rutResult.missing_categories.join(', ')}</p>}
+          {(rutResult.suggestions || []).map((s, i) => <div key={i} className={`text-xs ${c.textSecondary}`}>💡 {s.idea} — {s.why}</div>)}
+          {rutResult.encouragement && <p className={`text-xs italic ${c.textSecondary}`}>{rutResult.encouragement}</p>}
         </div>
       )}
 
@@ -405,7 +405,7 @@ const DateNight = ({ tool }) => {
                 <p className={`text-sm font-bold ${c.text}`}>{concept.name}</p>
                 <span className={`text-xs ${c.roseText}`}>{concept.estimated_budget}</span>
               </div>
-              <p className={`text-xs ${c.textSecondaryondary} mt-0.5`}>{concept.description}</p>
+              <p className={`text-xs ${c.textSecondary} mt-0.5`}>{concept.description}</p>
               <div className="flex gap-2 mt-1">
                 {concept.vibe && <span className={`text-[10px] ${c.textMuteded}`}>✨ {concept.vibe}</span>}
                 {concept.best_for && <span className={`text-[10px] ${c.textMuteded}`}>📅 {concept.best_for}</span>}
@@ -440,7 +440,7 @@ const DateNight = ({ tool }) => {
             <button
               key={i}
               onClick={() => { setResults(h.result); setShowInputs(false); resetResults(); }}
-              className={`w-full text-left px-3 py-2 rounded-lg text-xs ${c.cardAlt} ${c.textSecondaryondary} hover:opacity-80`}
+              className={`w-full text-left px-3 py-2 rounded-lg text-xs ${c.cardAlt} ${c.textSecondary} hover:opacity-80`}
             >
               {h.preview}{(h.preview?.length ?? 0) >= 40 ? '…' : ''}
             </button>
@@ -454,7 +454,7 @@ const DateNight = ({ tool }) => {
           {/* Date type */}
           <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
             <div className={`border-b ${c.border} pb-3 mb-3`}>
-              <p className={`text-xs font-bold ${c.textSecondaryondary} uppercase`}>{tool?.icon ?? '💘'} What kind of date?</p>
+              <p className={`text-xs font-bold ${c.textSecondary} uppercase`}>{tool?.icon ?? '💘'} What kind of date?</p>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {DATE_TYPES.map(dt => (
@@ -476,7 +476,7 @@ const DateNight = ({ tool }) => {
           {/* Budget */}
           <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
             <div className="flex justify-between mb-2">
-              <p className={`text-xs font-bold ${c.textSecondaryondary} uppercase`}>💰 Budget: <span className={c.roseText}>{fm(budget)}</span></p>
+              <p className={`text-xs font-bold ${c.textSecondary} uppercase`}>💰 Budget: <span className={c.roseText}>{fm(budget)}</span></p>
               <select value={currency} onChange={e => handleCurrencyChange(e.target.value)} className={`py-1 px-2 border rounded-lg text-xs ${c.input}`}>
                 {CURRENCIES.map(cur => <option key={cur.s} value={cur.s}>{cur.f} {cur.l}</option>)}
               </select>
@@ -499,30 +499,30 @@ const DateNight = ({ tool }) => {
           {/* Location + Time + Duration + Weather */}
           <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-3`}>
             <div>
-              <p className={`text-xs font-bold ${c.textSecondaryondary} uppercase mb-1`}>📍 Location</p>
+              <p className={`text-xs font-bold ${c.textSecondary} uppercase mb-1`}>📍 Location</p>
               <input value={location} onChange={e => setLocation(e.target.value)} placeholder="City, neighborhood..." className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input}`} />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <p className={`text-xs font-bold ${c.textSecondaryondary} uppercase mb-1`}>🕐 Start</p>
+                <p className={`text-xs font-bold ${c.textSecondary} uppercase mb-1`}>🕐 Start</p>
                 <select value={startTime} onChange={e => setStartTime(e.target.value)} className={`w-full py-2.5 px-3 border rounded-lg text-sm ${c.input}`}>
                   {START_TIMES.map(t => <option key={t} value={t}>{t}</option>)}
                 </select>
               </div>
               <div>
-                <p className={`text-xs font-bold ${c.textSecondaryondary} uppercase mb-1`}>⏱️ Length</p>
+                <p className={`text-xs font-bold ${c.textSecondary} uppercase mb-1`}>⏱️ Length</p>
                 <Pill options={DURATION_OPTIONS} value={duration} setter={setDuration} />
               </div>
             </div>
             <div>
-              <p className={`text-xs font-bold ${c.textSecondaryondary} uppercase mb-1`}>🌙 Weather</p>
+              <p className={`text-xs font-bold ${c.textSecondary} uppercase mb-1`}>🌙 Weather</p>
               <Pill options={WEATHER_OPTIONS} value={weather} setter={setWeather} />
             </div>
           </div>
 
           {/* Dietary + Restrictions */}
           <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-            <button onClick={() => setShowDietary(!showDietary)} className={`text-xs font-bold ${c.textSecondaryondary} uppercase`}>
+            <button onClick={() => setShowDietary(!showDietary)} className={`text-xs font-bold ${c.textSecondary} uppercase`}>
               🍽️ Dietary {dietary.length > 0 ? `(${dietary.length})` : ''} {showDietary ? '▲' : '▼'}
             </button>
             {showDietary && (
@@ -535,7 +535,7 @@ const DateNight = ({ tool }) => {
 
           {/* Partner prefs */}
           <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-            <button onClick={() => setShowPartner(!showPartner)} className={`text-xs font-bold ${c.textSecondaryondary} uppercase`}>
+            <button onClick={() => setShowPartner(!showPartner)} className={`text-xs font-bold ${c.textSecondary} uppercase`}>
               👫 Partner Preferences {showPartner ? '▲' : '▼'}
             </button>
             {showPartner && (
@@ -562,7 +562,7 @@ const DateNight = ({ tool }) => {
 
           {/* Last time */}
           <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-            <p className={`text-xs font-bold ${c.textSecondaryondary} uppercase mb-1`}>🔁 Last time? <span className={c.textMuteded}>(optional)</span></p>
+            <p className={`text-xs font-bold ${c.textSecondary} uppercase mb-1`}>🔁 Last time? <span className={c.textMuteded}>(optional)</span></p>
             <input value={lastTime} onChange={e => setLastTime(e.target.value)} placeholder="Sushi and a movie..." className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input}`} />
           </div>
 
@@ -599,8 +599,8 @@ const DateNight = ({ tool }) => {
             {/* Header */}
             <div className={`${c.headerCard} border-2 rounded-2xl p-5 text-center`}>
               <h3 className={`text-xl font-bold ${c.text}`}>{tool?.icon ?? '💘'} {results.vibe_title || 'Your Evening'}</h3>
-              {results.vibe_description && <p className={`text-sm ${c.textSecondaryondary} mt-1`}>{results.vibe_description}</p>}
-              {results.narrative_arc && <p className={`text-xs italic ${c.textSecondaryondary} mt-2`}>{results.narrative_arc}</p>}
+              {results.vibe_description && <p className={`text-sm ${c.textSecondary} mt-1`}>{results.vibe_description}</p>}
+              {results.narrative_arc && <p className={`text-xs italic ${c.textSecondary} mt-2`}>{results.narrative_arc}</p>}
             </div>
 
             {/* Actions */}
@@ -692,7 +692,7 @@ const DateNight = ({ tool }) => {
                         </div>
                         <span className={`text-sm font-black ${c.roseText}`}>~{fm(stop.estimated_cost)}</span>
                       </div>
-                      <p className={`text-xs ${c.textSecondaryondary} leading-relaxed mb-2`}>{stop.description}</p>
+                      <p className={`text-xs ${c.textSecondary} leading-relaxed mb-2`}>{stop.description}</p>
                       {stop.dress_vibe && <p className={`text-[10px] ${c.textMuteded} mb-1`}>👗 {stop.dress_vibe}</p>}
                       {stop.pro_tip && <p className={`text-[10px] ${c.proTipText} mb-1`}>💡 {stop.pro_tip}</p>}
                       {stop.anniversary_touch && <p className={`text-[10px] ${c.roseText} mb-1`}>💍 {stop.anniversary_touch}</p>}
@@ -723,7 +723,7 @@ const DateNight = ({ tool }) => {
                       <p className={`text-sm font-bold ${c.text}`}>{stopEmoji(s.stop_type)} {s.venue_name}</p>
                       <span className={`text-xs font-bold ${c.roseText}`}>~{fm(s.estimated_cost)}</span>
                     </div>
-                    <p className={`text-xs ${c.textSecondaryondary} mt-1`}>{s.why_similar}</p>
+                    <p className={`text-xs ${c.textSecondary} mt-1`}>{s.why_similar}</p>
                   </div>
                 ))}
               </div>
@@ -740,7 +740,7 @@ const DateNight = ({ tool }) => {
                   <div className={`px-4 pb-4 space-y-2 border-t ${c.border} pt-3`}>
                     {(results.nostalgia_prompts || results.conversation_starters || []).map((q, i) => (
                       <div key={i} className={`${c.quoteCard} rounded-lg p-3`}>
-                        <p className={`text-xs ${c.textSecondaryondary}`}>{results.nostalgia_prompts ? '💭' : '💬'} {q}</p>
+                        <p className={`text-xs ${c.textSecondary}`}>{results.nostalgia_prompts ? '💭' : '💬'} {q}</p>
                       </div>
                     ))}
                   </div>
@@ -755,7 +755,7 @@ const DateNight = ({ tool }) => {
                   <span className={`text-sm font-bold ${c.text}`}>🔄 Plan B</span>
                   <span className={`text-xs ${c.textMuteded}`}>{expandedPlanB ? '▲' : '▼'}</span>
                 </button>
-                {expandedPlanB && <div className={`px-4 pb-4 border-t ${c.border} pt-3`}><p className={`text-sm ${c.textSecondaryondary}`}>{results.plan_b}</p></div>}
+                {expandedPlanB && <div className={`px-4 pb-4 border-t ${c.border} pt-3`}><p className={`text-sm ${c.textSecondary}`}>{results.plan_b}</p></div>}
               </div>
             )}
             {results.tips?.length > 0 && (
@@ -803,7 +803,7 @@ const DateNight = ({ tool }) => {
                 {rateResult && (
                   <div className={`${c.success} border rounded-xl p-4 space-y-2`}>
                     <p className={`text-sm`}>{rateResult.encouragement}</p>
-                    <p className={`text-xs ${c.textSecondaryondary}`}>{rateResult.summary}</p>
+                    <p className={`text-xs ${c.textSecondary}`}>{rateResult.summary}</p>
                     {rateResult.next_suggestion && <p className={`text-xs ${c.roseText}`}>💡 Next: {rateResult.next_suggestion}</p>}
                     {rateResult.budget_accuracy && <p className={`text-xs ${c.textMuteded}`}>💰 {rateResult.budget_accuracy}</p>}
                   </div>
@@ -870,7 +870,7 @@ const DateNight = ({ tool }) => {
 
             {/* Time adjuster */}
             <div className="flex items-center gap-2">
-              <span className={`text-xs ${c.textSecondaryondary}`}>Running late?</span>
+              <span className={`text-xs ${c.textSecondary}`}>Running late?</span>
               {[15, 30, -15].map(m => (
                 <button key={m} onClick={() => setTimeOffset(p => p + m)} className={`px-2 py-1 rounded text-xs ${c.btnSecondaryondary} border ${c.border}`}>{m > 0 ? '+' : ''}{m}m</button>
               ))}
@@ -887,7 +887,7 @@ const DateNight = ({ tool }) => {
                 <span className={`text-sm font-bold ${c.roseText}`}>~{fm(cur.estimated_cost)}</span>
               </div>
               <p className={`text-sm ${c.text}`}>{cur.description}</p>
-              {cur.dress_vibe && <p className={`text-sm font-bold ${c.textSecondaryondary}`}>👗 {cur.dress_vibe}</p>}
+              {cur.dress_vibe && <p className={`text-sm font-bold ${c.textSecondary}`}>👗 {cur.dress_vibe}</p>}
               {cur.pro_tip && <div className={`text-sm p-3 rounded-lg border ${c.warning}`}>💡 {cur.pro_tip}</div>}
               {cur.anniversary_touch && <div className={`text-sm p-3 rounded-lg border ${c.accentCard} ${c.border}`}>💍 {cur.anniversary_touch}</div>}
             </div>
@@ -911,7 +911,7 @@ const DateNight = ({ tool }) => {
               <div className={`${c.altCard} border ${c.border} rounded-xl p-3`}>
                 <p className={`text-xs font-bold ${c.text} mb-1`}>Up next: {stopEmoji(stops[liveStep + 1].stop_type)} {stops[liveStep + 1].venue_name}</p>
                 <p className={`text-xs ${c.textMuteded}`}>{stops[liveStep + 1].time}{timeOffset ? ` (adj: ~${timeOffset > 0 ? '+' : ''}${timeOffset}m)` : ''}</p>
-                {results.transportation && <p className={`text-xs ${c.textSecondaryondary} mt-1`}>🚶 {results.transportation}</p>}
+                {results.transportation && <p className={`text-xs ${c.textSecondary} mt-1`}>🚶 {results.transportation}</p>}
               </div>
             )}
 

@@ -618,7 +618,7 @@ const LeaseTrapDetector = ({ tool }) => {
               const fs = results.financial_summary;
               return (
                 <div className={`${c.card} border-2 rounded-2xl p-5 ${isDark ? 'border-orange-700/50' : 'border-orange-300'}`}>
-                  <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textSecondaryondary}`}>💰 Financial Exposure</p>
+                  <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textSecondary}`}>💰 Financial Exposure</p>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-3">
                     {[{ label: 'Monthly Rent', value: fs.monthly_rent, icon: '🏠' }, { label: 'Move-in Cost', value: fs.total_move_in_cost, icon: '📦' }, { label: 'Annual Extras', value: fs.annual_extra_costs, icon: '📊' }, { label: 'Worst-case', value: fs.worst_case_penalties, icon: '⚠️' }].map((item, i) => item.value ? (
                       <div key={i} className={`p-3 rounded-xl ${c.cardAlt} border text-center`}>
@@ -692,7 +692,7 @@ const LeaseTrapDetector = ({ tool }) => {
                         </div>
                       )}
                       {flag.specific_law && <div className={`p-2 rounded-lg mb-2 ${isDark ? 'bg-zinc-700' : 'bg-zinc-50'}`}><p className={`text-[10px] font-bold ${c.textMuteded}`}>{flag.legal_status?.toUpperCase()}: <span className="font-mono">{flag.specific_law}</span></p></div>}
-                      <button onClick={() => toggle(`red-${idx}`)} className={`text-xs font-bold ${c.textSecondaryondary} hover:underline`}>{expandedSections[`red-${idx}`] ? 'Hide scripts ▲' : 'Scripts & rights ▼'}</button>
+                      <button onClick={() => toggle(`red-${idx}`)} className={`text-xs font-bold ${c.textSecondary} hover:underline`}>{expandedSections[`red-${idx}`] ? 'Hide scripts ▲' : 'Scripts & rights ▼'}</button>
                       {expandedSections[`red-${idx}`] && (
                         <div className="mt-2 space-y-2">
                           {flag.your_rights && <div className={`p-2.5 rounded-lg ${isDark ? 'bg-sky-900/20' : 'bg-sky-50'}`}><p className={`text-[10px] font-bold ${isDark ? 'text-sky-400' : 'text-sky-700'}`}>YOUR RIGHTS</p><p className={`text-xs ${c.textSecondary}`}>{flag.your_rights}</p></div>}
@@ -833,7 +833,7 @@ const LeaseTrapDetector = ({ tool }) => {
             {/* Renewal Trap Detector */}
             <div className={`${c.card} border rounded-2xl p-5`}>
               <div className="flex items-center justify-between mb-3">
-                <p className={`text-xs font-bold uppercase tracking-wider ${c.textSecondaryondary}`}>🔄 Renewal & Termination Traps</p>
+                <p className={`text-xs font-bold uppercase tracking-wider ${c.textSecondary}`}>🔄 Renewal & Termination Traps</p>
                 {!renewalTraps && <button onClick={analyzeRenewalTraps} disabled={renewalLoading} className={`text-xs font-bold px-3 py-1.5 rounded-lg ${c.btnPrimary}`}>{renewalLoading ? <span className="animate-spin inline-block">{tool?.icon ?? '⚙️'}</span> : 'Analyze'}</button>}
               </div>
               {!renewalTraps && !renewalLoading && <p className={`text-xs ${c.textMuteded}`}>What happens when your lease ends? Find auto-renewal traps, rent increase limits, and critical deadlines.</p>}
@@ -917,8 +917,8 @@ const LeaseTrapDetector = ({ tool }) => {
             {amendableClauses.length > 0 && (
               <div className={`${c.card} border rounded-2xl p-5`}>
                 <div className="flex items-center justify-between mb-3">
-                  <p className={`text-xs font-bold uppercase tracking-wider ${c.textSecondaryondary}`}>📝 Lease Amendment Generator</p>
-                  <button onClick={() => setShowAmendment(!showAmendment)} className={`text-xs font-bold ${c.textSecondaryondary} hover:underline`}>{showAmendment ? 'Close ▲' : 'Select clauses ▼'}</button>
+                  <p className={`text-xs font-bold uppercase tracking-wider ${c.textSecondary}`}>📝 Lease Amendment Generator</p>
+                  <button onClick={() => setShowAmendment(!showAmendment)} className={`text-xs font-bold ${c.textSecondary} hover:underline`}>{showAmendment ? 'Close ▲' : 'Select clauses ▼'}</button>
                 </div>
                 {!amendment && !showAmendment && <p className={`text-xs ${c.textMuteded}`}>Generate a formal addendum to present to your landlord for the clauses you want changed.</p>}
                 {showAmendment && !amendment && (
@@ -961,7 +961,7 @@ const LeaseTrapDetector = ({ tool }) => {
 
             {/* Move-in / Move-out Checklist */}
             <div className={`${c.card} border rounded-2xl p-5`}>
-              <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textSecondaryondary}`}>📋 Personalized Checklist</p>
+              <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textSecondary}`}>📋 Personalized Checklist</p>
               {!checklist && (
                 <div className="flex gap-3">
                   <button onClick={() => generateChecklist('move_in')} disabled={checklistLoading} className={`flex-1 py-3 rounded-xl font-bold ${c.btnPrimary}`}>{checklistLoading && checklistType === 'move_in' ? <span className="animate-spin inline-block">{tool?.icon ?? '⚙️'}</span> : '📦 Move-in'}</button>
@@ -998,7 +998,7 @@ const LeaseTrapDetector = ({ tool }) => {
                   ))}
                   {checklist.demand_letter_template && (
                     <div className={`p-3 rounded-xl border ${c.cardAlt}`}>
-                      <p className={`text-[10px] font-bold ${c.textSecondaryondary} mb-1`}>📬 DEPOSIT DEMAND LETTER</p>
+                      <p className={`text-[10px] font-bold ${c.textSecondary} mb-1`}>📬 DEPOSIT DEMAND LETTER</p>
                       <p className={`text-xs ${c.textSecondary} whitespace-pre-wrap`}>{checklist.demand_letter_template}</p>
                       <div className="mt-2"><CopyBtn content={checklist.demand_letter_template + BRANDING} label="Copy letter" /></div>
                     </div>
@@ -1011,7 +1011,7 @@ const LeaseTrapDetector = ({ tool }) => {
 
             {/* Draft Email */}
             <div className={`${c.card} border rounded-2xl p-5`}>
-              <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textSecondaryondary}`}>📧 Draft Negotiation Email</p>
+              <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textSecondary}`}>📧 Draft Negotiation Email</p>
               {!draftEmail && !showEmailSetup && <button onClick={() => setShowEmailSetup(true)} className={`w-full py-3 rounded-xl font-bold ${c.btnPrimary}`}>📧 Generate Email</button>}
               {showEmailSetup && !draftEmail && (
                 <div className="space-y-3">
@@ -1027,7 +1027,7 @@ const LeaseTrapDetector = ({ tool }) => {
                   {draftEmail.emails.map((em, i) => (
                     <div key={i} className={`p-4 rounded-xl border ${c.cardAlt}`}>
                       <div className="flex items-center justify-between mb-2">
-                        <p className={`text-xs font-bold ${c.textSecondaryondary}`}>{em.version === 'professional' ? '👔' : '💬'} {em.version}</p>
+                        <p className={`text-xs font-bold ${c.textSecondary}`}>{em.version === 'professional' ? '👔' : '💬'} {em.version}</p>
                         <p className={`text-[10px] ${c.textMuteded}`}>{em.best_for}</p>
                       </div>
                       <p className={`text-xs font-bold ${c.text} mb-1`}>Subject: {em.subject}</p>
@@ -1042,7 +1042,7 @@ const LeaseTrapDetector = ({ tool }) => {
 
             {/* Follow-up Q&A */}
             <div className={`${c.card} border rounded-2xl p-5 space-y-3`}>
-              <p className={`text-xs font-bold uppercase tracking-wider ${c.textSecondaryondary}`}>❓ Ask a Follow-up</p>
+              <p className={`text-xs font-bold uppercase tracking-wider ${c.textSecondary}`}>❓ Ask a Follow-up</p>
               {followupHistory.length > 0 && (
                 <div className="space-y-2 max-h-48 overflow-y-auto">
                   {followupHistory.map((fh, i) => (

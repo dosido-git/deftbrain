@@ -160,20 +160,20 @@ const NoiseCanceler = ({ tool }) => {
 
       <div className={c.card + ' border rounded-xl p-5 space-y-4'}>
         <div>
-          <label className={'text-xs font-bold ' + c.textSecondaryondary + ' uppercase tracking-wide mb-2 block'}>📎 Document type</label>
+          <label className={'text-xs font-bold ' + c.textSecondary + ' uppercase tracking-wide mb-2 block'}>📎 Document type</label>
           <div className="flex flex-wrap gap-1.5">
             {DOC_TYPES.map(dt => <Pill key={dt.value} active={documentType === dt.value} onClick={() => setDocumentType(dt.value)}>{dt.label}</Pill>)}
           </div>
         </div>
         <div>
-          <label className={'text-xs font-bold ' + c.textSecondaryondary + ' uppercase tracking-wide mb-1 block'}>👤 Your situation</label>
+          <label className={'text-xs font-bold ' + c.textSecondary + ' uppercase tracking-wide mb-1 block'}>👤 Your situation</label>
           <p className={'text-xs ' + c.textMuteded + ' mb-2'}>The more specific, the better we can filter.</p>
           <textarea value={mySituation} onChange={e => setMySituation(e.target.value)}
             placeholder="e.g., 'Renter, no kids, have a dog, work from home' or 'Single, 28, on the basic health plan, no dependents'"
             className={'w-full h-16 p-4 border-2 rounded-xl ' + c.input + ' outline-none focus:ring-2 resize-none text-sm'} />
         </div>
         <div>
-          <label className={'text-xs font-bold ' + c.textSecondaryondary + ' uppercase tracking-wide mb-1 block'}>🔍 Anything specific you're worried about? (optional)</label>
+          <label className={'text-xs font-bold ' + c.textSecondary + ' uppercase tracking-wide mb-1 block'}>🔍 Anything specific you're worried about? (optional)</label>
           <input type="text" value={concerns} onChange={e => setConcerns(e.target.value)}
             placeholder="e.g., 'Did they raise the rent?', 'Am I covered for this procedure?'"
             className={'w-full px-4 py-2.5 rounded-xl border text-sm ' + c.input + ' outline-none'} />
@@ -224,7 +224,7 @@ const NoiseCanceler = ({ tool }) => {
                   {a.effort && <span className={'text-[10px] px-2 py-0.5 rounded-full ' + c.badge}>{effortBadge(a.effort)}</span>}
                 </div>
                 {a.deadline && <p className={'text-xs font-bold ' + c.actionText + ' mb-1'}>📅 Deadline: {a.deadline}</p>}
-                {a.consequence && <p className={'text-xs ' + c.textSecondaryondary + ' mb-1'}>⚠️ If you don't: {a.consequence}</p>}
+                {a.consequence && <p className={'text-xs ' + c.textSecondary + ' mb-1'}>⚠️ If you don't: {a.consequence}</p>}
                 {a.how && <p className={'text-xs ' + c.textMuteded}>📝 How: {a.how}</p>}
               </div>
             ))}
@@ -241,7 +241,7 @@ const NoiseCanceler = ({ tool }) => {
                   <span className={'text-sm font-bold ' + c.text}>{item.what}</span>
                   {item.amount && <span className={'text-sm font-bold ' + c.costText}>{item.amount}</span>}
                 </div>
-                {item.when && <p className={'text-xs ' + c.textSecondaryondary}>Effective: {item.when}</p>}
+                {item.when && <p className={'text-xs ' + c.textSecondary}>Effective: {item.when}</p>}
                 {item.avoidable && <p className={'text-xs ' + c.tipText + ' mt-1'}>💡 {item.avoidable}</p>}
               </div>
             ))}
@@ -258,7 +258,7 @@ const NoiseCanceler = ({ tool }) => {
                   <span className={'text-sm font-bold ' + c.text}>{item.what}</span>
                   {item.amount && <span className={'text-sm font-bold ' + c.saveText}>{item.amount}</span>}
                 </div>
-                {item.how_to_claim && <p className={'text-xs ' + c.textSecondaryondary}>How: {item.how_to_claim}</p>}
+                {item.how_to_claim && <p className={'text-xs ' + c.textSecondary}>How: {item.how_to_claim}</p>}
                 {item.deadline && <p className={'text-xs ' + c.saveText + ' mt-1'}>📅 By: {item.deadline}</p>}
               </div>
             ))}
@@ -275,7 +275,7 @@ const NoiseCanceler = ({ tool }) => {
                     <span className={'text-xs font-bold px-2 py-0.5 rounded-full ' + (item.priority === 'high' ? c.badge : c.inset + ' ' + c.textMuteded)}>{item.priority}</span>
                     <span className={'text-sm font-semibold ' + c.text}>{item.what}</span>
                   </div>
-                  <p className={'text-xs ' + c.textSecondaryondary}>{item.why_it_matters}</p>
+                  <p className={'text-xs ' + c.textSecondary}>{item.why_it_matters}</p>
                 </div>
               ))}
             </div>
@@ -325,7 +325,7 @@ const NoiseCanceler = ({ tool }) => {
             {results.consult_professional.map((item, idx) => (
               <div key={idx} className="mb-2 last:mb-0">
                 <p className={'text-xs font-semibold ' + c.text}>{item.topic}</p>
-                <p className={'text-[10px] ' + c.textSecondaryondary}>{item.why} → Talk to a {item.who}</p>
+                <p className={'text-[10px] ' + c.textSecondary}>{item.why} → Talk to a {item.who}</p>
               </div>
             ))}
           </div>
@@ -339,7 +339,7 @@ const NoiseCanceler = ({ tool }) => {
 
         <div className={'p-4 rounded-2xl border ' + c.card}>
           <p className={'text-xs font-bold ' + c.textMuteded + ' uppercase tracking-wide mb-2'}>🔗 Related Tools</p>
-          <div className={'space-y-1.5 text-xs ' + c.textSecondaryondary}>
+          <div className={'space-y-1.5 text-xs ' + c.textSecondary}>
             <p>Need jargon translated? <a href="/JargonAssassin" target="_blank" rel="noopener noreferrer" className={linkStyle}>Jargon Assassin</a> breaks down dense language.</p>
             <p>Checking a lease? <a href="/LeaseTrapDetector" target="_blank" rel="noopener noreferrer" className={linkStyle}>Lease Trap Detector</a> finds predatory clauses.</p>
           </div>

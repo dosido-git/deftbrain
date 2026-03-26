@@ -203,12 +203,12 @@ const Giftology = ({ tool }) => {
           <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
             <span>{tool?.icon ?? '🎁'}</span>{tool?.title || 'Giftology'}
           </h2>
-          <p className={`text-sm ${c.textSecondaryondary}`}>Tell me about the person. I'll find a gift that feels like you spent weeks on it.</p>
+          <p className={`text-sm ${c.textSecondary}`}>Tell me about the person. I'll find a gift that feels like you spent weeks on it.</p>
         </div>
 
         {/* Recipient */}
         <div className="mb-4">
-          <label className={`text-xs font-bold ${c.textSecondaryondary} block mb-1.5`}>
+          <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>
             Who's this for? <span className="text-zinc-400">*</span>
           </label>
           <textarea
@@ -230,7 +230,7 @@ const Giftology = ({ tool }) => {
 
         {/* Occasion */}
         <div className="mb-4">
-          <label className={`text-[10px] font-bold ${c.textSecondaryondary} uppercase block mb-2`}>Occasion</label>
+          <label className={`text-[10px] font-bold ${c.textSecondary} uppercase block mb-2`}>Occasion</label>
           <div className="flex flex-wrap gap-1.5">
             {OCCASIONS.map(o => (
               <button
@@ -249,7 +249,7 @@ const Giftology = ({ tool }) => {
         {/* Budget + Deadline row */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
           <div>
-            <label className={`text-[10px] font-bold ${c.textSecondaryondary} uppercase block mb-1.5`}>Budget</label>
+            <label className={`text-[10px] font-bold ${c.textSecondary} uppercase block mb-1.5`}>Budget</label>
             <input
               type="text"
               value={budget}
@@ -260,7 +260,7 @@ const Giftology = ({ tool }) => {
             />
           </div>
           <div>
-            <label className={`text-[10px] font-bold ${c.textSecondaryondary} uppercase block mb-1.5`}>Deadline</label>
+            <label className={`text-[10px] font-bold ${c.textSecondary} uppercase block mb-1.5`}>Deadline</label>
             <div className="flex flex-wrap gap-1.5">
               {DEADLINES.map(d => (
                 <button
@@ -279,10 +279,10 @@ const Giftology = ({ tool }) => {
 
         {/* Optional extras */}
         <details className="mb-5">
-          <summary className={`text-xs font-bold cursor-pointer ${c.textSecondaryondary} mb-2`}>➕ Already tried / things to avoid</summary>
+          <summary className={`text-xs font-bold cursor-pointer ${c.textSecondary} mb-2`}>➕ Already tried / things to avoid</summary>
           <div className="space-y-3 mt-3">
             <div>
-              <label className={`text-xs ${c.textSecondaryondary} block mb-1`}>Already given or considered</label>
+              <label className={`text-xs ${c.textSecondary} block mb-1`}>Already given or considered</label>
               <input
                 type="text"
                 value={alreadyGiven}
@@ -292,7 +292,7 @@ const Giftology = ({ tool }) => {
               />
             </div>
             <div>
-              <label className={`text-xs ${c.textSecondaryondary} block mb-1`}>Definitely avoid</label>
+              <label className={`text-xs ${c.textSecondary} block mb-1`}>Definitely avoid</label>
               <input
                 type="text"
                 value={avoid}
@@ -349,7 +349,7 @@ const Giftology = ({ tool }) => {
 
           {results.perfect_picks?.length > 0 && (
             <div className="space-y-3">
-              <p className={`text-xs font-bold uppercase tracking-wider ${c.textSecondaryondary}`}>🎁 Gift ideas</p>
+              <p className={`text-xs font-bold uppercase tracking-wider ${c.textSecondary}`}>🎁 Gift ideas</p>
               {results.perfect_picks.map((pick, i) => {
                 const isExpanded = expandedPick === i;
                 return (
@@ -373,17 +373,17 @@ const Giftology = ({ tool }) => {
                     {isExpanded && (
                       <div className={`px-5 pb-5 space-y-3 border-t ${c.border} pt-3`}>
                         <div>
-                          <p className={`text-[10px] font-bold uppercase ${c.textSecondaryondary} mb-1`}>Why it's perfect for them</p>
-                          <p className={`text-sm ${c.textSecondaryondary} leading-relaxed`}>{pick.why_its_perfect}</p>
+                          <p className={`text-[10px] font-bold uppercase ${c.textSecondary} mb-1`}>Why it's perfect for them</p>
+                          <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{pick.why_its_perfect}</p>
                         </div>
                         <div>
-                          <p className={`text-[10px] font-bold uppercase ${c.textSecondaryondary} mb-1`}>Where to get it</p>
+                          <p className={`text-[10px] font-bold uppercase ${c.textSecondary} mb-1`}>Where to get it</p>
                           <p className={`text-sm ${c.text}`}>{pick.where_to_get}</p>
                         </div>
                         {pick.presentation_tip && (
                           <div className={`${c.cardAlt} rounded-lg p-3`}>
-                            <p className={`text-[10px] font-bold uppercase ${c.textSecondaryondary} mb-1`}>✨ Presentation tip</p>
-                            <p className={`text-xs ${c.textSecondaryondary}`}>{pick.presentation_tip}</p>
+                            <p className={`text-[10px] font-bold uppercase ${c.textSecondary} mb-1`}>✨ Presentation tip</p>
+                            <p className={`text-xs ${c.textSecondary}`}>{pick.presentation_tip}</p>
                           </div>
                         )}
                         {pick.card_message && (
@@ -421,9 +421,9 @@ const Giftology = ({ tool }) => {
                   </p>
                   <h3 className={`text-base font-bold ${c.text} mb-1`}>{results.the_wildcard.gift}</h3>
                   <p className={`text-xs ${c.textMuteded} mb-2`}>{results.the_wildcard.price_range}</p>
-                  <p className={`text-sm ${c.textSecondaryondary} mb-3`}>{results.the_wildcard.why_its_perfect}</p>
+                  <p className={`text-sm ${c.textSecondary} mb-3`}>{results.the_wildcard.why_its_perfect}</p>
                   <p className={`text-xs ${c.text} mb-3`}>
-                    <span className={`font-bold ${c.textSecondaryondary}`}>Where: </span>{results.the_wildcard.where_to_get}
+                    <span className={`font-bold ${c.textSecondary}`}>Where: </span>{results.the_wildcard.where_to_get}
                   </p>
                   {results.the_wildcard.card_message && (
                     <div className={`${c.warmBg} border rounded-lg p-3`}>

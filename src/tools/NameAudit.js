@@ -546,7 +546,7 @@ const NameAudit = ({ tool }) => {
       email_sig: (
         <div className={`p-4 rounded-lg border ${c.border} ${isDark ? 'bg-zinc-900' : 'bg-gray-50'}`}>
           <p className={`text-xs ${c.textMuteded} mb-2`}>Email Signature</p>
-          <div className={`text-xs ${c.textSecondaryondary} space-y-0.5`}>
+          <div className={`text-xs ${c.textSecondary} space-y-0.5`}>
             <p className="font-semibold">Alex Johnson</p>
             <p>Co-founder & CEO, <span className={`font-bold ${c.text}`}>{n}</span></p>
             <p className={`${c.textMuteded}`}>alex@{slug}.com | {slug}.com</p>
@@ -557,7 +557,7 @@ const NameAudit = ({ tool }) => {
         <div className={`p-6 rounded-lg border ${c.border} ${isDark ? 'bg-gradient-to-b from-zinc-800 to-zinc-900' : 'bg-gradient-to-b from-gray-50 to-white'} text-center`}>
           <p className={`text-xs ${c.textMuteded} mb-3`}>Website Hero</p>
           <p className={`text-2xl font-bold ${c.text} mb-1`}>{n}</p>
-          <p className={`text-sm ${c.textSecondaryondary}`}>{industry ? `The future of ${industry.toLowerCase()}` : 'Built for what comes next'}</p>
+          <p className={`text-sm ${c.textSecondary}`}>{industry ? `The future of ${industry.toLowerCase()}` : 'Built for what comes next'}</p>
           <div className={`inline-block mt-3 px-4 py-1.5 rounded-full text-xs font-semibold ${isDark ? 'bg-cyan-600 text-white' : 'bg-cyan-500 text-white'}`}>Get Started</div>
         </div>
       ),
@@ -634,7 +634,7 @@ const NameAudit = ({ tool }) => {
       vet_record: (
         <div className={`p-4 rounded-lg border ${c.border} ${isDark ? 'bg-zinc-900' : 'bg-gray-50'}`}>
           <p className={`text-xs ${c.textMuteded} mb-2`}>Vet Record</p>
-          <div className={`text-xs ${c.textSecondaryondary} space-y-0.5`}>
+          <div className={`text-xs ${c.textSecondary} space-y-0.5`}>
             <p><span className="font-bold">Patient:</span> <span className={`font-bold ${c.text}`}>{n}</span></p>
             <p><span className="font-bold">Species:</span> Canine · <span className="font-bold">Breed:</span> Golden Retriever</p>
             <p><span className="font-bold">Owner:</span> Johnson, A.</p>
@@ -760,7 +760,7 @@ const NameAudit = ({ tool }) => {
   const PassFail = ({ pass, notes }) => (
     <div className="flex items-start gap-2">
       <span className="flex-shrink-0 mt-0.5">{pass ? '✅' : '❌'}</span>
-      <span className={`text-sm ${c.textSecondaryondary}`}>{notes}</span>
+      <span className={`text-sm ${c.textSecondary}`}>{notes}</span>
     </div>
   );
 
@@ -1186,7 +1186,7 @@ const NameAudit = ({ tool }) => {
                 <h3 className={`text-xl font-bold ${c.text}`}>{compareResults.winner.name}</h3>
                 <span className={`px-2 py-0.5 text-xs font-bold rounded-full ${c.warning} border`}>{compareResults.winner.margin.replace(/_/g, ' ')}</span>
               </div>
-              <p className={`text-sm ${c.textSecondaryondary}`}>{compareResults.winner.why}</p>
+              <p className={`text-sm ${c.textSecondary}`}>{compareResults.winner.why}</p>
               <p className={`text-xs ${c.textMuteded} mt-3 italic`}>💡 Run this comparison 2-3 times — if the same name wins consistently, you've got your answer! If it's a toss-up, your finalists are genuinely close and you can trust your instincts.</p>
             </div>
           )}
@@ -1208,7 +1208,7 @@ const NameAudit = ({ tool }) => {
                       <span className={`px-2.5 py-1 rounded-full text-xs font-bold border ${gradeColors[cand.grade] || c.warning}`}>{cand.grade}</span>
                     </div>
                   </div>
-                  <p className={`text-sm ${c.textSecondaryondary} mb-3`}>{cand.one_liner}</p>
+                  <p className={`text-sm ${c.textSecondary} mb-3`}>{cand.one_liner}</p>
                   <div className="space-y-2">
                     <div className={`p-2 rounded-lg ${c.success} border`}>
                       <p className="text-xs font-bold mb-0.5">Best quality</p><p className="text-sm">{cand.best_quality}</p>
@@ -1331,7 +1331,7 @@ const NameAudit = ({ tool }) => {
                   </span>
                   <h3 className={`text-lg font-bold ${c.text}`}>"{results.name_analyzed}"</h3>
                 </div>
-                <p className={`text-sm ${c.textSecondaryondary} leading-relaxed`}>{results.overall_summary}</p>
+                <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{results.overall_summary}</p>
               </div>
             </div>
           </div>
@@ -1441,7 +1441,7 @@ const NameAudit = ({ tool }) => {
           {results.first_impression && (
             <Section id="impression" title="First Impression" icon="👁️" defaultOpen score={results.section_scores?.first_impression}>
               <div className="space-y-3">
-                <p className={`text-sm ${c.textSecondaryondary}`}>{results.first_impression.gut_reaction}</p>
+                <p className={`text-sm ${c.textSecondary}`}>{results.first_impression.gut_reaction}</p>
                 <div className="flex flex-wrap gap-1.5">
                   {results.first_impression.associations?.map((a, i) => (
                     <span key={i} className={`px-2.5 py-1 rounded-full text-xs border ${c.chip(false)}`}>{a}</span>
@@ -1460,7 +1460,7 @@ const NameAudit = ({ tool }) => {
                   results.phonetic_profile[key] && (
                     <div key={key} className={`p-3 rounded-lg ${c.cardAlt}`}>
                       <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{key.replace(/_/g, ' ').toUpperCase()}</p>
-                      <p className={`text-sm ${c.textSecondaryondary}`}>{results.phonetic_profile[key]}</p>
+                      <p className={`text-sm ${c.textSecondary}`}>{results.phonetic_profile[key]}</p>
                     </div>
                   )
                 ))}
@@ -1527,7 +1527,7 @@ const NameAudit = ({ tool }) => {
                   results.visual_analysis[key] && (
                     <div key={key} className={`p-3 rounded-lg ${c.cardAlt}`}>
                       <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{key.replace(/_/g, ' ').toUpperCase()}</p>
-                      <p className={`text-sm ${c.textSecondaryondary}`}>{results.visual_analysis[key]}</p>
+                      <p className={`text-sm ${c.textSecondary}`}>{results.visual_analysis[key]}</p>
                     </div>
                   )
                 ))}
@@ -1558,7 +1558,7 @@ const NameAudit = ({ tool }) => {
                   results.abbreviation_audit[key] && (
                     <div key={key} className={`p-3 rounded-lg ${key === 'issues' && results.abbreviation_audit[key] !== 'Clean' ? c.warning : c.cardAlt} ${key === 'issues' && results.abbreviation_audit[key] !== 'Clean' ? 'border' : ''}`}>
                       <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{key.replace(/_/g, ' ').toUpperCase()}</p>
-                      <p className={`text-sm ${c.textSecondaryondary} ${key === 'hashtag' ? 'font-mono' : ''}`}>{results.abbreviation_audit[key]}</p>
+                      <p className={`text-sm ${c.textSecondary} ${key === 'hashtag' ? 'font-mono' : ''}`}>{results.abbreviation_audit[key]}</p>
                     </div>
                   )
                 ))}
@@ -1578,7 +1578,7 @@ const NameAudit = ({ tool }) => {
                 )}
                 <div className={`p-3 rounded-lg ${c.cardAlt}`}>
                   <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>DIFFERENTIATION</p>
-                  <p className={`text-sm ${c.textSecondaryondary}`}>{results.competitive_landscape.differentiation}</p>
+                  <p className={`text-sm ${c.textSecondary}`}>{results.competitive_landscape.differentiation}</p>
                 </div>
               </div>
             </Section>
@@ -1592,7 +1592,7 @@ const NameAudit = ({ tool }) => {
                   results.searchability[key] && (
                     <div key={key} className={`p-3 rounded-lg ${c.cardAlt}`}>
                       <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{key.replace(/_/g, ' ').toUpperCase()}</p>
-                      <p className={`text-sm ${c.textSecondaryondary}`}>{results.searchability[key]}</p>
+                      <p className={`text-sm ${c.textSecondary}`}>{results.searchability[key]}</p>
                     </div>
                   )
                 ))}
@@ -1608,7 +1608,7 @@ const NameAudit = ({ tool }) => {
                   results.longevity[key] && (
                     <div key={key} className={`p-3 rounded-lg ${c.cardAlt}`}>
                       <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{key.replace(/_/g, ' ').toUpperCase()}</p>
-                      <p className={`text-sm ${c.textSecondaryondary}`}>{results.longevity[key]}</p>
+                      <p className={`text-sm ${c.textSecondary}`}>{results.longevity[key]}</p>
                     </div>
                   )
                 ))}
@@ -1625,7 +1625,7 @@ const NameAudit = ({ tool }) => {
                   results.tld_analysis[key] && (
                     <div key={key} className={`p-3 rounded-lg ${c.cardAlt}`}>
                       <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{key.replace(/_/g, ' ').toUpperCase()}</p>
-                      <p className={`text-sm ${c.textSecondaryondary}`}>{results.tld_analysis[key]}</p>
+                      <p className={`text-sm ${c.textSecondary}`}>{results.tld_analysis[key]}</p>
                     </div>
                   )
                 ))}
@@ -1641,7 +1641,7 @@ const NameAudit = ({ tool }) => {
                   results.domain_specific_tests[key] && (
                     <div key={key} className={`p-3 rounded-lg ${c.cardAlt}`}>
                       <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{key.replace(/_/g, ' ').toUpperCase()}</p>
-                      <p className={`text-sm ${c.textSecondaryondary}`}>{results.domain_specific_tests[key]}</p>
+                      <p className={`text-sm ${c.textSecondary}`}>{results.domain_specific_tests[key]}</p>
                     </div>
                   )
                 ))}
@@ -1654,7 +1654,7 @@ const NameAudit = ({ tool }) => {
             <Section id="emotion" title="Emotional Resonance" icon="❤️" score={results.section_scores?.emotional_resonance}>
               <div className="space-y-3">
                 {results.emotional_resonance.personality_match && (
-                  <p className={`text-sm ${c.textSecondaryondary}`}>{results.emotional_resonance.personality_match}</p>
+                  <p className={`text-sm ${c.textSecondary}`}>{results.emotional_resonance.personality_match}</p>
                 )}
                 {results.emotional_resonance.sensory_associations && (
                   <div className={`p-3 rounded-lg ${c.cardAlt} border`}>
@@ -1665,7 +1665,7 @@ const NameAudit = ({ tool }) => {
                 {results.emotional_resonance.if_it_were_a_person && (
                   <div className={`p-3 rounded-lg ${c.cardAlt}`}>
                     <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>IF THIS NAME WERE A PERSON</p>
-                    <p className={`text-sm ${c.textSecondaryondary} italic`}>{results.emotional_resonance.if_it_were_a_person}</p>
+                    <p className={`text-sm ${c.textSecondary} italic`}>{results.emotional_resonance.if_it_were_a_person}</p>
                   </div>
                 )}
               </div>
@@ -1742,7 +1742,7 @@ const NameAudit = ({ tool }) => {
                         <p className={`text-xs ${c.textMuteded}`}>{persona.description}</p>
                       </div>
                     </div>
-                    <p className={`text-sm ${c.textSecondaryondary} italic`}>"{persona.reaction}"</p>
+                    <p className={`text-sm ${c.textSecondary} italic`}>"{persona.reaction}"</p>
                     {persona.would_they_remember && (
                       <p className={`text-xs ${c.textMuteded} mt-1.5`}>
                         Would they remember it? <span className="font-semibold">{persona.would_they_remember}</span>
@@ -1858,7 +1858,7 @@ const NameAudit = ({ tool }) => {
                   </div>
                 )}
                 {secondOpinionResults.confidence_verdict && (
-                  <p className={`text-sm ${c.textSecondaryondary} italic text-center`}>🎯 {secondOpinionResults.confidence_verdict}</p>
+                  <p className={`text-sm ${c.textSecondary} italic text-center`}>🎯 {secondOpinionResults.confidence_verdict}</p>
                 )}
               </div>
             )}
@@ -1907,7 +1907,7 @@ const NameAudit = ({ tool }) => {
                 <span>✨</span> Improved Variations of "{results?.name_analyzed}"
               </h3>
               {fixResults.approach && (
-                <p className={`text-sm ${c.textSecondaryondary} mb-4 italic`}>{fixResults.approach}</p>
+                <p className={`text-sm ${c.textSecondary} mb-4 italic`}>{fixResults.approach}</p>
               )}
               <div className="space-y-3">
                 {fixResults.variations?.map((v, i) => (
@@ -1928,7 +1928,7 @@ const NameAudit = ({ tool }) => {
                             }`}>{v.estimated_score}</span>
                           )}
                         </div>
-                        <p className={`text-sm ${c.textSecondaryondary} mt-1.5`}>{v.why_its_better}</p>
+                        <p className={`text-sm ${c.textSecondary} mt-1.5`}>{v.why_its_better}</p>
                         {v.what_it_fixes && (
                           <p className={`text-xs ${isDark ? 'text-cyan-300' : 'text-cyan-600'} mt-1 font-medium`}>
                             → Fixes: {v.what_it_fixes}
@@ -1950,7 +1950,7 @@ const NameAudit = ({ tool }) => {
                 ))}
               </div>
               {fixResults.naming_direction && (
-                <p className={`text-sm ${c.textSecondaryondary} mt-4 italic`}>💡 {fixResults.naming_direction}</p>
+                <p className={`text-sm ${c.textSecondary} mt-4 italic`}>💡 {fixResults.naming_direction}</p>
               )}
             </div>
           )}
@@ -1998,7 +1998,7 @@ const NameAudit = ({ tool }) => {
                   {journalEntries[results.name_analyzed].map((note) => (
                     <div key={note.id} className={`flex items-start justify-between gap-2 p-2.5 rounded-lg ${c.cardAlt}`}>
                       <div className="flex-1 min-w-0">
-                        <p className={`text-sm ${c.textSecondaryondary}`}>{note.text}</p>
+                        <p className={`text-sm ${c.textSecondary}`}>{note.text}</p>
                         <p className={`text-xs ${c.textMuteded} mt-0.5`}>
                           {new Date(note.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
                         </p>

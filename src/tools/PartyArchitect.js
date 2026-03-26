@@ -122,7 +122,7 @@ const PartyArchitect = ({ tool }) => {
       <div className={`${c.card} border ${c.border} rounded-xl p-6`}>
         <div className={`mb-5 pb-4 border-b ${c.border}`}>
           <h2 className={`text-2xl font-bold ${c.text}`}>PartyArchitect 🎪</h2>
-          <p className={`text-sm ${c.textSecondaryondary} mt-1`}>Host events people actually remember</p>
+          <p className={`text-sm ${c.textSecondary} mt-1`}>Host events people actually remember</p>
         </div>
 
         <div className="mb-4">
@@ -216,7 +216,7 @@ const PartyArchitect = ({ tool }) => {
 
           {r.event_read && (
             <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-              <p className={`text-sm ${c.textSecondaryondary} leading-relaxed`}>{r.event_read}</p>
+              <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{r.event_read}</p>
             </div>
           )}
 
@@ -271,7 +271,7 @@ const PartyArchitect = ({ tool }) => {
                   {r.mixing_strategies.map((m, i) => (
                     <div key={i} className={`${c.cardAlt} rounded-lg p-4`}>
                       <p className={`text-xs font-bold ${c.text} mb-1`}>{m.strategy}</p>
-                      <p className={`text-xs ${c.textSecondaryondary} mb-2`}>{m.how}</p>
+                      <p className={`text-xs ${c.textSecondary} mb-2`}>{m.how}</p>
                       <div className="flex gap-3">
                         <p className={`text-[10px] ${c.textMuteded}`}>⏱ {m.when}</p>
                         <p className={`text-[10px] ${c.textMuteded} italic`}>🧠 {m.why_it_works}</p>
@@ -289,7 +289,7 @@ const PartyArchitect = ({ tool }) => {
               <p className={`text-xs font-bold ${c.text} mb-2`}>💬 Conversation catalysts</p>
               <div className="space-y-1.5">
                 {r.conversation_starters.map((s, i) => (
-                  <p key={i} className={`text-xs ${c.textSecondaryondary}`}>• {s}</p>
+                  <p key={i} className={`text-xs ${c.textSecondary}`}>• {s}</p>
                 ))}
               </div>
             </div>
@@ -300,8 +300,8 @@ const PartyArchitect = ({ tool }) => {
             <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
               <p className={`text-xs font-bold ${c.text} mb-2`}>🍽️ Food & drink strategy</p>
               <div className="space-y-2">
-                <p className={`text-xs ${c.textSecondaryondary}`}>{r.food_and_drink_strategy.approach}</p>
-                <p className={`text-xs ${c.textSecondaryondary}`}>⏱ {r.food_and_drink_strategy.timing}</p>
+                <p className={`text-xs ${c.textSecondary}`}>{r.food_and_drink_strategy.approach}</p>
+                <p className={`text-xs ${c.textSecondary}`}>⏱ {r.food_and_drink_strategy.timing}</p>
                 {r.food_and_drink_strategy.signature_touch && (
                   <p className={`text-xs ${isDark ? 'text-[rgb(217,160,78)]' : 'text-[rgb(147,84,31)]'} font-medium`}>✨ {r.food_and_drink_strategy.signature_touch}</p>
                 )}
@@ -319,7 +319,7 @@ const PartyArchitect = ({ tool }) => {
               <div className="space-y-1.5">
                 {[['🚪 Arrival', r.music_plan.arrival], ['🔥 Peak', r.music_plan.peak], ['🌙 Wind-down', r.music_plan.wind_down]]
                   .filter(([, v]) => v).map(([label, value], i) => (
-                    <p key={i} className={`text-xs ${c.textSecondaryondary}`}>{label}: {value}</p>
+                    <p key={i} className={`text-xs ${c.textSecondary}`}>{label}: {value}</p>
                   ))}
               </div>
             </div>
@@ -339,14 +339,14 @@ const PartyArchitect = ({ tool }) => {
             <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
               <p className={`text-xs font-bold ${c.text} mb-2`}>💰 Budget breakdown</p>
               <div className="space-y-1.5">
-                {r.budget_breakdown.total_estimate && <p className={`text-xs ${c.textSecondaryondary}`}>Total: {r.budget_breakdown.total_estimate}</p>}
-                {r.budget_breakdown.biggest_expense && <p className={`text-xs ${c.textSecondaryondary}`}>Biggest expense: {r.budget_breakdown.biggest_expense}</p>}
+                {r.budget_breakdown.total_estimate && <p className={`text-xs ${c.textSecondary}`}>Total: {r.budget_breakdown.total_estimate}</p>}
+                {r.budget_breakdown.biggest_expense && <p className={`text-xs ${c.textSecondary}`}>Biggest expense: {r.budget_breakdown.biggest_expense}</p>}
                 {r.budget_breakdown.where_to_save && <p className={`text-xs ${isDark ? 'text-[rgb(138,191,140)]' : 'text-[rgb(61,107,63)]'}`}>Save on: {r.budget_breakdown.where_to_save}</p>}
                 {r.budget_breakdown.free_upgrades?.length > 0 && (
                   <div className="mt-1">
                     <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>Free upgrades:</p>
                     {r.budget_breakdown.free_upgrades.map((u, i) => (
-                      <p key={i} className={`text-xs ${c.textSecondaryondary}`}>• {u}</p>
+                      <p key={i} className={`text-xs ${c.textSecondary}`}>• {u}</p>
                     ))}
                   </div>
                 )}
@@ -360,7 +360,7 @@ const PartyArchitect = ({ tool }) => {
               <p className={`text-xs font-bold ${c.text} mb-2`}>🚨 Disaster prevention</p>
               <div className="space-y-1.5">
                 {r.disaster_prevention.map((d, i) => (
-                  <p key={i} className={`text-xs ${c.textSecondaryondary}`}>• {d}</p>
+                  <p key={i} className={`text-xs ${c.textSecondary}`}>• {d}</p>
                 ))}
               </div>
             </div>

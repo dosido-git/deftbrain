@@ -679,7 +679,7 @@ const BillRescue = ({ tool }) => {
 
         {/* Bill type */}
         <div className="mb-4">
-          <label className={`text-xs font-bold ${c.textSecondaryondary} block mb-1.5`}>What kind of bill? *</label>
+          <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>What kind of bill? *</label>
           <div className="flex flex-wrap gap-1.5">
             {BILL_TYPES.map(bt => (
               <button key={bt.value} onClick={() => setBillType(bt.value === billType ? '' : bt.value)}
@@ -713,7 +713,7 @@ const BillRescue = ({ tool }) => {
 
         {/* Overdue status */}
         <div className="mb-4">
-          <label className={`text-xs font-bold ${c.textSecondaryondary} block mb-1.5`}>How late?</label>
+          <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>How late?</label>
           <div className="flex flex-wrap gap-1.5">
             {OVERDUE_STATUS.map(os => (
               <button key={os.value} onClick={() => setOverdueStatus(os.value === overdueStatus ? '' : os.value)}
@@ -727,7 +727,7 @@ const BillRescue = ({ tool }) => {
 
         {/* Reason */}
         <div className="mb-4">
-          <label className={`text-xs font-bold ${c.textSecondaryondary} block mb-1.5`}>Why is this hard?</label>
+          <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Why is this hard?</label>
           <div className="flex flex-wrap gap-1.5">
             {REASONS.map(re => (
               <button key={re.value} onClick={() => setReason(re.value === reason ? '' : re.value)}
@@ -809,7 +809,7 @@ const BillRescue = ({ tool }) => {
                   <span className="text-lg flex-shrink-0">💚</span>
                   <div>
                     <h3 className={`text-sm font-bold ${c.text} mb-1`}>First: Deep Breath</h3>
-                    <p className={`text-sm ${c.textSecondaryondary}`}>{r.shame_to_action.reframe}</p>
+                    <p className={`text-sm ${c.textSecondary}`}>{r.shame_to_action.reframe}</p>
                     {r.shame_to_action.micro_step && (
                       <div className={`mt-3 p-3 rounded-lg ${c.microStepBg}`}>
                         <p className={`text-xs font-bold ${c.highlightText}`}>📌 Your only step today: {r.shame_to_action.micro_step}</p>
@@ -826,7 +826,7 @@ const BillRescue = ({ tool }) => {
                 r.bill_autopsy.verdict?.toLowerCase().includes('overcharg') || r.bill_autopsy.verdict?.toLowerCase().includes('flag') ? c.danger
                 : r.bill_autopsy.verdict?.toLowerCase().includes('fair') ? c.success : c.warning
               } defaultOpen c={c}>
-                <p className={`text-sm ${c.textSecondaryondary}`}>{r.bill_autopsy.analysis}</p>
+                <p className={`text-sm ${c.textSecondary}`}>{r.bill_autopsy.analysis}</p>
                 {r.bill_autopsy.total_potential_savings && (
                   <div className={`${c.success} border rounded-lg p-3 text-center`}>
                     <p className={`text-xs font-bold ${c.successFg}`}>💰 Potential savings: {r.bill_autopsy.total_potential_savings}</p>
@@ -844,7 +844,7 @@ const BillRescue = ({ tool }) => {
                   </div>
                 )}
                 {r.bill_autopsy.request_itemized && (
-                  <p className={`text-xs ${c.textSecondaryondary}`}>💡 {r.bill_autopsy.request_itemized}</p>
+                  <p className={`text-xs ${c.textSecondary}`}>💡 {r.bill_autopsy.request_itemized}</p>
                 )}
               </Section>
             )}
@@ -870,7 +870,7 @@ const BillRescue = ({ tool }) => {
                   {r.action_steps.map((step, i) => (
                     <div key={i} className={`${c.quoteBg} rounded-lg p-4 border-l-4 ${c.stepBorderL}`}>
                       <p className={`text-[10px] font-bold ${c.highlightText} uppercase mb-1`}>Step {i + 1}: {step.title}</p>
-                      <p className={`text-sm ${c.textSecondaryondary} mb-2`}>{step.action}</p>
+                      <p className={`text-sm ${c.textSecondary} mb-2`}>{step.action}</p>
                       {step.script && (
                         <div className={`${c.card} border rounded-lg p-3`}>
                           <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>Say this:</p>
@@ -890,7 +890,7 @@ const BillRescue = ({ tool }) => {
             {/* Payment plan */}
             {r.payment_plan && (
               <Section icon="💵" title="Payment Plan Proposal" c={c}>
-                <p className={`text-sm ${c.textSecondaryondary}`}>{r.payment_plan.strategy}</p>
+                <p className={`text-sm ${c.textSecondary}`}>{r.payment_plan.strategy}</p>
                 {r.payment_plan.offer_amount && (
                   <div className={`${c.success} border rounded-lg p-3`}>
                     <p className={`text-xs font-bold ${c.successFg}`}>Offer: {r.payment_plan.offer_amount}</p>
@@ -924,7 +924,7 @@ const BillRescue = ({ tool }) => {
                 )}
                 {r.phone_script.key_phrases?.length > 0 && (
                   <div>
-                    <p className={`text-[10px] font-bold ${c.textSecondaryondary} uppercase mb-1.5`}>Magic phrases:</p>
+                    <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-1.5`}>Magic phrases:</p>
                     {r.phone_script.key_phrases.map((phrase, i) => (
                       <div key={i} className="flex items-center gap-2 mb-1">
                         <p className={`flex-1 text-xs ${c.text}`}>• "{phrase}"</p>
@@ -952,7 +952,7 @@ const BillRescue = ({ tool }) => {
                       <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-[10px] font-black ${c.escalationNum}`}>{i + 1}</div>
                       <div>
                         <p className={`text-xs font-bold ${c.text}`}>{level.who}</p>
-                        <p className={`text-[10px] ${c.textSecondaryondary}`}>{level.what_to_say}</p>
+                        <p className={`text-[10px] ${c.textSecondary}`}>{level.what_to_say}</p>
                       </div>
                     </div>
                   ))}
@@ -963,10 +963,10 @@ const BillRescue = ({ tool }) => {
             {/* Collections defense */}
             {r.collections_defense && (
               <Section icon="🛡️" title="Collections Defense Kit" badge="IMPORTANT" badgeColor={c.danger} defaultOpen c={c}>
-                <p className={`text-sm ${c.textSecondaryondary}`}>{r.collections_defense.overview}</p>
+                <p className={`text-sm ${c.textSecondary}`}>{r.collections_defense.overview}</p>
                 {r.collections_defense.validation_letter && (
                   <div>
-                    <p className={`text-[10px] font-bold ${c.textSecondaryondary} uppercase mb-1`}>Debt Validation Letter (send first):</p>
+                    <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-1`}>Debt Validation Letter (send first):</p>
                     <div className={`${c.quoteBg} rounded-lg p-3 font-mono`}>
                       <p className={`text-xs ${c.text} whitespace-pre-wrap leading-relaxed`}>{r.collections_defense.validation_letter}</p>
                     </div>
@@ -983,7 +983,7 @@ const BillRescue = ({ tool }) => {
                   <div>
                     <p className={`text-[10px] font-bold ${c.dangerFg} uppercase mb-1`}>NEVER do:</p>
                     {r.collections_defense.never_do.map((item, i) => (
-                      <p key={i} className={`text-xs ${c.textSecondaryondary}`}>🚫 {item}</p>
+                      <p key={i} className={`text-xs ${c.textSecondary}`}>🚫 {item}</p>
                     ))}
                   </div>
                 )}
@@ -1032,7 +1032,7 @@ const BillRescue = ({ tool }) => {
             {/* Worst case */}
             {r.worst_case && (
               <Section icon="⚠️" title="Realistic Worst Case" c={c}>
-                <p className={`text-sm ${c.textSecondaryondary}`}>{r.worst_case}</p>
+                <p className={`text-sm ${c.textSecondary}`}>{r.worst_case}</p>
                 {r.worst_case_reassurance && (
                   <p className={`text-xs ${c.textMuteded} italic`}>💚 {r.worst_case_reassurance}</p>
                 )}
@@ -1044,8 +1044,8 @@ const BillRescue = ({ tool }) => {
               <Section icon="📅" title="After the Call" c={c}>
                 {r.follow_up.document_this && (
                   <div>
-                    <p className={`text-[10px] font-bold ${c.textSecondaryondary} uppercase mb-1`}>Document immediately:</p>
-                    <p className={`text-xs ${c.textSecondaryondary}`}>{r.follow_up.document_this}</p>
+                    <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-1`}>Document immediately:</p>
+                    <p className={`text-xs ${c.textSecondary}`}>{r.follow_up.document_this}</p>
                   </div>
                 )}
                 {r.follow_up.calendar_reminder && (
@@ -1054,7 +1054,7 @@ const BillRescue = ({ tool }) => {
                   </div>
                 )}
                 {r.follow_up.if_they_dont_follow_through && (
-                  <p className={`text-xs ${c.textSecondaryondary}`}>If they don't follow through: {r.follow_up.if_they_dont_follow_through}</p>
+                  <p className={`text-xs ${c.textSecondary}`}>If they don't follow through: {r.follow_up.if_they_dont_follow_through}</p>
                 )}
                 <button onClick={() => { setLogPlanId(null); setView('log'); }}
                   className={`${c.btnPrimary} px-4 py-2 rounded-lg text-xs font-bold min-h-[36px] w-full`}>
@@ -1094,13 +1094,13 @@ const BillRescue = ({ tool }) => {
             <div className={`${c.card} border rounded-xl p-4`}>
               <p className={`text-[10px] font-bold ${c.textMuteded} uppercase mb-2`}>Related tools</p>
               <div className="space-y-1.5 text-xs">
-                <p className={c.textSecondaryondary}>
+                <p className={c.textSecondary}>
                   Want to practice this call before you dial?{' '}
                   <a href="/MoneyMoves" className={linkStyle}>Money Moves</a>{' '}
                   coaches you through tough money conversations.
                 </p>
                 {(overdueStatus === 'collections' || overdueStatus === '90_plus') && (
-                  <p className={c.textSecondaryondary}>
+                  <p className={c.textSecondary}>
                     Feeling overwhelmed by multiple stressors at once?{' '}
                     <a href="/CrisisPrioritizer" className={linkStyle}>Crisis Prioritizer</a>{' '}
                     helps you decide what to tackle first.
@@ -1195,7 +1195,7 @@ const BillRescue = ({ tool }) => {
             {/* Priority order */}
             {r.priority_order?.length > 0 && (
               <div className="space-y-2">
-                <p className={`text-xs font-bold ${c.textSecondaryondary} uppercase`}>Priority order:</p>
+                <p className={`text-xs font-bold ${c.textSecondary} uppercase`}>Priority order:</p>
                 {r.priority_order.map((bill, i) => (
                   <div key={i} className={`${c.card} border rounded-xl p-4`}>
                     <div className="flex items-start gap-3">
@@ -1214,7 +1214,7 @@ const BillRescue = ({ tool }) => {
                             bill.urgency === 'DISPUTE' ? c.highlightBg : c.success
                           }`}>{bill.urgency_emoji} {bill.urgency}</span>
                         </div>
-                        <p className={`text-[10px] ${c.textSecondaryondary}`}>{bill.why}</p>
+                        <p className={`text-[10px] ${c.textSecondary}`}>{bill.why}</p>
                         <p className={`text-[10px] font-bold ${c.highlightText} mt-1`}>→ {bill.recommended_action}</p>
                         {bill.allocate && <p className={`text-[10px] ${c.textMuteded}`}>Budget: {bill.allocate}</p>}
                       </div>
@@ -1227,7 +1227,7 @@ const BillRescue = ({ tool }) => {
             {/* Budget plan */}
             {r.budget_plan && (
               <div className={`${c.highlightBg} border rounded-xl p-4`}>
-                <p className={`text-[10px] font-bold ${c.textSecondaryondary} uppercase mb-2`}>Budget allocation</p>
+                <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-2`}>Budget allocation</p>
                 <div className="grid grid-cols-3 gap-2 text-center mb-2">
                   <div><p className={`text-xs font-bold ${c.text}`}>{r.budget_plan.total_monthly}</p><p className={`text-[9px] ${c.textMuteded}`}>Budget</p></div>
                   <div><p className={`text-xs font-bold ${c.highlightText}`}>{r.budget_plan.allocated}</p><p className={`text-[9px] ${c.textMuteded}`}>To bills</p></div>
@@ -1240,7 +1240,7 @@ const BillRescue = ({ tool }) => {
             {/* Quick wins + Danger zones */}
             {r.quick_wins?.length > 0 && (
               <Section icon="⚡" title="Quick Wins" defaultOpen c={c}>
-                {r.quick_wins.map((w, i) => <p key={i} className={`text-xs ${c.textSecondaryondary}`}>✅ {w}</p>)}
+                {r.quick_wins.map((w, i) => <p key={i} className={`text-xs ${c.textSecondary}`}>✅ {w}</p>)}
               </Section>
             )}
             {r.danger_zones?.length > 0 && (
@@ -1251,8 +1251,8 @@ const BillRescue = ({ tool }) => {
 
             {r.strategy && (
               <div className={`${c.card} border rounded-xl p-4`}>
-                <p className={`text-xs font-bold ${c.textSecondaryondary} uppercase mb-1`}>Overall strategy</p>
-                <p className={`text-sm ${c.textSecondaryondary}`}>{r.strategy}</p>
+                <p className={`text-xs font-bold ${c.textSecondary} uppercase mb-1`}>Overall strategy</p>
+                <p className={`text-sm ${c.textSecondary}`}>{r.strategy}</p>
               </div>
             )}
             {r.encouragement && (
@@ -1309,7 +1309,7 @@ const BillRescue = ({ tool }) => {
                     </div>
                     <p className={`text-[9px] ${c.textMuteded}`}>{new Date(plan.date).toLocaleDateString()}</p>
                     {plan.results?.shame_to_action?.micro_step && (
-                      <p className={`text-[10px] ${c.textSecondaryondary} mt-0.5 truncate`}>📌 {plan.results.shame_to_action.micro_step}</p>
+                      <p className={`text-[10px] ${c.textSecondary} mt-0.5 truncate`}>📌 {plan.results.shame_to_action.micro_step}</p>
                     )}
                   </div>
                   <div className="flex items-center gap-1 flex-shrink-0">
@@ -1362,7 +1362,7 @@ const BillRescue = ({ tool }) => {
 
         {/* Log form */}
         <div className="mb-4">
-          <label className={`text-xs font-bold ${c.textSecondaryondary} block mb-1.5`}>What happened?</label>
+          <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>What happened?</label>
           <div className="flex flex-wrap gap-1.5 mb-3">
             {[
               { value: 'accepted', label: '✅ They accepted my plan' },
@@ -1425,7 +1425,7 @@ const BillRescue = ({ tool }) => {
       {/* Past logs */}
       {callLogs.length > 0 && (
         <div className={`${c.card} border rounded-xl p-5`}>
-          <p className={`text-xs font-bold ${c.textSecondaryondary} uppercase mb-3`}>Past calls ({callLogs.length})</p>
+          <p className={`text-xs font-bold ${c.textSecondary} uppercase mb-3`}>Past calls ({callLogs.length})</p>
           <div className="space-y-2">
             {callLogs.map(log => (
               <div key={log.id} className={`${c.quoteBg} rounded-lg p-3`}>
@@ -1436,7 +1436,7 @@ const BillRescue = ({ tool }) => {
                         log.outcome === 'accepted' || log.outcome === 'settled' ? c.success :
                         log.outcome === 'denied' ? c.danger : c.warning
                       }`}>{log.outcome}</span>
-                      {log.repName && <span className={`text-[10px] ${c.textSecondaryondary}`}>with {log.repName}</span>}
+                      {log.repName && <span className={`text-[10px] ${c.textSecondary}`}>with {log.repName}</span>}
                     </div>
                     {log.agreed && <p className={`text-xs ${c.text}`}>🤝 {log.agreed}</p>}
                     {log.confirmationNumber && <p className={`text-[10px] ${c.highlightText}`}># {log.confirmationNumber}</p>}
@@ -1480,7 +1480,7 @@ const BillRescue = ({ tool }) => {
 
           <div className="space-y-3">
             <div>
-              <label className={`text-xs font-bold ${c.textSecondaryondary} block mb-1.5`}>What's the charge? *</label>
+              <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>What's the charge? *</label>
               <input value={qcCharge} onChange={e => setQcCharge(e.target.value)}
                 onKeyDown={e => { if (e.key === 'Enter' && qcCharge.trim() && !loading) runQuickCheck(); }}
                 placeholder='e.g. "Activation fee $35" or "Balance transfer fee"'
@@ -1489,7 +1489,7 @@ const BillRescue = ({ tool }) => {
 
             <div className="flex gap-2">
               <div className="flex-1">
-                <label className={`text-xs font-bold ${c.textSecondaryondary} block mb-1.5`}>Bill type</label>
+                <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Bill type</label>
                 <select value={qcType} onChange={e => setQcType(e.target.value)}
                   className={`w-full py-1.5 px-2 border rounded-lg text-xs ${c.input}`}>
                   <option value="">Any</option>
@@ -1497,7 +1497,7 @@ const BillRescue = ({ tool }) => {
                 </select>
               </div>
               <div className="flex-1">
-                <label className={`text-xs font-bold ${c.textSecondaryondary} block mb-1.5`}>Amount</label>
+                <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Amount</label>
                 <input type="number" value={qcAmount} onChange={e => setQcAmount(e.target.value)} placeholder="Optional"
                   className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
               </div>
@@ -1524,13 +1524,13 @@ const BillRescue = ({ tool }) => {
 
             {qcResults.typical_range && (
               <div className={`${c.card} border rounded-lg p-3 mb-3`}>
-                <p className={`text-[10px] font-bold ${c.textSecondaryondary} uppercase mb-1`}>Typical range</p>
+                <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-1`}>Typical range</p>
                 <p className="text-xs">{qcResults.typical_range}</p>
               </div>
             )}
             {qcResults.best_phrase && (
               <div className={`${c.card} border rounded-lg p-3 mb-3`}>
-                <p className={`text-[10px] font-bold ${c.textSecondaryondary} uppercase mb-1`}>Best phone phrase</p>
+                <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-1`}>Best phone phrase</p>
                 <p className="text-xs font-bold italic">"{qcResults.best_phrase}"</p>
                 <div className="mt-2"><CopyBtn content={qcResults.best_phrase + '\n\n— Generated by DeftBrain · deftbrain.com'} label="Copy phrase" /></div>
               </div>
@@ -1567,14 +1567,14 @@ const BillRescue = ({ tool }) => {
           {!rhActive ? (
             <div className="space-y-3">
               <div>
-                <label className={`text-xs font-bold ${c.textSecondaryondary} block mb-1.5`}>What's the situation? *</label>
+                <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>What's the situation? *</label>
                 <textarea rows={3} value={rhSituation} onChange={e => setRhSituation(e.target.value)}
                   placeholder='e.g. "I have a $2,400 medical bill and I can only afford $100/month. I want to negotiate a payment plan."'
                   className={`w-full px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
               </div>
               <div className="flex gap-2">
                 <div className="flex-1">
-                  <label className={`text-xs font-bold ${c.textSecondaryondary} block mb-1.5`}>Bill type</label>
+                  <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Bill type</label>
                   <select value={rhType} onChange={e => setRhType(e.target.value)}
                     className={`w-full py-1.5 px-2 border rounded-lg text-xs ${c.input}`}>
                     <option value="">Any</option>
@@ -1582,7 +1582,7 @@ const BillRescue = ({ tool }) => {
                   </select>
                 </div>
                 <div className="flex-1">
-                  <label className={`text-xs font-bold ${c.textSecondaryondary} block mb-1.5`}>Difficulty</label>
+                  <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Difficulty</label>
                   <select value={rhDifficulty} onChange={e => setRhDifficulty(e.target.value)}
                     className={`w-full py-1.5 px-2 border rounded-lg text-xs ${c.input}`}>
                     <option value="normal">Normal</option>
@@ -1591,7 +1591,7 @@ const BillRescue = ({ tool }) => {
                 </div>
               </div>
               <div>
-                <label className={`text-xs font-bold ${c.textSecondaryondary} block mb-1.5`}>Your opening line (optional)</label>
+                <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Your opening line (optional)</label>
                 <input value={rhMessage} onChange={e => setRhMessage(e.target.value)}
                   placeholder="e.g. Hi, I'm calling about my account..."
                   className={`w-full px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
@@ -1618,7 +1618,7 @@ const BillRescue = ({ tool }) => {
                   <div key={i} className={`text-xs ${msg.role === 'user' ? 'text-right' : 'text-left'}`}>
                     {msg.role === 'user' ? (
                       <div className="inline-block">
-                        <span className={`text-[10px] font-bold ${c.textSecondaryondary} block mb-0.5`}>You:</span>
+                        <span className={`text-[10px] font-bold ${c.textSecondary} block mb-0.5`}>You:</span>
                         <div className={`inline-block px-3 py-2 rounded-lg ${c.chatUser}`}>
                           {msg.content}
                         </div>
@@ -1626,7 +1626,7 @@ const BillRescue = ({ tool }) => {
                     ) : msg.parsed ? (
                       <div className="space-y-2">
                         <div>
-                          <span className={`text-[10px] font-bold ${c.textSecondaryondary} block mb-0.5`}>Rep ({msg.parsed.rep_tone || 'neutral'}):</span>
+                          <span className={`text-[10px] font-bold ${c.textSecondary} block mb-0.5`}>Rep ({msg.parsed.rep_tone || 'neutral'}):</span>
                           <div className={`inline-block px-3 py-2 rounded-lg text-left ${c.chatRep}`}>
                             {msg.parsed.rep_response}
                           </div>
@@ -1715,7 +1715,7 @@ const BillRescue = ({ tool }) => {
 
           <div className="space-y-3">
             <div>
-              <label className={`text-xs font-bold ${c.textSecondaryondary} block mb-1.5`}>Letter type *</label>
+              <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Letter type *</label>
               <div className="grid grid-cols-1 gap-1.5">
                 {LETTER_TYPES.map(lt => (
                   <button key={lt.value} onClick={() => setLtType(lt.value)}
@@ -1731,7 +1731,7 @@ const BillRescue = ({ tool }) => {
 
             <div className="flex gap-2">
               <div className="flex-1">
-                <label className={`text-xs font-bold ${c.textSecondaryondary} block mb-1.5`}>Bill type</label>
+                <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Bill type</label>
                 <select value={ltBillType} onChange={e => setLtBillType(e.target.value)}
                   className={`w-full py-1.5 px-2 border rounded-lg text-xs ${c.input}`}>
                   <option value="">Any</option>
@@ -1739,14 +1739,14 @@ const BillRescue = ({ tool }) => {
                 </select>
               </div>
               <div className="flex-1">
-                <label className={`text-xs font-bold ${c.textSecondaryondary} block mb-1.5`}>Amount</label>
+                <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Amount</label>
                 <input type="number" value={ltAmount} onChange={e => setLtAmount(e.target.value)} placeholder="Optional"
                   className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
               </div>
             </div>
 
             <div>
-              <label className={`text-xs font-bold ${c.textSecondaryondary} block mb-1.5`}>Your situation</label>
+              <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Your situation</label>
               <textarea rows={3} value={ltSituation} onChange={e => setLtSituation(e.target.value)}
                 onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && ltType && !loading) generateLetter(); }}
                 placeholder="Briefly describe what happened and what you need..."
@@ -1754,7 +1754,7 @@ const BillRescue = ({ tool }) => {
             </div>
 
             <div>
-              <label className={`text-xs font-bold ${c.textSecondaryondary} block mb-1.5`}>Additional context</label>
+              <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Additional context</label>
               <input value={ltContext} onChange={e => setLtContext(e.target.value)}
                 onKeyDown={e => { if (e.key === 'Enter' && ltType && !loading) generateLetter(); }}
                 placeholder="Rep name, dates, reference numbers, etc."
@@ -1780,7 +1780,7 @@ const BillRescue = ({ tool }) => {
 
             {ltResults.send_to && (
               <div className={`${c.highlightBg} border rounded-lg p-3`}>
-                <p className={`text-[10px] font-bold ${c.textSecondaryondary} uppercase mb-1`}>Send to</p>
+                <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-1`}>Send to</p>
                 <p className="text-xs">{ltResults.send_to}</p>
                 {ltResults.send_via && <p className="text-xs mt-1">📨 Via: <strong>{ltResults.send_via}</strong></p>}
               </div>
@@ -1792,14 +1792,14 @@ const BillRescue = ({ tool }) => {
 
             {ltResults.important_notes?.length > 0 && (
               <div className={`${c.warning} border rounded-lg p-3`}>
-                <p className={`text-[10px] font-bold ${c.textSecondaryondary} uppercase mb-1.5`}>⚠️ Before you send</p>
+                <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-1.5`}>⚠️ Before you send</p>
                 {ltResults.important_notes.map((n, i) => <p key={i} className="text-xs mb-1">• {n}</p>)}
               </div>
             )}
 
             {ltResults.follow_up && (
               <div className={`${c.card} border rounded-lg p-3`}>
-                <p className={`text-[10px] font-bold ${c.textSecondaryondary} uppercase mb-1`}>📅 After sending</p>
+                <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-1`}>📅 After sending</p>
                 <p className="text-xs">{ltResults.follow_up}</p>
               </div>
             )}
@@ -1878,7 +1878,7 @@ const BillRescue = ({ tool }) => {
               {/* Upcoming */}
               {upcomingItems.length > 0 && (
                 <div>
-                  <p className={`text-[10px] font-bold ${c.textSecondaryondary} uppercase mb-2`}>Upcoming</p>
+                  <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-2`}>Upcoming</p>
                   <div className="space-y-1.5">
                     {upcomingItems.map(it => (
                       <div key={it.id} className={`${c.card} border rounded-lg px-3 py-2 flex items-center gap-2 text-xs`}>
@@ -1902,7 +1902,7 @@ const BillRescue = ({ tool }) => {
         {/* Monthly total */}
         {savedPlans.length > 0 && (
           <div className={`${c.card} border rounded-xl p-4`}>
-            <p className={`text-[10px] font-bold ${c.textSecondaryondary} uppercase mb-2`}>Monthly obligations</p>
+            <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-2`}>Monthly obligations</p>
             <p className="text-xl font-black">
               {currency}{savedPlans.reduce((sum, p) => sum + (Number(p.amount) || 0), 0).toLocaleString()}
             </p>
@@ -1957,19 +1957,19 @@ const BillRescue = ({ tool }) => {
           <h3 className={`text-sm font-bold ${c.text} mb-3`}>Log a Win</h3>
           <div className="space-y-3">
             <div>
-              <label className={`text-xs font-bold ${c.textSecondaryondary} block mb-1.5`}>What happened? *</label>
+              <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>What happened? *</label>
               <input value={vicText} onChange={e => setVicText(e.target.value)}
                 placeholder='e.g. "Got $35 late fee waived on electric bill"'
                 className={`w-full px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
             </div>
             <div className="flex gap-2">
               <div className="flex-1">
-                <label className={`text-xs font-bold ${c.textSecondaryondary} block mb-1.5`}>Saved ({currency})</label>
+                <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Saved ({currency})</label>
                 <input type="number" value={vicAmount} onChange={e => setVicAmount(e.target.value)} placeholder="0"
                   className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
               </div>
               <div className="flex-1">
-                <label className={`text-xs font-bold ${c.textSecondaryondary} block mb-1.5`}>Type</label>
+                <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Type</label>
                 <select value={vicType} onChange={e => setVicType(e.target.value)}
                   className={`w-full py-1.5 px-2 border rounded-lg text-xs ${c.input}`}>
                   <option value="">Pick one</option>
@@ -1987,7 +1987,7 @@ const BillRescue = ({ tool }) => {
         {/* Win list */}
         {victories.length > 0 && (
           <div className={`${c.card} border rounded-xl p-4`}>
-            <p className={`text-[10px] font-bold ${c.textSecondaryondary} uppercase mb-3`}>Your victories</p>
+            <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-3`}>Your victories</p>
             <div className="space-y-2">
               {victories.map(v => (
                 <div key={v.id} className={`flex items-start gap-2 px-3 py-2 rounded-lg border ${c.card} text-xs`}>
@@ -2030,7 +2030,7 @@ const BillRescue = ({ tool }) => {
             <span className="text-3xl">{tool?.icon ?? '🧾'}</span>
             <div>
               <h2 className={`text-xl font-bold ${c.text}`}>{tool?.title ?? 'Bill Rescue'}</h2>
-              <p className={`text-sm ${c.textSecondaryondary}`}>{tool?.tagline ?? 'Turn bill anxiety into a clear action plan'}</p>
+              <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Turn bill anxiety into a clear action plan'}</p>
             </div>
           </div>
         </div>

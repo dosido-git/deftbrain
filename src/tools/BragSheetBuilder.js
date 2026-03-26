@@ -52,7 +52,7 @@ const BragSheetBuilder = ({ tool }) => {
     btnLoading:     isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-slate-200 text-slate-400',
     btnSecondaryondary: isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     textMuteded:    isDark ? 'text-zinc-500' : 'text-gray-400',
-    textSecondaryondary: isDark ? 'text-zinc-300' : 'text-gray-600',
+    textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     scoreBg:        isDark ? 'bg-zinc-700' : 'bg-gray-200',
     scoreHigh:      isDark ? 'bg-emerald-500' : 'bg-emerald-500',
     scoreMid:       isDark ? 'bg-amber-500' : 'bg-amber-500',
@@ -564,7 +564,7 @@ const BragSheetBuilder = ({ tool }) => {
             <h3 className={`font-bold ${c.text} flex items-center gap-2`}><span>🗓️</span> Accomplishment Journal</h3>
             <button onClick={() => setShowJournal(false)} className={`text-sm ${c.textMuteded}`}>✕</button>
           </div>
-          <p className={`text-xs ${c.textSecondaryondary} mb-3`}>Log wins as they happen. When it's brag sheet time, import them here instead of trying to remember.</p>
+          <p className={`text-xs ${c.textSecondary} mb-3`}>Log wins as they happen. When it's brag sheet time, import them here instead of trying to remember.</p>
           <div className="flex gap-2 mb-3">
             <input type="text" value={journalEntry} onChange={e => setJournalEntry(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addJournalEntry(); } }}
@@ -837,7 +837,7 @@ const BragSheetBuilder = ({ tool }) => {
                 <div key={idx} className={`${c.card} rounded-xl shadow-lg p-5 space-y-3`}>
                   <div className={`${c.beforeBg} border rounded-lg p-3`}>
                     <p className={`text-[10px] font-bold ${c.textMuteded} uppercase mb-1`}>You said:</p>
-                    <p className={`text-sm ${c.textSecondaryondary} italic`}>{t.original}</p>
+                    <p className={`text-sm ${c.textSecondary} italic`}>{t.original}</p>
                   </div>
                   <div className="flex items-center gap-2 px-2">
                     <span className={c.highlightText}>→</span>
@@ -919,7 +919,7 @@ const BragSheetBuilder = ({ tool }) => {
                     <span className="text-xl flex-shrink-0 mt-0.5">💪</span>
                     <div>
                       <h3 className={`text-sm font-bold ${c.text} mb-1`}>Permission to Brag</h3>
-                      {r.confidence.reframe && <p className={`text-sm ${c.textSecondaryondary} mb-2`}>{r.confidence.reframe}</p>}
+                      {r.confidence.reframe && <p className={`text-sm ${c.textSecondary} mb-2`}>{r.confidence.reframe}</p>}
                       {r.confidence.imposter_killer && <p className={`text-xs ${c.highlightAlt} font-semibold`}>{r.confidence.imposter_killer}</p>}
                     </div>
                   </div>
@@ -934,7 +934,7 @@ const BragSheetBuilder = ({ tool }) => {
               <h3 className={`font-bold ${c.text} flex items-center gap-2`}>
                 <span className="text-lg">📊</span> {refineRound === 0 ? 'Metrics Excavator' : `Round ${refineRound + 1} — Dig Deeper`}
               </h3>
-              <p className={`text-sm ${c.textSecondaryondary}`}>Answer these to replace estimates with real numbers.</p>
+              <p className={`text-sm ${c.textSecondary}`}>Answer these to replace estimates with real numbers.</p>
               <div className="space-y-4">
                 {metrics.map((mq, i) => {
                   const src = transforms[mq.accomplishment_index];
@@ -964,7 +964,7 @@ const BragSheetBuilder = ({ tool }) => {
                 <div className={`${c.card} rounded-xl shadow-lg p-6 text-center`}>
                   <span className="text-4xl block mb-3">📡</span>
                   <h3 className={`font-bold ${c.text} mb-2`}>Brag Sheet Strength Radar</h3>
-                  <p className={`text-sm ${c.textSecondaryondary} mb-4`}>See where your sheet is strong and where the gaps are — scored against expectations for your role and level.</p>
+                  <p className={`text-sm ${c.textSecondary} mb-4`}>See where your sheet is strong and where the gaps are — scored against expectations for your role and level.</p>
                   <button onClick={handleRadar} disabled={radarLoading}
                     className={`${c.btnPrimary} disabled:opacity-40 px-6 py-3 rounded-xl font-semibold text-sm`}>
                     {radarLoading ? <><span className="inline-block animate-spin">{tool?.icon ?? '🏆'}</span> Analyzing...</> : '📡 Analyze My Sheet'}</button>
@@ -991,7 +991,7 @@ const BragSheetBuilder = ({ tool }) => {
                   </div>
                   {radarData.strongest && <div className={`${c.success} border rounded-lg p-3`}><p className="text-xs">💪 {radarData.strongest}</p></div>}
                   {radarData.weakest && <div className={`${c.warning} border rounded-lg p-3`}><p className="text-xs">🎯 {radarData.weakest}</p></div>}
-                  {radarData.level_comparison && <p className={`text-xs ${c.textSecondaryondary} italic`}>{radarData.level_comparison}</p>}
+                  {radarData.level_comparison && <p className={`text-xs ${c.textSecondary} italic`}>{radarData.level_comparison}</p>}
                   {radarData.next_actions?.length > 0 && (
                     <div className={`${c.highlightBg} border rounded-lg p-3`}>
                       <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>NEXT STEPS</p>
@@ -1009,7 +1009,7 @@ const BragSheetBuilder = ({ tool }) => {
             <div className="space-y-4">
               <div className={`${c.card} rounded-xl shadow-lg p-6 space-y-4`}>
                 <h3 className={`font-bold ${c.text} flex items-center gap-2`}><span className="text-lg">🎯</span> Job Description Tailoring</h3>
-                <p className={`text-sm ${c.textSecondaryondary}`}>Paste a job description. Your accomplishments will be rewritten using their language, ranked by relevance, and gaps highlighted.</p>
+                <p className={`text-sm ${c.textSecondary}`}>Paste a job description. Your accomplishments will be rewritten using their language, ranked by relevance, and gaps highlighted.</p>
                 <textarea value={jdText} onChange={e => setJdText(e.target.value)} rows={6} placeholder="Paste the job description here..."
                   className={`w-full p-3 border rounded-xl outline-none text-sm resize-y ${c.input}`} />
                 <button onClick={handleTailor} disabled={tailorLoading || !jdText.trim()}
@@ -1025,7 +1025,7 @@ const BragSheetBuilder = ({ tool }) => {
                       <span className={`text-xl font-bold ${tailorData.match_score >= 70 ? (c.successFg) : c.highlightText}`}>{tailorData.match_score}%</span>
                     </div>
                     <ScoreBar score={tailorData.match_score} />
-                    {tailorData.match_summary && <p className={`text-xs ${c.textSecondaryondary} mt-2`}>{tailorData.match_summary}</p>}
+                    {tailorData.match_summary && <p className={`text-xs ${c.textSecondary} mt-2`}>{tailorData.match_summary}</p>}
                   </div>
                   {/* Tailored bullets */}
                   {tailorData.tailored_resume_bullets?.length > 0 && (
@@ -1083,7 +1083,7 @@ const BragSheetBuilder = ({ tool }) => {
                 <div className={`${c.card} rounded-xl shadow-lg p-6 text-center`}>
                   <span className="text-4xl block mb-3">🎤</span>
                   <h3 className={`font-bold ${c.text} mb-2`}>Interview Prep Matrix</h3>
-                  <p className={`text-sm ${c.textSecondaryondary} mb-4`}>Maps your accomplishments to the behavioral interview questions most likely for your role. See what's covered and what needs work.</p>
+                  <p className={`text-sm ${c.textSecondary} mb-4`}>Maps your accomplishments to the behavioral interview questions most likely for your role. See what's covered and what needs work.</p>
                   <button onClick={handleMatrix} disabled={matrixLoading}
                     className={`${c.btnPrimary} disabled:opacity-40 px-6 py-3 rounded-xl font-semibold text-sm`}>
                     {matrixLoading ? <><span className="inline-block animate-spin">{tool?.icon ?? '🏆'}</span> Building matrix...</> : '🎤 Build My Interview Prep'}</button>
@@ -1100,7 +1100,7 @@ const BragSheetBuilder = ({ tool }) => {
                       </span>
                     </div>
                     <ScoreBar score={matrixData.coverage_score} />
-                    {matrixData.prep_summary && <p className={`text-xs ${c.textSecondaryondary} mt-2`}>{matrixData.prep_summary}</p>}
+                    {matrixData.prep_summary && <p className={`text-xs ${c.textSecondary} mt-2`}>{matrixData.prep_summary}</p>}
                   </div>
                   {/* Covered questions */}
                   <div className={`${c.card} rounded-xl shadow-lg p-5`}>
@@ -1149,7 +1149,7 @@ const BragSheetBuilder = ({ tool }) => {
             <div className="space-y-4">
               <div className={`${c.card} rounded-xl shadow-lg p-6 space-y-4`}>
                 <h3 className={`font-bold ${c.text} flex items-center gap-2`}><span className="text-lg">✍️</span> Voice Match</h3>
-                <p className={`text-sm ${c.textSecondaryondary}`}>Paste something you've written — an email, a post, an old review. Your brag sheet will be rewritten to sound like you, not like AI.</p>
+                <p className={`text-sm ${c.textSecondary}`}>Paste something you've written — an email, a post, an old review. Your brag sheet will be rewritten to sound like you, not like AI.</p>
                 <textarea value={voiceSample} onChange={e => setVoiceSample(e.target.value)} rows={5} placeholder="Paste a writing sample here (email, LinkedIn post, performance review you wrote before)..."
                   className={`w-full p-3 border rounded-xl outline-none text-sm resize-y ${c.input}`} />
                 <button onClick={handleVoiceMatch} disabled={voiceLoading || !voiceSample.trim()}
@@ -1162,7 +1162,7 @@ const BragSheetBuilder = ({ tool }) => {
                   {voiceData.voice_profile && (
                     <div className={`${c.card} rounded-xl shadow-lg p-5`}>
                       <h4 className={`font-bold ${c.text} mb-3`}>🔊 Your Voice Profile</h4>
-                      <p className={`text-sm ${c.textSecondaryondary} mb-3`}>{voiceData.voice_summary}</p>
+                      <p className={`text-sm ${c.textSecondary} mb-3`}>{voiceData.voice_summary}</p>
                       <div className="flex flex-wrap gap-2">
                         <span className={`text-[10px] px-2.5 py-1 rounded-full ${c.highlightBg} border font-bold`}>Sentences: {voiceData.voice_profile.sentence_length}</span>
                         <span className={`text-[10px] px-2.5 py-1 rounded-full ${c.highlightBg} border font-bold`}>Formality: {voiceData.voice_profile.formality}</span>
@@ -1308,7 +1308,7 @@ const BragSheetBuilder = ({ tool }) => {
                   <h3 className={`font-bold ${c.text} flex items-center gap-2`}><span className="text-lg">💰</span> Raise Ammunition</h3>
                   <CopyBtn content={`${raise.summary}\n\n${(raise.value_statements || []).map(v => `• ${v}`).join('\n')}${raise.total_estimated_value ? `\n\nTotal value: ${raise.total_estimated_value}` : ''}${raise.script ? `\n\nSay this: "${raise.script}"` : ''}${BRAND}`} label="Copy All" />
                 </div>
-                <p className={`text-sm ${c.textSecondaryondary} mb-4`}>{raise.summary}</p>
+                <p className={`text-sm ${c.textSecondary} mb-4`}>{raise.summary}</p>
                 {raise.total_estimated_value && (
                   <div className={`p-4 rounded-xl ${c.success} border text-center mb-4`}>
                     <p className="text-xs font-bold mb-1">ESTIMATED BUSINESS VALUE</p>

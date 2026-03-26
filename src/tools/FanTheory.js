@@ -147,18 +147,18 @@ const FanTheory = ({ tool }) => {
           <div className={`${c.card} border rounded-xl p-5`}>
             <div className={`mb-4 pb-3 border-b ${isDark ? 'border-zinc-700' : 'border-gray-200'}`}>
               <h2 className={`text-xl font-bold ${c.text}`}><span className="mr-2">{tool?.icon ?? '🧵'}</span>{tool?.title || 'Fan Theory Generator'}</h2>
-              <p className={`text-sm ${c.textSecondaryondary}`}>Name anything — I'll generate a wild but defensible fan theory</p>
+              <p className={`text-sm ${c.textSecondary}`}>Name anything — I'll generate a wild but defensible fan theory</p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
               <div>
-                <label className={`text-xs font-bold ${c.textSecondaryondary} block mb-1.5`}>Title</label>
+                <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Title</label>
                 <input type="text" value={title} onChange={e => setTitle(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && title.trim()) runGenerate(); }}
                   placeholder="Movie, show, book, or game..."
                   className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
               </div>
               <div>
-                <label className={`text-xs font-bold ${c.textSecondaryondary} uppercase block mb-1.5`}>Type</label>
+                <label className={`text-xs font-bold ${c.textSecondary} uppercase block mb-1.5`}>Type</label>
                 <div className="flex gap-1.5 flex-wrap">
                   {MEDIA_TYPES.map(m => (
                     <button key={m.value} onClick={() => setMediaType(m.value)}
@@ -172,7 +172,7 @@ const FanTheory = ({ tool }) => {
             </div>
 
             <div className="mb-5">
-              <label className={`text-xs font-bold ${c.textSecondaryondary} uppercase block mb-2`}>Theory direction</label>
+              <label className={`text-xs font-bold ${c.textSecondary} uppercase block mb-2`}>Theory direction</label>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                 {DIRECTIONS.map(d => (
                   <button key={d.value} onClick={() => setDirection(d.value)}
@@ -200,7 +200,7 @@ const FanTheory = ({ tool }) => {
               <div className={`${c.warningBox} border-2 rounded-xl p-5 text-center`}>
                 <span className="text-3xl block mb-2">🧵</span>
                 <p className={`text-lg font-black ${c.text} mb-2`}>{results.theory_name}</p>
-                {results.one_line && <p className={`text-sm ${c.textSecondaryondary} italic`}>"{results.one_line}"</p>}
+                {results.one_line && <p className={`text-sm ${c.textSecondary} italic`}>"{results.one_line}"</p>}
                 <div className="flex justify-center gap-4 mt-3">
                   {results.plausibility && (
                     <div><span className={`text-xl font-black ${c.accentTxt}`}>{results.plausibility}</span><span className={`text-xs ${c.textMuteded}`}>/10 plausible</span></div>
@@ -215,7 +215,7 @@ const FanTheory = ({ tool }) => {
               {results.the_theory && (
                 <div className={`${c.card} border rounded-xl p-5`}>
                   <h3 className={`text-sm font-bold ${c.text} mb-2`}>🕵️ The Theory</h3>
-                  <p className={`text-sm ${c.textSecondaryondary} leading-relaxed whitespace-pre-line`}>{results.the_theory}</p>
+                  <p className={`text-sm ${c.textSecondary} leading-relaxed whitespace-pre-line`}>{results.the_theory}</p>
                 </div>
               )}
 
@@ -253,13 +253,13 @@ const FanTheory = ({ tool }) => {
                 {results.counterargument && (
                   <div className={`${c.quoteBg} border ${isDark ? 'border-zinc-700' : 'border-gray-200'} rounded-xl p-4`}>
                     <p className={`text-[10px] font-bold ${c.warningTxt} uppercase mb-1`}>🤔 Counterargument</p>
-                    <p className={`text-xs ${c.textSecondaryondary}`}>{results.counterargument}</p>
+                    <p className={`text-xs ${c.textSecondary}`}>{results.counterargument}</p>
                   </div>
                 )}
                 {results.rabbit_hole && (
                   <div className={`${c.quoteBg} border ${isDark ? 'border-zinc-700' : 'border-gray-200'} rounded-xl p-4`}>
                     <p className={`text-[10px] font-bold ${c.accentTxt} uppercase mb-1`}>🐇 Rabbit Hole</p>
-                    <p className={`text-xs ${c.textSecondaryondary}`}>{results.rabbit_hole}</p>
+                    <p className={`text-xs ${c.textSecondary}`}>{results.rabbit_hole}</p>
                   </div>
                 )}
               </div>
@@ -287,16 +287,16 @@ const FanTheory = ({ tool }) => {
         <>
           <div className={`${c.card} border rounded-xl p-5`}>
             <h2 className={`text-lg font-bold mb-1`}><span className="mr-2">📝</span>Grade My Theory</h2>
-            <p className={`text-sm ${c.textSecondaryondary} mb-4`}>Share your fan theory — the professor will grade it</p>
+            <p className={`text-sm ${c.textSecondary} mb-4`}>Share your fan theory — the professor will grade it</p>
 
             <div className="mb-3">
-              <label className={`text-xs font-bold ${c.textSecondaryondary} block mb-1.5`}>About what?</label>
+              <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>About what?</label>
               <input type="text" value={title} onChange={e => setTitle(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && title.trim()) runGenerate(); }}
                 placeholder="Movie, show, book, or game..."
                 className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
             </div>
             <div className="mb-4">
-              <label className={`text-xs font-bold ${c.textSecondaryondary} block mb-1.5`}>Your theory</label>
+              <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Your theory</label>
               <textarea value={myTheory} onChange={e => setMyTheory(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && title.trim()) runGrade(); }}
                 placeholder="Share your theory... the wilder the better"
                 rows={5} className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2 resize-y`} />
@@ -346,14 +346,14 @@ const FanTheory = ({ tool }) => {
               {gradeResults.professor_notes && (
                 <div className={`${c.card} border rounded-xl p-4`}>
                   <p className={`text-[10px] font-bold ${c.accentTxt} uppercase mb-1`}>🎓 Professor's Notes</p>
-                  <p className={`text-sm ${c.textSecondaryondary} italic`}>{gradeResults.professor_notes}</p>
+                  <p className={`text-sm ${c.textSecondary} italic`}>{gradeResults.professor_notes}</p>
                 </div>
               )}
 
               {gradeResults.would_reddit_upvote && (
                 <div className={`${c.quoteBg} border ${isDark ? 'border-zinc-700' : 'border-gray-200'} rounded-xl p-4`}>
                   <p className={`text-[10px] font-bold ${c.textMuteded} uppercase mb-1`}>📊 Reddit Prediction</p>
-                  <p className={`text-xs ${c.textSecondaryondary}`}>{gradeResults.would_reddit_upvote}</p>
+                  <p className={`text-xs ${c.textSecondary}`}>{gradeResults.would_reddit_upvote}</p>
                 </div>
               )}
 

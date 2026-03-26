@@ -613,7 +613,7 @@ const MeetingBSDetector = ({ tool }) => {
 
           {analyzeResults.optimal_format && (
             <div className={`${c.cardAlt} border rounded-lg p-3`}>
-              <p className={`text-xs font-bold ${c.textSecondaryondary}`}>💡 Optimal format: {analyzeResults.optimal_format}</p>
+              <p className={`text-xs font-bold ${c.textSecondary}`}>💡 Optimal format: {analyzeResults.optimal_format}</p>
             </div>
           )}
 
@@ -659,7 +659,7 @@ const MeetingBSDetector = ({ tool }) => {
           {calMeetings.map((m, i) => (
             <div key={i} className={`${c.quoteBg} rounded-lg p-3`}>
               <div className="flex items-start gap-2">
-                <span className={`text-xs font-black ${c.textSecondaryondary} mt-2`}>{i + 1}</span>
+                <span className={`text-xs font-black ${c.textSecondary} mt-2`}>{i + 1}</span>
                 <div className="flex-1 space-y-2">
                   <input type="text" value={m.title} onChange={e => updateCalMeeting(i, 'title', e.target.value)}
                     placeholder="Meeting name"
@@ -690,7 +690,7 @@ const MeetingBSDetector = ({ tool }) => {
           ))}
         </div>
 
-        <button onClick={addCalMeeting} className={`text-xs font-bold ${c.textSecondaryondary} mb-4 min-h-[32px]`}>➕ Add meeting</button>
+        <button onClick={addCalMeeting} className={`text-xs font-bold ${c.textSecondary} mb-4 min-h-[32px]`}>➕ Add meeting</button>
 
         <button onClick={runCalendar} disabled={!calMeetings.some(m => m.title.trim()) || loading}
           className={`w-full ${c.btnPrimaryPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
@@ -738,7 +738,7 @@ const MeetingBSDetector = ({ tool }) => {
 
           {calResults.weekly_advice && (
             <div className={`${c.cardAlt} border rounded-lg p-3`}>
-              <p className={`text-xs font-bold ${c.textSecondaryondary}`}>💡 {calResults.weekly_advice}</p>
+              <p className={`text-xs font-bold ${c.textSecondary}`}>💡 {calResults.weekly_advice}</p>
             </div>
           )}
 
@@ -849,7 +849,7 @@ const MeetingBSDetector = ({ tool }) => {
 
           {liveResults.post_meeting_move && (
             <div className={`${c.cardAlt} border rounded-lg p-3`}>
-              <p className={`text-xs font-bold ${c.textSecondaryondary}`}>📤 After: {liveResults.post_meeting_move}</p>
+              <p className={`text-xs font-bold ${c.textSecondary}`}>📤 After: {liveResults.post_meeting_move}</p>
             </div>
           )}
         </div>
@@ -1051,7 +1051,7 @@ const MeetingBSDetector = ({ tool }) => {
                 <span className={`text-[9px] ${c.textMuteded}`}>{v.best_for}</span>
               </div>
               {v.subject && (
-                <p className={`text-[10px] font-bold ${c.textSecondaryondary} mb-1`}>Subject: {v.subject}</p>
+                <p className={`text-[10px] font-bold ${c.textSecondary} mb-1`}>Subject: {v.subject}</p>
               )}
               <div className={`${c.quoteBg} rounded-lg p-3 mb-2`}>
                 <p className={`text-xs ${c.textSecondary} whitespace-pre-wrap leading-relaxed`}>{v.body}</p>
@@ -1440,7 +1440,7 @@ const MeetingBSDetector = ({ tool }) => {
             <p className="text-[9px]">Total focus time</p>
           </div>
           <div className={`${c.cardAlt} border rounded-lg p-3 text-center`}>
-            <p className={`text-2xl font-black ${c.textSecondaryondary}`}>{focusStats.totalMtg.toFixed(1)}h</p>
+            <p className={`text-2xl font-black ${c.textSecondary}`}>{focusStats.totalMtg.toFixed(1)}h</p>
             <p className="text-[9px]">In meetings</p>
           </div>
           <div className={`${focusStats.mtgPct > 50 ? c.danger : focusStats.mtgPct > 30 ? c.warning : c.success} border rounded-lg p-3 text-center`}>
@@ -1530,7 +1530,7 @@ const MeetingBSDetector = ({ tool }) => {
             <p className="text-4xl mb-1">{reportResults.headline_emoji || '📊'}</p>
             <p className={`text-3xl font-black ${
               reportResults.grade === 'A' ? c.success :
-              reportResults.grade === 'B' ? c.textSecondaryondary :
+              reportResults.grade === 'B' ? c.textSecondary :
               reportResults.grade === 'C' ? c.warning : c.danger
             }`}>{reportResults.grade}</p>
             <p className={`text-sm font-bold ${c.text} mt-1`}>{reportResults.grade_label}</p>
@@ -1564,7 +1564,7 @@ const MeetingBSDetector = ({ tool }) => {
               <p className={`text-xs font-bold ${c.label} uppercase mb-2`}>Time breakdown</p>
               <div className="grid grid-cols-2 gap-2">
                 <div className={`${c.cardAlt} border rounded-lg p-3 text-center`}>
-                  <p className={`text-xl font-black ${c.textSecondaryondary}`}>{reportResults.time_analysis.meeting_hours_per_week}h</p>
+                  <p className={`text-xl font-black ${c.textSecondary}`}>{reportResults.time_analysis.meeting_hours_per_week}h</p>
                   <p className="text-[9px]">Meeting hrs/week</p>
                 </div>
                 <div className={`${c.success} border rounded-lg p-3 text-center`}>
@@ -1649,7 +1649,7 @@ const MeetingBSDetector = ({ tool }) => {
         {teamMeetings.map((m, i) => (
           <div key={i} className={`${c.quoteBg} rounded-lg p-3 mb-2`}>
             <div className="flex items-center gap-2 mb-2">
-              <span className={`text-xs font-bold ${c.textSecondaryondary}`}>#{i + 1}</span>
+              <span className={`text-xs font-bold ${c.textSecondary}`}>#{i + 1}</span>
               {teamMeetings.length > 1 && (
                 <button onClick={() => removeTeamMeeting(i)} className={`ml-auto text-xs ${c.danger} min-h-[24px]`}>✕</button>
               )}
@@ -1705,7 +1705,7 @@ const MeetingBSDetector = ({ tool }) => {
           {teamResults.team_stats && (
             <div className="grid grid-cols-2 gap-2">
               <div className={`${c.cardAlt} border rounded-lg p-3 text-center`}>
-                <p className={`text-2xl font-black ${c.textSecondaryondary}`}>{teamResults.team_stats.total_team_meeting_hours_per_week}h</p>
+                <p className={`text-2xl font-black ${c.textSecondary}`}>{teamResults.team_stats.total_team_meeting_hours_per_week}h</p>
                 <p className="text-[9px]">Team mtg hrs/week</p>
               </div>
               <div className={`${c.card} border rounded-lg p-3 text-center`}>
@@ -1829,7 +1829,7 @@ const MeetingBSDetector = ({ tool }) => {
         {/* Stats cards */}
         <div className="grid grid-cols-3 gap-2 mb-4">
           <div className={`${c.cardAlt} rounded-lg p-3 text-center border`}>
-            <p className={`text-2xl font-black ${c.textSecondaryondary}`}>{stats.totalAnalyzed}</p>
+            <p className={`text-2xl font-black ${c.textSecondary}`}>{stats.totalAnalyzed}</p>
             <p className={`text-[9px] ${c.textMuteded}`}>Meetings analyzed</p>
           </div>
           <div className={`${c.success} rounded-lg p-3 text-center border`}>

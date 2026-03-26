@@ -166,12 +166,12 @@ const OnePercenter = ({ tool }) => {
             <div className={`rounded-2xl border p-5 ${c.card} ${c.border}`}>
               <p className={`text-xs font-black uppercase tracking-widest mb-3 ${c.textMuteded}`}>🔬 How Your System Works</p>
               {results.routine_diagnosis?.how_the_system_works && (
-                <p className={`text-sm leading-relaxed mb-3 ${c.textSecondaryondary}`}>{results.routine_diagnosis.how_the_system_works}</p>
+                <p className={`text-sm leading-relaxed mb-3 ${c.textSecondary}`}>{results.routine_diagnosis.how_the_system_works}</p>
               )}
               {results.routine_diagnosis?.the_bottleneck && (
                 <div className={`p-3 rounded-xl border ${isDark ? 'bg-zinc-500 border-zinc-500' : 'bg-zinc-500 border-zinc-500'}`}>
                   <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>🔴 The Bottleneck</p>
-                  <p className={`text-sm ${c.textSecondaryondary}`}>{results.routine_diagnosis.the_bottleneck}</p>
+                  <p className={`text-sm ${c.textSecondary}`}>{results.routine_diagnosis.the_bottleneck}</p>
                 </div>
               )}
               {results.routine_diagnosis?.what_the_data_shows && (
@@ -195,7 +195,7 @@ const OnePercenter = ({ tool }) => {
                   {results.the_one_change.the_mechanism && (
                     <div>
                       <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuteded}`}>⚙️ The Chain Reaction</p>
-                      <p className={`text-sm leading-relaxed ${c.textSecondaryondary}`}>{results.the_one_change.the_mechanism}</p>
+                      <p className={`text-sm leading-relaxed ${c.textSecondary}`}>{results.the_one_change.the_mechanism}</p>
                     </div>
                   )}
 
@@ -209,7 +209,7 @@ const OnePercenter = ({ tool }) => {
                   {results.the_one_change.implementation && (
                     <div>
                       <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuteded}`}>✅ How to implement</p>
-                      <p className={`text-sm ${c.textSecondaryondary}`}>{results.the_one_change.implementation}</p>
+                      <p className={`text-sm ${c.textSecondary}`}>{results.the_one_change.implementation}</p>
                     </div>
                   )}
                 </div>
@@ -221,12 +221,12 @@ const OnePercenter = ({ tool }) => {
               <div className={`rounded-2xl border p-5 ${c.card} ${c.border}`}>
                 <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textMuteded}`}>🤔 "But what about…"</p>
                 {results.why_not_other_things.the_tempting_alternatives && (
-                  <p className={`text-sm mb-2 ${c.textSecondaryondary}`}>
+                  <p className={`text-sm mb-2 ${c.textSecondary}`}>
                     <span className={`font-semibold ${c.text}`}>You might be tempted to:</span> {results.why_not_other_things.the_tempting_alternatives}
                   </p>
                 )}
                 {results.why_not_other_things.why_those_are_second_order && (
-                  <p className={`text-sm ${c.textSecondaryondary}`}>
+                  <p className={`text-sm ${c.textSecondary}`}>
                     <span className={`font-semibold ${c.text}`}>Why those come after:</span> {results.why_not_other_things.why_those_are_second_order}
                   </p>
                 )}
@@ -237,7 +237,7 @@ const OnePercenter = ({ tool }) => {
             {results.the_year_from_now && (
               <div className={`rounded-2xl border p-5 ${c.greenBg}`}>
                 <p className={`text-xs font-black uppercase tracking-widest mb-2 ${c.greenText}`}>📅 A Year From Now</p>
-                <p className={`text-sm leading-relaxed ${c.textSecondaryondary}`}>{results.the_year_from_now}</p>
+                <p className={`text-sm leading-relaxed ${c.textSecondary}`}>{results.the_year_from_now}</p>
               </div>
             )}
 
@@ -245,7 +245,7 @@ const OnePercenter = ({ tool }) => {
             {results.the_resistance && (
               <div className={`rounded-2xl border p-4 ${isDark ? 'bg-zinc-500 border-zinc-500' : 'bg-zinc-500 border-zinc-500'}`}>
                 <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>🧠 Why You Haven't Done This Already</p>
-                <p className={`text-sm ${c.textSecondaryondary}`}>{results.the_resistance}</p>
+                <p className={`text-sm ${c.textSecondary}`}>{results.the_resistance}</p>
               </div>
             )}
 

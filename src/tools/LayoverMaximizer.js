@@ -459,7 +459,7 @@ const LayoverMaximizer = ({ tool }) => {
 
             {/* Airport */}
             <div>
-              <label className={`text-xs font-bold ${c.textSecondaryondary} block mb-1.5`}>Airport *</label>
+              <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Airport *</label>
               <input value={airport} onChange={e => setAirport(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') runAnalysis(); }}
                 placeholder="Airport code or name (e.g. NRT, Narita, Istanbul)"
                 className={`w-full px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
@@ -476,7 +476,7 @@ const LayoverMaximizer = ({ tool }) => {
             {/* Layover duration */}
             {!isLiveMode && (
               <div>
-                <label className={`text-xs font-bold ${c.textSecondaryondary} block mb-1.5`}>Layover duration (hours) *</label>
+                <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Layover duration (hours) *</label>
                 <input type="number" step="0.5" min="0.5" max="24" value={layoverHours}
                   onChange={e => setLayoverHours(e.target.value)}
                   placeholder="e.g. 5"
@@ -487,19 +487,19 @@ const LayoverMaximizer = ({ tool }) => {
             {/* Details row */}
             <div className="flex flex-wrap gap-2">
               <div className="flex-1 min-w-[140px]">
-                <label className={`text-xs font-bold ${c.textSecondaryondary} block mb-1.5`}>Nationality / Passport</label>
+                <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Nationality / Passport</label>
                 <input value={nationality} onChange={e => setNationality(e.target.value)}
                   placeholder="e.g. US, UK, Indian"
                   className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
               </div>
               <div className="flex-1 min-w-[100px]">
-                <label className={`text-xs font-bold ${c.textSecondaryondary} block mb-1.5`}>Arrival terminal</label>
+                <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Arrival terminal</label>
                 <input value={arrivalTerminal} onChange={e => setArrivalTerminal(e.target.value)}
                   placeholder="e.g. 1, B"
                   className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
               </div>
               <div className="flex-1 min-w-[100px]">
-                <label className={`text-xs font-bold ${c.textSecondaryondary} block mb-1.5`}>Departure terminal</label>
+                <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Departure terminal</label>
                 <input value={connectionTerminal} onChange={e => setConnectionTerminal(e.target.value)}
                   placeholder="e.g. 3, E"
                   className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
@@ -509,7 +509,7 @@ const LayoverMaximizer = ({ tool }) => {
             {/* Arrival time */}
             {!isLiveMode && (
               <div>
-                <label className={`text-xs font-bold ${c.textSecondaryondary} block mb-1.5`}>Landing time (optional — for return-by calculation)</label>
+                <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Landing time (optional — for return-by calculation)</label>
                 <input type="time" value={arrivalTime} onChange={e => setArrivalTime(e.target.value)}
                   className={`px-3 py-2 border rounded-lg text-xs ${c.input} outline-none`} />
               </div>
@@ -531,7 +531,7 @@ const LayoverMaximizer = ({ tool }) => {
 
             {/* Travel style */}
             <div>
-              <label className={`text-xs font-bold ${c.textSecondaryondary} block mb-1.5`}>Travel style</label>
+              <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Travel style</label>
               <div className="flex flex-wrap gap-1.5">
                 {TRAVEL_STYLES.map(ts => (
                   <button key={ts.value} onClick={() => setTravelStyle(travelStyle === ts.value ? '' : ts.value)}
@@ -632,7 +632,7 @@ const LayoverMaximizer = ({ tool }) => {
                     {/* Visa info */}
                     {r.leave_the_airport.visa_info && (
                       <div className={`${c.highlight} border rounded-lg p-3`}>
-                        <p className={`text-[10px] font-bold ${c.textSecondaryondary} uppercase mb-1`}>🛂 Visa / Transit</p>
+                        <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-1`}>🛂 Visa / Transit</p>
                         <p className="text-xs">{r.leave_the_airport.visa_info}</p>
                       </div>
                     )}
@@ -640,7 +640,7 @@ const LayoverMaximizer = ({ tool }) => {
                     {/* Transit options */}
                     {r.leave_the_airport.transit_options?.length > 0 && (
                       <div>
-                        <p className={`text-[10px] font-bold ${c.textSecondaryondary} uppercase mb-1.5`}>🚇 Getting to the city</p>
+                        <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-1.5`}>🚇 Getting to the city</p>
                         {r.leave_the_airport.transit_options.map((t, i) => (
                           <div key={i} className={`${c.quoteBg} rounded-lg p-3 mb-1.5`}>
                             <div className="flex items-center justify-between">
@@ -703,7 +703,7 @@ const LayoverMaximizer = ({ tool }) => {
                     {/* Food */}
                     {r.stay_in_airport.food?.length > 0 && (
                       <div>
-                        <p className={`text-[10px] font-bold ${c.textSecondaryondary} uppercase mb-1.5`}>🍽️ Food</p>
+                        <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-1.5`}>🍽️ Food</p>
                         <div className="space-y-1.5">
                           {r.stay_in_airport.food.map((f, i) => (
                             <div key={i} className={`${c.quoteBg} rounded-lg p-3`}>
@@ -722,7 +722,7 @@ const LayoverMaximizer = ({ tool }) => {
                     {/* Lounges summary */}
                     {r.stay_in_airport.lounges?.length > 0 && (
                       <div>
-                        <p className={`text-[10px] font-bold ${c.textSecondaryondary} uppercase mb-1.5`}>🛋️ Lounges</p>
+                        <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-1.5`}>🛋️ Lounges</p>
                         {r.stay_in_airport.lounges.map((l, i) => (
                           <div key={i} className={`${c.quoteBg} rounded-lg p-3 mb-1.5`}>
                             <div className="flex items-center justify-between">
@@ -743,14 +743,14 @@ const LayoverMaximizer = ({ tool }) => {
                     {/* Sleep, hidden gems, practical */}
                     {r.stay_in_airport.sleep_spots && (
                       <div className={`${c.quoteBg} rounded-lg p-3`}>
-                        <p className={`text-[10px] font-bold ${c.textSecondaryondary} uppercase mb-1`}>😴 Rest spots</p>
+                        <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-1`}>😴 Rest spots</p>
                         <p className="text-xs">{r.stay_in_airport.sleep_spots}</p>
                       </div>
                     )}
 
                     {r.stay_in_airport.hidden_gems?.length > 0 && (
                       <div className={`${isDark ? 'bg-cyan-600/20 border-purple-800' : 'bg-cyan-600 border-purple-200'} border rounded-lg p-3`}>
-                        <p className={`text-[10px] font-bold ${c.textSecondaryondary} uppercase mb-1`}>✨ Hidden gems</p>
+                        <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-1`}>✨ Hidden gems</p>
                         {r.stay_in_airport.hidden_gems.map((g, i) => <p key={i} className="text-xs">• {g}</p>)}
                       </div>
                     )}
@@ -759,25 +759,25 @@ const LayoverMaximizer = ({ tool }) => {
                       <div className="grid grid-cols-2 gap-2">
                         {r.stay_in_airport.practical.wifi && (
                           <div className={`${c.quoteBg} rounded-lg p-2`}>
-                            <p className={`text-[10px] font-bold ${c.textSecondaryondary}`}>📶 WiFi</p>
+                            <p className={`text-[10px] font-bold ${c.textSecondary}`}>📶 WiFi</p>
                             <p className={`text-[10px] ${c.textMuteded}`}>{r.stay_in_airport.practical.wifi}</p>
                           </div>
                         )}
                         {r.stay_in_airport.practical.charging && (
                           <div className={`${c.quoteBg} rounded-lg p-2`}>
-                            <p className={`text-[10px] font-bold ${c.textSecondaryondary}`}>🔌 Charging</p>
+                            <p className={`text-[10px] font-bold ${c.textSecondary}`}>🔌 Charging</p>
                             <p className={`text-[10px] ${c.textMuteded}`}>{r.stay_in_airport.practical.charging}</p>
                           </div>
                         )}
                         {r.stay_in_airport.practical.showers && (
                           <div className={`${c.quoteBg} rounded-lg p-2`}>
-                            <p className={`text-[10px] font-bold ${c.textSecondaryondary}`}>🚿 Showers</p>
+                            <p className={`text-[10px] font-bold ${c.textSecondary}`}>🚿 Showers</p>
                             <p className={`text-[10px] ${c.textMuteded}`}>{r.stay_in_airport.practical.showers}</p>
                           </div>
                         )}
                         {r.stay_in_airport.practical.walking_path && (
                           <div className={`${c.quoteBg} rounded-lg p-2`}>
-                            <p className={`text-[10px] font-bold ${c.textSecondaryondary}`}>🚶 Walking</p>
+                            <p className={`text-[10px] font-bold ${c.textSecondary}`}>🚶 Walking</p>
                             <p className={`text-[10px] ${c.textMuteded}`}>{r.stay_in_airport.practical.walking_path}</p>
                           </div>
                         )}
@@ -815,20 +815,20 @@ const LayoverMaximizer = ({ tool }) => {
 
         <div className="space-y-3">
           <div>
-            <label className={`text-xs font-bold ${c.textSecondaryondary} block mb-1.5`}>Airport *</label>
+            <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Airport *</label>
             <input value={loungeAirport} onChange={e => setLoungeAirport(e.target.value)}
               placeholder="Airport code or name"
               className={`w-full px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
           </div>
           <div className="flex gap-2">
             <div className="flex-1">
-              <label className={`text-xs font-bold ${c.textSecondaryondary} block mb-1.5`}>Terminal</label>
+              <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Terminal</label>
               <input value={loungeTerminal} onChange={e => setLoungeTerminal(e.target.value)}
                 placeholder="Optional"
                 className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
             </div>
             <div className="flex-1">
-              <label className={`text-xs font-bold ${c.textSecondaryondary} block mb-1.5`}>Airline</label>
+              <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Airline</label>
               <input value={loungeAirline} onChange={e => setLoungeAirline(e.target.value)}
                 placeholder="Optional"
                 className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
@@ -836,13 +836,13 @@ const LayoverMaximizer = ({ tool }) => {
           </div>
           <div className="flex gap-2">
             <div className="flex-1">
-              <label className={`text-xs font-bold ${c.textSecondaryondary} block mb-1.5`}>Credit cards (comma-separated)</label>
+              <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Credit cards (comma-separated)</label>
               <input value={loungeCards} onChange={e => setLoungeCards(e.target.value)}
                 placeholder="e.g. Amex Platinum, Chase Sapphire"
                 className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
             </div>
             <div className="flex-1">
-              <label className={`text-xs font-bold ${c.textSecondaryondary} block mb-1.5`}>Airline status</label>
+              <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Airline status</label>
               <input value={loungeStatus} onChange={e => setLoungeStatus(e.target.value)}
                 placeholder="e.g. Gold, Platinum"
                 className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
@@ -867,13 +867,13 @@ const LayoverMaximizer = ({ tool }) => {
             )}
             {loungeResults.best_value && (
               <div className={`${c.highlight} border rounded-lg p-3 text-center`}>
-                <p className={`text-[10px] font-bold ${c.textSecondaryondary} uppercase`}>💰 Best Value</p>
+                <p className={`text-[10px] font-bold ${c.textSecondary} uppercase`}>💰 Best Value</p>
                 <p className="text-xs font-bold mt-0.5">{loungeResults.best_value}</p>
               </div>
             )}
             {loungeResults.best_for_sleep && (
               <div className={`${c.card} ${c.border} border rounded-lg p-3 text-center`}>
-                <p className={`text-[10px] font-bold ${c.textSecondaryondary} uppercase`}>😴 Best for Sleep</p>
+                <p className={`text-[10px] font-bold ${c.textSecondary} uppercase`}>😴 Best for Sleep</p>
                 <p className="text-xs font-bold mt-0.5">{loungeResults.best_for_sleep}</p>
               </div>
             )}
@@ -894,7 +894,7 @@ const LayoverMaximizer = ({ tool }) => {
 
                 {lounge.access_methods?.length > 0 && (
                   <div>
-                    <p className={`text-[10px] font-bold ${c.textSecondaryondary} uppercase mb-1`}>Access</p>
+                    <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-1`}>Access</p>
                     {lounge.access_methods.map((am, ai) => (
                       <div key={ai} className="flex items-center gap-2 text-xs mb-0.5">
                         <span>{am.eligible ? '✅' : '❌'}</span>
@@ -923,7 +923,7 @@ const LayoverMaximizer = ({ tool }) => {
 
           {loungeResults.no_lounge_alternative && (
             <div className={`${c.highlight} border rounded-lg p-3`}>
-              <p className={`text-[10px] font-bold ${c.textSecondaryondary} uppercase mb-1`}>No lounge? Try this instead</p>
+              <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-1`}>No lounge? Try this instead</p>
               <p className="text-xs">{loungeResults.no_lounge_alternative}</p>
             </div>
           )}
@@ -952,13 +952,13 @@ const LayoverMaximizer = ({ tool }) => {
           <div className="space-y-3">
             <div className="flex gap-2">
               <div className="flex-1">
-                <label className={`text-xs font-bold ${c.textSecondaryondary} block mb-1.5`}>Airport *</label>
+                <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Airport *</label>
                 <input value={riskAirport} onChange={e => setRiskAirport(e.target.value)}
                   placeholder="Airport code"
                   className={`w-full px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
               </div>
               <div className="flex-1">
-                <label className={`text-xs font-bold ${c.textSecondaryondary} block mb-1.5`}>Airline</label>
+                <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Airline</label>
                 <input value={riskAirline} onChange={e => setRiskAirline(e.target.value)}
                   placeholder="Optional"
                   className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
@@ -966,19 +966,19 @@ const LayoverMaximizer = ({ tool }) => {
             </div>
             <div className="flex gap-2">
               <div className="flex-1">
-                <label className={`text-xs font-bold ${c.textSecondaryondary} block mb-1.5`}>Layover hours</label>
+                <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Layover hours</label>
                 <input type="number" step="0.5" value={riskHours} onChange={e => setRiskHours(e.target.value)}
                   className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
               </div>
               <div className="flex-1">
-                <label className={`text-xs font-bold ${c.textSecondaryondary} block mb-1.5`}>Current delay (min)</label>
+                <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Current delay (min)</label>
                 <input type="number" value={riskDelay} onChange={e => setRiskDelay(e.target.value)}
                   placeholder="0"
                   className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
               </div>
             </div>
             <div>
-              <label className={`text-xs font-bold ${c.textSecondaryondary} block mb-1.5`}>What are you worried about?</label>
+              <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>What are you worried about?</label>
               <input value={riskScenario} onChange={e => setRiskScenario(e.target.value)}
                 placeholder="e.g. My first flight is delayed 90 min, should I still try to leave the airport?"
                 className={`w-full px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
@@ -1011,7 +1011,7 @@ const LayoverMaximizer = ({ tool }) => {
                   <div className="space-y-2">
                     {r.if_you_miss_it.next_flight_likely && (
                       <div className={`${c.quoteBg} rounded-lg p-3`}>
-                        <p className={`text-[10px] font-bold ${c.textSecondaryondary} uppercase mb-1`}>✈️ Next flight</p>
+                        <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-1`}>✈️ Next flight</p>
                         <p className="text-xs">{r.if_you_miss_it.next_flight_likely}</p>
                       </div>
                     )}
@@ -1066,7 +1066,7 @@ const LayoverMaximizer = ({ tool }) => {
               {/* Gamble verdict */}
               {r.gamble_verdict && (
                 <div className={`${c.card} ${c.border} border-2 rounded-xl p-4`}>
-                  <p className={`text-[10px] font-bold ${c.textSecondaryondary} uppercase mb-1`}>🎲 The verdict</p>
+                  <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-1`}>🎲 The verdict</p>
                   <p className="text-sm font-bold">{r.gamble_verdict}</p>
                 </div>
               )}
@@ -1139,24 +1139,24 @@ const LayoverMaximizer = ({ tool }) => {
           <p className={`text-xs ${c.textMuteded} mb-4`}>How to get between terminals/gates. Step-by-step, with time estimates.</p>
           <div className="space-y-3">
             <div>
-              <label className={`text-xs font-bold ${c.textSecondaryondary} block mb-1.5`}>Airport *</label>
+              <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Airport *</label>
               <input value={g2gAirport} onChange={e => setG2gAirport(e.target.value)} placeholder="Airport code or name"
                 className={`w-full px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
             </div>
             <div className="flex gap-2">
               <div className="flex-1">
-                <label className={`text-xs font-bold ${c.textSecondaryondary} block mb-1.5`}>Arriving at (gate/terminal)</label>
+                <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Arriving at (gate/terminal)</label>
                 <input value={g2gArrival} onChange={e => setG2gArrival(e.target.value)} placeholder="e.g. Gate B22, Terminal 1"
                   className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
               </div>
               <div className="flex-1">
-                <label className={`text-xs font-bold ${c.textSecondaryondary} block mb-1.5`}>Departing from (gate/terminal)</label>
+                <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Departing from (gate/terminal)</label>
                 <input value={g2gDeparture} onChange={e => setG2gDeparture(e.target.value)} placeholder="e.g. Gate E15, Terminal 4"
                   className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
               </div>
             </div>
             <div>
-              <label className={`text-xs font-bold ${c.textSecondaryondary} block mb-1.5`}>Minutes available</label>
+              <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Minutes available</label>
               <input type="number" value={g2gMinutes} onChange={e => setG2gMinutes(e.target.value)} placeholder="Optional"
                 className={`w-32 px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
             </div>
@@ -1180,14 +1180,14 @@ const LayoverMaximizer = ({ tool }) => {
 
               {r.fastest_route && (
                 <div className={`${c.highlight} border rounded-lg p-3`}>
-                  <p className={`text-[10px] font-bold ${c.textSecondaryondary} uppercase mb-1`}>🏃 Fastest route</p>
+                  <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-1`}>🏃 Fastest route</p>
                   <p className="text-xs">{r.fastest_route}</p>
                 </div>
               )}
 
               {r.steps?.length > 0 && (
                 <div className={`${c.card} ${c.border} border rounded-xl p-4`}>
-                  <p className={`text-[10px] font-bold ${c.textSecondaryondary} uppercase mb-3`}>Step by step</p>
+                  <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-3`}>Step by step</p>
                   <div className="space-y-2">
                     {r.steps.map((step, i) => (
                       <div key={i} className="flex gap-3">
@@ -1261,7 +1261,7 @@ const LayoverMaximizer = ({ tool }) => {
               </div>
 
               <div>
-                <label className={`text-xs font-bold ${c.textSecondaryondary} block mb-1.5`}>How many minutes delayed?</label>
+                <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>How many minutes delayed?</label>
                 <input type="number" value={delayMinutes} onChange={e => setDelayMinutes(e.target.value)}
                   placeholder="e.g. 45"
                   className={`w-full px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
@@ -1298,7 +1298,7 @@ const LayoverMaximizer = ({ tool }) => {
               {/* Threshold scale */}
               {thresholds.length > 0 && (
                 <div className={`${c.card} ${c.border} border rounded-xl p-4`}>
-                  <p className={`text-[10px] font-bold ${c.textSecondaryondary} uppercase mb-3`}>Delay impact scale</p>
+                  <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-3`}>Delay impact scale</p>
                   <div className="space-y-2">
                     {thresholds.map((t, i) => {
                       const verdict = t.available < 30 ? 'NO' : t.available < 90 ? 'RISKY' : 'YES';
@@ -1471,7 +1471,7 @@ const LayoverMaximizer = ({ tool }) => {
         <div className="space-y-4">
           {/* Grab list */}
           <div className={`${c.card} ${c.border} border rounded-xl p-5`}>
-            <p className={`text-[10px] font-bold ${c.textSecondaryondary} uppercase mb-3`}>🎒 Grab before deplaning</p>
+            <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-3`}>🎒 Grab before deplaning</p>
             <div className="space-y-2">
               {(packResults.grab_before_deplaning || []).map((item, i) => (
                 <div key={i} className={`flex items-start gap-2 text-xs px-3 py-2 rounded-lg ${
@@ -1493,25 +1493,25 @@ const LayoverMaximizer = ({ tool }) => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {packResults.weather_note && (
               <div className={`${c.quoteBg} rounded-lg p-3`}>
-                <p className={`text-[10px] font-bold ${c.textSecondaryondary}`}>🌤️ Weather</p>
+                <p className={`text-[10px] font-bold ${c.textSecondary}`}>🌤️ Weather</p>
                 <p className={`text-xs ${c.textMuteded}`}>{packResults.weather_note}</p>
               </div>
             )}
             {packResults.currency_tip && (
               <div className={`${c.quoteBg} rounded-lg p-3`}>
-                <p className={`text-[10px] font-bold ${c.textSecondaryondary}`}>💰 Currency</p>
+                <p className={`text-[10px] font-bold ${c.textSecondary}`}>💰 Currency</p>
                 <p className={`text-xs ${c.textMuteded}`}>{packResults.currency_tip}</p>
               </div>
             )}
             {packResults.phone_tip && (
               <div className={`${c.quoteBg} rounded-lg p-3`}>
-                <p className={`text-[10px] font-bold ${c.textSecondaryondary}`}>📱 Phone</p>
+                <p className={`text-[10px] font-bold ${c.textSecondary}`}>📱 Phone</p>
                 <p className={`text-xs ${c.textMuteded}`}>{packResults.phone_tip}</p>
               </div>
             )}
             {packResults.cultural_note && (
               <div className={`${c.quoteBg} rounded-lg p-3`}>
-                <p className={`text-[10px] font-bold ${c.textSecondaryondary}`}>🌍 Culture</p>
+                <p className={`text-[10px] font-bold ${c.textSecondary}`}>🌍 Culture</p>
                 <p className={`text-xs ${c.textMuteded}`}>{packResults.cultural_note}</p>
               </div>
             )}
@@ -1548,17 +1548,17 @@ const LayoverMaximizer = ({ tool }) => {
         <div className="space-y-3">
           <div className="flex gap-2">
             <div className="flex-1">
-              <label className={`text-xs font-bold ${c.textSecondaryondary} block mb-1.5`}>Airport *</label>
+              <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Airport *</label>
               <input value={kitAirport || results?.airport_code || ''} onChange={e => setKitAirport(e.target.value)}
                 placeholder="Airport code" className={`w-full px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
             </div>
             <div className="flex-1">
-              <label className={`text-xs font-bold ${c.textSecondaryondary} block mb-1.5`}>Airline</label>
+              <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Airline</label>
               <input value={kitAirline} onChange={e => setKitAirline(e.target.value)}
                 placeholder="Optional" className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
             </div>
             <div className="flex-1">
-              <label className={`text-xs font-bold ${c.textSecondaryondary} block mb-1.5`}>Hours</label>
+              <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Hours</label>
               <input type="number" value={kitHours || layoverHours || ''} onChange={e => setKitHours(e.target.value)}
                 className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
             </div>
@@ -1580,7 +1580,7 @@ const LayoverMaximizer = ({ tool }) => {
               {/* WiFi */}
               {r.wifi && (
                 <div className={`${c.highlight} border rounded-lg p-3 mb-3`}>
-                  <p className={`text-[10px] font-bold ${c.textSecondaryondary} uppercase mb-1`}>📶 WiFi</p>
+                  <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-1`}>📶 WiFi</p>
                   <p className="text-xs font-bold">{r.wifi.network_name}</p>
                   {r.wifi.password && <p className={`text-xs ${c.textMuteded}`}>Password: {r.wifi.password}</p>}
                   {r.wifi.how_to_connect && <p className={`text-[10px] ${c.textMuteded}`}>{r.wifi.how_to_connect}</p>}
@@ -1591,26 +1591,26 @@ const LayoverMaximizer = ({ tool }) => {
               <div className="grid grid-cols-2 gap-2 mb-3">
                 {r.time_zone && (
                   <div className={`${c.quoteBg} rounded-lg p-2`}>
-                    <p className={`text-[10px] font-bold ${c.textSecondaryondary}`}>🕐 Time Zone</p>
+                    <p className={`text-[10px] font-bold ${c.textSecondary}`}>🕐 Time Zone</p>
                     <p className="text-xs">{r.time_zone}</p>
                   </div>
                 )}
                 {r.currency && (
                   <div className={`${c.quoteBg} rounded-lg p-2`}>
-                    <p className={`text-[10px] font-bold ${c.textSecondaryondary}`}>💰 Currency</p>
+                    <p className={`text-[10px] font-bold ${c.textSecondary}`}>💰 Currency</p>
                     <p className="text-xs">{r.currency.local_currency}</p>
                     {r.currency.exchange_rate_approx && <p className={`text-[10px] ${c.textMuteded}`}>{r.currency.exchange_rate_approx}</p>}
                   </div>
                 )}
                 {r.power_outlets && (
                   <div className={`${c.quoteBg} rounded-lg p-2`}>
-                    <p className={`text-[10px] font-bold ${c.textSecondaryondary}`}>🔌 Outlets</p>
+                    <p className={`text-[10px] font-bold ${c.textSecondary}`}>🔌 Outlets</p>
                     <p className="text-xs">{r.power_outlets}</p>
                   </div>
                 )}
                 {r.emergency_numbers && (
                   <div className={`${c.quoteBg} rounded-lg p-2`}>
-                    <p className={`text-[10px] font-bold ${c.textSecondaryondary}`}>🆘 Emergency</p>
+                    <p className={`text-[10px] font-bold ${c.textSecondary}`}>🆘 Emergency</p>
                     <p className="text-xs">{r.emergency_numbers.local_emergency}</p>
                   </div>
                 )}
@@ -1618,14 +1618,14 @@ const LayoverMaximizer = ({ tool }) => {
 
               {r.airline_desk && (
                 <div className={`${c.quoteBg} rounded-lg p-3 mb-3`}>
-                  <p className={`text-[10px] font-bold ${c.textSecondaryondary}`}>✈️ Airline Desk</p>
+                  <p className={`text-[10px] font-bold ${c.textSecondary}`}>✈️ Airline Desk</p>
                   <p className="text-xs">{r.airline_desk}</p>
                 </div>
               )}
 
               {r.transport_from_airport && (
                 <div className={`${c.quoteBg} rounded-lg p-3 mb-3`}>
-                  <p className={`text-[10px] font-bold ${c.textSecondaryondary}`}>🚇 Getting to the City</p>
+                  <p className={`text-[10px] font-bold ${c.textSecondary}`}>🚇 Getting to the City</p>
                   <p className="text-xs">{r.transport_from_airport.to_city}</p>
                   {r.transport_from_airport.taxi_tip && <p className={`text-[10px] ${c.warning}`}>⚠️ {r.transport_from_airport.taxi_tip}</p>}
                 </div>
@@ -1634,7 +1634,7 @@ const LayoverMaximizer = ({ tool }) => {
               {/* Key phrases */}
               {r.key_phrases?.length > 0 && (
                 <div className="mb-3">
-                  <p className={`text-[10px] font-bold ${c.textSecondaryondary} uppercase mb-1.5`}>🗣️ Key Phrases</p>
+                  <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-1.5`}>🗣️ Key Phrases</p>
                   <div className="space-y-1">
                     {r.key_phrases.map((p, i) => (
                       <div key={i} className={`${c.quoteBg} rounded px-3 py-1.5 flex items-center justify-between text-xs`}>
@@ -1648,7 +1648,7 @@ const LayoverMaximizer = ({ tool }) => {
 
               {r.one_thing_to_know && (
                 <div className={`${isDark ? 'bg-cyan-600/20 border-purple-800' : 'bg-cyan-600 border-purple-200'} border rounded-lg p-3`}>
-                  <p className={`text-[10px] font-bold ${c.textSecondaryondary} uppercase mb-1`}>☝️ One thing to know</p>
+                  <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-1`}>☝️ One thing to know</p>
                   <p className="text-xs font-bold">{r.one_thing_to_know}</p>
                 </div>
               )}

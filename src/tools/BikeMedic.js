@@ -1298,7 +1298,7 @@ const BikeMedic = ({ tool }) => {
     if (!bikeProfile) return null;
     const labels = [bikeProfile.bikeType, bikeProfile.brakeType?.replace('_', ' '), bikeProfile.shiftType, bikeProfile.tireSetup].filter(Boolean);
     return (
-      <div className={`flex items-center gap-2 mb-4 p-2 rounded-lg ${c.cardAlt} text-xs ${c.textSecondaryondary} overflow-x-auto`}>
+      <div className={`flex items-center gap-2 mb-4 p-2 rounded-lg ${c.cardAlt} text-xs ${c.textSecondary} overflow-x-auto`}>
         <span className="font-semibold flex-shrink-0">🚲 {bikeProfile.name || 'My Bike'}:</span>
         {labels.map((l, i) => <span key={i} className={`${c.tag} px-2 py-0.5 rounded-md capitalize whitespace-nowrap`}>{l}</span>)}
         {bikeProfile.totalMiles > 0 && <span className={`${c.tag} px-2 py-0.5 rounded-md whitespace-nowrap`}>{Math.round(bikeProfile.totalMiles)} mi</span>}
@@ -1315,7 +1315,7 @@ const BikeMedic = ({ tool }) => {
   const renderLoadingState = () => (
     <div className="flex flex-col items-center justify-center py-12 gap-4">
       <span className="text-4xl animate-spin inline-block" style={{ animationDuration: '3s' }}>{tool?.icon ?? '🚲'}</span>
-      <p className={`text-sm font-semibold ${c.textSecondaryondary} animate-pulse`}>{MECHANIC_THINKING[thinkingMsg]}</p>
+      <p className={`text-sm font-semibold ${c.textSecondary} animate-pulse`}>{MECHANIC_THINKING[thinkingMsg]}</p>
     </div>
   );
 
@@ -1329,12 +1329,12 @@ const BikeMedic = ({ tool }) => {
           {data.difficulty && <span className={`text-xs font-bold px-2 py-1 rounded-full ${c.tag}`}>{data.difficulty}</span>}
           {data.time_estimate && <span className={`text-xs font-bold px-2 py-1 rounded-full ${c.tag}`}>{data.time_estimate}</span>}
         </div>
-        <p className={`${c.textSecondaryondary} text-sm mb-4`}>{data.explanation}</p>
+        <p className={`${c.textSecondary} text-sm mb-4`}>{data.explanation}</p>
         {data.likely_causes && (<div className="mb-4"><h4 className={`font-bold ${c.text} text-sm mb-2`}>Likely causes:</h4><ol className="space-y-2">
-          {data.likely_causes.map((cause, i) => <li key={i} className="flex gap-3 text-sm"><span className={`flex-shrink-0 w-6 h-6 rounded-full ${c.tag} flex items-center justify-center text-xs font-bold`}>{i+1}</span><span className={c.textSecondaryondary}>{cause}</span></li>)}
+          {data.likely_causes.map((cause, i) => <li key={i} className="flex gap-3 text-sm"><span className={`flex-shrink-0 w-6 h-6 rounded-full ${c.tag} flex items-center justify-center text-xs font-bold`}>{i+1}</span><span className={c.textSecondary}>{cause}</span></li>)}
         </ol></div>)}
         {data.fix_steps && (<div className="mb-4"><h4 className={`font-bold ${c.text} text-sm mb-2`}>How to fix:</h4><ol className="space-y-2">
-          {data.fix_steps.map((step, i) => <li key={i} className="flex gap-3 text-sm"><span className={`flex-shrink-0 w-6 h-6 rounded-full ${c.tagAmber} border flex items-center justify-center text-xs font-bold`}>{i+1}</span><span className={c.textSecondaryondary}>{step}</span></li>)}
+          {data.fix_steps.map((step, i) => <li key={i} className="flex gap-3 text-sm"><span className={`flex-shrink-0 w-6 h-6 rounded-full ${c.tagAmber} border flex items-center justify-center text-xs font-bold`}>{i+1}</span><span className={c.textSecondary}>{step}</span></li>)}
         </ol></div>)}
         {data.tools_needed?.length > 0 && (<div className="flex flex-wrap gap-2 mb-4">
           <span className={`text-xs font-bold ${c.textMuteded} uppercase mr-1 self-center`}>Tools:</span>
@@ -1342,7 +1342,7 @@ const BikeMedic = ({ tool }) => {
         </div>)}
         {data.pro_tip && (<div className={`${c.warning} border-2 rounded-xl p-4 mb-4`}><p className="text-sm"><span className="font-black text-xs uppercase block mb-1">🔧 Pro Tip</span>{data.pro_tip}</p></div>)}
         {data.next_steps?.length > 0 && (<div className="mb-4"><h4 className={`font-bold ${c.text} text-sm mb-2`}>Next steps:</h4><ol className="space-y-1">
-          {data.next_steps.map((ns, i) => <li key={i} className={`text-sm ${c.textSecondaryondary} flex gap-2`}><span style={{ color: accent }}>→</span><span>{ns}</span></li>)}
+          {data.next_steps.map((ns, i) => <li key={i} className={`text-sm ${c.textSecondary} flex gap-2`}><span style={{ color: accent }}>→</span><span>{ns}</span></li>)}
         </ol></div>)}
         {data.prevention && (<div className={`text-xs ${c.textMuteded} mt-3 p-3 rounded-lg ${c.cardAlt}`}><strong>Prevention:</strong> {data.prevention}</div>)}
         {data.shop_visit && (<div className={`mt-4 ${c.shopVisit} border border-l-4 rounded-r-xl p-4`}><p className="text-sm"><strong>When to go to a shop:</strong> {data.shop_visit}</p></div>)}
@@ -1414,7 +1414,7 @@ const BikeMedic = ({ tool }) => {
               </div>
             ))}
             <button onClick={() => { setEditingBikeId(null); setTempProfile({}); }}
-              className={`w-full p-3 rounded-xl border-2 border-dashed ${c.border} ${c.textSecondaryondary} text-sm font-semibold ${c.cardAltHover} transition-colors`}>
+              className={`w-full p-3 rounded-xl border-2 border-dashed ${c.border} ${c.textSecondary} text-sm font-semibold ${c.cardAltHover} transition-colors`}>
               ➕ Add Another Bike
             </button>
           </div>
@@ -1425,18 +1425,18 @@ const BikeMedic = ({ tool }) => {
           <div className={`${c.card} rounded-xl border-2 ${c.border} p-6`}>
             <h4 className={`text-sm font-bold ${c.text} mb-4`}>{editingBikeId ? 'Edit Bike' : 'Add New Bike'}</h4>
             <div className="mb-5">
-              <label className={`text-xs font-bold ${c.textSecondaryondary} uppercase tracking-wide mb-2 block`}>Bike Name</label>
+              <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>Bike Name</label>
               <input value={tempProfile.name || ''} onChange={e => setTempProfile(prev => ({ ...prev, name: e.target.value }))}
                 placeholder="e.g., Trek Domane, Daily Commuter..."
                 className={`w-full px-3 py-2 border-2 rounded-lg text-sm outline-none ${c.input}`} />
             </div>
             {Object.entries(opts).map(([key, options]) => (
               <div key={key} className="mb-5">
-                <label className={`text-xs font-bold ${c.textSecondaryondary} uppercase tracking-wide mb-2 block`}>{labels[key]}</label>
+                <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>{labels[key]}</label>
                 <div className="flex flex-wrap gap-2">
                   {options.map(o => (
                     <button key={o.v} onClick={() => setTempProfile(prev => ({ ...prev, [key]: prev[key] === o.v ? undefined : o.v }))}
-                      className={`px-3 py-2 rounded-lg text-sm font-semibold border-2 transition-all ${tempProfile[key] === o.v ? c.profileSelected : `${c.border} ${c.textSecondaryondary} ${c.cardAltHover}`}`}>{o.l}</button>
+                      className={`px-3 py-2 rounded-lg text-sm font-semibold border-2 transition-all ${tempProfile[key] === o.v ? c.profileSelected : `${c.border} ${c.textSecondary} ${c.cardAltHover}`}`}>{o.l}</button>
                   ))}
                 </div>
               </div>
@@ -1471,7 +1471,7 @@ const BikeMedic = ({ tool }) => {
                 <span className={`w-6 h-6 rounded-md border-2 flex items-center justify-center flex-shrink-0 ${owned ? c.checkboxChecked : c.border}`}>
                   {owned && <span className="text-xs">✓</span>}
                 </span>
-                <span className={owned ? c.text : c.textSecondaryondary}>{tool}</span>
+                <span className={owned ? c.text : c.textSecondary}>{tool}</span>
               </button>
             );
           })}
@@ -1498,7 +1498,7 @@ const BikeMedic = ({ tool }) => {
             <span className="text-xl">🌦️</span>
             <h3 className={`text-lg font-bold ${c.text}`}>Seasonal Maintenance Wizard</h3>
           </div>
-          <p className={`${c.textSecondaryondary} text-sm mb-4`}>AI-powered checklist based on your bike, season, and riding conditions.</p>
+          <p className={`${c.textSecondary} text-sm mb-4`}>AI-powered checklist based on your bike, season, and riding conditions.</p>
           {!bikeProfile && <p className={`text-sm ${c.textMuteded} p-4 text-center`}>Add a bike in your garage first to get personalized advice.</p>}
           {bikeProfile && !seasonalResult && !loading && (
             <button onClick={runSeasonalWizard} className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary}`}>🌦️ Generate Seasonal Checklist</button>
@@ -1592,7 +1592,7 @@ const BikeMedic = ({ tool }) => {
         {/* Favorites */}
         {favorites.length > 0 && (
           <div className="mb-6">
-            <h4 className={`text-sm font-bold ${c.textSecondaryondary} uppercase tracking-wide mb-3`}>⭐ Saved Fixes</h4>
+            <h4 className={`text-sm font-bold ${c.textSecondary} uppercase tracking-wide mb-3`}>⭐ Saved Fixes</h4>
             <div className="space-y-2">
               {favorites.map(fId => {
                 const f = FIXES[fId];
@@ -1611,7 +1611,7 @@ const BikeMedic = ({ tool }) => {
 
         {/* Maintenance Schedule (mileage-aware) */}
         <div className="mb-6">
-          <h4 className={`text-sm font-bold ${c.textSecondaryondary} uppercase tracking-wide mb-3`}>🗓️ Maintenance Schedule</h4>
+          <h4 className={`text-sm font-bold ${c.textSecondary} uppercase tracking-wide mb-3`}>🗓️ Maintenance Schedule</h4>
           {!activeBikeId ? (
             <p className={`text-sm ${c.textMuteded} p-4 text-center`}>Add a bike to track maintenance.</p>
           ) : (
@@ -1650,7 +1650,7 @@ const BikeMedic = ({ tool }) => {
 
         {/* Repair History */}
         <div>
-          <h4 className={`text-sm font-bold ${c.textSecondaryondary} uppercase tracking-wide mb-3`}>📋 Repair History</h4>
+          <h4 className={`text-sm font-bold ${c.textSecondary} uppercase tracking-wide mb-3`}>📋 Repair History</h4>
           {repairHistory.length === 0 ? (
             <p className={`text-sm ${c.textMuteded} p-4 text-center`}>No repairs logged yet. Complete a fix and tap "Log Repair" to start tracking.</p>
           ) : (
@@ -1689,7 +1689,7 @@ const BikeMedic = ({ tool }) => {
         {renderBikeProfileBar()}
         <div className={`${c.card} rounded-xl border-2 ${c.border} p-6`}>
           <h3 className={`text-lg font-bold ${c.text} mb-1`}>{check.icon} {check.title}</h3>
-          <p className={`text-sm ${c.textSecondaryondary} mb-5`}>Tap to check off. Hit the ⚠️ to troubleshoot any issue.</p>
+          <p className={`text-sm ${c.textSecondary} mb-5`}>Tap to check off. Hit the ⚠️ to troubleshoot any issue.</p>
           <div className="space-y-3">
             {check.items.map((item, i) => (
               <div key={i} className={`flex items-start gap-3 p-3 rounded-xl border-2 transition-all ${checkedItems[i] ? c.greenBanner : c.border}`}>
@@ -1726,7 +1726,7 @@ const BikeMedic = ({ tool }) => {
           <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
             <span>{tool?.icon ?? '🚲'}</span> Bike Medic
           </h2>
-          <p className={`text-sm ${c.textSecondaryondary}`}>Your trailside mechanic in your pocket</p>
+          <p className={`text-sm ${c.textSecondary}`}>Your trailside mechanic in your pocket</p>
         </div>
 
         {/* Cross-refs pre-result */}
@@ -1759,26 +1759,26 @@ const BikeMedic = ({ tool }) => {
         {/* Mode tabs + feature buttons */}
         <div className="flex items-center gap-2 mb-5 flex-wrap">
           <button onClick={() => setViewMode('problems')}
-            className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${viewMode === 'problems' ? c.btnPrimary : `${c.border} border ${c.textSecondaryondary} ${c.cardAltHover}`}`}>
+            className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${viewMode === 'problems' ? c.btnPrimary : `${c.border} border ${c.textSecondary} ${c.cardAltHover}`}`}>
             🔧 Diagnose
           </button>
           <button onClick={() => setViewMode('quickcheck')}
-            className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${viewMode === 'quickcheck' ? c.btnPrimary : `${c.border} border ${c.textSecondaryondary} ${c.cardAltHover}`}`}>
+            className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${viewMode === 'quickcheck' ? c.btnPrimary : `${c.border} border ${c.textSecondary} ${c.cardAltHover}`}`}>
             ✅ Quick Checks
           </button>
           <div className="flex-1" />
-          <button onClick={() => setShowSeasonalWizard(true)} className={`p-2 rounded-lg ${c.cardAltHover} ${c.textSecondaryondary} transition-colors`} title="Seasonal maintenance">
+          <button onClick={() => setShowSeasonalWizard(true)} className={`p-2 rounded-lg ${c.cardAltHover} ${c.textSecondary} transition-colors`} title="Seasonal maintenance">
             <span>🌦️</span>
           </button>
-          <button onClick={() => setShowToolbox(true)} className={`p-2 rounded-lg ${c.cardAltHover} ${c.textSecondaryondary} transition-colors relative`} title="My toolbox">
+          <button onClick={() => setShowToolbox(true)} className={`p-2 rounded-lg ${c.cardAltHover} ${c.textSecondary} transition-colors relative`} title="My toolbox">
             <span>🧰</span>
             {myTools.length > 0 && <span className={`absolute -top-1 -right-1 w-4 h-4 ${c.navBadgeZinc} text-[10px] font-bold rounded-full flex items-center justify-center`}>{myTools.length}</span>}
           </button>
-          <button onClick={() => setShowHistory(true)} className={`p-2 rounded-lg ${c.cardAltHover} ${c.textSecondaryondary} transition-colors relative`} title="Hub: history, rides, maintenance">
+          <button onClick={() => setShowHistory(true)} className={`p-2 rounded-lg ${c.cardAltHover} ${c.textSecondary} transition-colors relative`} title="Hub: history, rides, maintenance">
             <span>📋</span>
             {maintAlerts.length > 0 && <span className={`absolute -top-1 -right-1 w-4 h-4 ${c.navBadgeAmber} text-[10px] font-bold rounded-full flex items-center justify-center`}>{maintAlerts.length}</span>}
           </button>
-          <button onClick={() => setShowProfileSetup(true)} className={`p-2 rounded-lg ${c.cardAltHover} ${c.textSecondaryondary} transition-colors relative`} title="Garage">
+          <button onClick={() => setShowProfileSetup(true)} className={`p-2 rounded-lg ${c.cardAltHover} ${c.textSecondary} transition-colors relative`} title="Garage">
             <span>🏠</span>
             {garage.length > 0 && <span className={`absolute -top-1 -right-1 w-4 h-4 ${c.navBadgeZinc} text-[10px] font-bold rounded-full flex items-center justify-center`}>{garage.length}</span>}
           </button>
@@ -1795,7 +1795,7 @@ const BikeMedic = ({ tool }) => {
 
         {viewMode === 'quickcheck' ? (
           <div>
-            <p className={`${c.textSecondaryondary} mb-4 text-sm`}>Run a targeted checklist for your situation.</p>
+            <p className={`${c.textSecondary} mb-4 text-sm`}>Run a targeted checklist for your situation.</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {Object.entries(QUICK_CHECKS).map(([key, check]) => (
                 <button key={key} onClick={() => { setActiveQuickCheck(key); setCheckedItems({}); }}
@@ -1846,7 +1846,7 @@ const BikeMedic = ({ tool }) => {
                         <span className={`text-sm font-bold ${c.text}`}>AI Recommendation</span>
                         <span className={`text-xs ${c.textMuteded} ml-auto`}>{Math.round((aiRoute.confidence || 0) * 100)}%</span>
                       </div>
-                      <p className={`text-sm ${c.textSecondaryondary} mb-3`}>{aiRoute.reasoning}</p>
+                      <p className={`text-sm ${c.textSecondary} mb-3`}>{aiRoute.reasoning}</p>
                       <button onClick={() => { const p = PROBLEMS.find(x => x.id === aiRoute.recommended_category); if (p) { setShowInterpreter(false); setAiRoute(null); startProblem(aiRoute.recommended_category); } }}
                         className={`w-full py-2.5 rounded-xl font-bold text-sm ${c.btnPrimary}`}>
                         Start: {PROBLEMS.find(p => p.id === aiRoute.recommended_category)?.label || aiRoute.recommended_category}
@@ -1866,7 +1866,7 @@ const BikeMedic = ({ tool }) => {
               )}
             </div>
 
-            <p className={`${c.textSecondaryondary} mb-4 text-sm`}>Or select the problem:</p>
+            <p className={`${c.textSecondary} mb-4 text-sm`}>Or select the problem:</p>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
               {PROBLEMS.map(p => (
                 <button key={p.id} onClick={() => startProblem(p.id)}
@@ -1918,7 +1918,7 @@ const BikeMedic = ({ tool }) => {
             <span className="text-xl">💬</span>
             <h3 className={`text-lg font-bold ${c.text}`}>Ask the Mechanic</h3>
           </div>
-          <p className={`${c.textSecondaryondary} text-sm mb-4`}>Describe the problem — what you see, hear, or feel. Attach a photo for visual diagnosis.</p>
+          <p className={`${c.textSecondary} text-sm mb-4`}>Describe the problem — what you see, hear, or feel. Attach a photo for visual diagnosis.</p>
           <textarea value={customProblem} onChange={(e) => setCustomProblem(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && customProblem.trim() && !loading) askMechanic(); }}
             placeholder="e.g., 'Rear wheel grinds when going uphill and shifting to easier gear. Started after heavy rain.'"
@@ -1927,7 +1927,7 @@ const BikeMedic = ({ tool }) => {
           {/* Photo upload */}
           <div className="flex items-center gap-3 mt-3">
             <input ref={photoRef} type="file" accept="image/*" capture="environment" onChange={handlePhotoUpload} className="hidden" />
-            <button onClick={() => photoRef.current?.click()} className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold border-2 ${c.border} ${c.textSecondaryondary} ${c.cardAltHover} transition-colors`}>
+            <button onClick={() => photoRef.current?.click()} className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold border-2 ${c.border} ${c.textSecondary} ${c.cardAltHover} transition-colors`}>
               <span>📸</span> {photoData ? 'Change Photo' : 'Attach Photo'}
             </button>
             {photoData && (
@@ -1973,7 +1973,7 @@ const BikeMedic = ({ tool }) => {
           <div className={`mb-6 p-6 rounded-xl ${c.success} border-2 text-center`}>
             <span className="text-4xl block mb-2">🎉</span>
             <p className={`text-lg font-bold ${c.greenText}`}>Fixed!</p>
-            <p className={`text-sm ${c.textSecondaryondary} mt-1`}>Nice work — you just saved a trip to the shop.</p>
+            <p className={`text-sm ${c.textSecondary} mt-1`}>Nice work — you just saved a trip to the shop.</p>
             {SHOP_COSTS[currentFix] > 0 && (
               <div className={`mt-3 inline-block px-4 py-2 rounded-xl ${c.greenPill}`}>
                 <span className={`text-lg font-black ${c.greenText}`}>💰 ~${SHOP_COSTS[currentFix]} saved</span>
@@ -2056,7 +2056,7 @@ const BikeMedic = ({ tool }) => {
             <div className="mb-4">
               <div className="flex items-center justify-between mb-1">
                 <span className={`text-xs font-bold ${c.textMuteded} uppercase`}>Progress</span>
-                <span className={`text-xs font-bold ${c.textSecondaryondary}`}>{doneSteps} / {totalSteps}</span>
+                <span className={`text-xs font-bold ${c.textSecondary}`}>{doneSteps} / {totalSteps}</span>
               </div>
               <div className={`h-2 rounded-full ${c.cardAlt} overflow-hidden`}>
                 <div className="h-full rounded-full transition-all duration-300" style={{ width: `${progress}%`, backgroundColor: accent }} />
@@ -2066,7 +2066,7 @@ const BikeMedic = ({ tool }) => {
             {/* Steps with checkboxes */}
             <div className={`${c.card} rounded-xl border-2 ${c.border} overflow-hidden mb-6`}>
               <div className={`p-4 border-b ${c.border} ${c.cardAlt}`}>
-                <h4 className={`text-sm font-bold ${c.textSecondaryondary} uppercase tracking-wide`}>Step-by-Step</h4>
+                <h4 className={`text-sm font-bold ${c.textSecondary} uppercase tracking-wide`}>Step-by-Step</h4>
               </div>
               <ol className={`divide-y ${c.stepDivide}`}>
                 {fix.steps.map((step, idx) => {
@@ -2079,7 +2079,7 @@ const BikeMedic = ({ tool }) => {
                         style={!done ? { backgroundColor: accent } : {}}>
                         {done ? '✓' : idx + 1}
                       </div>
-                      <span className={`text-sm leading-relaxed pt-0.5 flex-1 ${done ? 'line-through' : ''} ${isActive ? `font-semibold ${c.text}` : c.textSecondaryondary}`}>{step}</span>
+                      <span className={`text-sm leading-relaxed pt-0.5 flex-1 ${done ? 'line-through' : ''} ${isActive ? `font-semibold ${c.text}` : c.textSecondary}`}>{step}</span>
                     </li>
                   );
                 })}
@@ -2096,7 +2096,7 @@ const BikeMedic = ({ tool }) => {
             {/* Parts reference */}
             {fix.parts?.length > 0 && (
               <div className="mb-6">
-                <button onClick={() => setShowParts(!showParts)} className={`w-full flex items-center gap-2 p-3 rounded-xl ${c.cardAlt} ${c.textSecondaryondary} text-sm font-semibold transition-colors`}>
+                <button onClick={() => setShowParts(!showParts)} className={`w-full flex items-center gap-2 p-3 rounded-xl ${c.cardAlt} ${c.textSecondary} text-sm font-semibold transition-colors`}>
                   <span>🛒</span> Parts & Shopping List
                   <span className="ml-auto">{showParts ? '▲' : '▼'}</span>
                 </button>
@@ -2127,7 +2127,7 @@ const BikeMedic = ({ tool }) => {
                     <span>👍</span> Fixed!
                   </button>
                   <button onClick={() => { setFixResolved('no'); setShowFollowUp(true); }}
-                    className={`flex items-center gap-2 px-5 py-2.5 rounded-xl border-2 ${c.border} ${c.textSecondaryondary} font-bold text-sm ${c.cardAltHover} transition-colors`}>
+                    className={`flex items-center gap-2 px-5 py-2.5 rounded-xl border-2 ${c.border} ${c.textSecondary} font-bold text-sm ${c.cardAltHover} transition-colors`}>
                     <span>👎</span> Still broken
                   </button>
                 </div>
@@ -2217,7 +2217,7 @@ const BikeMedic = ({ tool }) => {
   }
 
   // Fallback
-  return <div className={c.textSecondaryondary}>Loading...</div>;
+  return <div className={c.textSecondary}>Loading...</div>;
 };
 
 BikeMedic.displayName = 'BikeMedic';

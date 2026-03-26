@@ -211,7 +211,7 @@ const ArgumentSimulator = ({ tool }) => {
                 <span className="text-base flex-shrink-0 mt-0.5">💥</span>
                 <div>
                   <p className={`text-xs font-semibold uppercase ${accent} mb-1`}>Killer Point</p>
-                  <p className={`text-sm ${c.textSecondaryondary} leading-relaxed`}>{side.killer_point}</p>
+                  <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{side.killer_point}</p>
                 </div>
               </div>
 
@@ -220,7 +220,7 @@ const ArgumentSimulator = ({ tool }) => {
                 <span className="text-base flex-shrink-0 mt-0.5">📊</span>
                 <div>
                   <p className={`text-xs font-semibold uppercase ${accent} mb-1`}>Evidence</p>
-                  <p className={`text-sm ${c.textSecondaryondary} leading-relaxed`}>{side.evidence}</p>
+                  <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{side.evidence}</p>
                 </div>
               </div>
 
@@ -229,7 +229,7 @@ const ArgumentSimulator = ({ tool }) => {
                 <span className="text-base flex-shrink-0 mt-0.5">😬</span>
                 <div>
                   <p className={`text-xs font-semibold uppercase ${accent} mb-1`}>Uncomfortable Truth</p>
-                  <p className={`text-sm ${c.textSecondaryondary} leading-relaxed italic`}>{side.uncomfortable_truth}</p>
+                  <p className={`text-sm ${c.textSecondary} leading-relaxed italic`}>{side.uncomfortable_truth}</p>
                 </div>
               </div>
             </div>
@@ -261,7 +261,7 @@ const ArgumentSimulator = ({ tool }) => {
           <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
             <span>{tool.icon}</span> Argument Simulator
           </h2>
-          <p className={`text-sm ${c.textSecondaryondary}`}>Drop a hot take. AI argues both sides with full conviction.</p>
+          <p className={`text-sm ${c.textSecondary}`}>Drop a hot take. AI argues both sides with full conviction.</p>
         </div>
 
         {/* Hot take input */}
@@ -393,7 +393,7 @@ const ArgumentSimulator = ({ tool }) => {
                 <span className="text-lg">🔍</span>
                 <h3 className={`font-bold ${c.text}`}>Where They Actually Disagree</h3>
               </div>
-              <p className={`text-sm ${c.textSecondaryondary} leading-relaxed`}>
+              <p className={`text-sm ${c.textSecondary} leading-relaxed`}>
                 {results.where_they_actually_disagree}
               </p>
             </div>
@@ -430,7 +430,7 @@ const ArgumentSimulator = ({ tool }) => {
                 <span className="text-lg">🍷</span>
                 <h3 className={`font-bold ${c.text}`}>The Dinner Party Take</h3>
               </div>
-              <p className={`text-sm italic ${c.textSecondaryondary} leading-relaxed`}>
+              <p className={`text-sm italic ${c.textSecondary} leading-relaxed`}>
                 "{results.dinner_party_take}"
               </p>
               <p className={`text-xs ${c.textMuteded} mt-2`}>

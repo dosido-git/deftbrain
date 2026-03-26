@@ -1060,7 +1060,7 @@ const FocusPocus = ({ tool }) => {
           {!hasVisited && (
             <div className={`${c.card} ${c.border} border rounded-2xl shadow-lg p-5 sm:p-6`}>
               <h3 className={`text-lg font-bold ${c.text} mb-2`}>Welcome to Focus Pocus 🎩</h3>
-              <p className={`text-sm ${c.textSecondaryondary} mb-4`}>
+              <p className={`text-sm ${c.textSecondary} mb-4`}>
                 A focus timer that tracks your habits and helps you take better breaks.
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-4">
@@ -1142,7 +1142,7 @@ const FocusPocus = ({ tool }) => {
                 <span>🔖</span>
                 <div className="flex-1 min-w-0">
                   <p className={`text-[10px] font-bold ${isDark ? 'text-cyan-400' : 'text-cyan-600'} mb-0.5`}>Last time you left off:</p>
-                  <p className={`text-xs ${c.textSecondaryondary} italic`}>"{lastNoteForActivity}"</p>
+                  <p className={`text-xs ${c.textSecondary} italic`}>"{lastNoteForActivity}"</p>
                 </div>
               </div>
             )}
@@ -1249,7 +1249,7 @@ const FocusPocus = ({ tool }) => {
 
               {showTemplateForm && sessionActivity.trim() && (
                 <div className={`mb-3 p-3 rounded-xl border ${isDark ? 'bg-zinc-700/50 border-zinc-600' : 'bg-zinc-50 border-zinc-200'}`}>
-                  <p className={`text-xs ${c.textSecondaryondary} mb-2`}>Save "{sessionActivity.trim()}" as a template with {sessionDurationMin}m duration?</p>
+                  <p className={`text-xs ${c.textSecondary} mb-2`}>Save "{sessionActivity.trim()}" as a template with {sessionDurationMin}m duration?</p>
                   <div className="flex gap-2">
                     <button onClick={() => saveTemplate(sessionActivity, sessionDurationMin, upcomingObligations)}
                       className={`px-3 py-1.5 rounded-lg text-xs font-bold ${isDark ? 'bg-cyan-600 text-white hover:bg-cyan-500' : 'bg-cyan-600 text-white hover:bg-cyan-700'}`}>
@@ -1291,14 +1291,14 @@ const FocusPocus = ({ tool }) => {
           {/* Optional context */}
           <div className={`${c.card} ${c.border} border rounded-2xl shadow-lg p-5 sm:p-6`}>
             <button onClick={() => setShowOptional(!showOptional)}
-              className={`flex items-center gap-2 text-sm font-bold ${c.textSecondaryondary} w-full`}>
+              className={`flex items-center gap-2 text-sm font-bold ${c.textSecondary} w-full`}>
               <span className={`transition-transform ${showOptional ? 'rotate-180' : ''}`}>▼</span>
               Optional: context for smarter breaks
             </button>
             {showOptional && (
               <div className="mt-4 space-y-4">
                 <div>
-                  <label className={`block text-sm font-medium ${c.textSecondaryondary} mb-1.5`}>Upcoming obligations</label>
+                  <label className={`block text-sm font-medium ${c.textSecondary} mb-1.5`}>Upcoming obligations</label>
                   <input type="text" value={upcomingObligations} onChange={e => setUpcomingObligations(e.target.value)}
                     onKeyDown={handleKeyDown}
                     placeholder="e.g., Meeting at 3pm, Dinner reservation at 7"
@@ -1306,7 +1306,7 @@ const FocusPocus = ({ tool }) => {
                   />
                 </div>
                 <div>
-                  <label className={`block text-sm font-medium ${c.textSecondaryondary} mb-1.5`}>Already skipped or missed</label>
+                  <label className={`block text-sm font-medium ${c.textSecondary} mb-1.5`}>Already skipped or missed</label>
                   <input type="text" value={missedNeeds} onChange={e => setMissedNeeds(e.target.value)}
                     onKeyDown={handleKeyDown}
                     placeholder="e.g., Haven't eaten since breakfast, Skipped gym"
@@ -1571,7 +1571,7 @@ const FocusPocus = ({ tool }) => {
                         <div className={`text-[10px] ${c.textMuteded}`}>Chain completion</div>
                       </div>
                     </div>
-                    <p className={`text-xs font-bold ${c.textSecondaryondary} mb-2`}>Performance by Position</p>
+                    <p className={`text-xs font-bold ${c.textSecondary} mb-2`}>Performance by Position</p>
                     <div className="space-y-1.5">
                       {chartData.chainStats.positionData.map(pos => (
                         <div key={pos.position} className={`flex items-center gap-3 p-2.5 rounded-lg ${isDark ? 'bg-zinc-700/30' : 'bg-zinc-50/80'}`}>
@@ -1612,7 +1612,7 @@ const FocusPocus = ({ tool }) => {
                 <h4 className={`text-sm font-bold ${c.text} mb-3`}>🧘 Body Check Patterns</h4>
                 <div className="space-y-2">
                   {Object.entries(bodyInsights).map(([key, vals]) => (
-                    <div key={key} className={`flex items-center gap-2 text-sm ${c.textSecondaryondary}`}>
+                    <div key={key} className={`flex items-center gap-2 text-sm ${c.textSecondary}`}>
                       <span>{BODY_EMOJIS[key] || '📋'}</span>
                       <span className={`font-bold ${c.text}`}>{BODY_LABELS[key] || key}:</span>
                       <span className="truncate">{vals[vals.length - 1]}</span>
@@ -1626,12 +1626,12 @@ const FocusPocus = ({ tool }) => {
             <div className={`${c.card} ${c.border} border rounded-2xl shadow-lg p-5`}>
               <h4 className={`text-sm font-bold ${c.text} mb-3`}>💡 Insights</h4>
               <div className="space-y-2">
-                {p.avgDuration < 30 && <p className={`text-sm ${c.textSecondaryondary}`}>Your average session is {p.avgDuration} min — try extending to 35 min for deeper flow.</p>}
-                {p.avgDuration > 60 && <p className={`text-sm ${c.textSecondaryondary}`}>You average {p.avgDuration} min — impressive stamina. Watch for diminishing returns past 90 min.</p>}
-                {p.topDistraction === 'phone' && <p className={`text-sm ${c.textSecondaryondary}`}>Phone is your #1 distractor. Try putting it in another room during sessions.</p>}
-                {p.completionRate < 60 && <p className={`text-sm ${c.textSecondaryondary}`}>You complete {p.completionRate}% of sessions. Try shorter durations — finishing builds momentum.</p>}
-                {p.completionRate >= 90 && <p className={`text-sm ${c.textSecondaryondary}`}>🔥 {p.completionRate}% completion rate — outstanding discipline.</p>}
-                {p.peakHour && <p className={`text-sm ${c.textSecondaryondary}`}>Your peak focus hour is around {p.peakHour}. Schedule your hardest work here.</p>}
+                {p.avgDuration < 30 && <p className={`text-sm ${c.textSecondary}`}>Your average session is {p.avgDuration} min — try extending to 35 min for deeper flow.</p>}
+                {p.avgDuration > 60 && <p className={`text-sm ${c.textSecondary}`}>You average {p.avgDuration} min — impressive stamina. Watch for diminishing returns past 90 min.</p>}
+                {p.topDistraction === 'phone' && <p className={`text-sm ${c.textSecondary}`}>Phone is your #1 distractor. Try putting it in another room during sessions.</p>}
+                {p.completionRate < 60 && <p className={`text-sm ${c.textSecondary}`}>You complete {p.completionRate}% of sessions. Try shorter durations — finishing builds momentum.</p>}
+                {p.completionRate >= 90 && <p className={`text-sm ${c.textSecondary}`}>🔥 {p.completionRate}% completion rate — outstanding discipline.</p>}
+                {p.peakHour && <p className={`text-sm ${c.textSecondary}`}>Your peak focus hour is around {p.peakHour}. Schedule your hardest work here.</p>}
               </div>
             </div>
 
@@ -1692,7 +1692,7 @@ const FocusPocus = ({ tool }) => {
                 </div>
                 {weeklyChallenges.challenges.length === 0 ? (
                   <div className="text-center py-2">
-                    <p className={`text-xs ${c.textSecondaryondary} mb-3`}>Get personalized weekly focus challenges based on your patterns</p>
+                    <p className={`text-xs ${c.textSecondary} mb-3`}>Get personalized weekly focus challenges based on your patterns</p>
                     <button onClick={generateChallenges}
                       className={`px-5 py-2 rounded-xl text-xs font-bold transition-colors ${isDark ? 'bg-cyan-900/40 text-cyan-300 hover:bg-cyan-900/60 border border-cyan-700' : 'bg-cyan-50 text-cyan-700 hover:bg-cyan-100 border border-cyan-200'}`}>
                       🎯 Generate Challenges
@@ -1733,7 +1733,7 @@ const FocusPocus = ({ tool }) => {
               </div>
               {!aiPatterns ? (
                 <div className="text-center py-2">
-                  <p className={`text-xs ${c.textSecondaryondary} mb-3`}>Get AI-powered insights about your focus habits, patterns, and growth trajectory</p>
+                  <p className={`text-xs ${c.textSecondary} mb-3`}>Get AI-powered insights about your focus habits, patterns, and growth trajectory</p>
                   <button onClick={handleAiPatterns} disabled={aiPatternsLoading || sessionHistory.length < 5}
                     className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-colors ${
                       aiPatternsLoading || sessionHistory.length < 5
@@ -1750,7 +1750,7 @@ const FocusPocus = ({ tool }) => {
                     <div className={`p-4 rounded-xl text-center ${isDark ? 'bg-cyan-900/20 border border-cyan-800/40' : 'bg-cyan-50 border border-cyan-100'}`}>
                       <span className="text-3xl block mb-1">{aiPatterns.focus_profile.emoji}</span>
                       <p className={`text-lg font-bold ${c.text}`}>{aiPatterns.focus_profile.title}</p>
-                      <p className={`text-xs ${c.textSecondaryondary} mt-1`}>{aiPatterns.focus_profile.description}</p>
+                      <p className={`text-xs ${c.textSecondary} mt-1`}>{aiPatterns.focus_profile.description}</p>
                     </div>
                   )}
 
@@ -1763,7 +1763,7 @@ const FocusPocus = ({ tool }) => {
                         <div><span className={c.textMuteded}>Worst time:</span> <span className={c.text}>{aiPatterns.peak_performance.worst_time}</span></div>
                         <div className="col-span-2"><span className={c.textMuteded}>Sweet spot:</span> <span className={c.text}>{aiPatterns.peak_performance.optimal_duration}</span></div>
                       </div>
-                      <p className={`text-xs ${c.textSecondaryondary} mt-2`}>{aiPatterns.peak_performance.sweet_spot_insight}</p>
+                      <p className={`text-xs ${c.textSecondary} mt-2`}>{aiPatterns.peak_performance.sweet_spot_insight}</p>
                     </div>
                   )}
 
@@ -1771,9 +1771,9 @@ const FocusPocus = ({ tool }) => {
                   {aiPatterns.distraction_analysis && (
                     <div className={`p-3 rounded-xl ${isDark ? 'bg-amber-900/20 border border-amber-800/40' : 'bg-amber-50 border border-amber-100'}`}>
                       <p className={`text-xs font-bold ${isDark ? 'text-amber-300' : 'text-amber-700'} mb-2`}>📱 Distraction Analysis</p>
-                      <p className={`text-xs ${c.textSecondaryondary}`}><strong className={c.text}>Trigger:</strong> {aiPatterns.distraction_analysis.primary_trigger}</p>
-                      <p className={`text-xs ${c.textSecondaryondary}`}><strong className={c.text}>Pattern:</strong> {aiPatterns.distraction_analysis.pattern}</p>
-                      <p className={`text-xs ${c.textSecondaryondary} mt-1`}>💡 {aiPatterns.distraction_analysis.strategy}</p>
+                      <p className={`text-xs ${c.textSecondary}`}><strong className={c.text}>Trigger:</strong> {aiPatterns.distraction_analysis.primary_trigger}</p>
+                      <p className={`text-xs ${c.textSecondary}`}><strong className={c.text}>Pattern:</strong> {aiPatterns.distraction_analysis.pattern}</p>
+                      <p className={`text-xs ${c.textSecondary} mt-1`}>💡 {aiPatterns.distraction_analysis.strategy}</p>
                     </div>
                   )}
 
@@ -1791,7 +1791,7 @@ const FocusPocus = ({ tool }) => {
                           : isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-zinc-100 text-zinc-600'
                         }`}>{aiPatterns.growth.trajectory}</span>
                       </div>
-                      <p className={`text-xs ${c.textSecondaryondary}`}>{aiPatterns.growth.insight}</p>
+                      <p className={`text-xs ${c.textSecondary}`}>{aiPatterns.growth.insight}</p>
                     </div>
                   )}
 
@@ -1799,26 +1799,26 @@ const FocusPocus = ({ tool }) => {
                   {aiPatterns.core_blocker && (
                     <div className={`p-3 rounded-xl ${isDark ? 'bg-red-900/20 border border-red-800/40' : 'bg-red-50 border border-red-100'}`}>
                       <p className={`text-xs font-bold ${isDark ? 'text-red-300' : 'text-red-700'} mb-1`}>🚧 Core Blocker</p>
-                      <p className={`text-xs ${c.textSecondaryondary}`}>{aiPatterns.core_blocker}</p>
+                      <p className={`text-xs ${c.textSecondary}`}>{aiPatterns.core_blocker}</p>
                     </div>
                   )}
                   {aiPatterns.prescription && (
                     <div className={`p-3 rounded-xl ${isDark ? 'bg-emerald-900/20 border border-emerald-800/40' : 'bg-emerald-50 border border-emerald-100'}`}>
                       <p className={`text-xs font-bold ${isDark ? 'text-emerald-300' : 'text-emerald-700'} mb-1`}>💊 Prescription</p>
-                      <p className={`text-xs ${c.textSecondaryondary}`}>{aiPatterns.prescription}</p>
+                      <p className={`text-xs ${c.textSecondary}`}>{aiPatterns.prescription}</p>
                     </div>
                   )}
                   {aiPatterns.weekly_strategy && (
                     <div className={`p-3 rounded-xl ${isDark ? 'bg-cyan-900/20 border border-cyan-800/40' : 'bg-cyan-50 border border-cyan-100'}`}>
                       <p className={`text-xs font-bold ${isDark ? 'text-cyan-300' : 'text-cyan-700'} mb-1`}>📋 Weekly Strategy</p>
-                      <p className={`text-xs ${c.textSecondaryondary}`}>{aiPatterns.weekly_strategy}</p>
+                      <p className={`text-xs ${c.textSecondary}`}>{aiPatterns.weekly_strategy}</p>
                     </div>
                   )}
 
                   {/* Share snippet */}
                   {aiPatterns.share_snippet && (
                     <div className={`p-3 rounded-xl text-center ${isDark ? 'bg-zinc-700/50' : 'bg-zinc-50'}`}>
-                      <p className={`text-sm italic ${c.textSecondaryondary}`}>"{aiPatterns.share_snippet}"</p>
+                      <p className={`text-sm italic ${c.textSecondary}`}>"{aiPatterns.share_snippet}"</p>
                     </div>
                   )}
 
@@ -1892,7 +1892,7 @@ const FocusPocus = ({ tool }) => {
             {/* Distraction logger — always-visible bar */}
             <div className={`mt-4 p-3 rounded-xl ${isDark ? 'bg-zinc-700/30' : 'bg-zinc-50'}`}>
               <div className="flex items-center justify-between mb-1">
-                <span className={`text-xs font-bold ${c.textSecondaryondary}`}>📱 Distraction Log</span>
+                <span className={`text-xs font-bold ${c.textSecondary}`}>📱 Distraction Log</span>
                 {distractions.length > 0 && (
                   <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-amber-900/30 text-amber-300' : 'bg-amber-50 text-amber-700'}`}>
                     {distractions.length} logged
@@ -1921,7 +1921,7 @@ const FocusPocus = ({ tool }) => {
 
             {/* Session note / bookmark */}
             <div className={`mt-4 p-3 rounded-xl ${isDark ? 'bg-zinc-700/30' : 'bg-zinc-50'}`}>
-              <label className={`text-xs font-bold ${c.textSecondaryondary} mb-1.5 flex items-center gap-1.5`}>
+              <label className={`text-xs font-bold ${c.textSecondary} mb-1.5 flex items-center gap-1.5`}>
                 🔖 Session Bookmark
               </label>
               <input type="text" value={sessionNote} onChange={e => setSessionNote(e.target.value)}
@@ -1934,7 +1934,7 @@ const FocusPocus = ({ tool }) => {
             {/* Ambient sounds */}
             <div className={`mt-3 p-3 rounded-xl ${isDark ? 'bg-zinc-700/30' : 'bg-zinc-50'}`}>
               <div className="flex items-center justify-between mb-2">
-                <span className={`text-xs font-bold ${c.textSecondaryondary}`}>🎧 Ambient Sound</span>
+                <span className={`text-xs font-bold ${c.textSecondary}`}>🎧 Ambient Sound</span>
                 {activeAmbient && (
                   <button onClick={stopAmbient} className={`text-[10px] font-bold ${isDark ? 'text-red-400' : 'text-red-600'}`}>Stop</button>
                 )}
@@ -2005,7 +2005,7 @@ const FocusPocus = ({ tool }) => {
               <p className={`text-lg font-bold mb-4 ${uc.text}`}>
                 {NUDGE_MESSAGES[Math.min(currentUrgency, NUDGE_MESSAGES.length - 1)]}
               </p>
-              <p className={`text-sm mb-4 ${c.textSecondaryondary}`}>
+              <p className={`text-sm mb-4 ${c.textSecondary}`}>
                 You've been working on <strong className={c.text}>{sessionActivity}</strong> for <strong className={c.text}>{elapsedMin} minutes</strong>.
                 {overtimeFromOriginalMin > 0 && <> That's <strong className={uc.text}>{overtimeFromOriginalMin} min past</strong> your planned session.</>}
               </p>
@@ -2062,7 +2062,7 @@ const FocusPocus = ({ tool }) => {
             <h3 className={`text-xl font-bold ${c.text} mb-2`}>
               ☕ Break Time — {chainIndex + 1}/{chainConfig?.sessions.length} complete
             </h3>
-            <p className={`text-sm ${c.textSecondaryondary} mb-4`}>
+            <p className={`text-sm ${c.textSecondary} mb-4`}>
               Next session starts in {fmt(breakRemainingSec)}
             </p>
 
@@ -2090,7 +2090,7 @@ const FocusPocus = ({ tool }) => {
           {results && (
             <div ref={resultsRef} className={`${c.card} ${c.border} border rounded-2xl shadow-lg p-5`}>
               <h4 className={`text-sm font-bold ${c.text} mb-2`}>{results.headline}</h4>
-              <p className={`text-xs ${c.textSecondaryondary}`}>{results.message}</p>
+              <p className={`text-xs ${c.textSecondary}`}>{results.message}</p>
             </div>
           )}
         </div>
@@ -2189,7 +2189,7 @@ const FocusPocus = ({ tool }) => {
             <>
               <div className={`${c.card} ${c.border} border rounded-2xl shadow-lg p-6 text-center`}>
                 <h3 className={`text-2xl font-bold ${c.text} mb-3`}>{results.headline}</h3>
-                <p className={`text-sm ${c.textSecondaryondary} leading-relaxed max-w-lg mx-auto`}>{results.message}</p>
+                <p className={`text-sm ${c.textSecondary} leading-relaxed max-w-lg mx-auto`}>{results.message}</p>
               </div>
 
               {results.mandatory_actions?.length > 0 && (
@@ -2228,7 +2228,7 @@ const FocusPocus = ({ tool }) => {
                           <span className="text-sm">{BODY_EMOJIS[key] || '📋'}</span>
                           <span className={`text-xs font-bold ${c.text}`}>{BODY_LABELS[key] || key}</span>
                         </div>
-                        <p className={`text-xs ${c.textSecondaryondary} leading-relaxed`}>{val}</p>
+                        <p className={`text-xs ${c.textSecondary} leading-relaxed`}>{val}</p>
                       </div>
                     ))}
                   </div>
@@ -2241,7 +2241,7 @@ const FocusPocus = ({ tool }) => {
                     <h4 className={`text-sm font-bold ${c.text} mb-2 flex items-center gap-2`}>
                       <span className={isDark ? 'text-cyan-400' : 'text-cyan-600'}>🔖</span> Re-Entry Plan
                     </h4>
-                    <p className={`text-xs ${c.textSecondaryondary} leading-relaxed`}>{results.re_entry}</p>
+                    <p className={`text-xs ${c.textSecondary} leading-relaxed`}>{results.re_entry}</p>
                   </div>
                 )}
                 {results.next_session && (
@@ -2249,7 +2249,7 @@ const FocusPocus = ({ tool }) => {
                     <h4 className={`text-sm font-bold ${c.text} mb-2 flex items-center gap-2`}>
                       <span className={isDark ? 'text-emerald-400' : 'text-emerald-600'}>→</span> Next Session
                     </h4>
-                    <p className={`text-xs ${c.textSecondaryondary} leading-relaxed`}>{results.next_session}</p>
+                    <p className={`text-xs ${c.textSecondary} leading-relaxed`}>{results.next_session}</p>
                   </div>
                 )}
               </div>
@@ -2266,7 +2266,7 @@ const FocusPocus = ({ tool }) => {
           ) : (
             <div className={`${c.card} ${c.border} border rounded-2xl shadow-lg p-6 text-center`}>
               <h3 className={`text-xl font-bold ${c.text} mb-2`}>Session Ended</h3>
-              <p className={`text-sm ${c.textSecondaryondary} mb-4`}>
+              <p className={`text-sm ${c.textSecondary} mb-4`}>
                 Take a moment to stand up, drink water, and rest your eyes before starting again.
               </p>
             </div>
@@ -2323,7 +2323,7 @@ const FocusPocus = ({ tool }) => {
             </div>
             {!breakCoachResult ? (
               <div className="text-center">
-                <p className={`text-xs ${c.textSecondaryondary} mb-3`}>Get personalized guidance for a restorative break</p>
+                <p className={`text-xs ${c.textSecondary} mb-3`}>Get personalized guidance for a restorative break</p>
                 <button onClick={handleBreakCoach} disabled={breakCoachLoading}
                   className={`px-5 py-2 rounded-xl text-xs font-bold transition-colors ${isDark ? 'bg-cyan-900/40 text-cyan-300 hover:bg-cyan-900/60 border border-violet-700' : 'bg-cyan-50 text-cyan-700 hover:bg-cyan-100 border border-violet-200'}`}>
                   {breakCoachLoading ? <><span className='animate-spin inline-block mr-1'>{tool?.icon ?? '🎩'}</span>Coaching…</> : <>🧘 Get Break Coaching</>}
@@ -2334,25 +2334,25 @@ const FocusPocus = ({ tool }) => {
                 {breakCoachResult.acknowledgment && (
                   <div className={`p-3 rounded-xl ${isDark ? 'bg-cyan-900/20 border border-cyan-800/40' : 'bg-cyan-50 border border-cyan-100'}`}>
                     <p className={`text-xs font-bold ${isDark ? 'text-cyan-300' : 'text-cyan-700'} mb-1`}>💬 Acknowledgment</p>
-                    <p className={`text-xs ${c.textSecondaryondary}`}>{breakCoachResult.acknowledgment}</p>
+                    <p className={`text-xs ${c.textSecondary}`}>{breakCoachResult.acknowledgment}</p>
                   </div>
                 )}
                 {breakCoachResult.physical_reset && (
                   <div className={`p-3 rounded-xl ${isDark ? 'bg-emerald-900/20 border border-emerald-800/40' : 'bg-emerald-50 border border-emerald-100'}`}>
                     <p className={`text-xs font-bold ${isDark ? 'text-emerald-300' : 'text-emerald-700'} mb-1`}>🏃 Physical Reset</p>
-                    <p className={`text-xs ${c.textSecondaryondary}`}>{breakCoachResult.physical_reset}</p>
+                    <p className={`text-xs ${c.textSecondary}`}>{breakCoachResult.physical_reset}</p>
                   </div>
                 )}
                 {breakCoachResult.mental_transition && (
                   <div className={`p-3 rounded-xl ${isDark ? 'bg-cyan-900/20 border border-violet-800/40' : 'bg-cyan-50 border border-violet-100'}`}>
                     <p className={`text-xs font-bold ${isDark ? 'text-cyan-300' : 'text-cyan-700'} mb-1`}>🧠 Mental Transition</p>
-                    <p className={`text-xs ${c.textSecondaryondary}`}>{breakCoachResult.mental_transition}</p>
+                    <p className={`text-xs ${c.textSecondary}`}>{breakCoachResult.mental_transition}</p>
                   </div>
                 )}
                 {breakCoachResult.resume_tip && (
                   <div className={`p-3 rounded-xl ${isDark ? 'bg-amber-900/20 border border-amber-800/40' : 'bg-amber-50 border border-amber-100'}`}>
                     <p className={`text-xs font-bold ${isDark ? 'text-amber-300' : 'text-amber-700'} mb-1`}>🔖 Resume Tip</p>
-                    <p className={`text-xs ${c.textSecondaryondary}`}>{breakCoachResult.resume_tip}</p>
+                    <p className={`text-xs ${c.textSecondary}`}>{breakCoachResult.resume_tip}</p>
                   </div>
                 )}
               </div>

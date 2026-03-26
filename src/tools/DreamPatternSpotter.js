@@ -314,7 +314,7 @@ const DreamPatternSpotter = ({ tool }) => {
             <div className="space-y-6">
               {/* Dream Description */}
               <div>
-                <label htmlFor="dream" className={`block text-sm font-medium ${c.textSecondaryondary} mb-2`}>
+                <label htmlFor="dream" className={`block text-sm font-medium ${c.textSecondary} mb-2`}>
                   Dream description *
                 </label>
                 <textarea
@@ -329,7 +329,7 @@ const DreamPatternSpotter = ({ tool }) => {
 
               {/* Date */}
               <div>
-                <label htmlFor="date" className={`block text-sm font-medium ${c.textSecondaryondary} mb-2`}>
+                <label htmlFor="date" className={`block text-sm font-medium ${c.textSecondary} mb-2`}>
                   Date of dream
                 </label>
                 <input
@@ -343,7 +343,7 @@ const DreamPatternSpotter = ({ tool }) => {
 
               {/* Emotional Tone */}
               <div>
-                <label className={`block text-sm font-medium ${c.textSecondaryondary} mb-3`}>
+                <label className={`block text-sm font-medium ${c.textSecondary} mb-3`}>
                   Emotional tone (select all that apply)
                 </label>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -380,7 +380,7 @@ const DreamPatternSpotter = ({ tool }) => {
 
               {/* Life Context */}
               <div>
-                <label htmlFor="context" className={`block text-sm font-medium ${c.textSecondaryondary} mb-2`}>
+                <label htmlFor="context" className={`block text-sm font-medium ${c.textSecondary} mb-2`}>
                   What was happening in your life? (optional but helpful)
                 </label>
                 <textarea
@@ -658,10 +658,10 @@ const DreamPatternSpotter = ({ tool }) => {
                     {results.pattern_analysis.recurring_people.map((person, idx) => (
                       <div key={idx} className={`${c.cardAlt} border rounded-lg p-4`}>
                         <h4 className={`font-bold ${c.text} mb-2`}>{person.person_type}</h4>
-                        <p className={`text-sm ${c.textSecondaryondary} mb-1`}>
+                        <p className={`text-sm ${c.textSecondary} mb-1`}>
                           <strong>Role:</strong> {person.role_in_dreams}
                         </p>
-                        <p className={`text-sm ${c.textSecondaryondary}`}>
+                        <p className={`text-sm ${c.textSecondary}`}>
                           <strong>Possible connection:</strong> {person.possible_connection}
                         </p>
                         {person.frequency && (
@@ -733,10 +733,10 @@ const DreamPatternSpotter = ({ tool }) => {
                     {results.life_event_correlations.map((corr, idx) => (
                       <div key={idx} className={`${c.cardAlt} border rounded-lg p-4`}>
                         <h4 className={`font-semibold ${c.text} mb-2`}>Event: {corr.life_event}</h4>
-                        <p className={`text-sm ${c.textSecondaryondary} mb-2`}>
+                        <p className={`text-sm ${c.textSecondary} mb-2`}>
                           <strong>Dream changes:</strong> {corr.dream_changes}
                         </p>
-                        <p className={`text-sm ${c.textSecondaryondary}`}>
+                        <p className={`text-sm ${c.textSecondary}`}>
                           <strong>Pattern:</strong> {corr.pattern}
                         </p>
                       </div>
@@ -768,7 +768,7 @@ const DreamPatternSpotter = ({ tool }) => {
                       <div key={idx} className={`${c.cardAlt} border rounded-lg p-4`}>
                         <h4 className={`font-bold ${c.text} mb-2`}>{preoc.preoccupation}</h4>
                         {preoc.evidence && preoc.evidence.length > 0 && (
-                          <p className={`text-sm ${c.textSecondaryondary} mb-2`}>
+                          <p className={`text-sm ${c.textSecondary} mb-2`}>
                             <strong>Evidence:</strong> {preoc.evidence.join(', ')}
                           </p>
                         )}
@@ -807,7 +807,7 @@ const DreamPatternSpotter = ({ tool }) => {
                     </p>
                     <ul className="space-y-2">
                       {results.reflection_questions.map((q, idx) => (
-                        <li key={idx} className={`text-sm ${c.textSecondaryondary} flex items-start gap-2`}>
+                        <li key={idx} className={`text-sm ${c.textSecondary} flex items-start gap-2`}>
                           <span className="text-cyan-500 mt-0.5">?</span>
                           <span>{q}</span>
                         </li>
@@ -845,13 +845,13 @@ const DreamPatternSpotter = ({ tool }) => {
                     {results.insights.therapeutic_value && (
                       <div className={`${c.cardAlt} border rounded-lg p-4`}>
                         <h4 className={`font-semibold ${c.text} mb-2`}>Therapeutic Value:</h4>
-                        <p className={`text-sm ${c.textSecondaryondary}`}>{results.insights.therapeutic_value}</p>
+                        <p className={`text-sm ${c.textSecondary}`}>{results.insights.therapeutic_value}</p>
                       </div>
                     )}
                     {results.insights.growth_areas && (
                       <div className={`${c.cardAlt} border rounded-lg p-4`}>
                         <h4 className={`font-semibold ${c.text} mb-2`}>Growth Areas:</h4>
-                        <p className={`text-sm ${c.textSecondaryondary}`}>{results.insights.growth_areas}</p>
+                        <p className={`text-sm ${c.textSecondary}`}>{results.insights.growth_areas}</p>
                       </div>
                     )}
                   </div>

@@ -430,7 +430,7 @@ return (
 ### PF-12 · Common Typos
 
 ```bash
-grep -n "textSecondaryondary\|btnSecondaryondary" ComponentName.js
+grep -n "textSecondary\|btnSecondaryondary" ComponentName.js
 # Must return zero — fix: → textSecondary / btnSecondary
 
 grep -n ";;" ComponentName.js

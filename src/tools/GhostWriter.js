@@ -247,24 +247,24 @@ const GhostWriter = ({ tool }) => {
       <div className={`${c.card} ${c.border} border rounded-xl p-5 space-y-4`}>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label className={`text-xs font-bold ${c.textSecondaryondary} uppercase tracking-wide mb-1 block`}>👤 Who is this for?</label>
+            <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1 block`}>👤 Who is this for?</label>
             <input type="text" value={recipientName} onChange={e => setRecipientName(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') generate(); }}
               placeholder="Their name" className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
           </div>
           <div>
-            <label className={`text-xs font-bold ${c.textSecondaryondary} uppercase tracking-wide mb-1 block`}>🤝 Your relationship</label>
+            <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1 block`}>🤝 Your relationship</label>
             <input type="text" value={yourRelationship} onChange={e => setYourRelationship(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') generate(); }}
               placeholder="e.g., 'their manager for 2 years'" className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
           </div>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label className={`text-xs font-bold ${c.textSecondaryondary} uppercase tracking-wide mb-1 block`}>🎯 What they're applying for</label>
+            <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1 block`}>🎯 What they're applying for</label>
             <input type="text" value={whatFor} onChange={e => setWhatFor(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') generate(); }}
               placeholder="e.g., 'Senior Product Manager at Google'" className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
           </div>
           <div>
-            <label className={`text-xs font-bold ${c.textSecondaryondary} uppercase tracking-wide mb-1 block`}>⏱️ How long you've known them</label>
+            <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1 block`}>⏱️ How long you've known them</label>
             <input type="text" value={duration} onChange={e => setDuration(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') generate(); }}
               placeholder="e.g., '3 years'" className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
           </div>
@@ -273,13 +273,13 @@ const GhostWriter = ({ tool }) => {
 
       {/* Letter type */}
       <div className={`${c.card} ${c.border} border rounded-xl p-5`}>
-        <label className={`text-xs font-bold ${c.textSecondaryondary} uppercase tracking-wide mb-2 block`}>📄 Letter type</label>
+        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>📄 Letter type</label>
         <div className="flex flex-wrap gap-1.5">
           {LETTER_TYPES.map(opt => (
             <Pill key={opt.value} active={letterType === opt.value} onClick={() => setLetterType(opt.value)}>{opt.label}</Pill>
           ))}
         </div>
-        <label className={`text-xs font-bold ${c.textSecondaryondary} uppercase tracking-wide mt-4 mb-2 block`}>📏 Formality</label>
+        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mt-4 mb-2 block`}>📏 Formality</label>
         <div className="flex flex-wrap gap-1.5">
           {FORMALITY_OPTIONS.map(opt => (
             <Pill key={opt.value} active={formalityLevel === opt.value} onClick={() => setFormalityLevel(opt.value)}>{opt.label}</Pill>
@@ -289,7 +289,7 @@ const GhostWriter = ({ tool }) => {
 
       {/* Qualities */}
       <div className={`${c.card} ${c.border} border rounded-xl p-5`}>
-        <label className={`text-xs font-bold ${c.textSecondaryondary} uppercase tracking-wide mb-1 block`}>⭐ Qualities to highlight</label>
+        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1 block`}>⭐ Qualities to highlight</label>
         <p className={`text-xs ${c.textMuteded} mb-2`}>Select the traits that stand out about this person</p>
         <div className="flex flex-wrap gap-1.5">
           {QUALITY_OPTIONS.map(q => (
@@ -300,7 +300,7 @@ const GhostWriter = ({ tool }) => {
 
       {/* Anecdotes */}
       <div className={`${c.card} ${c.border} border rounded-xl p-5`}>
-        <label className={`text-xs font-bold ${c.textSecondaryondary} uppercase tracking-wide mb-1 block`}>📝 Specific examples or stories</label>
+        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1 block`}>📝 Specific examples or stories</label>
         <p className={`text-xs ${c.textMuteded} mb-3`}>Even rough bullet points work — we'll turn them into compelling mini-stories</p>
         <div className="space-y-2">
           {anecdotes.map((a, idx) => (
@@ -321,7 +321,7 @@ const GhostWriter = ({ tool }) => {
 
       {/* Context */}
       <div className={`${c.card} ${c.border} border rounded-xl p-5`}>
-        <label className={`text-xs font-bold ${c.textSecondaryondary} uppercase tracking-wide mb-1 block`}>💬 Anything else?</label>
+        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1 block`}>💬 Anything else?</label>
         <input type="text" value={additionalContext} onChange={e => setAdditionalContext(e.target.value)}
           placeholder="e.g., 'They're career-switching from marketing to product management'"
           className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
@@ -416,7 +416,7 @@ const GhostWriter = ({ tool }) => {
                 {/* Refinement input */}
                 {refiningVersion === v.style && (
                   <div className={`${c.cardAlt} ${c.border} border rounded-xl p-4 space-y-3`}>
-                    <label className={`text-sm font-semibold ${c.textSecondaryondary}`}>How should I adjust this?</label>
+                    <label className={`text-sm font-semibold ${c.textSecondary}`}>How should I adjust this?</label>
                     <textarea value={refinementText} onChange={e => setRefinementText(e.target.value)}
                       placeholder='e.g., "Make it shorter", "Add the client presentation story", "Sound warmer"'
                       className={`w-full p-3 border rounded-lg ${c.input} outline-none focus:ring-2 resize-none text-sm`} rows={2} />
@@ -444,7 +444,7 @@ const GhostWriter = ({ tool }) => {
               {results.placeholders_to_fill.map((p, idx) => (
                 <div key={idx} className={`p-3 rounded-lg ${c.cardAlt} ${c.border} flex items-start gap-3`}>
                   <code className={`text-xs font-mono px-1.5 py-0.5 rounded ${c.badge} flex-shrink-0`}>{p.placeholder}</code>
-                  <span className={`text-xs ${c.textSecondaryondary}`}>→ {p.suggestion}</span>
+                  <span className={`text-xs ${c.textSecondary}`}>→ {p.suggestion}</span>
                 </div>
               ))}
             </div>
@@ -471,7 +471,7 @@ const GhostWriter = ({ tool }) => {
             onToggle={() => setShowWritingTips(!showWritingTips)}>
             <div className="space-y-2 mt-4">
               {results.writing_tips.map((tip, idx) => (
-                <p key={idx} className={`text-sm ${c.textSecondaryondary}`}>• {tip}</p>
+                <p key={idx} className={`text-sm ${c.textSecondary}`}>• {tip}</p>
               ))}
             </div>
           </Section>
@@ -489,7 +489,7 @@ const GhostWriter = ({ tool }) => {
         {/* Cross-references */}
         <div className={`p-4 rounded-2xl border ${c.card} ${c.border}`}>
           <p className={`text-xs font-bold ${c.textMuteded} uppercase tracking-wide mb-2`}>🔗 Related Tools</p>
-          <div className={`space-y-1.5 text-xs ${c.textSecondaryondary}`}>
+          <div className={`space-y-1.5 text-xs ${c.textSecondary}`}>
             <p>Writing a tough message instead? <a href="/VelvetHammer" target="_blank" rel="noopener noreferrer" className={linkStyle}>Velvet Hammer</a> transforms angry drafts into professional messages.</p>
             <p>Need to craft a social caption about your team? <a href="/CaptionMagic" target="_blank" rel="noopener noreferrer" className={linkStyle}>Caption Magic</a> generates authentic social media captions.</p>
           </div>

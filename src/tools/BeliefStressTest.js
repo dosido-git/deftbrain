@@ -136,7 +136,7 @@ const BeliefStressTest = ({ tool }) => {
               <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
                 <span>{tool.icon}</span> Belief Stress Test
               </h2>
-              <p className={`text-sm ${c.textSecondaryondary}`}>Your guiding beliefs, pressure-tested. Where they hold. Where they break.</p>
+              <p className={`text-sm ${c.textSecondary}`}>Your guiding beliefs, pressure-tested. Where they hold. Where they break.</p>
             </div>
             <div>
               <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>
@@ -252,15 +252,15 @@ const BeliefStressTest = ({ tool }) => {
                 {expanded.hidden && (
                   <div className={`px-5 pb-4 space-y-3 border-t ${c.border} pt-4`}>
                     {results.the_hidden_structure.what_its_really_saying && (
-                      <p className={`text-sm ${c.textSecondaryondary}`}><span className={`font-semibold ${c.text}`}>What it's really saying:</span> {results.the_hidden_structure.what_its_really_saying}</p>
+                      <p className={`text-sm ${c.textSecondary}`}><span className={`font-semibold ${c.text}`}>What it's really saying:</span> {results.the_hidden_structure.what_its_really_saying}</p>
                     )}
                     {results.the_hidden_structure.the_psychological_function && (
-                      <p className={`text-sm ${c.textSecondaryondary}`}><span className={`font-semibold ${c.text}`}>Psychological function:</span> {results.the_hidden_structure.the_psychological_function}</p>
+                      <p className={`text-sm ${c.textSecondary}`}><span className={`font-semibold ${c.text}`}>Psychological function:</span> {results.the_hidden_structure.the_psychological_function}</p>
                     )}
                     {results.the_hidden_structure.when_it_becomes_harmful && (
                       <div className={`p-3 rounded-xl border ${isDark ? 'bg-red-900/15 border-red-700/40' : 'bg-red-50 border-red-200'}`}>
                         <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${isDark ? 'text-red-300' : 'text-red-700'}`}>When it becomes harmful</p>
-                        <p className={`text-sm ${c.textSecondaryondary}`}>{results.the_hidden_structure.when_it_becomes_harmful}</p>
+                        <p className={`text-sm ${c.textSecondary}`}>{results.the_hidden_structure.when_it_becomes_harmful}</p>
                       </div>
                     )}
                   </div>
