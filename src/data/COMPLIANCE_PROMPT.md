@@ -60,7 +60,7 @@ These have been violated and corrected. They must not require correction again:
 
 **Submit button:** `tool?.icon` in both loading AND idle branches. Never a hardcoded emoji in the idle branch.
 
-**Cross-refs:** Maximum 3. Emoji before name. `/PascalCase` hrefs. No `target="_blank"`. Pre-result ref below submit button. Post-result refs inside results block.
+**Cross-refs:** Mandatory — 1 to 3 links, sourced from `cross-reference-map.md`. Zero cross-refs is a violation. Emoji before name. `/PascalCase` hrefs. No `target="_blank"`. Pre-result ref below submit button. Post-result refs inside results block.
 
 ---
 

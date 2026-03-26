@@ -537,7 +537,7 @@ export const tools = [
   icon: "💣",
   categories: ['Read the Room', 'Me'],
   headerColor: "#e0b8b8",
-  description: "We all have things about ourselves we don't reveal to others. Examines what it's about, identifies what it costs you to hide it; explores what would actually happen if you said it, and scripts it three ways: gentle opening, direct statement, and full truth. Ends with permission to not say it — and the honest cost of that choice.",
+  description: "We all have things about ourselves we don't reveal to others. Truth Bomb examines what it's about, identifies what it costs you to hide it; explores what would actually happen if you said it, and scripts it three ways: gentle opening, direct statement, and full truth. Ends with permission to not say it — and the honest cost of that choice.",
   guide: {
       overview: "TruthBomb handles the unsaid thing — not with therapy, but with clarity. It examines what's really driving the silence, what it's costing you to maintain it, and what would realistically happen if you said it. Then it scripts three versions: a gentle opening, a direct statement, and the full unfiltered truth.",
       howToUse: [
@@ -1556,8 +1556,8 @@ export const tools = [
   icon: "🧠",
   categories: ['Go Deep!'],
   headerColor: "#d4dde8",
-  description: "Paste a lecture transcript from Zoom, Teams, Otter.ai, or your own notes and get the 20% that matters. Four modes: Distill extracts ranked bullet points with testable tags and professor signals. Study Guide builds a structured review with memorize-vs-understand labels, mnemonics, and exam strategy. Test Prep generates practice questions (MC, short answer, essay, T/F, fill-in-blank) with hidden answers, wrong-answer explanations, and grading hints. Connect analyzes 2-5 lectures to find recurring themes, concept chains, and cumulative exam targets.",
-  guide: {
+  description: "Paste a lecture transcript from Zoom, Teams, Otter.ai, or your own notes and get the 20% that matters. Four modes: Distill, Study Guide, Test Prep and Connect.", 
+    guide: {
     overview: "Recall solves the core lecture problem: 90 minutes of content where maybe 15 minutes is testable. Professors repeat the important stuff, signal it with emphasis phrases, and bury it in tangents and anecdotes. Recall detects those signals and extracts the material you'd highlight if you had perfect attention for the whole session. Four modes cover different study needs — from quick-reference bullets to full practice exams.",
     howToUse: [
       "Pick a mode: Distill (bullet points), Study Guide (structured review), Test Prep (practice questions), or Connect (cross-lecture themes)",
@@ -3027,7 +3027,7 @@ export const tools = [
   tags: ['plant', 'garden', 'water', 'dying', 'care', 'houseplant'],
   icon: '🪴',
   categories: ['The Grind'],
-  headerColor: "#d4dde8",
+  headerColor: "#1e2a3a",
   description: 'Diagnose struggling plants and get step-by-step rescue plans. Upload a photo or describe symptoms to identify species, analyze problems (yellowing, wilting, spots), and receive prioritized action plans with recovery timelines.',
   guide: {
     overview: "Your plant is dying and you don't know why. This tool uses AI image analysis to identify your plant species, diagnose problems (overwatering, pests, nutrient deficiency), and provide a prioritized rescue plan. Upload a photo of the affected leaves/stems or describe symptoms, and get expert advice within seconds.",

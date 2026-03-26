@@ -376,8 +376,7 @@ router.post('/friendship-fade-alerter/health-insight', async (req, res) => {
     const logBlock = contactLog?.length
       ? `
 CONTACT LOG (most recent first):
-${contactLog.map(l => `- ${l.date}: "${l.note || 'Reached out'}"${l.initiator === 'them' ? ' (they initiated)' : ''}`).join('
-')}`
+${contactLog.map(l => `- ${l.date}: "${l.note || 'Reached out'}"${l.initiator === 'them' ? ' (they initiated)' : ''}`).join('\n')}`
       : '';
 
     const reciprocityBlock = reciprocity
@@ -448,8 +447,7 @@ router.post('/friendship-fade-alerter/say-it-coach', async (req, res) => {
     const logBlock = contactLog?.length
       ? `
 RECENT INTERACTIONS:
-${contactLog.map(l => `- ${l.date}: "${l.note || 'Reached out'}" (${l.initiator === 'them' ? 'they initiated' : 'you initiated'})`).join('
-')}`
+${contactLog.map(l => `- ${l.date}: "${l.note || 'Reached out'}" (${l.initiator === 'them' ? 'they initiated' : 'you initiated'})`).join('\n')}`
       : '';
 
     const prompt = `Someone has noticed they always initiate contact with a person in their life. They want help deciding whether to address it — and if so, how.

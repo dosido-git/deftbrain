@@ -12,7 +12,7 @@ Before writing the first line of any new tool component, or making structural ch
 2. **State the header pattern** you will use: persistent `<h2>` + tagline, inset `border-b`, inside padded wrapper.
 3. **State the c block source**: copied verbatim from PF-2, not reconstructed.
 4. **State the hook order**: useClaudeAPI → useTheme → c block → linkStyle → useState → useRef → usePersistentState → handlers → buildFullText → useRegisterActions → useEffect scroll → useEffect keyboard → render helpers → return.
-5. **Confirm cross-ref count** will be ≤ 3, with emoji before name, no `target="_blank"`.
+5. **Confirm cross-refs are present**: 1–3 links from `cross-reference-map.md`, emoji before name, `/PascalCase` hrefs, no `target="_blank"`. Zero cross-refs is a violation.
 6. **Confirm the root div** is `<div className={\`space-y-4 \${c.text}\`}>` with no background color.
 
 Only after all six steps are confirmed may writing begin.
@@ -347,7 +347,13 @@ useRegisterActions(buildFullText(), tool?.title || 'Tool Name'); // AFTER buildF
 
 ### PF-9 · Cross-References
 
+Cross-references are **mandatory**. Every tool must link to at least one related tool. Absence of cross-refs is a violation, not a pass.
+
 ```bash
+# MANDATORY — must have at least 1, no more than 3:
+grep -c 'href="/' ComponentName.js
+# Zero results = VIOLATION. More than 3 = VIOLATION.
+
 # No target=_blank:
 grep -n 'target=' ComponentName.js
 # Must return zero results
@@ -356,17 +362,19 @@ grep -n 'target=' ComponentName.js
 grep -n 'href=' ComponentName.js
 # Each must be /ToolName format
 
-# Count (max 3):
-grep -c 'href="/' ComponentName.js
-
 # Emoji before name:
 grep -n 'href="/' ComponentName.js
 # Each link text must start with an emoji
 ```
 
+**Placement rules:**
+- **Pre-result:** one inline sentence below the submit button, inside the input card
+- **Post-result:** a `🔗 Related tools` block inside the results section
+- Use `cross-reference-map.md` to find the correct tools for each cluster
+
 **Correct pattern:**
 ```jsx
-<div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
   <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 Related tools</p>
   <div className="flex flex-wrap gap-3">
     <a href="/ToolNameA" className={`text-xs ${linkStyle}`}>🔨 Tool Name A</a>
