@@ -59,34 +59,40 @@ app.use('/api', (req, res, next) => {
 });
 
 // ── Case-insensitive tool route redirect ──
-// Always reads canonical IDs from tools.js (authoritative source).
-// Also scans build/ subdirectories in production to catch any extras.
+// IDs are hardcoded here so this works in production where src/ is not deployed.
+// To add a new tool: append its exact id from tools.js to TOOL_IDS below.
 // Redirects /namestorm → /NameStorm, /plantrescue → /PlantRescue, etc.
 const fs = require('fs');
+const TOOL_IDS = [
+  'AlternatePath','AnalogyEngine','ApologyCalibrator','ArgumentSimulator',
+  'AwkwardSilenceFiller','BatchFlow','BeliefStressTest','BikeMedic',
+  'BillRescue','Bookmark','BragSheetBuilder','BrainDumpBuddy','BrainRoulette',
+  'BrainStateDeejay','BuyWise','CaptionMagic','ChaosPilot','ColdOpenCraft',
+  'ComebackCooker','ComplaintEscalationWriter','ConflictCoach','ContextCollapse',
+  'ContrastReport','CrashPredictor','CrisisPrioritizer','CrowdWisdom','DateNight',
+  'DebateMe','DecisionCoach','DecoderRing','DifficultTalkCoach','DoctorVisitTranslator',
+  'DopamineMenuBuilder','DreamPatternSpotter','EgoKiller','EmailUrgencyTriager',
+  'FakeReviewDetective','FanTheory','FinalWish','FocusPocus','FocusSoundArchitect',
+  'FriendshipFadeAlerter','FutureProof','GentlePushGenerator','GhostWriter',
+  'Giftology','GratitudeDebtClearer','GravityWell','HecklerPrep','HistoryToday',
+  'HobbyMatch','JargonAssassin','LaundroMat','LayoverMaximizer','LazyWorkoutAdapter',
+  'LeaseTrapDetector','LeverageLogic','LuckSurface','MagicMouth','MarkupDetective',
+  'MeetingBSDetector','MeetingHijackPreventer','MicroAdventureMapper','MiseEnPlace',
+  'MoneyDiplomat','NameAudit','NameStorm','NameThatFeeling','NoiseCanceler',
+  'OnePercenter','PaperDigest','PartyArchitect','PetWeirdnessDecoder','PlainTalk',
+  'PlantRescue','PlotHole','PlotTwist','PreMortem','ProcedureProbe','Recall',
+  'RecipeChaosSolver','RentersDepositSaver','RoastMe','RoomReader','RoommateCourt',
+  'RulebookBreaker','SafeWalk','SayItRight','SensoryMinefieldMapper','SignalVsNoise',
+  'SixDegreesOfMe','SkillGapMap','SocialEnergyAudit','SpiralStopper','SubSweep',
+  'SubscriptionGuiltTrip','TaskAvalancheBreaker','TheAlibi','TheDebrief',
+  'TheFinalWord','TheGap','TheRunthrough','TimeWarp','TipOfTongue','ToastWriter',
+  'ToolFinder','TruthBomb','UpsellShield','VelvetHammer','VirtualBodyDouble',
+  'WaitingModeLiberator','WardrobeChaosHelper','WhatIf','WhatsMyVibe',
+  'WhereDidTheTimeGo','WrongAnswersOnly',
+];
 const toolIdMap = {};
-try {
-  // Always parse tools.js — it's the authoritative source regardless of environment
-  const toolsPath = path.join(__dirname, '..', 'src', 'data', 'tools.js');
-  if (fs.existsSync(toolsPath)) {
-    const toolsContent = fs.readFileSync(toolsPath, 'utf8');
-    const idRegex = /\bid:\s*['"]([^'"]*)['"]/g;
-    let m;
-    while ((m = idRegex.exec(toolsContent)) !== null) {
-      if (m[1]) toolIdMap[m[1].toLowerCase()] = m[1];
-    }
-    console.log(`Tool ID map loaded from tools.js: ${Object.keys(toolIdMap).length} tools`);
-  }
-  // Also scan build/ subdirectories — supplements the map, never replaces it
-  const buildDir = path.join(__dirname, '..', 'build');
-  if (fs.existsSync(buildDir)) {
-    fs.readdirSync(buildDir, { withFileTypes: true })
-      .filter(d => d.isDirectory() && !d.name.startsWith('.'))
-      .forEach(d => { if (!toolIdMap[d.name.toLowerCase()]) toolIdMap[d.name.toLowerCase()] = d.name; });
-    console.log(`Tool ID map supplemented from build/: ${Object.keys(toolIdMap).length} total`);
-  }
-} catch (e) {
-  console.warn('Could not load tool ID map:', e.message);
-}
+TOOL_IDS.forEach(id => { toolIdMap[id.toLowerCase()] = id; });
+console.log(`Tool ID map: ${Object.keys(toolIdMap).length} tools`);
 
 app.use((req, res, next) => {
   // Only apply to non-API, non-static asset paths
