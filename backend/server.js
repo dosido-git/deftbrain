@@ -156,9 +156,14 @@ app.get('/api/endpoints', (req, res) => {
 if (IS_PRODUCTION) {
   app.use(express.static(path.join(__dirname, '..', 'build')));
   app.get('*', (req, res) => {
-    // Strip leading slash and trailing slash, then look up canonical ID
     const slug = req.path.replace(/^\/|\/$/g, '');
     const canonical = slug ? toolIdMap[slug.toLowerCase()] : null;
+    // If case doesn't match, redirect — never serve at the wrong URL
+    if (canonical && canonical !== slug) {
+      res.set('Cache-Control', 'no-store');
+      return res.redirect(301, `/${canonical}`);
+    }
+    // Case already correct — serve prerendered file if it exists
     if (canonical) {
       const prerendered = path.join(__dirname, '..', 'build', canonical, 'index.html');
       if (fs.existsSync(prerendered)) return res.sendFile(prerendered);
