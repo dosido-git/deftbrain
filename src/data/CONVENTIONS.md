@@ -92,6 +92,7 @@ const c = {
                         : 'border-cyan-600 bg-cyan-100 text-cyan-900',
   pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500'
                         : 'border-gray-300 text-gray-500 hover:border-gray-400',
+  required:      isDark ? 'text-amber-400' : 'text-amber-500',
 };
 // Always include these two alias lines immediately after the closing brace:
 c.textMuteded = c.textMuted;
@@ -260,6 +261,26 @@ grep -n "document.addEventListener.*keydown" ComponentName.js -A5 | grep -v "Ref
 # canSubmit check — handler must not bypass disabled logic:
 grep -n "disabled={" ComponentName.js | grep -v "loading" | head -5
 # Any disabled condition beyond just loading must be mirrored as a canSubmitRef
+
+# COVERAGE CHECK 1 — multi-view tools must wire every submit-capable view:
+grep -c "setActiveTab\|setView\|activeTab ===\|view ===" ComponentName.js
+# If result > 2, this is a multi-view tool. Then run:
+grep -n "viewRef\|tabRef\|modeRef" ComponentName.js
+# Must return at least one result — zero on a multi-view tool = FAIL (keyboard broken on secondary views)
+grep -n "viewRef\.current\|tabRef\.current\|modeRef\.current" ComponentName.js | grep -v "useRef\|\.current ="
+# Must appear inside the keyboard handler body, not just as assignment
+
+# COVERAGE CHECK 2 — count async submit handlers vs wired refs:
+grep -c "const handle[A-Z][a-zA-Z]* = async\|async function handle[A-Z]" ComponentName.js
+# Note the count (N). Then verify N matching handleXxxRef.current?.() calls exist:
+grep -n "Ref\.current?.()" ComponentName.js
+# Count must equal number of distinct submit handlers exposed by the tool.
+# Fewer refs than handlers = some submit action unreachable by keyboard.
+
+# COVERAGE CHECK 3 — every submit view has its own canRef:
+grep -n "canSubmitRef\|can[A-Z][a-zA-Z]*Ref" ComponentName.js
+# Must have one canRef per submit-capable view.
+# Each canRef must mirror that view's button's disabled condition — read and verify.
 ```
 
 **Correct pattern — single mode:**
@@ -306,6 +327,14 @@ else handleAnalyzeRef.current?.();
 ```bash
 grep -n "setTimeout" ComponentName.js | grep -v "clearTimeout"
 # Any hit is a violation — every setTimeout needs clearTimeout in the return
+
+# COVERAGE CHECK — every below-fold result needs a scroll useEffect:
+grep -n "const \[.*[Rr]esult\b\|const \[results\b" ComponentName.js | grep "usePersistentState\|useState" | grep -v "Loading\|Ref"
+# Note the count (N) of distinct result variables.
+grep -n "scrollIntoView" ComponentName.js | wc -l
+# If scroll count < result count, flag each un-scrolled result for review.
+# Not every result requires scroll (e.g. results that replace the form above the fold),
+# but any result that appears below existing content with no scroll = likely UX bug.
 ```
 
 **Correct pattern:**
@@ -328,6 +357,13 @@ useEffect(() => {
 # TDZ check — useRegisterActions must come AFTER buildFullText:
 grep -n "useRegisterActions\|const buildFullText\|const buildText\|const buildCopy" ComponentName.js
 # useRegisterActions line number must be GREATER than build function line number
+
+# COVERAGE CHECK — buildFullText must include every result variable:
+grep -n "const \[.*[Rr]esult\b\|const \[results\b" ComponentName.js | grep "usePersistentState\|useState" | grep -v "Loading\|Ref"
+# Note each result variable name. Then verify each one appears inside the build function body:
+grep -n "buildFullText\|buildText\|buildCopy\|buildFull" ComponentName.js
+# Read the build function (use view tool) — any result variable absent from it
+# means that content is never included in copy/export. That is a silent data loss.
 ```
 
 **Correct pattern:**
@@ -430,7 +466,7 @@ return (
 ### PF-12 · Common Typos
 
 ```bash
-grep -n "textSecondary\|btnSecondaryondary" ComponentName.js
+grep -n "textSecondaryondary\|btnSecondaryondary" ComponentName.js
 # Must return zero — fix: → textSecondary / btnSecondary
 
 grep -n ";;" ComponentName.js
@@ -476,6 +512,49 @@ grep -n "⏳" ComponentName.js
     : <><span className="mr-1">{tool?.icon ?? '❓'}</span> Submit Label</>}
 </button>
 ```
+
+---
+
+### PF-15 · Required Field Asterisks
+
+Asterisks on required fields are **mandatory**. Every required input must have a visible `*` rendered using `c.required` (amber). A tool with any unasterisked required field is a compliance failure. Muted or red asterisks are also failures.
+
+**Scan:**
+```bash
+# Confirm c.required is defined in the c block:
+grep -n "required:" ComponentName.js | head -3
+# Must show: required: isDark ? 'text-amber-400' : 'text-amber-500'
+
+# Confirm c.required is used:
+grep -n "c\.required" ComponentName.js
+# Must return at least one result
+
+# Scan for asterisks NOT using c.required:
+grep -n '"\*"\|'"'"'\*'"'" ComponentName.js | grep -v "c\.required"
+# Must return zero results — all asterisks must go through c.required
+
+# Check labels on required fields have an asterisk:
+grep -n "<label" ComponentName.js | grep -v "\*" | head -20
+# Review each — any label for a required input without an asterisk is a FAIL
+```
+
+**Correct pattern:**
+```jsx
+<label className={`block text-sm font-medium ${c.labelText} mb-1`}>
+  Describe the behavior <span className={c.required}>*</span>
+</label>
+<textarea ... />
+```
+
+**Rules:**
+| Rule | Detail |
+|------|--------|
+| Asterisk is mandatory | Every required field must have one — no exceptions |
+| Color | `c.required` only — `text-amber-400` dark / `text-amber-500` light |
+| Never `c.textMuted` | Muted asterisks are invisible and therefore useless |
+| Never `text-red-500` | Red belongs to the error/danger semantic — not form marking |
+| Placement | Inside the `<label>`, after the label text, in a `<span className={c.required}>*</span>` |
+| Optional fields | No asterisk — silence means optional |
 
 ---
 

@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { Link } from 'react-router-dom';
 
 import BrandMark from './BrandMark';
+import ToolFinderWizard from './ToolFinderWizard';
 
 // ════════════════════════════════════════════════════════════
 // BRAND COLORS — Navy / Gold / Sand
@@ -268,53 +269,8 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
         <BrandMark direction="left" size="lg" isDark={false} showTagline={true} />
       </header>
 
-      {/* ═══════════ HERO SEARCH ═══════════ */}
-      <div className="w-full max-w-sm mx-auto -mt-2 mb-7 px-2 pt-5">
-        <p className="text-center text-[10px] font-extrabold uppercase tracking-[0.15em] mb-3"
-           style={{ color: CLR.warm500 }}>
-          How can we help…?
-        </p>
-        <div className="relative">
-          <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-base pointer-events-none">🔍</span>
-          <input
-            ref={searchRef}
-            type="text"
-            value={searchTerm}
-            onChange={(e) => { setSearchTerm(e.target.value); setActiveCategory('All'); }}
-            placeholder="Type a word or two…"
-            className="w-full pl-10 pr-10 py-2 rounded-xl text-sm font-medium outline-none transition-all"
-            style={{
-              border: `2px solid ${CLR.sand300}`,
-              background: '#fff',
-              color: CLR.warm800,
-              fontFamily: 'inherit',
-            }}
-            onFocus={e  => { e.target.style.borderColor = CLR.gold500; e.target.style.boxShadow = `0 0 0 3px ${CLR.gold100}`; }}
-            onBlur={e   => { e.target.style.borderColor = CLR.sand300; e.target.style.boxShadow = 'none'; }}
-          />
-          <div className="absolute right-2.5 top-1/2 -translate-y-1/2">
-            {searchTerm ? (
-              <button onClick={() => setSearchTerm('')}
-                      className="p-1 rounded-lg transition-colors"
-                      style={{ color: CLR.warm500 }}>
-                <span className="w-3.5 h-3.5 flex items-center justify-center text-xs">✕</span>
-              </button>
-            ) : (
-              <kbd className="hidden sm:flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold"
-                   style={{ background: CLR.sand100, border: `1px solid ${CLR.sand300}`, color: CLR.warm500 }}>
-                ⌘K
-              </kbd>
-            )}
-          </div>
-        </div>
-        {isSearching && (
-          <p className="text-center text-[11px] mt-2" style={{ color: CLR.warm500 }}>
-            {filteredTools.length === 0
-              ? 'No tools found — try different words'
-              : `${filteredTools.length} tool${filteredTools.length !== 1 ? 's' : ''} found`}
-          </p>
-        )}
-      </div>
+      {/* ═══════════ TOOL FINDER WIZARD ═══════════ */}
+      {!isSearching && <ToolFinderWizard />}
 
       {/* ═══════════ CATEGORY STRIP ═══════════ */}
       <div className="flex items-center mb-1" style={{ paddingLeft: 12 }}>
@@ -390,7 +346,10 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
                 ? 'No tools found — try different words'
                 : `${filteredTools.length} tool${filteredTools.length !== 1 ? 's' : ''} for "${searchTerm}"`}
             </p>
-            <SortBtn sortMode={sortMode} setSortMode={setSortMode} />
+            <div className="flex items-center gap-2">
+              <SearchBox searchRef={searchRef} searchTerm={searchTerm} setSearchTerm={setSearchTerm} setActiveCategory={setActiveCategory} />
+              <SortBtn sortMode={sortMode} setSortMode={setSortMode} />
+            </div>
           </div>
         )}
 
@@ -423,6 +382,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
               </span>
             </div>
             <div className="flex items-center gap-2">
+              <SearchBox searchRef={null} searchTerm={searchTerm} setSearchTerm={setSearchTerm} setActiveCategory={setActiveCategory} />
               <SortBtn sortMode={sortMode} setSortMode={setSortMode} />
               <button
                 onClick={() => selectCategory('All')}
@@ -438,7 +398,8 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
 
         {/* Sort button for plain All view */}
         {!isSearching && activeCategory === 'All' && (
-          <div className="flex justify-end mb-3">
+          <div className="flex items-center justify-end gap-2 mb-3">
+            <SearchBox searchRef={searchRef} searchTerm={searchTerm} setSearchTerm={setSearchTerm} setActiveCategory={setActiveCategory} />
             <SortBtn sortMode={sortMode} setSortMode={setSortMode} />
           </div>
         )}
@@ -515,6 +476,71 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
 // ════════════════════════════════════════════════════════════
 // SORT BUTTON
 // ════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════
+// COMPACT SEARCH BOX
+// ════════════════════════════════════════════════════════════
+function SearchBox({ searchRef, searchTerm, setSearchTerm, setActiveCategory }) {
+  return (
+    <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+      <span style={{
+        position: 'absolute', left: 7, fontSize: 11,
+        pointerEvents: 'none', color: CLR.warm500, lineHeight: 1,
+      }}>🔍</span>
+      <input
+        ref={searchRef}
+        type="text"
+        value={searchTerm}
+        onChange={e => { setSearchTerm(e.target.value); setActiveCategory('All'); }}
+        placeholder="Find"
+        style={{
+          paddingLeft: 22, paddingRight: searchTerm ? 22 : 8,
+          paddingTop: 5, paddingBottom: 5,
+          width: searchTerm ? 320 : 160,
+          border: `1.5px solid ${CLR.sand300}`,
+          borderRadius: 8,
+          background: '#fff',
+          color: CLR.warm800,
+          fontSize: 12,
+          fontWeight: 600,
+          fontFamily: 'inherit',
+          outline: 'none',
+          transition: 'width 0.2s, border-color 0.15s, box-shadow 0.15s',
+        }}
+        onKeyDown={e => {
+          if (e.key === 'Escape') {
+            setSearchTerm('');
+            e.target.style.width = '160px';
+            e.target.style.borderColor = CLR.sand300;
+            e.target.style.boxShadow = 'none';
+            e.target.blur();
+          }
+        }}
+        onFocus={e => {
+          e.target.style.width = '320px';
+          e.target.style.borderColor = CLR.gold500;
+          e.target.style.boxShadow = `0 0 0 2px ${CLR.gold100}`;
+        }}
+        onBlur={e => {
+          if (!searchTerm) e.target.style.width = '160px';
+          e.target.style.borderColor = CLR.sand300;
+          e.target.style.boxShadow = 'none';
+        }}
+      />
+      {searchTerm && (
+        <button
+          onClick={() => setSearchTerm('')}
+          style={{
+            position: 'absolute', right: 5,
+            background: 'none', border: 'none',
+            cursor: 'pointer', color: CLR.warm500,
+            fontSize: 10, lineHeight: 1, padding: 2,
+          }}
+        >✕</button>
+      )}
+    </div>
+  );
+}
+
 function SortBtn({ sortMode, setSortMode }) {
   return (
     <button

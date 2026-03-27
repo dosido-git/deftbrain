@@ -418,11 +418,15 @@ const linkStyle = isDark
   # Exception: standalone CopyBtn/PrintBtn for per-item actions are still fine
   ```
 
-- [ ] 🔍 **`useRegisterActions` called with correct content** — passes the tool's full export string (e.g. `buildFullExport()`) and `tool?.title`. Content must include `BRAND` so copy output ends with the DeftBrain attribution line.
+- [ ] 🔍 **`useRegisterActions` called with correct content — and content covers all result states** — passes the tool's full export string and `tool?.title`. For multi-result tools, every result variable must appear in the build function. Missing a result variable means that content is silently excluded from copy/export.
   ```bash
   grep -n "useRegisterActions" ComponentName.js
-  # Must show content builder function (buildFullExport, buildText, etc.) passed as first arg
-  # Must NOT pass an empty string or null — that hides the ActionBar entirely
+  # Must show content builder function passed as first arg — not empty string or null
+
+  # COVERAGE CHECK — every result variable must appear in buildFullText:
+  grep -n "const \[.*[Rr]esult\b\|const \[results\b" ComponentName.js | grep "usePersistentState\|useState" | grep -v "Loading\|Ref"
+  # Note each result variable. Then read the build function body and confirm each appears.
+  # Any result variable absent from buildFullText = that content is never copyable = FAIL
   ```
 
 - [ ] 🔍 **No `lucide-react` imports** — all icons are emojis in `<span>` tags.
@@ -580,11 +584,23 @@ const linkStyle = isDark
 
 ### 2.1 Input Handling
 
-- [ ] 🔍 **Required fields clearly marked** — muted asterisk only. Never `text-red-500` for required markers.
+- [ ] 🔍 🚨 **Required fields asterisked in amber** — every required input has `<span className={c.required}>*</span>` in its label. `c.required` must be defined as `isDark ? 'text-amber-400' : 'text-amber-500'`. Missing asterisk on any required field = **FAIL**. Muted or red asterisks = **FAIL**. This is a launch blocker.
   ```bash
-  grep -n "text-red-500\|text-red-600" ComponentName.js | grep -v "danger\|error\|c\."
-  # Any text-red- class outside the danger/error context is a potential violation
-  # Required field markers must use c.textMuted, never raw red
+  # c.required must be defined:
+  grep -n "required:" ComponentName.js | head -3
+  # Must show: required: isDark ? 'text-amber-400' : 'text-amber-500'
+
+  # c.required must be used:
+  grep -n "c\.required" ComponentName.js
+  # Must return at least one result
+
+  # All asterisks must go through c.required — no raw strings:
+  grep -n '"\*"\|'"'"'\*'"'" ComponentName.js | grep -v "c\.required"
+  # Must return zero results
+
+  # Labels on required fields must have asterisks:
+  grep -n "<label" ComponentName.js | grep -v "\*" | head -20
+  # Review each — any label for a required input missing an asterisk is a FAIL
   ```
 
 - [ ] 🔍 🧪 **Enter/Return submits** — every text input has a keyboard path to the submit action.
@@ -596,32 +612,40 @@ const linkStyle = isDark
   # An onKeyDown that ONLY calls addItem() with no submit path is a FAIL.
   ```
 
-- [ ] 🔍 🚨 **Global `Cmd/Ctrl+Enter` listener present** — every tool must have a document-level keydown listener that triggers submit when `Cmd+Enter` (Mac) or `Ctrl+Enter` (Windows) is pressed from anywhere on the page. An `onKeyDown` on a single input field is insufficient — it only fires when that field has focus.
+- [ ] 🔍 🚨 **Global `Cmd/Ctrl+Enter` listener present and covers all submit-capable views** — every tool must have a document-level keydown listener. An `onKeyDown` on a single input field is insufficient. For multi-view tools, every view with a submit action must be wired — a handler that covers only the primary view silently does nothing on secondary views.
   ```bash
+  # Presence check:
   grep -n "document.addEventListener.*keydown\|document.addEventListener.*'keydown'" ComponentName.js
-  # Must return at least one result — global listener is required in every tool
-  grep -n "metaKey\|ctrlKey" ComponentName.js
-  # Must return at least one result confirming Cmd/Ctrl is checked
+  # Must return at least one result
+
   grep -n "metaKey.*ctrlKey\|ctrlKey.*metaKey" ComponentName.js
   # Must show both metaKey AND ctrlKey checked together (cross-platform)
+
+  # Stale closure check:
+  grep -n "document.addEventListener.*keydown" ComponentName.js -A5 | grep -v "Ref\|current\|handler"
+  # Must return zero results — handler must use Ref.current?.() not direct calls
+
+  # COVERAGE CHECK — multi-view tools must wire every submit-capable view:
+  grep -c "setActiveTab\|setView\|activeTab ===\|view ===" ComponentName.js
+  # If result > 2, run the following:
+  grep -n "viewRef\|tabRef\|modeRef" ComponentName.js
+  # Must return at least one result for multi-view tools — zero = FAIL
+
+  grep -n "viewRef\.current\|tabRef\.current\|modeRef\.current" ComponentName.js | grep -v "useRef\|\.current ="
+  # Must appear inside the keyboard handler body showing routing logic
+
+  # COVERAGE CHECK — count submit handlers vs wired refs:
+  grep -c "const handle[A-Z][a-zA-Z]* = async\|async function handle[A-Z]" ComponentName.js
+  # Count (N). Then verify N handleXxxRef.current?.() calls in the handler:
+  grep -n "Ref\.current?.()" ComponentName.js
+  # Fewer wired refs than async submit handlers = keyboard broken on some action
+
+  # COVERAGE CHECK — canRef per view:
+  grep -n "canSubmitRef\|can[A-Z][a-zA-Z]*Ref" ComponentName.js
+  # Must have one canRef per submit-capable view, each mirroring that view's disabled condition
+  grep -n "disabled={" ComponentName.js | grep -v "loading\b" | head -10
+  # Each non-loading condition must have a matching canRef
   ```
-  > **Required pattern** (in a `useEffect` with cleanup):
-  > ```js
-  > useEffect(() => {
-  >   const handler = (e) => {
-  >     if (e.key !== 'Enter' || !(e.metaKey || e.ctrlKey)) return;
-  >     const tag = document.activeElement?.tagName;
-  >     if (tag === 'TEXTAREA') return; // let textarea handle its own newlines
-  >     if (!canSubmit || loading) return;
-  >     e.preventDefault();
-  >     handleSubmit();
-  >   };
-  >   document.addEventListener('keydown', handler);
-  >   return () => document.removeEventListener('keydown', handler);
-  > // eslint-disable-next-line react-hooks/exhaustive-deps
-  > }, [loading, handleSubmit]);
-  > ```
-  > Note: TEXTAREA inputs should be excluded from the global listener (they may have their own Cmd+Enter behavior). INPUT fields do not need exclusion — the global listener covers them.
 
 ⚠️ BUG PATTERN — Pill-only inputs never receive Enter (discovered BrainStateDeejay/BrainRoulette)
 Tools whose primary inputs are pill buttons or dropdowns (no text field) have no natural keyboard path to submit — clicking a pill leaves focus on the button, which doesn't propagate to any onKeyDown handler.
@@ -692,13 +716,15 @@ useEffect(() => {
   # anthropic.messages.create must return zero results (or only in documented exceptions)
   ```
 
-- [ ] 🔍 🚨 **Backend routes match frontend calls** — every `callToolEndpoint('route-name')` in the frontend must have a corresponding `router.post('/route-name')` in the backend.
+- [ ] 🔍 🚨 **Backend routes match frontend calls** — every `callToolEndpoint('route-name')` in the frontend must have a corresponding `router.post('/route-name')` in the backend. This includes sub-routes (e.g. `/followup`, `/compare`) — not just the primary route.
   ```bash
-  # Extract all frontend endpoint strings:
+  # Extract ALL frontend endpoint strings (primary + sub-routes):
   grep -o "callToolEndpoint('[^']*')" ComponentName.js | sort -u
-  # Extract all backend route declarations:
+  # Extract ALL backend route declarations:
   grep -o "router\.post('[^']*'" backend.js | sort -u
-  # Diff them — any frontend endpoint with no matching backend route is a launch blocker.
+  # Diff them — any frontend endpoint with no matching backend route = 404 at runtime = FAIL
+  # Pay special attention to sub-routes like 'tool-name/followup', 'tool-name/compare' —
+  # these are the most commonly missed.
   ```
 
   > ⚠️ **BUG PATTERN — Incomplete backend upload (discovered BrainRoulette audit, v4.16)**
@@ -740,10 +766,13 @@ useEffect(() => {
   grep -n "animate-spin.*tool\|tool.*animate-spin" ComponentName.js
   ```
 
-- [ ] 🔍 🚨 **No double-submit** — submit button disabled while loading.
+- [ ] 🔍 🚨 **No double-submit** — submit button disabled while loading. Every submit button — not just the primary one — must include `loading` in its disabled condition.
   ```bash
   grep -n "disabled={loading\|disabled={.*loading" ComponentName.js
-  # Every submit button must include loading in its disabled condition
+  # Count results. Then count submit buttons:
+  grep -n "onClick={handle[A-Z]\|onClick={() => handle[A-Z]" ComponentName.js | grep -v "Reset\|reset\|Clear\|clear\|Back\|back\|close\|Close"
+  # Number of disabled={loading checks must be >= number of submit buttons.
+  # Any submit button missing a disabled condition = double-submit possible = FAIL
   ```
 
 - [ ] 🔍 🚨 **No stale state** — `setResults(null)` called before new request.
@@ -760,11 +789,17 @@ useEffect(() => {
   # Generic messages — flag for improvement
   ```
 
-- [ ] 🔍 **Reset clears all state** — inputs, results, and error all cleared by the reset function.
+- [ ] 🔍 **Reset clears all state** — inputs, results, and error all cleared by the reset function. Every result variable must be reset, not just the primary one.
   ```bash
   grep -n "const reset\|function reset\|const handleReset\|function handleReset" ComponentName.js
-  # Read the reset function — verify it calls: setResults(null), setError(''), and clears primary inputs
-  grep -A 10 "const reset\b\|const handleReset\b" ComponentName.js
+  # Read the reset function — verify it includes ALL of:
+  # setResults(null), setError(''), and clears all primary inputs
+  grep -A 20 "const reset\b\|const handleReset\b" ComponentName.js
+
+  # COVERAGE CHECK — every result variable must be cleared:
+  grep -n "const \[.*[Rr]esult\b\|const \[results\b" ComponentName.js | grep "usePersistentState\|useState" | grep -v "Loading\|Ref"
+  # Note each result variable. Verify each has a set*Null/setX(null) call in the reset function.
+  # Any result variable not cleared = stale data visible after reset = FAIL
   ```
 
 - [ ] 🔍 🚨 **No silent saves** — any localStorage write gives immediate visual feedback (button state flip ≥ 2s + location hint).
@@ -911,18 +946,27 @@ useEffect(() => {
 > - **Post-result:** below the results content, at the bottom of the results section
 > - Both must be plain `{results && ...}` or similar inline JSX conditionals in the main return — **not** inside render helper functions (the audit script cannot see inside them)
 
-- [ ] 🔍 **Pre-result cross-ref present** — a complementary tool linked at the **bottom of the input area**, below the submit button. Answers "what would a user want before or instead of this tool?"
+- [ ] 🔍 **Pre-result cross-ref present** — a complementary tool linked at the **bottom of the input area**, below the submit button. Must be in the main `return` statement — not inside a render helper function (the audit script cannot see inside them).
   ```bash
   grep -n "href=.*linkStyle\|linkStyle.*href" ComponentName.js | head -10
-  # Confirm at least one cross-ref exists — then manually verify it sits below the submit button,
-  # not near the header/tagline
+  # Confirm at least one cross-ref exists below the submit button
+
+  # PLACEMENT CHECK — cross-refs must not be inside render helper functions:
+  grep -n "const render[A-Z]\|function render[A-Z]" ComponentName.js
+  # If any renderXxx helpers exist, verify no cross-ref href lives inside them:
+  grep -n "href=\"/" ComponentName.js
+  # For each href line, check what function it is inside — must be the main return, not a helper
   ```
 
-- [ ] 🔍 **Post-result cross-ref present** — a logical next-step tool linked at the **bottom of the results section**. Answers "what would a user naturally want to do after seeing these results?"
+- [ ] 🔍 **Post-result cross-ref present** — a logical next-step tool linked at the **bottom of the results section**, inside a results-conditional block in the main `return`.
   ```bash
   grep -n "href=.*linkStyle\|linkStyle.*href" ComponentName.js
-  # Confirm at least one cross-ref exists inside a results-conditional block ({results && ...})
-  # in the main return statement — not inside a renderResults() helper
+  # Confirm at least one cross-ref exists inside {results && ...} in the main return
+
+  # PLACEMENT CHECK — must be in main return, not a render helper:
+  grep -n "href=\"/" ComponentName.js
+  # Each href line must be in the main return body, not inside const renderResults = () => ...
+  # A cross-ref inside a render helper is invisible to the audit script and may be unreachable
   ```
 
 - [ ] 🔍 **At least one conditional cross-ref** — a reference that appears only when a specific result condition is met.

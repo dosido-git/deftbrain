@@ -19,11 +19,15 @@ app.use(cors(
 ));
 app.use(express.json({ limit: '50mb' }));
 
-// ── HTTPS redirect ──
-// Handled by Railway infrastructure — do not re-implement here.
-// Adding an x-forwarded-proto check causes a double redirect:
-// Railway upgrades HTTP→HTTPS at the edge (redirect #1), then this
-// check fires again on the already-HTTPS request (redirect #2).
+// ── HTTPS redirect (production) ──
+if (IS_PRODUCTION) {
+  app.use((req, res, next) => {
+    if (req.headers['x-forwarded-proto'] !== 'https') {
+      return res.redirect(301, `https://${req.hostname}${req.url}`);
+    }
+    next();
+  });
+}
 
 // ── Redirect www → apex ──
 if (IS_PRODUCTION) {
@@ -55,26 +59,30 @@ app.use('/api', (req, res, next) => {
 });
 
 // ── Case-insensitive tool route redirect ──
-// Reads canonical IDs from prerendered build/ subdirectories in production
-// (src/ is not deployed to Railway). Falls back to parsing tools.js in dev.
+// Always reads canonical IDs from tools.js (authoritative source).
+// Also scans build/ subdirectories in production to catch any extras.
 // Redirects /namestorm → /NameStorm, /plantrescue → /PlantRescue, etc.
 const fs = require('fs');
 const toolIdMap = {};
 try {
-  const buildDir = path.join(__dirname, '..', 'build');
-  if (fs.existsSync(buildDir)) {
-    fs.readdirSync(buildDir, { withFileTypes: true })
-      .filter(d => d.isDirectory() && !d.name.startsWith('.'))
-      .forEach(d => { toolIdMap[d.name.toLowerCase()] = d.name; });
-    console.log(`Tool ID map loaded from build/: ${Object.keys(toolIdMap).length} tools`);
-  } else {
-    const toolsContent = fs.readFileSync(path.join(__dirname, '..', 'src', 'data', 'tools.js'), 'utf8');
+  // Always parse tools.js — it's the authoritative source regardless of environment
+  const toolsPath = path.join(__dirname, '..', 'src', 'data', 'tools.js');
+  if (fs.existsSync(toolsPath)) {
+    const toolsContent = fs.readFileSync(toolsPath, 'utf8');
     const idRegex = /\bid:\s*['"]([^'"]*)['"]/g;
     let m;
     while ((m = idRegex.exec(toolsContent)) !== null) {
       if (m[1]) toolIdMap[m[1].toLowerCase()] = m[1];
     }
     console.log(`Tool ID map loaded from tools.js: ${Object.keys(toolIdMap).length} tools`);
+  }
+  // Also scan build/ subdirectories — supplements the map, never replaces it
+  const buildDir = path.join(__dirname, '..', 'build');
+  if (fs.existsSync(buildDir)) {
+    fs.readdirSync(buildDir, { withFileTypes: true })
+      .filter(d => d.isDirectory() && !d.name.startsWith('.'))
+      .forEach(d => { if (!toolIdMap[d.name.toLowerCase()]) toolIdMap[d.name.toLowerCase()] = d.name; });
+    console.log(`Tool ID map supplemented from build/: ${Object.keys(toolIdMap).length} total`);
   }
 } catch (e) {
   console.warn('Could not load tool ID map:', e.message);

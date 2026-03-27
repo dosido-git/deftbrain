@@ -489,4 +489,70 @@ Return ONLY valid JSON:
   }
 });
 
+// ════════════════════════════════════════════════════════════
+// POST /friendship-fade-alerter/frequency-suggest
+// AI-recommended contact frequency adjustment based on drift data
+// ════════════════════════════════════════════════════════════
+router.post('/friendship-fade-alerter/frequency-suggest', async (req, res) => {
+  try {
+    const { name, relationshipType, currentFrequency, avgInterval, contactLog, userLanguage } = req.body;
+    if (!name?.trim()) return res.status(400).json({ error: 'Name is required' });
+
+    const logBlock = contactLog?.length
+      ? `\nRECENT CONTACT INTERVALS:\n${contactLog.slice(0, 6).map(l => `- ${l.date}: ${l.note || 'Contact'}`).join('\n')}`
+      : '';
+
+    const FREQ_OPTIONS = ['weekly', 'biweekly', 'monthly', 'quarterly', 'semiannually'];
+
+    const prompt = `You are advising someone on how often to realistically aim to contact a person in their life. 
+Their goal is healthy relationships that don't feel like a chore — the right target frequency is one they can actually maintain.
+
+PERSON: ${name}
+RELATIONSHIP TYPE: ${relationshipType}
+CURRENT TARGET: ${currentFrequency}
+ACTUAL AVERAGE INTERVAL: ${avgInterval ? `${avgInterval} days` : 'unknown'}
+${logBlock}
+
+Recommend a realistic adjusted frequency. Consider:
+- If they're consistently missing their target by >50%, the target is unrealistic — lower it
+- If actual interval is close to target but slightly over, suggest a small adjustment or staying the course
+- Relationship type matters: close friends warrant more effort than acquaintances
+- Better to have a realistic target they hit than an aspirational one they feel guilty about
+
+Return ONLY valid JSON:
+{
+  "suggested_frequency": "one of: weekly | biweekly | monthly | quarterly | semiannually",
+  "reasoning": "One honest, specific sentence explaining why this frequency fits the actual pattern — not generic advice",
+  "impact": "What this adjustment will concretely change (e.g., 'Removes 2 overdue alerts per month you were ignoring')",
+  "stay_the_course": true/false
+}
+
+Return ONLY valid JSON.`;
+
+    console.log(`[FriendshipFade/freq-suggest] ${name}, current: ${currentFrequency}, avg: ${avgInterval}d`);
+
+    const message = await anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 400,
+      system: withLanguage('You are a direct, practical relationship coach. No fluff.', userLanguage),
+      messages: [{ role: 'user', content: prompt }],
+    });
+
+    const raw = message.content.find(b => b.type === 'text')?.text || '';
+    const parsed = safeParseJSON(raw);
+
+    // Validate suggested_frequency is a known value
+    const VALID = ['weekly', 'biweekly', 'monthly', 'quarterly', 'semiannually'];
+    if (parsed.suggested_frequency && !VALID.includes(parsed.suggested_frequency)) {
+      parsed.suggested_frequency = currentFrequency;
+    }
+
+    res.json(parsed);
+
+  } catch (error) {
+    console.error('[FriendshipFade/freq-suggest] Error:', error);
+    res.status(500).json({ error: error.message || 'Failed to suggest frequency' });
+  }
+});
+
 module.exports = router;
