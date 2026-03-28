@@ -28,7 +28,7 @@ const CLR = {
 // ════════════════════════════════════════════════════════════
 const QUESTIONS = [
   {
-    question: "What's this about?",
+    question: "What's on your mind?",
     options: [
       { label: 'Work & productivity',   emoji: '🏢' },
       { label: 'Money & spending',      emoji: '💸' },

@@ -71,18 +71,18 @@ const TOOL_IDS = [
   'ComebackCooker','ComplaintEscalationWriter','ConflictCoach','ContextCollapse',
   'ContrastReport','CrashPredictor','CrisisPrioritizer','CrowdWisdom','DateNight',
   'DebateMe','DecisionCoach','DecoderRing','DifficultTalkCoach','DoctorVisitTranslator',
-  'DopamineMenuBuilder','DreamPatternSpotter','EgoKiller','EmailUrgencyTriager',
+'DopamineMenuBuilder','DreamPatternSpotter','DriveHome','EgoKiller','EmailUrgencyTriager',
   'FakeReviewDetective','FanTheory','FinalWish','FocusPocus','FocusSoundArchitect',
   'FriendshipFadeAlerter','FutureProof','GentlePushGenerator','GhostWriter',
   'Giftology','GratitudeDebtClearer','GravityWell','HecklerPrep','HistoryToday',
   'HobbyMatch','JargonAssassin','LaundroMat','LayoverMaximizer','LazyWorkoutAdapter',
   'LeaseTrapDetector','LeverageLogic','LuckSurface','MagicMouth','MarkupDetective',
   'MeetingBSDetector','MeetingHijackPreventer','MicroAdventureMapper','MiseEnPlace',
-  'MoneyDiplomat','NameAudit','NameStorm','NameThatFeeling','NoiseCanceler',
+'MoneyDiplomat','MoneyMoves','NameAudit','NerveCheck','NameStorm','NameThatFeeling','NoiseCanceler',
   'OnePercenter','PaperDigest','PartyArchitect','PetWeirdnessDecoder','PlainTalk',
   'PlantRescue','PlotHole','PlotTwist','PreMortem','ProcedureProbe','Recall',
-  'RecipeChaosSolver','RentersDepositSaver','RoastMe','RoomReader','RoommateCourt',
-  'RulebookBreaker','SafeWalk','SayItRight','SensoryMinefieldMapper','SignalVsNoise',
+'RecipeChaosSolver','RechargeRadar','RentersDepositSaver','RoastMe','RoomReader','RoommateCourt',
+ 'RulebookBreaker','SafeWalk','PronounceItRight','SensoryMinefieldMapper','SignalVsNoise',
   'SixDegreesOfMe','SkillGapMap','SocialEnergyAudit','SpiralStopper','SubSweep',
   'SubscriptionGuiltTrip','TaskAvalancheBreaker','TheAlibi','TheDebrief',
   'TheFinalWord','TheGap','TheRunthrough','TimeWarp','TipOfTongue','ToastWriter',
@@ -97,10 +97,11 @@ console.log(`Tool ID map: ${Object.keys(toolIdMap).length} tools`);
 app.use((req, res, next) => {
   // Only apply to non-API, non-static asset paths
   if (req.path.startsWith('/api') || req.path.includes('.')) return next();
-  const slug = req.path.slice(1); // strip leading /
+  const slug = req.path.replace(/^\/|\/$/g, ''); // strip leading AND trailing slash
   if (!slug) return next();       // skip homepage
   const canonical = toolIdMap[slug.toLowerCase()];
   if (canonical && canonical !== slug) {
+    res.set('Cache-Control', 'no-store');
     return res.redirect(301, `/${canonical}`);
   }
   next();

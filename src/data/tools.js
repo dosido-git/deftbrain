@@ -100,7 +100,7 @@ export const tools = [
   icon: "🧰",
   categories: ['Do It!'],
   headerColor: "#e0b8b8",
-  description: "With 100+ tools, who has time to browse? Describe what you need in plain language and ToolFinder recommends the best DeftBrain tools for your situation, explains why each one fits, and tells you exactly what to enter when you get there. Recommends workflows when multiple tools work together.",
+  description: "With 100+ tools, how can you find the right one? Describe what you need in plain language and ToolFinder employs AI to find the best DeftBrain tools for your situation, explains why each one fits, and tells you exactly what to enter when you get there. Recommends workflows when multiple tools work together.",
   guide: {
     overview: "ToolFinder is the front door to DeftBrain. Instead of browsing the dashboard, describe your problem — a difficult conversation, a money question, something that broke, a decision you're stuck on — and it matches you with the right tools. Reads between the lines, recommends 1-5 tools ranked by relevance, and explains the fastest path to a solution.",
     howToUse: [
