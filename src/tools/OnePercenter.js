@@ -21,18 +21,7 @@ const EXAMPLES = [
 
 const OnePercenter = ({ tool }) => {
   const { isDark } = useTheme();
-
-  useEffect(() => {
-    const handler = (e) => {
-      const tag = document.activeElement?.tagName;
-      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
-      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !loading) handleSubmit();
-    };
-    document.addEventListener('keydown', handler);
-    return () => document.removeEventListener('keydown', handler);
-  }, [loading]);
   const { callToolEndpoint, loading } = useClaudeAPI();
-
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
@@ -83,7 +72,18 @@ const OnePercenter = ({ tool }) => {
     } catch (e) { setError(e.message || 'Failed to find your 1% change.'); }
   };
 
-  const handleExample = () => {
+
+  useEffect(() => {
+    const handler = (e) => {
+      const tag = document.activeElement?.tagName;
+      if (tag === 'SELECT') return;
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !loading) handleSubmit();
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [loading, handleSubmit]);
+
+    const handleExample = () => {
     const ex = EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)];
     setRoutine(ex.routine);
     setGoals(ex.goals || '');
