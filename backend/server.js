@@ -101,6 +101,10 @@ const LEGACY_REDIRECTS = {
   '/tool/bill-rescue':           '/BillRescue',
   // Renamed tools
   '/SayItRight':                 '/PronounceItRight',
+  // Never-built planned tools — soft 404s in Google
+  '/Impartial':                  '/',
+  '/Presenter':                  '/',
+  '/TheNetwork':                 '/',
   '/whatifmachine':              '/WhatIf',
   '/plothole':                   '/PlotTwist',
   '/roommatecourtroom':          '/RoommateCourt',
