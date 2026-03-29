@@ -94,6 +94,26 @@ const toolIdMap = {};
 TOOL_IDS.forEach(id => { toolIdMap[id.toLowerCase()] = id; });
 console.log(`Tool ID map: ${Object.keys(toolIdMap).length} tools`);
 
+// ── Legacy /tool/ route redirects ──
+const LEGACY_REDIRECTS = {
+  // Legacy /tool/ routes
+  '/tool/renters-deposit-saver': '/RentersDepositSaver',
+  '/tool/bill-rescue':           '/BillRescue',
+  // Renamed tools
+  '/SayItRight':                 '/PronounceItRight',
+  '/whatifmachine':              '/WhatIf',
+  '/plothole':                   '/PlotTwist',
+  '/roommatecourtroom':          '/RoommateCourt',
+  '/fridgealchemy':              '/MiseEnPlace',
+  '/foodswap':                   '/MiseEnPlace',
+  '/pdf-fixer':                  '/PlainTalk',
+  '/timevanishingexplainer':     '/WhereDidTheTimeGo',
+  '/wherediditgo':               '/WhereDidTheTimeGo',
+};
+Object.entries(LEGACY_REDIRECTS).forEach(([from, to]) => {
+  app.get(from, (req, res) => res.redirect(301, to));
+});
+
 app.use((req, res, next) => {
   // Only apply to non-API, non-static asset paths
   if (req.path.startsWith('/api') || req.path.includes('.')) return next();

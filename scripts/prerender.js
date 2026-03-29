@@ -47,7 +47,7 @@ const TOOL_OG_SLUGS = {
   ComebackCooker: 'comeback-cooker', AlternatePath: 'alternate-path',
   ArgumentSimulator: 'argument-simulator', PlotHole: 'plot-hole', FanTheory: 'fan-theory',
   RoastMe: 'roast-me', TimeWarp: 'time-warp', WrongAnswersOnly: 'wrong-answers-only',
-  SocialEnergyAudit: 'social-energy-audit', SayItRight: 'say-it-right', TheDebrief: 'the-debrief',
+  SocialEnergyAudit: 'social-energy-audit', PronounceItRight: 'pronounce-it-right', TheDebrief: 'the-debrief',
   Recall: 'recall', TheAlibi: 'the-alibi', NoiseCanceler: 'noise-canceler',
   ContextCollapse: 'context-collapse', Bookmark: 'bookmark', DecoderRing: 'decoder-ring',
   PlotTwist: 'plot-twist', MiseEnPlace: 'mise-en-place', GhostWriter: 'ghost-writer',

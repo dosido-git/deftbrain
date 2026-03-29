@@ -615,7 +615,7 @@ const AwkwardSilenceFiller = ({ tool }) => {
             <p className={`text-xs font-semibold ${c.textMuteded} uppercase tracking-wider`}>You might also like</p>
             <div className="flex flex-wrap gap-x-4 gap-y-1">
               <a href="/DateNight" className={`text-xs ${linkStyle}`}>💘 Date Night Planner</a>
-              <a href="/SayItRight" className={`text-xs ${linkStyle}`}>🗣️ Say It Right</a>
+              <a href="/PronounceItRight" className={`text-xs ${linkStyle}`}>🗣️ Pronounce It Right</a>
               <a href="/RoomReader" className={`text-xs ${linkStyle}`}>👀 Room Reader</a>
             </div>
           </div>
