@@ -60,7 +60,8 @@ Design the event. Return ONLY valid JSON:
   ],
 
   "conversation_starters": [
-    "5-6 environmental or structural conversation catalysts — things that create conversation without anyone being told to 'go talk to people'. Objects on tables, music choices, food that requires interaction, visual surprises."
+    "One environmental or structural conversation catalyst (object on a table, food that requires interaction, a visual surprise, a music choice — anything that creates conversation without telling people to mingle)",
+    "Another conversation catalyst"
   ],
 
   "food_and_drink_strategy": {
@@ -85,26 +86,53 @@ Design the event. Return ONLY valid JSON:
     "total_estimate": "Rough total for the budget level they stated",
     "biggest_expense": "Where the money goes",
     "where_to_save": "Where most people overspend unnecessarily",
-    "free_upgrades": "2-3 things that make a big impact and cost nothing"
+    "free_upgrades": [
+      "One thing that makes a big impact and costs nothing",
+      "Another free upgrade"
+    ]
   },
 
   "disaster_prevention": [
-    "3-4 things that commonly go wrong at this type of event and how to prevent each one."
+    "One thing that commonly goes wrong at this type of event and how to prevent it",
+    "Another disaster prevention tip"
   ]
 }
 
-Generate 8-12 timeline entries and 2-3 mixing strategies.`;
+Generate 6-8 timeline entries, 2 mixing strategies, 4 conversation starters, 2 free_upgrades, and 3 disaster_prevention items. Return ONLY the JSON object — no markdown, no backticks, no explanation. All array fields must be arrays, not strings.`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 3000,
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 5000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     });
 
     const text = message.content.find(b => b.type === 'text')?.text || '';
     const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+
+    let parsed;
+    try {
+      parsed = JSON.parse(cleaned);
+    } catch (jsonErr) {
+      console.error('PartyArchitect JSON parse error:', jsonErr.message);
+      console.error('Raw response:', cleaned.slice(0, 500));
+      return res.status(500).json({ error: 'The AI returned an unexpected format. Please try again.' });
+    }
+
+    // Sanitize: coerce any array fields that came back as strings
+    const toArray = (val) => {
+      if (Array.isArray(val)) return val;
+      if (typeof val === 'string' && val.trim()) return [val];
+      return [];
+    };
+    parsed.timeline            = toArray(parsed.timeline);
+    parsed.mixing_strategies   = toArray(parsed.mixing_strategies);
+    parsed.conversation_starters = toArray(parsed.conversation_starters);
+    parsed.disaster_prevention = toArray(parsed.disaster_prevention);
+    if (parsed.budget_breakdown) {
+      parsed.budget_breakdown.free_upgrades = toArray(parsed.budget_breakdown?.free_upgrades);
+    }
+
     return res.json(parsed);
 
   } catch (error) {

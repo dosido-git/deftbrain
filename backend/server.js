@@ -155,7 +155,7 @@ app.get('/api/endpoints', (req, res) => {
 
 // ── Serve React build (production) ──
 if (IS_PRODUCTION) {
-  app.use(express.static(path.join(__dirname, '..', 'build')));
+  app.use(express.static(path.join(__dirname, '..', 'build'), { redirect: false }));
   app.get('*', (req, res) => {
     const slug = req.path.replace(/^\/|\/$/g, '');
     const canonical = slug ? toolIdMap[slug.toLowerCase()] : null;
