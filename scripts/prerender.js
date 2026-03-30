@@ -52,7 +52,7 @@ const TOOL_OG_SLUGS = {
   ContextCollapse: 'context-collapse', Bookmark: 'bookmark', DecoderRing: 'decoder-ring',
   PlotTwist: 'plot-twist', MiseEnPlace: 'mise-en-place', GhostWriter: 'ghost-writer',
   CaptionMagic: 'caption-magic', LazyWorkoutAdapter: 'lazy-workout-adapter',
-  JargonAssassin: 'jargon-assassin', DebateMe: 'debate-me', PaperDigest: 'paper-digest',
+  JargonAssassin: 'jargon-assassin', DebateMe: 'debate-me', ResearchDecoder: 'research-decoder',
   RoomReader: 'room-reader', MoneyDiplomat: 'money-diplomat', SkillGapMap: 'skill-gap-map',
   HistoryToday: 'history-today', BragSheetBuilder: 'brag-sheet-builder',
   LayoverMaximizer: 'layover-maximizer', TheFinalWord: 'the-final-word', NameAudit: 'name-audit',

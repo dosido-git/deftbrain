@@ -436,7 +436,7 @@ const JargonAssassin = ({ tool }) => {
       {error && <div className={`${c.danger} border rounded-xl p-4 text-sm`}>⚠️ {error}</div>}
 
       {/* Cross-refs */}
-      {(results || cmpData || dossData) && <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}><p className={`text-xs ${c.textMuteded} mb-2`}>Related:</p><div className="flex flex-wrap gap-2">{[['PaperDigest', '📄', 'digest research'], ['DebateMe', '🥊', 'test understanding'], ['BrainDumpStructurer', '🧠', 'organize info']].map(([id, ico, d]) => <a key={id} href={`/${id}`} target="_blank" rel="noopener noreferrer" className={`text-xs px-3 py-1.5 rounded-lg ${c.btnPrimarySecondaryondary} no-underline`}>{ico} {d}</a>)}</div></div>}
+      {(results || cmpData || dossData) && <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}><p className={`text-xs ${c.textMuteded} mb-2`}>Related:</p><div className="flex flex-wrap gap-2">{[['ResearchDecoder', '📄', 'digest research'], ['DebateMe', '🥊', 'test understanding'], ['BrainDumpStructurer', '🧠', 'organize info']].map(([id, ico, d]) => <a key={id} href={`/${id}`} target="_blank" rel="noopener noreferrer" className={`text-xs px-3 py-1.5 rounded-lg ${c.btnPrimarySecondaryondary} no-underline`}>{ico} {d}</a>)}</div></div>}
         <div className={`mt-6 pt-4 border-t text-sm ${c.border} ${c.textMuted}`}>
           <p className="mb-2 font-medium">You might also like:</p>
           <div className="flex flex-wrap gap-2">

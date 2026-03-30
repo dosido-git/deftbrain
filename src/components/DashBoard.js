@@ -338,20 +338,20 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
       {/* ═══════════ RESULTS HEADER ═══════════ */}
       <div ref={resultsRef} style={{ scrollMarginTop: 16 }}>
 
-        {/* Search result count — only when searching */}
-        {isSearching && (
-          <div className="flex items-center justify-between mb-3">
+        {/* Always-rendered search + sort bar — keeps SearchBox mounted through isSearching transitions */}
+        <div className="flex items-center justify-between mb-3">
+          {isSearching ? (
             <p className="text-[11px] font-semibold" style={{ color: CLR.warm500 }}>
               {filteredTools.length === 0
                 ? 'No tools found — try different words'
                 : `${filteredTools.length} tool${filteredTools.length !== 1 ? 's' : ''} for "${searchTerm}"`}
             </p>
-            <div className="flex items-center gap-2">
-              <SearchBox searchRef={searchRef} searchTerm={searchTerm} setSearchTerm={setSearchTerm} setActiveCategory={setActiveCategory} />
-              <SortBtn sortMode={sortMode} setSortMode={setSortMode} />
-            </div>
+          ) : <div />}
+          <div className="flex items-center gap-2">
+            <SearchBox searchRef={searchRef} searchTerm={searchTerm} setSearchTerm={setSearchTerm} setActiveCategory={setActiveCategory} />
+            <SortBtn sortMode={sortMode} setSortMode={setSortMode} />
           </div>
-        )}
+        </div>
 
         {/* Category banner — only when a real category is active */}
         {!isSearching && activeCategory !== 'All' && (
@@ -381,26 +381,14 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
                 {filteredTools.length}
               </span>
             </div>
-            <div className="flex items-center gap-2">
-              <SearchBox searchRef={null} searchTerm={searchTerm} setSearchTerm={setSearchTerm} setActiveCategory={setActiveCategory} />
-              <SortBtn sortMode={sortMode} setSortMode={setSortMode} />
-              <button
-                onClick={() => selectCategory('All')}
-                className="flex items-center gap-1 px-2 py-1.5 rounded-lg text-[11px] font-semibold transition-colors"
-                style={{ color: CLR.warm500 }}
-                title="Clear filter"
-              >
-                <span>✕</span>
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Sort button for plain All view */}
-        {!isSearching && activeCategory === 'All' && (
-          <div className="flex items-center justify-end gap-2 mb-3">
-            <SearchBox searchRef={searchRef} searchTerm={searchTerm} setSearchTerm={setSearchTerm} setActiveCategory={setActiveCategory} />
-            <SortBtn sortMode={sortMode} setSortMode={setSortMode} />
+            <button
+              onClick={() => selectCategory('All')}
+              className="flex items-center gap-1 px-2 py-1.5 rounded-lg text-[11px] font-semibold transition-colors"
+              style={{ color: CLR.warm500 }}
+              title="Clear filter"
+            >
+              <span>✕</span>
+            </button>
           </div>
         )}
 

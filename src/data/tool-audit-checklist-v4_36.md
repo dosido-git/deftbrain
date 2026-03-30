@@ -402,7 +402,7 @@ const linkStyle = isDark
 >
 > **The ActionBar position is fixed by design:** It sits to the RIGHT of the Bookmark and Dark Mode buttons in the `ToolPageWrapper` header row, right-aligned by the `justify-between` outer flex container. This position was intentionally designed. Do not move it, do not propose changes to the wrapper structure, do not "fix" it without being explicitly asked.
 
-> `ActionBar` lives in the **`ToolPageWrapper` persistent header row** — right side, with bookmark and dark/light mode buttons on the left. Tools register their export content via `useRegisterActions(content, title)` — the wrapper renders the ActionBar automatically when content is available. An inline `<ActionBar>` remaining in tool JSX is a duplicate violation. Standalone `CopyBtn` or `PrintBtn` are still allowed inside a tool for per-item actions (e.g. copy a single question). The absolute rule: **never use `window.open` / `buildPrintHtml` for custom printing** — use `PrintBtn` from ActionButtons instead.
+> `ActionBar` lives in the **`ToolPageWrapper` persistent header row** — right side, with bookmark and dark/light mode buttons on the left. Tools register their export content via `useRegisterActions(content, title)` — the wrapper renders the ActionBar automatically when content is available. An inline `<ActionBar>` remaining in tool JSX is a duplicate violation. **`CopyBtn`, `ShareBtn`, and `PrintBtn` must never appear in tool JSX** — the ActionBar is the only copy/share/print surface. The absolute rule: **never use `window.open` / `buildPrintHtml` for custom printing** — all such actions go through the ActionBar.
 
 - [ ] 🔍 **Imports `useRegisterActions` from `../components/ActionBarContext`** — and calls it with the tool's export content and title.
   ```bash
@@ -415,8 +415,16 @@ const linkStyle = isDark
   ```bash
   grep -n "<ActionBar" ComponentName.js
   # Must return zero results (ActionBar is now rendered by ToolPageWrapper, not the tool)
-  # Exception: standalone CopyBtn/PrintBtn for per-item actions are still fine
   ```
+
+- [ ] 🔍 🚨 **No `CopyBtn`, `ShareBtn`, or `PrintBtn` in tool JSX** — the ActionBar is the sole copy/share/print surface. These components must not appear anywhere in the tool's JSX, and must not be imported from `ActionButtons`. The `ActionButtons` file documents them as available, but that is documentation — not an instruction to use them.
+  ```bash
+  grep -n "CopyBtn\|ShareBtn\|PrintBtn" ComponentName.js | grep -v "^[[:space:]]*//"
+  # Must return zero results — any hit is a violation, import line included
+  ```
+
+  > ⚠️ **BUG PATTERN — Inline CopyBtn on individual result fields (recurring, first flagged v4.36)**
+  > The `ActionButtons` file includes a comment showing `import { CopyBtn, ShareBtn, PrintBtn, ActionBar }` as usage examples. This is documentation, not an instruction. The comment was repeatedly misread as permission to add `CopyBtn` to individual result cards for per-field copying. All copy/share/print actions go through the ActionBar exclusively. Remove any `CopyBtn`, `ShareBtn`, or `PrintBtn` from tool JSX and remove their imports.
 
 - [ ] 🔍 **`useRegisterActions` called with correct content — and content covers all result states** — passes the tool's full export string and `tool?.title`. For multi-result tools, every result variable must appear in the build function. Missing a result variable means that content is silently excluded from copy/export.
   ```bash
@@ -435,7 +443,7 @@ const linkStyle = isDark
   # Must return zero results
   ```
 
-- [ ] 🔍 **No custom print bypass** — no `window.open`, `buildPrintHtml`, or hardcoded `.branding` div. All printing must go through `PrintBtn` from ActionButtons (called via ActionBar in the wrapper).
+- [ ] 🔍 **No custom print bypass** — no `window.open`, `buildPrintHtml`, or hardcoded `.branding` div. All print/copy/share actions go through the ActionBar exclusively via `useRegisterActions`.
   ```bash
   grep -n "window\.open\|buildPrintHtml\|buildPrintHTML\|class=\"branding\"\|className=\"branding\"" ComponentName.js
   # Must return zero results
@@ -532,12 +540,12 @@ const linkStyle = isDark
   # Spot-check the most common offenders:
   grep -n "useEffect\b" ComponentName.js | grep -v "import\|//"
   # If useEffect appears only in the import line, it's unused — remove it
-  grep -n "\bCopyBtn\b" ComponentName.js | grep -v "import\|//"
-  # If CopyBtn appears only in the import line, it's unused — remove it
+  grep -n "\bCopyBtn\b\|\bShareBtn\b\|\bPrintBtn\b" ComponentName.js | grep -v "//"
+  # Must return zero results — CopyBtn/ShareBtn/PrintBtn must not be imported or used
   ```
 
-  > ⚠️ **BUG PATTERN — Unused `useEffect` and `CopyBtn` imports (discovered WrongAnswersOnly audit, v4.23)**
-  > `useEffect` left over from a refactor and `CopyBtn` imported "just in case" both produce ESLint `no-unused-vars` warnings. These are harmless individually but accumulate warning noise that masks real issues. Remove any import not referenced below the import block.
+  > ⚠️ **BUG PATTERN — `CopyBtn`/`ShareBtn`/`PrintBtn` imported or used in tool JSX**
+  > These components must never appear in a tool file — not in the import line, not in JSX. The `ActionButtons` file documents them as available in a comment that starts with `import { CopyBtn, ... }` — this is documentation, not an instruction. All copy/share/print actions are handled exclusively by the ActionBar via `useRegisterActions`. Any occurrence of `CopyBtn`, `ShareBtn`, or `PrintBtn` in a tool file is a violation regardless of context.
 
 - [ ] 🔍 **`useCallback` dependency arrays are complete** — all `setState` functions from `usePersistentState` that are called inside a `useCallback` must be listed as deps.
   ```bash
@@ -905,16 +913,16 @@ useEffect(() => {
 
 ### 5.3 Output & Sharing
 
-- [ ] 🔍 **`ActionBar` present.**
+- [ ] 🔍 **`useRegisterActions` is called with content** — the ActionBar in the wrapper header is the sole copy/share/print surface.
   ```bash
-  grep -n "<ActionBar" ComponentName.js
-  # Must return at least one result
+  grep -n "useRegisterActions" ComponentName.js
+  # Must return at least one result showing useRegisterActions(content, title)
   ```
 
-- [ ] 🔍 **No duplicate action buttons.**
+- [ ] 🔍 **No inline copy/share/print buttons** — `CopyBtn`, `ShareBtn`, `PrintBtn`, and `<ActionBar>` must not appear anywhere in tool JSX.
   ```bash
-  grep -n "<PrintBtn\|<ShareBtn" ComponentName.js
-  # Must return zero results when ActionBar is present
+  grep -n "CopyBtn\|ShareBtn\|PrintBtn\|<ActionBar" ComponentName.js | grep -v "//"
+  # Must return zero results — all such actions go through the ActionBar exclusively
   ```
 
 - [ ] 🔍 **Shared/printed output includes DeftBrain credit.**
@@ -1139,7 +1147,7 @@ For each tool, capture:
 
 *v4.25 — Four new checks, discovered during WardrobeChaosHelper audit, March 2026:*
 
-**(1) Custom print bypass (Section 1.4):** Tools must not use `window.open` + hand-built HTML for printing. All print output must go through `PrintBtn` from `ActionButtons`, which provides the full-colour salmon logo header and footer automatically. Standalone `PrintBtn` alongside `ActionBar` is now explicitly permitted for per-item print actions. **Scan:** `grep -n "window\.open\|buildPrintHtml\|buildPrintHTML\|class=\"branding\"" ComponentName.js` — must return zero results.*
+**(1) Custom print bypass (Section 1.4):** Tools must not use `window.open` + hand-built HTML for printing. **`CopyBtn`, `ShareBtn`, and `PrintBtn` must not appear in tool JSX** — all copy/share/print actions go through the ActionBar exclusively via `useRegisterActions`. **Scan:** `grep -n "window\.open\|buildPrintHtml\|buildPrintHTML\|class=\"branding\"\|CopyBtn\|ShareBtn\|PrintBtn" ComponentName.js` — must return zero results.*
 
 **(2) TDZ: plain `const` fn in `useEffect` dep array (Section 1.7):** A plain `const` function declared later in the component body must never appear in a `useEffect` dependency array. React evaluates dep array entries at declaration time — referencing a not-yet-initialized `const` throws a TDZ ReferenceError at mount. Only `useCallback`-wrapped functions are safe in dep arrays. Plain handlers should be listed in an `// eslint-disable-next-line` comment if needed, not in the array. **Scan:** `grep -A2 "useEffect" ComponentName.js | grep -A1 "\}, \["` — check each dep against whether it's a `useCallback` or a plain `const`.*
 

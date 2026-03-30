@@ -79,9 +79,9 @@ const TOOL_IDS = [
   'LeaseTrapDetector','LeverageLogic','LuckSurface','MagicMouth','MarkupDetective',
   'MeetingBSDetector','MeetingHijackPreventer','MicroAdventureMapper','MiseEnPlace',
 'MoneyDiplomat','MoneyMoves','NameAudit','NerveCheck','NameStorm','NameThatFeeling','NoiseCanceler',
-  'OnePercenter','PaperDigest','PartyArchitect','PetWeirdnessDecoder','PlainTalk',
+  'OnePercenter','PartyArchitect','PetWeirdnessDecoder','PlainTalk',
   'PlantRescue','PlotHole','PlotTwist','PreMortem','ProcedureProbe','Recall',
-'RecipeChaosSolver','RechargeRadar','RentersDepositSaver','RoastMe','RoomReader','RoommateCourt',
+'RecipeChaosSolver','RechargeRadar','RentersDepositSaver','ResearchDecoder','RoastMe','RoomReader','RoommateCourt',
  'RulebookBreaker','SafeWalk','PronounceItRight','SensoryMinefieldMapper','SignalVsNoise',
   'SixDegreesOfMe','SkillGapMap','SocialEnergyAudit','SpiralStopper','SubSweep',
   'SubscriptionGuiltTrip','TaskAvalancheBreaker','TheAlibi','TheDebrief',
@@ -113,6 +113,7 @@ const LEGACY_REDIRECTS = {
   '/pdf-fixer':                  '/PlainTalk',
   '/timevanishingexplainer':     '/WhereDidTheTimeGo',
   '/wherediditgo':               '/WhereDidTheTimeGo',
+  '/PaperDigest':               '/ResearchDecoder',
 };
 Object.entries(LEGACY_REDIRECTS).forEach(([from, to]) => {
   app.get(from, (req, res) => res.redirect(301, to));

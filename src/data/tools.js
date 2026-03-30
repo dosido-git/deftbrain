@@ -2123,16 +2123,16 @@ export const tools = [
 },
 {
   modified: "",
-  id: "PaperDigest",
-  title: "Paper Digest",
+  id: "ResearchDecoder",
+  title: "Research Decoder",
   tagline: "What this paper actually says — and whether what you read about it is true",
   tags: ['research', 'academic', 'paper', 'science', 'summary', 'study', 'digest'],
   icon: "📄",
   categories: ['Go Deep!'],
   headerColor: "#d4dde8",
-  description: "Translate academic papers into plain language — no PhD required. 5 modes with 5 AI endpoints: digest any paper into a one-sentence finding with methodology description, limitations, jargon decoded, and an honest 'so what' assessment. Media Check compares what the paper actually says to how headlines report it, catching exaggerations, causation-from-correlation claims, and missing context. Compare two papers on the same topic to see where they agree and diverge. 'Does This Apply to Me?' gives personalized relevance based on your situation. Jargon Decoder explains any scientific term with analogies, not textbook definitions. Auto-builds a personal jargon dictionary as you read. Saves digests for reference.",
+  description: "Translate academic papers into plain language — no PhD required. Five modes: Digest breaks any paper into a one-sentence finding, methodology, limitations, decoded jargon, and an honest 'so what.' Media Check compares what a paper actually says to how headlines report it, catching exaggerations and missing context. Compare shows where two papers agree or diverge. For Me? gives personalized relevance based on your situation. Jargon Decoder explains scientific terms with analogies, not textbook definitions. Auto-builds a personal jargon dictionary as you read",
   guide: {
-      overview: "PaperDigest is for the moment you see a headline like 'Scientists prove coffee cures everything' and think 'wait, does it really?' Instead of wading through dense abstracts, paste the paper text and get the actual finding in one sentence, what kind of study it was (described, not judged), what it proves vs. what people think it proves, and a warm honest take you'd hear from a smart friend over coffee. The Media Check is the killer feature — it compares what the paper says to what the headline claims and catches every type of distortion. Every term you encounter gets saved to a personal jargon dictionary that grows as you read.",
+      overview: "Research Decoder is for the moment you see a headline like 'Scientists prove coffee cures everything' and think 'wait, does it really?' Instead of wading through dense abstracts, paste the paper text and get the actual finding in one sentence, what kind of study it was (described, not judged), what it proves vs. what people think it proves, and a warm honest take you'd hear from a smart friend over coffee. The Media Check is the killer feature — it compares what the paper says to what the headline claims and catches every type of distortion. Every term you encounter gets saved to a personal jargon dictionary that grows as you read.",
 
       howToUse: [
         "📄 Digest: Paste an abstract or paper text, optionally select the field. Get the finding in one sentence, methodology description, what it proves and doesn't, limitations, decoded jargon, and an honest 'so what' section with confidence level",
@@ -4645,7 +4645,7 @@ export const tools = [
   icon: '💸',
   categories: ['Loot', 'Humans'],
   headerColor: "#c0d8b8",
-  description: 'Handles social money awkwardness — split bills, can\'t afford invitations, salary questions, bill triage, and money talks with partners or family.',
+  description: 'Handles social money awkwardness — split bills, can\'t-afford invitations, salary questions, bill triage, and money talks with partners or family.',
   guide: {
     overview: "Money Moves is your advisor for the money situations nobody teaches you how to handle. When someone asks what you make, when you can't afford the group trip, when a friend owes you money and it's getting weird — Money Moves gives you the exact words and the strategy. Covers 6 core situations: social affordability, bill splits, salary questions, money talks with partners, asking for money back, and emergency bill triage. No judgment, just practical guidance.",
     howToUse: [

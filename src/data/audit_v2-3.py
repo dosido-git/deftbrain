@@ -396,6 +396,15 @@ for name, fpath in tools:
             if tool_id not in VALID_TOOL_IDS:
                 fails.append(f'S5.5: cross-ref link /{tool_id} does not exist in tools.js — broken link')
 
+    # S5.5: relative href check — catches href="tool-name" or href={`tool-name`} missing leading slash
+    # These resolve as child URLs (e.g. /CurrentTool/tool-name) and create ghost pages in Google
+    for bad in re.findall(r'href=["\'][^"\'/#{][^"\'>]*["\']', content):
+        m = re.search(r'href=["\']([^"\'/#{][^"\'>]*)["\']', bad)
+        if m:
+            fails.append(f'S5.5: relative href "{m.group(1)}" missing leading slash — will create ghost URLs in Google')
+    for bad_m in re.finditer(r'href=\{`(?!/|\$\{)([^`]+)`\}', content):
+        fails.append(f'S5.5: relative template href "{bad_m.group(1)}" missing leading slash — will create ghost URLs in Google')
+
     # Known bugs
     if re.search(r'\$\{\}', content):
         fails.append('BUG: empty ${} template expression')
