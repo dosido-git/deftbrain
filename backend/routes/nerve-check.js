@@ -4,14 +4,44 @@ const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
 
 function safeParseJSON(text) {
   let cleaned = cleanJsonResponse(text);
-  cleaned = cleaned.replace(/,(\s*[}\]])/g, '$1');
-  try { return JSON.parse(cleaned); } catch {
-    cleaned = cleaned.replace(/[\x00-\x1F\x7F]/g, ' ');
-    try { return JSON.parse(cleaned); } catch {
-      cleaned = cleaned.replace(/([{,]\s*)(\w+)\s*:/g, '$1"$2":');
-      return JSON.parse(cleaned);
-    }
+
+  // Pass 1: standard cleanup
+  cleaned = cleaned.replace(/,(\s*[}\]])/g, '$1');           // trailing commas
+  cleaned = cleaned.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, ' '); // control chars (keep \t \n \r)
+  cleaned = cleaned.replace(/([{,]\s*)(\w+)\s*:/g, '$1"$2":'); // unquoted keys
+
+  try { return JSON.parse(cleaned); } catch {}
+
+  // Pass 2: normalize line endings then escape literal newlines inside string values.
+  // Claude sometimes writes multi-line string values without \n escaping.
+  cleaned = cleaned.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  // Replace literal newlines that appear inside string values (between a non-escaped " and the next ")
+  // Strategy: replace any \n that is preceded by an open string (heuristic: inside "...") with \\n
+  cleaned = cleaned.replace(/("(?:[^"\\]|\\.)*?)\n((?:[^"\\]|\\.)*?")/g, '$1\\n$2');
+
+  try { return JSON.parse(cleaned); } catch {}
+
+  // Pass 3: fix unescaped double-quotes inside string values.
+  // Pattern: a string value that contains " not preceded by \
+  // Replace inner unescaped quotes with escaped version.
+  cleaned = cleaned.replace(
+    /:\s*"((?:[^"\\]|\\.)*)"/g,
+    (match, inner) => ': "' + inner.replace(/(?<!\\)"/g, '\\"') + '"'
+  );
+
+  try { return JSON.parse(cleaned); } catch {}
+
+  // Pass 4: last resort — strip everything before first { and after last }
+  const first = cleaned.indexOf('{');
+  const last  = cleaned.lastIndexOf('}');
+  if (first !== -1 && last !== -1 && last > first) {
+    try { return JSON.parse(cleaned.slice(first, last + 1)); } catch {}
   }
+
+  // Pass 5: throw a descriptive error
+  const e = new SyntaxError('safeParseJSON: all repair attempts failed');
+  e.rawText = text.slice(0, 200);
+  throw e;
 }
 
 // ═══════════════════════════════════════════════════════════════
