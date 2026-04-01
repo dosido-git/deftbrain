@@ -24,8 +24,20 @@ const path = require('path');
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 
-const BUILD_DIR  = path.join(__dirname, '..', 'build');
-const TOOLS_FILE = path.join(__dirname, '..', 'src', 'data', 'tools.js');
+// ── Find project root by walking up from this file ───────────────────────────
+function findProjectRoot(start) {
+  let dir = start;
+  while (true) {
+    if (fs.existsSync(path.join(dir, 'package.json')) &&
+        fs.existsSync(path.join(dir, 'src'))) return dir;
+    const parent = path.dirname(dir);
+    if (parent === dir) throw new Error('Could not find project root above ' + start);
+    dir = parent;
+  }
+}
+const ROOT       = findProjectRoot(__dirname);
+const BUILD_DIR  = path.join(ROOT, 'build');
+const TOOLS_FILE = path.join(ROOT, 'src', 'data', 'tools.js');
 const SITE_NAME  = 'DeftBrain';
 const SITE_URL   = 'https://deftbrain.com';
 const DEFAULT_DESCRIPTION = 'DeftBrain offers 100+ free AI-powered tools for productivity, communication, health, finance, and more. Get instant, intelligent help for real-life problems.';
@@ -79,7 +91,8 @@ const TOOL_OG_SLUGS = {
   PlainTalk: 'plain-talk', BrainRoulette: 'brain-roulette',
   WardrobeChaosHelper: 'wardrobe-chaos-helper', PlantRescue: 'plant-rescue',
   SpiralStopper: 'spiral-stopper', MoneyMoves: 'money-moves', NerveCheck: 'nerve-check',
-  RechargeRadar: 'recharge-radar', SubscriptionGuiltTrip: 'subscription-guilt-trip',
+  RechargeRadar: 'recharge-radar', SubscriptionGuiltTrip: 'subscription-guilt-trip', LedeBuilder: 'lede-builder',
+
 };
 
 function getOgImage(toolId) {

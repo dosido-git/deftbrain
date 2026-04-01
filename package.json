@@ -36,8 +36,9 @@
     "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "dev": "nodemon backend/server.js"
-  },
+    "dev": "nodemon backend/server.js",
+    "build:seo": "node src/seo/generatePages.js",
+    "build": "npm run build:seo && react-scripts build"  },
   "eslintConfig": {
     "extends": [
       "react-app",

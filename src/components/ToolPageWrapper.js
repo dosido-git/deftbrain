@@ -278,14 +278,14 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
 
         {/* Right Column: Ad Panel + Guide Sidebar */}
         <aside data-print-hide className="lg:col-span-4 space-y-6 relative z-0">
-          {/* ── Ad Panel Placeholder ── */}
-          <div className={`${colors.surfaceAlt} border ${colors.border} rounded-2xl overflow-hidden transition-colors duration-200`}>
+          {/* ── Ad Panel Placeholder — commented out until ready to activate ── */}
+          {/* <div className={`${colors.surfaceAlt} border ${colors.border} rounded-2xl overflow-hidden transition-colors duration-200`}>
             <div className="h-[200px] flex items-center justify-center">
               <span className={`text-[10px] font-mono uppercase tracking-widest ${colors.textMuted}`}>
                 reserved
               </span>
             </div>
-          </div>
+          </div> */}
 
           {/* ── Guide Sidebar ── */}
           <div className={`${colors.surfaceAlt} border ${colors.border} rounded-2xl p-6 sticky top-44 max-h-[calc(100vh-12rem)] overflow-y-auto transition-colors duration-200`}>

@@ -59,7 +59,9 @@ ${urls.map(u => `  <url>
 `;
 
 // ── Write to public/ ──
-const outputPath = path.join(__dirname, '..', 'public', 'sitemap.xml');
+// Writes to sitemap-app.xml — sitemap.xml is a sitemapindex referencing both
+// sitemap-app.xml (app tools) and guides-sitemap.xml (SEO guide pages).
+const outputPath = path.join(__dirname, '..', 'public', 'sitemap-app.xml');
 fs.writeFileSync(outputPath, sitemap);
 console.log(`Sitemap written to ${outputPath}`);
 console.log(`Total URLs: ${urls.length} (1 homepage + ${toolIds.length} tools)`);

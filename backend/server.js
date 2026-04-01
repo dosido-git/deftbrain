@@ -76,7 +76,7 @@ const TOOL_IDS = [
   'FriendshipFadeAlerter','FutureProof','GentlePushGenerator','GhostWriter',
   'Giftology','GratitudeDebtClearer','GravityWell','HecklerPrep','HistoryToday',
   'HobbyMatch','JargonAssassin','LaundroMat','LayoverMaximizer','LazyWorkoutAdapter',
-  'LeaseTrapDetector','LeverageLogic','LuckSurface','MagicMouth','MarkupDetective',
+  'LeaseTrapDetector','LedeBuilder','LeverageLogic','LuckSurface','MagicMouth','MarkupDetective',
   'MeetingBSDetector','MeetingHijackPreventer','MicroAdventureMapper','MiseEnPlace',
 'MoneyDiplomat','MoneyMoves','NameAudit','NerveCheck','NameStorm','NameThatFeeling','NoiseCanceler',
   'OnePercenter','PartyArchitect','PetWeirdnessDecoder','PlainTalk',
@@ -180,7 +180,10 @@ app.get('/api/endpoints', (req, res) => {
 
 // ── Serve React build (production) ──
 if (IS_PRODUCTION) {
-  app.use(express.static(path.join(__dirname, '..', 'build'), { redirect: false }));
+  // extensions: ['html'] serves guide pages at clean URLs:
+  // /guides/workplace/how-to-tell-your-boss-theyre-wrong
+  // → build/guides/workplace/how-to-tell-your-boss-theyre-wrong.html
+  app.use(express.static(path.join(__dirname, '..', 'build'), { redirect: false, extensions: ['html'] }));
   app.get('*', (req, res) => {
     const slug = req.path.replace(/^\/|\/$/g, '');
     const canonical = slug ? toolIdMap[slug.toLowerCase()] : null;

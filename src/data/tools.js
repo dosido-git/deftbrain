@@ -44,6 +44,40 @@ template:
 ]}},**/
 export const tools = [
 {
+  modified: "2026-03-30",
+  id: "LedeBuilder",
+  title: "LedeBuilder",
+  tagline: "Draft the human-feel opening for any SEO guide page",
+  tags: ['seo', 'lede', 'landing page', 'content', 'draft', 'guide page', 'opening paragraph', 'writing', 'internal'],
+  icon: "✍️",
+  categories: ['Do It!'],
+  headerColor: "#b8cce0",
+  description: "Drafts the lede — the human-feel opening paragraph(s) — for DeftBrain's SEO guide pages. Paste in a search phrase, the reader's emotional context, and a concrete example scenario, and it returns two paragraphs that meet the reader exactly where they are. Built for the content pipeline: review, tweak one sentence, paste into the JSON record, ship.",
+
+  guide: {
+    overview: "Every SEO guide page needs one thing a template can't provide: an opening that makes the reader feel seen. LedeBuilder generates that opening from three inputs — the search phrase, the emotional context, and a concrete scenario — then gets out of the way. The output is two short paragraphs, written in second person, that land the reader in their exact moment before the 'how to do it' section begins.",
+    howToUse: [
+      "Paste the search_phrase exactly as it appears in the JSON content record",
+      "Describe the emotional context — how the reader is feeling right now (nervous, frustrated, embarrassed, etc.)",
+      "Write a concrete example scenario — a specific situation that captures the reader's moment",
+      "Optionally name the tool the page promotes — helps the draft land the right tone",
+      "Review the two-paragraph output, tweak one sentence if needed, paste into the lede field of the JSON record",
+      "Run npm run build:seo to regenerate the page"
+    ],
+    example: {
+      scenario: "Writing the lede for the page: 'how to tell your boss they're wrong'",
+      action: "Search phrase: 'how to tell your boss they're wrong'. Emotional context: nervous, second-guessing yourself, slightly resentful. Scenario: your manager greenlights a plan you know will fail and is now asking for your buy-in.",
+      result: "Two paragraphs that open with the reader in the meeting, plan on the board, looking for a way out — before transitioning naturally into the five-step guide."
+    },
+    tips: [
+      "The emotional context field is the most important — vague emotions produce generic ledges, specific emotions produce felt ones",
+      "If the first draft feels slightly off in tone, hit Redraft — the prompt is non-deterministic and the second attempt is often better",
+      "The scenario doesn't need to match the reader's exact situation — it just needs to be specific enough to feel real",
+      "After pasting into the JSON, replace paragraph breaks with \\n\\n for the lede field format"
+    ]
+  }
+},
+{
   modified: "2026-03-24",
   id: "DriveHome",
   title: "DriveHome",
@@ -2206,7 +2240,7 @@ export const tools = [
   modified: "",
   id: "MoneyDiplomat",
   title: "Money Diplomat",
-  tagline: "Win every awkward money moment",
+  tagline: "The right number for every money moment — tips, splits, gifts, salary",
   tags: ['money', 'awkward', 'negotiate', 'bill', 'tip', 'salary', 'social'],
   icon: "💵",
   categories: ['Humans', 'Loot'],
@@ -4640,7 +4674,7 @@ export const tools = [
   modified: "",
   id: 'MoneyMoves',
   title: 'Money Moves',
-  tagline: "What's the money situation? I'll tell you what to do.",
+  tagline: "What to do and what to say when money gets complicated.",
   tags: ['money', 'social', 'bills', 'finances', 'awkward', 'salary', 'budget'],
   icon: '💸',
   categories: ['Loot', 'Humans'],
