@@ -84,15 +84,6 @@ const GentlePushGenerator = ({ tool }) => {
   const [error, setError] = useState('');
   const resultsRef = React.useRef(null);
 
-  // Global Cmd/Ctrl+Enter submit
-  React.useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !loading) handleGenerate();
-    };
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [handleGenerate, loading]);
-
   // ─── State: Setup inputs ───
   const [domain, setDomain] = useState('');
   const [comfortZone, setComfortZone] = useState('');
@@ -205,6 +196,15 @@ const GentlePushGenerator = ({ tool }) => {
       setView('pick');
     } catch (err) { setError(err.message || 'Failed to generate pushes.'); }
   };
+
+  // Global Cmd/Ctrl+Enter submit
+  React.useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !loading) handleGenerate();
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [handleGenerate, loading]);
 
   // ─── API: Regenerate with feedback ───
   const handleRegenerate = async () => {

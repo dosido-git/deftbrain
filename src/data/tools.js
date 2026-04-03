@@ -3439,7 +3439,7 @@ export const tools = [
   icon: "🛡️",
   categories: ['The Office'],
   headerColor: "#d4dde8",
-  description: "Create structured, inclusive meeting agendas with time-boxed items, facilitator scripts, and anti-hijack strategies. Prevents dominant personalities from derailing discussions and ensures all voices are heard. Built with neurodivergent users in mind.",
+  description: "Create structured, inclusive meeting agendas with time-boxed items, facilitator scripts, and anti-hijack strategies. Prevents dominant personalities from derailing discussions and ensures all voices are heard.",
   guide: {
       overview: "The Meeting Hijack Preventer generates complete meeting structures that keep discussions focused and productive. It provides time-boxed agenda items, explicit speaking order, facilitator scripts for every scenario, decision-making frameworks, virtual meeting protocols, and ready-to-use follow-up documents. Perfect for preventing tangents, managing dominant speakers, and ensuring quiet participants contribute.",
       howToUse: [
@@ -3754,7 +3754,7 @@ export const tools = [
   title: "Meeting BS Detector",
   tagline: "Is this meeting necessary or could it be an email?",
   tags: ['meeting', 'waste time', 'unnecessary', 'decline', 'calendar', 'work'],
-  icon: "🔇",
+  icon: "🕵️",
   categories: ['The Office'],
   headerColor: "#d4dde8",
   description: "Detects whether meetings are necessary or could be emails/async updates. Analyzes red flags like 'status update', 'touch base', no agenda. Provides alternative approaches (Loom, doc, Slack) with time saved estimates and permission to decline.",

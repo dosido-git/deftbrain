@@ -94,6 +94,14 @@ const toolIdMap = {};
 TOOL_IDS.forEach(id => { toolIdMap[id.toLowerCase()] = id; });
 console.log(`Tool ID map: ${Object.keys(toolIdMap).length} tools`);
 
+// ── Retired tools → 410 Gone ──
+// Tells Google these pages no longer exist (avoids soft-404 from homepage redirect).
+// Add slug exactly as Google knows it (case-sensitive).
+const RETIRED_SLUGS = ['/Impartial', '/Presenter', '/TheNetwork'];
+RETIRED_SLUGS.forEach(slug => {
+  app.get(slug, (req, res) => res.status(410).send('This tool has been retired.'));
+});
+
 // ── Legacy /tool/ route redirects ──
 const LEGACY_REDIRECTS = {
   // Legacy /tool/ routes
@@ -101,10 +109,6 @@ const LEGACY_REDIRECTS = {
   '/tool/bill-rescue':           '/BillRescue',
   // Renamed tools
   '/SayItRight':                 '/PronounceItRight',
-  // Never-built planned tools — soft 404s in Google
-  '/Impartial':                  '/',
-  '/Presenter':                  '/',
-  '/TheNetwork':                 '/',
   '/whatifmachine':              '/WhatIf',
   '/plothole':                   '/PlotTwist',
   '/roommatecourtroom':          '/RoommateCourt',
