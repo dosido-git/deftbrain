@@ -1,5 +1,5 @@
-import React, { useState, useCallback, useEffect } from 'react';
-import { CopyBtn, ActionBar } from '../components/ActionButtons';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
+import { useRegisterActions } from '../components/ActionBarContext';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
@@ -17,10 +17,6 @@ const HecklerPrep = ({ tool }) => {
   const { isDark } = useTheme();
 
 
-
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
 
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
@@ -44,7 +40,15 @@ const HecklerPrep = ({ tool }) => {
     warningTxt:    isDark ? 'text-amber-300' : 'text-amber-800',
     pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
+    required:      isDark ? 'text-amber-400' : 'text-amber-500',
+    badgeNeutral:  isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-gray-100 text-gray-600',
   };
+  c.textMuteded = c.textMuted;
+  c.label = c.labelText;
+
+  const linkStyle = isDark
+    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
+    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
 
   const [topic, setTopic] = usePersistentState('hp-topic', '');
   const [history, setHistory] = usePersistentState('hecklerprep-history', []);
@@ -70,7 +74,6 @@ const HecklerPrep = ({ tool }) => {
       });
       setResults(data);
       setHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: '' }, ...prev].slice(0, 6));
-      setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
     } catch (err) { setError(err.message || 'Failed to generate questions.'); }
   }, [topic, audience, proposal, knownObjections, stakes, callToolEndpoint]);
 
@@ -95,21 +98,49 @@ const HecklerPrep = ({ tool }) => {
     return text + BRAND;
   }, [results, topic]);
 
+  useRegisterActions(buildFullText(), tool?.title || 'HecklerPrep');
+
+  const generateRef = useRef(null);
+  const canSubmitRef = useRef(false);
+  generateRef.current = generate;
+  canSubmitRef.current = !!topic.trim();
+
+  useEffect(() => {
+    if (!results || !resultsRef.current) return;
+    const t = setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 200);
+    return () => clearTimeout(t);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [results]);
+
+  useEffect(() => {
+    const handler = (e) => {
+      const tag = document.activeElement?.tagName;
+      if (tag === 'SELECT') return;
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !loading && canSubmitRef.current)
+        generateRef.current?.();
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading]);
+
   const difficultyBadge = (d) => d === 'brutal' ? c.danger : d === 'hard' ? c.warning : c.success;
   const difficultyEmoji = (d) => d === 'brutal' ? '🔴' : d === 'hard' ? '🟡' : '🟢';
 
   const r = results;
 
   return (
-    <div className={`space-y-6 ${c.text}`}>
-      <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-6`}>
-        <div className={`mb-5 pb-4 border-b ${c.border}`}>
-          <h2 className={`text-2xl font-bold ${c.text}`}>HecklerPrep 🎤</h2>
-          <p className={`text-sm ${c.textSecondary} mt-1`}>Anticipate the hardest questions before they land</p>
+    <div className={`space-y-4 ${c.text}`}>
+      <div className={`${c.card} border ${c.border} rounded-xl p-6`}>
+        <div className="mb-5 pb-4 border-b border-zinc-500">
+          <h2 className={`text-xl font-bold ${c.text}`}>
+            <span className="mr-2">{tool?.icon ?? '🎤'}</span>{tool?.title ?? 'HecklerPrep'}
+          </h2>
+          <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Anticipate the hardest questions before they land'}</p>
         </div>
 
         <div className="mb-4">
-          <label className={`text-sm font-bold ${c.text} block mb-1.5`}>What are you presenting or proposing?</label>
+          <label className={`text-sm font-bold ${c.text} block mb-1.5`}>What are you presenting or proposing? <span className={c.required}>*</span></label>
           <textarea value={topic} onChange={e => setTopic(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && topic.trim()) generate(); }} rows={2}
             placeholder="e.g., budget increase for Q3, new product feature launch, policy change proposal"
             className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} ${c.text} outline-none focus:ring-2 resize-none`} />
@@ -155,15 +186,15 @@ const HecklerPrep = ({ tool }) => {
         <div className="flex gap-3">
           <button onClick={generate} disabled={loading || !topic.trim()}
             className={`flex-1 ${c.btnPrimary} disabled:opacity-40 disabled:cursor-not-allowed font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-2 min-h-[48px] shadow-lg`}>
-            {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🎤'}</span> Generating hardest questions...</> : <><span>{tool?.icon ?? '🎤'}</span> Prep Me</>}
+            {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🎤'}</span> Generating hardest questions...</> : <><span className="mr-1">{tool?.icon ?? '🎤'}</span> Prep Me</>}
           </button>
-          {results && <button onClick={handleReset} className={`px-5 py-3 ${c.btnSecondaryondary} rounded-xl font-medium min-h-[48px]`}>New</button>}
+          {results && <button onClick={handleReset} className={`px-5 py-3 ${c.btnSecondary} rounded-xl font-medium min-h-[48px]`}>New</button>}
         </div>
 
         {!results && (
           <div className={`mt-5 pt-4 border-t ${c.border}`}>
             <p className={`text-xs ${c.textMuteded}`}>
-              🔨 Need to frame a difficult message? <a href="/VelvetHammer" target="_blank" rel="noopener noreferrer" className={`underline ${linkStyle}`}>Velvet Hammer</a> helps you say hard things well.
+              🔨 Need to frame a difficult message? <a href="/VelvetHammer" className={linkStyle}>Velvet Hammer</a> helps you say hard things well.
             </p>
           </div>
         )}
@@ -177,10 +208,8 @@ const HecklerPrep = ({ tool }) => {
 
       {r && (
         <div ref={resultsRef} className="space-y-4">
-          <div className="flex justify-end"><ActionBar content={buildFullText()} subject="Heckler Prep Questions" /></div>
-
-          {r.situation_read && (
-            <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-5`}>
+{r.situation_read && (
+            <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
               <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{r.situation_read}</p>
             </div>
           )}
@@ -203,7 +232,7 @@ const HecklerPrep = ({ tool }) => {
               {r.questions.map((q, idx) => {
                 const isExpanded = expandedQ === idx;
                 return (
-                  <div key={idx} className={`${c.card} ${c.border} border ${c.border} rounded-xl overflow-hidden`}>
+                  <div key={idx} className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
                     <button onClick={() => setExpandedQ(isExpanded ? null : idx)}
                       className="w-full p-4 text-left">
                       <div className="flex items-start gap-3">
@@ -247,7 +276,6 @@ const HecklerPrep = ({ tool }) => {
                             <p className={`text-xs ${c.textSecondary}`}>"{q.bail_out}"</p>
                           </div>
                         )}
-                        <CopyBtn content={`Q: ${q.question}\nA: ${q.model_answer}${BRAND}`} label="Copy Q&A" />
                       </div>
                     )}
                   </div>
@@ -276,12 +304,12 @@ const HecklerPrep = ({ tool }) => {
             </div>
           )}
 
-          <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-xs font-bold ${c.text} mb-2`}>Related tools</p>
-            <div className="flex flex-wrap gap-2">
-              <a href="/TheRunthrough" target="_blank" rel="noopener noreferrer" className={`text-xs px-3 py-1.5 rounded-lg border ${c.pillInactive} no-underline`}>🏃 The Runthrough</a>
-              <a href="/VelvetHammer" target="_blank" rel="noopener noreferrer" className={`text-xs px-3 py-1.5 rounded-lg border ${c.pillInactive} no-underline`}>🔨 Velvet Hammer</a>
-              <a href="/BragSheetBuilder" target="_blank" rel="noopener noreferrer" className={`text-xs px-3 py-1.5 rounded-lg border ${c.pillInactive} no-underline`}>🏆 Brag Sheet Builder</a>
+          <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+            <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 Related tools</p>
+            <div className="flex flex-wrap gap-3">
+              <a href="/VelvetHammer" className={`text-xs ${linkStyle}`}>🔨 Velvet Hammer</a>
+              <a href="/BragSheetBuilder" className={`text-xs ${linkStyle}`}>🏆 Brag Sheet Builder</a>
+              <a href="/TheRunthrough" className={`text-xs ${linkStyle}`}>🏃 The Runthrough</a>
             </div>
           </div>
         </div>

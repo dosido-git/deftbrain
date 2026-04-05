@@ -62,7 +62,7 @@ Generate exactly 10 questions, escalating in difficulty. At least 2 should be 'b
 
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
-      max_tokens: 3000,
+      max_tokens: 4500,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     });

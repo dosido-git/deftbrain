@@ -2,440 +2,464 @@ const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 
-// ═══════════════════════════════════════════════════
-// GENTLE PUSH GENERATOR — v3 (7 routes)
-// v1: single generate call, single challenge
-// v2: +3 options, +domains, +regenerate, +reflect, +review
-// v3: +courage-countdown, +escalation-ladder,
-//     +fear-inventory, +predicted vs actual scariness
-// ═══════════════════════════════════════════════════
-
-const DOMAIN_LABELS = {
-  social: 'Social & relationships',
-  professional: 'Work & career',
-  creative: 'Creative expression',
-  physical: 'Physical & health',
-  emotional: 'Emotional vulnerability',
-  financial: 'Financial & money',
-};
-
-const CAPACITY_GUIDANCE = {
-  low: 'This person is low capacity right now. The pushes should be VERY small — almost trivially easy. Success is defined as attempting at all. The gentlest possible nudge.',
-  medium: 'Medium capacity. Pushes should be genuinely challenging but clearly achievable. The sweet spot between "I can do this" and "this scares me a little."',
-  high: 'High capacity — feeling strong. Pushes can be more ambitious. Still calibrated and specific, but this person can handle real discomfort right now.',
-};
+// ════════════════════════════════════════════════════════════
+// GENTLE PUSH GENERATOR
+// Dispatches to action handlers based on req.body.action
+// ════════════════════════════════════════════════════════════
 
 router.post('/gentle-push-generator', async (req, res) => {
-  const { action } = req.body;
-
   try {
-    switch (action || 'generate') {
+    const { action, userLanguage, ...payload } = req.body;
 
-      // ────────────────────────────────────────────
-      // GENERATE — 3 pushes at different intensities
-      // ────────────────────────────────────────────
-      case 'generate': {
-        const { domain, comfortZone, growthArea, currentCapacity, pushHistory, userLanguage } = req.body;
+    if (!action) {
+      return res.status(400).json({ error: 'action is required' });
+    }
 
-        if (!growthArea?.trim()) {
-          return res.status(400).json({ error: 'Where do you want to grow?' });
-        }
+    switch (action) {
+      case 'generate':       return await handleGenerate(payload, userLanguage, res);
+      case 'regenerate':     return await handleRegenerate(payload, userLanguage, res);
+      case 'reflect':        return await handleReflect(payload, userLanguage, res);
+      case 'review':         return await handleReview(payload, userLanguage, res);
+      case 'courage-countdown': return await handleCourageCountdown(payload, userLanguage, res);
+      case 'escalation-ladder': return await handleEscalationLadder(payload, userLanguage, res);
+      case 'fear-inventory': return await handleFearInventory(payload, userLanguage, res);
+      default:
+        return res.status(400).json({ error: `Unknown action: ${action}` });
+    }
+  } catch (error) {
+    console.error('GentlePushGenerator error:', error);
+    res.status(500).json({ error: error.message || 'Something went wrong.' });
+  }
+});
 
-        const domainLabel = DOMAIN_LABELS[domain] || domain || 'general';
-        const capacityGuide = CAPACITY_GUIDANCE[currentCapacity] || CAPACITY_GUIDANCE.medium;
+// ════════════════════════════════════════════════════════════
+// ACTION: GENERATE — 3 calibrated pushes
+// ════════════════════════════════════════════════════════════
+async function handleGenerate({ domain, comfortZone, growthArea, currentCapacity, pushHistory }, userLanguage, res) {
+  if (!growthArea?.trim()) {
+    return res.status(400).json({ error: 'growthArea is required' });
+  }
 
-        const historySection = pushHistory?.length > 0
-          ? `\n\nPUSH HISTORY (most recent first, up to 10):
-${pushHistory.slice(0, 10).map(p => `- "${p.challenge}" (${p.intensity}) → ${p.attempted ? `attempted, scariness: ${p.scariness}/5${p.outcome ? `, outcome: ${p.outcome}` : ''}` : 'not attempted'}`).join('\n')}
-Use this history to calibrate. If recent pushes were all completed easily (scariness 1-2), slightly raise the bar. If recent pushes were not attempted or rated 4-5 scary, ease off. If there's a pattern of avoiding a specific type of challenge, note it but don't force it.`
-          : '';
+  const capacityGuide = {
+    low:    'Keep challenges TINY. The person is struggling. A small brave step is a big deal right now.',
+    medium: 'Normal calibration. Real but doable — slightly outside comfort but achievable this week.',
+    high:   'They are ready for more. Can push a bit harder. Still must be achievable, not reckless.',
+  };
 
-        const prompt = withLanguage(`You are a warm, encouraging growth companion. Someone wants to expand their comfort zone, and you're generating micro-challenges calibrated to where they are right now.
+  const historyNote = pushHistory?.length > 0
+    ? `\nRECENT PUSH HISTORY (last ${pushHistory.length} pushes — use to avoid repeats and notice patterns):\n${pushHistory.slice(0, 5).map(p => `- "${p.challenge}" (${p.intensity}, attempted: ${p.attempted})`).join('\n')}`
+    : '';
 
-YOUR PHILOSOPHY:
-- Growth happens at the edge of comfort, not miles past it. A good push is "slightly scary but I could see myself doing it."
-- Attempting IS success. The outcome doesn't matter. Calling someone and having an awkward 2-minute conversation is a complete win.
-- Three options give autonomy. Being told what to do feels different from choosing.
-- Each push must be SPECIFIC, CONCRETE, and TIME-BOUND. Not "be more social" — "Text one friend you haven't talked to in a month and ask how they're doing. Do it before Friday."
-- Capacity matters deeply. A low-capacity push for someone scared of phone calls might be "listen to a voicemail without anxiety." A high-capacity push might be "call someone you've been avoiding."
+  const prompt = withLanguage(`You are a compassionate growth coach who specializes in calibrating challenges to exactly the right size — not too scary, not too easy. You understand that growth happens at the edge of comfort, not past the point of panic.
 
-DOMAIN: ${domainLabel}
-COMFORT ZONE: "${comfortZone || 'not specified'}"
-GROWTH AREA: "${growthArea.trim()}"
-CAPACITY: ${currentCapacity || 'medium'}
-${capacityGuide}
-${historySection}
+CONTEXT:
+- Growth area: "${growthArea.trim()}"
+- Domain: ${domain || 'not specified'}
+- Comfort zone baseline: ${comfortZone?.trim() || 'not specified'}
+- Current capacity: ${currentCapacity || 'medium'} — ${capacityGuide[currentCapacity] || capacityGuide.medium}
+${historyNote}
 
-Generate 3 pushes at different intensities. Each must be:
-- Specific (who, what, when, how long)
-- Achievable within 1 week
-- Clearly different in scariness level
-- Honest about why it's calibrated that way
+Generate 3 distinct push challenges — one gentle, one moderate, one bold. Each must be:
+- SPECIFIC and actionable (not "be more social" — "text one friend you haven't spoken to in 3 months")
+- Sized for their capacity right now
+- Achievable within the time frame given
+- Genuinely different from each other in structure, not just intensity
 
 Return ONLY valid JSON:
 {
-  "acknowledgment": "One warm sentence acknowledging where they are and what they want. Not generic — reference their specific comfort zone and growth area.",
+  "acknowledgment": "1-2 warm sentences acknowledging where they are and what they're working toward — human, not clinical",
+  "if_you_dont": "One gentle sentence normalising it if they don't attempt — no shame, just information",
+  "pattern_note": "Optional: 1 sentence noting a pattern in their push history (only if pushHistory has 3+ entries and a clear pattern). Omit if no history or no clear pattern.",
   "pushes": [
     {
       "intensity": "gentle",
-      "challenge": "The specific, concrete challenge. Time-bound. Achievable.",
-      "why_this_size": "Why this calibration — what makes it the right amount of scary.",
-      "what_counts": "What counts as success. Always includes 'attempting counts.'",
-      "if_too_much": "Specific smaller alternative. Still growth, just tinier.",
-      "time_frame": "When to do it by. 'Before Friday' or 'This week' etc."
+      "challenge": "Specific, concrete challenge they can attempt this week",
+      "time_frame": "e.g., 'This week', 'In the next 3 days', 'Today if possible'",
+      "why_this_size": "Why this challenge is sized right for them RIGHT NOW — reference their specific situation",
+      "what_counts": "What counts as success — lower the bar intentionally (e.g., 'Sending the text counts, even if they don't reply')",
+      "if_too_much": "A smaller version — what to do if this still feels too big"
     },
     {
       "intensity": "moderate",
       "challenge": "...",
+      "time_frame": "...",
       "why_this_size": "...",
       "what_counts": "...",
-      "if_too_much": "...",
-      "time_frame": "..."
+      "if_too_much": "..."
     },
     {
       "intensity": "bold",
       "challenge": "...",
+      "time_frame": "...",
       "why_this_size": "...",
       "what_counts": "...",
-      "if_too_much": "...",
-      "time_frame": "..."
+      "if_too_much": "..."
     }
-  ],
-  "if_you_dont": "Permission to not do any of them. Genuine, not passive-aggressive. Growth isn't mandatory.",
-  "pattern_note": "If push history reveals a pattern (always avoiding one type, always doing the easy one, comfort zone clearly expanding), mention it. Otherwise null."
-}`, userLanguage);
+  ]
+}
 
-        const parsed = await callClaudeWithRetry(prompt, {
-          model: 'claude-haiku-4-5-20251001',
+RULES:
+- Never suggest anything that requires spending money, accessing specific locations, or contacting someone who hasn't consented
+- The "bold" option should still be achievable — not terrifying, just a bigger step
+- If capacity is LOW, even the "bold" option should be small by normal standards
+- what_counts must make attempting easier than not — lower the bar
+- Return ONLY the JSON object`, userLanguage);
 
-          label: 'GPG-Generate',
-          max_tokens: 1500,
-        });
+  const parsed = await callClaudeWithRetry(prompt, {
+    label: 'gpg-generate',
+    max_tokens: 2000,
+  });
 
-        return res.json(parsed);
-      }
+  res.json(parsed);
+}
 
-      // ────────────────────────────────────────────
-      // REGENERATE — New push with feedback
-      // ────────────────────────────────────────────
-      case 'regenerate': {
-        const { previousPush, feedback, domain, comfortZone, growthArea, currentCapacity, userLanguage } = req.body;
+// ════════════════════════════════════════════════════════════
+// ACTION: REGENERATE — one new push based on feedback
+// ════════════════════════════════════════════════════════════
+async function handleRegenerate({ previousPush, feedback, domain, comfortZone, growthArea, currentCapacity }, userLanguage, res) {
+  const prompt = withLanguage(`You are a compassionate growth coach. The person didn't like the push they were given and wants something different.
 
-        if (!feedback?.trim()) {
-          return res.status(400).json({ error: 'What was wrong with the previous push?' });
-        }
+CONTEXT:
+- Growth area: "${growthArea?.trim() || 'not specified'}"
+- Domain: ${domain || 'not specified'}
+- Comfort zone: ${comfortZone?.trim() || 'not specified'}
+- Capacity: ${currentCapacity || 'medium'}
+- Previous push: "${previousPush || 'not specified'}"
+- Feedback: "${feedback}"
 
-        const prompt = withLanguage(`The previous push didn't fit. Generate a better one based on their feedback.
-
-PREVIOUS PUSH: "${previousPush || 'unknown'}"
-FEEDBACK: "${feedback.trim()}"
-DOMAIN: ${DOMAIN_LABELS[domain] || domain || 'general'}
-COMFORT ZONE: "${comfortZone || 'not specified'}"
-GROWTH AREA: "${growthArea || 'not specified'}"
-CAPACITY: ${currentCapacity || 'medium'}
-
-Common feedback types and how to respond:
-- "too scary": Generate something noticeably easier. Half the scariness.
-- "too easy": Step it up but don't overdo it. Slightly more edge.
-- "wrong direction": The activity type was wrong. Try a completely different approach to the same growth area.
-- "not relevant": They need something more connected to their actual life.
-- Custom feedback: Adapt based on what they said.
+Generate ONE new push that directly addresses the feedback. If they said "too scary" — smaller. If "too easy" — bigger. If "wrong direction" — reframe the challenge entirely. If "not relevant" — try a completely different angle.
 
 Return ONLY valid JSON:
 {
-  "response_to_feedback": "One sentence acknowledging their feedback. 'Too scary is useful information, not failure.'",
+  "response_to_feedback": "1 sentence acknowledging their feedback warmly",
   "push": {
-    "intensity": "adjusted",
-    "challenge": "New specific, concrete, time-bound challenge.",
-    "why_this_size": "Why this is better calibrated based on the feedback.",
-    "what_counts": "What counts as success.",
-    "if_too_much": "Even smaller alternative.",
-    "time_frame": "When to do it by."
+    "intensity": "gentle|moderate|bold|adjusted",
+    "challenge": "The new specific challenge",
+    "time_frame": "When to do it",
+    "why_this_size": "Why this is better sized given their feedback",
+    "what_counts": "What counts as success",
+    "if_too_much": "A smaller fallback if needed"
   }
 }`, userLanguage);
 
-        const parsed = await callClaudeWithRetry(prompt, {
-          model: 'claude-haiku-4-5-20251001',
+  const parsed = await callClaudeWithRetry(prompt, {
+    label: 'gpg-regenerate',
+    max_tokens: 800,
+  });
 
-          label: 'GPG-Regenerate',
-          max_tokens: 600,
-        });
+  res.json(parsed);
+}
 
-        return res.json(parsed);
-      }
+// ════════════════════════════════════════════════════════════
+// ACTION: REFLECT — process the outcome
+// ════════════════════════════════════════════════════════════
+async function handleReflect({ push, attempted, scariness, predictedScariness, whatHappened }, userLanguage, res) {
+  const prompt = withLanguage(`You are a compassionate growth coach helping someone process a comfort-zone challenge they just attempted (or didn't attempt).
 
-      // ────────────────────────────────────────────
-      // REFLECT — Outcome celebration + learning (v3: +predicted vs actual)
-      // ────────────────────────────────────────────
-      case 'reflect': {
-        const { push, attempted, scariness, predictedScariness, whatHappened, userLanguage } = req.body;
+WHAT THEY DID:
+- Challenge: "${push || 'not specified'}"
+- Attempted: ${attempted ? 'Yes' : 'No'}
+${scariness ? `- How scary it was (actual): ${scariness}/5` : ''}
+${predictedScariness ? `- How scary they expected it to be: ${predictedScariness}/5` : ''}
+${whatHappened?.trim() ? `- What happened: "${whatHappened.trim()}"` : ''}
 
-        const predVsActual = (predictedScariness && scariness)
-          ? `\nPREDICTED SCARINESS: ${predictedScariness}/5 (what they expected)
-ACTUAL SCARINESS: ${scariness}/5 (what they experienced)
-GAP: ${predictedScariness - scariness > 0 ? `Overpredicted by ${predictedScariness - scariness} points — it was less scary than expected.` : predictedScariness - scariness < 0 ? `Underpredicted by ${scariness - predictedScariness} points — it was scarier than expected.` : 'Predicted accurately.'}`
-          : '';
+${attempted
+  ? 'They attempted the challenge. Celebrate the attempt regardless of outcome — attempting IS success.'
+  : 'They did not attempt the challenge. Be compassionate — this is information, not failure. Help them understand without shame.'}
 
-        const prompt = withLanguage(`Someone completed (or attempted, or didn't attempt) a comfort-zone challenge. Reflect back to them with warmth and genuine insight.
-
-THE PUSH: "${push || 'unknown'}"
-ATTEMPTED: ${attempted ? 'Yes' : 'No'}
-SCARINESS RATING: ${scariness || 'not rated'}/5 (1 = easy, 5 = terrifying)${predVsActual}
-WHAT HAPPENED: "${whatHappened || 'not shared'}"
-
-RULES:
-- If they attempted: Celebrate genuinely. Not over-the-top. Specific to what they did.
-- If they didn't attempt: Zero guilt. Genuine permission. But gently explore why.
-- The scariness rating is gold: 1-2 means ready for more. 4-5 means significant stretch.
-- If predicted vs actual scariness data exists, this is KEY insight. If they predicted 4 but experienced 2, their brain is overestimating fear — point this out gently. This is their own evidence against their own anxiety.
-- If they shared what happened, reflect specifically. Find the growth even in awkward outcomes.
-- Always end with a forward look.
+${predictedScariness && scariness && predictedScariness !== scariness
+  ? `The prediction gap: they expected ${predictedScariness}/5, reality was ${scariness}/5. ${predictedScariness > scariness ? 'Their brain overpredicted the danger.' : 'It was harder than expected — that took courage.'}`
+  : ''}
 
 Return ONLY valid JSON:
 {
-  "reflection": "2-3 sentences of warm, specific reflection.",
-  "growth_insight": "What this reveals about their comfort zone.",
-  "scariness_note": "What the scariness rating tells you about calibration.",
-  "prediction_insight": "If predicted vs actual data exists: specific observation about how their brain miscalibrates fear. e.g., 'Your brain said this would be a 4. It was a 2. Your fear antenna is set too high for social situations — and you have the data to prove it.' If no prediction data: null.",
-  "next_suggestion": "Direction for next push based on this outcome.",
-  "celebration": "If attempted: specific celebration. If not: null."
+  "celebration": ${attempted ? '"Warm celebration of the attempt — 1-2 sentences. Reference what they actually did. No generic cheerleading."' : 'null'},
+  "reflection": "1-2 sentences of honest, warm reflection on what this experience shows about their growth edge",
+  "growth_insight": "One specific insight about their growth pattern — connect this to what their attempt (or non-attempt) reveals",
+  "scariness_note": ${scariness ? '"1 sentence calibration note about their scariness rating"' : 'null'},
+  "prediction_insight": ${predictedScariness && scariness ? '"1 sentence insight about the gap between predicted and actual scariness"' : 'null'},
+  "next_suggestion": "One concrete, small suggestion for next time — either the same challenge or a step toward it"
 }`, userLanguage);
 
-        const parsed = await callClaudeWithRetry(prompt, {
-          model: 'claude-haiku-4-5-20251001',
+  const parsed = await callClaudeWithRetry(prompt, {
+    label: 'gpg-reflect',
+    max_tokens: 800,
+  });
 
-          label: 'GPG-Reflect',
-          max_tokens: 600,
-        });
+  res.json(parsed);
+}
 
-        return res.json(parsed);
-      }
+// ════════════════════════════════════════════════════════════
+// ACTION: REVIEW — growth map analysis
+// ════════════════════════════════════════════════════════════
+async function handleReview({ pushLog, domains }, userLanguage, res) {
+  if (!pushLog?.length) {
+    return res.status(400).json({ error: 'pushLog is required' });
+  }
 
-      // ────────────────────────────────────────────
-      // REVIEW — Growth pattern analysis
-      // ────────────────────────────────────────────
-      case 'review': {
-        const { pushLog, domains, userLanguage } = req.body;
+  const attempted = pushLog.filter(p => p.attempted).length;
+  const attemptRate = Math.round((attempted / pushLog.length) * 100);
+  const withScariness = pushLog.filter(p => p.scariness > 0 && p.attempted);
+  const avgScariness = withScariness.length > 0
+    ? Math.round((withScariness.reduce((s, p) => s + p.scariness, 0) / withScariness.length) * 10) / 10
+    : 0;
 
-        if (!pushLog?.length || pushLog.length < 3) {
-          return res.status(400).json({ error: 'Need at least 3 logged pushes for patterns.' });
-        }
+  const prompt = withLanguage(`You are a growth coach analyzing someone's comfort-zone push history to help them understand their patterns.
 
-        const prompt = withLanguage(`Analyze this person's growth journey through their push history.
+PUSH HISTORY (${pushLog.length} total):
+${pushLog.slice(0, 20).map(p => `- "${p.challenge}" | domain: ${p.domain || 'general'} | intensity: ${p.intensity} | attempted: ${p.attempted} | scariness: ${p.scariness || 'not rated'}/5 | date: ${p.date?.slice(0, 10) || 'unknown'}`).join('\n')}
 
-PUSH LOG (most recent first):
-${JSON.stringify(pushLog.slice(0, 20), null, 2)}
+DOMAIN COMFORT SCORES (1=terrified, 5=confident):
+${domains ? Object.entries(domains).map(([d, v]) => `${d}: ${v}/5`).join(', ') : 'not provided'}
 
-DOMAIN COMFORT LEVELS (self-reported):
-${domains ? JSON.stringify(domains) : 'not tracked'}
+COMPUTED STATS:
+- Total pushes: ${pushLog.length}
+- Attempted: ${attempted} (${attemptRate}%)
+- Avg scariness (attempted): ${avgScariness}/5
 
-Analyze:
-- Attempt rate (what % of pushes were attempted?)
-- Average scariness vs. intensity chosen (are they always picking gentle? always bold?)
-- Domain patterns (which domains are they growing in? which are they avoiding?)
-- Scariness trends (are things getting less scary over time? = comfort zone expanding)
-- Completion patterns (time of week, consistency)
+Analyze their patterns and growth trajectory.
 
 Return ONLY valid JSON:
 {
-  "total_pushes": 0,
-  "attempted": 0,
-  "attempt_rate": "X%",
-  "avg_scariness": 0,
-  "intensity_pattern": {
-    "most_chosen": "gentle|moderate|bold",
-    "observation": "What this pattern reveals about their relationship to growth."
-  },
-  "domain_breakdown": [
-    { "domain": "social", "pushes": 0, "attempted": 0, "avg_scariness": 0, "trend": "growing|stable|avoiding" }
-  ],
+  "total_pushes": ${pushLog.length},
+  "attempted": ${attempted},
+  "attempt_rate": "${attemptRate}%",
+  "avg_scariness": ${avgScariness},
   "comfort_zone_shift": {
     "direction": "expanding|stable|contracting",
-    "evidence": "Specific evidence from the data. e.g., 'Phone calls went from 5/5 scary to 2/5 over 6 pushes.'",
-    "biggest_growth": "Domain or area with most measurable growth."
+    "evidence": "1-2 sentences of specific evidence from their history",
+    "biggest_growth": "The domain or area where they've grown most"
   },
-  "blind_spots": "Domains or types of challenges they're consistently avoiding. Be honest but kind.",
-  "streak": { "current": 0, "longest": 0, "observation": "What the streak says." },
-  "encouragement": "Genuine, specific encouragement tied to the data — not generic positivity.",
-  "next_recommendation": "Suggested focus area for the next push based on patterns."
-}`, userLanguage);
-
-        const parsed = await callClaudeWithRetry(prompt, {
-          model: 'claude-haiku-4-5-20251001',
-
-          label: 'GPG-Review',
-          max_tokens: 1200,
-        });
-
-        return res.json(parsed);
-      }
-
-      // ────────────────────────────────────────────
-      // COURAGE COUNTDOWN — In-the-moment companion (v3)
-      // ────────────────────────────────────────────
-      case 'courage-countdown': {
-        const { push, domain, comfortZone, userLanguage } = req.body;
-
-        if (!push?.trim()) {
-          return res.status(400).json({ error: 'What push are we doing?' });
-        }
-
-        const prompt = withLanguage(`Someone is about to do a scary thing RIGHT NOW. They're staring at their phone, or standing outside the door, or hovering over the send button. They need you to walk them through the next 60 seconds.
-
-THE PUSH: "${push.trim()}"
-DOMAIN: ${DOMAIN_LABELS[domain] || domain || 'general'}
-COMFORT ZONE: "${comfortZone || 'not specified'}"
-
-Generate a 60-second courage sequence:
-1. Breathing/grounding (one instruction — not a full exercise)
-2. A specific reframe for THIS push (not generic — tied to what they're about to do)
-3. A physical micro-action (the smallest first movement)
-4. The commitment moment ("You're doing it now")
-5. What to do if panic hits mid-push
-
-Each step should be:
-- One sentence. Max two.
-- Spoken in second person present tense ("You're picking up the phone")
-- Calm but forward-moving — not lingering
-
-Return ONLY valid JSON:
-{
-  "opening": "One sentence acknowledging they're here, right now, about to do the thing. Warm.",
-  "steps": [
-    { "instruction": "Short, specific instruction", "emoji": "One emoji", "seconds": 10 }
+  "streak": {
+    "current": 0,
+    "longest": 0,
+    "observation": "1 sentence about their consistency pattern"
+  },
+  "intensity_pattern": {
+    "most_chosen": "gentle|moderate|bold",
+    "observation": "1 sentence about what their intensity choices reveal"
+  },
+  "domain_breakdown": [
+    {
+      "domain": "social|professional|creative|physical|emotional|financial",
+      "pushes": 0,
+      "avg_scariness": 0,
+      "trend": "growing|avoiding|neutral"
+    }
   ],
-  "reframe": "The specific cognitive reframe for this exact push. Not 'you can do it' — more like 'You've survived 100% of awkward phone calls. This one won't be different.'",
-  "panic_plan": "If your heart is racing mid-push: [specific, brief instruction]. Don't quit — just pause.",
-  "go_line": "The final 'you're doing it' line. Bold, warm, specific."
-}`, userLanguage);
+  "blind_spots": "1 sentence about domains or patterns they're avoiding — or null if no clear blind spots",
+  "encouragement": "1-2 genuinely warm sentences about what their history shows — specific, not generic",
+  "next_recommendation": "1 specific suggestion for their next push based on patterns"
+}
 
-        const parsed = await callClaudeWithRetry(prompt, {
-          model: 'claude-haiku-4-5-20251001',
+Only include domains in domain_breakdown that appear in their history.`, userLanguage);
 
-          label: 'GPG-CourageCountdown',
-          max_tokens: 600,
-        });
+  const parsed = await callClaudeWithRetry(prompt, {
+    label: 'gpg-review',
+    max_tokens: 1500,
+  });
 
-        return res.json(parsed);
-      }
+  res.json(parsed);
+}
 
-      // ────────────────────────────────────────────
-      // ESCALATION LADDER — Path from here to goal (v3)
-      // ────────────────────────────────────────────
-      case 'escalation-ladder': {
-        const { domain, comfortZone, growthArea, currentCapacity, pushHistory, userLanguage } = req.body;
+// ════════════════════════════════════════════════════════════
+// ACTION: COURAGE COUNTDOWN — in-the-moment support
+// ════════════════════════════════════════════════════════════
+async function handleCourageCountdown({ push, domain, comfortZone }, userLanguage, res) {
+  if (!push?.trim()) {
+    return res.status(400).json({ error: 'push challenge is required' });
+  }
 
-        if (!growthArea?.trim()) {
-          return res.status(400).json({ error: 'What\'s the growth goal?' });
-        }
+  const prompt = withLanguage(`You are a calm, grounded coach helping someone in the moment right before they do something scary. They're about to attempt: "${push.trim()}"
 
-        const historyContext = pushHistory?.length > 0
-          ? `\nCOMPLETED PUSHES: ${pushHistory.filter(p => p.attempted).map(p => `"${p.challenge}" (scariness ${p.scariness}/5)`).slice(0, 8).join(', ')}`
-          : '';
+Context: domain: ${domain || 'general'}, comfort zone: ${comfortZone?.trim() || 'not specified'}
 
-        const prompt = withLanguage(`Build an escalation ladder — a visible path from this person's current comfort zone to their growth goal. Show them that the distance between "terrified" and "comfortable" is made of tiny steps.
-
-DOMAIN: ${DOMAIN_LABELS[domain] || domain || 'general'}
-COMFORT ZONE: "${comfortZone || 'not specified'}"
-GROWTH GOAL: "${growthArea.trim()}"
-CURRENT CAPACITY: ${currentCapacity || 'medium'}
-${historyContext}
-
-RULES:
-- 5-7 rungs from easiest to hardest
-- Each rung is a specific, concrete challenge (not vague)
-- The gap between rungs should feel small — "I could do the next one"
-- If they have push history, mark which rungs they've already passed
-- The first rung should be almost trivially easy
-- The last rung should be their actual goal or very close to it
-- Each rung has an estimated scariness level
+Create a short courage countdown — a sequence of 4-5 steps that grounds them, reframes their fear, and gets them ready to act. This is NOT a pep talk. It's a practical sequence: breathe, name the fear, shrink it, go.
 
 Return ONLY valid JSON:
 {
-  "ladder_intro": "One sentence framing the path. e.g., 'From texting to presenting: 6 small steps.'",
+  "opening": "1-2 sentences that meet them where they are — calm, not cheerleady. Acknowledge the fear.",
+  "reframe": "1 sentence that reframes the challenge in a smaller, more manageable way",
+  "steps": [
+    { "emoji": "🫁", "instruction": "Take one slow breath. In for 4, out for 6." },
+    { "emoji": "🧠", "instruction": "Name the actual fear. What's the worst realistic thing that happens?" },
+    { "emoji": "📏", "instruction": "Shrink it: what's the absolute minimum version of this that still counts?" },
+    { "emoji": "⏱️", "instruction": "Set a timer for 2 minutes. You only have to start — not finish." },
+    { "emoji": "🚀", "instruction": "Go. Right now. Before your brain talks you out of it." }
+  ],
+  "go_line": "Short, direct line to go. Not cheerleading — a quiet push.",
+  "panic_plan": "If they freeze: 1 sentence on the smallest possible version of the action they can take right now"
+}
+
+Steps should be 4-6 total. Keep each instruction to 1-2 sentences max. Practical, grounded, calm.`, userLanguage);
+
+  const parsed = await callClaudeWithRetry(prompt, {
+    label: 'gpg-countdown',
+    max_tokens: 800,
+  });
+
+  res.json(parsed);
+}
+
+// ════════════════════════════════════════════════════════════
+// ACTION: ESCALATION LADDER — step-by-step progression
+// ════════════════════════════════════════════════════════════
+async function handleEscalationLadder({ domain, comfortZone, growthArea, currentCapacity, pushHistory }, userLanguage, res) {
+  if (!growthArea?.trim()) {
+    return res.status(400).json({ error: 'growthArea is required' });
+  }
+
+  const historyNote = pushHistory?.length > 0
+    ? `\nPast pushes in this area: ${pushHistory.slice(0, 5).filter(p => p.attempted).map(p => `"${p.challenge}"`).join(', ')}`
+    : '';
+
+  const prompt = withLanguage(`You are a growth coach building a personalized escalation ladder — a clear progression from tiny first steps to meaningful growth.
+
+CONTEXT:
+- Growth area: "${growthArea.trim()}"
+- Domain: ${domain || 'not specified'}
+- Comfort zone: ${comfortZone?.trim() || 'not specified'}
+- Current capacity: ${currentCapacity || 'medium'}
+${historyNote}
+
+Create a 7-rung ladder from barely scary (1/5) to genuinely challenging (5/5). Each rung should be a clear, specific step. The ladder should tell a coherent story of progression.
+
+Return ONLY valid JSON:
+{
+  "ladder_intro": "1 sentence explaining the ladder's progression",
+  "current_position": 1,
   "rungs": [
     {
       "level": 1,
-      "challenge": "Specific, concrete challenge at this level",
+      "challenge": "Specific challenge — concrete and actionable",
       "estimated_scariness": 1,
-      "why_this_level": "Brief: why this is the right size for this rung",
-      "completed": false
-    }
+      "why_this_level": "Why this is sized at this level"
+    },
+    { "level": 2, "challenge": "...", "estimated_scariness": 2, "why_this_level": "..." },
+    { "level": 3, "challenge": "...", "estimated_scariness": 2, "why_this_level": "..." },
+    { "level": 4, "challenge": "...", "estimated_scariness": 3, "why_this_level": "..." },
+    { "level": 5, "challenge": "...", "estimated_scariness": 3, "why_this_level": "..." },
+    { "level": 6, "challenge": "...", "estimated_scariness": 4, "why_this_level": "..." },
+    { "level": 7, "challenge": "...", "estimated_scariness": 5, "why_this_level": "..." }
   ],
-  "current_position": "Which rung number they're currently at based on history (or 0 if starting)",
-  "distance_note": "Encouraging observation about how close/far they are. e.g., 'You're already past rung 3. The next step is smaller than the ones you've already taken.'",
-  "next_rung_suggestion": "Which rung to attempt next and why."
-}`, userLanguage);
+  "distance_note": "1 encouraging sentence about the distance from where they are to the top",
+  "next_rung_suggestion": "Which rung to start with and why"
+}
 
-        const parsed = await callClaudeWithRetry(prompt, {
-          model: 'claude-haiku-4-5-20251001',
+Set current_position to the rung that matches their current capacity and comfort zone.
+estimated_scariness should use scale 1-5 and increase progressively (not necessarily one per rung).`, userLanguage);
 
-          label: 'GPG-EscalationLadder',
-          max_tokens: 1000,
-        });
+  const parsed = await callClaudeWithRetry(prompt, {
+    label: 'gpg-ladder',
+    max_tokens: 1500,
+  });
 
-        return res.json(parsed);
-      }
+  res.json(parsed);
+}
 
-      // ────────────────────────────────────────────
-      // FEAR INVENTORY — Structured comfort mapping (v3)
-      // ────────────────────────────────────────────
-      case 'fear-inventory': {
-        const { responses, userLanguage } = req.body;
+// ════════════════════════════════════════════════════════════
+// ACTION: FEAR INVENTORY — profile analysis from scenario ratings
+// ════════════════════════════════════════════════════════════
+async function handleFearInventory({ responses }, userLanguage, res) {
+  if (!responses || Object.keys(responses).length < 5) {
+    return res.status(400).json({ error: 'At least 5 scenario responses required' });
+  }
 
-        if (!responses || Object.keys(responses).length < 10) {
-          return res.status(400).json({ error: 'Need at least 10 scenario ratings.' });
-        }
+  const SCENARIOS = {
+    s1:  { text: 'Eating alone at a restaurant',                    domain: 'social' },
+    s2:  { text: 'Making a phone call to a stranger',               domain: 'social' },
+    s3:  { text: 'Starting a conversation at a party',              domain: 'social' },
+    s4:  { text: 'Saying no to a friend\'s request',                domain: 'emotional' },
+    s5:  { text: 'Asking for a raise or promotion',                 domain: 'professional' },
+    s6:  { text: 'Speaking up in a meeting',                        domain: 'professional' },
+    s7:  { text: 'Sharing creative work publicly',                  domain: 'creative' },
+    s8:  { text: 'Singing or performing in front of others',        domain: 'creative' },
+    s9:  { text: 'Going to the gym alone',                          domain: 'physical' },
+    s10: { text: 'Trying a new sport or class',                     domain: 'physical' },
+    s11: { text: 'Crying in front of someone',                      domain: 'emotional' },
+    s12: { text: 'Telling someone they hurt you',                   domain: 'emotional' },
+    s13: { text: 'Checking your bank balance',                      domain: 'financial' },
+    s14: { text: 'Negotiating a price',                             domain: 'financial' },
+    s15: { text: 'Admitting you don\'t know something',             domain: 'professional' },
+    s16: { text: 'Traveling somewhere alone',                       domain: 'physical' },
+    s17: { text: 'Posting a photo of yourself online',              domain: 'creative' },
+    s18: { text: 'Having a difficult conversation with family',     domain: 'emotional' },
+    s19: { text: 'Applying for a job you\'re not sure you qualify for', domain: 'professional' },
+    s20: { text: 'Asking someone on a date',                        domain: 'social' },
+  };
 
-        const prompt = withLanguage(`Analyze this person's fear inventory — they rated 20 scenarios on a 1-5 scariness scale. Build a precise fear profile.
+  // Compute domain averages
+  const domainTotals = {};
+  const domainCounts = {};
+  const ratedItems = [];
 
-SCENARIO RATINGS (1 = easy, 5 = terrifying):
-${JSON.stringify(responses, null, 2)}
+  Object.entries(responses).forEach(([id, score]) => {
+    const scenario = SCENARIOS[id];
+    if (!scenario || !score) return;
+    ratedItems.push(`- "${scenario.text}" (${scenario.domain}): ${score}/5`);
+    if (!domainTotals[scenario.domain]) { domainTotals[scenario.domain] = 0; domainCounts[scenario.domain] = 0; }
+    domainTotals[scenario.domain] += score;
+    domainCounts[scenario.domain]++;
+  });
 
-Analyze:
-- Which domains are most comfortable vs. most feared?
-- Are there specific patterns? (e.g., "fine with strangers, terrified with family" or "fine online, scared in person")
-- What's the overall fear level? (mostly 1-2s = generally brave, mostly 4-5s = lots of growth potential)
-- What are the best entry points for growth? (areas rated 2-3, where they're uncomfortable but not terrified)
+  const domainAvgs = {};
+  Object.entries(domainTotals).forEach(([d, total]) => {
+    domainAvgs[d] = Math.round((total / domainCounts[d]) * 10) / 10;
+  });
+
+  // Convert scariness (1-5) to comfort (1-5, inverted) for domain_scores
+  const domainScores = {};
+  Object.entries(domainAvgs).forEach(([d, avg]) => {
+    domainScores[d] = Math.max(1, Math.min(5, Math.round(6 - avg)));
+  });
+
+  const prompt = withLanguage(`You are a growth coach analyzing someone's fear inventory to create a personalized comfort zone profile.
+
+THEIR RATINGS (1=easy, 5=terrifying):
+${ratedItems.join('\n')}
+
+DOMAIN AVERAGES (scariness 1-5, lower=more comfortable):
+${Object.entries(domainAvgs).map(([d, avg]) => `${d}: ${avg}/5`).join(', ')}
+
+Analyze their fear profile and provide personalized insights.
 
 Return ONLY valid JSON:
 {
-  "profile_summary": "2-3 sentence overall description of their comfort profile.",
-  "domain_scores": {
-    "social": 0, "professional": 0, "creative": 0,
-    "physical": 0, "emotional": 0, "financial": 0
+  "profile_summary": "2-3 sentences summarizing their overall fear profile — what's their comfort zone pattern? What does this reveal about them?",
+  "strongest": {
+    "domain": "the domain name (social|professional|creative|physical|emotional|financial)",
+    "observation": "1 sentence about why this is their strongest area and what it means for growth"
   },
-  "strongest": { "domain": "...", "observation": "Why this is their strength" },
-  "growth_edge": { "domain": "...", "observation": "Best entry point — uncomfortable but not overwhelming" },
-  "biggest_fear": { "domain": "...", "observation": "Most feared area — handle with care" },
+  "growth_edge": {
+    "domain": "the domain with most growth potential given their profile",
+    "observation": "1 sentence about why this domain offers the best leverage for their growth"
+  },
+  "biggest_fear": {
+    "domain": "their highest-scariness domain",
+    "observation": "1 compassionate sentence about this domain — no judgment, just insight"
+  },
   "patterns": [
-    { "pattern": "Specific pattern noticed", "insight": "What it might mean" }
+    { "pattern": "Pattern name", "insight": "What this pattern reveals about them — 1 sentence" },
+    { "pattern": "Pattern name", "insight": "..." }
   ],
   "recommended_first_push": {
-    "domain": "...",
-    "direction": "Specific suggestion for first push based on the profile",
-    "why": "Why start here"
-  }
-}`, userLanguage);
+    "direction": "Specific suggested first push — concrete, not generic",
+    "why": "Why this is the right starting point for them specifically"
+  },
+  "domain_scores": ${JSON.stringify(domainScores)}
+}
 
-        const parsed = await callClaudeWithRetry(prompt, {
-          model: 'claude-haiku-4-5-20251001',
+Patterns should be cross-domain insights (e.g., "Social-professional crossover: comfortable one-on-one but scared in groups"). 2-3 patterns max. Be specific and insightful, not generic.`, userLanguage);
 
-          label: 'GPG-FearInventory',
-          max_tokens: 1000,
-        });
+  const parsed = await callClaudeWithRetry(prompt, {
+    label: 'gpg-inventory',
+    max_tokens: 1200,
+  });
 
-        return res.json(parsed);
-      }
+  // Ensure domain_scores is always included (use computed values as fallback)
+  if (!parsed.domain_scores) parsed.domain_scores = domainScores;
 
-      default:
-        return res.status(400).json({ error: `Unknown action: ${action}` });
-    }
-
-  } catch (err) {
-    console.error('GentlePushGenerator error:', err);
-    res.status(500).json({ error: err.message || 'Failed to generate push.' });
-  }
-});
+  res.json(parsed);
+}
 
 module.exports = router;

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
 const { rateLimit, CREATIVE_LIMITS } = require('../lib/rateLimiter');
 
 // Apply creative-tier rate limit
@@ -182,11 +182,12 @@ Generate 2-3 message versions with different approaches. Return ONLY valid JSON.
     }
 
     const wrappedPrompt = withLanguage(prompt, userLanguage);
-    const parsed = await callClaudeWithRetry(wrappedPrompt, {
+    const msg1 = await anthropic.messages.create({
       model: 'claude-haiku-4-5-20251001',
-      label: 'GratitudeDebtClearer',
       max_tokens: 2500,
+      messages: [{ role: 'user', content: wrappedPrompt }],
     });
+    const parsed = JSON.parse(cleanJsonResponse(msg1.content.find(b => b.type === 'text')?.text || ''));
 
     console.log(`[GratitudeDebtClearer] For: ${recipientName}, Messages: ${parsed.thank_you_messages?.length}${recipientHistory?.length ? `, History: ${recipientHistory.length} past` : ''}`);
     res.json(parsed);
@@ -240,11 +241,12 @@ RULES:
 - Focus on: what specifically happened, how it made them feel, what would have happened without this person.
 - Return ONLY JSON.`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
+    const msg2 = await anthropic.messages.create({
       model: 'claude-haiku-4-5-20251001',
-      label: 'GratitudeSpecificity',
       max_tokens: 800,
+      messages: [{ role: 'user', content: prompt }],
     });
+    const parsed = JSON.parse(cleanJsonResponse(msg2.content.find(b => b.type === 'text')?.text || ''));
 
     console.log(`[GratitudeSpecificity] Level: ${parsed.specificity_level}, Questions: ${parsed.questions?.length}`);
     res.json(parsed);
@@ -308,11 +310,12 @@ OUTPUT (JSON only):
 
 Return ONLY valid JSON.`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
+    const msg3 = await anthropic.messages.create({
       model: 'claude-haiku-4-5-20251001',
-      label: 'GratitudeFollowUp',
       max_tokens: 1500,
+      messages: [{ role: 'user', content: prompt }],
     });
+    const parsed = JSON.parse(cleanJsonResponse(msg3.content.find(b => b.type === 'text')?.text || ''));
 
     console.log(`[GratitudeFollowUp] For: ${recipientName}, Messages: ${parsed.follow_up_messages?.length}`);
     res.json(parsed);

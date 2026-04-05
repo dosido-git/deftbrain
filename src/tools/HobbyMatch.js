@@ -1,5 +1,6 @@
-import React, { useState, useCallback, useEffect } from 'react';
-import { CopyBtn, ActionBar } from '../components/ActionButtons';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
+import { CopyBtn } from '../components/ActionButtons';
+import { useRegisterActions } from '../components/ActionBarContext';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
@@ -30,10 +31,6 @@ const HobbyMatch = ({ tool }) => {
 
 
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
-
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
@@ -56,7 +53,16 @@ const HobbyMatch = ({ tool }) => {
     warningTxt:    isDark ? 'text-amber-300' : 'text-amber-800',
     pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
+    badgeNeutral:  isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-gray-100 text-gray-600',
+    labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
+    required:      isDark ? 'text-amber-400' : 'text-amber-500',
   };
+  c.textMuteded = c.textMuted;
+  c.label = c.labelText;
+
+  const linkStyle = isDark
+    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
+    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
 
   // ─── State ───
   const [personality, setPersonality] = usePersistentState('hm-personality', '');
@@ -110,21 +116,39 @@ const HobbyMatch = ({ tool }) => {
   // ─── Build text ───
   const buildFullText = useCallback(() => {
     if (!results) return '';
-    const r = results;
     let text = '🧬 HobbyMatch Results\n';
-    if (r.profile_read) text += `\n${r.profile_read}\n`;
-    if (r.hobbies?.length) {
-      r.hobbies.forEach((h, i) => {
+    if (results.profile_read) text += `\n${results.profile_read}\n`;
+    if (results.hobbies?.length) {
+      results.hobbies.forEach((h, i) => {
         text += `\n${i + 1}. ${h.icon || '🎯'} ${h.name}\n${h.one_liner}\n${h.what_it_is}`;
         text += `\n⏱ ${h.time_required} | 💰 ${h.startup_cost}`;
         text += `\n🚀 First step: ${h.first_step}`;
         text += `\n👥 Community: ${h.find_your_people}\n`;
       });
     }
-    if (r.wildcard) text += `\n🃏 Wildcard: ${r.wildcard.name} — ${r.wildcard.why}`;
-    if (r.pattern_noticed) text += `\n\n💡 ${r.pattern_noticed}`;
+    if (results.wildcard) text += `\n🃏 Wildcard: ${results.wildcard.name} — ${results.wildcard.why}`;
+    if (results.pattern_noticed) text += `\n\n💡 ${results.pattern_noticed}`;
     return text + BRAND;
   }, [results]);
+
+  useRegisterActions(buildFullText(), tool?.title || 'HobbyMatch');
+
+  const generateRef = useRef(null);
+  const canSubmitRef = useRef(false);
+  generateRef.current = generate;
+  canSubmitRef.current = !!personality.trim() || selectedGoals.length > 0;
+
+  useEffect(() => {
+    const handler = (e) => {
+      const tag = document.activeElement?.tagName;
+      if (tag === 'SELECT') return;
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !loading && canSubmitRef.current)
+        generateRef.current?.();
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading]);
 
   const r = results;
 
@@ -132,18 +156,18 @@ const HobbyMatch = ({ tool }) => {
   // RENDER
   // ════════════════════════════════════════════════════════════
   return (
-    <div className={`space-y-6 ${c.text}`}>
+    <div className={`space-y-4 ${c.text}`}>
 
       {/* ── HEADER ── */}
-      <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-6`}>
-        <div className={`mb-5 pb-4 border-b ${c.border}`}>
+      <div className={`${c.card} border ${c.border} rounded-xl p-6`}>
+        <div className="mb-5 pb-4 border-b border-zinc-500">
           <h2 className={`text-2xl font-bold ${c.text}`}><span className="mr-2">{tool?.icon ?? '🎯'}</span>{tool?.title || 'HobbyMatch'}</h2>
           <p className={`text-sm ${c.textSecondary} mt-1`}>Discover hobbies you didn't know existed</p>
         </div>
 
         {/* Personality */}
         <div className="mb-4">
-          <label className={`text-sm font-bold ${c.text} block mb-1.5`}>Tell me about yourself</label>
+          <label className={`text-sm font-bold ${c.text} block mb-1.5`}>Tell me about yourself <span className={c.required}>*</span></label>
           <textarea
             value={personality}
             onChange={e => setPersonality(e.target.value)}
@@ -241,11 +265,11 @@ const HobbyMatch = ({ tool }) => {
             {loading ? (
               <><span className="animate-spin inline-block">{tool?.icon ?? '🎯'}</span> Matching hobbies...</>
             ) : (
-              <><span>🧬</span> Find My Hobbies</>
+              <><span className="mr-1">{tool?.icon ?? '🎯'}</span> Find My Hobbies</>
             )}
           </button>
           {results && (
-            <button onClick={handleReset} className={`px-5 py-3 ${c.btnSecondaryondary} rounded-xl font-medium min-h-[48px]`}>
+            <button onClick={handleReset} className={`px-5 py-3 ${c.btnSecondary} rounded-xl font-medium min-h-[48px]`}>
               New Search
             </button>
           )}
@@ -266,13 +290,9 @@ const HobbyMatch = ({ tool }) => {
       {r && (
         <div ref={resultsRef} className="space-y-4">
 
-          <div className="flex justify-end">
-            <ActionBar content={buildFullText()} subject="Hobby Matches from HobbyMatch" />
-          </div>
-
           {/* ── PROFILE READ ── */}
           {r.profile_read && (
-            <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-5`}>
+            <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
               <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{r.profile_read}</p>
             </div>
           )}
@@ -283,7 +303,7 @@ const HobbyMatch = ({ tool }) => {
               {r.hobbies.map((hobby, idx) => {
                 const isExpanded = expandedHobby === idx;
                 return (
-                  <div key={idx} className={`${c.card} ${c.border} border ${c.border} rounded-xl overflow-hidden`}>
+                  <div key={idx} className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
                     {/* Header — always visible */}
                     <button
                       onClick={() => setExpandedHobby(isExpanded ? null : idx)}
@@ -371,18 +391,12 @@ const HobbyMatch = ({ tool }) => {
           )}
 
           {/* ── CROSS-REFERENCES ── */}
-          <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-xs font-bold ${c.text} mb-2`}>Related tools</p>
-            <div className="flex flex-wrap gap-2">
-              <a href="/MicroAdventureMapper" target="_blank" rel="noopener noreferrer" className={`text-xs px-3 py-1.5 rounded-lg border ${c.pillInactive} no-underline`}>
-                🗺️ MicroAdventure Mapper
-              </a>
-              <a href="/DopamineMenuBuilder" target="_blank" rel="noopener noreferrer" className={`text-xs px-3 py-1.5 rounded-lg border ${c.pillInactive} no-underline`}>
-                🍽️ Dopamine Menu
-              </a>
-              <a href="/SixDegreesOfMe" target="_blank" rel="noopener noreferrer" className={`text-xs px-3 py-1.5 rounded-lg border ${c.pillInactive} no-underline`}>
-                🕸️ Six Degrees of Me
-              </a>
+          <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+            <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 Related tools</p>
+            <div className="flex flex-wrap gap-3">
+              <a href="/MicroAdventureMapper" className={`text-xs ${linkStyle}`}>🗺️ Micro Adventure Mapper</a>
+              <a href="/DopamineMenuBuilder" className={`text-xs ${linkStyle}`}>🍽️ Dopamine Menu Builder</a>
+              <a href="/SixDegreesOfMe" className={`text-xs ${linkStyle}`}>🕸️ Six Degrees of Me</a>
             </div>
           </div>
         </div>

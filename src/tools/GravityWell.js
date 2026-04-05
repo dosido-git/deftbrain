@@ -24,9 +24,8 @@ const PHASE_COLORS = [
 ];
 
 const GravityWell = ({ tool }) => {
-  const { isDark } = useTheme();
-
   const { callToolEndpoint, loading } = useClaudeAPI();
+  const { isDark } = useTheme();
 
 
   const c = {
@@ -83,29 +82,10 @@ const GravityWell = ({ tool }) => {
       });
       setResults(data);
       setHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: (data.the_90_day_plan?.phase_1?.theme || targetDescription).slice(0, 40) }, ...prev].slice(0, 6));
-      setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
     } catch (e) { setError(e.message || 'Failed to design gravity strategy.'); }
   };
 
-  const handleSubmitRef = useRef(null);
-  const canSubmitRef = useRef(false);
-  handleSubmitRef.current = handleSubmit;
-  canSubmitRef.current = !!targetDescription.trim();
-
-  useEffect(() => {
-    const handler = (e) => {
-      const tag = document.activeElement?.tagName;
-      if (tag === 'SELECT') return;
-      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter' && !loading && canSubmitRef.current) {
-        e.preventDefault();
-        handleSubmitRef.current?.();
-      }
-    };
-    document.addEventListener('keydown', handler);
-    return () => document.removeEventListener('keydown', handler);
-  }, [loading]);
-
-  const buildText = useCallback(() => {
+  const buildFullText = useCallback(() => {
     if (!results) return '';
     let t = `🌀 GRAVITY WELL — 90-DAY ORBIT STRATEGY\n\nTarget: ${targetDescription}\nCurrent gravity: ${results.your_gravity_score?.current}\n\n`;
     ['phase_1', 'phase_2', 'phase_3'].forEach(ph => {
@@ -120,7 +100,33 @@ const GravityWell = ({ tool }) => {
     return t + BRAND;
   }, [results, targetDescription]);
 
-  useRegisterActions(buildText(), tool?.title || 'Gravity Well');
+  useRegisterActions(buildFullText(), tool?.title || 'Gravity Well');
+
+  const handleSubmitRef = useRef(null);
+  const canSubmitRef = useRef(false);
+  handleSubmitRef.current = handleSubmit;
+  canSubmitRef.current = !!targetDescription.trim();
+
+  useEffect(() => {
+    if (!results || !resultsRef.current) return;
+    const t = setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 200);
+    return () => clearTimeout(t);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [results]);
+
+  useEffect(() => {
+    const handler = (e) => {
+      const tag = document.activeElement?.tagName;
+      if (tag === 'SELECT') return;
+      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter' && !loading && canSubmitRef.current) {
+        e.preventDefault();
+        handleSubmitRef.current?.();
+      }
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading]);
 
   const plan = results?.the_90_day_plan;
   const phases = plan ? [
@@ -157,7 +163,7 @@ const GravityWell = ({ tool }) => {
             </div>
 
             <div>
-              <label className={`block text-sm font-semibold mb-2 ${c.text}`}>Type of relationship <span className={`font-normal ${c.textMuteded}`}>(optional)</span></label>
+              <label className={`block text-sm font-semibold mb-2 ${c.text}`}>Type of relationship<br /><span className={`font-normal ${c.textMuteded}`}>(optional)</span></label>
               <div className="flex flex-wrap gap-2">
                 {TARGET_TYPES.map(t => (
                   <button key={t.id} onClick={() => setTargetType(targetType === t.id ? '' : t.id)}
@@ -195,6 +201,15 @@ const GravityWell = ({ tool }) => {
             </button>
 
             <p className={`text-xs text-center ${c.textMuteded}`}>Not cold outreach. Gravitational pull — so when you finally connect, they already know who you are.</p>
+
+            <div className={`rounded-xl border p-4 ${c.cardAlt} ${c.border}`}>
+              <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 Related tools</p>
+              <div className="flex flex-wrap gap-3">
+                <a href="/VelvetHammer" className={`text-xs ${linkStyle}`}>🔨 Velvet Hammer</a>
+                <a href="/HecklerPrep" className={`text-xs ${linkStyle}`}>🎤 HecklerPrep</a>
+                <a href="/LuckSurface" className={`text-xs ${linkStyle}`}>🧲 Luck Surface</a>
+              </div>
+            </div>
           </div>
         )}
 
@@ -289,10 +304,7 @@ const GravityWell = ({ tool }) => {
                 {results.the_first_contact.what_not_to_say && (
                   <p className={`text-xs ${isDark ? 'text-red-300' : 'text-red-700'}`}><span className="font-semibold">Don't say:</span> {results.the_first_contact.what_not_to_say}</p>
                 )}
-                {results.the_first_contact.what_to_say && (
-                  <div className="mt-3">
-                  </div>
-                )}
+
               </div>
             )}
 
@@ -337,16 +349,9 @@ const GravityWell = ({ tool }) => {
             <div className={`rounded-xl border p-4 ${c.cardAlt} ${c.border}`}>
               <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 Related tools</p>
               <div className="flex flex-wrap gap-3">
-                {[
-                  { id: 'LuckSurface', icon: '🧲', label: 'Expand your luck surface area' },
-                  { id: 'MagicMouth', icon: '🎤', label: 'Script a difficult conversation' },
-                  { id: 'ChaosPilot', icon: '🎰', label: 'Break out of your patterns' },
-                ].map(r => (
-                  <a key={r.id} href={`/${r.id}`}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${c.btnSecondary}`}>
-                    {r.icon} {r.label}
-                  </a>
-                ))}
+                <a href="/LuckSurface" className={`text-xs ${linkStyle}`}>🧲 Luck Surface</a>
+                <a href="/VelvetHammer" className={`text-xs ${linkStyle}`}>🔨 Velvet Hammer</a>
+                <a href="/HecklerPrep" className={`text-xs ${linkStyle}`}>🎤 HecklerPrep</a>
               </div>
             </div>
           </div>

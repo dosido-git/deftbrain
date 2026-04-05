@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
-import { CopyBtn, ActionBar } from '../components/ActionButtons';
+import { CopyBtn } from '../components/ActionButtons';
+import { useRegisterActions } from '../components/ActionBarContext';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -48,6 +49,50 @@ const STAIN_AGES = [
   { value: 'few_hours', label: 'Few hours ago' },
   { value: 'dried', label: 'Dried / set' },
   { value: 'old', label: 'Old stain' },
+];
+
+const LOAD_CHIPS = [
+  { id: 'jeans', label: '👖 Jeans' },
+  { id: 'tshirts', label: '👕 T-shirts' },
+  { id: 'towels', label: '🛁 Towels' },
+  { id: 'delicates', label: '🪷 Delicates' },
+  { id: 'gym', label: '🏃 Gym clothes' },
+  { id: 'whites', label: '⬜ Whites' },
+  { id: 'darks', label: '🖤 Darks' },
+  { id: 'wool', label: '🐑 Wool/knits' },
+  { id: 'sheets', label: '🛏️ Bed sheets' },
+  { id: 'socks', label: '🧦 Socks' },
+];
+
+const CARE_SYMBOLS = [
+  // Washing
+  { sym: '🪣', code: 'W30', name: 'Cold wash (30°C)', meaning: 'Machine wash in cold water, max 30°C/86°F. Good for colors, synthetics, and anything that might bleed.', category: 'Washing', caution: false },
+  { sym: '🪣', code: 'W40', name: 'Warm wash (40°C)', meaning: 'Machine wash in warm water, max 40°C/105°F. The standard for most everyday cottons.', category: 'Washing', caution: false },
+  { sym: '🪣', code: 'W60', name: 'Hot wash (60°C)', meaning: 'Machine wash in hot water, max 60°C/140°F. For whites, towels, bedding, heavily soiled items.', category: 'Washing', caution: false },
+  { sym: '✋', code: 'WH', name: 'Hand wash only', meaning: 'Wash gently by hand in cool or lukewarm water. No machine — the agitation will damage the fabric.', category: 'Washing', caution: false },
+  { sym: '🌀', code: 'WD', name: 'Delicate / gentle cycle', meaning: 'Use the delicate or gentle cycle. Low agitation, cold water.', category: 'Washing', caution: false },
+  { sym: '🚫🪣', code: 'WNW', name: 'Do not wash', meaning: 'No water at all — dry clean only. Water will ruin this garment.', category: 'Washing', caution: true },
+  // Drying
+  { sym: '☀️', code: 'DL', name: 'Line dry / hang dry', meaning: 'Hang on a hanger or clothesline to air dry. Prevents shrinkage and heat damage.', category: 'Drying', caution: false },
+  { sym: '📐', code: 'DF', name: 'Dry flat', meaning: 'Lay the garment flat to dry. Critical for wool and knits — hanging will stretch them out of shape.', category: 'Drying', caution: false },
+  { sym: '📜', code: 'DS', name: 'Drip dry', meaning: 'Hang to drip dry without wringing. Often for structured or delicate items.', category: 'Drying', caution: false },
+  { sym: '🌀□L', code: 'TDL', name: 'Tumble dry low', meaning: 'Machine dry on the lowest heat setting. For delicates, synthetics, and anything you’re not sure about.', category: 'Drying', caution: false },
+  { sym: '🌀□M', code: 'TDM', name: 'Tumble dry medium', meaning: 'Machine dry on medium heat. Standard for cottons, t-shirts, most everyday items.', category: 'Drying', caution: false },
+  { sym: '🌀□H', code: 'TDH', name: 'Tumble dry high', meaning: 'Machine dry on high heat. For heavy cottons, towels, denim, and bedding only.', category: 'Drying', caution: false },
+  { sym: '🚫🌀', code: 'NDT', name: 'Do not tumble dry', meaning: 'No machine drying — air dry only. Heat will shrink, felt, or damage this garment.', category: 'Drying', caution: true },
+  // Bleaching
+  { sym: '△', code: 'BA', name: 'Any bleach OK', meaning: 'Chlorine bleach is safe. Use sparingly — it weakens fibers over time even when allowed.', category: 'Bleaching', caution: false },
+  { sym: '△//', code: 'BN', name: 'Non-chlorine bleach only', meaning: 'Use oxygen / color-safe bleach only. No chlorine bleach — it will damage the dye or fabric.', category: 'Bleaching', caution: false },
+  { sym: '🚫△', code: 'BNB', name: 'Do not bleach', meaning: 'No bleach of any kind. The fabric or dye cannot withstand it.', category: 'Bleaching', caution: true },
+  // Ironing
+  { sym: '🧹·', code: 'I1', name: 'Iron low (110°C)', meaning: 'Iron on the lowest heat setting. For silk, acetate, and delicate synthetics. Steam optional.', category: 'Ironing', caution: false },
+  { sym: '🧹··', code: 'I2', name: 'Iron medium (150°C)', meaning: 'Iron on medium heat. For wool, nylon, and polyester blends.', category: 'Ironing', caution: false },
+  { sym: '🧹···', code: 'I3', name: 'Iron high (200°C)', meaning: 'Iron on high heat. Cotton and linen only — anything else will scorch or melt.', category: 'Ironing', caution: false },
+  { sym: '🚫🧹', code: 'INI', name: 'Do not iron', meaning: 'No ironing at all. Heat will damage, melt, or mark this fabric permanently.', category: 'Ironing', caution: true },
+  // Dry Cleaning
+  { sym: '○', code: 'DCA', name: 'Dry clean', meaning: 'Professional dry cleaning required. Any solvent is safe — no special instructions needed.', category: 'Dry Cleaning', caution: false },
+  { sym: '○P', code: 'DCP', name: 'Dry clean — gentle', meaning: 'Dry clean with perchloroethylene or petroleum solvents only. Tell your cleaner.', category: 'Dry Cleaning', caution: false },
+  { sym: '🚫○', code: 'DCN', name: 'Do not dry clean', meaning: 'Water wash only — dry cleaning solvents will damage this garment.', category: 'Dry Cleaning', caution: false },
 ];
 
 // ════════════════════════════════════════════════════════════
@@ -118,6 +163,7 @@ const compressImageFile = (file) => {
 // MAIN COMPONENT
 // ════════════════════════════════════════════════════════════
 const LaundroMat = ({ tool }) => {
+  const { callToolEndpoint, loading } = useClaudeAPI();
   const { isDark } = useTheme();
   const c = {
     card:          isDark ? 'bg-zinc-800'     : 'bg-white',
@@ -154,15 +200,16 @@ const LaundroMat = ({ tool }) => {
     riskHigh:      isDark ? 'bg-red-900/30 border-red-600 text-red-300' : 'bg-red-50 border-red-300 text-red-800',
     riskLow:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-300' : 'bg-emerald-50 border-emerald-200 text-emerald-700',
     savedBg:       isDark ? 'bg-zinc-800/80 border-zinc-700' : 'bg-gray-50 border-gray-200',
-    deleteHover: isDark ? '${c.deleteHover}' : '${c.deleteHover}',
+    deleteHover:   isDark ? 'hover:text-red-400' : 'hover:text-red-500',
+    labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
+    required:      isDark ? 'text-amber-400' : 'text-amber-500',
   };
+  c.textMuteded = c.textMuted;
+  c.label = c.labelText;
 
-  const resultsRef = React.useRef(null);
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
     : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
-
-  const { callToolEndpoint, loading } = useClaudeAPI();
 
 
   // Tabs
@@ -202,6 +249,7 @@ const LaundroMat = ({ tool }) => {
   const [compressingStain, setCompressingStain] = useState(false);
   const [stainResults, setStainResults] = useState(null);
   const [checkedSteps, setCheckedSteps] = useState({});
+  const [selectedChips, setSelectedChips] = useState([]);
   const stainPhotoRef = useRef(null);
 
   // Shared
@@ -223,6 +271,7 @@ const LaundroMat = ({ tool }) => {
   const scanStreamRef = useRef(null);
   const scanIntervalRef = useRef(null);
   const hasBarcodeDetector = typeof window !== 'undefined' && 'BarcodeDetector' in window;
+  const resultsRef = useRef(null);
 
   // ══════════════════════════════════════════
   // TIMER LOGIC
@@ -517,7 +566,7 @@ const LaundroMat = ({ tool }) => {
   }, [loadDesc, machineType, labelImage, callToolEndpoint]);
 
   // Bridge: set timers from advice
-  const setTimersFromAdvice = useCallback((washMin, dryMin) => {
+  const setTimersFromAdvice = useCallback((washMin, dryMin, dryingAdvice) => {
     const ts = [];
     const now = Date.now();
     if (washMin) {
@@ -526,7 +575,11 @@ const LaundroMat = ({ tool }) => {
     }
     if (dryMin) {
       const id2 = `timer_${now}_d`;
-      ts.push({ id: id2, label: 'Dryer', totalSec: dryMin * 60, remainingSec: dryMin * 60, alertBeforeSec: 5 * 60, running: true, done: false, dismissed: false, lastTick: now });
+      // Pull the highest-risk drying tip for the done-state nudge
+      const highRisk = (dryingAdvice || []).find(d => d.risk === 'high');
+      const anyTip = (dryingAdvice || [])[0];
+      const nudge = highRisk ? `⚠️ ${highRisk.item}: ${highRisk.method}` : anyTip ? `💡 ${anyTip.item}: ${anyTip.method}` : null;
+      ts.push({ id: id2, label: 'Dryer', totalSec: dryMin * 60, remainingSec: dryMin * 60, alertBeforeSec: 5 * 60, running: true, done: false, dismissed: false, lastTick: now, nudge });
     }
     setTimers(prev => [...prev, ...ts]);
     setActiveTab('timers');
@@ -577,26 +630,75 @@ const LaundroMat = ({ tool }) => {
   // ══════════════════════════════════════════
   // RENDER: Header + Tabs
   // ══════════════════════════════════════════
+  const getLoadAdviceRef = useRef(null);
+  const getStainHelpRef = useRef(null);
+  const activeTabKbRef = useRef(null);
+  const canSubmitRef = useRef(false);
+  getLoadAdviceRef.current = getLoadAdvice;
+  getStainHelpRef.current = getStainHelp;
+  activeTabKbRef.current = activeTab;
+  canSubmitRef.current = activeTab === 'advisor'
+    ? (!!loadDesc.trim() || !!labelImage)
+    : activeTab === 'stain'
+    ? (!!stainType || !!stainCustom.trim() || !!stainImage)
+    : false;
+
+  useEffect(() => {
+    const handler = (e) => {
+      const tag = document.activeElement?.tagName;
+      if (tag === 'SELECT') return;
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !loading && canSubmitRef.current) {
+        if (activeTabKbRef.current === 'advisor') getLoadAdviceRef.current?.();
+        else if (activeTabKbRef.current === 'stain') getStainHelpRef.current?.();
+      }
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading]);
+
+  const buildFullText = useCallback(() => {
+    if (adviceResults) {
+      const r = adviceResults;
+      const lines = ['🧺 LAUNDROMAT — LOAD ADVICE', ''];
+      if (r.load_assessment) lines.push(r.load_assessment, '');
+      if (r.recommended_settings) lines.push(`Cycle: ${r.recommended_settings.cycle} | Temp: ${r.recommended_settings.temperature} | Spin: ${r.recommended_settings.spin}`, '');
+      if (r.separate_these?.length) { lines.push('Separate:'); r.separate_these.forEach(s => lines.push(`• ${s.item}: ${s.reason}`)); lines.push(''); }
+      if (r.drying_advice?.length) { lines.push('Drying:'); r.drying_advice.forEach(d => lines.push(`• ${d.item}: ${d.method}`)); lines.push(''); }
+      if (r.quick_tip) lines.push(`Tip: ${r.quick_tip}`);
+      lines.push(BRAND);
+      return lines.join('\n');
+    }
+    if (stainResults) {
+      const r = stainResults;
+      const lines = ['🆘 LAUNDROMAT — STAIN SOS', ''];
+      if (r.urgency) lines.push(r.urgency, '');
+      if (r.what_you_need?.length) lines.push(`You need: ${r.what_you_need.join(', ')}`, '');
+      if (r.steps?.length) { lines.push('Steps:'); r.steps.forEach((s, i) => lines.push(`${i + 1}. ${s}`)); lines.push(''); }
+      if (r.pro_tip) lines.push(`Pro tip: ${r.pro_tip}`);
+      lines.push(BRAND);
+      return lines.join('\n');
+    }
+    return '';
+  }, [adviceResults, stainResults]);
+
+  useRegisterActions(buildFullText(), tool?.title || 'LaundroMat');
+
   const renderHeader = () => (
-    <div className="mb-5">
-      <div className="flex items-center gap-3 mb-4">
-        <div>
-          <h2 className={`text-2xl font-bold ${c.text}`}>LaundroMat 🧺</h2>
-          <p className={`text-sm ${c.textMuted}`}>Never lose track of your laundry again</p>
-        </div>
-      </div>
+    <div className="space-y-2">
       <div className="flex gap-1.5">
         {[
           { id: 'timers', label: '⏱️ Timers', badge: timers.filter(t => t.running || (t.done && !t.dismissed)).length },
-          { id: 'advisor', label: '🧠 Load Advisor' },
-          { id: 'stain', label: '🆘 Stain SOS' },
+          { id: 'advisor', label: '🧠 Advisor' },
+          { id: 'stain', label: '🆘 Stain' },
+          { id: 'symbols', label: '🏷️ Symbols' },
         ].map(tab => (
           <button key={tab.id} onClick={() => setActiveTab(tab.id)}
-            className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5
+            className={`flex-1 py-2.5 px-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1
               ${activeTab === tab.id ? c.tabActive : `${c.tabInactive} border`}`}>
             {tab.label}
             {tab.badge > 0 && (
-              <span className={`ml-1 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black
+              <span className={`ml-0.5 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black
                 ${activeTab === tab.id ? 'bg-white/20' : (isDark ? 'bg-amber-500/30 text-amber-300' : 'bg-amber-100 text-amber-700')}`}>
                 {tab.badge}
               </span>
@@ -604,6 +706,14 @@ const LaundroMat = ({ tool }) => {
           </button>
         ))}
       </div>
+      {activeTab !== 'stain' && (
+        <button
+          onClick={() => { setActiveTab('stain'); setStainAge('just_happened'); }}
+          className={`w-full py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-2 border-2 transition-all
+            ${isDark ? 'border-red-700 bg-red-900/20 text-red-300 hover:bg-red-900/40' : 'border-red-300 bg-red-50 text-red-700 hover:bg-red-100'}`}>
+          🆘 Just spilled something? Act now — every second counts
+        </button>
+      )}
     </div>
   );
 
@@ -665,6 +775,13 @@ const LaundroMat = ({ tool }) => {
               </div>
             </div>
           </div>
+
+          {/* Nudge on completion */}
+          {isDone && timer.nudge && (
+            <div className={`mx-1 mb-3 px-3 py-2.5 rounded-xl border text-xs font-medium ${c.warning}`}>
+              {timer.nudge}
+            </div>
+          )}
 
           {/* Controls */}
           <div className="flex flex-wrap items-center justify-center gap-2">
@@ -1066,13 +1183,13 @@ const LaundroMat = ({ tool }) => {
 
           {/* Set timers from estimate */}
           {r.time_estimate && (
-            <button onClick={() => setTimersFromAdvice(r.time_estimate.wash_minutes, r.time_estimate.dry_minutes)}
+            <button onClick={() => setTimersFromAdvice(r.time_estimate.wash_minutes, r.time_estimate.dry_minutes, r.drying_advice)}
               className={`w-full py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2 ${c.btnPrimary}`}>
               <span>⏱️</span>
               Set timers ({r.time_estimate.wash_minutes}m wash{r.time_estimate.dry_minutes ? ` + ${r.time_estimate.dry_minutes}m dry` : ''})
             </button>
           )}
-        <ActionBar copyContent={[adviceResults?.load_assessment, ...(adviceResults?.wash_instructions||[]).map(i=>i.instruction)].filter(Boolean).join('\n') + BRAND} copyLabel="Copy Advice" />
+
         </div>
       );
     };
@@ -1080,11 +1197,41 @@ const LaundroMat = ({ tool }) => {
     return (
       <div>
         <div className={`p-5 rounded-2xl border ${c.border} ${c.card} ${c.border} mb-4`}>
-          <h3 className={`text-sm font-bold ${c.text} mb-3 flex items-center gap-2`}>
-            <span>👕</span> What are you washing?
-          </h3>
+          <div className="flex items-center justify-between mb-2">
+            <h3 className={`text-sm font-bold ${c.text} flex items-center gap-2`}>
+              <span>👕</span> What are you washing? <span className={c.required}>*</span>
+            </h3>
+            {laundryHistory.length > 0 && (
+              <span className={`text-[10px] ${c.textMuted}`}>
+                Last: {(() => { const d = new Date(laundryHistory[0].date); const days = Math.floor((Date.now() - d) / 86400000); return days === 0 ? 'today' : days === 1 ? 'yesterday' : `${days}d ago`; })()}
+                {laundryHistory[0].preview ? ` · ${laundryHistory[0].preview}` : ''}
+              </span>
+            )}
+          </div>
 
-          <textarea value={loadDesc} onChange={e => setLoadDesc(e.target.value)}
+          {/* Quick-pick chips */}
+          <div className="flex flex-wrap gap-1.5 mb-3">
+            {LOAD_CHIPS.map(chip => {
+              const active = selectedChips.includes(chip.id);
+              return (
+                <button key={chip.id} onClick={() => {
+                  const next = active
+                    ? selectedChips.filter(id => id !== chip.id)
+                    : [...selectedChips, chip.id];
+                  setSelectedChips(next);
+                  // Rebuild loadDesc from active chips + any custom text already typed
+                  const chipText = next.map(id => LOAD_CHIPS.find(c => c.id === id)?.label.replace(/^\S+\s/, '')).filter(Boolean).join(', ');
+                  setLoadDesc(chipText);
+                }}
+                  className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-all
+                    ${active ? c.pillActive : c.pillInactive}`}>
+                  {chip.label}
+                </button>
+              );
+            })}
+          </div>
+
+          <textarea value={loadDesc} onChange={e => { setLoadDesc(e.target.value); setSelectedChips([]); }}
             placeholder='e.g. "dark jeans, a few t-shirts, my new wool sweater, and gym socks"'
             rows={3} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none mb-3`} />
 
@@ -1127,7 +1274,7 @@ const LaundroMat = ({ tool }) => {
           <button onClick={getLoadAdvice} disabled={loading || (!loadDesc.trim() && !labelImage)}
             className={`w-full py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2
               ${(loadDesc.trim() || labelImage) && !loading ? c.btnPrimary : c.btnDisabled}`}>
-            {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🌊'}</span> Analyzing...</> : <><span>✨</span> Advise Me</>}
+            {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🌊'}</span> Analyzing...</> : <><span className="mr-1">{tool?.icon ?? '🌊'}</span> Advise Me</>}
           </button>
         </div>
 
@@ -1296,11 +1443,51 @@ const LaundroMat = ({ tool }) => {
             disabled={loading || (!stainType && !stainCustom.trim() && !stainImage)}
             className={`w-full py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2
               ${(stainType || stainCustom.trim() || stainImage) && !loading ? c.btnPrimary : c.btnDisabled}`}>
-            {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🌊'}</span> Analyzing...</> : <><span>✨</span> Help!</>}
+            {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🌊'}</span> Analyzing...</> : <><span className="mr-1">{tool?.icon ?? '🌊'}</span> Help!</>}
           </button>
         </div>
 
         {renderStainResults()}
+      </div>
+    );
+  };
+
+  // ══════════════════════════════════════════
+  // RENDER: CARE SYMBOLS TAB
+  // ══════════════════════════════════════════
+  const renderSymbolsTab = () => {
+    const categories = [...new Set(CARE_SYMBOLS.map(s => s.category))];
+    return (
+      <div className="space-y-5">
+        <div className={`p-4 rounded-2xl border ${c.skyCard}`}>
+          <p className={`text-sm font-semibold ${c.text} mb-1`}>🏷️ Care Symbol Reference</p>
+          <p className={`text-xs ${c.textSecondary}`}>Every standard laundry symbol translated to plain English. No photo needed.</p>
+        </div>
+        {categories.map(cat => (
+          <div key={cat}>
+            <p className={`text-xs font-bold uppercase tracking-wide ${c.textMuted} mb-2`}>{cat}</p>
+            <div className="space-y-2">
+              {CARE_SYMBOLS.filter(s => s.category === cat).map(sym => (
+                <div key={sym.code}
+                  className={`flex items-start gap-3 p-3.5 rounded-xl border ${sym.caution
+                    ? (isDark ? 'bg-red-900/15 border-red-700/50' : 'bg-red-50 border-red-200')
+                    : `${c.card} ${c.border}`}`}>
+                  <div className={`flex-shrink-0 w-9 h-9 rounded-lg flex items-center justify-center text-base font-black border
+                    ${sym.caution
+                      ? (isDark ? 'bg-red-900/30 border-red-700 text-red-300' : 'bg-red-100 border-red-300 text-red-700')
+                      : (isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-200' : 'bg-gray-100 border-gray-200 text-gray-700')}`}>
+                    {sym.sym}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className={`text-sm font-semibold ${sym.caution ? (isDark ? 'text-red-300' : 'text-red-800') : c.text}`}>{sym.name}</p>
+                    <p className={`text-xs mt-0.5 leading-relaxed ${sym.caution ? (isDark ? 'text-red-300/80' : 'text-red-700') : c.textSecondary}`}>{sym.meaning}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+        <p className={`text-xs text-center ${c.textMuted}`}>Based on ISO 3758 and ASTM D5489 care labeling standards.</p>
       </div>
     );
   };
@@ -1311,21 +1498,33 @@ const LaundroMat = ({ tool }) => {
   const handleReset = () => { setAdviceResults(null); setError?.(''); };
 
   return (
-    <div className={c.text}>
-      {renderHeader()}
+    <div className={`space-y-4 ${c.text}`}>
+      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm`}>
+        <div className="px-5 pt-5">
+          <div className="pb-3 border-b border-zinc-500">
+            <h2 className={`text-xl font-bold ${c.text}`}>
+              <span className="mr-2">{tool?.icon ?? '🧺'}</span>{tool?.title ?? 'LaundroMat'}
+            </h2>
+            <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Never lose track of your laundry again'}</p>
+          </div>
+        </div>
+        <div className="px-5 py-4">
+          {renderHeader()}
+        </div>
+      </div>
       {activeTab === 'timers' && renderTimersTab()}
       {activeTab === 'advisor' && renderAdvisorTab()}
       {activeTab === 'stain' && renderStainTab()}
+      {activeTab === 'symbols' && renderSymbolsTab()}
       {renderError()}
         <p className={`text-xs text-center mt-4 ${c.textMuted}`}>AI-generated advice — for reference only. Always check garment care labels.</p>
-        <div className={`mt-6 pt-4 border-t text-sm ${c.border} ${c.textMuted}`}>
-          <p className="mb-2 font-medium">You might also like:</p>
-          <div className="flex flex-wrap gap-2">
-            {[{slug:'recipe-chaos-solver',label:'🍽️ Recipe Chaos Solver'},{slug:'plain-talk',label:'💬 Plain Talk'},{slug:'where-did-it-go',label:'💸 Where Did It Go'}].map(({slug,label})=>(
-              <a key={slug} href={`${slug}`} className={linkStyle}>{label}</a>
-            ))}
-          </div>
+      <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
+        <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 Related tools</p>
+        <div className="flex flex-wrap gap-3">
+          <a href="/HabitChain" className={`text-xs ${linkStyle}`}>🔗 Habit Chain</a>
+          <a href="/RoutineRuptureManager" className={`text-xs ${linkStyle}`}>🔄 Routine Rupture Manager</a>
         </div>
+      </div>
     </div>
   );
 };

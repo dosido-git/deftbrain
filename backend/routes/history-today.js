@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
 
 // ═══════════════════════════════════════════════════
 // ROUTE 1: MAIN — Find structural historical parallels
@@ -86,14 +86,15 @@ Return ONLY valid JSON:
   ]
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-haiku-4-5-20251001',
-//    model: 'claude-sonnet-4-20250514',
-
-      label: 'HistoryToday',
-      max_tokens: 6000,
+    const message = await anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 8000,
       system: systemPrompt,
+      messages: [{ role: 'user', content: prompt }],
     });
+    const text = message.content.find(b => b.type === 'text')?.text || '';
+    const cleaned = cleanJsonResponse(text);
+    const parsed = JSON.parse(cleaned);
 
     console.log(`[HistoryToday] Event: "${event.substring(0, 50)}", Parallels: ${parsed.parallels?.length}`);
     res.json(parsed);
@@ -175,13 +176,14 @@ Return ONLY valid JSON:
   }
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
+    const message2 = await anthropic.messages.create({
       model: 'claude-haiku-4-5-20251001',
-
-      label: 'HistoryTodayDeeper',
       max_tokens: 5000,
       system: withLanguage('You are a narrative historian who brings the past to life with specificity and honesty. Return ONLY valid JSON. No markdown.', userLanguage),
+      messages: [{ role: 'user', content: prompt }],
     });
+    const text2 = message2.content.find(b => b.type === 'text')?.text || '';
+    const parsed = JSON.parse(cleanJsonResponse(text2));
 
     console.log(`[HistoryTodayDeeper] Expanded: "${parallel.title}", Timeline: ${parsed.timeline?.length}`);
     res.json(parsed);
@@ -236,13 +238,14 @@ Return ONLY valid JSON:
   "key_takeaway": "One sentence the user should remember"
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
+    const message3 = await anthropic.messages.create({
       model: 'claude-haiku-4-5-20251001',
-
-      label: 'HistoryTodayCounter',
       max_tokens: 2500,
       system: withLanguage('You are a structural historian focused on why similar conditions sometimes produce different outcomes. Return ONLY valid JSON. No markdown.', userLanguage),
+      messages: [{ role: 'user', content: prompt }],
     });
+    const text3 = message3.content.find(b => b.type === 'text')?.text || '';
+    const parsed = JSON.parse(cleanJsonResponse(text3));
 
     console.log(`[HistoryTodayCounter] Counter: "${parsed.title}", Type: ${parsed.hope_or_warning}`);
     res.json(parsed);
