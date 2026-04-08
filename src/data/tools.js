@@ -1949,9 +1949,9 @@ export const tools = [
 
 {
   modified: "2026-03-11",
-  id: "DopamineMenuBuilder",
-  title: 'Dopamine Menu',
-  tagline: 'Energy management — recharge, budget, forecast, track',
+id: "PEP",
+title: "PEP",
+tagline: "Personal Energy Planner — understand your energy, plan around it",
   tags: ['energy', 'dopamine', 'recharge', 'motivation', 'burnout', 'mood', 'focus', 'routine', 'self-care', 'rest'],
   icon: '✨',
   categories: ['Energy'],
@@ -2949,7 +2949,7 @@ export const tools = [
   icon: "📜",
   categories: ['Humans', 'Me'],
   headerColor: "#e0b8b8",
-  description: "AI-guided digital legacy planner that helps you organize accounts, documents, finances, and personal messages into a single printable document for your trusted person.",
+  description: "Guided digital legacy planner that helps you organize accounts, documents, finances, and personal messages into a single printable document for your trusted person.",
   guide: {
       overview: "FinalWish walks you through an AI-guided interview to build a comprehensive digital legacy package — covering accounts, documents, finances, personal messages, and practical wishes. Everything exports as a self-contained, printable HTML document you hand to someone you trust. Nothing is stored.",
       howToUse: [
@@ -3403,7 +3403,7 @@ export const tools = [
   icon: "🌙",
   categories: ['Mind'],
   headerColor: "#b8dcd8",
-  description: "Analyzes your dreams using Jungian, Freudian, and neuroscience frameworks to surface recurring themes, emotional patterns, symbolic imagery, and life correlations — with reflection questions to make the insights actionable.",
+  description: "Analyzes your dreams using Jungian, Freudian, and neuroscience frameworks to surface recurring themes, emotional patterns, symbolic imagery, and life correlations — with reflection questions to make the insights actionable. Not fortune-telling or mysticism: it's pattern recognition for self-reflection and insight.",
   guide: {
     overview: "The Dream Pattern Spotter applies psychological frameworks to find patterns in your dream life. Single Dream mode provides deep analysis of one dream. Pattern mode analyzes 2-6 dreams together to find recurring themes, emotional signatures, and correlations to waking life. Not mysticism — pattern recognition for self-reflection.",
     howToUse: [

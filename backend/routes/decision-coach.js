@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
-const { rateLimit, DEFAULT_LIMITS, DIVERSION_LIMITS } = require('../lib/rateLimiter');
+const { rateLimit } = require('../lib/rateLimiter');
 // ════════════════════════════════════════════════════════════
 // DECISION COACH v3 — Backend
 // v1: decide
@@ -18,7 +18,7 @@ const CAPACITY = {
 // ── v1: Main decide ──
 router.post('/decision-coach', rateLimit(), async (req, res) => {
   try {
-    const { decisionNeeded, category, preferences, capacityLevel, recentDecisions, rejectedChoices, locale } = req.body;
+    const { decisionNeeded, category, preferences, capacityLevel, recentDecisions, rejectedChoices, rejectionReason, locale } = req.body;
     const lang = withLanguage(locale);
     if (!decisionNeeded) return res.status(400).json({ error: 'Describe the decision you need made' });
 
@@ -32,6 +32,7 @@ CAPACITY: ${CAPACITY[capacityLevel] || CAPACITY.overwhelmed}
 
 ${recentDecisions?.length > 0 ? `RECENT DECISIONS (avoid repeating): ${recentDecisions.join(', ')}` : ''}
 ${rejectedChoices?.length > 0 ? `REJECTED (do NOT suggest these or similar): ${rejectedChoices.join(', ')}
+${rejectionReason ? `REASON FOR LAST REJECTION: "${rejectionReason}" — factor this heavily into your new suggestion.` : ''}
 IMPORTANT: New answer must be CLEARLY DIFFERENT — not a variation.` : ''}
 
 YOUR APPROACH:
@@ -279,11 +280,13 @@ router.post('/decision-coach/followup', rateLimit(), async (req, res) => {
   try {
     const { originalDecision, outcome, actualChoice, satisfaction, locale } = req.body;
     const lang = withLanguage(locale);
+    if (!originalDecision || !outcome) return res.status(400).json({ error: 'Missing decision or outcome' });
 
+    // outcome values: did_it | didnt_do_it | changed
     const prompt = `You are Decision Coach — FOLLOW-UP mode. Check in on a past decision.
 
 ORIGINAL DECISION: ${originalDecision}
-OUTCOME: ${outcome} ${/* did_it, didnt_do_it, changed */''}
+OUTCOME: ${outcome}
 ${outcome === 'changed' && actualChoice ? `WHAT THEY DID INSTEAD: ${actualChoice}` : ''}
 ${satisfaction ? `SATISFACTION: ${satisfaction}/5` : ''}
 
@@ -328,7 +331,7 @@ router.post('/decision-coach/dna', rateLimit(), async (req, res) => {
   try {
     const { history, learnedPreferences, locale } = req.body;
     const lang = withLanguage(locale);
-    if (!history?.length || history.length < 8) return res.status(400).json({ error: 'Need at least 8 decisions for DNA analysis' });
+    if (!history?.length || history.length < 5) return res.status(400).json({ error: 'Need at least 5 decisions for DNA analysis' });
 
     const histSummary = history.slice(0, 40).map((h, i) => {
       const parts = [`${i + 1}. "${h.question}" → "${h.choice}"`];
@@ -413,6 +416,7 @@ router.post('/decision-coach/devils-advocate', rateLimit(), async (req, res) => 
   try {
     const { decisionNeeded, gutInstinct, preferences, locale } = req.body;
     const lang = withLanguage(locale);
+    if (!decisionNeeded?.trim()) return res.status(400).json({ error: 'Describe the decision' });
     if (!gutInstinct?.trim()) return res.status(400).json({ error: 'Share your gut instinct first' });
 
     const prompt = `You are Decision Coach — DEVIL'S ADVOCATE mode.

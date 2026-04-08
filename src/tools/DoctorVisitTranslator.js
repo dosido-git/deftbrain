@@ -2,7 +2,6 @@ import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react'
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
-import { CopyBtn } from '../components/ActionButtons';
 import { useRegisterActions } from '../components/ActionBarContext';
 
 // ════════════════════════════════════════════════════════════
@@ -123,7 +122,6 @@ function DiagramBtn({ description, diagramType, isDark, c }) {
 const DoctorVisitTranslator = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { isDark } = useTheme();
-  const resultsRef = useRef(null);
 
   const c = {
     // Standard keys
@@ -142,8 +140,21 @@ const DoctorVisitTranslator = ({ tool }) => {
     // Bespoke tool-specific keys
     highlight:     isDark ? 'bg-cyan-900/20 border-cyan-700 text-cyan-200' : 'bg-cyan-50 border-cyan-200 text-cyan-800',
     pillGray:      isDark ? 'bg-zinc-700 text-zinc-400 border-zinc-600' : 'bg-zinc-100 text-zinc-500 border-zinc-200',
-    deleteHover: isDark ? 'hover:text-red-400' : 'hover:text-red-600',
+    deleteHover:   isDark ? 'hover:text-red-400' : 'hover:text-red-600',
+    btnOutline:    isDark ? 'border-zinc-600 hover:border-zinc-500 text-zinc-300' : 'border-gray-300 hover:border-gray-400 text-gray-700',
+    labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
+    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
+    infoBox:       isDark ? 'bg-sky-900/20 border-sky-700 text-sky-200' : 'bg-sky-50 border-sky-200 text-sky-800',
+    successBox:    isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-300',
+    successTxt:    isDark ? 'text-emerald-300' : 'text-emerald-800',
+    warningBox:    isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
+    warningTxt:    isDark ? 'text-amber-300' : 'text-amber-800',
+    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
+    required:      isDark ? 'text-amber-400' : 'text-amber-500',
   };
+  c.textMuteded = c.textMuted;
+  c.label = c.labelText;
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
@@ -180,17 +191,21 @@ const DoctorVisitTranslator = ({ tool }) => {
   const [journal, setJournal] = usePersistentState('doctor-symptom-journal', []);
   const [reminders, setReminders] = usePersistentState('doctor-reminders', []);
 
-  // PREP + JOURNAL FORM
   const [prepData, setPrepData] = useState({ symptoms: '', duration: '', severity: '', questions: [''] });
   const [journalEntry, setJournalEntry] = useState({ symptom: '', severity: 5, triggers: '', notes: '' });
+  const [pdfFile, setPdfFile] = useState(null);
+  const [pdfDragging, setPdfDragging] = useState(false);
+
+  // ── Refs (after all useState per PF-10) ──
+  const resultsRef = useRef(null);
+  const handleTranslateRef = useRef(null);
+  const canSubmitRef = useRef(false);
+  const fileInputRef = useRef(null);
 
   // F3: Auto-inject meds
   const activeMeds = useMemo(() => medList.filter(m => m.active), [medList]);
 
   // ─── PDF UPLOAD ───
-  const [pdfFile, setPdfFile] = useState(null);   // { name, base64 }
-  const [pdfDragging, setPdfDragging] = useState(false);
-  const fileInputRef = useRef(null);
 
   const readPdfAsBase64 = (file) => new Promise((resolve, reject) => {
     if (!file || file.type !== 'application/pdf') { reject(new Error('Please upload a PDF file')); return; }
@@ -383,17 +398,21 @@ const DoctorVisitTranslator = ({ tool }) => {
 
 
   // ─── Global Cmd/Ctrl+Enter shortcut ───
+  // ── PF-6: Keyboard handler (ref pattern avoids stale closures) ──
+  handleTranslateRef.current = handleTranslate;
+  canSubmitRef.current = mode === 'input' && !loading && !!(doctorNotes.trim() || pdfFile);
+
   useEffect(() => {
     const handler = (e) => {
-      if (!(e.metaKey || e.ctrlKey) || e.key !== 'Enter') return;
       const tag = document.activeElement?.tagName;
-      if (tag === 'TEXTAREA' || tag === 'SELECT') return; // textarea has its own onKeyDown
-      if (mode === 'input' && doctorNotes.trim() && !loading) handleTranslate();
+      if (tag === 'SELECT') return;
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && canSubmitRef.current)
+        handleTranslateRef.current?.();
     };
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mode, doctorNotes, loading]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Register export content with the wrapper's persistent ActionBar
   // Uses buildFullExport when in results mode, buildPrepExport in prep mode
@@ -406,10 +425,14 @@ const DoctorVisitTranslator = ({ tool }) => {
   // RENDER
   // ════════════════════════════════════════════════════════════
   return (
-    <div className={`space-y-6 ${c.text}`}>
-      <div className="mb-2">
-        <h2 className={`text-2xl font-bold ${c.text}`}><span className="mr-2">{tool?.icon ?? '🩺'}</span>{tool?.title || 'Doctor Visit Translator'}</h2>
-        <p className={`text-sm ${c.textMuted}`}>{tool?.tagline || 'Understand visits, labs, prescriptions, and bills in plain language'}</p>
+    <div className={`space-y-4 ${c.text}`}>
+      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
+        <div className="pb-3 border-b border-zinc-500">
+          <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
+            <span>{tool?.icon ?? '🩺'}</span>{tool?.title ?? 'Doctor Visit Translator'}
+          </h2>
+          <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Understand visits, labs, prescriptions, and bills in plain language'}</p>
+        </div>
       </div>
 
       {/* MODE TABS */}
@@ -538,10 +561,15 @@ const DoctorVisitTranslator = ({ tool }) => {
               className={`w-full h-16 p-3 border-2 rounded-lg ${c.input} outline-none resize-none text-sm`} />
           </div>
 
-          <button onClick={handleTranslate} disabled={loading || (!doctorNotes.trim() && !pdfFile)}
-            className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2`}>
-            {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🩺'}</span> Translating...</> : <><span>{tool?.icon ?? '🩺'}</span> Translate</>}
-          </button>
+          <div className="flex gap-3">
+            <button onClick={handleTranslate} disabled={loading || (!doctorNotes.trim() && !pdfFile)}
+              className={`flex-1 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2`}>
+              {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🩺'}</span> Translating...</> : <><span>{tool?.icon ?? '🩺'}</span> Translate</>}
+            </button>
+            {(doctorNotes.trim() || results) && (
+              <button onClick={handleReset} className={`${c.btnSecondary} py-3 px-4 rounded-lg text-sm font-semibold`}>← Start Over</button>
+            )}
+          </div>
           {error && <div className={`${c.danger} border rounded-lg p-4 flex items-start gap-2`}><span>⚠️</span><p className="text-sm">{error}</p></div>}
         </div>
       )}
@@ -556,7 +584,7 @@ const DoctorVisitTranslator = ({ tool }) => {
                 className={`${saved ? c.success : c.btnSecondary} py-2 px-4 rounded-lg text-sm font-semibold border transition-colors`}>
                 {saved ? '✅ Saved to History' : '💾 Save to History'}
               </button>
-              <button onClick={handleReset} className={`${c.btnSecondary} py-2 px-3 rounded-lg text-sm`}>✨ New</button>
+              <button onClick={handleReset} className={`${c.btnSecondary} py-2 px-3 rounded-lg text-sm`}>← Start Over</button>
             </div>
           </div>
 
@@ -727,7 +755,7 @@ const DoctorVisitTranslator = ({ tool }) => {
           {/* Questions */}
           {results.questions_for_next_visit?.length > 0 && (
             <Sec icon="❓" title="Questions" badge={`${results.questions_for_next_visit.length}`} open={secs.questions} onToggle={() => tog('questions')} c={c}
-              actions={<CopyBtn content={results.questions_for_next_visit.join('\n') + BRAND} label="Copy" />}>
+              >
               <div className={`${c.cardAlt} border rounded-lg p-4`}>{results.questions_for_next_visit.map((q, i) => <p key={i} className={`text-sm ${c.textSecondary} mb-1`}>❓ {q}</p>)}</div>
             </Sec>
           )}
@@ -775,7 +803,7 @@ const DoctorVisitTranslator = ({ tool }) => {
 
           {/* Cross-references */}
           <p className={`text-xs ${c.textMuted} text-center`}>
-            Got a bill to dispute?{' '}<a href="/BillRescue" target="_blank" rel="noopener noreferrer" className={linkStyle}>Bill Rescue</a>{' '}
+            Got a bill to dispute?{' '}<a href="/BillRescue" className={linkStyle}>Bill Rescue</a>{' '}
             helps fight insurance denials and medical billing errors.
           </p>
         </div>
@@ -808,7 +836,7 @@ const DoctorVisitTranslator = ({ tool }) => {
 
           {symptomTrends?.length > 0 && (
             <div className={`${c.card} border rounded-xl p-5`}>
-              <div className="flex items-center justify-between mb-3"><h3 className={`text-sm font-bold ${c.text}`}>📈 Trends</h3><CopyBtn content={buildSymptomReport()} label="Export" /></div>
+              <div className="flex items-center justify-between mb-3"><h3 className={`text-sm font-bold ${c.text}`}>📈 Trends</h3></div>
               <div className="space-y-2">{symptomTrends.map(t => (
                 <div key={t.name} className={`${c.cardAlt} border rounded-lg p-3`}>
                   <div className="flex items-center justify-between mb-1"><span className={`text-sm font-semibold ${c.text}`}>{t.name}</span><span className={`${t.trend === 'improving' ? c.success : t.trend === 'worsening' ? c.danger : c.pillGray} border text-[9px] font-bold px-1.5 py-0.5 rounded`}>{t.trend === 'improving' ? '📉 Better' : t.trend === 'worsening' ? '📈 Worse' : '➡️ Stable'}</span></div>
@@ -854,7 +882,7 @@ const DoctorVisitTranslator = ({ tool }) => {
 
           {/* Meds */}
           <div className={`${c.card} border rounded-xl p-5`}>
-            <div className="flex items-center justify-between mb-3"><h3 className={`text-sm font-bold ${c.text}`}>💊 Meds ({medStats.active})</h3>{activeMeds.length > 0 && <CopyBtn content={activeMeds.map(m => `${m.name}\n  ${m.purpose}\n  ${m.howToTake}`).join('\n\n') + BRAND} label="Copy" />}</div>
+            <div className="flex items-center justify-between mb-3"><h3 className={`text-sm font-bold ${c.text}`}>💊 Meds ({medStats.active})</h3></div>
             {medList.length === 0 ? <p className={`text-sm ${c.textSecondary} text-center py-3`}>Meds auto-add when you save visits.</p>
             : <>{activeMeds.length > 0 && <div className="space-y-2 mb-3">{activeMeds.map(m => (
               <div key={m.id} className={`${c.cardAlt} border rounded-lg p-3`}>
@@ -927,8 +955,12 @@ const DoctorVisitTranslator = ({ tool }) => {
         <div className={`mt-6 pt-4 border-t text-sm ${c.border} ${c.textMuted}`}>
           <p className="mb-2 font-medium">You might also like:</p>
           <div className="flex flex-wrap gap-2">
-            {[{slug:'procedure-probe',label:'🔬 Procedure Probe'},{slug:'plain-talk',label:'💬 Plain Talk'},{slug:'jargon-assassin',label:'🗡️ Jargon Assassin'}].map(({slug,label})=>(
-              <a key={slug} href={`${slug}`} className={linkStyle}>{label}</a>
+            {[
+              { href: '/ProcedureProbe', label: '🔬 Procedure Probe' },
+              { href: '/PlainTalk', label: '💬 Plain Talk' },
+              { href: '/JargonAssassin', label: '🗡️ Jargon Assassin' },
+            ].map(({ href, label }) => (
+              <a key={href} href={href} className={linkStyle}>{label}</a>
             ))}
           </div>
         </div>

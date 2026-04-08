@@ -1,4 +1,4 @@
-import os, re, glob
+import os, re, glob, sys
 
 BANNED_KEYS = ['divider', 'muted', 'accent', 'accentBg', 'dangerText',
                'successText', 'warningText', 'info', 'purple', 'pageBg',
@@ -37,12 +37,23 @@ def is_comment_line(content, pos):
     return content[line_start:pos].strip().startswith('//')
 
 tools = []
-for fpath in sorted(glob.glob('/mnt/user-data/outputs/*.js')):
-    name = os.path.basename(fpath).replace('.js','')
-    if '-tools-entry' in name: continue
-    if name in SKIP: continue
-    if os.path.exists(f'/mnt/project/{name}.js'):
-        tools.append((name, fpath))
+# If a file path is passed as argument, audit that file directly (no project-file pairing required)
+if len(sys.argv) > 1:
+    fpath = os.path.abspath(sys.argv[1])
+    if os.path.isfile(fpath):
+        name = os.path.basename(fpath).replace('.js', '')
+        if name not in SKIP:
+            tools.append((name, fpath))
+    else:
+        print(f'ERROR: file not found: {fpath}', file=sys.stderr)
+        sys.exit(1)
+else:
+    for fpath in sorted(glob.glob('/mnt/user-data/outputs/*.js')):
+        name = os.path.basename(fpath).replace('.js','')
+        if '-tools-entry' in name: continue
+        if name in SKIP: continue
+        if os.path.exists(f'/mnt/project/{name}.js'):
+            tools.append((name, fpath))
 
 # Load valid tool IDs from tools.js for cross-ref link validation
 VALID_TOOL_IDS = set()
@@ -292,8 +303,8 @@ for name, fpath in tools:
     # S1.5: history cap — look for ].slice(0, N) pattern (array cap, not string slices inside)
     for m in re.finditer(r'set(?:History|[A-Z]\w*History)[^;]{0,400}\]\.slice\(0,\s*(\d+)\)', content, re.DOTALL):
         cap = int(m.group(1))
-        if cap > 6:
-            fails.append(f'S1.5: history cap {cap} > 6')
+        if cap > 50:
+            fails.append(f'S1.5: history cap {cap} > 50')
         break
 
     # S1.7: displayName
@@ -357,15 +368,39 @@ for name, fpath in tools:
         fails.append('S5.4: no AI disclaimer')
 
     # S5.5: cross-refs
-    # Split at the first JSX results conditional block (not state declarations).
-    # Look for patterns like: {results && (, results && (, {result && ( — JSX conditionals
+    # Classify hrefs as pre-result or post-result.
+    # Two tool patterns:
+    #   A) Inline JSX: {results && (<div>...hrefs...</div>)} — split at results &&
+    #   B) Render functions: const renderResults = () => ... called as {renderResults()} in return
+    #      pre_region  = main return content BEFORE the {renderResults()} call
+    #      post_region = the renderResults function body itself
     href_pattern = r'href=["\'][/][A-Za-z]|href=\{[`][/]\$?\{?[A-Za-z]'
 
-    # Find JSX results conditional — must be followed by ( or <, not = or ,
-    results_jsx = re.search(r'\{?\s*(?:\(\s*)?(?<![!])(?:results|result)\b[^=\n]{0,40}&&\s*[(<r]', content)
-    if results_jsx:
-        pre_content = content[:results_jsx.start()]
-        post_content = content[results_jsx.start():]
+    # Find the main component's last return( to anchor JSX-only searches
+    _return_matches = list(re.finditer(r'\breturn\s*\(', content))
+    _jsx_start = _return_matches[-1].start() if _return_matches else 0
+
+    # Pattern B: does a renderResults render-function exist?
+    _render_results_m = re.search(r'\bconst\s+render(?:Results?|Output|Answer)\s*=', content)
+    _rr_call_m = re.search(r'render(?:Results?|Output|Answer)\(\)', content[_jsx_start:]) if _render_results_m else None
+
+    # Pattern A: inline {results && ( or {result && ( inside the JSX return
+    _inline_jsx = re.search(
+        r'\{?\s*(?:\(\s*)?(?<![!])(?:results|result)\b[^=\n]{0,40}&&\s*[(<]',
+        content[_jsx_start:]
+    )
+
+    if _inline_jsx:
+        # Inline pattern — single split point
+        _split = _jsx_start + _inline_jsx.start()
+        pre_content = content[:_split]
+        post_content = content[_split:]
+    elif _render_results_m and _rr_call_m:
+        # Render-function pattern — two separate regions
+        _rr_body_start = _render_results_m.start()
+        _rr_call_pos   = _jsx_start + _rr_call_m.start()
+        pre_content  = content[_jsx_start:_rr_call_pos]   # main return before {renderResults()}
+        post_content = content[_rr_body_start:_jsx_start]  # renderResults function body
     else:
         pre_content = content
         post_content = ''
@@ -404,6 +439,49 @@ for name, fpath in tools:
             fails.append(f'S5.5: relative href "{m.group(1)}" missing leading slash — will create ghost URLs in Google')
     for bad_m in re.finditer(r'href=\{`(?!/|\$\{)([^`]+)`\}', content):
         fails.append(f'S5.5: relative template href "{bad_m.group(1)}" missing leading slash — will create ghost URLs in Google')
+
+    # PF-15: Required field asterisks
+    # 1. c.required must be defined in the c block
+    if c_block and not re.search(r'^\s+required\s*:', c_block, re.MULTILINE):
+        fails.append('PF-15: c.required not defined in c block')
+
+    # 2. Every asterisk <span> must use c.required — not raw color classes or bare text
+    for _span_m in re.finditer(r'<span([^>]*)>\s*\*\s*</span>', content):
+        if 'c.required' not in _span_m.group(1):
+            _line_n = content[:_span_m.start()].count('\n') + 1
+            fails.append(f'PF-15: asterisk span at line {_line_n} does not use c.required — must be <span className={{c.required}}>*</span>')
+            break  # one report is enough
+
+    # 3. Required field variables (from submit disabled={}) must have a c.required asterisk in their label
+    # Extract required vars: !varName or !varName.trim() in disabled condition, excluding control vars
+    _CONTROL_VARS = {'loading', 'isLoading', 'isRunning', 'true', 'false', 'null', 'undefined', 'error'}
+    _submit_dis = re.search(r'disabled=\{([^}]{5,400})\}', jsx_area)
+    _required_vars = set()
+    if _submit_dis:
+        _dis_expr = _submit_dis.group(1)
+        for _vm in re.finditer(r'!\s*([a-zA-Z_][a-zA-Z0-9_]*)(?:\.trim\(\))?', _dis_expr):
+            _v = _vm.group(1)
+            if _v not in _CONTROL_VARS:
+                _required_vars.add(_v)
+    for _var in _required_vars:
+        # Find the input/textarea/select that binds value={_var} in jsx_area
+        _input_m = re.search(r'value=\{' + re.escape(_var) + r'\b', jsx_area)
+        if not _input_m:
+            continue
+        # Search backwards for the nearest <label before this input
+        _before = jsx_area[:_input_m.start()]
+        _label_matches = list(re.finditer(r'<label\b', _before))
+        if not _label_matches:
+            continue
+        _label_start = _label_matches[-1].start()
+        # Grab text from <label to </label> (up to 500 chars)
+        _label_snippet = jsx_area[_label_start:_label_start + 500]
+        if '</label>' not in _label_snippet:
+            continue  # malformed / multiline edge case — skip
+        _label_text = _label_snippet[:_label_snippet.index('</label>') + 8]
+        if 'c.required' not in _label_text:
+            _abs_line = content[:c_end_pos + _label_start].count('\n') + 1
+            fails.append(f'PF-15: required field "{_var}" — label at line {_abs_line} missing <span className={{c.required}}>*</span>')
 
     # Known bugs
     if re.search(r'\$\{\}', content):

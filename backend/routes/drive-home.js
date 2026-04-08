@@ -95,7 +95,16 @@ Generate 3-5 watch_for items, 4-6 checklist items, and 2-3 reminders. Tailor eve
 
       const cleaned = cleanJsonResponse(text);
       const parsed = JSON.parse(cleaned);
-      return res.json(parsed);
+
+      // Strip <cite index="...">text</cite> tags the model injects when web search is active
+      const stripCites = (v) => {
+        if (typeof v === 'string') return v.replace(/<cite[^>]*>([\s\S]*?)<\/cite>/g, '$1');
+        if (Array.isArray(v)) return v.map(stripCites);
+        if (v && typeof v === 'object') return Object.fromEntries(Object.entries(v).map(([k, val]) => [k, stripCites(val)]));
+        return v;
+      };
+
+      return res.json(stripCites(parsed));
     }
 
     return res.status(400).json({ error: `Unknown action: ${action}` });

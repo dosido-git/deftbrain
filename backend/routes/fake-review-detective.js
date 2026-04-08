@@ -386,45 +386,82 @@ Return ONLY valid JSON:
           return res.status(502).json({ error: `Couldn't fetch: ${fetchErr.message}. Site may block automated requests.` });
         }
 
-        const maxChars = 80000;
-        const truncatedHtml = html.length > maxChars ? html.substring(0, maxChars) + '\n[... truncated ...]' : html;
+        // ── Step 1: Try JSON-LD structured data (richest source on many retail sites) ──
+        const jsonLdBlocks = [];
+        const jsonLdRe = /<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi;
+        let m;
+        while ((m = jsonLdRe.exec(html)) !== null) {
+          try {
+            const parsed = JSON.parse(m[1]);
+            const flat = JSON.stringify(parsed);
+            // Only keep blocks that mention reviews/ratings
+            if (/review|rating|ratingValue|reviewBody/i.test(flat)) jsonLdBlocks.push(flat);
+          } catch { /* ignore malformed JSON */ }
+        }
 
-        const systemPrompt = `You are an expert at extracting product reviews from web page HTML. Find ALL individual customer reviews and output them in clean, structured text.
+        // ── Step 2: Try embedded JSON state blobs (Amazon, Walmart, etc.) ──
+        const stateBlobs = [];
+        const stateBlobRe = /(?:window\.__)?(?:INITIAL_STATE|APP_STATE|DATA|__reactProps\$[^=]+=|reviewData|reviewsData)\s*=\s*({[\s\S]{200,8000}?});/g;
+        while ((m = stateBlobRe.exec(html)) !== null) {
+          if (/review|rating/i.test(m[1])) stateBlobs.push(m[1].substring(0, 4000));
+        }
+
+        // ── Step 3: Strip HTML to readable text (removes tags, scripts, styles) ──
+        const stripped = html
+          .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+          .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+          .replace(/<svg[\s\S]*?<\/svg>/gi, ' ')
+          .replace(/<!--[\s\S]*?-->/g, ' ')
+          .replace(/<[^>]+>/g, ' ')
+          .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&nbsp;/g, ' ').replace(/&#39;/g, "'").replace(/&quot;/g, '"')
+          .replace(/\s{3,}/g, '\n')
+          .trim();
+
+        // ── Assemble content for Claude, prioritising structured data ──
+        const maxChars = 80000;
+        let contentForClaude = '';
+        if (jsonLdBlocks.length > 0) {
+          contentForClaude += '=== STRUCTURED REVIEW DATA (JSON-LD) ===\n' + jsonLdBlocks.join('\n').substring(0, 30000) + '\n\n';
+        }
+        if (stateBlobs.length > 0) {
+          contentForClaude += '=== EMBEDDED STATE DATA ===\n' + stateBlobs.join('\n').substring(0, 20000) + '\n\n';
+        }
+        contentForClaude += '=== PAGE TEXT ===\n' + stripped.substring(0, maxChars - contentForClaude.length);
+
+        const systemPrompt = `You are an expert at extracting product reviews from web page content. The content may include structured JSON-LD data, embedded state blobs, and stripped page text. Prioritise JSON-LD and structured data over raw text. Find ALL individual customer reviews.
 
 EXTRACTION RULES:
-1. Find every customer review
-2. For each: star rating, text, reviewer name (if available), date, verified purchase status
+1. Find every customer review — check JSON-LD "review" arrays, "aggregateRating", embedded JSON state blobs, and page text
+2. For each review output: star rating, text, date, verified purchase status
 3. Output format (one blank line between reviews):
 
 ⭐⭐⭐⭐⭐ [review text]
 - [Verified Purchase, ]Posted [date]
 
-4. Convert numeric ratings to star emoji
-5. Include "Verified Purchase" only if page indicates actual purchase
-6. Preserve actual review text — don't summarize
-7. If no reviews found: return exactly NO_REVIEWS_FOUND
+4. Convert numeric ratings (1-5) to the corresponding number of ⭐ emoji
+5. Include "Verified Purchase" only if indicated
+6. Preserve actual review text — do NOT summarise
+7. If no reviews found anywhere: return exactly NO_REVIEWS_FOUND
 8. Detect product name and category if visible
 
 OUTPUT FORMAT:
 First line: PRODUCT: [name or "Unknown"]
 Second line: CATEGORY: [Electronics, Home & Kitchen, Beauty, Fashion, Sports, Books, Health, Food, Toys, Automotive, or Other]
 Third line: REVIEWS_FOUND: [count]
-Then blank line, then reviews.`;
-
-        const userPrompt = `Extract all customer/product reviews from this HTML:\n\n${truncatedHtml}`;
+Then blank line, then the reviews.`;
 
         const message = await anthropic.messages.create({
           model: 'claude-sonnet-4-20250514',
-          max_tokens: 4000,
+          max_tokens: 8000,
           system: withLanguage(systemPrompt, userLanguage),
-          messages: [{ role: 'user', content: userPrompt }],
+          messages: [{ role: 'user', content: `Extract all customer reviews from this page content:\n\n${contentForClaude}` }],
         });
 
         const text = message.content.find(b => b.type === 'text')?.text || '';
 
         if (text.includes('NO_REVIEWS_FOUND')) {
           return res.json({ reviews: '', productName: null, category: null, reviewCount: 0,
-            message: 'No reviews found. Site may require JavaScript or page may not contain reviews.' });
+            message: 'No reviews found in the page. This site likely loads reviews via JavaScript — try copying and pasting the reviews directly into the text box instead.' });
         }
 
         const productMatch = text.match(/^PRODUCT:\s*(.+)$/m);

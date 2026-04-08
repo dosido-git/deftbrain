@@ -138,13 +138,14 @@ router.post('/date-night', async (req, res) => {
     if (action === 'generate') {
       const { budget, currency = '$', dateType, location, restrictions, lastTime, startTime,
               dietary, duration, weather, pastDates, preferences, partnerPrefs,
-              favorites, userLanguage } = req.body;
+              favorites, plannedDate, isFuturePlan, userLanguage } = req.body;
 
       if (!location?.trim()) return res.status(400).json({ error: 'Please enter a city or neighborhood.' });
       if (!dateType) return res.status(400).json({ error: 'Please select a date type.' });
 
       const sym = currency;
       const durationMap = { quick: 'Quick — 2 stops, done by ~9:30 PM', standard: 'Standard — 2-3 stops, done by ~11 PM', long: 'Long — 3-4 stops, past midnight' };
+      const futureDateStr = plannedDate ? new Date(plannedDate + 'T12:00:00').toLocaleDateString('en', { weekday: 'long', month: 'long', day: 'numeric' }) : null;
 
       const prompt = `PLAN A DATE NIGHT:
 - Budget: ${sym}${budget} (hard cap — plan ~${sym}${Math.round((budget || 100) * 0.85)})
@@ -154,6 +155,7 @@ router.post('/date-night', async (req, res) => {
 - Start: ${startTime || '7:00 PM'}
 - Duration: ${durationMap[duration] || durationMap.standard}
 - Season: ${season} — ${seasonAdvice}
+${isFuturePlan && futureDateStr ? `- FUTURE DATE: Planning for ${futureDateStr}. Include advance_booking tips (which stops need reservations, how far in advance). Frame recommendations for planning ahead, not tonight.` : ''}
 ${weather ? `- Weather: ${weather}` : ''}
 ${restrictions ? `- Restrictions: ${restrictions}` : ''}
 ${lastTime ? `- Last time (avoid): ${lastTime}` : ''}
@@ -161,6 +163,7 @@ ${buildDietaryBlock(dietary)}${buildPreferenceBlock(preferences)}${buildPartnerB
 
 Return ONLY valid JSON:
 ${RESPONSE_SCHEMA}
+${isFuturePlan ? '\nAlso include: "advance_booking": ["Tip 1 about reservations/booking", "Tip 2", "Tip 3"] — specific actions to take now for the planned date.' : ''}
 
 All costs in ${sym}. dress_vibe per stop + overall_dress_code. plan_b per stop AND overall.`;
 

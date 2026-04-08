@@ -77,7 +77,7 @@ const FriendshipFadeAlerter = ({ tool }) => {
   const [view, setView] = useState('dashboard');
   const [error, setError] = useState('');
   const [activeCircleFilter, setActiveCircleFilter] = useState(null);
-  const [form, setForm] = useState({ id: null, name: '', relationshipType: '', frequency: '', lastContact: '', contextNotes: '', upcomingEvents: [], circleIds: [] });
+  const [form, setForm] = useState({ id: null, name: '', relationshipType: '', frequency: '', lastContact: new Date().toISOString().split('T')[0], contextNotes: '', upcomingEvents: [], circleIds: [] });
   const [eventLabel, setEventLabel] = useState('');
   const [eventDate, setEventDate] = useState('');
   const [newCircleName, setNewCircleName] = useState('');
@@ -204,7 +204,7 @@ const FriendshipFadeAlerter = ({ tool }) => {
   // ════════════════════════════════════════
   // CRUD + ACTIONS
   // ════════════════════════════════════════
-  const resetForm = () => { setForm({ id: null, name: '', relationshipType: '', frequency: '', lastContact: '', contextNotes: '', upcomingEvents: [], circleIds: [] }); setEventLabel(''); setEventDate(''); setError(''); };
+  const resetForm = () => { setForm({ id: null, name: '', relationshipType: '', frequency: '', lastContact: new Date().toISOString().split('T')[0], contextNotes: '', upcomingEvents: [], circleIds: [] }); setEventLabel(''); setEventDate(''); setError(''); };
 
   const saveRelationship = useCallback(() => {
     if (!form.name || !form.relationshipType || !form.frequency || !form.lastContact) { setError('Please fill in all required fields'); return; }
@@ -452,8 +452,23 @@ const FriendshipFadeAlerter = ({ tool }) => {
       lines.push(BRAND);
       return lines.join('\n');
     }
+    if (sayItData && sayItPerson) {
+      const lines = [`💬 SAY-IT COACH — ${sayItPerson.name}`, ''];
+      if (sayItData.situation_read) lines.push(sayItData.situation_read, '');
+      if (sayItData.whether_to_say_it) lines.push(sayItData.whether_to_say_it, '');
+      if (sayItData.the_script) lines.push(`Script: "${sayItData.the_script}"`, '');
+      lines.push(BRAND);
+      return lines.join('\n');
+    }
+    if (followupAdvice && followupPerson) {
+      const lines = [`📨 FOLLOW-UP ADVICE — ${followupPerson.name}`, ''];
+      if (followupAdvice.assessment) lines.push(followupAdvice.assessment, '');
+      if (followupAdvice.follow_up_message) lines.push(`Message: "${followupAdvice.follow_up_message}"`, '');
+      lines.push(BRAND);
+      return lines.join('\n');
+    }
     return '';
-  }, [digest, starters, selectedPerson, batchResults, reengageResults, reengageForm]);
+  }, [digest, starters, selectedPerson, batchResults, reengageResults, reengageForm, followupAdvice, followupPerson, sayItData, sayItPerson]);
 
   useRegisterActions(buildFullText(), tool?.title || 'Friendship Fade Alerter');
 
@@ -795,7 +810,7 @@ const FriendshipFadeAlerter = ({ tool }) => {
 
               {/* Pre-result cross-ref */}
               <p className={`text-xs text-center ${c.textMuted}`}>
-                Need to practice a hard conversation first? Try <a href="/DifficultTalkRehearser" className={linkStyle}>🎭 Difficult Talk Rehearser</a>.
+                Need to practice a hard conversation first? Try <a href="/DifficultTalkCoach" className={linkStyle}>🗣️ Difficult Talk Coach</a>.
               </p>
             </div>
           )}
@@ -1380,7 +1395,7 @@ const FriendshipFadeAlerter = ({ tool }) => {
         <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
           <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 Related tools</p>
           <div className="flex flex-wrap gap-3">
-            <a href="/DifficultTalkRehearser" className={`text-xs ${linkStyle}`}>🎭 Difficult Talk Rehearser</a>
+            <a href="/DifficultTalkCoach" className={`text-xs ${linkStyle}`}>🗣️ Difficult Talk Coach</a>
             <a href="/GratitudeDebtClearer" className={`text-xs ${linkStyle}`}>🙏 Gratitude Debt Clearer</a>
           </div>
         </div>

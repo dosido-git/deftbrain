@@ -71,7 +71,7 @@ const TOOL_IDS = [
   'ComebackCooker','ComplaintEscalationWriter','ConflictCoach','ContextCollapse',
   'ContrastReport','CrashPredictor','CrisisPrioritizer','CrowdWisdom','DateNight',
   'DebateMe','DecisionCoach','DecoderRing','DifficultTalkCoach','DoctorVisitTranslator',
-'DopamineMenuBuilder','DreamPatternSpotter','DriveHome','EgoKiller','EmailUrgencyTriager',
+'DreamPatternSpotter','DriveHome','EgoKiller','EmailUrgencyTriager','PEP',
   'FakeReviewDetective','FanTheory','FinalWish','FocusPocus','FocusSoundArchitect',
   'FriendshipFadeAlerter','FutureProof','GentlePushGenerator','GhostWriter',
   'Giftology','GratitudeDebtClearer','GravityWell','HecklerPrep','HistoryToday',
@@ -105,19 +105,19 @@ RETIRED_SLUGS.forEach(slug => {
 // ── Legacy /tool/ route redirects ──
 const LEGACY_REDIRECTS = {
   // Legacy /tool/ routes
-  '/tool/renters-deposit-saver': '/RentersDepositSaver',
-  '/tool/bill-rescue':           '/BillRescue',
+ // '/tool/renters-deposit-saver': '/RentersDepositSaver',
+ // '/tool/bill-rescue':           '/BillRescue',
   // Renamed tools
   '/SayItRight':                 '/PronounceItRight',
-  '/whatifmachine':              '/WhatIf',
-  '/plothole':                   '/PlotTwist',
-  '/roommatecourtroom':          '/RoommateCourt',
-  '/fridgealchemy':              '/MiseEnPlace',
-  '/foodswap':                   '/MiseEnPlace',
-  '/pdf-fixer':                  '/PlainTalk',
-  '/timevanishingexplainer':     '/WhereDidTheTimeGo',
-  '/wherediditgo':               '/WhereDidTheTimeGo',
+  '/WhatIfMachine':              '/WhatIf',
+  '/PlotHole':                   '/PlotTwist',
+  '/RoommateCourtroom':          '/RoommateCourt',
+  '/FridgeAlchemy':              '/MiseEnPlace',
+  '/FoodSwap':                   '/MiseEnPlace',
+  '/TimeVanishingExplainer':     '/WhereDidTheTimeGo',
+  '/WhereDidItGo':               '/WhereDidTheTimeGo',
   '/PaperDigest':               '/ResearchDecoder',
+  '/DopamineMenuBuilder':               '/PEP',
 };
 Object.entries(LEGACY_REDIRECTS).forEach(([from, to]) => {
   app.get(from, (req, res) => res.redirect(301, to));
