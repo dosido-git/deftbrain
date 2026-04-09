@@ -236,14 +236,27 @@ grep -n "c\.card" ComponentName.js | head -3
 
 ---
 
-### PF-5 · Inline ActionBar
+### PF-5 · ActionBar and Copy/Share/Print Buttons
 
+The global ActionBar — rendered automatically by `ToolPageWrapper` via `useRegisterActions` — is the **only** sanctioned copy, share, and print mechanism in any tool. No inline buttons of any kind may duplicate these actions.
+
+**Scan — all must return zero results:**
 ```bash
 grep -n "<ActionBar" ComponentName.js
-# Must return zero results — remove any found
+# Must return zero — inline ActionBar is forbidden
+
+grep -n "CopyBtn\|PrintBtn\|ShareBtn" ComponentName.js | grep -v "^import"
+# Must return zero — inline copy/share/print buttons are forbidden
+
+grep -n "copyToClipboard\|navigator\.clipboard\|copiedField\|copiedIndex\|setCopied" ComponentName.js
+# Must return zero — local clipboard logic is forbidden
 ```
 
-Replace with `useRegisterActions(buildFullText(), tool?.title || 'Tool Name')` placed AFTER `buildFullText` is declared.
+**Fix:** Replace any inline `<ActionBar>`, `<CopyBtn>`, `<PrintBtn>`, or `<ShareBtn>` in JSX with `useRegisterActions(buildFullText(), tool?.title || 'Tool Name')` placed AFTER `buildFullText` is declared. The import line `import { CopyBtn } from '../components/ActionButtons'` is still required (the audit checks for it), but `CopyBtn` must not appear anywhere in JSX.
+
+**Why this rule exists:** Inline copy buttons duplicate the global action bar, producing redundant UI (e.g. two Copy buttons visible at once). They also fragment the copy content — each inline button copies only a subset of results, while `useRegisterActions` copies everything via `buildFullText`. When users see inline buttons, they lose trust in the global bar and both become confusing.
+
+**The one exception:** A tool may use `CopyBtn` inline for content that is *always independent of the main results* — e.g. a delegate message draft that users copy to send separately, where copying the whole plan would be wrong. This must be discussed and explicitly approved before implementation. All other uses are prohibited.
 
 ---
 

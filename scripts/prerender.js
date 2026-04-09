@@ -216,15 +216,27 @@ function main() {
 
   console.log(`\nPrerendering ${tools.length} tool pages...\n`);
 
+  // Clean up legacy directory-based prerender output before writing flat files.
+  // Directories named after tool IDs (e.g. build/SpiralStopper/index.html) cause
+  // static servers to serve /SpiralStopper/ as 200, creating trailing-slash duplicates
+  // that confuse Google. Flat files (build/SpiralStopper.html) have no slash variant.
+  const protectedDirs = new Set(['static', 'og', 'guides']);
+  for (const entry of fs.readdirSync(BUILD_DIR)) {
+    if (protectedDirs.has(entry)) continue;
+    const full = path.join(BUILD_DIR, entry);
+    if (fs.statSync(full).isDirectory()) {
+      fs.rmSync(full, { recursive: true, force: true });
+      console.log(`  CLEANED  ${entry}/`);
+    }
+  }
+
   let succeeded = 0;
   let failed    = 0;
 
   for (const tool of tools) {
     try {
       const html = injectMeta(template, tool);
-      const dir  = path.join(BUILD_DIR, tool.id);
-      fs.mkdirSync(dir, { recursive: true });
-      fs.writeFileSync(path.join(dir, 'index.html'), html, 'utf8');
+      fs.writeFileSync(path.join(BUILD_DIR, `${tool.id}.html`), html, 'utf8');
       console.log(`  OK  /${tool.id}`);
       succeeded++;
     } catch (err) {

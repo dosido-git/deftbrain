@@ -126,7 +126,7 @@ Object.entries(LEGACY_REDIRECTS).forEach(([from, to]) => {
 app.use((req, res, next) => {
   // Only apply to non-API, non-static asset paths
   if (req.path.startsWith('/api') || req.path.includes('.')) return next();
-  const slug = req.path.replace(/^\/|\/$/g, ''); // strip leading AND trailing slash
+  const slug = req.path.replace(/^\//, '').replace(/\/$/, '');
   if (!slug) return next();       // skip homepage
   const canonical = toolIdMap[slug.toLowerCase()];
   if (canonical && canonical !== slug) {
@@ -184,23 +184,45 @@ app.get('/api/endpoints', (req, res) => {
 
 // ── Serve React build (production) ──
 if (IS_PRODUCTION) {
-  // extensions: ['html'] serves guide pages at clean URLs:
-  // /guides/workplace/how-to-tell-your-boss-theyre-wrong
-  // → build/guides/workplace/how-to-tell-your-boss-theyre-wrong.html
+  // ── Trailing slash redirect — must be before express.static ──
+  // Prerendered tool pages are now flat files (build/ToolName.html) rather than
+  // directories (build/ToolName/index.html), so static servers have no slash
+  // variant to serve. This middleware handles any slash URLs that Google or
+  // external links may have cached, redirecting them to the canonical form.
+  // Placed here rather than at top-level because Railway's Fastly CDN edge
+  // intercepts requests before top-level Express middleware can fire.
+  app.use((req, res, next) => {
+    if (req.path !== '/' && req.path.endsWith('/')) {
+      const slug = req.path.slice(1, -1); // strip leading / and trailing /
+      const canonical = toolIdMap[slug.toLowerCase()];
+      const cleanPath = canonical ? `/${canonical}` : req.path.slice(0, -1);
+      const query = req.url.slice(req.path.length);
+      return res.redirect(301, cleanPath + query);
+    }
+    next();
+  });
+
+  // extensions: ['html'] serves prerendered flat files at clean URLs:
+  // /SpiralStopper → build/SpiralStopper.html (200, no trailing-slash variant)
+  // /guides/how-to-tell-your-boss → build/guides/how-to-tell-your-boss.html
   app.use(express.static(path.join(__dirname, '..', 'build'), { redirect: false, extensions: ['html'] }));
+
   app.get('*', (req, res) => {
-    const slug = req.path.replace(/^\/|\/$/g, '');
+    const slug = req.path.replace(/^\//, '');
     const canonical = slug ? toolIdMap[slug.toLowerCase()] : null;
+
     // If case doesn't match, redirect — never serve at the wrong URL
     if (canonical && canonical !== slug) {
       res.set('Cache-Control', 'no-store');
       return res.redirect(301, `/${canonical}`);
     }
-    // Case already correct — serve prerendered file if it exists
+
+    // Case already correct — serve prerendered flat file if it exists
     if (canonical) {
-      const prerendered = path.join(__dirname, '..', 'build', canonical, 'index.html');
+      const prerendered = path.join(__dirname, '..', 'build', `${canonical}.html`);
       if (fs.existsSync(prerendered)) return res.sendFile(prerendered);
     }
+
     res.sendFile(path.join(__dirname, '..', 'build', 'index.html'));
   });
 }
