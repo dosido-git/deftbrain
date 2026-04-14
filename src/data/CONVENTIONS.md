@@ -558,6 +558,69 @@ grep -n "<label" ComponentName.js | grep -v "\*" | head -20
 </label>
 <textarea ... />
 ```
+### PF-16 · Reset Button — One, Top-Right, Always
+
+Every tool has exactly **one** reset control. It lives in the top-right corner of the input card header, on the same row as the `<h2>` title. No other reset, "New", "Clear", or "Start Over" button may appear anywhere else in the tool.
+
+**Scan:**
+```bash
+grep -n "handleReset\|onClick.*reset\|Start Over\|startOver" ComponentName.js | grep -i "button\|btn"
+# Must return exactly 1 result
+# More than 1 = duplicate reset buttons — FAIL
+# Zero = no reset button — FAIL
+```
+
+**✅ Correct pattern:**
+```jsx
+<div className="mb-4 pb-3 border-b border-zinc-500">
+  <div className="flex items-center justify-between">
+    <div>
+      <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
+        <span className="mr-2">{tool?.icon ?? '❓'}</span>{tool?.title ?? 'Fallback'}
+      </h2>
+      <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Fallback tagline'}</p>
+    </div>
+    {(results || input.trim()) && (
+      <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs`}>
+        ↺ Start Over
+      </button>
+    )}
+  </div>
+</div>
+```
+
+**❌ Wrong — reset in the submit row:**
+```jsx
+<div className="flex gap-3">
+  <button onClick={handleAnalyze} className={`flex-1 ${c.btnPrimary}...`}>Analyze</button>
+  <button onClick={handleReset} className={`${c.btnSecondary}...`}>New</button>  {/* ← WRONG */}
+</div>
+```
+
+**❌ Wrong — reset inside the results block:**
+```jsx
+{results && (
+  <div>
+    ...
+    <button onClick={handleReset}>Start Over</button>  {/* ← WRONG */}
+  </div>
+)}
+```
+
+**Critical values:**
+
+| Rule | Requirement |
+|------|-------------|
+| **Count** | Exactly 1 reset button per tool |
+| **Position** | Top-right of header `flex justify-between` row |
+| **Visibility** | Hidden on fresh load; shown when `results` set or primary input has content |
+| **Style** | Always `c.btnSecondary` — never `c.btnPrimary` |
+| **Label** | Any clear label: "↺ Start Over", "New", "Clear", "Reset" |
+| **Never in submit row** | The `flex gap-3` row at the bottom of inputs is for submit only |
+| **Never in results block** | No reset inside `{results && (...)}` |
+
+*Added v4.37, Session 100, April 2026.*
+
 
 **Rules:**
 | Rule | Detail |

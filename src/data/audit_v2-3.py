@@ -376,8 +376,11 @@ for name, fpath in tools:
     #      post_region = the renderResults function body itself
     href_pattern = r'href=["\'][/][A-Za-z]|href=\{[`][/]\$?\{?[A-Za-z]'
 
-    # Find the main component's last return( to anchor JSX-only searches
-    _return_matches = list(re.finditer(r'\breturn\s*\(', content))
+    # Find the main component's top-level return( to anchor JSX-only searches.
+    # Use shallow indentation (1-6 spaces) to exclude deeply-nested IIFE returns
+    # inside JSX (which use 8+ spaces). Fallback to any return( if needed.
+    _top_level_returns = list(re.finditer(r'^\s{1,6}return\s*\(', content, re.MULTILINE))
+    _return_matches = _top_level_returns if _top_level_returns else list(re.finditer(r'\breturn\s*\(', content))
     _jsx_start = _return_matches[-1].start() if _return_matches else 0
 
     # Pattern B: does a renderResults render-function exist?

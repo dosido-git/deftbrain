@@ -105,8 +105,8 @@ RETIRED_SLUGS.forEach(slug => {
 // ── Legacy /tool/ route redirects ──
 const LEGACY_REDIRECTS = {
   // Legacy /tool/ routes
- // '/tool/renters-deposit-saver': '/RentersDepositSaver',
- // '/tool/bill-rescue':           '/BillRescue',
+ '/tool/renters-deposit-saver': '/RentersDepositSaver',
+ '/tool/bill-rescue':           '/BillRescue',
   // Renamed tools
   '/SayItRight':                 '/PronounceItRight',
   '/WhatIfMachine':              '/WhatIf',

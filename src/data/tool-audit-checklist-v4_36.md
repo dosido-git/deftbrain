@@ -1647,3 +1647,125 @@ grep -n "border-b border-zinc-500" ComponentName.js
 # If the same div also has px-* padding classes → edge-to-edge violation. FAIL.
 # The border-b div must NOT carry horizontal padding — padding belongs on its parent.
 ```
+# PF-16 · Reset Button Placement
+### Addendum to tool-audit-checklist-v4_36.md
+### Added: Session 100 (April 2026)
+
+---
+
+## RULE PF-16 — Reset Button: One, Top-Right, Always
+
+Every tool has exactly **one** reset control. It lives in the **top-right corner of the input card header**, on the same row as the tool title. No other reset, "New", "Clear", or "Start Over" button may exist anywhere in the tool — not in the button row below the submit button, not inside the results block, not in a footer.
+
+---
+
+### Canonical position
+
+```
+┌──────────────────────────────────────────────────────┐
+│  🔨  Tool Title                   [↺ Start Over]    │
+│  Tagline goes here                                   │
+├──────────────────────────────────────────────────────┘
+│  (inputs below the border-b border-zinc-500 divider) │
+```
+
+The reset button sits inside the existing `flex items-center justify-between` row that already holds the `<h2>` and tagline. No additional wrapper needed.
+
+---
+
+### Required pattern
+
+```jsx
+{/* Standard header — with reset in top-right */}
+<div className="mb-4 pb-3 border-b border-zinc-500">
+  <div className="flex items-center justify-between">
+    <div>
+      <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
+        <span className="mr-2">{tool?.icon ?? '❓'}</span>{tool?.title ?? 'Fallback'}
+      </h2>
+      <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Fallback tagline'}</p>
+    </div>
+    {(results || inputHasContent) && (
+      <button
+        onClick={handleReset}
+        className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs`}
+      >
+        ↺ Start Over
+      </button>
+    )}
+  </div>
+</div>
+```
+
+**`inputHasContent`** is a tool-specific boolean — the minimum signal that the user has done something worth clearing. Examples:
+- Single text input: `receivedMessage.trim()`
+- Multi-field: `input.trim() || selectedOption !== defaultOption`
+- Always-show (simpler tools): omit the condition entirely, button always visible
+
+---
+
+### Rules
+
+| Rule | Requirement |
+|------|-------------|
+| **One instance only** | Exactly one reset button per tool — no duplicates |
+| **Position** | Top-right of header row, inside the `flex items-center justify-between` div |
+| **Conditional display** | Hidden on fresh load; visible once `results` is set OR primary input has content |
+| **Style** | Always `c.btnSecondary` — never `c.btnPrimary` |
+| **Label** | Any label that clearly implies clearing state: "↺ Start Over", "New", "Clear", "Reset", "↺ Fresh start" |
+| **Function** | Must call the tool's `handleReset` function, which clears ALL state (see §1.5 reset coverage check) |
+| **Not in the submit row** | The `flex gap-3` button row at the bottom of inputs must never contain a reset button |
+| **Not in results** | No reset button inside `{results && (...)}` blocks |
+
+---
+
+### Scans
+
+```bash
+# Step 1 — Count total reset-flavored buttons
+grep -n "handleReset\|onClick.*reset\|Start Over\|startOver" ComponentName.js | grep -i "button\|btn"
+# Must return exactly 1 result — the header reset button
+# More than 1 = FAIL (duplicates exist)
+# Zero = FAIL (no reset button at all)
+
+# Step 2 — Confirm it's in the header, not the submit row or results block
+grep -n "handleReset" ComponentName.js
+# Take that line number. Verify it appears BEFORE the closing tag of the input card header section
+# (i.e., before the border-b border-zinc-500 divider closes, or within ~5 lines of the <h2>)
+
+# Step 3 — Confirm reset is NOT in the submit row
+grep -n "handleReset" ComponentName.js
+# Must NOT appear alongside the primary submit button (flex gap-3 row)
+# Pattern to reject: <button onClick={handleAnalyze}>... <button onClick={handleReset}>
+# in the same flex row
+
+# Step 4 — Confirm reset is NOT inside a results conditional
+grep -n "handleReset" ComponentName.js
+# Must NOT appear after: {results && ( or ref={resultsRef}
+```
+
+---
+
+### Common violations to fix during audit
+
+| Violation | Where found | Fix |
+|-----------|-------------|-----|
+| Reset button in `flex gap-3` submit row | Bottom of input card, next to Analyze/Submit | Move to header; remove from row |
+| "New" button that only appears when results exist | Inside `{results && (...)}` block | Move to header with `results` conditional |
+| Two reset buttons (header + results) | Both locations | Remove the one in results |
+| No reset button at all | — | Add to header with `(results \|\| inputHasContent)` condition |
+| Reset uses `c.btnPrimary` | — | Change to `c.btnSecondary` |
+| Reset label identical to submit label | — | Change label to "↺ Start Over" or similar |
+
+---
+
+### Why top-right of the header
+
+- **Predictability:** Every tool has the same reset location — users build muscle memory across the product
+- **Separation from submit:** The submit action is always at the bottom of the input area; reset is always at the top-right. They can never be confused for each other
+- **Always reachable:** The header is always visible (inputs are scrolled to top on load, results don't push the header off screen on desktop)
+- **Conditional visibility is safe here:** The `flex justify-between` row already exists for the title — adding a conditionally-rendered button doesn't shift any layout
+
+---
+
+*Rule PF-16 added Session 100, April 2026. Originated from ConflictCoach audit observation — "New" button was in the submit row and only appeared conditionally inside results, making it inconsistently placed and hard to find.*

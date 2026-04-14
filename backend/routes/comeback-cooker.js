@@ -1,6 +1,25 @@
 const express = require('express');
 const router = express.Router();
-const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+
+// ── Retry helper — handles Anthropic 529 overloaded errors ──
+async function withRetry(fn, { retries = 3, baseDelayMs = 1500 } = {}) {
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      return await fn();
+    } catch (err) {
+      const status = err?.status ?? err?.error?.status;
+      const isOverloaded = status === 529 || err?.error?.error?.type === 'overloaded_error';
+      if (isOverloaded && attempt < retries) {
+        const delay = baseDelayMs * Math.pow(2, attempt);
+        console.warn(`[comeback-cooker] Overloaded (529), retrying in ${delay}ms (attempt ${attempt + 1}/${retries})`);
+        await new Promise(r => setTimeout(r, delay));
+      } else {
+        throw err;
+      }
+    }
+  }
+}
 
 const PERSONALITY = `You are a razor-sharp wit with perfect timing. You specialize in the comeback someone SHOULD have said — the one they thought of in the shower three hours later. You're clever, not cruel. Your comebacks are satisfying because they're smart, not because they're mean.
 
@@ -60,15 +79,16 @@ Return ONLY valid JSON:
   }
 }`;
 
-    const parsed = await callClaudeWithRetry(
-      userPrompt,
-      {
-        system: withLanguage(PERSONALITY, userLanguage),
-        label: 'comeback-cooker',
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 2000,
-      }
-    );
+    const lang = withLanguage(userLanguage);
+    console.log(`[comeback-cooker] Mood: ${mood || 'witty'}`);
+
+    const msg = await withRetry(() => anthropic.messages.create({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 2000,
+      system: PERSONALITY + (lang ? `\n\n${lang}` : ''),
+      messages: [{ role: 'user', content: userPrompt }],
+    }));
+    const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
 
     res.json(parsed);
 

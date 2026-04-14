@@ -1,12 +1,35 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, callClaudeWithRetry, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
+
+// ═══════════════════════════════════════════════════════════════
+// RETRY HELPER — handles Anthropic 529 overloaded errors
+// ═══════════════════════════════════════════════════════════════
+
+async function withRetry(fn, { retries = 3, baseDelayMs = 1500 } = {}) {
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      return await fn();
+    } catch (err) {
+      const status = err?.status ?? err?.error?.status;
+      const isOverloaded = status === 529 || err?.error?.error?.type === 'overloaded_error';
+      if (isOverloaded && attempt < retries) {
+        const delay = baseDelayMs * Math.pow(2, attempt);
+        console.warn(`[CEW] Anthropic overloaded (529), retrying in ${delay}ms (attempt ${attempt + 1}/${retries})`);
+        await new Promise(r => setTimeout(r, delay));
+      } else {
+        throw err;
+      }
+    }
+  }
+}
 
 // ═══════════════════════════════════════════════════════════════
 // MAIN CAMPAIGN GENERATION
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/complaint-escalation-writer', async (req, res) => {
+router.post('/complaint-escalation-writer', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { company, issue, industry, previousAttempts, desiredOutcome, amountAtStake, hasDocumentation, tone, userLanguage } = req.body;
 
@@ -115,16 +138,15 @@ Build a complete multi-stage escalation campaign. Return ONLY valid JSON (no mar
   }
 }`;
 
+    const lang = withLanguage(userLanguage);
     console.log(`[ComplaintEscalationWriter] Company: ${company}, Industry: ${industry || 'auto'}, Tone: ${tone || 'firm'}`);
 
-    const parsed = await callClaudeWithRetry(
-      withLanguage(prompt, userLanguage),
-      {
-        label: 'complaint-escalation-writer',
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 8000,
-      }
-    );
+    const msg1 = await withRetry(() => anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 8000,
+      messages: [{ role: 'user', content: `${prompt}\n\n${lang}` }],
+    }));
+    const parsed = JSON.parse(cleanJsonResponse(msg1.content.find(i => i.type === 'text')?.text || ''));
 
     console.log(`[ComplaintEscalationWriter] Severity: ${parsed.situation_assessment?.severity}, Legal leverage: ${parsed.legal_leverage?.length || 0} items`);
     res.json(parsed);
@@ -139,7 +161,7 @@ Build a complete multi-stage escalation campaign. Return ONLY valid JSON (no mar
 // RESPONSE ANALYSIS
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/complaint-escalation-writer/analyze-response', async (req, res) => {
+router.post('/complaint-escalation-writer/analyze-response', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { company, originalIssue, stage, companyResponse, desiredOutcome, userLanguage } = req.body;
 
@@ -192,14 +214,13 @@ Return ONLY valid JSON:
   "things_to_get_in_writing": ["Anything from their response that should be confirmed in writing"]
 }`;
 
-    const parsed = await callClaudeWithRetry(
-      withLanguage(prompt, userLanguage),
-      {
-        label: 'cew-analyze-response',
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 4000,
-      }
-    );
+    const lang = withLanguage(userLanguage);
+    const msg2 = await withRetry(() => anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 4000,
+      messages: [{ role: 'user', content: `${prompt}\n\n${lang}` }],
+    }));
+    const parsed = JSON.parse(cleanJsonResponse(msg2.content.find(i => i.type === 'text')?.text || ''));
 
     console.log(`[CEW/analyze-response] Type: ${parsed.response_type}, Recommendation: ${parsed.recommendation}`);
     res.json(parsed);
@@ -214,7 +235,7 @@ Return ONLY valid JSON:
 // REGENERATE STAGE — rebuild with full campaign context
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/complaint-escalation-writer/regenerate-stage', async (req, res) => {
+router.post('/complaint-escalation-writer/regenerate-stage', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { company, issue, industry, desiredOutcome, amountAtStake, tone, targetStage, campaignHistory, userLanguage } = req.body;
 
@@ -259,14 +280,13 @@ ${historyNarrative || 'No previous stage history available.'}
 Generate ONLY Stage ${targetStage} content. Reference SPECIFIC things that happened during the campaign — dates, responses, offers made, tactics used. Return ONLY valid JSON matching this format:
 ${stageFormats[targetStage] || stageFormats[3]}`;
 
-    const parsed = await callClaudeWithRetry(
-      withLanguage(prompt, userLanguage),
-      {
-        label: 'cew-regenerate-stage',
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 4000,
-      }
-    );
+    const lang = withLanguage(userLanguage);
+    const msg3 = await withRetry(() => anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 4000,
+      messages: [{ role: 'user', content: `${prompt}\n\n${lang}` }],
+    }));
+    const parsed = JSON.parse(cleanJsonResponse(msg3.content.find(i => i.type === 'text')?.text || ''));
 
     console.log(`[CEW/regenerate] Stage ${targetStage} regenerated`);
     res.json(parsed);
@@ -282,7 +302,7 @@ ${stageFormats[targetStage] || stageFormats[3]}`;
 // Note: Uses raw anthropic.messages.stream — streaming cannot use callClaudeWithRetry
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/complaint-escalation-writer/stream', async (req, res) => {
+router.post('/complaint-escalation-writer/stream', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   const { company, issue, industry, previousAttempts, desiredOutcome, amountAtStake, hasDocumentation, tone, userLanguage } = req.body;
 
   if (!company?.trim()) return res.status(400).json({ error: 'Company name is required' });
@@ -302,7 +322,8 @@ router.post('/complaint-escalation-writer/stream', async (req, res) => {
       empathetic: 'Empathetic and resolution-focused. Acknowledge front-line staff are not at fault.',
     };
 
-    const prompt = withLanguage(`You are an elite consumer advocacy strategist. Build a complete consumer escalation campaign for the following:
+    const lang = withLanguage(userLanguage);
+    const prompt = `You are an elite consumer advocacy strategist. Build a complete consumer escalation campaign for the following:
 
 COMPANY: ${company}
 INDUSTRY: ${industry || 'Unknown — infer from the company name'}
@@ -313,13 +334,29 @@ AMOUNT AT STAKE: ${amountAtStake || 'Not specified'}
 HAS DOCUMENTATION: ${hasDocumentation || 'Not specified'}
 TONE: ${toneInstructions[tone] || toneInstructions.firm}
 
-Return ONLY valid JSON with situation_assessment, legal_leverage, evidence_checklist, escalation_stages (stages 1-5), timeline, quick_tips, and call_script.`, userLanguage);
+Return ONLY valid JSON with situation_assessment, legal_leverage, evidence_checklist, escalation_stages (stages 1-5), timeline, quick_tips, and call_script.\n\n${lang}`;
 
-    const stream = await anthropic.messages.stream({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 8000,
-      messages: [{ role: 'user', content: prompt }],
-    });
+    let stream;
+    for (let attempt = 0; attempt <= 3; attempt++) {
+      try {
+        stream = await anthropic.messages.stream({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 8000,
+          messages: [{ role: 'user', content: prompt }],
+        });
+        break;
+      } catch (err) {
+        const status = err?.status ?? err?.error?.status;
+        const isOverloaded = status === 529 || err?.error?.error?.type === 'overloaded_error';
+        if (isOverloaded && attempt < 3) {
+          const delay = 1500 * Math.pow(2, attempt);
+          console.warn(`[CEW/stream] Overloaded (529), retrying in ${delay}ms (attempt ${attempt + 1}/3)`);
+          await new Promise(r => setTimeout(r, delay));
+        } else {
+          throw err;
+        }
+      }
+    }
 
     stream.on('text', (text) => sendEvent({ chunk: text }));
     await stream.finalMessage();

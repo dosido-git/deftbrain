@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════════════════════════
@@ -16,13 +16,11 @@ router.post('/conflict-coach', rateLimit(DEFAULT_LIMITS), async (req, res) => {
       return res.status(400).json({ error: 'Please provide the message (at least 10 characters)' });
     }
 
+    const lang = withLanguage(userLanguage);
     const emotionsText = emotionalState?.length > 0 ? emotionalState.join(', ') : 'not specified';
     const goalsText = goals?.length > 0 ? goals.map(g => g.replace(/_/g, ' ')).join(', ') : 'respond thoughtfully';
 
-    const systemPrompt = withLanguage(
-      'You are an expert conflict resolution coach with deep knowledge of manipulation tactics, attachment theory, and de-escalation. Return only valid JSON.',
-      userLanguage
-    );
+    const systemPrompt = 'You are an expert conflict resolution coach with deep knowledge of manipulation tactics, attachment theory, and de-escalation. CRITICAL: Return ONLY valid JSON.';
 
     const prompt = `Expert conflict resolution coach. Analyze this ${isThread ? 'conversation thread' : 'message'} and prevent reactive texting.
 
@@ -112,17 +110,18 @@ RULES:
 4. Generate 3-5 response strategies, all de-escalating
 5. what_NOT_to_say: 3-5 specific phrases personalized to THIS conflict
 6. timing_landmines + channel_landmines: always include at least 1-2 each
-7. Protect the relationship over being "right"`;
+7. Protect the relationship over being "right"
 
-    const parsed = await callClaudeWithRetry(
-      prompt,
-      {
-        label: 'conflict-coach',
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 3500,
-        system: systemPrompt,
-      }
-    );
+${lang}`;
+
+    const msg = await anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 3500,
+      system: systemPrompt,
+      messages: [{ role: 'user', content: prompt }],
+    });
+
+    const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
 
     console.log('✅ V3 Analysis:', {
       temperature: parsed.message_analysis?.emotional_temperature,
@@ -150,6 +149,8 @@ router.post('/conflict-coach/followup', rateLimit(DEFAULT_LIMITS), async (req, r
     if (!question?.trim()) return res.status(400).json({ error: 'Please provide a question.' });
     if (!originalAnalysis) return res.status(400).json({ error: 'No analysis context. Run analysis first.' });
 
+    const lang = withLanguage(userLanguage);
+
     const ctx = [];
     ctx.push(`Relationship: ${relationship || 'Unknown'}${personLabel ? ` (${personLabel})` : ''}`);
     ctx.push(`Original message: ${receivedMessage?.slice(0, 200) || 'Not provided'}`);
@@ -165,8 +166,7 @@ router.post('/conflict-coach/followup', rateLimit(DEFAULT_LIMITS), async (req, r
       ctx.push(`Strategies suggested: ${originalAnalysis.response_strategies.map(s => s.strategy).join(', ')}`);
     }
 
-    const systemPrompt = withLanguage(
-      `You are an expert conflict resolution coach. A user already received an analysis and has a follow-up question.
+    const systemPrompt = `You are an expert conflict resolution coach. A user already received an analysis and has a follow-up question.
 
 ORIGINAL CONTEXT:
 ${ctx.join('\n')}
@@ -177,19 +177,16 @@ Answer the follow-up based on full context. Be specific, practical, warm but hon
 - If they're spiraling, help ground them.
 - Keep to 2-4 paragraphs. Stay de-escalating.
 
-Return ONLY valid JSON: {"answer": "Your full coaching response here"}`,
-      userLanguage
-    );
+CRITICAL: Return ONLY valid JSON: {"answer": "Your full coaching response here"}`;
 
-    const parsed = await callClaudeWithRetry(
-      question.trim(),
-      {
-        label: 'conflict-coach-followup',
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 800,
-        system: systemPrompt,
-      }
-    );
+    const msg = await anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 800,
+      system: systemPrompt,
+      messages: [{ role: 'user', content: question.trim() + `\n\n${lang}` }],
+    });
+
+    const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
 
     console.log('✅ Follow-up answered');
     res.json({ answer: parsed.answer || 'No answer available.' });
@@ -209,6 +206,9 @@ router.post('/conflict-coach/adjust-tone', rateLimit(DEFAULT_LIMITS), async (req
     const { originalResponse, originalStrategy, toneLevel, relationship, receivedMessage, actualGoal, userLanguage } = req.body;
 
     if (!originalResponse) return res.status(400).json({ error: 'No response to adjust.' });
+    if (toneLevel === undefined || toneLevel === null) return res.status(400).json({ error: 'Tone level required.' });
+
+    const lang = withLanguage(userLanguage);
 
     const toneDescription = toneLevel <= 20 ? 'very gentle, soft, empathetic, prioritizing warmth over directness'
       : toneLevel <= 40 ? 'gentle and warm, but with clear intent'
@@ -216,34 +216,30 @@ router.post('/conflict-coach/adjust-tone', rateLimit(DEFAULT_LIMITS), async (req
       : toneLevel <= 80 ? 'firm and clear, with minimal softening'
       : 'very firm, direct, no-nonsense, clear boundaries with zero ambiguity';
 
-    const systemPrompt = withLanguage(
-      `You are a conflict resolution expert. Rewrite this response at the requested tone level while keeping the same intent and strategy.
+    const systemPrompt = `You are a conflict resolution expert. Rewrite this response at the requested tone level while keeping the same intent and strategy.
 
-Original strategy: ${originalStrategy}
+Original strategy: ${originalStrategy || 'de-escalate'}
 Original: "${originalResponse}"
-Relationship: ${relationship}
+Relationship: ${relationship || 'Unknown'}
 ${actualGoal ? `Goal: ${actualGoal}` : ''}
 Context (their message): "${receivedMessage?.slice(0, 200) || ''}"
 
 Tone target: ${toneLevel}/100 (${toneDescription})
 
-Return ONLY valid JSON:
+CRITICAL: Return ONLY valid JSON:
 {
   "adjusted_text": "The rewritten response",
   "tone_note": "Brief note on what changed and why this tone level works/risks for this situation"
-}`,
-      userLanguage
-    );
+}`;
 
-    const parsed = await callClaudeWithRetry(
-      `Rewrite at tone level ${toneLevel}/100.`,
-      {
-        label: 'conflict-coach-tone',
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 500,
-        system: systemPrompt,
-      }
-    );
+    const msg = await anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 500,
+      system: systemPrompt,
+      messages: [{ role: 'user', content: `Rewrite at tone level ${toneLevel}/100.\n\n${lang}` }],
+    });
+
+    const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
 
     console.log('✅ Tone adjusted:', { toneLevel, length: parsed.adjusted_text?.length });
     res.json(parsed);

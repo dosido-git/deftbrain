@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { CopyBtn, ActionBar } from '../components/ActionButtons';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { CopyBtn } from '../components/ActionButtons';
+import { useRegisterActions } from '../components/ActionBarContext';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -11,11 +12,6 @@ const ConflictCoach = ({ tool }) => {
   const { isDark } = useTheme();
 
   // ─── Standard c object ───
-
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
-
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
@@ -38,7 +34,43 @@ const ConflictCoach = ({ tool }) => {
     warningTxt:    isDark ? 'text-amber-300' : 'text-amber-800',
     pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
+    required:      'text-red-500',
+    badgeNeutral:  isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-gray-100 text-gray-600',
+    // ─── Tool-specific semantic colors ───
+    toast:             isDark ? 'bg-zinc-700 text-zinc-100 border border-zinc-600' : 'bg-white text-gray-900 border border-gray-200',
+    manipulation:      isDark ? 'bg-red-950/30 border-red-800' : 'bg-red-50 border-red-300',
+    manipulationInner: isDark ? 'bg-red-900/20' : 'bg-red-100/50',
+    highlight:         isDark ? 'bg-cyan-900/20 border-cyan-700' : 'bg-cyan-50 border-cyan-300',
+    historyPanel:      isDark ? 'bg-zinc-800/60 border-zinc-700' : 'bg-white border-gray-200',
+    historyItem:       isDark ? 'bg-zinc-700/50' : 'bg-gray-50',
+    draftBox:          isDark ? 'border-red-800 bg-red-900/10' : 'border-red-300 bg-red-50',
+    draftFlag:         isDark ? 'bg-amber-900/20' : 'bg-amber-50',
+    strategySelected:  isDark ? 'border-cyan-500 bg-cyan-900/20' : 'border-cyan-500 bg-cyan-50',
+    strategyHover:     isDark ? 'border-zinc-600 hover:border-zinc-500' : 'border-gray-200 hover:border-gray-300',
+    toneBadge:         isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-gray-100 text-gray-600',
+    lockIcon:          isDark ? 'text-red-400' : 'text-red-600',
+    unlockIcon:        isDark ? 'text-emerald-400' : 'text-emerald-600',
+    strategyText:      isDark ? 'bg-zinc-700/50' : 'bg-gray-50',
+    toneSlider:        isDark ? 'bg-zinc-700/50' : 'bg-gray-50',
+    toneAdjusted:      isDark ? 'bg-zinc-700/30' : 'bg-gray-50',
+    apologyBox:        isDark ? 'bg-cyan-900/20' : 'bg-cyan-50',
+    landminePhrase:    isDark ? 'bg-red-900/20' : 'bg-red-50',
+    escalationScript:  isDark ? 'bg-amber-900/10' : 'bg-amber-50',
+    followupMe:        isDark ? 'bg-zinc-700/50' : 'bg-gray-100',
+    confirmModal:      isDark ? 'bg-zinc-700/50' : 'bg-gray-100',
+    emotionRequired:   isDark ? 'border-amber-600' : 'border-amber-400',
+    goalActive:        isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    goalInactive:      isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
+    threadContainer:   isDark ? 'bg-zinc-800/50 border-zinc-700' : 'bg-gray-50 border-gray-200',
+    threadMsgMe:       isDark ? 'bg-cyan-900/30 border-cyan-700' : 'bg-cyan-50 border-cyan-200',
+    threadMsgThem:     isDark ? 'bg-zinc-700/50 border-zinc-600' : 'bg-white border-gray-200',
   };
+  c.textMuteded = c.textMuted;
+  c.label = c.labelText;
+
+  const linkStyle = isDark
+    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
+    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
 
   // Emotion-specific active state colors (tool-specific: each emotion has a semantically distinct color)
   const emotionActive = {
@@ -71,7 +103,6 @@ const ConflictCoach = ({ tool }) => {
 
   // ─── Persisted state ───
   const [receivedMessage, setReceivedMessage] = usePersistentState('cc-message', '');
-  const [history, setHistory] = usePersistentState('conflictcoach-history', []);
   const [relationship,    setRelationship]    = usePersistentState('cc-relationship', 'Friend');
   const [personLabel,     setPersonLabel]     = usePersistentState('cc-person', '');
   const [actualGoal,      setActualGoal]      = usePersistentState('cc-goal', '');
@@ -84,14 +115,21 @@ const ConflictCoach = ({ tool }) => {
   const [userDraft,      setUserDraft]      = useState('');
   const [error,          setError]          = useState('');
   const [toast,          setToast]          = useState(null);
-  const showToast = (msg, dur = 4000) => { setToast(msg); setTimeout(() => setToast(null), dur); };
+  const toastTimerRef = useRef(null);
+  const mountedRef   = useRef(true);
+  const showToast = (msg, dur = 4000) => {
+    if (!mountedRef.current) return;
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    setToast(msg);
+    toastTimerRef.current = setTimeout(() => { if (mountedRef.current) setToast(null); }, dur);
+  };
 
   const [mandatoryDelay,        setMandatoryDelay]        = useState(false);
-  const [delaySeconds,          setDelaySeconds]          = useState(600);
-  const [delayActive,           setDelayActive]           = useState(false);
+  const [delayEndTime,          setDelayEndTime]          = useState(null);
+  const [now,                   setNow]                   = useState(Date.now);
+  const delayActive  = delayEndTime !== null && now < delayEndTime;
+  const delaySeconds = delayEndTime !== null ? Math.max(0, Math.round((delayEndTime - now) / 1000)) : 0;
   const [selectedResponse,      setSelectedResponse]      = useState(null);
-  const [showGoalClarification, setShowGoalClarification] = useState(false);
-  const [emotionCheckDone,      setEmotionCheckDone]      = useState(false);
   const [showConfirmSend,       setShowConfirmSend]       = useState(false);
   const [threadMessages,        setThreadMessages]        = useState([]);
   const [threadInput,           setThreadInput]           = useState('');
@@ -106,34 +144,38 @@ const ConflictCoach = ({ tool }) => {
   const [toneLoading,           setToneLoading]           = useState(false);
   const [showHistory,           setShowHistory]           = useState(false);
 
-  const followupRef = useRef(null);
-  const resultsRef  = useRef(null);
-
-  // ─── Document-level Ctrl+Enter submit ───
-  useEffect(() => {
-    const handler = (e) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter' && !loading) {
-        e.preventDefault();
-        handleAnalyze();
-      }
-    };
-    document.addEventListener('keydown', handler);
-    return () => document.removeEventListener('keydown', handler);
-  }); // eslint-disable-line react-hooks/exhaustive-deps
+  const followupRef    = useRef(null);
+  const resultsRef     = useRef(null);
+  const submitRef      = useRef(null);
+  const canSubmitRef   = useRef(false);
 
   const relationshipOptions = ['Partner', 'Family', 'Friend', 'Coworker', 'Ex', 'Customer', 'Other'];
 
-  // ─── Delay timer ───
   useEffect(() => {
-    let iv;
-    if (delayActive && delaySeconds > 0) {
-      iv = setInterval(() => setDelaySeconds(p => {
-        if (p <= 1) { setDelayActive(false); showToast('⏰ Cooling period complete.', 6000); return 0; }
-        return p - 1;
-      }), 1000);
-    }
+    if (!delayEndTime) return;
+    const tick = () => {
+      if (!mountedRef.current) return;
+      const remaining = delayEndTime - Date.now();
+      if (remaining <= 0) {
+        setDelayEndTime(null);
+        setNow(Date.now());
+        showToast('⏰ Cooling period complete.', 6000);
+      } else {
+        setNow(Date.now());
+      }
+    };
+    const iv = setInterval(tick, 1000);
     return () => clearInterval(iv);
-  }, [delayActive, delaySeconds]);
+  }, [delayEndTime]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ─── Cleanup all timers on unmount ───
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+      if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    };
+  }, []);
 
   const formatTime = (s) => `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, '0')}`;
 
@@ -143,7 +185,7 @@ const ConflictCoach = ({ tool }) => {
       ? threadMessages.map(m => `[${m.sender}]: ${m.text}`).join('\n')
       : receivedMessage.trim();
     if (!msg || msg.length < 10) { setError('Paste the message (10+ chars) or add thread messages'); return; }
-    if (!showGoalClarification && !actualGoal) { setShowGoalClarification(true); setError('Please clarify your goal first.'); return; }
+
     setError(''); setResults(null); setFollowupHistory([]); setSelectedStrategyIdx(null); setAdjustedResponse(null);
     try {
       const data = await callToolEndpoint('conflict-coach', {
@@ -154,20 +196,19 @@ const ConflictCoach = ({ tool }) => {
         isThread: useThread, personLabel: personLabel.trim() || null,
       });
       setResults(data);
-      setHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: '' }, ...prev].slice(0, 6));
       if (data.message_analysis?.emotional_temperature === 'high' || emotionalState.angry || emotionalState.defensive) {
         setMandatoryDelay(true);
-        if (!delayActive) { setDelaySeconds(600); setDelayActive(true); }
+        if (!delayActive) { setDelayEndTime(Date.now() + 600 * 1000); }
       }
       handleSaveConflict(data);
     } catch (err) { setError(err.message || 'Analysis failed.'); }
   };
 
-  const handleEmotionToggle = (e) => { setEmotionalState(p => ({ ...p, [e]: !p[e] })); setEmotionCheckDone(true); };
+  const handleEmotionToggle = (e) => { setEmotionalState(p => ({ ...p, [e]: !p[e] })); };
   const handleGoalToggle    = (g) => setGoals(p => ({ ...p, [g]: !p[g] }));
 
   const handleCopyResponse = (text) => {
-    if ((mandatoryDelay && delayActive) || !emotionCheckDone) { showToast('⏸️ Wait for cooling period & check emotions first.'); return; }
+    if (mandatoryDelay && delayActive) { showToast('⏸️ Wait for cooling period to end.'); return; }
     setSelectedResponse(text); setShowConfirmSend(true);
   };
   const handleConfirmCopy = async () => {
@@ -183,9 +224,9 @@ const ConflictCoach = ({ tool }) => {
     setEmotionalState({ angry: false, hurt: false, defensive: false, frustrated: false, calm: false, confused: false });
     setGoals({ resolve: false, boundary: false, disengage: false, validate: false, schedule_talk: false });
     setUserDraft(''); setResults(null); setError('');
-    setMandatoryDelay(false); setDelayActive(false); setDelaySeconds(600);
-    setSelectedResponse(null); setShowGoalClarification(false); setActualGoal('');
-    setEmotionCheckDone(false); setShowConfirmSend(false);
+    setMandatoryDelay(false); setDelayEndTime(null);
+    setSelectedResponse(null); setActualGoal('');
+    setShowConfirmSend(false);
     setThreadMessages([]); setFollowupHistory([]); setSelectedStrategyIdx(null); setAdjustedResponse(null);
   };
 
@@ -234,6 +275,7 @@ const ConflictCoach = ({ tool }) => {
       id: Date.now().toString(), date: new Date().toISOString(),
       person: personLabel.trim() || relationship, relationship,
       topic: receivedMessage.trim().slice(0, 80),
+      preview: data?.message_analysis?.primary_emotion_detected || '',
       temperature: data?.message_analysis?.emotional_temperature || 'unknown',
       tactics: data?.manipulation_tactics?.map(t => t.tactic) || [],
     };
@@ -255,7 +297,7 @@ const ConflictCoach = ({ tool }) => {
   };
 
   // ─── Build full text ───
-  const buildFullText = () => {
+  const buildFullText = useCallback(() => {
     if (!results) return '';
     const l = ['💬 CONFLICT COACH', '═'.repeat(40)];
     if (results.message_analysis) {
@@ -271,15 +313,46 @@ const ConflictCoach = ({ tool }) => {
     if (results.timing_landmines?.length) { l.push('', '⏰ TIMING'); results.timing_landmines.forEach(t => l.push(`  ⏰ ${t}`)); }
     if (followupHistory.length) { l.push('', 'FOLLOW-UP:'); followupHistory.forEach(f => l.push(`  Q: ${f.question}`, `  A: ${f.answer}`, '')); }
     return l.join('\n') + BRAND;
-  };
+  }, [results, followupHistory]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useRegisterActions(buildFullText, tool?.title ?? 'Conflict Coach');
+
+  // ─── Scroll to results ───
+  useEffect(() => {
+    if (!results) return;
+    const t = setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+    return () => clearTimeout(t);
+  }, [results]);
+
+  // ─── Keyboard refs (assigned on every render so handler sees fresh state) ───
+  submitRef.current    = handleAnalyze;
+  canSubmitRef.current = !loading &&
+    (useThread ? threadMessages.length > 0 : receivedMessage.trim().length >= 10);
+
+  // ─── Document-level Ctrl+Enter submit ───
+  useEffect(() => {
+    const handler = (e) => {
+      const tag = e.target?.tagName;
+      if (tag === 'SELECT') return;
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        if (!loading && canSubmitRef.current) {
+          e.preventDefault();
+          submitRef.current?.();
+        }
+      }
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [loading]);
 
   const exampleMessage = "I can't believe you did that again. You never think about how your actions affect me. This is exactly why we have problems. I'm so sick of this.";
+  const hasContent = !!(results || receivedMessage.trim());
 
   // ═══════════════════════════════════════════════════════════════
   // RENDER
   // ═══════════════════════════════════════════════════════════════
   return (
-    <div className="space-y-4">
+    <div className={`space-y-4 ${c.text}`}>
 
       {/* Toast */}
       {toast && (
@@ -288,64 +361,27 @@ const ConflictCoach = ({ tool }) => {
         </div>
       )}
 
-      {/* Pattern Alert */}
-      {(() => {
-        const p = detectPatterns();
-        return p ? (
-          <div className={`${c.manipulation} border-2 rounded-xl p-5`}>
-            <h3 className={`font-bold mb-2 ${c.text}`}>🔗 Pattern Detected</h3>
-            <p className={`text-sm ${c.textSecondary}`}>You've logged <strong>{p.count} conflicts</strong> with <strong>{p.person}</strong> in the past {p.timeframe}.</p>
-            {p.repeatedTactics.length > 0 && <p className={`text-sm mt-1 ${c.textSecondary}`}>Recurring tactics: <strong>{p.repeatedTactics.join(', ')}</strong>. This is a pattern, not an incident.</p>}
-            <p className={`text-xs mt-2 ${c.textMuteded}`}>Consider whether this relationship dynamic needs professional support.</p>
-          </div>
-        ) : null;
-      })()}
-
-      {/* Mandatory delay */}
-      {delayActive && (
-        <div className={`${c.danger} border-4 rounded-xl p-6 text-center`}>
-          <span className="text-6xl block mb-4">🔒</span>
-          <h3 className={`text-2xl font-bold mb-2 ${c.text}`}>Mandatory Cooling Period</h3>
-          <div className={`text-5xl font-mono font-bold mb-3 ${c.text}`}>{formatTime(delaySeconds)}</div>
-          <p className={`text-sm ${c.text}`}>High emotions detected. Responses locked. Breathe.</p>
-        </div>
-      )}
-
-      {/* Goal Clarification */}
-      {showGoalClarification && !actualGoal && (
-        <div className={`${c.highlight} border-4 rounded-xl p-6`}>
-          <h3 className={`text-lg font-bold mb-4 ${c.text}`}>🎯 What Do You Actually Want?</h3>
-          <p className={`text-sm mb-3 ${c.textSecondary}`}>Not "what do I want to say" — what <em>outcome</em> do I want?</p>
-          <div className={`space-y-2 mb-4 text-sm ${c.textSecondary}`}>
-            <p>Examples:</p>
-            <ul className="list-disc list-inside space-y-1">
-              <li>"I want them to understand how this affected me"</li>
-              <li>"I want to set a boundary about this behavior"</li>
-              <li>"I want to end this conversation without it blowing up"</li>
-              <li>"I want to preserve the relationship while being honest"</li>
-            </ul>
-          </div>
-            placeholder="What outcome do you want from this conversation?"
-            className={`w-full p-4 border rounded-lg ${c.input} mb-3`} rows={3} />
-          <button onClick={() => setShowGoalClarification(false)} disabled={!actualGoal.trim()}
-            className={`w-full ${c.btnPrimary} py-3 rounded-lg font-semibold disabled:opacity-50`}>Continue</button>
-        </div>
-      )}
-
       {/* ═══ INPUT CARD ═══ */}
       <div className={`${c.card} border ${c.border} rounded-xl shadow-lg p-5`}>
         {/* Standard header */}
-        <div className={`mb-4 pb-3 border-b ${c.border}`}>
+        <div className="mb-4 pb-3 border-b border-zinc-500">
           <div className="flex items-center justify-between">
             <div>
               <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-                <span>{tool?.icon ?? '💬'}</span>{tool?.title ?? 'Conflict Coach'}
+                <span className="mr-2">{tool?.icon ?? '💬'}</span>{tool?.title ?? 'Conflict Coach'}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Stop, breathe, and craft the right response'}</p>
             </div>
-            <button onClick={() => setShowHistory(!showHistory)} className={`${c.btnSecondaryondary} px-3 py-1.5 rounded-lg text-xs`}>
-              📋 History
-            </button>
+            <div className="flex items-center gap-2">
+              {hasContent && (
+                <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs`}>
+                  ↺ Start Over
+                </button>
+              )}
+              <button onClick={() => setShowHistory(!showHistory)} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs`}>
+                📋 History
+              </button>
+            </div>
           </div>
         </div>
 
@@ -379,6 +415,17 @@ const ConflictCoach = ({ tool }) => {
         )}
 
         <div className="space-y-5">
+
+          {/* Mandatory delay — below header so tool name always renders first */}
+          {delayActive && (
+            <div className={`${c.danger} border-4 rounded-xl p-6 text-center`}>
+              <span className="text-6xl block mb-4">🔒</span>
+              <h3 className={`text-2xl font-bold mb-2 ${c.text}`}>Mandatory Cooling Period</h3>
+              <div className={`text-5xl font-mono font-bold mb-3 ${c.text}`}>{formatTime(delaySeconds)}</div>
+              <p className={`text-sm ${c.text}`}>High emotions detected. Responses locked. Breathe.</p>
+            </div>
+          )}
+
           {/* Person + Relationship */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -434,9 +481,10 @@ const ConflictCoach = ({ tool }) => {
           ) : (
             <div>
               <div className="flex justify-between mb-1">
-                <label className={`text-sm font-medium ${c.text}`}>The message you received <span className={c.textMuteded}>*</span></label>
+                <label className={`text-sm font-medium ${c.text}`}>The message you received <span className={c.required}>*</span></label>
                 <button onClick={() => setReceivedMessage(exampleMessage)} className={`text-xs ${linkStyle}`}>Example</button>
               </div>
+              <textarea value={receivedMessage} onChange={e => setReceivedMessage(e.target.value)}
                 placeholder="Paste the tense/upsetting message… (Ctrl+Enter to analyze)"
                 className={`w-full p-4 border rounded-lg ${c.input}`} rows={4} />
             </div>
@@ -448,13 +496,14 @@ const ConflictCoach = ({ tool }) => {
               <span>🛑</span>
               <label className={`text-sm font-bold ${c.text}`}>What you're tempted to say (CRITICAL)</label>
             </div>
+            <textarea value={userDraft} onChange={e => setUserDraft(e.target.value)}
               placeholder="Your reactive response… be honest"
               className={`w-full p-3 border rounded-lg ${c.input}`} rows={3} />
             <p className={`text-xs ${c.textMuteded} mt-1`}>We catch escalation BEFORE it happens. Honesty helps.</p>
           </div>
 
           {/* Emotions */}
-          <div className={`border-2 rounded-lg p-4 ${!emotionCheckDone ? c.emotionRequired : ''}`}>
+          <div className="border-2 rounded-lg p-4">
             <label className={`block text-sm font-bold ${c.text} mb-2`}>How are you feeling RIGHT NOW?</label>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
               {[
@@ -471,7 +520,7 @@ const ConflictCoach = ({ tool }) => {
                 </label>
               ))}
             </div>
-            {!emotionCheckDone && <p className={`text-xs ${c.textMuteded} mt-2 font-semibold`}>⚠️ Required for accurate analysis</p>}
+
           </div>
 
           {/* Goals */}
@@ -495,19 +544,16 @@ const ConflictCoach = ({ tool }) => {
 
           {/* Pre-result cross-ref */}
           <p className={`text-xs text-center ${c.textMuteded}`}>
-            Need to rehearse? <a href="/DifficultTalkCoach" rel="noopener noreferrer" className={linkStyle}>Difficult Talk Coach</a> lets you practice.
+            Need to rehearse? <a href="/DifficultTalkCoach" className={linkStyle}>🎭 Difficult Talk Rehearser</a> lets you practice.
           </p>
 
           <div className="flex gap-3">
-            <button onClick={handleAnalyze} disabled={loading || !emotionCheckDone}
+            <button onClick={handleAnalyze} disabled={loading}
               className={`flex-1 ${c.btnPrimary} disabled:opacity-50 font-medium py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
               {loading
                 ? <><span className="animate-spin inline-block">{tool?.icon ?? '📱'}</span> Analyzing...</>
                 : <><span>{tool?.icon ?? '📱'}</span> Analyze</>}
             </button>
-            {results && (
-              <button onClick={handleReset} className={`px-6 py-3 border-2 ${c.border} ${c.btnSecondaryondary} rounded-lg`}>New</button>
-            )}
           </div>
           {error && (
             <div className={`p-4 ${c.danger} border rounded-lg flex items-start gap-3`}>
@@ -523,11 +569,18 @@ const ConflictCoach = ({ tool }) => {
       {results && (
         <div ref={resultsRef} className="space-y-4">
 
-          {/* ActionBar — top of results */}
-          <div className={`${c.card} border ${c.border} rounded-xl shadow-lg p-4 flex items-center justify-between flex-wrap gap-2`}>
-            <span className={`text-sm font-semibold ${c.text}`}>Conflict Analysis</span>
-            <ActionBar content={buildFullText()} title="Conflict Coach Analysis" />
-          </div>
+          {/* Pattern Alert — shown inside results so tool title always appears first */}
+          {(() => {
+            const p = detectPatterns();
+            return p ? (
+              <div className={`${c.manipulation} border-2 rounded-xl p-5`}>
+                <h3 className={`font-bold mb-2 ${c.text}`}>🔗 Pattern Detected</h3>
+                <p className={`text-sm ${c.textSecondary}`}>You've logged <strong>{p.count} conflicts</strong> with <strong>{p.person}</strong> in the past {p.timeframe}.</p>
+                {p.repeatedTactics.length > 0 && <p className={`text-sm mt-1 ${c.textSecondary}`}>Recurring tactics: <strong>{p.repeatedTactics.join(', ')}</strong>. This is a pattern, not an incident.</p>}
+                <p className={`text-xs mt-2 ${c.textMuted}`}>Consider whether this relationship dynamic needs professional support.</p>
+              </div>
+            ) : null;
+          })()}
 
           {/* Temperature */}
           {results.message_analysis && (
@@ -610,7 +663,7 @@ const ConflictCoach = ({ tool }) => {
                 {delayActive ? <span className={c.lockIcon}>🔒</span> : <span className={c.unlockIcon}>🔓</span>} Strategies
                 {delayActive && <span className={`text-sm font-normal ${c.textMuteded}`}>(Locked)</span>}
               </h3>
-              <div className="space-y-4">
+              <div className={`space-y-4 ${c.text}`}>
                 {results.response_strategies.map((s, idx) => (
                   <div key={idx} className={`border-2 rounded-lg p-5 transition-colors ${delayActive ? 'opacity-50' : selectedStrategyIdx === idx ? c.strategySelected : c.strategyHover}`}>
                     <div className="flex items-start justify-between mb-2">
@@ -619,7 +672,7 @@ const ConflictCoach = ({ tool }) => {
                         {s.tone && <span className={`text-xs px-2 py-0.5 rounded ${c.toneBadge}`}>Tone: {s.tone}</span>}
                       </div>
                       <button onClick={() => handleCopyResponse(s.response_text)} disabled={delayActive}
-                        className={`${c.btnSecondaryondary} px-3 py-1.5 rounded text-sm disabled:opacity-50`}>
+                        className={`${c.btnSecondary} px-3 py-1.5 rounded text-sm disabled:opacity-50`}>
                         {delayActive ? '🔒' : '📋'} Copy
                       </button>
                     </div>
@@ -655,7 +708,7 @@ const ConflictCoach = ({ tool }) => {
                                 </div>
                                 {adjustedResponse.tone_note && <p className={`text-xs mt-1 ${c.textMuteded}`}>{adjustedResponse.tone_note}</p>}
                                 <button onClick={() => handleCopyResponse(adjustedResponse.adjusted_text)}
-                                  className={`${c.btnSecondaryondary} px-3 py-1 rounded text-xs mt-2`}>📋 Copy adjusted</button>
+                                  className={`${c.btnSecondary} px-3 py-1 rounded text-xs mt-2`}>📋 Copy adjusted</button>
                               </div>
                             )}
                           </div>
@@ -676,7 +729,6 @@ const ConflictCoach = ({ tool }) => {
               {results.apology_assessment.is_apology_appropriate && results.apology_assessment.suggested_apology && (
                 <div className={`p-3 rounded mt-2 ${c.apologyBox}`}>
                   <p className={`text-sm ${c.text}`}>"{results.apology_assessment.suggested_apology}"</p>
-                  <p className={`text-xs mt-1 ${c.textMuteded}`}>Fine-tune → <a href="/ApologyCalibrator" rel="noopener noreferrer" className={linkStyle}>Apology Calibrator</a></p>
                 </div>
               )}
             </div>
@@ -764,12 +816,11 @@ const ConflictCoach = ({ tool }) => {
             </div>
           </div>
 
-          {/* Cross-refs (conditional post-result) */}
+          {/* Cross-refs (post-result) */}
           <div className="text-center space-y-1">
-            <p className={`text-xs ${c.textMuteded}`}>Need a firm response? <a href="/VelvetHammer" rel="noopener noreferrer" className={linkStyle}>Velvet Hammer</a></p>
-            <p className={`text-xs ${c.textMuteded}`}>Cooking up a comeback? <a href="/ComebackCooker" rel="noopener noreferrer" className={linkStyle}>Comeback Cooker</a> sharpens your reply.</p>
+            <p className={`text-xs ${c.textMuted}`}>Need a firm response? <a href="/VelvetHammer" className={linkStyle}>🔨 Velvet Hammer</a></p>
             {results.message_analysis?.emotional_temperature === 'high' && (
-              <p className={`text-xs ${c.textMuteded}`}>Still spiraling? → <a href="/SpiralStopper" rel="noopener noreferrer" className={linkStyle}>Spiral Stopper</a></p>
+              <p className={`text-xs ${c.textMuted}`}>Still spiraling? → <a href="/SpiralStopper" className={linkStyle}>🌀 Spiral Stopper</a></p>
             )}
           </div>
 
@@ -796,7 +847,7 @@ const ConflictCoach = ({ tool }) => {
             </div>
             <div className="flex gap-3">
               <button onClick={handleConfirmCopy} className={`flex-1 ${c.btnPrimary} py-3 rounded-lg font-semibold`}>Yes, Copy</button>
-              <button onClick={() => { setShowConfirmSend(false); setSelectedResponse(null); }} className={`flex-1 ${c.btnSecondaryondary} py-3 rounded-lg`}>Wait, Think More</button>
+              <button onClick={() => { setShowConfirmSend(false); setSelectedResponse(null); }} className={`flex-1 ${c.btnSecondary} py-3 rounded-lg`}>Wait, Think More</button>
             </div>
           </div>
         </div>

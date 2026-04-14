@@ -1,6 +1,24 @@
 const express = require('express');
 const router = express.Router();
-const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+
+async function withRetry(fn, { retries = 3, baseDelayMs = 1500 } = {}) {
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      return await fn();
+    } catch (err) {
+      const status = err?.status ?? err?.error?.status;
+      const isOverloaded = status === 529 || err?.error?.error?.type === 'overloaded_error';
+      if (isOverloaded && attempt < retries) {
+        const delay = baseDelayMs * Math.pow(2, attempt);
+        console.warn(`[chaos-pilot] Overloaded (529), retrying in ${delay}ms (attempt ${attempt + 1}/${retries})`);
+        await new Promise(r => setTimeout(r, delay));
+      } else {
+        throw err;
+      }
+    }
+  }
+}
 
 const PERSONALITY = `You are a strategic disruption designer. You specialize in identifying invisible ruts — the patterns people fall into without realizing it — and designing single, specific, achievable interventions that break them.
 
@@ -60,15 +78,16 @@ Return ONLY valid JSON:
   "if_they_resist": "The exact thought they'll have that will make them skip it — and the one sentence that dismantles that excuse"
 }`;
 
-    const parsed = await callClaudeWithRetry(
-      userPrompt,
-      {
-        system: withLanguage(PERSONALITY, userLanguage),
-        label: 'chaos-pilot',
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1800,
-      }
-    );
+    const lang = withLanguage(userLanguage);
+    console.log(`[chaos-pilot] Routine length: ${routine.trim().length}`);
+
+    const msg = await withRetry(() => anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1800,
+      system: PERSONALITY + (lang ? `\n\n${lang}` : ''),
+      messages: [{ role: 'user', content: userPrompt }],
+    }));
+    const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
 
     res.json(parsed);
 

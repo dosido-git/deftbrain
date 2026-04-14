@@ -1,6 +1,24 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, callClaudeWithRetry, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+
+async function withRetry(fn, { retries = 3, baseDelayMs = 1500 } = {}) {
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      return await fn();
+    } catch (err) {
+      const status = err?.status ?? err?.error?.status;
+      const isOverloaded = status === 529 || err?.error?.error?.type === 'overloaded_error';
+      if (isOverloaded && attempt < retries) {
+        const delay = baseDelayMs * Math.pow(2, attempt);
+        console.warn(`[caption-magic] Overloaded (529), retrying in ${delay}ms (attempt ${attempt + 1}/${retries})`);
+        await new Promise(r => setTimeout(r, delay));
+      } else {
+        throw err;
+      }
+    }
+  }
+}
 
 // ── Helper: extract base64 and media type from data URL ──
 function parseDataUrl(dataUrl) {
@@ -125,11 +143,11 @@ CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
 
     contentBlocks.push({ type: 'text', text: withLanguage(basePrompt, userLanguage) });
 
-    const message = await anthropic.messages.create({
+    const message = await withRetry(() => anthropic.messages.create({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 3000,
       messages: [{ role: 'user', content: contentBlocks }],
-    });
+    }));
 
     const textContent = message.content.find(item => item.type === 'text')?.text || '';
     const parsed_json = JSON.parse(cleanJsonResponse(textContent));
@@ -175,10 +193,13 @@ Return ONLY a JSON object:
 
 CRITICAL: Return ONLY valid JSON.`;
 
-    const parsed = await callClaudeWithRetry(withLanguage(basePrompt, userLanguage), {
-      label: 'caption-magic-revise',
+    const lang = withLanguage(userLanguage);
+    const msg = await withRetry(() => anthropic.messages.create({
+      model: 'claude-haiku-4-5-20251001',
       max_tokens: 800,
-    });
+      messages: [{ role: 'user', content: withLanguage(basePrompt, userLanguage) }],
+    }));
+    const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
     res.json(parsed);
 
   } catch (error) {
@@ -243,10 +264,12 @@ OUTPUT (JSON only):
 
 CRITICAL: Return ONLY valid JSON.`;
 
-    const parsed = await callClaudeWithRetry(withLanguage(basePrompt, userLanguage), {
-      label: 'caption-magic-adapt',
+    const msg2 = await withRetry(() => anthropic.messages.create({
+      model: 'claude-haiku-4-5-20251001',
       max_tokens: 2000,
-    });
+      messages: [{ role: 'user', content: withLanguage(basePrompt, userLanguage) }],
+    }));
+    const parsed = JSON.parse(cleanJsonResponse(msg2.content.find(i => i.type === 'text')?.text || ''));
     res.json(parsed);
 
   } catch (error) {
@@ -302,10 +325,12 @@ OUTPUT (JSON only):
 
 CRITICAL: Return ONLY valid JSON.`;
 
-    const parsed = await callClaudeWithRetry(withLanguage(basePrompt, userLanguage), {
-      label: 'caption-magic-remix',
+    const msg3 = await withRetry(() => anthropic.messages.create({
+      model: 'claude-haiku-4-5-20251001',
       max_tokens: 1000,
-    });
+      messages: [{ role: 'user', content: withLanguage(basePrompt, userLanguage) }],
+    }));
+    const parsed = JSON.parse(cleanJsonResponse(msg3.content.find(i => i.type === 'text')?.text || ''));
     res.json(parsed);
 
   } catch (error) {

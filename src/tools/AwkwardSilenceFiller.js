@@ -645,7 +645,7 @@ const AwkwardSilenceFiller = ({ tool }) => {
         <div className={`mt-6 pt-4 border-t text-sm ${c.border} ${c.textMuted}`}>
           <p className="mb-2 font-medium">You might also like:</p>
           <div className="flex flex-wrap gap-2">
-            {[{slug:'comeback-cooker',label:'🥊 Comeback Cooker'},{slug:'conflict-coach',label:'🤝 Conflict Coach'},{slug:'say-it-right',label:'🗣️ Say It Right'}].map(({slug,label})=>(
+            {[{slug:'ComebackCooker',label:'🥊 Comeback Cooker'},{slug:'ConflictCoach',label:'🤝 Conflict Coach'},{slug:'SayItRight',label:'🗣️ Say It Right'}].map(({slug,label})=>(
               <a key={slug} href={`${slug}`} className={linkStyle}>{label}</a>
             ))}
           </div>
