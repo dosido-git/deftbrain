@@ -13,7 +13,7 @@ You MUST complete all of the following before writing the first line of code. St
 2. State the header pattern you will use
 3. State the c block source (PF-2 verbatim)
 4. State the hook order (PF-10)
-5. Confirm cross-ref rules (≤3, emoji before name, no target="_blank", /PascalCase hrefs)
+5. Confirm cross-ref rules (≤3 per cluster, emoji before name, no target="_blank", /PascalCase hrefs)
 6. Confirm root div pattern (`space-y-4 ${c.text}`, no background)
 
 If you skip this protocol and a violation is discovered in review, that is a failure of process, not just a mistake.
@@ -60,7 +60,7 @@ These have been violated and corrected. They must not require correction again:
 
 **Submit button:** `tool?.icon` in both loading AND idle branches. Never a hardcoded emoji in the idle branch.
 
-**Cross-refs:** Mandatory — 1 to 3 links, sourced from `cross-reference-map.md`. Zero cross-refs is a violation. Emoji before name. `/PascalCase` hrefs. No `target="_blank"`. Pre-result ref below submit button. Post-result refs inside results block.
+**Cross-refs:** Mandatory — at least one link, sourced from `cross-reference-map.md`. Zero cross-refs is a violation. **Max 3 links per cluster** (where "cluster" = cross-refs appearing within ~5 lines of each other in the JSX — a single footer, sidebar, or inline paragraph). Preferred: 1–2 per cluster. Cross-refs can appear on multiple pages/branches of the same tool; each page's cluster is counted independently. Emoji before name. `/PascalCase` hrefs. No `target="_blank"`. Pre-result ref visible before submit. Post-result ref inside results block.
 
 ---
 

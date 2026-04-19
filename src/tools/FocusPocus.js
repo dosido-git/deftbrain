@@ -1090,8 +1090,8 @@ const FocusPocus = ({ tool }) => {
         <div className="pb-3 border-b border-zinc-500">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-                <span>{tool?.icon ?? '🎩'}</span>{tool?.title ?? 'Focus Pocus'}
+              <h2 className={`text-xl font-bold ${c.text}`}>
+                <span className="mr-2">{tool?.icon ?? '🎩'}</span>{tool?.title ?? 'Focus Pocus'}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Lock in your focus session, get pulled out when time is up'}</p>
             </div>
@@ -2306,15 +2306,6 @@ const FocusPocus = ({ tool }) => {
                     <p className={`text-xs ${c.textSecondary} leading-relaxed`}>{results.next_session}</p>
                   </div>
                 )}
-              </div>
-
-              {/* Actions */}
-              <div className="flex items-center gap-2">
-                <CopyBtn content={breakPlanTextWithBrand} label="Copy Plan" />
-                <PrintBtn
-                  content={`${sessionActivity} · ${elapsedMin} min session\n\n${breakPlanText}`}
-                  title="Focus Pocus — Break Plan"
-                />
               </div>
             </>
           ) : (

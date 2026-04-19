@@ -1,6 +1,24 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, callClaudeWithRetry, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+
+async function withRetry(fn, { retries = 3, baseDelayMs = 1500 } = {}) {
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      return await fn();
+    } catch (err) {
+      const status = err?.status ?? err?.error?.status;
+      const isOverloaded = status === 529 || err?.error?.error?.type === 'overloaded_error';
+      if (isOverloaded && attempt < retries) {
+        const delay = baseDelayMs * Math.pow(2, attempt);
+        console.warn(`[buy-wise] Overloaded (529), retrying in ${delay}ms (attempt ${attempt + 1}/${retries})`);
+        await new Promise(r => setTimeout(r, delay));
+      } else {
+        throw err;
+      }
+    }
+  }
+}
 
 // ════════════════════════════════════════════════════════════
 // SHARED
@@ -173,11 +191,13 @@ Return ONLY valid JSON with ALL applicable sections. Set sections to null if the
   "bottom_line": "2-3 sentences. The friend-level honest summary. End with a clear action step."
 }`;
 
-    const parsed = await callClaudeWithRetry(userPrompt, {
-      label: 'buy-wise',
+    const msg = await withRetry(() => anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
       max_tokens: 4000,
       system: withLanguage(systemPrompt, userLanguage),
-    });
+      messages: [{ role: 'user', content: userPrompt }],
+    }));
+    const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
     res.json(parsed);
 
   } catch (error) {
@@ -234,11 +254,13 @@ Recommend the best option(s) within this budget. Return ONLY valid JSON:
   "save_more_tip": "How to stretch the budget further (refurb, older model, sales, etc.)"
 }`;
 
-    const parsed = await callClaudeWithRetry(userPrompt, {
-      label: 'buy-wise-budget',
+    const msg = await withRetry(() => anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
       max_tokens: 2000,
       system: withLanguage(systemPrompt, userLanguage),
-    });
+      messages: [{ role: 'user', content: userPrompt }],
+    }));
+    const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
     res.json(parsed);
 
   } catch (error) {
@@ -277,11 +299,13 @@ Answer thoroughly. Return ONLY valid JSON:
   "sources_to_check": ["1-2 specific places they can verify this info (YouTube channel, subreddit, review site, etc.)"]
 }`;
 
-    const parsed = await callClaudeWithRetry(userPrompt, {
-      label: 'buy-wise-followup',
+    const msg = await withRetry(() => anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
       max_tokens: 1500,
       system: withLanguage(systemPrompt, userLanguage),
-    });
+      messages: [{ role: 'user', content: userPrompt }],
+    }));
+    const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
     res.json(parsed);
 
   } catch (error) {
@@ -331,11 +355,13 @@ When is the best time to buy ${category}? Map out the full year. Return ONLY val
 
 Include all 12 months in the calendar array.`;
 
-    const parsed = await callClaudeWithRetry(userPrompt, {
-      label: 'buy-wise-calendar',
+    const msg = await withRetry(() => anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
       max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage),
-    });
+      messages: [{ role: 'user', content: userPrompt }],
+    }));
+    const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
     res.json(parsed);
 
   } catch (error) {
@@ -392,12 +418,12 @@ If you cannot identify the product, set identified to false and explain in recom
       { type: 'text', text: userPrompt },
     ];
 
-    const message = await anthropic.messages.create({
+    const message = await withRetry(() => anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 1500,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content }],
-    });
+    }));
 
     const text = message.content.find(b => b.type === 'text')?.text || '';
     const cleaned = cleanJsonResponse(text);
@@ -448,11 +474,13 @@ Return ONLY valid JSON:
   "one_liner": "The single most persuasive sentence to close with — something they can text."
 }`;
 
-    const parsed = await callClaudeWithRetry(userPrompt, {
-      label: 'buy-wise-convince',
+    const msg = await withRetry(() => anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
       max_tokens: 1500,
       system: withLanguage(systemPrompt, userLanguage),
-    });
+      messages: [{ role: 'user', content: userPrompt }],
+    }));
+    const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
     res.json(parsed);
 
   } catch (error) {
@@ -509,11 +537,13 @@ Review this haul as a whole. Return ONLY valid JSON:
   "save_tip": "One specific way to reduce the total spend without losing value"
 }`;
 
-    const parsed = await callClaudeWithRetry(userPrompt, {
-      label: 'buy-wise-haul',
+    const msg = await withRetry(() => anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
       max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage),
-    });
+      messages: [{ role: 'user', content: userPrompt }],
+    }));
+    const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
     res.json(parsed);
 
   } catch (error) {
@@ -614,11 +644,13 @@ Return ONLY valid JSON:
   "bottom_line": "2-3 sentences: final recommendation. Be specific about what to do next."
 }`;
 
-    const parsed = await callClaudeWithRetry(userPrompt, {
-      label: 'buy-wise-quote',
+    const msg = await withRetry(() => anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
       max_tokens: 3000,
       system: withLanguage(systemPrompt, userLanguage),
-    });
+      messages: [{ role: 'user', content: userPrompt }],
+    }));
+    const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
     res.json(parsed);
 
   } catch (error) {

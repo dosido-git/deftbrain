@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
-const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
+// Rate limiting handled globally in server.js
 
 // ═══════════════════════════════════════════════════
 // BRAIN DUMP STRUCTURER — v3 (7 routes)
@@ -24,7 +24,7 @@ const CONTEXT_GUIDANCE = {
   grief_logistics: 'They are dealing with loss and its logistics. Be extremely gentle. Separate practical tasks from grief processing. Many items may need delegation. Acknowledge that doing logistics while grieving is profoundly hard.',
 };
 
-router.post('/brain-dump-buddy', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+router.post('/brain-dump-buddy', async (req, res) => {
   const { action } = req.body;
 
   try {
@@ -149,124 +149,6 @@ Return ONLY valid JSON:
       }
 
       // ────────────────────────────────────────────
-      // START-WITH-ME — Guided launch
-      // ────────────────────────────────────────────
-      case 'start-with-me': {
-        const { task, timeEstimate, context, userLanguage } = req.body;
-        if (!task?.trim()) return res.status(400).json({ error: 'What task are we starting?' });
-
-        const prompt = withLanguage(`You are a calm companion helping someone who just brain-dumped and is still overwhelmed. They've identified their first task but can't start. Walk them through a 60-second guided launch.
-
-TASK: "${task.trim()}"
-TIME ESTIMATE: ${timeEstimate || 'a few minutes'}
-CONTEXT: ${context || 'general overwhelm'}
-
-Generate 4-5 micro-steps. Each: specific physical action, completable in under 15 seconds, assumes the previous is done. First step = absolute smallest action. Last step = actual work beginning.
-
-Return ONLY valid JSON:
-{
-  "launch_line": "Warm sentence acknowledging the dump AND starting the first task",
-  "steps": [{ "instruction": "Tiny physical action", "emoji": "One emoji" }],
-  "done_message": "Celebration + what to do next",
-  "permission": "Permission to stop if needed."
-}`, userLanguage);
-
-        const parsed = await callClaudeWithRetry(prompt, { label: 'BDS-StartWithMe', max_tokens: 500 });
-        return res.json(parsed);
-      }
-
-      // ────────────────────────────────────────────
-      // SHRINK — Negotiate the list smaller (v3)
-      // ────────────────────────────────────────────
-      case 'shrink': {
-        const { actions, decisions, tell_someone, context, userLanguage } = req.body;
-
-        const allItems = [];
-        actions?.forEach(a => allItems.push({ type: 'action', text: a.task || a, deadline: a.deadline, time_estimate: a.time_estimate }));
-        decisions?.forEach(d => allItems.push({ type: 'decision', text: d.decision || d }));
-        tell_someone?.forEach(t => allItems.push({ type: 'tell_someone', text: `Tell ${t.who}: ${t.what}`, who: t.who }));
-
-        if (allItems.length < 2) return res.status(400).json({ error: 'List is already tiny.' });
-
-        const prompt = withLanguage(`You are a wise, slightly pushy friend. This person brain-dumped and got their thoughts sorted. Now they have a list. Your job: make it SHORTER.
-
-Play devil's advocate against every item. Challenge whether each one is:
-- Actually urgent (or just feels urgent from sitting on their mental list?)
-- Actually their job (or could someone else handle it?)
-- Actually the full task (or could a 3-minute version remove 80% of the stress?)
-- Actually needed this week (or guilt-carrying from months ago?)
-- Possible to batch with another item?
-
-Be specific. Not "consider if this is urgent." Say "Does the WHOLE kitchen need cleaning, or would wiping the counters take 3 minutes?"
-
-CONTEXT: ${context || 'general overwhelm'}
-THEIR LIST:
-${JSON.stringify(allItems, null, 2)}
-
-Return ONLY valid JSON:
-{
-  "original_count": ${allItems.length},
-  "intro": "One sentence framing the negotiation.",
-  "challenges": [
-    {
-      "item": "Original item text",
-      "type": "action|decision|tell_someone",
-      "verdict": "keep|shrink|batch|defer|drop",
-      "challenge": "Specific challenge — conversational, slightly provocative.",
-      "shrunk_version": "New version if shrink/batch/defer, null if keep/drop.",
-      "time_saved": "Estimated time/energy saved."
-    }
-  ],
-  "summary": { "kept": 0, "shrunk": 0, "batched": 0, "deferred": 0, "dropped": 0, "new_count": 0, "time_saved": "Total" },
-  "closing": "One warm sentence about the lighter list."
-}`, userLanguage);
-
-        const parsed = await callClaudeWithRetry(prompt, { label: 'BDS-Shrink', max_tokens: 2000 });
-        return res.json(parsed);
-      }
-
-      // ────────────────────────────────────────────
-      // TIME-MAP — List to schedule (v3)
-      // ────────────────────────────────────────────
-      case 'time-map': {
-        const { actions, tell_someone, do_first, availableTime, startTime, context, userLanguage } = req.body;
-        if (!availableTime) return res.status(400).json({ error: 'How much time do you have?' });
-
-        const items = [];
-        if (do_first) items.push({ task: do_first.task, time_estimate: do_first.time_estimate, priority: 'first' });
-        actions?.forEach(a => items.push({ task: a.task || a, time_estimate: a.time_estimate, deadline: a.deadline }));
-        tell_someone?.forEach(t => items.push({ task: `Tell ${t.who}: ${t.what}`, time_estimate: '5 min', type: 'communication' }));
-
-        const prompt = withLanguage(`You are a practical time planner. This person brain-dumped, got tasks sorted, and wants to map them to a real schedule. The schedule should feel EASY, not packed.
-
-RULES:
-- Buffer/break time between tasks. Never back-to-back.
-- Group similar tasks (communication together, computer tasks together).
-- Do-first item goes first. Non-negotiable.
-- If not enough time, say which items to defer and why.
-- At least one break.
-- Realistic time estimates. 5 min often takes 10. Round up.
-
-TASKS: ${JSON.stringify(items, null, 2)}
-AVAILABLE TIME: ${availableTime}
-START TIME: ${startTime || 'now'}
-CONTEXT: ${context || 'general'}
-
-Return ONLY valid JSON:
-{
-  "schedule": [{ "time": "9:00 AM", "end_time": "9:05 AM", "task": "What to do", "type": "task|break|communication|buffer", "note": "Optional tip" }],
-  "fits": true,
-  "deferred": [{ "task": "...", "suggested_when": "Tomorrow", "reason": "Why okay to defer" }],
-  "total_work_time": "Actual work time",
-  "total_break_time": "Break time",
-  "closing": "One encouraging sentence."
-}`, userLanguage);
-
-        const parsed = await callClaudeWithRetry(prompt, { label: 'BDS-TimeMap', max_tokens: 1500 });
-        return res.json(parsed);
-      }
-
-      // ────────────────────────────────────────────
       // EXCAVATE — Go deeper on a worry (v3)
       // ────────────────────────────────────────────
       case 'excavate': {
@@ -302,63 +184,6 @@ Return ONLY valid JSON:
       }
 
       // ────────────────────────────────────────────
-      // DUMP-DIFF — Compare to last dump (v3)
-      // ────────────────────────────────────────────
-      case 'dump-diff': {
-        const { currentDump, previousDump, userLanguage } = req.body;
-        if (!currentDump || !previousDump) return res.status(400).json({ error: 'Need two dumps to compare.' });
-
-        const prompt = withLanguage(`Compare two brain dumps from the same person. Previous dump first, current dump second. Identify what changed.
-
-PREVIOUS DUMP: ${JSON.stringify(previousDump, null, 2)}
-CURRENT DUMP: ${JSON.stringify(currentDump, null, 2)}
-
-Look for: resolved items (celebrate), stuck items (nudge gently), new items, overwhelm shift.
-
-Return ONLY valid JSON:
-{
-  "resolved": [{ "item": "Gone from last time", "likely_reason": "Done / dropped / resolved" }],
-  "stuck": [{ "item": "Appeared both times", "nudge": "Gentle suggestion" }],
-  "new_items": [{ "item": "New this time", "category": "action/worry/etc" }],
-  "overwhelm_shift": { "direction": "better|same|worse", "previous_tasks": 0, "current_tasks": 0, "observation": "What the shift means" },
-  "celebration": "Specific progress acknowledgment.",
-  "stuck_pattern": "If 2+ stuck items, what do they have in common?"
-}`, userLanguage);
-
-        const parsed = await callClaudeWithRetry(prompt, { label: 'BDS-DumpDiff', max_tokens: 1200 });
-        return res.json(parsed);
-      }
-
-      // ────────────────────────────────────────────
-      // REVIEW — Dump history patterns
-      // ────────────────────────────────────────────
-      case 'review': {
-        const { dumpLog, userLanguage } = req.body;
-        if (!dumpLog?.length || dumpLog.length < 3) return res.status(400).json({ error: 'Need at least 3 dumps for patterns.' });
-
-        const prompt = withLanguage(`Analyze this person's brain dump history.
-
-DUMP LOG (most recent first):
-${JSON.stringify(dumpLog.slice(0, 15), null, 2)}
-
-Look for: inflation ratio, common contexts, do-first completion rate, dominant categories, trends.
-
-Return ONLY valid JSON:
-{
-  "total_dumps": 0, "avg_thoughts": 0, "avg_real_tasks": 0,
-  "inflation_ratio": "Your brain inflates your to-do list by about Xx",
-  "dominant_category": { "category": "...", "observation": "..." },
-  "context_patterns": { "most_common": "...", "observation": "..." },
-  "completion": { "do_first_rate": "...", "observation": "..." },
-  "trend": "...",
-  "recommendations": [{ "insight": "...", "suggestion": "..." }],
-  "encouragement": "..."
-}`, userLanguage);
-
-        const parsed = await callClaudeWithRetry(prompt, { label: 'BDS-Review', max_tokens: 1000 });
-        return res.json(parsed);
-      }
-
       default:
         return res.status(400).json({ error: `Unknown action: ${action}` });
     }

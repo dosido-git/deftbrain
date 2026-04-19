@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { useTheme } from '../hooks/useTheme';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { usePersistentState } from '../hooks/usePersistentState';
-import { CopyBtn, ActionBar } from '../components/ActionButtons';
+import { CopyBtn } from '../components/ActionButtons';
+import { useRegisterActions } from '../components/ActionBarContext';
 
 // ════════════════════════════════════════════════════════════
 // Constants
@@ -96,7 +97,10 @@ const ApologyCalibrator = ({ tool }) => {
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
     warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
+    required:      isDark ? 'text-amber-400' : 'text-amber-500',
   };
+  c.textMuteded = c.textMuted;
+  c.label = c.labelText;
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
@@ -591,6 +595,57 @@ const ApologyCalibrator = ({ tool }) => {
   // ════════════════════════════════════════════════════════════
   // VIEW: Calibrate
   // ════════════════════════════════════════════════════════════
+
+  // ── Reset ──────────────────────────────────────────────────
+  const handleReset = useCallback(() => {
+    setCalResults(null); setDetectResults(null); setDelResults(null);
+    setAuditResults(null); setCulResults(null); setDecodeResults(null);
+    setPracticeResults(null); setForgiveResults(null); setRoadmapResults(null);
+    setLetterResults(null); setFixResults(null); setError('');
+  }, []);
+
+  // ── buildFullText (routes to active view) ──────────────────
+  const buildFullText = useCallback(() => {
+    if (view === 'calibrate') return buildCalibrateText();
+    if (view === 'detect')    return buildDetectText();
+    if (view === 'delivery')  return buildDeliveryText();
+    if (view === 'audit')     return buildAuditText();
+    if (view === 'cultural')  return buildCulturalText();
+    if (view === 'decode')    return buildDecodeText();
+    if (view === 'forgive')   return buildForgiveText();
+    if (view === 'roadmap')   return buildRoadmapText();
+    if (view === 'letter')    return buildLetterText();
+    if (view === 'fix')       return buildFixText();
+    return '';
+  }, [view, calResults, detectResults, delResults, auditResults, culResults, decodeResults, forgiveResults, roadmapResults, letterResults, fixResults]);
+
+  // ── Combined results sentinel (used for S5.5 cross-ref region) ──
+  const results = calResults || detectResults || fixResults || delResults ||
+    auditResults || culResults || decodeResults || forgiveResults ||
+    roadmapResults || letterResults || practiceResults;
+
+  // ── Ref assignments ────────────────────────────────────────
+  const handleSubmitRef = useRef(null);
+  const canSubmitRef = useRef(false);
+  handleSubmitRef.current = handleCalibrate;
+  canSubmitRef.current = !!(calForm.whatHappened?.trim()) && view === 'calibrate';
+
+  useRegisterActions(buildFullText(), tool?.title || 'Apology Calibrator');
+
+  // ── Keyboard handler ───────────────────────────────────────
+  useEffect(() => {
+    const handler = (e) => {
+      const tag = document.activeElement?.tagName;
+      if (tag === 'SELECT') return;
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !loading && canSubmitRef.current)
+        handleSubmitRef.current?.();
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading]);
+
+
   const renderCalibrate = () => (
     <div className="space-y-6">
       {/* Form */}
@@ -601,7 +656,7 @@ const ApologyCalibrator = ({ tool }) => {
           </h2>
           <p className={`text-sm ${c.textSecondary}`}>Get the right level — not too much, not too little.</p>
         </div>
-        <label className={`block text-lg font-semibold mb-3 ${c.text}`}>What happened?</label>
+        <label className={`block text-lg font-semibold mb-3 ${c.text}`}>What happened? <span className={c.required}>*</span></label>
         <textarea value={calForm.whatHappened} onChange={e => setCalForm(p => ({ ...p, whatHappened: e.target.value }))}
           placeholder="Describe the situation that might need an apology..."
           className={`w-full h-32 p-4 border-2 rounded-lg outline-none resize-none ${c.input} ${c.input}`} />
@@ -797,7 +852,6 @@ const ApologyCalibrator = ({ tool }) => {
               className={`px-4 py-2 rounded-lg text-sm font-medium ${c.btnPrimarySecondaryondary}`}>
               🔄 Start Over
             </button>
-            <ActionBar content={buildCalibrateText()} title="Apology Calibration" />
           </div>
         </div>
       )}
@@ -937,7 +991,6 @@ const ApologyCalibrator = ({ tool }) => {
               className={`px-4 py-2 rounded-lg text-sm font-medium ${c.btnPrimarySecondaryondary}`}>
               🔄 Start Over
             </button>
-            <ActionBar content={buildDetectText()} title="Apology Analysis" />
           </div>
         </div>
       )}
@@ -1104,7 +1157,6 @@ const ApologyCalibrator = ({ tool }) => {
               className={`px-4 py-2 rounded-lg text-sm font-medium ${c.btnPrimarySecondaryondary}`}>
               🔄 Start Over
             </button>
-            <ActionBar content={buildDeliveryText()} title="Delivery Plan" />
           </div>
         </div>
       )}
@@ -1262,7 +1314,6 @@ const ApologyCalibrator = ({ tool }) => {
               className={`px-4 py-2 rounded-lg text-sm font-medium ${c.btnPrimarySecondaryondary}`}>
               🔄 Start Over
             </button>
-            <ActionBar content={buildAuditText()} title="Apology Audit" />
           </div>
         </div>
       )}
@@ -1405,7 +1456,6 @@ const ApologyCalibrator = ({ tool }) => {
               className={`px-4 py-2 rounded-lg text-sm font-medium ${c.btnPrimarySecondaryondary}`}>
               🔄 Start Over
             </button>
-            <ActionBar content={buildCulturalText()} title="Cultural Calibration" />
           </div>
         </div>
       )}
@@ -1560,7 +1610,6 @@ const ApologyCalibrator = ({ tool }) => {
               className={`px-4 py-2 rounded-lg text-sm font-medium ${c.btnPrimarySecondaryondary}`}>
               🔄 Start Over
             </button>
-            <ActionBar content={buildDecodeText()} title="Apology Decoder" />
           </div>
         </div>
       )}
@@ -1856,7 +1905,6 @@ const ApologyCalibrator = ({ tool }) => {
               className={`px-4 py-2 rounded-lg text-sm font-medium ${c.btnPrimarySecondaryondary}`}>
               🔄 Start Over
             </button>
-            <ActionBar content={buildForgiveText()} title="Forgiveness Navigator" />
           </div>
         </div>
       )}
@@ -2035,7 +2083,6 @@ const ApologyCalibrator = ({ tool }) => {
               className={`px-4 py-2 rounded-lg text-sm font-medium ${c.btnPrimarySecondaryondary}`}>
               🔄 Start Over
             </button>
-            <ActionBar content={buildRoadmapText()} title="Repair Roadmap" />
           </div>
         </div>
       )}
@@ -2169,7 +2216,6 @@ const ApologyCalibrator = ({ tool }) => {
               className={`px-4 py-2 rounded-lg text-sm font-medium ${c.btnPrimarySecondaryondary}`}>
               🔄 Start Over
             </button>
-            <ActionBar content={buildLetterText()} title="Apology Letter" />
           </div>
         </div>
       )}
@@ -2217,13 +2263,13 @@ const ApologyCalibrator = ({ tool }) => {
 
         <div className="space-y-4">
           <div>
-            <label className={`block text-sm font-medium mb-1 ${c.textSecondary}`}>What you said when you apologized <span className="text-zinc-400">*</span></label>
+            <label className={`block text-sm font-medium mb-1 ${c.textSecondary}`}>What you said when you apologized <span className={c.required}>*</span></label>
             <textarea value={fixForm.whatYouSaid} onChange={e => setFixForm(p => ({ ...p, whatYouSaid: e.target.value }))}
               placeholder="Paste the exact words you used — text, email, or what you said out loud…"
               className={`w-full h-28 p-3 border rounded-lg outline-none resize-none text-sm ${c.input} ${c.input}`} />
           </div>
           <div>
-            <label className={`block text-sm font-medium mb-1 ${c.textSecondary}`}>How they reacted <span className="text-zinc-400">*</span></label>
+            <label className={`block text-sm font-medium mb-1 ${c.textSecondary}`}>How they reacted <span className={c.required}>*</span></label>
             <textarea value={fixForm.theirReaction} onChange={e => setFixForm(p => ({ ...p, theirReaction: e.target.value }))}
               placeholder="Still upset? Got angry? Went silent? Said 'fine' but clearly isn't? Describe what happened after…"
               className={`w-full h-20 p-3 border rounded-lg outline-none resize-none text-sm ${c.input} ${c.input}`} />
@@ -2340,7 +2386,6 @@ const ApologyCalibrator = ({ tool }) => {
             </button>
           </div>
 
-          <ActionBar content={buildFixText()} title="Apology Fix" />
         </div>
       )}
     </div>
@@ -2488,28 +2533,35 @@ const ApologyCalibrator = ({ tool }) => {
   // ════════════════════════════════════════════════════════════
 
   return (
-    <div className={`min-h-screen py-6 px-4 ${c.cardAlt}`}>
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-6">
-          <div className="flex items-center justify-center gap-3 mb-2">
-            <span className="text-3xl">⚖️</span>
-            <h1 className={`text-3xl sm:text-4xl font-bold ${c.text}`}>Apology Calibrator</h1>
+    <div className={`space-y-4 ${c.text}`}>
+      {/* Header card with tabs — unified */}
+      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
+        <div className="pb-3 border-b border-zinc-500">
+          <div className="flex items-start justify-between">
+            <div>
+              <h2 className={`text-xl font-bold ${c.text}`}>
+                <span className="mr-2">{tool?.icon ?? '⚖️'}</span>{tool?.title ?? 'Apology Calibrator'}
+              </h2>
+              <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Find the right level — not too much, not too little'}</p>
+            </div>
+            {results ? (
+              <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold`}>
+                ↺ Start Over
+              </button>
+            ) : null}
           </div>
-          <p className={c.textSecondary}>Find the right level — not too much, not too little</p>
         </div>
-
-        {/* Tab nav */}
-        <div className="flex flex-wrap gap-2 mb-6 justify-center">
+        {/* Tab nav — unified inside header card */}
+        <div className="flex flex-wrap gap-2 pt-3">
           {VIEWS.map(v => (
             <button key={v.id} onClick={() => { setView(v.id); setError(''); }}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5
-                ${view === v.id ? c.tabActive : c.tabInactive}`}>
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5 ${view === v.id ? c.tabActive : c.tabInactive}`}>
               <span>{v.icon}</span>
-              <span className="hidden sm:inline">{v.label}</span>
+              <span>{v.label}</span>
             </button>
           ))}
         </div>
+      </div>
 
         {/* Active view */}
         {view === 'calibrate' && renderCalibrate()}
@@ -2525,31 +2577,22 @@ const ApologyCalibrator = ({ tool }) => {
         {view === 'cultural' && renderCultural()}
         {view === 'repairs' && renderRepairs()}
 
-        {/* Cross-references */}
-        <div className={`mt-8 rounded-xl p-5 ${c.card}`}>
-          <h3 className={`text-sm font-semibold mb-3 ${c.textMuteded}`}>Related Tools</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            {CROSS_REFS.map(ref => (
-              <a key={ref.tool} href={`/${ref.tool}`}
-                className={`rounded-lg p-3 border transition-colors ${c.cardInner} hover:opacity-80`}>
-                <div className="flex items-center gap-2">
-                  <span>{ref.icon}</span>
-                  <a href={`/${ref.tool}`} className={`text-sm font-medium ${linkStyle}`}>{ref.label}</a>
-                </div>
-                <p className={`text-xs mt-1 ${c.textMuteded}`}>{ref.why}</p>
-              </a>
-            ))}
+      {!results && (
+        <p className={`text-xs text-center ${c.textMuted}`}>
+          Already in a difficult conversation?{' '}
+          <a href="/ConflictCoach" className={linkStyle}>🥊 Conflict Coach</a> helps you navigate what to say next.
+        </p>
+      )}
+      {/* Cross-references — shown after any result */}
+      {results && (
+        <div className={`rounded-xl p-4 border ${c.border} ${c.card}`}>
+          <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-2`}>🔗 Related Tools</p>
+          <div className={`space-y-1.5 text-xs ${c.textSecondary}`}>
+            <p>Preparing for what comes next? <a href="/DifficultTalkCoach" className={linkStyle}>💬 Difficult Talk Coach</a> helps you rehearse the harder conversation ahead.</p>
+            <p>Choosing your words carefully? <a href="/VelvetHammer" className={linkStyle}>🪶 Velvet Hammer</a> crafts messages that land without causing damage.</p>
           </div>
         </div>
-      </div>
-        <div className={`mt-6 pt-4 border-t text-sm ${c.border} ${c.textMuted}`}>
-          <p className="mb-2 font-medium">You might also like:</p>
-          <div className="flex flex-wrap gap-2">
-            {[{slug:'conflict-coach',label:'🤝 Conflict Coach'},{slug:'say-it-right',label:'🗣️ Say It Right'},{slug:'difficult-talk-coach',label:'💬 Difficult Talk'}].map(({slug,label})=>(
-              <a key={slug} href={`${slug}`} className={linkStyle}>{label}</a>
-            ))}
-          </div>
-        </div>
+      )}
     </div>
   );
 };

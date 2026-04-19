@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════════════
 // ROUTE 1: MAIN — Build Brag Sheet
 // ═══════════════════════════════════════════════════
-router.post('/brag-sheet-builder', async (req, res) => {
+router.post('/brag-sheet-builder', rateLimit(), async (req, res) => {
   try {
     const {
       accomplishments, industry, level, purposes,
@@ -183,7 +184,7 @@ Generate one transformation per accomplishment. Generate 2-4 metrics questions (
 // ═══════════════════════════════════════════════════
 // ROUTE 2: REFINE — Upgrade bullets with real metrics
 // ═══════════════════════════════════════════════════
-router.post('/brag-sheet-refine', async (req, res) => {
+router.post('/brag-sheet-refine', rateLimit(), async (req, res) => {
   try {
     const {
       originalTransformations,
@@ -285,7 +286,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 3: TWEAK — Reword a single transformation
 // ═══════════════════════════════════════════════════
-router.post('/brag-sheet-tweak', async (req, res) => {
+router.post('/brag-sheet-tweak', rateLimit(), async (req, res) => {
   try {
     const {
       original,
@@ -350,7 +351,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 4: ADD SINGLE — Transform one new accomplishment
 // ═══════════════════════════════════════════════════
-router.post('/brag-sheet-add-single', async (req, res) => {
+router.post('/brag-sheet-add-single', rateLimit(), async (req, res) => {
   try {
     const {
       newAccomplishment,
@@ -428,7 +429,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 5: STAR SELECT — Generate STAR story from specific accomplishment
 // ═══════════════════════════════════════════════════
-router.post('/brag-sheet-star', async (req, res) => {
+router.post('/brag-sheet-star', rateLimit(), async (req, res) => {
   try {
     const {
       accomplishment,
@@ -486,7 +487,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 6: EXCAVATE — Role-specific prompting questions
 // ═══════════════════════════════════════════════════
-router.post('/brag-sheet-excavate', async (req, res) => {
+router.post('/brag-sheet-excavate', rateLimit(), async (req, res) => {
   try {
     const {
       roleTitle,
@@ -575,7 +576,7 @@ Generate 3-4 questions per category. Make them SPECIFIC to this person's role, i
 // ═══════════════════════════════════════════════════
 // ROUTE 7: TAILOR — Match accomplishments to a job description
 // ═══════════════════════════════════════════════════
-router.post('/brag-sheet-tailor', async (req, res) => {
+router.post('/brag-sheet-tailor', rateLimit(), async (req, res) => {
   try {
     const {
       jobDescription,
@@ -677,7 +678,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 8: RADAR — Strength assessment across dimensions
 // ═══════════════════════════════════════════════════
-router.post('/brag-sheet-radar', async (req, res) => {
+router.post('/brag-sheet-radar', rateLimit(), async (req, res) => {
   try {
     const {
       transformations,
@@ -755,7 +756,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 9: INTERVIEW MATRIX — Map accomplishments to questions
 // ═══════════════════════════════════════════════════
-router.post('/brag-sheet-interview-matrix', async (req, res) => {
+router.post('/brag-sheet-interview-matrix', rateLimit(), async (req, res) => {
   try {
     const {
       transformations,
@@ -841,7 +842,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 10: VOICE MATCH — Extract voice patterns from writing sample
 // ═══════════════════════════════════════════════════
-router.post('/brag-sheet-voice-match', async (req, res) => {
+router.post('/brag-sheet-voice-match', rateLimit(), async (req, res) => {
   try {
     const {
       writingSample,

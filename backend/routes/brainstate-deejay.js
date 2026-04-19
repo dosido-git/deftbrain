@@ -1,9 +1,28 @@
 const express = require('express');
 const router = express.Router();
-const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
+
+async function withRetry(fn, { retries = 3, baseDelayMs = 1500 } = {}) {
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      return await fn();
+    } catch (err) {
+      const status = err?.status ?? err?.error?.status;
+      const isOverloaded = status === 529 || err?.error?.error?.type === 'overloaded_error';
+      if (isOverloaded && attempt < retries) {
+        const delay = baseDelayMs * Math.pow(2, attempt);
+        console.warn(`[brainstate-deejay] Overloaded (529), retrying in ${delay}ms (attempt ${attempt + 1}/${retries})`);
+        await new Promise(r => setTimeout(r, delay));
+      } else {
+        throw err;
+      }
+    }
+  }
+}
 
 // ── Main playlist generation ──
-router.post('/brainstate-deejay', async (req, res) => {
+router.post('/brainstate-deejay', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   const { currentState, desiredState, taskContext, musicPreferences, sensitivities, locale } = req.body;
 
   if (!currentState || !desiredState) {
@@ -112,7 +131,12 @@ CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`, locale);
 
   try {
     console.log(`[BrainstateDeejay] ${currentState} → ${desiredState} | Task: ${taskContext || 'none'}`);
-    const parsed = await callClaudeWithRetry(prompt);
+    const msg = await withRetry(() => anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 2000,
+      messages: [{ role: 'user', content: prompt }],
+    }));
+    const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
     res.json(parsed);
   } catch (error) {
     console.error('Brainstate Deejay error:', error);
@@ -121,7 +145,7 @@ CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`, locale);
 });
 
 // ── Playlist adjustment ──
-router.post('/brainstate-deejay/adjust', async (req, res) => {
+router.post('/brainstate-deejay/adjust', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   const { currentState, desiredState, taskContext, musicPreferences, sensitivities, feedback, locale } = req.body;
 
   if (!feedback) {
@@ -148,7 +172,12 @@ Return the same JSON structure as the original playlist, adjusted for the feedba
 
   try {
     console.log(`[BrainstateDeejay/adjust] ${currentState} → ${desiredState} | Feedback: ${feedback}`);
-    const parsed = await callClaudeWithRetry(prompt);
+    const msg = await withRetry(() => anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 2000,
+      messages: [{ role: 'user', content: prompt }],
+    }));
+    const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
     res.json(parsed);
   } catch (error) {
     console.error('Brainstate Deejay adjust error:', error);

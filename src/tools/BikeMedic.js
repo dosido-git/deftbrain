@@ -2,7 +2,8 @@ import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
-import { ActionBar, CopyBtn, PrintBtn, ShareBtn } from '../components/ActionButtons';
+import { CopyBtn } from '../components/ActionButtons';
+import { useRegisterActions } from '../components/ActionBarContext';
 import { compressImage } from '../utils/imageCompression';
 
 
@@ -561,6 +562,75 @@ const FIXES = {
     tools: ['Barrel adjuster'],
     steps: ['Rhythmic click = derailleur halfway between gears', 'Shift to noisy gear', 'Barrel adjuster ¼ turn CCW. Gone? Done.', 'If worse: ¼ turn CW instead', 'Pedal to verify silent running'],
     pro_tip: '30-second fix that shops charge $30 for.', parts: [] },
+  fix_cable_inspect: { title: 'Inspect Cables & Housing', animation: 'adjust-derailleur', difficulty: 'Easy', time: '5–10 min',
+    tools: ['Flashlight', 'Clean rag'],
+    steps: [
+      'Look for visible fraying at cable ends — fine strands poking out at shifter or derailleur anchor',
+      'Check housing for kinks, cracks, or rust at the ferrules (metal tips)',
+      'Pull each section of housing away from its stop — cable should slide smoothly, no grinding',
+      'Shift through all gears — any notchy or sluggish shift hints at cable drag inside housing',
+      'Squeeze full length of housing — should feel uniform; soft/crushed spots mean damage',
+      'Peek at cable entry points — if grime is visible, a drop of lube + wipe-through helps; if corroded, plan a replacement',
+      'If all smooth, you\'re done. If anything feels off, jump to the "Fix Ghost Shifting" guide for cable replacement',
+    ],
+    pro_tip: 'The earliest frayed strand is always at the shifter end — lift the hood/cover and look there first.',
+    parts: [] },
+  fix_chain_inspect: { title: 'Check Chain Wear', animation: 'reseat-chain', difficulty: 'Easy', time: '2–5 min',
+    tools: ['Chain checker (optional)', 'Ruler (backup)'],
+    steps: [
+      'Best method — drop a chain checker into the chain. Pins at 0.5% = fine; 0.75% = replace soon; 1.0% = replace now + likely cassette too',
+      'No tool? Use a ruler. 12 links of a new chain span exactly 12 inches (pin to pin)',
+      'If 12 links measure 12⅛" or more, the chain is worn — replace it',
+      'If 12¼" or more, the cassette is almost certainly worn too — replace both together',
+      'While you\'re at it, look at the cassette teeth from the side — sharp/hooked teeth mean replace',
+      'Wipe chain with rag before measuring — grime adds fake length',
+      'No wear? Re-lube and you\'re set. Worn? Jump to "Replace Worn Chain + Cassette"',
+    ],
+    pro_tip: 'Replacing a chain before 0.75% wear gets you multiple chains on one cassette — cheaper long-term.',
+    parts: [{ name: 'Chain checker', example: 'Park Tool CC-3.2', price: '$10–15' }] },
+  fix_brake_inspect: { title: 'Check Brake Pads', animation: 'center-caliper', difficulty: 'Easy', time: '3–5 min',
+    tools: ['Flashlight'],
+    steps: [
+      'Disc brakes — look into the caliper slot from above; pad material should be at least 1mm thick above the metal backing',
+      'Disc brakes — check both pads; inboard wears faster than outboard, especially on front',
+      'Rim brakes — pad should have visible wear grooves; if grooves are gone or pad is below wear-line indicator, replace',
+      'Both — look for glazing (shiny glass-like surface) — sand lightly with sandpaper if glazed',
+      'Both — squeeze brake lever firmly. Should be firm without going near bar. Spongy = possible bleed issue (disc) or cable stretch (rim)',
+      'Check the rotor (disc) or rim sidewall (rim) for grooves, scoring, or concave wear',
+      'Pads OK? You\'re done. Worn? Jump to the pad-replacement guide',
+    ],
+    pro_tip: 'Quiet braking tests better than visual — brakes that squeal or pulse often signal contamination, not wear.',
+    parts: [] },
+  fix_tire_pressure_inspect: { title: 'Check Tire Pressure', animation: null, difficulty: 'Easy', time: '1–2 min',
+    tools: ['Pump with gauge (floor pump preferred)'],
+    steps: [
+      'Know your target PSI. Road: 80–100 (skinnier tires = higher). Gravel: 35–50. Mountain XC: 22–28. Mountain trail/enduro: 18–24. Commuter: 60–80. Check sidewall for manufacturer\'s min/max if unsure',
+      'Check when tires are cold (before riding) — air expands when warm and gives a false-high reading',
+      'Unscrew valve cap; for Presta, also unscrew the small top nut until it clicks up',
+      'Press pump head on straight, clamp the lever — check gauge before adding air',
+      'Rider weight matters: heavier rider = top of the range, lighter rider = bottom. Tubeless: drop 5–10 PSI from tubed equivalent',
+      'Conditions matter: wet/rocky = drop 2–5 PSI for grip. Hot day = slightly lower to avoid over-pressure',
+      'Re-seat valve cap and tighten Presta nut finger-tight',
+      'Squeeze test is a lousy substitute — a gauge is the only reliable check',
+    ],
+    pro_tip: 'Underinflation causes pinch flats and rim damage. Overinflation reduces grip and makes the ride harsh. The middle of the range suits most riders most days.',
+    parts: [{ name: 'Floor pump with gauge', example: 'Topeak JoeBlow Sport', price: '$40–60' }] },
+  fix_full_service_inspect: { title: 'Full Service Checklist', animation: null, difficulty: 'Easy → Advanced', time: '1–3 hours',
+    tools: ['Allen keys', 'Torque wrench', 'Chain checker', 'Degreaser', 'Chain lube', 'Clean rags'],
+    steps: [
+      'Clean first — drivetrain with degreaser + brush, frame with mild soap and rag. A clean bike reveals hidden problems',
+      'Drivetrain: measure chain wear (use the chain-check guide), inspect cassette/chainrings, lube chain after cleaning',
+      'Brakes: inspect pads (use the brake-inspection guide), test levers, check rotor/rim for wear, bleed if hydraulic and spongy',
+      'Cables & housing: inspect for fraying, kinks, smooth action (use the cable-inspection guide). Replace if 2+ years old',
+      'Wheels: squeeze spokes to check tension, spin to check trueness and hub play, tighten axle/QR/thru-axle',
+      'Tires: check pressure, sidewall condition, refresh tubeless sealant if applicable',
+      'Headset: lift front wheel, rock front brake — any knocking means headset needs adjustment',
+      'Bottom bracket: grab crank arms, rock side to side — any play means BB needs service',
+      'All bolts: stem, seat clamp, bottle cages, rack, accessories. Torque wrench preferred — follow manufacturer specs',
+      'Shop vs DIY: wheel truing, BB service, suspension service, and hydraulic bleeds are shop-worthy if you lack experience or tools',
+    ],
+    pro_tip: 'A full annual service (or every 3,000 miles) catches wear before it becomes expensive. If you don\'t have the tools or time for 2–3 hours of focused work, a pro service is $100–200 well spent.',
+    parts: [] },
   fix_ghost_shift: { title: 'Fix Ghost Shifting', animation: 'adjust-derailleur', difficulty: 'Moderate', time: '15–30 min',
     tools: ['Allen keys', 'Cable cutters'],
     steps: ['Usually frayed or sticky cable', 'Check housing for kinks/cracks', 'Inspect cable at derailleur anchor — fraying?', 'Pull housing at each stop — does cable slide freely?', 'Damaged: replace cable + housing as set', 'Also check hanger alignment', 'After replacing: fine-tune barrel adjuster'],
@@ -736,12 +806,12 @@ const QUICK_CHECKS = {
 // ════════════════════════════════════════════════════════════
 const MAINT_SCHEDULE = {
   chain_lube: { label: 'Lube Chain', icon: '🔗', intervalDays: 7, intervalMiles: 100, fixRef: 'fix_noise_chainlube' },
-  tire_pressure: { label: 'Check Tire Pressure', icon: '🛞', intervalDays: 7, intervalMiles: null, fixRef: null },
-  brake_check: { label: 'Check Brake Pads', icon: '✋', intervalDays: 30, intervalMiles: 500, fixRef: 'fix_disc_pad_worn' },
-  chain_wear: { label: 'Check Chain Wear', icon: '📏', intervalDays: 90, intervalMiles: 2500, fixRef: 'fix_chain_worn' },
+  tire_pressure: { label: 'Check Tire Pressure', icon: '🛞', intervalDays: 7, intervalMiles: null, fixRef: 'fix_tire_pressure_inspect' },
+  brake_check: { label: 'Check Brake Pads', icon: '✋', intervalDays: 30, intervalMiles: 500, fixRef: 'fix_brake_inspect' },
+  chain_wear: { label: 'Check Chain Wear', icon: '📏', intervalDays: 90, intervalMiles: 2500, fixRef: 'fix_chain_inspect' },
   sealant_refresh: { label: 'Refresh Tubeless Sealant', icon: '💧', intervalDays: 90, intervalMiles: null, fixRef: 'fix_tubeless_refresh' },
-  cable_check: { label: 'Inspect Cables & Housing', icon: '🔌', intervalDays: 180, intervalMiles: 3000, fixRef: 'fix_ghost_shift' },
-  full_service: { label: 'Full Bike Service', icon: '🏪', intervalDays: 365, intervalMiles: 5000, fixRef: null },
+  cable_check: { label: 'Inspect Cables & Housing', icon: '🔌', intervalDays: 180, intervalMiles: 3000, fixRef: 'fix_cable_inspect' },
+  full_service: { label: 'Full Bike Service', icon: '🏪', intervalDays: 365, intervalMiles: 5000, fixRef: 'fix_full_service_inspect' },
 };
 
 // ════════════════════════════════════════════════════════════
@@ -797,9 +867,27 @@ const saveLS = (key, val) => { try { localStorage.setItem(key, JSON.stringify(va
 // ════════════════════════════════════════════════════════════
 // MAIN COMPONENT
 // ════════════════════════════════════════════════════════════
+const GARAGE_OPTS = {
+  bikeType: [{ v: 'road', l: 'Road' }, { v: 'mountain', l: 'Mountain' }, { v: 'gravel', l: 'Gravel' }, { v: 'commuter', l: 'Commuter' }, { v: 'ebike', l: 'E-Bike' }],
+  brakeType: [{ v: 'disc_hydro', l: 'Disc (Hydraulic)' }, { v: 'disc_mech', l: 'Disc (Cable)' }, { v: 'rim_caliper', l: 'Rim (Caliper)' }, { v: 'rim_vbrake', l: 'V-Brake' }],
+  shiftType: [{ v: 'cable', l: 'Cable Derailleur' }, { v: 'electronic', l: 'Electronic (Di2/AXS)' }, { v: 'internal', l: 'Internal Hub' }, { v: 'single', l: 'Single Speed' }],
+  tireSetup: [{ v: 'tubes', l: 'Inner Tubes' }, { v: 'tubeless', l: 'Tubeless' }],
+};
+const GARAGE_LABELS = { bikeType: 'Bike Type', brakeType: 'Brakes', shiftType: 'Shifting', tireSetup: 'Tires' };
+
 const BikeMedic = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { isDark } = useTheme();
+
+  // ── Safe date formatter — defensive against any library/browser that passes
+  //    a locale argument through (prevents "locale.toLowerCase is not a function")
+  const fmtDate = (input) => {
+    try {
+      const d = input instanceof Date ? input : new Date(input);
+      if (isNaN(d.getTime())) return '';
+      return d.toLocaleDateString();
+    } catch { return ''; }
+  };
 
   const c = {
     // ── Standard keys ──
@@ -821,6 +909,8 @@ const BikeMedic = ({ tool }) => {
                           : 'bg-amber-50 border-amber-200 text-amber-900',
     danger:        isDark ? 'bg-red-900/30 border-red-700 text-red-300'
                           : 'bg-red-50 border-red-200 text-red-800',
+    required:      isDark ? 'text-amber-400' : 'text-amber-500',
+    labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
     // ── Tool-specific extras (all dark-mode aware) ──
     borderHover:   isDark ? 'hover:border-zinc-500'  : 'hover:border-zinc-400',
     btnSuccess:    'bg-green-500 hover:bg-green-600 text-white',
@@ -866,7 +956,7 @@ const BikeMedic = ({ tool }) => {
     safe: (s) => s
       ? (isDark ? 'bg-green-900/40 text-green-300' : 'bg-green-100 text-green-700')
       : (isDark ? 'bg-red-900/40 text-red-300'    : 'bg-red-100 text-red-700'),
-    deleteHover: isDark ? '${c.deleteHover}' : '${c.deleteHover}',
+    deleteHover: isDark ? 'hover:text-red-400' : 'hover:text-red-600',
   };
 
   const linkStyle = isDark
@@ -874,6 +964,7 @@ const BikeMedic = ({ tool }) => {
     : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
 
   // Core state
+  // eslint-disable-next-line no-unused-vars
   const [_auditHistory, _setAuditHistory] = usePersistentState('bikemedic-historylog', []); // history marker
   const [selectedProblem, setSelectedProblem] = useState(null);
   const [treePath, setTreePath] = useState([]);
@@ -900,7 +991,8 @@ const BikeMedic = ({ tool }) => {
 
   // UI state
   const [animPaused, setAnimPaused] = useState(false);
-  const [showProfileSetup, setShowProfileSetup] = useState(false);
+  const [activeSection, setActiveSection] = useState(null); // 'garage' | 'hub' | 'toolbox' | 'seasonal'
+  const [savedFix, setSavedFix] = useState(false);
   const [activeQuickCheck, setActiveQuickCheck] = useState(null);
   const [checkedItems, setCheckedItems] = useState({});
   const [viewMode, setViewMode] = useState('problems');
@@ -915,26 +1007,30 @@ const BikeMedic = ({ tool }) => {
   const [garage, setGarage] = useState(() => loadLS(LS_KEY_GARAGE, []));
   const [activeBikeId, setActiveBikeId] = useState(() => loadLS(LS_KEY_ACTIVE_BIKE, null));
   const [editingBikeId, setEditingBikeId] = useState(null);
+  const [addingNew, setAddingNew] = useState(false);
 
   // ── Feature 2: Ride Logger ──
   const [rides, setRides] = useState(() => loadLS(LS_KEY_RIDES, []));
-  const [showRideLogger, setShowRideLogger] = useState(false);
   const [rideDistance, setRideDistance] = useState('');
   const [rideConditions, setRideConditions] = useState('dry');
 
   // ── Feature 3: Toolbox Inventory ──
   const [myTools, setMyTools] = useState(() => loadLS(LS_KEY_TOOLBOX, []));
-  const [showToolbox, setShowToolbox] = useState(false);
 
-  // ── Feature 6: Seasonal Wizard ──
+  // ── Feature 6: Seasonal Checklist ──
+  const getCurrentSeason = () => {
+    const m = new Date().getMonth();
+    return m < 2 || m > 10 ? 'winter' : m < 5 ? 'spring' : m < 8 ? 'summer' : 'fall';
+  };
   const [seasonalResult, setSeasonalResult] = useState(null);
-  const [showSeasonalWizard, setShowSeasonalWizard] = useState(false);
+  const [selectedSeason, setSelectedSeason] = useState(getCurrentSeason());
+  const [customSituation, setCustomSituation] = useState('');
+  const [customCheckResult, setCustomCheckResult] = useState(null);
 
   // Repair history + favorites + maintenance schedule
   const [repairHistory, setRepairHistory] = useState(() => loadLS(LS_KEY_HISTORY, []));
   const [favorites, setFavorites] = useState(() => loadLS(LS_KEY_FAVORITES, []));
   const [maintSchedule, setMaintSchedule] = useState(() => loadLS(LS_KEY_SCHEDULE, {}));
-  const [showHistory, setShowHistory] = useState(false);
 
   const showToast = (msg) => setToast(msg);
 
@@ -950,7 +1046,7 @@ const BikeMedic = ({ tool }) => {
   useEffect(() => { saveLS(LS_KEY_RIDES, rides); }, [rides]);
   useEffect(() => { saveLS(LS_KEY_TOOLBOX, myTools); }, [myTools]);
 
-  useEffect(() => { if (showProfileSetup) setTempProfile(editingBikeId ? (garage.find(b => b.id === editingBikeId) || {}) : {}); }, [showProfileSetup, editingBikeId, garage]);
+  useEffect(() => { if (activeSection === 'garage') setTempProfile(editingBikeId ? (garage.find(b => b.id === editingBikeId) || {}) : {}); }, [activeSection, editingBikeId, garage]);
   useEffect(() => {
     if (loading) { setThinkingMsg(0); thinkingRef.current = setInterval(() => setThinkingMsg(p => (p + 1) % MECHANIC_THINKING.length), 2000); }
     else { clearInterval(thinkingRef.current); }
@@ -975,7 +1071,7 @@ const BikeMedic = ({ tool }) => {
       setActiveBikeId(newBike.id);
       showToast('Bike added');
     }
-    setShowProfileSetup(false); setEditingBikeId(null);
+    setActiveSection(null); setEditingBikeId(null); setAddingNew(false);
   }, [editingBikeId]);
 
   const removeBike = useCallback((bikeId) => {
@@ -994,7 +1090,7 @@ const BikeMedic = ({ tool }) => {
     setRides(prev => [ride, ...prev].slice(0, 6));
     // Update bike total miles
     setGarage(prev => prev.map(b => b.id === activeBikeId ? { ...b, totalMiles: (b.totalMiles || 0) + dist } : b));
-    setRideDistance(''); setShowRideLogger(false);
+    setRideDistance('');
     showToast(`${dist} mi logged`);
   }, [rideDistance, rideConditions, activeBikeId]);
 
@@ -1028,8 +1124,8 @@ const BikeMedic = ({ tool }) => {
   // ── Feature 5: Log repair + savings tracking ──
   const logRepair = useCallback((fixId, fixTitle) => {
     const shopCost = SHOP_COSTS[fixId] || 0;
-    const entry = { id: Date.now(), fixId, title: fixTitle, date: new Date().toISOString(), bikeId: activeBikeId, shopCost, preview: (fixTitle||'').slice(0,40) };
-    setRepairHistory(prev => [entry, ...prev].slice(0, 6));
+    const entry = { id: Date.now(), fixId, title: fixTitle, date: new Date().toISOString(), bikeId: activeBikeId, shopCost, kind: 'repair', preview: (fixTitle||'').slice(0,40) };
+    setRepairHistory(prev => [entry, ...prev].slice(0, 50));
     showToast(shopCost > 0 ? `Repair logged — you saved ~$${shopCost}!` : 'Repair logged');
   }, [activeBikeId]);
 
@@ -1040,7 +1136,22 @@ const BikeMedic = ({ tool }) => {
   // ── Feature: Mark maintenance task done (per bike) ──
   const markMaintDone = useCallback((taskId) => {
     if (!activeBikeId) return;
-    setMaintSchedule(prev => ({ ...prev, [activeBikeId]: { ...(prev[activeBikeId] || {}), [taskId]: new Date().toISOString() } }));
+    const task = MAINT_SCHEDULE[taskId];
+    const now = new Date().toISOString();
+    setMaintSchedule(prev => ({ ...prev, [activeBikeId]: { ...(prev[activeBikeId] || {}), [taskId]: now } }));
+    if (task) {
+      const entry = {
+        id: Date.now(),
+        fixId: task.fixRef || `maint_${taskId}`,
+        title: `${task.icon} ${task.label}`,
+        date: now,
+        bikeId: activeBikeId,
+        shopCost: 0,
+        kind: 'maintenance',
+        preview: task.label,
+      };
+      setRepairHistory(prev => [entry, ...prev].slice(0, 50));
+    }
     showToast('Maintenance logged');
   }, [activeBikeId]);
 
@@ -1071,7 +1182,8 @@ const BikeMedic = ({ tool }) => {
   // ── Feature 3: Toolbox readiness check ──
   const getToolReadiness = useCallback((fixTools) => {
     if (!fixTools || myTools.length === 0) return null;
-    const have = fixTools.filter(t => myTools.some(mt => t.toLowerCase().includes(mt.toLowerCase()) || mt.toLowerCase().includes(t.toLowerCase())));
+    const safeLC = (v) => (typeof v === 'string' ? v : String(v ?? '')).toLowerCase();
+    const have = fixTools.filter(t => myTools.some(mt => safeLC(t).includes(safeLC(mt)) || safeLC(mt).includes(safeLC(t))));
     const missing = fixTools.filter(t => !have.includes(t));
     return { have, missing, ready: missing.length === 0 };
   }, [myTools]);
@@ -1093,14 +1205,15 @@ const BikeMedic = ({ tool }) => {
     }
     if (followUpText.trim()) lines.push(`\nRider's Description: "${followUpText.trim()}"`);
     if (customProblem.trim()) lines.push(`\nOriginal Symptom: "${customProblem.trim()}"`);
-    lines.push(`\nDate: ${new Date().toLocaleDateString()}`);
+    lines.push(`\nDate: ${fmtDate(new Date())}`);
     lines.push('\n— Generated by DeftBrain Bike Medic · deftbrain.com');
     return lines.join('\n');
   }, [bikeProfile, fix, activeProblem, completedSteps, followUpText, customProblem]);
 
+  // eslint-disable-next-line no-unused-vars
   const buildShopHandoffHtml = useCallback(() => {
     let html = `<div style="font-family:system-ui;max-width:600px;margin:auto;padding:20px">`;
-    html += `<h1 style="font-size:20px;border-bottom:2px solid #333;padding-bottom:8px">🔧 Bike Shop Diagnostic Summary</h1>`;
+    html += `<div style="font-size:20px;font-weight:bold;border-bottom:2px solid #333;padding-bottom:8px;margin-bottom:8px">🔧 Bike Shop Diagnostic Summary</div>`;
     if (bikeProfile) {
       html += `<h3>Bike Details</h3><table style="width:100%;border-collapse:collapse;font-size:14px">`;
       html += `<tr><td style="padding:4px 8px;border:1px solid #ddd;font-weight:bold">Name</td><td style="padding:4px 8px;border:1px solid #ddd">${bikeProfile.name || 'Unknown'}</td></tr>`;
@@ -1116,25 +1229,43 @@ const BikeMedic = ({ tool }) => {
       if (doneStepsList.length > 0) { html += `<ol style="font-size:13px">`; doneStepsList.forEach(s => { html += `<li>${s}</li>`; }); html += `</ol>`; }
     }
     if (followUpText.trim()) html += `<h3>Current Symptom</h3><p style="font-size:14px;background:rgb(245,245,245);padding:12px;border-radius:8px">"${followUpText.trim()}"</p>`;
-    html += `<p style="font-size:12px;color:#999;margin-top:20px;border-top:1px solid #ddd;padding-top:8px">Generated ${new Date().toLocaleDateString()} by DeftBrain Bike Medic · deftbrain.com</p></div>`;
+    html += `<p style="font-size:12px;color:#999;margin-top:20px;border-top:1px solid #ddd;padding-top:8px">Generated ${fmtDate(new Date())} by DeftBrain Bike Medic · deftbrain.com</p></div>`;
     return html;
   }, [bikeProfile, fix, completedSteps, followUpText]);
 
-  // ── Feature 6: Seasonal maintenance wizard ──
+  // ── Feature 6: Seasonal maintenance checklist ──
   const runSeasonalWizard = async () => {
     if (!bikeProfile) { showToast('Add a bike first'); return; }
     setAiError(''); setSeasonalResult(null);
     try {
-      const month = new Date().getMonth();
-      const season = month < 2 || month > 10 ? 'winter' : month < 5 ? 'spring' : month < 8 ? 'summer' : 'fall';
       const data = await callToolEndpoint('bike-medic', {
         symptom: `Seasonal maintenance check`,
         mode: 'seasonal',
         bikeProfile: { ...bikeProfile, totalMiles: bikeProfile.totalMiles || 0 },
-        context: { season, recentRides: rides.filter(r => r.bikeId === activeBikeId).slice(0, 6) }
+        context: { season: selectedSeason, recentRides: rides.filter(r => r.bikeId === activeBikeId).slice(0, 6) }
       });
       setSeasonalResult(data);
     } catch (err) { setAiError(err.message || 'Seasonal check failed'); }
+  };
+
+  // ── Feature 7: Custom situation checklist ──
+  const runCustomCheck = async () => {
+    if (!customSituation.trim()) { showToast('Describe your situation first'); return; }
+    setAiError(''); setCustomCheckResult(null);
+    try {
+      const season = getCurrentSeason();
+      const data = await callToolEndpoint('bike-medic', {
+        symptom: customSituation.trim(),
+        mode: 'custom_check',
+        bikeProfile: bikeProfile ? { ...bikeProfile, totalMiles: bikeProfile.totalMiles || 0 } : { bikeType: 'generic' },
+        context: { season, customSituation: customSituation.trim(), recentRides: rides.filter(r => r.bikeId === activeBikeId).slice(0, 6) }
+      });
+      if (!data || !Array.isArray(data.tasks) || data.tasks.length === 0) {
+        setAiError('No checklist could be generated for that situation. Try describing it more specifically (e.g., type of ride, distance, conditions, recent issues).');
+        return;
+      }
+      setCustomCheckResult(data);
+    } catch (err) { setAiError(err.message || 'Check failed — try again'); }
   };
 
   // Build copyable fix text
@@ -1148,11 +1279,14 @@ const BikeMedic = ({ tool }) => {
     return text;
   }, [fix]);
 
+
+
   // Build printable fix HTML
+  // eslint-disable-next-line no-unused-vars
   const buildFixPrintHtml = useCallback(() => {
     if (!fix) return '';
     let html = `<div style="font-family:system-ui;max-width:600px;margin:auto;padding:20px">`;
-    html += `<h1 style="font-size:22px;margin-bottom:4px">${fix.title}</h1>`;
+    html += `<div style="font-size:22px;font-weight:bold;margin-bottom:4px">${fix.title}</div>`;
     html += `<p style="color:#666;font-size:14px">${fix.difficulty} · ${fix.time}</p>`;
     html += `<h3 style="margin-top:16px">Tools</h3><p>${fix.tools.join(', ')}</p>`;
     html += `<h3>Steps</h3><ol>`;
@@ -1191,7 +1325,7 @@ const BikeMedic = ({ tool }) => {
     setCompletedSteps({}); setActiveStep(0); setFixResolved(null); setShowFollowUp(false); setShowParts(false);
     if (route.startsWith('fix_')) { setTreePath([`${pid}_start`]); setCurrentFix(route); }
     else { setTreePath([route]); setCurrentFix(null); }
-  }, [getProfileRoute]);
+  }, [getProfileRoute, setAiDiagnosis]);
 
   // Start a fix directly (from favorites / history / maintenance)
   const startFixDirect = useCallback((fixId) => {
@@ -1200,8 +1334,8 @@ const BikeMedic = ({ tool }) => {
     setSelectedProblem('custom'); setTreePath(['direct']);
     setCurrentFix(fixId); setCompletedSteps({}); setActiveStep(0);
     setFixResolved(null); setShowFollowUp(false); setShowParts(false);
-    setShowAskMechanic(false); setAiDiagnosis(null); setShowHistory(false);
-  }, []);
+    setShowAskMechanic(false); setAiDiagnosis(null);
+  }, [setAiDiagnosis]);
 
   const selectOption = useCallback((opt) => {
     if (opt.fix) { setCurrentFix(opt.fix); setCompletedSteps({}); setActiveStep(0); setFixResolved(null); setShowFollowUp(false); setShowParts(false); }
@@ -1209,16 +1343,21 @@ const BikeMedic = ({ tool }) => {
   }, []);
 
   const goBack = useCallback(() => {
-    if (showProfileSetup) { setShowProfileSetup(false); setEditingBikeId(null); return; }
-    if (showHistory) { setShowHistory(false); return; }
-    if (showToolbox) { setShowToolbox(false); return; }
-    if (showSeasonalWizard) { setShowSeasonalWizard(false); setSeasonalResult(null); return; }
-    if (activeQuickCheck) { setActiveQuickCheck(null); setCheckedItems({}); return; }
+    if (activeQuickCheck) { setActiveQuickCheck(null); setCheckedItems({}); setCustomCheckResult(null); return; }
+    if (currentFix) {
+      setCurrentFix(null); setCompletedSteps({}); setFixResolved(null);
+      // If treePath tail isn't a valid TREE node (e.g. direct fix launch from Seasonal),
+      // clear selectedProblem so we return to the home/section view, keeping activeSection intact.
+      const prevNodeId = treePath[treePath.length - 1];
+      if (!prevNodeId || !TREE[prevNodeId]) { setSelectedProblem(null); setTreePath([]); }
+      return;
+    }
+    if (activeSection === 'garage') { setActiveSection(null); setEditingBikeId(null); setAddingNew(false); return; }
+    if (activeSection) { setActiveSection(null); setSeasonalResult(null); return; }
     if (showFollowUp) { setShowFollowUp(false); return; }
-    if (currentFix) { setCurrentFix(null); setCompletedSteps({}); setFixResolved(null); }
-    else if (treePath.length > 1) { setTreePath(prev => prev.slice(0, -1)); }
+    if (treePath.length > 1) { setTreePath(prev => prev.slice(0, -1)); }
     else { setSelectedProblem(null); setTreePath([]); setCurrentFix(null); setAiDiagnosis(null); setShowAskMechanic(false); }
-  }, [currentFix, treePath, showFollowUp, showProfileSetup, activeQuickCheck, showHistory, showToolbox, showSeasonalWizard]);
+  }, [currentFix, treePath, showFollowUp, activeSection, activeQuickCheck, setAiDiagnosis]);
 
   const reset = useCallback(() => {
     setSelectedProblem(null); setTreePath([]); setCurrentFix(null); setAiDiagnosis(null);
@@ -1226,9 +1365,11 @@ const BikeMedic = ({ tool }) => {
     setActiveStep(0); setFixResolved(null); setShowFollowUp(false); setFollowUpText('');
     setAiRoute(null); setShowInterpreter(false); setSymptomText(''); setActiveQuickCheck(null);
     setCheckedItems({}); setViewMode('problems'); setShowParts(false); setAnimPaused(false);
-    setShowHistory(false); setPhotoData(null); setShowToolbox(false); setShowSeasonalWizard(false);
-    setSeasonalResult(null); setShowRideLogger(false); setEditingBikeId(null);
-  }, []);
+    setPhotoData(null); setSeasonalResult(null); setEditingBikeId(null); setAddingNew(false);
+    setCustomSituation(''); setCustomCheckResult(null);
+    setSelectedSeason(getCurrentSeason());
+    setActiveSection(null);
+  }, [setAiDiagnosis, setCustomProblem]);
 
   const toggleStep = useCallback((idx) => {
     setCompletedSteps(prev => { const n = { ...prev }; if (n[idx]) delete n[idx]; else n[idx] = true; return n; });
@@ -1281,6 +1422,159 @@ const BikeMedic = ({ tool }) => {
   // ══════════════════════════════════════════
   // RENDER HELPERS
   // ══════════════════════════════════════════
+  // ── Results sentinel (S5.5 region detection) ───────────────
+  const results = aiDiagnosis || seasonalResult || customCheckResult;
+
+  // ── buildFullText ─────────────────────────────────────────
+  const buildFullText = useCallback(() => {
+    if (aiDiagnosis) {
+      let text = `${aiDiagnosis.diagnosis}\n\n${aiDiagnosis.explanation}\n\nSteps:\n`;
+      (aiDiagnosis.fix_steps || []).forEach((s, i) => { text += `${i + 1}. ${s}\n`; });
+      if (aiDiagnosis.pro_tip) text += `\nMechanic's Tip: ${aiDiagnosis.pro_tip}`;
+      return text + '\n\n— Generated by DeftBrain · deftbrain.com';
+    }
+    if (fix) return buildFixText();
+    if (seasonalResult) {
+      let text = `Seasonal Maintenance\n${seasonalResult.summary}\n\n`;
+      (seasonalResult.tasks || []).forEach((t, i) => { text += `${i + 1}. [${t.priority}] ${t.task} — ${t.reason}\n`; });
+      return text + '\n\n— Generated by DeftBrain · deftbrain.com';
+    }
+    if (customCheckResult) {
+      let text = `Custom Pre-Ride Checklist\nSituation: ${customSituation}\n\n${customCheckResult.summary}\n\n`;
+      (customCheckResult.tasks || []).forEach((t, i) => { text += `${i + 1}. [${t.priority}] ${t.task} — ${t.reason}\n`; });
+      return text + '\n\n— Generated by DeftBrain · deftbrain.com';
+    }
+    return '';
+  }, [aiDiagnosis, fix, seasonalResult, customCheckResult, customSituation, buildFixText]);
+
+  // ── Ref assignments ────────────────────────────────────────
+  const handleSubmitRef = useRef(null);
+  const canSubmitRef = useRef(false);
+  handleSubmitRef.current = () => { setShowAskMechanic(true); askMechanic(); };
+  canSubmitRef.current = !!(customProblem?.trim());
+
+  useRegisterActions(buildFullText(), tool?.title || 'Bike Medic');
+
+  // ── Keyboard handler ───────────────────────────────────────
+  useEffect(() => {
+    const handler = (e) => {
+      const tag = document.activeElement?.tagName;
+      if (tag === 'SELECT') return;
+      if (!e.metaKey && !e.ctrlKey) return;
+      if (e.key !== 'Enter') return;
+      // Garage: save bike form
+      if (activeSection === 'garage' && tempProfile.bikeType) { saveBike(tempProfile); return; }
+      // Seasonal: trigger wizard
+      if (activeSection === 'seasonal' && bikeProfile && !loading) { runSeasonalWizard(); return; }
+      // Log & Miles: log a ride when distance is valid
+      if (activeSection === 'hub' && activeBikeId && parseFloat(rideDistance) > 0) { logRide(); return; }
+      // Quick Check: custom situation submit
+      if (activeQuickCheck === 'custom' && customSituation.trim() && !loading) { runCustomCheck(); return; }
+      // Ask Mechanic / main AI submit
+      if (!loading && canSubmitRef.current) handleSubmitRef.current?.();
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading, activeSection, tempProfile, bikeProfile, activeQuickCheck, customSituation, rideDistance, activeBikeId]);
+
+  // ── Persistent tool header — used by all sub-screens ──────────
+  const renderPersistentHeader = (screenLabel) => (
+    <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 mb-4`}>
+      <div className="pb-3 border-b border-zinc-500">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <h2 className={`text-xl font-bold ${c.text}`}>
+              <span className="mr-2">{tool?.icon ?? '🚲'}</span>{tool?.title ?? 'Bike Medic'}
+            </h2>
+            <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Your trailside mechanic in your pocket'}</p>
+          </div>
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <button onClick={goBack} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold ${c.btnSecondary}`}>
+              ← Back
+            </button>
+            <button onClick={reset} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold ${c.btnSecondary}`}>
+              🔄 Start Over
+            </button>
+          </div>
+        </div>
+      </div>
+      {screenLabel && (
+        <div className="pt-3">
+          <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide`}>{screenLabel}</p>
+        </div>
+      )}
+    </div>
+  );
+
+  // ── Quick Check section panel ────────────────────────────────
+  const renderQuickSection = () => (
+    <div className="space-y-4">
+      <p className={`text-sm ${c.textSecondary}`}>Run a targeted checklist for your situation.</p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        {Object.entries(QUICK_CHECKS).map(([key, check]) => (
+          <button key={key} onClick={() => { setActiveQuickCheck(key); setCheckedItems({}); }}
+            className={`group flex items-center gap-3 p-4 rounded-xl border-2 ${c.border} ${c.borderHover} ${c.card} ${c.cardAltHover} transition-all text-left`}>
+            <span className="text-2xl">{check.icon}</span>
+            <div><span className={`text-sm font-bold ${c.text}`}>{check.title}</span><span className={`block text-xs ${c.textMuted}`}>{check.items.length} items</span></div>
+            <span className={`ml-auto ${c.textMuted} group-hover:translate-x-1 transition-transform`}>→</span>
+          </button>
+        ))}
+        <button onClick={() => { setActiveQuickCheck('custom'); setCheckedItems({}); setCustomCheckResult(null); }}
+          className={`group flex items-center gap-3 p-4 rounded-xl border-2 border-dashed ${c.border} ${c.borderHover} ${c.card} ${c.cardAltHover} transition-all text-left`}>
+          <span className="text-2xl">✏️</span>
+          <div><span className={`text-sm font-bold ${c.text}`}>Other situation</span><span className={`block text-xs ${c.textMuted}`}>AI-generated for your scenario</span></div>
+          <span className={`ml-auto ${c.textMuted} group-hover:translate-x-1 transition-transform`}>→</span>
+        </button>
+      </div>
+    </div>
+  );
+
+  // ── Persistent section tab bar ─────────────────────────────
+  const SECTION_TABS = [
+    { key: null,          icon: '🔍', label: 'Diagnose',    badge: null },
+    { key: 'quick',       icon: '✅', label: 'Quick Check', badge: null },
+    { key: 'seasonal',    icon: '🌦️', label: 'Seasonal',    badge: null },
+    { key: 'toolbox',     icon: '🧰', label: 'Toolbox',     badge: myTools.length || null },
+    { key: 'maintenance', icon: '🗓️', label: 'Maintenance', badge: maintAlerts.length || null },
+    { key: 'hub',         icon: '🚴', label: 'Miles',       badge: repairHistory.filter(e => activeBikeId ? e.bikeId === activeBikeId : true).length || null },
+    { key: 'garage',      icon: '🏠', label: 'Garage',      badge: garage.length || null },
+  ];
+
+  const renderSectionTabs = () => (
+    <div className={`flex gap-1 flex-wrap -mx-1 px-1 overflow-x-auto pt-2 border-b-2 ${c.border}`}>
+      {SECTION_TABS.map(tab => {
+        const isActive = tab.key === null
+          ? (activeSection === null && viewMode === 'problems')
+          : activeSection === tab.key;
+        return (
+          <button key={String(tab.key)}
+            onClick={() => {
+              setActiveSection(tab.key);
+              setEditingBikeId(null);
+              setAddingNew(false);
+              if (tab.key === null) setViewMode('problems');
+              if (tab.key === 'quick') setViewMode('quickcheck');
+            }}
+            className={`relative flex items-center gap-1 px-3 py-2 text-xs font-bold border-2 border-b-0 rounded-t-lg -mb-0.5 transition-all whitespace-nowrap ${
+              isActive
+                ? `${c.card} ${c.text} ${c.border} z-10`
+                : `${c.cardAlt} ${c.textMuted} ${c.border} hover:${c.textSecondary} opacity-80 hover:opacity-100`
+            }`}>
+            <span>{tab.icon}</span>
+            <span>{tab.label}</span>
+            {tab.badge > 0 && (
+              <span className={`ml-0.5 px-1 py-0.5 ${c.navBadgeZinc} text-[9px] font-bold rounded-full leading-none`}>
+                {tab.badge}
+              </span>
+            )}
+          </button>
+        );
+      })}
+    </div>
+  );
+
+  // eslint-disable-next-line no-unused-vars
   const renderNavBar = (showBack = true) => (
     <div className="flex items-center justify-between mb-6">
       {showBack ? (
@@ -1297,13 +1591,23 @@ const BikeMedic = ({ tool }) => {
   const renderBikeProfileBar = () => {
     if (!bikeProfile) return null;
     const labels = [bikeProfile.bikeType, bikeProfile.brakeType?.replace('_', ' '), bikeProfile.shiftType, bikeProfile.tireSetup].filter(Boolean);
+    const multi = garage.length > 1;
     return (
-      <div className={`flex items-center gap-2 mb-4 p-2 rounded-lg ${c.cardAlt} text-xs ${c.textSecondary} overflow-x-auto`}>
-        <span className="font-semibold flex-shrink-0">🚲 {bikeProfile.name || 'My Bike'}:</span>
+      <div className={`flex items-center gap-2 mt-2 mb-1 px-3 py-1.5 rounded-lg text-xs ${c.textSecondary} overflow-x-auto border-2 ${c.activeBikeBorder}`}>
+        {bikeProfile.photo ? (
+          <img src={bikeProfile.photo} alt={bikeProfile.name || 'Bike'} className={`w-8 h-8 rounded-md object-cover border ${c.border} flex-shrink-0`} />
+        ) : (
+          <span className="flex-shrink-0">🚲</span>
+        )}
+        <span className="font-semibold flex-shrink-0">
+          {multi && <span className={`${c.amberText} mr-1`}>Assessing:</span>}
+          {bikeProfile.name || 'My Bike'}
+        </span>
         {labels.map((l, i) => <span key={i} className={`${c.tag} px-2 py-0.5 rounded-md capitalize whitespace-nowrap`}>{l}</span>)}
         {bikeProfile.totalMiles > 0 && <span className={`${c.tag} px-2 py-0.5 rounded-md whitespace-nowrap`}>{Math.round(bikeProfile.totalMiles)} mi</span>}
-        {garage.length > 1 && (
+        {multi && (
           <select value={activeBikeId || ''} onChange={e => setActiveBikeId(e.target.value)}
+            title="Switch bike"
             className={`ml-auto px-2 py-0.5 rounded-md text-xs font-semibold ${c.input} border`}>
             {garage.map(b => <option key={b.id} value={b.id}>{b.name || b.bikeType}</option>)}
           </select>
@@ -1346,56 +1650,35 @@ const BikeMedic = ({ tool }) => {
         </ol></div>)}
         {data.prevention && (<div className={`text-xs ${c.textMuteded} mt-3 p-3 rounded-lg ${c.cardAlt}`}><strong>Prevention:</strong> {data.prevention}</div>)}
         {data.shop_visit && (<div className={`mt-4 ${c.shopVisit} border border-l-4 rounded-r-xl p-4`}><p className="text-sm"><strong>When to go to a shop:</strong> {data.shop_visit}</p></div>)}
-        {/* Action buttons */}
-        <div className="mt-4">
-          <ActionBar
-            content={`${data.diagnosis}\n\n${data.explanation}\n\nSteps:\n${(data.fix_steps||[]).map((s,i)=>`${i+1}. ${s}`).join('\n')}\n\n${data.pro_tip ? `Pro Tip: ${data.pro_tip}` : ''}\n\n— Generated by DeftBrain · deftbrain.com`}
-            printContent={`<div style="font-family:system-ui;max-width:600px;margin:auto;padding:20px"><h1>🔧 ${data.diagnosis}</h1><p>${data.explanation}</p><ol>${(data.fix_steps||[]).map(s=>`<li style="margin-bottom:8px">${s}</li>`).join('')}</ol>${data.pro_tip?`<p><strong>Pro Tip:</strong> ${data.pro_tip}</p>`:''}<p style="font-size:12px;color:#999;margin-top:20px;border-top:1px solid #ddd;padding-top:8px">Generated by DeftBrain Bike Medic · deftbrain.com</p></div>`}
-            title="Bike Mechanic Diagnosis"
-          />
-        </div>
-        {/* Cross-refs */}
-        <div className={`mt-4 pt-3 border-t ${c.border} text-xs ${c.textMuteded}`}>
-          {data.shop_visit && <>Need help deciding DIY vs shop? Try <a href="/DecisionCoach" target="_blank" rel="noopener noreferrer" className={linkStyle}>Decision Coach</a>. </>}
-          {data.parts_cost && <>Checking part value? <a href="/BuyWise" target="_blank" rel="noopener noreferrer" className={linkStyle}>BuyWise</a> can help.</>}
-        </div>
+
+
+
         <p className={`mt-3 text-xs ${c.textMuteded} border-t ${c.border} pt-2`}>⚠️ AI-generated diagnosis — always verify safety-critical repairs with a qualified mechanic before riding.</p>
       </div>
-        <div className={`mt-6 pt-4 border-t text-sm ${c.border} ${c.textMuted}`}>
-          <p className="mb-2 font-medium">You might also like:</p>
-          <div className="flex flex-wrap gap-2">
-            {[{slug:'plant-rescue',label:'🌱 Plant Rescue'},{slug:'crash-predictor',label:'💥 Crash Predictor'},{slug:'procedure-probe',label:'🏥 Procedure Probe'}].map(({slug,label})=>(
-              <a key={slug} href={`${slug}`} className={linkStyle}>{label}</a>
-            ))}
-          </div>
-        </div>
+
     </div>
   );
 
   // ══════════════════════════════════════════
   // SCREEN: GARAGE (Multi-Bike Manager)
   // ══════════════════════════════════════════
-  if (showProfileSetup) {
-    const opts = {
-      bikeType: [{ v: 'road', l: 'Road' }, { v: 'mountain', l: 'Mountain' }, { v: 'gravel', l: 'Gravel' }, { v: 'commuter', l: 'Commuter' }, { v: 'ebike', l: 'E-Bike' }],
-      brakeType: [{ v: 'disc_hydro', l: 'Disc (Hydraulic)' }, { v: 'disc_mech', l: 'Disc (Cable)' }, { v: 'rim_caliper', l: 'Rim (Caliper)' }, { v: 'rim_vbrake', l: 'V-Brake' }],
-      shiftType: [{ v: 'cable', l: 'Cable Derailleur' }, { v: 'electronic', l: 'Electronic (Di2/AXS)' }, { v: 'internal', l: 'Internal Hub' }, { v: 'single', l: 'Single Speed' }],
-      tireSetup: [{ v: 'tubes', l: 'Inner Tubes' }, { v: 'tubeless', l: 'Tubeless' }],
-    };
-    const labels = { bikeType: 'Bike Type', brakeType: 'Brakes', shiftType: 'Shifting', tireSetup: 'Tires' };
-    const isEditing = !!editingBikeId || garage.length === 0;
+  const renderGarageSection = () => {
+    const isEditing = addingNew || !!editingBikeId || garage.length === 0;
     return (
       <div className={c.text}>
-        {toast && <Toast message={toast} onClose={() => setToast(null)} />}
-        {renderNavBar()}
-        <h3 className={`text-lg font-bold ${c.text} mb-5`}>🏠 My Garage</h3>
-
         {/* Existing bikes list */}
-        {garage.length > 0 && !editingBikeId && (
+        {garage.length > 0 && !isEditing && (
           <div className="space-y-3 mb-6">
+            {garage.length > 1 && (
+              <p className={`text-xs ${c.textMuteded} mb-2`}>The bike in gold is currently being assessed. Tap <strong>Set Active</strong> to switch.</p>
+            )}
             {garage.map(bike => (
-              <div key={bike.id} className={`flex items-center gap-3 p-4 rounded-xl border-2 ${bike.id === activeBikeId ? c.activeBikeBorder : c.border} ${c.card}`}>
-                <span className="text-2xl">🚲</span>
+              <div key={bike.id} className={`flex items-center gap-3 p-4 rounded-xl border-2 ${bike.id === activeBikeId ? `${c.activeBikeBorder} shadow-md` : c.border} ${c.card}`}>
+                {bike.photo ? (
+                  <img src={bike.photo} alt={bike.name || bike.bikeType} className={`w-14 h-14 rounded-lg object-cover border ${c.border} flex-shrink-0`} />
+                ) : (
+                  <span className="text-2xl flex-shrink-0 w-14 h-14 flex items-center justify-center">🚲</span>
+                )}
                 <div className="flex-1 min-w-0">
                   <div className={`text-sm font-bold ${c.text}`}>{bike.name || bike.bikeType}</div>
                   <div className={`text-xs ${c.textMuteded} flex flex-wrap gap-1 mt-0.5`}>
@@ -1413,7 +1696,7 @@ const BikeMedic = ({ tool }) => {
                 <button onClick={() => { if (window.confirm(`Remove ${bike.name || 'this bike'}?`)) removeBike(bike.id); }} className={`text-xs ${c.textMuteded} ${c.deleteHover}`}>🗑️</button>
               </div>
             ))}
-            <button onClick={() => { setEditingBikeId(null); setTempProfile({}); }}
+            <button onClick={() => { setEditingBikeId(null); setAddingNew(true); setTempProfile({}); }}
               className={`w-full p-3 rounded-xl border-2 border-dashed ${c.border} ${c.textSecondary} text-sm font-semibold ${c.cardAltHover} transition-colors`}>
               ➕ Add Another Bike
             </button>
@@ -1427,12 +1710,40 @@ const BikeMedic = ({ tool }) => {
             <div className="mb-5">
               <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>Bike Name</label>
               <input value={tempProfile.name || ''} onChange={e => setTempProfile(prev => ({ ...prev, name: e.target.value }))}
+                onKeyDown={e => { if (e.key === 'Enter' && tempProfile.bikeType) saveBike(tempProfile); }}
                 placeholder="e.g., Trek Domane, Daily Commuter..."
                 className={`w-full px-3 py-2 border-2 rounded-lg text-sm outline-none ${c.input}`} />
             </div>
-            {Object.entries(opts).map(([key, options]) => (
+            <div className="mb-5">
+              <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>Photo</label>
+              <div className="flex items-center gap-3">
+                {tempProfile.photo ? (
+                  <img src={tempProfile.photo} alt="Bike" className={`w-20 h-20 rounded-lg object-cover border-2 ${c.border}`} />
+                ) : (
+                  <div className={`w-20 h-20 rounded-lg border-2 border-dashed ${c.border} flex items-center justify-center text-3xl ${c.textMuted}`}>🚲</div>
+                )}
+                <div className="flex flex-col gap-2">
+                  <label className={`cursor-pointer inline-flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold ${c.btnSecondary} border-2 ${c.border}`}>
+                    <span>📸</span> {tempProfile.photo ? 'Change Photo' : 'Add Photo'}
+                    <input type="file" accept="image/*" className="hidden" onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      try {
+                        const dataUrl = await compressImage(file, { maxWidth: 800, maxHeight: 800, maxSizeKB: 300 });
+                        setTempProfile(prev => ({ ...prev, photo: dataUrl }));
+                      } catch { showToast('Photo too large — try a smaller image'); }
+                    }} />
+                  </label>
+                  {tempProfile.photo && (
+                    <button onClick={() => setTempProfile(prev => ({ ...prev, photo: null }))}
+                      className={`text-xs ${c.textMuteded} ${c.deleteHover} text-left`}>Remove photo</button>
+                  )}
+                </div>
+              </div>
+            </div>
+            {Object.entries(GARAGE_OPTS).map(([key, options]) => (
               <div key={key} className="mb-5">
-                <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>{labels[key]}</label>
+                <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>{GARAGE_LABELS[key]}{key === 'bikeType' && <span className={c.required}> *</span>}</label>
                 <div className="flex flex-wrap gap-2">
                   {options.map(o => (
                     <button key={o.v} onClick={() => setTempProfile(prev => ({ ...prev, [key]: prev[key] === o.v ? undefined : o.v }))}
@@ -1441,9 +1752,23 @@ const BikeMedic = ({ tool }) => {
                 </div>
               </div>
             ))}
+            {!tempProfile.bikeType && (
+              <p className={`text-xs mt-4 -mb-2 ${c.amberText}`}>
+                ⚠ Select a bike type before saving.
+              </p>
+            )}
             <div className="flex gap-3 mt-6">
-              <button onClick={() => saveBike(tempProfile)} className={`flex-1 py-3 rounded-xl font-bold text-sm ${c.btnPrimary}`}>{editingBikeId ? 'Update Bike' : 'Add Bike'}</button>
-              <button onClick={() => { setShowProfileSetup(garage.length > 0 ? true : false); setEditingBikeId(null); if (garage.length === 0) setShowProfileSetup(false); }}
+              {(() => {
+                const saveDisabled = !tempProfile.bikeType;
+                return (
+                  <button onClick={() => saveBike(tempProfile)} disabled={saveDisabled}
+                    title={saveDisabled ? 'Select a bike type first' : ''}
+                    className={`flex-1 py-3 rounded-xl font-bold text-sm transition-opacity ${saveDisabled ? `${c.btnSecondary} opacity-50 cursor-not-allowed` : c.btnPrimary}`}>
+                    {editingBikeId ? 'Update Bike' : 'Add Bike'}
+                  </button>
+                );
+              })()}
+              <button onClick={() => { setEditingBikeId(null); setAddingNew(false); if (garage.length === 0) setActiveSection(null); }}
                 className={`px-6 py-3 rounded-xl font-bold text-sm ${c.btnSecondary} border-2 ${c.border}`}>Cancel</button>
             </div>
           </div>
@@ -1455,13 +1780,9 @@ const BikeMedic = ({ tool }) => {
   // ══════════════════════════════════════════
   // SCREEN: TOOLBOX INVENTORY
   // ══════════════════════════════════════════
-  if (showToolbox) {
-    return (
-      <div className={c.text}>
-        {toast && <Toast message={toast} onClose={() => setToast(null)} />}
-        {renderNavBar()}
-        <h3 className={`text-lg font-bold ${c.text} mb-2`}>🧰 My Toolbox</h3>
-        <p className={`text-sm ${c.textMuteded} mb-5`}>Mark the tools you own. We'll tell you if you're ready for each fix.</p>
+  const renderToolboxSection = () => (
+    <div className="space-y-4">
+    <p className={`text-sm ${c.textMuteded} mb-5`}>Mark the tools you own. We'll tell you if you're ready for each fix.</p>
         <div className="space-y-2 mb-6">
           {ALL_TOOLS.map(tool => {
             const owned = myTools.includes(tool);
@@ -1480,36 +1801,66 @@ const BikeMedic = ({ tool }) => {
         {myTools.length > 0 && (
           <button onClick={() => { setMyTools([]); showToast('Toolbox cleared'); }} className={`mt-3 text-xs ${c.textMuteded} ${c.deleteHover} block mx-auto`}>Clear all</button>
         )}
-      </div>
-    );
-  }
+    </div>
+  );
 
   // ══════════════════════════════════════════
-  // SCREEN: SEASONAL MAINTENANCE WIZARD
+  // SCREEN: SEASONAL MAINTENANCE
   // ══════════════════════════════════════════
-  if (showSeasonalWizard) {
+  const renderSeasonalSection = () => {
+    const currentSeason = getCurrentSeason();
+    const SEASONS = [
+      { key: 'spring', icon: '🌸', label: 'Spring' },
+      { key: 'summer', icon: '☀️', label: 'Summer' },
+      { key: 'fall',   icon: '🍂', label: 'Fall' },
+      { key: 'winter', icon: '❄️', label: 'Winter' },
+    ];
     return (
-      <div className={c.text}>
-        {toast && <Toast message={toast} onClose={() => setToast(null)} />}
-        {renderNavBar()}
-        {renderBikeProfileBar()}
-        <div className={`${c.card} rounded-xl border-2 ${c.border} p-6 mb-6`}>
-          <div className="flex items-center gap-3 mb-4">
-            <span className="text-xl">🌦️</span>
-            <h3 className={`text-lg font-bold ${c.text}`}>Seasonal Maintenance Wizard</h3>
-          </div>
+    <div className="space-y-4">
+    {renderBikeProfileBar()}
+    <div className={`${c.card} rounded-xl border-2 ${c.border} p-6 mb-6`}>
           <p className={`${c.textSecondary} text-sm mb-4`}>AI-powered checklist based on your bike, season, and riding conditions.</p>
           {!bikeProfile && <p className={`text-sm ${c.textMuteded} p-4 text-center`}>Add a bike in your garage first to get personalized advice.</p>}
           {bikeProfile && !seasonalResult && !loading && (
-            <button onClick={runSeasonalWizard} className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary}`}>🌦️ Generate Seasonal Checklist</button>
+            <>
+              <div className="mb-3">
+                <p className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2`}>Season</p>
+                <div className="flex flex-wrap gap-2">
+                  {SEASONS.map(s => {
+                    const isSelected = selectedSeason === s.key;
+                    const isCurrent = currentSeason === s.key;
+                    return (
+                      <button key={s.key} onClick={() => setSelectedSeason(s.key)}
+                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border-2 transition-all ${isSelected ? c.profileSelected : `${c.border} ${c.textSecondary} ${c.cardAltHover}`}`}>
+                        <span>{s.icon}</span>
+                        <span>{s.label}</span>
+                        {isCurrent && <span className={`text-[10px] ${isSelected ? '' : c.textMuteded}`}>· now</span>}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+              <button onClick={runSeasonalWizard} className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary}`}>🌦️ Generate {SEASONS.find(s => s.key === selectedSeason)?.label || 'Seasonal'} Checklist</button>
+            </>
           )}
           {loading && renderLoadingState()}
           {aiError && !loading && <div className={`p-4 ${c.danger} border rounded-xl text-sm`}>{aiError}</div>}
         </div>
         {seasonalResult && !loading && (
           <div className={`${c.card} rounded-xl border-2 ${c.border} p-6`}>
-            <h4 className={`text-sm font-bold ${c.text} mb-1`}>{seasonalResult.title || 'Seasonal Checklist'}</h4>
+            <div className="flex items-start justify-between gap-3 mb-1">
+              <h4 className={`text-sm font-bold ${c.text}`}>{seasonalResult.title || 'Seasonal Checklist'}</h4>
+              <button onClick={() => { setSeasonalResult(null); runSeasonalWizard(); }}
+                className={`flex-shrink-0 text-xs ${c.btnSecondary} px-2 py-1 rounded-lg`}>
+                ↺ Regenerate
+              </button>
+            </div>
             <p className={`text-xs ${c.textMuteded} mb-4`}>{seasonalResult.summary}</p>
+            {selectedSeason !== currentSeason && (
+              <p className={`text-xs ${c.amberText} mb-3`}>
+                🗓️ Planning ahead — this is a {SEASONS.find(s => s.key === selectedSeason)?.label} checklist. Current season is {SEASONS.find(s => s.key === currentSeason)?.label}.
+              </p>
+            )}
             {seasonalResult.tasks?.map((task, i) => (
               <div key={i} className={`flex items-start gap-3 p-3 mb-2 rounded-xl border ${c.border}`}>
                 <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${c.priorityPill(task.priority)}`}>{task.priority}</span>
@@ -1517,39 +1868,130 @@ const BikeMedic = ({ tool }) => {
                   <div className={`text-sm font-semibold ${c.text}`}>{task.task}</div>
                   <div className={`text-xs ${c.textMuteded} mt-0.5`}>{task.reason}</div>
                   {task.fix_ref && FIXES[task.fix_ref] && (
-                    <button onClick={() => { setShowSeasonalWizard(false); startFixDirect(task.fix_ref); }} className={`text-xs ${c.amberLink} mt-1`}>View guide →</button>
+                    <button onClick={() => startFixDirect(task.fix_ref)} className={`text-xs ${c.amberLink} mt-1`}>View guide →</button>
                   )}
                 </div>
               </div>
             ))}
-            <div className="flex gap-2 mt-4">
-              <CopyBtn content={`Seasonal Bike Maintenance\n${seasonalResult.summary}\n\n${(seasonalResult.tasks || []).map((t,i) => `${i+1}. [${t.priority}] ${t.task} — ${t.reason}`).join('\n')}\n\n— Generated by DeftBrain · deftbrain.com`} label="Copy Checklist" />
-              <ActionBar printContent={`<div style="font-family:system-ui;max-width:600px;margin:auto;padding:20px"><h1>🌦️ Seasonal Bike Maintenance</h1><p>${seasonalResult.summary}</p><ol>${(seasonalResult.tasks || []).map(t => `<li style="margin-bottom:12px"><strong>[${t.priority}]</strong> ${t.task}<br><em style="color:#666">${t.reason}</em></li>`).join('')}</ol><div style="margin-top:20px;border-top:1px solid #ddd;padding-top:8px;font-size:12px;color:#999;text-align:center">Generated by DeftBrain · deftbrain.com</div></div>`} printTitle="Seasonal Maintenance" />
-            </div>
           </div>
+        )}
+    </div>
+  );
+  };
+
+  // ══════════════════════════════════════════
+  // SCREEN: MAINTENANCE (schedule + completed maintenance history)
+  // ══════════════════════════════════════════
+  const renderMaintenanceSection = () => {
+    const maintDone = activeBikeId
+      ? repairHistory.filter(e => e.bikeId === activeBikeId && e.kind === 'maintenance')
+      : [];
+    return (
+      <div className={c.text}>
+        {renderBikeProfileBar()}
+        {!activeBikeId ? (
+          <p className={`text-sm ${c.textMuteded} p-4 mb-4 text-center rounded-xl border-2 border-dashed ${c.border}`}>
+            Add a bike in the Garage tab to track maintenance per bike.
+          </p>
+        ) : (
+          <>
+            {maintAlerts.length > 0 && (
+              <div className={`mb-6 p-4 rounded-xl border-2 ${c.amberBanner}`}>
+                <div className="flex items-center gap-2 mb-2">
+                  <span>🗓️</span>
+                  <span className={`text-sm font-bold ${c.amberLabel}`}>
+                    {maintAlerts.length} task{maintAlerts.length !== 1 ? 's' : ''} due
+                  </span>
+                </div>
+                <p className={`text-xs ${c.textSecondary}`}>See the schedule below. Intervals are based on your bike profile and logged mileage.</p>
+              </div>
+            )}
+
+            {/* Maintenance Schedule */}
+            <div className="mb-6">
+              <h4 className={`text-sm font-bold ${c.textSecondary} uppercase tracking-wide mb-3`}>🗓️ Maintenance Schedule</h4>
+              <div className="space-y-2">
+                {Object.entries(MAINT_SCHEDULE).filter(([id]) => {
+                  if (id === 'sealant_refresh' && bikeProfile?.tireSetup !== 'tubeless') return false;
+                  return true;
+                }).map(([taskId, task]) => {
+                  const bikeSched = maintSchedule[activeBikeId] || {};
+                  const lastDone = bikeSched[taskId];
+                  const daysSince = lastDone ? Math.floor((Date.now() - new Date(lastDone).getTime()) / 86400000) : null;
+                  const milesSince = task.intervalMiles ? getMilesSinceMaint(activeBikeId, taskId) : null;
+                  const timeOverdue = daysSince === null || daysSince >= task.intervalDays;
+                  const milesOverdue = milesSince !== null && task.intervalMiles && milesSince >= task.intervalMiles;
+                  const overdue = timeOverdue || milesOverdue;
+                  const daysUntilDue = daysSince === null ? 0 : Math.max(0, task.intervalDays - daysSince);
+                  return (
+                    <div key={taskId} className={`flex items-center gap-3 p-3 rounded-xl border-2 ${overdue ? c.amberBanner : c.border} ${c.card}`}>
+                      <span className="text-lg">{task.icon}</span>
+                      <div className="flex-1 min-w-0">
+                        <div className={`text-sm font-semibold ${c.text}`}>{task.label}</div>
+                        <div className={`text-xs ${c.textMuteded}`}>
+                          {lastDone ? `${daysSince}d ago` : 'Never done'}
+                          {milesSince !== null && <> · {Math.round(milesSince)} mi</>}
+                          {' · every '}{task.intervalDays}d{task.intervalMiles ? ` / ${task.intervalMiles} mi` : ''}
+                          {!overdue && daysUntilDue > 0 && <span className={c.textMuted}> · next due in {daysUntilDue}d</span>}
+                        </div>
+                      </div>
+                      {overdue && <span className={`text-xs font-bold ${c.amberText}`}>DUE</span>}
+                      <button onClick={() => markMaintDone(taskId)} disabled={!overdue}
+                        title={overdue ? 'Mark this maintenance task complete' : `Not yet due — available in ${daysUntilDue}d`}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-opacity ${overdue ? c.btnPrimary : `${c.btnSecondary} opacity-40 cursor-not-allowed`}`}>✅ Done</button>
+                      {task.fixRef && <button onClick={() => startFixDirect(task.fixRef)} className={`text-xs ${c.textMuteded} hover:underline`}>Guide →</button>}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Completed Maintenance History */}
+            {maintDone.length > 0 && (
+              <div>
+                <h4 className={`text-sm font-bold ${c.textSecondary} uppercase tracking-wide mb-3`}>✅ Recently Completed</h4>
+                <div className="space-y-2">
+                  {maintDone.slice(0, 8).map(entry => (
+                    <div key={entry.id} className={`flex items-center gap-3 p-3 rounded-xl border ${c.border} ${c.card}`}>
+                      <div className="flex-1 min-w-0">
+                        <div className={`text-sm font-semibold ${c.text} truncate`}>{entry.title}</div>
+                        <div className={`text-xs ${c.textMuteded}`}>{fmtDate(entry.date)}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
     );
-  }
+  };
 
   // ══════════════════════════════════════════
-  // SCREEN: REPAIR HISTORY + FAVORITES + MAINTENANCE
+  // SCREEN: MILES (ride logger + savings + repair history + favorites)
   // ══════════════════════════════════════════
-  if (showHistory) {
-    const totalSaved = getTotalSavings();
+  const renderHubSection = () => {
+    const bikeRepairHistory = (activeBikeId ? repairHistory.filter(e => e.bikeId === activeBikeId) : repairHistory.filter(e => !e.bikeId)).filter(e => e.kind !== 'maintenance');
+    const bikeTotalSaved = bikeRepairHistory.reduce((sum, e) => sum + (e.shopCost || 0), 0);
     const bikeRides = activeBikeId ? rides.filter(r => r.bikeId === activeBikeId) : [];
     return (
       <div className={c.text}>
-        {toast && <Toast message={toast} onClose={() => setToast(null)} />}
-        {renderNavBar()}
-        <h3 className={`text-lg font-bold ${c.text} mb-5`}>🔧 My Bike Hub</h3>
-
+        {renderBikeProfileBar()}
+        {garage.length === 0 && (
+          <p className={`text-sm ${c.textMuteded} p-4 mb-4 text-center rounded-xl border-2 border-dashed ${c.border}`}>
+            Add a bike in the Garage tab to track maintenance and repair history per bike.
+          </p>
+        )}
         {/* DIY Savings Tracker */}
-        {repairHistory.length > 0 && (
+        {bikeRepairHistory.length > 0 && (
           <div className={`mb-6 p-5 rounded-xl border-2 ${c.greenBanner} text-center`}>
             <span className="text-3xl block mb-1">💰</span>
-            <div className={`text-2xl font-black ${c.greenText}`}>${totalSaved}</div>
-            <div className={`text-xs ${c.textMuteded} mt-1`}>saved by DIY across {repairHistory.length} repair{repairHistory.length !== 1 ? 's' : ''}</div>
+            <div className={`text-2xl font-black ${c.greenText}`}>${bikeTotalSaved}</div>
+            <div className={`text-xs ${c.textMuteded} mt-1`}>
+              saved by DIY across {bikeRepairHistory.length} repair{bikeRepairHistory.length !== 1 ? 's' : ''}
+              {activeBikeId && bikeProfile && <> on {bikeProfile.name || bikeProfile.bikeType}</>}
+            </div>
           </div>
         )}
 
@@ -1558,12 +2000,18 @@ const BikeMedic = ({ tool }) => {
           <div className={`mb-6 p-4 rounded-xl border-2 ${c.border} ${c.card}`}>
             <div className="flex items-center gap-2 mb-3">
               <span>🚴</span>
-              <span className={`text-sm font-bold ${c.text}`}>Log a Ride</span>
-              <span className={`text-xs ${c.textMuteded} ml-auto`}>{bikeRides.length} rides · {Math.round(getBikeMiles(activeBikeId))} mi total</span>
+              <div className="flex-1">
+                <span className={`text-sm font-bold ${c.text}`}>Mileage Tracker</span>
+                <span className={`block text-xs ${c.textMuted}`}>Miles logged trigger maintenance reminders below</span>
+              </div>
+              <span className={`text-xs ${c.textMuted}`}>{Math.round(getBikeMiles(activeBikeId))} mi total</span>
             </div>
             <div className="flex gap-2 items-end">
               <div className="flex-1">
-                <input type="number" value={rideDistance} onChange={e => setRideDistance(e.target.value)} placeholder="Distance (mi)"
+                <label className={`text-xs font-bold ${c.textSecondary} block mb-1`}>Distance <span className={c.required}>*</span></label>
+                <input type="number" value={rideDistance} onChange={e => setRideDistance(e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter' && parseFloat(rideDistance) > 0) logRide(); }}
+                  placeholder="Distance (mi)"
                   className={`w-full px-3 py-2 border-2 rounded-lg text-sm outline-none ${c.input}`} />
               </div>
               <select value={rideConditions} onChange={e => setRideConditions(e.target.value)}
@@ -1574,13 +2022,14 @@ const BikeMedic = ({ tool }) => {
                 <option value="snow">❄️ Snow</option>
               </select>
               <button onClick={logRide} disabled={!rideDistance || parseFloat(rideDistance) <= 0}
+                title="Log (Enter or ⌘/Ctrl+Enter)"
                 className={`px-4 py-2 rounded-lg font-bold text-sm ${!rideDistance || parseFloat(rideDistance) <= 0 ? `${c.btnSecondary} opacity-50` : c.btnPrimary}`}>Log</button>
             </div>
             {bikeRides.length > 0 && (
               <div className={`mt-3 max-h-24 overflow-y-auto text-xs ${c.textMuteded} space-y-1`}>
                 {bikeRides.slice(0, 5).map(r => (
                   <div key={r.id} className="flex justify-between">
-                    <span>{new Date(r.date).toLocaleDateString()}</span>
+                    <span>{fmtDate(r.date)}</span>
                     <span>{r.distance} mi · {r.conditions}</span>
                   </div>
                 ))}
@@ -1609,70 +2058,85 @@ const BikeMedic = ({ tool }) => {
           </div>
         )}
 
-        {/* Maintenance Schedule (mileage-aware) */}
-        <div className="mb-6">
-          <h4 className={`text-sm font-bold ${c.textSecondary} uppercase tracking-wide mb-3`}>🗓️ Maintenance Schedule</h4>
-          {!activeBikeId ? (
-            <p className={`text-sm ${c.textMuteded} p-4 text-center`}>Add a bike to track maintenance.</p>
-          ) : (
-            <div className="space-y-2">
-              {Object.entries(MAINT_SCHEDULE).filter(([id]) => {
-                if (id === 'sealant_refresh' && bikeProfile?.tireSetup !== 'tubeless') return false;
-                return true;
-              }).map(([taskId, task]) => {
-                const bikeSched = maintSchedule[activeBikeId] || {};
-                const lastDone = bikeSched[taskId];
-                const daysSince = lastDone ? Math.floor((Date.now() - new Date(lastDone).getTime()) / 86400000) : null;
-                const milesSince = task.intervalMiles ? getMilesSinceMaint(activeBikeId, taskId) : null;
-                const timeOverdue = daysSince === null || daysSince >= task.intervalDays;
-                const milesOverdue = milesSince !== null && task.intervalMiles && milesSince >= task.intervalMiles;
-                const overdue = timeOverdue || milesOverdue;
-                return (
-                  <div key={taskId} className={`flex items-center gap-3 p-3 rounded-xl border-2 ${overdue ? c.amberBanner : c.border} ${c.card}`}>
-                    <span className="text-lg">{task.icon}</span>
-                    <div className="flex-1 min-w-0">
-                      <div className={`text-sm font-semibold ${c.text}`}>{task.label}</div>
-                      <div className={`text-xs ${c.textMuteded}`}>
-                        {lastDone ? `${daysSince}d ago` : 'Never done'}
-                        {milesSince !== null && <> · {Math.round(milesSince)} mi</>}
-                        {' · every '}{task.intervalDays}d{task.intervalMiles ? ` / ${task.intervalMiles} mi` : ''}
-                      </div>
-                    </div>
-                    {overdue && <span className={`text-xs font-bold ${c.amberText}`}>DUE</span>}
-                    <button onClick={() => markMaintDone(taskId)} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnPrimary}`}>✅ Done</button>
-                    {task.fixRef && <button onClick={() => startFixDirect(task.fixRef)} className={`text-xs ${c.textMuteded} hover:underline`}>Guide →</button>}
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-
         {/* Repair History */}
         <div>
-          <h4 className={`text-sm font-bold ${c.textSecondary} uppercase tracking-wide mb-3`}>📋 Repair History</h4>
-          {repairHistory.length === 0 ? (
-            <p className={`text-sm ${c.textMuteded} p-4 text-center`}>No repairs logged yet. Complete a fix and tap "Log Repair" to start tracking.</p>
+          <h4 className={`text-sm font-bold ${c.textSecondary} uppercase tracking-wide mb-3`}>
+            📋 Repair History{activeBikeId && bikeProfile && <span className={`${c.textMuteded} font-normal normal-case ml-1`}>· {bikeProfile.name || bikeProfile.bikeType}</span>}
+          </h4>
+          {bikeRepairHistory.length === 0 ? (
+            <p className={`text-sm ${c.textMuteded} p-4 text-center`}>No repairs logged {activeBikeId ? 'for this bike ' : ''}yet. Complete a fix and tap "Log Repair" to start tracking.</p>
           ) : (
             <div className="space-y-2">
-              {repairHistory.slice(0, 6).map(entry => (
+              {bikeRepairHistory.slice(0, 6).map(entry => (
                 <div key={entry.id} className={`flex items-center gap-3 p-3 rounded-xl border ${c.border} ${c.card}`}>
                   <div className="flex-1 min-w-0">
                     <button onClick={() => startFixDirect(entry.fixId)} className={`text-sm font-semibold ${c.text} hover:underline truncate block`}>{entry.title}</button>
                     <div className={`text-xs ${c.textMuteded}`}>
-                      {new Date(entry.date).toLocaleDateString()}
+                      {fmtDate(entry.date)}
                       {entry.shopCost > 0 && <span className={c.greenInline}> · saved ~${entry.shopCost}</span>}
                     </div>
                   </div>
                 </div>
               ))}
-              {repairHistory.length > 20 && <p className={`text-xs ${c.textMuteded} text-center`}>Showing 20 of {repairHistory.length}</p>}
+              {bikeRepairHistory.length > 20 && <p className={`text-xs ${c.textMuteded} text-center`}>Showing 20 of {bikeRepairHistory.length}</p>}
             </div>
           )}
-          {repairHistory.length > 0 && (
-            <button onClick={() => { setRepairHistory([]); showToast('History cleared'); }} className={`mt-3 text-xs ${c.textMuteded} ${c.deleteHover}`}>Clear history</button>
+          {bikeRepairHistory.length > 0 && (
+            <button onClick={() => {
+              if (activeBikeId) {
+                setRepairHistory(prev => prev.filter(e => e.bikeId !== activeBikeId));
+                showToast(`History cleared for ${bikeProfile?.name || 'this bike'}`);
+              } else {
+                setRepairHistory(prev => prev.filter(e => e.bikeId));
+                showToast('Orphaned history cleared');
+              }
+            }} className={`mt-3 text-xs ${c.textMuteded} ${c.deleteHover}`}>Clear history{activeBikeId && bikeProfile && <> for {bikeProfile.name || bikeProfile.bikeType}</>}</button>
           )}
         </div>
+      </div>
+    );
+  };
+
+  // ══════════════════════════════════════════
+  // SCREEN: QUICK CHECK — CUSTOM SITUATION
+  // ══════════════════════════════════════════
+  if (activeQuickCheck === 'custom') {
+    return (
+      <div className={c.text}>
+        {renderPersistentHeader('✏️ My Own Situation')}
+        {renderBikeProfileBar()}
+        <div className={`${c.card} rounded-xl border-2 ${c.border} p-6`}>
+          <p className={`text-sm ${c.textSecondary} mb-3`}>Describe the ride or condition and we'll generate a tailored checklist. <span className={c.textMuteded}>(⌘/Ctrl+Enter to submit)</span></p>
+          <textarea value={customSituation} onChange={e => setCustomSituation(e.target.value)}
+            placeholder="e.g., 'First gravel race of the season — 60 miles, mixed surfaces, rain forecast' or 'Bike's been sitting in a shed over winter; first spring ride tomorrow'"
+            className={`w-full h-28 p-3 border-2 rounded-xl text-sm outline-none resize-none ${c.input}`} />
+          <button onClick={runCustomCheck} disabled={loading || !customSituation.trim()}
+            className={`mt-3 w-full py-3 rounded-xl font-bold text-sm transition-colors ${loading || !customSituation.trim() ? `${c.btnSecondary} opacity-50` : c.btnPrimary}`}>
+            {loading ? <span className="flex items-center justify-center gap-2"><span className="animate-spin inline-block">{tool?.icon ?? '🚲'}</span> Generating...</span> : '✨ Generate Checklist'}
+          </button>
+          {aiError && !loading && <div className={`mt-3 p-3 ${c.danger} border rounded-xl text-sm`}>{aiError}</div>}
+        </div>
+        {customCheckResult && !loading && (
+          <div className={`${c.card} rounded-xl border-2 ${c.border} p-6 mt-4`}>
+            <h4 className={`text-sm font-bold ${c.text} mb-1`}>{customCheckResult.title || 'Tailored Checklist'}</h4>
+            <p className={`text-xs ${c.textMuteded} mb-4`}>{customCheckResult.summary}</p>
+            {customCheckResult.tasks?.map((task, i) => (
+              <div key={i} className={`flex items-start gap-3 p-3 mb-2 rounded-xl border ${c.border}`}>
+                <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${c.priorityPill(task.priority)}`}>{task.priority}</span>
+                <div className="flex-1">
+                  <div className={`text-sm font-semibold ${c.text}`}>{task.task}</div>
+                  <div className={`text-xs ${c.textMuteded} mt-0.5`}>{task.reason}</div>
+                  {task.fix_ref && FIXES[task.fix_ref] && (
+                    <button onClick={() => startFixDirect(task.fix_ref)} className={`text-xs ${c.amberLink} mt-1`}>View guide →</button>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+        <p className={`mt-4 text-xs text-center ${c.textMuteded}`}>
+          🔗 Related: <a href="/BuyWise" className={linkStyle}>🛒 BuyWise</a> · <a href="/DecisionCoach" className={linkStyle}>🧭 Decision Coach</a>
+        </p>
       </div>
     );
   }
@@ -1685,10 +2149,9 @@ const BikeMedic = ({ tool }) => {
     const numChecked = Object.keys(checkedItems).filter(k => checkedItems[k]).length;
     return (
       <div className={c.text}>
-        {renderNavBar()}
+        {renderPersistentHeader(`${check.icon} ${check.title}`)}
         {renderBikeProfileBar()}
         <div className={`${c.card} rounded-xl border-2 ${c.border} p-6`}>
-          <h3 className={`text-lg font-bold ${c.text} mb-1`}>{check.icon} {check.title}</h3>
           <p className={`text-sm ${c.textSecondary} mb-5`}>Tap to check off. Hit the ⚠️ to troubleshoot any issue.</p>
           <div className="space-y-3">
             {check.items.map((item, i) => (
@@ -1709,6 +2172,9 @@ const BikeMedic = ({ tool }) => {
           </div>
           <div className={`mt-4 text-center text-xs ${c.textMuteded}`}>{numChecked} / {check.items.length} checked</div>
         </div>
+        <p className={`mt-4 text-xs text-center ${c.textMuteded}`}>
+          🔗 Related: <a href="/BuyWise" className={linkStyle}>🛒 BuyWise</a> · <a href="/DecisionCoach" className={linkStyle}>🧭 Decision Coach</a>
+        </p>
       </div>
     );
   }
@@ -1721,93 +2187,64 @@ const BikeMedic = ({ tool }) => {
       <div className={c.text}>
         {toast && <Toast message={toast} onClose={() => setToast(null)} />}
 
-        {/* Tool Header */}
-        <div className={`mb-6 pb-4 border-b ${c.border}`}>
-          <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-            <span>{tool?.icon ?? '🚲'}</span> Bike Medic
-          </h2>
-          <p className={`text-sm ${c.textSecondary}`}>Your trailside mechanic in your pocket</p>
-        </div>
-
-        {/* Cross-refs pre-result */}
-        <div className={`mb-4 text-xs ${c.textMuteded}`}>
-          Need parts for a fix? <a href="/BuyWise" target="_blank" rel="noopener noreferrer" className={linkStyle}>BuyWise</a> checks if it's worth the money.
-        </div>
-
-        {renderBikeProfileBar()}
-
-        {/* Maintenance alerts */}
-        {maintAlerts.length > 0 && (
-          <div className={`mb-5 p-4 rounded-xl border-2 ${c.amberBanner}`}>
-            <div className="flex items-center gap-2 mb-2">
-              <span>🗓️</span>
-              <span className={`text-sm font-bold ${c.amberLabel}`}>Maintenance Due</span>
-              <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${c.amberBadge}`}>{maintAlerts.length}</span>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {maintAlerts.slice(0, 3).map(a => (
-                <button key={a.taskId} onClick={() => { if (a.fixRef) startFixDirect(a.fixRef); else markMaintDone(a.taskId); }}
-                  className={`text-xs font-semibold px-2 py-1 rounded-lg ${a.overdue ? c.redPill : c.tag} hover:opacity-80`}>
-                  {a.icon} {a.label}
-                </button>
-              ))}
-              {maintAlerts.length > 3 && <button onClick={() => setShowHistory(true)} className={`text-xs ${c.textMuteded} hover:underline`}>+{maintAlerts.length - 3} more</button>}
+        {/* Tool Header — unified card with profile bar */}
+        <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 mb-4`}>
+          <div className="pb-3 border-b border-zinc-500">
+            <div className="flex items-start justify-between">
+              <div>
+                <h2 className={`text-xl font-bold ${c.text}`}>
+                  <span className="mr-2">{tool?.icon ?? '🚲'}</span>{tool?.title ?? 'Bike Medic'}
+                </h2>
+                <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Your trailside mechanic in your pocket'}</p>
+              </div>
             </div>
           </div>
-        )}
-
-        {/* Mode tabs + feature buttons */}
-        <div className="flex items-center gap-2 mb-5 flex-wrap">
-          <button onClick={() => setViewMode('problems')}
-            className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${viewMode === 'problems' ? c.btnPrimary : `${c.border} border ${c.textSecondary} ${c.cardAltHover}`}`}>
-            🔧 Diagnose
-          </button>
-          <button onClick={() => setViewMode('quickcheck')}
-            className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${viewMode === 'quickcheck' ? c.btnPrimary : `${c.border} border ${c.textSecondary} ${c.cardAltHover}`}`}>
-            ✅ Quick Checks
-          </button>
-          <div className="flex-1" />
-          <button onClick={() => setShowSeasonalWizard(true)} className={`p-2 rounded-lg ${c.cardAltHover} ${c.textSecondary} transition-colors`} title="Seasonal maintenance">
-            <span>🌦️</span>
-          </button>
-          <button onClick={() => setShowToolbox(true)} className={`p-2 rounded-lg ${c.cardAltHover} ${c.textSecondary} transition-colors relative`} title="My toolbox">
-            <span>🧰</span>
-            {myTools.length > 0 && <span className={`absolute -top-1 -right-1 w-4 h-4 ${c.navBadgeZinc} text-[10px] font-bold rounded-full flex items-center justify-center`}>{myTools.length}</span>}
-          </button>
-          <button onClick={() => setShowHistory(true)} className={`p-2 rounded-lg ${c.cardAltHover} ${c.textSecondary} transition-colors relative`} title="Hub: history, rides, maintenance">
-            <span>📋</span>
-            {maintAlerts.length > 0 && <span className={`absolute -top-1 -right-1 w-4 h-4 ${c.navBadgeAmber} text-[10px] font-bold rounded-full flex items-center justify-center`}>{maintAlerts.length}</span>}
-          </button>
-          <button onClick={() => setShowProfileSetup(true)} className={`p-2 rounded-lg ${c.cardAltHover} ${c.textSecondary} transition-colors relative`} title="Garage">
-            <span>🏠</span>
-            {garage.length > 0 && <span className={`absolute -top-1 -right-1 w-4 h-4 ${c.navBadgeZinc} text-[10px] font-bold rounded-full flex items-center justify-center`}>{garage.length}</span>}
-          </button>
+          <div className="pt-3">
+            {renderSectionTabs()}
+          </div>
+          {activeSection === null && renderBikeProfileBar()}
+          {activeSection === null && !bikeProfile && (
+            <div className="px-0 pt-2">
+              <p className={`text-xs ${c.textMuted}`}>
+                <button onClick={() => setActiveSection('garage')} className={`${c.accentTxt} font-semibold hover:underline`}>➕ Add your bike</button>{' '}
+                for personalized diagnosis and maintenance tracking.
+              </p>
+            </div>
+          )}
         </div>
+
+        {/* Section panels — rendered inline below header */}
+        {activeSection === 'garage' && renderGarageSection()}
+        {activeSection === 'quick' && renderQuickSection()}
+        {activeSection === 'toolbox' && renderToolboxSection()}
+        {activeSection === 'seasonal' && renderSeasonalSection()}
+        {activeSection === 'maintenance' && renderMaintenanceSection()}
+        {activeSection === 'hub' && renderHubSection()}
+
+        {activeSection === null && (
+          <>
+        {/* Maintenance due — compact link to Maintenance tab */}
+        {maintAlerts.length > 0 && (
+          <button onClick={() => setActiveSection('maintenance')}
+            className={`mb-5 w-full flex items-center gap-2 p-3 rounded-xl border-2 ${c.amberBanner} text-left hover:opacity-90 transition-opacity`}>
+            <span>🗓️</span>
+            <span className={`text-sm font-bold ${c.amberLabel}`}>
+              {maintAlerts.length} maintenance task{maintAlerts.length !== 1 ? 's' : ''} due
+            </span>
+            <span className={`ml-auto text-xs ${c.textMuteded}`}>View →</span>
+          </button>
+        )}
 
         {/* Savings banner */}
         {getTotalSavings() > 0 && (
           <div className={`mb-4 flex items-center gap-3 p-3 rounded-xl border ${c.greenBanner}`}>
             <span>💰</span>
             <span className={`text-sm font-bold ${c.greenText}`}>${getTotalSavings()} saved by DIY</span>
-            <button onClick={() => setShowHistory(true)} className={`ml-auto text-xs ${c.textMuteded} hover:underline`}>Details →</button>
+            <button onClick={() => setActiveSection('hub')} className={`ml-auto text-xs ${c.textMuteded} hover:underline`}>Details →</button>
           </div>
         )}
 
-        {viewMode === 'quickcheck' ? (
-          <div>
-            <p className={`${c.textSecondary} mb-4 text-sm`}>Run a targeted checklist for your situation.</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {Object.entries(QUICK_CHECKS).map(([key, check]) => (
-                <button key={key} onClick={() => { setActiveQuickCheck(key); setCheckedItems({}); }}
-                  className={`group flex items-center gap-3 p-4 rounded-xl border-2 ${c.border} ${c.borderHover} ${c.card} ${c.cardAltHover} transition-all text-left`}>
-                  <span className="text-2xl">{check.icon}</span>
-                  <div><span className={`text-sm font-bold ${c.text}`}>{check.title}</span><span className={`block text-xs ${c.textMuteded}`}>{check.items.length} items</span></div>
-                  <span className={`ml-auto ${c.textMuteded} group-hover:translate-x-1 transition-transform`}>→</span>
-                </button>
-              ))}
-            </div>
-          </div>
-        ) : (
+        {(
           <div>
             {/* Favorites quick access */}
             {favorites.length > 0 && (
@@ -1888,6 +2325,7 @@ const BikeMedic = ({ tool }) => {
                   onChange={e => setCustomProblem(e.target.value)}
                   onKeyDown={e => { if (e.key === 'Enter' && customProblem.trim()) { setShowAskMechanic(true); askMechanic(); } }}
                   placeholder="e.g., 'Creaking from bottom bracket when climbing...'"
+                  title="Enter to submit"
                   className={`flex-1 px-3 py-2 border-2 rounded-lg text-sm outline-none ${c.input}`}
                 />
                 <button
@@ -1900,6 +2338,17 @@ const BikeMedic = ({ tool }) => {
             </div>
           </div>
         )}
+          </>
+        )}
+
+        {/* Shared cross-refs — visible on every tab */}
+        <div className={`mt-5 p-3 rounded-xl border ${c.border} ${c.card}`}>
+          <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-2`}>🔗 Related Tools</p>
+          <div className={`space-y-1 text-xs ${c.textSecondary}`}>
+            <p>Need to buy a part? <a href="/BuyWise" className={linkStyle}>🛒 BuyWise</a> checks if it's worth the price before you order.</p>
+            <p>Not sure whether to DIY or go to the shop? <a href="/DecisionCoach" className={linkStyle}>🧭 Decision Coach</a> helps you decide.</p>
+          </div>
+        </div>
       </div>
     );
   }
@@ -1911,18 +2360,23 @@ const BikeMedic = ({ tool }) => {
     return (
       <div className={c.text}>
         {toast && <Toast message={toast} onClose={() => setToast(null)} />}
-        {renderNavBar()}
+        {renderPersistentHeader('💬 Ask the Mechanic')}
         {renderBikeProfileBar()}
         <div className={`${c.card} rounded-xl border-2 ${c.border} p-6 mb-6`}>
-          <div className="flex items-center gap-3 mb-4">
-            <span className="text-xl">💬</span>
-            <h3 className={`text-lg font-bold ${c.text}`}>Ask the Mechanic</h3>
-          </div>
           <p className={`${c.textSecondary} text-sm mb-4`}>Describe the problem — what you see, hear, or feel. Attach a photo for visual diagnosis.</p>
           <textarea value={customProblem} onChange={(e) => setCustomProblem(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && customProblem.trim() && !loading) askMechanic(); }}
             placeholder="e.g., 'Rear wheel grinds when going uphill and shifting to easier gear. Started after heavy rain.'"
             className={`w-full h-32 p-4 border-2 rounded-xl outline-none resize-none text-sm ${c.input}`} />
+          <button
+            onClick={() => setCustomProblem(bikeProfile?.bikeType === 'road'
+              ? "My rear derailleur makes a clicking noise when I pedal hard and occasionally drops into a harder gear unexpectedly."
+              : bikeProfile?.bikeType === 'mountain'
+              ? "Front brake squeals loudly on every stop, especially when wet. Pads look fine."
+              : "Rear wheel makes a creaking sound every pedal stroke, only when putting power down uphill.")}
+            className={`mt-2 text-xs font-semibold ${c.accentTxt} hover:underline`}>
+            Try example
+          </button>
 
           {/* Photo upload */}
           <div className="flex items-center gap-3 mt-3">
@@ -1953,6 +2407,9 @@ const BikeMedic = ({ tool }) => {
           )}
         </div>
         {aiDiagnosis && !loading && renderAIDiagnosis(aiDiagnosis)}
+        <p className={`mt-4 text-xs text-center ${c.textMuteded}`}>
+          🔗 Related: <a href="/BuyWise" className={linkStyle}>🛒 BuyWise</a> · <a href="/DecisionCoach" className={linkStyle}>🧭 Decision Coach</a>
+        </p>
       </div>
     );
   }
@@ -1965,7 +2422,7 @@ const BikeMedic = ({ tool }) => {
     return (
       <div className={c.text}>
         {toast && <Toast message={toast} onClose={() => setToast(null)} />}
-        {renderNavBar()}
+        {renderPersistentHeader(fix.title)}
         {renderBikeProfileBar()}
 
         {/* Resolved celebration */}
@@ -2001,9 +2458,12 @@ const BikeMedic = ({ tool }) => {
               <div className="md:col-span-3 flex flex-col justify-center">
                 <div className="flex items-start gap-2">
                   <h3 className={`text-2xl font-bold ${c.text} mb-3 flex-1`}>{fix.title}</h3>
-                  <button onClick={() => { toggleFavorite(currentFix); showToast(isFav ? 'Removed from favorites' : 'Saved to favorites'); }}
-                    className={`text-xl flex-shrink-0 mt-1 hover:scale-110 transition-transform`} title={isFav ? 'Remove from favorites' : 'Save to favorites'}>
-                    {isFav ? '⭐' : '☆'}
+                  <button onClick={() => {
+                    toggleFavorite(currentFix);
+                    if (!isFav) { setSavedFix(true); setTimeout(() => setSavedFix(false), 2000); }
+                    showToast(isFav ? 'Removed from saved guides' : 'Guide saved — find it in My Bike Hub');
+                  }} className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold border transition-all flex-shrink-0 mt-0.5 ${isFav ? `${c.amberBadge} border-amber-500` : `${c.border} ${c.textSecondary}`}`}>
+                    {savedFix ? '✅ Saved!' : isFav ? '⭐ Saved' : '☆ Save Guide'}
                   </button>
                 </div>
                 <div className="flex flex-wrap gap-2 mb-3">
@@ -2019,11 +2479,6 @@ const BikeMedic = ({ tool }) => {
 
             {/* Action buttons */}
             <div className="mb-4">
-              <ActionBar
-                content={buildFixText()}
-                printContent={buildFixPrintHtml()}
-                title={fix.title}
-              />
             </div>
 
             {/* Toolbox readiness check */}
@@ -2111,7 +2566,7 @@ const BikeMedic = ({ tool }) => {
                     ))}
                     {/* Cross-ref */}
                     <div className={`p-3 border-t ${c.border} text-xs ${c.textMuteded}`}>
-                      Worth buying? <a href="/BuyWise" target="_blank" rel="noopener noreferrer" className={linkStyle}>BuyWise</a> breaks it down.
+                      
                     </div>
                   </div>
                 )}
@@ -2153,7 +2608,6 @@ const BikeMedic = ({ tool }) => {
                 {/* Shop handoff */}
                 <div className={`mt-3 pt-3 border-t ${c.border} flex gap-2`}>
                   <CopyBtn content={buildShopHandoff()} label="📤 Copy Shop Summary" />
-                  <ActionBar printContent={buildShopHandoffHtml()} label="🖨️ Print for Shop" />
                 </div>
                 <p className={`text-xs ${c.textMuteded} mt-2`}>Taking it to a shop? Copy or print a diagnostic summary so they know what you've already tried.</p>
               </div>
@@ -2161,12 +2615,8 @@ const BikeMedic = ({ tool }) => {
 
             {/* Cross-refs + disclaimer */}
             <div className={`mt-6 pt-4 border-t ${c.border} space-y-2 text-xs ${c.textMuteded}`}>
-              {fix.difficulty === 'shop-only' && (
-                <p>Not sure whether to DIY this one? <a href="/DecisionCoach" target="_blank" rel="noopener noreferrer" className={linkStyle}>Decision Coach</a> helps you think it through.</p>
-              )}
-              {fix.parts?.length > 0 && (
-                <p>Checking whether parts are worth the cost? <a href="/BuyWise" target="_blank" rel="noopener noreferrer" className={linkStyle}>BuyWise</a> can help you decide.</p>
-              )}
+              <p>🔗 Related: <a href="/BuyWise" className={linkStyle}>🛒 BuyWise</a> — check a part's value before ordering · <a href="/DecisionCoach" className={linkStyle}>🧭 Decision Coach</a> — DIY vs. shop decision help
+              </p>
               <p className={`pt-2 border-t ${c.border}`}>⚠️ Safety-critical repairs (brakes, wheels, headset) should be verified by a professional mechanic before riding.</p>
             </div>
           </>
@@ -2182,9 +2632,9 @@ const BikeMedic = ({ tool }) => {
     return (
       <div className={c.text}>
         {toast && <Toast message={toast} onClose={() => setToast(null)} />}
-        {renderNavBar()}
+        {renderPersistentHeader(null)}
         {renderBikeProfileBar()}
-        <div className={`flex items-center gap-2 mb-6 text-xs ${c.textMuteded} font-medium`}>
+        <div className={`flex items-center gap-2 mb-4 text-xs ${c.textMuted} font-medium`}>
           <span style={{ color: accent }} className="font-bold">{activeProblem?.icon} {activeProblem?.label}</span>
           <span>→</span>
           <span>Step {treePath.length}</span>
@@ -2205,6 +2655,12 @@ const BikeMedic = ({ tool }) => {
             ))}
           </div>
         </div>
+
+        {results && (
+          <p className={`mt-4 text-xs text-center ${c.textMuted}`}>
+            Shopping for parts? <a href="/BuyWise" className={linkStyle}>🛒 BuyWise</a> checks if a part is worth the price.
+          </p>
+        )}
         {/* Quick AI escape hatch */}
         <div className="mt-4 text-center">
           <button onClick={() => { setShowAskMechanic(true); setCustomProblem(`I have a ${activeProblem?.label?.toLowerCase() || 'bike'} problem: `); }}

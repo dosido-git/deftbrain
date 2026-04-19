@@ -63,7 +63,7 @@ Generate a personalized seasonal maintenance checklist. Consider:
 
 Return ONLY valid JSON:
 {
-  "title": "Season + Year Maintenance Checklist",
+  "title": "Concise title naming the season only — NO YEAR (e.g., 'Spring Maintenance Checklist', 'Winter Prep')",
   "summary": "One-sentence overview of priorities for this season",
   "tasks": [
     {
@@ -75,12 +75,61 @@ Return ONLY valid JSON:
   ]
 }
 
-Available fix_ref IDs: fix_noise_chainlube, fix_chain_worn, fix_disc_pad_worn, fix_disc_squeal, fix_tubeless_refresh, fix_ghost_shift, fix_headset_loose, fix_headset_gritty, fix_bb_creak, fix_noise_creak, fix_true_wheel, fix_hub_play, fix_clipless, fix_rim_weak
+Available fix_ref IDs: fix_noise_chainlube, fix_chain_worn, fix_chain_inspect, fix_disc_pad_worn, fix_disc_squeal, fix_brake_inspect, fix_tubeless_refresh, fix_ghost_shift, fix_cable_inspect, fix_headset_loose, fix_headset_gritty, fix_bb_creak, fix_noise_creak, fix_true_wheel, fix_hub_play, fix_clipless, fix_rim_weak
 
-Generate 6-10 tasks, ordered by priority. Be specific to the bike and season.`;
+Generate 6-10 tasks, ordered by priority. Be specific to the bike and season. The checklist should be evergreen — do not reference the current year, since it will be reused across years.`;
 
       const parsed = await callClaudeWithRetry(seasonalUserPrompt, {
         label: 'bike-medic/seasonal',
+        max_tokens: 1500,
+        system: withLanguage(MECHANIC_PERSONA, req.body.userLanguage),
+      });
+      return res.json(parsed);
+    }
+
+    // ── TYPE 4b: Custom Situation Checklist ──
+    // Like seasonal, but tailored to a user-described scenario (e.g. "first gravel race",
+    // "bike sat in shed all winter"). Returns the same {title, summary, tasks[]} shape.
+    if (mode === 'custom_check') {
+      const situation = (context?.customSituation || symptom || '').trim();
+      if (situation.length < 5) {
+        return res.status(400).json({ error: 'Describe your situation in a few words' });
+      }
+
+      const bp = bikeProfile || {};
+      const recentRides = context?.recentRides || [];
+      const ridesContext = recentRides.length > 0
+        ? `\nRECENT RIDES: ${recentRides.map(r => `${r.distance}mi (${r.conditions})`).join(', ')}`
+        : '';
+
+      const customUserPrompt = `You are generating a TAILORED PRE-RIDE / PREP CHECKLIST for a specific situation a cyclist described.
+
+RIDER'S SITUATION: "${situation}"
+BIKE: ${bp.name || bp.bikeType || 'unknown'} — type: ${bp.bikeType || '?'}, brakes: ${bp.brakeType || '?'}, shifting: ${bp.shiftType || '?'}, tires: ${bp.tireSetup || '?'}
+TOTAL MILEAGE: ~${bp.totalMiles || 0} miles${ridesContext}
+
+Generate a prioritized checklist specifically for this situation. Focus on what actually matters for THIS scenario — not a generic tune-up. If the situation involves wet/muddy conditions, prioritize drivetrain and brake prep. If it's a long tour, prioritize reliability checks. If it's first ride after storage, prioritize safety verification.
+
+Return ONLY valid JSON:
+{
+  "title": "Concise title reflecting the situation",
+  "summary": "One-sentence overview of what this checklist addresses",
+  "tasks": [
+    {
+      "task": "Specific, actionable task",
+      "reason": "Why this matters for THIS situation specifically",
+      "priority": "high | medium | low",
+      "fix_ref": "fix_id from our fix database or null if no matching guide"
+    }
+  ]
+}
+
+Available fix_ref IDs: fix_noise_chainlube, fix_chain_worn, fix_chain_inspect, fix_disc_pad_worn, fix_disc_squeal, fix_brake_inspect, fix_tubeless_refresh, fix_ghost_shift, fix_cable_inspect, fix_headset_loose, fix_headset_gritty, fix_bb_creak, fix_noise_creak, fix_true_wheel, fix_hub_play, fix_clipless, fix_rim_weak
+
+Generate 5-10 tasks, ordered by priority. Be specific to the situation and the bike.`;
+
+      const parsed = await callClaudeWithRetry(customUserPrompt, {
+        label: 'bike-medic/custom_check',
         max_tokens: 1500,
         system: withLanguage(MECHANIC_PERSONA, req.body.userLanguage),
       });
@@ -168,7 +217,7 @@ Return ONLY valid JSON:
   "prevention": "How to prevent this in the future",
   "next_steps": ["Prioritized action 1", "Action 2", "Action 3"],
   "related_issues": ["Other things to check while they're at it"]
-}`, req);
+}`, req.body.userLanguage);
 
     } else {
       // ── TYPE 1: Freeform Diagnosis ──
@@ -198,7 +247,7 @@ Return ONLY valid JSON:
   "related_issues": ["Other things to check while you're at it"]
 }
 
-Return ONLY valid JSON. No markdown, no explanation outside the JSON.`, req);
+Return ONLY valid JSON. No markdown, no explanation outside the JSON.`, req.body.userLanguage);
     }
 
     // ── Types 1 & 2: Freeform Diagnosis + Post-Fix Follow-up ──

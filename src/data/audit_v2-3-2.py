@@ -12,9 +12,11 @@ ABBREV_KEYS = ['  ts:', '  tm:', '  pri:', '  bdr:', '  ok:', '  bad:',
 REQUIRED_KEYS = ['card', 'cardAlt', 'text', 'textSecondary', 'textMuted',
                  'input', 'btnPrimary', 'btnSecondary', 'border', 'success',
                  'warning', 'danger']
-BANNED_COLORS = ['bg-blue', 'text-blue', 'border-blue', 'bg-purple', 'text-purple',
-                 'bg-violet', 'text-violet', 'bg-indigo', 'text-indigo',
-                 'bg-teal', 'text-teal', 'bg-stone', 'text-stone', 'bg-yellow', 'text-yellow']
+BANNED_COLORS = ['bg-blue', 'text-blue', 'border-blue', 'bg-purple', 'text-purple', 'border-purple',
+                 'bg-violet', 'text-violet', 'border-violet', 'bg-indigo', 'text-indigo', 'border-indigo',
+                 'bg-teal', 'text-teal', 'border-teal', 'bg-stone', 'text-stone', 'border-stone',
+                 'bg-yellow', 'text-yellow', 'border-yellow',
+                 'bg-rose', 'text-rose', 'border-rose', 'bg-pink', 'text-pink', 'border-pink']
 SKIP = {'crowd-wisdom','debate-me','usePersistentState','tools','ActionButtons','printBranding','BrandMark','GlobalHeader','ToolPageWrapper','server','index','rateLimiter','useTheme','useDocumentHead','useSurvivalMath','usePersistentState','imageCompression'}
 
 def get_c_block(content):
@@ -56,13 +58,25 @@ else:
             tools.append((name, fpath))
 
 # Load valid tool IDs from tools.js for cross-ref link validation
+# Also capture per-tool icon + title so we can cross-check fallbacks
 VALID_TOOL_IDS = set()
+TOOL_META = {}  # id -> {'icon': '...', 'title': '...'}
 tools_js_path = '/mnt/project/tools.js'
 if os.path.exists(tools_js_path):
     import re as _re2
     with open(tools_js_path) as f:
         _tools_js = f.read()
     VALID_TOOL_IDS = set(_re2.findall(r'id:\s*["\']([A-Za-z][A-Za-z0-9]+)["\']', _tools_js))
+    # Capture id + following icon/title within the same tool entry (next ~400 chars after id)
+    for _m in _re2.finditer(r'id:\s*["\']([A-Za-z][A-Za-z0-9]+)["\']', _tools_js):
+        _id = _m.group(1)
+        _window = _tools_js[_m.end():_m.end() + 600]
+        _icon_m = _re2.search(r'icon:\s*["\']([^"\']+)["\']', _window)
+        _title_m = _re2.search(r'title:\s*["\']([^"\']+)["\']', _window)
+        TOOL_META[_id] = {
+            'icon': _icon_m.group(1) if _icon_m else None,
+            'title': _title_m.group(1) if _title_m else None,
+        }
 
 results = {}
 
@@ -102,6 +116,22 @@ for name, fpath in tools:
     icon_count = content.count('tool?.icon')
     if icon_count < 2:
         fails.append(f'S0: tool?.icon appears only {icon_count} time(s) — must be in header AND submit button(s)')
+
+    # S0f: icon/title fallback values must match tools.js metadata
+    # Pattern: tool?.icon ?? 'X' and tool?.title ?? 'Y' fallbacks should equal what tools.js has
+    if name in TOOL_META and TOOL_META[name].get('icon'):
+        expected_icon = TOOL_META[name]['icon']
+        # Collect all tool?.icon ?? 'X' fallbacks
+        fallback_icons = set(re.findall(r"tool\?\.icon\s*\?\?\s*['\"]([^'\"]+)['\"]", content))
+        bad = [f for f in fallback_icons if f != expected_icon]
+        if bad:
+            fails.append(f'S0f: tool?.icon fallback(s) {bad} mismatch tools.js icon "{expected_icon}"')
+    if name in TOOL_META and TOOL_META[name].get('title'):
+        expected_title = TOOL_META[name]['title']
+        fallback_titles = set(re.findall(r"tool\?\.title\s*\?\?\s*['\"]([^'\"]+)['\"]", content))
+        bad = [t for t in fallback_titles if t != expected_title]
+        if bad:
+            fails.append(f'S0f: tool?.title fallback(s) {bad} mismatch tools.js title "{expected_title}"')
 
     # S1.2: left-alignment — text-center banned on the tool page header (h2/tagline area)
     # Allowed on: result cards, metric callouts, verdict displays
@@ -179,6 +209,29 @@ for name, fpath in tools:
     if btn_m and 'cyan' not in btn_m.group(0):
         fails.append(f'S1.1: btnPrimary not cyan: {btn_m.group(0).strip()[:60]}')
 
+    # S1.1i: used-but-undefined c keys (WrongAnswersOnly pattern — silent undefined classNames)
+    # Collect all c.xxx references in the component body, then check each is defined either
+    # as a literal key inside c block OR as an alias assignment (c.foo = c.bar).
+    c_used = set(re.findall(r'(?<=c\.)([a-zA-Z][a-zA-Z0-9]*)\b', content))
+    # Keys defined via literal `key: value` inside c block
+    c_literal_keys = set(re.findall(r'^\s+([a-zA-Z][a-zA-Z0-9]*)\s*:', c_block, re.MULTILINE))
+    # Keys defined via alias assignment anywhere in file: `c.foo = c.bar;`
+    c_alias_keys = set(re.findall(r'\bc\.([a-zA-Z][a-zA-Z0-9]*)\s*=\s*c\.', content))
+    c_defined = c_literal_keys | c_alias_keys
+    undefined_keys = c_used - c_defined
+    for k in sorted(undefined_keys):
+        fails.append(f'S1.1i: c.{k} used but not defined in c block (silent undefined className)')
+
+    # S1.1j: raw Tailwind in lookup-object color props (BrainRoulette pattern)
+    # Catches both `color: 'text-...'` (direct string) and `color: (d) => d ? 'bg-...' : ...` (fn).
+    # We look for `color:` followed within 200 chars by a Tailwind class prefix inside quotes.
+    for m in re.finditer(r"color\s*:\s*[^,}\n]{0,220}?['\"](?:bg-|text-|border-)[a-z]+-\d", content):
+        if is_comment_line(content, m.start()):
+            continue
+        line_n = content[:m.start()].count('\n') + 1
+        fails.append(f'S1.1j: lookup-object uses raw Tailwind color at line {line_n} — use colorKey: "themeKey" and c[key] indirection')
+        break
+
     # S1.1: linkStyle standalone
     if 'linkStyle' not in content:
         fails.append('S1.1: linkStyle missing')
@@ -238,10 +291,20 @@ for name, fpath in tools:
         fails.append('S1.4: ActionBarContext not imported — add: import { useRegisterActions } from \'../components/ActionBarContext\'')
     if has_inline_actionbar:
         fails.append('S1.4: inline <ActionBar> found in tool JSX — remove it; ToolPageWrapper renders ActionBar in the header via useRegisterActions')
-    # S1.4: standalone PrintBtn is valid when used directly alongside CopyBtn
-    # The real violation is custom window.open bypasses (caught by S1.4e below)
+    # S1.4: standalone <PrintBtn> is NEVER valid inline — always a whole-document action
+    # Whole-output CopyBtn belongs in useRegisterActions; per-item CopyBtn (helper takes a param) is fine
+    # (This codifies the ContextCollapse-style exception for per-item copy buttons)
     if 'BRAND' not in content and 'deftbrain.com' not in content:
         fails.append('S1.4: BRAND/deftbrain.com missing')
+    # S1.4g: inline <PrintBtn> is always a violation — print has no legitimate per-item use case
+    if re.search(r'<PrintBtn\b', content):
+        fails.append('S1.4g: inline <PrintBtn> found — print actions go through useRegisterActions, never inline')
+    # S1.4h: whole-output CopyBtn helpers (called with empty parens) must go through useRegisterActions
+    # Per-item helpers that take a parameter — buildChainText(chain), buildCopyText(variant) — are allowed
+    _whole_helpers = r'(buildFullText|buildAllScripts|buildAllScriptsContent|buildReport|buildReportText|buildCopy|buildReminderText|buildCompareText|buildResults|buildPlanText|buildBreakPlan)'
+    _whole_hits = re.findall(r'<CopyBtn[^>]*content=\{\s*' + _whole_helpers + r'\s*\(\s*\)', content)
+    for _fname in _whole_hits:
+        fails.append(f'S1.4h: inline <CopyBtn content={{{_fname}()}}> — whole-output copy must go through useRegisterActions')
     # S1.4e: no custom print bypass (must use ActionBar/PrintBtn, not manual window.open)
     if re.search(r"window\.open\s*\(", content):
         # Allow if it's inside a comment
@@ -287,6 +350,70 @@ for name, fpath in tools:
             reset_rendered = True
         if not reset_rendered:
             fails.append('S1.5: reset function defined but no onClick button renders it')
+
+    # PF-16: Reset button placement — exactly 1, in header top-right, never in results block or submit row
+    # Signals of a reset button: onClick={handleReset} OR onClick containing setResults(null) reset-like pattern
+    # We count distinct <button> elements that look like reset buttons.
+    reset_btn_matches = list(re.finditer(
+        r'<button[^>]*onClick=\{(?:[^}]*handleReset|[^}]*setResults\(null\)[^}]*setBelief|[^}]*setResults\(null\)[^}]*setInput|\(\s*\)\s*=>\s*\{[^}]*setResults\(null\)[^}]*set)',
+        content
+    ))
+    # Simpler coverage: count handleReset onClick usages (most tools use dedicated fn)
+    reset_onclick_count = len(re.findall(r'onClick=\{handleReset\}|onClick=\{\s*handleReset\s*\}', content))
+    # Also look for buttons whose label is "Start Over" / "New" / "Clear" / "Reset" + ↺ / ↩
+    reset_label_count = len(re.findall(r'<button[^>]*>[^<]{0,50}(?:↺|↩)\s*(?:Start Over|New|Clear|Reset|Fresh)', content))
+    # The best count is the max — captures both patterns
+    reset_count = max(reset_onclick_count, reset_label_count)
+    if reset_count > 1:
+        fails.append(f'PF-16: {reset_count} reset buttons detected — must be exactly 1 (header top-right only)')
+    # PF-16: reset button must NOT appear inside a {results && ( block.
+    # Strategy: find the first {results && ( split, then check handleReset appears only BEFORE it.
+    _results_split = re.search(r'\{\s*(?<![!])results\b[^=\n]{0,40}&&\s*[(<]', content)
+    if _results_split and 'handleReset' in content:
+        reset_pos = content.find('handleReset', _results_split.end())  # search AFTER the split
+        if reset_pos != -1:
+            # There's a handleReset AFTER the {results && ( — violation
+            # But allow: if handleReset is a function definition (const handleReset = ...) after the split
+            # We only flag <button onClick={handleReset}> AFTER the split
+            _btn_after = re.search(r'<button[^>]*onClick=\{handleReset\}', content[_results_split.end():])
+            if _btn_after:
+                line_n = content[:_results_split.end() + _btn_after.start()].count('\n') + 1
+                fails.append(f'PF-16: reset button at line {line_n} is inside {{results && (...)}} — must be in header top-right')
+    # PF-16: reset button must NOT use c.btnPrimary
+    if re.search(r'<button[^>]*onClick=\{handleReset\}[^>]*c\.btnPrimary\b', content):
+        fails.append('PF-16: reset button uses c.btnPrimary — must be c.btnSecondary')
+
+    # PF-12: Python-replace script corruption typos (self-reference doubling pattern)
+    # These emerge when a find/replace accidentally runs twice. All are silent: className
+    # resolves to "undefined undefined" and styles disappear with no error.
+    PY_REPLACE_TYPOS = [
+        'btnPrimaryPrimary',
+        'btnPrimarySecondaryondary',
+        'btnSecondaryondary',
+        'textSecondaryondary',
+        'textMutedMuted',
+        'borderBorder',
+        'cardCard',
+    ]
+    for typo in PY_REPLACE_TYPOS:
+        if typo in content:
+            fails.append(f'PF-12: Python-replace corruption typo "{typo}" — fix the class name at each callsite')
+
+    # S1.5: history preview length must be ~40 chars (not 6, not 100)
+    for m in re.finditer(r'preview\s*:\s*[^,\n}]+\.slice\(\s*0\s*,\s*(\d+)\s*\)', content):
+        n = int(m.group(1))
+        if n < 20 or n > 80:
+            line_n = content[:m.start()].count('\n') + 1
+            fails.append(f'S1.5: preview slice length {n} at line {line_n} — should be 30–60 (typical is 40)')
+
+    # S2.1: keyboard handler SELECT-only guard (not INPUT/TEXTAREA)
+    # Over-broad guards (tag === 'INPUT' || tag === 'TEXTAREA') prevent the global
+    # ⌘/Ctrl+Enter shortcut from working while the user is typing in the main input —
+    # defeating the purpose of the shortcut.
+    for m in re.finditer(r"tag\s*===\s*['\"](?:INPUT|TEXTAREA)['\"]", content):
+        line_n = content[:m.start()].count('\n') + 1
+        fails.append(f'S2.1: keyboard handler at line {line_n} guards on INPUT/TEXTAREA — use SELECT-only guard so ⌘/Ctrl+Enter works while typing')
+        break
 
     # S1.5: history in usePersistentState (accept *History, *Log, *log as equivalents)
     if not re.search(r'usePersistentState[^\n]*(?:[Hh]istor|[Ll]og|[Aa]dventure|[Jj]ournal)|(?:[Hh]istor|[A-Za-z]+[Ll]og|[Aa]dventure|[Jj]ournal)[^\n]*usePersistentState|loadHistory\(\)|saveHistory\(', content):
@@ -423,8 +550,32 @@ for name, fpath in tools:
             fails.append('S5.5: no pre-result cross-ref — add a tool link visible before submit (e.g. "Need X first? Try [Tool]")')
         if post_hrefs == 0:
             fails.append('S5.5: no post-result cross-ref — add a tool link inside the results block (e.g. "Next step: [Tool]")')
-        if total_hrefs > 3:
-            fails.append(f'S5.5: {total_hrefs} cross-refs (max 3 total)')
+
+        # Per-cluster rule (v4.38): no more than 3 hrefs within any 5-source-line window.
+        # Counts every href occurrence with its line number, groups by proximity, flags dense clusters.
+        PROXIMITY_LINES = 5
+        MAX_PER_CLUSTER = 3
+        href_lines = []
+        for m in re.finditer(r'href=["\'{`]', content):
+            href_lines.append(content[:m.start()].count('\n') + 1)
+        href_lines.sort()
+        if href_lines:
+            cluster_start = href_lines[0]
+            cluster_hits = [href_lines[0]]
+            worst_cluster = None
+            for ln in href_lines[1:]:
+                if ln - cluster_hits[-1] <= PROXIMITY_LINES:
+                    cluster_hits.append(ln)
+                else:
+                    if len(cluster_hits) > MAX_PER_CLUSTER and (worst_cluster is None or len(cluster_hits) > len(worst_cluster)):
+                        worst_cluster = cluster_hits[:]
+                    cluster_start = ln
+                    cluster_hits = [ln]
+            # Final cluster
+            if len(cluster_hits) > MAX_PER_CLUSTER and (worst_cluster is None or len(cluster_hits) > len(worst_cluster)):
+                worst_cluster = cluster_hits[:]
+            if worst_cluster:
+                fails.append(f'S5.5: {len(worst_cluster)} cross-refs clustered within {PROXIMITY_LINES} lines (lines {worst_cluster[0]}–{worst_cluster[-1]}) — max {MAX_PER_CLUSTER} per cluster; spread them out')
 
 
     # S5.5: cross-ref link validity — check all static /ToolId hrefs resolve to a real tool in tools.js

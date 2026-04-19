@@ -1,10 +1,28 @@
 const express = require('express');
 const router = express.Router();
-const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
-const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
+const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+
+async function withRetry(fn, { retries = 3, baseDelayMs = 1500 } = {}) {
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      return await fn();
+    } catch (err) {
+      const status = err?.status ?? err?.error?.status;
+      const isOverloaded = status === 529 || err?.error?.error?.type === 'overloaded_error';
+      if (isOverloaded && attempt < retries) {
+        const delay = baseDelayMs * Math.pow(2, attempt);
+        console.warn(`[brain-roulette] Overloaded (529), retrying in ${delay}ms (attempt ${attempt + 1}/${retries})`);
+        await new Promise(r => setTimeout(r, delay));
+      } else {
+        throw err;
+      }
+    }
+  }
+}
+// Rate limiting handled globally in server.js
 
 // ── Main spin ──
-router.post('/brain-roulette', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+router.post('/brain-roulette', async (req, res) => {
   const { interests, depth, seenTopics, isSurprise, customTopic, audienceLevel, locale } = req.body;
 
   if (!depth) {
@@ -61,7 +79,12 @@ Respond ONLY with valid JSON in this exact format:
 
   try {
     console.log(`[BrainRoulette] Spin | Interests: ${activeInterests.length ? activeInterests.join(', ') : 'SURPRISE'} | Depth: ${depth} | Seen: ${(seenTopics || []).length}`);
-    const parsed = await callClaudeWithRetry(prompt);
+    const msg = await withRetry(() => anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 2000,
+      messages: [{ role: 'user', content: prompt }],
+    }));
+    const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
     res.json(parsed);
   } catch (error) {
     console.error('Brain Roulette spin error:', error);
@@ -70,7 +93,7 @@ Respond ONLY with valid JSON in this exact format:
 });
 
 // ── Go Deeper ──
-router.post('/brain-roulette/deeper', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+router.post('/brain-roulette/deeper', async (req, res) => {
   const { originalTitle, originalHook, threadLabel, promptHint, audienceLevel, locale } = req.body;
 
   if (!originalTitle || !threadLabel) {
@@ -100,7 +123,12 @@ Respond ONLY with valid JSON:
 
   try {
     console.log(`[BrainRoulette] Go Deeper: "${threadLabel}" (from "${originalTitle}")`);
-    const parsed = await callClaudeWithRetry(prompt);
+    const msg = await withRetry(() => anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1500,
+      messages: [{ role: 'user', content: prompt }],
+    }));
+    const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
     res.json(parsed);
   } catch (error) {
     console.error('Brain Roulette deeper error:', error);
@@ -109,7 +137,7 @@ Respond ONLY with valid JSON:
 });
 
 // ── Extract Concepts (Spin From This) ──
-router.post('/brain-roulette/extract-concepts', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+router.post('/brain-roulette/extract-concepts', async (req, res) => {
   const { title, content, locale } = req.body;
 
   if (!title || !content) {
@@ -139,7 +167,12 @@ Respond ONLY with valid JSON:
 
   try {
     console.log(`[BrainRoulette] Extract Concepts from: "${title}"`);
-    const parsed = await callClaudeWithRetry(prompt);
+    const msg = await withRetry(() => anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 800,
+      messages: [{ role: 'user', content: prompt }],
+    }));
+    const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
     res.json(parsed);
   } catch (error) {
     console.error('Brain Roulette extract-concepts error:', error);
@@ -148,7 +181,7 @@ Respond ONLY with valid JSON:
 });
 
 // ── Chain Deeper ──
-router.post('/brain-roulette/chain-deeper', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+router.post('/brain-roulette/chain-deeper', async (req, res) => {
   const { originalTitle, chainHistory, threadLabel, promptHint, audienceLevel, locale } = req.body;
 
   if (!originalTitle || !threadLabel) {
@@ -185,7 +218,12 @@ Respond ONLY with valid JSON:
 
   try {
     console.log(`[BrainRoulette] Chain Deeper: "${threadLabel}" (chain length: ${(chainHistory || []).length})`);
-    const parsed = await callClaudeWithRetry(prompt);
+    const msg = await withRetry(() => anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1500,
+      messages: [{ role: 'user', content: prompt }],
+    }));
+    const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
     res.json(parsed);
   } catch (error) {
     console.error('Brain Roulette chain-deeper error:', error);
@@ -194,7 +232,7 @@ Respond ONLY with valid JSON:
 });
 
 // ── Debate Mode ("Actually…") ──
-router.post('/brain-roulette/debate', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+router.post('/brain-roulette/debate', async (req, res) => {
   const { interests, seenTopics, audienceLevel, locale } = req.body;
 
   const today = new Date();
@@ -230,7 +268,12 @@ Respond ONLY with valid JSON:
 
   try {
     console.log(`[BrainRoulette] Debate | Interests: ${(interests || []).join(', ') || 'GENERAL'}`);
-    const parsed = await callClaudeWithRetry(prompt);
+    const msg = await withRetry(() => anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1500,
+      messages: [{ role: 'user', content: prompt }],
+    }));
+    const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
     res.json(parsed);
   } catch (error) {
     console.error('Brain Roulette debate error:', error);
@@ -239,7 +282,7 @@ Respond ONLY with valid JSON:
 });
 
 // ── Guided Journey (create 6-step plan) ──
-router.post('/brain-roulette/journey', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+router.post('/brain-roulette/journey', async (req, res) => {
   const { interests, customTheme, audienceLevel, locale } = req.body;
 
   const prompt = withLanguage(`You are Brain Roulette's Guided Journey creator. Your job is to design a 6-step curated path where each discovery builds meaningfully on the last.
@@ -271,7 +314,12 @@ Respond ONLY with valid JSON:
 
   try {
     console.log(`[BrainRoulette] Journey | Theme: ${customTheme || 'AUTO'} | Interests: ${(interests || []).join(', ') || 'GENERAL'}`);
-    const parsed = await callClaudeWithRetry(prompt);
+    const msg = await withRetry(() => anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1000,
+      messages: [{ role: 'user', content: prompt }],
+    }));
+    const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
     res.json(parsed);
   } catch (error) {
     console.error('Brain Roulette journey error:', error);
@@ -280,7 +328,7 @@ Respond ONLY with valid JSON:
 });
 
 // ── Journey Step (generate content for one step) ──
-router.post('/brain-roulette/journey-step', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+router.post('/brain-roulette/journey-step', async (req, res) => {
   const { journeyTitle, stepNumber, stepTitle, promptHint, previousSteps, audienceLevel, locale } = req.body;
 
   if (!journeyTitle || !stepTitle) {
@@ -320,7 +368,12 @@ Respond ONLY with valid JSON:
 
   try {
     console.log(`[BrainRoulette] Journey Step ${stepNumber}: "${stepTitle}" (journey: "${journeyTitle}")`);
-    const parsed = await callClaudeWithRetry(prompt);
+    const msg = await withRetry(() => anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1200,
+      messages: [{ role: 'user', content: prompt }],
+    }));
+    const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
     res.json(parsed);
   } catch (error) {
     console.error('Brain Roulette journey-step error:', error);
@@ -329,7 +382,7 @@ Respond ONLY with valid JSON:
 });
 
 // ── Daily Digest ──
-router.post('/brain-roulette/digest', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+router.post('/brain-roulette/digest', async (req, res) => {
   const { interests, seenTopics, audienceLevel, locale } = req.body;
 
   const today = new Date();
@@ -388,7 +441,12 @@ Respond ONLY with valid JSON:
 
   try {
     console.log(`[BrainRoulette] Digest | Interests: ${(interests || []).join(', ') || 'GENERAL'} | Date: ${dateStr}`);
-    const parsed = await callClaudeWithRetry(prompt);
+    const msg = await withRetry(() => anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 2000,
+      messages: [{ role: 'user', content: prompt }],
+    }));
+    const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
     res.json(parsed);
   } catch (error) {
     console.error('Brain Roulette digest error:', error);

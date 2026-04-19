@@ -203,6 +203,72 @@ This passes the gradient-blocking scan (because `<h2>` IS inside a `c.card`) but
 > ⚠️ **BUG PATTERN — Edge-to-edge header divider (discovered DriveHome / SafeWalk, March 2026)**
 > Placing `border-b border-zinc-500` on the same div that carries `px-5` padding causes the border to run from card edge to card edge — visually heavy and inconsistent with all other tools. The `border-b` must always be on a child div, inside the padded wrapper, so the line is naturally inset.
 
+> ⚠️ **EXCEPTION — Replace-mode tools (inputs disappear on results)**
+>
+> Some tools replace their entire input form with the results view — the inputs
+> are conditionally rendered with `{!results && renderInput()}` and disappear
+> entirely when results load. This creates a problem: if the header lives inside
+> the input card, it vanishes when results appear, breaking the persistent-header
+> requirement from the compliance prompt.
+>
+> **The two legitimate patterns are therefore:**
+>
+> | Pattern | When to use |
+> |---------|-------------|
+> | **Header + inputs unified in one card** (standard) | Inputs remain visible alongside results, OR tool uses tabs. This is the default — always prefer it. |
+> | **Input-state card + results-state card** (replace-mode exception) | Inputs are fully replaced by results (`{!results && renderInput()}`). Header lives inside the input card during input phase; a separate persistent header card (with reset button) appears during the results phase. |
+>
+> **Replace-mode implementation:**
+>
+> ```jsx
+> // Input phase — header inside the unified input card (MarkupDetective style):
+> const renderInput = () => (
+>   <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
+>     <div className="pb-3 border-b border-zinc-500">
+>       <h2 className={`text-xl font-bold ${c.text}`}>
+>         <span className="mr-2">{tool?.icon ?? '❓'}</span>{tool?.title ?? 'Fallback'}
+>       </h2>
+>       <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Fallback tagline'}</p>
+>     </div>
+>     {/* inputs below */}
+>   </div>
+> );
+>
+> // Results phase — persistent standalone header card with reset button.
+> // IMPORTANT: use a ternary (not &&) to avoid breaking the audit script's
+> // S5.5 cross-ref region detection:
+> return (
+>   <div className={`space-y-4 ${c.text}`}>
+>     {!results && renderInput()}
+>     {results ? (
+>       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
+>         <div className="pb-3 border-b border-zinc-500">
+>           <div className="flex items-start justify-between">
+>             <div>
+>               <h2 className={`text-xl font-bold ${c.text}`}>
+>                 <span className="mr-2">{tool?.icon ?? '❓'}</span>{tool?.title ?? 'Fallback'}
+>               </h2>
+>               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Fallback tagline'}</p>
+>             </div>
+>             <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold`}>
+>               ↺ Start Over
+>             </button>
+>           </div>
+>         </div>
+>       </div>
+>     ) : null}
+>     {results && renderResults()}
+>   </div>
+> );
+> ```
+>
+> **Critical detail — use ternary, not `&&`, for the results-phase header card.**
+> `{results && (` triggers the audit script's inline-JSX split at that point,
+> causing cross-refs inside `renderResults()` to land in the wrong region and
+> produce a false S5.5 failure. `{results ? (...) : null}` avoids the match.
+>
+> *Added Session 100, April 2026. Reference tool: Bookmark.js.*
+
 ---
 
 ### PF-4 · Header Violations
@@ -396,12 +462,16 @@ useRegisterActions(buildFullText(), tool?.title || 'Tool Name'); // AFTER buildF
 
 ### PF-9 · Cross-References
 
-Cross-references are **mandatory**. Every tool must link to at least one related tool. Absence of cross-refs is a violation, not a pass.
+Cross-references are **mandatory**. Every tool must link to at least one related tool. Absence of cross-refs is a violation, not a pass. Cross-refs may appear on multiple pages/branches of a multi-page tool — each page's cross-ref group is counted independently.
 
 ```bash
-# MANDATORY — must have at least 1, no more than 3:
+# MANDATORY — must have at least 1:
 grep -c 'href="/' ComponentName.js
-# Zero results = VIOLATION. More than 3 = VIOLATION.
+# Zero = VIOLATION
+
+# Per-cluster cap — max 3 links within ~5 lines of each other (one footer/sidebar/paragraph):
+awk '/href="\//{c++; if (NR-p<=5) g++; else g=1; p=NR; if (g>3) print "Cluster of "g" at line "NR}' ComponentName.js
+# Any output = VIOLATION — spread clusters across pages or remove extras
 
 # No target=_blank:
 grep -n 'target=' ComponentName.js
@@ -416,9 +486,12 @@ grep -n 'href="/' ComponentName.js
 # Each link text must start with an emoji
 ```
 
+**Cap clarified (v4.38, Session 101, April 2026):** The cap is **3 per cluster**, not 3 per tool. A "cluster" = cross-ref links appearing within ~5 source lines of each other — typically a single footer, sidebar, or inline paragraph. Separate pages/branches of the same tool each get their own cluster budget. Preferred: 1–2 links per cluster. The audit script (`audit_v2-3.py` S5.5) enforces this by grouping adjacent hrefs into clusters and flagging any cluster with >3.
+
 **Placement rules:**
 - **Pre-result:** one inline sentence below the submit button, inside the input card
 - **Post-result:** a `🔗 Related tools` block inside the results section
+- Multi-page tools: at least one cross-ref per primary page/branch
 - Use `cross-reference-map.md` to find the correct tools for each cluster
 
 **Correct pattern:**
@@ -558,6 +631,19 @@ grep -n "<label" ComponentName.js | grep -v "\*" | head -20
 </label>
 <textarea ... />
 ```
+
+**Rules:**
+| Rule | Detail |
+|------|--------|
+| Asterisk is mandatory | Every required field must have one — no exceptions |
+| Color | `c.required` only — `text-amber-400` dark / `text-amber-500` light |
+| Never `c.textMuted` | Muted asterisks are invisible and therefore useless |
+| Never `text-red-500` | Red belongs to the error/danger semantic — not form marking |
+| Placement | Inside the `<label>`, after the label text, in a `<span className={c.required}>*</span>` |
+| Optional fields | No asterisk — silence means optional |
+
+---
+
 ### PF-16 · Reset Button — One, Top-Right, Always
 
 Every tool has exactly **one** reset control. It lives in the top-right corner of the input card header, on the same row as the `<h2>` title. No other reset, "New", "Clear", or "Start Over" button may appear anywhere else in the tool.
@@ -621,16 +707,88 @@ grep -n "handleReset\|onClick.*reset\|Start Over\|startOver" ComponentName.js | 
 
 *Added v4.37, Session 100, April 2026.*
 
+---
+
+### PF-17 · Try Example Button
+
+A "Try Example" button pre-fills the form with a realistic, high-quality input that demonstrates what the tool can do. It lowers first-use friction and sets the quality bar for what good input looks like.
+
+**When to include:**
+- Multi-field tools where filling everything in feels daunting
+- Tools with non-obvious input formats (e.g. "stopped at Season 3, Episode 4")
+- Tools whose output quality depends heavily on rich, specific input
+- Tools where a first-time user might not know how to start
+
+**When to skip:**
+- Single-input tools where the placeholder already does the job
+- Random or generative tools with no meaningful input
+- Tools with highly personal inputs where a generic example feels hollow
+
+**Scan:**
+```bash
+grep -n "loadExample\|Try example\|EXAMPLES\b" ComponentName.js
+# If the tool qualifies (see criteria above), one of these must be present
+```
+
+**Pattern — single mode:**
+```js
+// Module-level constant, above the component:
+const EXAMPLE = {
+  topic: 'Should cities ban cars from downtown cores?',
+  position: 'Yes — the benefits outweigh the disruption',
+};
+
+// Inside component, after other handlers:
+const loadExample = useCallback(() => {
+  setTopic(EXAMPLE.topic);
+  setPosition(EXAMPLE.position);
+}, []);
+```
+
+**Pattern — multi-mode tool (keyed by active mode):**
+```js
+// Module-level constant, above the component:
+const EXAMPLES = {
+  show:   { title: 'Succession', stoppedAt: 'Season 2, Episode 7' },
+  book:   { title: 'Project Hail Mary', stoppedAt: 'Chapter 15' },
+  game:   { title: 'Elden Ring', stoppedAt: 'Just beat Rennala' },
+  sports: { title: 'Boston Celtics', stoppedAt: 'December 2024' },
+};
+
+// Inside component, after other handlers:
+const loadExample = useCallback(() => {
+  const ex = EXAMPLES[mode];
+  if (ex) { setTitle(ex.title); setStoppedAt(ex.stoppedAt); }
+}, [mode]);
+```
+
+**Button placement — always secondary, alongside the submit button:**
+```jsx
+<div className="flex gap-2">
+  <button
+    onClick={handleSubmit}
+    disabled={loading || !input.trim()}
+    className={'flex-1 py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all ' + (loading || !input.trim() ? c.btnDisabled : c.btnPrimary)}>
+    {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '❓'}</span> Working...</> : <><span>{tool?.icon ?? '❓'}</span> Submit</>}
+  </button>
+  <button onClick={loadExample} className={'px-4 py-4 rounded-2xl text-xs font-bold ' + c.btnSecondary}>
+    Try example
+  </button>
+</div>
+```
 
 **Rules:**
+
 | Rule | Detail |
 |------|--------|
-| Asterisk is mandatory | Every required field must have one — no exceptions |
-| Color | `c.required` only — `text-amber-400` dark / `text-amber-500` light |
-| Never `c.textMuted` | Muted asterisks are invisible and therefore useless |
-| Never `text-red-500` | Red belongs to the error/danger semantic — not form marking |
-| Placement | Inside the `<label>`, after the label text, in a `<span className={c.required}>*</span>` |
-| Optional fields | No asterisk — silence means optional |
+| Always `c.btnSecondary` | Never `c.btnPrimary` — it is a helper, not the primary action |
+| Fixed label | "Try example" — lowercase, no emoji, no variation |
+| No disabled state | Always clickable, even if inputs already have content (just overwrites) |
+| Module-level constant | `EXAMPLE` or `EXAMPLES` defined above the component, never inline |
+| Realistic content | The example must produce genuinely useful output — not a toy demo |
+| `useCallback` | `loadExample` must be wrapped in `useCallback` with mode/variant in dep array if multi-mode |
+
+*Added v4.38 (Try Example), Session 101, April 2026.*
 
 ---
 
@@ -645,3 +803,238 @@ These cannot be auto-corrected — they require reading context:
 - Mode-switching clears stale results
 - All API result fields accessed with `?.`
 - No references to psychological/medical diagnoses in metadata or UI copy
+
+---
+# CONVENTIONS Addendum — Session 101 Clarifications
+
+### For merge into `CONVENTIONS.md`
+### Supersedes conflicting text in `tool-audit-checklist-v4_37.md` §1.1
+
+This addendum captures rule clarifications that emerged during audits where existing documentation was ambiguous or contradictory. Merge these edits into `CONVENTIONS.md` at next doc update. Every rule here is also enforced by `audit_v2-3.py` v4.41+ unless otherwise noted.
+
+---
+
+## Clarification 1 · `label` is NOT a banned c-block key — it is a **required alias**
+
+**Status:** Resolves conflict between `tool-audit-checklist-v4_37.md` §1.1 and `CONVENTIONS.md` PF-2.
+
+The checklist lists `label` among banned c-block keys. This is **stale text**. The canonical rule per CONVENTIONS.md PF-2 is:
+
+```javascript
+// Always include these two alias lines immediately after the closing brace:
+c.textMuteded = c.textMuted;
+c.label = c.labelText;
+```
+
+Both aliases are **required**. They exist because historical Python refactor scripts generated code with those names, and removing them would cascade-break dozens of tools. The audit script's `BANNED_KEYS` constant does not and must not include `label`.
+
+**Action:** When next editing `tool-audit-checklist-v4_37.md`, delete `label` from the §1.1 banned-key list.
+
+---
+
+## Clarification 2 · Banned color families — expanded list
+
+**Status:** Tightens existing §1.1 / PF-2 banned-color rule.
+
+The authoritative list of **banned** Tailwind color families:
+
+| Banned | Notes |
+|--------|-------|
+| `blue` | All prefixes: `bg-`, `text-`, `border-`, etc. |
+| `purple` | ″ |
+| `violet` | ″ |
+| `indigo` | ″ |
+| `teal` | ″ |
+| `stone` | ″ |
+| `yellow` | ″ (use `amber` instead) |
+| `rose` | **Newly documented** — use `amber` for required-field asterisks, `red` for danger/error |
+| `pink` | **Newly documented** |
+
+**Approved** families: `zinc`, `slate`, `cyan`, `emerald`, `amber`, `red`, `sky`, `green`, `gray`.
+
+**`required` color specifically:** per PF-15, `c.required` must always use `text-amber-400` (dark) / `text-amber-500` (light). Not `rose`. Not `red`. Not `textMuted`.
+
+**Enforcement:** `audit_v2-3.py` v4.40+ catches all banned families including `rose`/`pink`/`border-*` variants. v4.39 and earlier missed these.
+
+---
+
+## Clarification 3 · Lookup objects must use `colorKey` indirection (BrainRoulette pattern)
+
+**Status:** Reinforces existing checklist §1.1 rule.
+
+Lookup objects like `SEVERITY_CONFIG`, `VERDICT_COLORS`, `STATUS_MAP` may **never** store raw Tailwind color strings in a `color` property. This bypasses the `c` theme object entirely.
+
+```javascript
+// ❌ WRONG — raw strings
+const VERDICT = {
+  mostly_false: { color: 'text-red-500' },                    // direct string
+  mostly_true:  { color: (d) => d ? 'text-green-400' : 'text-green-600' }  // dark-aware fn
+};
+
+// ✅ CORRECT — colorKey indirection
+const VERDICT = {
+  mostly_false: { colorKey: 'verdictFalse' },
+  mostly_true:  { colorKey: 'verdictTrue' },
+};
+// In c block:
+verdictFalse: isDark ? 'bg-red-900/20 border-red-700/50 text-red-200' : 'bg-red-50 border-red-300 text-red-800',
+verdictTrue:  isDark ? 'bg-green-900/20 border-green-700/50 text-green-200' : 'bg-green-50 border-green-300 text-green-800',
+// In JSX:
+className={`rounded-xl border p-5 ${c[VERDICT[key]?.colorKey] || c.text}`}
+```
+
+**Rationale:** Raw color strings in lookups aren't theme-aware, can't be audited, and bypass the single-source-of-truth c block. BrainRoulette and BeliefStressTest both hit this pattern during audits.
+
+**Enforcement:** `audit_v2-3.py` v4.40+ `S1.1j`.
+
+---
+
+## Clarification 4 · PF-16 reset conditional must use ternary, not `&&`
+
+**Status:** Resolves a subtle interaction between PF-16 and S5.5 audit logic. CONVENTIONS.md's replace-mode section mentions this; lifting it to a universal rule.
+
+Any JSX conditional whose expression contains the word `results` and uses the `&&` operator will trigger `audit_v2-3.py`'s S5.5 cross-ref region-split logic. This is true even when the conditional is unrelated to the results block:
+
+```jsx
+// ❌ BREAKS S5.5 region detection
+{(results || belief.trim()) && (
+  <button onClick={handleReset}>↺ Start Over</button>
+)}
+
+// ✅ SAFE
+{(results || belief.trim()) ? (
+  <button onClick={handleReset}>↺ Start Over</button>
+) : null}
+```
+
+**Why it matters:** S5.5 classifies cross-references as pre-submit or post-submit based on the first `{results && (` it finds. A reset-button conditional that matches this pattern splits the region at the wrong point, causing legitimate pre-submit cross-refs to be misclassified as post-submit.
+
+**Rule:** Whenever a JSX conditional includes `results` or `result` in its expression, use ternary (`? ... : null`) not `&&`. This applies to:
+- PF-16 header reset button conditionals
+- Any `{(results || x) && ...}` pattern in headers, sidebars, or shared UI
+- Any `{(!results || x) && ...}` pattern in the same positions
+
+The only place `&&` is safe with `results` is the canonical results block itself: `{results && (<div>...results UI...</div>)}`.
+
+**Enforcement:** Not directly enforced by v4.41, but symptoms (S5.5 misclassification) surface quickly if ignored. A targeted check could be added in v4.42.
+
+---
+
+## Clarification 5 · Icon and title fallbacks must match `tools.js`
+
+**Status:** Formalizes a previously-implicit expectation.
+
+The component's fallback values for `tool?.icon ?? '...'` and `tool?.title ?? '...'` must match what `tools.js` declares for that tool. Mismatches are silent drift — the component ships with `🧪` as a fallback even after the tool's canonical icon is changed to `🔬` in `tools.js`, and nothing in the build or test pipeline flags the discrepancy.
+
+```javascript
+// tools.js
+{ id: "BeliefStressTest", icon: "🔬", title: "Belief Stress Test", ... }
+
+// Component — MUST match:
+<span className="mr-2">{tool?.icon ?? '🔬'}</span>{tool?.title ?? 'Belief Stress Test'}
+```
+
+**Enforcement:** `audit_v2-3.py` v4.40+ `S0f` — compares every `tool?.icon ??` and `tool?.title ??` fallback in the component against `tools.js` metadata for that tool's id.
+
+---
+
+## Clarification 6 · History preview length ≈ 40 characters
+
+**Status:** Tightens existing checklist §1.5.
+
+The `preview` field of a history entry should be sliced to **~40 characters** (acceptable range: 30–60). A 6-char preview (found in BeliefStressTest pre-audit) is too short to be meaningful; a 100-char preview is too long to fit in the history panel.
+
+```javascript
+const newEntry = {
+  id: Date.now(),
+  timestamp: new Date().toISOString(),
+  preview: belief.trim().slice(0, 40),   // ← 40 is the sweet spot
+  result: data,
+};
+```
+
+**Enforcement:** `audit_v2-3.py` v4.41+ flags preview slices outside 20–80 characters.
+
+---
+
+## Clarification 7 · Global keyboard handler guards on SELECT only
+
+**Status:** Formalizes a pattern already in PF-style tools; tightens S2.1.
+
+The global `keydown` listener for ⌘/Ctrl+Enter submit must **not** block when the user is typing in an input or textarea. Over-broad guards defeat the purpose of the shortcut:
+
+```javascript
+// ❌ WRONG — shortcut doesn't work while user is typing in the primary input
+const handler = (e) => {
+  const tag = document.activeElement?.tagName;
+  if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+  if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && canSubmitRef.current) {
+    e.preventDefault();
+    handleSubmitRef.current?.();
+  }
+};
+
+// ✅ CORRECT — only SELECT dropdowns swallow Enter
+const handler = (e) => {
+  const tag = document.activeElement?.tagName;
+  if (tag === 'SELECT') return;
+  if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && canSubmitRef.current) {
+    e.preventDefault();
+    handleSubmitRef.current?.();
+  }
+};
+```
+
+**Rationale:** The whole point of ⌘/Ctrl+Enter is that it works everywhere including while typing. Input/textarea guards make it redundant with the local `onKeyDown={...}` handlers that already fire there.
+
+**Enforcement:** `audit_v2-3.py` v4.41+ flags `tag === 'INPUT'` or `tag === 'TEXTAREA'` inside a keyboard handler.
+
+---
+
+## Clarification 8 · Python-replace corruption typos are a detectable class
+
+**Status:** New diagnostic category.
+
+When a historical find/replace script ran twice by accident, it produced self-doubling class names that resolve silently to `undefined` in Tailwind:
+
+| Corrupted name | Correct name |
+|----------------|--------------|
+| `btnPrimaryPrimary` | `btnPrimary` |
+| `btnPrimarySecondaryondary` | `btnSecondary` |
+| `btnSecondaryondary` | `btnSecondary` |
+| `textSecondaryondary` | `textSecondary` |
+| `textMutedMuted` | `textMuted` |
+| `borderBorder` | `border` |
+| `cardCard` | `card` |
+
+These break tool styling silently. BeliefStressTest pre-audit had 5 instances across 3 typo classes.
+
+**Enforcement:** `audit_v2-3.py` v4.41+ PF-12 — flags any of the known typo patterns.
+
+---
+
+## Source-of-truth precedence (formalized)
+
+When documentation conflicts:
+
+1. **`CONVENTIONS.md`** — authoritative canonical spec
+2. **`audit_v2-3.py` source** — source of truth for automated enforcement (especially `BANNED_KEYS`, `BANNED_COLORS`, `REQUIRED_KEYS` constants at the top)
+3. **`tool-audit-checklist-v4_37.md`** — manual checklist; portions may be stale
+4. **`backend-audit-section7.md`** — backend-specific addendum to the checklist
+
+On conflict: check the audit script's constant arrays as the tiebreaker. Whatever the script actually enforces is the working rule.
+
+---
+
+## audit_v2-3.py version history (recent)
+
+| Version | Added |
+|---------|-------|
+| v4.38 | S5.5 per-cluster rule (max 3 hrefs per 5-line window, replacing max-3-per-tool) |
+| v4.39 | S1.4g (inline `<PrintBtn>`), S1.4h (whole-output `<CopyBtn>` helpers) |
+| v4.40 | S0f (icon/title fallback vs tools.js), S1.1i (undefined c keys), S1.1j (raw Tailwind in lookups), expanded BANNED_COLORS with rose+pink+border variants |
+| v4.41 | PF-12 (Python-replace typos), PF-16 (reset button placement + count + style), S2.1 (INPUT/TEXTAREA guard), S1.5 (preview slice length) |
+
+---
+
+*Addendum prepared 2026-04-18. Merge into CONVENTIONS.md and discard this file once merged. audit_v2-3.py v4.41 is available at `/mnt/user-data/outputs/audit_v2-3.py`.*
