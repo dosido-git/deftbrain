@@ -22,6 +22,7 @@ app.use(express.json({ limit: '50mb' }));
 // ── HTTPS redirect (production) ──
 if (IS_PRODUCTION) {
   app.use((req, res, next) => {
+    if (req.hostname === 'localhost' || req.hostname === '127.0.0.1') return next();
     if (req.headers['x-forwarded-proto'] !== 'https') {
       return res.redirect(301, `https://${req.hostname}${req.url}`);
     }
@@ -205,7 +206,19 @@ if (IS_PRODUCTION) {
   // extensions: ['html'] serves prerendered flat files at clean URLs:
   // /SpiralStopper → build/SpiralStopper.html (200, no trailing-slash variant)
   // /guides/how-to-tell-your-boss → build/guides/how-to-tell-your-boss.html
-  app.use(express.static(path.join(__dirname, '..', 'build'), { redirect: false, extensions: ['html'] }));
+  //
+  // setHeaders adds aggressive CDN caching for guide HTML — Fastly respects
+  // s-maxage (24h), browsers use max-age (5min). Other static assets keep
+  // express.static's defaults.
+  app.use(express.static(path.join(__dirname, '..', 'build'), {
+    redirect: false,
+    extensions: ['html'],
+    setHeaders: (res, filePath) => {
+      if (filePath.includes(path.sep + 'guides' + path.sep) && filePath.endsWith('.html')) {
+        res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=86400');
+      }
+    },
+  }));
 
   app.get('*', (req, res) => {
     const slug = req.path.replace(/^\//, '');

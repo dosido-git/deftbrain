@@ -31,3 +31,9 @@ Thumbs.db
 coverage/
 
 priv/
+
+# Font downloads — only the 3 working files in scripts/fonts/ are tracked
+scripts/fonts/*.zip
+scripts/fonts/DM_Sans,Playfair_Display/
+scripts/fonts/Playfair_Display/
+scripts/fonts/DM_Sans/
