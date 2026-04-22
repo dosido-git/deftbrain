@@ -1,3 +1,4 @@
+# v1.0 · 2026-04-20 · ground-zero baseline
 import os, re, glob, sys
 
 BANNED_KEYS = ['divider', 'muted', 'accent', 'accentBg', 'dangerText',
@@ -607,19 +608,31 @@ for name, fpath in tools:
             break  # one report is enough
 
     # 3. Required field variables (from submit disabled={}) must have a c.required asterisk in their label
-    # Extract required vars: !varName or !varName.trim() in disabled condition, excluding control vars
+    # Extract required vars: !varName[.sub.path][.trim()] in disabled condition, excluding control vars.
+    # Handles both bare identifiers (!hotTake, !practiceInput) and dot-nested form paths
+    # (!calForm.whatHappened.trim(), !fixForm.theirReaction.trim()). Dot-nesting is common in
+    # multi-mode tools that collect inputs into a single form object per mode.
+    # Iterates ALL disabled={} expressions, not just the first — multi-mode tools have 10+.
     _CONTROL_VARS = {'loading', 'isLoading', 'isRunning', 'true', 'false', 'null', 'undefined', 'error'}
-    _submit_dis = re.search(r'disabled=\{([^}]{5,400})\}', jsx_area)
-    _required_vars = set()
-    if _submit_dis:
+    _required_paths = set()
+    for _submit_dis in re.finditer(r'disabled=\{([^}]{5,400})\}', jsx_area):
         _dis_expr = _submit_dis.group(1)
-        for _vm in re.finditer(r'!\s*([a-zA-Z_][a-zA-Z0-9_]*)(?:\.trim\(\))?', _dis_expr):
-            _v = _vm.group(1)
-            if _v not in _CONTROL_VARS:
-                _required_vars.add(_v)
-    for _var in _required_vars:
-        # Find the input/textarea/select that binds value={_var} in jsx_area
-        _input_m = re.search(r'value=\{' + re.escape(_var) + r'\b', jsx_area)
+        # Greedy match: identifier + optional dotted sub-path. Trailing .trim() is inside the
+        # capture if present, and we strip it below to recover the actual binding path.
+        for _vm in re.finditer(r'!\s*([a-zA-Z_][a-zA-Z0-9_]*(?:\.[a-zA-Z_][a-zA-Z0-9_]*)*)', _dis_expr):
+            _path = _vm.group(1)
+            if _path.endswith('.trim'):
+                _path = _path[:-5]
+            if not _path:
+                continue
+            _root = _path.split('.')[0]
+            if _root in _CONTROL_VARS:
+                continue
+            _required_paths.add(_path)
+    for _path in _required_paths:
+        # Find the input/textarea/select that binds value={<path>} in jsx_area.
+        # re.escape handles the dots in nested paths correctly.
+        _input_m = re.search(r'value=\{' + re.escape(_path) + r'\b', jsx_area)
         if not _input_m:
             continue
         # Search backwards for the nearest <label before this input
@@ -635,7 +648,7 @@ for name, fpath in tools:
         _label_text = _label_snippet[:_label_snippet.index('</label>') + 8]
         if 'c.required' not in _label_text:
             _abs_line = content[:c_end_pos + _label_start].count('\n') + 1
-            fails.append(f'PF-15: required field "{_var}" — label at line {_abs_line} missing <span className={{c.required}}>*</span>')
+            fails.append(f'PF-15: required field "{_path}" — label at line {_abs_line} missing <span className={{c.required}}>*</span>')
 
     # Known bugs
     if re.search(r'\$\{\}', content):

@@ -1,3 +1,4 @@
+<!-- v1.0 · 2026-04-20 · ground-zero baseline -->
 # Tool Audit Checklist v4.37
 ### DeftBrain — Pre-Ship Quality & Consistency Standard
 

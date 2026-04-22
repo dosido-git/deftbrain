@@ -1,3 +1,4 @@
+<!-- v1.0 · 2026-04-20 · ground-zero baseline -->
 # DeftBrain Category Color Map
 
 **Version:** 2.0 — March 2026

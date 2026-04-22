@@ -1,3 +1,4 @@
+<!-- v1.0 · 2026-04-20 · ground-zero baseline -->
 # Tool Audit Checklist — Section 7: Backend Route Audit
 ### Addendum to tool-audit-checklist-v4_37.md
 ### Added: Session 4 (April 2026)

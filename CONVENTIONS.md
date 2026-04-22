@@ -1,3 +1,4 @@
+<!-- v1.0 · 2026-04-20 · ground-zero baseline -->
 # DeftBrain Component Conventions
 > **Read this file before writing or editing any tool component.**
 > Copy snippets verbatim. Do not reconstruct from memory.
@@ -428,6 +429,10 @@ useEffect(() => {
 }, [results]);
 ```
 
+*Reference case: BatchFlow (scroll-to-results plus four additional scroll useEffects — one per controls-bar panel: share, progress, saveTemplate, weekly — each attached to its own `useRef` and watching its own toggle state, solving the "click does nothing visible" bug when panels render below the fold).*
+
+**Anti-jump guidance:** The scroll anchor should live at the seam between the input card and the results area — standard placement. When that placement is adopted, any conditional content between the submit button and the anchor (pre-result cross-refs, error reservations, session-state panels) becomes visible scroll-travel distance when scroll fires. This creates a jarring "jump" effect as the user watches unrelated content whiz past. **Mitigation: hide pre-result cross-refs during loading states** by wrapping them in `{!loading && !compareLoading && (...)}`. Pre-result prompts like "Need X first? Try [Tool]" are semantically irrelevant once the user has committed to submit; hiding them collapses the vertical gap and makes the scroll-to-skeleton motion feel adjacent to the click. Same principle applies to any other pre-result-only content that sits between submit and the scroll anchor. Reference case: NameAudit (pre-result NameStorm cross-ref wrapped in `{!loading && !compareLoading && ...}` to eliminate ~130px of scroll-travel past it).
+
 ---
 
 ### PF-8 · useRegisterActions
@@ -504,6 +509,8 @@ grep -n 'href="/' ComponentName.js
   </div>
 </div>
 ```
+
+*Reference case: ArgumentSimulator (pre-result `/BeliefStressTest` in the input card, conditional `/RoastMe` shown only when intensity is unhinged, post-result cluster of `/PlotTwist` + `/WrongAnswersOnly`). Three clusters, each at or under the max-3 limit, each thematically tight.*
 
 ---
 
@@ -599,6 +606,20 @@ grep -n "⏳" ComponentName.js
 </button>
 ```
 
+**Multi-mode exception:** In tools with multiple functional modes (tabs, views, or sub-tools) where each mode has its own submit button with a distinct semantic purpose, each mode's **idle-state** icon may use a topical emoji matching that mode's action (e.g., ⚖️ Calibrate, 🔁 Fix, 🔎 Detect, 💬 Decode). The **loading-state** icon must still spin `tool?.icon` in every mode — that consistency is what tells users "this is still the same tool, just working." The shared `<Spinner />` helper is the canonical way to enforce this:
+
+```jsx
+const Spinner = () => <span className="animate-spin inline-block mr-2">{tool?.icon ?? '⚙️'}</span>;
+// …
+<button onClick={handleFix} disabled={…} className={`... ${c.btnPrimary}`}>
+  {loading ? <><Spinner />Fixing...</> : <><span className="mr-2">🔁</span> Diagnose & Fix</>}
+</button>
+```
+
+Single-mode tools retain the strict rule: `tool?.icon` in both branches.
+
+*Reference case: ApologyCalibrator (13 modes, each with topical submit icon, shared `Spinner` helper using `tool?.icon` for loading).*
+
 ---
 
 ### PF-15 · Required Field Asterisks
@@ -641,6 +662,12 @@ grep -n "<label" ComponentName.js | grep -v "\*" | head -20
 | Never `text-red-500` | Red belongs to the error/danger semantic — not form marking |
 | Placement | Inside the `<label>`, after the label text, in a `<span className={c.required}>*</span>` |
 | Optional fields | No asterisk — silence means optional |
+
+**⚠️ Audit false-negative — dot-nested required fields:** `audit_v2-3.py`'s PF-15 extractor matches `!variable.trim()` in the submit button's `disabled={...}` expression. It does **not** correctly handle dot-nested paths like `!form.whatHappened.trim()` or `!fixForm.theirReaction.trim()` — it captures only `form`/`fixForm` as the variable name, then fails to find an input with `value={form}` (because the actual binding is `value={form.whatHappened}`), and silently skips the check. Tools that collect all user input into a single form object (common pattern for multi-field tools) will pass the audit despite missing every asterisk.
+
+During audit, manually verify required-field asterisks by listing every submit button's `disabled={}` expression and tracing each negated variable back to its input label. If the asterisk isn't on the label, add it.
+
+*Reference case: ApologyCalibrator (13 modes, 11 required fields bound to nested form state — `calForm.whatHappened`, `detectForm.draft`, `culForm.culture`, etc. — all passed structural audit, all were missing asterisks until manually corrected).*
 
 ---
 
@@ -706,6 +733,8 @@ grep -n "handleReset\|onClick.*reset\|Start Over\|startOver" ComponentName.js | 
 | **Never in results block** | No reset inside `{results && (...)}` |
 
 *Added v4.37, Session 100, April 2026.*
+
+*Reference case: AwkwardSilenceFiller (conditional visibility guard checks multiple input sources before showing the button — `(results || panicResult || customContext.trim() || scenario || landmines.trim()) ? <button .../> : null` — so the button only appears once the user has started interacting, not on the blank initial state).*
 
 ---
 
