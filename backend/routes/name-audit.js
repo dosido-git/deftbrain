@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const dns = require('dns').promises;
-const { anthropic, cleanJsonResponse, callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════════════
 // HELPER: Check domain availability via DNS
@@ -62,7 +63,7 @@ async function checkSocials(name) {
 // ═══════════════════════════════════════════════════
 // ROUTE 1: FULL NAME ANALYSIS
 // ═══════════════════════════════════════════════════
-router.post('/nameaudit', async (req, res) => {
+router.post('/nameaudit', rateLimit(), async (req, res) => {
   try {
     const {
       name,
@@ -381,7 +382,7 @@ CRITICAL RULES
 // ═══════════════════════════════════════════════════
 // ROUTE 2: QUICK COMPARE (analyze 2-3 names side by side)
 // ═══════════════════════════════════════════════════
-router.post('/nameaudit/compare', async (req, res) => {
+router.post('/nameaudit/compare', rateLimit(), async (req, res) => {
   try {
     const { names, context, industry, userLanguage } = req.body;
 
@@ -391,11 +392,20 @@ router.post('/nameaudit/compare', async (req, res) => {
     if (names.length > 4) {
       return res.status(400).json({ error: 'Maximum 4 names for comparison' });
     }
+    if (!context?.trim()) {
+      return res.status(400).json({ error: 'Please select what these names are for' });
+    }
 
-    const prompt = `You are a world-class naming consultant. A client is torn between ${names.length} name candidates and needs a clear comparison.
+    const langDirective = withLanguage(userLanguage);
+    const trimmedNames = names.map(n => (n || '').trim()).filter(Boolean);
+    if (trimmedNames.length < 2) {
+      return res.status(400).json({ error: 'At least 2 non-empty names required for comparison' });
+    }
 
-NAMES TO COMPARE: ${names.map((n, i) => `${i + 1}. "${n}"`).join(', ')}
-WHAT IT'S FOR: ${context || 'Not specified'}
+    const prompt = `You are a world-class naming consultant. A client is torn between ${trimmedNames.length} name candidates and needs a clear comparison.
+
+NAMES TO COMPARE: ${trimmedNames.map((n, i) => `${i + 1}. "${n}"`).join(', ')}
+WHAT IT'S FOR: ${context}
 INDUSTRY: ${industry || 'Not specified'}
 
 For each name, give a quick assessment across the key dimensions, including a score from 0-100. Be honest — a mediocre name should score 40-55, not 70. Then declare a winner with clear reasoning.
@@ -427,9 +437,10 @@ Return ONLY this JSON:
   "comparison_insight": "The most important difference between these names that should drive the decision"
 }
 
-Be honest and decisive. The client needs clarity, not diplomacy. Return ONLY JSON.`;
+Be honest and decisive. The client needs clarity, not diplomacy. Return ONLY JSON.
+${langDirective ? `\n${langDirective}` : ''}`;
 
-    console.log(`[NameAudit/Compare] Comparing: ${names.join(' vs ')}`);
+    console.log(`[NameAudit/Compare] Comparing: ${trimmedNames.join(' vs ')}`);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-20250514',
@@ -450,7 +461,7 @@ Be honest and decisive. The client needs clarity, not diplomacy. Return ONLY JSO
 // ROUTE 3: FIX THIS NAME
 // Takes a name + its audit results, generates improved variations
 // ═══════════════════════════════════════════════════
-router.post('/nameaudit/fix', async (req, res) => {
+router.post('/nameaudit/fix', rateLimit(), async (req, res) => {
   try {
     const {
       name, context, industry, targetAudience,
@@ -551,14 +562,14 @@ Return ONLY valid JSON.`;
 // ROUTE 4: AUDIENCE REACTION SIMULATOR
 // Simulates 4-5 target audience personas reacting to the name
 // ═══════════════════════════════════════════════════
-router.post('/nameaudit/reactions', async (req, res) => {
+router.post('/nameaudit/reactions', rateLimit(), async (req, res) => {
   try {
     const {
       name, context, industry, targetAudience,
       overallSummary, personality, userLanguage,
     } = req.body;
 
-    if (!name) return res.status(400).json({ error: 'Name is required' });
+    if (!name?.trim()) return res.status(400).json({ error: 'Name is required' });
 
     const langDirective = withLanguage(userLanguage);
 
@@ -622,14 +633,14 @@ Return ONLY valid JSON.`;
 // ROUTE 5: CONTEXT-SPECIFIC DEEP DIVE
 // Runs specialized analysis based on name category
 // ═══════════════════════════════════════════════════
-router.post('/nameaudit/deepdive', async (req, res) => {
+router.post('/nameaudit/deepdive', rateLimit(), async (req, res) => {
   try {
     const {
       name, context, industry, targetAudience,
       grade, score, userLanguage,
     } = req.body;
 
-    if (!name) return res.status(400).json({ error: 'Name is required' });
+    if (!name?.trim()) return res.status(400).json({ error: 'Name is required' });
 
     const langDirective = withLanguage(userLanguage);
 
@@ -724,14 +735,14 @@ Return ONLY valid JSON.`;
 // ROUTE 6: SECOND OPINION
 // Independent re-analysis compared against the first
 // ═══════════════════════════════════════════════════
-router.post('/nameaudit/second-opinion', async (req, res) => {
+router.post('/nameaudit/second-opinion', rateLimit(), async (req, res) => {
   try {
     const {
       name, context, industry, targetAudience,
       firstOpinion, userLanguage,
     } = req.body;
 
-    if (!name) return res.status(400).json({ error: 'Name is required' });
+    if (!name?.trim()) return res.status(400).json({ error: 'Name is required' });
 
     const langDirective = withLanguage(userLanguage);
 

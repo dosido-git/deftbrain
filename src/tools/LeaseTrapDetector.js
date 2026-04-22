@@ -65,27 +65,39 @@ const LeaseTrapDetector = ({ tool }) => {
   const [missingLoading, setMissingLoading] = useState(false);
   const [history, setHistory] = usePersistentState('ltd-history', []);
 
+  const c = {
+    card:          isDark ? 'bg-zinc-800' : 'bg-white',
+    cardAlt:       isDark ? 'bg-zinc-700/40 border-zinc-600' : 'bg-orange-50/50 border-orange-100',
+    text:          isDark ? 'text-zinc-50' : 'text-gray-900',
+    textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
+    textMuted:     isDark ? 'text-zinc-500' : 'text-gray-400',
+    labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
+    input:         isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder:text-zinc-500 focus:border-orange-500 focus:ring-orange-500/20' : 'bg-white border-zinc-300 text-gray-900 placeholder:text-zinc-400 focus:border-orange-500 focus:ring-orange-500/20',
+    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-zinc-100 hover:bg-zinc-200 text-gray-700',
+    btnSoft:       isDark ? 'bg-zinc-700/50 hover:bg-zinc-600/50 text-zinc-300' : 'bg-zinc-50 hover:bg-zinc-100 text-gray-500',
+    border:        isDark ? 'border-zinc-700' : 'border-zinc-200',
+    danger:        isDark ? 'bg-red-900/20 border-red-800/50 text-red-300' : 'bg-red-50 border-red-200 text-red-700',
+    warning:       isDark ? 'bg-amber-900/20 border-amber-800/50 text-amber-300' : 'bg-amber-50 border-amber-200 text-amber-700',
+    success:       isDark ? 'bg-emerald-900/20 border-emerald-800/50 text-emerald-300' : 'bg-emerald-50 border-emerald-200 text-emerald-700',
+    deleteHover:   isDark ? 'text-zinc-500 hover:text-red-400' : 'text-gray-400 hover:text-red-500',
+    required:      isDark ? 'text-amber-400' : 'text-amber-500',
+    // ── Highlight tokens for annotated-lease-view (S1.1j indirection) ──
+    highlightRed:    isDark ? 'bg-red-500/30 border-b-2 border-red-500' : 'bg-red-200/70 border-b-2 border-red-400',
+    highlightYellow: isDark ? 'bg-amber-500/30 border-b-2 border-amber-500' : 'bg-amber-200/70 border-b-2 border-amber-400',
+    highlightGreen:  isDark ? 'bg-emerald-500/30 border-b-2 border-emerald-500' : 'bg-emerald-200/70 border-b-2 border-emerald-400',
+    // ── Simple swatch tokens for the annotation-view legend ──
+    swatchRed:    isDark ? 'bg-red-500/30' : 'bg-red-200',
+    swatchYellow: isDark ? 'bg-amber-500/30' : 'bg-amber-200',
+    swatchGreen:  isDark ? 'bg-emerald-500/30' : 'bg-emerald-200',
+    swatchCyan:   isDark ? 'bg-cyan-500/30' : 'bg-cyan-200',
+  };
+  c.textMuteded = c.textMuted;
+  c.label = c.labelText;
+
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
     : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
-
-    const c = {
-    card:          isDark ? 'bg-zinc-800' : 'bg-white',
-    cardAlt: isDark ? 'bg-zinc-700/40 border-zinc-600' : 'bg-orange-50/50 border-orange-100',
-    text: isDark ? 'text-zinc-50' : 'text-gray-900',
-    textMuted: isDark ? 'text-zinc-500' : 'text-gray-400',
-    input: isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder:text-zinc-500 focus:border-orange-500 focus:ring-orange-500/20' : 'bg-white border-zinc-300 text-gray-900 placeholder:text-zinc-400 focus:border-orange-500 focus:ring-orange-500/20',
-    btnPrimary: isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
-    btnSecondary: isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-zinc-100 hover:bg-zinc-200 text-gray-700',
-    btnSoft: isDark ? 'bg-zinc-700/50 hover:bg-zinc-600/50 text-zinc-300' : 'bg-zinc-50 hover:bg-zinc-100 text-gray-500',
-    border: isDark ? 'border-zinc-700' : 'border-zinc-200',
-    danger: isDark ? 'bg-red-900/20 border-red-800/50 text-red-300' : 'bg-red-50 border-red-200 text-red-700',
-    warning: isDark ? 'bg-amber-900/20 border-amber-800/50 text-amber-300' : 'bg-amber-50 border-amber-200 text-amber-700',
-    success: isDark ? 'bg-emerald-900/20 border-emerald-800/50 text-emerald-300' : 'bg-emerald-50 border-emerald-200 text-emerald-700',
-    textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
-    deleteHover: isDark ? 'text-zinc-500 hover:text-red-400' : 'text-gray-400 hover:text-red-500',
-    required:    isDark ? 'text-amber-400' : 'text-amber-500',
-  };
   const toggle = (key) => setExpandedSections(prev => ({ ...prev, [key]: !prev[key] }));
   const getNegBadge = (neg) => { if (!neg) return null; const n = neg.toLowerCase(); if (n.includes('likely negotiable')) return { label: 'Likely Negotiable', cls: isDark ? 'bg-emerald-900/40 text-emerald-300' : 'bg-emerald-100 text-emerald-700' }; if (n.includes('possible')) return { label: 'Possible w/ Leverage', cls: isDark ? 'bg-amber-900/40 text-amber-300' : 'bg-amber-100 text-amber-700' }; return { label: 'Non-Negotiable', cls: isDark ? 'bg-red-900/40 text-red-300' : 'bg-red-100 text-red-700' }; };
   const getResourceBadge = (type) => { if (!type) return isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-zinc-100 text-gray-600'; const t = type.toLowerCase(); if (t.includes('legal')) return isDark ? 'bg-sky-900/40 text-sky-300' : 'bg-sky-100 text-sky-700'; if (t.includes('tenant')) return isDark ? 'bg-cyan-900/40 text-cyan-300' : 'bg-cyan-100 text-cyan-700'; if (t.includes('housing')) return isDark ? 'bg-orange-900/40 text-orange-300' : 'bg-orange-100 text-orange-700'; return isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-zinc-100 text-gray-600'; };
@@ -172,7 +184,7 @@ const LeaseTrapDetector = ({ tool }) => {
   const generateAmendment = async () => {
     if (!amendmentClauses.length) return;
     setAmendmentLoading(true); setAmendment(null);
-    const allFlags = [...(results?.red_flags || []), ...(results?.unenforceable_clauses?.map(uc => ({ lease_reference: uc.lease_reference, clause_text: uc.clause_text, concern: uc.explanation, specific_law: uc.specific_law })) || [])];
+    const allFlags = [...(results?.red_flags || []), ...(results?.unenforceable_clauses?.map(clause => ({ lease_reference: clause.lease_reference, clause_text: clause.clause_text, concern: clause.explanation, specific_law: clause.specific_law })) || [])];
     const selected = amendmentClauses.map(i => allFlags[i]).filter(Boolean);
     try {
       const data = await callToolEndpoint('lease-trap-detector/amendment', { clausesToAmend: selected, location, landlordName: landlordName.trim() || undefined, tenantName: tenantName.trim() || undefined, propertyAddress: propertyAddress.trim() || undefined });
@@ -243,12 +255,18 @@ const LeaseTrapDetector = ({ tool }) => {
 
   useRegisterActions(buildFullText(), tool?.title || 'Lease Trap Detector');
 
-  const reset = () => {
+  const handleReset = () => {
+    // Analyze mode
     setLeaseText(''); setUploadedFile(null); setFileBase64(null); setLocation(''); setLeaseType(''); setConcerns('');
-    setResults(null); setError(''); setExpandedSections({}); setFollowupHistory([]); setFollowupA(null); setFollowupQ('');
+    setResults(null); setExpandedSections({}); setFollowupHistory([]); setFollowupA(null); setFollowupQ('');
     setDraftEmail(null); setComparison(null); setShowCompare(false); setAmendment(null); setShowAmendment(false);
     setAmendmentClauses([]); setChecklist(null); setChecklistType(null); setCheckedItems({});
     setRenewalTraps(null); setShowHighlights(false);
+    // Missing mode (previously missed — caused state persistence bug)
+    setMissingContractText(''); setMissingContractType(''); setMissingRole(''); setMissingConcerns('');
+    setMissingResults(null);
+    // Shared
+    setError('');
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
@@ -304,29 +322,38 @@ const LeaseTrapDetector = ({ tool }) => {
   return (
     <div className={`space-y-4 ${c.text}`}>
 
-      {/* Mode Toggle */}
-      {!results && !missingResults && (
-        <div className={`flex gap-2 p-1 rounded-xl ${isDark ? 'bg-zinc-800' : 'bg-zinc-100'}`}>
+      {/* ── Unified header card: title + tagline + reset + mode tabs ── */}
+      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
+        <div className="flex items-start justify-between gap-3 pb-3 border-b border-zinc-500">
+          <div className="flex-1 min-w-0">
+            <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
+              <span className="mr-2">{tool?.icon ?? '🏡'}</span>{tool?.title ?? 'Lease Trap Detector'}
+            </h2>
+            <p className={`text-sm ${c.textSecondary} mt-1`}>{tool?.tagline ?? 'Find predatory clauses hiding in your lease'}</p>
+          </div>
+          {(results || missingResults || leaseText.trim() || missingContractText.trim() || uploadedFile) ? (
+            <button
+              onClick={handleReset}
+              className={`shrink-0 px-3 py-2 rounded-lg text-sm font-bold min-h-[40px] ${c.btnSecondary}`}
+            >↺ Start Over</button>
+          ) : null}
+        </div>
+        {/* Mode tabs — always visible so users can switch modes from any state */}
+        <div className="flex gap-2 pt-3">
           <button onClick={() => setLtdMode('analyze')}
-            className={`flex-1 py-2.5 rounded-lg text-sm font-bold transition-all ${ltdMode === 'analyze' ? c.btnPrimary : `${c.textSecondary} hover:${c.text}`}`}>
+            className={`flex-1 py-2.5 rounded-lg text-sm font-bold transition-all ${ltdMode === 'analyze' ? c.btnPrimary : c.btnSecondary}`}>
             🔍 Find Problems
           </button>
           <button onClick={() => setLtdMode('missing')}
-            className={`flex-1 py-2.5 rounded-lg text-sm font-bold transition-all ${ltdMode === 'missing' ? c.btnPrimary : `${c.textSecondary} hover:${c.text}`}`}>
+            className={`flex-1 py-2.5 rounded-lg text-sm font-bold transition-all ${ltdMode === 'missing' ? c.btnPrimary : c.btnSecondary}`}>
             🏦 Find What's Missing
           </button>
         </div>
-      )}
+      </div>
 
       {ltdMode === 'analyze' && !results && !missingResults && (
         <div className="space-y-5">
           <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
-            <div className="pb-3 border-b border-zinc-500">
-              <h2 className={`text-xl font-bold ${c.text}`}>
-                <span className="mr-2">{tool?.icon ?? '🏠'}</span>{tool?.title ?? 'Lease Trap Detector'}
-              </h2>
-              <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Find predatory clauses, hidden fees, and unenforceable terms'}</p>
-            </div>
             <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>How would you like to provide your lease?</p>
             <div className="grid grid-cols-2 gap-3">
               {[{ id: 'text', icon: '📄', label: 'Paste Text', desc: 'Copy & paste' }, { id: 'file', icon: '📎', label: 'Upload PDF', desc: 'PDF file' }].map(m => (
@@ -395,8 +422,14 @@ const LeaseTrapDetector = ({ tool }) => {
               </div>
             </div>
 
+            <p className={`text-xs text-center ${c.textMuteded}`}>
+              Already signed and worried about your deposit?{' '}
+              <a href="/RentersDepositSaver" className={linkStyle}>💰 Renters Deposit Saver</a>{' '}
+              helps you get it back when you move out.
+            </p>
+
             <button onClick={analyzeLease} disabled={loading} className={`w-full py-4 sm:py-5 rounded-xl font-black text-lg shadow-lg disabled:opacity-50 transition-all hover:scale-[1.02] active:scale-[0.98] ${c.btnPrimary}`}>
-              {loading ? <><span className="animate-spin inline-block mr-2">{tool?.icon ?? '⚙️'}</span> Analyzing...</> : <><span className="mr-2">{tool?.icon ?? '🛡️'}</span> Analyze My Lease</>}
+              {loading ? <><span className="animate-spin inline-block mr-2">{tool?.icon ?? '🏡'}</span> Analyzing...</> : <><span className="mr-2">{tool?.icon ?? '🏡'}</span> Analyze My Lease</>}
             </button>
 
             {error && <div className={`p-3 rounded-xl border ${c.danger}`}><span className="mr-1">⚠️</span> {error}</div>}
@@ -425,7 +458,7 @@ const LeaseTrapDetector = ({ tool }) => {
               </div>
               <div className="space-y-4">
                 <div>
-                  <label className={`block text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuted}`}>Paste your contract <span className="text-red-400">*</span></label>
+                  <label className={`block text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuted}`}>Paste your contract <span className={c.required}>*</span></label>
                   <textarea value={missingContractText} onChange={e => setMissingContractText(e.target.value)}
                     placeholder="Paste your lease, freelance agreement, contractor proposal, employment offer, or any contract you're about to sign…"
                     rows={10} className={`w-full p-4 border-2 rounded-xl text-sm resize-y focus:outline-none focus:ring-2 ${c.input}`} />
@@ -459,7 +492,7 @@ const LeaseTrapDetector = ({ tool }) => {
                 {error && <div className={`p-3 rounded-xl border ${c.danger}`}><span className="mr-1">⚠️</span> {error}</div>}
                 <button onClick={handleFindMissing} disabled={missingLoading || !missingContractText.trim()}
                   className={`w-full py-4 rounded-xl font-black text-lg shadow-lg disabled:opacity-50 transition-all ${c.btnPrimary}`}>
-                  {missingLoading ? <><span className="animate-spin inline-block mr-2">{tool?.icon ?? '⚙️'}</span>Scanning…</> : <><span className="mr-2">{tool?.icon ?? '🏦'}</span>Find What's Missing</>}
+                  {missingLoading ? <><span className="animate-spin inline-block mr-2">{tool?.icon ?? '🏡'}</span>Scanning…</> : <><span className="mr-2">{tool?.icon ?? '🏡'}</span>Find What's Missing</>}
                 </button>
                 <p className={`text-center text-xs ${c.textMuted}`}>⚖️ General guidance, not legal advice. Consult an attorney for specifics.</p>
               </div>
@@ -564,7 +597,7 @@ const LeaseTrapDetector = ({ tool }) => {
           <div className="space-y-5">
             {/* Top bar */}
             <div className="flex items-center justify-between flex-wrap gap-2">
-              <button onClick={reset} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnSecondary}`}>← New</button>
+
               <div className="flex gap-2 flex-wrap">
                 {savedAnalyses.length > 0 && <button onClick={() => setShowCompare(!showCompare)} className={`text-xs font-bold px-3 py-2 rounded-xl ${c.btnSecondary}`}>⚖️ Compare</button>}
               </div>
@@ -576,8 +609,8 @@ const LeaseTrapDetector = ({ tool }) => {
                 <div className="flex items-center justify-between mb-3">
                   <p className={`text-xs font-bold uppercase tracking-wider ${isDark ? 'text-sky-400' : 'text-sky-600'}`}>🔍 Annotated Lease View</p>
                   <div className="flex gap-2">
-                    {[{ color: isDark ? 'bg-red-500/30' : 'bg-red-200', label: 'Red flag' }, { color: isDark ? 'bg-amber-500/30' : 'bg-amber-200', label: 'Yellow' }, { color: isDark ? 'bg-emerald-500/30' : 'bg-emerald-200', label: 'Green' }, { color: isDark ? 'bg-cyan-500/30' : 'bg-cyan-200', label: 'Unenforceable' }].map(l => (
-                      <span key={l.label} className={`text-[9px] px-1.5 py-0.5 rounded ${l.color} ${c.text}`}>{l.label}</span>
+                    {[{ colorKey: 'swatchRed', label: 'Red flag' }, { colorKey: 'swatchYellow', label: 'Yellow' }, { colorKey: 'swatchGreen', label: 'Green' }, { colorKey: 'swatchCyan', label: 'Unenforceable' }].map(l => (
+                      <span key={l.label} className={`text-[9px] px-1.5 py-0.5 rounded ${c[l.colorKey]} ${c.text}`}>{l.label}</span>
                     ))}
                   </div>
                 </div>
@@ -588,9 +621,9 @@ const LeaseTrapDetector = ({ tool }) => {
                     const parts = [];
                     let lastEnd = 0;
                     const colorMap = {
-                      red: isDark ? 'bg-red-500/30 border-b-2 border-red-500' : 'bg-red-200/70 border-b-2 border-red-400',
-                      yellow: isDark ? 'bg-amber-500/30 border-b-2 border-amber-500' : 'bg-amber-200/70 border-b-2 border-amber-400',
-                      green: isDark ? 'bg-emerald-500/30 border-b-2 border-emerald-500' : 'bg-emerald-200/70 border-b-2 border-emerald-400',
+                      red: c.highlightRed,
+                      yellow: c.highlightYellow,
+                      green: c.highlightGreen,
                     };
                     highlightedText.forEach((m, i) => {
                       if (m.start > lastEnd) parts.push(<span key={`t-${i}`}>{leaseText.slice(lastEnd, m.start)}</span>);
@@ -650,7 +683,7 @@ const LeaseTrapDetector = ({ tool }) => {
 
             {/* Roommate/Sublease Warning */}
             {isRoommateOrSublease && (
-              <div className={`${c.card} border-2 rounded-2xl p-5 ${isDark ? 'border-purple-700/50' : 'border-purple-300'}`}>
+              <div className={`${c.card} border-2 rounded-2xl p-5 ${isDark ? 'border-cyan-700/50' : 'border-cyan-300'}`}>
                 <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${isDark ? 'text-cyan-400' : 'text-cyan-600'}`}>👥 {leaseType === 'sublease' ? 'Sublease' : 'Room Rental'} Risk Alert</p>
                 <p className={`text-sm ${c.textSecondary} mb-3`}>{leaseType === 'sublease' ? 'Subleases carry unique risks. Key questions: Are you on the master lease? Who\'s liable if the master tenant defaults? Can the landlord evict you directly?' : 'Room rentals often have weaker legal protections. Key questions: Are you on the main lease? Who controls common areas? Can the primary tenant change terms?'}</p>
                 <p className={`text-xs font-bold ${c.text}`}>💡 Use the follow-up Q&A below to ask about your specific {leaseType} concerns.</p>
@@ -761,7 +794,7 @@ const LeaseTrapDetector = ({ tool }) => {
                 {expandedSections.unenforceable && (
                   <div className="mt-4 space-y-3">
                     {results.unenforceable_clauses.map((cl, idx) => (
-                      <div key={idx} className={`border-l-4 border-purple-500 pl-4 p-3 rounded-xl ${c.cardAlt} border`}>
+                      <div key={idx} className={`border-l-4 border-cyan-500 pl-4 p-3 rounded-xl ${c.cardAlt} border`}>
                         <RefBadge reference={cl.lease_reference} color={isDark ? 'bg-cyan-800/50 text-cyan-300' : 'bg-cyan-200 text-cyan-800'} />
                         <p className={`text-sm font-mono ${c.textSecondary} mb-2`}>"{cl.clause_text}"</p>
                         <p className={`text-xs font-bold ${isDark ? 'text-cyan-400' : 'text-cyan-700'} mb-1`}>⚖️ {cl.specific_law}</p>
@@ -849,7 +882,7 @@ const LeaseTrapDetector = ({ tool }) => {
             <div className={`${c.card} border rounded-2xl p-5`}>
               <div className="flex items-center justify-between mb-3">
                 <p className={`text-xs font-bold uppercase tracking-wider ${c.textSecondary}`}>🔄 Renewal & Termination Traps</p>
-                {!renewalTraps && <button onClick={analyzeRenewalTraps} disabled={renewalLoading} className={`text-xs font-bold px-3 py-1.5 rounded-lg ${c.btnPrimary}`}>{renewalLoading ? <span className="animate-spin inline-block mr-1">{tool?.icon ?? '⚙️'}</span> : <span className="mr-1">{tool?.icon ?? '⚙️'}</span>}{renewalLoading ? 'Analyzing...' : 'Analyze'}</button>}
+                {!renewalTraps && <button onClick={analyzeRenewalTraps} disabled={renewalLoading} className={`text-xs font-bold px-3 py-1.5 rounded-lg ${c.btnPrimary}`}>{renewalLoading ? <span className="animate-spin inline-block mr-1">{tool?.icon ?? '🏡'}</span> : <span className="mr-1">{tool?.icon ?? '🏡'}</span>}{renewalLoading ? 'Analyzing...' : 'Analyze'}</button>}
               </div>
               {!renewalTraps && !renewalLoading && <p className={`text-xs ${c.textMuted}`}>What happens when your lease ends? Find auto-renewal traps, rent increase limits, and critical deadlines.</p>}
               {renewalTraps && (
@@ -950,7 +983,7 @@ const LeaseTrapDetector = ({ tool }) => {
                     ))}
                     <input type="text" value={propertyAddress} onChange={e => setPropertyAddress(e.target.value)} placeholder="Property address (optional)" className={`w-full px-3 py-2 rounded-xl border-2 text-xs ${c.input}`} />
                     <button onClick={generateAmendment} disabled={amendmentLoading || !amendmentClauses.length} className={`w-full py-3 rounded-xl font-bold disabled:opacity-40 ${c.btnPrimary}`}>
-                      {amendmentLoading ? <><span className="animate-spin inline-block mr-2">{tool?.icon ?? '⚙️'}</span> Generating...</> : <><span className="mr-2">{tool?.icon ?? '📝'}</span>{`Generate Amendment (${amendmentClauses.length} clauses)`}</>}
+                      {amendmentLoading ? <><span className="animate-spin inline-block mr-2">{tool?.icon ?? '🏡'}</span> Generating...</> : <><span className="mr-2">{tool?.icon ?? '🏡'}</span>{`Generate Amendment (${amendmentClauses.length} clauses)`}</>}
                     </button>
                   </div>
                 )}
@@ -979,8 +1012,8 @@ const LeaseTrapDetector = ({ tool }) => {
               <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textSecondary}`}>📋 Personalized Checklist</p>
               {!checklist && (
                 <div className="flex gap-3">
-                  <button onClick={() => generateChecklist('move_in')} disabled={checklistLoading} className={`flex-1 py-3 rounded-xl font-bold ${c.btnPrimary}`}>{checklistLoading && checklistType === 'move_in' ? <><span className="animate-spin inline-block mr-1">{tool?.icon ?? '⚙️'}</span> Loading...</> : <><span className="mr-1">{tool?.icon ?? '📦'}</span> Move-in</>}</button>
-                  <button onClick={() => generateChecklist('move_out')} disabled={checklistLoading} className={`flex-1 py-3 rounded-xl font-bold ${c.btnSecondary}`}>{checklistLoading && checklistType === 'move_out' ? <><span className="animate-spin inline-block mr-1">{tool?.icon ?? '⚙️'}</span> Loading...</> : <><span className="mr-1">{tool?.icon ?? '🚚'}</span> Move-out</>}</button>
+                  <button onClick={() => generateChecklist('move_in')} disabled={checklistLoading} className={`flex-1 py-3 rounded-xl font-bold ${c.btnPrimary}`}>{checklistLoading && checklistType === 'move_in' ? <><span className="animate-spin inline-block mr-1">{tool?.icon ?? '🏡'}</span> Loading...</> : <><span className="mr-1">{tool?.icon ?? '🏡'}</span> Move-in</>}</button>
+                  <button onClick={() => generateChecklist('move_out')} disabled={checklistLoading} className={`flex-1 py-3 rounded-xl font-bold ${c.btnSecondary}`}>{checklistLoading && checklistType === 'move_out' ? <><span className="animate-spin inline-block mr-1">{tool?.icon ?? '🏡'}</span> Loading...</> : <><span className="mr-1">{tool?.icon ?? '🏡'}</span> Move-out</>}</button>
                 </div>
               )}
               {checklist && (
@@ -1033,7 +1066,7 @@ const LeaseTrapDetector = ({ tool }) => {
                   <input type="text" value={landlordName} onChange={e => setLandlordName(e.target.value)} placeholder="Landlord name (optional)" className={`w-full px-3 py-2.5 rounded-xl border-2 text-sm ${c.input}`} />
                   <input type="text" value={tenantName} onChange={e => setTenantName(e.target.value)} placeholder="Your name (optional)" className={`w-full px-3 py-2.5 rounded-xl border-2 text-sm ${c.input}`} />
                   <button onClick={generateEmail} disabled={emailLoading} className={`w-full py-3 rounded-xl font-bold disabled:opacity-50 ${c.btnPrimary}`}>
-                    {emailLoading ? <><span className="animate-spin inline-block mr-2">{tool?.icon ?? '⚙️'}</span> Drafting...</> : <><span className="mr-2">{tool?.icon ?? '📧'}</span> Generate</>}
+                    {emailLoading ? <><span className="animate-spin inline-block mr-2">{tool?.icon ?? '🏡'}</span> Drafting...</> : <><span className="mr-2">{tool?.icon ?? '🏡'}</span> Generate</>}
                   </button>
                 </div>
               )}
@@ -1071,7 +1104,7 @@ const LeaseTrapDetector = ({ tool }) => {
               <div className="flex gap-2">
                 <input type="text" value={followupQ} onChange={e => setFollowupQ(e.target.value)} placeholder="e.g., What happens if they try to enforce the late fee?" onKeyDown={e => e.key === 'Enter' && askFollowup()} className={`flex-1 px-3 py-2.5 rounded-xl border-2 text-sm ${c.input}`} />
                 <button onClick={askFollowup} disabled={followupLoading || !followupQ.trim()} className={`px-4 py-2.5 rounded-xl text-sm font-bold disabled:opacity-40 ${c.btnPrimary}`}>
-                  {followupLoading ? <span className="animate-spin inline-block">{tool?.icon ?? '⚙️'}</span> : <span>{tool?.icon ?? '❓'}</span>}
+                  {followupLoading ? <span className="animate-spin inline-block">{tool?.icon ?? '🏡'}</span> : <span>{tool?.icon ?? '🏡'}</span>}
                 </button>
               </div>
               {followupA && (
@@ -1086,7 +1119,7 @@ const LeaseTrapDetector = ({ tool }) => {
 
             {/* Compare */}
             {showCompare && savedAnalyses.length > 0 && (
-              <div className={`${c.card} border-2 rounded-2xl p-5 ${isDark ? 'border-purple-700/50' : 'border-purple-300'}`}>
+              <div className={`${c.card} border-2 rounded-2xl p-5 ${isDark ? 'border-cyan-700/50' : 'border-cyan-300'}`}>
                 <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${isDark ? 'text-cyan-400' : 'text-cyan-600'}`}>⚖️ Compare Leases</p>
                 {!comparison && (
                   <div className="space-y-2">
@@ -1096,7 +1129,7 @@ const LeaseTrapDetector = ({ tool }) => {
                         <p className={`text-xs ${c.textMuted}`}>{new Date(sa.date).toLocaleDateString()}</p>
                       </button>
                     ))}
-                    {compareLoading && <p className={`text-sm text-center ${c.textMuted}`}><span className="animate-spin inline-block mr-2">{tool?.icon ?? '⚙️'}</span> Comparing...</p>}
+                    {compareLoading && <p className={`text-sm text-center ${c.textMuted}`}><span className="animate-spin inline-block mr-2">{tool?.icon ?? '🏡'}</span> Comparing...</p>}
                   </div>
                 )}
                 {comparison && (
@@ -1137,7 +1170,7 @@ const LeaseTrapDetector = ({ tool }) => {
             )}
 
             <p className={`text-center text-xs ${c.textMuted}`}>⚖️ General guidance, not legal advice. Consult a tenant rights attorney for specifics.</p>
-            <button onClick={reset} className={`w-full py-4 rounded-xl font-bold ${c.btnSecondary}`}><span className="mr-2">🔄</span> Analyze Another Lease</button>
+
           </div>
         )}
         {results && (
@@ -1145,9 +1178,7 @@ const LeaseTrapDetector = ({ tool }) => {
             Landlord not playing fair? <a href="/ComplaintEscalationWriter" className={linkStyle}>📝 Complaint Escalation Writer</a> helps you push back effectively.
           </p>
         )}
-        <p className={`text-xs ${c.textMuted} text-center`}>
-          Moving out? <a href="/RentersDepositSaver" className={linkStyle}>🏠 Renters Deposit Saver</a> helps you get your deposit back.
-        </p>
+
     </div>
   );
 };

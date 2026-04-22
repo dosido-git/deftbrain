@@ -62,7 +62,6 @@ const NameAudit = ({ tool }) => {
   // ─── State ───
   const [mode, setMode] = useState('analyze'); // 'analyze' | 'compare'
   const [name, setName] = useState('');
-  const [context, setContext] = useState('');
   const [industry, setIndustry] = useState('');
   const [targetAudience, setTargetAudience] = useState('');
   const [results, setResults] = useState(null);
@@ -92,6 +91,7 @@ const NameAudit = ({ tool }) => {
   const [journalDraft, setJournalDraft] = useState('');
 
   // ─── Persistent state ───
+  const [context, setContext] = usePersistentState('nameaudit-context', '');
   const [auditHistory, setAuditHistory] = usePersistentState('nameaudit-history', []);
   const [evolutionTimeline, setEvolutionTimeline] = usePersistentState('nameaudit-evolution', []);
   const [journalEntries, setJournalEntries] = usePersistentState('nameaudit-journal', {});
@@ -170,6 +170,7 @@ const NameAudit = ({ tool }) => {
   // ─── Analyze Another (quick re-analyze from results) ───
   const handleQuickAnalyze = async () => {
     if (!quickName.trim()) return;
+    if (!context) { setError('Please select what this name is for'); return; }
     setName(quickName.trim());
     setError(''); setResults(null); setFixResults(null);
     setReactionsResults(null); setDeepDiveResults(null); setSecondOpinionResults(null);
@@ -595,7 +596,7 @@ const NameAudit = ({ tool }) => {
         </div>
       ),
       birth_announcement: (
-        <div className={`p-6 rounded-lg border-2 ${isDark ? 'border-pink-700 bg-pink-950/20' : 'border-pink-300 bg-pink-50'} text-center`}>
+        <div className={`p-6 rounded-lg border-2 ${isDark ? 'border-emerald-700 bg-emerald-950/20' : 'border-emerald-300 bg-emerald-50'} text-center`}>
           <p className={`text-xs ${c.textMuteded} mb-2`}>Birth Announcement</p>
           <p className={`text-xs tracking-widest uppercase ${c.textMuteded}`}>welcome to the world</p>
           <p className={`text-3xl font-light mt-1 ${c.text}`} style={{ fontFamily: 'Georgia, serif' }}>{n}</p>
@@ -718,12 +719,15 @@ const NameAudit = ({ tool }) => {
   }, [compareNames, context, industry, callToolEndpoint]);
 
   const reset = () => {
-    setName(''); setContext(''); setIndustry(''); setTargetAudience('');
+    setName(''); setIndustry(''); setTargetAudience('');
     setResults(null); setError(''); setCompareResults(null);
     setCompareNames(['', '']); setFixResults(null); setFixLoading(false);
     setQuickName(''); setAnalyzeToCompare(false); setCompareSecondName('');
     setShowExplainer({}); setReactionsResults(null); setDeepDiveResults(null);
     setSecondOpinionResults(null); setShowMockups(false); setJournalDraft('');
+    // Note: context is intentionally preserved across resets — users testing
+    // multiple names within the same context (e.g., Business) shouldn't have
+    // to re-pick every time. Persisted via usePersistentState.
   };
 
   const gradeColors = {
@@ -940,19 +944,43 @@ const NameAudit = ({ tool }) => {
 
 
   // ─── Keyboard shortcut ───
+  const handleAnalyzeRef = useRef(null);
+  const handleCompareRef = useRef(null);
+  const canSubmitRef = useRef(false);
+  const modeRef = useRef(mode);
+  const resultsAnchorRef = useRef(null);
+  handleAnalyzeRef.current = handleAnalyze;
+  handleCompareRef.current = handleCompare;
+  modeRef.current = mode;
+  canSubmitRef.current = mode === 'analyze'
+    ? (!!name.trim() && !!context)
+    : (compareNames.filter(n => n.trim()).length >= 2 && !!context);
+
   useEffect(() => {
     const handler = (e) => {
       const tag = document.activeElement?.tagName;
-      if (tag === 'TEXTAREA' && !e.metaKey && !e.ctrlKey) return;
-      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+      if (tag === 'SELECT') return;
+      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter'
+          && !loading && !compareLoading && canSubmitRef.current) {
         e.preventDefault();
-        if (mode === 'analyze' && name.trim() && context) handleAnalyze();
-        else if (mode === 'compare' && compareNames.filter(n => n.trim()).length >= 2 && context) handleCompare();
+        if (modeRef.current === 'analyze') handleAnalyzeRef.current?.();
+        else handleCompareRef.current?.();
       }
     };
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
-  }, [mode, name, context, compareNames, handleAnalyze, handleCompare]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading, compareLoading]);
+
+  // ─── Scroll to results anchor when loading starts OR results arrive ───
+  useEffect(() => {
+    if ((loading || compareLoading || results || compareResults) && resultsAnchorRef.current) {
+      const timeout = setTimeout(() => {
+        resultsAnchorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+      return () => clearTimeout(timeout);
+    }
+  }, [loading, compareLoading, results, compareResults]);
 
   // ─── RENDER ───
   return (
@@ -962,10 +990,19 @@ const NameAudit = ({ tool }) => {
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm`}>
         <div className="px-5 pt-5">
           <div className="pb-3 border-b border-zinc-500">
-            <h2 className={`text-xl font-bold ${c.text}`}>
-              <span className="mr-2">{tool?.icon ?? '🔍'}</span>{tool?.title ?? 'NameAudit'}
-            </h2>
-            <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Stress-test any name before you commit'}</p>
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h2 className={`text-xl font-bold ${c.text}`}>
+                  <span className="mr-2">{tool?.icon ?? '🔍'}</span>{tool?.title ?? 'NameAudit'}
+                </h2>
+                <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Stress-test any name before you commit'}</p>
+              </div>
+              {(results || compareResults || name.trim() || compareNames.some(n => n.trim())) ? (
+                <button onClick={reset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>
+                  ↺ Start Over
+                </button>
+              ) : null}
+            </div>
           </div>
         </div>
         <div className="p-5 space-y-4">
@@ -1113,9 +1150,16 @@ const NameAudit = ({ tool }) => {
             className={`w-full py-4 px-6 rounded-xl font-semibold text-lg transition-all flex items-center justify-center gap-2 shadow-lg ${
               (loading || compareLoading) ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : c.btnPrimary
             }`}>
-            {(loading || compareLoading) ? (<><span className="animate-spin inline-block">{tool?.icon ?? '⚙️'}</span> {mode === 'analyze' ? 'Analyzing...' : 'Comparing...'}</>)
+            {(loading || compareLoading) ? (<><span className="animate-spin inline-block">{tool?.icon ?? '🔍'}</span> {mode === 'analyze' ? 'Analyzing...' : 'Comparing...'}</>)
               : (<><span className="mr-1">{tool?.icon ?? '🔍'}</span>{mode === 'analyze' ? 'Analyze This Name' : 'Compare These Names'}</>)}
           </button>
+
+          {/* Inline status — visible before scroll completes */}
+          {(loading || compareLoading) && (
+            <p className={`text-xs text-center ${c.textMuted}`}>
+              {mode === 'analyze' ? 'Running full analysis…' : 'Comparing candidates…'} scroll down to follow along
+            </p>
+          )}
 
           {error && (
             <div className={`p-4 rounded-xl flex items-start gap-3 ${c.danger} border`}>
@@ -1123,17 +1167,50 @@ const NameAudit = ({ tool }) => {
             </div>
           )}
 
-          {/* NameStorm cross-ref */}
-          <p className={`text-xs text-center ${c.textMuteded}`}>
-            Need name ideas first? Try{' '}
-            <a href="/NameStorm" className={linkStyle}>NameStorm</a>{' '}
-            to generate names, then bring your favorites here.
-          </p>
+          {/* NameStorm cross-ref — hidden during loading to reduce scroll-jump distance */}
+          {!loading && !compareLoading && (
+            <p className={`text-xs text-center ${c.textMuteded}`}>
+              Need name ideas first? Try{' '}
+              <a href="/NameStorm" className={linkStyle}>NameStorm</a>{' '}
+              to generate names, then bring your favorites here.
+            </p>
+          )}
         </div>
       )}
 
         </div>{/* /header card inner */}
       </div>{/* /header card */}
+
+      {/* ═══ Scroll anchor + Rich skeleton during loading ═══ */}
+      <div ref={resultsAnchorRef} />
+      {(loading || compareLoading) && !results && !compareResults && (
+        <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6 space-y-5 animate-pulse`}
+             aria-busy="true" aria-label="Analysis in progress">
+          {/* Header row — name + grade */}
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex-1 space-y-2">
+              <div className={`h-6 w-2/3 rounded ${isDark ? 'bg-zinc-700' : 'bg-gray-200'}`} />
+              <div className={`h-3 w-1/3 rounded ${isDark ? 'bg-zinc-700/60' : 'bg-gray-200/70'}`} />
+            </div>
+            {/* Placeholder score circle — just a pulsing disk, no spinner (submit button already spins) */}
+            <div className={`w-20 h-20 rounded-full ${isDark ? 'bg-zinc-700' : 'bg-gray-200'}`} />
+          </div>
+          {/* Divider */}
+          <div className={`border-t ${c.border}`} />
+          {/* Four section header + line placeholders */}
+          {[0, 1, 2, 3].map((i) => (
+            <div key={i} className="space-y-2">
+              <div className={`h-4 w-1/4 rounded ${isDark ? 'bg-zinc-700' : 'bg-gray-200'}`} />
+              <div className={`h-3 w-full rounded ${isDark ? 'bg-zinc-700/60' : 'bg-gray-200/70'}`} />
+              <div className={`h-3 w-5/6 rounded ${isDark ? 'bg-zinc-700/60' : 'bg-gray-200/70'}`} />
+            </div>
+          ))}
+          {/* Honest status line */}
+          <p className={`text-xs text-center ${c.textMuted} pt-2`}>
+            {mode === 'analyze' ? 'Running 12-dimension analysis — this usually takes 10-20 seconds.' : 'Comparing candidates — this usually takes 10-20 seconds.'}
+          </p>
+        </div>
+      )}
 
       {/* ═══ COMPARE RESULTS ═══ */}
       {compareResults && (
@@ -1142,9 +1219,6 @@ const NameAudit = ({ tool }) => {
             <span className={`text-sm font-semibold ${c.text}`}>Comparison: {compareNames.filter(n => n.trim()).join(' vs ')}</span>
             <div className="flex items-center gap-2 flex-wrap">
               <BookmarkButton toolId="NameAudit" isDark={isDark} size="sm" />
-              <button onClick={reset} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-50 text-cyan-700'}`}>
-                <span>🔄</span> New Analysis
-              </button>
             </div>
           </div>
 
@@ -1230,22 +1304,19 @@ const NameAudit = ({ tool }) => {
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${showMockups ? (isDark ? 'bg-cyan-900/40 text-cyan-200' : 'bg-cyan-100 text-cyan-700') : c.btnSecondary}`}>
                   <span>🎨</span> Mockups
                 </button>
-                <button onClick={reset} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-50 text-cyan-700'}`}>
-                  <span>🔄</span> New Analysis
-                </button>
               </div>
             </div>
 
             {/* Analyze Another — quick input */}
             <div className={`flex items-center gap-2 pt-2 border-t ${c.border}`}>
-              <span className={`text-xs font-semibold ${c.textMuteded} flex-shrink-0`}>Quick audit:</span>
+              <label className={`text-xs font-semibold ${c.textMuteded} flex-shrink-0`}>Quick audit <span className={c.required}>*</span>:</label>
               <input type="text" value={quickName} onChange={(e) => setQuickName(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter') handleQuickAnalyze(); }}
                 placeholder="Test another name (same settings)"
                 className={`flex-1 p-2 border rounded-lg outline-none text-sm focus:ring-2 focus:ring-cyan-300 ${c.input}`} />
               <button onClick={handleQuickAnalyze} disabled={loading || !quickName.trim()}
                 className={`px-3 py-2 rounded-lg text-sm font-medium ${loading || !quickName.trim() ? (isDark ? 'bg-zinc-700 text-zinc-500' : 'bg-gray-100 text-gray-400') : c.btnPrimary}`}>
-                {loading ? <span className="animate-spin inline-block">{tool?.icon ?? '⚙️'}</span> : 'Audit'}
+                {loading ? <span className="animate-spin inline-block">{tool?.icon ?? '🔍'}</span> : 'Audit'}
               </button>
               {/* Compare from Analyze */}
               {!analyzeToCompare ? (
@@ -1255,13 +1326,16 @@ const NameAudit = ({ tool }) => {
                 </button>
               ) : (
                 <>
-                  <input type="text" value={compareSecondName} onChange={(e) => setCompareSecondName(e.target.value)}
-                    onKeyDown={(e) => { if (e.key === 'Enter') handleCompareFromAnalyze(); }}
-                    placeholder="vs..."
-                    className={`w-28 p-2 border rounded-lg outline-none text-sm focus:ring-2 focus:ring-cyan-300 ${c.input}`} />
+                  <label className="flex items-center gap-1.5">
+                    <span className={c.required}>*</span>
+                    <input type="text" value={compareSecondName} onChange={(e) => setCompareSecondName(e.target.value)}
+                      onKeyDown={(e) => { if (e.key === 'Enter') handleCompareFromAnalyze(); }}
+                      placeholder="vs..."
+                      className={`w-28 p-2 border rounded-lg outline-none text-sm focus:ring-2 focus:ring-cyan-300 ${c.input}`} />
+                  </label>
                   <button onClick={handleCompareFromAnalyze} disabled={compareLoading || !compareSecondName.trim()}
                     className={`px-3 py-2 rounded-lg text-sm font-medium ${compareLoading || !compareSecondName.trim() ? (isDark ? 'bg-zinc-700 text-zinc-500' : 'bg-gray-100 text-gray-400') : c.btnPrimary}`}>
-                    {compareLoading ? <span className="animate-spin inline-block">{tool?.icon ?? '⚙️'}</span> : 'Go'}
+                    {compareLoading ? <span className="animate-spin inline-block">{tool?.icon ?? '🔍'}</span> : 'Go'}
                   </button>
                   <button onClick={() => { setAnalyzeToCompare(false); setCompareSecondName(''); }}
                     className={`text-xs ${c.textMuteded}`}>✕</button>
@@ -1685,7 +1759,7 @@ const NameAudit = ({ tool }) => {
                 className={`w-full py-3 px-4 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all ${
                   reactionsLoading ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : c.btnPrimary
                 }`}>
-                {reactionsLoading ? (<><span className="animate-spin inline-block">{tool?.icon ?? '⚙️'}</span> Simulating reactions...</>)
+                {reactionsLoading ? (<><span className="animate-spin inline-block">{tool?.icon ?? '🔍'}</span> Simulating reactions...</>)
                   : (<><span>👥</span> Simulate Audience Reactions
                     <span className={`text-[9px] px-1 py-0.5 rounded font-bold ${isDark ? 'bg-cyan-900/50 text-cyan-300' : 'bg-cyan-100 text-cyan-700'}`}>PRO</span></>)}
               </button>
@@ -1739,7 +1813,7 @@ const NameAudit = ({ tool }) => {
                 className={`w-full py-3 px-4 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all ${
                   deepDiveLoading ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : c.btnPrimary
                 }`}>
-                {deepDiveLoading ? (<><span className="animate-spin inline-block">{tool?.icon ?? '⚙️'}</span> Running deep dive...</>)
+                {deepDiveLoading ? (<><span className="animate-spin inline-block">{tool?.icon ?? '🔍'}</span> Running deep dive...</>)
                   : (<><span>🔬</span> Run Deep Dive
                     <span className={`text-[9px] px-1 py-0.5 rounded font-bold ${isDark ? 'bg-cyan-900/50 text-cyan-300' : 'bg-cyan-100 text-cyan-700'}`}>PRO</span></>)}
               </button>
@@ -1775,7 +1849,7 @@ const NameAudit = ({ tool }) => {
                 className={`w-full py-3 px-4 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all ${
                   secondOpinionLoading ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : c.btnPrimary
                 }`}>
-                {secondOpinionLoading ? (<><span className="animate-spin inline-block">{tool?.icon ?? '⚙️'}</span> Getting second opinion...</>)
+                {secondOpinionLoading ? (<><span className="animate-spin inline-block">{tool?.icon ?? '🔍'}</span> Getting second opinion...</>)
                   : (<><span>🔄</span> Get Second Opinion
                     <span className={`text-[9px] px-1 py-0.5 rounded font-bold ${isDark ? 'bg-cyan-900/50 text-cyan-300' : 'bg-cyan-100 text-cyan-700'}`}>PRO</span></>)}
               </button>
@@ -1846,11 +1920,11 @@ const NameAudit = ({ tool }) => {
                   className={`w-full mt-2 py-3 px-4 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all ${
                     fixResults ? (isDark ? 'bg-zinc-700 border border-zinc-600 text-zinc-400' : 'bg-gray-100 border border-gray-200 text-gray-400')
                     : fixLoading ? (isDark ? 'bg-zinc-700 border border-zinc-600 text-zinc-400' : 'bg-gray-200 border border-gray-200 text-gray-400')
-                    : isDark ? 'bg-cyan-900/30 border border-violet-700 text-cyan-200 hover:bg-cyan-900/50'
-                      : 'bg-cyan-50 border border-violet-200 text-cyan-700 hover:bg-cyan-100'
+                    : isDark ? 'bg-cyan-900/30 border border-cyan-700 text-cyan-200 hover:bg-cyan-900/50'
+                      : 'bg-cyan-50 border border-cyan-200 text-cyan-700 hover:bg-cyan-100'
                   }`}
                 >
-                  {fixLoading ? (<><span className="animate-spin inline-block">{tool?.icon ?? '⚙️'}</span> Generating fixes...</>)
+                  {fixLoading ? (<><span className="animate-spin inline-block">{tool?.icon ?? '🔍'}</span> Generating fixes...</>)
                     : fixResults ? (<><span>✅</span> Fixes generated below</>)
                     : (<><span>✨</span> Fix This Name — Generate improved variations <PremiumBadge feature="nameAudit.fixThisName" /></>)}
                 </button>
@@ -1968,6 +2042,9 @@ const NameAudit = ({ tool }) => {
                 </div>
               )}
               {/* Add note input */}
+              <label className={`block text-xs font-semibold ${c.labelText} mb-1`}>
+                Add a note <span className={c.required}>*</span>
+              </label>
               <div className="flex gap-2">
                 <input type="text" value={journalDraft} onChange={(e) => setJournalDraft(e.target.value)}
                   onKeyDown={(e) => { if (e.key === 'Enter') addJournalNote(results.name_analyzed); }}
@@ -1997,14 +2074,6 @@ const NameAudit = ({ tool }) => {
           </div>
         </div>
       )}
-        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-          <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 Related tools</p>
-          <div className="flex flex-wrap gap-3">
-            <a href="/AnalogyEngine" className={`text-xs ${linkStyle}`}>💡 Analogy Engine</a>
-            <a href="/JargonAssassin" className={`text-xs ${linkStyle}`}>🗡️ Jargon Assassin</a>
-            <a href="/SayItRight" className={`text-xs ${linkStyle}`}>🗣️ Pronounce It Right</a>
-          </div>
-        </div>
     </div>
   );
 };

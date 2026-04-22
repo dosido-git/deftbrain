@@ -1,5 +1,6 @@
-import React, { useState, useCallback } from 'react';
-import { CopyBtn, ActionBar } from '../components/ActionButtons';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { CopyBtn } from '../components/ActionButtons';
+import { useRegisterActions } from '../components/ActionBarContext';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
@@ -69,7 +70,10 @@ const AwkwardSilenceFiller = ({ tool }) => {
     pillInactive:  isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-300 hover:border-zinc-500' : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300',
     quoteBg:       isDark ? 'bg-zinc-900/60'   : 'bg-slate-50',
     chainBg:       isDark ? 'bg-zinc-900/40 border-zinc-700' : 'bg-emerald-50/50 border-emerald-100',
+    required:      isDark ? 'text-amber-400'   : 'text-amber-500',
   };
+  // Alias for common typo
+  c.textMuteded = c.textMuted;
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
@@ -88,6 +92,10 @@ const AwkwardSilenceFiller = ({ tool }) => {
   const [error, setError] = useState('');
   const [expandedSections, setExpandedSections] = useState({});
   const [panicLoading, setPanicLoading] = useState(false);
+
+  // ─── Refs for keyboard handler ───
+  const generateRef = useRef(null);
+  const canGenerateRef = useRef(false);
 
   // ─── Helpers ───
   const toggleSection = useCallback((key) => {
@@ -204,6 +212,27 @@ const AwkwardSilenceFiller = ({ tool }) => {
     return text + BRAND;
   }, [results]);
 
+  // ─── Register actions for the global ActionBar (header) ───
+  useRegisterActions(buildFullText(), tool?.title || 'Awkward Silence Filler');
+
+  // ─── Ref assignments every render (for keyboard handler routing) ───
+  generateRef.current = generate;
+  canGenerateRef.current = Boolean(getContext().trim()) && !isRunning;
+
+  // ─── Global ⌘/Ctrl+Enter keyboard handler ───
+  useEffect(() => {
+    const handler = (e) => {
+      const tag = document.activeElement?.tagName;
+      if (tag === 'SELECT') return;
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && canGenerateRef.current) {
+        e.preventDefault();
+        generateRef.current?.();
+      }
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, []);
+
   const r = results;
 
   // ════════════════════════════════════════════════════════════
@@ -216,11 +245,19 @@ const AwkwardSilenceFiller = ({ tool }) => {
       <div className={`${c.card} border ${c.border} rounded-xl p-6`}>
 
         {/* Standard header */}
-        <div className={`mb-5 pb-4 border-b ${c.border}`}>
-          <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-            <span>{tool.icon}</span> Awkward Silence Filler
-          </h2>
-          <p className={`text-sm ${c.textSecondary}`}>Context-smart things to say when conversation stalls</p>
+        <div className="flex items-start justify-between gap-3 mb-5 pb-4 border-b border-zinc-500">
+          <div className="flex-1 min-w-0">
+            <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
+              <span className="mr-2">{tool?.icon ?? '💬'}</span>{tool?.title ?? 'Awkward Silence Filler'}
+            </h2>
+            <p className={`text-sm ${c.textSecondary} mt-1`}>{tool?.tagline ?? 'Context-appropriate conversation rescues on demand'}</p>
+          </div>
+          {(results || panicResult || customContext.trim() || scenario || landmines.trim()) ? (
+            <button
+              onClick={handleReset}
+              className={`shrink-0 px-3 py-2 rounded-lg text-sm font-bold min-h-[40px] ${c.btnSecondary}`}
+            >↺ Start Over</button>
+          ) : null}
         </div>
 
         {/* ── PANIC MODE BUTTON ── */}
@@ -228,10 +265,10 @@ const AwkwardSilenceFiller = ({ tool }) => {
           <button
             onClick={panicMode}
             disabled={isRunning}
-            className={`w-full ${c.btnPrimaryPanic} disabled:opacity-40 font-black py-3.5 px-6 rounded-xl flex items-center justify-center gap-2 text-base min-h-[52px] shadow-lg`}
+            className={`w-full ${c.btnPanic} disabled:opacity-40 font-black py-3.5 px-6 rounded-xl flex items-center justify-center gap-2 text-base min-h-[52px] shadow-lg`}
           >
             {panicLoading ? (
-              <><span className="animate-spin inline-block">{tool?.icon ?? '⚙️'}</span> Hold on...</>
+              <><span className="animate-spin inline-block">{tool?.icon ?? '💬'}</span> Hold on...</>
             ) : (
               <>🚨 I'M IN AN AWKWARD SILENCE RIGHT NOW</>
             )}
@@ -359,36 +396,28 @@ const AwkwardSilenceFiller = ({ tool }) => {
           finds the perfect spot first.
         </p>
 
-        {/* ── SUBMIT / RESET ── */}
+        {/* ── SUBMIT / REFRESH ── */}
         <div className="flex gap-3">
           <button
             onClick={generate}
             disabled={loading || isRunning}
-            className={`flex-1 ${c.btnPrimaryPrimary} disabled:opacity-40 disabled:cursor-not-allowed font-bold py-3 px-6 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}
+            className={`flex-1 ${c.btnPrimary} disabled:opacity-40 disabled:cursor-not-allowed font-bold py-3 px-6 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}
           >
             {loading ? (
-              <><span className="animate-spin inline-block">{tool?.icon ?? '⚙️'}</span> Generating...</>
+              <><span className="animate-spin inline-block">{tool?.icon ?? '💬'}</span> Generating...</>
             ) : (
-              <><span>💬</span> Get Conversation Lines</>
+              <><span>{tool?.icon ?? '💬'}</span> Get Conversation Lines</>
             )}
           </button>
           {results && (
-            <>
-              <button
-                onClick={refresh}
-                disabled={isRunning}
-                className={`px-4 py-3 ${c.btnPrimarySecondaryondary} rounded-lg min-h-[48px]`}
-                title="Different suggestions"
-              >
-                <span className={isRunning ? 'animate-spin inline-block' : ''}>{tool?.icon ?? '⚙️'}</span>
-              </button>
-              <button
-                onClick={handleReset}
-                className={`px-4 py-3 ${c.btnPrimarySecondaryondary} rounded-lg font-bold min-h-[48px]`}
-              >
-                ↩ Reset
-              </button>
-            </>
+            <button
+              onClick={refresh}
+              disabled={isRunning}
+              className={`px-4 py-3 ${c.btnSecondary} rounded-lg min-h-[48px]`}
+              title="Different suggestions"
+            >
+              <span className={isRunning ? 'animate-spin inline-block' : ''}>{tool?.icon ?? '💬'}</span>
+            </button>
           )}
         </div>
       </div>
@@ -406,11 +435,6 @@ const AwkwardSilenceFiller = ({ tool }) => {
       {/* ════════════════════════════════════════════════════════ */}
       {r && (
         <div className="space-y-4">
-
-          {/* ActionBar — top of results */}
-          <div className="flex justify-end">
-            <ActionBar content={buildFullText()} title="Awkward Silence Filler" />
-          </div>
 
           {/* ── SILENCE REFRAME (prominent) ── */}
           {r.silence_reframe && (
@@ -615,7 +639,7 @@ const AwkwardSilenceFiller = ({ tool }) => {
             <p className={`text-xs font-semibold ${c.textMuteded} uppercase tracking-wider`}>You might also like</p>
             <div className="flex flex-wrap gap-x-4 gap-y-1">
               <a href="/DateNight" className={`text-xs ${linkStyle}`}>💘 Date Night Planner</a>
-              <a href="/PronounceItRight" className={`text-xs ${linkStyle}`}>🗣️ Pronounce It Right</a>
+              <a href="/SayItRight" className={`text-xs ${linkStyle}`}>🗣️ Say It Right</a>
               <a href="/RoomReader" className={`text-xs ${linkStyle}`}>👀 Room Reader</a>
             </div>
           </div>
@@ -630,7 +654,7 @@ const AwkwardSilenceFiller = ({ tool }) => {
             {history.map(entry => (
               <button key={entry.id}
                 onClick={() => setResults(entry.result)}
-                className={`w-full text-left px-3 py-2 rounded-lg ${c.btnPrimarySecondaryondary} text-xs flex items-center gap-2`}
+                className={`w-full text-left px-3 py-2 rounded-lg ${c.btnSecondary} text-xs flex items-center gap-2`}
               >
                 <span className={c.textMuteded}>
                   {new Date(entry.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
@@ -641,15 +665,6 @@ const AwkwardSilenceFiller = ({ tool }) => {
           </div>
         </div>
       )}
-
-        <div className={`mt-6 pt-4 border-t text-sm ${c.border} ${c.textMuted}`}>
-          <p className="mb-2 font-medium">You might also like:</p>
-          <div className="flex flex-wrap gap-2">
-            {[{slug:'ComebackCooker',label:'🥊 Comeback Cooker'},{slug:'ConflictCoach',label:'🤝 Conflict Coach'},{slug:'SayItRight',label:'🗣️ Say It Right'}].map(({slug,label})=>(
-              <a key={slug} href={`${slug}`} className={linkStyle}>{label}</a>
-            ))}
-          </div>
-        </div>
     </div>
   );
 };
