@@ -4,6 +4,8 @@
 > Copy snippets verbatim. Do not reconstruct from memory.
 
 ---
+For deferred infrastructure and architecture decisions, see docs/deferred-decisions.md
+---
 
 ## ⚡ MANDATORY PRE-WRITE PROTOCOL (new tools and significant edits)
 
