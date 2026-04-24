@@ -37,3 +37,4 @@ scripts/fonts/*.zip
 scripts/fonts/DM_Sans,Playfair_Display/
 scripts/fonts/Playfair_Display/
 scripts/fonts/DM_Sans/
+__pycache__/
