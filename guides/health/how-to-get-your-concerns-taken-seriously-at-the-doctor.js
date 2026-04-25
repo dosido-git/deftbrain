@@ -25,7 +25,7 @@ module.exports = {
   deck:          "Being dismissed by a doctor happens more often than it should. The good news: specific, learnable moves change the dynamic — without getting you labeled 'difficult.' Here are five.",
 
   published:     '2026-04-24',
-  modified:      '2026-04-24',
+  modified:      '2026-04-25',
 
   ledes: [
     `You know your body. You've been trying to explain something for months, and the response keeps being a version of 'let's see how this goes' or 'that's probably just stress.' You leave the appointment exhausted, sometimes in tears, and you can feel yourself starting to second-guess whether you should have gone in at all. If that's familiar, you're not imagining it, and you're not alone.`,
@@ -62,17 +62,17 @@ module.exports = {
   },
 
   cta: {
-    glyph:    '🩺',
-    headline: "Walk in with the language that changes how you're heard",
-    body:     "Doctor Visit Translator turns your concerns into the specific language doctors are trained to respond to — documented symptoms, named possibilities to rule out, and the scripts that move a 'wait-and-see' into a 'let's check that.'",
+    glyph:    '📝',
+    headline: "Walk in with the documentation and language that change the dynamic",
+    body:     "The five moves in this guide work in any appointment, with any doctor. Doctor Visit Prep takes what you're experiencing — the symptoms, the timeline, the concern you've been trying to name — and turns it into a documented, specific, clinical-ready brief. The kind doctors are trained to take seriously.",
     features: [
-      "Symptom documentation builder",
-      "'Rule out' script generator",
-      "Specific-language translator",
-      "Referral request drafts",
-      "Chart-note language",
+      "A clinical-ready description of what you've been experiencing",
+      "Specific 'rule out' questions, named with reasons",
+      "Things to mention even if your doctor doesn't ask",
+      "Red flags worth raising first",
+      "A pre-visit checklist tailored to your concern",
     ],
-    toolId:   'DoctorVisitTranslator',
-    toolName: 'Doctor Visit Translator',
+    toolId:   'DoctorVisitPrep',
+    toolName: 'Doctor Visit Prep',
   },
 };

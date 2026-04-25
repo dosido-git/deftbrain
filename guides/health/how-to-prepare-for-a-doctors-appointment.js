@@ -19,7 +19,7 @@ module.exports = {
   deck:          "You've waited weeks for the appointment. You'll have fifteen minutes. A practical, step-by-step approach to walking in prepared — so nothing gets forgotten and nothing gets wasted.",
 
   published:     '2026-04-24',
-  modified:      '2026-04-24',
+  modified:      '2026-04-25',
 
   ledes: [
     `You booked the appointment three weeks ago. Now it's tomorrow and you're running through everything in your head — the symptoms, the questions, the concern that made you call in the first place. And you can already feel how fifteen minutes won't be enough. The last time you saw a doctor, you remembered the most important thing halfway home.`,
@@ -56,17 +56,17 @@ module.exports = {
   },
 
   cta: {
-    glyph:    '🩺',
+    glyph:    '📝',
     headline: "Walk in ready — without forgetting the thing that matters",
-    body:     "Doctor Visit Translator turns your symptoms and questions into a prep sheet you can actually use: the compact opener, the three questions, the follow-ups for each likely answer.",
+    body:     "The five moves in this guide work for any appointment. Doctor Visit Prep takes your symptoms, history, and what you're most worried about, and turns them into the prep sheet for your specific visit — opener, prioritized questions, and the things to mention even if your doctor doesn't ask.",
     features: [
-      "Symptom organizer",
-      "Top-question picker",
-      "One-sentence opener generator",
-      "Follow-up prompts",
-      "Visit-time optimizer",
+      "Prioritized questions, ranked by what matters most",
+      "A clinical-ready opener you can read aloud",
+      "Things to mention even if your doctor doesn't ask",
+      "A pre-visit checklist tailored to your concern",
+      "A short list of what to bring",
     ],
-    toolId:   'DoctorVisitTranslator',
-    toolName: 'Doctor Visit Translator',
+    toolId:   'DoctorVisitPrep',
+    toolName: 'Doctor Visit Prep',
   },
 };

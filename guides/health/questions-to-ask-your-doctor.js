@@ -1,29 +1,29 @@
 // ============================================================
-// guide-specs/health/what-questions-to-ask-your-doctor.js
+// guide-specs/health/questions-to-ask-your-doctor.js
 // ============================================================
-// Source of truth for /guides/health/what-questions-to-ask-your-doctor.
+// Source of truth for /guides/health/questions-to-ask-your-doctor.
 // Edit here; run `node scripts/build-guides.js health` to regenerate.
 // ============================================================
 
 module.exports = {
-  slug:          'what-questions-to-ask-your-doctor',
+  slug:          'questions-to-ask-your-doctor',
   category:      'health',
   categoryLabel: 'Health',
 
-  title:         "What Questions to Ask Your Doctor (That You'll Wish You'd Asked Later)",
-  titleHtml:     "What Questions to Ask Your Doctor <em>(That You&#39;ll Wish You&#39;d Asked Later)</em>",
-  shortTitle:    "What Questions to Ask Your Doctor",
-  navTitle:      "What questions to ask your doctor — the ones you'll wish you'd asked",
+  title:         "Prepare for Your Appointment in Advance: Questions to Ask Your Doctor to Get the Most Out of Your Visit",
+  titleHtml:     "Prepare for Your Appointment in Advance: <em>Questions to Ask Your Doctor to Get the Most Out of Your Visit</em>",
+  shortTitle:    "Questions to Ask Your Doctor",
+  navTitle:      "Prepare for your appointment in advance: questions to ask your doctor",
 
-  description:   "Most people walk out wishing they'd asked something they didn't. The right questions aren't longer or fancier — they're sharper. Five questions that change what you walk out with.",
-  deck:          "Most people walk out wishing they'd asked something they didn't. The right questions aren't longer or fancier — they're sharper. Five questions that change what you walk out with.",
+  description:   "A short doctor's appointment compresses a lot of reasoning into a few sentences. Five questions, prepared in advance, decompress it — so you leave with the doctor's thinking, not just the conclusion.",
+  deck:          "A short doctor's appointment compresses a lot of reasoning into a few sentences. Five questions, prepared in advance, decompress it — so you leave with the doctor's thinking, not just the conclusion.",
 
   published:     '2026-04-24',
-  modified:      '2026-04-24',
+  modified:      '2026-04-25',
 
   ledes: [
-    `The doctor asks 'any questions?' and you say no. Then you spend the drive home realizing there were five. What the medication is actually for. Whether you need to worry. What happens if it doesn't work. By the time you remember, the visit is over — and you're stuck with the version of the answer you imagined instead of the one you'd have gotten.`,
-    `Good questions aren't a memorized list. They're a short set of moves you can run in any appointment, regardless of what it's about. Here are the five that earn their place.`,
+    `A typical doctor's appointment is fifteen minutes. In that time, your doctor is doing a lot of compressed work — narrowing down what's wrong, weighing options, deciding what to monitor and what to ignore. The conclusions get spoken aloud. The reasoning behind them usually doesn't, unless you ask. Prepared in advance, these five questions are the ones that get the reasoning out.`,
+    `They aren't a memorized list. They're a short set of moves you can run in any appointment, regardless of what it's about. Each one targets a place where doctors tend to compress — and where decompressing matters to you.`,
   ],
 
   steps: [
@@ -56,17 +56,17 @@ module.exports = {
   },
 
   cta: {
-    glyph:    '🩺',
-    headline: "Get the questions you'd have come up with over the next three hours — now",
-    body:     "Doctor Visit Translator generates the smart follow-up questions tailored to your specific situation, so you walk in with the list you'd have built if you'd had all day.",
+    glyph:    '📝',
+    headline: "Walk in with the questions tailored to your situation",
+    body:     "The five questions in this guide work in any appointment. Doctor Visit Prep takes your symptoms, history, and what you're most worried about, and generates the prioritized questions for your specific visit — the ones that matter if your doctor only has time for two.",
     features: [
-      "Situation-specific questions",
-      "Follow-up prompts by diagnosis",
-      "Plain-English phrasing",
-      "Alternatives you didn't know to ask",
-      "Final-30-seconds checklist",
+      "Prioritized questions, ranked by what matters most",
+      "A clinical-ready opener you can read aloud",
+      "What to mention even if your doctor doesn't ask",
+      "Red-flag symptoms to report first",
+      "Pre-visit checklist tailored to your concern",
     ],
-    toolId:   'DoctorVisitTranslator',
-    toolName: 'Doctor Visit Translator',
+    toolId:   'DoctorVisitPrep',
+    toolName: 'Doctor Visit Prep',
   },
 };

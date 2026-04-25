@@ -3,7 +3,6 @@ import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
-import { CopyBtn } from '../components/ActionButtons'; // eslint-disable-line no-unused-vars -- required import per CONVENTIONS.md PF-5
 
 // ════════════════════════════════════════════════════════════
 // CONSTANTS

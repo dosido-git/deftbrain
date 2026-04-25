@@ -1,4 +1,4 @@
-# v1.3 · 2026-04-24 · file renamed back to audit_v2-3-2.py per project preference; no logic changes
+# v1.4 · 2026-04-24 · removed vestigial S1.4 ActionButtons-import check; the ActionBarContext check already covers what tools actually need
 # Usage: python3 audit_v2-3-2.py path/to/Component.js
 # tools.js path resolution order:
 #   1. $TOOLS_JS environment variable (if set)
@@ -318,9 +318,7 @@ for name, fpath in tools:
         if re.search(r'min-h-screen|bg-white|bg-zinc|bg-slate|bg-gray|bg-stone|bg-gradient', root_classes):
             fails.append(f'S1.2: root div sets background color — remove it; ToolPageWrapper provides the frame (found: {root_classes[:60]})')
 
-    # S1.4: ActionButtons
-    if '../components/ActionButtons' not in content:
-        fails.append('S1.4: ActionButtons not imported')
+    # S1.4: lucide-react ban
     if 'lucide-react' in content:
         fails.append('S1.4: lucide-react imported')
     # S1.4: ActionBar via useRegisterActions (v4.28+ standard)

@@ -1,4 +1,4 @@
-<!-- v1.2 · 2026-04-24 · audit script name reverted from audit.py to audit_v2-3-2.py; references updated -->
+<!-- v1.3 · 2026-04-24 · removed vestigial CopyBtn-import requirement from PF-1 and PF-5; tools now import CopyBtn only when they actually use it -->
 # DeftBrain Component Conventions
 > **Read this file before writing or editing any tool component.**
 > Copy snippets verbatim. Do not reconstruct from memory.
@@ -42,9 +42,14 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
-import { CopyBtn } from '../components/ActionButtons';
 import { useRegisterActions } from '../components/ActionBarContext';
 ```
+
+**Conditional — only when actually used (rare):**
+```js
+import { CopyBtn } from '../components/ActionButtons';
+```
+Only the ContextCollapse-style per-item copy button needs `CopyBtn`. Every other tool routes copy/share/print through `useRegisterActions` and should NOT import `CopyBtn` — an unused import is dead weight and triggers `no-unused-vars`.
 
 **Must NOT be present:**
 ```bash
@@ -321,7 +326,7 @@ grep -n "copyToClipboard\|navigator\.clipboard\|copiedField\|copiedIndex\|setCop
 # Must return zero — local clipboard logic is forbidden
 ```
 
-**Fix:** Replace any inline `<ActionBar>`, `<CopyBtn>`, `<PrintBtn>`, or `<ShareBtn>` in JSX with `useRegisterActions(buildFullText(), tool?.title || 'Tool Name')` placed AFTER `buildFullText` is declared. The import line `import { CopyBtn } from '../components/ActionButtons'` is still required (the audit checks for it), but `CopyBtn` must not appear anywhere in JSX.
+**Fix:** Replace any inline `<ActionBar>`, `<CopyBtn>`, `<PrintBtn>`, or `<ShareBtn>` in JSX with `useRegisterActions(buildFullText(), tool?.title || 'Tool Name')` placed AFTER `buildFullText` is declared. Tools that previously imported `CopyBtn` solely to satisfy an audit check should remove the import entirely — `CopyBtn` is only imported by tools that actually render it inline (the ContextCollapse exception).
 
 **Why this rule exists:** Inline copy buttons duplicate the global action bar, producing redundant UI (e.g. two Copy buttons visible at once). They also fragment the copy content — each inline button copies only a subset of results, while `useRegisterActions` copies everything via `buildFullText`. When users see inline buttons, they lose trust in the global bar and both become confusing.
 

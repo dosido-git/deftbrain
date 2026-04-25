@@ -19,7 +19,7 @@ module.exports = {
   deck:          "You've been trying to explain it for three weeks. Doctors are pattern-recognizers — they need the shape of a problem they can work with. A step-by-step approach to describing symptoms in the way that gets taken seriously.",
 
   published:     '2026-04-24',
-  modified:      '2026-04-24',
+  modified:      '2026-04-25',
 
   ledes: [
     `You've been trying for three weeks to explain it. The pain is there, except when it isn't. It's kind of sharp, unless it's dull. It's worst at night, usually, but not always. You get through the first thirty seconds of your description and you can feel the doctor's attention slipping. It isn't that they don't believe you. It's that you haven't given them the shape of a problem they can work with.`,
@@ -56,17 +56,17 @@ module.exports = {
   },
 
   cta: {
-    glyph:    '🩺',
-    headline: "Turn your scattered symptoms into the description that gets heard",
-    body:     "Doctor Visit Translator organizes what you've been feeling into the precise language doctors are trained to hear — the quality, the pattern, the timeline, and the concern you haven't been able to put into words.",
+    glyph:    '📝',
+    headline: "Turn your scattered symptoms into a description the doctor can act on",
+    body:     "The five moves in this guide work for any symptom, any visit. Doctor Visit Prep takes what you've been feeling — the location, the pattern, the timeline, the trigger — and writes the clinical-ready description for your specific situation, in the language doctors are trained to hear.",
     features: [
-      "Symptom-quality translator",
-      "Trigger-and-relief mapper",
-      "Medical vocabulary helper",
-      "Photo + log organizer",
-      "Concern-naming prompts",
+      "A symptom description in clinical language",
+      "A one-sentence opener you can read aloud",
+      "Trigger-and-relief patterns surfaced",
+      "Things to mention even if your doctor doesn't ask",
+      "Red-flag symptoms to report first",
     ],
-    toolId:   'DoctorVisitTranslator',
-    toolName: 'Doctor Visit Translator',
+    toolId:   'DoctorVisitPrep',
+    toolName: 'Doctor Visit Prep',
   },
 };
