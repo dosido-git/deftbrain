@@ -3,6 +3,7 @@ import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
+import { CopyBtn } from '../components/ActionButtons'; // eslint-disable-line no-unused-vars -- required import per CONVENTIONS.md PF-5
 
 // ════════════════════════════════════════════════════════════
 // CONSTANTS
@@ -111,7 +112,7 @@ function DiagramBtn({ description, diagramType, isDark, c }) {
         className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-all disabled:opacity-50
           ${isDark ? 'border-zinc-600 bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'border-gray-300 bg-gray-50 hover:bg-gray-100 text-gray-700'}`}>
         {state === 'loading'
-          ? <><span className="animate-spin inline-block">🖼️</span> Generating…</>
+          ? <><span>🖼️</span> Generating…</>
           : <><span>🖼️</span> Generate Visual</>}
       </button>
     </div>
@@ -160,47 +161,45 @@ const DoctorVisitTranslator = ({ tool }) => {
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
     : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
 
-  // MODE: input | results | journal | health | prep
+  // ── useState (all first per PF-14) ──
+  // MODE: input | results | journal | health | history | prep
   const [mode, setMode] = useState('input');
-
   // FORM
-  const [doctorNotes, setDoctorNotes] = usePersistentState('dvt-notes', '');
   const [visitType, setVisitType] = useState('Follow-up');
   const [concerns, setConcerns] = useState('');
   const [currentMedications, setCurrentMedications] = useState('');
   const [doctorName, setDoctorName] = useState('');
   const [language, setLanguage] = useState('en');
   const [documentType, setDocumentType] = useState('visit');
-
-  // RESULTS
-  const [results, setResults] = usePersistentState('dvt-results', null);
+  // RESULTS (useState per PF-11 — never usePersistentState)
+  const [results, setResults] = useState(null);
   const [error, setError] = useState('');
-
   // UI TOGGLES
   const [secs, setSecs] = useState({
     summary: true, terms: true, visualAids: false, actions: true, medications: false,
     medSafety: false, tests: false, followUp: true, questions: false,
     secondOpinion: false, advocacy: false, insurance: false, tips: false, comparison: false,
   });
-  const tog = (k) => setSecs(p => ({ ...p, [k]: !p[k] }));
   const [saved, setSaved] = useState(false);
-
-  // PERSISTENT STORES
-  const [history, setHistory] = usePersistentState('doctor-visit-history', []);
-  const [medList, setMedList] = usePersistentState('doctor-meds-list', []);
-  const [journal, setJournal] = usePersistentState('doctor-symptom-journal', []);
-  const [reminders, setReminders] = usePersistentState('doctor-reminders', []);
-
   const [prepData, setPrepData] = useState({ symptoms: '', duration: '', severity: '', questions: [''] });
   const [journalEntry, setJournalEntry] = useState({ symptom: '', severity: 5, triggers: '', notes: '' });
   const [pdfFile, setPdfFile] = useState(null);
   const [pdfDragging, setPdfDragging] = useState(false);
 
-  // ── Refs (after all useState per PF-10) ──
+  // ── useRef (after all useState per PF-14) ──
   const resultsRef = useRef(null);
-  const handleTranslateRef = useRef(null);
+  const handleSubmitRef = useRef(null);
   const canSubmitRef = useRef(false);
   const fileInputRef = useRef(null);
+
+  // ── usePersistentState (after all useRef per PF-14) ──
+  const [doctorNotes, setDoctorNotes] = usePersistentState('dvt-notes', '');
+  const [history, setHistory] = usePersistentState('doctor-visit-history', []);
+  const [medList, setMedList] = usePersistentState('doctor-meds-list', []);
+  const [journal, setJournal] = usePersistentState('doctor-symptom-journal', []);
+  const [reminders, setReminders] = usePersistentState('doctor-reminders', []);
+
+  const tog = (k) => setSecs(p => ({ ...p, [k]: !p[k] }));
 
   // F3: Auto-inject meds
   const activeMeds = useMemo(() => medList.filter(m => m.active), [medList]);
@@ -245,7 +244,6 @@ const DoctorVisitTranslator = ({ tool }) => {
         pdfData: pdfFile?.base64 || null,
       });
       setResults(data); setMode('results');
-      setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
       setSecs(p => ({ ...p, summary: true, actions: true, followUp: true, medSafety: !!allMeds, comparison: false }));
     } catch (err) { setError(err.message || 'Failed to translate.'); }
   };
@@ -394,32 +392,59 @@ const DoctorVisitTranslator = ({ tool }) => {
   }, [visitType, doctorName, prepData, history, activeMeds, symptomTrends]);
 
   const medStats = useMemo(() => ({ active: activeMeds.length, total: medList.length }), [activeMeds, medList]);
-  const handleReset = () => { setDoctorNotes(''); setVisitType('Follow-up'); setConcerns(''); setCurrentMedications(''); setDoctorName(''); setLanguage('en'); setDocumentType('visit'); setResults(null); setError(''); setMode('input'); };
+  const handleReset = () => {
+    setDoctorNotes(''); setVisitType('Follow-up'); setConcerns('');
+    setCurrentMedications(''); setDoctorName(''); setLanguage('en');
+    setDocumentType('visit'); setResults(null); setError('');
+    setPdfFile(null); setPdfDragging(false); setMode('input');
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
 
+  // ─── PF-17: Try Example ───
+  const loadExample = () => {
+    setResults(null); setError(''); setPdfFile(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+    setDocumentType('visit');
+    setDoctorNotes("Type 2 diabetes follow-up. A1C today 7.8% (was 8.2% three months ago). Adding metformin 500mg twice daily with meals. Continue lisinopril 10mg. Repeat A1C and basic metabolic panel in 3 months. Call if fasting BG over 300 or symptoms of hypoglycemia. Consider GLP-1 agonist if A1C does not improve. Patient tolerating current meds well, BP 128/82, weight down 4 lbs.");
+    setVisitType('Follow-up');
+    setConcerns('Worried about starting a new medication — what side effects should I watch for, and will it interact with my current meds?');
+    setCurrentMedications('Lisinopril 10mg daily');
+    setDoctorName('Dr. Patel');
+    setLanguage('en');
+  };
 
-  // ─── Global Cmd/Ctrl+Enter shortcut ───
+  // ── PF-8: Register export content with the wrapper's persistent ActionBar ──
+  useRegisterActions(
+    mode === 'prep' ? buildPrepExport() : buildFullExport(),
+    tool?.title || 'Doctor Visit Translation'
+  );
+
   // ── PF-6: Keyboard handler (ref pattern avoids stale closures) ──
-  handleTranslateRef.current = handleTranslate;
-  canSubmitRef.current = mode === 'input' && !loading && !!(doctorNotes.trim() || pdfFile);
+  // Coverage: input mode → handleTranslate; journal mode → addJournalEntry
+  handleSubmitRef.current = mode === 'journal' ? addJournalEntry : handleTranslate;
+  canSubmitRef.current =
+    (mode === 'input' && !loading && !!(doctorNotes.trim() || pdfFile)) ||
+    (mode === 'journal' && !!journalEntry.symptom.trim());
 
+  // ── PF-7: Scroll to results on results mode (with clearTimeout cleanup) ──
+  useEffect(() => {
+    if (mode !== 'results' || !results) return;
+    const t = setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
+    return () => clearTimeout(t);
+  }, [mode, results]);
+
+  // ── PF-6: Keyboard useEffect ──
   useEffect(() => {
     const handler = (e) => {
       const tag = document.activeElement?.tagName;
       if (tag === 'SELECT') return;
       if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && canSubmitRef.current)
-        handleTranslateRef.current?.();
+        handleSubmitRef.current?.();
     };
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // Register export content with the wrapper's persistent ActionBar
-  // Uses buildFullExport when in results mode, buildPrepExport in prep mode
-  useRegisterActions(
-    mode === 'prep' ? buildPrepExport() : buildFullExport(),
-    tool?.title || 'Doctor Visit Translation'
-  );
 
   // ════════════════════════════════════════════════════════════
   // RENDER
@@ -427,11 +452,21 @@ const DoctorVisitTranslator = ({ tool }) => {
   return (
     <div className={`space-y-4 ${c.text}`}>
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
-        <div className="pb-3 border-b border-zinc-500">
-          <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-            <span>{tool?.icon ?? '🩺'}</span>{tool?.title ?? 'Doctor Visit Translator'}
-          </h2>
-          <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Understand visits, labs, prescriptions, and bills in plain language'}</p>
+        <div className="pb-3 border-b border-zinc-500 flex items-start justify-between gap-2">
+          <div className="flex-1">
+            <h2 className={`text-xl font-bold ${c.text} flex items-center`}>
+              <span className="mr-2">{tool?.icon ?? '🩺'}</span>{tool?.title ?? 'Doctor Visit Translator'}
+            </h2>
+            <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Understand visits, labs, prescriptions, and bills in plain language'}</p>
+          </div>
+          {(doctorNotes.trim() || results || pdfFile || concerns.trim() || doctorName.trim()) && (
+            <button
+              onClick={handleReset}
+              className={`${c.btnSecondary} text-xs px-3 py-1.5 rounded-lg font-semibold whitespace-nowrap`}
+              title="Clear all inputs and results">
+              ↺ Start Over
+            </button>
+          )}
         </div>
       </div>
 
@@ -482,7 +517,12 @@ const DoctorVisitTranslator = ({ tool }) => {
 
           {/* F6: Document type */}
           <div>
-            <label className={`text-sm font-semibold ${c.textSecondary} block mb-1.5`}>What are you translating?</label>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className={`text-sm font-semibold ${c.textSecondary}`}>What are you translating?</label>
+              <button onClick={loadExample} className={`text-xs ${c.accentTxt} hover:underline`} title="Fill in a sample visit to see how this works">
+                ✨ Try Example
+              </button>
+            </div>
             <div className="grid grid-cols-5 gap-1.5">{DOC_TYPES.map(dt => (
               <button key={dt.id} onClick={() => setDocumentType(dt.id)}
                 className={`p-2 border-2 rounded-lg text-center transition-colors ${documentType === dt.id ? (isDark ? 'border-cyan-500 bg-cyan-900/20' : 'border-cyan-500 bg-cyan-50') : (isDark ? 'border-zinc-700' : 'border-gray-200')}`}>
@@ -494,7 +534,7 @@ const DoctorVisitTranslator = ({ tool }) => {
           <div>
             <label className={`text-sm font-semibold ${c.textSecondary} block mb-1.5`}>
               {DOC_TYPES.find(d => d.id === documentType)?.label || 'Notes'}
-              {pdfFile ? <span className={`ml-1 text-[10px] font-normal ${c.textMuted}`}>(optional — PDF is the primary source)</span> : <span className="ml-0.5">*</span>}
+              {pdfFile ? <span className={`ml-1 text-[10px] font-normal ${c.textMuted}`}>(optional — PDF is the primary source)</span> : <span className={c.required}>*</span>}
             </label>
 
             {/* PDF upload zone */}
@@ -507,7 +547,7 @@ const DoctorVisitTranslator = ({ tool }) => {
                     <p className="text-[10px]">PDF uploaded — will be sent directly to AI</p>
                   </div>
                 </div>
-                <button onClick={clearPdf} className={`text-xs ${c.textMuted} hover:text-red-500 ml-2`} title="Remove PDF">✕</button>
+                <button onClick={clearPdf} className={`text-xs ${c.textMuted} ${c.deleteHover} ml-2`} title="Remove PDF">✕</button>
               </div>
             ) : (
               <div
@@ -527,7 +567,7 @@ const DoctorVisitTranslator = ({ tool }) => {
               </div>
             )}
 
-            <textarea value={doctorNotes} onChange={e => setDoctorNotes(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && (doctorNotes.trim() || pdfFile)) handleTranslate(); }}
+            <textarea value={doctorNotes} onChange={e => setDoctorNotes(e.target.value)}
               placeholder={pdfFile ? 'Optional: add context or specific questions about the PDF...' : DOC_TYPES.find(d => d.id === documentType)?.placeholder}
               className={`w-full h-24 p-4 border-2 rounded-lg ${c.input} outline-none focus:ring-2 resize-none text-sm`} />
           </div>
@@ -566,11 +606,14 @@ const DoctorVisitTranslator = ({ tool }) => {
               className={`flex-1 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2`}>
               {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🩺'}</span> Translating...</> : <><span>{tool?.icon ?? '🩺'}</span> Translate</>}
             </button>
-            {(doctorNotes.trim() || results) && (
-              <button onClick={handleReset} className={`${c.btnSecondary} py-3 px-4 rounded-lg text-sm font-semibold`}>← Start Over</button>
-            )}
           </div>
           {error && <div className={`${c.danger} border rounded-lg p-4 flex items-start gap-2`}><span>⚠️</span><p className="text-sm">{error}</p></div>}
+
+          {/* Pre-result cross-ref (S5.5) */}
+          <p className={`text-xs ${c.textMuted} text-center pt-2`}>
+            Have a procedure coming up? Prep with{' '}
+            <a href="/ProcedureProbe" className={linkStyle}>🔬 Procedure Probe</a>.
+          </p>
         </div>
       )}
 
@@ -584,7 +627,6 @@ const DoctorVisitTranslator = ({ tool }) => {
                 className={`${saved ? c.success : c.btnSecondary} py-2 px-4 rounded-lg text-sm font-semibold border transition-colors`}>
                 {saved ? '✅ Saved to History' : '💾 Save to History'}
               </button>
-              <button onClick={handleReset} className={`${c.btnSecondary} py-2 px-3 rounded-lg text-sm`}>← Start Over</button>
             </div>
           </div>
 
@@ -803,7 +845,7 @@ const DoctorVisitTranslator = ({ tool }) => {
 
           {/* Cross-references */}
           <p className={`text-xs ${c.textMuted} text-center`}>
-            Got a bill to dispute?{' '}<a href="/BillRescue" className={linkStyle}>Bill Rescue</a>{' '}
+            Got a bill to dispute?{' '}<a href="/BillRescue" className={linkStyle}>🏥 Bill Rescue</a>{' '}
             helps fight insurance denials and medical billing errors.
           </p>
         </div>
@@ -815,7 +857,7 @@ const DoctorVisitTranslator = ({ tool }) => {
           <div className={`${c.card} border rounded-xl p-5 space-y-4`}>
             <h3 className={`text-sm font-bold ${c.text} flex items-center gap-2`}><span>📓</span> Log Symptom</h3>
             <div>
-              <label className={`text-xs font-semibold ${c.textSecondary} block mb-1`}>Symptom</label>
+              <label className={`text-xs font-semibold ${c.textSecondary} block mb-1`}>Symptom<span className={c.required}>*</span></label>
               <div className="flex flex-wrap gap-1 mb-2">{SYMPTOM_PRESETS.map(s => (
                 <button key={s} onClick={() => setJournalEntry(p => ({ ...p, symptom: s }))}
                   className={`text-[10px] px-2 py-1 rounded border transition-colors ${journalEntry.symptom === s ? (isDark ? 'border-cyan-500 bg-cyan-900/20' : 'border-cyan-500 bg-cyan-50') : `${c.pillGray} border`}`}>{s}</button>

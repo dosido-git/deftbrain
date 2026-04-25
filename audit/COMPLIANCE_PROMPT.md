@@ -1,8 +1,35 @@
-<!-- v1.1 · 2026-04-20 · session 110 additions: version header discipline section -->
+<!-- v1.3 · 2026-04-24 · audit script name reverted from audit.py to audit_v2-3-2.py; inventory and references updated -->
 # DeftBrain Standards Compliance — Mandatory Instructions
+
+#Before doing anything else, confirm that every file in the inventory below is accessible via the view tool. If any is missing, stop and ask the user to upload it.
 
 ## The Single Most Important Rule
 The standards exist in writing. CONVENTIONS.md and the audit checklist are the authoritative source for every pattern, every class name, every structural decision. There is no acceptable reason to reconstruct any pattern from memory. Memory drifts. The file does not.
+
+---
+
+## Files in This Audit System
+
+This document is the entry point. Before any audit, know which file owns which question.
+
+| File | Class | Read when |
+|---|---|---|
+| `COMPLIANCE_PROMPT.md` (this file) | **Entry point** — workflow, edit strategy, version discipline | Start of every session |
+| `CONVENTIONS.md` | **Rules** — patterns, c block, hook order, color map | Before writing any tool; whenever a pattern is unclear |
+| `tool-audit-checklist-v4_38.md` | **Checks** — Sections 0–8, including Section 7 backend audit | During every tool audit, after running the script |
+| `cross-reference-map.md` | **Runtime data** — which tools should link to which | When auditing PF-9 / S5.5 cross-refs |
+| `audit-backlog.md` | **Campaign state** — deferred per-tool items, catalog-wide items, audit script patches | Step 0 of every audit (per "Before Beginning the Audit" below) |
+| `campaigns/*.md` (e.g. `BUG_SWEEP_HANDOFF.md`) | **Campaign state** — episodic bug-class sweeps and tool-spanning hunts | When resuming or starting a cross-tool campaign |
+| `audit_v2-3-2.py` | **Structural automation** | Run on every tool before manual sweep |
+| `ux-smoke-playbook.md` + `ux-smoke.py` | **Behavioral automation** — different cognitive mode, post-structural | After all structural audits complete; not during per-tool work |
+
+**Critical pairing:** `audit_v2-3-2.py` (structural script) → `tool-audit-checklist-v4_38.md` (manual sweep) → `audit-backlog.md` (deferred items log). Skipping any of the three is the most common audit failure mode.
+
+**Section 7 was previously a separate file** (`backend-audit-section7.md`). It is now folded into `tool-audit-checklist-v4_38.md`. Backend route audits are not optional — they run in the same pass as the frontend audit.
+
+**Color map was previously a separate file** (`CATEGORY-COLOR-MAP-2.md`). It is now folded into `CONVENTIONS.md` as the "Category Color Map" section. Reference values for `headerColor` and panel tints live there.
+
+**Adding a new file to this system:** if a new standards or campaign file is introduced, this inventory must be updated in the same commit. The version-discipline rules below apply to every file in the inventory.
 
 ---
 
@@ -47,7 +74,7 @@ Apply intelligence and discernment throughout:
 
 ## Choosing Edit Strategy by Baseline Severity
 
-Before starting any audit, run `audit_v2-3.py` on the uploaded file to establish a baseline violation count. That count dictates the editing strategy:
+Before starting any audit, run `audit_v2-3-2.py` on the uploaded file to establish a baseline violation count. That count dictates the editing strategy:
 
 **Baseline ≤ 5 violations** — surgical `str_replace` edits, one violation at a time. Preserves the existing file exactly where it's already correct; minimizes diff size for review.
 
@@ -98,11 +125,12 @@ A file that passes every grep scan but has not been read is not ready to ship.
 Standards documents carry a header of the form `<!-- vX.Y · DATE · TAG -->`. Any edit to a file with this header must update the header as part of the same commit — not later, not in a follow-up session. Files currently under this discipline:
 
 - `COMPLIANCE_PROMPT.md` (this file)
-- `CONVENTIONS.md`
+- `CONVENTIONS.md` (now includes the former `CATEGORY-COLOR-MAP-2.md`)
 - `audit-backlog.md`
-- `tool-audit-checklist-v4_37.md`
-- `backend-audit-section7.md`
+- `tool-audit-checklist-v4_38.md` (now includes the former `backend-audit-section7.md` as Section 7)
 - `cross-reference-map.md`
+- `audit_v2-3-2.py`
+- `campaigns/*.md` (currently includes `BUG_SWEEP_HANDOFF.md`)
 
 **Versioning rules:**
 
@@ -155,7 +183,7 @@ You have the intelligence to catch problems before they are presented. Use it. T
 
 ## Scope Boundary — What This Document Does Not Cover
 
-This document and `audit_v2-3.py` enforce **structural** compliance: imports, hook order, c block, cross-refs, file conventions. They cannot detect **behavioral** UX bugs — panels that render off-screen, loading icons replaced by static clocks instead of spinning in place, togglable panels that silently fail after results exist, stale content during refetch.
+This document and `audit_v2-3-2.py` enforce **structural** compliance: imports, hook order, c block, cross-refs, file conventions. They cannot detect **behavioral** UX bugs — panels that render off-screen, loading icons replaced by static clocks instead of spinning in place, togglable panels that silently fail after results exist, stale content during refetch.
 
 Those are covered by `ux-smoke-playbook.md` and `ux-smoke.py`, which run as a post-audit quality pass once structural compliance reaches 100% catalog-wide. During per-tool audits, do not attempt to also cover behavioral UX — that's a different cognitive mode (interactive, live-deployment) and mixing the two per session is counterproductive. Finish the structural audit, then switch modes for the catalog-wide UX pass.
 

@@ -43,6 +43,46 @@ template:
         ""
 ]}},**/
 export const tools = [
+
+{
+  modified: "2026-04-24",
+  id: "DoctorVisitPrep",
+  title: "Doctor Visit Prep",
+  tagline: "Walk in prepared — so you don't waste the visit",
+  tags: ['doctor', 'appointment', 'prep', 'questions', 'symptoms', 'health', 'medical', 'visit', 'preparation'],
+  icon: "📝",
+  categories: ['Body'],
+  headerColor: "#ccdfc4",
+  description: "Turn your scattered worries and symptoms into a focused script for your next doctor visit — a clear opener, prioritized questions, things to mention even if the doctor doesn't ask, and a pre-visit checklist.",
+  guide: {
+    overview: "The Doctor Visit Prep tool shapes what you say to your doctor, the same way the Doctor Visit Translator decodes what the doctor said afterward. Tell it your chief concern, how long it's been going on, what you've tried, and what you're most worried about — and get back a one-sentence opener for the first minute of the visit, three prioritized questions, things to mention proactively (medications, family history, functional impact), a pre-visit checklist, and conversation tips. Useful when you know you'll forget half of what you meant to say the moment you're sitting on the exam table.",
+    howToUse: [
+      "Type your chief concern — the single main reason for the visit — in your own words",
+      "Add details: how long it's been going on, severity, what makes it better or worse",
+      "List your current medications and any known allergies or adverse reactions",
+      "Select the appointment type (new problem, follow-up, specialist, etc.) so the prep matches the context",
+      "Add what you're most worried about — the output will address it directly",
+      "Review your opener, prioritized questions, and pre-visit checklist; copy, print, or export to your phone"
+    ],
+    example: {
+      scenario: "You've had intermittent right-sided back pain for about three weeks. It's worse when you sit for long stretches and better when you walk. You've been taking ibuprofen. You're worried it might be a kidney problem because your mother had kidney stones. Your follow-up is in two days and you know you'll forget half of this the moment you're in the room.",
+      action: "Enter chief concern: 'Right-sided lower back pain for 3 weeks, getting worse'. Add symptom details, duration, and severity. Add current medications (ibuprofen 400mg). Add family history of kidney stones. Set worry: 'Concerned it might be kidney-related'. Select 'Follow-up' appointment type.",
+      result: "You get a single-sentence opener to start the visit, three prioritized questions (top one: 'Could this be kidney-related given my family history, and what's the simplest way to rule that in or out?'), things to mention proactively (ibuprofen dose and frequency, mother's kidney stone history, functional impact on your sitting tolerance), a pre-visit checklist (write down exact onset date, note when pain is worst, bring your ibuprofen bottle), and conversation tips."
+    },
+    tips: [
+      "Be specific in the chief concern field — 'right-sided lower back pain for 3 weeks' beats 'my back hurts'",
+      "Fill in the 'what you're most worried about' field honestly — the output will address it directly instead of dancing around it",
+      "Use it the night before the visit, then again in the waiting room — you'll retain it better in two passes",
+      "Save the output to your phone and scroll to it when the doctor asks 'so what's going on?'",
+      "Pair with Doctor Visit Translator afterward to decode what the doctor said"
+    ],
+    pitfalls: [
+      "This tool does not diagnose and will not suggest treatments — it shapes how you describe your symptoms and what to ask",
+      "If you have red-flag symptoms (severe chest pain, sudden severe headache, signs of stroke, heavy bleeding), go to urgent care or an ER — prep is for scheduled visits, not emergencies",
+      "The opener and questions are suggestions, not a script to memorize — read them in your own voice"
+    ]
+  }
+},
 {
   modified: "2026-03-30",
   id: "LedeBuilder",

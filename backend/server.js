@@ -71,7 +71,7 @@ const TOOL_IDS = [
   'BrainStateDeejay','BuyWise','CaptionMagic','ChaosPilot','ColdOpenCraft',
   'ComebackCooker','ComplaintEscalationWriter','ConflictCoach','ContextCollapse',
   'ContrastReport','CrashPredictor','CrisisPrioritizer','CrowdWisdom','DateNight',
-  'DebateMe','DecisionCoach','DecoderRing','DifficultTalkCoach','DoctorVisitTranslator',
+  'DebateMe','DecisionCoach','DecoderRing','DifficultTalkCoach','DoctorVisitPrep','DoctorVisitTranslator',
 'DreamPatternSpotter','DriveHome','EgoKiller','EmailUrgencyTriager','PEP',
   'FakeReviewDetective','FanTheory','FinalWish','FocusPocus','FocusSoundArchitect',
   'FriendshipFadeAlerter','FutureProof','GentlePushGenerator','GhostWriter',

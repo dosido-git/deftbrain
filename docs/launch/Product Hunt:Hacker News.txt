@@ -1,0 +1,10 @@
+what is PH/HN?
+12:59 AM
+Sorry — shorthand that wasn't worth using:
+PH = Product Hunt (producthunt.com) — a daily-voting community for launches. Making it onto the top 5 of any given day can drive ~10–50K visitors and a spike of signups. Common first launch venue for indie software.
+HN = Hacker News (news.ycombinator.com) — specifically the "Show HN" category, where makers post their projects. Making the front page drives ~5–30K visitors and tends to bring in a technical audience (often harsh but valuable feedback).
+Both are free, self-serve, and high-leverage for a solo dev launching a software product. They're the closest thing indie devs have to "press coverage" without needing press connections.
+A few practical notes
+They don't mix well on the same day. The audiences overlap, and doing both simultaneously splits your attention during the launch window when you need to be responding to comments actively. Most people do Product Hunt first (it rewards momentum and response rate), then Hacker News a week or two later. Some people skip one or the other entirely.
+Timing matters. Product Hunt resets at midnight PT; launching at 12:01 AM PT on a Tuesday or Wednesday gives you the most hours to accumulate upvotes. Hacker News prefers Tuesday–Thursday mornings US time.
+Both reward preparation. A Product Hunt launch benefits from a "hunter" with a following, a thumbnail video/GIF, and pre-written responses to common questions. A Show HN benefits from a good title (factual, specific, no hype) and being online for the first few hours to answer comments.
