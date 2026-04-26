@@ -1,4 +1,4 @@
-<!-- v1.3 · 2026-04-24 · audit script name reverted from audit.py to audit_v2-3-2.py; inventory and references updated -->
+<!-- v1.4 · 2026-04-25 · session 110 additions: toolchain verification before presenting; guide-spec coherence checks (internal coherence + CTA three-way alignment) -->
 # DeftBrain Standards Compliance — Mandatory Instructions
 
 #Before doing anything else, confirm that every file in the inventory below is accessible via the view tool. If any is missing, stop and ask the user to upload it.
@@ -120,6 +120,24 @@ A file that passes every grep scan but has not been read is not ready to ship.
 
 ---
 
+## Toolchain Verification Before Presenting
+
+The read-through catches most bugs. It does not catch syntactic ones the parser would catch in a millisecond. Before presenting any edited file, run the relevant toolchain check.
+
+**Backend files (`.js` under `backend/`):** run `node --check path/to/file.js`. Catches missing parens, unclosed braces, malformed arrow syntax — failures that crash the server on `npm start` and that no amount of careful reading will reliably surface. The check is fast and free; running it is non-negotiable.
+
+**ESLint-disable directives use literal `--`, never em-dash (`—`).** An em-dash in `// eslint-disable-next-line ...` silently breaks the directive and the suppressed rule fires anyway in production. The two characters are visually indistinguishable in proportional fonts. The toolchain is the only reliable detector. Before presenting, search:
+
+```
+grep -nP "eslint-disable[^-]*\xe2\x80\x94" path/to/file.js
+```
+
+Any hit is a defect.
+
+**Directives are smells.** Every `eslint-disable` line is documentation that something is being suppressed. Before adding one, ask whether the underlying rule is firing for a reason. Most "needed disables" turn out to be "fix the underlying issue." A file that ships with new disables stacked on top of old disables is accumulating debt the audit script can't see — and the next audit pass has to decide whether each disable was earned or inherited. Earn each one or remove it.
+
+---
+
 ## Version Header Discipline
 
 Standards documents carry a header of the form `<!-- vX.Y · DATE · TAG -->`. Any edit to a file with this header must update the header as part of the same commit — not later, not in a follow-up session. Files currently under this discipline:
@@ -170,6 +188,36 @@ These have been violated and corrected. They must not require correction again:
 **Submit button:** `tool?.icon` in both loading AND idle branches. Never a hardcoded emoji in the idle branch. *Multi-mode exception: in tools with multiple functional modes where each mode has its own submit button with a distinct semantic purpose, each mode's idle icon may use a topical emoji. The loading-state icon must still spin `tool?.icon` via a shared `<Spinner />` helper. See CONVENTIONS.md PF-14 for the reference case.*
 
 **Cross-refs:** Mandatory — at least one link, sourced from `cross-reference-map.md`. Zero cross-refs is a violation. **Max 3 links per cluster** (where "cluster" = cross-refs appearing within ~5 lines of each other in the JSX — a single footer, sidebar, or inline paragraph). Preferred: 1–2 per cluster. Cross-refs can appear on multiple pages/branches of the same tool; each page's cluster is counted independently. Emoji before name. `/PascalCase` hrefs. No `target="_blank"`. Pre-result ref visible before submit. Post-result ref inside results block.
+
+---
+
+## Coherence Checks for Guide Specs
+
+Guide specs are a different workstream from tool audits. Their compliance is narrative, not structural. The audit script doesn't see them; the read-through alone is not sufficient. Two coherence checks must run on every guide spec before it ships — for new drafts and for retargets alike.
+
+### Internal coherence
+
+Does the prose describe what the steps actually teach?
+
+The lede, intro paragraph, and any callouts make implicit promises about what the reader will learn. The 5-step body delivers something specific. If those don't match, the reader's intent is broken — the lede pulled them in expecting one thing, the steps gave them another. The guide may rank well; it will not convert.
+
+Test before shipping: read the lede and intro alone, write down (literally, in your scratch space) what you expect the steps to teach, then read the steps. If the prediction doesn't match what's there, one side has to change. Usually it's the lede — the steps tend to be the more thoroughly considered artifact.
+
+Real failure caught this session: a guide's lede framed the problem as "the questions you forgot to ask your doctor" but the steps actually taught "what to do when the answers you got were incomplete." Different problem, different reader. The lede had to be rewritten to match the steps.
+
+### CTA three-way alignment
+
+When retargeting a guide's CTA to a different tool — or writing a new guide whose CTA points at a tool — three things must align. Missing any one of them produces a guide that's structurally well-formed and narratively broken.
+
+1. **Guide alignment.** Does the guide content actually lead to the use case the target tool solves? A guide about reading a lease cannot end with a CTA for a symptom journal. The narrative arc has to terminate at the door the tool opens.
+
+2. **Tool alignment.** Does the target tool actually do what the CTA block says it does? The headline, body copy, and feature list inside the CTA block must reflect the *current* tool — not a previous tool whose CTA block was copied as a starting point. Feature bullets are the most common drift point; the headline gets updated, the bullets don't.
+
+3. **Bridge alignment.** Does the bridge text — the sentence or two between the last step and the CTA block — accurately describe what the user gets when they click? Bridge text is prose, not a templated block, so it tends to retain old promises through a retarget.
+
+Real failure caught this session: a CTA retarget swapped the `toolId`, glyph, headline, and feature list cleanly, but left the bridge text and one feature bullet promising "export your symptom journal" — a feature the new target tool didn't have. Reader clicks expecting the journal, gets a tool that doesn't offer it, bounces.
+
+Run all three checks every time. They are cheap; missing any one is expensive.
 
 ---
 

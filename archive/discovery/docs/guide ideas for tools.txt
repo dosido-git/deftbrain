@@ -1,0 +1,52 @@
+DeftBrain Tool Fitness — Findings & Recommendations
+Date: April 23, 2026 Exercise: SEO-fit triage of all 119 tools in DeftBrain, classifying each as HIGH / MEDIUM / LOW / NONE candidate for the guide-driven acquisition strategy. Full classification: DeftBrain_Guide_Strategy.xlsx → Tool Fitness sheet.
+
+ 
+Headline numbers
+~931 estimated queries across 75 tools are genuinely SEO-acquirable.
+Two-thirds of the suite (63%) is a candidate for the guide strategy — a healthier ratio than typical.
+15 tools (13%) carry the bulk of the opportunity — roughly 464 queries concentrated in the top tier.
+Tier
+Tools
+Est. queries
+Share of query opportunity
+HIGH
+15
+~464
+50%
+MEDIUM
+35
+~336
+36%
+LOW
+40
+~131
+14%
+NONE
+28
+0
+0%
+ 
+Progress against the opportunity
+4 of 15 HIGH tools have completed discovery (DifficultTalkCoach, UpsellShield, LeaseTrapDetector, DoctorVisitTranslator).
+231 queries captured in the backlog across those 4 tools.
+5 guides shipped (all DifficultTalkCoach / boss cluster).
+226 candidates remain in queue — ~86 of them tagged High-priority.
+The remaining 11 HIGH tools — PlantRescue, PetWeirdnessDecoder, BikeMedic, MarkupDetective, ComplaintEscalationWriter, RentersDepositSaver, RulebookBreaker, SubscriptionGuiltTrip, ConflictCoach, BillRescue, ToastWriter — would add an estimated ~230 more candidates to the backlog if discovery continued.
+
+ 
+Key findings
+The suite divides cleanly into two kinds of tools. The front-door tools (HIGH/MEDIUM fit) solve real problems people Google in real moments. The depth tools (NONE) solve problems too abstract, too playful, or too self-reflective to be Google-acquired. Both kinds are valuable — but only the first kind drives traffic through SEO guides. The NONE tier isn’t a failure; it’s the retention and depth of the suite, accessible via ToolFinder and internal navigation once a user arrives.
+
+Three triage issues require resolution before writing overlapping guides:
+
+SubscriptionGuiltTrip likely owns UpsellShield’s Subscriptions cluster. Eight queries in the existing backlog probably belong to a tool we hadn’t discovered yet. Reassignment is straightforward when SubscriptionGuiltTrip’s discovery pass runs.
+ConflictCoach vs. DifficultTalkCoach. The 25-query estimate for ConflictCoach is only meaningful if it specializes (e.g., in response-after-the-fact de-escalation, distinct from DTC’s initiate-the-conversation scope). Without a clean split, the two tools will produce near-identical guides and cannibalize each other’s rankings.
+Four additional pair triages affect smaller query shares: JargonAssassin / PlainTalk, ContrastReport / PlotTwist / DecisionCoach, HecklerPrep / TheRunthrough, ProcedureProbe / DoctorVisitTranslator, and RulebookBreaker / ComplaintEscalationWriter / UpsellShield. Each needs a clean scope boundary before multiple guides target the same query.
+Several tools are deceptively low-priority despite seeming promising:
+
+Productivity tools (BatchFlow, BrainDumpBuddy, TaskAvalancheBreaker, FocusPocus, FocusSoundArchitect) — all LOW because productivity SEO is among the most competitive verticals on the web. Even good guides rank poorly.
+Cooking tools (MiseEnPlace, Giftology) — recipe-site SEO has been dominated for a decade by Pinterest-optimized content. Difficult to crack.
+Fashion (WardrobeChaosHelper) — same dynamic.
+These tools are still valuable inside the suite; they’re just not SEO-acquirable.
+

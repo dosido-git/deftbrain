@@ -1,0 +1,19 @@
+# Sample roots file for PetWeirdnessDecoder
+# Generated 2026-04-25 alongside seed_expand.py v1
+#
+# Usage:
+#   python3 seed_expand.py \
+#       --roots roots-pet.txt \
+#       --subreddits cats,dogs,AskVet,Pets \
+#       --output seeds-pet.csv \
+#       --verbose
+#
+# Lines starting with # are comments and skipped.
+# Blank lines are skipped.
+# Each remaining line is one root phrase.
+
+why is my cat
+why is my dog
+is my pet sick
+weird pet behavior
+when to take pet to vet
