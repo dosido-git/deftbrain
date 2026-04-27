@@ -1,72 +1,59 @@
-// ============================================================
-// guide-specs/home/red-flags-in-a-rental-lease.js
-// ============================================================
-// Source of truth for /guides/home/red-flags-in-a-rental-lease.
-// Edit here; run `node scripts/build-guides.js home` to regenerate.
-// ============================================================
-
 module.exports = {
   slug:          'red-flags-in-a-rental-lease',
   category:      'home',
   categoryLabel: 'Home',
 
-  title:         "Red Flags in a Rental Lease (That Should Make You Think Twice)",
-  titleHtml:     "Red Flags in a Rental Lease <em>(That Should Make You Think Twice)</em>",
+  title:         "Red Flags in a Rental Lease (And What They're Actually Telling You)",
+  titleHtml:     "Red Flags in a Rental Lease <em>(And What They&#39;re Actually Telling You)</em>",
   shortTitle:    "Red Flags in a Rental Lease",
-  navTitle:      "Red flags in a rental lease that should make you think twice",
+  navTitle:      "Red flags in a rental lease and what they're actually telling you",
 
-  description:   "Not every bad lease clause is illegal. Many are just predatory — permitted in your state, but designed to extract money or control from the tenant. Here are the five worth walking away over.",
-  deck:          "Not every bad lease clause is illegal. Many are just predatory — permitted in your state, but designed to extract money or control from the tenant. Here are the five worth walking away over.",
-
-  published:     '2026-04-24',
-  modified:      '2026-04-24',
+  description:   "Some lease clauses are inconvenient. Others are warnings about who you're about to spend a year with. Here's how to tell the difference.",
+  deck:          "Some lease clauses are inconvenient. Others are warnings about who you're about to spend a year with. Here's how to tell the difference.",
 
   ledes: [
-    `You're reading the lease, and something doesn't sit right. You can't name it exactly — just a feeling that a clause favors the landlord a little too much, or a fee seems higher than it should, or a rule gives them more control than you expected. That feeling is usually right. Most bad leases aren't illegal. They're just designed to extract money or control in ways a first-time renter doesn't see coming.`,
-    `Every state has laws that cap what landlords can do in practice, but most don't cap what they can try to put into a lease. A clause that's unenforceable in court can still cost you a lawsuit, or a security deposit, or a year of stress. Here are the five worst offenders, and what they look like on the page.`,
+    `You're reading the lease and something feels off. Maybe it's the clause that says the landlord can enter "at any time deemed necessary." Maybe it's the $400 cleaning fee that gets charged whether you clean or not. Maybe it's just the cumulative weight of clause after clause that all seem to favor one side. You can't tell if you're being paranoid or if the document is actually telling you something.`,
+    `It's telling you something. A lease isn't just a contract — it's a portrait of how the landlord plans to behave. The clauses they wrote are the moves they expect to make. Once you know what to look for, the lease becomes a remarkably honest preview of the next twelve months.`,
   ],
 
   steps: [
     {
-      name: "'As-is' language without a pre-signing inspection",
-      body: "A lease that states the unit is accepted 'as-is,' with no written record of its condition at move-in, hands the landlord the ability to claim any damage is yours. If you see 'as-is' anywhere in the document, ask for an inspection report to be attached. Document every pre-existing issue with timestamped photos before you hand over the first check. Without that record, you've agreed that the stained carpet and cracked window are things you did.",
+      name: "Clauses that waive your legal rights, not just your preferences",
+      body: "There's a difference between a lease that's restrictive and a lease that's trying to override the law. 'No pets' is a preference. 'Tenant waives the right to a hearing before eviction' is a waiver. 'Tenant agrees landlord may withhold any portion of the security deposit' is a waiver. Watch for the word 'waives,' the phrase 'notwithstanding any statute,' and any clause that asks you to agree the landlord 'may' do something the law normally wouldn't allow. These aren't oversights. They're written by someone who plans to use them.",
     },
     {
-      name: "One-sided early-termination fees",
-      body: "Leases commonly specify what the tenant owes if they break the lease — usually one or two months' rent plus forfeiture of the deposit. Red flag: the lease spells out your penalty for breaking it, but is silent on the landlord's obligations if they fail to maintain the unit. That's a one-way street. A fairer lease specifies mutual obligations and consequences on both sides, not just yours.",
+      name: "Fees that exist but aren't explained",
+      body: "A $250 'administrative fee' on top of first month's rent. A $75 'monthly utility coordination charge' that doesn't correspond to any utility. A 'move-in processing fee' that shows up on the ledger but not in the lease. Legitimate fees are itemized and capped. Vague fees are revenue. The number of unexplained line items in a lease is a good proxy for how creative the landlord plans to get with your money.",
     },
     {
-      name: "Excessive or open-ended fees",
-      body: "Late fees that are percentages rather than fixed amounts. 'Administrative fees' or 'processing fees' with no definition. Cleaning fees that apply regardless of condition. Any line item that's 'to be determined by landlord.' Each can be reasonable in moderation, but together they signal a landlord who expects to extract more than rent. A $150 fee on a lease renewal isn't normal — it's just permitted.",
+      name: "Maintenance language that puts the burden on you",
+      body: "Look at how the lease handles repairs. The standard split is structural and major systems = landlord, day-to-day wear and small replacements = tenant. Red flag leases push the line. 'Tenant responsible for all repairs under $500' means you pay for plumbing leaks and broken appliances. 'Tenant maintains all fixtures in good working condition' means a $1,200 stove repair could be on you. The dollar threshold and the breadth of 'maintains' tell you who's planning to fix what.",
     },
     {
-      name: "Landlord entry without proper notice",
-      body: "Most states require 24 hours' notice before a landlord enters the unit, with exceptions for genuine emergencies. A lease that says the landlord can enter 'at any time,' 'upon reasonable notice,' or 'with two hours' notice' is trying to normalize something the law often doesn't permit. Check your state's minimum; if the lease is more permissive, it doesn't override the law — but it tells you what the landlord thinks they can get away with.",
+      name: "Entry, inspection, and access clauses with no notice requirement",
+      body: "Standard tenant law in most jurisdictions requires 24 to 48 hours notice before non-emergency entry. A lease that says the landlord may enter 'at any time' or 'as deemed necessary' is either ignorant of the law or banking on you not knowing it. Either way, it's a signal. Landlords who don't respect entry notice in writing don't respect it in practice — and once you're living there, every showing for the next tenant becomes a test of how much you'll tolerate.",
     },
     {
-      name: "'Joint and several liability' with roommates, buried",
-      body: "If you're signing with roommates, 'joint and several' means the landlord can collect the full rent from any one of you if the others don't pay. You're not just liable for your share — you're liable for everyone's. This is standard and often appropriate, but it should be explicit. If the lease doesn't mention how roommate liability works, ask. If it's there but buried in boilerplate, at least you know what you've signed.",
+      name: "When the whole document reads like a pre-built case against you",
+      body: "Sometimes no single clause is dispositive — but you finish reading and realize every contingency is written from one side. Disputes go to mandatory arbitration. Late fees compound. Notice requirements run only one direction. Inspection rights are unilateral. The tenant indemnifies the landlord for nearly everything. This is the most important red flag, and the one you'll feel before you can name. The lease isn't trying to be fair. It's trying to win in advance. That's not a negotiation problem — it's a who-am-I-renting-from problem.",
     },
   ],
 
-  callout: {
-    afterStep: 1,
-    scriptedLine: "Before I sign, I'd like to do a walk-through with you and document the unit's current condition — photos and a written list we both sign off on.",
-    explanation: "This protects both parties, and a landlord who refuses is telling you they want the 'as-is' clause to mean they can charge you later for pre-existing damage. Most reasonable landlords will agree right away — their insurance often requires it anyway.",
-  },
-
   cta: {
     glyph:    '🏡',
-    headline: "Find the predatory clauses before you sign",
-    body:     "Lease Trap Detector reads your lease the way a tenant's-rights attorney would, flagging the clauses most likely to cost you money, freedom, or your deposit.",
+    headline: "Find every red flag before you sign",
+    body:     "Lease Trap Detector scans your lease for unenforceable clauses, hidden fees, rights waivers, and language that overrides standard tenant protections — with specific citations to your local law.",
     features: [
-      "Predatory-clause detection",
-      "Fairness rating by section",
-      "State-aware law check",
-      "Negotiation scripts",
-      "Pre-signing inspection checklist",
+      "Red, yellow, and green flag detection",
+      "Specific law citations by jurisdiction",
+      "Unenforceable clause flagging",
+      "Risk-level assessment",
+      "Side-by-side lease comparison",
     ],
     toolId:   'LeaseTrapDetector',
     toolName: 'Lease Trap Detector',
   },
+
+  published: '2026-04-27',
+  modified:  '2026-04-27',
 };

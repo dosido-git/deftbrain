@@ -1,72 +1,59 @@
-// ============================================================
-// guide-specs/health/how-to-prepare-for-a-doctors-appointment.js
-// ============================================================
-// Source of truth for /guides/health/how-to-prepare-for-a-doctors-appointment.
-// Edit here; run `node scripts/build-guides.js health` to regenerate.
-// ============================================================
-
 module.exports = {
   slug:          'how-to-prepare-for-a-doctors-appointment',
   category:      'health',
   categoryLabel: 'Health',
 
-  title:         "How to Prepare for a Doctor's Appointment (So You Don't Waste It)",
-  titleHtml:     "How to Prepare for a Doctor&#39;s Appointment <em>(So You Don&#39;t Waste It)</em>",
+  title:         "How to Prepare for a Doctor's Appointment (Without Forgetting What You Came For)",
+  titleHtml:     "How to Prepare for a Doctor&#39;s Appointment <em>(Without Forgetting What You Came For)</em>",
   shortTitle:    "How to Prepare for a Doctor's Appointment",
-  navTitle:      "How to prepare for a doctor's appointment so you don't waste it",
+  navTitle:      "How to prepare for a doctor's appointment without forgetting what you came for",
 
-  description:   "You've waited weeks for the appointment. You'll have fifteen minutes. A practical, step-by-step approach to walking in prepared — so nothing gets forgotten and nothing gets wasted.",
-  deck:          "You've waited weeks for the appointment. You'll have fifteen minutes. A practical, step-by-step approach to walking in prepared — so nothing gets forgotten and nothing gets wasted.",
-
-  published:     '2026-04-24',
-  modified:      '2026-04-25',
+  description:   "A 15-minute visit goes fast. The difference between a useful one and a wasted one is almost always what you brought with you — written down, before you walked in.",
+  deck:          "A 15-minute visit goes fast. The difference between a useful one and a wasted one is almost always what you brought with you — written down, before you walked in.",
 
   ledes: [
-    `You booked the appointment three weeks ago. Now it's tomorrow and you're running through everything in your head — the symptoms, the questions, the concern that made you call in the first place. And you can already feel how fifteen minutes won't be enough. The last time you saw a doctor, you remembered the most important thing halfway home.`,
-    `The good news is that a prepared patient is a different patient. Not smarter, not more assertive — just organized. Here's the preparation.`,
+    `You're sitting in the waiting room rehearsing what you came to say. The whole list was clear last night. Now the front desk is calling your name, and the three things that brought you here have rearranged themselves into one foggy worry. Twenty minutes from now you'll be back in the parking lot trying to remember whether you actually mentioned the headaches.`,
+    `Almost everyone does this. The visit is short, the doctor is moving, and the things you wanted to say get displaced by the things they ask you. The fix is mechanical: a small amount of work the night before that survives the moment you walk in. You don't need to be assertive in the appointment if you've been organized before it.`,
   ],
 
   steps: [
     {
-      name: "Pick your top three questions and write them down",
-      body: "Three, not ten. If you walk in with a list of ten, you'll get cursory answers to all of them. Pick the three that matter most — the symptom you're most worried about, the decision you need help with, the question you'll kick yourself for not asking. Everything else can wait for the follow-up message or the next visit.",
+      name: "Write down your top three concerns, in priority order",
+      body: "Doctors get fifteen minutes. They will spend most of it on whatever you mention first. If you bury the most important thing under three smaller items, you'll run out of clock before you get there. Pick the top three things you want addressed, write them on a single piece of paper or a phone note, and start with the one that scares you most. The headache that's woken you up four times this month doesn't belong in slot three.",
     },
     {
-      name: "Bring a current medication list — with doses",
-      body: "Not just 'I take something for blood pressure.' The name, the dose, and how long you've been on it. Same for supplements and over-the-counter pills. Snap a photo of the bottles if it's easier. Medication interactions are a common reason a visit runs off course; giving your doctor the full list up front saves the detour.",
+      name: "Build a symptom log, not a symptom list",
+      body: "'I've been getting headaches' is a sentence the doctor has heard a thousand times. 'I've had headaches on the right side, behind the eye, lasting two to four hours, four times in the past three weeks, usually starting around 4 PM' is a different conversation. Write down when it started, where it is, how often, how long it lasts, what it feels like, and what makes it better or worse. Specific symptoms get specific responses.",
     },
     {
-      name: "Know your symptom timeline",
-      body: "When did it start? When is it worse? When is it better? If you can't remember, look back through your phone — photos, messages, and calendar entries can often pin down when something began. Doctors are trained to look for patterns. Your job is to give them the pattern, not the raw feelings.",
+      name: "Bring a complete medication and supplement list",
+      body: "Bring everything: prescriptions, over-the-counter, vitamins, supplements, herbal stuff, the magnesium your friend told you about. Photos of the bottles work fine. Doctors aren't trying to judge you for what you take — they're trying to spot interactions, and they can't if they don't know. The supplement that 'doesn't really count' is exactly the supplement that matters.",
     },
     {
-      name: "Rehearse your one-sentence opener",
-      body: "The doctor will say 'What brings you in today?' — probably within the first thirty seconds. Your answer sets the direction for the next fifteen minutes. Don't wing it. Practice one sentence that names the main concern, how long it's been going on, and one key detail. A crisp opener buys you time for everything else.",
+      name: "Write down the specific questions you want answered",
+      body: "'What is this?' isn't a useful question — it's a topic. Useful questions sound like: 'What's the most likely cause?' 'What else could it be?' 'What should I watch for that means I should call back sooner?' 'What's the timeline you'd expect this to follow?' Write them down. You won't remember in the room. The doctor isn't going to volunteer the answer to a question you didn't ask.",
     },
     {
-      name: "Note anything that's changed since last visit",
-      body: "New stressors, new medications, new diagnoses from other doctors, a job change, a move, a death in the family. Much of medicine is reading the whole context, not just the current complaint. The doctor who knows your father died six months ago will interpret your new insomnia differently than the one who doesn't.",
+      name: "Decide what counts as a successful visit before you go",
+      body: "If you don't define what success looks like, the visit ends whenever the doctor decides it does — and you'll get in the car not sure whether anything happened. Was the goal a referral? A prescription? Just a conversation about whether something is worth worrying about? Name it before you walk in. If the visit ends and you didn't get the thing you came for, that's the moment to ask one more question — not the moment to stand up and leave.",
     },
   ],
 
-  callout: {
-    afterStep: 4,
-    scriptedLine: "I've had [specific symptom] for [how long], and it's [one key detail — worse when X, better when Y, getting worse, etc.].",
-    explanation: "The formula — what, how long, one specific detail — is how doctors are trained to take a history. Opening with it puts your visit in a shape they can work with immediately, instead of one they have to piece together.",
-  },
-
   cta: {
     glyph:    '📝',
-    headline: "Walk in ready — without forgetting the thing that matters",
-    body:     "The five moves in this guide work for any appointment. Doctor Visit Prep takes your symptoms, history, and what you're most worried about, and turns them into the prep sheet for your specific visit — opener, prioritized questions, and the things to mention even if your doctor doesn't ask.",
+    headline: "Walk in with the script already written",
+    body:     "Doctor Visit Prep turns scattered worries and symptoms into a focused appointment script — a clear opener, prioritized questions, things to mention even if the doctor doesn't ask, and a pre-visit checklist.",
     features: [
-      "Prioritized questions, ranked by what matters most",
-      "A clinical-ready opener you can read aloud",
-      "Things to mention even if your doctor doesn't ask",
-      "A pre-visit checklist tailored to your concern",
-      "A short list of what to bring",
+      "Symptom and timeline organizer",
+      "Prioritized question list",
+      "Things to mention proactively",
+      "Pre-visit checklist",
+      "Specialist appointment prep",
     ],
     toolId:   'DoctorVisitPrep',
     toolName: 'Doctor Visit Prep',
   },
+
+  published: '2026-04-27',
+  modified:  '2026-04-27',
 };

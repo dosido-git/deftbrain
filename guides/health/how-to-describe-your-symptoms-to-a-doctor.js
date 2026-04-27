@@ -1,72 +1,59 @@
-// ============================================================
-// guide-specs/health/how-to-describe-your-symptoms-to-a-doctor.js
-// ============================================================
-// Source of truth for /guides/health/how-to-describe-your-symptoms-to-a-doctor.
-// Edit here; run `node scripts/build-guides.js health` to regenerate.
-// ============================================================
-
 module.exports = {
   slug:          'how-to-describe-your-symptoms-to-a-doctor',
   category:      'health',
   categoryLabel: 'Health',
 
-  title:         "How to Describe Your Symptoms to a Doctor (So They Actually Listen)",
-  titleHtml:     "How to Describe Your Symptoms to a Doctor <em>(So They Actually Listen)</em>",
+  title:         "How to Describe Your Symptoms to a Doctor (So They Can Actually Help You)",
+  titleHtml:     "How to Describe Your Symptoms to a Doctor <em>(So They Can Actually Help You)</em>",
   shortTitle:    "How to Describe Your Symptoms to a Doctor",
-  navTitle:      "How to describe your symptoms to a doctor so they actually listen",
+  navTitle:      "How to describe your symptoms to a doctor so they can actually help you",
 
-  description:   "You've been trying to explain it for three weeks. Doctors are pattern-recognizers — they need the shape of a problem they can work with. A step-by-step approach to describing symptoms in the way that gets taken seriously.",
-  deck:          "You've been trying to explain it for three weeks. Doctors are pattern-recognizers — they need the shape of a problem they can work with. A step-by-step approach to describing symptoms in the way that gets taken seriously.",
-
-  published:     '2026-04-24',
-  modified:      '2026-04-25',
+  description:   "The same symptom can sound like a non-issue or a real problem depending on how you describe it. The right description is the one that gives the doctor enough to work with.",
+  deck:          "The same symptom can sound like a non-issue or a real problem depending on how you describe it. The right description is the one that gives the doctor enough to work with.",
 
   ledes: [
-    `You've been trying for three weeks to explain it. The pain is there, except when it isn't. It's kind of sharp, unless it's dull. It's worst at night, usually, but not always. You get through the first thirty seconds of your description and you can feel the doctor's attention slipping. It isn't that they don't believe you. It's that you haven't given them the shape of a problem they can work with.`,
-    `Doctors are pattern-matchers. They've heard thousands of symptom descriptions, and the ones that land are the ones that fit the patterns they already know. Describing your symptoms well is a specific, teachable skill. Here's how.`,
+    `The doctor walks in and asks what's been going on. You start to explain, but somehow the words coming out of your mouth don't match the thing you've been experiencing for the past three weeks. 'It just kind of hurts sometimes.' 'I've been more tired than usual.' 'It feels weird.' You can hear yourself saying it. You also can't seem to do better in the moment.`,
+    `That gap is fixable. Doctors are trained to translate vague descriptions into possible diagnoses, but they can only translate what they're given. The more specific your description, the smaller the differential and the faster you get to a useful answer. The trick is knowing which specifics matter — and resisting the urge to translate your experience into what you think they want to hear.`,
   ],
 
   steps: [
     {
-      name: "Lead with the compact summary",
-      body: "One sentence. The what, the duration, and one key detail. 'I've had a sharp headache behind my right eye for about ten days, and it gets worse when I lie down.' You've just given the doctor three categories of information they need, in under fifteen words. The rest of the conversation builds on that foundation.",
+      name: "Pin down when it started, not just how long it's been",
+      body: "'For a few weeks' is less useful than 'starting Tuesday, March 14th, after a long drive.' If you can name the exact day or the event that preceded it — a meal, a workout, a stressful event, a change in medication — say so. Onset is one of the most diagnostically useful pieces of information. A symptom that started suddenly is a different category from one that crept in. You don't need a perfect memory; you need an honest best estimate.",
     },
     {
-      name: "Name the quality, not just the intensity",
-      body: "Doctors distinguish between sharp, dull, throbbing, burning, stabbing, aching, and pressure-like. Each one points to a different category of cause. Saying 'it really hurts' tells the doctor nothing diagnostic; 'it's a burning sensation that spreads down my arm' tells them something specific. If you can't decide on a single word, say 'mostly sharp, sometimes throbbing' — that's also useful information.",
+      name: "Use comparison, not just adjectives",
+      body: "'Sharp pain' is a category. 'Sharp like the inside of a paper cut' is a comparison. 'Throbbing like a heartbeat in my temple' is more useful than 'throbbing.' 'Heavy like someone's standing on my chest' is more useful than 'heavy.' Comparisons translate the experience into something the doctor can map to specific conditions. This is the single biggest upgrade you can make in a symptom description, and it costs nothing.",
     },
     {
-      name: "Give the trigger-and-relief pattern",
-      body: "When is it worse? When is it better? After meals, during exercise, at night, when you're stressed, after a specific movement. The pattern is often more diagnostic than the symptom itself. 'My knee hurts when I go down stairs but not up' narrows the causes significantly. 'I feel dizzy when I stand up, but it passes in ten seconds' points somewhere specific.",
+      name: "Track frequency, duration, and intensity separately",
+      body: "These three are almost always asked, and almost always answered as one blurry thing. Frequency: how many times per day, week, or month. Duration: how long does each episode last — minutes, hours, all day. Intensity: on a scale of 1 to 10, where 10 is the worst pain you've experienced. Answer all three, separately. 'I get headaches sometimes' becomes 'about three times a week, lasting two to four hours each, peaking at maybe a 7.' That sentence narrows the differential by half.",
     },
     {
-      name: "Say what you've already tried",
-      body: "Over-the-counter medications, rest, heat, ice, stretches, cutting caffeine, elimination diets. What helped, what didn't, what made it worse. This saves the doctor from suggesting things you've already tested, and gives them information about which categories of cause are less likely. It also signals that you've been paying attention — which changes how the rest of your description gets taken.",
+      name: "Name what makes it better and what makes it worse",
+      body: "Triggers and relievers are diagnostic gold. Does it get worse after eating? After lying down? When you exercise? When you don't? Does it ease with rest, with medication, with heat, with movement? If you've been keeping a mental log, share it. If you haven't, think back through the last episode and try to remember what was happening just before and just after. Patterns that seem trivial to you ('it's worse when I wake up') often map directly to specific conditions.",
     },
     {
-      name: "Name your specific concern",
-      body: "'I'm worried this might be a thyroid issue because it runs in my family' is different from 'I don't know, it just doesn't feel right.' Naming your concern — even if you're wrong — gives the doctor a concrete thing to respond to. They can rule it in, rule it out, or explain why they don't think it applies. Without a named concern, they'll choose their own framing, and you might not get to yours.",
+      name: "Don't translate your experience into what you think they want to hear",
+      body: "There's a temptation to make symptoms sound 'medical' — to use words you've heard before, to soften experiences that feel too dramatic to describe accurately, to play it cool. Don't. If you're scared, say you're scared. If a pain is the worst you've ever felt, say so. If a symptom is keeping you from working or sleeping or eating, say that, in those words. Your job in the room isn't to be a good patient. Your job is to give the doctor the most honest version of what's happening to you. The medical translation is theirs to do.",
     },
   ],
 
-  callout: {
-    afterStep: 1,
-    scriptedLine: "I've had [specific symptom] for [how long], and [one key detail — worse when X, better when Y, spreading, getting worse, etc.].",
-    explanation: "The formula — what, how long, one specific detail — is how doctors are trained to take a history. Opening with it means your description lands in a shape they can work with immediately, instead of one they have to piece together from scattered fragments.",
-  },
-
   cta: {
     glyph:    '📝',
-    headline: "Turn your scattered symptoms into a description the doctor can act on",
-    body:     "The five moves in this guide work for any symptom, any visit. Doctor Visit Prep takes what you've been feeling — the location, the pattern, the timeline, the trigger — and writes the clinical-ready description for your specific situation, in the language doctors are trained to hear.",
+    headline: "Turn scattered symptoms into a clear description",
+    body:     "Doctor Visit Prep helps you organize what you've been experiencing into the specific, structured description doctors actually need — onset, frequency, intensity, triggers, and the pattern across time.",
     features: [
-      "A symptom description in clinical language",
-      "A one-sentence opener you can read aloud",
-      "Trigger-and-relief patterns surfaced",
-      "Things to mention even if your doctor doesn't ask",
-      "Red-flag symptoms to report first",
+      "Symptom timeline builder",
+      "Trigger and reliever tracking",
+      "Onset and duration capture",
+      "Severity scaling guidance",
+      "Doctor-ready summary export",
     ],
     toolId:   'DoctorVisitPrep',
     toolName: 'Doctor Visit Prep',
   },
+
+  published: '2026-04-27',
+  modified:  '2026-04-27',
 };

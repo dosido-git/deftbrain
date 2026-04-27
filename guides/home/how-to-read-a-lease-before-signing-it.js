@@ -1,72 +1,65 @@
-// ============================================================
-// guide-specs/home/how-to-read-a-lease-before-signing-it.js
-// ============================================================
-// Source of truth for /guides/home/how-to-read-a-lease-before-signing-it.
-// Edit here; run `node scripts/build-guides.js home` to regenerate.
-// ============================================================
-
 module.exports = {
   slug:          'how-to-read-a-lease-before-signing-it',
   category:      'home',
   categoryLabel: 'Home',
 
-  title:         "How to Read a Lease Before Signing It (Without Missing Anything Expensive)",
-  titleHtml:     "How to Read a Lease Before Signing It <em>(Without Missing Anything Expensive)</em>",
+  title:         "How to Read a Lease Before Signing It (Without Missing Anything That Matters)",
+  titleHtml:     "How to Read a Lease Before Signing It <em>(Without Missing Anything That Matters)</em>",
   shortTitle:    "How to Read a Lease Before Signing It",
-  navTitle:      "How to read a lease before signing it without missing anything expensive",
+  navTitle:      "How to read a lease before signing it without missing anything that matters",
 
-  description:   "A lease is a contract most people skim. The expensive regrets are buried in the parts they skipped. A five-step approach to reading one properly — before you're stuck with it for a year.",
-  deck:          "A lease is a contract most people skim. The expensive regrets are buried in the parts they skipped. A five-step approach to reading one properly — before you're stuck with it for a year.",
-
-  published:     '2026-04-24',
-  modified:      '2026-04-24',
+  description:   "A 30-page lease isn't designed to be read — it's designed to make every clause look equal. Here's the order to read it in, and what to actually pay attention to.",
+  deck:          "A 30-page lease isn't designed to be read — it's designed to make every clause look equal. Here's the order to read it in, and what to actually pay attention to.",
 
   ledes: [
-    `The landlord hands you the lease and a pen. You're standing in the unit you just toured. You're already mentally moved in — you've pictured the couch, you've thought about where the cat would nap. And somewhere in those three pages of dense small-type text, there are clauses that will cost you money or freedom you haven't considered yet. The amount most renters read before signing is "enough to know where to initial."`,
-    `Reading a lease properly isn't a legal skill. It's a process — a few passes, each looking for something different. Fifteen minutes, a pen, and a quiet room. Here's how.`,
+    `It's sitting on the kitchen table. Twenty-eight pages, single-spaced, with five places to initial. The landlord wants it back by Friday. You started reading it Tuesday night and somewhere around page four the words stopped being sentences and started being shapes. You know you're supposed to read every word. You also know you won't.`,
+    `That's fine. The skill isn't reading every clause — it's reading the right clauses in the right order. Most of a lease is boilerplate that won't ever matter to you. A handful of clauses will determine whether the next year is uneventful or expensive. Here's how to find them.`,
   ],
 
   steps: [
     {
-      name: "Ask to take it home before signing",
-      body: "A landlord who insists you sign on the spot is a landlord you want to know more about first. Standard practice is 24 to 48 hours to review, ask questions, and return with signed pages. Pressure to sign immediately is itself information — about how this landlord will handle disputes later. If they won't let you take the document home to read it, that's a data point worth a long pause before you commit.",
+      name: "Skim the move-out clauses before the move-in ones",
+      body: "Most people read leases front-to-back, which means they're paying full attention by the time they hit 'rent due on the first' and zoning out by the time they reach 'tenant shall be liable for.' Flip the script. Find the sections on early termination, security deposit return, and end-of-lease cleaning standards first, while you're still alert. These are where the real money is — and where landlords write the clauses that hurt the most.",
     },
     {
-      name: "Read it cold, all the way through, before flagging anything",
-      body: "Resist the urge to start underlining or writing questions on the first pass. Just read it straight through, no notes, no stops. The goal is to absorb the overall shape of the agreement — the term, the money, the major obligations — so you know the context for anything specific you flag later. A clause about 'quiet hours' means something different if you already know there's a 60-day notice period for termination.",
+      name: "Read every dollar amount out loud",
+      body: "Lease numbers blur. Pet deposit, key replacement fee, lockout fee, late fee, parking fee, utility surcharge, administrative fee — they all start to sound the same on the page. Saying them out loud breaks the trance. You'll catch the $250 lockout fee that was hiding next to a paragraph about plumbing maintenance. You'll notice that the late fee is 10% of monthly rent, not a flat $50. Anything that costs you money should be heard, not just seen.",
     },
     {
-      name: "On the second pass, check what should be there",
-      body: "Basic items every lease should specify clearly: the monthly rent and when it's due, the security deposit amount and return terms, the lease length and renewal rules, who pays which utilities, what's included (parking, laundry, storage). If any of these are vague or missing, that's a flag on its own. A well-run landlord has these dialed. A lease that leaves basics implicit leaves them open to interpretation — and the interpretation will be the landlord's.",
+      name: "Look for clauses that override your standard rights",
+      body: "Tenant law gives you certain default protections — notice before entry, the right to a habitable unit, limits on what your security deposit can be used for. Some leases try to write those protections out. Watch for phrases like 'tenant waives,' 'notwithstanding any law,' 'tenant agrees that landlord may,' or 'except as expressly stated herein.' These are flags that the lease is asking you to give up something the law would otherwise give you for free.",
     },
     {
-      name: "On the third pass, mark anything that seems one-sided",
-      body: "Any clause that lists what you owe if you break the lease, but is silent on the landlord's obligations if they fail to uphold theirs. Any provision that lets the landlord enter without notice, raise rent mid-term, or change the rules on short notice. Any fee where the amount is 'to be determined' rather than specified. One-sided doesn't automatically mean illegal — it just means the document favors the landlord in that situation, and you should know it going in.",
+      name: "Watch for definitions written to be flexible",
+      body: "If a clause says you're responsible for 'reasonable wear and tear' — fine. If it says you're responsible for 'normal use as determined by landlord' — that's a different sentence. The same goes for 'sufficient notice' (versus 30 days), 'reasonable repairs' (versus a list), 'good condition' (versus a move-in checklist). The vaguer the standard, the more discretion the landlord has when they invoke it. Vagueness in a lease is almost never accidental.",
     },
     {
-      name: "Look up anything you don't understand",
-      body: "'Joint and several liability.' 'Force majeure.' 'Attornment.' 'Estoppel certificate.' You don't need to become a lawyer, but you do need to know what each clause actually binds you to. Search the term plus 'tenant' for a plain-English explanation. If a word is important enough to be in a contract you're about to sign, it's important enough to understand before you sign it.",
+      name: "Mark what you'll actually have to live by",
+      body: "Once you've read it once, go back through and underline only the clauses that will affect your daily life or cost you money: pet rules, guest rules, quiet hours, maintenance request process, what counts as default, what triggers a fee. Take a photo of those pages. The rest of the lease is for lawyers and edge cases. The clauses you live by are the ones you should be able to recall in 18 months — because that's when one of them will come up.",
     },
   ],
 
   callout: {
-    afterStep: 1,
-    scriptedLine: "Thanks — I'd like to take this home to read through carefully. I'll be back with signed pages by [tomorrow / Monday / end of the week].",
-    explanation: "Direct, reasonable, not apologetic. A 24-to-48-hour review window is standard practice, and a landlord who pushes back on it is telling you something about how disputes will go later. Give a specific return day so it doesn't feel open-ended.",
+    afterStep: 3,
+    scriptedLine: "Before I sign, can you walk me through which clauses are negotiable? I'd like to clarify a few before we finalize.",
+    explanation: "This frames you as a careful tenant rather than a difficult one, and it surfaces what the landlord considers fixed versus flexible. Their answer tells you what's worth pushing on.",
   },
 
   cta: {
     glyph:    '🏡',
-    headline: "Find what's buried in the lease before you commit to it",
-    body:     "Lease Trap Detector reads your lease the way a tenant's-rights attorney would — surfacing the problematic clauses, the one-sided language, and the questions worth asking before you sign.",
+    headline: "Don't read the lease alone",
+    body:     "Lease Trap Detector reads it for you, flags the clauses that override your rights, identifies what's unenforceable in your jurisdiction, and tells you exactly what to push back on before you sign.",
     features: [
-      "Predatory-clause detector",
-      "Plain-English translations",
-      "Fairness check by section",
-      "Negotiation-ready questions",
-      "State-aware warnings",
+      "Red, yellow, and green flag detection",
+      "Unenforceable clause identification",
+      "Jurisdiction-specific rights check",
+      "Negotiation priority list",
+      "PDF or pasted-text input",
     ],
     toolId:   'LeaseTrapDetector',
     toolName: 'Lease Trap Detector',
   },
+
+  published: '2026-04-27',
+  modified:  '2026-04-27',
 };

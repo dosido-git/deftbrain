@@ -1,72 +1,59 @@
-// ============================================================
-// guide-specs/home/what-to-look-for-in-an-apartment-lease.js
-// ============================================================
-// Source of truth for /guides/home/what-to-look-for-in-an-apartment-lease.
-// Edit here; run `node scripts/build-guides.js home` to regenerate.
-// ============================================================
-
 module.exports = {
   slug:          'what-to-look-for-in-an-apartment-lease',
   category:      'home',
   categoryLabel: 'Home',
 
-  title:         "What to Look for in an Apartment Lease (Before You Lock In a Year)",
-  titleHtml:     "What to Look for in an Apartment Lease <em>(Before You Lock In a Year)</em>",
-  shortTitle:    "What to Look for in an Apartment Lease",
-  navTitle:      "What to look for in an apartment lease before you lock in a year",
+  title:         "What to Look For in an Apartment Lease (Beyond Just the Rent)",
+  titleHtml:     "What to Look For in an Apartment Lease <em>(Beyond Just the Rent)</em>",
+  shortTitle:    "What to Look For in an Apartment Lease",
+  navTitle:      "What to look for in an apartment lease beyond just the rent",
 
-  description:   "A lease is a list of promises — yours and the landlord's. Here's what every well-written lease should specify clearly, and what it usually means when something isn't specified at all.",
-  deck:          "A lease is a list of promises — yours and the landlord's. Here's what every well-written lease should specify clearly, and what it usually means when something isn't specified at all.",
-
-  published:     '2026-04-24',
-  modified:      '2026-04-24',
+  description:   "The rent number is the easy part. The five clauses that actually shape the next twelve months of your life are buried somewhere on pages eight through fourteen.",
+  deck:          "The rent number is the easy part. The five clauses that actually shape the next twelve months of your life are buried somewhere on pages eight through fourteen.",
 
   ledes: [
-    `You're looking at the lease. It's seven pages, mostly small type, with sections titled things like 'Covenants of Tenant' and 'Possession.' You know you should be reading it carefully, but carefully for what? Which paragraphs actually matter? Which ones are boilerplate? And which ones are the problem — the parts that will cost you, surprise you, or trap you later?`,
-    `A well-written lease specifies certain things clearly. When something important is vague, missing, or left 'to be determined,' the interpretation defaults to the landlord. The five categories below are what to verify before you put your name on anything.`,
+    `You looked at the apartment, you liked the apartment, you got approved for the apartment. Now there's a lease in front of you and the only number you've really focused on is the monthly rent. That number's probably fine. The question is what's in the rest of the document — because the rent is the line you negotiated, and everything else is the line they wrote.`,
+    `Most lease problems don't come from the rent figure. They come from clauses that didn't seem important at signing — fees, rules, restrictions, responsibilities — and that turned out to be very important nine months in. Here are the five sections that actually determine what your year is going to feel like.`,
   ],
 
   steps: [
     {
-      name: "The money: rent, due date, grace period, late fees",
-      body: "Exact rent amount. Day of the month it's due. Grace period before late fees kick in (three to five days is standard). Late fee amount, and whether it's a flat fee or a percentage of the rent. Accepted payment methods. If any of these are vague — 'late fees at landlord's discretion' — flag it. 'At landlord's discretion' is legalese for 'however much I feel like charging.'",
+      name: "What's actually included in the rent — and what isn't",
+      body: "Rent is rarely just rent. Look for the full picture: which utilities are covered (water, trash, sewer, gas, electric), which are billed separately, and which are charged through the landlord with a markup. Check for parking fees, storage fees, 'amenity fees,' building maintenance fees, and anything labeled 'monthly.' A $1,800 rent with $200 in mandatory monthly add-ons is a $2,000 apartment. The number on the listing is rarely the number you'll write on the check.",
     },
     {
-      name: "The term: length, notice to leave, auto-renewal",
-      body: "How long the lease is (usually 12 months). Whether it converts to month-to-month at the end or automatically renews for another full term. How much notice you need to give if you don't want to renew — 30 days is minimum, 60 is common, 90 is worth pushing back on. What happens if you need to leave early, and whether there's a specified break fee. Auto-renewal clauses are where people get locked into another year they never meant to commit to.",
+      name: "The length, renewal, and end-of-term provisions",
+      body: "How long is the lease? Twelve months, eighteen, month-to-month after the initial term? What happens at the end — does it convert to month-to-month automatically, or do you have to sign a new one? How much notice do you have to give to leave? And critically: is there an automatic renewal clause that locks you in for another full term if you don't notify them in writing 60 or 90 days before the end? That last clause is where a lot of people accidentally sign themselves up for another year.",
     },
     {
-      name: "The deposit: amount, where it's held, how it's returned",
-      body: "How much. Who holds it (some states require a separate escrow account, with interest paid to the tenant). What can be deducted from it — 'damage beyond normal wear and tear' is the standard language, and the fight is always over what counts as normal. Timeline for return after move-out — most states require 14 to 30 days with an itemized list of deductions. The lease should state the timeline even if state law already does; if it doesn't, ask.",
+      name: "The security deposit: amount, holding terms, and return process",
+      body: "How much is it? Is it held in an interest-bearing account (required in many states)? What specifically can it be used for at move-out? What's the timeline for returning it after you leave — and what happens if the landlord misses that deadline? Some states impose penalties on landlords who hold deposits past the legal return window. Knowing those rules now is what lets you push back later if the deposit return turns into a dispute.",
     },
     {
-      name: "Access and use: pets, guests, subletting, working from home",
-      body: "Whether pets are allowed, what kinds, what the deposit or monthly fee is. Whether guests can stay, and how long before they count as an unauthorized occupant. Whether you can sublet or assign the lease. Whether you can run a business from the unit — increasingly relevant for remote workers. Quiet hours, parking, smoking, and other use rules. All of this should be explicit in the lease; none of it should be 'discuss with landlord.'",
+      name: "The rules for daily life: pets, guests, occupancy, modifications",
+      body: "These are the clauses you'll actually live with. Are pets allowed, what does the deposit look like, are there breed or weight restrictions? How long can a guest stay before they count as an unauthorized occupant? Can you paint, hang shelves, install a window AC? Are quiet hours specified? These don't sound serious until they're invoked. The lease that says 'no overnight guests for more than seven consecutive days' becomes a real problem if your partner starts staying over regularly.",
     },
     {
-      name: "Responsibility: utilities, maintenance, repairs, appliances",
-      body: "Which utilities the tenant pays, which the landlord pays. Who's responsible for yard care, snow removal, pest control. Who fixes the HVAC when it dies, and how quickly. Whether appliances are 'provided as-is' or maintained. Vague language here is expensive. When the furnace quits in January, you don't want to be arguing over who pays to replace it — you want to point at a line in the lease.",
+      name: "What's not in the lease that should be",
+      body: "The most consequential lease problems are sometimes about absence rather than presence. Is there no cap on rent increases at renewal? You may be looking at a 20% jump in twelve months. No specified maintenance response time? 'Reasonable' is a long time when your heater is broken in February. No mention of mold, lead paint, or required disclosures your state mandates? That itself is a flag. Read the lease for what's there. Then read it again for what should be there and isn't.",
     },
   ],
 
-  callout: {
-    afterStep: 2,
-    scriptedLine: "Before I sign, could you specify the break fee in writing? I'd rather know the number now than discover it later.",
-    explanation: "Most leases imply a break fee through liquidated-damages language without stating a specific number. Asking for one isn't aggressive — it's reasonable, and it protects both sides. A landlord unwilling to commit to a specific number on paper is telling you they want discretion later.",
-  },
-
   cta: {
     glyph:    '🏡',
-    headline: "A lease read by an expert — before you sign one",
-    body:     "Lease Trap Detector checks every essential clause for presence, specificity, and fairness. Paste your lease, get a plain-English summary with every flag worth your attention.",
+    headline: "See what your lease is really asking you to agree to",
+    body:     "Lease Trap Detector reads every clause, calculates the true monthly cost including all fees, flags missing protections, and shows you exactly which terms are unenforceable in your jurisdiction.",
     features: [
-      "Essential-clause checklist",
-      "Vague-language spotter",
-      "Fee and deposit audit",
-      "Break-clause detector",
-      "Questions worth asking",
+      "Full-fee monthly cost calculation",
+      "Missing protection detection",
+      "Renewal trap analysis",
+      "Daily-life clause summary",
+      "Jurisdiction-specific legal review",
     ],
     toolId:   'LeaseTrapDetector',
     toolName: 'Lease Trap Detector',
   },
+
+  published: '2026-04-27',
+  modified:  '2026-04-27',
 };

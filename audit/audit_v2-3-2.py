@@ -26,7 +26,7 @@ BANNED_COLORS = ['bg-blue', 'text-blue', 'border-blue', 'bg-purple', 'text-purpl
                  'bg-teal', 'text-teal', 'border-teal', 'bg-stone', 'text-stone', 'border-stone',
                  'bg-yellow', 'text-yellow', 'border-yellow',
                  'bg-rose', 'text-rose', 'border-rose', 'bg-pink', 'text-pink', 'border-pink']
-SKIP = {'crowd-wisdom','debate-me','usePersistentState','tools','ActionButtons','printBranding','BrandMark','GlobalHeader','ToolPageWrapper','server','index','rateLimiter','useTheme','useDocumentHead','useSurvivalMath','usePersistentState','imageCompression'}
+SKIP = {'usePersistentState','tools','ActionButtons','printBranding','BrandMark','GlobalHeader','ToolPageWrapper','server','index','rateLimiter','useTheme','useDocumentHead','useSurvivalMath','usePersistentState','imageCompression', 'ToolFinderWizard'}
 
 def get_c_block(content):
     c_start = content.find('const c = {')

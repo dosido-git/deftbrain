@@ -36,7 +36,8 @@ const QUESTIONS = [
       { label: 'Food & home',           emoji: '🍳' },
       { label: 'Wellbeing & clarity',   emoji: '🧘' },
       { label: 'Travel',                emoji: '✈️' },
-      { label: 'Something else',        emoji: '🎲' },
+      { label: "I'm bored",             emoji: '🥱' },
+      { label: 'Something else',        emoji: '❓' },
     ],
   },
   {
@@ -89,6 +90,57 @@ function HoverPill({ option, onPick }) {
       <span>{option.emoji}</span>
       {option.label}
     </button>
+  );
+}
+
+// ════════════════════════════════════════════════════════════
+// STEP INDICATOR — three dots + "Step X of 3" caption
+// ════════════════════════════════════════════════════════════
+function StepIndicator({ step }) {
+  return (
+    <div style={{
+      display: 'flex', alignItems: 'center', gap: 5,
+      marginBottom: 8,
+    }}>
+      {[1, 2, 3].map(n => (
+        <span key={n} style={{
+          width: 6, height: 6, borderRadius: '50%',
+          background: n <= step ? CLR.gold500 : CLR.sand300,
+          transition: 'background 0.15s',
+        }} />
+      ))}
+      <span style={{
+        fontSize: 10, fontWeight: 600,
+        color: CLR.warm500, marginLeft: 4,
+        letterSpacing: 0.3,
+      }}>
+        Step {step} of 3
+      </span>
+    </div>
+  );
+}
+
+// ════════════════════════════════════════════════════════════
+// ANSWER RECAP — shows prior answers as pills
+// ════════════════════════════════════════════════════════════
+function AnswerRecap({ answers }) {
+  if (!answers.length) return null;
+  return (
+    <div style={{
+      display: 'flex', gap: 6, flexWrap: 'wrap',
+      marginBottom: 9,
+    }}>
+      {answers.map((a, i) => (
+        <span key={i} style={{
+          fontSize: 11, fontWeight: 600,
+          background: CLR.gold100, color: CLR.warm700,
+          border: `1px solid ${CLR.gold300}`,
+          borderRadius: 6, padding: '3px 8px',
+        }}>
+          {a.emoji} {a.label}
+        </span>
+      ))}
+    </div>
   );
 }
 
@@ -194,10 +246,12 @@ export default function ToolFinderWizard() {
       )}
 
       {/* ══════════════════════════════════════════
-          STEPS 1–3 — QUESTIONS
+          STEPS 1–3 — QUESTIONS (with step indicator + recap)
       ══════════════════════════════════════════ */}
       {currentQ && (
         <div>
+          <StepIndicator step={step} />
+          <AnswerRecap answers={answers} />
           <p style={{ fontSize: 13, fontWeight: 600, color: CLR.warm800, marginBottom: 9 }}>
             {currentQ.question}
           </p>
