@@ -79,7 +79,7 @@ const TOOL_IDS = [
   'HobbyMatch','JargonAssassin','LaundroMat','LayoverMaximizer','LazyWorkoutAdapter',
   'LeaseTrapDetector','LedeBuilder','LeverageLogic','LuckSurface','MagicMouth','MarkupDetective',
   'MeetingBSDetector','MeetingHijackPreventer','MicroAdventureMapper','MiseEnPlace',
-'MoneyDiplomat','MoneyMoves','NameAudit','NerveCheck','NameStorm','NameThatFeeling','NoiseCanceler',
+'MoneyDiplomat','NameAudit','NerveCheck','NameStorm','NameThatFeeling','NoiseCanceler',
   'OnePercenter','PartyArchitect','PetWeirdnessDecoder','PlainTalk',
   'PlantRescue','PlotHole','PlotTwist','PreMortem','ProcedureProbe','Recall',
 'RecipeChaosSolver','RechargeRadar','RentersDepositSaver','ResearchDecoder','RoastMe','RoomReader','RoommateCourt',
@@ -119,6 +119,8 @@ const LEGACY_REDIRECTS = {
   '/WhereDidItGo':               '/WhereDidTheTimeGo',
   '/PaperDigest':               '/ResearchDecoder',
   '/DopamineMenuBuilder':               '/PEP',
+  '/MoneyMoves':                 '/MoneyDiplomat',
+
 };
 Object.entries(LEGACY_REDIRECTS).forEach(([from, to]) => {
   app.get(from, (req, res) => res.redirect(301, to));

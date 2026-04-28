@@ -3927,7 +3927,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
       "Making a partial payment on old debt can restart the statute of limitations — the tool warns about this"
     ]
   },
-  crossRefs: ['MoneyMoves', 'CrisisPrioritizer'],
+  crossRefs: ['MoneyDiplomat', 'CrisisPrioritizer'],
 },
 
 {
@@ -4710,39 +4710,6 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
       ]
     }
 },
-{
-  modified: "",
-  id: 'MoneyMoves',
-  title: 'Money Moves',
-  tagline: "What to do and what to say when money gets complicated.",
-  tags: ['money', 'social', 'bills', 'finances', 'awkward', 'salary', 'budget'],
-  icon: '💸',
-  categories: ['Loot', 'Humans'],
-  headerColor: "#c0d8b8",
-  description: 'Handles social money awkwardness — split bills, can\'t-afford invitations, salary questions, bill triage, and money talks with partners or family.',
-  guide: {
-    overview: "Money Moves is your advisor for the money situations nobody teaches you how to handle. When someone asks what you make, when you can't afford the group trip, when a friend owes you money and it's getting weird — Money Moves gives you the exact words and the strategy. Covers 6 core situations: social affordability, bill splits, salary questions, money talks with partners, asking for money back, and emergency bill triage. No judgment, just practical guidance.",
-    howToUse: [
-      "Pick the situation type that matches what you're dealing with",
-      "Fill in the specifics — who's involved, what the amount is, your relationship to them",
-      "Optionally add context about your comfort level or what you've already tried",
-      "Get a tailored script, strategy, and fallback options",
-      "Copy the script directly or adapt it to your voice"
-    ],
-    example: {
-      scenario: "Your friend group is planning a destination bachelorette weekend that costs $800. You genuinely can't afford it but you don't want to lie or make it awkward.",
-      action: "Select 'Can't afford the invite', enter the situation details and your relationship to the group.",
-      result: "You get a warm, honest opt-out script that doesn't over-explain or apologize, a counter-offer for a local celebration you can actually attend, and a note on timing — when to send it so it doesn't derail planning."
-    },
-    tips: [
-      "The salary question situation is one of the most searched — use it before interviews, not just after someone asks",
-      "For partner money talks, add as much context as you can — the more it knows about the dynamic, the more useful the script",
-      "Bill triage mode works best when you list everything you owe — prioritization only works with the full picture",
-      "If the first script feels too formal or too casual, say so — describe your voice and it adjusts"
-    ]
-  }
-},
-
 {
   modified: "",
   id: 'NerveCheck',
