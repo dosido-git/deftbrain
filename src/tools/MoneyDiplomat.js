@@ -27,7 +27,7 @@ const SITUATIONS = [
   { id: 'cultural', icon: '🌐', label: 'Culture Bridge', desc: 'Cross-cultural money' },
 ];
 
-// ── Sub-components (module scope — must NOT be inside MoneyMoves to preserve focus) ──
+// ── Sub-components (module scope — must NOT be inside MoneyDiplomat to preserve focus) ──
 function Badge({ children, type = 'info', c }) {
   const style = c[type] || c.infoBox;
   return <span className={`text-[9px] px-2 py-0.5 rounded-full font-bold border ${style}`}>{children}</span>;
@@ -895,9 +895,6 @@ const MoneyDiplomat = ({ tool }) => {
                 <Btn c={c} loading={loading} toolIcon={tool?.icon} onClick={handleSubmit} disabled={loading || (!situation.trim() && !['travel', 'gift', 'cultural'].includes(activeType))} icon="💸" label="Get Advice" />
                 {activeType && <button onClick={() => { setActiveType(null); setSituation(''); setError(''); }} className={`text-xs ${c.textMuteded} underline`}>Back</button>}
               </div>
-              <p className={`text-xs text-center ${c.textMuted} mt-1`}>
-                Need a full plan? <a href="/MoneyMoves" className={`text-xs ${linkStyle}`}>💸 Money Moves</a> covers the whole situation.
-              </p>
             </div>
           )}
         </div>
@@ -1570,7 +1567,6 @@ const MoneyDiplomat = ({ tool }) => {
           <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
             <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 Related tools</p>
             <div className="flex flex-wrap gap-3">
-              <a href="/MoneyMoves" className={`text-xs ${linkStyle}`}>💸 Money Moves</a>
               <a href="/VelvetHammer" className={`text-xs ${linkStyle}`}>🔨 Velvet Hammer</a>
             </div>
           </div>

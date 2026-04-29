@@ -16,16 +16,16 @@ This document is the entry point. Before any audit, know which file owns which q
 |---|---|---|
 | `COMPLIANCE_PROMPT.md` (this file) | **Entry point** — workflow, edit strategy, version discipline | Start of every session |
 | `CONVENTIONS.md` | **Rules** — patterns, c block, hook order, color map | Before writing any tool; whenever a pattern is unclear |
-| `tool-audit-checklist-v4_38.md` | **Checks** — Sections 0–8, including Section 7 backend audit | During every tool audit, after running the script |
+| `tool- audit-checklist-v4_39.md` | **Checks** — Sections 0–8, including Section 7 backend audit | During every tool audit, after running the script |
 | `cross-reference-map.md` | **Runtime data** — which tools should link to which | When auditing PF-9 / S5.5 cross-refs |
 | `audit-backlog.md` | **Campaign state** — deferred per-tool items, catalog-wide items, audit script patches | Step 0 of every audit (per "Before Beginning the Audit" below) |
 | `campaigns/*.md` (e.g. `BUG_SWEEP_HANDOFF.md`) | **Campaign state** — episodic bug-class sweeps and tool-spanning hunts | When resuming or starting a cross-tool campaign |
 | `audit_v2-3-2.py` | **Structural automation** | Run on every tool before manual sweep |
 | `ux-smoke-playbook.md` + `ux-smoke.py` | **Behavioral automation** — different cognitive mode, post-structural | After all structural audits complete; not during per-tool work |
 
-**Critical pairing:** `audit_v2-3-2.py` (structural script) → `tool-audit-checklist-v4_38.md` (manual sweep) → `audit-backlog.md` (deferred items log). Skipping any of the three is the most common audit failure mode.
+**Critical pairing:** `audit_v2-3-2.py` (structural script) → `tool- audit-checklist-v4_39.md` (manual sweep) → `audit-backlog.md` (deferred items log). Skipping any of the three is the most common audit failure mode.
 
-**Section 7 was previously a separate file** (`backend-audit-section7.md`). It is now folded into `tool-audit-checklist-v4_38.md`. Backend route audits are not optional — they run in the same pass as the frontend audit.
+**Section 7 was previously a separate file** (`backend-audit-section7.md`). It is now folded into `tool- audit-checklist-v4_39.md`. Backend route audits are not optional — they run in the same pass as the frontend audit.
 
 **Color map was previously a separate file** (`CATEGORY-COLOR-MAP-2.md`). It is now folded into `CONVENTIONS.md` as the "Category Color Map" section. Reference values for `headerColor` and panel tints live there.
 
@@ -145,7 +145,7 @@ Standards documents carry a header of the form `<!-- vX.Y · DATE · TAG -->`. A
 - `COMPLIANCE_PROMPT.md` (this file)
 - `CONVENTIONS.md` (now includes the former `CATEGORY-COLOR-MAP-2.md`)
 - `audit-backlog.md`
-- `tool-audit-checklist-v4_38.md` (now includes the former `backend-audit-section7.md` as Section 7)
+- `tool- audit-checklist-v4_39.md` (now includes the former `backend-audit-section7.md` as Section 7)
 - `cross-reference-map.md`
 - `audit_v2-3-2.py`
 - `campaigns/*.md` (currently includes `BUG_SWEEP_HANDOFF.md`)

@@ -66,7 +66,7 @@ function saveStore(key, items, max) {
 }
 
 const CROSS_REFS = [
-  { id: 'MoneyMoves', icon: '💰', label: 'Practice money conversations' },
+  { id: 'MoneyDiplomat', icon: '💰', label: 'Practice money conversations' },
   { id: 'CrisisPrioritizer', icon: '🚨', label: 'Prioritize when everything feels urgent' },
 ];
 
@@ -2089,7 +2089,7 @@ const BillRescue = ({ tool }) => {
         <div className={`rounded-xl p-4 border ${c.border} ${c.card}`}>
           <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-2`}>🔗 Related Tools</p>
           <div className={`space-y-1.5 text-xs ${c.textSecondary}`}>
-            <p>Want to practice this call before you dial? <a href="/MoneyMoves" className={linkStyle}>💸 Money Moves</a> coaches you through tough money conversations.</p>
+            <p>Want to practice this call before you dial? <a href="/MoneyDiplomat" className={linkStyle}>💸 Money Moves</a> coaches you through tough money conversations.</p>
             <p>Overwhelmed by multiple money stressors at once? <a href="/CrisisPrioritizer" className={linkStyle}>🚨 Crisis Prioritizer</a> helps you decide what to tackle first.</p>
           </div>
         </div>

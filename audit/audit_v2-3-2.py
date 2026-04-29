@@ -1,5 +1,17 @@
+# v1.6 · 2026-04-27 · added PF-14 (hook ordering), PF-17 (Try Example), TOOLS
+#                     (registration check), PF-13 (disabled:opacity-40, strict),
+#                     CONV slider check, and S1.1k (dead c-block keys).
+#                     ESLint now default-on (opt-out via AUDIT_SKIP_ESLINT=1)
+#                     instead of opt-in. Tightened PF-16 and S5.5 regexes to
+#                     require whitespace-only between 'results' and '&&'
+#                     (was matching property accesses).
+# v1.5 · 2026-04-27 · added PF-18 hygiene checks (unused imports, dead constants,
+#                     broken <a>) and optional ESLint integration. Closes the gap
+#                     between "audit passes" and "lint-clean" — a passing audit now
+#                     means the file is genuinely clean.
 # v1.4 · 2026-04-24 · removed vestigial S1.4 ActionButtons-import check; the ActionBarContext check already covers what tools actually need
 # Usage: python3 audit_v2-3-2.py path/to/Component.js
+#        AUDIT_SKIP_ESLINT=1 python3 audit_v2-3-2.py path/to/Component.js  (skip ESLint pass)
 # tools.js path resolution order:
 #   1. $TOOLS_JS environment variable (if set)
 #   2. ../src/data/tools.js (relative to this script — assumes /audit/ is at repo root)
@@ -266,6 +278,22 @@ for name, fpath in tools:
     for k in sorted(undefined_keys):
         fails.append(f'S1.1i: c.{k} used but not defined in c block (silent undefined className)')
 
+    # S1.1k: defined-but-unused c keys (dead-key cleanup after refactors).
+    # Complement to S1.1i. Whitelist exempts keys mandated by convention even
+    # when a specific tool doesn't reference them: REQUIRED_KEYS (baseline),
+    # 'required' (PF-15), and the PF-2 alias scaffolding ('textMuteded', 'label',
+    # 'labelText'). Computing c_used by stripping the c-block declarations means
+    # a literal key whose only "reference" is its own definition isn't counted as
+    # used — so dead literal keys get caught the same as dead aliases.
+    _CONVENTION_KEYS = set(REQUIRED_KEYS) | {'required', 'textMuteded', 'label', 'labelText'}
+    # Recompute c_used from content with c_block declarations stripped
+    # (so a literal key isn't "used" merely by existing in the c block).
+    _content_no_cblock = content.replace(c_block, '') if c_block else content
+    _c_used_external = set(re.findall(r'(?<=c\.)([a-zA-Z][a-zA-Z0-9]*)\b', _content_no_cblock))
+    unused_keys = (c_defined - _c_used_external) - _CONVENTION_KEYS
+    for k in sorted(unused_keys):
+        fails.append(f'S1.1k: c.{k} defined but never used in JSX (dead key — remove from c block)')
+
     # S1.1j: raw Tailwind in lookup-object color props (BrainRoulette pattern)
     # Catches both `color: 'text-...'` (direct string) and `color: (d) => d ? 'bg-...' : ...` (fn).
     # We look for `color:` followed within 200 chars by a Tailwind class prefix inside quotes.
@@ -410,7 +438,7 @@ for name, fpath in tools:
         fails.append(f'PF-16: {reset_count} reset buttons detected — must be exactly 1 (header top-right only)')
     # PF-16: reset button must NOT appear inside a {results && ( block.
     # Strategy: find the first {results && ( split, then check handleReset appears only BEFORE it.
-    _results_split = re.search(r'\{\s*(?<![!])results\b[^=\n]{0,40}&&\s*[(<]', content)
+    _results_split = re.search(r'\{\s*(?<![!])results\s*&&\s*[(<]', content)
     if _results_split and 'handleReset' in content:
         reset_pos = content.find('handleReset', _results_split.end())  # search AFTER the split
         if reset_pos != -1:
@@ -558,7 +586,7 @@ for name, fpath in tools:
 
     # Pattern A: inline {results && ( or {result && ( inside the JSX return
     _inline_jsx = re.search(
-        r'\{?\s*(?:\(\s*)?(?<![!])(?:results|result)\b[^=\n]{0,40}&&\s*[(<]',
+        r'\{?\s*(?:\(\s*)?(?<![!])(?:results|result)\s*&&\s*[(<]',
         content[_jsx_start:]
     )
 
@@ -690,6 +718,211 @@ for name, fpath in tools:
         if 'c.required' not in _label_text:
             _abs_line = content[:c_end_pos + _label_start].count('\n') + 1
             fails.append(f'PF-15: required field "{_path}" — label at line {_abs_line} missing <span className={{c.required}}>*</span>')
+
+    # ── PF-18: Hygiene checks (catch what ESLint catches, without needing ESLint) ──
+    # Goal: a "passing audit" means the file is also lint-clean. These checks find
+    # dead imports, unused constants, and patterns that linger after refactors —
+    # the long tail of "Compiled with warnings" noise. They overlap with ESLint
+    # warnings but run without ESLint being available, so they always work in
+    # the Claude environment.
+
+    # PF-18a: ActionButton imports declared but never used in JSX.
+    # The single largest source of warning noise: tools converted to
+    # useRegisterActions kept their `CopyBtn` (and friends) imports.
+    _action_import_m = re.search(
+        r"import\s*\{\s*([^}]+?)\s*\}\s*from\s*['\"][^'\"]*ActionButtons['\"]",
+        content
+    )
+    if _action_import_m:
+        imported = {n.strip() for n in _action_import_m.group(1).split(',') if n.strip()}
+        body_after = content[_action_import_m.end():]
+        for imp in imported & {'CopyBtn', 'PrintBtn', 'ShareBtn', 'ActionBar'}:
+            # Used as JSX tag (<CopyBtn) or as function reference
+            if not re.search(rf'<{imp}\b|\b{imp}\s*\(', body_after):
+                fails.append(f'PF-18a: "{imp}" imported from ActionButtons but never used — remove from import')
+
+    # PF-18b: BRAND defined or imported but never appended.
+    # PF-12 says BRAND must be appended in builder functions. This catches the
+    # converse: BRAND is declared but no builder ever uses it (silent PF-12 gap).
+    _has_brand_decl = bool(
+        re.search(r'\bconst\s+BRAND\s*=', content) or
+        re.search(r'import[^;]*\bBRAND\b', content)
+    )
+    if _has_brand_decl:
+        # Strip declaration/import lines (allow leading whitespace); check body for any BRAND ref
+        _body = re.sub(r'^\s*const\s+BRAND\s*=.*$', '', content, flags=re.MULTILINE)
+        _body = re.sub(r'^\s*import[^;]*\bBRAND\b[^;]*;?\s*$', '', _body, flags=re.MULTILINE)
+        if not re.search(r'\bBRAND\b', _body):
+            fails.append('PF-18b: BRAND defined but never appended — must be used in buildFullText (PF-12)')
+
+    # PF-18c: CROSS_REFS defined but never rendered.
+    # Architectural decay signal: cross-refs were declared but the JSX rendering
+    # was removed (or never wired up). Either remove the constant or render it.
+    _cross_refs_m = re.search(r'\bconst\s+CROSS_REFS\s*=', content)
+    if _cross_refs_m:
+        # Look for actual usage (not the declaration itself)
+        _body_after_decl = content[_cross_refs_m.end():]
+        if not re.search(r'\bCROSS_REFS\b', _body_after_decl):
+            fails.append('PF-18c: CROSS_REFS defined but never rendered — render it (PF-9) or remove the constant')
+
+    # PF-18d: React hook imports present but never called.
+    # `import { useMemo, useCallback } from 'react'` where useMemo is never invoked.
+    _react_import_m = re.search(
+        r"import\s+(?:React,?\s*)?\{\s*([^}]+?)\s*\}\s*from\s*['\"]react['\"]",
+        content
+    )
+    if _react_import_m:
+        _react_imports = {n.strip() for n in _react_import_m.group(1).split(',') if n.strip()}
+        _body_after = content[_react_import_m.end():]
+        _hook_names = {'useState', 'useEffect', 'useCallback', 'useMemo', 'useRef',
+                       'useContext', 'useReducer', 'useLayoutEffect', 'useImperativeHandle'}
+        for hook in _react_imports & _hook_names:
+            if not re.search(rf'\b{hook}\s*\(', _body_after):
+                fails.append(f'PF-18d: React hook "{hook}" imported but never called — remove from import')
+
+    # PF-18e: Anchor tags with empty or fragment-only href (a11y violation).
+    # `<a href="">` and `<a href="#">` fail screen readers and keyboard nav.
+    # Should be `<button>` styled to look like a link.
+    for _m in re.finditer(r'<a\s+[^>]*?href=(["\'])(#?)\1', content):
+        _line_n = content[:_m.start()].count('\n') + 1
+        fails.append(f'PF-18e: <a> with empty/placeholder href at line {_line_n} — use <button> styled as link (a11y)')
+        break  # one report is enough; user fixes all instances
+
+    # PF-18f: linkStyle defined but never used in JSX.
+    # Symptom of cross-refs being removed without cleaning up their styling helper.
+    if re.search(r'\bconst\s+linkStyle\s*=', content):
+        # Strip the declaration line (allow leading whitespace), check body for usage
+        _body = re.sub(r'^\s*const\s+linkStyle\s*=.*$', '', content, flags=re.MULTILINE)
+        if not re.search(r'\blinkStyle\b', _body):
+            fails.append('PF-18f: linkStyle defined but never used — remove the const or wire it into cross-refs')
+
+    # ── PF-14: Hook ordering (canonical sequence enforced) ─────────────────────
+    # Required order: useTheme → c block → linkStyle → useState → usePersistentState
+    # → useRegisterActions (after buildFullText). Out-of-order placement causes
+    # silent TDZ bugs (c referenced before declaration, etc.).
+    def _first_line(pattern, source=content, flags=0):
+        m = re.search(pattern, source, flags)
+        return source[:m.start()].count('\n') + 1 if m else None
+
+    _ln_useTheme    = _first_line(r'\buseTheme\s*\(')
+    _ln_c_block     = _first_line(r'\bconst\s+c\s*=\s*\{')
+    _ln_linkStyle   = _first_line(r'\bconst\s+linkStyle\s*=')
+    _ln_useState    = _first_line(r'\buseState\s*\(')
+    _ln_persistent  = _first_line(r'\busePersistentState\s*\(')
+    _ln_buildFull   = _first_line(r'\bconst\s+build\w*Text\s*=\s*useCallback\b')
+    _ln_register    = _first_line(r'\buseRegisterActions\s*\(')
+
+    # Each invariant: (name, line_a, line_b, message) — flag if line_a > line_b
+    _PF14_INVARIANTS = [
+        ('useTheme before c block',          _ln_useTheme,   _ln_c_block,    'useTheme must be called before const c = {...}'),
+        ('c block before useState',          _ln_c_block,    _ln_useState,   'const c = {...} must be defined before first useState (TDZ risk)'),
+        ('linkStyle before useState',        _ln_linkStyle,  _ln_useState,   'const linkStyle must be defined before first useState'),
+        ('useState before usePersistentState', _ln_useState, _ln_persistent, 'all useState calls must come before any usePersistentState call (PF-11)'),
+        ('buildFullText before useRegisterActions', _ln_buildFull, _ln_register, 'buildFullText (useCallback) must be defined before useRegisterActions'),
+    ]
+    for _label, _a, _b, _msg in _PF14_INVARIANTS:
+        if _a is not None and _b is not None and _a > _b:
+            fails.append(f'PF-14: {_msg} (found at lines {_a} → {_b})')
+
+    # ── PF-17: Try Example required on multi-field tools ───────────────────────
+    # If a tool has 2+ user input fields (textarea/text-input/select), it must
+    # offer a "Try Example" button to demo functionality with sample data.
+    _input_count = (
+        len(re.findall(r'<textarea\b', content)) +
+        len(re.findall(r"<input\s+[^>]*type=['\"](?:text|number|email|tel|url|search)['\"]", content)) +
+        len(re.findall(r'<select\b', content))
+    )
+    if _input_count >= 2:
+        # Strip JS comments so "Try Example" in a comment doesn't satisfy the check
+        _no_comments = re.sub(r'//[^\n]*|/\*[\s\S]*?\*/', '', content)
+        _has_example = bool(re.search(
+            r"[Tt]ry\s+(?:an?\s+)?[Ee]xample"
+            r"|[Ll]oad\s+[Ee]xample"
+            r"|[Ss]ee\s+[Ee]xample"
+            r"|fillExample|loadExample|setExample|useExample|tryExample"
+            r"|[Ss]how\s+[Ee]xample",
+            _no_comments
+        ))
+        if not _has_example:
+            fails.append(f'PF-17: multi-field tool ({_input_count} inputs) missing Try Example button — required to demo functionality')
+
+    # ── TOOLS: tool must have an entry in tools.js ─────────────────────────────
+    # Caught early: a tool component without a tools.js registration is unreachable.
+    # Skipped if tools.js wasn't found at audit time (offline / wrong path).
+    if VALID_TOOL_IDS and name not in VALID_TOOL_IDS:
+        fails.append(f'TOOLS: "{name}" not found in tools.js — file is unreachable; add a registration entry')
+
+    # ── PF-13: loading-disabled buttons must use disabled:opacity-40 ───────────
+    # Strict: only `disabled:opacity-40` is accepted. The ternary pattern
+    # (e.g. `${loading ? c.btnDis : c.btnPrimary}`) is rejected to keep disabled
+    # feedback visually consistent across tools. CONVENTIONS.md is the source
+    # of truth on this — one pattern only.
+    # Brace-aware walker: JSX attrs commonly contain `=>`, so `[^>]` regexes
+    # break on arrow functions. Track brace depth to find the real closing `>`.
+    for _btn_m in re.finditer(r'<button\b', content):
+        _depth = 0
+        _btn_end = None
+        for _i in range(_btn_m.end(), min(len(content), _btn_m.end() + 2000)):
+            _ch = content[_i]
+            if _ch == '{': _depth += 1
+            elif _ch == '}': _depth -= 1
+            elif _ch == '>' and _depth == 0:
+                _btn_end = _i
+                break
+        if _btn_end is None:
+            continue
+        _btn_open = content[_btn_m.start():_btn_end]
+        # Only check buttons that disable on loading (skip others — not subject to PF-13)
+        if not re.search(r'disabled=\{[^}]*[Ll]oading[^}]*\}', _btn_open):
+            continue
+        # Extract className value (supports template literals via backticks)
+        _cn_m = re.search(r"className=\{?[`\"']([^`\"']+)", _btn_open)
+        if not _cn_m:
+            continue
+        if 'disabled:opacity-40' not in _cn_m.group(1):
+            _line_n = content[:_btn_m.start()].count('\n') + 1
+            fails.append(f'PF-13: button at line {_line_n} disables on loading but className missing "disabled:opacity-40"')
+            break
+
+    # ── CONV: appearance-none on range inputs (slider track regression) ────────
+    # Strips browser track rendering; we use accent-cyan-600 instead. See
+    # CONVENTIONS.md "appearance-none on sliders" entry.
+    # Window-based check: scan the line containing type="range" plus the next
+    # 4 lines (sliders' className often lives on a continuation line in JSX).
+    _lines_arr = content.split('\n')
+    for _i, _line in enumerate(_lines_arr):
+        if 'type="range"' in _line or "type='range'" in _line:
+            _window = '\n'.join(_lines_arr[max(0, _i - 1):_i + 5])
+            if 'appearance-none' in _window:
+                fails.append(f'CONV: <input type="range"> at line {_i + 1} uses appearance-none — strip it (kills track rendering); keep accent-cyan-600')
+                break
+
+    # ── LINT: ESLint integration (default-on; opt-out via AUDIT_SKIP_ESLINT=1) ──
+    # Runs ESLint on the file and surfaces every warning as an audit failure.
+    # Catches everything the regex checks miss (hooks-deps, accessibility,
+    # useless escapes, unused locals beyond PF-18 set, etc).
+    # Silently skipped when ESLint isn't available (e.g. Claude environment).
+    if not os.environ.get('AUDIT_SKIP_ESLINT'):
+        import subprocess as _sp, json as _json
+        try:
+            _r = _sp.run(
+                ['npx', '--no-install', 'eslint', '--format', 'json', fpath],
+                capture_output=True, text=True, timeout=45
+            )
+            # ESLint exit codes: 0 (clean), 1 (has issues), 2 (config error)
+            if _r.returncode in (0, 1) and _r.stdout.strip():
+                try:
+                    _data = _json.loads(_r.stdout)
+                    if _data and _data[0].get('messages'):
+                        for _msg in _data[0]['messages']:
+                            _rule = _msg.get('ruleId') or 'unknown'
+                            _ln = _msg.get('line', 0)
+                            _txt = _msg.get('message', '').strip()
+                            fails.append(f'LINT [{_rule}]: line {_ln} — {_txt}')
+                except _json.JSONDecodeError:
+                    pass  # malformed output — silently skip
+        except (_sp.TimeoutExpired, FileNotFoundError, OSError):
+            pass  # eslint not available — silently skip
 
     # Known bugs
     if re.search(r'\$\{\}', content):

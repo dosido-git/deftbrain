@@ -90,7 +90,7 @@ const TOOL_OG_SLUGS = {
   LaundroMat: 'laundro-mat', DopamineMenuBuilder: 'dopamine-menu-builder', BatchFlow: 'batch-flow',
   PlainTalk: 'plain-talk', BrainRoulette: 'brain-roulette',
   WardrobeChaosHelper: 'wardrobe-chaos-helper', PlantRescue: 'plant-rescue',
-  SpiralStopper: 'spiral-stopper', MoneyMoves: 'money-moves', NerveCheck: 'nerve-check',
+  SpiralStopper: 'spiral-stopper', NerveCheck: 'nerve-check',
   RechargeRadar: 'recharge-radar', SubscriptionGuiltTrip: 'subscription-guilt-trip', LedeBuilder: 'lede-builder',
 
 };

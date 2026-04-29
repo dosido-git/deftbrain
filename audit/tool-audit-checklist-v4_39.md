@@ -1,7 +1,8 @@
-<!-- v1.1 · 2026-04-24 · v4.38: backend-audit-section7.md folded in as Section 7; testing methodology renumbered to Section 8 -->
-# Tool Audit Checklist v4.38
+<!-- v1.2 · 2026-04-27 · v4.39: PF-13 strictened (no ternary), PF-14 hook ordering audit-enforced, PF-17 Try Example audit-enforced, PF-18 hygiene checks added, TOOLS registration check added, CONV slider appearance-none check added, S1.1k dead-c-key check added, ESLint integration default-on. -->
+# Tool Audit Checklist v4.39
 ### DeftBrain — Pre-Ship Quality & Consistency Standard
 
+> **v4.39 (Session 103):** Audit script now enforces what was previously only convention. Seven new automated checks added: PF-13 (strictened — `disabled:opacity-40` only, ternary pattern no longer accepted), PF-14 (hook ordering), PF-17 (Try Example presence), PF-18a–f (hygiene: unused imports, dead constants, broken anchors), TOOLS (tools.js registration), CONV (slider appearance-none), and S1.1k (defined-but-unused c keys). ESLint integration flipped from opt-in to default-on. PF-16 and S5.5 regex bug fixed (was matching property accesses like `{results.foo && <p>}` as the main results split). See addenda at end of document.
 > **v4.38 (Session 102):** Folded the former `backend-audit-section7.md` into this file as the new Section 7 (Backend Route Audit). The previous Section 7 (Testing Methodology) becomes Section 8. No content changes to either section.
 > **v4.37 (Session 101):** Removed `label` from banned c-key list — it is a required alias per CONVENTIONS.md PF-2. See §1.1 for clarification note.
 > **v4.36:** Added PF-16 reset button placement rule.
@@ -2003,3 +2004,325 @@ grep -n "handleReset" ComponentName.js
 ---
 
 *Rule PF-16 added Session 100, April 2026. Originated from ConflictCoach audit observation — "New" button was in the submit row and only appeared conditionally inside results, making it inconsistently placed and hard to find.*
+
+---
+
+# v4.39 ADDENDA — Audit Coverage Expansion (Session 103)
+
+These rules existed in CONVENTIONS.md but were not previously enforced by the audit script. As of v4.39 of this checklist (audit script v1.6), they are mechanically checked. A passing audit now means the file is genuinely clean — not just structurally compliant against a partial check set.
+
+The full diff: seven new automated checks plus a default-on ESLint pass. Operationally, **a clean audit run is now sufficient evidence to ship the file** in terms of structure, hygiene, and lint correctness. (Behavioral correctness — does the tool do what it claims — still requires a live test per Section 8.)
+
+---
+
+## RULE PF-13 (strictened) — Disabled Buttons Use `disabled:opacity-40`
+
+Every `<button>` whose `disabled` expression includes `loading` (or `Loading`) must have `disabled:opacity-40` in its className. The Tailwind `disabled:opacity-40` modifier provides visible feedback when the button cannot be activated.
+
+**Strict reading.** No alternative patterns are accepted. Specifically: ternary patterns like `${loading ? c.btnDis : c.btnPrimary}` are rejected even though they produce a similar visual effect — they fragment disabled-state behavior across the codebase and force users to learn two distinct visual languages for the same UX state. CONVENTIONS.md is the source of truth; one pattern only.
+
+### Scope
+
+Applies to **every button that disables on loading state**, not only the primary submit. Secondary action buttons (regenerate, swap, retry, etc.) that share the loading state must show the same disabled feedback.
+
+### Required pattern
+
+```jsx
+<button
+  onClick={handleSubmit}
+  disabled={loading || !canSubmit}
+  className={`disabled:opacity-40 ${c.btnPrimary} px-4 py-2 rounded`}
+>
+  Submit
+</button>
+```
+
+### Common violations to fix during audit
+
+| Violation | Fix |
+|-----------|-----|
+| Loading-disabled button has no opacity treatment | Add `disabled:opacity-40` to className |
+| Button uses ternary `${loading ? c.btnDis : c.btnPrimary}` | Replace with `disabled:opacity-40 ${c.btnPrimary}`; remove `c.btnDis` from c block if no longer used (see S1.1k) |
+| Submit has it, but secondary action buttons don't | Add to all loading-disabled buttons |
+
+### Audit script behavior
+
+`audit_v2-3-2.py` walks every `<button>` opening tag (with brace-depth tracking to handle JSX arrow functions inside attributes), checks if its `disabled=` expression contains `loading`, and if so requires `disabled:opacity-40` in the className. Reports `PF-13: button at line N disables on loading but className missing "disabled:opacity-40"`.
+
+---
+
+## RULE PF-14 — Hook Ordering Enforced
+
+Hooks must appear in the canonical order documented in CONVENTIONS.md PF-14. Out-of-order placement causes silent TDZ (temporal dead zone) bugs — values referenced before declaration return `undefined` or throw at runtime.
+
+### Canonical order
+
+```
+1. useClaudeAPI
+2. useTheme         → unlocks isDark
+3. const c = {…}    → uses isDark, must come AFTER useTheme
+4. const linkStyle  → uses isDark
+5. useState         → all useState calls grouped
+6. useRef
+7. usePersistentState  → MUST come after all useState (PF-11)
+8. handlers (useCallback)
+9. buildFullText (useCallback)
+10. useRegisterActions  → MUST come after buildFullText
+11. scroll useEffect (with clearTimeout cleanup)
+12. keyboard useEffect (Cmd/Ctrl+Enter)
+13. other useEffects
+```
+
+### Audit script behavior
+
+The audit checks five primary invariants (line A must come before line B):
+
+| Invariant | What it catches |
+|-----------|-----------------|
+| `useTheme` before `const c = {` | TDZ on `isDark` inside c block |
+| `const c = {` before first `useState` | c-block keys referenced before defined |
+| `linkStyle` before first `useState` | `linkStyle` referenced before defined |
+| First `useState` before first `usePersistentState` (PF-11) | State-ordering rule documented in CONVENTIONS.md |
+| `buildFullText` (useCallback) before `useRegisterActions` | Stale buildFullText reference at registration time |
+
+Each violation reports as `PF-14: <description> (found at lines A → B)`. Invariants only fire when both endpoints are present in the file — tools that legitimately don't have, e.g., `usePersistentState`, are not flagged.
+
+### Why these specific invariants
+
+These five capture every documented TDZ failure mode that has actually shipped. Other ordering rules (handlers before buildFullText, scroll effect before keyboard effect) are stylistic — they don't cause runtime bugs and are left to manual review.
+
+### Common violations to fix during audit
+
+| Violation | Fix |
+|-----------|-----|
+| `useState` calls precede `useTheme` / c block | Move them after the c block |
+| `usePersistentState` interleaved with `useState` | Group all `useState` first, then all `usePersistentState` |
+| `useRegisterActions` defined before `buildFullText` | Move registration after the build function |
+
+---
+
+## RULE PF-17 — Try Example Required on Multi-Field Tools
+
+Tools with two or more input fields (`<textarea>`, text-type `<input>`, or `<select>`) must offer a "Try Example" button that loads sample data into the form. The point is to lower the cost of trying the tool — a user staring at a multi-field form should always have a one-click way to see what the tool produces.
+
+### What counts as "multi-field"
+
+The audit counts:
+- `<textarea>` elements
+- `<input type="text|number|email|tel|url|search">` elements
+- `<select>` elements
+
+Pill buttons, checkboxes, and radio toggles **don't count** — they're typically pre-defaulted (no example needed) and they don't impose the "blank slate" cost on the user.
+
+### Accepted button labels and patterns
+
+Audit matches any of:
+
+- "Try Example" / "Try an Example" (case-insensitive)
+- "Load Example" / "See Example" / "Show Example"
+- Function names: `tryExample`, `loadExample`, `setExample`, `useExample`, `fillExample`
+
+The text must appear **outside JS comments** — comments are stripped before the check runs (was a v4.39 bug fix; previously a `/* Try Example */` comment satisfied the check).
+
+### Common violations to fix during audit
+
+| Violation | Fix |
+|-----------|-----|
+| Multi-field tool with no Try Example button | Add a button labeled "Try Example" that fills all required fields with sample data |
+| Button exists but only fills one field | Fill every required field — the goal is "form is now ready to submit" |
+| Sample data is too generic ("Lorem ipsum") | Use realistic, recognizable data — e.g., a fake but plausible name + scenario |
+
+### Why this is now mandatory
+
+The audit previously didn't check this. Tools shipped without examples and adoption suffered: a user landing on a 5-field form often bounces. A working example makes the tool's output legible in five seconds.
+
+---
+
+## RULE PF-18 — Hygiene (no dead imports, no dead constants)
+
+A file that passes structural compliance can still carry dead code from past refactors. The 460+ build warnings recorded in Session 103 were almost entirely files that had been audited (sometimes multiple times) but kept stale imports and unused constants. PF-18 catches these mechanically.
+
+### PF-18a — Unused ActionButton imports
+
+`CopyBtn`, `PrintBtn`, `ShareBtn`, `ActionBar` imported from `../components/ActionButtons` but never referenced in the file body. The single largest source of warning noise — tools converted to `useRegisterActions` kept their import lines.
+
+```bash
+grep -n "import.*ActionButtons" ComponentName.js
+# Verify every named import is actually used (<CopyBtn or CopyBtn(...) etc.)
+```
+
+**Fix:** Remove the unused name from the import statement.
+
+### PF-18b — `BRAND` defined but never appended
+
+`BRAND` is imported or declared but no builder function appends it. Per PF-12, `BRAND` must be appended in `buildFullText` (and any other `build*Text` helpers).
+
+**Fix:** Append `BRAND` in the relevant builder, OR remove the constant if the file doesn't produce copyable output.
+
+### PF-18c — `CROSS_REFS` defined but never rendered
+
+Architectural decay: cross-refs were declared as a constant but the JSX rendering was removed (or never wired up). Either render them per PF-9 or remove the constant.
+
+### PF-18d — React hook imports never called
+
+`import { useMemo, useCallback } from 'react'` where `useMemo` is never invoked. Common after refactors that simplified a tool away from memoization.
+
+**Fix:** Remove unused names from the React import.
+
+### PF-18e — Anchor tags with empty/placeholder href
+
+`<a href="">` or `<a href="#">` fail screen readers and keyboard navigation. Use `<button>` styled to look like a link instead.
+
+### PF-18f — `linkStyle` defined but never used
+
+Symptom of cross-refs being removed without cleaning up their styling helper. Remove the const, or wire it into cross-refs.
+
+### Audit script behavior
+
+All six sub-checks run by default. Each reports its specific cause. Whitelist exceptions (e.g., `BRAND` is exempt if the file uses `deftbrain.com` directly via S1.4) are handled inside the script.
+
+---
+
+## RULE TOOLS — Tool Must Be Registered in tools.js
+
+Every component file in `src/tools/` must have a corresponding registration entry in `src/data/tools.js`. A tool component without a registration is unreachable — no route, no entry in any tool list, no way for a user to find it.
+
+### Audit script behavior
+
+The audit loads `tools.js` at startup and extracts every `id:` value. After auditing a component, it checks whether the filename (sans `.js`) appears in that set. If not, reports:
+
+```
+TOOLS: "ComponentName" not found in tools.js — file is unreachable; add a registration entry
+```
+
+The check is skipped silently if `tools.js` couldn't be located (e.g., script run outside the project tree). Otherwise it always runs.
+
+### Common violations to fix during audit
+
+| Violation | Fix |
+|-----------|-----|
+| Component file exists but no tools.js entry | Add full registration: `id`, `title`, `tagline`, `description`, `icon`, `categories`, `tags`, `headerColor`, `guide` |
+| tools.js entry has wrong `id` (not matching filename) | Either rename the file or update the `id` — they must match exactly |
+| Component was renamed but tools.js still has old id | Update tools.js |
+
+---
+
+## RULE CONV — `<input type="range">` Must Not Use `appearance-none`
+
+Sliders styled with `appearance-none` lose their browser-native track rendering. The track becomes invisible — only the thumb is visible — making the control hard to use and confusing to look at.
+
+### Required pattern
+
+```jsx
+<input
+  type="range"
+  min="0" max="10" value={value}
+  onChange={e => setValue(+e.target.value)}
+  className="accent-cyan-600 w-full"
+/>
+```
+
+`accent-cyan-600` is the canonical thumb-and-track color. No `appearance-none` modifier.
+
+### Audit script behavior
+
+The audit scans for `<input type="range">` elements and inspects the surrounding 5-line window. Any `appearance-none` near a range input is flagged.
+
+### Common violations to fix during audit
+
+| Violation | Fix |
+|-----------|-----|
+| `appearance-none accent-cyan-600` on a range input | Remove `appearance-none`; keep `accent-cyan-600` |
+| Custom track styling that requires `appearance-none` | Reconsider — the native track is intentional. Custom styling here is rarely necessary |
+
+---
+
+## RULE S1.1k — Defined-but-Unused c-block Keys
+
+Complement to S1.1i (used-but-undefined). After refactors, c-block keys may remain defined even though every reference to them was removed. These are dead lines in the c block — they read as "this color is theme-aware" but produce no rendered output.
+
+### Whitelist exceptions
+
+Keys mandated by convention regardless of whether a specific tool uses them:
+
+- `REQUIRED_KEYS` (the baseline 12: `card`, `cardAlt`, `text`, `textSecondary`, `textMuted`, `input`, `btnPrimary`, `btnSecondary`, `border`, `success`, `warning`, `danger`)
+- `required` (PF-15 mandate)
+- PF-2 alias scaffolding: `textMuteded`, `label`, `labelText`
+
+These are exempt from the unused check — they may be present without being referenced.
+
+### Audit script behavior
+
+For each non-whitelisted key in the c block: if it has zero `c.{key}` references outside the c block declaration itself, reports:
+
+```
+S1.1k: c.{key} defined but never used in JSX (dead key — remove from c block)
+```
+
+The check correctly handles aliases — `c.foo = c.bar` defines `foo` and uses `bar`.
+
+### Common violations to fix during audit
+
+| Violation | Fix |
+|-----------|-----|
+| `c.btnDis` defined for ternary disabled-state pattern; removed during PF-13 strictening | Remove `btnDis` from c block |
+| Tool-specific semantic keys (`infoBox`, `successBox`, etc.) defined but no longer referenced | Remove from c block |
+| Helper keys defined "just in case" but never wired up | Remove — add them back when actually needed |
+
+---
+
+## ESLint Integration — Now Default-On
+
+The audit script runs `npx eslint --format json` against the file as its final pass. Every ESLint warning is surfaced as an audit failure, prefixed with `LINT [rule-id]:`.
+
+### What this catches that the regex checks don't
+
+- **`react-hooks/exhaustive-deps`** — stale closure dependencies. Common in `useCallback` and `useEffect` where a referenced value is missing from the dependency array. Cannot be regex-detected; requires AST analysis.
+- **Conditional hook calls** — calling `useState` inside an `if` branch or after an early return. Violates React's rules-of-hooks.
+- **`no-unused-vars`** — unused locals, destructured names, and imports beyond the curated PF-18 set. Catches the long tail.
+- **`jsx-a11y/anchor-is-valid`** — broader anchor-tag accessibility violations than PF-18e covers.
+- **`no-useless-escape`**, **`import/no-anonymous-default-export`**, etc. — minor style warnings.
+
+### Behavior
+
+- **Default-on.** Runs unless explicitly disabled.
+- **Opt-out:** `AUDIT_SKIP_ESLINT=1 python3 audit_v2-3-2.py path/to/Component.js`
+- **Graceful skip when unavailable.** ESLint requires `node_modules/.bin/eslint` and a working ESLint config in the project tree. If either is missing (e.g., script run inside the Claude environment), the integration silently skips and only the regex checks run.
+
+### When to opt out
+
+Almost never. Three legitimate cases:
+
+1. **Bulk audits where ESLint slows the run too much** — running ESLint on 100+ tools sequentially is meaningfully slower than the regex pass alone. Bulk runs may opt out and run a separate `npm run build` afterward.
+2. **CI environments without npm install** — if the audit runs in a stripped-down container, opt out.
+3. **Debugging a specific PF-* check in isolation** — sometimes useful to suppress the lint noise while verifying a regex check.
+
+### What "audit pass" means now
+
+A passing audit (zero output) means:
+
+- All structural PF-1 through PF-18 checks pass
+- Hook ordering is correct (PF-14)
+- Try Example present where required (PF-17)
+- Tool is registered in tools.js
+- No dead c-block keys
+- No `appearance-none` on sliders
+- ESLint reports zero warnings (when available)
+
+That is sufficient to ship the file structurally. Behavioral correctness — does it actually do what it claims — still requires a live test per Section 8.
+
+---
+
+## Bug fix — PF-16 / S5.5 Regex Tightening
+
+The PF-16 reset-button-placement check and S5.5 cross-reference classification both used the regex `\{\s*(?<![!])results\b[^=\n]{0,40}&&\s*[(<]` to find the main `{results && (...)}` JSX split. The `[^=\n]{0,40}` was too permissive — it matched property accesses like `{results.extend_it.extra_time && <p>...}` as if they were the main results split.
+
+The result: false-positive PF-16 violations on tools that legitimately accessed result fields inside the results block. MicroAdventureMapper triggered this — its inline check `{results.extend_it.extra_time && <p>}` confused the audit into thinking the entire region after that line was "post-results" and the header reset button was therefore "after the results split."
+
+**Fix:** changed `[^=\n]{0,40}` to `\s*` (whitespace only). The regex now matches only the canonical `{results && (` split with at most whitespace between `results` and `&&`. Property accesses like `{results.foo && <jsx>}` no longer match.
+
+**Side effect on edge cases:** patterns like `{results /* comment */ && (` or `{results && condition && (` (compound conditions) no longer match. These are uncommon enough that we accept the tradeoff. If a tool ever shows mysteriously zero post-result cross-refs after the v4.39 upgrade, an inline comment between operators or a compound condition is the likely cause.
+
+---
+
+*v4.39 added Session 103, April 2026. Originated from MicroAdventureMapper audit observation — a file that passed v4.38 audit cleanly turned out to have 13 latent issues across stale imports, dead constants, hook ordering, missing visual feedback, and unused c-block keys. The realization that "passing audit" had been silently incomplete drove the expansion of mechanical coverage.*

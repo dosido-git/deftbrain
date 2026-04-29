@@ -103,10 +103,6 @@ const MicroAdventureMapper = ({ tool }) => {
                           : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200'
                           : 'bg-red-50 border-red-200 text-red-800',
-    infoBox:       isDark ? 'bg-sky-900/20 border-sky-700 text-sky-200'
-                          : 'bg-sky-50 border-sky-200 text-sky-800',
-    successBox:    isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-300',
-    successTxt:    isDark ? 'text-emerald-300' : 'text-emerald-800',
     warningBox:    isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
     warningTxt:    isDark ? 'text-amber-300' : 'text-amber-800',
     pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200'
@@ -125,11 +121,10 @@ const MicroAdventureMapper = ({ tool }) => {
     transitText:   isDark ? 'bg-zinc-700/50 text-zinc-400' : 'bg-slate-100 text-slate-500',
     checkBg:       isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-gray-200',
     rainBg:        isDark ? 'bg-sky-900/20 border-sky-700/50 text-sky-200' : 'bg-sky-50 border-sky-200 text-sky-800',
-    extendBg:      isDark ? 'bg-violet-900/20 border-violet-700/50 text-violet-200' : 'bg-violet-50 border-violet-200 text-violet-800',
+    extendBg:      isDark ? 'bg-amber-900/20 border-amber-700/50 text-amber-200' : 'bg-amber-50 border-amber-200 text-amber-800',
     journalCard:   isDark ? 'border-zinc-700' : 'border-gray-200',
     journalBg:     isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-gray-200',
     journalAccent: isDark ? 'text-amber-400' : 'text-amber-600',
-    btnDis:        isDark ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed' : 'bg-gray-200 text-gray-400 cursor-not-allowed',
   };
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
@@ -152,7 +147,7 @@ const MicroAdventureMapper = ({ tool }) => {
   const [showAccessibility, setShowAccessibility] = useState(false);
 
   // ── Results ──
-  const [results, setResults] = useState(null);
+  const [results, setResults] = usePersistentState('micro-adventure-mapper-results', null);
   const [showInputs, setShowInputs] = useState(true);
   const [error, setError] = useState('');
   const [swapping, setSwapping] = useState(null);
@@ -274,6 +269,13 @@ const MicroAdventureMapper = ({ tool }) => {
       setError(err.message || 'Failed to plan adventure. Please try again.');
     }
   }, [location, callToolEndpoint, getInputPayload, getPastAdventureNames, saveToJournal]);
+
+  const handleReset = useCallback(() => {
+    setError('');
+    setResults(null);
+    setCheckedItems({});
+    setShowInputs(true);
+  }, [setResults]);
 
   const regenerate = useCallback(async () => {
     if (!results?.adventure) return;
@@ -495,7 +497,7 @@ const MicroAdventureMapper = ({ tool }) => {
         disabled={loading || location.trim().length < 2}
         className={`w-full py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2 shadow-sm disabled:opacity-40 ${c.btnPrimary}`}>
         {loading
-          ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> Planning your adventure...</>
+          ? <><span className="inline-block animate-spin">{tool?.icon ?? '🗺️'}</span> Planning your adventure...</>
           : <><span className="mr-1">{tool?.icon ?? '🗺️'}</span> Map My Adventure</>}
       </button>
 
@@ -580,8 +582,8 @@ const MicroAdventureMapper = ({ tool }) => {
 
                   {/* Swap button */}
                   <button onClick={() => swapStop(stop.number || idx + 1)} disabled={isSwapping || loading}
-                    className={`text-xs font-semibold flex items-center gap-1 ${c.btnGhost}`}>
-                    {isSwapping ? <span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> : null}
+                    className={`text-xs font-semibold flex items-center gap-1 disabled:opacity-40 ${c.btnGhost}`}>
+                    {isSwapping ? <span className="inline-block animate-spin">{tool?.icon ?? '🗺️'}</span> : null}
                     {isSwapping ? 'Swapping...' : 'Swap this stop'}
                   </button>
                 </div>
@@ -669,8 +671,8 @@ const MicroAdventureMapper = ({ tool }) => {
     const renderActions = () => (
       <div className="flex flex-wrap gap-2">
         <button onClick={regenerate} disabled={loading}
-          className={`flex-1 py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 ${loading ? c.btnDis : c.btnPrimary}`}>
-          {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> : null}
+          className={`flex-1 py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 disabled:opacity-40 ${c.btnPrimary}`}>
+          {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '🗺️'}</span> : null}
           Different Adventure
         </button>
 
@@ -861,14 +863,25 @@ const MicroAdventureMapper = ({ tool }) => {
       {/* ── Persistent Header ── */}
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm`}>
         <div className="px-5 pt-5">
-          <div className="pb-3 border-b border-zinc-500">
-            <h2 className={`text-xl font-bold ${c.text}`}>
-              <span className="mr-2">{tool?.icon ?? '🗺️'}</span>{tool?.title ?? 'Micro-Adventure Mapper'}
-            </h2>
-            <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Plan a local adventure in 30 seconds'}</p>
+          <div className="pb-3 border-b border-zinc-500 flex items-start justify-between gap-3">
+            <div>
+              <h2 className={`text-xl font-bold ${c.text}`}>
+                <span className="mr-2">{tool?.icon ?? '🗺️'}</span>{tool?.title ?? 'Micro-Adventure Mapper'}
+              </h2>
+              <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Plan a local adventure in 30 seconds'}</p>
+            </div>
+            <button onClick={handleReset}
+              className={`shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold ${c.btnSecondary}`}>
+              ↺ Start Over
+            </button>
           </div>
         </div>
         <div className="p-5 space-y-4">
+          {!results && (
+            <p className={`text-xs ${c.textMuted}`}>
+              Throwing a gathering instead? <a href="/PartyArchitect" className={linkStyle}>🎉 Party Architect</a> plans the whole thing.
+            </p>
+          )}
           {!results && renderInputForm()}
         </div>
       </div>

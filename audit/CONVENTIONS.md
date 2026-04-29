@@ -1046,7 +1046,7 @@ These cannot be auto-corrected — they require reading context:
 ## CONVENTIONS Addendum — Session 101 Clarifications
 
 ### For merge into `CONVENTIONS.md`
-### Supersedes conflicting text in `tool-audit-checklist-v4_38.md` §1.1
+### Supersedes conflicting text in `tool- audit-checklist-v4_39.md` §1.1
 
 This addendum captures rule clarifications that emerged during audits where existing documentation was ambiguous or contradictory. Merge these edits into `CONVENTIONS.md` at next doc update. Every rule here is also enforced by `audit_v2-3-2.py` (v4.41+) unless otherwise noted.
 
@@ -1054,7 +1054,7 @@ This addendum captures rule clarifications that emerged during audits where exis
 
 ## Clarification 1 · `label` is NOT a banned c-block key — it is a **required alias**
 
-**Status:** Resolves conflict between `tool-audit-checklist-v4_38.md` §1.1 and `CONVENTIONS.md` PF-2.
+**Status:** Resolves conflict between `tool- audit-checklist-v4_39.md` §1.1 and `CONVENTIONS.md` PF-2.
 
 The checklist lists `label` among banned c-block keys. This is **stale text**. The canonical rule per CONVENTIONS.md PF-2 is:
 
@@ -1066,7 +1066,7 @@ c.label = c.labelText;
 
 Both aliases are **required**. They exist because historical Python refactor scripts generated code with those names, and removing them would cascade-break dozens of tools. The audit script's `BANNED_KEYS` constant does not and must not include `label`.
 
-**Action:** When next editing `tool-audit-checklist-v4_38.md`, delete `label` from the §1.1 banned-key list.
+**Action:** When next editing `tool- audit-checklist-v4_39.md`, delete `label` from the §1.1 banned-key list.
 
 ---
 
@@ -1257,7 +1257,7 @@ When documentation conflicts:
 
 1. **`CONVENTIONS.md`** — authoritative canonical spec
 2. **`audit_v2-3-2.py` source** — source of truth for automated enforcement (especially `BANNED_KEYS`, `BANNED_COLORS`, `REQUIRED_KEYS` constants at the top)
-3. **`tool-audit-checklist-v4_38.md`** — manual checklist; portions may be stale
+3. **`tool- audit-checklist-v4_39.md`** — manual checklist; portions may be stale
 4. **`backend-audit-section7.md`** — backend-specific addendum to the checklist
 
 On conflict: check the audit script's constant arrays as the tiebreaker. Whatever the script actually enforces is the working rule.
