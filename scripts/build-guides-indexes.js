@@ -481,7 +481,7 @@ function renderByCategory(specs) {
 
       <p class="deck">Guides for the moments when something specific is on your mind — a hard conversation, a confusing diagnosis, a lease that doesn&#39;t sit right.</p>
 
-      <p class="lede">Each guide here was written for the person who searched the exact phrase, not for the audience that wanted an overview. They&#39;re short, structured, and end with a tool that does the work the guide tells you how to do.</p>
+<p class="lede">Each guide gets to the point, and ends with a tool that does the work for you. Find the one that matches your situation and start there.</p>
 ${renderTabs('category')}
 ${body}
       <p class="index-outro">More guides shipping regularly. If there&#39;s a moment we haven&#39;t written for yet, the <a href="/">tool catalog</a> is where the work continues.</p>
