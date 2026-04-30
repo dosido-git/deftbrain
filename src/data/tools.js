@@ -1979,13 +1979,6 @@ export const tools = [
     ]
   }
 },
-// ── DopamineMenuBuilder tools.js entry ──
-// Replace existing entry (id: "DopamineMenuBuilder")
-// Changes: modified date, description trimmed to 1 sentence, tags 7→10, pitfalls added
-
-// ── DopamineMenuBuilder tools.js entry ──
-// Replace existing entry (id: "DopamineMenuBuilder")
-// Changes: modified date, description trimmed to 1 sentence, tags 7→10, pitfalls added
 
 {
   modified: "2026-03-11",
@@ -3430,9 +3423,6 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
       ]
     }
 },
-// ── DreamPatternSpotter tools.js entry ──
-// Replace existing entry (id: "DreamPatternSpotter")
-// Changes: modified date, description trimmed, pitfalls added
 
 {
   modified: "2026-03-11",
@@ -3502,9 +3492,6 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
       ]
     }
 },
-// ── DoctorVisitTranslator tools.js entry ──
-// Replace existing entry (id: "DoctorVisitTranslator")
-// Changes: modified date, description trimmed to 1 sentence, tags 7→9, pitfalls added
 
 {
   modified: "2026-03-11",
@@ -4712,8 +4699,8 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 },
 {
   modified: "",
-  id: 'NerveCheck',
-  title: 'Nerve Check',
+  id: "NerveCheck",
+  title: "Nerve Check",
   tagline: 'Real confidence for scary moments.',
   tags: ['confidence', 'anxiety', 'interview', 'presentation', 'nervous', 'fear', 'preparation'],
   icon: '💪',
@@ -4745,8 +4732,8 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 
 {
   modified: "",
-  id: 'RechargeRadar',
-  title: 'Recharge Radar',
+  id: "RechargeRadar",
+  title: "Recharge Radar",
   tagline: 'Predict when you\'ll need alone time this week.',
   tags: ['energy', 'introvert', 'social', 'recharge', 'schedule', 'alone time', 'burnout'],
   icon: '🔋',

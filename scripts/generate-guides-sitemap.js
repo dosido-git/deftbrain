@@ -20,10 +20,15 @@ const fs = require('fs');
 const path = require('path');
 
 const GUIDES_DIR = path.join(__dirname, '..', 'build', 'guides');
-const OUTPUT     = path.join(GUIDES_DIR, 'guides-sitemap.xml');
+const OUTPUT     = path.join(__dirname, '..', 'build', 'guides-sitemap.xml');
 
-// Files to ignore when walking build/guides/
-const IGNORE = new Set(['_template.html', '404.html', 'index.html']);
+// Files to ignore when walking build/guides/.
+// index.html appears as the by-category landing page at build/guides/index.html
+// and as each category's hub at build/guides/{category}/index.html — both are
+// collection pages, not individual articles, so they don't carry an
+// article:modified_time meta tag and shouldn't be in the article sitemap.
+// by-tool.html is the by-tool collection view, same reasoning.
+const IGNORE = new Set(['_template.html', '404.html', 'index.html', 'by-tool.html']);
 
 function walk(dir) {
   const out = [];

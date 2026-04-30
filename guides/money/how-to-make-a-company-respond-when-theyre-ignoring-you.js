@@ -2,58 +2,36 @@ module.exports = {
   slug:          'how-to-make-a-company-respond-when-theyre-ignoring-you',
   category:      'money',
   categoryLabel: 'Money',
-
-  title:         "How to Make a Company Respond When They're Ignoring You (And Why Polite Isn't Working)",
-  titleHtml:     "How to Make a Company Respond When They&#39;re Ignoring You <em>(And Why Polite Isn&#39;t Working)</em>",
-  shortTitle:    "How to Make a Company Respond When They're Ignoring You",
-  navTitle:      "How to make a company respond when they're ignoring you and why polite isn't working",
-
-  description:   "Customer service ignores polite emails because polite emails don't cost them anything. Here's the escalation ladder that actually works — what to send, where to send it, and when to skip rungs.",
-  deck:          "Customer service ignores polite emails because polite emails don't cost them anything. Here's the escalation ladder that actually works — what to send, where to send it, and when to skip rungs.",
-
+  title:         "How to Make a Company Respond When They Are Ignoring You",
+  titleHtml:     "How to Make a Company Respond <em>When They Are Ignoring You</em>",
+  shortTitle:    "Make Company Respond to You",
+  navTitle:      "make a company respond when ignoring you",
+  description:   "Five pressure points that work in sequence. Each one increases the cost to the company of continuing to ignore you.",
+  deck:          "Five pressure points that work in sequence. Each one increases the cost to the company of continuing to ignore you.",
   ledes: [
-    `You've sent three emails. The first got an auto-reply. The second got a templated response that didn't address what you asked. The third didn't get a response at all. The chat agent gave you a case number that doesn't appear in any system. The phone line keeps you on hold for forty minutes, then drops the call. You're starting to wonder if you've imagined the entire transaction. The company hasn't said no. The company hasn't said anything. The company is hoping you'll go away.`,
-    `Most companies aren't actively malicious — they're optimized. They've learned that 80% of complainers give up after two rounds, and they've structured their support to make the second round expensive enough to lose those 80%. The remaining 20% — the ones who escalate — eventually get handled. The trick isn't being louder. It's getting onto a different ladder, one where ignoring you starts to cost the company more than helping you would.`,
+    `You have called. You have emailed. You have used the chat. You have followed up. The company\u2019s system is designed to absorb complaints by exhausting the complainer, and it is working — you are exhausted. The temptation is to give up. The math says do not.<br/><br/>If a company is ignoring you, the answer is to make ignoring you more expensive than dealing with you. There are five pressure points, and they work in sequence. Each one raises the visibility of your complaint inside the company, which routes it to people who actually have authority to fix it.`,
+    `Five pressure points, ordered by how much they cost the company to ignore.`,
   ],
-
   steps: [
-    {
-      name: "Stop talking to support — they're not authorized to help you",
-      body: "First-tier customer service is rarely empowered to issue refunds, escalate disputes, or make policy exceptions. They're empowered to apologize, document the case, and escalate internally — and the internal escalation is where most cases die. After two unproductive rounds, stop responding to support entirely and route around them. Your time is more valuable than the satisfaction of one more reply, and replying keeps the case where it can't be solved. Silence from you is a feature, not a giving up.",
-    },
-    {
-      name: "Send the executive email — by name, in writing",
-      body: "Most companies have a customer-relations team that reports to the executive office, often called something like 'Office of the President' or 'Executive Resolution.' Their job is to handle complaints that have escalated past normal support. The way to reach them is to email the CEO directly. CEO email patterns are findable (firstname.lastname@company.com, firstname@company.com — most companies follow one consistent pattern). The CEO won't read it, but the message will be routed to the executive resolution team within 24-48 hours, and they have authority that support doesn't. This single move resolves a meaningful percentage of stuck cases.",
-    },
-    {
-      name: "File the regulatory complaint — and CC the company",
-      body: "Beyond the company's own structure, regulators care about specific industries. Banks: CFPB. Airlines: DOT. Insurance: your state's department of insurance. Healthcare billing: state attorney general. Telecom: FCC. Cable and ISP: also FCC. Filing the complaint takes 10 minutes and triggers a process where the regulator forwards your complaint to the company and requires a written response within 30-60 days. The same complaint that was being ignored as a support ticket suddenly becomes a regulatory matter the company must respond to formally. CC'ing the company on the regulator filing is optional — but doing so often produces a resolution before the regulator even processes the complaint.",
-    },
-    {
-      name: "Use chargeback as the leverage move, not the giving-up move",
-      body: "If the dispute involves money already paid, your credit card's chargeback process is a separate, parallel track that bypasses the company entirely. File a chargeback for 'goods/services not as described' or 'merchandise not received' or 'continued billing after cancellation,' depending on what fits. Chargebacks have teeth — the company has 30 days to respond with documentation, and if they can't, the charge reverses automatically. Even when chargebacks fail, they cost the company money to fight (chargeback fees range from $25 to $100 per case), which means a chargeback notice often produces an immediate resolution offer from the company that didn't want to engage before. Don't think of chargeback as the last resort. Think of it as the fastest way to get the company's attention.",
-    },
-    {
-      name: "When public pressure becomes the right move — and when it doesn't",
-      body: "Twitter/X complaints work. Reddit complaints sometimes work. BBB complaints are rated by companies but rarely move them. Reviews on Google, Yelp, or Trustpilot can move companies that depend on local reputation, less so for nationals. The judgment call is whether public pressure is the right tool for *this* company. Big consumer brands with active social-media teams (airlines, hotels, telecoms) often respond to public posts within an hour when private channels failed for weeks. Smaller companies, B2B vendors, or businesses without much online presence often don't notice or care. If the company has a heavily-staffed social account that posts daily, public pressure is a real lever. If they post once a quarter, it isn't. Aim the move at the surface that's actually sensitive.",
-    },
+    { name: 'Move from chat and phone to certified mail', body: 'Phone calls and chat messages disappear into queues. Certified mail to the company\u2019s registered agent or corporate headquarters generates a delivery receipt and lands on a desk. Many companies route certified mail to legal or compliance teams automatically because of regulatory exposure. The cost of certified mail is small; the impact is disproportionate. Send a tight, factual letter with your prior contacts documented and a deadline.' },
+    { name: 'File a regulatory complaint and tell them you filed', body: 'BBB, state AG, CFPB (financial services), FTC, FCC (telecom) — pick the right one for the industry and file. Then send a follow-up to the company saying "I have filed a complaint with [agency]; reference number [X]." Regulatory filings cost companies time and attention because they have to respond. The company\u2019s incentive shifts from "absorb this complaint" to "resolve this complaint before it becomes a regulatory pattern."' },
+    { name: 'Email an executive directly', body: 'Customer service exists to absorb complaints; executive teams exist to make them stop. Find an email for someone with title (CEO, COO, VP of customer experience). Common formats: firstname.lastname@company.com or first initial+lastname. LinkedIn often shows email patterns. Write a short, professional email — not angry, not desperate — explaining the situation and what you want. Many companies have executive customer service teams that respond within 24 to 48 hours.' },
+    { name: 'Public pressure for visible companies', body: 'If the company is consumer-facing and active on social media, a measured factual post on Twitter/X tagging their handle often gets faster results than direct contact. Stick to facts. Avoid all-caps and threats. Companies that monitor social media have teams whose job is to defuse public complaints; those teams have authority. This works for retailers, airlines, banks, and telecoms. It does not work for niche B2B vendors who do not have a public profile.' },
+    { name: 'Chargeback or small claims', body: 'When pressure does not work, take the money back yourself. If you paid by credit card, file a chargeback within the dispute window — the issuer pulls the money back from the merchant directly and the merchant has to argue to keep it. If you paid by other means and the amount is over a few hundred dollars, small claims court is fast, cheap, and intimidating to companies that get served. Both moves change the dynamic from "complaint" to "defended action," which is the level at which most ignoring stops.' }
   ],
-
   cta: {
     glyph:    '📧',
-    headline: "Build the escalation campaign, not just one more email",
-    body:     "Complaint Escalation Writer maps every rung of the ladder for your specific situation — direct complaint, regulator filing, executive escalation, chargeback, public pressure — with the laws to cite, the letters drafted, and the tactical timing.",
+    headline: "Build the campaign that they cannot ignore.",
+    body:     "Complaint Escalation Writer maps your situation into a 5-stage campaign with executive contacts, regulatory filings, and chargeback templates — all pre-written and ready to send.",
     features: [
-      "Multi-stage escalation campaign",
-      "Regulator-specific complaint drafting",
-      "Executive contact templates",
-      "Chargeback letter generation",
-      "Tactical sequencing and timing",
+      "5-stage escalation campaign",
+      "Executive contact research",
+      "Industry-aware regulatory filings",
+      "Tactical timeline with triggers"
     ],
     toolId:   'ComplaintEscalationWriter',
     toolName: 'Complaint Escalation Writer',
   },
-
-  published: '2026-04-27',
-  modified:  '2026-04-27',
+  published: '2026-04-29',
+  modified:  '2026-04-29',
 };

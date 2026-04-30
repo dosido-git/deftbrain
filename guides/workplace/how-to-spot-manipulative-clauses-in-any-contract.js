@@ -1,63 +1,37 @@
-// ============================================================
-// guides/workplace/how-to-spot-manipulative-clauses-in-any-contract.js
-// ============================================================
-
 module.exports = {
   slug:          'how-to-spot-manipulative-clauses-in-any-contract',
   category:      'workplace',
   categoryLabel: 'Workplace',
-
-  title:         "How to Spot Manipulative Clauses in Any Contract",
-  titleHtml:     "How to Spot Manipulative Clauses <em>in Any Contract</em>",
-  shortTitle:    "Manipulative Clauses",
-  navTitle:      "How to spot manipulative clauses in any contract",
-
-  description:   "Manipulative clauses don't shout. They hide in passive voice, in references to other documents, and in what's missing. Here's how to read for the patterns.",
-  deck:          "Manipulative clauses don't shout. They hide in passive voice, in references to other documents, and in what's missing. Here's how to read for the patterns.",
-
-  published:     '2026-04-28',
-  modified:      '2026-04-28',
-
+  title:         "How to spot manipulative clauses in any contract",
+  titleHtml:     "How to spot <em>manipulative clauses in any contract</em>",
+  shortTitle:    "Spot manipulative clauses",
+  navTitle:      "spot manipulative clauses",
+  description:   "A practical method for catching the clauses in any contract that are written to disadvantage you — without needing to be a lawyer.",
+  deck:          "A practical method for catching the clauses in any contract that are written to disadvantage you — without needing to be a lawyer.",
   ledes: [
-    `You've read the contract. Nothing jumped out. Everything sounds reasonable. And yet there's a vague sense that you're missing something — that the document is doing more work than it appears to, in places you can't quite locate. That sense is usually right. Manipulative contract language is engineered to read past you. It's designed not to register on a careful first pass, which is the only pass most people make.`,
-    `The good news is that manipulative clauses follow patterns. Once you've seen them in three contracts, you'll see them in every contract. The skill isn't legal expertise; it's pattern recognition. Here are the patterns.`,
+    `Every contract has some clauses that protect both parties and some that asymmetrically protect the party that drafted it. The drafter is usually counting on you not to read carefully, not to recognize the asymmetry, and not to push back. They are usually right, because most people do not read carefully and do not push back. But the manipulative clauses are visible if you know what to look for, and pushing back on them is often successful — partly because the drafter did not really expect to get away with them, just to see if you would let them.\n\nYou do not need a law degree to spot most of them. You need a few patterns and the willingness to ask questions about provisions that do not feel right.`,
+    `Here is how to identify manipulative clauses in any contract — and what to do about them.`,
   ],
-
   steps: [
-    {
-      name: "Pattern one: passive voice with discretion",
-      body: "Watch for sentences that hide who has the power. 'Fees may be adjusted' is doing different work than 'we may adjust fees.' Both let them change the price; only the second admits it's their decision. The standard tell is the phrase 'at our sole discretion,' which means 'we can do this for any reason, and you have no recourse.' Anywhere that phrase appears, read the surrounding sentence twice — that's where the asymmetry lives.",
-    },
-    {
-      name: "Pattern two: references to other documents",
-      body: "Some of the worst clauses aren't in the contract you're reading — they're in a document the contract references. 'Subject to our Terms of Service,' 'in accordance with the Privacy Policy,' 'as detailed in the Operating Agreement' — every reference is a separate document that's now part of your contract. Always ask for those documents before signing. If they say 'they're on our website,' download them and read them. Otherwise you're agreeing to terms you haven't seen.",
-    },
-    {
-      name: "Pattern three: clauses with no time limit",
-      body: "Look for the words 'perpetual,' 'in perpetuity,' 'irrevocable,' and 'survives termination.' These mean the obligation continues forever, even after the relationship ends. Some perpetual clauses are appropriate — confidentiality of trade secrets, for instance. Most aren't. A perpetual non-compete, a perpetual rights grant, a perpetual indemnification — these are signs they want something to outlast the deal in ways that benefit only one side.",
-    },
-    {
-      name: "Pattern four: asymmetric obligations",
-      body: "Read every clause and ask: who is required to do this? Who has the option? In a fair contract, obligations are mostly symmetrical — both parties have to give notice, both can terminate, both warrant the same things. In a manipulative one, you're required to indemnify them but not the other way around; you give 30 days' notice and they give zero; you guarantee everything and they guarantee nothing. Mismatched obligations are the contract telling you what it actually thinks of you.",
-    },
-    {
-      name: "Pattern five: what's missing",
-      body: "The most manipulative clauses are sometimes the clauses that aren't there. No cap on liability. No definition of 'reasonable efforts.' No carve-out for force majeure. No process for resolving disputes short of litigation. When something obvious is missing from a contract, it's not always an oversight; sometimes it's intentional silence designed to be filled in later, in their favor. Make a list of what's not there and ask why.",
-    },
+    { name: 'Look for asymmetric remedies', body: 'If a contract gives one party rights that the other does not get, that is an asymmetry. Sometimes it is justified; sometimes it is not. The most common manipulative pattern: if the other party breaches, you get one specific remedy (limited damages, cure period, mediation). If you breach, they get broad remedies (immediate termination, full damages, injunctive relief, attorneys\' fees). Asymmetry is normal in some contexts but should not be hidden. Read both directions of every obligation and look for the imbalances.' },
+    { name: 'Watch for unilateral modification rights', body: 'Some contracts allow one party to change the terms after signing — usually with notice, sometimes without. If the contract says the other party can update its terms \'at any time\' or \'in its sole discretion,\' you have signed something that can change underneath you. This is common in software terms of service and increasingly in service agreements. Sometimes you cannot avoid it. But you should at least know it is there, and push for notice provisions and the right to terminate if changes are unacceptable.' },
+    { name: 'Read mandatory arbitration and class-action waiver clauses carefully', body: 'These are standard now in many contracts, but the specific terms vary. Pay attention to: who chooses the arbitrator, who pays the costs, where arbitration takes place, what claims are covered, and whether you can opt out. Arbitration tends to favor whoever drafts the clause, which is usually the company. If you cannot avoid arbitration, at minimum understand what you are agreeing to and whether there is an opt-out window.' },
+    { name: 'Notice indemnification scope', body: 'Indemnification is when one party agrees to cover the other\'s losses. The standard pattern: each side indemnifies the other for harms it causes. The manipulative pattern: you indemnify them broadly (for almost anything), and they indemnify you narrowly (for very specific things). Read both indemnification clauses. If yours is much longer and broader than theirs, ask why. The answer should be that there is something specific about your obligations that makes the asymmetry necessary. If there is no good answer, push for symmetry.' },
+    { name: 'Find and challenge any \'sole discretion\' language', body: 'When a contract says the other party can do something \'in its sole discretion,\' that means they can decide unilaterally with no limits. Sometimes this is fine. Sometimes it lets them terminate the contract, withhold payment, or change terms whenever they want. Search for the phrase \'sole discretion\' and read every clause containing it. Each one is a place where you have given them unilateral power. Decide whether each instance is acceptable, and push back where it is not.' }
   ],
-
   cta: {
-    glyph:    '🗡',
-    headline: "Detect the manipulation before you sign",
-    body:     "Paste any contract and Jargon Assassin flags every passive-voice discretion clause, every external reference, every perpetual obligation, and every asymmetric term — ranked by danger, with the language to push back on each.",
+    glyph:    '🗡️',
+    headline: "From confusion to action, in one document.",
+    body:     "Paste any legal, medical, insurance, or financial document and Jargon Assassin translates it into plain language with red flags scored, enforceability notes, and a built-in glossary. Then it goes further: red-line edits to propose, comparisons against what's standard, action plans with deadlines, and ready-to-send response letters.",
     features: [
-      "Pattern detection",
-      "Red-flag scoring",
-      "Asymmetry analysis",
-      "Suggested redlines",
-      "Plain-language translation",
+      "Plain-language translation with adjustable reading level (ELI5 → Professional)",
+      "Red flags scored, enforceability noted, hidden catches surfaced",
+      "Red-Line generates specific edits to propose with negotiation strategy",
+      "Template Compare shows whether the document is standard or aggressive"
     ],
     toolId:   'JargonAssassin',
     toolName: 'Jargon Assassin',
   },
+  published: '2026-04-29',
+  modified:  '2026-04-29',
 };

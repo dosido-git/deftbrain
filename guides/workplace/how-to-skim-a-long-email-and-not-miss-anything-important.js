@@ -1,63 +1,37 @@
-// ============================================================
-// guides/workplace/how-to-skim-a-long-email-and-not-miss-anything-important.js
-// ============================================================
-
 module.exports = {
   slug:          'how-to-skim-a-long-email-and-not-miss-anything-important',
   category:      'workplace',
   categoryLabel: 'Workplace',
-
-  title:         "How to Skim a Long Email and Not Miss Anything Important",
-  titleHtml:     "How to Skim a Long Email and <em>Not Miss Anything Important</em>",
-  shortTitle:    "Skim a Long Email",
-  navTitle:      "How to skim a long email and not miss anything important",
-
-  description:   "Some emails are five paragraphs of context plus one sentence that needs your reply. Here's how to find that sentence in 30 seconds — and how to know whether the rest is worth reading.",
-  deck:          "Some emails are five paragraphs of context plus one sentence that needs your reply. Here's how to find that sentence in 30 seconds — and how to know whether the rest is worth reading.",
-
-  published:     '2026-04-28',
-  modified:      '2026-04-28',
-
+  title:         "How to skim a long email and not miss anything important",
+  titleHtml:     "How to skim a long email <em>and not miss anything important</em>",
+  shortTitle:    "Skim long emails",
+  navTitle:      "skim long emails",
+  description:   "A method for processing the email that is way too long without spending fifteen minutes on it or missing the one thing that needed your attention.",
+  deck:          "A method for processing the email that is way too long without spending fifteen minutes on it or missing the one thing that needed your attention.",
   ledes: [
-    `The email is eleven paragraphs long. The sender wanted to be thorough; what they were actually being was generous with your time, on the assumption you'd read every paragraph. You won't. You shouldn't. Inside this eleven-paragraph email there is — almost always — one specific request, one decision being asked of you, or one piece of information you genuinely need. The rest is context, history, framing, hedging, and the writer thinking through their own position out loud.`,
-    `Skimming a long email well is a real skill — different from speed-reading and different from ignoring it. The goal is to find the actionable core in roughly 30 seconds and decide, in another 30, whether the surrounding material is worth reading. Five moves.`,
+    `The email is twelve paragraphs long. The sender used no headings. There are at least three different topics in it. There may be a question for you somewhere — there usually is — but you cannot find it on first read. There may also be an action item, a deadline, and an FYI, all interleaved with context you did not need and tangents that should have been a separate email. You have a meeting in eleven minutes. You are about to make a decision: read it now, deal with it later, or skim it and risk missing something.\n\nA disciplined skim, done well, takes ninety seconds and catches almost everything that matters. The trick is knowing where in a long email the actionable content tends to live, and learning to filter past the parts that do not require you.`,
+    `Here is how to skim a long email efficiently and not miss what matters.`,
   ],
-
   steps: [
-    {
-      name: "Read the last paragraph first",
-      body: "In long emails, the actual ask usually lives at the bottom — the writer has built up to it through context and arrives at the request in the closing paragraphs. Reading the last paragraph first tells you what the email wants. Once you know the ask, the rest of the email becomes navigable: you can decide which earlier paragraphs you actually need to read in order to respond.",
-    },
-    {
-      name: "Search for question marks and dates",
-      body: "Questions and dates are the two structural elements of a request. Ctrl-F a question mark, then a date format. Each hit is a candidate for the actionable content. A long email frequently has only one or two real questions buried inside three pages of explanation; finding the question marks reduces the hunt from minutes to seconds.",
-    },
-    {
-      name: "Find your name and read backwards from there",
-      body: "If your name appears anywhere in the body, that's almost always near the actionable part — 'and so [your name], could you...' or 'will need [your name] to confirm.' Search for your first name and read the surrounding paragraph. The rest of the email may be context for other recipients; the part directly addressed to you is the part you owe a response to.",
-    },
-    {
-      name: "Skip the historical recap",
-      body: "Long emails frequently begin with a recap of how we got here — what was discussed last week, what was agreed, what's been blocked. If you were part of those conversations, the recap is content you already have. Skip it. The email is communicating with multiple readers at different levels of context; you don't need the version that's pitched at the least-informed person on the thread.",
-    },
-    {
-      name: "Reply only to the actionable part",
-      body: "Long emails seem to demand long replies. They don't. Reply directly to the question, the request, or the decision — not to the entire email. A short, focused reply tells the sender you read what mattered without performing a full read of every paragraph. Most senders prefer this; they wrote at length because they had time to, not because they expected the same in return.",
-    },
+    { name: 'Read the first sentence and the last paragraph first', body: 'Most long emails follow an unintentional structure: the writer warms up in the opening (skim it), gets to the substance in the middle (read this), and circles back to action items or asks at the end (read this). Reading the first sentence tells you the topic. Reading the last paragraph often tells you what they want from you. Together, these two reads give you 80% of the email\'s payload in 10% of the time. Then you decide whether to read the middle.' },
+    { name: 'Search for question marks', body: 'Questions are where action lives. Ctrl-F for question marks if the email is in a window that allows it, or just visually scan for them. Each question is a place where the sender expects you to respond. If there are three question marks, there are three things they want from you. If there are zero, the email is probably informational, and you may not need to respond at all. The number of question marks is a fast proxy for the email\'s demand on your time.' },
+    { name: 'Look for explicit action language', body: 'Phrases like \'can you,\' \'please,\' \'I need,\' \'by [date],\' \'let me know,\' \'would you mind\' — these are action flags. Each one points to something the sender wants. Even in a long email with no clear structure, these phrases stand out once you are looking for them. They are usually concentrated in the last third of the email. Catching them is most of what skimming has to accomplish.' },
+    { name: 'Identify any dates and deadlines', body: 'If a long email contains a date, that date is usually load-bearing. Scan for digits and day names. The date is when something happens, when something is due, or when a window closes. Always note the date. The number of times someone misses a deadline because the relevant date was buried in paragraph eight is high enough that this single check would prevent most of those failures.' },
+    { name: 'If you skimmed and feel uncertain, ask a clarifying question instead of re-reading', body: 'If after skimming you are not sure what they want, send a quick reply asking the specific clarifying question — \'Do you need this by Thursday?\' \'Are you asking me to draft this or review yours?\' This is faster than re-reading the email three times trying to be sure, and it shifts the cost of clarity back to the sender, which is where it belonged in the first place. Long, ambiguous emails should not require recipients to do detective work.' }
   ],
-
   cta: {
     glyph:    '🔇',
-    headline: "Get the actionable core of any email instantly",
-    body:     "Paste a long email and Noise Canceler extracts the actual ask, surfaces the questions and dates, and produces a tight summary of the parts that affect you — so you reply to substance, not throat-clearing.",
+    headline: "Pull the 10% that matters out of the 90% that doesn't.",
+    body:     "Noise Canceler is a relevance filter, not a summarizer. Paste any dense document — HOA notice, insurance EOB, benefits packet, policy update — describe your situation, and it returns only what requires action, what costs you money, what saves you money, and what you can safely ignore.",
     features: [
-      "Actionable-content extraction",
-      "Question and date detection",
-      "Name-targeted highlighting",
-      "Recap-and-context filtering",
-      "Plain-language summaries",
+      "Cross-references the document against your specific situation",
+      "Extracts only action items, cost changes, and personally-affecting clauses",
+      "Flags 'buried but important' items hidden in dense fine print",
+      "Tells you explicitly what you can ignore — most of it"
     ],
     toolId:   'NoiseCanceler',
     toolName: 'Noise Canceler',
   },
+  published: '2026-04-29',
+  modified:  '2026-04-29',
 };

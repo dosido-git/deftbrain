@@ -2,58 +2,36 @@ module.exports = {
   slug:          'how-to-get-a-hospital-bill-reduced',
   category:      'money',
   categoryLabel: 'Money',
-
-  title:         "How to Get a Hospital Bill Reduced (When You Don't Have Insurance, or Have Bad Insurance)",
-  titleHtml:     "How to Get a Hospital Bill Reduced <em>(When You Don&#39;t Have Insurance, or Have Bad Insurance)</em>",
-  shortTitle:    "How to Get a Hospital Bill Reduced",
-  navTitle:      "How to get a hospital bill reduced when you don't have insurance or have bad insurance",
-
-  description:   "Hospital bills are the most negotiable kind of consumer debt in America, and the discounts available are substantial — but they almost never get applied unless you specifically ask. Here's the playbook.",
-  deck:          "Hospital bills are the most negotiable kind of consumer debt in America, and the discounts available are substantial — but they almost never get applied unless you specifically ask. Here's the playbook.",
-
+  title:         "How to Get a Hospital Bill Reduced",
+  titleHtml:     "How to Get a <em>Hospital Bill Reduced</em>",
+  shortTitle:    "Reduce a Hospital Bill",
+  navTitle:      "get a hospital bill reduced",
+  description:   "Five tactics that actually work, in the order they work in. Itemized bill first, financial assistance second, negotiation last.",
+  deck:          "Five tactics that actually work, in the order they work in. Itemized bill first, financial assistance second, negotiation last.",
   ledes: [
-    `The hospital bill landed and you're staring at the number trying to decide whether your life is now organized around paying it. Maybe you don't have insurance. Maybe your insurance had a deductible larger than the bill, so it didn't help. Maybe the insurance covered some of it but the rest still feels impossible. The bill itself is intimidating in its specificity — line items, codes, totals — and you have a vague sense that bills like this are negotiable, but no clear sense of how, or with whom, or when.`,
-    `Hospital bills are the most negotiable kind of consumer debt that exists in everyday life. The pricing system is designed around layered discounts, financial assistance programs, and payment options that are almost never volunteered by the billing department but are routinely available to patients who specifically request them. Knowing what to ask for, in what order, transforms a bill that feels final into one that's actually a starting point.`,
+    `The bill is on the kitchen counter. Twelve thousand dollars. You opened it three weeks ago and you have not opened it since. The number is large enough that paying it would empty your savings, and small enough that the hospital expects you to find a way. You feel stuck between two impossible choices: pay it or wreck your credit.<br/><br/>There is a third option, and most people do not know it exists. Hospital bills are negotiable in ways that almost no other bills are. You just have to do the steps in the right order, because skipping ahead loses you leverage you would have had.`,
+    `The reduction sequence, ordered by what works first.`,
   ],
-
   steps: [
-    {
-      name: "Apply for financial assistance — even if you think you don't qualify",
-      body: "Every nonprofit hospital in the US — which is most hospitals — is required by federal law to have a financial assistance policy. The income thresholds are higher than people expect: many programs offer free care up to 200% of the federal poverty line and partial assistance up to 400%. Even households earning $80-100k may qualify for partial assistance depending on family size and circumstances. The application is usually short and produces dramatic results. The hospital almost never volunteers this option. Search '[hospital name] financial assistance application' or call the billing office and say: 'I'd like to apply for charity care under your financial assistance policy.' Even partial qualification often produces 50-80% reductions.",
-    },
-    {
-      name: "Ask for the cash price, then ask for a prompt-pay discount",
-      body: "If financial assistance doesn't apply or doesn't fully cover the bill, the next move is the cash-price discount. Hospitals charge insurance companies one rate and self-pay patients a different (lower) rate. Ask: 'What is the cash price for these services if I pay in full today?' This often produces an immediate 30-50% reduction. On top of that, ask: 'Is there a prompt-pay discount if I settle this in 30 days?' Most hospitals offer one. Stack the two and you can typically reduce the bill by 50-70% before any negotiation has actually started. The hospital wants the cash; they just don't volunteer the discount unless you ask.",
-    },
-    {
-      name: "Negotiate from the Medicare rate, not the billed rate",
-      body: "If the discounts above don't get you to a manageable number, the negotiation framework that often works is: 'I'd like to settle this account at the Medicare reimbursement rate for these services.' The Medicare rate is the price the federal government pays the hospital for the same procedure — typically 30-40% of the billed amount. It's the floor most hospitals can defensibly accept, because they accept it from Medicare patients every day. Hospitals often agree to settlement amounts in this range, especially if you offer to pay the negotiated amount in full immediately. This isn't a wild ask; it's pricing the bill at the established federal benchmark.",
-    },
-    {
-      name: "Set up a no-interest payment plan if you still can't pay in full",
-      body: "If the negotiated amount is still more than you can pay at once, ask: 'Can we set up a payment plan with no interest for this balance?' Most hospitals will, and the minimum monthly payment is usually surprisingly low — often $25-50 a month even on bills of several thousand dollars. As long as you make the minimum payment each month, the account stays in good standing, doesn't go to collections, and doesn't accrue interest. This is dramatically better than the alternative — bills that go unpaid get sold to collection agencies for pennies on the dollar, then pursued aggressively with credit-damaging consequences. The payment plan is the hospital's preferred outcome too; everyone benefits from avoiding collections.",
-    },
-    {
-      name: "When the bill is too big and the hospital won't budge",
-      body: "Sometimes the discounts aren't enough and the hospital won't move further on the negotiation. In those cases, the next layers of help exist. Hospital billing advocates — independent professionals who negotiate on your behalf for a percentage of the savings — can sometimes get reductions you can't. Medical billing errors are common enough that a third-party review of the bill (by a billing-error specialist) often finds chargeable items that shouldn't be there. State attorneys general have consumer protection divisions that handle complaints about hospital billing practices, and the threat of one of these complaints sometimes produces movement that calls couldn't. And if the bill is genuinely impossible — meaning paying it would require giving up housing, food, or essential medication — bankruptcy is a real option that wipes medical debt cleanly. None of these are the first move. But they exist, and the existence of the next layer is part of why the negotiation usually works in the first place. The hospital knows what's available to you, even if they don't say so.",
-    },
+    { name: 'Request the itemized bill before negotiating anything', body: 'What you got was a summary. The itemized bill — every code, every charge, every supply — is what you actually have to fight. Hospitals are required to provide it on request. Studies have found that 70 to 80 percent of itemized bills contain errors: duplicate charges, incorrect codes, services billed but never received. The errors alone often reduce the bill 20 to 30 percent. Ask in writing for the itemized statement before you even discuss payment.' },
+    { name: 'Apply for financial assistance — most hospitals are required to offer it', body: 'Nonprofit hospitals are required by federal law to have financial assistance programs and to publish the eligibility criteria. Many for-profit hospitals offer them too. Eligibility is usually based on income relative to federal poverty level, and the assistance can range from a discount to full forgiveness. The hospital is not going to tell you about it unprompted. Ask for the financial assistance application and submit it before you make any payment plan.' },
+    { name: 'Ask for the cash discount', body: 'Hospitals charge insurance companies one rate, accept a much lower rate after negotiation, and have a separate "prompt pay" or "self-pay" discount for uninsured patients. Even if you have insurance, if you offer to pay a lump sum, hospitals often discount 30 to 50 percent. Call billing and say: "What is your self-pay or prompt-pay discount if I settle this today?" The first number they offer is rarely the best one.' },
+    { name: 'Negotiate the remainder, in writing, with a counter-offer', body: 'After errors are removed and discounts applied, take whatever number remains and write a letter offering to pay a lower amount as full settlement. Be specific: "I can pay [X] within 30 days as full settlement of this account, with the remainder forgiven and not reported to collections." Hospitals would rather get partial payment now than chase you for years. Get any agreement in writing before you send money — verbal deals get forgotten.' },
+    { name: 'Set up a payment plan only as a last resort, and read it carefully', body: 'Payment plans sound generous, but they often come with interest, late fees, and clauses that send you to collections after one missed payment. Some hospitals offer zero-interest plans; ask. Set the monthly payment at the lowest amount they will accept — you can always pay more, but you cannot easily renegotiate down. Get the terms in writing and keep records of every payment, because billing systems lose payments and then send the unpaid balance to collections.' }
   ],
-
   cta: {
     glyph:    '🧾',
-    headline: "Walk through the discount stack before you pay anything",
-    body:     "Bill Rescue runs your hospital bill through every available discount path — financial assistance, cash price, prompt-pay, Medicare-rate settlement — and gives you the scripts and letters to claim each one.",
+    headline: "Get the full hospital bill rescue plan.",
+    body:     "Enter the bill details. Bill Rescue gives you scripts, letters for every step, and a practice mode to rehearse the negotiation call before you dial.",
     features: [
-      "Financial assistance application templates",
-      "Cash-price and prompt-pay scripts",
-      "Medicare-rate settlement language",
-      "Payment-plan negotiation",
-      "Billing-error detection",
+      "Hospital-specific scripts and letters",
+      "Itemized-bill error spotting",
+      "Financial assistance templates",
+      "AI rep practice mode"
     ],
     toolId:   'BillRescue',
     toolName: 'Bill Rescue',
   },
-
-  published: '2026-04-27',
-  modified:  '2026-04-27',
+  published: '2026-04-29',
+  modified:  '2026-04-29',
 };

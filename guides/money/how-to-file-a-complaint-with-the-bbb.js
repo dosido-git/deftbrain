@@ -2,58 +2,36 @@ module.exports = {
   slug:          'how-to-file-a-complaint-with-the-bbb',
   category:      'money',
   categoryLabel: 'Money',
-
-  title:         "How to File a Complaint With the BBB (And When It Actually Helps)",
-  titleHtml:     "How to File a Complaint With the BBB <em>(And When It Actually Helps)</em>",
-  shortTitle:    "How to File a Complaint With the BBB",
-  navTitle:      "How to file a complaint with the BBB and when it actually helps",
-
-  description:   "The Better Business Bureau isn't a regulator and can't force a company to do anything. But for certain kinds of complaints against certain kinds of companies, it's still one of the fastest ways to a resolution.",
-  deck:          "The Better Business Bureau isn't a regulator and can't force a company to do anything. But for certain kinds of complaints against certain kinds of companies, it's still one of the fastest ways to a resolution.",
-
+  title:         "How to File a Complaint with the BBB",
+  titleHtml:     "How to File <em>a Complaint with the BBB</em>",
+  shortTitle:    "File a BBB Complaint",
+  navTitle:      "file a complaint with the bbb",
+  description:   "BBB complaints work for some companies and do nothing for others. The five-step filing that maximizes leverage where it exists.",
+  deck:          "BBB complaints work for some companies and do nothing for others. The five-step filing that maximizes leverage where it exists.",
   ledes: [
-    `You've been told to 'file a BBB complaint' as if it's a serious move, and you're trying to figure out whether it actually is. The Better Business Bureau has a vaguely-official-sounding name, a rating system, and a complaint form. It also charges companies for membership and has no actual enforcement authority. The result is something genuinely strange: an organization that can't *make* any company do anything, but that successfully resolves a meaningful percentage of complaints filed with it. Whether that includes yours depends entirely on what kind of company you're dealing with.`,
-    `BBB complaints work in some specific cases and don't work in others, and the gap between the two is mostly invisible from the outside. Knowing when to file (and when to skip the BBB and go straight to a regulator or chargeback) saves you a couple of weeks of waiting for a process that wasn't going to help anyway.`,
+    `Someone told you to file a BBB complaint. You went to the website, started the form, and realized you do not really know what the BBB does, what they can make a company do, or whether your specific company even cares. You are a few clicks away from spending an hour on something that may have no effect.<br/><br/>BBB complaints are a real lever for some companies and useless for others. Knowing the difference is most of the work. Here is the protocol that maximizes the chance of getting results, and tells you when to skip the BBB and escalate further.`,
+    `The five-step BBB filing — and the test for whether it will help.`,
   ],
-
   steps: [
-    {
-      name: "Understand what the BBB actually is",
-      body: "The BBB is a private nonprofit, not a government regulator. It assigns letter-grade ratings to businesses (paid members in good standing get higher grades, which is a separate critique), maintains complaint records, and offers mediation between consumers and companies. It cannot fine companies. It cannot force refunds. It cannot revoke licenses. What it can do is post your complaint publicly on the company's BBB profile, where it appears next to the rating prospective customers see. For companies that care about their BBB profile, that public visibility is leverage. For companies that don't, the complaint gets ignored.",
-    },
-    {
-      name: "Use it for local and reputation-sensitive businesses",
-      body: "BBB complaints work best against local service businesses (contractors, auto repair shops, moving companies, dental practices) and against national companies that compete heavily on reputation (some retailers, hotel chains, smaller financial-services firms). These businesses watch their BBB profiles because their customers do. A pending complaint with no response damages their rating and shows up in Google searches for their name. For companies in this category, filing a BBB complaint often produces a response within a week — sometimes faster than any other channel.",
-    },
-    {
-      name: "Skip it for large national companies that don't care",
-      body: "BBB complaints rarely move airlines, telecoms, banks, insurance companies, or large tech platforms. These companies have deliberately accepted poor BBB ratings as a cost of doing business — their growth doesn't depend on BBB grades, and most of their customers don't check the BBB before signing up. For these companies, the BBB complaint is processed in a queue that sometimes gets responses and often doesn't, with no accountability mechanism. If you're complaining about Comcast, Bank of America, or American Airlines, skip the BBB and go directly to the appropriate federal regulator. Same effort, much better odds.",
-    },
-    {
-      name: "File it correctly: facts, not feelings",
-      body: "Like any formal complaint, BBB complaints work better when they read like documentation. Lead with what you want (refund, repair, service correction), state the facts with dates and amounts, and keep the tone neutral. The BBB forwards your complaint to the company, and the company writes a response that also gets posted publicly. A measured, fact-based complaint produces a measured response that often resolves the issue. A frustrated, adjective-heavy complaint produces a defensive corporate response and an unresolved 'closed - not resolved' rating. The format matters because the audience is the next reader of the company's BBB profile, not the BBB itself.",
-    },
-    {
-      name: "When the BBB is the right move because it's the only public one",
-      body: "Sometimes the BBB's value isn't its enforcement (it has none) — it's its visibility. For complaints that aren't large enough to justify a chargeback or a regulator filing, but where you genuinely want a public record of the company's behavior, the BBB is one of the few free, formal, public channels available. Your complaint stays on the company's profile for years. Future customers Googling the company will see it. That's not nothing — and for some types of disputes, especially against smaller companies whose reputation is their main asset, the public visibility is the entire point. Filed correctly, the BBB complaint isn't asking for resolution; it's adding a public note that the company can either respond to or be defined by.",
-    },
+    { name: 'Check whether the company is BBB-accredited', body: 'BBB has the most leverage with companies that are accredited and pay for the accreditation — they have a financial interest in maintaining their rating. Look up the company on bbb.org first. Accredited (with a good rating) means a complaint will likely get a response. Not accredited or low-rated means the BBB has limited leverage; you may want to start with an AG or CFPB complaint instead. The check takes 30 seconds and changes your strategy.' },
+    { name: 'File with the right BBB regional office', body: 'BBB is regional. Use the company lookup on bbb.org — it will route you to the office that covers the company\u2019s headquarters. Filing with the right regional office matters because that office has the relationship with the company. A complaint filed against a company\u2019s wrong region may bounce around for weeks before being properly routed.' },
+    { name: 'Write a tight, factual complaint', body: 'BBB complaints get reviewed quickly. Lead with a one-paragraph summary: what you bought, what went wrong, what you tried, what you want. Follow with a chronology of contact attempts (dates, rep names, outcomes). End with the resolution you are requesting. Skip emotional language, avoid all-caps, and stick to facts. The BBB forwards your complaint to the company verbatim — you want a document the company will treat seriously.' },
+    { name: 'Attach the documentation', body: 'Receipts, screenshots, photos, prior correspondence. Without documentation, a BBB complaint reads as your word against theirs and the company can dismiss it easily. With documentation, the company has to respond to specifics. The BBB itself does not adjudicate disputes — they pass complaints to the company and post the response — but documentation makes the company\u2019s response harder to wave off.' },
+    { name: 'Watch for the response and decide what is next', body: 'Companies typically respond within 7 to 14 days. If they offer a fair resolution, accept and close it out. If they offer an unfair resolution or refuse, your reply on the BBB site stays public — this is your last chance to add information and to mark the case unresolved. After BBB, escalate to the relevant regulator (state AG, CFPB, FTC) depending on the industry. The unresolved BBB filing is now part of your evidence.' }
   ],
-
   cta: {
     glyph:    '📧',
-    headline: "Pick the right venue for your complaint",
-    body:     "Complaint Escalation Writer maps your complaint to the channels that will actually move it — BBB, regulators, chargebacks, executive escalation — based on the company size, industry, and type of dispute.",
+    headline: "Get the BBB filing — plus the next stages if it fails.",
+    body:     "Complaint Escalation Writer drafts the BBB complaint as one stage in a full campaign. If the BBB stage stalls, the next stage is already pre-written.",
     features: [
-      "Channel-selection by company type",
-      "BBB complaint drafting",
-      "Regulator-vs-BBB decision frame",
-      "Public-record-vs-resolution analysis",
-      "Multi-channel campaign sequencing",
+      "5-stage escalation campaign",
+      "Industry-specific leverage check",
+      "Pre-written letters at every stage",
+      "Tactical timeline with triggers"
     ],
     toolId:   'ComplaintEscalationWriter',
     toolName: 'Complaint Escalation Writer',
   },
-
-  published: '2026-04-27',
-  modified:  '2026-04-27',
+  published: '2026-04-29',
+  modified:  '2026-04-29',
 };

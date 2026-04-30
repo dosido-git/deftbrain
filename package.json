@@ -36,14 +36,13 @@
     "test":  "react-scripts test",
     "eject": "react-scripts eject",
 
-    "build:guides":        "node scripts/build-guides.js",
-    "build:og":            "node scripts/generate-og-images.js",
-    "build:sitemap:tools": "node scripts/generate-sitemap.js || true",
+"build:guides":          "node scripts/build-guides.js",
+"build:og":              "node scripts/generate-og-images.js",
+"build:sitemap:tools":   "node scripts/generate-sitemap.js || true",
 
-    "prebuild":  "npm run build:guides && npm run build:og && npm run build:sitemap:tools",
-    "build":     "react-scripts build",
-    "postbuild": "node scripts/prerender.js && node scripts/generate-guides-sitemap.js && node scripts/generate-sitemap-index.js"
-  },
+"prebuild":  "npm run build:guides && npm run build:og && npm run build:sitemap:tools",    "build":     "react-scripts build",
+"postbuild": "node scripts/prerender.js && node scripts/build-guides-indexes.js && node scripts/generate-guides-sitemap.js && node scripts/generate-sitemap-index.js"  
+},
   "eslintConfig": {
     "extends": [
       "react-app",

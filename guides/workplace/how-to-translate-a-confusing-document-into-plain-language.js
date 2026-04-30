@@ -1,63 +1,37 @@
-// ============================================================
-// guides/workplace/how-to-translate-a-confusing-document-into-plain-language.js
-// ============================================================
-
 module.exports = {
   slug:          'how-to-translate-a-confusing-document-into-plain-language',
   category:      'workplace',
   categoryLabel: 'Workplace',
-
-  title:         "How to Translate a Confusing Document Into Plain Language",
-  titleHtml:     "How to Translate a Confusing Document <em>Into Plain Language</em>",
-  shortTitle:    "Translate a Confusing Document",
-  navTitle:      "How to translate a confusing document into plain language",
-
-  description:   "The document is dense, formal, and giving you nothing. Here's a five-pass method for translating any complicated text into something a normal person can read.",
-  deck:          "The document is dense, formal, and giving you nothing. Here's a five-pass method for translating any complicated text into something a normal person can read.",
-
-  published:     '2026-04-28',
-  modified:      '2026-04-28',
-
+  title:         "How to translate a confusing document into plain language",
+  titleHtml:     "How to translate a confusing document <em>into plain language</em>",
+  shortTitle:    "Translate confusing documents",
+  navTitle:      "translate confusing documents",
+  description:   "A method for taking a document that was clearly not written for you and figuring out what it actually says, in language you would use yourself.",
+  deck:          "A method for taking a document that was clearly not written for you and figuring out what it actually says, in language you would use yourself.",
   ledes: [
-    `The document arrived in your inbox an hour ago. You've read the first paragraph four times. Each individual sentence is technically grammatical, and you understand each of the words, and yet you've extracted approximately zero meaning from the page. This is the specific failure mode of professional writing — text that is correct without being clear, and that's been signed off on by everyone in the chain because nobody wanted to admit they didn't understand it either.`,
-    `Translating dense writing into plain language is a real skill — different from writing well, different from reading well. It's a process. Five passes, in order. By the end you'll have a version you can act on, send to a colleague, or actually keep in your head. Here are the passes.`,
+    `Someone has handed you a document. It is in English. The words are all words you know. You read the first paragraph, then you read it again, then you realize you have absorbed nothing. The sentences are long. The structure is unfamiliar. There are clauses that refer to other clauses that refer back to the first ones. By the third page, you are skimming. By the fifth, you are pretending to have read it.\n\nThis is not a reading problem. The document was not written for you. It was written for an audience that already shares a context you do not have — a lawyer, a specialist, an insider — and the language assumes that context. Until you bridge the gap, the words will continue to slide past you, no matter how carefully you try to read.`,
+    `Here is how to translate a document written for someone else into language you can actually use.`,
   ],
-
   steps: [
-    {
-      name: "Read it once with no notes",
-      body: "The first read is for shape, not substance. Don't highlight, don't take notes, don't try to understand. You're getting a feel for the document — how long it is, what the sections are, where it speeds up and slows down. Trying to understand a complex document on the first read is how you get lost in the second paragraph and stay lost. Skim, then start.",
-    },
-    {
-      name: "Find the verbs and circle them",
-      body: "Bad writing hides the verbs. 'Authorization is required' is doing the same work as 'you need to authorize this,' but the first version puts the action two clauses away from anyone doing it. The fastest way to translate a document is to find the verbs, identify who's doing them, and rewrite each sentence around that subject-verb pair. The fog clears immediately when you can name who's supposed to do what.",
-    },
-    {
-      name: "Strip the modifiers, then read it again",
-      body: "Most density comes from modifiers — 'comprehensive,' 'reasonable,' 'subject to,' 'including but not limited to,' 'in accordance with the provisions of.' Cross them out. Read the sentence without them. Almost always, the sentence still says the same thing, and the meaning is suddenly visible. The modifiers were doing legal or political work; they weren't doing comprehension work.",
-    },
-    {
-      name: "Translate clause by clause, not paragraph by paragraph",
-      body: "Don't try to summarize a paragraph; translate each clause separately, then reassemble. A clause is a complete idea. A paragraph is several clauses pretending to be one. When you translate at the paragraph level, you lose specifics; when you translate at the clause level, the specifics survive. Do the small unit, then put the small units back together. The output will be longer than you expect and clearer than the original.",
-    },
-    {
-      name: "Test the translation against the original",
-      body: "After you've rewritten the document in plain language, go back and check each translated section against its source. Did you preserve the meaning, or did you smooth over a real subtlety? Plain language is dangerous when it papers over distinctions that mattered. The good translation is shorter, clearer, and identical in substance. The bad translation is shorter, clearer, and quietly wrong. Run the comparison; that's where you catch yourself.",
-    },
+    { name: 'Identify what kind of document it is and who it is for', body: 'Before you read another sentence, name the document. Is it a contract? A regulatory filing? A medical record? A scientific paper? An internal memo from a different industry? Each genre has conventions. Knowing the genre tells you what to expect — what is boilerplate, what is substance, where the important parts are likely to be hiding. A reader who knows it is a contract reads it differently than a reader who does not. Naming the genre is the first translation.' },
+    { name: 'Find the structural skeleton before reading the prose', body: 'Skim the document for headings, subheadings, numbered sections, bold text, anything that signals structure. Most documents have a skeleton — purpose, definitions, obligations, exceptions, signatures — and once you see it, the prose becomes navigable. Reading a structured document linearly is like trying to understand a building by walking through every room without first looking at the floor plan. Find the floor plan first.' },
+    { name: 'Translate sentence by sentence with simpler words', body: 'When you hit a passage you cannot follow, do not push past it. Stop and translate. Take one sentence and rewrite it in your own words. If a phrase sounds like jargon, replace it with an everyday equivalent. \'The party of the first part shall hereby indemnify\' becomes \'I have to cover their losses if X happens.\' This is slow work. It is also the only way to actually understand. Skipping the translation step is what produces the illusion of having read.' },
+    { name: 'Identify obligations and timelines and write them down separately', body: 'Most complex documents are doing one of two things: imposing obligations or specifying timelines. Pull these out into a separate list. Who has to do what? By when? Under what conditions? The list is usually shorter than you expected — and the prose around the obligations is often boilerplate that exists for legal purposes, not for communication. The list is the real document. The prose is the wrapping.' },
+    { name: 'Look for what the document is not saying', body: 'Sometimes the most important thing in a confusing document is what is missing. The promise that is suspiciously specific in some areas and vague in others. The exception that swallows the rule. The deadline that has no consequence attached. Once you have a plain-English version, ask: what is missing here that I would expect? The gaps are often where the real meaning lives — and where you should ask follow-up questions before signing or acting.' }
   ],
-
   cta: {
     glyph:    '🔍',
-    headline: "Run the five-pass translation in seconds",
-    body:     "PlainTalk takes any document — legal, financial, medical, technical — and produces the plain-language version with structural analysis, key sections highlighted, and a glossary built as you read.",
+    headline: "See through any text.",
+    body:     "Paste any document — a contract, a research paper, a medical form, a corporate memo — and PlainTalk gives you two things: a plain-English translation, and a structural X-ray showing how the text is built. It surfaces obligations, deadlines, hidden asymmetries, and the parts that actually matter.",
     features: [
-      "Plain-language translation",
-      "Structural document map",
-      "Key-section highlighting",
-      "Built-in glossary",
-      "Reading-level controls",
+      "Plain-English translation of any document, any length",
+      "Structural X-ray showing how the text is architecturally built",
+      "Side-by-side view to compare original to translation",
+      "Auto-detects document type and adapts the analysis"
     ],
     toolId:   'PlainTalk',
-    toolName: 'PlainTalk',
+    toolName: 'PlainTalk — Document Analyst',
   },
+  published: '2026-04-29',
+  modified:  '2026-04-29',
 };

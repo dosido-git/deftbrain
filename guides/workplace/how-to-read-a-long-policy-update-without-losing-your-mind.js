@@ -1,63 +1,37 @@
-// ============================================================
-// guides/workplace/how-to-read-a-long-policy-update-without-losing-your-mind.js
-// ============================================================
-
 module.exports = {
   slug:          'how-to-read-a-long-policy-update-without-losing-your-mind',
   category:      'workplace',
   categoryLabel: 'Workplace',
-
-  title:         "How to Read a Long Policy Update Without Losing Your Mind",
-  titleHtml:     "How to Read a Long Policy Update <em>Without Losing Your Mind</em>",
-  shortTitle:    "Read a Long Policy Update",
-  navTitle:      "How to read a long policy update without losing your mind",
-
-  description:   "The email said 'effective in 30 days.' The PDF is 24 pages. Here's how to find what actually changed, what affects you, and what you can ignore — without reading all 24 pages.",
-  deck:          "The email said 'effective in 30 days.' The PDF is 24 pages. Here's how to find what actually changed, what affects you, and what you can ignore — without reading all 24 pages.",
-
-  published:     '2026-04-28',
-  modified:      '2026-04-28',
-
+  title:         "How to read a long policy update without losing your mind",
+  titleHtml:     "How to read a long policy update <em>without losing your mind</em>",
+  shortTitle:    "Read long policy updates",
+  navTitle:      "read policy updates",
+  description:   "A method for reading the long policy update that just landed in your inbox without giving up halfway through and without missing the parts that matter.",
+  deck:          "A method for reading the long policy update that just landed in your inbox without giving up halfway through and without missing the parts that matter.",
   ledes: [
-    `The email arrived from HR. The subject line was 'Updated Travel & Expense Policy — Effective May 15.' Attached: a 24-page PDF. The body of the email said 'please review carefully.' You scrolled the PDF for ninety seconds, found nothing that looked dramatically different, and closed the tab. In four weeks something will go wrong because of a clause on page eleven, and the email will be cited at you. This is the entire pattern of corporate policy updates.`,
-    `Reading a long policy update front-to-back is almost never the right move — most of the document is unchanged from last time, and the part that matters is small. Five steps that find the part that matters without making you read the rest. Here they are.`,
+    `The email subject line says something like 'Updates to Our Terms of Service' or 'Important Changes to Your Account' or 'Revised Employee Handbook — Please Review.' You opened it. It is five thousand words. The first three hundred are throat-clearing about how much they value you. The next four thousand are dense prose with bullet points buried inside it. There is no summary. There is no diff. There is no 'what changed' header. There is just a wall of new text, and you are supposed to know what is different from before.\n\nThis is by design. Long policy updates are written to be technically compliant — they put everything in the document — without being read. The fact that you struggle to parse them is not your fault. But you still have to extract what matters, because the rest of the document is sometimes attempting to commit you to things you would not agree to if you understood them.`,
+    `Here is how to read a long policy update efficiently and not miss what matters.`,
   ],
-
   steps: [
-    {
-      name: "Look for the 'summary of changes' first",
-      body: "Most updated policies include a one-page section near the front that lists what changed since the previous version. This is the only section that matters in 80% of cases. Find it before you read anything else; if it exists, read it carefully and stop. The full policy is the unchanged context; the change summary is the news. Reading the unchanged context is what costs you the afternoon.",
-    },
-    {
-      name: "If there's no change summary, diff it yourself",
-      body: "Pull the previous version of the policy from your inbox or HR portal. Open both side by side. The fastest way to find what changed is to scroll both at once, looking for sections where the formatting has shifted, where new bullet points appear, or where paragraph length has grown. Real changes almost always disturb the visual pattern. The page where the formatting suddenly changes is usually the page where the policy changed.",
-    },
-    {
-      name: "Search for dates and dollar amounts",
-      body: "Policy changes most often modify two things: timing and money. Specific dates ('effective May 15') and specific amounts ('limit increased from $X to $Y') are the most concrete kinds of change, and they're easy to find with Ctrl-F. Search for '$', '%', 'effective,' and 'as of.' The hits cluster around the actual changes; the rest of the document is connective tissue.",
-    },
-    {
-      name: "Identify what applies to your role",
-      body: "A policy that applies to all employees is usually 30% directly relevant to any individual employee. If you're remote, ignore the in-office sections. If you don't manage people, ignore the manager sections. If you don't travel internationally, ignore the international travel section. Skim for your specific situation; the rest of the policy is real content for someone, just not for you.",
-    },
-    {
-      name: "Note the deadline and set a reminder",
-      body: "Most policy updates have a date by which something needs to be done — re-acknowledge, update preferences, complete training, change a setting. Find that date and put it on your calendar with a buffer of three days. The single biggest cost of policy updates isn't reading them; it's missing the deadline buried inside them. The five-minute skim is worth roughly nothing if it doesn't end with the date in your calendar.",
-    },
+    { name: 'Look for the changes, not the document', body: 'You probably already roughly understand the existing policy. What you need to know is what is different. Some policy updates helpfully include a \'summary of changes\' section — read that first if it exists. If it does not, you have to do the work yourself by scanning for new or modified language. Phrases like \'Section X has been revised,\' \'Effective [date],\' or \'Previously,\' signal modified content. The goal is not to absorb the whole document — it is to identify the deltas.' },
+    { name: 'Scan for changes to your obligations or costs', body: 'Of all the things that could change in a policy, the ones that matter to you are: what you are now required to do, what fees or rates have changed, what is now prohibited that was not before, and what data they are now collecting or sharing. Look specifically for these. Most policy updates contain other changes — internal procedures, new disclosures, formatting — that do not affect you. Filter ruthlessly.' },
+    { name: 'Watch for arbitration and waiver clauses', body: 'A common change in consumer-facing policy updates is the addition or modification of arbitration clauses, class-action waivers, or limitations of liability. These are not boilerplate — they materially affect your legal rights. If a policy update introduces or expands one of these, that is significant. The language is dense on purpose. Look for words like \'arbitration,\' \'binding,\' \'class action,\' \'waive,\' \'opt out.\' The opt-out language often gives you a window — usually 30 to 60 days — and the window is usually buried.' },
+    { name: 'Note any deadlines or default-acceptance language', body: 'Many policy updates state that continued use of the service constitutes acceptance, or that you have a window to opt out before changes take effect. Find this language. If you want to push back on a change, you usually have to do it before a specific date or before you next use the service. Missing the window is the same as agreeing. Set a calendar reminder if there is anything you want to revisit.' },
+    { name: 'Save the old version if you can find it', body: 'When in doubt, the most useful exercise is comparing the old version to the new version side by side. If the company published a redline or a \'changes since [date]\' document, that is gold. If they did not, you may be able to find the old version through their archive or through the Wayback Machine. Even ten minutes with both documents open will tell you more than an hour with just the new one.' }
   ],
-
   cta: {
     glyph:    '🔇',
-    headline: "Diff the policy and extract what affects you",
-    body:     "Noise Canceler reads the policy update against the previous version, surfaces every concrete change, filters for what applies to your specific role, and pulls every deadline into a clean action list.",
+    headline: "Pull the 10% that matters out of the 90% that doesn't.",
+    body:     "Noise Canceler is a relevance filter, not a summarizer. Paste any dense document — HOA notice, insurance EOB, benefits packet, policy update — describe your situation, and it returns only what requires action, what costs you money, what saves you money, and what you can safely ignore.",
     features: [
-      "Policy diff against prior version",
-      "Role-specific filtering",
-      "Deadline extraction",
-      "Concrete-change detection",
-      "Action-item summary",
+      "Cross-references the document against your specific situation",
+      "Extracts only action items, cost changes, and personally-affecting clauses",
+      "Flags 'buried but important' items hidden in dense fine print",
+      "Tells you explicitly what you can ignore — most of it"
     ],
     toolId:   'NoiseCanceler',
     toolName: 'Noise Canceler',
   },
+  published: '2026-04-29',
+  modified:  '2026-04-29',
 };

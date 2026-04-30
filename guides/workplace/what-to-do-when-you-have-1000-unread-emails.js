@@ -1,69 +1,37 @@
-// ============================================================
-// guides/workplace/what-to-do-when-you-have-1000-unread-emails.js
-// ============================================================
-
 module.exports = {
   slug:          'what-to-do-when-you-have-1000-unread-emails',
   category:      'workplace',
   categoryLabel: 'Workplace',
-
-  title:         "What to Do When You Have 1,000+ Unread Emails",
-  titleHtml:     "What to Do When You Have <em>1,000+ Unread Emails</em>",
-  shortTitle:    "1,000+ Unread Emails",
-  navTitle:      "What to do when you have 1,000+ unread emails",
-
-  description:   "The number stares back. You've been pretending it isn't a problem; now it is. Here's how to clear a four-figure inbox without reading all of it — you won't, and you don't have to.",
-  deck:          "The number stares back. You've been pretending it isn't a problem; now it is. Here's how to clear a four-figure inbox without reading all of it — you won't, and you don't have to.",
-
-  published:     '2026-04-28',
-  modified:      '2026-04-28',
-
+  title:         "What to do when you have 1000+ unread emails",
+  titleHtml:     "What to do when you have <em>1000+ unread emails</em>",
+  shortTitle:    "Inbox bankruptcy",
+  navTitle:      "1000 unread emails",
+  description:   "A method for the specific situation where your inbox has grown to a size where you cannot possibly read it all — and what to do to recover without dropping anything important.",
+  deck:          "A method for the specific situation where your inbox has grown to a size where you cannot possibly read it all — and what to do to recover without dropping anything important.",
   ledes: [
-    `The number is 1,247. Or 2,300. Or 4,800. You stopped looking at the count six weeks ago because it was making you feel something you didn't want to feel. Now you're looking again, and it's larger than it was, and somewhere in there is probably a real email from a real person who needed something. You don't know which one. You also don't have a week to find out.`,
-    `Here's the truth: you are not going to read those emails. Anyone who tells you to start at the top and work down is selling you a fantasy. The only way out of a four-figure inbox is to stop treating each email as a thing that needs reading and start treating the pile as a problem with a procedure. Here's the procedure.`,
+    `You opened your inbox today and the unread counter says 1,247. Some of the emails are from last quarter. Some are from people who have probably given up waiting. Some are urgent things you missed. You have no idea which is which. Just looking at the counter produces a wave of dread that makes you close the laptop and pretend nothing happened.\n\nAt this scale, the inbox is no longer a tool — it is a graveyard. You cannot read your way out of it. Trying to triage 1,200 emails one at a time is not going to happen, and the longer the pile grows, the more impossible the task feels. There is a faster way out, and it requires accepting that you are about to do something that feels reckless: declare bankruptcy.`,
+    `Here is what to do when your inbox has grown to a size you cannot process — and how to recover without losing anything important.`,
   ],
-
   steps: [
-    {
-      name: "Accept that you won't read them",
-      body: "This is the hardest step and it's the first one. Reading 1,247 emails would take a full work week and you don't have a full work week. The premise of triaging this pile is that 95% of it doesn't matter — and that's the same percentage as a normal inbox; it just looks worse at scale. You're not abandoning the messages. You're being honest about what you were going to do with them anyway.",
-    },
-    {
-      name: "Sort by sender, not date",
-      body: "Date-sorted, the inbox is chaos. Sender-sorted, patterns appear: 312 are from one newsletter, 78 are from your calendar app, 41 are from a tool you stopped using two months ago. These are the bulk-archive piles. Sort by sender and the noise sorts itself; suddenly the message from a real human in week three jumps out instead of hiding in line behind 200 others.",
-    },
-    {
-      name: "Bulk-archive the obvious noise first",
-      body: "Calendar invites, automated notifications, newsletters, alerts, Slack digests, system emails — gone. Multi-select, archive, don't think. You can always recover from archive if it turns out you needed something; you can't recover the hour you spent debating whether to archive each one individually. The bulk-archive pass should remove half the pile in under five minutes.",
-    },
-    {
-      name: "Search by name for the senders you actually owe",
-      body: "Now think of the four or five people whose emails you'd be embarrassed to ignore. A boss, a client, a collaborator on a project you're behind on. Search by name. Read those threads, and only those threads. Everyone else either followed up — in which case you'll find them naturally — or didn't, in which case it wasn't urgent.",
-    },
-    {
-      name: "Send a short 'I missed this' to the few",
-      body: "For the messages that needed a reply weeks ago, the apology is short and the explanation is shorter. 'Just seeing this — sorry for the delay. Still relevant?' Two sentences. No paragraph of excuses. The senders you owe a real reply to either say 'yes, still relevant' and you handle it, or 'no, sorted itself out' and you didn't owe anything anyway. Most of them are the second.",
-    },
+    { name: 'Declare email bankruptcy and archive everything older than 30 days', body: 'If an email is more than thirty days old and you have not responded, you are not going to. Archive everything older than thirty days. All of it. Do not read first. Just archive. The archived emails are not deleted — you can still find them by search if something specific comes up. But they are out of your active pile. This single action takes ten seconds and removes 80% of the unread count. Your inbox is now a manageable size.' },
+    { name: 'Send a brief \'inbox bankruptcy\' note to anyone you know was waiting', body: 'If you can think of two or three specific people who were waiting on a reply from you, send each one a quick note. \'Sorry for the silence — my inbox got away from me. Please resend if you need a response on anything.\' This puts the ball back in their court. If they actually needed something, they will resend. If they did not, the issue is closed. Most people understand and appreciate the honesty more than they would have appreciated a delayed full reply.' },
+    { name: 'Process the remaining 30 days using fast triage', body: 'Now you have a few hundred emails from the last month. Sort by sender or subject. Use the same fast-triage protocol you would use on a daily basis. Identify what genuinely needs a reply now, what can be archived without reply, what can wait. You should be able to process the last thirty days in under thirty minutes if you stay disciplined. Do not get sucked into long threads. Reply briefly or defer.' },
+    { name: 'Set up filters so this does not happen again', body: 'Once you are out of the hole, take fifteen minutes to set up rules that auto-archive newsletters, system notifications, and low-priority sender categories. The reason your inbox got to 1,200 is partly that low-value email was mixing with high-value email. Separating them programmatically prevents the same accumulation from happening again. Most inbox bankruptcies are repeats; the people who avoid the repeat are the ones who fixed the underlying flow.' },
+    { name: 'Forgive yourself and move on', body: 'Inbox bankruptcy is not a moral failure. It is a normal consequence of email volume exceeding processing capacity. People you respect have done it. Some of them do it once a year. The shame people attach to it is disproportionate to the actual cost — most of the world keeps running. Once you have declared bankruptcy, you are done. Do not spend mental energy revisiting whether it was the right move. It was. Move on.' }
   ],
-
-  callout: {
-    afterStep: 4,
-    scriptedLine: "Just seeing this now — sorry for the delay. Is this still live, or has it sorted itself out? Happy to help if you still need me.",
-    explanation: "This is the universal late-reply opener: short apology, an out for the sender, and a clear offer. Most replies come back as 'all sorted, no worries' — which is exactly what you want.",
-  },
-
   cta: {
     glyph:    '📬',
-    headline: "Triage a four-figure inbox without reading it",
-    body:     "Email Urgency Triager handles batch analysis: paste the senders and subjects from your unread pile and get back which ones actually need attention — fast, with reasoning, and with reply templates for the small set that does.",
+    headline: "What actually needs a reply today.",
+    body:     "Email Urgency Triager separates real urgency from perceived urgency. Paste any batch of emails — it sorts them into Reply Now, Reply This Week, and Optional/Never, with reasoning for each. Quick-response templates included for the urgent ones. Permission-to-breathe section for the anxiety.",
     features: [
-      "Batch inbox analysis",
-      "Three-tier prioritization",
-      "Per-email reasoning",
-      "Late-reply templates",
-      "Permission to archive",
+      "Three-tier sort: Reply Now, Reply This Week, Optional/Never",
+      "Detailed reasoning per email — not just labels",
+      "Quick-response templates for the urgent items",
+      "Permission-to-breathe section for inbox anxiety"
     ],
     toolId:   'EmailUrgencyTriager',
     toolName: 'Email Urgency Triager',
   },
+  published: '2026-04-29',
+  modified:  '2026-04-29',
 };

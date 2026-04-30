@@ -1,63 +1,37 @@
-// ============================================================
-// guides/workplace/how-to-know-what-emails-actually-need-a-response.js
-// ============================================================
-
 module.exports = {
   slug:          'how-to-know-what-emails-actually-need-a-response',
   category:      'workplace',
   categoryLabel: 'Workplace',
-
-  title:         "How to Know Which Emails Actually Need a Response",
-  titleHtml:     "How to Know <em>Which Emails Actually Need a Response</em>",
-  shortTitle:    "Which Emails Need a Response",
-  navTitle:      "How to know which emails actually need a response",
-
-  description:   "Most emails don't need a reply, but the inbox makes you feel like they all do. Here's how to tell the difference fast — without guilt, and without missing the ones that matter.",
-  deck:          "Most emails don't need a reply, but the inbox makes you feel like they all do. Here's how to tell the difference fast — without guilt, and without missing the ones that matter.",
-
-  published:     '2026-04-28',
-  modified:      '2026-04-28',
-
+  title:         "How to know what emails actually need a response",
+  titleHtml:     "How to know <em>what emails actually need a response</em>",
+  shortTitle:    "Emails that need replies",
+  navTitle:      "emails that need replies",
+  description:   "A diagnostic for telling which emails actually require your reply and which are informational, social, or noise — so you can stop responding to everything.",
+  deck:          "A diagnostic for telling which emails actually require your reply and which are informational, social, or noise — so you can stop responding to everything.",
   ledes: [
-    `An email lands. You read it. You sit with it for a minute. Does this one actually need a reply, or is it one of those messages that exists in your inbox and nothing more? If you're honest, you spend a lot of the day half-drafting answers to things nobody asked you for. The cost isn't sending the reply; the cost is the ten minutes you spent deciding whether to.`,
-    `Most emails don't need a response. Many don't need to be read. The trick is being able to tell, in about three seconds, which category any given message falls into. Here's how to read for that signal.`,
+    `You feel obligated to reply to most emails. Even the FYIs. Even the ones that copy you on long threads. Even the ones where someone mentions your name in passing. The result is that you spend a lot of your day writing short responses that maintain a perception of engagement without actually moving any work forward. You suspect this is unnecessary. You also worry that if you stop responding, people will think you are ignoring them or not paying attention.\n\nMost email does not actually need a reply. The expectation that it does is a cultural habit you can let go of, with surprisingly little cost. The challenge is being able to tell, in real time, which emails actually need you and which do not.`,
+    `Here is how to tell which emails actually need a reply.`,
   ],
-
   steps: [
-    {
-      name: "Look for the question, not the words",
-      body: "Most emails don't actually contain a question. They contain a status update, a CYA forward, a 'just letting you know,' or a slow-motion announcement. If you read the message and can't point to a specific thing the sender wants from you, there's nothing to reply to — there's only an impulse to acknowledge, which is different. Acknowledgment is optional; an answer is owed only when there's a question.",
-    },
-    {
-      name: "Check who's actually being asked",
-      body: "If you're on the To line, you're being asked. If you're CC'd, you're being informed. If you're BCC'd, you're being archived. People conflate these constantly — they treat a CC like a To and feel guilty for not replying to a thread they were never expected to answer. Reply to the To line. Read the CC. Ignore the BCC.",
-    },
-    {
-      name: "Notice when the sender already has their answer",
-      body: "A surprising number of emails are someone thinking out loud. They're asking a question they could answer themselves; they're flagging an issue that resolved itself by the time you read it; they're proposing a thing and three other people have already replied to greenlight it. Scroll the thread. If consensus has formed without you, you're not the bottleneck — and chiming in adds noise, not value.",
-    },
-    {
-      name: "Calculate the cost of saying nothing",
-      body: "For any email you're tempted to reply to, ask: what concretely happens if I don't? Most of the time, the honest answer is 'nothing' — the project moves on, the meeting still happens, the sender follows up if they actually need you. The emails that cost you something to ignore are the small minority, and they're usually obvious when you stop and check.",
-    },
-    {
-      name: "Default to no reply, not yes reply",
-      body: "If you can't articulate why an email needs a response, the default is silence. Inbox culture has trained you to feel guilty about silence — but most senders don't expect a reply to most messages, and the ones who do will follow up. Letting an email die is not rude; it's how email is supposed to work. The guilt is a trained response, not a real obligation.",
-    },
+    { name: 'Look for an explicit request or question', body: 'Most emails that need a reply contain a question mark or a phrase like \'can you,\' \'please,\' \'I need,\' or \'let me know.\' If the email contains none of these, it is probably informational, not requesting. Informational emails usually do not need a reply. The sender shared something with you. They were not asking for anything. A reply at this point is just acknowledgment, and acknowledgment is usually optional.' },
+    { name: 'Check who else is on the email', body: 'If you are CC\'d rather than addressed in the To line, the email is mostly informational for you. The action is for someone else. Replies from CC recipients clutter threads without adding value. Unless you have something substantive to contribute, do not reply just because you were copied. The convention that CC means \'no action expected\' is widely understood; honoring it is appreciated.' },
+    { name: 'Notice whether the email is the start or middle of a thread', body: 'If the email is part of an active thread between several people, your reply is only needed if you have specific information or a specific decision to add. Replies that say \'agreed\' or \'sounds good\' from non-decision-makers are noise. Watch the thread, contribute when you have something specific, stay quiet otherwise. The people running the thread will appreciate this.' },
+    { name: 'Distinguish \'reply expected\' from \'reply traditional\'', body: 'Some emails culturally seem to expect a reply but functionally do not. Holiday wishes from your manager. Thank-you notes after a meeting. Confirmations that an email was received when there is nothing else to confirm. These are reply-traditional, not reply-expected. Skipping them rarely has consequences. The cumulative time saved by skipping reply-traditional emails is significant, and the cost is essentially zero.' },
+    { name: 'When in doubt, wait 24 hours', body: 'If you cannot tell whether an email needs a reply, do not reply. Wait. If it really needed a reply, the sender will follow up. If they do not, the reply was not needed. This is a simple test, and it is a more reliable predictor than your sense of obligation. Most emails that you waited on never required a follow-up, which is the cleanest possible signal that the reply was not necessary.' }
   ],
-
   cta: {
     glyph:    '📬',
-    headline: "Get a reply-or-ignore verdict for every email",
-    body:     "Email Urgency Triager analyzes your inbox one message at a time and tells you exactly which ones need a response, which ones can wait, and which ones you can let die — with the reasoning behind each call.",
+    headline: "What actually needs a reply today.",
+    body:     "Email Urgency Triager separates real urgency from perceived urgency. Paste any batch of emails — it sorts them into Reply Now, Reply This Week, and Optional/Never, with reasoning for each. Quick-response templates included for the urgent ones. Permission-to-breathe section for the anxiety.",
     features: [
-      "Reply-or-ignore decisions",
-      "Per-email reasoning",
-      "Three-tier prioritization",
-      "Permission to ignore",
-      "Suggested response time",
+      "Three-tier sort: Reply Now, Reply This Week, Optional/Never",
+      "Detailed reasoning per email — not just labels",
+      "Quick-response templates for the urgent items",
+      "Permission-to-breathe section for inbox anxiety"
     ],
     toolId:   'EmailUrgencyTriager',
     toolName: 'Email Urgency Triager',
   },
+  published: '2026-04-29',
+  modified:  '2026-04-29',
 };

@@ -126,9 +126,39 @@ Object.entries(LEGACY_REDIRECTS).forEach(([from, to]) => {
   app.get(from, (req, res) => res.redirect(301, to));
 });
 
+// ── Guide index pages ──
+// These must come BEFORE the case-insensitive tool slug middleware below,
+// so /guides isn't interpreted as a tool ID lookup.
+// express.static with extensions:['html'] handles individual guide pages
+// (/guides/{category}/{slug}) but does NOT auto-serve directory index files,
+// so /guides, /guides/by-tool, and /guides/{category} need explicit routes.
+app.get('/guides', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'build', 'guides', 'index.html'));
+});
+app.get('/guides/by-tool', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'build', 'guides', 'by-tool.html'));
+});
+
+// Per-category guide index pages
+// Each /guides/{category} resolves to build/guides/{category}/index.html.
+// Listed explicitly (rather than wildcard) so unknown categories fall through
+// to a proper 404 instead of returning a misleading "OK" with empty content.
+const GUIDE_CATEGORIES = [
+  'apologies','career','conversations','cooking','decisions','health',
+  'home','learning','meetings','money','pets','planning','practical',
+  'presentations','speeches','travel','wellness','workplace'
+];
+GUIDE_CATEGORIES.forEach(cat => {
+  app.get(`/guides/${cat}`, (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'build', 'guides', cat, 'index.html'));
+  });
+});
+
 app.use((req, res, next) => {
   // Only apply to non-API, non-static asset paths
   if (req.path.startsWith('/api') || req.path.includes('.')) return next();
+  // Skip /guides/* — these are not tool IDs
+  if (req.path === '/guides' || req.path.startsWith('/guides/')) return next();
   const slug = req.path.replace(/^\//, '').replace(/\/$/, '');
   if (!slug) return next();       // skip homepage
   const canonical = toolIdMap[slug.toLowerCase()];
@@ -185,15 +215,29 @@ app.get('/api/endpoints', (req, res) => {
   res.json({ endpoints: routeList, count: routeList.length });
 });
 
+// ── Serve static build assets ──
+// Hoisted out of the IS_PRODUCTION block so /guides/{category}/{slug} works
+// in dev too (so we can locally test the guide URLs we just enabled).
+// extensions: ['html'] serves prerendered flat files at clean URLs:
+//   /SpiralStopper → build/SpiralStopper.html
+//   /guides/workplace/how-to-stop-email-anxiety → build/guides/workplace/how-to-stop-email-anxiety.html
+app.use(express.static(path.join(__dirname, '..', 'build'), {
+  redirect: false,
+  extensions: ['html'],
+  setHeaders: (res, filePath) => {
+    if (filePath.includes(path.sep + 'guides' + path.sep) && filePath.endsWith('.html')) {
+      res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=86400');
+    }
+  },
+}));
+
 // ── Serve React build (production) ──
 if (IS_PRODUCTION) {
-  // ── Trailing slash redirect — must be before express.static ──
+  // ── Trailing slash redirect — must be before catch-all ──
   // Prerendered tool pages are now flat files (build/ToolName.html) rather than
   // directories (build/ToolName/index.html), so static servers have no slash
   // variant to serve. This middleware handles any slash URLs that Google or
   // external links may have cached, redirecting them to the canonical form.
-  // Placed here rather than at top-level because Railway's Fastly CDN edge
-  // intercepts requests before top-level Express middleware can fire.
   app.use((req, res, next) => {
     if (req.path !== '/' && req.path.endsWith('/')) {
       const slug = req.path.slice(1, -1); // strip leading / and trailing /
@@ -204,23 +248,6 @@ if (IS_PRODUCTION) {
     }
     next();
   });
-
-  // extensions: ['html'] serves prerendered flat files at clean URLs:
-  // /SpiralStopper → build/SpiralStopper.html (200, no trailing-slash variant)
-  // /guides/how-to-tell-your-boss → build/guides/how-to-tell-your-boss.html
-  //
-  // setHeaders adds aggressive CDN caching for guide HTML — Fastly respects
-  // s-maxage (24h), browsers use max-age (5min). Other static assets keep
-  // express.static's defaults.
-  app.use(express.static(path.join(__dirname, '..', 'build'), {
-    redirect: false,
-    extensions: ['html'],
-    setHeaders: (res, filePath) => {
-      if (filePath.includes(path.sep + 'guides' + path.sep) && filePath.endsWith('.html')) {
-        res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=86400');
-      }
-    },
-  }));
 
   app.get('*', (req, res) => {
     const slug = req.path.replace(/^\//, '');

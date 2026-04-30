@@ -1,63 +1,37 @@
-// ============================================================
-// guides/workplace/how-to-find-the-action-items-buried-in-a-long-document.js
-// ============================================================
-
 module.exports = {
   slug:          'how-to-find-the-action-items-buried-in-a-long-document',
   category:      'workplace',
   categoryLabel: 'Workplace',
-
-  title:         "How to Find the Action Items Buried in a Long Document",
-  titleHtml:     "How to Find the Action Items <em>Buried in a Long Document</em>",
-  shortTitle:    "Find Action Items in a Document",
-  navTitle:      "How to find the action items buried in a long document",
-
-  description:   "Long documents like to hide their requests inside paragraphs of context. Here's how to extract every action item from any document in five minutes — without missing anything.",
-  deck:          "Long documents like to hide their requests inside paragraphs of context. Here's how to extract every action item from any document in five minutes — without missing anything.",
-
-  published:     '2026-04-28',
-  modified:      '2026-04-28',
-
+  title:         "How to find the action items buried in a long document",
+  titleHtml:     "How to find <em>the action items buried in a long document</em>",
+  shortTitle:    "Find buried action items",
+  navTitle:      "find buried action items",
+  description:   "A method for the specific problem of pulling out the things you actually have to do from a document that buried them in pages of context, throat-clearing, and FYI material.",
+  deck:          "A method for the specific problem of pulling out the things you actually have to do from a document that buried them in pages of context, throat-clearing, and FYI material.",
   ledes: [
-    `The document you just read had 18 pages. Somewhere inside it were three things that required your action — a form to fill out, a date to confirm, a checkbox to update. You read the document carefully, you absorbed the gist, and you missed two of the three. They were buried in paragraphs of context, mentioned in passing, sandwiched between background information and follow-up notes. Reading carefully wasn't enough. Reading carefully isn't always the right strategy.`,
-    `Finding action items in a long document is a different mode than reading for understanding. It's extraction, not absorption. You're looking for verbs and deadlines, not arguments and context. Five moves that surface every action without making you read everything.`,
+    `You know the document contains action items. The sender said so. Or implied so. Or you remember the email saying 'please review and respond.' But the document itself is sixteen pages of dense prose, and the action items — if they exist — are not in their own section, not bolded, not flagged, not in a bulleted list. They are inline, somewhere, hiding among the FYI material.\n\nThis is unfortunately how many work documents are written. The author knew what the asks were. The author did not bother to make them visible. The result is that recipients miss things, take longer than they should, and sometimes have to ask 'wait, was there something I needed to do?' which is a question that should never have to be asked but routinely is.`,
+    `Here is how to find the buried action items in a long document, fast.`,
   ],
-
   steps: [
-    {
-      name: "Search for command-form verbs",
-      body: "Action items begin with verbs in the imperative or future-conditional: 'submit,' 'confirm,' 'review,' 'sign,' 'update,' 'will need to,' 'must.' Ctrl-F for these in any combination. Each hit is a candidate for an action that applies to you; skim the surrounding sentence to see if it does. The verbs are the entry points; the context is recoverable once you've found them.",
-    },
-    {
-      name: "Find every deadline phrase",
-      body: "'By Friday,' 'no later than May 15,' 'within seven days,' 'before the next billing cycle.' Deadlines are the metadata of action items — every action you owe has one, and the deadline is usually adjacent to the action in the text. Search for date formats, 'by,' 'before,' 'no later than,' and 'within.' Where dates cluster, actions cluster. The two travel together.",
-    },
-    {
-      name: "Look for forms, links, and attachments",
-      body: "Action items frequently come with infrastructure — a form to fill, a link to click, an attachment to sign. Anywhere the document references one of these, there's an action attached. Scroll through quickly looking only for embedded forms or 'click here to acknowledge' links; each one is a request that the document is making of you. The link is the action made literal.",
-    },
-    {
-      name: "Distinguish your actions from other people's",
-      body: "Long documents address multiple audiences. An action item written to 'all employees' is yours; one written to 'managers' may not be. One written to 'tenants' applies to you only if you're a tenant. Read each action item with the audience filter on — and don't add to your task list anything that's actually someone else's task. False positives are how you end up doing work that isn't yours; false negatives are how you miss work that is. Both costs are real.",
-    },
-    {
-      name: "Build a clean list at the end",
-      body: "After you've extracted candidate actions, rewrite them as a flat checklist with the deadline next to each item: 'Sign acknowledgment form — by May 15.' 'Update beneficiary on portal — by end of month.' This list is now your contract with the document; the document itself can be archived. You'll act from the list, not the source. The list is the document's actual output; the rest of it was the route you had to walk to get there.",
-    },
+    { name: 'Search for action verbs first', body: 'Open the document and search for the verbs that signal an ask: review, complete, sign, submit, send, return, confirm, approve, respond, attend, register, opt out. Use Ctrl-F. Each hit is a place where someone is being asked to do something. The hits will not all be addressed to you, but they form the candidate list. Read the surrounding sentence for each one. The pattern emerges quickly: the actual action items will be a subset of these hits, and the rest will be context.' },
+    { name: 'Search for dates and deadlines', body: 'Any sentence containing a specific date is a candidate action item — something is happening or due on that date. Scan for digits, month names, and phrases like \'by Friday,\' \'no later than,\' \'effective [date].\' These are signal flares. Even if the action language is vague, the date tells you something specific is expected. Make a list of every date you find with a one-line description of what is associated with it.' },
+    { name: 'Search for direct address language', body: 'Long documents often distinguish between general information and instructions to specific people. Look for direct address: \'Please ensure you,\' \'You are required to,\' \'Each [role] should.\' These are the moments when the document is talking to you specifically rather than describing the world generally. The action items are concentrated in these passages.' },
+    { name: 'Map each action item to a person and a deadline', body: 'For every candidate action you find, ask two questions: who has to do it, and by when? If both are clear, it is a real action item. If either is vague, you have one of two options — make a reasonable assumption and proceed, or reach out to the sender for clarification. Vague action items have a way of becoming missed action items, because nobody is sure they apply to them. Pinning down the who and the when converts vague into concrete.' },
+    { name: 'Build a one-page summary of the actions and ignore the rest', body: 'After your search, you should have a short list — usually three to seven items — of actions you actually need to take. Write them down in a simple format: action, deadline, what success looks like. This page is now your working version of the document. The original sixteen pages exist for reference, but you do not need to read them again. The summary is what you act from. Most of the document was context. The actions are the document\'s actual payload.' }
   ],
-
   cta: {
     glyph:    '🔇',
-    headline: "Extract every action item automatically",
-    body:     "Paste any long document and Noise Canceler extracts every action item with its deadline, filters for the ones that apply to your role, and produces a clean checklist you can act from — the source archived, the list ready.",
+    headline: "Pull the 10% that matters out of the 90% that doesn't.",
+    body:     "Noise Canceler is a relevance filter, not a summarizer. Paste any dense document — HOA notice, insurance EOB, benefits packet, policy update — describe your situation, and it returns only what requires action, what costs you money, what saves you money, and what you can safely ignore.",
     features: [
-      "Action-item extraction",
-      "Deadline pairing",
-      "Role-specific filtering",
-      "Form-and-link surfacing",
-      "Calendar-ready checklist",
+      "Cross-references the document against your specific situation",
+      "Extracts only action items, cost changes, and personally-affecting clauses",
+      "Flags 'buried but important' items hidden in dense fine print",
+      "Tells you explicitly what you can ignore — most of it"
     ],
     toolId:   'NoiseCanceler',
     toolName: 'Noise Canceler',
   },
+  published: '2026-04-29',
+  modified:  '2026-04-29',
 };

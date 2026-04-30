@@ -7,6 +7,7 @@ import { PremiumProvider } from './hooks/usePremium';
 // Components
 import ToolRenderer from './components/ToolRenderer';
 import DashBoard from './components/DashBoard';
+import Footer from './components/Footer';
 
 export default function App() {
   const [college] = useState("");
@@ -22,17 +23,19 @@ export default function App() {
       <PremiumProvider>
         <BrowserRouter>
           <div className="min-h-screen bg-white font-sans flex flex-col">
-            <Routes>
-              <Route path="/" element={
-                <DashBoard
-                  allTools={tools}
-                  searchTerm={searchTerm}
-                  setSearchTerm={setSearchTerm}
-                />
-              } />
-
-              <Route path="/:toolId" element={<ToolRenderer college={college} />} />
-            </Routes>
+            <div className="flex-1">
+              <Routes>
+                <Route path="/" element={
+                  <DashBoard
+                    allTools={tools}
+                    searchTerm={searchTerm}
+                    setSearchTerm={setSearchTerm}
+                  />
+                } />
+                <Route path="/:toolId" element={<ToolRenderer college={college} />} />
+              </Routes>
+            </div>
+            <Footer />
           </div>
         </BrowserRouter>
       </PremiumProvider>

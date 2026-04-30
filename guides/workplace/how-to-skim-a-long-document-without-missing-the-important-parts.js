@@ -1,63 +1,37 @@
-// ============================================================
-// guides/workplace/how-to-skim-a-long-document-without-missing-the-important-parts.js
-// ============================================================
-
 module.exports = {
   slug:          'how-to-skim-a-long-document-without-missing-the-important-parts',
   category:      'workplace',
   categoryLabel: 'Workplace',
-
-  title:         "How to Skim a Long Document Without Missing the Important Parts",
-  titleHtml:     "How to Skim a Long Document <em>Without Missing the Important Parts</em>",
-  shortTitle:    "How to Skim a Long Document",
-  navTitle:      "How to skim a long document without missing the important parts",
-
-  description:   "Reading every word is a waste. Reading none of it is a risk. Here's the middle path — a five-pass skim that catches what matters and lets you ignore the rest with a clean conscience.",
-  deck:          "Reading every word is a waste. Reading none of it is a risk. Here's the middle path — a five-pass skim that catches what matters and lets you ignore the rest with a clean conscience.",
-
-  published:     '2026-04-28',
-  modified:      '2026-04-28',
-
+  title:         "How to skim a long document without missing the important parts",
+  titleHtml:     "How to skim a long document <em>without missing the important parts</em>",
+  shortTitle:    "Skim long documents",
+  navTitle:      "skim long documents",
+  description:   "A method for reading a long document fast — extracting what actually applies to you while not getting blindsided by something you skipped.",
+  deck:          "A method for reading a long document fast — extracting what actually applies to you while not getting blindsided by something you skipped.",
   ledes: [
-    `The document is forty pages and you have nine minutes. The HR portal needs you to confirm receipt; the email said 'please review carefully'; the policy applies starting next month. You can't read it carefully. You also can't truthfully click 'I have read and understood' — but everyone clicks anyway, and you will too, because the alternative is staring at forty pages of formatting until your meeting starts. The premise of professional life is that you'll skim things you were told to read.`,
-    `Skimming well is a real skill — different from reading carefully, different from not reading at all. The pros don't read every word; they read the right words in the right order, and they catch the parts that matter without absorbing the parts that don't. Five passes, in this order. The whole thing takes five to ten minutes.`,
+    `You have an eighteen-page document in front of you. You do not have eighteen pages of attention to give it. Reading every word will take an hour you do not have, and most of it will not apply to you anyway. But somewhere in there is one thing — maybe a deadline, maybe a fee, maybe a change in policy — that does apply, and if you miss it, you will pay for the miss in money or aggravation later.\n\nThe goal is not to read the whole document. The goal is to find the parts that affect you, take action on those, and ignore the rest with confidence. This is a different skill from reading. It is closer to triage.`,
+    `Here is how to skim a long document without missing what actually matters.`,
   ],
-
   steps: [
-    {
-      name: "Read the headings first, in order",
-      body: "Before you read any body text, scroll through the entire document and read only the section headings. This takes about thirty seconds and gives you the structure: how long is this thing, what's it about, where is the important section likely to be. Headings won't tell you the content, but they'll tell you the shape — and the shape is what tells you where to spend your remaining attention.",
-    },
-    {
-      name: "Read the first sentence of each section",
-      body: "Most professional writing has a thesis sentence at the top of each section. Read just that sentence, every section, in order. Skip everything else. This pass takes another two or three minutes and gives you roughly 80% of what the document is trying to communicate. The remaining 20% is detail, examples, and supporting evidence — important if you need it, ignorable if you don't.",
-    },
-    {
-      name: "Search for the action verbs",
-      body: "Anything that requires you to do something is what actually matters. Ctrl-F these: 'must,' 'required,' 'shall,' 'will need to,' 'by [date].' Each hit is a candidate action — read the surrounding sentence to see if the action applies to you. Most of the document's hundreds of words exist to set context for a small number of obligations. The skim catches the obligations and lets the context stay in the document.",
-    },
-    {
-      name: "Find what's specific to your situation",
-      body: "A 40-page benefits packet is mostly content for people who aren't you — different plans, different jurisdictions, different family situations. Skim for the variables that match your case: your plan name, your state, your role, your dependents. The relevant material is usually 10-15% of the document. The other 85% is real content for someone, just not for you, and you can let it stay theirs.",
-    },
-    {
-      name: "Read the table of changes if there is one",
-      body: "Many long documents — policy updates, plan revisions, contract amendments — include a 'summary of changes' or 'what's new' section. Find it and read it carefully. That single section often replaces 90% of the document for a returning reader; the rest is the unchanged baseline. Most people read the full new version because they're too rushed to find the diff. Find the diff first; the diff is the document.",
-    },
+    { name: 'Identify what kind of document it is and what you would care about', body: 'Before reading anything, name the document type — insurance EOB, HOA notice, benefits change, lease amendment, school newsletter — and ask: what categories of information could possibly require my action? Deadlines. Costs going up. New rules I would violate by default. Benefits I would lose by not enrolling. Most documents have only three or four categories that matter to you. Knowing the categories in advance turns reading into searching.' },
+    { name: 'Scan for action language', body: 'Skim the document looking for verbs that signal you must do something: must, required, deadline, by [date], action required, opt out by, will result in, fine, penalty. These words are signal flares for the parts of the document you cannot afford to miss. Highlight or note every one. Skip everything else for now. The action items are usually a small percentage of the document, but they are the only parts that have consequences.' },
+    { name: 'Look for numbers, especially money and dates', body: 'Specific numbers — dollar amounts, percentages, dates — are usually substantive. Vague paragraphs of prose are often boilerplate. Train your eye to glance through pages looking for digits. The dollar amount is the cost change. The date is the deadline. The percentage is the rate. These are the data points that matter. Once you have them, the prose around them is much easier to read because you know what it is explaining.' },
+    { name: 'Filter against your specific situation', body: 'Most long documents address many possible situations and only a few apply to you. Read with your situation in mind: I am a renter, I have no kids, I am on the standard health plan, I drive to work. As you scan, ask whether each section addresses your situation. If yes, read it. If no, skip it. The mistake is reading every section equally — that is exhausting and unnecessary. Filtering as you go is the whole skill.' },
+    { name: 'Set the document aside and write down what you took away', body: 'After your skim, close the document and write down: what action do I need to take, by when, and what will it cost or save me? If you can answer this in three to five sentences, your skim worked. If you cannot, go back and look again — you missed something. The summary in your own words is the verification step. It catches the gap between feeling like you read the document and actually having extracted what mattered.' }
   ],
-
   cta: {
     glyph:    '🔇',
-    headline: "Get the relevance-filtered version of any document",
-    body:     "Noise Canceler takes any long document — benefits packet, policy update, lease, HOA notice — and extracts only what requires your action, costs you money, or affects your specific situation. Not a summary; a personalized filter.",
+    headline: "Pull the 10% that matters out of the 90% that doesn't.",
+    body:     "Noise Canceler is a relevance filter, not a summarizer. Paste any dense document — HOA notice, insurance EOB, benefits packet, policy update — describe your situation, and it returns only what requires action, what costs you money, what saves you money, and what you can safely ignore.",
     features: [
-      "Personalized relevance filter",
-      "Action-item extraction",
-      "Diff against prior version",
-      "Situation-aware filtering",
-      "Plain-language summaries",
+      "Cross-references the document against your specific situation",
+      "Extracts only action items, cost changes, and personally-affecting clauses",
+      "Flags 'buried but important' items hidden in dense fine print",
+      "Tells you explicitly what you can ignore — most of it"
     ],
     toolId:   'NoiseCanceler',
     toolName: 'Noise Canceler',
   },
+  published: '2026-04-29',
+  modified:  '2026-04-29',
 };

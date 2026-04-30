@@ -1,69 +1,37 @@
-// ============================================================
-// guides/workplace/what-to-look-for-in-an-nda-before-signing.js
-// ============================================================
-
 module.exports = {
   slug:          'what-to-look-for-in-an-nda-before-signing',
   category:      'workplace',
   categoryLabel: 'Workplace',
-
-  title:         "What to Look For in an NDA Before Signing",
-  titleHtml:     "What to Look For in an NDA <em>Before Signing</em>",
-  shortTitle:    "What to Look For in an NDA",
-  navTitle:      "What to look for in an NDA before signing",
-
-  description:   "The other side wants you to sign before the meeting. Here's how to read an NDA in ten minutes and identify the four places they overreach — without killing the deal.",
-  deck:          "The other side wants you to sign before the meeting. Here's how to read an NDA in ten minutes and identify the four places they overreach — without killing the deal.",
-
-  published:     '2026-04-28',
-  modified:      '2026-04-28',
-
+  title:         "What to look for in an NDA before signing",
+  titleHtml:     "What to look for in an NDA <em>before signing</em>",
+  shortTitle:    "Reading NDAs",
+  navTitle:      "reading NDAs",
+  description:   "A practical guide to reading non-disclosure agreements — what they should and should not say, and what to push back on.",
+  deck:          "A practical guide to reading non-disclosure agreements — what they should and should not say, and what to push back on.",
   ledes: [
-    `The meeting is tomorrow at 10am. The other side just emailed: 'Quick housekeeping — please sign the attached NDA before we get on the call.' It's three pages, single-spaced, and you're meant to read, sign, and return it tonight. They're not trying to trap you, probably. But the standard NDA most companies send out is calibrated to favor them, and if you've signed it without reading it you've done their negotiation for them.`,
-    `An NDA is one of the few documents you can read in ten minutes and meaningfully redline yourself. There are four sections that matter; everything else is boilerplate. Here are the four.`,
+    `Someone has handed you an NDA to sign. Maybe before a job interview. Maybe before a business meeting. Maybe as part of a partnership conversation. The document is three to seven pages long. Most of it is dense, and you have a meeting in twenty minutes. The pressure is to just sign — it is 'standard,' it is 'mutual,' it is 'just a formality.' All of these phrases are sometimes true. Sometimes they are not.\n\nNDAs are not all the same. Some are reasonable and necessary. Some are unreasonably broad and would commit you to obligations that follow you for years. The differences are visible if you know where to look — and reviewing an NDA carefully takes five to ten minutes once you know what to look for.`,
+    `Here is what to look for in an NDA before you sign it.`,
   ],
-
   steps: [
-    {
-      name: "Pin down what 'confidential' actually covers",
-      body: "Bad NDAs define confidential information as 'any information disclosed by the Disclosing Party' — which is everything, including the weather. Good NDAs require the information to be marked confidential, or to be the kind of thing a reasonable person would treat as confidential. Push for the second. Without that limit, you're agreeing not to discuss anything that came up in the conversation, including ideas you brought yourself.",
-    },
-    {
-      name: "Limit the duration to something reasonable",
-      body: "Some NDAs run two years. Some run five. Some run 'in perpetuity,' which is the legal way of writing 'forever.' Forever is almost never appropriate for routine business conversations — trade secrets are a separate category and can be handled by a separate clause. For most exploratory meetings, two to three years is the upper bound. If they ask for more, ask why.",
-    },
-    {
-      name: "Carve out the obvious exceptions",
-      body: "Make sure the NDA explicitly excludes: information that's already public, information you already knew before the conversation, information you develop independently without using theirs, and information you're legally required to disclose. These exceptions exist in most templates, but not all of them. If they're missing, you've technically signed an agreement that you can be sued for repeating something you read in a newspaper.",
-    },
-    {
-      name: "Watch for non-solicit and non-compete sneaking in",
-      body: "An NDA is supposed to govern information. Some templates quietly include clauses that prevent you from hiring the other side's employees, working with their competitors, or pursuing similar business opportunities — none of which are confidentiality. Read the headings. If you see 'non-solicitation,' 'non-circumvention,' or 'non-compete' in a document called an NDA, you're being asked to agree to substantially more than the title suggests.",
-    },
-    {
-      name: "Sign the right copy",
-      body: "If you redline a document and send it back, the other side will sometimes 'accept your changes' and circulate a clean version. Read the clean version. Make sure your changes are actually in it. The most common NDA dispute isn't about a clause — it's about whose version got signed. Sign the document with your edits visible, or sign a clean version you've personally diffed against your redline. Trust, but verify.",
-    },
+    { name: 'Verify it is mutual or one-way, and understand which', body: 'A mutual NDA protects information shared in both directions. A one-way NDA protects only the other party\'s information. Mutual NDAs are usually fine for business conversations between potential partners. One-way NDAs make sense when only one side is sharing sensitive information (you are interviewing at a company, you are evaluating their software). If you are sharing information too and you are given a one-way NDA, ask why it is not mutual. Sometimes the answer is reasonable. Sometimes it reveals an asymmetry you should address.' },
+    { name: 'Read the definition of \'confidential information\'', body: 'What counts as confidential? Some NDAs define it narrowly: information specifically marked confidential or shared in writing with a confidentiality designation. Some NDAs define it broadly: anything you learn in connection with the relationship, regardless of whether it was identified as confidential. The broad version is much harder to comply with — you might inadvertently violate it just by knowing things. Push for narrower definitions when you can.' },
+    { name: 'Check the duration', body: 'How long does the obligation last? Reasonable NDAs are typically two to five years for general business information. Trade secrets can be protected indefinitely. If an NDA has a perpetual confidentiality obligation on ordinary business information, that is unusually broad. Ask why. Sometimes the answer is reasonable; often the duration was just over-drafted by a lawyer who did not push back. Negotiating it down is usually possible.' },
+    { name: 'Identify the carve-outs', body: 'Standard NDAs include carve-outs — categories of information that are not covered. These usually include: information you already knew, information you learned independently, information that is or becomes public through no fault of yours, and information you are required to disclose by law. Make sure these carve-outs are present. Without them, you could be technically violating the NDA by repeating something you read in the news.' },
+    { name: 'Look for non-compete-by-stealth language', body: 'Some NDAs sneak in non-compete or non-solicitation provisions. The document is titled \'NDA\' but contains clauses that prevent you from working with competitors, hiring their employees, or pursuing similar business. These provisions belong in a separate non-compete agreement that you can evaluate on its own. If they appear in an NDA, they are often hoping you will not notice. Read every paragraph, not just the headings. If you see anything beyond confidentiality obligations, push back.' }
   ],
-
-  callout: {
-    afterStep: 2,
-    scriptedLine: "Happy to sign — I just want to suggest two small changes to the standard form, the duration and the definition of confidential information. Can I send a redline back this afternoon?",
-    explanation: "This works because it signals readiness to sign while flagging two specific, reasonable edits. Most counterparties expect minor redlines on a standard NDA and will accept them without pushback; the ones who don't are telling you something useful about how the rest of the deal will go.",
-  },
-
   cta: {
-    glyph:    '🗡',
-    headline: "Redline the NDA in five minutes, not five hours",
-    body:     "Paste the document and Jargon Assassin flags the four overreach clauses, generates suggested redlines with the exact alternative language, and tells you what's standard versus aggressive for an NDA of this type.",
+    glyph:    '🗡️',
+    headline: "From confusion to action, in one document.",
+    body:     "Paste any legal, medical, insurance, or financial document and Jargon Assassin translates it into plain language with red flags scored, enforceability notes, and a built-in glossary. Then it goes further: red-line edits to propose, comparisons against what's standard, action plans with deadlines, and ready-to-send response letters.",
     features: [
-      "Four-clause analysis",
-      "Suggested redlines",
-      "Standard-vs-aggressive comparison",
-      "Plain-language translation",
-      "Negotiation strategy",
+      "Plain-language translation with adjustable reading level (ELI5 → Professional)",
+      "Red flags scored, enforceability noted, hidden catches surfaced",
+      "Red-Line generates specific edits to propose with negotiation strategy",
+      "Template Compare shows whether the document is standard or aggressive"
     ],
     toolId:   'JargonAssassin',
     toolName: 'Jargon Assassin',
   },
+  published: '2026-04-29',
+  modified:  '2026-04-29',
 };

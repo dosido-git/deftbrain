@@ -1,63 +1,37 @@
-// ============================================================
-// guides/workplace/how-to-manage-email-overload.js
-// ============================================================
-
 module.exports = {
   slug:          'how-to-manage-email-overload',
   category:      'workplace',
   categoryLabel: 'Workplace',
-
-  title:         "How to Manage Email Overload (Without Declaring Inbox Bankruptcy)",
-  titleHtml:     "How to Manage Email Overload <em>(Without Declaring Inbox Bankruptcy)</em>",
-  shortTitle:    "How to Manage Email Overload",
-  navTitle:      "How to manage email overload without declaring inbox bankruptcy",
-
-  description:   "Most email overload isn't a volume problem — it's a triage problem. Here's how to cut through the pile and know what to ignore, without losing the few things that matter.",
-  deck:          "Most email overload isn't a volume problem — it's a triage problem. Here's how to cut through the pile and know what to ignore, without losing the few things that matter.",
-
-  published:     '2026-04-28',
-  modified:      '2026-04-28',
-
+  title:         "How to manage email overload",
+  titleHtml:     "How to manage <em>email overload</em>",
+  shortTitle:    "Manage email overload",
+  navTitle:      "manage email overload",
+  description:   "A practical method for handling an inbox that has more incoming volume than you can possibly read carefully — without dropping the things that actually matter.",
+  deck:          "A practical method for handling an inbox that has more incoming volume than you can possibly read carefully — without dropping the things that actually matter.",
   ledes: [
-    `It's 9:47 on a Tuesday morning. You opened your laptop intending to start the day. Forty minutes later you've read seventeen emails, replied to two, and somehow the unread count is higher than when you started. There's a real day ahead of you and you haven't begun it. The inbox isn't a tool anymore; it's a holding pen for everyone else's priorities.`,
-    `Email overload isn't a volume problem. It's a triage problem. Most messages don't need a reply; many of them don't need to be read. The work is figuring out which is which fast enough that the inbox doesn't eat your day. Here's the sequence.`,
+    `You opened your email this morning and there were one hundred and forty-three unread messages. By 11 a.m. there were one hundred and seventy. The pace at which new email arrives exceeds the pace at which you can possibly read and respond. You feel like you are losing ground every hour. The inbox has become a low-grade source of anxiety that follows you through the day, and the longer you ignore it, the worse the anxiety gets.\n\nMost advice about email management assumes a manageable volume. The advice is fine if you get thirty emails a day. It collapses entirely if you get two hundred. At high volume, the math does not work — you cannot apply the standard 'read each one carefully and decide what to do with it' approach. The system has to be different.`,
+    `Here is how to manage an inbox that has too much volume to manage in the traditional way.`,
   ],
-
   steps: [
-    {
-      name: "Sort by sender, then scan, then read",
-      body: "Reading top-to-bottom is the trap — you spend your attention in the order things arrived, which has nothing to do with what matters. Sort by sender, scan the names, and skip anything from a sender you don't recognize or owe. The list of names tells you more about your day than the list of subjects ever will.",
-    },
-    {
-      name: "Use the three-bucket rule, not inbox zero",
-      body: "Inbox zero is a perfectionist trap. The bucket system isn't: every email is Reply Now, Reply This Week, or Ignore. Reply Now is the small set with a real question, a real deadline, and someone actually waiting. Reply This Week is anything you'd be embarrassed not to answer eventually. Everything else is Ignore — and the world stays fine.",
-    },
-    {
-      name: "Stop confusing urgency with importance",
-      body: "An email can be loud without being urgent. ALL CAPS subjects, red exclamation flags, three follow-ups in two hours — these are signals about the sender, not the message. The actually-urgent emails almost never look urgent; they're calm, specific, and have a real deadline attached. Train yourself to ignore the volume and read for the substance.",
-    },
-    {
-      name: "Set a budget, not a goal",
-      body: "'Inbox zero by end of day' is a goal you'll fail every day. 'Twenty minutes in the morning, twenty in the afternoon' is a budget you can keep. The budget protects the rest of your time. The goal punishes you for having a job that produces email faster than you can answer it. Stop trying to win against the inbox; start refusing to let it win against you.",
-    },
-    {
-      name: "Cut the noise at the source",
-      body: "Every recurring newsletter you didn't sign up for, every CC chain you don't need to be on, every notification from a tool you stopped using — unsubscribe, mute, or filter, in the moment you notice. Five seconds of friction once saves you the same email costing you attention every week for a year. The inbox doesn't shrink unless you shrink it.",
-    },
+    { name: 'Accept that you will not read every email', body: 'The premise of inbox-zero advice is that you can process every message. At high volume, this is not true. Stop trying. Accept that some percentage of your incoming email will be archived without being read carefully, and that this is fine. The goal is not to read every email — it is to catch the ones that matter and let the rest wash past. People who read every email have given up other parts of their work to do so. People who triage well have not.' },
+    { name: 'Triage in batches, twice a day', body: 'Constantly checking email is the worst possible strategy at high volume. Each check triggers a stress response and produces few decisions. Instead, batch your email — twice a day, for thirty minutes each. Process the inbox in those windows and ignore it the rest of the time. Use the time outside those windows for the actual work that justifies your salary. The notification that just came in can almost always wait three hours.' },
+    { name: 'Use the \'four-D\' rule for fast triage', body: 'For each email in your batch, do one of four things. Delete (or archive without reading) — newsletters, FYIs, marketing. Do — if it takes less than two minutes, do it now. Defer — schedule it for later, calendar it, or move it to a \'later\' folder. Delegate — forward it to whoever should actually handle it. Most emails fall into \'delete\' or \'defer\' if you are honest. The \'do now\' bucket should be small. The system fails when everything goes into \'defer\' and the deferred pile becomes its own problem.' },
+    { name: 'Set up filters and rules to handle predictable volume', body: 'If you regularly get newsletters, automated notifications, system emails, or low-priority messages from specific senders, build filters that auto-archive or auto-label them. The work to set up the filters takes minutes; the savings compound forever. Most inboxes have 30-50% predictable volume that can be handled by rules. Failing to set up rules means processing the same kinds of low-value email manually, day after day, for years.' },
+    { name: 'Lower your response standards on non-urgent emails', body: 'Many people write longer emails than necessary. The 200-word reply often communicates the same information as a 30-word reply, but it costs ten times more to compose. At high inbox volume, you cannot afford the long replies. Drop courtesy openings. Skip the recap. Answer in two sentences when two sentences will do. The relationships do not suffer; the volume gets manageable. The people who answer fastest in busy organizations are usually the ones who write the shortest replies.' }
   ],
-
   cta: {
     glyph:    '📬',
-    headline: "Cut through the pile in two minutes",
-    body:     "Email Urgency Triager reads your inbox, sorts every message into Reply Now / Reply This Week / Ignore, and tells you exactly what each one actually wants — so you can stop reading and start deciding.",
+    headline: "What actually needs a reply today.",
+    body:     "Email Urgency Triager separates real urgency from perceived urgency. Paste any batch of emails — it sorts them into Reply Now, Reply This Week, and Optional/Never, with reasoning for each. Quick-response templates included for the urgent ones. Permission-to-breathe section for the anxiety.",
     features: [
-      "Three-tier prioritization",
-      "Per-email reasoning",
-      "Permission to ignore",
-      "Quick reply templates",
-      "Role-aware analysis",
+      "Three-tier sort: Reply Now, Reply This Week, Optional/Never",
+      "Detailed reasoning per email — not just labels",
+      "Quick-response templates for the urgent items",
+      "Permission-to-breathe section for inbox anxiety"
     ],
     toolId:   'EmailUrgencyTriager',
     toolName: 'Email Urgency Triager',
   },
+  published: '2026-04-29',
+  modified:  '2026-04-29',
 };

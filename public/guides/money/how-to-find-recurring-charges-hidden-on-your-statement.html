@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>How to Find Recurring Charges Hidden on Your Statement | DeftBrain</title>
+  <meta name="description" content="Some subscriptions hide on your statement under names you do not recognize. Here is how to identify them, trace them back to the actual service, and stop paying.">
+  <link rel="canonical" href="https://deftbrain.com/guides/money/how-to-find-recurring-charges-hidden-on-your-statement">
+
+  <meta property="og:type"        content="article">
+  <meta property="og:title"       content="How to Find Recurring Charges Hidden on Your Statement">
+  <meta property="og:description" content="Some subscriptions hide on your statement under names you do not recognize. Here is how to identify them, trace them back to the actual service, and stop paying.">
+  <meta property="og:url"         content="https://deftbrain.com/guides/money/how-to-find-recurring-charges-hidden-on-your-statement">
+  <meta property="og:site_name"   content="DeftBrain">
+  <meta property="og:image"        content="https://deftbrain.com/og/guides/how-to-find-recurring-charges-hidden-on-your-statement.png">
+  <meta property="og:image:width"  content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="article:published_time" content="2026-04-29">
+  <meta property="article:modified_time"  content="2026-04-29">
+  <meta property="article:section"        content="Money">
+
+  <meta name="twitter:card"        content="summary_large_image">
+  <meta name="twitter:title"       content="How to Find Recurring Charges Hidden on Your Statement">
+  <meta name="twitter:description" content="Some subscriptions hide on your statement under names you do not recognize. Here is how to identify them, trace them back to the actual service, and stop paying.">
+  <meta name="twitter:image"       content="https://deftbrain.com/og/guides/how-to-find-recurring-charges-hidden-on-your-statement.png">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "name": "How to Find Recurring Charges Hidden on Your Statement",
+    "description": "Some subscriptions hide on your statement under names you do not recognize. Here is how to identify them, trace them back to the actual service, and stop paying.",
+    "step": [
+      {"@type":"HowToStep","name":"Recognize the third-party processor prefixes","text":"Common processor patterns include DRI* (Digital River), FS* (FastSpring), 2CO* (2Checkout), STRIPE*, SP* (Square), PADDLE*. When a charge starts with one of these and ends with a partial merchant name, the actual service is whatever comes after the prefix. 'DRI*BLZ MERCHANT' might be a Blizzard game subscription processed through Digital River. Recognizing the format is half the work."},
+      {"@type":"HowToStep","name":"Search the exact statement string in a search engine","text":"Copy the merchant string exactly as it appears on the statement and search for it. Other people have asked the same question — what is \"DRI*XYZ\" — and forums usually have answers. The cryptic name almost always resolves to a specific company within the first page of results. This is the fastest manual method. Two minutes of searching identifies most mystery charges."},
+      {"@type":"HowToStep","name":"Check your email for receipts matching the date and amount","text":"Search your email for the dollar amount of the mystery charge. Most subscriptions email a receipt or renewal notice, often from a billing address that names the actual service. A search for \"$9.99\" plus the date often surfaces the email. If no email exists, the subscription may have been signed up for years ago when you used a different email. Check archive folders or old email accounts."},
+      {"@type":"HowToStep","name":"Call the bank if you genuinely cannot identify it","text":"After search and email both fail, call the bank or use their dispute portal. They can identify the merchant from the merchant ID number on their side. They can also stop the charges for you if you confirm you did not authorize them. Banks deal with this constantly and have well-developed processes. If you cannot identify a charge after 10 minutes, escalating is faster than continuing to dig."},
+      {"@type":"HowToStep","name":"Use SubSweep to identify and decode them automatically","text":"Drop the statement into SubSweep and it decodes processor prefixes and obscure merchant strings to actual service names. It maintains a database of these mappings and updates it as new ones appear. The line item that said 'DRI*BLZ MERCHANT' becomes 'Blizzard Battle.net subscription' with a link to your account page. From cryptic to actionable in seconds."}
+    ]
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"DeftBrain","item":"https://deftbrain.com"},
+      {"@type":"ListItem","position":2,"name":"Guides","item":"https://deftbrain.com/guides"},
+      {"@type":"ListItem","position":3,"name":"Money","item":"https://deftbrain.com/guides/money"},
+      {"@type":"ListItem","position":4,"name":"Hidden Recurring Charges"}
+    ]
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/guides/guide.css">
+</head>
+<body>
+
+  <header class="masthead">
+    <a <a href="/" class="masthead-logo" aria-label="DeftBrain — home">
+      <img src="/pBrain-r.png" alt="" class="masthead-logo-img" height="96" style="width:auto;height:96px;object-fit:contain;">
+      <span class="masthead-logo-text">Deft<span>Brain</span></span>
+    </a>
+    <a <a href="/" class="masthead-cta">All tools →</a>
+  </header>
+
+  <main>
+    <div class="container">
+
+      <div class="eyebrow">
+        <span class="tag">Money</span>
+        <div class="eyebrow-rule"></div>
+      </div>
+
+      <h1>How to Find Recurring Charges <em>Hidden on Your Statement</em></h1>
+
+      <p class="deck">Some subscriptions hide on your statement under names you do not recognize. Here is how to identify them, trace them back to the actual service, and stop paying.</p>
+
+      <p class="meta-line">Updated April 29, 2026 · By the DeftBrain team</p>
+
+      <p class="lede">You scan your statement and most charges are obvious — the streaming service, the gym, the cloud storage. Then there is a $9.99 line item from &quot;DRI*BLZ MERCHANT&quot; that has been there for three months. You have no idea what it is. You suspect it might be the cancelled trial from something, but you cannot remember signing up. You are now paying $120 a year for a service you cannot name.
+
+This is intentional. Many subscriptions bill under generic processor names — DRI, FastSpring, Stripe, third-party billing services — that obscure what you are actually paying for. The merchant gets paid; you get billed by something that looks like it could be anything. The trick is recognizing the patterns and tracing the charges back to the actual service.</p>
+      <p class="lede">Here is how to trace them — and how SubSweep names them for you.</p>
+
+      <div class="section-rule"><span>How to do it</span></div>
+
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h3>Recognize the third-party processor prefixes</h3>
+          <p>Common processor patterns include DRI* (Digital River), FS* (FastSpring), 2CO* (2Checkout), STRIPE*, SP* (Square), PADDLE*. When a charge starts with one of these and ends with a partial merchant name, the actual service is whatever comes after the prefix. &#39;DRI*BLZ MERCHANT&#39; might be a Blizzard game subscription processed through Digital River. Recognizing the format is half the work.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h3>Search the exact statement string in a search engine</h3>
+          <p>Copy the merchant string exactly as it appears on the statement and search for it. Other people have asked the same question — what is &quot;DRI*XYZ&quot; — and forums usually have answers. The cryptic name almost always resolves to a specific company within the first page of results. This is the fastest manual method. Two minutes of searching identifies most mystery charges.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h3>Check your email for receipts matching the date and amount</h3>
+          <p>Search your email for the dollar amount of the mystery charge. Most subscriptions email a receipt or renewal notice, often from a billing address that names the actual service. A search for &quot;$9.99&quot; plus the date often surfaces the email. If no email exists, the subscription may have been signed up for years ago when you used a different email. Check archive folders or old email accounts.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h3>Call the bank if you genuinely cannot identify it</h3>
+          <p>After search and email both fail, call the bank or use their dispute portal. They can identify the merchant from the merchant ID number on their side. They can also stop the charges for you if you confirm you did not authorize them. Banks deal with this constantly and have well-developed processes. If you cannot identify a charge after 10 minutes, escalating is faster than continuing to dig.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <h3>Use SubSweep to identify and decode them automatically</h3>
+          <p>Drop the statement into SubSweep and it decodes processor prefixes and obscure merchant strings to actual service names. It maintains a database of these mappings and updates it as new ones appear. The line item that said &#39;DRI*BLZ MERCHANT&#39; becomes &#39;Blizzard Battle.net subscription&#39; with a link to your account page. From cryptic to actionable in seconds.</p>
+        </div>
+      </div>
+
+      <div class="cta-block" data-glyph="🧹">
+        <div class="cta-eyebrow">Try it now — free</div>
+        <h2>Find every recurring charge. Cut what you do not use.</h2>
+        <p>Drop in your statement and SubSweep finds every subscription, calculates the annual cost, ranks them by value-per-use, and gives you the cancellation links and scripts for the ones to drop.</p>
+        <div class="cta-features">
+          <span class="cta-feature">Finds hidden recurring charges</span>
+          <span class="cta-feature">Annual cost per subscription</span>
+          <span class="cta-feature">Value-per-use ranking</span>
+          <span class="cta-feature">Cancellation links + scripts</span>
+        </div>
+        <a href="/SubSweep" class="cta-btn">
+          Open SubSweep →
+        </a>
+        <span class="cta-subtext">No account required to get started.</span>
+      </div>
+
+      <div class="section-rule"><span>Related situations</span></div>
+      <div class="related-grid">
+        <a href="/guides/money/can-you-trust-verifiedpurchase-reviews" class="related-card">
+          <div class="rel-cat">Money</div>
+          <div class="rel-title">are verified reviews trustworthy?</div>
+        </a>
+        <a href="/guides/money/how-much-does-coffee-actually-cost-to-make" class="related-card">
+          <div class="rel-cat">Money</div>
+          <div class="rel-title">How much does coffee actually cost to make when you&#39;re paying $6 for it</div>
+        </a>
+        <a href="/guides/money/how-much-to-tip-your-hairstylist" class="related-card">
+          <div class="rel-cat">Money</div>
+          <div class="rel-title">tip your hairstylist</div>
+        </a>
+        <a href="/guides/money/how-to-ask-a-friend-to-pay-you-back" class="related-card">
+          <div class="rel-cat">Money</div>
+          <div class="rel-title">ask a friend to pay back</div>
+        </a>
+        <a href="/guides/money/how-to-audit-all-your-subscriptions-in-10-minutes" class="related-card">
+          <div class="rel-cat">Money</div>
+          <div class="rel-title">audit subscriptions in ten minutes</div>
+        </a>
+        <a href="/guides/money/how-to-avoid-buyers-remorse" class="related-card">
+          <div class="rel-cat">Money</div>
+          <div class="rel-title">How to avoid buyer&#39;s remorse before you buy, not after</div>
+        </a>
+        <a href="/guides/money/how-to-avoid-free-trial-billing-traps" class="related-card">
+          <div class="rel-cat">Money</div>
+          <div class="rel-title">How to avoid free trial billing traps before they become recurring charges</div>
+        </a>
+        <a href="/guides/money/how-to-calculate-if-a-subscription-is-actually-worth-it" class="related-card">
+          <div class="rel-cat">Money</div>
+          <div class="rel-title">is this subscription worth it</div>
+        </a>
+        <a href="/guides/money/how-to-cancel-a-subscription-that-wont-let-you-cancel" class="related-card">
+          <div class="rel-cat">Money</div>
+          <div class="rel-title">How to cancel a subscription that won&#39;t let you cancel and when it&#39;s actually illegal</div>
+        </a>
+        <a href="/guides/money/how-to-cancel-cable-without-them-talking-you-out-of-it" class="related-card">
+          <div class="rel-cat">Money</div>
+          <div class="rel-title">How to cancel cable without them talking you out of it</div>
+        </a>
+        <a href="/guides/money/how-to-compare-two-similar-products-you-cant-decide-between" class="related-card">
+          <div class="rel-cat">Money</div>
+          <div class="rel-title">How to compare two similar products you can&#39;t decide between</div>
+        </a>
+        <a href="/guides/money/how-to-complain-to-a-state-attorney-general" class="related-card">
+          <div class="rel-cat">Money</div>
+          <div class="rel-title">complain to a state attorney general</div>
+        </a>
+        <a href="/guides/money/how-to-deal-with-a-retention-specialist" class="related-card">
+          <div class="rel-cat">Money</div>
+          <div class="rel-title">How to deal with a retention specialist without getting talked into staying</div>
+        </a>
+        <a href="/guides/money/how-to-dispute-a-bill-you-dont-recognize" class="related-card">
+          <div class="rel-cat">Money</div>
+          <div class="rel-title">dispute a bill you do not recognize</div>
+        </a>
+        <a href="/guides/money/how-to-do-a-credit-card-chargeback" class="related-card">
+          <div class="rel-cat">Money</div>
+          <div class="rel-title">do a credit card chargeback</div>
+        </a>
+        <a href="/guides/money/how-to-escalate-a-customer-service-complaint" class="related-card">
+          <div class="rel-cat">Money</div>
+          <div class="rel-title">escalate a customer service complaint</div>
+        </a>
+        <a href="/guides/money/how-to-escalate-when-the-official-answer-is-no" class="related-card">
+          <div class="rel-cat">Money</div>
+          <div class="rel-title">How to escalate when the official answer is no and the external paths most people don&#39;t know exist</div>
+        </a>
+        <a href="/guides/money/how-to-escape-a-high-pressure-sales-pitch-politely" class="related-card">
+          <div class="rel-cat">Money</div>
+          <div class="rel-title">How to escape a high-pressure sales pitch politely without buying</div>
+        </a>
+        <a href="/guides/money/how-to-file-a-complaint-with-the-bbb" class="related-card">
+          <div class="rel-cat">Money</div>
+          <div class="rel-title">file a complaint with the bbb</div>
+        </a>
+        <a href="/guides/money/how-to-get-a-hospital-bill-reduced" class="related-card">
+          <div class="rel-cat">Money</div>
+          <div class="rel-title">get a hospital bill reduced</div>
+        </a>
+        <a href="/guides/money/how-to-get-a-medical-bill-reduced-when-they-say-its-final" class="related-card">
+          <div class="rel-cat">Money</div>
+          <div class="rel-title">How to get a medical bill reduced when they say it&#39;s final and it almost never actually is</div>
+        </a>
+        <a href="/guides/money/how-to-get-out-of-a-non-refundable-fee" class="related-card">
+          <div class="rel-cat">Money</div>
+          <div class="rel-title">How to get out of a non-refundable fee when the word non-refundable isn&#39;t actually binding</div>
+        </a>
+        <a href="/guides/money/how-to-get-past-no-when-its-not-actually-final" class="related-card">
+          <div class="rel-cat">Money</div>
+          <div class="rel-title">How to get past no when it&#39;s not actually final and the tells that reveal which kind you got</div>
+        </a>
+        <a href="/guides/money/how-to-handle-a-venmo-request-thats-wrong" class="related-card">
+          <div class="rel-cat">Money</div>
+          <div class="rel-title">wrong venmo request</div>
+        </a>
+        <a href="/guides/money/how-to-know-if-youre-getting-a-good-deal" class="related-card">
+          <div class="rel-cat">Money</div>
+          <div class="rel-title">How to know if you&#39;re getting a good deal when everything&#39;s marketed as one</div>
+        </a>
+        <a href="/guides/money/how-to-make-a-company-respond-when-theyre-ignoring-you" class="related-card">
+          <div class="rel-cat">Money</div>
+          <div class="rel-title">make a company respond when ignoring you</div>
+        </a>
+        <a href="/guides/money/how-to-negotiate-a-medical-bill" class="related-card">
+          <div class="rel-cat">Money</div>
+          <div class="rel-title">negotiate a medical bill</div>
+        </a>
+        <a href="/guides/money/how-to-negotiate-with-a-car-salesman" class="related-card">
+          <div class="rel-cat">Money</div>
+          <div class="rel-title">How to negotiate with a car salesman without getting played</div>
+        </a>
+        <a href="/guides/money/how-to-push-back-on-bank-fees" class="related-card">
+          <div class="rel-cat">Money</div>
+          <div class="rel-title">How to push back on bank fees and actually get them refunded</div>
+        </a>
+        <a href="/guides/money/how-to-read-product-reviews-critically" class="related-card">
+          <div class="rel-cat">Money</div>
+          <div class="rel-title">read reviews critically</div>
+        </a>
+        <a href="/guides/money/how-to-recognize-sales-manipulation-tactics" class="related-card">
+          <div class="rel-cat">Money</div>
+          <div class="rel-title">How to recognize sales manipulation tactics before they work on you</div>
+        </a>
+        <a href="/guides/money/how-to-research-a-big-purchase-before-buying" class="related-card">
+          <div class="rel-cat">Money</div>
+          <div class="rel-title">How to research a big purchase before buying without losing a whole weekend to it</div>
+        </a>
+        <a href="/guides/money/how-to-say-no-to-a-timeshare-presentation" class="related-card">
+          <div class="rel-cat">Money</div>
+          <div class="rel-title">How to say no to a timeshare presentation and actually get out</div>
+        </a>
+        <a href="/guides/money/how-to-share-a-streaming-subscription-without-getting-kicked-off" class="related-card">
+          <div class="rel-cat">Money</div>
+          <div class="rel-title">share a streaming subscription</div>
+        </a>
+        <a href="/guides/money/how-to-split-a-bill-fairly-when-you-ate-less" class="related-card">
+          <div class="rel-cat">Money</div>
+          <div class="rel-title">split a bill when you ate less</div>
+        </a>
+        <a href="/guides/money/how-to-spot-a-bad-deal-that-looks-good" class="related-card">
+          <div class="rel-cat">Money</div>
+          <div class="rel-title">How to spot a bad deal that looks good before you click buy</div>
+        </a>
+        <a href="/guides/money/how-to-spot-billing-errors-on-a-statement" class="related-card">
+          <div class="rel-cat">Money</div>
+          <div class="rel-title">spot billing errors on a statement</div>
+        </a>
+        <a href="/guides/money/how-to-spot-fake-amazon-reviews" class="related-card">
+          <div class="rel-cat">Money</div>
+          <div class="rel-title">spot fake amazon reviews</div>
+        </a>
+        <a href="/guides/money/how-to-stop-paying-for-subscriptions-you-forgot-about" class="related-card">
+          <div class="rel-cat">Money</div>
+          <div class="rel-title">How to stop paying for subscriptions you forgot about and find the ones hiding on your card</div>
+        </a>
+        <a href="/guides/money/how-to-talk-to-a-supervisor-and-actually-get-results" class="related-card">
+          <div class="rel-cat">Money</div>
+          <div class="rel-title">How to talk to a supervisor and actually get results most people do this wrong</div>
+        </a>
+        <a href="/guides/money/how-to-tell-if-a-bill-is-a-mistake-or-just-confusing" class="related-card">
+          <div class="rel-cat">Money</div>
+          <div class="rel-title">tell if a bill is a mistake or just confusing</div>
+        </a>
+        <a href="/guides/money/how-to-tell-if-a-subscription-is-actually-worth-it" class="related-card">
+          <div class="rel-cat">Money</div>
+          <div class="rel-title">How to tell if a subscription is actually worth it without the sunk-cost math</div>
+        </a>
+        <a href="/guides/money/how-to-tell-if-something-is-overpriced" class="related-card">
+          <div class="rel-cat">Money</div>
+          <div class="rel-title">How to tell if something is overpriced without being a pricing nerd</div>
+        </a>
+        <a href="/guides/money/how-to-walk-away-from-a-high-pressure-sale" class="related-card">
+          <div class="rel-cat">Money</div>
+          <div class="rel-title">How to walk away from a high-pressure sale even when you&#39;re almost convinced</div>
+        </a>
+        <a href="/guides/money/how-to-write-a-formal-complaint-letter-to-a-company" class="related-card">
+          <div class="rel-cat">Money</div>
+          <div class="rel-title">How to write a formal complaint letter to a company that doesn&#39;t get filed in the crank pile</div>
+        </a>
+        <a href="/guides/money/red-flags-in-product-reviews-that-mean-its-fake" class="related-card">
+          <div class="rel-cat">Money</div>
+          <div class="rel-title">red flags that mean fake</div>
+        </a>
+        <a href="/guides/money/signs-you-have-subscription-creep" class="related-card">
+          <div class="rel-cat">Money</div>
+          <div class="rel-title">subscription creep</div>
+        </a>
+        <a href="/guides/money/what-to-do-when-customer-service-says-theres-nothing-they-can-do" class="related-card">
+          <div class="rel-cat">Money</div>
+          <div class="rel-title">What to do when customer service says there&#39;s nothing they can do</div>
+        </a>
+        <a href="/guides/money/what-to-do-with-a-bill-you-cant-afford" class="related-card">
+          <div class="rel-cat">Money</div>
+          <div class="rel-title">What to do with a bill you can&#39;t afford before it becomes a bigger problem</div>
+        </a>
+        <a href="/guides/money/what-to-say-when-you-cant-afford-something-your-friends-are-doing" class="related-card">
+          <div class="rel-cat">Money</div>
+          <div class="rel-title">cannot afford what friends are doing</div>
+        </a>
+        <a href="/guides/money/why-are-wedding-venues-so-expensive" class="related-card">
+          <div class="rel-cat">Money</div>
+          <div class="rel-title">Why are wedding venues so expensive and why the word wedding doubles the price</div>
+        </a>
+        <a href="/guides/money/why-do-products-with-great-reviews-suck" class="related-card">
+          <div class="rel-cat">Money</div>
+          <div class="rel-title">why great-review products suck</div>
+        </a>
+        <a href="/guides/money/why-does-bottled-water-cost-so-much" class="related-card">
+          <div class="rel-cat">Money</div>
+          <div class="rel-title">Why does bottled water cost so much when the stuff in it is basically free</div>
+        </a>
+        <a href="/guides/money/why-does-everything-cost-so-much-more-than-it-used-to" class="related-card">
+          <div class="rel-cat">Money</div>
+          <div class="rel-title">Why does everything cost so much more than it used to and it&#39;s not just inflation</div>
+        </a>
+        <a href="/guides/money/why-is-airport-food-so-expensive" class="related-card">
+          <div class="rel-cat">Money</div>
+          <div class="rel-title">Why is airport food so expensive and why it&#39;s not just the rent</div>
+        </a>
+      </div>
+
+    </div>
+  </main>
+
+  <footer>
+    <a <a href="/" class="footer-brand" aria-label="DeftBrain — home">
+      <img src="/pBrain-r.png" alt="" class="footer-brand-img" height="64" style="width:auto;height:64px;object-fit:contain;">
+      <span class="footer-brand-text">Deft<span>Brain</span></span>
+    </a>
+    <nav class="footer-nav" style="display:flex;gap:1rem;font-family:'DM Sans',system-ui,sans-serif;font-size:0.92rem;">
+      <a href="/guides" style="color:#2c4a6e;text-decoration:none;">Guides</a>
+    </nav>
+    <span class="footer-copy">© 2026 DeftBrain · deftbrain.com</span>
+  </footer>
+  
+</body>
+</html>

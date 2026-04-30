@@ -1,63 +1,37 @@
-// ============================================================
-// guides/workplace/how-to-read-a-financial-report-like-an-expert.js
-// ============================================================
-
 module.exports = {
   slug:          'how-to-read-a-financial-report-like-an-expert',
   category:      'workplace',
   categoryLabel: 'Workplace',
-
-  title:         "How to Read a Financial Report Like an Expert",
-  titleHtml:     "How to Read a Financial Report <em>Like an Expert</em>",
-  shortTitle:    "Read a Financial Report",
-  navTitle:      "How to read a financial report like someone who knows what they're looking at",
-
-  description:   "A 10-K is intimidating once. Then it's a pattern. Here's the order experts read in — and the four numbers that tell you most of what the report is actually saying.",
-  deck:          "A 10-K is intimidating once. Then it's a pattern. Here's the order experts read in — and the four numbers that tell you most of what the report is actually saying.",
-
-  published:     '2026-04-28',
-  modified:      '2026-04-28',
-
+  title:         "How to read a financial report like an expert",
+  titleHtml:     "How to read a financial report <em>like an expert</em>",
+  shortTitle:    "Read financial reports",
+  navTitle:      "read financial reports",
+  description:   "A practical method for reading a financial report so you can actually understand what is happening at a company — not just what they want you to think.",
+  deck:          "A practical method for reading a financial report so you can actually understand what is happening at a company — not just what they want you to think.",
   ledes: [
-    `You've opened the annual report. It's 180 pages. You skimmed the first six and you've already met the words 'transformational,' 'positioned,' and 'fiscal headwinds.' Somewhere in the back are the actual numbers, but the numbers are in a format that assumes you already know how to read them. The whole document is built on the assumption that you'll either be a finance professional who breezes through it or a retail investor who reads the press release and stops there. You're neither.`,
-    `Reading a financial report is a learnable skill, and the pros don't read it front to back — they have a sequence. Four sections, in this order, and most of what matters is visible in under thirty minutes. Here's the sequence.`,
+    `You opened the company's annual report. It is 180 pages. The first 40 pages are a glossy narrative about strategy, with photos of smiling employees and quotes about innovation. The last 140 pages are dense numerical tables and footnotes. The middle is where the actual information lives, but you do not know where to start, and the document seems designed to make sure you keep not knowing.\n\nFinancial reports are not as opaque as they look. They are constructed according to conventions, and once you know the conventions, you can read one in twenty minutes and have a defensible read on the company. The trick is knowing which sections to read carefully, which to skim, and what to ignore entirely.`,
+    `Here is how to read a financial report the way an analyst would, in a fraction of the time it takes to read it cover to cover.`,
   ],
-
   steps: [
-    {
-      name: "Skip to the cash flow statement first",
-      body: "Income statements can be massaged. Balance sheets can be timed. Cash flow is harder to fake — it's literally the money that moved in and out. Look at cash from operations: is the company generating cash from the actual business, or only from financing and asset sales? A company with rising profits and falling operating cash flow is telling you something important, and it's almost always the cash flow that's telling the truth.",
-    },
-    {
-      name: "Read the auditor's letter",
-      body: "Two pages, near the front, written by the outside accounting firm. Most of the time it's boilerplate and you can move on. But when it isn't boilerplate — when it includes language about 'going concern,' 'material weaknesses,' or 'critical audit matters' — that's the auditor flagging something the rest of the report won't say plainly. The pros read this letter every time, in case it's the one time it isn't routine.",
-    },
-    {
-      name: "Find the four numbers that summarize the business",
-      body: "Revenue growth, operating margin, free cash flow, and debt-to-equity. These four numbers, year-over-year, tell you whether the business is healthy, getting better, or quietly deteriorating. Everything else is texture. The reports are written to make you read the texture first; the experts go to the four numbers, then read the rest only as needed to understand what the numbers are saying.",
-    },
-    {
-      name: "Read the risk factors backwards",
-      body: "The risk factors section is long, generic, and ten pages of standard disclosure copy-pasted from every other public filing. But the new risks — the ones added this year that weren't there last year — are the ones the company's lawyers thought were specific enough to disclose. Pull last year's report and diff the risk sections. The new entries are usually where the real news is buried, in the only place that requires them to be honest about it.",
-    },
-    {
-      name: "Read management's commentary last, not first",
-      body: "Management Discussion & Analysis sounds like it'd be the place to start — actual humans explaining the numbers — but it's actually where the spin lives. Read it after you already know what the numbers say. That way you can tell whether management is explaining the business or selling you a narrative about it. Reading MD&A first is how you absorb the framing before you've assessed the facts. Reverse the order.",
-    },
+    { name: 'Skip the front, go straight to the financials', body: 'The front of the report — the CEO letter, the strategy section, the photos — is marketing. It is written by communications professionals to shape the narrative. It contains zero information you cannot get more reliably elsewhere. Start at the financial statements: balance sheet, income statement, cash flow statement. These are governed by accounting standards. They cannot lie outright. Marketing language can. The numbers are where the truth lives.' },
+    { name: 'Read the cash flow statement before the income statement', body: 'Income statements show profit, which is partly an accounting construction. Cash flow shows cash, which is real. A company can report a profit while burning cash. A company can show a loss while generating cash. The cash flow statement is harder to manipulate and tells you whether the business actually works. Read it first. Look at operating cash flow specifically — that is the engine. If operating cash flow is consistently negative, no narrative in the front of the report can save the company.' },
+    { name: 'Read the footnotes — that is where the secrets are', body: 'The numbers on the financial statements are summaries. The footnotes are where the assumptions, exceptions, and worrying details live. Revenue recognition policies. Debt covenants. Pending lawsuits. Off-balance-sheet obligations. Related-party transactions. Auditors put the truly interesting stuff in the footnotes precisely because most readers skip them. Flip directly to the footnotes after the statements. Look for changes from prior years — that is where new problems get disclosed.' },
+    { name: 'Compare year over year, and look for patterns', body: 'A single year\'s data tells you almost nothing. The same company across three to five years tells you the trajectory. Is revenue growing or stalling? Are margins expanding or contracting? Is debt rising? Are receivables growing faster than revenue (often a sign of trouble)? Is inventory piling up? The patterns matter more than any single number. The MD&A section discusses these but adopts the company\'s framing. Look at the raw numbers and form your own opinion before reading their interpretation.' },
+    { name: 'Compare to peers, not just to itself', body: 'A company growing 5% in an industry growing 15% is losing share, regardless of how good 5% sounds in isolation. A company with a 20% margin in an industry where the average is 30% has a problem. Pull two or three peer companies and compare the same metrics. Most reports look reasonable on their own. Compared to peers, the picture often shifts. The peer comparison is where the actionable insight usually lives.' }
   ],
-
   cta: {
     glyph:    '🔍',
-    headline: "Get the structural read in two minutes",
-    body:     "PlainTalk parses a financial report — 10-K, 10-Q, annual report — and surfaces the cash flow trends, auditor flags, year-over-year risk-factor changes, and the four numbers that summarize the business.",
+    headline: "See through any text.",
+    body:     "Paste any document — a contract, a research paper, a medical form, a corporate memo — and PlainTalk gives you two things: a plain-English translation, and a structural X-ray showing how the text is built. It surfaces obligations, deadlines, hidden asymmetries, and the parts that actually matter.",
     features: [
-      "Document structure map",
-      "Cash flow analysis",
-      "Year-over-year diff",
-      "Auditor-letter highlighting",
-      "MD&A spin detection",
+      "Plain-English translation of any document, any length",
+      "Structural X-ray showing how the text is architecturally built",
+      "Side-by-side view to compare original to translation",
+      "Auto-detects document type and adapts the analysis"
     ],
     toolId:   'PlainTalk',
-    toolName: 'PlainTalk',
+    toolName: 'PlainTalk — Document Analyst',
   },
+  published: '2026-04-29',
+  modified:  '2026-04-29',
 };

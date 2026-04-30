@@ -1,69 +1,37 @@
-// ============================================================
-// guides/workplace/how-to-read-a-job-offer-letter-employment-contract-before-signing.js
-// ============================================================
-
 module.exports = {
   slug:          'how-to-read-a-job-offer-letter-employment-contract-before-signing',
   category:      'workplace',
   categoryLabel: 'Workplace',
-
-  title:         "How to Read a Job Offer Before You Sign (Without Missing the Traps)",
-  titleHtml:     "How to Read a Job Offer Before You Sign <em>(Without Missing the Traps)</em>",
-  shortTitle:    "How to Read a Job Offer",
-  navTitle:      "How to read a job offer letter or employment contract before signing",
-
-  description:   "The PDF arrived. You're excited and tired and tempted to just sign. Here's how to read an employment contract carefully — once, properly — without missing what matters.",
-  deck:          "The PDF arrived. You're excited and tired and tempted to just sign. Here's how to read an employment contract carefully — once, properly — without missing what matters.",
-
-  published:     '2026-04-28',
-  modified:      '2026-04-28',
-
+  title:         "How to read a job offer letter or employment contract before signing",
+  titleHtml:     "How to read a job offer letter <em>before signing</em>",
+  shortTitle:    "Read a job offer before signing",
+  navTitle:      "read offer before signing",
+  description:   "A specific method for understanding what you are actually agreeing to in a job offer or employment contract — before you sign and before you negotiate.",
+  deck:          "A specific method for understanding what you are actually agreeing to in a job offer or employment contract — before you sign and before you negotiate.",
   ledes: [
-    `The email arrived an hour ago. Subject line: 'Offer Letter — please review and sign by Friday.' You're already mentally telling your friends. The PDF is fourteen pages of dense formatting and you've skimmed page one — the salary number, which is good — and you're looking for the signature block. The deadline is in three days. The temptation to scroll to the bottom and click is enormous, and that is exactly when most people sign things they later wish they hadn't.`,
-    `Reading an employment contract well is not about being a lawyer. It's about knowing the four or five places they hide the things you'd actually want to know. The people who push back successfully on offers aren't more confrontational than you — they just read the right pages. Here are the right pages.`,
+    `The offer arrived. The base salary is what you expected. The signing bonus is a nice surprise. You scrolled past the rest because most of it is dense legal language about indemnification and intellectual property and 'at-will employment.' You are excited, you want to accept, and the impulse is to just sign and move on. Maybe you give it one quick read. Maybe.\n\nThis is exactly the moment when companies tuck unfavorable terms into the contract — non-competes you did not notice, equity vesting clauses that are worse than industry standard, severance terms that protect them more than you, intellectual property assignments that reach further than you would expect. None of these will be flagged for you. They are buried in the prose, and the prose was written by people whose job is to make it hard to notice them.`,
+    `Here is how to actually read a job offer or employment contract before signing it.`,
   ],
-
   steps: [
-    {
-      name: "Read the comp section twice, slowly",
-      body: "Base salary is the easy part. The math gets weird in everything else: bonus is 'target' (not guaranteed), equity has a vest schedule and usually a one-year cliff, sign-on bonus has a clawback if you leave early. Add up what you actually take home in year one if you do nothing extraordinary, then again if you leave at month eleven. Two different numbers. Both should be ones you'd accept.",
-    },
-    {
-      name: "Find the clauses they want you to skim",
-      body: "Non-compete, IP assignment, arbitration, confidentiality — these are the clauses written in the language that makes your eyes glaze, and that's not an accident. Read them slowly. Non-competes vary wildly by state and some are functionally unenforceable; IP assignment can quietly include 'anything you make on your own time'; arbitration trades your right to sue for a closed-door process you'd lose more often than not. Skim these and you've signed something different from what you read.",
-    },
-    {
-      name: "Match the verbal offer to the written offer",
-      body: "Whatever the recruiter said on the call — about the bonus structure, about remote flexibility, about the title, about the start date — none of it exists unless it's in the document. 'We always pay the bonus' is not the same as 'bonus is guaranteed.' If something matters and isn't written, ask for it written. The contract overrides every conversation that came before it; the conversation does not override the contract.",
-    },
-    {
-      name: "Identify what happens automatically",
-      body: "At-will employment, change-in-control provisions, severance triggers, stock acceleration on termination — these are the clauses that decide what happens to you when something happens to the company. They're often phrased in passive voice so they feel like background noise. They aren't. The terms that govern your worst-case scenario deserve the same attention as the ones governing your salary.",
-    },
-    {
-      name: "Negotiate before signing, not after",
-      body: "You have leverage at exactly one moment: between offer extended and offer accepted. Once you sign, your leverage drops to roughly zero. Ask for the changes you want now, in one consolidated email, not in dribs and drabs. Most companies expect some pushback and have already left themselves room. The people who don't ask don't get; the people who ask once, professionally, almost always get something.",
-    },
+    { name: 'Find the compensation section and verify everything in writing', body: 'Salary, bonus structure, equity grant, vesting schedule, signing bonus, relocation — all of these should be in writing in the offer. If something was promised verbally that is not in the document, it does not exist. Recruiters say things in good faith that get lost in translation to legal. Before signing, every promise needs to be written down. If a promise is missing, ask for it to be added. The conversation about adding it is much easier than the conversation about enforcing it after you have signed.' },
+    { name: 'Read the at-will and termination language carefully', body: 'Most US employment is at-will, meaning the company can terminate you for almost any reason. The contract may have additional language about termination — \'for cause,\' \'without cause,\' notice periods, severance. Understand what each phrase means. Pay particular attention to \'good reason\' clauses (which let you leave with severance under specific conditions), notice periods, and any severance terms. The asymmetry here matters: their right to terminate you is usually broader than your right to leave with anything.' },
+    { name: 'Look for non-compete and non-solicitation clauses', body: 'Non-competes restrict where you can work after leaving. Non-solicitation clauses restrict who you can recruit or do business with after leaving. Some are reasonable; some are wildly broad. Read the geographic scope, the time period, and the definition of \'competitor.\' If a non-compete prevents you from working in your industry for two years across all of North America, that is unreasonable and may not be enforceable depending on your state — but you do not want to fight it later. Negotiate it now or push to remove it.' },
+    { name: 'Read the IP assignment section', body: 'Most employment contracts assign intellectual property created during your employment to the company. This is normal. What is not normal is overly broad language that claims ownership of work done outside business hours, work using personal equipment, or pre-existing inventions you brought with you. Look for an exhibit or attachment where you can list pre-existing IP that is yours. If there is none, request one. The IP section is where companies sometimes overreach quietly.' },
+    { name: 'Identify what is missing', body: 'What a contract does not say can be as important as what it does. Is there severance language for layoffs? Is there a definition of \'good reason\' that lets you leave with benefits? Is there language about how disputes are resolved (especially mandatory arbitration, which is very common and often disadvantageous to employees)? Note what is missing and decide whether to negotiate for it. Many candidates only push back on things in the document and do not ask for things that are absent — but absent terms are often where the biggest leverage lies.' }
   ],
-
-  callout: {
-    afterStep: 4,
-    scriptedLine: "Thanks for sending this through — before signing, I'd like 20 minutes this week to walk through the comp structure and a couple of the clauses. Could we set something up?",
-    explanation: "This works because it doesn't reject the offer, doesn't list demands in writing, and doesn't put your concerns in an email that gets forwarded internally. It moves the conversation to a call, which is where negotiation actually happens.",
-  },
-
   cta: {
-    glyph:    '🗡',
-    headline: "Translate the contract before you sign it",
-    body:     "Jargon Assassin reads your offer, flags every clause that matters, scores the document against typical employment contracts, and tells you exactly what to push back on with the language to use.",
+    glyph:    '🗡️',
+    headline: "From confusion to action, in one document.",
+    body:     "Paste any legal, medical, insurance, or financial document and Jargon Assassin translates it into plain language with red flags scored, enforceability notes, and a built-in glossary. Then it goes further: red-line edits to propose, comparisons against what's standard, action plans with deadlines, and ready-to-send response letters.",
     features: [
-      "Plain-language translation",
-      "Red-flag scoring",
-      "Standard-vs-aggressive comparison",
-      "Suggested redline edits",
-      "Negotiation strategy",
+      "Plain-language translation with adjustable reading level (ELI5 → Professional)",
+      "Red flags scored, enforceability noted, hidden catches surfaced",
+      "Red-Line generates specific edits to propose with negotiation strategy",
+      "Template Compare shows whether the document is standard or aggressive"
     ],
     toolId:   'JargonAssassin',
     toolName: 'Jargon Assassin',
   },
+  published: '2026-04-29',
+  modified:  '2026-04-29',
 };

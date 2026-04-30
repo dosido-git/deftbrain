@@ -1,63 +1,37 @@
-// ============================================================
-// guides/workplace/how-to-read-a-software-license-agreement-before-clicking-accept.js
-// ============================================================
-
 module.exports = {
   slug:          'how-to-read-a-software-license-agreement-before-clicking-accept',
   category:      'workplace',
   categoryLabel: 'Workplace',
-
-  title:         "How to Read a Software License Agreement (Without Reading 47 Pages)",
-  titleHtml:     "How to Read a Software License Agreement <em>(Without Reading 47 Pages)</em>",
-  shortTitle:    "How to Read a Software License",
-  navTitle:      "How to read a software license agreement before clicking accept",
-
-  description:   "Nobody reads them. You're not going to either. Here's the four-section scan that catches what actually matters — data, money, rights, and termination.",
-  deck:          "Nobody reads them. You're not going to either. Here's the four-section scan that catches what actually matters — data, money, rights, and termination.",
-
-  published:     '2026-04-28',
-  modified:      '2026-04-28',
-
+  title:         "How to read a software license agreement before clicking accept",
+  titleHtml:     "How to read a software license <em>before clicking accept</em>",
+  shortTitle:    "Software license agreements",
+  navTitle:      "software license agreements",
+  description:   "A practical method for actually reading the software license agreements you click through every week — at least the parts that matter — without spending an hour on each one.",
+  deck:          "A practical method for actually reading the software license agreements you click through every week — at least the parts that matter — without spending an hour on each one.",
   ledes: [
-    `The install dialog wants you to click 'I agree.' Above the button is a scroll box containing forty-seven pages of legalese that you have, in your entire life, never once read. You scroll once for form's sake — maybe you make it three sentences in — and you click. Everyone clicks. The companies know everyone clicks. The whole document is designed around the assumption that you won't read it, and most of the time, you really shouldn't.`,
-    `But every now and then it's a tool you're going to use seriously, with your data, on your work, for years — and at that point a five-minute scan is worth doing. Not the whole agreement. Four sections. Here are the four.`,
+    `An app is asking you to accept its terms. The terms are 47 screens long. Nobody has ever read these. There is a long-running joke about it — every survey shows that virtually nobody reads the terms of service, and yet we all keep checking the box. You are about to do the same thing. The check box is the only path forward, and the alternative is not using the app, which is not really an alternative.\n\nYou are not going to read every word. You are also not going to need to. Most software license agreements consist of boilerplate that follows industry conventions, plus a small number of provisions that vary meaningfully and that occasionally do something you would not want to agree to. You can read just those parts in three to five minutes, and that is most of what reading the agreement is actually for.`,
+    `Here is how to read a software license agreement quickly, focusing on the parts that actually matter.`,
   ],
-
   steps: [
-    {
-      name: "Skip to the data section first",
-      body: "Search the document for 'data,' 'personal information,' or 'usage information.' What they collect, what they share, who they sell it to, and how long they keep it — those four answers are the entire privacy story. Bonus points if the document references a separate privacy policy by URL; that means the data terms can change without your knowing, and 'we may update this policy at any time' is doing a lot of work in that sentence.",
-    },
-    {
-      name: "Find the auto-renewal and payment clauses",
-      body: "The free trial that becomes a charge. The monthly subscription that auto-renews annually at a higher rate. The cancellation that has to happen 30 days before the next billing cycle. These are written into the agreement, not the marketing page, and they are how 'free' tools generate revenue from people who forgot. Look for 'auto-renew,' 'recurring,' 'evergreen,' and 'unless cancelled.' If the cancellation procedure is more complicated than the signup, that's the design.",
-    },
-    {
-      name: "Read the arbitration and class-action waivers",
-      body: "Almost every modern license includes mandatory arbitration and a class-action waiver. Translation: if the company harms you, you can't sue them in court and you can't join with other affected users to do it together. You'd individually arbitrate, in their chosen venue, under their chosen rules. Sometimes there's a 30-day window after signup where you can opt out by email. Almost nobody does, because almost nobody reads.",
-    },
-    {
-      name: "Check what happens to your data on termination",
-      body: "Termination clauses are short and brutal. They can suspend or close your account 'at any time, for any reason or no reason' — and many agreements give you a fixed window, often 30 days, to export your data before it's deleted. If your work lives in the tool, this is the section that decides whether a future dispute costs you a weekend of export work or your entire archive. Treat it accordingly.",
-    },
-    {
-      name: "Word-search for the heavy modifiers",
-      body: "You don't have to read the whole document — you have to find the load-bearing words. Ctrl-F these: 'perpetual,' 'irrevocable,' 'worldwide,' 'royalty-free,' 'sublicensable.' These are the words companies use when they're claiming broad rights to something — usually content you upload. If they appear next to 'license you grant us,' read that sentence three times. That's the sentence where you sign over more than you think.",
-    },
+    { name: 'Search for "data" — what they collect and what they do with it', body: 'Use the find function. Search for \'data,\' \'information,\' \'collect,\' \'share,\' and \'sell.\' These hits will lead you to the privacy section. Read it. Pay attention to: what data is collected (location, contacts, browsing history, biometrics), with whom it is shared (advertisers, partners, government on request), and whether it is sold or used for purposes beyond providing the service. The privacy section is the most important variable section for most users, and it is usually shorter than the rest of the document.' },
+    { name: 'Search for "arbitration" or "class action"', body: 'Almost every modern license agreement contains an arbitration clause that prevents you from suing the company in court and a class-action waiver that prevents you from joining group lawsuits. These are standard, but their specific terms vary. Some have opt-out windows of 30 to 60 days. Some have carve-outs for certain claims. Search for these clauses and at minimum understand what rights you are giving up. If there is an opt-out, decide whether to use it.' },
+    { name: 'Search for "license" — what you are getting and what you are not', body: 'What rights do you actually get to the software, the content, or the service? Most agreements grant a \'limited, non-exclusive, revocable, non-transferable license\' — meaning you can use the thing under their terms, you do not own anything, and they can revoke it. Some agreements grant unusually narrow licenses — for example, allowing personal use only and prohibiting business use. If you plan to use it for business, read the license scope carefully.' },
+    { name: 'Look for content ownership', body: 'If you upload content to the service — photos, documents, posts, recordings — find the section that addresses what they can do with it. Many agreements grant the service a \'worldwide, royalty-free, sublicensable license\' to use your content. This is usually because they need to display, store, and distribute it as part of providing the service. But the language sometimes goes further than that — granting them rights to use your content for marketing, AI training, or licensing to third parties. Read this section if content matters to you.' },
+    { name: 'Note termination and account deletion terms', body: 'What happens if they terminate your account? What happens to your data? Can you export it? How long do they retain it after deletion? These provisions matter most when you eventually leave the service, and the time to know them is when you sign up, not after. Look for sections on account termination, data export, and data retention. These are usually short and easy to read once you find them, and they tell you what your exit looks like.' }
   ],
-
   cta: {
-    glyph:    '🗡',
-    headline: "Get the four-section translation in two minutes",
-    body:     "Paste any software license or terms of service, and Jargon Assassin extracts the data, billing, rights, and termination clauses — flagged, ranked, and translated into plain language — so you can decide before you click accept.",
+    glyph:    '🗡️',
+    headline: "From confusion to action, in one document.",
+    body:     "Paste any legal, medical, insurance, or financial document and Jargon Assassin translates it into plain language with red flags scored, enforceability notes, and a built-in glossary. Then it goes further: red-line edits to propose, comparisons against what's standard, action plans with deadlines, and ready-to-send response letters.",
     features: [
-      "Plain-language translation",
-      "Data and rights flagging",
-      "Auto-renewal detection",
-      "Termination clause analysis",
-      "Q&A on specific clauses",
+      "Plain-language translation with adjustable reading level (ELI5 → Professional)",
+      "Red flags scored, enforceability noted, hidden catches surfaced",
+      "Red-Line generates specific edits to propose with negotiation strategy",
+      "Template Compare shows whether the document is standard or aggressive"
     ],
     toolId:   'JargonAssassin',
     toolName: 'Jargon Assassin',
   },
+  published: '2026-04-29',
+  modified:  '2026-04-29',
 };

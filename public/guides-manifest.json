@@ -1,0 +1,3863 @@
+{
+  "generated": "2026-04-30T06:40:44.859Z",
+  "count": 551,
+  "guides": [
+    {
+      "slug": "how-to-apologize-at-work-for-a-mistake-everyone-saw",
+      "category": "apologies",
+      "title": "How to Apologize at Work for a Mistake Everyone Saw (Without Making It Your Whole Identity)",
+      "toolId": "ApologyCalibrator",
+      "toolName": "Apology Calibrator"
+    },
+    {
+      "slug": "how-to-apologize-for-ghosting-someone",
+      "category": "apologies",
+      "title": "How to Apologize for Ghosting Someone (And Not Make It Weirder)",
+      "toolId": "ApologyCalibrator",
+      "toolName": "Apology Calibrator"
+    },
+    {
+      "slug": "how-to-apologize-to-your-partner-without-making-it-worse",
+      "category": "apologies",
+      "title": "How to Apologize to Your Partner Without Making It Worse",
+      "toolId": "ApologyCalibrator",
+      "toolName": "Apology Calibrator"
+    },
+    {
+      "slug": "how-to-apologize-when-you-really-screwed-up-at-work",
+      "category": "apologies",
+      "title": "How to Apologize When You Really Screwed Up at Work (Without Making It Worse)",
+      "toolId": "ApologyCalibrator",
+      "toolName": "Apology Calibrator"
+    },
+    {
+      "slug": "the-difference-between-an-apology-and-an-explanation",
+      "category": "apologies",
+      "title": "The Difference Between an Apology and an Explanation (And Why It Matters)",
+      "toolId": "ApologyCalibrator",
+      "toolName": "Apology Calibrator"
+    },
+    {
+      "slug": "how-long-does-it-take-to-learn-data-analysis-for-a-career-change",
+      "category": "career",
+      "title": "How Long Does It Take to Learn Data Analysis for a Career Change?",
+      "toolId": "SkillGapMap",
+      "toolName": "Skill Gap Map"
+    },
+    {
+      "slug": "how-to-figure-out-what-career-to-switch-to",
+      "category": "career",
+      "title": "How to Figure Out What Career to Switch To",
+      "toolId": "SkillGapMap",
+      "toolName": "Skill Gap Map"
+    },
+    {
+      "slug": "how-to-identify-your-transferable-skills",
+      "category": "career",
+      "title": "How to Identify Your Transferable Skills",
+      "toolId": "SkillGapMap",
+      "toolName": "Skill Gap Map"
+    },
+    {
+      "slug": "how-to-know-if-youre-ready-for-the-next-level",
+      "category": "career",
+      "title": "How to Know If You're Ready for the Next Level",
+      "toolId": "SkillGapMap",
+      "toolName": "Skill Gap Map"
+    },
+    {
+      "slug": "how-to-know-if-your-job-is-at-risk",
+      "category": "career",
+      "title": "How to Know If Your Job Is at Risk",
+      "toolId": "FutureProof",
+      "toolName": "Future Proof"
+    },
+    {
+      "slug": "how-to-make-the-case-for-your-promotion-in-writing",
+      "category": "career",
+      "title": "How to Make the Case for Your Promotion in Writing",
+      "toolId": "BragSheetBuilder",
+      "toolName": "Brag Sheet Builder"
+    },
+    {
+      "slug": "how-to-switch-careers-to-tech",
+      "category": "career",
+      "title": "How to Switch Careers to Tech (Without a Computer Science Degree)",
+      "toolId": "SkillGapMap",
+      "toolName": "Skill Gap Map"
+    },
+    {
+      "slug": "how-to-talk-about-your-work-without-sounding-arrogant",
+      "category": "career",
+      "title": "How to Talk About Your Work Without Sounding Arrogant",
+      "toolId": "BragSheetBuilder",
+      "toolName": "Brag Sheet Builder"
+    },
+    {
+      "slug": "how-to-transition-from-engineering-to-product-management",
+      "category": "career",
+      "title": "How to Transition From Engineering to Product Management",
+      "toolId": "SkillGapMap",
+      "toolName": "Skill Gap Map"
+    },
+    {
+      "slug": "how-to-write-resume-bullets-for-the-job-you-actually-did",
+      "category": "career",
+      "title": "How to Write Resume Bullets for the Job You Actually Did (Not the Title You Had)",
+      "toolId": "BragSheetBuilder",
+      "toolName": "Brag Sheet Builder"
+    },
+    {
+      "slug": "how-to-write-self-review-bullets-that-get-you-the-raise",
+      "category": "career",
+      "title": "How to Write Self-Review Bullets That Get You the Raise",
+      "toolId": "BragSheetBuilder",
+      "toolName": "Brag Sheet Builder"
+    },
+    {
+      "slug": "is-a-college-degree-still-worth-it",
+      "category": "career",
+      "title": "Is a College Degree Still Worth It?",
+      "toolId": "FutureProof",
+      "toolName": "Future Proof"
+    },
+    {
+      "slug": "is-accounting-going-to-be-replaced-by-ai",
+      "category": "career",
+      "title": "Is Accounting Going to Be Replaced by AI?",
+      "toolId": "FutureProof",
+      "toolName": "Future Proof"
+    },
+    {
+      "slug": "is-it-too-late-to-learn-coding",
+      "category": "career",
+      "title": "Is It Too Late to Learn Coding?",
+      "toolId": "FutureProof",
+      "toolName": "Future Proof"
+    },
+    {
+      "slug": "should-i-learn-ai-in-2026",
+      "category": "career",
+      "title": "Should I Learn AI in 2026?",
+      "toolId": "FutureProof",
+      "toolName": "Future Proof"
+    },
+    {
+      "slug": "what-jobs-will-be-in-demand-in-5-years",
+      "category": "career",
+      "title": "What Jobs Will Be in Demand in 5 Years?",
+      "toolId": "FutureProof",
+      "toolName": "Future Proof"
+    },
+    {
+      "slug": "what-skills-are-actually-futureproof",
+      "category": "career",
+      "title": "What Skills Are Actually Future-Proof?",
+      "toolId": "FutureProof",
+      "toolName": "Future Proof"
+    },
+    {
+      "slug": "what-skills-do-i-need-to-become-a-product-manager",
+      "category": "career",
+      "title": "What Skills Do I Need to Become a Product Manager?",
+      "toolId": "SkillGapMap",
+      "toolName": "Skill Gap Map"
+    },
+    {
+      "slug": "what-to-say-in-a-performance-review-when-you-cant-remember",
+      "category": "career",
+      "title": "What to Say in a Performance Review When You Can't Remember What You Did",
+      "toolId": "BragSheetBuilder",
+      "toolName": "Brag Sheet Builder"
+    },
+    {
+      "slug": "captions-for-solo-travel-photos",
+      "category": "conversations",
+      "title": "Captions for Solo Travel Photos (That Don't Sound Like a Travel Brand)",
+      "toolId": "CaptionMagic",
+      "toolName": "Caption Magic"
+    },
+    {
+      "slug": "first-message-on-a-dating-app-that-actually-gets-a-reply",
+      "category": "conversations",
+      "title": "First Message on a Dating App That Actually Gets a Reply",
+      "toolId": "ColdOpenCraft",
+      "toolName": "Cold Open Craft"
+    },
+    {
+      "slug": "funny-captions-for-couples-photos",
+      "category": "conversations",
+      "title": "Funny Captions for Couples Photos (That Aren't Cringey or Forced)",
+      "toolId": "CaptionMagic",
+      "toolName": "Caption Magic"
+    },
+    {
+      "slug": "how-do-i-sound-to-people-who-dont-know-me",
+      "category": "conversations",
+      "title": "How do I sound to people who don't know me?",
+      "toolId": "WhatsMyVibe",
+      "toolName": "What's My Vibe"
+    },
+    {
+      "slug": "how-to-apologize-at-work-for-a-mistake-everyone-saw",
+      "category": "conversations",
+      "title": "How to Apologize at Work for a Mistake Everyone Saw",
+      "toolId": "ApologyCalibrator",
+      "toolName": "Apology Calibrator"
+    },
+    {
+      "slug": "how-to-apologize-for-ghosting-someone",
+      "category": "conversations",
+      "title": "How to Apologize for Ghosting Someone",
+      "toolId": "ApologyCalibrator",
+      "toolName": "Apology Calibrator"
+    },
+    {
+      "slug": "how-to-apologize-to-your-partner-without-making-it-worse",
+      "category": "conversations",
+      "title": "How to Apologize to Your Partner Without Making It Worse",
+      "toolId": "ApologyCalibrator",
+      "toolName": "Apology Calibrator"
+    },
+    {
+      "slug": "how-to-apologize-when-you-really-screwed-up-at-work",
+      "category": "conversations",
+      "title": "How to Apologize When You Really Screwed Up at Work",
+      "toolId": "ApologyCalibrator",
+      "toolName": "Apology Calibrator"
+    },
+    {
+      "slug": "how-to-ask-for-a-discount-without-seeming-cheap",
+      "category": "conversations",
+      "title": "How to Ask for a Discount Without Seeming Cheap",
+      "toolId": "MagicMouth",
+      "toolName": "Magic Mouth"
+    },
+    {
+      "slug": "how-to-ask-for-a-refund-and-actually-get-one",
+      "category": "conversations",
+      "title": "How to Ask for a Refund and Actually Get One",
+      "toolId": "MagicMouth",
+      "toolName": "Magic Mouth"
+    },
+    {
+      "slug": "how-to-ask-for-an-upgrade",
+      "category": "conversations",
+      "title": "How to Ask for an Upgrade Without Being Annoying About It",
+      "toolId": "MagicMouth",
+      "toolName": "Magic Mouth"
+    },
+    {
+      "slug": "how-to-ask-your-boss-for-a-raise",
+      "category": "conversations",
+      "title": "How to Ask Your Boss for a Raise (the Conversation, Not the Strategy)",
+      "toolId": "MagicMouth",
+      "toolName": "Magic Mouth"
+    },
+    {
+      "slug": "how-to-be-the-friend-who-keeps-in-touch",
+      "category": "conversations",
+      "title": "How to Be the Friend Who Keeps in Touch (When That Has Never Been You)",
+      "toolId": "FriendshipFadeAlerter",
+      "toolName": "Friendship Fade Alerter"
+    },
+    {
+      "slug": "how-to-caption-a-photo-when-you-dont-know-what-to-say",
+      "category": "conversations",
+      "title": "How to Caption a Photo When You Don't Know What to Say",
+      "toolId": "CaptionMagic",
+      "toolName": "Caption Magic"
+    },
+    {
+      "slug": "how-to-come-up-with-a-good-analogy-for-a-complex-idea",
+      "category": "conversations",
+      "title": "How to Come Up with a Good Analogy for a Complex Idea (When Nothing's Coming to Mind)",
+      "toolId": "AnalogyEngine",
+      "toolName": "Analogy Engine"
+    },
+    {
+      "slug": "how-to-de-escalate-a-fight-over-text",
+      "category": "conversations",
+      "title": "How to De-escalate a Fight Over Text (Before It Turns Into Something Worse)",
+      "toolId": "ConflictCoach",
+      "toolName": "Conflict Coach"
+    },
+    {
+      "slug": "how-to-de-escalate-a-text-fight-with-your-partner",
+      "category": "conversations",
+      "title": "How to de-escalate a text fight with your partner",
+      "toolId": "ConflictCoach",
+      "toolName": "Conflict Coach"
+    },
+    {
+      "slug": "how-to-decode-a-cryptic-message-from-a-coworker",
+      "category": "conversations",
+      "title": "How to decode a cryptic message from a coworker",
+      "toolId": "DecoderRing",
+      "toolName": "Decoder Ring"
+    },
+    {
+      "slug": "how-to-defend-a-position-without-getting-defensive",
+      "category": "conversations",
+      "title": "How to defend a position without getting defensive",
+      "toolId": "DebateMe",
+      "toolName": "Debate Me"
+    },
+    {
+      "slug": "how-to-explain-ai-to-non-technical-people",
+      "category": "conversations",
+      "title": "How to Explain AI to Non-Technical People (Without Sounding Like a Textbook)",
+      "toolId": "AnalogyEngine",
+      "toolName": "Analogy Engine"
+    },
+    {
+      "slug": "how-to-explain-inflation-to-a-kid",
+      "category": "conversations",
+      "title": "How to Explain Inflation to a Kid (Without Boring Them or Lying)",
+      "toolId": "AnalogyEngine",
+      "toolName": "Analogy Engine"
+    },
+    {
+      "slug": "how-to-explain-something-complicated-without-making-someone-feel-stupid",
+      "category": "conversations",
+      "title": "How to Explain Something Complicated (Without Making the Other Person Feel Stupid)",
+      "toolId": "AnalogyEngine",
+      "toolName": "Analogy Engine"
+    },
+    {
+      "slug": "how-to-explain-your-job-to-your-family-at-thanksgiving",
+      "category": "conversations",
+      "title": "How to Explain Your Job to Your Family at Thanksgiving (Without Glazing Anyone Over)",
+      "toolId": "AnalogyEngine",
+      "toolName": "Analogy Engine"
+    },
+    {
+      "slug": "how-to-figure-out-your-default-communication-tone",
+      "category": "conversations",
+      "title": "How to figure out your default communication tone",
+      "toolId": "WhatsMyVibe",
+      "toolName": "What's My Vibe"
+    },
+    {
+      "slug": "how-to-get-a-fee-waived",
+      "category": "conversations",
+      "title": "How to Get a Fee Waived",
+      "toolId": "MagicMouth",
+      "toolName": "Magic Mouth"
+    },
+    {
+      "slug": "how-to-get-back-on-someones-radar-without-being-weird",
+      "category": "conversations",
+      "title": "How to Get Back on Someone's Radar Without Being Weird About It",
+      "toolId": "GravityWell",
+      "toolName": "Gravity Well"
+    },
+    {
+      "slug": "how-to-handle-rude-comments-from-family-at-holidays",
+      "category": "conversations",
+      "title": "How to Handle Rude Comments from Family at Holidays",
+      "toolId": "ComebackCooker",
+      "toolName": "Comeback Cooker"
+    },
+    {
+      "slug": "how-to-keep-a-conversation-going-when-its-dying",
+      "category": "conversations",
+      "title": "How to Keep a Conversation Going When It's Dying (Without Tap-Dancing)",
+      "toolId": "AwkwardSilenceFiller",
+      "toolName": "Awkward Silence Filler"
+    },
+    {
+      "slug": "how-to-know-if-a-friendship-is-over-or-just-dormant",
+      "category": "conversations",
+      "title": "How to Know if a Friendship Is Over or Just Dormant",
+      "toolId": "FriendshipFadeAlerter",
+      "toolName": "Friendship Fade Alerter"
+    },
+    {
+      "slug": "how-to-know-if-you-sound-aggressive-without-meaning-to",
+      "category": "conversations",
+      "title": "How to know if you sound aggressive without meaning to",
+      "toolId": "WhatsMyVibe",
+      "toolName": "What's My Vibe"
+    },
+    {
+      "slug": "how-to-know-if-your-message-will-be-misinterpreted-before",
+      "category": "conversations",
+      "title": "How to Know If Your Message Will Be Misinterpreted Before You Send It",
+      "toolId": "ContextCollapse",
+      "toolName": "Context Collapse"
+    },
+    {
+      "slug": "how-to-know-when-to-leave-a-party",
+      "category": "conversations",
+      "title": "How to Know When to Leave a Party",
+      "toolId": "RoomReader",
+      "toolName": "Room Reader"
+    },
+    {
+      "slug": "how-to-maintain-friendships-as-an-adult",
+      "category": "conversations",
+      "title": "How to Maintain Friendships as an Adult (When You Have No Time)",
+      "toolId": "FriendshipFadeAlerter",
+      "toolName": "Friendship Fade Alerter"
+    },
+    {
+      "slug": "how-to-make-small-talk-without-being-annoying",
+      "category": "conversations",
+      "title": "How to Make Small Talk Without Being Annoying (or Bored)",
+      "toolId": "AwkwardSilenceFiller",
+      "toolName": "Awkward Silence Filler"
+    },
+    {
+      "slug": "how-to-message-someone-on-linkedin-you-dont-know",
+      "category": "conversations",
+      "title": "How to Message Someone on LinkedIn You Don't Know (Without It Going Straight to Their Trash)",
+      "toolId": "ColdOpenCraft",
+      "toolName": "Cold Open Craft"
+    },
+    {
+      "slug": "how-to-prep-for-a-meeting-where-youll-get-pushback",
+      "category": "conversations",
+      "title": "How to prep for a meeting where you'll get pushback",
+      "toolId": "DebateMe",
+      "toolName": "Debate Me"
+    },
+    {
+      "slug": "how-to-prepare-for-a-tough-question-you-cant-answer",
+      "category": "conversations",
+      "title": "How to prepare for a tough question you cannot answer",
+      "toolId": "DebateMe",
+      "toolName": "Debate Me"
+    },
+    {
+      "slug": "how-to-reach-out-to-a-friend-youve-lost-touch-with",
+      "category": "conversations",
+      "title": "How to Reach Out to a Friend You've Lost Touch With (Without Making It Weird)",
+      "toolId": "FriendshipFadeAlerter",
+      "toolName": "Friendship Fade Alerter"
+    },
+    {
+      "slug": "how-to-reach-out-to-someone-you-admire",
+      "category": "conversations",
+      "title": "How to Reach Out to Someone You Admire (Without It Coming Off as Fan Mail)",
+      "toolId": "ColdOpenCraft",
+      "toolName": "Cold Open Craft"
+    },
+    {
+      "slug": "how-to-read-a-room-before-walking-in",
+      "category": "conversations",
+      "title": "How to Read a Room Before Walking In",
+      "toolId": "RoomReader",
+      "toolName": "Room Reader"
+    },
+    {
+      "slug": "how-to-rebuild-a-friendship-thats-gone-quiet-without-being-awkward",
+      "category": "conversations",
+      "title": "How to Rebuild a Friendship That's Gone Quiet (Without Being Awkward)",
+      "toolId": "GravityWell",
+      "toolName": "Gravity Well"
+    },
+    {
+      "slug": "how-to-reconnect-with-an-old-friend-without-it-being-weird",
+      "category": "conversations",
+      "title": "How to Reconnect With an Old Friend Without It Being Weird",
+      "toolId": "FriendshipFadeAlerter",
+      "toolName": "Friendship Fade Alerter"
+    },
+    {
+      "slug": "how-to-reconnect-with-someone-before-you-ask-them-for-a-favor",
+      "category": "conversations",
+      "title": "How to Reconnect with Someone Before You Ask Them for a Favor",
+      "toolId": "GravityWell",
+      "toolName": "Gravity Well"
+    },
+    {
+      "slug": "how-to-reply-to-a-rude-email-without-stooping-to-their-level",
+      "category": "conversations",
+      "title": "How to Reply to a Rude Email (Without Stooping to Their Level)",
+      "toolId": "ConflictCoach",
+      "toolName": "Conflict Coach"
+    },
+    {
+      "slug": "how-to-respond-to-youre-being-too-sensitive",
+      "category": "conversations",
+      "title": "How to Respond to \"You’re Being Too Sensitive\"",
+      "toolId": "ComebackCooker",
+      "toolName": "Comeback Cooker"
+    },
+    {
+      "slug": "how-to-respond-to-a-backhanded-compliment",
+      "category": "conversations",
+      "title": "How to Respond to a Backhanded Compliment",
+      "toolId": "ComebackCooker",
+      "toolName": "Comeback Cooker"
+    },
+    {
+      "slug": "how-to-respond-to-a-mean-text-from-family",
+      "category": "conversations",
+      "title": "How to Respond to a Mean Text From Family (When You Can't Just Block Them)",
+      "toolId": "ConflictCoach",
+      "toolName": "Conflict Coach"
+    },
+    {
+      "slug": "how-to-respond-to-a-passive-aggressive-text",
+      "category": "conversations",
+      "title": "How to respond to a passive-aggressive text",
+      "toolId": "ConflictCoach",
+      "toolName": "Conflict Coach"
+    },
+    {
+      "slug": "how-to-respond-to-an-angry-text-without-making-it-worse",
+      "category": "conversations",
+      "title": "How to respond to an angry text without making it worse",
+      "toolId": "ConflictCoach",
+      "toolName": "Conflict Coach"
+    },
+    {
+      "slug": "how-to-respond-when-you-want-to-respond-but-shouldnt",
+      "category": "conversations",
+      "title": "How to Respond When You Want to Respond But Shouldn't (And the 60-Second Move That Changes Everything)",
+      "toolId": "ConflictCoach",
+      "toolName": "Conflict Coach"
+    },
+    {
+      "slug": "how-to-send-a-group-text-that-wont-be-misread",
+      "category": "conversations",
+      "title": "How to Send a Group Text That Won't Be Misread (By Anyone in the Group)",
+      "toolId": "ContextCollapse",
+      "toolName": "Context Collapse"
+    },
+    {
+      "slug": "how-to-set-a-boundary-over-text-without-being-rude",
+      "category": "conversations",
+      "title": "How to set a boundary over text without being rude",
+      "toolId": "ConflictCoach",
+      "toolName": "Conflict Coach"
+    },
+    {
+      "slug": "how-to-share-difficult-news-on-social-media",
+      "category": "conversations",
+      "title": "How to Share Difficult News on Social Media (Without Regretting It)",
+      "toolId": "ContextCollapse",
+      "toolName": "Context Collapse"
+    },
+    {
+      "slug": "how-to-spot-a-logical-fallacy-in-an-argument",
+      "category": "conversations",
+      "title": "How to spot a logical fallacy in an argument",
+      "toolId": "DebateMe",
+      "toolName": "Debate Me"
+    },
+    {
+      "slug": "how-to-stay-close-to-a-friend-after-one-of-you-moves",
+      "category": "conversations",
+      "title": "How to Stay Close to a Friend After One of You Moves",
+      "toolId": "FriendshipFadeAlerter",
+      "toolName": "Friendship Fade Alerter"
+    },
+    {
+      "slug": "how-to-stay-top-of-mind-with-someone-you-barely-know",
+      "category": "conversations",
+      "title": "How to Stay Top of Mind with Someone You Barely Know",
+      "toolId": "GravityWell",
+      "toolName": "Gravity Well"
+    },
+    {
+      "slug": "how-to-steelman-an-argument-you-disagree-with",
+      "category": "conversations",
+      "title": "How to steelman an argument you disagree with",
+      "toolId": "DebateMe",
+      "toolName": "Debate Me"
+    },
+    {
+      "slug": "how-to-tell-if-a-conversation-is-going-well-or-going-badly",
+      "category": "conversations",
+      "title": "How to Tell If a Conversation Is Going Well or Going Badly",
+      "toolId": "RoomReader",
+      "toolName": "Room Reader"
+    },
+    {
+      "slug": "how-to-tell-if-a-text-is-passive-aggressive-or-just-short",
+      "category": "conversations",
+      "title": "How to tell if a text is passive-aggressive or just short",
+      "toolId": "DecoderRing",
+      "toolName": "Decoder Ring"
+    },
+    {
+      "slug": "how-to-tell-if-someone-is-actually-mad-or-just-busy",
+      "category": "conversations",
+      "title": "How to tell if someone is actually mad or just busy",
+      "toolId": "DecoderRing",
+      "toolName": "Decoder Ring"
+    },
+    {
+      "slug": "how-to-tell-if-youre-being-included-or-politely-tolerated",
+      "category": "conversations",
+      "title": "How to Tell If You Are Being Included or Just Politely Tolerated",
+      "toolId": "RoomReader",
+      "toolName": "Room Reader"
+    },
+    {
+      "slug": "how-to-thank-someone-who-really-helped-you-when-you-struggled",
+      "category": "conversations",
+      "title": "How to Thank Someone Who Really Helped You When You Struggled",
+      "toolId": "GratitudeDebtClearer",
+      "toolName": "Gratitude Debt Clearer"
+    },
+    {
+      "slug": "how-to-turn-we-should-hang-out-into-actually-hanging-out",
+      "category": "conversations",
+      "title": "How to Turn \"We Should Hang Out\" into Actually Hanging Out",
+      "toolId": "FriendshipFadeAlerter",
+      "toolName": "Friendship Fade Alerter"
+    },
+    {
+      "slug": "how-to-walk-into-a-room-where-everyone-already-knows-each-other",
+      "category": "conversations",
+      "title": "How to Walk Into a Room Where Everyone Already Knows Each Other",
+      "toolId": "RoomReader",
+      "toolName": "Room Reader"
+    },
+    {
+      "slug": "how-to-warm-up-a-cold-contact-over-weeks-not-minutes",
+      "category": "conversations",
+      "title": "How to Warm Up a Cold Contact Over Weeks, Not Minutes",
+      "toolId": "GravityWell",
+      "toolName": "Gravity Well"
+    },
+    {
+      "slug": "how-to-write-a-belated-thank-you-note",
+      "category": "conversations",
+      "title": "How to Write a Belated Thank-You Note (Without Making It Weird)",
+      "toolId": "GratitudeDebtClearer",
+      "toolName": "Gratitude Debt Clearer"
+    },
+    {
+      "slug": "how-to-write-a-cold-email-that-gets-a-response",
+      "category": "conversations",
+      "title": "How to Write a Cold Email That Gets a Response (Without Sounding Like a Sales Template)",
+      "toolId": "ColdOpenCraft",
+      "toolName": "Cold Open Craft"
+    },
+    {
+      "slug": "how-to-write-a-linkedin-post-without-sounding-fake",
+      "category": "conversations",
+      "title": "How to Write a LinkedIn Post Without Sounding Fake (Or Like an Inspirational Speaker)",
+      "toolId": "ContextCollapse",
+      "toolName": "Context Collapse"
+    },
+    {
+      "slug": "how-to-write-a-linkedin-recommendation-that-doesnt-sound-generic",
+      "category": "conversations",
+      "title": "How to Write a LinkedIn Recommendation That Doesn't Sound Generic",
+      "toolId": "GhostWriter",
+      "toolName": "Ghost Writer"
+    },
+    {
+      "slug": "how-to-write-a-message-that-lands-the-same-way-for-boss-and-friend",
+      "category": "conversations",
+      "title": "How to Write a Message That Lands the Same Way for Your Boss and Your Friend",
+      "toolId": "ContextCollapse",
+      "toolName": "Context Collapse"
+    },
+    {
+      "slug": "how-to-write-a-recommendation-letter",
+      "category": "conversations",
+      "title": "How to Write a Recommendation Letter",
+      "toolId": "GhostWriter",
+      "toolName": "Ghost Writer"
+    },
+    {
+      "slug": "how-to-write-a-recommendation-letter-for-a-coworker",
+      "category": "conversations",
+      "title": "How to Write a Recommendation Letter for a Coworker",
+      "toolId": "GhostWriter",
+      "toolName": "Ghost Writer"
+    },
+    {
+      "slug": "how-to-write-a-recommendation-letter-when-you-dont-know-them-well",
+      "category": "conversations",
+      "title": "How to Write a Recommendation Letter When You Don't Know Them Well",
+      "toolId": "GhostWriter",
+      "toolName": "Ghost Writer"
+    },
+    {
+      "slug": "how-to-write-a-thank-you-email-after-an-interview",
+      "category": "conversations",
+      "title": "How to Write a Thank-You Email After an Interview",
+      "toolId": "GratitudeDebtClearer",
+      "toolName": "Gratitude Debt Clearer"
+    },
+    {
+      "slug": "how-to-write-a-thank-you-note-for-a-wedding-gift",
+      "category": "conversations",
+      "title": "How to Write a Thank-You Note for a Wedding Gift",
+      "toolId": "GratitudeDebtClearer",
+      "toolName": "Gratitude Debt Clearer"
+    },
+    {
+      "slug": "how-to-write-a-thank-you-note-that-doesnt-sound-generic",
+      "category": "conversations",
+      "title": "How to Write a Thank-You Note That Doesn't Sound Generic",
+      "toolId": "GratitudeDebtClearer",
+      "toolName": "Gratitude Debt Clearer"
+    },
+    {
+      "slug": "how-to-write-instagram-captions-that-get-engagement",
+      "category": "conversations",
+      "title": "How to Write Instagram Captions That Get Engagement (Without Sounding Like an Influencer)",
+      "toolId": "CaptionMagic",
+      "toolName": "Caption Magic"
+    },
+    {
+      "slug": "professional-instagram-caption-examples",
+      "category": "conversations",
+      "title": "Professional Instagram Caption Examples (For When LinkedIn Voice Won't Work)",
+      "toolId": "CaptionMagic",
+      "toolName": "Caption Magic"
+    },
+    {
+      "slug": "recommendation-letter-template-for-graduate-school",
+      "category": "conversations",
+      "title": "Recommendation Letter Template for Graduate School",
+      "toolId": "GhostWriter",
+      "toolName": "Ghost Writer"
+    },
+    {
+      "slug": "the-difference-between-an-apology-and-an-explanation",
+      "category": "conversations",
+      "title": "The Difference Between an Apology and an Explanation",
+      "toolId": "ApologyCalibrator",
+      "toolName": "Apology Calibrator"
+    },
+    {
+      "slug": "the-perfect-comeback-you-thought-of-three-hours-too-late",
+      "category": "conversations",
+      "title": "The Perfect Comeback You Thought of Three Hours Too Late",
+      "toolId": "ComebackCooker",
+      "toolName": "Comeback Cooker"
+    },
+    {
+      "slug": "things-to-say-on-a-first-date-when-conversation-stalls",
+      "category": "conversations",
+      "title": "Things to Say on a First Date When Conversation Stalls (Without Sounding Rehearsed)",
+      "toolId": "AwkwardSilenceFiller",
+      "toolName": "Awkward Silence Filler"
+    },
+    {
+      "slug": "what-does-it-mean-when-someone-says-its-fine",
+      "category": "conversations",
+      "title": "What does it mean when someone says \"it's fine\"",
+      "toolId": "DecoderRing",
+      "toolName": "Decoder Ring"
+    },
+    {
+      "slug": "what-they-actually-meant-by-we-need-to-talk",
+      "category": "conversations",
+      "title": "What they actually meant by \"we need to talk\"",
+      "toolId": "DecoderRing",
+      "toolName": "Decoder Ring"
+    },
+    {
+      "slug": "what-to-say-when-someone-interrupts-you-in-a-meeting",
+      "category": "conversations",
+      "title": "What to Say When Someone Interrupts You in a Meeting",
+      "toolId": "ComebackCooker",
+      "toolName": "Comeback Cooker"
+    },
+    {
+      "slug": "what-to-say-when-someone-is-being-defensive",
+      "category": "conversations",
+      "title": "What to Say When Someone Is Being Defensive (And Why Pushing Harder Makes It Worse)",
+      "toolId": "ConflictCoach",
+      "toolName": "Conflict Coach"
+    },
+    {
+      "slug": "what-to-say-when-someone-is-gaslighting-you-over-text",
+      "category": "conversations",
+      "title": "What to say when someone is gaslighting you over text",
+      "toolId": "ConflictCoach",
+      "toolName": "Conflict Coach"
+    },
+    {
+      "slug": "what-to-say-when-theres-an-awkward-silence",
+      "category": "conversations",
+      "title": "What to Say When There's an Awkward Silence (Without Forcing It)",
+      "toolId": "AwkwardSilenceFiller",
+      "toolName": "Awkward Silence Filler"
+    },
+    {
+      "slug": "what-to-talk-about-with-someone-you-barely-know",
+      "category": "conversations",
+      "title": "What to Talk About with Someone You Barely Know (Beyond Weather and Work)",
+      "toolId": "AwkwardSilenceFiller",
+      "toolName": "Awkward Silence Filler"
+    },
+    {
+      "slug": "what-to-write-in-a-cold-pitch-when-you-have-no-credentials",
+      "category": "conversations",
+      "title": "What to Write in a Cold Pitch When You Have No Credentials (Yet)",
+      "toolId": "ColdOpenCraft",
+      "toolName": "Cold Open Craft"
+    },
+    {
+      "slug": "why-do-people-misread-my-texts-as-rude",
+      "category": "conversations",
+      "title": "Why do people misread my texts as rude?",
+      "toolId": "WhatsMyVibe",
+      "toolName": "What's My Vibe"
+    },
+    {
+      "slug": "why-does-my-writing-feel-cold-even-when-im-being-friendly",
+      "category": "conversations",
+      "title": "Why does my writing feel cold even when I'm being friendly?",
+      "toolId": "WhatsMyVibe",
+      "toolName": "What's My Vibe"
+    },
+    {
+      "slug": "why-your-closest-friendships-fade-even-when-nothing-went-wrong",
+      "category": "conversations",
+      "title": "Why Your Closest Friendships Fade (Even When Nothing Went Wrong)",
+      "toolId": "FriendshipFadeAlerter",
+      "toolName": "Friendship Fade Alerter"
+    },
+    {
+      "slug": "common-cooking-mistakes-and-how-to-fix-them",
+      "category": "cooking",
+      "title": "Common Cooking Mistakes and How to Fix Them",
+      "toolId": "RecipeChaosSolver",
+      "toolName": "Recipe Chaos Solver"
+    },
+    {
+      "slug": "how-to-cook-efficiently-when-you-have-limited-counter-space",
+      "category": "cooking",
+      "title": "How to Cook Efficiently When You Have Almost No Counter Space",
+      "toolId": "MiseEnPlace",
+      "toolName": "Mise en Place"
+    },
+    {
+      "slug": "how-to-cook-for-a-dinner-party-without-losing-your-mind",
+      "category": "cooking",
+      "title": "How to Cook for a Dinner Party Without Losing Your Mind",
+      "toolId": "MiseEnPlace",
+      "toolName": "Mise en Place"
+    },
+    {
+      "slug": "how-to-cook-for-guests-with-different-dietary-needs",
+      "category": "cooking",
+      "title": "How to Cook One Meal for Guests With Different Dietary Needs",
+      "toolId": "MiseEnPlace",
+      "toolName": "Mise en Place"
+    },
+    {
+      "slug": "how-to-fix-a-cooking-disaster",
+      "category": "cooking",
+      "title": "How to Fix a Cooking Disaster",
+      "toolId": "RecipeChaosSolver",
+      "toolName": "Recipe Chaos Solver"
+    },
+    {
+      "slug": "how-to-halve-or-double-a-recipe",
+      "category": "cooking",
+      "title": "How to Halve or Double a Recipe Without Ruining It",
+      "toolId": "RecipeChaosSolver",
+      "toolName": "Recipe Chaos Solver"
+    },
+    {
+      "slug": "how-to-plan-a-multi-course-meal",
+      "category": "cooking",
+      "title": "How to Plan a Multi-Course Meal Without Everything Going Sideways",
+      "toolId": "MiseEnPlace",
+      "toolName": "Mise en Place"
+    },
+    {
+      "slug": "how-to-rescue-a-meal-thats-going-wrong",
+      "category": "cooking",
+      "title": "How to Rescue a Meal That Is Going Wrong",
+      "toolId": "RecipeChaosSolver",
+      "toolName": "Recipe Chaos Solver"
+    },
+    {
+      "slug": "how-to-time-a-meal-so-everythings-ready-at-once",
+      "category": "cooking",
+      "title": "How to Time a Meal So Everything Is Ready at the Same Time",
+      "toolId": "MiseEnPlace",
+      "toolName": "Mise en Place"
+    },
+    {
+      "slug": "what-to-substitute-for-an-ingredient-youre-missing",
+      "category": "cooking",
+      "title": "What to Substitute for an Ingredient You Are Missing",
+      "toolId": "RecipeChaosSolver",
+      "toolName": "Recipe Chaos Solver"
+    },
+    {
+      "slug": "how-to-anticipate-the-strongest-argument-against-your-position",
+      "category": "decisions",
+      "title": "How to Anticipate the Strongest Argument Against Your Position",
+      "toolId": "DebateMe",
+      "toolName": "Debate Me"
+    },
+    {
+      "slug": "how-to-argue-better",
+      "category": "decisions",
+      "title": "How to Argue Better",
+      "toolId": "DebateMe",
+      "toolName": "Debate Me"
+    },
+    {
+      "slug": "how-to-argue-with-someone-whos-smarter-than-you",
+      "category": "decisions",
+      "title": "How to Argue With Someone Who's Smarter Than You",
+      "toolId": "DebateMe",
+      "toolName": "Debate Me"
+    },
+    {
+      "slug": "how-to-argue-without-getting-emotional",
+      "category": "decisions",
+      "title": "How to Argue Without Getting Emotional",
+      "toolId": "DebateMe",
+      "toolName": "Debate Me"
+    },
+    {
+      "slug": "how-to-choose-between-two-good-options",
+      "category": "decisions",
+      "title": "How to Choose Between Two Good Options",
+      "toolId": "DecisionCoach",
+      "toolName": "Decision Coach"
+    },
+    {
+      "slug": "how-to-decide-what-to-eat-when-nothing-sounds-good",
+      "category": "decisions",
+      "title": "How to decide what to eat when nothing sounds good",
+      "toolId": "DecisionCoach",
+      "toolName": "Decision Coach"
+    },
+    {
+      "slug": "how-to-decide-when-your-gut-and-your-logic-disagree",
+      "category": "decisions",
+      "title": "How to Decide When Your Gut and Your Logic Disagree",
+      "toolId": "DecisionCoach",
+      "toolName": "Decision Coach"
+    },
+    {
+      "slug": "how-to-decide-whether-to-move-to-a-new-city",
+      "category": "decisions",
+      "title": "How to decide whether to move to a new city",
+      "toolId": "WhatIf",
+      "toolName": "What If?"
+    },
+    {
+      "slug": "how-to-evaluate-a-wellness-trend-before-buying-in",
+      "category": "decisions",
+      "title": "How to Evaluate a Wellness Trend Before Buying In",
+      "toolId": "SignalVsNoise",
+      "toolName": "Signal vs. Noise"
+    },
+    {
+      "slug": "how-to-know-if-youll-regret-saying-no-to-something",
+      "category": "decisions",
+      "title": "How to know if you'll regret saying no to something",
+      "toolId": "WhatIf",
+      "toolName": "What If?"
+    },
+    {
+      "slug": "how-to-know-if-youre-overthinking-a-decision",
+      "category": "decisions",
+      "title": "How to Know If You're Overthinking a Decision",
+      "toolId": "DecisionCoach",
+      "toolName": "Decision Coach"
+    },
+    {
+      "slug": "how-to-know-if-youve-actually-won-an-argument",
+      "category": "decisions",
+      "title": "How to Know If You've Actually Won an Argument",
+      "toolId": "DebateMe",
+      "toolName": "Debate Me"
+    },
+    {
+      "slug": "how-to-make-a-decision-when-everything-feels-equally-bad",
+      "category": "decisions",
+      "title": "How to make a decision when everything feels equally bad",
+      "toolId": "DecisionCoach",
+      "toolName": "Decision Coach"
+    },
+    {
+      "slug": "how-to-make-a-decision-when-you-dont-have-enough-information",
+      "category": "decisions",
+      "title": "How to Make a Decision When You Don't Have Enough Information",
+      "toolId": "DecisionCoach",
+      "toolName": "Decision Coach"
+    },
+    {
+      "slug": "how-to-make-a-decision-when-you-have-to-commit-by-deadline",
+      "category": "decisions",
+      "title": "How to Make a Decision When You Have to Commit by a Deadline",
+      "toolId": "DecisionCoach",
+      "toolName": "Decision Coach"
+    },
+    {
+      "slug": "how-to-make-a-hard-decision-when-you-keep-going-back-and-forth",
+      "category": "decisions",
+      "title": "How to Make a Hard Decision When You Keep Going Back and Forth",
+      "toolId": "DecisionCoach",
+      "toolName": "Decision Coach"
+    },
+    {
+      "slug": "how-to-make-a-major-life-decision-without-regretting-it",
+      "category": "decisions",
+      "title": "How to make a major life decision without regretting it",
+      "toolId": "WhatIf",
+      "toolName": "What If?"
+    },
+    {
+      "slug": "how-to-prepare-for-a-debate",
+      "category": "decisions",
+      "title": "How to Prepare for a Debate",
+      "toolId": "DebateMe",
+      "toolName": "Debate Me"
+    },
+    {
+      "slug": "how-to-spot-a-logical-fallacy-in-real-time",
+      "category": "decisions",
+      "title": "How to Spot a Logical Fallacy in Real Time",
+      "toolId": "DebateMe",
+      "toolName": "Debate Me"
+    },
+    {
+      "slug": "how-to-spot-wellness-marketing-dressed-as-science",
+      "category": "decisions",
+      "title": "How to Spot Wellness Marketing Dressed Up as Science",
+      "toolId": "SignalVsNoise",
+      "toolName": "Signal vs. Noise"
+    },
+    {
+      "slug": "how-to-stop-decision-paralysis-when-youre-burned-out",
+      "category": "decisions",
+      "title": "How to stop decision paralysis when you're burned out",
+      "toolId": "DecisionCoach",
+      "toolName": "Decision Coach"
+    },
+    {
+      "slug": "how-to-stop-secondguessing-decisions-you-already-made",
+      "category": "decisions",
+      "title": "How to Stop Second-Guessing Decisions You Already Made",
+      "toolId": "DecisionCoach",
+      "toolName": "Decision Coach"
+    },
+    {
+      "slug": "how-to-stop-second-guessing-yourself-after-you-decide",
+      "category": "decisions",
+      "title": "How to stop second-guessing yourself after you decide",
+      "toolId": "DecisionCoach",
+      "toolName": "Decision Coach"
+    },
+    {
+      "slug": "how-to-tell-what-actually-works",
+      "category": "decisions",
+      "title": "How to Tell What Actually Works",
+      "toolId": "SignalVsNoise",
+      "toolName": "Signal vs. Noise"
+    },
+    {
+      "slug": "how-to-think-about-a-decision-when-both-paths-feel-right",
+      "category": "decisions",
+      "title": "How to think about a decision when both paths feel right",
+      "toolId": "WhatIf",
+      "toolName": "What If?"
+    },
+    {
+      "slug": "how-to-think-through-a-job-offer-when-youre-torn",
+      "category": "decisions",
+      "title": "How to think through a job offer when you're torn",
+      "toolId": "WhatIf",
+      "toolName": "What If?"
+    },
+    {
+      "slug": "is-this-health-claim-actually-backed-by-evidence",
+      "category": "decisions",
+      "title": "Is This Health Claim Actually Backed by Evidence?",
+      "toolId": "SignalVsNoise",
+      "toolName": "Signal vs. Noise"
+    },
+    {
+      "slug": "why-am-i-so-bad-at-making-small-decisions-when-im-tired",
+      "category": "decisions",
+      "title": "Why am I so bad at making small decisions when I m tired",
+      "toolId": "DecisionCoach",
+      "toolName": "Decision Coach"
+    },
+    {
+      "slug": "why-does-every-expert-contradict-every-other-expert",
+      "category": "decisions",
+      "title": "Why Does Every Expert Contradict Every Other Expert?",
+      "toolId": "SignalVsNoise",
+      "toolName": "Signal vs. Noise"
+    },
+    {
+      "slug": "how-to-describe-your-symptoms-to-a-doctor",
+      "category": "health",
+      "title": "How to Describe Your Symptoms to a Doctor (So They Can Actually Help You)",
+      "toolId": "DoctorVisitPrep",
+      "toolName": "Doctor Visit Prep"
+    },
+    {
+      "slug": "how-to-get-a-second-opinion",
+      "category": "health",
+      "title": "How to Get a Second Opinion (Without Awkwardness or Wasted Time)",
+      "toolId": "DoctorVisitPrep",
+      "toolName": "Doctor Visit Prep"
+    },
+    {
+      "slug": "how-to-get-your-concerns-taken-seriously-at-the-doctor",
+      "category": "health",
+      "title": "How to Get Your Concerns Taken Seriously at the Doctor (Without Being Dismissed)",
+      "toolId": "DoctorVisitPrep",
+      "toolName": "Doctor Visit Prep"
+    },
+    {
+      "slug": "how-to-interpret-lab-results",
+      "category": "health",
+      "title": "How to Interpret Lab Results (When the Doctor Hasn't Called Yet)",
+      "toolId": "DoctorVisitTranslator",
+      "toolName": "Doctor Visit Translator"
+    },
+    {
+      "slug": "how-to-prepare-for-a-doctors-appointment",
+      "category": "health",
+      "title": "How to Prepare for a Doctor's Appointment (Without Forgetting What You Came For)",
+      "toolId": "DoctorVisitPrep",
+      "toolName": "Doctor Visit Prep"
+    },
+    {
+      "slug": "how-to-push-back-when-a-doctor-isnt-listening",
+      "category": "health",
+      "title": "How to Push Back When a Doctor Isn't Listening (Without Burning the Visit)",
+      "toolId": "DoctorVisitPrep",
+      "toolName": "Doctor Visit Prep"
+    },
+    {
+      "slug": "how-to-read-your-blood-test-results",
+      "category": "health",
+      "title": "How to Read Your Blood Test Results (Without Panicking About Every Number)",
+      "toolId": "DoctorVisitTranslator",
+      "toolName": "Doctor Visit Translator"
+    },
+    {
+      "slug": "how-to-understand-a-chronic-illness-diagnosis",
+      "category": "health",
+      "title": "How to Understand a Chronic Illness Diagnosis (When You're Newly Diagnosed)",
+      "toolId": "DoctorVisitTranslator",
+      "toolName": "Doctor Visit Translator"
+    },
+    {
+      "slug": "how-to-understand-medical-jargon",
+      "category": "health",
+      "title": "How to Understand Medical Jargon (Without a Medical Dictionary)",
+      "toolId": "DoctorVisitTranslator",
+      "toolName": "Doctor Visit Translator"
+    },
+    {
+      "slug": "how-to-understand-what-your-doctor-actually-said",
+      "category": "health",
+      "title": "How to Understand What Your Doctor Actually Said (After You Already Left)",
+      "toolId": "DoctorVisitTranslator",
+      "toolName": "Doctor Visit Translator"
+    },
+    {
+      "slug": "questions-to-ask-your-doctor",
+      "category": "health",
+      "title": "Prepare for Your Appointment in Advance: Questions to Ask Your Doctor to Get the Most Out of Your Visit",
+      "toolId": "DoctorVisitPrep",
+      "toolName": "Doctor Visit Prep"
+    },
+    {
+      "slug": "what-questions-to-ask-your-doctor",
+      "category": "health",
+      "title": "What Questions to Ask Your Doctor (And Which Ones Actually Get You Answers)",
+      "toolId": "DoctorVisitPrep",
+      "toolName": "Doctor Visit Prep"
+    },
+    {
+      "slug": "apartment-move-in-checklist",
+      "category": "home",
+      "title": "Apartment Move-In Checklist (The Five Things That Actually Matter)",
+      "toolId": "RentersDepositSaver",
+      "toolName": "Renter's Deposit Saver"
+    },
+    {
+      "slug": "can-a-landlord-keep-your-security-deposit",
+      "category": "home",
+      "title": "Can a Landlord Keep Your Security Deposit (And When You Can Fight It)",
+      "toolId": "LeaseTrapDetector",
+      "toolName": "Lease Trap Detector"
+    },
+    {
+      "slug": "how-to-break-a-lease-legally",
+      "category": "home",
+      "title": "How to Break a Lease Legally (Without Wrecking Your Rental History)",
+      "toolId": "LeaseTrapDetector",
+      "toolName": "Lease Trap Detector"
+    },
+    {
+      "slug": "how-to-do-a-rental-walkthrough-with-your-landlord",
+      "category": "home",
+      "title": "How to Do a Rental Walkthrough With Your Landlord (Without It Becoming Adversarial)",
+      "toolId": "RentersDepositSaver",
+      "toolName": "Renter's Deposit Saver"
+    },
+    {
+      "slug": "how-to-handle-pre-existing-damage-in-a-rental",
+      "category": "home",
+      "title": "How to Handle Pre-Existing Damage in a Rental (Without Inheriting Someone Else's Charges)",
+      "toolId": "RentersDepositSaver",
+      "toolName": "Renter's Deposit Saver"
+    },
+    {
+      "slug": "how-to-negotiate-a-lease-before-signing",
+      "category": "home",
+      "title": "How to Negotiate a Lease Before Signing (Without Losing the Apartment)",
+      "toolId": "LeaseTrapDetector",
+      "toolName": "Lease Trap Detector"
+    },
+    {
+      "slug": "how-to-protect-your-security-deposit-before-you-even-move-in",
+      "category": "home",
+      "title": "How to Protect Your Security Deposit Before You Even Move In (The 90 Minutes That Save You $1,000)",
+      "toolId": "RentersDepositSaver",
+      "toolName": "Renter's Deposit Saver"
+    },
+    {
+      "slug": "how-to-read-a-lease-before-signing-it",
+      "category": "home",
+      "title": "How to Read a Lease Before Signing It (Without Missing Anything That Matters)",
+      "toolId": "LeaseTrapDetector",
+      "toolName": "Lease Trap Detector"
+    },
+    {
+      "slug": "how-to-revive-a-dying-plant",
+      "category": "home",
+      "title": "How to Revive a Dying Plant (When You're Not Sure It's Worth Saving)",
+      "toolId": "PlantRescue",
+      "toolName": "Plant Rescue"
+    },
+    {
+      "slug": "how-to-set-boundaries-with-a-roommate-without-making-it-weird",
+      "category": "home",
+      "title": "How to Set Boundaries with a Roommate Without Making It Weird",
+      "toolId": "RoommateCourt",
+      "toolName": "RoommateCourt"
+    },
+    {
+      "slug": "how-to-split-household-chores-fairly",
+      "category": "home",
+      "title": "How to Split Household Chores Fairly",
+      "toolId": "RoommateCourt",
+      "toolName": "RoommateCourt"
+    },
+    {
+      "slug": "how-to-talk-to-your-roommate-about-a-problem",
+      "category": "home",
+      "title": "How to Talk to Your Roommate About a Problem",
+      "toolId": "RoommateCourt",
+      "toolName": "RoommateCourt"
+    },
+    {
+      "slug": "how-to-tell-if-a-plant-is-overwatered-or-underwatered",
+      "category": "home",
+      "title": "How to Tell If a Plant Is Overwatered or Underwatered (When the Symptoms Look Identical)",
+      "toolId": "PlantRescue",
+      "toolName": "Plant Rescue"
+    },
+    {
+      "slug": "how-to-tell-if-its-bugs-or-disease-on-your-plant",
+      "category": "home",
+      "title": "How to Tell If It's Bugs or Disease on Your Plant (Because the Treatments Are Different)",
+      "toolId": "PlantRescue",
+      "toolName": "Plant Rescue"
+    },
+    {
+      "slug": "how-to-write-a-move-in-condition-report",
+      "category": "home",
+      "title": "How to Write a Move-In Condition Report (That Actually Holds Up Later)",
+      "toolId": "RentersDepositSaver",
+      "toolName": "Renter's Deposit Saver"
+    },
+    {
+      "slug": "red-flags-in-a-rental-lease",
+      "category": "home",
+      "title": "Red Flags in a Rental Lease (And What They're Actually Telling You)",
+      "toolId": "LeaseTrapDetector",
+      "toolName": "Lease Trap Detector"
+    },
+    {
+      "slug": "what-to-do-when-you-and-your-roommate-arent-speaking",
+      "category": "home",
+      "title": "What to Do When You and Your Roommate Are Not Speaking",
+      "toolId": "RoommateCourt",
+      "toolName": "RoommateCourt"
+    },
+    {
+      "slug": "what-to-do-when-your-roommate-isnt-pulling-their-weight",
+      "category": "home",
+      "title": "What to Do When Your Roommate Is Not Pulling Their Weight",
+      "toolId": "RoommateCourt",
+      "toolName": "RoommateCourt"
+    },
+    {
+      "slug": "what-to-look-for-in-an-apartment-lease",
+      "category": "home",
+      "title": "What to Look For in an Apartment Lease (Beyond Just the Rent)",
+      "toolId": "LeaseTrapDetector",
+      "toolName": "Lease Trap Detector"
+    },
+    {
+      "slug": "what-to-photograph-when-moving-into-a-rental",
+      "category": "home",
+      "title": "What to Photograph When Moving Into a Rental (The Shot List That Saves Your Deposit)",
+      "toolId": "RentersDepositSaver",
+      "toolName": "Renter's Deposit Saver"
+    },
+    {
+      "slug": "when-its-time-to-give-up-on-a-plant",
+      "category": "home",
+      "title": "When It's Time to Give Up on a Plant (And Why It's Not a Failure)",
+      "toolId": "PlantRescue",
+      "toolName": "Plant Rescue"
+    },
+    {
+      "slug": "why-does-my-plant-have-brown-leaf-tips",
+      "category": "home",
+      "title": "Why Does My Plant Have Brown Leaf Tips (And When It's a Real Problem)",
+      "toolId": "PlantRescue",
+      "toolName": "Plant Rescue"
+    },
+    {
+      "slug": "why-is-my-plant-turning-yellow",
+      "category": "home",
+      "title": "Why Is My Plant Turning Yellow (And Which Yellow Is the One That Matters)",
+      "toolId": "PlantRescue",
+      "toolName": "Plant Rescue"
+    },
+    {
+      "slug": "common-myths-most-people-still-believe",
+      "category": "learning",
+      "title": "Common Myths Most People Still Believe",
+      "toolId": "TheFinalWord",
+      "toolName": "The Final Word"
+    },
+    {
+      "slug": "how-to-ask-a-question-when-you-dont-know-what-to-ask",
+      "category": "learning",
+      "title": "How to Ask a Question When You Do Not Even Know What to Ask",
+      "toolId": "TheGap",
+      "toolName": "The Gap"
+    },
+    {
+      "slug": "how-to-extract-the-important-parts-from-a-long-lecture",
+      "category": "learning",
+      "title": "How to Extract the Important Parts from a Long Lecture",
+      "toolId": "Recall",
+      "toolName": "Recall"
+    },
+    {
+      "slug": "how-to-fact-check-a-news-article-that-cites-a-study",
+      "category": "learning",
+      "title": "How to Fact-Check a News Article That Cites a Study",
+      "toolId": "ResearchDecoder",
+      "toolName": "Research Decoder"
+    },
+    {
+      "slug": "how-to-fact-check-something-you-read-online",
+      "category": "learning",
+      "title": "How to Fact-Check Something You Read Online",
+      "toolId": "TheFinalWord",
+      "toolName": "The Final Word"
+    },
+    {
+      "slug": "how-to-find-a-book-you-cant-remember-the-title-of",
+      "category": "learning",
+      "title": "How to Find a Book You Read Once But Cannot Remember the Title",
+      "toolId": "TipOfTongue",
+      "toolName": "Tip of Tongue"
+    },
+    {
+      "slug": "whats-that-movie-where-something-happens",
+      "category": "learning",
+      "title": "How to Find That Movie Where Something Specific Happened",
+      "toolId": "TipOfTongue",
+      "toolName": "Tip of Tongue"
+    },
+    {
+      "slug": "whats-that-song-with-a-specific-vibe",
+      "category": "learning",
+      "title": "How to Find That Song You Half-Remember",
+      "toolId": "TipOfTongue",
+      "toolName": "Tip of Tongue"
+    },
+    {
+      "slug": "how-to-find-the-original-study-a-news-article-is-talking-about",
+      "category": "learning",
+      "title": "How to Find the Original Study a News Article Is Talking About",
+      "toolId": "ResearchDecoder",
+      "toolName": "Research Decoder"
+    },
+    {
+      "slug": "how-to-know-if-a-study-is-reliable",
+      "category": "learning",
+      "title": "How to Know If a Study Is Reliable",
+      "toolId": "ResearchDecoder",
+      "toolName": "Research Decoder"
+    },
+    {
+      "slug": "how-to-know-whats-going-to-be-on-the-test",
+      "category": "learning",
+      "title": "How to Know What Is Actually Going to Be on the Test",
+      "toolId": "Recall",
+      "toolName": "Recall"
+    },
+    {
+      "slug": "how-to-learn-when-youve-fallen-behind-in-class",
+      "category": "learning",
+      "title": "How to Learn a Subject When You Have Fallen Behind",
+      "toolId": "TheGap",
+      "toolName": "The Gap"
+    },
+    {
+      "slug": "how-to-politely-tell-someone-theyre-wrong-about-a-fact",
+      "category": "learning",
+      "title": "How to Politely Tell Someone They Are Wrong About a Fact",
+      "toolId": "TheFinalWord",
+      "toolName": "The Final Word"
+    },
+    {
+      "slug": "how-to-read-a-research-paper-without-a-phd",
+      "category": "learning",
+      "title": "How to Read a Research Paper Without a PhD",
+      "toolId": "ResearchDecoder",
+      "toolName": "Research Decoder"
+    },
+    {
+      "slug": "how-to-remember-a-word-thats-on-the-tip-of-your-tongue",
+      "category": "learning",
+      "title": "How to Remember a Word That Is on the Tip of Your Tongue",
+      "toolId": "TipOfTongue",
+      "toolName": "Tip of Tongue"
+    },
+    {
+      "slug": "how-to-settle-an-argument-with-facts",
+      "category": "learning",
+      "title": "How to Settle an Argument With Facts",
+      "toolId": "TheFinalWord",
+      "toolName": "The Final Word"
+    },
+    {
+      "slug": "how-to-spot-when-a-study-is-being-misrepresented",
+      "category": "learning",
+      "title": "How to Spot When a Study Is Being Misrepresented",
+      "toolId": "ResearchDecoder",
+      "toolName": "Research Decoder"
+    },
+    {
+      "slug": "how-to-study-when-you-have-hours-of-recorded-content",
+      "category": "learning",
+      "title": "How to Study When You Have Hours of Recorded Content to Get Through",
+      "toolId": "Recall",
+      "toolName": "Recall"
+    },
+    {
+      "slug": "how-to-take-notes-from-a-lecture-you-missed",
+      "category": "learning",
+      "title": "How to Take Notes from a Lecture You Missed",
+      "toolId": "Recall",
+      "toolName": "Recall"
+    },
+    {
+      "slug": "how-to-tell-the-difference-between-not-getting-it-and-almost-getting-it",
+      "category": "learning",
+      "title": "How to Tell the Difference Between Not Getting It and Almost Getting It",
+      "toolId": "TheGap",
+      "toolName": "The Gap"
+    },
+    {
+      "slug": "how-to-turn-a-transcript-into-a-study-guide",
+      "category": "learning",
+      "title": "How to Turn a Transcript into a Study Guide",
+      "toolId": "Recall",
+      "toolName": "Recall"
+    },
+    {
+      "slug": "how-to-understand-a-hard-concept-when-explanations-dont-click",
+      "category": "learning",
+      "title": "How to Understand a Hard Concept When Explanations Do Not Click",
+      "toolId": "TheGap",
+      "toolName": "The Gap"
+    },
+    {
+      "slug": "how-to-win-an-argument-with-facts-not-feelings",
+      "category": "learning",
+      "title": "How to Win an Argument With Facts, Not Feelings",
+      "toolId": "TheFinalWord",
+      "toolName": "The Final Word"
+    },
+    {
+      "slug": "why-does-the-word-disappear-when-youre-trying-to-remember-it",
+      "category": "learning",
+      "title": "Why Does the Word Disappear When You Are Trying to Remember It?",
+      "toolId": "TipOfTongue",
+      "toolName": "Tip of Tongue"
+    },
+    {
+      "slug": "why-is-this-topic-so-hard-to-understand",
+      "category": "learning",
+      "title": "Why Is This Topic So Hard to Understand?",
+      "toolId": "TheGap",
+      "toolName": "The Gap"
+    },
+    {
+      "slug": "how-to-ask-if-a-meeting-can-be-canceled",
+      "category": "meetings",
+      "title": "How to Ask If a Meeting Can Be Canceled",
+      "toolId": "MeetingBSDetector",
+      "toolName": "Meeting BS Detector"
+    },
+    {
+      "slug": "how-to-bring-a-meeting-back-on-topic",
+      "category": "meetings",
+      "title": "How to Bring a Meeting Back on Topic",
+      "toolId": "MeetingHijackPreventer",
+      "toolName": "Meeting Hijack Preventer"
+    },
+    {
+      "slug": "how-to-deal-with-a-coworker-who-interrupts-everyone",
+      "category": "meetings",
+      "title": "How to Deal With a Coworker Who Interrupts Everyone",
+      "toolId": "MeetingHijackPreventer",
+      "toolName": "Meeting Hijack Preventer"
+    },
+    {
+      "slug": "how-to-facilitate-a-meeting-when-youre-not-the-boss",
+      "category": "meetings",
+      "title": "How to Facilitate a Meeting When You're Not the Boss",
+      "toolId": "MeetingHijackPreventer",
+      "toolName": "Meeting Hijack Preventer"
+    },
+    {
+      "slug": "how-to-handle-pointless-meetings-without-ruining-your-career",
+      "category": "meetings",
+      "title": "How to Handle Pointless Meetings Without Ruining Your Career",
+      "toolId": "MeetingBSDetector",
+      "toolName": "Meeting BS Detector"
+    },
+    {
+      "slug": "how-to-handle-someone-who-dominates-meetings",
+      "category": "meetings",
+      "title": "How to Handle Someone Who Dominates Meetings",
+      "toolId": "MeetingHijackPreventer",
+      "toolName": "Meeting Hijack Preventer"
+    },
+    {
+      "slug": "how-to-make-sure-quiet-people-speak-up-in-meetings",
+      "category": "meetings",
+      "title": "How to Make Sure Quiet People Speak Up in Meetings",
+      "toolId": "MeetingHijackPreventer",
+      "toolName": "Meeting Hijack Preventer"
+    },
+    {
+      "slug": "how-to-politely-decline-a-meeting",
+      "category": "meetings",
+      "title": "How to Politely Decline a Meeting (Without Looking Like You're Hiding)",
+      "toolId": "MeetingBSDetector",
+      "toolName": "Meeting BS Detector"
+    },
+    {
+      "slug": "how-to-run-a-meeting-that-doesnt-go-off-the-rails",
+      "category": "meetings",
+      "title": "How to Run a Meeting That Doesn't Go Off the Rails",
+      "toolId": "MeetingHijackPreventer",
+      "toolName": "Meeting Hijack Preventer"
+    },
+    {
+      "slug": "how-to-set-a-meeting-agenda-that-actually-works",
+      "category": "meetings",
+      "title": "How to Set a Meeting Agenda That Actually Works",
+      "toolId": "MeetingHijackPreventer",
+      "toolName": "Meeting Hijack Preventer"
+    },
+    {
+      "slug": "how-to-suggest-making-a-meeting-async",
+      "category": "meetings",
+      "title": "How to Suggest Making a Meeting Async",
+      "toolId": "MeetingBSDetector",
+      "toolName": "Meeting BS Detector"
+    },
+    {
+      "slug": "how-to-tell-if-a-meeting-is-going-to-be-useful",
+      "category": "meetings",
+      "title": "How to Tell If a Meeting Is Going to Be Useful",
+      "toolId": "MeetingBSDetector",
+      "toolName": "Meeting BS Detector"
+    },
+    {
+      "slug": "how-to-track-action-items-so-things-actually-get-done",
+      "category": "meetings",
+      "title": "How to Track Action Items So Things Actually Get Done",
+      "toolId": "TheDebrief",
+      "toolName": "The Debrief"
+    },
+    {
+      "slug": "how-to-turn-a-long-meeting-transcript-into-a-clear-summary",
+      "category": "meetings",
+      "title": "How to Turn a Long Meeting Transcript Into a Clear Summary",
+      "toolId": "TheDebrief",
+      "toolName": "The Debrief"
+    },
+    {
+      "slug": "how-to-write-meeting-notes-that-people-actually-read",
+      "category": "meetings",
+      "title": "How to Write Meeting Notes That People Actually Read",
+      "toolId": "TheDebrief",
+      "toolName": "The Debrief"
+    },
+    {
+      "slug": "should-this-be-a-meeting-or-an-email",
+      "category": "meetings",
+      "title": "Should This Be a Meeting or an Email?",
+      "toolId": "MeetingBSDetector",
+      "toolName": "Meeting BS Detector"
+    },
+    {
+      "slug": "signs-your-meeting-could-be-an-email",
+      "category": "meetings",
+      "title": "Signs Your Meeting Could Be an Email",
+      "toolId": "MeetingBSDetector",
+      "toolName": "Meeting BS Detector"
+    },
+    {
+      "slug": "the-difference-between-meeting-minutes-and-meeting-notes",
+      "category": "meetings",
+      "title": "The Difference Between Meeting Minutes and Meeting Notes (And Which One You Need)",
+      "toolId": "TheDebrief",
+      "toolName": "The Debrief"
+    },
+    {
+      "slug": "what-to-do-when-your-manager-asks-what-did-we-decide",
+      "category": "meetings",
+      "title": "What to Do When Your Manager Asks \"What Did We Decide?\" and You Can't Remember",
+      "toolId": "TheDebrief",
+      "toolName": "The Debrief"
+    },
+    {
+      "slug": "can-you-trust-verifiedpurchase-reviews",
+      "category": "money",
+      "title": "Can You Trust Verified-Purchase Reviews?",
+      "toolId": "FakeReviewDetective",
+      "toolName": "Fake Review Detective"
+    },
+    {
+      "slug": "how-much-does-coffee-actually-cost-to-make",
+      "category": "money",
+      "title": "How Much Does Coffee Actually Cost to Make (When You're Paying $6 for It)",
+      "toolId": "MarkupDetective",
+      "toolName": "MarkupDetective"
+    },
+    {
+      "slug": "how-much-to-tip-your-hairstylist",
+      "category": "money",
+      "title": "How Much to Tip Your Hairstylist (and the Other Salon Awkwardness)",
+      "toolId": "MoneyDiplomat",
+      "toolName": "Money Diplomat"
+    },
+    {
+      "slug": "how-to-ask-a-friend-to-pay-you-back",
+      "category": "money",
+      "title": "How to Ask a Friend to Pay You Back (Without Making It Weird)",
+      "toolId": "MoneyDiplomat",
+      "toolName": "Money Diplomat"
+    },
+    {
+      "slug": "how-to-audit-all-your-subscriptions-in-10-minutes",
+      "category": "money",
+      "title": "How to Audit All Your Subscriptions in 10 Minutes",
+      "toolId": "SubSweep",
+      "toolName": "SubSweep"
+    },
+    {
+      "slug": "how-to-avoid-buyers-remorse",
+      "category": "money",
+      "title": "How to Avoid Buyer's Remorse (Before You Buy, Not After)",
+      "toolId": "BuyWise",
+      "toolName": "Buy Wise"
+    },
+    {
+      "slug": "how-to-avoid-free-trial-billing-traps",
+      "category": "money",
+      "title": "How to Avoid Free Trial Billing Traps (Before They Become Recurring Charges)",
+      "toolId": "SubscriptionGuiltTrip",
+      "toolName": "Subscription Guilt Trip"
+    },
+    {
+      "slug": "how-to-calculate-if-a-subscription-is-actually-worth-it",
+      "category": "money",
+      "title": "How to Calculate If a Subscription Is Actually Worth It",
+      "toolId": "SubSweep",
+      "toolName": "SubSweep"
+    },
+    {
+      "slug": "how-to-cancel-a-subscription-that-wont-let-you-cancel",
+      "category": "money",
+      "title": "How to Cancel a Subscription That Won't Let You Cancel (And When It's Actually Illegal)",
+      "toolId": "SubscriptionGuiltTrip",
+      "toolName": "Subscription Guilt Trip"
+    },
+    {
+      "slug": "how-to-cancel-cable-without-them-talking-you-out-of-it",
+      "category": "money",
+      "title": "How to Cancel Cable Without Them Talking You Out of It (And Why the Call Is Designed to Stop You)",
+      "toolId": "SubscriptionGuiltTrip",
+      "toolName": "Subscription Guilt Trip"
+    },
+    {
+      "slug": "how-to-compare-two-similar-products-you-cant-decide-between",
+      "category": "money",
+      "title": "How to Compare Two Similar Products You Can't Decide Between",
+      "toolId": "BuyWise",
+      "toolName": "Buy Wise"
+    },
+    {
+      "slug": "how-to-complain-to-a-state-attorney-general",
+      "category": "money",
+      "title": "How to Complain to a State Attorney General",
+      "toolId": "ComplaintEscalationWriter",
+      "toolName": "Complaint Escalation Writer"
+    },
+    {
+      "slug": "how-to-deal-with-a-retention-specialist",
+      "category": "money",
+      "title": "How to Deal With a Retention Specialist (Without Getting Talked Into Staying)",
+      "toolId": "SubscriptionGuiltTrip",
+      "toolName": "Subscription Guilt Trip"
+    },
+    {
+      "slug": "how-to-dispute-a-bill-you-dont-recognize",
+      "category": "money",
+      "title": "How to Dispute a Bill You Do Not Recognize",
+      "toolId": "BillRescue",
+      "toolName": "Bill Rescue"
+    },
+    {
+      "slug": "how-to-do-a-credit-card-chargeback",
+      "category": "money",
+      "title": "How to Do a Credit Card Chargeback",
+      "toolId": "ComplaintEscalationWriter",
+      "toolName": "Complaint Escalation Writer"
+    },
+    {
+      "slug": "how-to-escalate-a-customer-service-complaint",
+      "category": "money",
+      "title": "How to Escalate a Customer Service Complaint",
+      "toolId": "ComplaintEscalationWriter",
+      "toolName": "Complaint Escalation Writer"
+    },
+    {
+      "slug": "how-to-escalate-when-the-official-answer-is-no",
+      "category": "money",
+      "title": "How to Escalate When the Official Answer Is No (The External Paths Most People Don't Know Exist)",
+      "toolId": "RulebookBreaker",
+      "toolName": "Rulebook Breaker"
+    },
+    {
+      "slug": "how-to-escape-a-high-pressure-sales-pitch-politely",
+      "category": "money",
+      "title": "How to Escape a High-Pressure Sales Pitch Politely (Without Buying)",
+      "toolId": "UpsellShield",
+      "toolName": "UpsellShield"
+    },
+    {
+      "slug": "how-to-file-a-complaint-with-the-bbb",
+      "category": "money",
+      "title": "How to File a Complaint with the BBB",
+      "toolId": "ComplaintEscalationWriter",
+      "toolName": "Complaint Escalation Writer"
+    },
+    {
+      "slug": "how-to-find-recurring-charges-hidden-on-your-statement",
+      "category": "money",
+      "title": "How to Find Recurring Charges Hidden on Your Statement",
+      "toolId": "SubSweep",
+      "toolName": "SubSweep"
+    },
+    {
+      "slug": "how-to-get-a-hospital-bill-reduced",
+      "category": "money",
+      "title": "How to Get a Hospital Bill Reduced",
+      "toolId": "BillRescue",
+      "toolName": "Bill Rescue"
+    },
+    {
+      "slug": "how-to-get-a-medical-bill-reduced-when-they-say-its-final",
+      "category": "money",
+      "title": "How to Get a Medical Bill Reduced When They Say It's Final (It Almost Never Actually Is)",
+      "toolId": "RulebookBreaker",
+      "toolName": "Rulebook Breaker"
+    },
+    {
+      "slug": "how-to-get-out-of-a-non-refundable-fee",
+      "category": "money",
+      "title": "How to Get Out of a Non-Refundable Fee (When the Word 'Non-Refundable' Isn't Actually Binding)",
+      "toolId": "RulebookBreaker",
+      "toolName": "Rulebook Breaker"
+    },
+    {
+      "slug": "how-to-get-past-no-when-its-not-actually-final",
+      "category": "money",
+      "title": "How to Get Past 'No' When It's Not Actually Final (And the Tells That Reveal Which Kind You Got)",
+      "toolId": "RulebookBreaker",
+      "toolName": "Rulebook Breaker"
+    },
+    {
+      "slug": "how-to-handle-a-venmo-request-thats-wrong",
+      "category": "money",
+      "title": "How to Handle a Venmo Request That Is Wrong (Without Burning the Friendship)",
+      "toolId": "MoneyDiplomat",
+      "toolName": "Money Diplomat"
+    },
+    {
+      "slug": "how-to-know-if-youre-getting-a-good-deal",
+      "category": "money",
+      "title": "How to Know If You're Getting a Good Deal (When Everything's Marketed as One)",
+      "toolId": "BuyWise",
+      "toolName": "Buy Wise"
+    },
+    {
+      "slug": "how-to-make-a-company-respond-when-theyre-ignoring-you",
+      "category": "money",
+      "title": "How to Make a Company Respond When They Are Ignoring You",
+      "toolId": "ComplaintEscalationWriter",
+      "toolName": "Complaint Escalation Writer"
+    },
+    {
+      "slug": "how-to-negotiate-a-medical-bill",
+      "category": "money",
+      "title": "How to Negotiate a Medical Bill",
+      "toolId": "BillRescue",
+      "toolName": "Bill Rescue"
+    },
+    {
+      "slug": "how-to-negotiate-with-a-car-salesman",
+      "category": "money",
+      "title": "How to Negotiate With a Car Salesman (Without Getting Played)",
+      "toolId": "UpsellShield",
+      "toolName": "UpsellShield"
+    },
+    {
+      "slug": "how-to-push-back-on-bank-fees",
+      "category": "money",
+      "title": "How to Push Back on Bank Fees (And Actually Get Them Refunded)",
+      "toolId": "UpsellShield",
+      "toolName": "UpsellShield"
+    },
+    {
+      "slug": "how-to-read-product-reviews-critically",
+      "category": "money",
+      "title": "How to Read Product Reviews Critically",
+      "toolId": "FakeReviewDetective",
+      "toolName": "Fake Review Detective"
+    },
+    {
+      "slug": "how-to-recognize-sales-manipulation-tactics",
+      "category": "money",
+      "title": "How to Recognize Sales Manipulation Tactics (Before They Work on You)",
+      "toolId": "UpsellShield",
+      "toolName": "UpsellShield"
+    },
+    {
+      "slug": "how-to-research-a-big-purchase-before-buying",
+      "category": "money",
+      "title": "How to Research a Big Purchase Before Buying (Without Losing a Whole Weekend to It)",
+      "toolId": "BuyWise",
+      "toolName": "Buy Wise"
+    },
+    {
+      "slug": "how-to-say-no-to-a-timeshare-presentation",
+      "category": "money",
+      "title": "How to Say No to a Timeshare Presentation (And Actually Get Out)",
+      "toolId": "UpsellShield",
+      "toolName": "UpsellShield"
+    },
+    {
+      "slug": "how-to-share-a-streaming-subscription-without-getting-kicked-off",
+      "category": "money",
+      "title": "How to Share a Streaming Subscription Without Getting Kicked Off",
+      "toolId": "SubSweep",
+      "toolName": "SubSweep"
+    },
+    {
+      "slug": "how-to-split-a-bill-fairly-when-you-ate-less",
+      "category": "money",
+      "title": "How to Split a Bill Fairly When You Ate or Drank Less",
+      "toolId": "MoneyDiplomat",
+      "toolName": "Money Diplomat"
+    },
+    {
+      "slug": "how-to-spot-a-bad-deal-that-looks-good",
+      "category": "money",
+      "title": "How to Spot a Bad Deal That Looks Good (Before You Click Buy)",
+      "toolId": "BuyWise",
+      "toolName": "Buy Wise"
+    },
+    {
+      "slug": "how-to-spot-billing-errors-on-a-statement",
+      "category": "money",
+      "title": "How to Spot Billing Errors on a Statement",
+      "toolId": "BillRescue",
+      "toolName": "Bill Rescue"
+    },
+    {
+      "slug": "how-to-spot-fake-amazon-reviews",
+      "category": "money",
+      "title": "How to Spot Fake Amazon Reviews",
+      "toolId": "FakeReviewDetective",
+      "toolName": "Fake Review Detective"
+    },
+    {
+      "slug": "how-to-stop-paying-for-subscriptions-you-forgot-about",
+      "category": "money",
+      "title": "How to Stop Paying for Subscriptions You Forgot About (And Find the Ones Hiding on Your Card)",
+      "toolId": "SubscriptionGuiltTrip",
+      "toolName": "Subscription Guilt Trip"
+    },
+    {
+      "slug": "how-to-talk-to-a-supervisor-and-actually-get-results",
+      "category": "money",
+      "title": "How to Talk to a Supervisor and Actually Get Results (Most People Do This Wrong)",
+      "toolId": "RulebookBreaker",
+      "toolName": "Rulebook Breaker"
+    },
+    {
+      "slug": "how-to-tell-if-a-bill-is-a-mistake-or-just-confusing",
+      "category": "money",
+      "title": "How to Tell If a Bill Is a Mistake or Just Confusing",
+      "toolId": "BillRescue",
+      "toolName": "Bill Rescue"
+    },
+    {
+      "slug": "how-to-tell-if-a-subscription-is-actually-worth-it",
+      "category": "money",
+      "title": "How to Tell If a Subscription Is Actually Worth It (Without the Sunk-Cost Math)",
+      "toolId": "SubscriptionGuiltTrip",
+      "toolName": "Subscription Guilt Trip"
+    },
+    {
+      "slug": "how-to-tell-if-something-is-overpriced",
+      "category": "money",
+      "title": "How to Tell If Something Is Overpriced (Without Being a Pricing Nerd)",
+      "toolId": "MarkupDetective",
+      "toolName": "MarkupDetective"
+    },
+    {
+      "slug": "how-to-walk-away-from-a-high-pressure-sale",
+      "category": "money",
+      "title": "How to Walk Away From a High-Pressure Sale (Even When You're Almost Convinced)",
+      "toolId": "UpsellShield",
+      "toolName": "UpsellShield"
+    },
+    {
+      "slug": "how-to-write-a-formal-complaint-letter-to-a-company",
+      "category": "money",
+      "title": "How to Write a Formal Complaint Letter to a Company (That Doesn't Get Filed in the 'Crank' Pile)",
+      "toolId": "ComplaintEscalationWriter",
+      "toolName": "Complaint Escalation Writer"
+    },
+    {
+      "slug": "red-flags-in-product-reviews-that-mean-its-fake",
+      "category": "money",
+      "title": "Red Flags in Product Reviews That Mean It's Fake",
+      "toolId": "FakeReviewDetective",
+      "toolName": "Fake Review Detective"
+    },
+    {
+      "slug": "signs-you-have-subscription-creep",
+      "category": "money",
+      "title": "Signs You Have Subscription Creep",
+      "toolId": "SubSweep",
+      "toolName": "SubSweep"
+    },
+    {
+      "slug": "what-to-do-when-customer-service-says-theres-nothing-they-can-do",
+      "category": "money",
+      "title": "What to Do When Customer Service Says There's Nothing They Can Do (Because That's Almost Never True)",
+      "toolId": "RulebookBreaker",
+      "toolName": "Rulebook Breaker"
+    },
+    {
+      "slug": "what-to-do-with-a-bill-you-cant-afford",
+      "category": "money",
+      "title": "What to Do With a Bill You Can't Afford (Before It Becomes a Bigger Problem)",
+      "toolId": "BillRescue",
+      "toolName": "Bill Rescue"
+    },
+    {
+      "slug": "what-to-say-when-you-cant-afford-something-your-friends-are-doing",
+      "category": "money",
+      "title": "What to Say When You Cannot Afford Something Your Friends Are Doing",
+      "toolId": "MoneyDiplomat",
+      "toolName": "Money Diplomat"
+    },
+    {
+      "slug": "why-are-wedding-venues-so-expensive",
+      "category": "money",
+      "title": "Why Are Wedding Venues So Expensive (And Why the Word 'Wedding' Doubles the Price)",
+      "toolId": "MarkupDetective",
+      "toolName": "MarkupDetective"
+    },
+    {
+      "slug": "why-do-products-with-great-reviews-suck",
+      "category": "money",
+      "title": "Why Do Products with Great Reviews Suck?",
+      "toolId": "FakeReviewDetective",
+      "toolName": "Fake Review Detective"
+    },
+    {
+      "slug": "why-does-bottled-water-cost-so-much",
+      "category": "money",
+      "title": "Why Does Bottled Water Cost So Much (When the Stuff in It Is Basically Free)",
+      "toolId": "MarkupDetective",
+      "toolName": "MarkupDetective"
+    },
+    {
+      "slug": "why-does-everything-cost-so-much-more-than-it-used-to",
+      "category": "money",
+      "title": "Why Does Everything Cost So Much More Than It Used To (It's Not Just Inflation)",
+      "toolId": "MarkupDetective",
+      "toolName": "MarkupDetective"
+    },
+    {
+      "slug": "why-is-airport-food-so-expensive",
+      "category": "money",
+      "title": "Why Is Airport Food So Expensive (And Why It's Not Just the Rent)",
+      "toolId": "MarkupDetective",
+      "toolName": "MarkupDetective"
+    },
+    {
+      "slug": "do-dogs-just-vomit-sometimes",
+      "category": "pets",
+      "title": "Do Dogs Just Vomit Sometimes? Yes — But Here's When It Matters",
+      "toolId": "PetWeirdnessDecoder",
+      "toolName": "Pet Weirdness Decoder"
+    },
+    {
+      "slug": "how-do-i-know-if-my-dog-is-sick",
+      "category": "pets",
+      "title": "How Do I Know If My Dog Is Sick? The Signs That Actually Matter",
+      "toolId": "PetWeirdnessDecoder",
+      "toolName": "Pet Weirdness Decoder"
+    },
+    {
+      "slug": "is-my-dog-sick-or-just-tired",
+      "category": "pets",
+      "title": "Is My Dog Sick or Just Tired? How to Tell the Difference",
+      "toolId": "PetWeirdnessDecoder",
+      "toolName": "Pet Weirdness Decoder"
+    },
+    {
+      "slug": "weird-cat-behaviors-explained",
+      "category": "pets",
+      "title": "Weird Cat Behaviors, Explained (And When to Actually Worry)",
+      "toolId": "PetWeirdnessDecoder",
+      "toolName": "Pet Weirdness Decoder"
+    },
+    {
+      "slug": "weird-dog-behaviors-explained",
+      "category": "pets",
+      "title": "Weird Dog Behaviors, Explained (And When to Actually Worry)",
+      "toolId": "PetWeirdnessDecoder",
+      "toolName": "Pet Weirdness Decoder"
+    },
+    {
+      "slug": "why-is-my-cat-throwing-up-undigested-food",
+      "category": "pets",
+      "title": "Why Is My Cat Throwing Up Undigested Food? The 5 Real Reasons",
+      "toolId": "PetWeirdnessDecoder",
+      "toolName": "Pet Weirdness Decoder"
+    },
+    {
+      "slug": "how-to-find-the-holes-in-your-own-thinking-before-someone-else-does",
+      "category": "planning",
+      "title": "How to Find the Holes in Your Own Thinking Before Someone Else Does",
+      "toolId": "PreMortem",
+      "toolName": "Pre-Mortem"
+    },
+    {
+      "slug": "how-to-know-if-your-business-idea-is-actually-going-to-work",
+      "category": "planning",
+      "title": "How to Know if Your Business Idea Is Actually Going to Work",
+      "toolId": "PreMortem",
+      "toolName": "Pre-Mortem"
+    },
+    {
+      "slug": "how-to-plan-a-project-so-it-doesnt-fail-in-the-obvious-ways",
+      "category": "planning",
+      "title": "How to Plan a Project So It Doesn't Fail in the Obvious Ways",
+      "toolId": "PreMortem",
+      "toolName": "Pre-Mortem"
+    },
+    {
+      "slug": "how-to-pressure-test-a-plan-before-you-bet-money-on-it",
+      "category": "planning",
+      "title": "How to Pressure-Test a Plan Before You Bet Money on It",
+      "toolId": "PreMortem",
+      "toolName": "Pre-Mortem"
+    },
+    {
+      "slug": "the-questions-to-ask-before-starting-anything-that-costs-you-time",
+      "category": "planning",
+      "title": "The Questions to Ask Before Starting Anything That Costs You Time",
+      "toolId": "PreMortem",
+      "toolName": "Pre-Mortem"
+    },
+    {
+      "slug": "cheap-date-ideas",
+      "category": "practical",
+      "title": "Cheap Date Ideas (That Don't Feel Cheap)",
+      "toolId": "DateNight",
+      "toolName": "Date Night"
+    },
+    {
+      "slug": "creative-date-ideas-for-couples-in-a-rut",
+      "category": "practical",
+      "title": "Creative Date Ideas for Couples in a Rut",
+      "toolId": "DateNight",
+      "toolName": "Date Night"
+    },
+    {
+      "slug": "date-ideas-for-introverts",
+      "category": "practical",
+      "title": "Date Ideas for Introverts (That Aren't Just \"Stay Home\")",
+      "toolId": "DateNight",
+      "toolName": "Date Night"
+    },
+    {
+      "slug": "date-night-ideas-at-home",
+      "category": "practical",
+      "title": "Date Night Ideas at Home (That Aren't a Movie)",
+      "toolId": "DateNight",
+      "toolName": "Date Night"
+    },
+    {
+      "slug": "first-date-ideas-that-arent-dinner-and-a-movie",
+      "category": "practical",
+      "title": "First Date Ideas That Aren't Dinner and a Movie",
+      "toolId": "DateNight",
+      "toolName": "Date Night"
+    },
+    {
+      "slug": "free-things-to-do-near-me",
+      "category": "practical",
+      "title": "Free Things to Do Near You (That Are Actually Worth Doing)",
+      "toolId": "MicroAdventureMapper",
+      "toolName": "Micro-Adventure Mapper"
+    },
+    {
+      "slug": "gift-ideas-for-someone-who-has-everything",
+      "category": "practical",
+      "title": "Gift Ideas for Someone Who Has Everything",
+      "toolId": "Giftology",
+      "toolName": "Giftology"
+    },
+    {
+      "slug": "hobbies-for-adults-who-dont-know-what-they-like",
+      "category": "practical",
+      "title": "Hobbies for Adults Who Don't Know What They Like Anymore",
+      "toolId": "HobbyMatch",
+      "toolName": "Hobby Match"
+    },
+    {
+      "slug": "hobbies-for-introverts-that-dont-feel-forced",
+      "category": "practical",
+      "title": "Hobbies for Introverts That Don't Feel Forced",
+      "toolId": "HobbyMatch",
+      "toolName": "Hobby Match"
+    },
+    {
+      "slug": "hobbies-that-dont-cost-a-lot-of-money",
+      "category": "practical",
+      "title": "Hobbies That Don't Cost a Lot of Money (And Stay That Way)",
+      "toolId": "HobbyMatch",
+      "toolName": "Hobby Match"
+    },
+    {
+      "slug": "hot-vs-cold-water-for-laundry-when-does-it-actually-matter",
+      "category": "practical",
+      "title": "Hot vs Cold Water for Laundry: When Does It Actually Matter?",
+      "toolId": "LaundroMat",
+      "toolName": "LaundroMat"
+    },
+    {
+      "slug": "how-to-ask-someone-how-to-pronounce-their-name",
+      "category": "practical",
+      "title": "How to Ask Someone How to Pronounce Their Name",
+      "toolId": "PronounceItRight",
+      "toolName": "Pronounce It Right"
+    },
+    {
+      "slug": "how-to-build-outfits-from-what-you-already-own",
+      "category": "practical",
+      "title": "How to build outfits from what you already own",
+      "toolId": "WardrobeChaosHelper",
+      "toolName": "Wardrobe Chaos Helper"
+    },
+    {
+      "slug": "how-to-catch-up-on-a-video-game-after-a-long-break-without-spoilers",
+      "category": "practical",
+      "title": "How to Catch Up on a Video Game After a Long Break (Without Spoilers)",
+      "toolId": "Bookmark",
+      "toolName": "Bookmark"
+    },
+    {
+      "slug": "how-to-do-laundry-properly-when-youve-been-winging-it",
+      "category": "practical",
+      "title": "How to Do Laundry Properly When You've Been Winging It",
+      "toolId": "LaundroMat",
+      "toolName": "LaundroMat"
+    },
+    {
+      "slug": "how-to-dress-for-unpredictable-weather",
+      "category": "practical",
+      "title": "How to dress for unpredictable weather",
+      "toolId": "WardrobeChaosHelper",
+      "toolName": "Wardrobe Chaos Helper"
+    },
+    {
+      "slug": "how-to-find-a-hobby-youll-actually-stick-with",
+      "category": "practical",
+      "title": "How to Find a Hobby You'll Actually Stick With",
+      "toolId": "HobbyMatch",
+      "toolName": "Hobby Match"
+    },
+    {
+      "slug": "how-to-find-the-right-gift-for-someone-you-barely-know",
+      "category": "practical",
+      "title": "How to Find the Right Gift for Someone You Barely Know",
+      "toolId": "Giftology",
+      "toolName": "Giftology"
+    },
+    {
+      "slug": "how-to-fix-a-flat-tire-on-the-trail",
+      "category": "practical",
+      "title": "How to Fix a Flat Tire on the Trail",
+      "toolId": "BikeMedic",
+      "toolName": "Bike Medic"
+    },
+    {
+      "slug": "how-to-get-a-recap-of-a-show-without-spoilers",
+      "category": "practical",
+      "title": "How to Get a Recap of a Show Without Spoilers (For the Part You Haven't Watched Yet)",
+      "toolId": "Bookmark",
+      "toolName": "Bookmark"
+    },
+    {
+      "slug": "how-to-get-back-into-a-show-you-abandoned",
+      "category": "practical",
+      "title": "How to Get Back into a Show You Abandoned (Without Restarting from Scratch)",
+      "toolId": "Bookmark",
+      "toolName": "Bookmark"
+    },
+    {
+      "slug": "how-to-get-dressed-when-you-cant-decide",
+      "category": "practical",
+      "title": "How to get dressed when you can't decide",
+      "toolId": "WardrobeChaosHelper",
+      "toolName": "Wardrobe Chaos Helper"
+    },
+    {
+      "slug": "how-to-get-red-wine-out-of-clothes",
+      "category": "practical",
+      "title": "How to Get Red Wine Out of Clothes (Even After It Has Dried)",
+      "toolId": "LaundroMat",
+      "toolName": "LaundroMat"
+    },
+    {
+      "slug": "how-to-host-a-party-people-actually-remember",
+      "category": "practical",
+      "title": "How to Host a Party People Actually Remember",
+      "toolId": "PartyArchitect",
+      "toolName": "PartyArchitect"
+    },
+    {
+      "slug": "how-to-host-a-party-when-you-dont-know-everyones-name",
+      "category": "practical",
+      "title": "How to Host a Party When You Do Not Know Everyone's Name",
+      "toolId": "PartyArchitect",
+      "toolName": "PartyArchitect"
+    },
+    {
+      "slug": "how-to-know-if-a-show-is-worth-picking-back-up",
+      "category": "practical",
+      "title": "How to Know If a Show Is Worth Picking Back Up (Or Just Letting It Go)",
+      "toolId": "Bookmark",
+      "toolName": "Bookmark"
+    },
+    {
+      "slug": "how-to-make-a-regular-weekend-feel-like-a-small-vacation",
+      "category": "practical",
+      "title": "How to Make a Regular Weekend Feel Like a Small Vacation",
+      "toolId": "MicroAdventureMapper",
+      "toolName": "Micro-Adventure Mapper"
+    },
+    {
+      "slug": "how-to-plan-a-birthday-party-for-an-adult",
+      "category": "practical",
+      "title": "How to Plan a Birthday Party for an Adult",
+      "toolId": "PartyArchitect",
+      "toolName": "PartyArchitect"
+    },
+    {
+      "slug": "how-to-pronounce-designer-brand-names",
+      "category": "practical",
+      "title": "How to Pronounce Designer Brand Names",
+      "toolId": "PronounceItRight",
+      "toolName": "Pronounce It Right"
+    },
+    {
+      "slug": "how-to-pronounce-difficult-french-food-names",
+      "category": "practical",
+      "title": "How to Pronounce Difficult French Food Names",
+      "toolId": "PronounceItRight",
+      "toolName": "Pronounce It Right"
+    },
+    {
+      "slug": "how-to-pronounce-names-from-languages-you-dont-speak",
+      "category": "practical",
+      "title": "How to Pronounce Names From Languages You Do Not Speak",
+      "toolId": "PronounceItRight",
+      "toolName": "Pronounce It Right"
+    },
+    {
+      "slug": "how-to-pronounce-wine-names-without-sounding-pretentious",
+      "category": "practical",
+      "title": "How to Pronounce Wine Names Without Sounding Pretentious",
+      "toolId": "PronounceItRight",
+      "toolName": "Pronounce It Right"
+    },
+    {
+      "slug": "how-to-remember-a-book-you-read-years-ago-without-rereading-it",
+      "category": "practical",
+      "title": "How to Remember a Book You Read Years Ago (Without Re-Reading It)",
+      "toolId": "Bookmark",
+      "toolName": "Bookmark"
+    },
+    {
+      "slug": "how-to-stop-standing-in-front-of-your-closet",
+      "category": "practical",
+      "title": "How to stop standing in front of your closet",
+      "toolId": "WardrobeChaosHelper",
+      "toolName": "Wardrobe Chaos Helper"
+    },
+    {
+      "slug": "how-to-tell-if-your-bike-needs-a-tune-up",
+      "category": "practical",
+      "title": "How to Tell If Your Bike Needs a Tune-Up",
+      "toolId": "BikeMedic",
+      "toolName": "Bike Medic"
+    },
+    {
+      "slug": "how-to-wash-clothes-without-shrinking-them",
+      "category": "practical",
+      "title": "How to Wash Clothes Without Shrinking Them",
+      "toolId": "LaundroMat",
+      "toolName": "LaundroMat"
+    },
+    {
+      "slug": "icebreakers-that-dont-feel-forced",
+      "category": "practical",
+      "title": "Icebreakers That Do Not Feel Forced",
+      "toolId": "PartyArchitect",
+      "toolName": "PartyArchitect"
+    },
+    {
+      "slug": "lastminute-gift-ideas-that-dont-look-lastminute",
+      "category": "practical",
+      "title": "Last-Minute Gift Ideas That Don't Look Last-Minute",
+      "toolId": "Giftology",
+      "toolName": "Giftology"
+    },
+    {
+      "slug": "new-hobbies-to-try",
+      "category": "practical",
+      "title": "New Hobbies to Try (When the Usual Suggestions Don't Fit)",
+      "toolId": "HobbyMatch",
+      "toolName": "Hobby Match"
+    },
+    {
+      "slug": "things-to-do-alone-that-arent-sad",
+      "category": "practical",
+      "title": "Things to Do Alone That Are Not Sad",
+      "toolId": "MicroAdventureMapper",
+      "toolName": "Micro-Adventure Mapper"
+    },
+    {
+      "slug": "things-to-do-when-youve-already-done-all-the-touristy-stuff",
+      "category": "practical",
+      "title": "Things to Do in Your City When You Have Already Done All the Touristy Stuff",
+      "toolId": "MicroAdventureMapper",
+      "toolName": "Micro-Adventure Mapper"
+    },
+    {
+      "slug": "things-to-do-this-weekend",
+      "category": "practical",
+      "title": "Things to Do This Weekend (When You Are Sick of Your Usual)",
+      "toolId": "MicroAdventureMapper",
+      "toolName": "Micro-Adventure Mapper"
+    },
+    {
+      "slug": "thoughtful-gifts-under-50-dollars-that-dont-feel-cheap",
+      "category": "practical",
+      "title": "Thoughtful Gifts Under $50 That Don't Feel Cheap",
+      "toolId": "Giftology",
+      "toolName": "Giftology"
+    },
+    {
+      "slug": "what-those-laundry-symbols-actually-mean",
+      "category": "practical",
+      "title": "What Those Laundry Symbols Actually Mean",
+      "toolId": "LaundroMat",
+      "toolName": "LaundroMat"
+    },
+    {
+      "slug": "what-to-check-before-a-long-ride",
+      "category": "practical",
+      "title": "What to Check Before a Long Ride",
+      "toolId": "BikeMedic",
+      "toolName": "Bike Medic"
+    },
+    {
+      "slug": "what-to-do-when-your-party-is-dying",
+      "category": "practical",
+      "title": "What to Do When Your Party Is Dying",
+      "toolId": "PartyArchitect",
+      "toolName": "PartyArchitect"
+    },
+    {
+      "slug": "what-to-get-the-person-who-is-impossible-to-shop-for",
+      "category": "practical",
+      "title": "What to Get the Person Who Is Impossible to Shop For",
+      "toolId": "Giftology",
+      "toolName": "Giftology"
+    },
+    {
+      "slug": "what-to-wear-today",
+      "category": "practical",
+      "title": "What to wear today",
+      "toolId": "WardrobeChaosHelper",
+      "toolName": "Wardrobe Chaos Helper"
+    },
+    {
+      "slug": "why-do-my-bike-brakes-squeak",
+      "category": "practical",
+      "title": "Why Do My Bike Brakes Squeak?",
+      "toolId": "BikeMedic",
+      "toolName": "Bike Medic"
+    },
+    {
+      "slug": "why-does-my-bike-make-a-clicking-noise-when-i-pedal",
+      "category": "practical",
+      "title": "Why Does My Bike Make a Clicking Noise When I Pedal?",
+      "toolId": "BikeMedic",
+      "toolName": "Bike Medic"
+    },
+    {
+      "slug": "why-is-my-bike-chain-skipping",
+      "category": "practical",
+      "title": "Why Is My Bike Chain Skipping (And the Three Things That Almost Always Fix It)",
+      "toolId": "BikeMedic",
+      "toolName": "Bike Medic"
+    },
+    {
+      "slug": "how-to-answer-a-question-when-you-dont-know-the-answer",
+      "category": "presentations",
+      "title": "How to Answer a Question When You Don't Know the Answer",
+      "toolId": "HecklerPrep",
+      "toolName": "HecklerPrep"
+    },
+    {
+      "slug": "how-to-anticipate-questions-before-a-presentation",
+      "category": "presentations",
+      "title": "How to Anticipate Questions Before a Presentation",
+      "toolId": "TheRunthrough",
+      "toolName": "The Runthrough"
+    },
+    {
+      "slug": "how-to-anticipate-the-hardest-questions-about-your-pitch",
+      "category": "presentations",
+      "title": "How to Anticipate the Hardest Questions About Your Pitch",
+      "toolId": "HecklerPrep",
+      "toolName": "HecklerPrep"
+    },
+    {
+      "slug": "how-to-cut-down-a-presentation-thats-too-long",
+      "category": "presentations",
+      "title": "How to Cut Down a Presentation That Is Too Long",
+      "toolId": "TheRunthrough",
+      "toolName": "The Runthrough"
+    },
+    {
+      "slug": "how-to-handle-hostile-questions-in-a-presentation",
+      "category": "presentations",
+      "title": "How to Handle Hostile Questions in a Presentation",
+      "toolId": "HecklerPrep",
+      "toolName": "HecklerPrep"
+    },
+    {
+      "slug": "how-to-prepare-for-a-presentation-in-a-week",
+      "category": "presentations",
+      "title": "How to Prepare for a Presentation in a Week",
+      "toolId": "TheRunthrough",
+      "toolName": "The Runthrough"
+    },
+    {
+      "slug": "how-to-prepare-for-qa-after-a-thesis-defense-dissertation",
+      "category": "presentations",
+      "title": "How to Prepare for Q&A After a Thesis Defense or Dissertation",
+      "toolId": "HecklerPrep",
+      "toolName": "HecklerPrep"
+    },
+    {
+      "slug": "how-to-prepare-for-tough-interview-questions",
+      "category": "presentations",
+      "title": "How to Prepare for Tough Interview Questions (Without Memorizing Answers)",
+      "toolId": "HecklerPrep",
+      "toolName": "HecklerPrep"
+    },
+    {
+      "slug": "how-to-recover-when-your-presentation-goes-off-the-rails",
+      "category": "presentations",
+      "title": "How to Recover When Your Presentation Goes Off the Rails",
+      "toolId": "TheRunthrough",
+      "toolName": "The Runthrough"
+    },
+    {
+      "slug": "how-to-start-a-presentation-strong",
+      "category": "presentations",
+      "title": "How to Start a Presentation Strong",
+      "toolId": "TheRunthrough",
+      "toolName": "The Runthrough"
+    },
+    {
+      "slug": "how-to-give-a-toast-when-you-barely-know-the-person",
+      "category": "speeches",
+      "title": "How to Give a Toast When You Barely Know the Person Being Toasted",
+      "toolId": "ToastWriter",
+      "toolName": "ToastWriter"
+    },
+    {
+      "slug": "how-to-write-a-maid-of-honor-speech-that-doesnt-bomb",
+      "category": "speeches",
+      "title": "How to Write a Maid of Honor Speech That Doesn't Bomb",
+      "toolId": "ToastWriter",
+      "toolName": "ToastWriter"
+    },
+    {
+      "slug": "how-to-write-a-retirement-speech-for-someone-you-actually-like",
+      "category": "speeches",
+      "title": "How to Write a Retirement Speech for Someone You Actually Like",
+      "toolId": "ToastWriter",
+      "toolName": "ToastWriter"
+    },
+    {
+      "slug": "the-best-man-speech-that-lands-without-trying-too-hard",
+      "category": "speeches",
+      "title": "The Best Man Speech That Lands Without Trying Too Hard",
+      "toolId": "ToastWriter",
+      "toolName": "ToastWriter"
+    },
+    {
+      "slug": "what-to-say-at-a-memorial-service-when-youre-not-a-writer",
+      "category": "speeches",
+      "title": "What to Say at a Memorial Service When You're Not a Writer",
+      "toolId": "ToastWriter",
+      "toolName": "ToastWriter"
+    },
+    {
+      "slug": "can-you-leave-the-airport-during-a-layover",
+      "category": "travel",
+      "title": "Can You Leave the Airport During a Layover? (When It Is Worth It and When It Is Not)",
+      "toolId": "LayoverMaximizer",
+      "toolName": "Layover Maximizer"
+    },
+    {
+      "slug": "how-to-handle-a-missed-connection-when-its-not-your-fault",
+      "category": "travel",
+      "title": "How to Handle a Missed Connection When It Is Not Your Fault",
+      "toolId": "LayoverMaximizer",
+      "toolName": "Layover Maximizer"
+    },
+    {
+      "slug": "how-to-know-if-youll-make-your-connection",
+      "category": "travel",
+      "title": "How to Know if You'll Make Your Connection",
+      "toolId": "LayoverMaximizer",
+      "toolName": "Layover Maximizer"
+    },
+    {
+      "slug": "how-to-sleep-in-an-airport-during-a-long-layover",
+      "category": "travel",
+      "title": "How to Sleep in an Airport During a Long Layover",
+      "toolId": "LayoverMaximizer",
+      "toolName": "Layover Maximizer"
+    },
+    {
+      "slug": "is-a-90-minute-layover-long-enough",
+      "category": "travel",
+      "title": "Is a 90-Minute Layover Long Enough? (It Depends on These Five Things)",
+      "toolId": "LayoverMaximizer",
+      "toolName": "Layover Maximizer"
+    },
+    {
+      "slug": "alternatives-to-coworking-spaces-if-you-work-from-home",
+      "category": "wellness",
+      "title": "Alternatives to Coworking Spaces If You Work From Home",
+      "toolId": "VirtualBodyDouble",
+      "toolName": "Virtual Body Double"
+    },
+    {
+      "slug": "best-ambient-sounds-for-studying",
+      "category": "wellness",
+      "title": "Best Ambient Sounds for Studying (Without Putting You to Sleep)",
+      "toolId": "FocusSoundArchitect",
+      "toolName": "Focus Sound Architect"
+    },
+    {
+      "slug": "best-music-for-deep-focus",
+      "category": "wellness",
+      "title": "Best Music for Deep Focus (When You Actually Need to Concentrate, Not Just Vibe)",
+      "toolId": "BrainStateDeejay",
+      "toolName": "Brain State Deejay"
+    },
+    {
+      "slug": "do-binaural-beats-actually-work-for-focus",
+      "category": "wellness",
+      "title": "Do Binaural Beats Actually Work for Focus, or Is It Hype?",
+      "toolId": "FocusSoundArchitect",
+      "toolName": "Focus Sound Architect"
+    },
+    {
+      "slug": "early-warning-signs-of-burnout-most-people-miss",
+      "category": "wellness",
+      "title": "Early Warning Signs of Burnout Most People Miss",
+      "toolId": "CrashPredictor",
+      "toolName": "Crash Predictor"
+    },
+    {
+      "slug": "emotions-i-dont-have-a-word-for",
+      "category": "wellness",
+      "title": "Emotions I Don't Have a Word For",
+      "toolId": "NameThatFeeling",
+      "toolName": "Name That Feeling"
+    },
+    {
+      "slug": "how-to-batch-similar-tasks-to-save-time",
+      "category": "wellness",
+      "title": "How to Batch Similar Tasks to Save Time (Without Becoming a Spreadsheet)",
+      "toolId": "BatchFlow",
+      "toolName": "Batch Flow"
+    },
+    {
+      "slug": "how-to-brain-dump-everything-in-your-head",
+      "category": "wellness",
+      "title": "How to Brain Dump Everything in Your Head (Without Making It Worse)",
+      "toolId": "BrainDumpBuddy",
+      "toolName": "Brain Dump Buddy"
+    },
+    {
+      "slug": "how-to-break-down-an-overwhelming-project",
+      "category": "wellness",
+      "title": "How to break down an overwhelming project",
+      "toolId": "TaskAvalancheBreaker",
+      "toolName": "Task Avalanche Breaker"
+    },
+    {
+      "slug": "how-to-calm-your-nerves-before-an-interview",
+      "category": "wellness",
+      "title": "How to Calm Your Nerves Before an Interview",
+      "toolId": "NerveCheck",
+      "toolName": "Nerve Check"
+    },
+    {
+      "slug": "how-to-clear-your-head-when-everything-feels-jumbled",
+      "category": "wellness",
+      "title": "How to Clear Your Head When Everything Feels Jumbled (And You Can't Even Tell What's Wrong)",
+      "toolId": "BrainDumpBuddy",
+      "toolName": "Brain Dump Buddy"
+    },
+    {
+      "slug": "how-to-describe-your-feelings-when-you-dont-have-the-words",
+      "category": "wellness",
+      "title": "How to describe your feelings when you don't have the words",
+      "toolId": "NameThatFeeling",
+      "toolName": "Name That Feeling"
+    },
+    {
+      "slug": "how-to-do-anything-when-you-cant-get-started",
+      "category": "wellness",
+      "title": "How to do anything when you can't get started",
+      "toolId": "TaskAvalancheBreaker",
+      "toolName": "Task Avalanche Breaker"
+    },
+    {
+      "slug": "how-to-exercise-when-you-have-zero-motivation",
+      "category": "wellness",
+      "title": "How to Exercise When You Have Zero Motivation",
+      "toolId": "LazyWorkoutAdapter",
+      "toolName": "Lazy Workout Adapter"
+    },
+    {
+      "slug": "how-to-figure-out-what-to-do-first-when-overwhelmed",
+      "category": "wellness",
+      "title": "How to Figure Out What to Do First When You're Overwhelmed",
+      "toolId": "CrisisPrioritizer",
+      "toolName": "Crisis Prioritizer"
+    },
+    {
+      "slug": "how-to-figure-out-where-your-time-actually-goes",
+      "category": "wellness",
+      "title": "How to figure out where your time actually goes",
+      "toolId": "WhereDidTheTimeGo",
+      "toolName": "Where Did the Time Go?"
+    },
+    {
+      "slug": "how-to-figure-out-which-friends-are-actually-draining-you",
+      "category": "wellness",
+      "title": "How to Figure Out Which Friends Are Actually Draining You",
+      "toolId": "SocialEnergyAudit",
+      "toolName": "Social Energy Audit"
+    },
+    {
+      "slug": "how-to-focus-when-working-alone",
+      "category": "wellness",
+      "title": "How to focus when working alone",
+      "toolId": "VirtualBodyDouble",
+      "toolName": "Virtual Body Double"
+    },
+    {
+      "slug": "how-to-function-on-the-day-of-an-interview-or-exam",
+      "category": "wellness",
+      "title": "How to Function on the Day of an Interview, Exam, or Doctor Appointment",
+      "toolId": "WaitingModeLiberator",
+      "toolName": "Waiting Mode Liberator"
+    },
+    {
+      "slug": "how-to-get-anything-done-on-the-day-of-a-big-meeting",
+      "category": "wellness",
+      "title": "How to Get Anything Done on the Day of a Big Meeting",
+      "toolId": "WaitingModeLiberator",
+      "toolName": "Waiting Mode Liberator"
+    },
+    {
+      "slug": "how-to-get-things-done-when-you-have-no-energy",
+      "category": "wellness",
+      "title": "How to Get Things Done When You Have No Energy",
+      "toolId": "PEP",
+      "toolName": "PEP"
+    },
+    {
+      "slug": "how-to-group-your-work-so-you-actually-finish-things",
+      "category": "wellness",
+      "title": "How to Group Your Work So You Actually Finish Things (Instead of Just Starting Them)",
+      "toolId": "BatchFlow",
+      "toolName": "Batch Flow"
+    },
+    {
+      "slug": "how-to-interpret-your-own-dreams",
+      "category": "wellness",
+      "title": "How to Interpret Your Own Dreams (Without Symbol Lists)",
+      "toolId": "DreamPatternSpotter",
+      "toolName": "Dream Pattern Spotter"
+    },
+    {
+      "slug": "how-to-know-if-youre-an-introvert-or-just-low-on-energy",
+      "category": "wellness",
+      "title": "How to Know If You Are an Introvert or Just Low on Energy",
+      "toolId": "SocialEnergyAudit",
+      "toolName": "Social Energy Audit"
+    },
+    {
+      "slug": "how-to-know-if-you-should-push-through-or-rest",
+      "category": "wellness",
+      "title": "How to Know If You Should Push Through or Rest",
+      "toolId": "PEP",
+      "toolName": "PEP"
+    },
+    {
+      "slug": "how-to-know-if-youre-burned-out-or-just-tired",
+      "category": "wellness",
+      "title": "How to Know If You're Burned Out or Just Tired",
+      "toolId": "CrashPredictor",
+      "toolName": "Crash Predictor"
+    },
+    {
+      "slug": "how-to-look-confident-when-youre-terrified",
+      "category": "wellness",
+      "title": "How to Look Confident When You Are Terrified",
+      "toolId": "NerveCheck",
+      "toolName": "Nerve Check"
+    },
+    {
+      "slug": "how-to-make-a-project-feel-manageable",
+      "category": "wellness",
+      "title": "How to make a project feel manageable",
+      "toolId": "TaskAvalancheBreaker",
+      "toolName": "Task Avalanche Breaker"
+    },
+    {
+      "slug": "how-to-make-solo-deep-work-less-lonely",
+      "category": "wellness",
+      "title": "How to make solo deep work less lonely",
+      "toolId": "VirtualBodyDouble",
+      "toolName": "Virtual Body Double"
+    },
+    {
+      "slug": "how-to-move-forward-on-a-project-thats-been-stuck-for-months",
+      "category": "wellness",
+      "title": "How to Move Forward on a Project That's Been Stuck for Months",
+      "toolId": "TaskAvalancheBreaker",
+      "toolName": "Task Avalanche Breaker"
+    },
+    {
+      "slug": "how-to-move-your-body-when-youre-sick-sore-or-hungover",
+      "category": "wellness",
+      "title": "How to Move Your Body When You're Sick, Sore, or Hungover",
+      "toolId": "LazyWorkoutAdapter",
+      "toolName": "Lazy Workout Adapter"
+    },
+    {
+      "slug": "how-to-organize-a-brain-dump-into-actual-tasks",
+      "category": "wellness",
+      "title": "How to Organize a Brain Dump into Actual Tasks (Without It Becoming Another Mess)",
+      "toolId": "BrainDumpBuddy",
+      "toolName": "Brain Dump Buddy"
+    },
+    {
+      "slug": "how-to-plan-around-lowenergy-days",
+      "category": "wellness",
+      "title": "How to Plan Around Low-Energy Days",
+      "toolId": "PEP",
+      "toolName": "PEP"
+    },
+    {
+      "slug": "how-to-plan-rest-before-you-need-it-not-after",
+      "category": "wellness",
+      "title": "How to Plan Rest Before You Need It, Not After",
+      "toolId": "RechargeRadar",
+      "toolName": "Recharge Radar"
+    },
+    {
+      "slug": "how-to-plan-your-week-so-you-dont-crash-by-thursday",
+      "category": "wellness",
+      "title": "How to Plan Your Week So You Do Not Crash by Thursday",
+      "toolId": "SocialEnergyAudit",
+      "toolName": "Social Energy Audit"
+    },
+    {
+      "slug": "how-to-power-through-tasks-youve-been-avoiding",
+      "category": "wellness",
+      "title": "How to power through tasks you've been avoiding",
+      "toolId": "VirtualBodyDouble",
+      "toolName": "Virtual Body Double"
+    },
+    {
+      "slug": "how-to-prepare-mentally-for-a-hard-conversation",
+      "category": "wellness",
+      "title": "How to Prepare Mentally for a Hard Conversation",
+      "toolId": "NerveCheck",
+      "toolName": "Nerve Check"
+    },
+    {
+      "slug": "how-to-prioritize-when-everything-feels-urgent",
+      "category": "wellness",
+      "title": "How to Prioritize When Everything Feels Urgent",
+      "toolId": "CrisisPrioritizer",
+      "toolName": "Crisis Prioritizer"
+    },
+    {
+      "slug": "how-to-push-through-vs-when-to-stop",
+      "category": "wellness",
+      "title": "How to Push Through vs When to Stop",
+      "toolId": "CrashPredictor",
+      "toolName": "Crash Predictor"
+    },
+    {
+      "slug": "how-to-recover-from-burnout-when-you-cant-take-time-off",
+      "category": "wellness",
+      "title": "How to Recover from Burnout When You Can't Take Time Off",
+      "toolId": "CrashPredictor",
+      "toolName": "Crash Predictor"
+    },
+    {
+      "slug": "how-to-remember-everything-you-need-to-do-without-losing-your-mind",
+      "category": "wellness",
+      "title": "How to Remember Everything You Need to Do (Without Losing Your Mind in the Process)",
+      "toolId": "BrainDumpBuddy",
+      "toolName": "Brain Dump Buddy"
+    },
+    {
+      "slug": "how-to-remember-your-dreams-better",
+      "category": "wellness",
+      "title": "How to Remember Your Dreams Better",
+      "toolId": "DreamPatternSpotter",
+      "toolName": "Dream Pattern Spotter"
+    },
+    {
+      "slug": "how-to-schedule-a-week-so-youre-not-constantly-switching-gears",
+      "category": "wellness",
+      "title": "How to Schedule a Week So You're Not Constantly Switching Gears",
+      "toolId": "BatchFlow",
+      "toolName": "Batch Flow"
+    },
+    {
+      "slug": "how-to-schedule-downtime-when-you-dont-think-you-need-any",
+      "category": "wellness",
+      "title": "How to Schedule Downtime When You Do Not Think You Need Any",
+      "toolId": "RechargeRadar",
+      "toolName": "Recharge Radar"
+    },
+    {
+      "slug": "how-to-schedule-tasks-based-on-your-energy-levels",
+      "category": "wellness",
+      "title": "How to Schedule Tasks Based on Your Energy Levels",
+      "toolId": "PEP",
+      "toolName": "PEP"
+    },
+    {
+      "slug": "how-to-start-when-everything-feels-too-big",
+      "category": "wellness",
+      "title": "How to start when everything feels too big",
+      "toolId": "TaskAvalancheBreaker",
+      "toolName": "Task Avalanche Breaker"
+    },
+    {
+      "slug": "how-to-stay-accountable-when-no-one-is-watching",
+      "category": "wellness",
+      "title": "How to stay accountable when no one is watching",
+      "toolId": "VirtualBodyDouble",
+      "toolName": "Virtual Body Double"
+    },
+    {
+      "slug": "how-to-stay-active-on-a-really-busy-week",
+      "category": "wellness",
+      "title": "How to Stay Active on a Really Busy Week",
+      "toolId": "LazyWorkoutAdapter",
+      "toolName": "Lazy Workout Adapter"
+    },
+    {
+      "slug": "how-to-stop-context-switching-all-day",
+      "category": "wellness",
+      "title": "How to Stop Context-Switching All Day (When Your Job Is Built On It)",
+      "toolId": "BatchFlow",
+      "toolName": "Batch Flow"
+    },
+    {
+      "slug": "how-to-stop-wasting-the-morning-before-an-afternoon-appointment",
+      "category": "wellness",
+      "title": "How to Stop Wasting the Morning Before an Afternoon Appointment",
+      "toolId": "WaitingModeLiberator",
+      "toolName": "Waiting Mode Liberator"
+    },
+    {
+      "slug": "how-to-stop-your-hands-from-shaking-before-a-presentation",
+      "category": "wellness",
+      "title": "How to Stop Your Hands From Shaking Before a Presentation",
+      "toolId": "NerveCheck",
+      "toolName": "Nerve Check"
+    },
+    {
+      "slug": "how-to-tell-when-youre-about-to-burn-out-before-you-do",
+      "category": "wellness",
+      "title": "How to Tell When You Are About to Run Out of Energy Before You Do",
+      "toolId": "RechargeRadar",
+      "toolName": "Recharge Radar"
+    },
+    {
+      "slug": "how-to-track-time-without-obsessing-over-it",
+      "category": "wellness",
+      "title": "How to track time without obsessing over it",
+      "toolId": "WhereDidTheTimeGo",
+      "toolName": "Where Did the Time Go?"
+    },
+    {
+      "slug": "how-to-triage-your-todo-list-when-you-cant-think-straight",
+      "category": "wellness",
+      "title": "How to Triage Your To-Do List When You Can't Think Straight",
+      "toolId": "CrisisPrioritizer",
+      "toolName": "Crisis Prioritizer"
+    },
+    {
+      "slug": "how-to-use-music-to-switch-between-tasks",
+      "category": "wellness",
+      "title": "How to Use Music to Switch Between Tasks (Without Carrying the Last One With You)",
+      "toolId": "BrainStateDeejay",
+      "toolName": "Brain State Deejay"
+    },
+    {
+      "slug": "how-to-use-the-day-before-a-deadline-without-panicking-or-procrastinating",
+      "category": "wellness",
+      "title": "How to Use the Day Before a Deadline Without Panicking or Procrastinating",
+      "toolId": "WaitingModeLiberator",
+      "toolName": "Waiting Mode Liberator"
+    },
+    {
+      "slug": "how-to-work-alone-without-getting-distracted",
+      "category": "wellness",
+      "title": "How to Work Alone Without Getting Distracted",
+      "toolId": "VirtualBodyDouble",
+      "toolName": "Virtual Body Double"
+    },
+    {
+      "slug": "is-silence-actually-better-than-ambient-noise-for-focus",
+      "category": "wellness",
+      "title": "Is Silence Actually Better Than Ambient Noise for Focus?",
+      "toolId": "FocusSoundArchitect",
+      "toolName": "Focus Sound Architect"
+    },
+    {
+      "slug": "is-this-actually-urgent-or-am-i-panicking",
+      "category": "wellness",
+      "title": "Is This Actually Urgent, or Am I Panicking?",
+      "toolId": "CrisisPrioritizer",
+      "toolName": "Crisis Prioritizer"
+    },
+    {
+      "slug": "music-that-actually-helps-you-work-vs-distracts-you",
+      "category": "wellness",
+      "title": "Music That Actually Helps You Work vs Distracts You (How to Tell the Difference Quickly)",
+      "toolId": "BrainStateDeejay",
+      "toolName": "Brain State Deejay"
+    },
+    {
+      "slug": "signs-youre-heading-for-burnout",
+      "category": "wellness",
+      "title": "Signs You're Heading for Burnout (Before the Crash)",
+      "toolId": "CrashPredictor",
+      "toolName": "Crash Predictor"
+    },
+    {
+      "slug": "the-smallest-possible-first-step-for-writing-a-book",
+      "category": "wellness",
+      "title": "The Smallest Possible First Step for Writing a Book",
+      "toolId": "TaskAvalancheBreaker",
+      "toolName": "Task Avalanche Breaker"
+    },
+    {
+      "slug": "the-smallest-workout-that-still-counts",
+      "category": "wellness",
+      "title": "The Smallest Workout That Still Counts",
+      "toolId": "LazyWorkoutAdapter",
+      "toolName": "Lazy Workout Adapter"
+    },
+    {
+      "slug": "what-does-it-mean-when-you-dream-about-someone-whos-died",
+      "category": "wellness",
+      "title": "What Does It Mean When You Dream About Someone Who's Died?",
+      "toolId": "DreamPatternSpotter",
+      "toolName": "Dream Pattern Spotter"
+    },
+    {
+      "slug": "what-is-body-doubling-and-does-it-actually-work",
+      "category": "wellness",
+      "title": "What is body doubling, and does it actually work?",
+      "toolId": "VirtualBodyDouble",
+      "toolName": "Virtual Body Double"
+    },
+    {
+      "slug": "what-music-to-listen-to-while-studying",
+      "category": "wellness",
+      "title": "What Music to Listen to While Studying (That Actually Helps Instead of Distracting)",
+      "toolId": "BrainStateDeejay",
+      "toolName": "Brain State Deejay"
+    },
+    {
+      "slug": "what-to-do-when-youre-panicking-right-before-an-event",
+      "category": "wellness",
+      "title": "What to Do When You Are Panicking Right Before the Event",
+      "toolId": "NerveCheck",
+      "toolName": "Nerve Check"
+    },
+    {
+      "slug": "what-to-do-when-you-have-too-much-to-do-and-you-freeze",
+      "category": "wellness",
+      "title": "What to Do When You Have Too Much to Do and You Freeze",
+      "toolId": "CrisisPrioritizer",
+      "toolName": "Crisis Prioritizer"
+    },
+    {
+      "slug": "what-to-do-when-your-mind-wont-stop-racing",
+      "category": "wellness",
+      "title": "What to Do When Your Mind Won't Stop Racing (At 11 PM, At Your Desk, In Line)",
+      "toolId": "BrainDumpBuddy",
+      "toolName": "Brain Dump Buddy"
+    },
+    {
+      "slug": "what-to-do-when-your-todo-list-is-too-long-to-even-look-at",
+      "category": "wellness",
+      "title": "What to do when your to-do list is too long to even look at",
+      "toolId": "TaskAvalancheBreaker",
+      "toolName": "Task Avalanche Breaker"
+    },
+    {
+      "slug": "what-to-listen-to-when-you-cant-concentrate-in-a-noisy",
+      "category": "wellness",
+      "title": "What to Listen To When You Cannot Concentrate in a Noisy Environment",
+      "toolId": "FocusSoundArchitect",
+      "toolName": "Focus Sound Architect"
+    },
+    {
+      "slug": "what-to-listen-to-when-youre-tired-but-need-to-keep-working",
+      "category": "wellness",
+      "title": "What to Listen to When You're Tired but Need to Keep Working (Without Crashing Harder Later)",
+      "toolId": "BrainStateDeejay",
+      "toolName": "Brain State Deejay"
+    },
+    {
+      "slug": "whats-the-best-background-noise-for-working",
+      "category": "wellness",
+      "title": "What's the Best Background Noise for Working (And Why It Depends on the Task)",
+      "toolId": "FocusSoundArchitect",
+      "toolName": "Focus Sound Architect"
+    },
+    {
+      "slug": "whats-the-difference-between-jealousy-and-envy",
+      "category": "wellness",
+      "title": "What's the difference between jealousy and envy?",
+      "toolId": "NameThatFeeling",
+      "toolName": "Name That Feeling"
+    },
+    {
+      "slug": "whats-the-feeling-you-get-when-you-finish-a-tv-series-you-loved",
+      "category": "wellness",
+      "title": "What's the Feeling You Get When You Finish a TV Series You Loved?",
+      "toolId": "NameThatFeeling",
+      "toolName": "Name That Feeling"
+    },
+    {
+      "slug": "whats-the-word-for-the-feeling-when-you-secretly-enjoy-someone-elses-failure",
+      "category": "wellness",
+      "title": "What's the word for the feeling when you secretly enjoy someone else's failure?",
+      "toolId": "NameThatFeeling",
+      "toolName": "Name That Feeling"
+    },
+    {
+      "slug": "white-noise-vs-brown-noise-vs-pink-noise",
+      "category": "wellness",
+      "title": "White Noise vs Brown Noise vs Pink Noise: Which One Actually Helps You Focus",
+      "toolId": "FocusSoundArchitect",
+      "toolName": "Focus Sound Architect"
+    },
+    {
+      "slug": "why-am-i-always-behind-even-when-im-working-all-day",
+      "category": "wellness",
+      "title": "Why am I always behind even when I'm working all day?",
+      "toolId": "WhereDidTheTimeGo",
+      "toolName": "Where Did the Time Go?"
+    },
+    {
+      "slug": "why-am-i-tired-all-the-time-even-when-i-sleep-enough",
+      "category": "wellness",
+      "title": "Why Am I Tired All the Time Even When I Sleep Enough",
+      "toolId": "PEP",
+      "toolName": "PEP"
+    },
+    {
+      "slug": "why-do-i-dream-about-people-i-havent-seen-in-years",
+      "category": "wellness",
+      "title": "Why Do I Dream About People I Haven't Seen in Years?",
+      "toolId": "DreamPatternSpotter",
+      "toolName": "Dream Pattern Spotter"
+    },
+    {
+      "slug": "why-do-i-feel-confusing-emotional-states",
+      "category": "wellness",
+      "title": "Why do I feel emotions I cannot name?",
+      "toolId": "NameThatFeeling",
+      "toolName": "Name That Feeling"
+    },
+    {
+      "slug": "why-do-i-feel-confusing-emotional-state",
+      "category": "wellness",
+      "title": "Why Do I Feel Two Things at Once?",
+      "toolId": "NameThatFeeling",
+      "toolName": "Name That Feeling"
+    },
+    {
+      "slug": "why-do-i-keep-having-the-same-dream",
+      "category": "wellness",
+      "title": "Why Do I Keep Having the Same Dream?",
+      "toolId": "DreamPatternSpotter",
+      "toolName": "Dream Pattern Spotter"
+    },
+    {
+      "slug": "why-does-it-feel-like-i-did-nothing-today",
+      "category": "wellness",
+      "title": "Why does it feel like I did nothing today?",
+      "toolId": "WhereDidTheTimeGo",
+      "toolName": "Where Did the Time Go?"
+    },
+    {
+      "slug": "why-does-multitasking-make-me-so-tired",
+      "category": "wellness",
+      "title": "Why Does Multitasking Make Me So Tired (When I'm Not Doing Anything Hard)",
+      "toolId": "BatchFlow",
+      "toolName": "Batch Flow"
+    },
+    {
+      "slug": "why-does-my-day-disappear-so-fast",
+      "category": "wellness",
+      "title": "Why does my day disappear so fast?",
+      "toolId": "WhereDidTheTimeGo",
+      "toolName": "Where Did the Time Go?"
+    },
+    {
+      "slug": "why-is-it-so-hard-to-name-what-im-feeling",
+      "category": "wellness",
+      "title": "Why is it so hard to name what I'm feeling?",
+      "toolId": "NameThatFeeling",
+      "toolName": "Name That Feeling"
+    },
+    {
+      "slug": "why-scheduled-rest-never-feels-like-enough",
+      "category": "wellness",
+      "title": "Why Scheduled Rest Never Feels Like Enough",
+      "toolId": "RechargeRadar",
+      "toolName": "Recharge Radar"
+    },
+    {
+      "slug": "why-you-cant-focus-before-something-stressful",
+      "category": "wellness",
+      "title": "Why You Cannot Focus Before Something Stressful",
+      "toolId": "WaitingModeLiberator",
+      "toolName": "Waiting Mode Liberator"
+    },
+    {
+      "slug": "why-you-feel-drained-after-every-social-event-even-when-you-enjoyed-it",
+      "category": "wellness",
+      "title": "Why You Feel Drained After Every Social Event Even When You Enjoyed It",
+      "toolId": "SocialEnergyAudit",
+      "toolName": "Social Energy Audit"
+    },
+    {
+      "slug": "why-you-keep-saying-yes-to-things-that-exhaust-you",
+      "category": "wellness",
+      "title": "Why You Keep Saying Yes to Things That Exhaust You",
+      "toolId": "SocialEnergyAudit",
+      "toolName": "Social Energy Audit"
+    },
+    {
+      "slug": "why-your-energy-crashes-always-come-at-the-worst-time",
+      "category": "wellness",
+      "title": "Why Your Energy Crashes Always Come at the Worst Time",
+      "toolId": "RechargeRadar",
+      "toolName": "Recharge Radar"
+    },
+    {
+      "slug": "workouts-you-can-do-when-youre-exhausted",
+      "category": "wellness",
+      "title": "Workouts You Can Do When You're Exhausted (And Why They Still Work)",
+      "toolId": "LazyWorkoutAdapter",
+      "toolName": "Lazy Workout Adapter"
+    },
+    {
+      "slug": "common-naming-mistakes-that-kill-startups",
+      "category": "workplace",
+      "title": "Common Naming Mistakes That Kill Startups (and How to Avoid Them)",
+      "toolId": "NameAudit",
+      "toolName": "NameAudit"
+    },
+    {
+      "slug": "how-to-brainstorm-names-that-arent-terrible",
+      "category": "workplace",
+      "title": "How to Brainstorm Names That Are Not Terrible",
+      "toolId": "NameStorm",
+      "toolName": "NameStorm"
+    },
+    {
+      "slug": "how-to-break-down-a-complicated-document-section-by-section",
+      "category": "workplace",
+      "title": "How to Break Down a Complicated Document Section by Section",
+      "toolId": "PlainTalk",
+      "toolName": "PlainTalk"
+    },
+    {
+      "slug": "how-to-bring-a-meeting-back-on-topic",
+      "category": "workplace",
+      "title": "How to bring a meeting back on topic",
+      "toolId": "MeetingHijackPreventer",
+      "toolName": "Meeting Hijack Preventer"
+    },
+    {
+      "slug": "how-to-choose-between-two-job-offers",
+      "category": "workplace",
+      "title": "How to Choose Between Two Job Offers (When Both Look Good)",
+      "toolId": "LeverageLogic",
+      "toolName": "Leverage Logic"
+    },
+    {
+      "slug": "how-to-come-up-with-a-business-name",
+      "category": "workplace",
+      "title": "How to Come Up With a Business Name (When You Are Stuck)",
+      "toolId": "NameStorm",
+      "toolName": "NameStorm"
+    },
+    {
+      "slug": "how-to-decide-between-multiple-side-projects",
+      "category": "workplace",
+      "title": "How to Decide Between Multiple Side Projects (When You Cannot Do Them All)",
+      "toolId": "LeverageLogic",
+      "toolName": "Leverage Logic"
+    },
+    {
+      "slug": "how-to-figure-out-what-career-to-switch-to",
+      "category": "workplace",
+      "title": "How to figure out what career to switch to",
+      "toolId": "SkillGapMap",
+      "toolName": "Skill Gap Map"
+    },
+    {
+      "slug": "how-to-find-the-action-items-buried-in-a-long-document",
+      "category": "workplace",
+      "title": "How to find the action items buried in a long document",
+      "toolId": "NoiseCanceler",
+      "toolName": "Noise Canceler"
+    },
+    {
+      "slug": "how-to-handle-a-flood-of-emails-after-vacation",
+      "category": "workplace",
+      "title": "How to Handle a Flood of Emails After Vacation (Without Undoing the Vacation)",
+      "toolId": "EmailUrgencyTriager",
+      "toolName": "Email Urgency Triager"
+    },
+    {
+      "slug": "how-to-handle-someone-who-dominates-meetings",
+      "category": "workplace",
+      "title": "How to handle someone who dominates meetings",
+      "toolId": "MeetingHijackPreventer",
+      "toolName": "Meeting Hijack Preventer"
+    },
+    {
+      "slug": "how-to-hold-someone-accountable-in-writing",
+      "category": "workplace",
+      "title": "How to Hold Someone Accountable in Writing Without Making It Personal",
+      "toolId": "VelvetHammer",
+      "toolName": "Velvet Hammer"
+    },
+    {
+      "slug": "how-to-identify-hidden-costs-in-a-service-agreement",
+      "category": "workplace",
+      "title": "How to Identify Hidden Costs in a Service Agreement",
+      "toolId": "JargonAssassin",
+      "toolName": "Jargon Assassin"
+    },
+    {
+      "slug": "how-to-identify-your-transferable-skills",
+      "category": "workplace",
+      "title": "How to identify your transferable skills",
+      "toolId": "SkillGapMap",
+      "toolName": "Skill Gap Map"
+    },
+    {
+      "slug": "how-to-know-if-an-email-is-actually-urgent",
+      "category": "workplace",
+      "title": "How to Know If an Email Is Actually Urgent",
+      "toolId": "EmailUrgencyTriager",
+      "toolName": "Email Urgency Triager"
+    },
+    {
+      "slug": "how-to-know-if-an-opportunity-is-worth-the-time",
+      "category": "workplace",
+      "title": "How to Know if an Opportunity Is Worth the Time",
+      "toolId": "LeverageLogic",
+      "toolName": "Leverage Logic"
+    },
+    {
+      "slug": "how-to-know-if-youre-ready-for-the-next-level",
+      "category": "workplace",
+      "title": "How to know if you're ready for the next level",
+      "toolId": "SkillGapMap",
+      "toolName": "Skill Gap Map"
+    },
+    {
+      "slug": "how-to-know-if-your-business-name-is-forgettable",
+      "category": "workplace",
+      "title": "How to Know If Your Business Name Is Forgettable",
+      "toolId": "NameAudit",
+      "toolName": "NameAudit"
+    },
+    {
+      "slug": "how-to-know-if-your-job-is-at-risk",
+      "category": "workplace",
+      "title": "How to know if your job is at risk",
+      "toolId": "FutureProof",
+      "toolName": "Future Proof"
+    },
+    {
+      "slug": "how-to-know-what-emails-actually-need-a-response",
+      "category": "workplace",
+      "title": "How to know what emails actually need a response",
+      "toolId": "EmailUrgencyTriager",
+      "toolName": "Email Urgency Triager"
+    },
+    {
+      "slug": "how-to-make-sure-quiet-people-speak-up-in-meetings",
+      "category": "workplace",
+      "title": "How to make sure quiet people speak up in meetings",
+      "toolId": "MeetingHijackPreventer",
+      "toolName": "Meeting Hijack Preventer"
+    },
+    {
+      "slug": "how-to-make-the-case-for-your-promotion-in-writing",
+      "category": "workplace",
+      "title": "How to Make the Case for Your Promotion in Writing",
+      "toolId": "BragSheetBuilder",
+      "toolName": "Brag Sheet Builder"
+    },
+    {
+      "slug": "how-to-manage-email-overload",
+      "category": "workplace",
+      "title": "How to manage email overload",
+      "toolId": "EmailUrgencyTriager",
+      "toolName": "Email Urgency Triager"
+    },
+    {
+      "slug": "how-to-name-a-startup-when-all-the-good-names-are-taken",
+      "category": "workplace",
+      "title": "How to Name a Startup When All the Good Names Are Taken",
+      "toolId": "NameStorm",
+      "toolName": "NameStorm"
+    },
+    {
+      "slug": "how-to-name-your-company-when-you-have-no-creative-ideas",
+      "category": "workplace",
+      "title": "How to Name Your Company When You Have No Creative Ideas Left",
+      "toolId": "NameStorm",
+      "toolName": "NameStorm"
+    },
+    {
+      "slug": "how-to-politely-decline-a-meeting",
+      "category": "workplace",
+      "title": "How to politely decline a meeting",
+      "toolId": "MeetingBSDetector",
+      "toolName": "Meeting BS Detector"
+    },
+    {
+      "slug": "how-to-push-back-on-your-boss-professionally",
+      "category": "workplace",
+      "title": "How to Push Back on a Decision That's Already Been Made",
+      "toolId": "DifficultTalkCoach",
+      "toolName": "Difficult Talk Coach"
+    },
+    {
+      "slug": "how-to-push-back-on-an-unreasonable-email",
+      "category": "workplace",
+      "title": "How to Push Back on an Unreasonable Email Without Burning the Bridge",
+      "toolId": "VelvetHammer",
+      "toolName": "Velvet Hammer"
+    },
+    {
+      "slug": "how-to-read-a-financial-report-like-an-expert",
+      "category": "workplace",
+      "title": "How to read a financial report like an expert",
+      "toolId": "PlainTalk",
+      "toolName": "PlainTalk — Document Analyst"
+    },
+    {
+      "slug": "how-to-read-a-job-offer-letter-employment-contract-before-signing",
+      "category": "workplace",
+      "title": "How to read a job offer letter or employment contract before signing",
+      "toolId": "JargonAssassin",
+      "toolName": "Jargon Assassin"
+    },
+    {
+      "slug": "how-to-read-a-long-policy-update-without-losing-your-mind",
+      "category": "workplace",
+      "title": "How to read a long policy update without losing your mind",
+      "toolId": "NoiseCanceler",
+      "toolName": "Noise Canceler"
+    },
+    {
+      "slug": "how-to-read-a-school-newsletter-hoa-notice-efficiently",
+      "category": "workplace",
+      "title": "How to Read a School Newsletter or HOA Notice Efficiently",
+      "toolId": "NoiseCanceler",
+      "toolName": "Noise Canceler"
+    },
+    {
+      "slug": "how-to-read-a-software-license-agreement-before-clicking-accept",
+      "category": "workplace",
+      "title": "How to read a software license agreement before clicking accept",
+      "toolId": "JargonAssassin",
+      "toolName": "Jargon Assassin"
+    },
+    {
+      "slug": "how-to-read-an-insurance-policy-you-actually-need",
+      "category": "workplace",
+      "title": "How to Read an Insurance Policy You Actually Need",
+      "toolId": "JargonAssassin",
+      "toolName": "Jargon Assassin"
+    },
+    {
+      "slug": "how-to-read-between-the-lines-of-a-performance-review",
+      "category": "workplace",
+      "title": "How to read between the lines of a performance review",
+      "toolId": "PlainTalk",
+      "toolName": "PlainTalk — Document Analyst"
+    },
+    {
+      "slug": "how-to-respond-to-a-passive-aggressive-email",
+      "category": "workplace",
+      "title": "How to Respond to a Passive-Aggressive Email Professionally (Without Matching the Energy)",
+      "toolId": "VelvetHammer",
+      "toolName": "Velvet Hammer"
+    },
+    {
+      "slug": "how-to-run-a-meeting-that-doesnt-go-off-the-rails",
+      "category": "workplace",
+      "title": "How to run a meeting that doesn't go off the rails",
+      "toolId": "MeetingHijackPreventer",
+      "toolName": "Meeting Hijack Preventer"
+    },
+    {
+      "slug": "how-to-say-no-to-your-boss",
+      "category": "workplace",
+      "title": "How to Say No to Your Boss (Without Burning a Bridge)",
+      "toolId": "DifficultTalkCoach",
+      "toolName": "Difficult Talk Coach"
+    },
+    {
+      "slug": "how-to-see-the-real-structure-of-a-complex-document",
+      "category": "workplace",
+      "title": "How to see the real structure of a complex document",
+      "toolId": "PlainTalk",
+      "toolName": "PlainTalk — Document Analyst"
+    },
+    {
+      "slug": "how-to-set-a-meeting-agenda-that-actually-works",
+      "category": "workplace",
+      "title": "How to set a meeting agenda that actually works",
+      "toolId": "MeetingHijackPreventer",
+      "toolName": "Meeting Hijack Preventer"
+    },
+    {
+      "slug": "how-to-skim-a-long-document-without-missing-the-important-parts",
+      "category": "workplace",
+      "title": "How to skim a long document without missing the important parts",
+      "toolId": "NoiseCanceler",
+      "toolName": "Noise Canceler"
+    },
+    {
+      "slug": "how-to-skim-a-long-email-and-not-miss-anything-important",
+      "category": "workplace",
+      "title": "How to skim a long email and not miss anything important",
+      "toolId": "NoiseCanceler",
+      "toolName": "Noise Canceler"
+    },
+    {
+      "slug": "how-to-spend-your-free-time-when-you-want-a-career-change",
+      "category": "workplace",
+      "title": "How to Spend Your Free Time When You Want a Career Change",
+      "toolId": "LeverageLogic",
+      "toolName": "Leverage Logic"
+    },
+    {
+      "slug": "how-to-spot-manipulative-clauses-in-any-contract",
+      "category": "workplace",
+      "title": "How to spot manipulative clauses in any contract",
+      "toolId": "JargonAssassin",
+      "toolName": "Jargon Assassin"
+    },
+    {
+      "slug": "how-to-spot-the-highest-leverage-thing-you-could-be-doing",
+      "category": "workplace",
+      "title": "How to Spot the Highest-Leverage Thing You Could Be Doing",
+      "toolId": "LeverageLogic",
+      "toolName": "Leverage Logic"
+    },
+    {
+      "slug": "how-to-spot-whats-actually-changed-in-a-terms-of-service-update",
+      "category": "workplace",
+      "title": "How to Spot What's Actually Changed in a Terms of Service Update",
+      "toolId": "NoiseCanceler",
+      "toolName": "Noise Canceler"
+    },
+    {
+      "slug": "how-to-stop-email-anxiety",
+      "category": "workplace",
+      "title": "How to stop email anxiety",
+      "toolId": "EmailUrgencyTriager",
+      "toolName": "Email Urgency Triager"
+    },
+    {
+      "slug": "how-to-suggest-making-a-meeting-async",
+      "category": "workplace",
+      "title": "How to suggest making a meeting async",
+      "toolId": "MeetingBSDetector",
+      "toolName": "Meeting BS Detector"
+    },
+    {
+      "slug": "how-to-switch-careers-to-tech",
+      "category": "workplace",
+      "title": "How to switch careers to tech",
+      "toolId": "SkillGapMap",
+      "toolName": "Skill Gap Map"
+    },
+    {
+      "slug": "how-to-talk-about-your-work-without-sounding-arrogant",
+      "category": "workplace",
+      "title": "How to Talk About Your Work Without Sounding Arrogant",
+      "toolId": "BragSheetBuilder",
+      "toolName": "Brag Sheet Builder"
+    },
+    {
+      "slug": "how-to-tell-if-a-meeting-is-going-to-be-useful",
+      "category": "workplace",
+      "title": "How to tell if a meeting is going to be useful",
+      "toolId": "MeetingBSDetector",
+      "toolName": "Meeting BS Detector"
+    },
+    {
+      "slug": "how-to-tell-if-a-name-is-too-similar-to-an-existing-brand",
+      "category": "workplace",
+      "title": "How to Tell If Your Name Is Too Similar to an Existing Brand",
+      "toolId": "NameAudit",
+      "toolName": "NameAudit"
+    },
+    {
+      "slug": "how-to-tell-what-a-document-is-actually-saying-vs-what-it",
+      "category": "workplace",
+      "title": "How to Tell What a Document Is Actually Saying (vs. What It Sounds Like)",
+      "toolId": "PlainTalk",
+      "toolName": "PlainTalk"
+    },
+    {
+      "slug": "how-to-tell-your-boss-a-deadline-is-unrealistic",
+      "category": "workplace",
+      "title": "How to Tell Your Boss a Deadline Is Unrealistic (Before It's Too Late)",
+      "toolId": "DifficultTalkCoach",
+      "toolName": "Difficult Talk Coach"
+    },
+    {
+      "slug": "how-to-tell-your-boss-theyre-wrong",
+      "category": "workplace",
+      "title": "How to Tell Your Boss They're Wrong (Without Burning Anything Down)",
+      "toolId": "DifficultTalkCoach",
+      "toolName": "Difficult Talk Coach"
+    },
+    {
+      "slug": "how-to-tell-your-manager-their-feedback-is-unfair",
+      "category": "workplace",
+      "title": "How to Tell Your Manager Their Feedback Feels Unfair (Without Sounding Defensive)",
+      "toolId": "DifficultTalkCoach",
+      "toolName": "Difficult Talk Coach"
+    },
+    {
+      "slug": "how-to-test-a-business-name-before-committing",
+      "category": "workplace",
+      "title": "How to Test a Business Name Before You Commit to It",
+      "toolId": "NameAudit",
+      "toolName": "NameAudit"
+    },
+    {
+      "slug": "how-to-test-if-a-name-passes-the-drunk-test",
+      "category": "workplace",
+      "title": "How to Test If a Name Passes the Drunk Test",
+      "toolId": "NameAudit",
+      "toolName": "NameAudit"
+    },
+    {
+      "slug": "how-to-translate-a-confusing-document-into-plain-language",
+      "category": "workplace",
+      "title": "How to translate a confusing document into plain language",
+      "toolId": "PlainTalk",
+      "toolName": "PlainTalk — Document Analyst"
+    },
+    {
+      "slug": "how-to-triage-your-inbox-in-5-minutes",
+      "category": "workplace",
+      "title": "How to triage your inbox in 5 minutes",
+      "toolId": "EmailUrgencyTriager",
+      "toolName": "Email Urgency Triager"
+    },
+    {
+      "slug": "how-to-understand-a-document-written-in-academic-jargon",
+      "category": "workplace",
+      "title": "How to Understand a Document Written in Academic Jargon",
+      "toolId": "PlainTalk",
+      "toolName": "PlainTalk"
+    },
+    {
+      "slug": "how-to-understand-a-document-written-in-jargon",
+      "category": "workplace",
+      "title": "How to understand a document written in jargon",
+      "toolId": "PlainTalk",
+      "toolName": "PlainTalk — Document Analyst"
+    },
+    {
+      "slug": "how-to-write-a-professional-email-when-youre-furious",
+      "category": "workplace",
+      "title": "How to Write a Professional Email When You're Actually Furious",
+      "toolId": "VelvetHammer",
+      "toolName": "Velvet Hammer"
+    },
+    {
+      "slug": "how-to-write-resume-bullets-for-the-job-you-actually-did",
+      "category": "workplace",
+      "title": "How to Write Resume Bullets for the Job You Actually Did",
+      "toolId": "BragSheetBuilder",
+      "toolName": "Brag Sheet Builder"
+    },
+    {
+      "slug": "how-to-write-self-review-bullets-that-get-you-the-raise",
+      "category": "workplace",
+      "title": "How to Write Self-Review Bullets That Get You the Raise",
+      "toolId": "BragSheetBuilder",
+      "toolName": "Brag Sheet Builder"
+    },
+    {
+      "slug": "is-accounting-going-to-be-replaced-by-ai",
+      "category": "workplace",
+      "title": "Is accounting going to be replaced by AI?",
+      "toolId": "FutureProof",
+      "toolName": "Future Proof"
+    },
+    {
+      "slug": "is-it-too-late-to-learn-coding",
+      "category": "workplace",
+      "title": "Is it too late to learn coding?",
+      "toolId": "FutureProof",
+      "toolName": "Future Proof"
+    },
+    {
+      "slug": "should-this-be-a-meeting-or-an-email",
+      "category": "workplace",
+      "title": "Should this be a meeting or an email?",
+      "toolId": "MeetingBSDetector",
+      "toolName": "Meeting BS Detector"
+    },
+    {
+      "slug": "signs-your-meeting-could-be-an-email",
+      "category": "workplace",
+      "title": "Signs your meeting could be an email",
+      "toolId": "MeetingBSDetector",
+      "toolName": "Meeting BS Detector"
+    },
+    {
+      "slug": "the-email-you-write-at-11pm-vs-the-email-you-should-send",
+      "category": "workplace",
+      "title": "The Email You Write at 11pm vs. The Email You Should Send in the Morning",
+      "toolId": "VelvetHammer",
+      "toolName": "Velvet Hammer"
+    },
+    {
+      "slug": "what-does-k-period-mean-in-a-text",
+      "category": "workplace",
+      "title": "What \"K.\" Actually Means in a Text (And Why the Period Changes Everything)",
+      "toolId": "DecoderRing",
+      "toolName": "Decoder Ring"
+    },
+    {
+      "slug": "what-does-kindly-mean-in-an-email",
+      "category": "workplace",
+      "title": "What \"Kindly\" Actually Means at the Start of an Email (And Why It Lands So Differently)",
+      "toolId": "DecoderRing",
+      "toolName": "Decoder Ring"
+    },
+    {
+      "slug": "what-does-lets-table-this-mean",
+      "category": "workplace",
+      "title": "What \"Let's Table This\" Actually Means in a Meeting (And When It's a No)",
+      "toolId": "DecoderRing",
+      "toolName": "Decoder Ring"
+    },
+    {
+      "slug": "what-does-lets-take-this-offline-mean",
+      "category": "workplace",
+      "title": "What \"Let's Take This Offline\" Actually Means in a Meeting (And When to Push Back)",
+      "toolId": "DecoderRing",
+      "toolName": "Decoder Ring"
+    },
+    {
+      "slug": "what-does-noted-mean-in-work-email",
+      "category": "workplace",
+      "title": "What \"Noted\" Actually Means in a Work Email (And What to Say Back)",
+      "toolId": "DecoderRing",
+      "toolName": "Decoder Ring"
+    },
+    {
+      "slug": "what-does-per-my-last-email-mean",
+      "category": "workplace",
+      "title": "What \"Per My Last Email\" Actually Means (And How to Respond Without Escalating)",
+      "toolId": "DecoderRing",
+      "toolName": "Decoder Ring"
+    },
+    {
+      "slug": "what-does-an-arbitration-clause-actually-mean-for-you",
+      "category": "workplace",
+      "title": "What does an arbitration clause actually mean for you?",
+      "toolId": "JargonAssassin",
+      "toolName": "Jargon Assassin"
+    },
+    {
+      "slug": "what-jobs-will-be-in-demand-in-5-years",
+      "category": "workplace",
+      "title": "What jobs will be in demand in 5 years?",
+      "toolId": "FutureProof",
+      "toolName": "Future Proof"
+    },
+    {
+      "slug": "what-makes-a-name-memorable",
+      "category": "workplace",
+      "title": "What Makes a Name Memorable (and What Just Sounds Memorable to You)",
+      "toolId": "NameStorm",
+      "toolName": "NameStorm"
+    },
+    {
+      "slug": "what-skills-are-actually-futureproof",
+      "category": "workplace",
+      "title": "What skills are actually future-proof?",
+      "toolId": "FutureProof",
+      "toolName": "Future Proof"
+    },
+    {
+      "slug": "what-skills-do-i-need-to-become-a-product-manager",
+      "category": "workplace",
+      "title": "What skills do I need to become a product manager?",
+      "toolId": "SkillGapMap",
+      "toolName": "Skill Gap Map"
+    },
+    {
+      "slug": "what-to-actually-pay-attention-to-in-a-benefits-packet",
+      "category": "workplace",
+      "title": "What to actually pay attention to in a benefits packet",
+      "toolId": "NoiseCanceler",
+      "toolName": "Noise Canceler"
+    },
+    {
+      "slug": "what-to-do-when-you-have-1000-unread-emails",
+      "category": "workplace",
+      "title": "What to do when you have 1000+ unread emails",
+      "toolId": "EmailUrgencyTriager",
+      "toolName": "Email Urgency Triager"
+    },
+    {
+      "slug": "what-to-look-for-in-an-nda-before-signing",
+      "category": "workplace",
+      "title": "What to look for in an NDA before signing",
+      "toolId": "JargonAssassin",
+      "toolName": "Jargon Assassin"
+    },
+    {
+      "slug": "what-to-say-in-a-performance-review-when-you-cant-remember",
+      "category": "workplace",
+      "title": "What to Say in a Performance Review When You Cannot Remember",
+      "toolId": "BragSheetBuilder",
+      "toolName": "Brag Sheet Builder"
+    }
+  ]
+}

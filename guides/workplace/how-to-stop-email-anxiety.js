@@ -1,63 +1,37 @@
-// ============================================================
-// guides/workplace/how-to-stop-email-anxiety.js
-// ============================================================
-
 module.exports = {
   slug:          'how-to-stop-email-anxiety',
   category:      'workplace',
   categoryLabel: 'Workplace',
-
-  title:         "How to Stop Email Anxiety",
-  titleHtml:     "How to <em>Stop Email Anxiety</em>",
-  shortTitle:    "How to Stop Email Anxiety",
-  navTitle:      "How to stop the dread that comes with opening your inbox",
-
-  description:   "The dread isn't really about the emails. It's about feeling permanently behind on something invisible. Here's how to put the inbox back in its place — a tool, not a verdict.",
-  deck:          "The dread isn't really about the emails. It's about feeling permanently behind on something invisible. Here's how to put the inbox back in its place — a tool, not a verdict.",
-
-  published:     '2026-04-28',
-  modified:      '2026-04-28',
-
+  title:         "How to stop email anxiety",
+  titleHtml:     "How to stop <em>email anxiety</em>",
+  shortTitle:    "Stop email anxiety",
+  navTitle:      "stop email anxiety",
+  description:   "A practical approach to the specific anxiety that follows you all day because of the unread emails you have not gotten to — and how to make it stop.",
+  deck:          "A practical approach to the specific anxiety that follows you all day because of the unread emails you have not gotten to — and how to make it stop.",
   ledes: [
-    `It's Sunday evening. You've had a good weekend. Then somewhere between dinner and bed, your stomach drops a little — because tomorrow morning you have to open the laptop, and you already know what's waiting. You haven't read any of it yet. You don't know what's in it. But the feeling is already there, two-thirds of a day before the actual emails.`,
-    `Email dread isn't really about the emails. It's about a quiet, persistent sense that you're behind on something you can't see and can't get a handle on. The good news: that feeling has more to do with how you relate to the inbox than how many messages are in it. Change the relationship, change the dread.`,
+    `It is not the email itself that is the problem. It is the awareness, all day, of unread emails you have not read. The little number on the icon. The pulled-thread feeling that someone is waiting for you. The 2 a.m. anxiety about an email you saw at 6 p.m. and did not respond to. The dread of opening the inbox because you know what you will find. Email anxiety is a real condition with real costs to mood and productivity, and most of the productivity advice does nothing for it because it focuses on processing volume rather than addressing the anxiety.\n\nThe anxiety has a few specific roots, and addressing the roots is more effective than trying to muscle through it.`,
+    `Here is how to actually reduce email anxiety, not just process email faster.`,
   ],
-
   steps: [
-    {
-      name: "Tell real obligation from fear of silence",
-      body: "Most of what people call email anxiety is a low-grade fear of social consequence — the worry that if you don't respond fast enough, someone will be annoyed, judge you, escalate above you, or quietly write you off. Notice when that's the engine, not the actual urgency of the message. The fear is real. The threat usually isn't.",
-    },
-    {
-      name: "Set a check window, not a checking habit",
-      body: "Refreshing the inbox every twelve minutes feels like vigilance. It functions as low-level dread amplification. Pick two windows — say 10am and 3pm — and make those the only times you read email. The first day will feel like withdrawal. By day three, you'll notice you stopped flinching every time you sit down at your desk. Vigilance is not the same as control.",
-    },
-    {
-      name: "Stop reading email at night",
-      body: "The 10pm read is the 11pm drafted reply is the midnight regret. Late-night email reading combines the two worst things: low judgment and high emotional reactivity. Whatever you read at 10pm, you will replay until you fall asleep. Whatever you read at 8am, you will deal with and move on. Move the reading. The dread follows the timing.",
-    },
-    {
-      name: "Reply briefly when you do reply",
-      body: "Long replies are anxiety in keystrokes. The longer you spend drafting an email, the more you signal to yourself that this email is high-stakes — when usually the message you're replying to was tossed off in twenty seconds. Match the energy. A short, direct reply lowers your own emotional investment in the thread; a five-paragraph defense raises it. The reader doesn't want the five paragraphs anyway.",
-    },
-    {
-      name: "Notice that nothing usually breaks",
-      body: "Try this: ignore an email you'd normally have replied to within an hour. Wait three days. Watch what happens. Almost always: nothing — the sender follows up if it mattered, and if it didn't, the thread quietly dies. The inbox has trained you to expect catastrophe from silence, but the catastrophe almost never arrives. Once you've watched a few non-catastrophes happen, the dread loses most of its grip.",
-    },
+    { name: 'Turn off all email notifications', body: 'The single biggest source of low-grade email anxiety is the constant stream of notifications. Each ping triggers a small stress response. Across a day, this adds up to a chronic state of activation. Turn off email notifications on your phone and on your computer. Open email when you choose to, on your schedule, not when it pings. This change alone often reduces anxiety substantially within a few days. The cost — sometimes seeing an urgent email an hour later — is much smaller than the cost of being on alert all day.' },
+    { name: 'Set fixed email windows and protect them', body: 'Decide when in your day you will check email — say, three windows of thirty minutes. During those windows, process. Outside of them, do not look. The anxiety lives in the gap between checking — the wondering if something has come in. Closing that gap by structuring it makes the anxiety subside. The first few days are hard because the habit of checking is reflexive. After a week, the anxiety reduces noticeably.' },
+    { name: 'Remind yourself that almost nothing is actually urgent', body: 'When you feel anxious about unread email, ask: what is the worst thing that could be in there, and how bad would it actually be if I read it tomorrow instead of right now? In almost all cases, the answer is \'nothing terrible.\' True emergencies do not come through email. Real urgent matters come through phone calls or texts. Email anxiety is mostly anxiety about feeling behind, not about actual catastrophe. Naming this gently to yourself helps.' },
+    { name: 'Lower the stakes of being late', body: 'Some email anxiety comes from the assumption that responses must be fast. They do not. Most professional contexts accept a 24-48 hour reply window without complaint. If your context expects faster, examine whether that expectation is reasonable — sometimes it is, but often it has been internalized without anyone actually demanding it. Ask explicitly: what is your normal expected response time? Many bosses say \'a day or two is fine,\' which is much longer than most people assume.' },
+    { name: 'If anxiety persists, look at the underlying issue', body: 'Sometimes email anxiety is not really about email — it is about a job that is overwhelming, a boss whose expectations are unreasonable, or a workload that exceeds what is humanly possible. If you have implemented the structural fixes and the anxiety remains, the email is the symptom, not the cause. The conversation to have is about workload and expectations, not about your inbox. Email anxiety that has structural roots will not go away with better email practices alone.' }
   ],
-
   cta: {
     glyph:    '📬',
-    headline: "Get permission to ignore most of your inbox",
-    body:     "Email Urgency Triager analyzes what's actually in your inbox and tells you, with reasoning, exactly which messages can be safely left alone — including a 'Permission to Breathe' read-out for the ones the dread is overrating.",
+    headline: "What actually needs a reply today.",
+    body:     "Email Urgency Triager separates real urgency from perceived urgency. Paste any batch of emails — it sorts them into Reply Now, Reply This Week, and Optional/Never, with reasoning for each. Quick-response templates included for the urgent ones. Permission-to-breathe section for the anxiety.",
     features: [
-      "Permission to ignore",
-      "Anxiety-relief read-out",
-      "Three-tier prioritization",
-      "Per-email reasoning",
-      "Quick reply templates",
+      "Three-tier sort: Reply Now, Reply This Week, Optional/Never",
+      "Detailed reasoning per email — not just labels",
+      "Quick-response templates for the urgent items",
+      "Permission-to-breathe section for inbox anxiety"
     ],
     toolId:   'EmailUrgencyTriager',
     toolName: 'Email Urgency Triager',
   },
+  published: '2026-04-29',
+  modified:  '2026-04-29',
 };
