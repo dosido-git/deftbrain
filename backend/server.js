@@ -265,7 +265,16 @@ if (IS_PRODUCTION) {
       if (fs.existsSync(prerendered)) return res.sendFile(prerendered);
     }
 
-    res.sendFile(path.join(__dirname, '..', 'build', 'index.html'));
+    // Homepage: serve React app with 200 OK
+    if (req.path === '/') {
+      return res.sendFile(path.join(__dirname, '..', 'build', 'index.html'));
+    }
+
+    // Anything else falling through here was not matched by static files,
+    // explicit guide routes, retired-tool slugs, or known tool IDs — serve
+    // the React app with HTTP 404 status. React Router's catch-all renders
+    // <NotFound />. The 404 status prevents soft-404s in Google Search Console.
+    res.status(404).sendFile(path.join(__dirname, '..', 'build', 'index.html'));
   });
 }
 

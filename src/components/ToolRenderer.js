@@ -33,8 +33,8 @@ const ToolRenderer = ({ college }) => {
         <div className="text-center space-y-6 bg-white p-12 rounded-[3rem] shadow-xl border border-slate-100 max-w-sm w-full">
           <h1 className="text-6xl font-black text-slate-900 italic tracking-tighter">404</h1>
           <div>
-            <p className="text-blue-600 font-mono text-xs tracking-[.4em] uppercase font-bold">Unauthorized Asset Path</p>
-            <p className="text-slate-400 text-sm mt-2">The requested tool could not be located in the database.</p>
+            <p className="text-blue-600 font-mono text-xs tracking-[.4em] uppercase font-bold">Tool Not Found</p>
+            <p className="text-slate-400 text-sm mt-2">This tool may have been renamed or retired. The dashboard has the current list.</p>
           </div>
           
           <button 

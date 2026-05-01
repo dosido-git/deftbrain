@@ -8,6 +8,7 @@ import { PremiumProvider } from './hooks/usePremium';
 import ToolRenderer from './components/ToolRenderer';
 import DashBoard from './components/DashBoard';
 import Footer from './components/Footer';
+import NotFound from './components/NotFound';
 
 export default function App() {
   const [college] = useState("");
@@ -33,6 +34,7 @@ export default function App() {
                   />
                 } />
                 <Route path="/:toolId" element={<ToolRenderer college={college} />} />
+                <Route path="*" element={<NotFound />} />
               </Routes>
             </div>
             <Footer />
