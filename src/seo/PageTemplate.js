@@ -4,6 +4,8 @@
 // Pure function: takes a content record, returns a complete HTML string.
 // No React, no dependencies — runs at build time via generatePages.js.
 
+const { getFooterHTML } = require('./chrome');
+
 const esc = s => String(s ?? '')
   .replace(/&/g, '&amp;')
   .replace(/</g, '&lt;')
@@ -470,8 +472,8 @@ function PageTemplate(record) {
 <body>
 
   <header class="masthead">
-    <a <a href="/" class="masthead-logo">Deft<span>Brain</span></a>
-    <a <a href="/" class="masthead-cta">All tools →</a>
+    <a href="/" class="masthead-logo">Deft<span>Brain</span></a>
+    <a href="/" class="masthead-cta">All tools →</a>
   </header>
 
   <main>
@@ -513,17 +515,8 @@ ${featuresHtml}
     </div>
   </main>
 
-  <footer>
-    <a <a href="/" class="footer-brand" aria-label="DeftBrain — home">
-      <img src="/pBrain-r.png" alt="" class="footer-brand-img" height="64" style="width:auto;height:64px;object-fit:contain;">
-      <span class="footer-brand-text">Deft<span>Brain</span></span>
-    </a>
-    <nav class="footer-nav" style="display:flex;gap:1rem;font-family:'DM Sans',system-ui,sans-serif;font-size:0.92rem;">
-      <a href="/guides" style="color:#2c4a6e;text-decoration:none;">Guides</a>
-    </nav>
-    <span class="footer-copy">© ${new Date().getFullYear()} DeftBrain · deftbrain.com</span>
-  </footer>
-  
+${getFooterHTML()}
+
 </body>
 </html>`;
 }

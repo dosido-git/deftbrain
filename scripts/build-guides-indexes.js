@@ -22,6 +22,7 @@
 
 const fs   = require('fs');
 const path = require('path');
+const { getFooterHTML } = require('../src/seo/chrome');
 
 const ROOT       = path.join(__dirname, '..');
 const SPECS_DIR  = path.join(ROOT, 'guides');
@@ -413,16 +414,7 @@ function renderHead({ title, description, canonicalPath, extraStyle = '' }) {
 
 function renderFooter() {
   return `
-  <footer>
-    <a href="/" class="footer-brand" aria-label="DeftBrain — home">
-      <img src="/pBrain-r.png" alt="" class="footer-brand-img" height="64" style="width:auto;height:64px;object-fit:contain;">
-      <span class="footer-brand-text">Deft<span>Brain</span></span>
-    </a>
-    <nav class="footer-nav" style="display:flex;gap:1rem;font-family:'DM Sans',system-ui,sans-serif;font-size:0.92rem;">
-      <a href="/guides" style="color:#2c4a6e;text-decoration:none;">Guides</a>
-    </nav>
-    <span class="footer-copy">© ${new Date().getFullYear()} DeftBrain · deftbrain.com</span>
-  </footer>
+${getFooterHTML()}
 
 </body>
 </html>`;
