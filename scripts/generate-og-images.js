@@ -39,6 +39,7 @@ const ROOT          = path.join(__dirname, '..');
 const GUIDES_SRC    = path.join(ROOT, 'public', 'guides');
 const OG_OUT_DIR    = path.join(ROOT, 'public', 'og', 'guides');
 const FONTS_DIR     = path.join(__dirname, 'fonts');
+const BRAIN_PATH    = path.join(ROOT, 'public', 'pBrain-r.png');
 
 const FORCE = process.argv.includes('--force');
 
@@ -89,7 +90,7 @@ function titleFontSize(title) {
   return 44;
 }
 
-function buildTemplate({ title, category }) {
+function buildTemplate({ title, category, brainDataUri }) {
   // Satori uses a subset of flexbox CSS. No `display: block`;
   // everything must be flex or absolute. Colors/tokens match guide.css.
   return {
@@ -106,7 +107,7 @@ function buildTemplate({ title, category }) {
         position: 'relative',
       },
       children: [
-        // ── Masthead: DeftBrain wordmark + right-side URL ──
+        // ── Masthead: brain + wordmark left, URL right ──
         {
           type: 'div',
           props: {
@@ -122,10 +123,19 @@ function buildTemplate({ title, category }) {
               {
                 type: 'div',
                 props: {
-                  style: { display: 'flex' },
+                  style: { display: 'flex', alignItems: 'center', gap: '14px' },
                   children: [
-                    { type: 'span', props: { children: 'Deft' } },
-                    { type: 'span', props: { style: { color: '#c94f2c' }, children: 'Brain' } },
+                    { type: 'img', props: { src: brainDataUri, width: 64, height: 64 } },
+                    {
+                      type: 'div',
+                      props: {
+                        style: { display: 'flex' },
+                        children: [
+                          { type: 'span', props: { children: 'Deft' } },
+                          { type: 'span', props: { style: { color: '#c94f2c' }, children: 'Brain' } },
+                        ],
+                      },
+                    },
                   ],
                 },
               },
@@ -250,6 +260,15 @@ async function main() {
     { name: 'DM Sans',           data: loadFont('DMSans-Medium.ttf'),        weight: 500, style: 'normal' },
   ];
 
+  if (!fs.existsSync(BRAIN_PATH)) {
+    console.error(`✗ Missing brain image: ${BRAIN_PATH}`);
+    console.error('  Expected at public/pBrain-r.png (same path used by Footer.js).');
+    process.exit(2);
+  }
+  const brainBuf = fs.readFileSync(BRAIN_PATH);
+  const brainMime = brainBuf[0] === 0xFF && brainBuf[1] === 0xD8 ? 'image/jpeg' : 'image/png';
+  const brainDataUri = `data:${brainMime};base64,${brainBuf.toString('base64')}`;
+
   fs.mkdirSync(OG_OUT_DIR, { recursive: true });
 
   const guides = walk(GUIDES_SRC);
@@ -285,7 +304,7 @@ async function main() {
         continue;
       }
 
-      const tree = buildTemplate({ title, category });
+      const tree = buildTemplate({ title, category, brainDataUri });
       const svg = await satori(tree, { width: 1200, height: 630, fonts });
       const png = new Resvg(svg, { fitTo: { mode: 'width', value: 1200 } }).render().asPng();
 
