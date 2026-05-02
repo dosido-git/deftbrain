@@ -38,11 +38,22 @@ from PIL import Image, ImageDraw, ImageFont
 
 # ── Configuration ────────────────────────────────────────────────────────────
 
+# Find project root by walking up — same approach as scripts/prerender.js.
+# Lets the script work whether it lives in scripts/ or at project root.
+def _find_project_root(start):
+    p = Path(start).resolve()
+    while p.parent != p:
+        if (p / 'package.json').exists() and (p / 'src').exists():
+            return p
+        p = p.parent
+    raise FileNotFoundError(f'Could not find project root above {start}')
+
 _HERE          = Path(__file__).parent.resolve()
-TOOLS_JS_PATH  = str(_HERE / 'src/data/tools.js')
-SLUG_MAP_PATH  = str(_HERE / 'src/data/tool-og-slugs.json')
-LOGO_PATH      = str(_HERE / 'src/assets/pBrain-l.png')
-OUTPUT_DIR     = str(_HERE / 'public/og')
+_ROOT          = _find_project_root(_HERE)
+TOOLS_JS_PATH  = str(_ROOT / 'src/data/tools.js')
+SLUG_MAP_PATH  = str(_ROOT / 'src/data/tool-og-slugs.json')
+LOGO_PATH      = str(_ROOT / 'src/assets/pBrain-l.png')
+OUTPUT_DIR     = str(_ROOT / 'public/og')
 
 BASE_URL       = 'https://deftbrain.com'
 
@@ -148,9 +159,9 @@ def wrap_text(draw, text, font, max_w):
 
 # ── Card renderers ────────────────────────────────────────────────────────────
 
-EMOJI_CACHE_DIR  = str(_HERE / 'og-emoji-cache')
-TWEMOJI_LOCAL    = str(_HERE / 'public/twemoji/svg')   # SVGs bundled with the app
-TWEMOJI_LOCAL_72 = str(_HERE / 'public/twemoji/72x72') # PNGs if present
+EMOJI_CACHE_DIR  = str(_ROOT / 'og-emoji-cache')
+TWEMOJI_LOCAL    = str(_ROOT / 'public/twemoji/svg')   # SVGs bundled with the app
+TWEMOJI_LOCAL_72 = str(_ROOT / 'public/twemoji/72x72') # PNGs if present
 
 
 def emoji_to_twemoji_filename(emoji):
@@ -267,7 +278,7 @@ def make_default_card(out_path, logo_img, logo_w):
     draw   = ImageDraw.Draw(canvas)
 
     # Top-left brain — right-facing salmon brain image (pBrain-r.png), NOT an emoji
-    top_brain_path = str(_HERE / 'src/assets/pBrain-r.png')
+    top_brain_path = str(_ROOT / 'src/assets/pBrain-r.png')
     try:
         top_brain = Image.open(top_brain_path).convert('RGBA')
         tb_h = 90
