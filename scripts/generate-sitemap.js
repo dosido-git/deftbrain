@@ -28,6 +28,14 @@ while ((match = idRegex.exec(toolsContent)) !== null) {
 
 console.log(`Found ${toolIds.length} tools for sitemap`);
 
+// ── Static pages (not tools, not guides — top-level standalone HTML) ──
+// Extensible: append new entries as they ship (terms, contact, about, etc.)
+const STATIC_PAGES = [
+  { loc: `${SITE_URL}/privacy`, changefreq: 'monthly', priority: '0.3' },
+  // Future: { loc: `${SITE_URL}/terms`,   changefreq: 'monthly', priority: '0.3' },
+  // Future: { loc: `${SITE_URL}/contact`, changefreq: 'monthly', priority: '0.3' },
+];
+
 // ── Generate sitemap.xml ──
 const urls = [
   // Homepage — highest priority
@@ -36,6 +44,8 @@ const urls = [
     changefreq: 'weekly',
     priority: '1.0',
   },
+  // Static pages
+  ...STATIC_PAGES,
   // Tool pages
   ...toolIds.map(id => ({
     loc: `${SITE_URL}/${id}`,
@@ -64,7 +74,7 @@ ${urls.map(u => `  <url>
 const outputPath = path.join(__dirname, '..', 'public', 'sitemap-app.xml');
 fs.writeFileSync(outputPath, sitemap);
 console.log(`Sitemap written to ${outputPath}`);
-console.log(`Total URLs: ${urls.length} (1 homepage + ${toolIds.length} tools)`);
+console.log(`Total URLs: ${urls.length} (1 homepage + ${STATIC_PAGES.length} static + ${toolIds.length} tools)`);
 
 // ── Also generate robots.txt if it doesn't exist ──
 const robotsPath = path.join(__dirname, '..', 'public', 'robots.txt');
