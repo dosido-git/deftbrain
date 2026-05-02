@@ -27,22 +27,19 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start":        "cd backend && node server.js",
-
-    "dev":          "nodemon backend/server.js",
+    "start": "cd backend && node server.js",
+    "dev": "nodemon backend/server.js",
     "dev:frontend": "react-scripts start",
-    "dev:backend":  "cd backend && nodemon server.js",
-
-    "test":  "react-scripts test",
+    "dev:backend": "cd backend && nodemon server.js",
+    "test": "react-scripts test",
     "eject": "react-scripts eject",
-
-"build:guides":          "node scripts/build-guides.js",
-"build:og":              "node scripts/generate-og-images.js",
-"build:sitemap:tools":   "node scripts/generate-sitemap.js || true",
-
-"prebuild":  "npm run build:guides && npm run build:og && npm run build:sitemap:tools",    "build":     "react-scripts build",
-"postbuild": "node scripts/prerender.js && node scripts/build-guides-indexes.js && node scripts/generate-guides-sitemap.js && node scripts/generate-sitemap-index.js"  
-},
+    "build:guides": "node scripts/build-guides.js",
+    "build:og": "node scripts/generate-og-images.js",
+    "build:sitemap:tools": "node scripts/generate-sitemap.js || true",
+    "prebuild": "npm run build:guides && npm run build:og && npm run build:sitemap:tools",
+    "build": "react-scripts build",
+    "postbuild": "node scripts/prerender.js && node scripts/build-guides-indexes.js && node scripts/generate-guides-sitemap.js && node scripts/generate-sitemap-index.js"
+  },
   "eslintConfig": {
     "extends": [
       "react-app",
@@ -65,6 +62,7 @@
   "devDependencies": {
     "@resvg/resvg-js": "^2.6.2",
     "concurrently": "^8.2.2",
+    "marked": "^18.0.3",
     "nodemon": "^3.1.14",
     "satori": "^0.26.0"
   }

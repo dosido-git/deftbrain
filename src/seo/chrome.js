@@ -25,6 +25,7 @@ function getFooterHTML() {
     </a>
     <nav class="footer-nav" style="display:flex;gap:1rem;font-family:'DM Sans',system-ui,sans-serif;font-size:0.92rem;">
       <a href="/guides" style="color:#2c4a6e;text-decoration:none;">Guides</a>
+      <a href="/privacy" style="color:#2c4a6e;text-decoration:none;">Privacy</a>
     </nav>
     <span class="footer-copy">© ${year} DeftBrain · deftbrain.com</span>
   </footer>`;
