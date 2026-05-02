@@ -115,8 +115,6 @@ Return ONLY valid JSON:
 
 Return ONLY valid JSON.`;
 
-    console.log(`[NerveCheck] Situation: ${(situation || '').slice(0, 60)}...`);
-
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 2000,
@@ -169,8 +167,6 @@ Return ONLY valid JSON:
 
 Return ONLY valid JSON.`;
 
-    console.log(`[NerveCheck/live] Panic: ${panicLevel || '?'}, Minutes: ${minutesUntil || '?'}`);
-
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 800,
@@ -221,8 +217,6 @@ Return ONLY valid JSON:
 }
 
 Return ONLY valid JSON.`;
-
-    console.log(`[NerveCheck/debrief] ${(howItWent || '').slice(0, 50)}...`);
 
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
@@ -307,8 +301,6 @@ Return ONLY valid JSON:
 }
 
 Return ONLY valid JSON.`;
-
-    console.log(`[NerveCheck/specific-prep] Type: ${situationType}, ${(situation || '').slice(0, 40)}...`);
 
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
@@ -409,8 +401,6 @@ Return ONLY valid JSON:
 
 Return ONLY valid JSON.`;
 
-    console.log(`[NerveCheck/coach] Helping: ${whoIsNervous || '?'} with: ${(theirSituation || '').slice(0, 40)}...`);
-
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 1200,
@@ -463,8 +453,6 @@ Return ONLY valid JSON:
 Generate exactly 6 rungs. Rung 1 should be almost trivially easy. Rung 6 should be the actual big fear or very close to it.
 
 Return ONLY valid JSON.`;
-
-    console.log(`[NerveCheck/fear-ladder] Fear: ${(bigFear || '').slice(0, 40)}...`);
 
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',

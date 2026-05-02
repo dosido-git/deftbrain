@@ -62,7 +62,6 @@ Return ONLY valid JSON:
     const text = message.content.find(b => b.type === 'text')?.text || '';
     const cleaned = cleanJsonResponse(text);
     const parsed = JSON.parse(cleaned);
-    console.log(`[JargonAssassin] ${documentType} | ${readingLevel || '5th'} | ${parsed.glossary?.length || 0} terms | danger: ${parsed.danger_score?.level || '?'}`);
     res.json(parsed);
   } catch (error) {
     console.error('[JargonAssassin]', error);
@@ -269,7 +268,6 @@ Return ONLY valid JSON:
     const text = message.content.find(b => b.type === 'text')?.text || '';
     const cleaned = cleanJsonResponse(text);
     const parsed = JSON.parse(cleaned);
-    console.log(`[JargonAssassinExplainTo] audience: ${audience?.substring(0, 30)}`);
     res.json(parsed);
   } catch (error) {
     console.error('[JargonAssassinExplainTo]', error);
@@ -324,7 +322,6 @@ Return ONLY valid JSON:
     const text = message.content.find(b => b.type === 'text')?.text || '';
     const cleaned = cleanJsonResponse(text);
     const parsed = JSON.parse(cleaned);
-    console.log(`[JargonAssassinRedline] ${parsed.redlines?.length || 0} redlines | fairness: ${parsed.fairness_score?.score || '?'}/10`);
     res.json(parsed);
   } catch (error) {
     console.error('[JargonAssassinRedline]', error);
@@ -377,7 +374,6 @@ Return ONLY valid JSON:
     const text = message.content.find(b => b.type === 'text')?.text || '';
     const cleaned = cleanJsonResponse(text);
     const parsed = JSON.parse(cleaned);
-    console.log(`[JargonAssassinTemplate] ${documentType} | score: ${parsed.normal_score?.score || '?'}/10 | ${parsed.comparisons?.length || 0} comparisons`);
     res.json(parsed);
   } catch (error) {
     console.error('[JargonAssassinTemplate]', error);
@@ -431,7 +427,6 @@ Return ONLY valid JSON:
     const text = message.content.find(b => b.type === 'text')?.text || '';
     const cleaned = cleanJsonResponse(text);
     const parsed = JSON.parse(cleaned);
-    console.log(`[JargonAssassinActionPlan] ${parsed.steps?.length || 0} steps | deadline: ${parsed.timeline || '?'}`);
     res.json(parsed);
   } catch (error) {
     console.error('[JargonAssassinActionPlan]', error);
@@ -474,7 +469,6 @@ Return ONLY valid JSON:
     const text = message.content.find(b => b.type === 'text')?.text || '';
     const cleaned = cleanJsonResponse(text);
     const parsed = JSON.parse(cleaned);
-    console.log(`[JargonAssassinDossier] ${documents.length} docs | conflicts: ${parsed.conflicts?.length || 0} | gaps: ${parsed.gaps?.length || 0}`);
     res.json(parsed);
   } catch (error) {
     console.error('[JargonAssassinDossier]', error);
@@ -522,7 +516,6 @@ Return ONLY valid JSON:
     const text = message.content.find(b => b.type === 'text')?.text || '';
     const cleaned = cleanJsonResponse(text);
     const parsed = JSON.parse(cleaned);
-    console.log(`[JargonAssassinLetter] intent: ${intent?.substring(0, 30)} | via: ${parsed.send_via || '?'}`);
     res.json(parsed);
   } catch (error) {
     console.error('[JargonAssassinLetter]', error);

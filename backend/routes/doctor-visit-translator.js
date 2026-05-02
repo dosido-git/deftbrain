@@ -265,7 +265,6 @@ Return ONLY the JSON object.`;
   }
 });
 
-
 // ── Diagram generator ─────────────────────────────────────────────────────────
 router.post('/generate-diagram', async (req, res) => {
   try {

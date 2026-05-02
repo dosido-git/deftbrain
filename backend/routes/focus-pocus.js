@@ -18,8 +18,6 @@ router.post('/focus-pocus', async (req, res) => {
     const planned = plannedMinutes || 25;
     const actual = actualMinutes || planned;
 
-    console.log(`[FocusPocus] Activity: "${activity}", planned: ${planned}min, actual: ${actual}min, overtime: ${overtime}min, snoozes: ${snoozes}`);
-
     const prompt = withLanguage(`You are a firm but caring focus coach helping someone transition out of a deep work session. Your tone should match the urgency level — gentle if they stopped on time, increasingly direct if they've been going way past their session.
 
 SESSION DATA:
@@ -91,12 +89,10 @@ CRITICAL: Be specific to their activity. Do NOT give generic advice. Reference w
     });
 
     const textContent = message.content.find(item => item.type === 'text')?.text || '';
-    console.log(`[FocusPocus] Response: ${textContent.length} chars`);
 
     const cleaned = cleanJsonResponse(textContent);
     const parsed = JSON.parse(cleaned);
 
-    console.log(`[FocusPocus] Generated: headline=${!!parsed.headline}, actions=${parsed.mandatory_actions?.length || 0}`);
     res.json(parsed);
 
   } catch (error) {
@@ -135,8 +131,6 @@ router.post('/focus-pocus/patterns', async (req, res) => {
     const streakInfo = multiDayStreak
       ? `Current streak: ${multiDayStreak.currentStreak} days, Longest: ${multiDayStreak.longestStreak} days, Total minutes: ${multiDayStreak.totalMinutes}`
       : 'No streak data available';
-
-    console.log(`[FocusPocus/patterns] Analyzing ${sessionSummaries.length} sessions`);
 
     const prompt = withLanguage(`You are an expert focus and productivity analyst. Analyze this person's focus session history and provide deep behavioral insights. Be specific, data-driven, and genuinely useful — not generic self-help fluff.
 
@@ -189,12 +183,10 @@ RULES:
     });
 
     const textContent = message.content.find(item => item.type === 'text')?.text || '';
-    console.log(`[FocusPocus/patterns] Response: ${textContent.length} chars`);
 
     const cleaned = cleanJsonResponse(textContent);
     const parsed = JSON.parse(cleaned);
 
-    console.log(`[FocusPocus/patterns] Generated profile: ${parsed.focus_profile?.title || 'unknown'}`);
     res.json(parsed);
 
   } catch (error) {
@@ -218,8 +210,6 @@ router.post('/focus-pocus/break-coach', async (req, res) => {
 
     const note = sessionNote || '';
     const elapsed = elapsedMin || 25;
-
-    console.log(`[FocusPocus/break-coach] Activity: "${activity}", elapsed: ${elapsed}min, note: ${note.length > 0 ? 'yes' : 'no'}`);
 
     const prompt = withLanguage(`You are a mindful break coach — part sports psychologist, part meditation teacher. Someone just finished a focus session and needs help transitioning into a restorative break. Your goal: help them actually recover, not just pause.
 
@@ -252,12 +242,10 @@ CRITICAL: Be specific to their activity and session. Generic advice is useless. 
     });
 
     const textContent = message.content.find(item => item.type === 'text')?.text || '';
-    console.log(`[FocusPocus/break-coach] Response: ${textContent.length} chars`);
 
     const cleaned = cleanJsonResponse(textContent);
     const parsed = JSON.parse(cleaned);
 
-    console.log(`[FocusPocus/break-coach] Generated: ack=${!!parsed.acknowledgment}`);
     res.json(parsed);
 
   } catch (error) {

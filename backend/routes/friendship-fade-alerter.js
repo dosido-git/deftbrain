@@ -96,8 +96,6 @@ Return ONLY valid JSON:
 
 Return ONLY valid JSON.`;
 
-    console.log(`[FriendshipFade] Generating for ${name} (${daysSinceContact}d, ${relationshipType})`);
-
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 1200,
@@ -157,8 +155,6 @@ Return ONLY valid JSON:
 
 Return ONLY valid JSON.`;
 
-    console.log(`[FriendshipFade/batch] ${people.length} people`);
-
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 1500,
@@ -207,8 +203,6 @@ Return ONLY valid JSON:
 }
 
 Return ONLY valid JSON.`;
-
-    console.log(`[FriendshipFade/followup] ${name}, ${daysSinceOutreach}d since outreach`);
 
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
@@ -269,8 +263,6 @@ Return ONLY valid JSON:
 }
 
 Return ONLY valid JSON.`;
-
-    console.log(`[FriendshipFade/digest] ${stats.total} people, ${stats.contactedThisWeek} contacted`);
 
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
@@ -528,8 +520,6 @@ Return ONLY valid JSON:
 }
 
 Return ONLY valid JSON.`;
-
-    console.log(`[FriendshipFade/freq-suggest] ${name}, current: ${currentFrequency}, avg: ${avgInterval}d`);
 
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',

@@ -18,8 +18,6 @@ router.post('/plaintalk', async (req, res) => {
     const typeHint = textType && textType !== 'auto' ? `\nDOCUMENT TYPE (user-specified): ${textType}` : '';
     const focusHint = focusQuestion ? `\nUSER'S SPECIFIC QUESTION: "${focusQuestion}"` : '';
 
-    console.log(`[PlainTalk] Analyzing ${trimmed.length} chars, type: ${textType || 'auto'}`);
-
     const prompt = withLanguage(`You are PlainTalk, a universal text comprehension expert. Your job: take complex text and make it completely understandable.
 
 ANALYZE THIS TEXT:
@@ -109,12 +107,10 @@ CRITICAL RULES:
     });
 
     const textContent = message.content.find(item => item.type === 'text')?.text || '';
-    console.log(`[PlainTalk] Response: ${textContent.length} chars`);
 
     const cleaned = cleanJsonResponse(textContent);
     const parsed = JSON.parse(cleaned);
 
-    console.log(`[PlainTalk] Type: ${parsed.detected_type}, ${parsed.sections?.length || 0} sections`);
     res.json(parsed);
 
   } catch (error) {
@@ -141,8 +137,6 @@ router.post('/plaintalk/followup', async (req, res) => {
       overview: previousAnalysis.overview,
       sections: (previousAnalysis.sections || []).map(s => ({ title: s.title, purpose: s.purpose })),
     }) : '';
-
-    console.log(`[PlainTalk/followup] Question: "${question.slice(0, 80)}..."`);
 
     const prompt = withLanguage(`You previously analyzed a document for a user using PlainTalk. Now they have a follow-up question.
 
@@ -178,7 +172,6 @@ Return ONLY valid JSON:
     const cleaned = cleanJsonResponse(textContent);
     const parsed = JSON.parse(cleaned);
 
-    console.log(`[PlainTalk/followup] Answer: ${parsed.answer?.length || 0} chars`);
     res.json(parsed);
 
   } catch (error) {
@@ -202,8 +195,6 @@ router.post('/plaintalk/compare', async (req, res) => {
     const trimA = textA.trim().slice(0, 10000);
     const trimB = textB.trim().slice(0, 10000);
     const typeHint = textType && textType !== 'auto' ? `\nDOCUMENT TYPE: ${textType}` : '';
-
-    console.log(`[PlainTalk/compare] A: ${trimA.length} chars, B: ${trimB.length} chars`);
 
     const prompt = withLanguage(`You are PlainTalk, a document comparison expert. Compare two versions of a document and identify every meaningful change.
 
@@ -261,12 +252,10 @@ CRITICAL:
     });
 
     const textContent = message.content.find(item => item.type === 'text')?.text || '';
-    console.log(`[PlainTalk/compare] Response: ${textContent.length} chars`);
 
     const cleaned = cleanJsonResponse(textContent);
     const parsed = JSON.parse(cleaned);
 
-    console.log(`[PlainTalk/compare] Found ${parsed.changes?.length || 0} changes`);
     res.json(parsed);
 
   } catch (error) {

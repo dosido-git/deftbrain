@@ -130,8 +130,6 @@ Return ONLY valid JSON:
 
 CRITICAL: Return ONLY valid JSON. No markdown, no preamble.`, userLanguage);
 
-    console.log(`[RechargeRadar] Battery: ${currentBattery}% | Style: ${socialStyle} | Input length: ${description.length}`);
-
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 3000,
@@ -199,8 +197,6 @@ Return ONLY valid JSON:
 
 Order triage array from easiest-to-skip first to hardest-to-skip last.
 CRITICAL: Return ONLY valid JSON.`, userLanguage);
-
-    console.log(`[RechargeRadar/triage] ${parsedEvents.length} events`);
 
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
@@ -275,8 +271,6 @@ Return ONLY valid JSON:
 }
 
 CRITICAL: Return ONLY valid JSON.`, userLanguage);
-
-    console.log(`[RechargeRadar/add-event] New: "${newEventDescription.slice(0, 50)}"`);
 
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
@@ -360,8 +354,6 @@ Return ONLY valid JSON:
 
 CRITICAL: Return ONLY valid JSON.`, userLanguage);
 
-    console.log(`[RechargeRadar/reflect] ${events.length} events reflected on`);
-
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 2000,
@@ -427,8 +419,6 @@ Return ONLY valid JSON:
 }
 
 CRITICAL: Return ONLY valid JSON.`, userLanguage);
-
-    console.log(`[RechargeRadar/decline] Event: "${eventName}"`);
 
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',

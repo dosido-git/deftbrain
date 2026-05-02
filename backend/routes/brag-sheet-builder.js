@@ -162,8 +162,6 @@ ${outputSpec}
 
 Generate one transformation per accomplishment. Generate 2-4 metrics questions (include accomplishment_index to track which accomplishment each question is about, 0-indexed). ${wantInterview ? 'Generate 1-2 STAR stories from the strongest accomplishments.' : ''} ${wantResume ? 'Generate resume bullets for ALL accomplishments.' : ''} ${wantRaise ? 'Generate value statements for ALL accomplishments.' : ''}`, userLanguage);
 
-    console.log(`[BragSheetBuilder] Accomplishments: ${accomplishments.length}, Industry: ${industry}, Level: ${level}, Tone: ${tone || 'balanced'}, Purposes: ${purposes?.join(',')}`);
-
     const parsed = await callClaudeWithRetry(userPrompt, {
       model: 'claude-sonnet-4-20250514',
 
@@ -172,7 +170,6 @@ Generate one transformation per accomplishment. Generate 2-4 metrics questions (
       system: withLanguage(systemPrompt, userLanguage),
     });
 
-    console.log(`[BragSheetBuilder] Transformations: ${parsed.transformations?.length}, Metrics Qs: ${parsed.metrics_to_find?.length}`);
     res.json(parsed);
 
   } catch (error) {
@@ -264,8 +261,6 @@ Return ONLY valid JSON:
   ]
 }`, userLanguage);
 
-    console.log(`[BragSheetRefine] Answers: ${metricsAnswers.length}, Transformations: ${originalTransformations.length}`);
-
     const parsed = await callClaudeWithRetry(prompt, {
       model: 'claude-sonnet-4-20250514',
 
@@ -274,7 +269,6 @@ Return ONLY valid JSON:
       system: withLanguage('You are an expert career coach upgrading accomplishment statements with real metrics. Return ONLY valid JSON. No markdown, no preamble.', userLanguage),
     });
 
-    console.log(`[BragSheetRefine] Upgraded: ${parsed.upgraded_transformations?.length}, Remaining Qs: ${parsed.remaining_questions?.length}`);
     res.json(parsed);
 
   } catch (error) {
@@ -339,7 +333,6 @@ Return ONLY valid JSON:
       system: withLanguage('You are a professional accomplishment translator. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
-    console.log(`[BragSheetTweak] Instruction: "${instruction.substring(0, 40)}"`);
     res.json(parsed);
 
   } catch (error) {
@@ -417,7 +410,6 @@ Return ONLY valid JSON:
       system: withLanguage('You are an expert accomplishment translator. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
-    console.log(`[BragSheetAddSingle] New: "${newAccomplishment.substring(0, 40)}"`);
     res.json(parsed);
 
   } catch (error) {
@@ -475,7 +467,6 @@ Return ONLY valid JSON:
       system: withLanguage('You are an expert interview coach. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
-    console.log(`[BragSheetStar] Story: "${parsed.title}"`);
     res.json(parsed);
 
   } catch (error) {
@@ -564,7 +555,6 @@ Generate 3-4 questions per category. Make them SPECIFIC to this person's role, i
       system: withLanguage('You are a career coach who specializes in helping people uncover hidden accomplishments. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
-    console.log(`[BragSheetExcavate] Categories: ${parsed.categories?.length}, Role: ${roleTitle}`);
     res.json(parsed);
 
   } catch (error) {
@@ -666,7 +656,6 @@ Return ONLY valid JSON:
       system: withLanguage('You are an expert resume strategist and ATS optimization specialist. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
-    console.log(`[BragSheetTailor] Match: ${parsed.match_score}%, Gaps: ${parsed.gaps?.length}, Ranked: ${parsed.relevance_ranking?.length}`);
     res.json(parsed);
 
   } catch (error) {
@@ -744,7 +733,6 @@ Return ONLY valid JSON:
       system: withLanguage('You are a career assessment expert. Be honest — a 60 is not a bad score, it means there is room to improve. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
-    console.log(`[BragSheetRadar] Overall: ${parsed.overall_score}, Grade: ${parsed.overall_grade}, Dims: ${parsed.dimensions?.length}`);
     res.json(parsed);
 
   } catch (error) {
@@ -830,7 +818,6 @@ Return ONLY valid JSON:
       system: withLanguage('You are a senior interview coach at a top career consulting firm. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
-    console.log(`[BragSheetInterviewMatrix] Questions: ${parsed.questions?.length}, Coverage: ${parsed.coverage_score}%, Gaps: ${parsed.gap_count}`);
     res.json(parsed);
 
   } catch (error) {
@@ -916,7 +903,6 @@ Return ONLY valid JSON:
       system: withLanguage('You are a ghostwriter who specializes in matching someone\'s natural voice while keeping professional accomplishment statements powerful. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
-    console.log(`[BragSheetVoiceMatch] Profile: ${parsed.voice_profile?.formality}, Rewrites: ${parsed.rewritten_transformations?.length}`);
     res.json(parsed);
 
   } catch (error) {

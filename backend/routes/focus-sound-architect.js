@@ -15,8 +15,6 @@ router.post('/focus-sound-architect', async (req, res) => {
     const prefList = Array.isArray(soundPreferences) ? soundPreferences : (soundPreferences ? [soundPreferences] : []);
     const sensList = Array.isArray(sensitivities) ? sensitivities : (sensitivities ? [sensitivities] : []);
 
-    console.log(`[FocusSoundArchitect] Task: "${task}", energy: ${energyGoal}, prefs: ${prefList.join(', ')}`);
-
     const prompt = withLanguage(`You are an expert in psychoacoustics and focus optimization. Design a personalized soundscape for someone who needs to focus.
 
 USER PROFILE:
@@ -97,7 +95,6 @@ CRITICAL:
     });
 
     const textContent = message.content.find(item => item.type === 'text')?.text || '';
-    console.log(`[FocusSoundArchitect] Response: ${textContent.length} chars`);
 
     const cleaned = cleanJsonResponse(textContent);
     const parsed = JSON.parse(cleaned);
@@ -108,7 +105,6 @@ CRITICAL:
       parsed.layers = parsed.layers.filter(l => validTypes.includes(l.type));
     }
 
-    console.log(`[FocusSoundArchitect] Generated: "${parsed.soundscape_name}", ${parsed.layers?.length || 0} layers`);
     res.json(parsed);
 
   } catch (error) {
@@ -131,8 +127,6 @@ router.post('/focus-sound-architect/scene', async (req, res) => {
     const envList = Array.isArray(environment) ? environment : (environment ? [environment] : []);
     const prefList = Array.isArray(soundPreferences) ? soundPreferences : (soundPreferences ? [soundPreferences] : []);
     const sensList = Array.isArray(sensitivities) ? sensitivities : (sensitivities ? [sensitivities] : []);
-
-    console.log(`[FocusSoundArchitect/scene] Task: "${task}", ${minutes}min, energy: ${energyGoal}`);
 
     const prompt = withLanguage(`You are an expert in psychoacoustics and focus optimization. Design an EVOLVING multi-phase soundscape that changes over time for a ${minutes}-minute session.
 
@@ -196,7 +190,6 @@ CRITICAL:
     });
 
     const textContent = message.content.find(item => item.type === 'text')?.text || '';
-    console.log(`[FocusSoundArchitect/scene] Response: ${textContent.length} chars`);
 
     const cleaned = cleanJsonResponse(textContent);
     const parsed = JSON.parse(cleaned);
@@ -211,7 +204,6 @@ CRITICAL:
       });
     }
 
-    console.log(`[FocusSoundArchitect/scene] Generated: "${parsed.scene_name}", ${parsed.phases?.length || 0} phases`);
     res.json(parsed);
 
   } catch (error) {
@@ -231,8 +223,6 @@ router.post('/focus-sound-architect/adjust', async (req, res) => {
     if (!currentLayers || !feedback) {
       return res.status(400).json({ error: 'Current layers and feedback are required' });
     }
-
-    console.log(`[FocusSoundArchitect/adjust] Feedback: "${feedback}", ${currentLayers.length} layers`);
 
     const layerSummary = currentLayers.map((l, i) =>
       `[${i}] ${l.type} — volume: ${l.volume}${l.hz ? `, hz: ${l.hz}` : ''} (label: "${l.label || l.type}")`
@@ -291,7 +281,6 @@ CRITICAL:
       parsed.add_layer = null;
     }
 
-    console.log(`[FocusSoundArchitect/adjust] Adjustments: ${parsed.adjustments?.length || 0}, add: ${parsed.add_layer ? 'yes' : 'no'}`);
     res.json(parsed);
 
   } catch (error) {

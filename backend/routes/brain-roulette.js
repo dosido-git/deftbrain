@@ -78,7 +78,6 @@ Respond ONLY with valid JSON in this exact format:
 }`, locale);
 
   try {
-    console.log(`[BrainRoulette] Spin | Interests: ${activeInterests.length ? activeInterests.join(', ') : 'SURPRISE'} | Depth: ${depth} | Seen: ${(seenTopics || []).length}`);
     const msg = await withRetry(() => anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 2000,
@@ -122,7 +121,6 @@ Respond ONLY with valid JSON:
 }`, locale);
 
   try {
-    console.log(`[BrainRoulette] Go Deeper: "${threadLabel}" (from "${originalTitle}")`);
     const msg = await withRetry(() => anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 1500,
@@ -166,7 +164,6 @@ Respond ONLY with valid JSON:
 }`, locale);
 
   try {
-    console.log(`[BrainRoulette] Extract Concepts from: "${title}"`);
     const msg = await withRetry(() => anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 800,
@@ -217,7 +214,6 @@ Respond ONLY with valid JSON:
 }`, locale);
 
   try {
-    console.log(`[BrainRoulette] Chain Deeper: "${threadLabel}" (chain length: ${(chainHistory || []).length})`);
     const msg = await withRetry(() => anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 1500,
@@ -267,7 +263,6 @@ Respond ONLY with valid JSON:
 }`, locale);
 
   try {
-    console.log(`[BrainRoulette] Debate | Interests: ${(interests || []).join(', ') || 'GENERAL'}`);
     const msg = await withRetry(() => anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 1500,
@@ -313,7 +308,6 @@ Respond ONLY with valid JSON:
 }`, locale);
 
   try {
-    console.log(`[BrainRoulette] Journey | Theme: ${customTheme || 'AUTO'} | Interests: ${(interests || []).join(', ') || 'GENERAL'}`);
     const msg = await withRetry(() => anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 1000,
@@ -367,7 +361,6 @@ Respond ONLY with valid JSON:
 }`, locale);
 
   try {
-    console.log(`[BrainRoulette] Journey Step ${stepNumber}: "${stepTitle}" (journey: "${journeyTitle}")`);
     const msg = await withRetry(() => anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 1200,
@@ -440,7 +433,6 @@ Respond ONLY with valid JSON:
 }`, locale);
 
   try {
-    console.log(`[BrainRoulette] Digest | Interests: ${(interests || []).join(', ') || 'GENERAL'} | Date: ${dateStr}`);
     const msg = await withRetry(() => anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 2000,

@@ -90,8 +90,6 @@ Return this exact JSON structure:
 
 Generate 3-5 watch_for items, 4-6 checklist items, 1-3 route_suggestions, and 2-4 reminders. Reference specific location names throughout.`;
 
-      console.log(`[SafeWalk] Assessing: ${from || '?'} to ${to || '?'}, ${timeOfDay || 'unknown time'}`);
-
       const message = await anthropic.messages.create({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 2000,

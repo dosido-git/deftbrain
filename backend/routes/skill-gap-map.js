@@ -95,7 +95,6 @@ Return ONLY valid JSON:
       system: withLanguage('You are a career transition strategist who gives brutally specific advice. No generic platitudes. Every recommendation is actionable and specific to this exact transition. You never fabricate URLs — you describe resources by name, author, or search term. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
-    console.log(`[SkillGapMap] ${parsed.skill_gaps?.length} gaps, Readiness: ${parsed.overall_readiness?.score}%, Difficulty: ${parsed.transition_summary?.difficulty}`);
     res.json(parsed);
 
   } catch (error) {
@@ -168,7 +167,6 @@ Return ONLY valid JSON:
       system: withLanguage('You are a learning plan designer who builds realistic, week-by-week roadmaps. You understand that people have jobs and lives, and plan accordingly. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
-    console.log(`[SkillGapTimeline] ${parsed.phases?.length} phases, ${parsed.total_weeks} weeks at ${parsed.hours_per_week}h/wk`);
     res.json(parsed);
 
   } catch (error) {
@@ -238,7 +236,6 @@ Return ONLY valid JSON:
       system: withLanguage('You are a career portfolio strategist who helps people prove competence without credentials. You think like a hiring manager. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
-    console.log(`[SkillGapProof] ${parsed.proof_plans?.length} proof plans, MVP: ${parsed.portfolio_strategy?.minimum_viable_portfolio?.substring(0, 50)}`);
     res.json(parsed);
 
   } catch (error) {
@@ -299,7 +296,6 @@ Return ONLY valid JSON:
       system: withLanguage('You are a strategic networking advisor for career transitioners. You give specific, actionable advice about who to connect with and what to say. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
-    console.log(`[SkillGapNetwork] ${parsed.network_gaps?.length} network types, Unexpected: "${parsed.unexpected_ally?.type}"`);
     res.json(parsed);
 
   } catch (error) {
@@ -367,7 +363,6 @@ Return ONLY valid JSON:
       system: withLanguage('You are a skill development coach who creates detailed, stage-by-stage learning plans. Be specific about resources (by name, not URL) and honest about what "good enough" looks like. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
-    console.log(`[SkillGapDeep] Skill: "${gap.skill}", Stages: ${parsed.learning_path?.length}`);
     res.json(parsed);
 
   } catch (error) {
@@ -430,7 +425,6 @@ Return ONLY valid JSON:
       system: withLanguage('You are a resume strategist and career translator who helps people reframe existing experience for new roles. You think like a hiring manager and know what language signals competence in different fields. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
-    console.log(`[SkillGapReframe] ${parsed.translations?.length} translations, Coverage: ${parsed.coverage_score}%`);
     res.json(parsed);
 
   } catch (error) {
@@ -516,7 +510,6 @@ Return ONLY valid JSON:
       system: withLanguage('You are a career economics analyst who gives honest financial assessments of career transitions. Use realistic salary data. Never inflate numbers to make a transition look better. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
-    console.log(`[SkillGapEconomics] Delta: ${parsed.salary_delta?.expected_increase_percent}%, ROI: ${parsed.roi_analysis?.verdict}`);
     res.json(parsed);
 
   } catch (error) {
@@ -592,7 +585,6 @@ Return ONLY valid JSON:
       system: withLanguage('You are a resume auditor who has reviewed thousands of career-transition resumes. You know exactly what hiring managers scan for and what triggers an instant rejection. Be direct and specific. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
-    console.log(`[SkillGapResume] Score: ${parsed.overall_score}, Problems: ${parsed.problems?.length}`);
     res.json(parsed);
 
   } catch (error) {
@@ -661,7 +653,6 @@ Return ONLY valid JSON:
       system: withLanguage('You are a job search strategist who knows which companies hire career transitioners and which screen them out. Be specific about company types and honest about the odds. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
-    console.log(`[SkillGapCompanies] ${parsed.ideal_company_types?.length} ideal types, Stealth: "${parsed.stealth_targets?.type}"`);
     res.json(parsed);
 
   } catch (error) {
@@ -745,7 +736,6 @@ Return ONLY valid JSON:
       system: withLanguage('You are an interview coach who specializes in career transitioners. You know the specific questions they face and the landmines they step on. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
-    console.log(`[SkillGapInterview] ${parsed.transition_questions?.length} transition Qs, ${parsed.behavioral_questions?.length} behavioral`);
     res.json(parsed);
 
   } catch (error) {
@@ -817,7 +807,6 @@ Return ONLY valid JSON:
       system: withLanguage('You are a career transition realist who adjusts plans for real life. You are kind but honest — if constraints make a transition significantly harder, you say so while offering solutions. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
-    console.log(`[SkillGapCalibrate] Adjusted to ${parsed.adjusted_timeline_months} months, Risk: "${parsed.risk_assessment?.biggest_risk?.substring(0, 50)}"`);
     res.json(parsed);
 
   } catch (error) {
@@ -881,7 +870,6 @@ Return ONLY valid JSON:
       system: withLanguage('You are a career exploration advisor who helps people discover realistic career paths based on their current skills. Be creative but honest about difficulty. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
-    console.log(`[SkillGapExplore] ${parsed.paths?.length} paths, Avoid: ${parsed.avoid_paths?.length}`);
     res.json(parsed);
 
   } catch (error) {
@@ -954,7 +942,6 @@ Return ONLY valid JSON:
       system: withLanguage('You are a career transition coach doing a progress check. Be encouraging but honest — if they are not ready, say so kindly. If they are, celebrate them. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
-    console.log(`[SkillGapProgress] Readiness: ${parsed.updated_readiness?.previous_score} → ${parsed.updated_readiness?.score}, Ready: ${parsed.ready_to_apply}`);
     res.json(parsed);
 
   } catch (error) {
@@ -1030,7 +1017,6 @@ Return ONLY valid JSON:
       system: withLanguage('You are a career realist who shows people what jobs actually feel like day-to-day. Not the recruiting pitch — the truth. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
-    console.log(`[SkillGapDayLife] Schedule: ${parsed.schedule?.length} entries, Energy: ${parsed.role_reality?.energy_pattern}`);
     res.json(parsed);
 
   } catch (error) {
@@ -1079,7 +1065,6 @@ Return ONLY valid JSON:
       system: withLanguage('You write networking messages that actually get responses. You sound human, specific, and respectful of the recipient\'s time. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
-    console.log(`[SkillGapOutreach] Platform: ${parsed.platform}, Words: ${parsed.message?.split(' ').length}`);
     res.json(parsed);
 
   } catch (error) {
@@ -1162,7 +1147,6 @@ Return ONLY valid JSON:
       system: withLanguage('You are a job posting analyst who decodes what companies actually want vs. what they write. You know the difference between must-haves and wishlist items. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
-    console.log(`[SkillGapDecode] Competitiveness: ${parsed.competitiveness?.score}%, Apply: ${parsed.competitiveness?.should_you_apply}`);
     res.json(parsed);
 
   } catch (error) {
@@ -1231,7 +1215,6 @@ Return ONLY valid JSON:
       system: withLanguage('You are a learning sequence optimizer who maps dependencies between skills. You find the order that minimizes total learning time. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
-    console.log(`[SkillGapAdjacency] Bottleneck: "${parsed.bottleneck_skill?.skill}", Tracks: ${parsed.parallel_tracks?.length}`);
     res.json(parsed);
 
   } catch (error) {
@@ -1306,7 +1289,6 @@ Return ONLY valid JSON:
       system: withLanguage('You are a supportive but honest interview coach. You evaluate answers realistically and give specific, actionable feedback. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
-    console.log(`[SkillGapMock] Score: ${parsed.evaluation?.score}, Verdict: ${parsed.evaluation?.verdict}`);
     res.json({ type: 'evaluation', ...parsed });
 
   } catch (error) {
@@ -1368,7 +1350,6 @@ Return ONLY valid JSON:
       system: withLanguage('You are a labor market analyst who tracks hiring trends and career transition dynamics. Be specific and honest about market conditions. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
-    console.log(`[SkillGapMarket] Trend: ${parsed.market_outlook?.trend}, Direction: ${parsed.market_outlook?.direction}`);
     res.json(parsed);
 
   } catch (error) {
@@ -1410,7 +1391,6 @@ Return ONLY valid JSON:
       system: withLanguage('You are an encouraging career coach who celebrates milestones with specific, genuine acknowledgment — not empty cheerleading. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
-    console.log(`[SkillGapCelebrate] Milestone: "${milestone}", Headline: "${parsed.headline}"`);
     res.json(parsed);
 
   } catch (error) {
@@ -1461,7 +1441,6 @@ Return ONLY valid JSON:
       system: withLanguage('You are a focused accountability partner who gives one clear assignment per week. Never overwhelming — just the next right step. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
-    console.log(`[SkillGapNudge] Assignment: "${parsed.assignment?.substring(0, 50)}", Time: ${parsed.time_estimate}`);
     res.json(parsed);
 
   } catch (error) {
@@ -1525,7 +1504,6 @@ Return ONLY valid JSON:
       system: withLanguage('You are a mentorship strategist who helps career transitioners find exactly the right person to guide them. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
-    console.log(`[SkillGapMentor] Profile: "${parsed.ideal_mentor_profile?.background?.substring(0, 50)}"`);
     res.json(parsed);
 
   } catch (error) {

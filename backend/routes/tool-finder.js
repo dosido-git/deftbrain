@@ -46,7 +46,6 @@ function buildCatalog() {
 }
 
 const TOOL_CATALOG = buildCatalog();
-console.log(`🧰 ToolFinder: Loaded ${TOOL_CATALOG.length} tools into catalog`);
 
 function catalogToString() {
   return TOOL_CATALOG.map(t =>

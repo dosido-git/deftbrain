@@ -38,8 +38,6 @@ router.post('/laundro-mat', async (req, res) => {
         return res.status(400).json({ error: 'Describe your load or upload a care label photo' });
       }
 
-      console.log('🧺 LaundroMat: Load advice request');
-
       const contentBlocks = [];
 
       if (imageBase64) {
@@ -107,7 +105,6 @@ Only include care_symbols if a care label photo was provided. separate_these and
 
       try {
         const data = JSON.parse(cleaned);
-        console.log('🧺 LaundroMat: Load advice generated');
         return res.json(data);
       } catch (e) {
         console.error('🧺 LaundroMat: Parse error:', e.message);
@@ -120,8 +117,6 @@ Only include care_symbols if a care label photo was provided. separate_these and
       if (!imageBase64) {
         return res.status(400).json({ error: 'Care label photo required' });
       }
-
-      console.log('🧺 LaundroMat: Care label scan request');
 
       const parsed = parseBase64Image(imageBase64);
       if (!parsed || !parsed.base64Data || parsed.base64Data.length < 100) {
@@ -164,7 +159,6 @@ Return JSON:
 
       try {
         const data = JSON.parse(cleaned);
-        console.log(`🧺 LaundroMat: Identified ${(data.care_symbols || []).length} symbols`);
         return res.json(data);
       } catch (e) {
         console.error('🧺 LaundroMat: Label parse error:', e.message);
@@ -177,8 +171,6 @@ Return JSON:
       if (!stainType && !stainCustom && !imageBase64) {
         return res.status(400).json({ error: 'Describe the stain or upload a photo' });
       }
-
-      console.log(`🧺 LaundroMat: Stain SOS — ${stainType || stainCustom || 'photo'}`);
 
       const contentBlocks = [];
 
@@ -233,7 +225,6 @@ Return JSON:
 
       try {
         const data = JSON.parse(cleaned);
-        console.log(`🧺 LaundroMat: Stain advice generated — ${(data.steps || []).length} steps`);
         return res.json(data);
       } catch (e) {
         console.error('🧺 LaundroMat: Stain parse error:', e.message);

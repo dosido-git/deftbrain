@@ -5,7 +5,6 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ── Main diagnosis / care / identify endpoint ──
 router.post('/plant-rescue', rateLimit(DEFAULT_LIMITS), async (req, res) => {
-  console.log('✅ Plant Rescue V3 endpoint called');
 
   try {
     const {
@@ -177,8 +176,6 @@ ${hasPets || hasChildren ? `🚨 HOUSEHOLD HAS ${hasPets ? 'PETS' : ''}${hasPets
 
 Return ONLY the JSON.`, userLanguage);
 
-    console.log('🤖 Calling Claude...', { mode, hasImage: !!imageBase64, extraPhotos: extraPhotos?.filter(Boolean)?.length || 0, symptoms: symptoms?.length || 0 });
-
     // Build message content with multi-photo support (#6)
     const content = [];
 
@@ -226,14 +223,6 @@ Return ONLY the JSON.`, userLanguage);
       return res.status(500).json({ error: 'Incomplete diagnosis. Try again.' });
     }
 
-    console.log('✅ V3 Response:', {
-      mode, species: parsed.plant_identification?.species || 'unknown',
-      hasCareSchedule: !!parsed.care_schedule,
-      hasCalendar: !!parsed.seasonal_calendar?.length,
-      hasRepotting: !!parsed.repotting_guide,
-      hasPropagation: !!parsed.propagation_guide
-    });
-
     res.json(parsed);
 
   } catch (error) {
@@ -242,10 +231,8 @@ Return ONLY the JSON.`, userLanguage);
   }
 });
 
-
 // ── Follow-up Q&A ──
 router.post('/plant-rescue/followup', rateLimit(DEFAULT_LIMITS), async (req, res) => {
-  console.log('✅ Plant Rescue Follow-Up called');
 
   try {
     const { question, originalDiagnosis, plantDescription, imageProvided, userLanguage } = req.body;
@@ -293,10 +280,8 @@ Be specific, practical, encouraging. 2-4 paragraphs.`,
   }
 });
 
-
 // ── Companion Planting Advisor (#4) ──
 router.post('/plant-rescue/companions', rateLimit(DEFAULT_LIMITS), async (req, res) => {
-  console.log('✅ Companion Planting called');
 
   try {
     const { plants, climateZone, location, userLanguage } = req.body;
@@ -354,7 +339,6 @@ RULES:
       catch { return res.status(500).json({ error: 'Parse failed.' }); }
     }
 
-    console.log('✅ Companions:', { groupings: parsed.groupings?.length, conflicts: parsed.conflicts?.length });
     res.json(parsed);
 
   } catch (error) {
@@ -362,6 +346,5 @@ RULES:
     res.status(500).json({ error: error.message || 'Companion analysis failed.' });
   }
 });
-
 
 module.exports = router;

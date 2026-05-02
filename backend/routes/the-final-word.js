@@ -63,7 +63,6 @@ setInterval(() => {
   }
 }, 30 * 60 * 1000);
 
-
 // ═══════════════════════════════════════════════════
 // MAIN AI ROUTE — All modes
 // ═══════════════════════════════════════════════════
@@ -389,7 +388,6 @@ Return ONLY this JSON:
   }
 });
 
-
 // ═══════════════════════════════════════════════════
 // SHAREABLE VERDICT ROUTES
 // ═══════════════════════════════════════════════════
@@ -420,7 +418,6 @@ router.get('/the-final-word/share/:id', (req, res) => {
   if (!entry) return res.status(404).json({ error: 'Verdict not found or has expired' });
   res.json({ verdict: entry.verdict, inputSummary: entry.inputSummary });
 });
-
 
 // ═══════════════════════════════════════════════════
 // MULTIPLAYER TRIVIA — Room Management

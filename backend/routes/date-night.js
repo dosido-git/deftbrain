@@ -173,7 +173,6 @@ All costs in ${sym}. dress_vibe per stop + overall_dress_code. plan_b per stop A
         label: 'DateNightGenerate', max_tokens: 3000,
         system: withLanguage(`${SYSTEM_PROMPT}\n\nAll costs in ${sym}.`, userLanguage)
       });
-      console.log(`[DateNight] Generated "${parsed.vibe_title}" | ${(parsed.itinerary || []).length} stops`);
       return res.json(parsed);
     }
 
@@ -203,7 +202,6 @@ Return ONLY valid JSON: ${RESPONSE_SCHEMA}`;
         label: 'DateNightRegenerate', max_tokens: 3000,
         system: withLanguage(`${SYSTEM_PROMPT}\n\nAll costs in ${sym}.`, userLanguage)
       });
-      console.log(`[DateNight] Regenerated as "${parsed.vibe_title}"`);
       return res.json(parsed);
     }
 
@@ -239,7 +237,6 @@ Return ONLY valid JSON:
         label: 'DateNightSwap', max_tokens: 1000,
         system: withLanguage(`${SYSTEM_PROMPT}\n\nAll costs in ${sym}.`, userLanguage)
       });
-      console.log(`[DateNight] Swapped #${swapStopNumber} → "${parsed.stop?.venue_name}"`);
       return res.json(parsed);
     }
 
@@ -275,7 +272,6 @@ Return ONLY valid JSON:
         label: 'DateNightRate', max_tokens: 800,
         system: withLanguage('Date feedback analyst. Warm, encouraging. Return ONLY valid JSON.', userLanguage)
       });
-      console.log(`[DateNight] Rated "${vibeTitle}" ${overallRating}/5`);
       return res.json(parsed);
     }
 
@@ -409,7 +405,6 @@ Return ONLY valid JSON:
         label: 'DateNightAnniversary', max_tokens: 3500,
         system: withLanguage(`${SYSTEM_PROMPT}\n\nAll costs in ${sym}. Special anniversary — bring warmth.`, userLanguage)
       });
-      console.log(`[DateNight] Anniversary ${yearsTogether}yr: "${parsed.vibe_title}"`);
       return res.json(parsed);
     }
 
@@ -452,7 +447,6 @@ Return ONLY valid JSON:
         label: 'DateNightJar', max_tokens: 3000,
         system: withLanguage(`${SYSTEM_PROMPT}\n\nAll budgets in ${sym}. Be creative — surprise them.`, userLanguage)
       });
-      console.log(`[DateNight] Date Jar: ${(parsed.concepts || []).length} concepts for ${location.trim()}`);
       return res.json(parsed);
     }
 
@@ -497,7 +491,6 @@ Return ONLY valid JSON:
         label: 'DateNightRutDetect', max_tokens: 1000,
         system: withLanguage('Relationship pattern analyst. Encouraging, not judgmental. Return ONLY valid JSON.', userLanguage)
       });
-      console.log(`[DateNight] Rut detect: ${parsed.rut_detected ? 'RUT FOUND' : 'no rut'}`);
       return res.json(parsed);
     }
 

@@ -96,7 +96,6 @@ Return ONLY valid JSON:
     const cleaned = cleanJsonResponse(text);
     const parsed = JSON.parse(cleaned);
 
-    console.log(`[HistoryToday] Event: "${event.substring(0, 50)}", Parallels: ${parsed.parallels?.length}`);
     res.json(parsed);
 
   } catch (error) {
@@ -185,7 +184,6 @@ Return ONLY valid JSON:
     const text2 = message2.content.find(b => b.type === 'text')?.text || '';
     const parsed = JSON.parse(cleanJsonResponse(text2));
 
-    console.log(`[HistoryTodayDeeper] Expanded: "${parallel.title}", Timeline: ${parsed.timeline?.length}`);
     res.json(parsed);
 
   } catch (error) {
@@ -247,7 +245,6 @@ Return ONLY valid JSON:
     const text3 = message3.content.find(b => b.type === 'text')?.text || '';
     const parsed = JSON.parse(cleanJsonResponse(text3));
 
-    console.log(`[HistoryTodayCounter] Counter: "${parsed.title}", Type: ${parsed.hope_or_warning}`);
     res.json(parsed);
 
   } catch (error) {

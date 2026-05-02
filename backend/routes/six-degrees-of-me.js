@@ -52,7 +52,6 @@ Respond ONLY with valid JSON:
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
-    console.log(`[SixDegrees] Chain | A: "${thingA}" → B: "${thingB}"`);
     const msg = await anthropic.messages.create({ model: 'claude-haiku-4-5-20251001', max_tokens: 2000, messages: [{ role: 'user', content: prompt }] });
     res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
   } catch (e) { console.error('SixDegrees chain:', e); res.status(500).json({ error: e.message || 'Chain broke!' }); }
@@ -162,7 +161,6 @@ Respond ONLY with valid JSON:
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
-    console.log(`[SixDegrees] Challenge | ${constraint} | A:"${thingA}" → B:"${thingB}"`);
     const msg = await anthropic.messages.create({ model: 'claude-haiku-4-5-20251001', max_tokens: 2000, messages: [{ role: 'user', content: prompt }] });
     res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
   } catch (e) { console.error('Challenge:', e); res.status(500).json({ error: 'Challenge failed.' }); }
@@ -202,7 +200,6 @@ Respond ONLY with valid JSON:
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
-    console.log(`[SixDegrees] WhatIf | Removed step ${removedStep.step}`);
     const msg = await anthropic.messages.create({ model: 'claude-haiku-4-5-20251001', max_tokens: 2000, messages: [{ role: 'user', content: prompt }] });
     res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
   } catch (e) { console.error('WhatIf:', e); res.status(500).json({ error: "Couldn't explore what-if." }); }
@@ -252,7 +249,6 @@ Respond ONLY with valid JSON:
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
-    console.log(`[SixDegrees] Story | ${(chainHistory || []).length} chains | ${allNodes.size} nodes`);
     const msg = await anthropic.messages.create({ model: 'claude-haiku-4-5-20251001', max_tokens: 2500, messages: [{ role: 'user', content: prompt }] });
     res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
   } catch (e) { console.error('Story:', e); res.status(500).json({ error: "Couldn't write your story." }); }
@@ -330,7 +326,6 @@ Respond with valid JSON:
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
-    console.log(`[SixDegrees] ChainBetween | ${nameA} + ${nameB} | mode: ${mode}`);
     const msg = await anthropic.messages.create({ model: 'claude-haiku-4-5-20251001', max_tokens: 2500, messages: [{ role: 'user', content: prompt }] });
     res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
   } catch (e) { console.error('ChainBetween:', e); res.status(500).json({ error: "Couldn't find the connection." }); }

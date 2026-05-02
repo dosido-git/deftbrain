@@ -102,7 +102,6 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
       const parsed = await callClaudeWithRetry(prompt, { label: 'BatchFlowGenerate', max_tokens: 5000, system: withLanguage(SYSTEM_PROMPT, userLanguage) });
-      console.log(`[BatchFlow] Generate: ${tasks.length} tasks -> ${(parsed.batches||[]).length} batches`);
       return res.json(parsed);
     }
 
@@ -133,7 +132,6 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
       const parsed = await callClaudeWithRetry(prompt, { label: 'BatchFlowDump', max_tokens: 4000, system: withLanguage(SYSTEM_PROMPT, userLanguage) });
-      console.log(`[BatchFlow] Dump -> ${(parsed.extracted_tasks||[]).length} tasks, ${(parsed.batches||[]).length} batches`);
       return res.json(parsed);
     }
 
@@ -247,7 +245,6 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
       const parsed = await callClaudeWithRetry(prompt, { label: 'BatchFlowAB', max_tokens: 5000, system: withLanguage(SYSTEM_PROMPT, userLanguage) });
-      console.log(`[BatchFlow] A/B: sprint ${parsed.sprint?.estimated_end_time}, marathon ${parsed.marathon?.estimated_end_time}`);
       return res.json(parsed);
     }
 
@@ -280,7 +277,6 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
       const parsed = await callClaudeWithRetry(prompt, { label: 'BatchFlowWeekly', max_tokens: 4000, system: withLanguage('Weekly productivity architect. Sustainable batch rhythms. Return ONLY valid JSON.', userLanguage) });
-      console.log(`[BatchFlow] Weekly: ${(parsed.days||[]).length} days`);
       return res.json(parsed);
     }
 
@@ -305,7 +301,6 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
       const parsed = await callClaudeWithRetry(prompt, { label: 'BatchFlowResistance', max_tokens: 2000, system: withLanguage('Task resistance analyst. Diagnose avoidance, offer fixes. Honest but kind. Return ONLY valid JSON.', userLanguage) });
-      console.log(`[BatchFlow] Resistance: ${deferred_tasks.length} tasks analyzed`);
       return res.json(parsed);
     }
 
@@ -331,7 +326,6 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
       const parsed = await callClaudeWithRetry(prompt, { label: 'BatchFlowCalibrate', max_tokens: 1200, system: withLanguage('Time estimation analyst. Find patterns in duration misjudgment. Return ONLY valid JSON.', userLanguage) });
-      console.log(`[BatchFlow] Calibrate: bias ${parsed.bias_direction} ${parsed.bias_amount}`);
       return res.json(parsed);
     }
 
@@ -362,7 +356,6 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
       const parsed = await callClaudeWithRetry(prompt, { label: 'BatchFlowLocation', max_tokens: 2000, system: withLanguage('Errand optimization expert. Efficient routes. Return ONLY valid JSON.', userLanguage) });
-      console.log(`[BatchFlow] Location: ${(parsed.location_batches||[]).length} clusters`);
       return res.json(parsed);
     }
 

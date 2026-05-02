@@ -196,7 +196,6 @@ ${schema}`;
         label: 'CrisisPrioritize', max_tokens: 4000,
         system: withLanguage(SYSTEM_PROMPT, userLanguage)
       });
-      console.log(`[CrisisPrioritizer] ${timeframe}: ${tasks.length} tasks → ${parsed.actual_crisis_tasks} urgent, ${parsed.can_wait} can wait`);
       return res.json(parsed);
     }
 
@@ -232,7 +231,6 @@ Return ONLY valid JSON:
         label: 'CrisisDump', max_tokens: 2000,
         system: withLanguage('Task extraction specialist. Pull actionable items from messy text. Warm tone. Return ONLY valid JSON.', userLanguage)
       });
-      console.log(`[CrisisPrioritizer] Quick dump → ${(parsed.tasks || []).length} tasks extracted`);
       return res.json(parsed);
     }
 
@@ -277,7 +275,6 @@ Return ONLY valid JSON:
         label: 'CrisisRetriage', max_tokens: 1500,
         system: withLanguage(SYSTEM_PROMPT, userLanguage)
       });
-      console.log(`[CrisisPrioritizer] Re-triage: ${(completedTasks || []).length} done, ${remainingTasks.length} remaining`);
       return res.json(parsed);
     }
 
@@ -392,7 +389,6 @@ Return ONLY valid JSON:
         label: 'CrisisPattern', max_tokens: 1500,
         system: withLanguage('Crisis pattern analyst. Insightful, warm, not judgmental. Find the patterns humans can\'t see in their own behavior. Return ONLY valid JSON.', userLanguage)
       });
-      console.log(`[CrisisPrioritizer] Pattern analysis: ${sessions.length} sessions, improvement: ${parsed.improvement_noted}`);
       return res.json(parsed);
     }
 
@@ -459,7 +455,6 @@ Return ONLY valid JSON:
         label: 'CrisisTimeBlock', max_tokens: 3000,
         system: withLanguage('Time management expert who builds realistic, humane schedules. You know people underestimate task duration by 50%, so you pad accordingly. Return ONLY valid JSON.', userLanguage)
       });
-      console.log(`[CrisisPrioritizer] Time-block: ${(parsed.blocks || []).length} blocks, ${parsed.total_work_time} work min`);
       return res.json(parsed);
     }
 
@@ -509,7 +504,6 @@ Return ONLY valid JSON:
         label: 'CrisisOneAction', max_tokens: 800,
         system: withLanguage('Crisis de-escalation specialist. When someone is paralyzed, you cut through the noise and give them one clear action. Minimal words, maximum clarity. Return ONLY valid JSON.', userLanguage)
       });
-      console.log(`[CrisisPrioritizer] Just one thing: "${parsed.the_one_thing}"`);
       return res.json(parsed);
     }
 
@@ -556,7 +550,6 @@ Return ONLY valid JSON:
         label: 'CrisisTaskSplit', max_tokens: 1500,
         system: withLanguage('Task decomposition expert. You see the hidden tasks inside vague to-dos. Specific, actionable, honest time estimates. Return ONLY valid JSON.', userLanguage)
       });
-      console.log(`[CrisisPrioritizer] Task split: "${task}" → ${(parsed.sub_tasks || []).length} sub-tasks`);
       return res.json(parsed);
     }
 
@@ -669,7 +662,6 @@ Return ONLY valid JSON:
         label: 'CrisisRollingUpdate', max_tokens: 2500,
         system: withLanguage(SYSTEM_PROMPT + '\nYou are updating an ongoing crisis management plan. Be honest about progress while maintaining hope.', userLanguage)
       });
-      console.log(`[CrisisPrioritizer] Rolling update: week ${weekNumber}, status: ${parsed.plan_status}`);
       return res.json(parsed);
     }
 

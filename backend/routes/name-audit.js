@@ -345,8 +345,6 @@ CRITICAL RULES
 
 6. Return ONLY the JSON object. No markdown, no preamble.`;
 
-        console.log(`[NameAudit] Analyzing: "${name}" for ${context}`);
-
         return await callClaudeWithRetry({
           model: 'claude-sonnet-4-20250514',
           max_tokens: 6000,
@@ -370,7 +368,6 @@ CRITICAL RULES
       } : null,
     };
 
-    console.log(`[NameAudit] Grade: ${result.overall_grade}, Strengths: ${result.strengths?.length}, Weaknesses: ${result.weaknesses?.length}`);
     res.json(result);
 
   } catch (error) {
@@ -440,15 +437,12 @@ Return ONLY this JSON:
 Be honest and decisive. The client needs clarity, not diplomacy. Return ONLY JSON.
 ${langDirective ? `\n${langDirective}` : ''}`;
 
-    console.log(`[NameAudit/Compare] Comparing: ${trimmedNames.join(' vs ')}`);
-
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 3000,
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'NameAudit/Compare' });
 
-    console.log(`[NameAudit/Compare] Winner: ${parsed.winner?.name} (${parsed.winner?.margin})`);
     res.json(parsed);
 
   } catch (error) {
@@ -540,8 +534,6 @@ IMPORTANT:
 
 Return ONLY valid JSON.`;
 
-    console.log(`[NameAudit/Fix] Fixing: "${name}" (${grade})`);
-
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 3500,
@@ -549,7 +541,6 @@ Return ONLY valid JSON.`;
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'NameAudit/Fix' });
 
-    console.log(`[NameAudit/Fix] Generated ${parsed.variations?.length || 0} variations`);
     res.json(parsed);
 
   } catch (error) {
@@ -611,8 +602,6 @@ Return ONLY this JSON:
 
 Return ONLY valid JSON.`;
 
-    console.log(`[NameAudit/Reactions] Simulating audience for: "${name}"`);
-
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 2500,
@@ -620,7 +609,6 @@ Return ONLY valid JSON.`;
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'NameAudit/Reactions' });
 
-    console.log(`[NameAudit/Reactions] Generated ${parsed.personas?.length || 0} personas`);
     res.json(parsed);
 
   } catch (error) {
@@ -713,8 +701,6 @@ Return ONLY this JSON:
 
 Return ONLY valid JSON.`;
 
-    console.log(`[NameAudit/DeepDive] Deep dive for: "${name}" (${context})`);
-
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 3000,
@@ -722,7 +708,6 @@ Return ONLY valid JSON.`;
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'NameAudit/DeepDive' });
 
-    console.log(`[NameAudit/DeepDive] ${parsed.sections?.length || 0} sections, verdict: ${parsed.verdict?.slice(0, 50)}...`);
     res.json(parsed);
 
   } catch (error) {
@@ -788,8 +773,6 @@ Return ONLY this JSON:
 
 Return ONLY valid JSON.`;
 
-    console.log(`[NameAudit/SecondOpinion] Re-analyzing: "${name}" (first opinion: ${firstOpinion?.grade} ${firstOpinion?.score})`);
-
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 2500,
@@ -797,7 +780,6 @@ Return ONLY valid JSON.`;
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'NameAudit/SecondOpinion' });
 
-    console.log(`[NameAudit/SecondOpinion] Second grade: ${parsed.grade} ${parsed.score}, ${parsed.agreements?.length || 0} agreements, ${parsed.disagreements?.length || 0} disagreements`);
     res.json(parsed);
 
   } catch (error) {

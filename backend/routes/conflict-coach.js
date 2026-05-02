@@ -8,7 +8,6 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 // ═══════════════════════════════════════════════════════════════
 
 router.post('/conflict-coach', rateLimit(DEFAULT_LIMITS), async (req, res) => {
-  console.log('✅ Conflict Coach V3 endpoint called');
   try {
     const { receivedMessage, relationship, emotionalState, goals, userDraft, actualGoal, isThread, personLabel, userLanguage } = req.body;
 
@@ -123,13 +122,6 @@ ${lang}`;
 
     const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
 
-    console.log('✅ V3 Analysis:', {
-      temperature: parsed.message_analysis?.emotional_temperature,
-      manipulationCount: parsed.manipulation_tactics?.length || 0,
-      strategies: parsed.response_strategies?.length || 0,
-      landmines: parsed.what_NOT_to_say?.length || 0,
-    });
-
     res.json(parsed);
   } catch (error) {
     console.error('❌ Conflict Coach V3 error:', error.message);
@@ -142,7 +134,6 @@ ${lang}`;
 // ═══════════════════════════════════════════════════════════════
 
 router.post('/conflict-coach/followup', rateLimit(DEFAULT_LIMITS), async (req, res) => {
-  console.log('✅ Conflict Coach Follow-Up called');
   try {
     const { question, originalAnalysis, relationship, receivedMessage, actualGoal, personLabel, userLanguage } = req.body;
 
@@ -188,7 +179,6 @@ CRITICAL: Return ONLY valid JSON: {"answer": "Your full coaching response here"}
 
     const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
 
-    console.log('✅ Follow-up answered');
     res.json({ answer: parsed.answer || 'No answer available.' });
   } catch (error) {
     console.error('❌ Follow-up error:', error.message);
@@ -201,7 +191,6 @@ CRITICAL: Return ONLY valid JSON: {"answer": "Your full coaching response here"}
 // ═══════════════════════════════════════════════════════════════
 
 router.post('/conflict-coach/adjust-tone', rateLimit(DEFAULT_LIMITS), async (req, res) => {
-  console.log('✅ Conflict Coach Tone Adjust called');
   try {
     const { originalResponse, originalStrategy, toneLevel, relationship, receivedMessage, actualGoal, userLanguage } = req.body;
 
@@ -241,7 +230,6 @@ CRITICAL: Return ONLY valid JSON:
 
     const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
 
-    console.log('✅ Tone adjusted:', { toneLevel, length: parsed.adjusted_text?.length });
     res.json(parsed);
   } catch (error) {
     console.error('❌ Tone adjust error:', error.message);

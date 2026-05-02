@@ -52,7 +52,6 @@ Return ONLY valid JSON:
 
     const parsed = await callClaudeWithRetry(prompt, { label: 'ResearchDecoder', max_tokens: 3000,
       system: withLanguage('Science translator for non-experts. You make research accessible without dumbing it down. You DESCRIBE methodology rather than judging it. You are scrupulously honest about what papers prove vs. what people assume they prove. Warm, clear, occasionally funny. You use analogies. You care about scientific literacy. Return ONLY valid JSON. No markdown.', userLanguage) });
-    console.log(`[ResearchDecoder] ${parsed.what_they_did?.study_type?.substring(0, 40) || '?'} | ${parsed.jargon_decoded?.length || 0} terms`);
     res.json(parsed);
   } catch (error) {
     console.error('[ResearchDecoder]', error);
@@ -101,7 +100,6 @@ Return ONLY valid JSON:
 
     const parsed = await callClaudeWithRetry(prompt, { label: 'ResearchDecoderMedia', max_tokens: 2000,
       system: withLanguage('Media accuracy analyst for scientific papers. You compare what papers say to what headlines claim. You are fair — you give credit when media gets it right — but unflinching when they distort. You care about public understanding of science. Warm, clear, never condescending. Return ONLY valid JSON. No markdown.', userLanguage) });
-    console.log(`[ResearchDecoderMedia] ${parsed.accuracy_rating?.score || '?'}`);
     res.json(parsed);
   } catch (error) {
     console.error('[ResearchDecoderMedia]', error);
@@ -141,7 +139,6 @@ Return ONLY valid JSON:
 
     const parsed = await callClaudeWithRetry(prompt, { label: 'ResearchDecoderJargon', max_tokens: 1500,
       system: withLanguage('Jargon translator. You explain technical terms so they actually make sense to non-experts. Analogies, examples, zero jargon in explanations. Return ONLY valid JSON. No markdown.', userLanguage) });
-    console.log(`[ResearchDecoderJargon] ${termList.length} terms`);
     res.json(parsed);
   } catch (error) {
     console.error('[ResearchDecoderJargon]', error);
@@ -188,7 +185,6 @@ Return ONLY valid JSON:
 
     const parsed = await callClaudeWithRetry(prompt, { label: 'ResearchDecoderCompare', max_tokens: 2500,
       system: withLanguage('Paper comparison analyst. You help non-experts understand how multiple studies relate to each other. You never declare one paper "better" without explaining what "better" means in context. Nuanced, fair, clear. Return ONLY valid JSON. No markdown.', userLanguage) });
-    console.log(`[PaperDigestCompare] ${parsed.do_they_agree?.verdict || '?'}`);
     res.json(parsed);
   } catch (error) {
     console.error('[ResearchDecoderCompare]', error);
@@ -232,7 +228,6 @@ Return ONLY valid JSON:
 
     const parsed = await callClaudeWithRetry(prompt, { label: 'ResearchDecoderRelevance', max_tokens: 1500,
       system: withLanguage('Personal health/science relevance advisor. You help people figure out if a study applies to THEM. You never give medical advice but you help them think clearly about what to do with information. Warm, honest, specific. Return ONLY valid JSON. No markdown.', userLanguage) });
-    console.log(`[ResearchDecoderRelevance] ${parsed.applies_to_you?.verdict || '?'}`);
     res.json(parsed);
   } catch (error) {
     console.error('[ResearchDecoderRelevance]', error);

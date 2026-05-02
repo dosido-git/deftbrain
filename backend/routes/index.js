@@ -18,12 +18,9 @@ files.forEach(file => {
   try {
     const routeModule = require(path.join(routeDir, file));
     router.use('/', routeModule);
-    console.log(`  ✅ Loaded route: ${file}`);
   } catch (err) {
     console.error(`  ❌ Failed to load route ${file}:`, err.message);
   }
 });
-
-console.log(`\n📡 ${files.length} route files loaded\n`);
 
 module.exports = router;

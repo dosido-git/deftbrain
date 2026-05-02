@@ -1,3 +1,8 @@
+# v1.7 · 2026-05-01 · added backend-route detection (express.Router files)
+#                     with checks B0 (no console.log — Railway log retention
+#                     leaks user content) and B1 (no user-content interpolation
+#                     in console.error). Backend files now skip the React
+#                     structural checks instead of producing 30+ false positives.
 # v1.6 · 2026-04-27 · added PF-14 (hook ordering), PF-17 (Try Example), TOOLS
 #                     (registration check), PF-13 (disabled:opacity-40, strict),
 #                     CONV slider check, and S1.1k (dead c-block keys).
@@ -136,11 +141,50 @@ if tools_js_path:
 
 results = {}
 
+SUSPICIOUS_LOG_VARS = {
+    'word', 'name', 'email', 'question', 'description', 'input', 'text',
+    'message', 'recipientName', 'recipient', 'task', 'topic', 'feedback',
+    'prompt', 'situation', 'event', 'activity', 'company', 'audience',
+    'instruction', 'leaseText', 'pdfText', 'content',
+}
+
 for name, fpath in tools:
     with open(fpath) as f:
         content = f.read()
     lines = content.split('\n')
     fails = []
+
+    # Backend route detection — short-circuits the React-component checks.
+    # Routes are Express files; running React structural checks on them
+    # produces 30+ false positives. Backend files get their own check set.
+    is_backend_route = (
+        re.search(r"require\(['\"]express['\"]\)", content) is not None
+        and re.search(r"express\.Router\(\)", content) is not None
+    )
+    if is_backend_route:
+        # B0: no console.log — backend stdout is captured by Railway and
+        # retained for the plan's log window; success-path debug logs leak
+        # user content (names, slices of inputs, Claude output excerpts).
+        # Use console.error in catch blocks for genuine failures only.
+        log_lines = [content[:m.start()].count('\n') + 1
+                     for m in re.finditer(r'(?:^|\n)[ \t]*console\.log\(', content)]
+        if log_lines:
+            shown = ', '.join(map(str, log_lines[:8]))
+            more = f' (+{len(log_lines) - 8} more)' if len(log_lines) > 8 else ''
+            fails.append(f'B0: {len(log_lines)} console.log call(s) — remove all. Lines: {shown}{more}')
+
+        # B1: console.error must not interpolate user-content variables.
+        # Error messages are fine; ${word}, ${name}, ${email}, etc. are not.
+        for m in re.finditer(r'console\.error\([^\n]*', content):
+            for vm in re.finditer(r'\$\{([a-zA-Z_][a-zA-Z0-9_]*)', m.group()):
+                if vm.group(1) in SUSPICIOUS_LOG_VARS:
+                    ln = content[:m.start()].count('\n') + 1
+                    fails.append(f'B1: console.error line {ln} interpolates `${{{vm.group(1)}}}` — strip user content from error logs')
+                    break
+
+        results[name] = fails
+        continue
+
     c_block = get_c_block(content)
     c_end_pos = content.find('const linkStyle')
     if c_end_pos == -1: c_end_pos = len(content) // 2

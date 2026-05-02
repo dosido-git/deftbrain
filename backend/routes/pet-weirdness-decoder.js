@@ -4,7 +4,6 @@ const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 router.post('/pet-weirdness-decoder', rateLimit(DEFAULT_LIMITS), async (req, res) => {
-  console.log('✅ Pet Weirdness Decoder endpoint called');
 
   try {
     const { petType, breed, age, behavior, duration, frequency, otherChanges, imageBase64, currentMeds, recentDietChanges, seasonalContext, userLanguage } = req.body;
@@ -93,13 +92,6 @@ Return ONLY this JSON:
       parsed = JSON.parse(raw.substring(first, last + 1));
     }
 
-    console.log('✅ Analysis:', {
-      urgency: parsed.behavior_analysis?.urgency_level,
-      hasImage: !!imageBase64,
-      hasMeds: !!currentMeds,
-      hasDiet: !!recentDietChanges
-    });
-
     res.json(parsed);
 
   } catch (error) {
@@ -110,7 +102,6 @@ Return ONLY this JSON:
 
 // ── Follow-up Q&A endpoint ──
 router.post('/pet-weirdness-decoder/followup', rateLimit(DEFAULT_LIMITS), async (req, res) => {
-  console.log('✅ Pet Weirdness Decoder Follow-Up called');
 
   try {
     const { question, originalAnalysis, petType, breed, age, behavior, imageBase64, userLanguage } = req.body;
@@ -167,7 +158,6 @@ Answer the follow-up based on context. Be specific, practical, warm.
     });
 
     const answer = message.content.find(item => item.type === 'text')?.text || 'No answer available.';
-    console.log('✅ Follow-up answered');
     res.json({ answer: answer.trim() });
 
   } catch (error) {

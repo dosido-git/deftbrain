@@ -243,7 +243,6 @@ Return ONLY the JSON object.`;
         .replace(/,\s*]/g, ']');
       try {
         results = JSON.parse(repaired);
-        console.log('✅ JSON parsed after repair');
       } catch (retryError) {
         const pos = parseInt(parseError.message.match(/position (\d+)/)?.[1] || '0');
         if (pos > 0) {
@@ -535,7 +534,6 @@ Return ONLY the JSON object.`;
         .replace(/,\s*]/g, ']');
       try {
         results = JSON.parse(repaired);
-        console.log('✅ JSON parsed after repair');
       } catch (retryError) {
         const pos = parseInt(parseError.message.match(/position (\d+)/)?.[1] || '0');
         if (pos > 0) {
@@ -555,6 +553,5 @@ Return ONLY the JSON object.`;
     });
   }
 });
-
 
 module.exports = router;

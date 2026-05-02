@@ -75,9 +75,8 @@ router.post('/pronounce-it-right-audio', async (req, res) => {
     res.set('Cache-Control', 'no-store'); // audio is per-word, no benefit to caching
     res.send(audioBuffer);
 
-    console.log(`[PronounceItRight/audio] "${word.trim()}" (${languageOfOrigin || 'unknown origin'}) — ${audioBuffer.length} bytes`);
   } catch (err) {
-    console.error(`[PronounceItRight/audio] Failed for "${word}":`, err.message);
+    console.error('[PronounceItRight/audio] Failed:', err.message);
     res.status(500).json({ error: 'Audio generation failed' });
   }
 });

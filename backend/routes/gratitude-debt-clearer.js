@@ -189,7 +189,6 @@ Generate 2-3 message versions with different approaches. Return ONLY valid JSON.
     });
     const parsed = JSON.parse(cleanJsonResponse(msg1.content.find(b => b.type === 'text')?.text || ''));
 
-    console.log(`[GratitudeDebtClearer] For: ${recipientName}, Messages: ${parsed.thank_you_messages?.length}${recipientHistory?.length ? `, History: ${recipientHistory.length} past` : ''}`);
     res.json(parsed);
 
   } catch (error) {
@@ -248,7 +247,6 @@ RULES:
     });
     const parsed = JSON.parse(cleanJsonResponse(msg2.content.find(b => b.type === 'text')?.text || ''));
 
-    console.log(`[GratitudeSpecificity] Level: ${parsed.specificity_level}, Questions: ${parsed.questions?.length}`);
     res.json(parsed);
 
   } catch (error) {
@@ -317,7 +315,6 @@ Return ONLY valid JSON.`, userLanguage);
     });
     const parsed = JSON.parse(cleanJsonResponse(msg3.content.find(b => b.type === 'text')?.text || ''));
 
-    console.log(`[GratitudeFollowUp] For: ${recipientName}, Messages: ${parsed.follow_up_messages?.length}`);
     res.json(parsed);
 
   } catch (error) {

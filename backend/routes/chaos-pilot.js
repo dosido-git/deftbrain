@@ -79,7 +79,6 @@ Return ONLY valid JSON:
 }`;
 
     const lang = withLanguage(userLanguage);
-    console.log(`[chaos-pilot] Routine length: ${routine.trim().length}`);
 
     const msg = await withRetry(() => anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',

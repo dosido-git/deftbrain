@@ -16,8 +16,6 @@ router.post('/renters-deposit-saver', async (req, res) => {
         return res.status(400).json({ error: 'Location is required to look up deposit rights' });
       }
 
-      console.log(`[RentersDepositSaver] Rights-only lookup for: ${location}`);
-
       const rightsPrompt = `You are an expert tenant rights advocate. Provide a comprehensive security deposit rights guide for a renter in ${location}.
 
 Cover ALL of the following:
@@ -71,7 +69,6 @@ Return ONLY valid JSON (no markdown, no preamble, no code fences):
       });
 
       const textContent = message.content.find(item => item.type === 'text')?.text || '';
-      console.log(`[RentersDepositSaver] Rights response: ${textContent.length} chars`);
 
       const cleaned = cleanJsonResponse(textContent);
       const parsed = JSON.parse(cleaned);
@@ -97,11 +94,6 @@ Return ONLY valid JSON (no markdown, no preamble, no code fences):
     }
 
     // Summarize checklist for logging
-    const totalItems = checklist.reduce((sum, room) => sum + room.items.length, 0);
-    const damagedItems = checklist.reduce(
-      (sum, room) => sum + room.items.filter(i => i.condition === 'damaged').length, 0
-    );
-    console.log(`[RentersDepositSaver] ${checklist.length} rooms, ${totalItems} items, ${damagedItems} damaged`);
 
     // Format checklist data for the prompt
     const checklistFormatted = checklist.map(room => {
@@ -226,8 +218,6 @@ CRITICAL RULES:
 - Deposit rights MUST reference actual law with statute numbers
 - Return ONLY valid JSON`;
 
-    console.log(`[RentersDepositSaver] Sending prompt (${prompt.length} chars)`);
-
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 8000,
@@ -235,12 +225,10 @@ CRITICAL RULES:
     });
 
     const textContent = message.content.find(item => item.type === 'text')?.text || '';
-    console.log(`[RentersDepositSaver] Response: ${textContent.length} chars`);
 
     const cleaned = cleanJsonResponse(textContent);
     const parsed = JSON.parse(cleaned);
 
-    console.log(`[RentersDepositSaver] Generated: report=${!!parsed.condition_report}, letter=${!!parsed.landlord_letter}, photos=${!!parsed.photo_shot_list}, rights=${!!parsed.deposit_rights}, tips=${!!parsed.move_out_tips}`);
     res.json(parsed);
 
   } catch (error) {

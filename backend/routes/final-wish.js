@@ -42,7 +42,6 @@ function parseArrayResponse(raw) {
 }
 
 router.post('/final-wish', rateLimit(), async (req, res) => {
-  console.log('FinalWish v3 endpoint called');
 
   try {
     const { mode, payload, locale } = req.body;
@@ -54,8 +53,6 @@ router.post('/final-wish', rateLimit(), async (req, res) => {
       if (!text || text.trim().length < 3) {
         return res.status(400).json({ error: 'Please describe your accounts' });
       }
-
-      console.log('Parsing accounts from freetext');
 
       const prompt = `The user is creating a digital legacy document for "${trustedPerson || 'their trusted person'}". They described their important accounts:
 
@@ -92,8 +89,6 @@ If no clear accounts found, return an empty array.${lang}`;
         return res.status(400).json({ error: 'Please describe your financial accounts' });
       }
 
-      console.log('Parsing financial accounts');
-
       const prompt = `The user described their financial accounts for a digital legacy document:
 
 "${text.trim()}"
@@ -120,8 +115,6 @@ If nothing found, return [].${lang}`;
       if (!recipientName || !whatToKnow) {
         return res.status(400).json({ error: 'Recipient and message content are required' });
       }
-
-      console.log('Generating message for:', recipientName);
 
       const prompt = `Write a personal message from the user to "${recipientName}".
 
@@ -155,8 +148,6 @@ Return JSON: { "draft": "the message text", "lengthWords": number }${lang}`;
         return res.status(400).json({ error: 'Draft and adjustment are required' });
       }
 
-      console.log('Adjusting message for:', recipientName);
-
       const prompt = `Adjust this personal legacy message. Adjustment requested: "${adjustment}"
 
 Original message:
@@ -180,8 +171,6 @@ Return JSON: { "draft": "the adjusted message text" }${lang}`;
     // ── MODE 5: AI Interview — Next Question ──
     if (mode === 'interview-question') {
       const { documentState, previousQuestions } = payload || {};
-
-      console.log('Generating interview question');
 
       const stateDesc = [];
       if (documentState?.accountCount) stateDesc.push(`${documentState.accountCount} accounts documented`);
@@ -238,8 +227,6 @@ Return JSON: {
     if (mode === 'smart-gaps') {
       const { documentState } = payload || {};
 
-      console.log('Running smart gaps analysis');
-
       const prompt = `Analyze this FinalWish digital legacy document for gaps and missing information. Be specific and actionable — generic advice is useless.
 
 DOCUMENT STATE:
@@ -292,8 +279,6 @@ Return 3-8 gaps, prioritized by severity. Be specific to THEIR data, not generic
       if (!draft || !targetLanguage) {
         return res.status(400).json({ error: 'Draft and target language are required' });
       }
-
-      console.log('Translating message to:', targetLanguage);
 
       const prompt = `Translate this personal legacy message to ${targetLanguage}. This is an intimate, personal message — maintain the emotional tone, warmth, and authenticity of the original. Don't make it more formal or flowery than the original. If the original is casual, keep it casual in the translation.
 

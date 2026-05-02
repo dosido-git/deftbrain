@@ -89,8 +89,6 @@ Return this exact JSON structure:
   "reality_check": "honest, direct assessment — what would a wise friend say?"
 }`;
 
-      console.log(`[RoommateCourt] Mediating: ${category || 'general'} dispute (${duration || 'unknown'} duration)`);
-
       const message = await anthropic.messages.create({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 2500,
@@ -143,8 +141,6 @@ Return this exact JSON structure:
   "chore_weights": { "Chore1": 1-3, "Chore2": 1-3 }
 }`;
 
-      console.log(`[RoommateCourt] Assigning ${chores.length} chores to ${roommates.length} roommates (${history?.length || 0} prior rounds)`);
-
       const message = await anthropic.messages.create({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 1500,
@@ -189,8 +185,6 @@ Return this exact JSON structure:
   "revised_fairness_score": <number> or null,
   "explanation": "plain language explanation for the complainer — empathetic but factual"
 }`;
-
-      console.log(`[RoommateCourt] Rebalance request: "${complaint}"`);
 
       const message = await anthropic.messages.create({
         model: 'claude-sonnet-4-20250514',

@@ -100,8 +100,6 @@ router.post('/micro-adventure-mapper', async (req, res) => {
         return res.status(400).json({ error: 'Location is required' });
       }
 
-      console.log(`🗺️ MicroAdventureMapper: Generating for ${location} (${(previousAdventures || []).length} past adventures in area)`);
-
       const constraints = buildConstraintNotes(req.body);
 
       let dedupBlock = '';
@@ -132,7 +130,6 @@ ${RESPONSE_SCHEMA}`;
 
       try {
         const data = JSON.parse(cleaned);
-        console.log(`🗺️ MicroAdventureMapper: Generated "${data.adventure?.name}" with ${(data.stops || []).length} stops`);
         return res.json(data);
       } catch (e) {
         console.error('🗺️ MicroAdventureMapper: Parse error:', e.message);
@@ -144,8 +141,6 @@ ${RESPONSE_SCHEMA}`;
     if (action === 'regenerate') {
       const { location, previousAdventureName, previousAdventures } = req.body;
       if (!location) return res.status(400).json({ error: 'Location is required' });
-
-      console.log(`🗺️ MicroAdventureMapper: Regenerating (was: "${previousAdventureName}", ${(previousAdventures || []).length} past in area)`);
 
       const constraints = buildConstraintNotes(req.body);
 
@@ -179,7 +174,6 @@ ${RESPONSE_SCHEMA}`;
 
       try {
         const data = JSON.parse(cleaned);
-        console.log(`🗺️ MicroAdventureMapper: Regenerated as "${data.adventure?.name}"`);
         return res.json(data);
       } catch (e) {
         console.error('🗺️ MicroAdventureMapper: Regenerate parse error:', e.message);
@@ -193,8 +187,6 @@ ${RESPONSE_SCHEMA}`;
       if (!currentItinerary || !swapStopNumber) {
         return res.status(400).json({ error: 'Current itinerary and stop number required' });
       }
-
-      console.log(`🗺️ MicroAdventureMapper: Swapping stop #${swapStopNumber}`);
 
       const constraints = buildConstraintNotes(req.body);
       const currentStop = (currentItinerary.stops || []).find(s => s.number === swapStopNumber);
@@ -255,7 +247,6 @@ Return ONLY valid JSON with the replacement stop and updated transit:
 
       try {
         const data = JSON.parse(cleaned);
-        console.log(`🗺️ MicroAdventureMapper: Swapped to "${data.stops?.[0]?.name}"`);
         return res.json(data);
       } catch (e) {
         console.error('🗺️ MicroAdventureMapper: Swap parse error:', e.message);

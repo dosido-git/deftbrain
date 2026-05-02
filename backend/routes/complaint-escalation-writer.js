@@ -139,7 +139,6 @@ Build a complete multi-stage escalation campaign. Return ONLY valid JSON (no mar
 }`;
 
     const lang = withLanguage(userLanguage);
-    console.log(`[ComplaintEscalationWriter] Company: ${company}, Industry: ${industry || 'auto'}, Tone: ${tone || 'firm'}`);
 
     const msg1 = await withRetry(() => anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
@@ -148,7 +147,6 @@ Build a complete multi-stage escalation campaign. Return ONLY valid JSON (no mar
     }));
     const parsed = JSON.parse(cleanJsonResponse(msg1.content.find(i => i.type === 'text')?.text || ''));
 
-    console.log(`[ComplaintEscalationWriter] Severity: ${parsed.situation_assessment?.severity}, Legal leverage: ${parsed.legal_leverage?.length || 0} items`);
     res.json(parsed);
 
   } catch (error) {
@@ -168,8 +166,6 @@ router.post('/complaint-escalation-writer/analyze-response', rateLimit(DEFAULT_L
     if (!companyResponse?.trim()) {
       return res.status(400).json({ error: 'Company response text is required' });
     }
-
-    console.log(`[CEW/analyze-response] Company: ${company}, Stage: ${stage}`);
 
     const prompt = `You are an expert consumer advocate. The user sent a complaint and received a response from the company. Analyze the response and advise on next steps.
 
@@ -222,7 +218,6 @@ Return ONLY valid JSON:
     }));
     const parsed = JSON.parse(cleanJsonResponse(msg2.content.find(i => i.type === 'text')?.text || ''));
 
-    console.log(`[CEW/analyze-response] Type: ${parsed.response_type}, Recommendation: ${parsed.recommendation}`);
     res.json(parsed);
 
   } catch (error) {
@@ -263,8 +258,6 @@ router.post('/complaint-escalation-writer/regenerate-stage', rateLimit(DEFAULT_L
       5: `{"title":"Financial & Legal Remedies","chargeback":{"applicable":true,"reason_code":"Code","time_window":"Window","how_to_file":"Steps","documentation_needed":"Reference specific evidence gathered during campaign","success_likelihood":"Based on documented history"},"small_claims":{"applicable":true,"jurisdiction":"Where","filing_fee_range":"Cost","max_claim_amount":"Limit","typical_outcome":"How these resolve","company_response":"What company typically does"},"attorney_general":{"applicable":true,"how_to_file":"Process","what_it_triggers":"What happens"}}`,
     };
 
-    console.log(`[CEW/regenerate] Stage ${targetStage} for ${company}, history: ${campaignHistory?.length || 0} entries`);
-
     const prompt = `You are an elite consumer advocacy strategist. Regenerate Stage ${targetStage} of an escalation campaign based on what has ACTUALLY HAPPENED so far.
 
 COMPANY: ${company}
@@ -288,7 +281,6 @@ ${stageFormats[targetStage] || stageFormats[3]}`;
     }));
     const parsed = JSON.parse(cleanJsonResponse(msg3.content.find(i => i.type === 'text')?.text || ''));
 
-    console.log(`[CEW/regenerate] Stage ${targetStage} regenerated`);
     res.json(parsed);
 
   } catch (error) {

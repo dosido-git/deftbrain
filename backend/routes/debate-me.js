@@ -57,7 +57,6 @@ Return ONLY valid JSON:
 
     const parsed = await callClaudeWithRetry(prompt, { label: 'DebateOpen', max_tokens: 2500,
       system: withLanguage(`Steelman debate partner. Intellectually honest, real evidence, genuine respect. Coach not adversary. ${challengeLevel === 'no-mercy' ? 'Intellectually relentless.' : ''} ${format === 'socratic' || format === 'cross-exam' ? 'QUESTIONS ONLY — never make statements or assertions.' : ''} Return ONLY valid JSON. No markdown.`, userLanguage) });
-    console.log(`[DebateOpen] ${parsed.debate_context?.core_tension?.substring(0, 50) || '?'} | ${challengeLevel} | ${format || 'freeform'}`);
     res.json(parsed);
   } catch (error) {
     console.error('[DebateOpen]', error);
@@ -102,7 +101,6 @@ Return ONLY valid JSON:
 
     const parsed = await callClaudeWithRetry(prompt, { label: 'DebateRespond', max_tokens: 2000,
       system: withLanguage(`Steelman debate partner. Concede strong points. Flag fallacies. Press forward. ${format === 'socratic' || format === 'cross-exam' ? 'QUESTIONS ONLY.' : ''} Return ONLY valid JSON. No markdown.`, userLanguage) });
-    console.log(`[DebateRespond] momentum: ${parsed.momentum?.assessment || '?'}`);
     res.json(parsed);
   } catch (error) {
     console.error('[DebateRespond]', error);
@@ -171,7 +169,6 @@ Return ONLY valid JSON:
 
     const parsed = await callClaudeWithRetry(prompt, { label: 'DebateScorecard', max_tokens: 2500,
       system: withLanguage('Debate coach. Honest, warm, specific. Coaching not grading. Return ONLY valid JSON. No markdown.', userLanguage) });
-    console.log(`[DebateScorecard] ${parsed.overall?.thinking_sharpness}/10`);
     res.json(parsed);
   } catch (error) {
     console.error('[DebateScorecard]', error);
@@ -278,7 +275,6 @@ Return ONLY valid JSON:
 
     const parsed = await callClaudeWithRetry(prompt, { label: 'DebateAudienceJudge', max_tokens: 2000,
       system: withLanguage('Undecided audience member judging a debate on persuasiveness, not correctness. Fair, specific, thoughtful. Return ONLY valid JSON. No markdown.', userLanguage) });
-    console.log(`[DebateAudienceJudge] ${parsed.verdict?.more_persuasive} (${parsed.verdict?.confidence})`);
     res.json(parsed);
   } catch (error) {
     console.error('[DebateAudienceJudge]', error);
@@ -334,7 +330,6 @@ Return ONLY valid JSON:
 
     const parsed = await callClaudeWithRetry(prompt, { label: 'DebateArgumentMap', max_tokens: 2500,
       system: withLanguage('Argument structure analyst. Map the logical structure of debates into trees. Precise, analytical, visual. Return ONLY valid JSON. No markdown.', userLanguage) });
-    console.log(`[DebateArgumentMap] user branches: ${parsed.user_tree?.branches?.length || 0} | ai branches: ${parsed.ai_tree?.branches?.length || 0}`);
     res.json(parsed);
   } catch (error) {
     console.error('[DebateArgumentMap]', error);
@@ -383,7 +378,6 @@ Return ONLY valid JSON:
 
     const parsed = await callClaudeWithRetry(prompt, { label: 'DebatePrep', max_tokens: 2500,
       system: withLanguage('Devil\'s advocate prep coach. Simulate specific audiences and drill on their hardest objections. Practical, specific, actionable. Return ONLY valid JSON. No markdown.', userLanguage) });
-    console.log(`[DebatePrep] ${parsed.hard_questions?.length || 0} questions | audience: ${audience?.substring(0, 30) || '?'}`);
     res.json(parsed);
   } catch (error) {
     console.error('[DebatePrep]', error);
@@ -471,7 +465,6 @@ Return ONLY valid JSON:
 
     const parsed = await callClaudeWithRetry(prompt, { label: 'DebateSourceCheck', max_tokens: 1500,
       system: withLanguage('Evidence evaluator. Assess claims for factual accuracy and evidence quality. Honest, specific, educational. Return ONLY valid JSON. No markdown.', userLanguage) });
-    console.log(`[DebateSourceCheck] ${parsed.evidence_rating?.score || '?'} | ${parsed.claim_type || '?'}`);
     res.json(parsed);
   } catch (error) {
     console.error('[DebateSourceCheck]', error);
@@ -511,7 +504,6 @@ Return ONLY valid JSON:
 
     const parsed = await callClaudeWithRetry(prompt, { label: 'DebateRematch', max_tokens: 2500,
       system: withLanguage('Rematch debate partner. You have intelligence on their previous weaknesses. Target them specifically. Still fair, still steelman — but surgically aimed at their growth areas. Return ONLY valid JSON. No markdown.', userLanguage) });
-    console.log(`[DebateRematch] targeting ${parsed.targeted_weaknesses?.length || 0} weaknesses`);
     res.json(parsed);
   } catch (error) {
     console.error('[DebateRematch]', error);
@@ -558,7 +550,6 @@ Return ONLY valid JSON:
 
     const parsed = await callClaudeWithRetry(prompt, { label: 'DebateHighlightReel', max_tokens: 2500,
       system: withLanguage('Meta-analyst of debating patterns. You find patterns across multiple debates that no single scorecard reveals. Insightful, specific, growth-oriented. Return ONLY valid JSON. No markdown.', userLanguage) });
-    console.log(`[DebateHighlightReel] ${debates.length} debates | type: ${parsed.debater_type?.label || '?'}`);
     res.json(parsed);
   } catch (error) {
     console.error('[DebateHighlightReel]', error);

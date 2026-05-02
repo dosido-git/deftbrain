@@ -411,8 +411,6 @@ CRITICAL RULES
 
 7. Return ONLY the JSON. No markdown, no preamble.`;
 
-    console.log(`[NameStorm] Category: ${category}${isDomainMode ? ' (DOMAIN MODE)' : ''}${primaryLanguage && primaryLanguage !== 'English' ? ` [${primaryLanguage}]` : ''}, Vibes: ${vibeChips?.join(', ') || 'none'}, Vibe text: ${vibe?.substring(0, 40) || 'none'}`);
-
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-20250514',
       max_tokens: isDomainMode ? 6000 : 7000,
@@ -426,7 +424,6 @@ CRITICAL RULES
       });
     });
 
-    console.log(`[NameStorm] Categories: ${parsed.categories_selected?.length}, Names: ${parsed.names_by_category?.reduce((sum, c) => sum + c.names.length, 0)}, Top picks: ${parsed.top_picks?.length}`);
     res.json(parsed);
 
   } catch (error) {
@@ -442,8 +439,6 @@ router.post('/namestorm/check', async (req, res) => {
   try {
     const { name, isDomainMode } = req.body;
     if (!name) return res.status(400).json({ error: 'Name is required' });
-
-    console.log(`[NameStorm/Check] Checking availability for: ${name} (domain mode: ${!!isDomainMode})`);
 
     // For domain mode, use the domain-aware checker
     if (isDomainMode && name.includes('.')) {
@@ -514,8 +509,6 @@ Return ONLY this JSON:
 
 Same rules: check every name for problems in major languages, phonetic issues, brand conflicts. Be creative — don't just add prefixes/suffixes to the original. Return ONLY JSON.`;
 
-    console.log(`[NameStorm/More] More like: "${name}"`);
-
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 3000,
@@ -527,7 +520,6 @@ Same rules: check every name for problems in major languages, phonetic issues, b
       if (!Array.isArray(v.problems)) v.problems = [];
     });
 
-    console.log(`[NameStorm/More] Generated ${parsed.variations?.length} variations for "${name}"`);
     res.json(parsed);
 
   } catch (error) {
@@ -669,8 +661,6 @@ RULES:
 7. PHONETIC-FIRST IS SOUND-FIRST: For strategy 6, do NOT start with source words and modify them. Start by imagining what the perfect name SOUNDS like for this vibe, then find the source fragments inside that sound. The result should feel like a discovered word, not a constructed one.
 8. Return ONLY valid JSON.`;
 
-    console.log(`[NameStorm/Blend] Seeds: ${seedWords.join(' + ')}${isNonEnglish ? ` [${primaryLanguage}]` : ''}${pairWithDomains ? ' +domains' : ''}`);
-
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 6000,
@@ -684,7 +674,6 @@ RULES:
       });
     });
 
-    console.log(`[NameStorm/Blend] Strategies: ${parsed.categories_selected?.length}, Blends: ${parsed.names_by_category?.reduce((sum, c) => sum + c.names.length, 0)}, Top picks: ${parsed.top_picks?.length}`);
     res.json(parsed);
 
   } catch (error) {
@@ -767,8 +756,6 @@ For "problems", flag issues like the original tool does:
 
 Return ONLY valid JSON.`;
 
-    console.log(`[NameStorm/Refine] Refining: "${name}" — instruction: "${instruction.substring(0, 50)}"`);
-
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 3000,
@@ -781,7 +768,6 @@ Return ONLY valid JSON.`;
       if (!Array.isArray(v.problems)) v.problems = [];
     });
 
-    console.log(`[NameStorm/Refine] Generated ${parsed.variations?.length || 0} refinements`);
     res.json(parsed);
 
   } catch (error) {
@@ -842,8 +828,6 @@ The story should:
 
 Return ONLY valid JSON.`;
 
-    console.log(`[NameStorm/Story] Generating story for: "${name}"`);
-
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 2000,
@@ -851,7 +835,6 @@ Return ONLY valid JSON.`;
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'NameStorm/Story' });
 
-    console.log(`[NameStorm/Story] Story generated for "${name}"`);
     res.json(parsed);
 
   } catch (error) {

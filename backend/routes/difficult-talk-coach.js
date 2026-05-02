@@ -259,8 +259,6 @@ CRITICAL RULES
 
 6. Return ONLY the JSON object. No markdown, no preamble.`;
 
-    console.log(`[DifficultTalkCoach] Topic: "${topic.substring(0, 50)}...", Relationship: ${relationship}, Resistance: ${resistanceLevel}, Fears: ${fears?.length || 0}`);
-
     const systemPrompt = withLanguage(
       'You are an expert communication coach and conflict resolution specialist. Return ONLY valid JSON matching the exact schema requested. No markdown, no preamble.',
       userLanguage
@@ -272,7 +270,6 @@ CRITICAL RULES
       system: systemPrompt,
     });
 
-    console.log(`[DifficultTalkCoach] Approaches: ${parsed.conversation_approaches?.length}, Landmines: ${parsed.emotional_landmines?.length}`);
     res.json(parsed);
 
   } catch (error) {
@@ -620,7 +617,6 @@ Return ONLY JSON.`, userLanguage);
       system: withLanguage('You are an expert communication coach. Return ONLY valid JSON. No markdown, no preamble.', userLanguage),
     });
 
-    console.log(`[DifficultTalkPracticeSummary] Readiness: ${parsed.readiness_score}/10, Strengths: ${parsed.strengths?.length}, Stumbles: ${parsed.stumbles?.length}`);
     res.json(parsed);
 
   } catch (error) {

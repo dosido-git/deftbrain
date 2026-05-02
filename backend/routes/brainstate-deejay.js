@@ -130,7 +130,6 @@ OUTPUT (JSON only):
 CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`, locale);
 
   try {
-    console.log(`[BrainstateDeejay] ${currentState} → ${desiredState} | Task: ${taskContext || 'none'}`);
     const msg = await withRetry(() => anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 2000,
@@ -171,7 +170,6 @@ Based on this feedback, generate an adjusted playlist that addresses the issue. 
 Return the same JSON structure as the original playlist, adjusted for the feedback. CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`, locale);
 
   try {
-    console.log(`[BrainstateDeejay/adjust] ${currentState} → ${desiredState} | Feedback: ${feedback}`);
     const msg = await withRetry(() => anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 2000,

@@ -130,8 +130,6 @@ Return ONLY valid JSON:
 
 Return ONLY valid JSON.`;
 
-    console.log(`[LeverageLogic] Analyzing: ${(situation || '').slice(0, 60)}...`);
-
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 2500,
@@ -184,8 +182,6 @@ Return ONLY valid JSON:
 }
 
 Return ONLY valid JSON.`;
-
-    console.log(`[LeverageLogic/counter] They said: "${(theyJustSaid || '').slice(0, 50)}..."`);
 
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
@@ -246,8 +242,6 @@ Return ONLY valid JSON:
 
 Return ONLY valid JSON.`;
 
-    console.log(`[LeverageLogic/prep-check] ${(situation || '').slice(0, 50)}...`);
-
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 1000,
@@ -307,8 +301,6 @@ Return ONLY valid JSON:
 }
 
 Return ONLY valid JSON.`;
-
-    console.log(`[LeverageLogic/simulate] ${(situation || '').slice(0, 50)}...`);
 
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
@@ -380,8 +372,6 @@ Return ONLY valid JSON:
 
 Return ONLY valid JSON.`;
 
-    console.log(`[LeverageLogic/draft-email] ${(situation || '').slice(0, 50)}...`);
-
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 2000,
@@ -447,8 +437,6 @@ Return ONLY valid JSON:
 }
 
 Return ONLY valid JSON.`;
-
-    console.log(`[LeverageLogic/debrief] Outcome: ${(finalOutcome || '').slice(0, 50)}...`);
 
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',

@@ -67,15 +67,12 @@ function manuallyParseTasks(jsonStr) {
 }
 
 router.post('/task-avalanche-breaker', rateLimit(DEFAULT_LIMITS), async (req, res) => {
-  console.log('✅ Task Avalanche Breaker V2 endpoint called');
 
   try {
     const {
       project, overwhelmReasons, availableTime,
       energyLevel, adaptiveMode, existingHabit, userLanguage
     } = req.body;
-
-    console.log('📝 Request:', { projectLength: project?.length, energy: energyLevel });
 
     if (!project || project.trim().length < 10) {
       return res.status(400).json({ error: 'Please describe your project (at least 10 characters)' });
@@ -158,8 +155,6 @@ Return this JSON structure:
 
 Return ONLY valid JSON.`;
 
-    console.log('🤖 Calling Claude API...');
-
     const systemPrompt = withLanguage(
       'You are an expert task decomposition coach for people with executive dysfunction. Return only valid JSON.',
       userLanguage
@@ -172,23 +167,18 @@ Return ONLY valid JSON.`;
       messages: [{ role: 'user', content: prompt }]
     });
 
-    console.log('✅ Claude API responded');
-
     const textContent = message.content.find(item => item.type === 'text')?.text || '';
     const cleaned = cleanJsonResponse(textContent);
 
     let parsed;
     try {
       parsed = JSON.parse(cleaned);
-      console.log('✅ JSON parsed successfully');
     } catch (parseError) {
       console.error('❌ Parse failed, attempting repair:', parseError.message);
       const repaired = repairJSON(cleaned);
       try {
         parsed = JSON.parse(repaired);
-        console.log('✅ JSON parsed after repair');
       } catch (retryError) {
-        console.log('🔧 Attempting manual task extraction...');
         const tasks = manuallyParseTasks(repaired);
         if (tasks.length === 0) {
           return res.status(500).json({ error: 'Could not extract any tasks. Please try a simpler project description.' });
@@ -208,7 +198,6 @@ Return ONLY valid JSON.`;
           },
           momentum_checkpoints: [{ after_task: 5, celebration: "You started! Hardest part done!", points_earned: 50 }]
         };
-        console.log(`✅ Manually reconstructed with ${tasks.length} tasks`);
       }
     }
 
@@ -254,9 +243,6 @@ Return ONLY valid JSON.`;
     if (!parsed.momentum_checkpoints) {
       parsed.momentum_checkpoints = [{ after_task: 5, celebration: "You started! Hardest part done!", points_earned: 50 }];
     }
-
-    console.log('✅ Final validation complete');
-    console.log('📊 Breakdown:', { totalTasks: parsed.micro_tasks.length, points: parsed.project_breakdown.total_points_possible });
 
     res.json(parsed);
 

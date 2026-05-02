@@ -104,8 +104,6 @@ Return ONLY valid JSON:
 
 Return ONLY valid JSON.`;
 
-    console.log(`[SceneScout] Analyzing ${location} (${placeType}, ${visitDateTime})`);
-
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 2000,
@@ -167,8 +165,6 @@ Return ONLY valid JSON:
 
 Return ONLY valid JSON.`;
 
-    console.log(`[SceneScout/alternatives] For ${location}`);
-
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 1000,
@@ -218,8 +214,6 @@ Return ONLY valid JSON:
 
 Return ONLY valid JSON.`;
 
-    console.log(`[SceneScout/companion] For ${location}`);
-
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 800,
@@ -266,8 +260,6 @@ Return ONLY valid JSON:
 }
 
 Return ONLY valid JSON.`;
-
-    console.log(`[SceneScout/rescan] ${location}: ${currentConditions.slice(0, 50)}...`);
 
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
@@ -348,8 +340,6 @@ Return ONLY valid JSON:
 
 Return ONLY valid JSON.`;
 
-    console.log(`[SceneScout/route] ${stops.length} stops`);
-
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 1500,
@@ -402,8 +392,6 @@ Return ONLY valid JSON:
 }
 
 Return ONLY valid JSON.`;
-
-    console.log(`[SceneScout/comfort-kit] ${placeType}, ${concerns.join(', ')}`);
 
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',

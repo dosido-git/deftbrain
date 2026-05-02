@@ -53,7 +53,6 @@ Return ONLY valid JSON:
       system: withLanguage('You are a tipping etiquette expert who gives specific, culturally aware recommendations. You know the difference between what\'s expected, what\'s generous, and what\'s insulting in every context. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
-    console.log(`[MoneyDiplomatTip] ${parsed.recommendation?.percentage}% in ${country || 'USA'}, ${serviceType || 'restaurant'}`);
     res.json(parsed);
 
   } catch (error) {
@@ -110,7 +109,6 @@ Return ONLY valid JSON:
       system: withLanguage('You are a social dynamics expert who splits bills fairly while preserving friendships. You understand that "fair" and "equal" aren\'t always the same thing. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
-    console.log(`[MoneyDiplomatSplit] ${parsed.options?.length} options, recommended: ${parsed.recommended?.substring(0, 40)}`);
     res.json(parsed);
 
   } catch (error) {
@@ -166,7 +164,6 @@ Return ONLY valid JSON:
       system: withLanguage('You are a social money advisor who helps people navigate the awkward territory of requesting money from friends and family. You\'re practical, not preachy. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
-    console.log(`[MoneyDiplomatVenmo] Verdict: ${parsed.verdict}, Confidence: ${parsed.confidence}%`);
     res.json(parsed);
 
   } catch (error) {
@@ -228,7 +225,6 @@ Return ONLY valid JSON:
       system: withLanguage('You are a gift-giving advisor who knows the unspoken rules about how much to spend. You calibrate to relationship dynamics, cultural norms, and social expectations. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
-    console.log(`[MoneyDiplomatGift] ${parsed.recommendation?.amount} for ${occasion.trim()}`);
     res.json(parsed);
 
   } catch (error) {
@@ -287,7 +283,6 @@ Return ONLY valid JSON:
       system: withLanguage('You are a shared-living fairness expert. You know that equal isn\'t always fair and can explain adjustments in a way both sides accept. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
-    console.log(`[MoneyDiplomatRoommate] ${parsed.fair_split?.length} people, methodology: ${parsed.methodology?.substring(0, 40)}`);
     res.json(parsed);
 
   } catch (error) {
@@ -351,7 +346,6 @@ Return ONLY valid JSON:
       system: withLanguage('You are a family dynamics advisor specializing in money conversations. You understand that family money is never just about money — it\'s about love, control, guilt, obligation, and belonging. Be wise, warm, and culturally sensitive. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
-    console.log(`[MoneyDiplomatFamily] Type: ${parsed.assessment?.type}, Stakes: ${parsed.assessment?.emotional_stakes}`);
     res.json(parsed);
 
   } catch (error) {
@@ -410,7 +404,6 @@ Return ONLY valid JSON:
       system: withLanguage('You are a social dining strategist who helps people navigate group meals without money stress. You give specific words to say, not vague advice. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
-    console.log(`[MoneyDiplomatDining] Who pays: ${parsed.who_pays?.expectation?.substring(0, 40)}`);
     res.json(parsed);
 
   } catch (error) {
@@ -475,7 +468,6 @@ Return ONLY valid JSON:
       system: withLanguage('You are a group expense settler who makes complex shared costs simple and fair. You minimize transactions, handle dropouts gracefully, and keep friendships intact. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
-    console.log(`[MoneyDiplomatGroup] ${parsed.settlement?.length} people, ${parsed.simplification?.transactions?.length} transactions`);
     res.json(parsed);
 
   } catch (error) {
@@ -534,7 +526,6 @@ Return ONLY valid JSON:
       system: withLanguage('You are a personal lending advisor who protects both the money and the relationship. You\'re honest about whether people will get their money back. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
-    console.log(`[MoneyDiplomatLend] Verdict: ${parsed.verdict}, Payback: ${parsed.risk_assessment?.will_you_get_it_back}`);
     res.json(parsed);
 
   } catch (error) {
@@ -595,7 +586,6 @@ Return ONLY valid JSON:
       system: withLanguage('You are a workplace culture expert who understands the unwritten rules of office money dynamics. You help people navigate collections, splits, and expenses without hurting their reputation. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
-    console.log(`[MoneyDiplomatWork] Type: ${parsed.assessment?.type}, Pressure: ${parsed.assessment?.pressure_level}`);
     res.json(parsed);
 
   } catch (error) {
@@ -665,7 +655,6 @@ Return ONLY valid JSON:
       system: withLanguage('You are a cultural money etiquette expert for global travel. You know the specific norms, traps, and social rules for money in every destination. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
-    console.log(`[MoneyDiplomatTravel] Destination: ${destination.trim()}, Haggling: ${parsed.haggling?.expected}`);
     res.json(parsed);
 
   } catch (error) {
@@ -729,7 +718,6 @@ Return ONLY valid JSON:
       system: withLanguage('You are a behavioral money analyst who reveals social spending patterns people can\'t see themselves. Be insightful and kind — this is about self-awareness, not judgment. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
-    console.log(`[MoneyDiplomatProfile] Archetype: ${parsed.money_style?.archetype}, Score: ${parsed.money_health_score?.score}`);
     res.json(parsed);
 
   } catch (error) {
@@ -795,7 +783,6 @@ Return ONLY valid JSON:
       system: withLanguage('You are a dating etiquette advisor who handles money dynamics with emotional intelligence. You know that who pays communicates something — help people send the right signal. Be modern, inclusive, and culturally aware. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
-    console.log(`[MoneyDiplomatDate] Who pays: ${parsed.who_pays?.recommendation}, Date #${dateNumber || '?'}`);
     res.json(parsed);
 
   } catch (error) {
@@ -856,7 +843,6 @@ Return ONLY valid JSON:
       system: withLanguage('You are a shared subscription expert who balances fairness with the reality that someone always manages the account and someone always barely uses it. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
-    console.log(`[MoneyDiplomatSubs] Service: ${service || 'unknown'}, ${parsed.fair_split?.length} people`);
     res.json(parsed);
 
   } catch (error) {
@@ -901,7 +887,6 @@ Return ONLY valid JSON:
       system: withLanguage('You write money reminder messages that actually work — casual enough to preserve the friendship, clear enough to get paid. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
-    console.log(`[MoneyDiplomatNudge] ${personName.trim()}: ${amount}, attempt ${attempts || 1}`);
     res.json(parsed);
 
   } catch (error) {
@@ -969,7 +954,6 @@ Return ONLY valid JSON:
       system: withLanguage('You are a salary negotiation coach who gives specific numbers, not vague advice. You understand leverage, anchoring, and the psychology of hiring managers. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
-    console.log(`[MoneyDiplomatSalary] Ask: ${parsed.range?.ask}, Likely: ${parsed.range?.likely_outcome}`);
     res.json(parsed);
 
   } catch (error) {
@@ -1021,7 +1005,6 @@ Return ONLY valid JSON:
       system: withLanguage('You are a financial reality-checker who gives honest, judgment-free gut checks. Not a budget planner — a friend who tells the truth about whether you can swing it. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
-    console.log(`[MoneyDiplomatAfford] Verdict: ${parsed.verdict}, Confidence: ${parsed.confidence}%`);
     res.json(parsed);
 
   } catch (error) {
@@ -1086,7 +1069,6 @@ Return ONLY valid JSON:
       system: withLanguage('You are a compassionate inheritance advisor who understands that estate money is grief money. You navigate family dynamics, legal complexity, and emotional minefields with wisdom and kindness. Always recommend professional help for legal/tax matters. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
-    console.log(`[MoneyDiplomatInheritance] Complexity: ${parsed.assessment?.complexity}, Needs pro: ${parsed.assessment?.needs_professional}`);
     res.json(parsed);
 
   } catch (error) {
@@ -1145,7 +1127,6 @@ Return ONLY valid JSON:
       system: withLanguage('You are a cross-cultural money etiquette translator. You know the unspoken rules of money in every culture and help people from different backgrounds navigate shared money moments without offense. Be specific, not generic. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
-    console.log(`[MoneyDiplomatCultural] ${yourBackground.trim()} ↔ ${theirBackground.trim()}, Risk: ${parsed.culture_clash_risk}`);
     res.json(parsed);
 
   } catch (error) {
@@ -1204,7 +1185,6 @@ Return ONLY valid JSON:
       system: withLanguage('You are a charitable giving advisor who helps people be generous without being exploited. You understand the difference between genuine giving and guilt compliance. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
-    console.log(`[MoneyDiplomatCharity] ${parsed.recommendation?.amount}, Obligation: ${parsed.obligation_check?.are_you_obligated}`);
     res.json(parsed);
 
   } catch (error) {
@@ -1285,7 +1265,6 @@ Return ONLY valid JSON:
       system: withLanguage('You are both a realistic role-player AND a money conversation coach. Evaluate honestly, then stay in character for the next line. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
-    console.log(`[MoneyDiplomatSim] Score: ${parsed.evaluation?.score}, Level: ${parsed.escalation_level}`);
     res.json({ type: 'evaluation', ...parsed });
 
   } catch (error) {
@@ -1344,7 +1323,6 @@ Return ONLY valid JSON:
       system: withLanguage('You are a witty, insightful personal money analyst who makes people feel good about taking control of their social money life. Think Spotify Wrapped energy. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
-    console.log(`[MoneyDiplomatRecap] Headline: "${parsed.headline}", Situations: ${parsed.stats?.total_situations}`);
     res.json(parsed);
 
   } catch (error) {

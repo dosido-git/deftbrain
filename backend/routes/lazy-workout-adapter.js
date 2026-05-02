@@ -81,7 +81,6 @@ Return ONLY valid JSON:
       const text = message.content.find(b => b.type === 'text')?.text || '';
       const cleaned = cleanJsonResponse(text);
       const parsed = JSON.parse(cleaned);
-    console.log(`[LazyWorkout] energy:${energyNum} body:${bodyAreas?.length || 0} ctx:${contexts?.length || 0} prog:${progressionLevel}`);
     res.json(parsed);
   } catch (error) {
     console.error('[LazyWorkout]', error);
@@ -308,7 +307,6 @@ Return ONLY valid JSON:
       const text = message.content.find(b => b.type === 'text')?.text || '';
       const cleaned = cleanJsonResponse(text);
       const parsed = JSON.parse(cleaned);
-    console.log(`[LazyWorkoutStack] activity: ${activity?.substring(0, 30)}`);
     res.json(parsed);
   } catch (error) { console.error('[LazyWorkoutStack]', error); res.status(500).json({ error: error.message || 'Failed.' }); }
 });
@@ -376,7 +374,6 @@ Return ONLY valid JSON:
       const text = message.content.find(b => b.type === 'text')?.text || '';
       const cleaned = cleanJsonResponse(text);
       const parsed = JSON.parse(cleaned);
-    console.log(`[LazyWorkoutRecovery] event: ${event?.substring(0, 30)}`);
     res.json(parsed);
   } catch (error) { console.error('[LazyWorkoutRecovery]', error); res.status(500).json({ error: error.message || 'Failed.' }); }
 });
@@ -412,7 +409,6 @@ Return ONLY valid JSON:
       const text = message.content.find(b => b.type === 'text')?.text || '';
       const cleaned = cleanJsonResponse(text);
       const parsed = JSON.parse(cleaned);
-    console.log(`[LazyWorkoutProve] ${recent.length} sessions`);
     res.json(parsed);
   } catch (error) { console.error('[LazyWorkoutProve]', error); res.status(500).json({ error: error.message || 'Failed.' }); }
 });

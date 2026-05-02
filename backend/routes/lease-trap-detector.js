@@ -38,8 +38,6 @@ router.post('/lease-trap-detector', async (req, res) => {
     if (pdfBase64) {
       const commaIndex = pdfBase64.indexOf(',');
       const rawBase64 = commaIndex !== -1 ? pdfBase64.substring(commaIndex + 1) : pdfBase64;
-      const sizeKB = Math.round((rawBase64.length * 0.75) / 1024);
-      console.log(`[LeaseTrapDetector] PDF received: ${sizeKB}KB`);
 
       contentBlocks.push({
         type: 'document',
@@ -251,8 +249,6 @@ CRITICAL RULES:
 
     contentBlocks.push({ type: 'text', text: prompt });
 
-    console.log(`[LeaseTrapDetector] Sending ${contentBlocks.length} blocks (PDF: ${!!pdfBase64}, text: ${!!leaseText})`);
-
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 8000,
@@ -260,9 +256,7 @@ CRITICAL RULES:
     });
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
-    console.log(`[LeaseTrapDetector] Response: ${raw.length} chars`);
     const parsed = safeParseJSON(raw);
-    console.log(`[LeaseTrapDetector] Risk: ${parsed.overall_assessment?.risk_level}, Red: ${parsed.red_flags?.length || 0}`);
     res.json(parsed);
 
   } catch (error) {
@@ -332,8 +326,6 @@ Return ONLY valid JSON:
 }
 
 Return ONLY valid JSON.`, userLanguage);
-
-    console.log(`[LeaseTrapDetector/followup] Q: "${question.slice(0, 60)}"`);
 
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
@@ -421,8 +413,6 @@ Return ONLY valid JSON:
 
 Return ONLY valid JSON.`, userLanguage);
 
-    console.log(`[LeaseTrapDetector/compare] Comparing "${leaseA.name}" vs "${leaseB.name}"`);
-
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 2500,
@@ -509,8 +499,6 @@ Return ONLY valid JSON:
 
 Return ONLY valid JSON.`, userLanguage);
 
-    console.log(`[LeaseTrapDetector/draft-email] ${(redFlags?.length || 0)} red, ${(unenforceableClauses?.length || 0)} unenforceable, ${(yellowFlags?.length || 0)} yellow`);
-
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 2500,
@@ -578,8 +566,6 @@ Return ONLY valid JSON:
 }
 
 CRITICAL: Return ONLY valid JSON. Use \\n for line breaks in the addendum text.`, userLanguage);
-
-    console.log(`[LeaseTrapDetector/amendment] ${clausesToAmend.length} clauses`);
 
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
@@ -683,8 +669,6 @@ Return ONLY valid JSON:
 }
 
 Return ONLY valid JSON.`, userLanguage);
-
-    console.log(`[LeaseTrapDetector/checklist] Type: ${checklistType}, Location: ${location}`);
 
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
@@ -792,8 +776,6 @@ Return ONLY valid JSON:
 }
 
 Return ONLY valid JSON.`, userLanguage);
-
-    console.log(`[LeaseTrapDetector/renewal-traps] Location: ${location}`);
 
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
