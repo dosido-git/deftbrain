@@ -182,12 +182,19 @@ const MarkupDetective = ({ tool }) => {
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Why does this cost that? Follow the money.'}</p>
             </div>
-            {history.length > 0 && (
-              <button onClick={() => setShowHistory(!showHistory)}
-                className={`text-xs font-bold px-3 py-1.5 rounded-lg ${c.btnSecondary}`}>
-                📋 {history.length}
-              </button>
-            )}
+            <div className="flex items-center gap-2 flex-shrink-0">
+              {history.length > 0 && (
+                <button onClick={() => setShowHistory(!showHistory)}
+                  className={`text-xs font-bold px-3 py-1.5 rounded-lg ${c.btnSecondary}`}>
+                  📋 {history.length}
+                </button>
+              )}
+              {(results || product.trim()) && (
+                <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold`}>
+                  ↺ Start Over
+                </button>
+              )}
+            </div>
           </div>
         </div>
 
@@ -365,12 +372,6 @@ const MarkupDetective = ({ tool }) => {
               </ul>
             </div>
           )}
-
-          {/* Reset */}
-          <button onClick={handleReset}
-            className={`w-full py-2 text-sm border-2 ${isDark ? 'border-zinc-600 hover:border-zinc-500 text-zinc-300' : 'border-gray-300 hover:border-gray-400 text-gray-700'} rounded-lg`}>
-            🔍 New lookup
-          </button>
 
           {/* Post-result cross-refs */}
           <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>

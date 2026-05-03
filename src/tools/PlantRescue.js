@@ -340,10 +340,17 @@ const PlantRescue = ({ tool }) => {
                 </h2>
                 <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Diagnose, identify, care for, and track your plants'}</p>
               </div>
-              <button onClick={() => setShowCollection(!showCollection)}
-                className={`${c.btnSecondary} px-3 py-1.5 rounded text-xs flex-shrink-0`}>
-                🪴 My Plants ({plantCollection.length})
-              </button>
+              <div className="flex items-center gap-2 flex-shrink-0">
+                <button onClick={() => setShowCollection(!showCollection)}
+                  className={`${c.btnSecondary} px-3 py-1.5 rounded text-xs`}>
+                  🪴 My Plants ({plantCollection.length})
+                </button>
+                {(results || plantDescription.trim() || imagePreview) && (
+                  <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold`}>
+                    ↺ Start Over
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -890,12 +897,6 @@ const PlantRescue = ({ tool }) => {
               <a href="/DoctorVisitTranslator" className={`text-xs ${linkStyle}`}>🏥 Doctor Visit Translator</a>
             </div>
           </div>
-
-          {/* Start Over */}
-          <button onClick={handleReset}
-            className={`w-full ${c.btnSecondary} font-bold py-2.5 rounded-lg text-sm min-h-[44px]`}>
-            🔄 Start Over
-          </button>
         </div>
       )}
     </div>

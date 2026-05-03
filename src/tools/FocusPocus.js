@@ -1095,18 +1095,25 @@ const FocusPocus = ({ tool }) => {
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Lock in your focus session, get pulled out when time is up'}</p>
             </div>
-            {todaySessions > 0 && phase === 'setup' && (
-              <div className="flex items-center gap-2 flex-shrink-0">
-                {multiDayStreak.currentStreak >= 2 && (
-                  <div className={`flex items-center gap-1 px-2.5 py-1.5 rounded-full text-xs font-bold ${isDark ? 'bg-amber-900/30 text-amber-300' : 'bg-amber-50 text-amber-700'}`}>
-                    🔥 {multiDayStreak.currentStreak}-day streak
+            <div className="flex items-center gap-2 flex-shrink-0">
+              {todaySessions > 0 && phase === 'setup' && (
+                <>
+                  {multiDayStreak.currentStreak >= 2 && (
+                    <div className={`flex items-center gap-1 px-2.5 py-1.5 rounded-full text-xs font-bold ${isDark ? 'bg-amber-900/30 text-amber-300' : 'bg-amber-50 text-amber-700'}`}>
+                      🔥 {multiDayStreak.currentStreak}-day streak
+                    </div>
+                  )}
+                  <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold ${isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-50 text-cyan-700'}`}>
+                    🔥 {todaySessions} today · {todayMinutes}m
                   </div>
-                )}
-                <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold ${isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-50 text-cyan-700'}`}>
-                  🔥 {todaySessions} today · {todayMinutes}m
-                </div>
-              </div>
-            )}
+                </>
+              )}
+              {(phase !== 'setup' || sessionActivity.trim()) && (
+                <button onClick={resetAll} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold`}>
+                  ↺ Start Over
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -2403,12 +2410,6 @@ const FocusPocus = ({ tool }) => {
               </div>
             )}
           </div>
-
-          {/* New session */}
-          <button onClick={resetAll}
-            className="w-full flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl font-bold text-white bg-cyan-600 hover:bg-cyan-700 transition-colors shadow-lg shadow-indigo-200 dark:shadow-indigo-900/40">
-            🔄 Start New Session
-          </button>
 
           {/* Post-result cross-refs */}
           <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>

@@ -172,10 +172,19 @@ const CrowdWisdom = ({ tool }) => {
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm`}>
         <div className="px-5 pt-5">
           <div className="pb-3 border-b border-zinc-500">
-            <h2 className={`text-xl font-bold ${c.text}`}>
-              <span className="mr-2">{tool?.icon ?? '👥'}</span>{tool?.title ?? 'Crowd Wisdom'}
-            </h2>
-            <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Five real perspectives on the choice you can\'t stop thinking about'}</p>
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h2 className={`text-xl font-bold ${c.text}`}>
+                  <span className="mr-2">{tool?.icon ?? '👥'}</span>{tool?.title ?? 'Crowd Wisdom'}
+                </h2>
+                <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Five real perspectives on the choice you can\'t stop thinking about'}</p>
+              </div>
+              {(results || question.trim()) && (
+                <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>
+                  ↺ Start Over
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -355,13 +364,6 @@ const CrowdWisdom = ({ tool }) => {
               <a href="/DecisionCoach" className={`text-xs ${linkStyle}`}>🎯 Decision Coach</a>
               <a href="/BeliefStressTest" className={`text-xs ${linkStyle}`}>🧪 Belief Stress Test</a>
             </div>
-          </div>
-
-          {/* Reset */}
-          <div className="flex items-center gap-3 flex-wrap">
-            <button onClick={handleReset} className={`px-4 py-2 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
-              🔄 New Question
-            </button>
           </div>
         </div>
       )}

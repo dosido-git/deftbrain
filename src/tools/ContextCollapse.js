@@ -214,10 +214,19 @@ const ContextCollapse = ({ tool }) => {
       {/* ─── Standard header card ─── */}
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
         <div className="pb-3 mb-4 border-b border-zinc-500">
-          <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-            <span className="mr-2">{tool?.icon ?? '📢'}</span>{tool?.title ?? 'Context Collapse'}
-          </h2>
-          <p className={`text-sm ${c.textSecondary} mt-0.5`}>{tool?.tagline ?? 'See how different people will read the same message — before you send it'}</p>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
+                <span className="mr-2">{tool?.icon ?? '📢'}</span>{tool?.title ?? 'Context Collapse'}
+              </h2>
+              <p className={`text-sm ${c.textSecondary} mt-0.5`}>{tool?.tagline ?? 'See how different people will read the same message — before you send it'}</p>
+            </div>
+            {(results || message.trim()) && (
+              <button onClick={handleReset} disabled={loading} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>
+                ↺ Start Over
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Pre-result cross-ref */}
@@ -473,13 +482,6 @@ const ContextCollapse = ({ tool }) => {
           <div className={`p-4 rounded-xl text-center ${c.cardAlt}`}>
             <p className={`text-xs ${c.textMuted}`}>💬 AI-generated analysis. Audience interpretations are predictions, not certainties — use your judgment.</p>
           </div>
-
-          {/* Reset */}
-          <button
-            onClick={handleReset} disabled={loading}
-            className={`w-full py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2 ${c.btnSecondary}`}>
-            <span>📢</span> New Message
-          </button>
         </div>
       )}
 

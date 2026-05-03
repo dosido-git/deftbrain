@@ -597,7 +597,7 @@ const PronounceItRight = ({ tool }) => {
       {(results || batchResults) && (
         <div className="mt-4 space-y-3">
           <div className="flex gap-2">
-            <button onClick={handleReset} className={'flex-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 ' + c.btnPrimary}>
+            <button onClick={handleReset} className={'flex-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 ' + c.btnSecondary}>
               <span>🗣️</span> New Word
             </button>
             <button onClick={() => { setResults(null); setBatchResults(null); setError(''); setAudioUrl(null); }}

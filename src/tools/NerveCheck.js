@@ -924,7 +924,6 @@ const NerveCheck = ({ tool }) => {
                     <div className="mt-2"><CopyBtn content={debriefResults.save_this} label="Copy" /></div>
                   </div>
                 )}
-                <button onClick={resetAll} className={`w-full py-3 rounded-xl font-bold ${c.btnPrimary}`}>← Done — What's Next?</button>
               </div>
             )}
           </div>

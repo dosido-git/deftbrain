@@ -143,9 +143,16 @@ const VelvetHammer = ({ tool }) => {
               <span className="mr-2">{tool?.icon ?? '🔨'}</span>{tool?.title ?? 'Velvet Hammer'} </h2>
             <p className={`text-sm ${c.textSecondary} mt-0.5`}>{tool?.tagline ?? 'Transform furious drafts into professional messages'}</p>
           </div>
-          {history.length > 0 && (<button onClick={() => setShowHistory(!showHistory)} className={`text-xs font-bold px-3 py-1.5 rounded-lg ${c.btnSecondary} shrink-0`}>
-              📋 {history.length} </button>
-          )} </div>
+          <div className="flex items-center gap-2 flex-shrink-0">
+            {history.length > 0 && (<button onClick={() => setShowHistory(!showHistory)} className={`text-xs font-bold px-3 py-1.5 rounded-lg ${c.btnSecondary}`}>
+                📋 {history.length} </button>
+            )}
+            {(results || draft.trim()) && (
+              <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold`}>
+                ↺ Start Over
+              </button>
+            )}
+          </div> </div>
 
         {/* History panel */} {showHistory && history.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 space-y-2`}>
             <p className={`text-xs font-bold ${c.textMuted} mb-1`}>Recent transforms</p>
@@ -224,10 +231,6 @@ const VelvetHammer = ({ tool }) => {
               <a href="/ComebackCooker" className={`text-xs ${linkStyle}`}>🗣️ Comeback Cooker</a>
             </div>
           </div>
-
-          <button onClick={handleReset} className={`w-full py-2 rounded-xl text-sm font-semibold ${c.btnSecondary}`}>
-            🔨 New transform
-          </button>
         </div>
       )} </div>
   );

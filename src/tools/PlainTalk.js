@@ -1411,12 +1411,6 @@ const PlainTalk = ({ tool }) => {
                 <p className="text-sm">{error}</p>
               </div>
             )}
-
-            {/* ─── ANALYZE NEW TEXT ─── */}
-            <button onClick={handleReset}
-              className={`w-full py-4 rounded-2xl font-bold text-base flex items-center justify-center gap-2 transition-all ${c.btnPrimary}`}>
-              <span>🔍</span> Analyze New Text
-            </button>
           </div>
         )}
       {/* eslint-disable-next-line no-restricted-globals */}

@@ -266,10 +266,19 @@ const DreamPatternSpotter = ({ tool }) => {
         {/* Header */}
         <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
           <div className="pb-3 border-b border-zinc-500">
-            <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-              <span>{tool?.icon ?? '🌙'}</span>{tool?.title ?? 'Dream Pattern Spotter'}
-            </h2>
-            <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Find recurring themes and emotional patterns in your dreams'}</p>
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
+                  <span>{tool?.icon ?? '🌙'}</span>{tool?.title ?? 'Dream Pattern Spotter'}
+                </h2>
+                <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Find recurring themes and emotional patterns in your dreams'}</p>
+              </div>
+              {(results || singleDream.description.trim() || dreams.some(d => d.description.trim())) && (
+                <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>
+                  ↺ Start Over
+                </button>
+              )}
+            </div>
           </div>
         </div>
 
@@ -500,13 +509,6 @@ const DreamPatternSpotter = ({ tool }) => {
         {/* Results */}
         {results && (
           <div ref={resultsRef} className="space-y-6">
-            
-            {/* Controls */}
-            <div className="flex justify-end">
-              <button onClick={handleReset} className={`${c.btnSecondary} py-2 px-4 rounded-lg text-sm`}>
-                ✨ New Analysis
-              </button>
-            </div>
 
             {/* Pattern Analysis Header (for multi-dream) */}
             {results.pattern_analysis && (

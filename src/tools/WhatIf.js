@@ -147,8 +147,17 @@ const WhatIf = ({ tool }) => {
       {/* ── INPUT CARD ── */}
       <div className={`${c.card} border ${c.border} rounded-xl shadow-lg p-6`}>
         <div className={`mb-5 pb-4 border-b ${c.border}`}>
-          <h2 className={`text-2xl font-bold ${c.text}`}><span className="mr-2">{tool?.icon}</span>{tool?.title}</h2>
-          <p className={`text-sm ${c.textSecondary} mt-1`}>{tool?.tagline}</p>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h2 className={`text-2xl font-bold ${c.text}`}><span className="mr-2">{tool?.icon}</span>{tool?.title}</h2>
+              <p className={`text-sm ${c.textSecondary} mt-1`}>{tool?.tagline}</p>
+            </div>
+            {(results || decision.trim()) && (
+              <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>
+                ↺ Start Over
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Decision */}
@@ -218,11 +227,6 @@ const WhatIf = ({ tool }) => {
               : (<><span>{tool?.icon ?? '🎲'}</span> Show Me That Future</>)
             }
           </button>
-          {results && (
-            <button onClick={handleReset} className={`px-5 py-3 ${c.btnSecondary} rounded-xl font-medium min-h-[48px]`}>
-              New Decision
-            </button>
-          )}
         </div>
 
         {/* Pre-result cross-ref */}

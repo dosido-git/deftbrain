@@ -708,11 +708,6 @@ const SubSweep = ({ tool }) => {
             className={`flex-1 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
             {loading && !scanning ? <><span className="animate-spin">{tool?.icon ?? '⚙️'}</span> Analyzing...</> : <><span className="mr-1">{tool?.icon ?? '✂️'}</span> Analyze My Subscriptions</>}
           </button>
-          {results && (
-            <button onClick={handleReset} className={`px-5 py-3 border-2 rounded-lg font-bold text-xs ${isDark ? 'border-zinc-600 text-zinc-300' : 'border-slate-300 text-slate-700'}`}>
-              Reset
-            </button>
-          )}
         </div>
       </div>
 
@@ -1908,12 +1903,23 @@ const SubSweep = ({ tool }) => {
   // MAIN RETURN
   // ════════════════════════════════════════════════════════════
   return (
-    <div className={`space-y-1 ${c.text}`}>
-      <div className="mb-4">
-        <h2 className={`text-2xl font-bold ${c.text}`}>
-          <span className="mr-2">{tool?.icon ?? '🧹'}</span>{tool?.title ?? 'SubSweep'}
-        </h2>
-        <p className={`text-sm ${c.textMuted} mt-1`}>{tool?.tagline ?? 'Cancel what you don\'t use. Negotiate what you keep.'}</p>
+    <div className={`space-y-4 ${c.text}`}>
+      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
+        <div className="pb-3 border-b border-zinc-500">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h2 className={`text-xl font-bold ${c.text}`}>
+                <span className="mr-2">{tool?.icon ?? '🧹'}</span>{tool?.title ?? 'SubSweep'}
+              </h2>
+              <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Cancel what you don\'t use. Negotiate what you keep.'}</p>
+            </div>
+            {(results || statementText.trim() || subs.some(s => s.name?.trim())) && (
+              <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>
+                ↺ Start Over
+              </button>
+            )}
+          </div>
+        </div>
       </div>
       {renderNav()}
 

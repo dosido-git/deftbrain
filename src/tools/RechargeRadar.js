@@ -368,10 +368,19 @@ const RechargeRadar = ({ tool }) => {
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm overflow-hidden`}>
         <div className="px-5 pt-5">
           <div className="pb-3 border-b border-zinc-500">
-            <h2 className={`text-xl font-bold ${c.text}`}>
-              <span className="mr-2">{tool?.icon ?? '📡'}</span>{tool?.title ?? 'Recharge Radar'}
-            </h2>
-            <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? "Predict when you'll need alone time this week"}</p>
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h2 className={`text-xl font-bold ${c.text}`}>
+                  <span className="mr-2">{tool?.icon ?? '📡'}</span>{tool?.title ?? 'Recharge Radar'}
+                </h2>
+                <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? "Predict when you'll need alone time this week"}</p>
+              </div>
+              {(forecast || description.trim()) && (
+                <button onClick={reset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>
+                  ↺ Start Over
+                </button>
+              )}
+            </div>
           </div>
         </div>
 
@@ -559,8 +568,7 @@ const RechargeRadar = ({ tool }) => {
         <div className="space-y-4" ref={resultsRef}>
 
           {/* Top bar */}
-          <div className="flex items-center justify-between flex-wrap gap-2">
-            <button onClick={reset} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnSecondary}`}>← New</button>
+          <div className="flex items-center justify-end flex-wrap gap-2">
             <div className="flex gap-2">
               <button onClick={() => setShowReflect(true)}
                 className={`text-xs font-bold px-3 py-2 rounded-xl ${c.btnSecondary}`}>📝 Reflect</button>
@@ -867,10 +875,6 @@ const RechargeRadar = ({ tool }) => {
               <a href="/SpiralStopper" className={`text-xs ${linkStyle}`}>🌀 Spiral Stopper</a>
             </div>
           </div>
-
-          <button onClick={reset} className={`w-full py-4 rounded-xl font-bold ${c.btnSecondary}`}>
-            <span className="mr-2">🔄</span> New Forecast
-          </button>
         </div>
       )}
 

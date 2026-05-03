@@ -382,10 +382,19 @@ const NoiseCanceler = ({ tool }) => {
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm`}>
         <div className="px-5 pt-5">
           <div className="pb-3 border-b border-zinc-500">
-            <h2 className={`text-xl font-bold ${c.text}`}>
-              <span className="mr-2">{tool?.icon ?? '🔇'}</span>{tool?.title ?? 'Noise Canceler'}
-            </h2>
-            <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Paste a long document, tell us your situation — we\'ll extract only what affects you'}</p>
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h2 className={`text-xl font-bold ${c.text}`}>
+                  <span className="mr-2">{tool?.icon ?? '🔇'}</span>{tool?.title ?? 'Noise Canceler'}
+                </h2>
+                <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Paste a long document, tell us your situation — we\'ll extract only what affects you'}</p>
+              </div>
+              {(results || docText.trim()) && (
+                <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>
+                  ↺ Start Over
+                </button>
+              )}
+            </div>
           </div>
         </div>
 
@@ -462,15 +471,6 @@ const NoiseCanceler = ({ tool }) => {
             {/* Pre-result cross-ref */}
             <p className={`text-xs ${c.textMuted}`}>Dealing with a lease? <a href="/LeaseTrapDetector" className={linkStyle}>📄 Lease Trap Detector</a> goes even deeper on predatory clauses.</p>
 
-          </div>
-        )}
-
-        {/* ── "New Document" button when results are showing ── */}
-        {results && (
-          <div className="px-5 pb-4 pt-3">
-            <button onClick={handleReset} className={`w-full ${c.btnSecondary} font-bold py-2.5 rounded-lg flex items-center justify-center gap-2 text-sm`}>
-              <span>{tool?.icon ?? '🔇'}</span> New Document
-            </button>
           </div>
         )}
       </div>

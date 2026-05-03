@@ -424,7 +424,7 @@ const Recall = ({ tool }) => {
       </button>
       <p className={`text-xs text-center ${c.textMuted}`}>
         Thoughts still jumbled?{' '}
-        <a href="/BrainDumpStructurer" className={linkStyle}>🧠 Brain Dump Structurer</a>
+        <a href="/BrainDumpBuddy" className={linkStyle}>🧠 Brain Dump Buddy</a>
         {' '}can help organize messy notes before you paste them.
       </p>
     </div>
@@ -760,18 +760,39 @@ const Recall = ({ tool }) => {
   return (
     <div className={`space-y-4 ${c.text}`}>
 
-      {/* ── Input card with persistent header ── */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
-        <div className="pb-3 border-b border-zinc-500">
-          <h2 className={`text-xl font-bold ${c.text}`}>
-            <span className="mr-2">{tool?.icon ?? '🧠'}</span>{tool?.title ?? 'Recall'}
-          </h2>
-          <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Paste a lecture transcript — get the signal without the noise'}</p>
+      {/* ── Input phase: unified card (header + input) ── */}
+      {!results && (
+        <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
+          <div className="pb-3 border-b border-zinc-500">
+            <h2 className={`text-xl font-bold ${c.text}`}>
+              <span className="mr-2">{tool?.icon ?? '🧠'}</span>{tool?.title ?? 'Recall'}
+            </h2>
+            <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Paste a lecture transcript — get the signal without the noise'}</p>
+          </div>
+          {renderInput()}
         </div>
-        {!results && renderInput()}
-      </div>
+      )}
 
-      {/* ── Results ── */}
+      {/* ── Results phase: persistent header card with reset (ternary, not && — see PF-3 replace-mode note) ── */}
+      {results ? (
+        <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
+          <div className="pb-3 border-b border-zinc-500">
+            <div className="flex items-start justify-between">
+              <div>
+                <h2 className={`text-xl font-bold ${c.text}`}>
+                  <span className="mr-2">{tool?.icon ?? '🧠'}</span>{tool?.title ?? 'Recall'}
+                </h2>
+                <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Paste a lecture transcript — get the signal without the noise'}</p>
+              </div>
+              <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>
+                ↺ Start Over
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {/* ── Results body ── */}
       {results && (
         <div ref={resultsRef} className="space-y-4">
           {mode === 'distill'     && renderDistill()}
@@ -779,23 +800,18 @@ const Recall = ({ tool }) => {
           {mode === 'test_prep'   && renderTestPrep()}
           {mode === 'connect'     && renderConnect()}
 
-          <div className="flex gap-2">
-            <button onClick={handleReset}
-              className={`flex-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 ${c.btnPrimary}`}>
-              <span>🧠</span> New Lecture
-            </button>
-            <button onClick={() => { setResults(null); setError(''); }}
-              className={`flex-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 ${c.btnSecondary}`}>
-              <span>✏️</span> Edit Input
-            </button>
-          </div>
+          {/* Edit Input — partial reset, returns to input form keeping content */}
+          <button onClick={() => { setResults(null); setError(''); }}
+            className={`w-full py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 ${c.btnSecondary}`}>
+            <span>✏️</span> Edit Input
+          </button>
 
           {/* Post-result cross-refs */}
           <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
             <p className={`text-xs font-semibold uppercase tracking-wide mb-3 ${c.textMuted}`}>🔗 Related tools</p>
             <div className="flex flex-wrap gap-3">
-              <a href="/BrainDumpStructurer" className={`text-xs ${linkStyle}`}>🧠 Brain Dump Structurer</a>
-              <a href="/TheGap"              className={`text-xs ${linkStyle}`}>🔍 The Gap</a>
+              <a href="/BrainDumpBuddy" className={`text-xs ${linkStyle}`}>🧠 Brain Dump Buddy</a>
+              <a href="/TheGap"          className={`text-xs ${linkStyle}`}>🔍 The Gap</a>
             </div>
           </div>
         </div>

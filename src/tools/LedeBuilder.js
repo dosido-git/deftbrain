@@ -153,10 +153,19 @@ Write the lede.`;
       {/* Input card */}
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
         <div className="pb-3 border-b border-zinc-500">
-          <h2 className={`text-xl font-bold ${c.text}`}>
-            <span className="mr-2">{tool?.icon ?? '✍️'}</span>{tool?.title ?? 'LedeBuilder'}
-          </h2>
-          <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Draft the human-feel opening for any SEO guide page'}</p>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h2 className={`text-xl font-bold ${c.text}`}>
+                <span className="mr-2">{tool?.icon ?? '✍️'}</span>{tool?.title ?? 'LedeBuilder'}
+              </h2>
+              <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Draft the human-feel opening for any SEO guide page'}</p>
+            </div>
+            {(results || searchPhrase.trim() || emotionalContext.trim() || exampleScenario.trim()) && (
+              <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>
+                ↺ Start Over
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Search phrase */}
@@ -277,21 +286,13 @@ Write the lede.`;
             </div>
 
             {/* Actions */}
-            <div className="flex gap-3">
-              <button
-                onClick={handleSubmit}
-                disabled={loading}
-                className={`flex-1 ${c.btnSecondary} disabled:opacity-40 font-medium py-2 rounded-lg text-sm`}
-              >
-                Redraft
-              </button>
-              <button
-                onClick={handleReset}
-                className={`flex-1 ${c.btnSecondary} font-medium py-2 rounded-lg text-sm`}
-              >
-                New page
-              </button>
-            </div>
+            <button
+              onClick={handleSubmit}
+              disabled={loading}
+              className={`w-full ${c.btnSecondary} disabled:opacity-40 font-medium py-2 rounded-lg text-sm`}
+            >
+              Redraft
+            </button>
 
             {/* Post-result cross-ref */}
             <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>

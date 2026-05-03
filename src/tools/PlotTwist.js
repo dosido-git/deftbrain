@@ -528,7 +528,7 @@ const PlotTwist = ({ tool }) => {
         {/* Actions */}
         <div className="flex gap-2">
           <button onClick={handleReset}
-            className={`flex-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 ${c.btnPrimary}`}>
+            className={`flex-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 ${c.btnSecondary}`}>
             <span>🔄</span> New Decision
           </button>
         </div>

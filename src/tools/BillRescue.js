@@ -826,11 +826,6 @@ const BillRescue = ({ tool }) => {
             className={`flex-1 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
             {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🧾'}</span> Working on it...</> : <><span>🧾</span> Get My Action Plan</>}
           </button>
-          {results && (
-            <button onClick={handleReset} className={`${c.btnSecondary} px-4 py-3 rounded-lg text-xs font-bold min-h-[48px]`}>
-              🔄 New
-            </button>
-          )}
         </div>
       </div>
 

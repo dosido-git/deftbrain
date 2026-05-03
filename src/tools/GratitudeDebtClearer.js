@@ -694,6 +694,11 @@ const GratitudeDebtClearer = ({ tool }) => {
                 </span>
               )}
             </button>
+            {(results || recipientName.trim() || gratitudePoints.trim()) && (
+              <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>
+                ↺ Start Over
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -1399,18 +1404,6 @@ const GratitudeDebtClearer = ({ tool }) => {
                 <><span className="mr-1">{tool?.icon ?? '💚'}</span>Generate Thank You Messages</>
               )}
             </button>
-            
-            {results && (
-              <button
-                onClick={handleReset}
-                className={`px-6 py-3 border-2 font-semibold rounded-lg transition-colors ${
-                  isDark ? 'border-zinc-600 hover:border-zinc-500 text-zinc-200' : 'border-slate-300 hover:border-slate-400 text-slate-700'
-                }`}
-                aria-label="Reset form"
-              >
-                Reset
-              </button>
-            )}
           </div>
           <p className={`text-xs text-center ${c.textMuteded} mt-2`}>
             <kbd className={`px-1.5 py-0.5 rounded text-xs font-mono ${isDark ? 'bg-zinc-700' : 'bg-slate-100'}`}>Ctrl</kbd>+<kbd className={`px-1.5 py-0.5 rounded text-xs font-mono ${isDark ? 'bg-zinc-700' : 'bg-slate-100'}`}>Enter</kbd> to submit from any field

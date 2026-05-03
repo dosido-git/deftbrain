@@ -433,7 +433,7 @@ const TipOfTongue = ({ tool }) => {
         {/* Actions */}
         <div className="flex gap-2">
           <div className="flex-1"><CopyBtn content={buildCopy()} label="Copy All Matches" /></div>
-          <button onClick={handleReset} className={'flex-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 ' + c.btnPrimary}>
+          <button onClick={handleReset} className={'flex-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 ' + c.btnSecondary}>
             <span>🔍</span> New Search
           </button>
         </div>

@@ -292,12 +292,29 @@ const SpiralStopper = ({ tool }) => {
   }, [loading]);
 
   return (
-    <div className="max-w-xl mx-auto space-y-5">
-      <div className="flex items-center justify-between">
-        <div><h2 className={`text-2xl font-bold ${c.text}`}><span className="mr-2">{tool?.icon ?? '🌀'}</span>{tool?.title ?? 'Spiral Stopper'}</h2><p className={`text-sm ${c.textMuted}`}>{tool?.tagline ?? 'Emergency intervention for spirals, freezes, and crashes'}</p></div>
-        <div className="flex gap-2">
-          {episodeLog.length > 0 && view !== 'history' && <button onClick={() => { setView('history'); setMode(null); }} className={`text-xs font-bold px-3 py-1.5 rounded-lg ${c.btnSecondary}`}>📊 {episodeLog.length}</button>}
-          {(mode || view !== 'input') && <button onClick={resetAll} className={`text-xs font-bold px-3 py-1.5 rounded-lg ${c.btnSecondary}`}>🏠</button>}
+    <div className="max-w-xl mx-auto space-y-4">
+      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
+        <div className="pb-3 border-b border-zinc-500">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h2 className={`text-xl font-bold ${c.text}`}>
+                <span className="mr-2">{tool?.icon ?? '🌀'}</span>{tool?.title ?? 'Spiral Stopper'}
+              </h2>
+              <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Emergency intervention for spirals, freezes, and crashes'}</p>
+            </div>
+            <div className="flex items-center gap-2 flex-shrink-0">
+              {episodeLog.length > 0 && view !== 'history' && (
+                <button onClick={() => { setView('history'); setMode(null); }} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold`}>
+                  📊 {episodeLog.length}
+                </button>
+              )}
+              {(mode || view !== 'input') && (
+                <button onClick={resetAll} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold`}>
+                  ↺ Start Over
+                </button>
+              )}
+            </div>
+          </div>
         </div>
       </div>
 
@@ -512,8 +529,6 @@ const SpiralStopper = ({ tool }) => {
             {debriefResult.prevention_tip && <div className={`${c.warning} border rounded-xl p-4`}><p className="text-sm">🛡️ Next time: {debriefResult.prevention_tip}</p></div>}
             {debriefResult.strength_noted && <div className={`${c.btnSecondary} border rounded-xl p-4`}><p className="text-sm">💪 {debriefResult.strength_noted}</p></div>}
           </div>}
-
-          <button onClick={resetAll} className={`w-full py-2 rounded-lg text-sm font-bold ${c.btnSecondary}`}>← Home</button>
         </div>
       )}
 
@@ -556,8 +571,6 @@ const SpiralStopper = ({ tool }) => {
               {patternResult.encouragement && <p className={`text-sm ${c.reframeText}`}>✨ {patternResult.encouragement}</p>}
             </div>
           </div>}
-
-          <button onClick={resetAll} className={`w-full py-2 rounded-lg text-sm font-bold ${c.btnSecondary}`}>← Home</button>
         </div>
       )}
         <div className={`mt-6 pt-4 border-t text-sm ${c.border} ${c.textMuted}`}>

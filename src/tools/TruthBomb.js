@@ -122,10 +122,19 @@ const TruthBomb = ({ tool }) => {
       {/* Input card */}
       <div className={`${c.card} border ${c.border} rounded-xl p-6`}>
         <div className={`mb-5 pb-4 border-b ${c.border}`}>
-          <h2 className={`text-2xl font-bold ${c.text}`}>
-            <span className="mr-2">{tool?.icon ?? '💣'}</span>{tool?.title ?? 'Truth Bomb'}
-          </h2>
-          <p className={`text-sm ${c.textSecondary} mt-1`}>{tool?.tagline ?? "The thing you know but won't say — explored, costed, and scripted three ways"}</p>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h2 className={`text-2xl font-bold ${c.text}`}>
+                <span className="mr-2">{tool?.icon ?? '💣'}</span>{tool?.title ?? 'Truth Bomb'}
+              </h2>
+              <p className={`text-sm ${c.textSecondary} mt-1`}>{tool?.tagline ?? "The thing you know but won't say — explored, costed, and scripted three ways"}</p>
+            </div>
+            {(results || theUnsaidThing.trim()) && (
+              <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>
+                ↺ Start Over
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Opening hook */}
@@ -327,11 +336,6 @@ const TruthBomb = ({ tool }) => {
               <a href="/ApologyCalibrator" className={`text-xs ${linkStyle}`}>🤝 Fix an apology that didn't land</a>
             </div>
           </div>
-
-          <button onClick={handleReset}
-            className={`px-4 py-2 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
-            ↩ New Truth
-          </button>
         </div>
       )}
 

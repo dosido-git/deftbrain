@@ -1582,9 +1582,6 @@ const BikeMedic = ({ tool }) => {
           <span>←</span> Back
         </button>
       ) : <div />}
-      <button onClick={reset} className={`flex items-center gap-2 ${c.textMuteded} text-sm font-semibold transition-colors hover:opacity-80`}>
-        <span>🔄</span> Start Over
-      </button>
     </div>
   );
 
@@ -2401,7 +2398,6 @@ const BikeMedic = ({ tool }) => {
             <div className={`mt-4 p-4 ${c.danger} border rounded-xl flex items-start gap-3`}>
               <span className="flex-shrink-0 mt-0.5">⚠️</span>
               <div><p className="text-sm">{aiError}</p>
-                <button onClick={reset} className={`text-sm font-semibold ${linkStyle} mt-2`}>← Try static tree instead</button>
               </div>
             </div>
           )}
@@ -2439,7 +2435,6 @@ const BikeMedic = ({ tool }) => {
             )}
             <div className="flex justify-center gap-3 mt-4">
               <button onClick={() => { logRepair(currentFix, fix.title); }} className={`px-5 py-2 rounded-xl font-bold text-sm ${c.btnPrimary}`}>📋 Log Repair</button>
-              <button onClick={reset} className={`px-5 py-2 rounded-xl font-bold text-sm ${c.btnSecondary} border-2 ${c.border}`}>Back to Home</button>
             </div>
           </div>
         )}

@@ -161,8 +161,17 @@ const HobbyMatch = ({ tool }) => {
       {/* ── HEADER ── */}
       <div className={`${c.card} border ${c.border} rounded-xl p-6`}>
         <div className="mb-5 pb-4 border-b border-zinc-500">
-          <h2 className={`text-2xl font-bold ${c.text}`}><span className="mr-2">{tool?.icon ?? '🎯'}</span>{tool?.title || 'HobbyMatch'}</h2>
-          <p className={`text-sm ${c.textSecondary} mt-1`}>Discover hobbies you didn't know existed</p>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h2 className={`text-2xl font-bold ${c.text}`}><span className="mr-2">{tool?.icon ?? '🎯'}</span>{tool?.title || 'HobbyMatch'}</h2>
+              <p className={`text-sm ${c.textSecondary} mt-1`}>Discover hobbies you didn't know existed</p>
+            </div>
+            {(results || personality.trim()) && (
+              <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>
+                ↺ Start Over
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Personality */}
@@ -268,11 +277,6 @@ const HobbyMatch = ({ tool }) => {
               <><span className="mr-1">{tool?.icon ?? '🎯'}</span> Find My Hobbies</>
             )}
           </button>
-          {results && (
-            <button onClick={handleReset} className={`px-5 py-3 ${c.btnSecondary} rounded-xl font-medium min-h-[48px]`}>
-              New Search
-            </button>
-          )}
         </div>
       </div>
 

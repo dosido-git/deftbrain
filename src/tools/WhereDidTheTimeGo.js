@@ -201,7 +201,26 @@ const WhereDidTheTimeGo = ({ tool }) => {
           </div>
         )} {/* Error */} {error && (<div className={`${c.danger} border rounded-xl p-4 text-sm flex items-center gap-2`}>
             <span>⚠️</span> {error} </div>
-        )} {/* Results */} {results && (<div ref={resultsRef} data-results-anchor className="space-y-5">
+        )}
+
+        {/* Results-phase header card with reset (ternary, PF-3 replace-mode) */}
+        {results ? (
+          <div className={`${c.card} ${c.border} border rounded-2xl p-6 shadow-sm`}>
+            <div className={`pb-3 border-b ${c.border}`}>
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <h2 className={`text-xl font-bold ${c.text}`}><span className="mr-2">{tool?.icon}</span>{tool?.title}</h2>
+                  <p className={`text-sm ${c.textSecondary} mt-1`}>{tool?.tagline}</p>
+                </div>
+                <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>
+                  ↺ Start Over
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : null}
+
+        {/* Results */} {results && (<div ref={resultsRef} data-results-anchor className="space-y-5">
 
             {/* Validation first */} {results.what_you_actually_did && (<div className={`${c.card} ${c.success} border border-l-4 rounded-2xl p-5`}>
                 <p className={`text-xs font-semibold uppercase tracking-wider mb-2 flex items-center gap-1.5`}>
@@ -287,9 +306,7 @@ const WhereDidTheTimeGo = ({ tool }) => {
                 <p className={`text-sm ${c.text} leading-relaxed italic max-w-md mx-auto`}>
                   {results.honest_capacity} </p>
               </div>
-            )} {/* Reset */} <button
-              onClick={handleReset} className={`w-full ${c.btnSecondary} py-3 rounded-xl text-sm font-medium transition-colors flex items-center justify-center gap-2`} >
-              <span>🔄</span> Analyze another {timeframe === 'today' ? 'day' : 'period'} </button>
+            )}
 
             {/* Cross-references — results */} <div className={`${c.cardAlt} ${c.border} border rounded-xl p-4 space-y-2`}>
               <p className={`text-xs font-semibold ${c.textMuted} uppercase tracking-wider`}>

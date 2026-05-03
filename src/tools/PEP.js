@@ -451,10 +451,19 @@ const PEP = ({ tool }) => {
       <div className="max-w-4xl mx-auto space-y-4">
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
         <div className="pb-3 border-b border-zinc-500">
-          <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-            <span>{tool?.icon ?? '✨'}</span>{tool?.title ?? 'PEP'}
-          </h2>
-          <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Personal Energy Planner — understand your energy, plan around it'}</p>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
+                <span>{tool?.icon ?? '✨'}</span>{tool?.title ?? 'PEP'}
+              </h2>
+              <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Personal Energy Planner — understand your energy, plan around it'}</p>
+            </div>
+            {(results || seqResult || timeAvail.trim() || recentActs.trim()) && (
+              <button onClick={reset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>
+                ↺ Start Over
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
@@ -592,8 +601,6 @@ const PEP = ({ tool }) => {
           <div className="flex items-center gap-2 flex-wrap">
             <button onClick={() => setShowCheckin(!showCheckin)} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnSecondary}`}>🔔 Remind me</button>
             <button onClick={handleSequence} disabled={seqLoading} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnSecondary}`}>{seqLoading ? (tool?.icon ?? '✨') : '🎯 Build a plan'}</button>
-            
-            <button onClick={reset} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnSecondary}`}>← Start over</button>
           </div>
         </div>
 

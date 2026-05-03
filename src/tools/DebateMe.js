@@ -446,7 +446,6 @@ const DebateMe = ({ tool }) => {
         </div>}
         <div className="flex flex-wrap gap-2">
           <button onClick={startNew} className={`flex-1 py-2.5 rounded-xl font-bold text-sm ${c.btnPrimary}`}><span>{tool?.icon ?? '🥊'}</span> New Debate</button>
-          <button onClick={handleReset} className={`px-4 py-2.5 rounded-xl font-bold text-xs ${c.btnSecondary} border ${c.border}`}>↩ Start Over</button>
         </div>
         <p className={`text-xs ${c.textMuteded} text-center`}>AI can make mistakes — verify key arguments independently.</p>
         <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
@@ -470,10 +469,19 @@ const DebateMe = ({ tool }) => {
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm`}>
         <div className="px-5 pt-5">
           <div className="pb-3 border-b border-zinc-500">
-            <h2 className={`text-xl font-bold ${c.text}`}>
-              <span className="mr-2">{tool?.icon ?? '🥊'}</span>{tool?.title ?? 'Debate Me'}
-            </h2>
-            <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Sharpen your thinking against the strongest opposing case'}</p>
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h2 className={`text-xl font-bold ${c.text}`}>
+                  <span className="mr-2">{tool?.icon ?? '🥊'}</span>{tool?.title ?? 'Debate Me'}
+                </h2>
+                <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Sharpen your thinking against the strongest opposing case'}</p>
+              </div>
+              {(mode === 'debate' || mode === 'scorecard' || position.trim()) && (
+                <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>
+                  ↺ Start Over
+                </button>
+              )}
+            </div>
           </div>
         </div>
         <div className="px-5 py-3 flex flex-wrap gap-1.5">
@@ -484,9 +492,6 @@ const DebateMe = ({ tool }) => {
           {(mode === 'debate' || debateHistory.length > 0) && <Tab id="debate" icon="💬" label={`Debate (Turn ${turnCount})`} />}
           <Tab id="stats" icon="📈" label="Stats" />
           <button onClick={() => setShowLog(!showLog)} className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${showLog ? c.on : c.off}`}><span className="mr-1">📜</span> Log{history.length ? ` (${history.length})` : ''}</button>
-          {(mode === 'debate' || mode === 'scorecard') && (
-            <button onClick={handleReset} className={`ml-auto px-3 py-1.5 rounded-lg text-xs font-medium ${c.btnSecondary}`}>↩ Start Over</button>
-          )}
         </div>
       </div>
 

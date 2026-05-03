@@ -355,17 +355,29 @@ const SkillGapMap = ({ tool }) => {
   return (
     <div className={`space-y-4 ${c.text}`}>
 
-      {/* ═══ INPUT ═══ */}
-      {!hasResults && (
-        <div className="space-y-4">
-          {/* Header + inputs — single card */}
-          <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
-            <div className={`pb-3 border-b ${c.border}`}>
+      {/* Persistent header — single reset always in same position */}
+      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
+        <div className={`pb-3 border-b ${c.border}`}>
+          <div className="flex items-start justify-between gap-3">
+            <div>
               <h2 className={`text-2xl font-bold ${c.text}`}>
                 <span className="mr-2">{tool?.icon ?? '🗺️'}</span>{tool?.title ?? 'Skill Gap Map'}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Map the exact skills between where you are and where you want to be'}</p>
             </div>
+            {(hasResults || currentRole.trim() || targetRole.trim()) && (
+              <button onClick={reset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>
+                ↺ Start Over
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* ═══ INPUT ═══ */}
+      {!hasResults && (
+        <div className="space-y-4">
+          <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
             {/* Mode toggle */}
             <div className="flex items-center gap-2">
               <button onClick={() => setMode('map')} className={`flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all ${mode === 'map' ? c.btnPrimary : c.btnSecondary}`}>🗺️ I Know My Target</button>
@@ -456,9 +468,8 @@ const SkillGapMap = ({ tool }) => {
       {/* ═══════════════ EXPLORE RESULTS ═══════════════ */}
       {exploreData && (
         <div className="space-y-5">
-          <div className={`${c.card} rounded-xl shadow-lg p-4 flex items-center justify-between`}>
+          <div className={`${c.card} rounded-xl shadow-lg p-4`}>
             <p className={`text-sm font-semibold ${c.text}`}>🧭 Career Paths from: {currentRole}</p>
-            <button onClick={reset} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnSecondary}`}><span>🔄</span> New</button>
           </div>
           {exploreData.current_profile_summary && <p className={`text-sm ${c.text} ${c.card} rounded-xl shadow-lg p-4`}>{exploreData.current_profile_summary}</p>}
 
@@ -515,9 +526,6 @@ const SkillGapMap = ({ tool }) => {
                   <span className={`text-xs ${c.textMuteded}`}>~{results.transition_summary?.estimated_months}mo at {hoursPerWeek}h/wk</span>
                   {completedCount > 0 && <Badge type="success">✅ {completedCount} completed</Badge>}
                 </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <button onClick={reset} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnSecondary}`}><span>🔄</span> New</button>
               </div>
             </div>
             <div className="flex flex-wrap gap-2">

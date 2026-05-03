@@ -625,24 +625,9 @@ const BrainStateDeejay = ({ tool }) => {
   // ══════════════════════════════════════════
   const renderInputForm = () => (
     <div className="space-y-4">
-      {/* Header + quick presets + first input — unified in one card */}
+      {/* Quick presets + first input — unified in one card */}
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
-        <div className="pb-3 border-b border-zinc-500">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className={`text-xl font-bold ${c.text}`}>
-                <span className="mr-2">{tool?.icon ?? '🎧'}</span>{tool?.title ?? 'Brain State Deejay'}
-              </h2>
-              <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Science-backed playlists for your brain state'}</p>
-            </div>
-            {(!!results || !!currentState) && (
-              <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs`}>
-                ↺ Start Over
-              </button>
-            )}
-          </div>
-        </div>
-        <div className="pt-3 pb-3 border-b border-zinc-200 dark:border-zinc-700">
+        <div className="pb-3 border-b border-zinc-200 dark:border-zinc-700">
           {renderPresets()}
           {renderWinningSuggestion()}
         </div>
@@ -1217,24 +1202,25 @@ const BrainStateDeejay = ({ tool }) => {
   // ══════════════════════════════════════════
   return (
     <div className={`space-y-4 ${c.text}`}>
-      {(!results || showInputs) && renderInputForm()}
-      {(results && !showInputs) ? (
-        <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
-          <div className="pb-3 border-b border-zinc-500">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className={`text-xl font-bold ${c.text}`}>
-                  <span className="mr-2">{tool?.icon ?? '🎧'}</span>{tool?.title ?? 'Brain State Deejay'}
-                </h2>
-                <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Science-backed playlists for your brain state'}</p>
-              </div>
-              <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs`}>
+      {/* Persistent header — single reset always in same position */}
+      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
+        <div className="pb-3 border-b border-zinc-500">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className={`text-xl font-bold ${c.text}`}>
+                <span className="mr-2">{tool?.icon ?? '🎧'}</span>{tool?.title ?? 'Brain State Deejay'}
+              </h2>
+              <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Science-backed playlists for your brain state'}</p>
+            </div>
+            {(results || currentState) && (
+              <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>
                 ↺ Start Over
               </button>
-            </div>
+            )}
           </div>
         </div>
-      ) : null}
+      </div>
+      {(!results || showInputs) && renderInputForm()}
       {results && renderResults()}
       {!results && (
         <p className={`text-xs text-center ${c.textMuted}`}>

@@ -130,9 +130,19 @@ const ToolFinder = ({ tool }) => {
 
       {/* ── HEADER ── */} <div className={`${c.card} border ${c.border} rounded-xl p-6`}>
         <div className={`mb-5 pb-4 border-b ${c.border}`}>
-          <h2 className={`text-2xl font-bold ${c.text}`}>
-            <span className="mr-2">{tool?.icon ?? '🧰'}</span>{tool?.title ?? 'ToolFinder'} </h2>
-          <p className={`text-sm ${c.textSecondary} mt-1`}>{tool?.tagline ?? "Describe your problem — I'll find the right tools for you"}</p>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h2 className={`text-2xl font-bold ${c.text}`}>
+                <span className="mr-2">{tool?.icon ?? '🧰'}</span>{tool?.title ?? 'ToolFinder'}
+              </h2>
+              <p className={`text-sm ${c.textSecondary} mt-1`}>{tool?.tagline ?? "Describe your problem — I'll find the right tools for you"}</p>
+            </div>
+            {(results || problem.trim()) && (
+              <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>
+                ↺ Start Over
+              </button>
+            )}
+          </div>
         </div>
 
         {/* ── PROBLEM INPUT ── */} <div className="mb-4">
@@ -158,11 +168,7 @@ const ToolFinder = ({ tool }) => {
             {loading
               ? <><span className="inline-block animate-spin">{tool?.icon ?? '🧰'}</span> Searching…</>
               : <><span>{tool?.icon ?? '🧰'}</span> Find My Tools</>} </button>
-          {results && (<button
-              onClick={handleReset} className={`px-5 py-3 ${c.btnSecondary} rounded-xl font-medium min-h-[48px]`} >
-              New Search
-            </button>
-          )} </div>
+        </div>
         <p className={`text-xs text-center ${c.textMuted} mt-2`}>
           Not sure what you need? <a href="/SkillGapMap" className={linkStyle}>Skill Gap Map</a> helps if it's a career question.
         </p>

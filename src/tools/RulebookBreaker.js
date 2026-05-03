@@ -267,6 +267,25 @@ const RulebookBreaker = ({ tool }) => {
         </div>
       )}
 
+      {/* ── Results-phase header card with reset (ternary, not && — PF-3 replace-mode) ── */}
+      {results ? (
+        <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
+          <div className="pb-3 border-b border-zinc-500">
+            <div className="flex items-start justify-between">
+              <div>
+                <h2 className={`text-xl font-bold ${c.text}`}>
+                  <span className="mr-2">{tool?.icon ?? '🏴‍☠️'}</span>{tool?.title ?? 'Rulebook Breaker'}
+                </h2>
+                <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'The loopholes, magic words, and escalation ladder nobody tells you about.'}</p>
+              </div>
+              <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>
+                ↺ Start Over
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
       {/* ── Results ── */}
       {results && (
         <div className="space-y-4" ref={resultsRef}>
@@ -436,10 +455,6 @@ const RulebookBreaker = ({ tool }) => {
           {/* Actions */}
           <div className="flex items-center gap-3 flex-wrap">
             <CopyBtn content={buildFullText()} label="Copy Results" />
-            <button onClick={handleReset}
-              className={`px-4 py-2 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
-              🔄 New Problem
-            </button>
           </div>
 
           {/* Post-result cross-refs */}

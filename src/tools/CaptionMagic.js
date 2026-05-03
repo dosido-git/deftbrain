@@ -507,24 +507,6 @@ const CaptionMagic = ({ tool }) => {
   // ══════════════════════════════════════════
   const renderInputForm = () => (
     <div className="space-y-4">
-      {/* Header unified inside input card */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
-        <div className="pb-3 border-b border-zinc-500">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className={`text-xl font-bold ${c.text}`}>
-                <span className="mr-2">{tool?.icon ?? '📸'}</span>{tool?.title ?? 'Caption Magic'}
-              </h2>
-              <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Turn any photo into engaging social media captions'}</p>
-            </div>
-            {(!!results || !!imageBase64 || !!imageDescription.trim()) && (
-              <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs`}>
-                ↺ Start Over
-              </button>
-            )}
-          </div>
-        </div>
-      </div>
       {renderImageUpload()}
 
       <div className={`p-5 rounded-2xl border ${c.border} ${c.card}`}>
@@ -953,24 +935,25 @@ const CaptionMagic = ({ tool }) => {
   // ══════════════════════════════════════════
   return (
     <div className={`space-y-4 ${c.text}`}>
-      {!results && renderInputForm()}
-      {results ? (
-        <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
-          <div className="pb-3 border-b border-zinc-500">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className={`text-xl font-bold ${c.text}`}>
-                  <span className="mr-2">{tool?.icon ?? '📸'}</span>{tool?.title ?? 'Caption Magic'}
-                </h2>
-                <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Turn any photo into engaging social media captions'}</p>
-              </div>
-              <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs`}>
+      {/* Persistent header — single reset always in same position */}
+      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
+        <div className="pb-3 border-b border-zinc-500">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className={`text-xl font-bold ${c.text}`}>
+                <span className="mr-2">{tool?.icon ?? '📸'}</span>{tool?.title ?? 'Caption Magic'}
+              </h2>
+              <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Turn any photo into engaging social media captions'}</p>
+            </div>
+            {(results || imageBase64 || imageDescription.trim()) && (
+              <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>
                 ↺ Start Over
               </button>
-            </div>
+            )}
           </div>
         </div>
-      ) : null}
+      </div>
+      {!results && renderInputForm()}
       {!results && (
         <p className={`text-xs text-center ${c.textMuted}`}>
           Want help crafting what you write next?{' '}

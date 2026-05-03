@@ -482,11 +482,18 @@ const DifficultTalkCoach = ({ tool }) => {
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Practice hard conversations before they happen'}</p>
           </div>
-          {strategyHistory.length > 0 && !results && (
-            <button onClick={() => toggleSection('history')} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
-              <span>📁</span> Past ({strategyHistory.length})
-            </button>
-          )}
+          <div className="flex items-center gap-2 flex-shrink-0">
+            {strategyHistory.length > 0 && !results && (
+              <button onClick={() => toggleSection('history')} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
+                <span>📁</span> Past ({strategyHistory.length})
+              </button>
+            )}
+            {(results || topic.trim()) && (
+              <button onClick={reset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold`}>
+                ↺ Start Over
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
@@ -640,12 +647,6 @@ const DifficultTalkCoach = ({ tool }) => {
           {/* Controls */}
           <div className={`${c.card} rounded-xl shadow-lg p-4 flex items-center justify-between flex-wrap gap-3`}>
             <span className={`text-sm font-semibold ${c.text}`}>Strategy: {topic.substring(0, 50)}{topic.length > 50 ? '…' : ''}</span>
-            <div className="flex items-center gap-2">
-
-              <button onClick={reset} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
-                <span className="text-sm">🔄</span> New Conversation
-              </button>
-            </div>
           </div>
 
           {/* Tabs */}

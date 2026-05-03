@@ -254,7 +254,14 @@ const TheDebrief = ({ tool }) => {
   // INPUT
   // ════════════════════════════════════════════════════════════
   const renderInput = () => (
-    <div className="space-y-4">
+    <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
+      <div className="pb-3 border-b border-zinc-500">
+        <h2 className={'text-xl font-bold ' + c.text}>
+          <span className="mr-2">{tool?.icon ?? '📋'}</span>{tool?.title ?? 'The Debrief'}
+        </h2>
+        <p className={'text-sm ' + c.textSecondary}>{tool?.tagline ?? 'Paste a meeting transcript — get decisions, actions, and follow-ups'}</p>
+      </div>
+
       <div className="flex gap-1.5 overflow-x-auto pb-1">
         {MODES.map(m => (
           <button key={m.value} onClick={() => { setMode(m.value); setResults(null); setError(''); }}
@@ -270,7 +277,7 @@ const TheDebrief = ({ tool }) => {
       </div>
 
       {mode !== 'series' ? (
-        <div className={c.card + ' border rounded-xl p-5'}>
+        <div>
           <label className={'text-base font-bold ' + c.text + ' mb-1 block'}>📄 Paste meeting transcript or notes</label>
           <p className={'text-xs ' + c.textMuted + ' mb-3'}>From Zoom, Teams, Google Meet, Otter.ai, or your own notes.</p>
           <textarea value={transcript} onChange={e => setTranscript(e.target.value)}
@@ -695,30 +702,39 @@ const TheDebrief = ({ tool }) => {
   // MAIN RENDER
   // ════════════════════════════════════════════════════════════
   return (
-    <div>
-      <div className="flex items-center gap-3 mb-5">
-        <div>
-          <h2 className={'text-2xl font-bold ' + c.text}>
-            <span className="mr-2">{tool?.icon ?? '📋'}</span>{tool?.title ?? 'The Debrief'}
-          </h2>
-          <p className={'text-sm ' + c.textMuted}>{tool?.tagline ?? 'Paste a meeting transcript — get decisions, actions, and follow-ups'}</p>
-        </div>
-      </div>
+    <div className={`space-y-4 ${c.text}`}>
       {!results && renderInput()}
+
+      {/* ── Results phase: persistent header card with reset (ternary, not && — see PF-3 replace-mode note) ── */}
+      {results ? (
+        <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
+          <div className="pb-3 border-b border-zinc-500">
+            <div className="flex items-start justify-between">
+              <div>
+                <h2 className={'text-xl font-bold ' + c.text}>
+                  <span className="mr-2">{tool?.icon ?? '📋'}</span>{tool?.title ?? 'The Debrief'}
+                </h2>
+                <p className={'text-sm ' + c.textSecondary}>{tool?.tagline ?? 'Paste a meeting transcript — get decisions, actions, and follow-ups'}</p>
+              </div>
+              <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>
+                ↺ Start Over
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
       {results && (
-        <div ref={resultsRef} className="space-y-4 mt-4">
+        <div ref={resultsRef} className="space-y-4">
           {mode === 'distill' && renderDistill()}
           {mode === 'followup' && renderFollowup()}
           {mode === 'series' && renderSeries()}
 
-          <div className="flex gap-2">
-            <button onClick={handleReset} className={'flex-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 ' + c.btnPrimary}>
-              <span>📋</span> New Meeting
-            </button>
-            <button onClick={() => { setResults(null); setError(''); }} className={'flex-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 ' + c.btnSecondary}>
-              <span>✏️</span> Edit Input
-            </button>
-          </div>
+          {/* Edit Input — partial reset, returns to input form keeping content */}
+          <button onClick={() => { setResults(null); setError(''); }}
+            className={'w-full py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 ' + c.btnSecondary}>
+            <span>✏️</span> Edit Input
+          </button>
 
           <div className={'p-4 rounded-2xl border ' + c.card}>
             <p className={'text-xs font-bold ' + c.textMuted + ' uppercase tracking-wide mb-2'}>🔗 Related Tools</p>
@@ -730,7 +746,7 @@ const TheDebrief = ({ tool }) => {
         </div>
       )}
       {error && (
-        <div className={'mt-4 p-4 ' + c.warningBox + ' border rounded-xl flex items-start gap-3'}>
+        <div className={'p-4 ' + c.warningBox + ' border rounded-xl flex items-start gap-3'}>
           <span className={'text-base ' + c.warningTxt}>⚠️</span>
           <p className={'text-sm ' + c.warningTxt}>{error}</p>
         </div>

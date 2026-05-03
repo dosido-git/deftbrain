@@ -273,12 +273,21 @@ const ContrastReport = ({ tool }) => {
       {/* ─── Standard header card ─── */}
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
         <div className="pb-3 mb-4 border-b border-zinc-500">
-          <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-            <span className="mr-2">{tool?.icon ?? '🔮'}</span>{tool?.title ?? 'The Contrast Report'}
-          </h2>
-          <p className={`text-sm ${c.textSecondary} mt-0.5`}>
-            {tool?.tagline ?? 'Feel both futures before you choose.'}
-          </p>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
+                <span className="mr-2">{tool?.icon ?? '🔮'}</span>{tool?.title ?? 'The Contrast Report'}
+              </h2>
+              <p className={`text-sm ${c.textSecondary} mt-0.5`}>
+                {tool?.tagline ?? 'Feel both futures before you choose.'}
+              </p>
+            </div>
+            {(results || pathA.trim() || pathB.trim()) && (
+              <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>
+                ↺ Start Over
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Pre-result cross-ref */}
@@ -367,13 +376,6 @@ const ContrastReport = ({ tool }) => {
               className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs transition-colors flex items-center gap-1.5`}>
               <span>🎲</span> Example
             </button>
-            {results && (
-              <button
-                onClick={handleReset}
-                className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs transition-colors flex items-center gap-1.5`}>
-                <span>🔄</span> Reset
-              </button>
-            )}
           </div>
 
           <button

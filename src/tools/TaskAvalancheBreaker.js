@@ -540,10 +540,19 @@ const TaskAvalancheBreaker = ({ tool }) => {
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm`}>
         <div className="px-5 pt-5">
           <div className="pb-3 border-b border-zinc-500">
-            <h2 className={`text-xl font-bold ${c.text}`}>
-              <span className="mr-2">{tool?.icon ?? '⚡'}</span>{tool?.title ?? 'Task Avalanche Breaker'}
-            </h2>
-            <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? "Let's turn that mountain into micro-steps"}</p>
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h2 className={`text-xl font-bold ${c.text}`}>
+                  <span className="mr-2">{tool?.icon ?? '⚡'}</span>{tool?.title ?? 'Task Avalanche Breaker'}
+                </h2>
+                <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? "Let's turn that mountain into micro-steps"}</p>
+              </div>
+              {(results || project.trim()) && (
+                <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>
+                  ↺ Start Over
+                </button>
+              )}
+            </div>
           </div>
         </div>
 
@@ -684,9 +693,6 @@ const TaskAvalancheBreaker = ({ tool }) => {
               {loading ? (<><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> Breaking it down...</>)
                 : (<><span className="mr-1">{tool?.icon ?? '⛰️'}</span> Break This Down for Me</>)}
             </button>
-            {results && (
-              <button onClick={handleReset} className={`px-6 py-3 border-2 ${c.btnOutline} font-medium rounded-lg`}>New Project</button>
-            )}
           </div>
           <p className={`text-xs text-center ${c.textMuted}`}>AI-generated suggestions — adjust to fit what actually works for you.</p>
 

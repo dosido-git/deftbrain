@@ -549,73 +549,58 @@ const BragSheetBuilder = ({ tool }) => {
   // ─── RENDER ───
   return (
     <div className={`space-y-4 ${c.text}`}>
-      {/* Input phase: header + quick-actions + role/experience in one card */}
-      {!results && (
-        <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
-          <div className="pb-3 border-b border-zinc-500">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className={`text-xl font-bold ${c.text}`}>
-                  <span className="mr-2">{tool?.icon ?? '🏆'}</span>{tool?.title ?? 'Brag Sheet Builder'}
-                </h2>
-                <p className={`text-sm ${c.textSecondary} mt-1`}>{tool?.tagline ?? 'Turn humble descriptions into powerful achievement statements'}</p>
-              </div>
-              {(accomplishments.length > 0 || currentEntry.trim()) && (
-                <button onClick={reset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs`}>
-                  ↺ Start Over
-                </button>
-              )}
-            </div>
-          </div>
-          <div className="flex items-center gap-2 flex-wrap pt-3 pb-3 border-b border-zinc-200 dark:border-zinc-700">
-            {savedAccomplishments.length > 0 && (
-              <button onClick={() => setAccomplishments(prev => [...prev, ...savedAccomplishments])}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
-                <span>📂</span> Load Saved ({savedAccomplishments.length})
-              </button>
-            )}
-            <button onClick={() => setShowJournal(!showJournal)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
-              <span>🗓️</span> Journal {journal.length > 0 ? `(${journal.length})` : ''}
-            </button>
-          </div>
-          {/* Role + Experience — first inputs, unified inside header card */}
-          <div className="pt-3 grid grid-cols-1 sm:grid-cols-2 gap-4">
+      {/* Persistent header card — single reset, always in same position */}
+      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
+        <div className="pb-3 border-b border-zinc-500">
+          <div className="flex items-center justify-between">
             <div>
-              <label className={`block text-sm font-semibold ${c.text} mb-1.5`}>Your role <span className={`font-normal ${c.textMuteded}`}>(optional)</span></label>
-              <input type="text" value={roleTitle} onChange={e => setRoleTitle(e.target.value)}
-                onKeyDown={e => { if (e.key === 'Enter') entryRef.current?.focus(); }}
-                placeholder="e.g., Product Manager, Nurse, Teacher..."
-                className={`w-full p-3 border rounded-xl outline-none text-sm focus:ring-2 focus:ring-cyan-300 ${c.input}`} />
+              <h2 className={`text-xl font-bold ${c.text}`}>
+                <span className="mr-2">{tool?.icon ?? '🏆'}</span>{tool?.title ?? 'Brag Sheet Builder'}
+              </h2>
+              <p className={`text-sm ${c.textSecondary} mt-1`}>{tool?.tagline ?? 'Turn humble descriptions into powerful achievement statements'}</p>
             </div>
-            <div>
-              <label className={`block text-sm font-semibold ${c.text} mb-1.5`}>Years of experience <span className={`font-normal ${c.textMuteded}`}>(optional)</span></label>
-              <input type="number" value={yearsExp} onChange={e => setYearsExp(e.target.value)}
-                onKeyDown={e => { if (e.key === 'Enter') entryRef.current?.focus(); }}
-                placeholder="e.g., 3"
-                className={`w-full p-3 border rounded-xl outline-none text-sm focus:ring-2 focus:ring-cyan-300 ${c.input}`} />
-            </div>
-          </div>
-        </div>
-      )}
-      {/* Results phase: persistent standalone header */}
-      {results ? (
-        <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
-          <div className="pb-3 border-b border-zinc-500">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className={`text-xl font-bold ${c.text}`}>
-                  <span className="mr-2">{tool?.icon ?? '🏆'}</span>{tool?.title ?? 'Brag Sheet Builder'}
-                </h2>
-                <p className={`text-sm ${c.textSecondary} mt-1`}>{tool?.tagline ?? 'Turn humble descriptions into powerful achievement statements'}</p>
-              </div>
-              <button onClick={reset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs`}>
+            {(results || accomplishments.length > 0 || currentEntry.trim()) && (
+              <button onClick={reset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>
                 ↺ Start Over
               </button>
-            </div>
+            )}
           </div>
         </div>
-      ) : null}
+        {/* Quick-actions + role/experience — input-phase only */}
+        {!results && (
+          <>
+            <div className="flex items-center gap-2 flex-wrap pt-3 pb-3 border-b border-zinc-200 dark:border-zinc-700">
+              {savedAccomplishments.length > 0 && (
+                <button onClick={() => setAccomplishments(prev => [...prev, ...savedAccomplishments])}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
+                  <span>📂</span> Load Saved ({savedAccomplishments.length})
+                </button>
+              )}
+              <button onClick={() => setShowJournal(!showJournal)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
+                <span>🗓️</span> Journal {journal.length > 0 ? `(${journal.length})` : ''}
+              </button>
+            </div>
+            {/* Role + Experience — first inputs, unified inside header card */}
+            <div className="pt-3 grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className={`block text-sm font-semibold ${c.text} mb-1.5`}>Your role <span className={`font-normal ${c.textMuteded}`}>(optional)</span></label>
+                <input type="text" value={roleTitle} onChange={e => setRoleTitle(e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter') entryRef.current?.focus(); }}
+                  placeholder="e.g., Product Manager, Nurse, Teacher..."
+                  className={`w-full p-3 border rounded-xl outline-none text-sm focus:ring-2 focus:ring-cyan-300 ${c.input}`} />
+              </div>
+              <div>
+                <label className={`block text-sm font-semibold ${c.text} mb-1.5`}>Years of experience <span className={`font-normal ${c.textMuteded}`}>(optional)</span></label>
+                <input type="number" value={yearsExp} onChange={e => setYearsExp(e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter') entryRef.current?.focus(); }}
+                  placeholder="e.g., 3"
+                  className={`w-full p-3 border rounded-xl outline-none text-sm focus:ring-2 focus:ring-cyan-300 ${c.input}`} />
+              </div>
+            </div>
+          </>
+        )}
+      </div>
 
       {/* ═══════════════ JOURNAL PANEL ═══════════════ */}
       {showJournal && !results && (

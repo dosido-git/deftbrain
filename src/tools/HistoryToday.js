@@ -178,10 +178,19 @@ const HistoryToday = ({ tool }) => {
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm`}>
         <div className="px-5 pt-5">
           <div className="pb-3 border-b border-zinc-500">
-            <h2 className={`text-xl font-bold ${c.text}`}>
-              <span className="mr-2">{tool?.icon ?? '📅'}</span>{tool?.title ?? 'History Today'}
-            </h2>
-            <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Find the structural historical parallel — not the obvious one'}</p>
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h2 className={`text-xl font-bold ${c.text}`}>
+                  <span className="mr-2">{tool?.icon ?? '📅'}</span>{tool?.title ?? 'History Today'}
+                </h2>
+                <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Find the structural historical parallel — not the obvious one'}</p>
+              </div>
+              {(results || event.trim()) && (
+                <button onClick={reset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>
+                  ↺ Start Over
+                </button>
+              )}
+            </div>
           </div>
         </div>
         {!results && (
@@ -271,9 +280,6 @@ const HistoryToday = ({ tool }) => {
                   {counterLoading ? <span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> : <span>🔄</span>} Counter-Example
                 </button>
               )}
-              <button onClick={reset} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
-                <span>🔄</span> New Search
-              </button>
             </div>
           </div>
 

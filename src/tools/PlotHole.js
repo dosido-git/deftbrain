@@ -176,10 +176,19 @@ const PlotHole = ({ tool }) => {
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm overflow-hidden`}>
         <div className="px-5 pt-5">
           <div className="pb-3 border-b border-zinc-500">
-            <h2 className={`text-xl font-bold ${c.text}`}>
-              <span className="mr-2">{tool?.icon ?? '🕳️'}</span>{tool?.title ?? 'Plot Hole Finder'}
-            </h2>
-            <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? "Name a movie, show, book, or game — I'll find where the logic breaks"}</p>
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h2 className={`text-xl font-bold ${c.text}`}>
+                  <span className="mr-2">{tool?.icon ?? '🕳️'}</span>{tool?.title ?? 'Plot Hole Finder'}
+                </h2>
+                <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? "Name a movie, show, book, or game — I'll find where the logic breaks"}</p>
+              </div>
+              {(results || defendResults || title.trim() || defendHole.trim()) && (
+                <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>
+                  ↺ Start Over
+                </button>
+              )}
+            </div>
           </div>
         </div>
         <div className="px-5 py-3 flex gap-2">
@@ -317,11 +326,6 @@ const PlotHole = ({ tool }) => {
                   <a href="/FanTheory" className={`text-xs ${linkStyle}`}>🔭 Fan Theory</a>
                 </div>
               </div>
-
-              <button onClick={handleReset}
-                className={`w-full ${c.btnSecondary} font-bold py-2.5 rounded-lg text-sm min-h-[44px]`}>
-                🔄 Start Over
-              </button>
             </div>
           )}
         </>
@@ -402,11 +406,6 @@ const PlotHole = ({ tool }) => {
                   <a href="/PlotTwist" className={`text-xs ${linkStyle}`}>🔀 Plot Twist</a>
                 </div>
               </div>
-
-              <button onClick={handleReset}
-                className={`w-full ${c.btnSecondary} font-bold py-2.5 rounded-lg text-sm min-h-[44px]`}>
-                🔄 Start Over
-              </button>
             </div>
           )}
         </>
