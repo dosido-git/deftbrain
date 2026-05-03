@@ -1,3 +1,11 @@
+# v1.9 · 2026-05-03 · PF-16 split regex broadened to recognize render-helper
+#                     pattern `{results && renderResults()}` (and renderOutput,
+#                     renderAnswer, etc.). Previously the split regex required
+#                     `(` or `<` after `&&`, missing tools that delegate body
+#                     rendering to a helper function. Catalog re-sweep on
+#                     2026-05-03 surfaced 9 such tools, all verified clean
+#                     (reset in canonical header position above render call).
+#                     This patch closes the hole for future drift.
 # v1.8 · 2026-05-02 · session backlog burndown:
 #                     (1) added 'accentTxt' to S1.1k _CONVENTION_KEYS whitelist
 #                     — PF-2 canonical block includes accentTxt and 39 tools
@@ -519,7 +527,10 @@ for name, fpath in tools:
         fails.append(f'PF-16: {reset_count} reset buttons detected — must be exactly 1 (header top-right only)')
     # PF-16: reset button must NOT appear inside a {results && ( block.
     # Strategy: find the first {results && ( split, then check any reset-named button appears only BEFORE it.
-    _results_split = re.search(r'\{\s*(?<![!])results\s*&&\s*[(<]', content)
+    # v1.9: broadened split regex to recognize render-helper pattern
+    # `{results && renderResults()}` — previously missed, leaving render-helper
+    # tools un-checked for AFTER-split reset buttons.
+    _results_split = re.search(r'\{\s*(?<![!])results\s*&&\s*(?:[(<]|render[A-Z]\w*\s*\(\s*\))', content)
     if _results_split:
         _after = content[_results_split.end():]
         _btn_after = re.search(rf'<button[^>]*onClick=\{{\s*{_RESET_ALT}\s*\}}', _after)

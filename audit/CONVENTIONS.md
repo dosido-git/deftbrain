@@ -1,3 +1,4 @@
+<!-- v1.5 · 2026-05-02 · added PF-16 EXCEPTION block for multi-view tools (5 strict conditions, GentlePushGenerator reference case). Codifies Bruce-stated reset-button principle: one reset, horizontally aligned with title, aligned right, always present. -->
 <!-- v1.4 · 2026-05-02 · session 2026-05-02 backlog burndown: added PF-15 EXEMPTION block for chat-style send and inline-quick-add inputs (Bucket 3 design call closure). Asterisk requirement now has two named carve-outs with strict shape conditions and reference cases (ApologyCalibrator practiceInput + note). -->
 <!-- v1.3 · 2026-04-24 · removed vestigial CopyBtn-import requirement from PF-1 and PF-5; tools now import CopyBtn only when they actually use it -->
 # DeftBrain Component Conventions
@@ -761,6 +762,32 @@ grep -n "handleReset\|onClick.*reset\|Start Over\|startOver" ComponentName.js | 
 *Added v4.37, Session 100, April 2026.*
 
 *Reference case: AwkwardSilenceFiller (conditional visibility guard checks multiple input sources before showing the button — `(results || panicResult || customContext.trim() || scenario || landmines.trim()) ? <button .../> : null` — so the button only appears once the user has started interacting, not on the blank initial state).*
+
+---
+
+### PF-16 EXCEPTION · Multi-view tools
+
+Some tools render fundamentally different UIs depending on a `view` state machine — e.g. `view === 'setup'` vs `view === 'practice'` vs `view === 'reflection'` vs `view === 'review'`. Each view is a self-contained screen with its own header. The runtime user sees **exactly one view at a time**, and that view has **exactly one reset button** in its header.
+
+In source code, this manifests as N `<button onClick={handleReset}>` declarations — one per view branch — all calling the same canonical `handleReset()`. They are mutually exclusive at runtime; the duplication is structural, not behavioral.
+
+**This is the only sanctioned exception to the "exactly 1 reset button" count rule.**
+
+**Conditions for the exception (all five must hold):**
+
+1. The tool has a top-level `view` (or equivalent) state variable controlling which screen renders.
+2. The `view` branches are mutually exclusive — only one renders at a time, typically a chain of `view === 'X' && (...)` or a switch.
+3. **All** reset buttons call the same single `handleReset()` (or equivalent) function — no branching reset logic.
+4. **All** reset buttons sit in their respective view's header position — top-right, horizontally aligned with the `<h2>` title, on the same row.
+5. **All** reset buttons use `c.btnSecondary` and a consistent label (e.g. `↩ Start Over`).
+
+If any of those five conditions fails, the exception does not apply — fix it as a normal PF-16 violation.
+
+**Reference case:** `GentlePushGenerator` — 13 view branches (`setup`, `pick`, `acknowledge`, `attempted`, `reflection`, `countdown`, `ladder`, `review`, plus several practice modes), each with its own `↩ Start Over` button in its header. All 13 call the same `handleReset()`. The audit script's PF-16 count check fires a false positive on these tools — manual inspection required to confirm the exception applies.
+
+**Audit-script note:** The script counts `onClick={handleReset}` source occurrences, not runtime occurrences. It cannot distinguish multi-view tools from genuine duplicates. Tools flagged with `>1 reset buttons detected` must be manually inspected against the five conditions above.
+
+*Bruce-stated principle (Session 2026-05-02): "Normally there should only be one reset button and that should be horizontally aligned with the tool title, aligned right. There should always be a reset button in this location only."*
 
 ---
 
