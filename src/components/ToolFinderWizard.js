@@ -148,7 +148,7 @@ function AnswerRecap({ answers }) {
 // MAIN COMPONENT
 // ════════════════════════════════════════════════════════════
 export default function ToolFinderWizard() {
-  const [step,      setStep]      = useState(0); // 0=intro 1-3=questions 4=results
+  const [step,      setStep]      = useState(1); // 1-3=questions 4=results
   const [answers,   setAnswers]   = useState([]);
   const [loading,   setLoading]   = useState(false);
   const [results,   setResults]   = useState(null);
@@ -191,7 +191,7 @@ export default function ToolFinderWizard() {
   }, [answers]);
 
   const reset = useCallback(() => {
-    setStep(0);
+    setStep(1);
     setAnswers([]);
     setResults(null);
     setError('');
@@ -203,12 +203,13 @@ export default function ToolFinderWizard() {
 
   return (
     <div style={{
-      background: CLR.sand100,
-      border: `1px solid ${CLR.sand200}`,
-      borderRadius: 12,
-      padding: '11px 14px 10px',
+      background: '#ffffff',
+      border: `1.5px solid ${CLR.sand300}`,
+      borderRadius: 16,
+      padding: '18px 20px 16px',
       marginBottom: 16,
       position: 'relative',
+      boxShadow: `0 1px 3px ${CLR.warm500}10`,
     }}>
 
       {/* ── Dismiss ── */}
@@ -216,45 +217,40 @@ export default function ToolFinderWizard() {
         onClick={() => setDismissed(true)}
         aria-label="Dismiss"
         style={{
-          position: 'absolute', top: 10, right: 12,
+          position: 'absolute', top: 12, right: 14,
           background: 'none', border: 'none', cursor: 'pointer',
-          color: CLR.warm500, fontSize: 15, lineHeight: 1, padding: 2,
+          color: CLR.warm500, fontSize: 16, lineHeight: 1, padding: 2,
         }}
       >✕</button>
 
-      {/* ── Label / intro ── */}
-      {step === 0 && (
-        <p style={{ fontSize: 11, fontWeight: 600, color: CLR.warm700, marginBottom: 8 }}>
-          🧰 Answer 3 questions — we'll find the right tool for you.
-        </p>
-      )}
-
       {/* ══════════════════════════════════════════
-          STEP 0 — INTRO CTA
-      ══════════════════════════════════════════ */}
-      {step === 0 && (
-        <button
-          onClick={() => setStep(1)}
-          style={{
-            background: CLR.navy500, color: '#fff', border: 'none',
-            borderRadius: 8, padding: '7px 14px',
-            fontWeight: 600, fontSize: 12, cursor: 'pointer',
-          }}
-        >
-          Let's go →
-        </button>
-      )}
-
-      {/* ══════════════════════════════════════════
-          STEPS 1–3 — QUESTIONS (with step indicator + recap)
+          STEPS 1–3 — QUESTIONS
+          Heading is the question itself; subhead on step 1
+          explains the structure, recap takes its place on 2–3.
       ══════════════════════════════════════════ */}
       {currentQ && (
         <div>
-          <StepIndicator step={step} />
-          <AnswerRecap answers={answers} />
-          <p style={{ fontSize: 13, fontWeight: 600, color: CLR.warm800, marginBottom: 9 }}>
+          <h2 style={{
+            fontSize: 18, fontWeight: 800,
+            color: CLR.warm800, lineHeight: 1.2,
+            marginBottom: 6, paddingRight: 24,
+          }}>
             {currentQ.question}
-          </p>
+          </h2>
+
+          {step === 1 ? (
+            <p style={{
+              fontSize: 12, color: CLR.warm500,
+              marginBottom: 12, lineHeight: 1.4,
+            }}>
+              3 quick questions — we'll match you to the right tool.
+            </p>
+          ) : (
+            <AnswerRecap answers={answers} />
+          )}
+
+          <StepIndicator step={step} />
+
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7 }}>
             {currentQ.options.map(opt => (
               <HoverPill key={opt.label} option={opt} onPick={handlePick} />

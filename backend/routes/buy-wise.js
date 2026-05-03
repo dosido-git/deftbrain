@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 async function withRetry(fn, { retries = 3, baseDelayMs = 1500 } = {}) {
   for (let attempt = 0; attempt <= retries; attempt++) {
@@ -35,7 +36,7 @@ YOUR PERSONALITY:
 // ════════════════════════════════════════════════════════════
 // POST /buy-wise — Main analysis
 // ════════════════════════════════════════════════════════════
-router.post('/buy-wise', async (req, res) => {
+router.post('/buy-wise', rateLimit(), async (req, res) => {
   try {
     const { product, price, currency, urgency, isImpulse, isGift, giftRecipient, priority, context, comparison, userLanguage } = req.body;
 
@@ -209,7 +210,7 @@ Return ONLY valid JSON with ALL applicable sections. Set sections to null if the
 // ════════════════════════════════════════════════════════════
 // POST /buy-wise/budget — Budget mode
 // ════════════════════════════════════════════════════════════
-router.post('/buy-wise/budget', async (req, res) => {
+router.post('/buy-wise/budget', rateLimit(), async (req, res) => {
   try {
     const { budget, category, needs, currency, userLanguage } = req.body;
 
@@ -272,7 +273,7 @@ Recommend the best option(s) within this budget. Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /buy-wise/followup — Follow-up questions
 // ════════════════════════════════════════════════════════════
-router.post('/buy-wise/followup', async (req, res) => {
+router.post('/buy-wise/followup', rateLimit(), async (req, res) => {
   try {
     const { product, question, originalVerdict, currency, userLanguage } = req.body;
 
@@ -317,7 +318,7 @@ Answer thoroughly. Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /buy-wise/calendar — Deal season calendar
 // ════════════════════════════════════════════════════════════
-router.post('/buy-wise/calendar', async (req, res) => {
+router.post('/buy-wise/calendar', rateLimit(), async (req, res) => {
   try {
     const { category, currency, userLanguage } = req.body;
 
@@ -373,7 +374,7 @@ Include all 12 months in the calendar array.`;
 // ════════════════════════════════════════════════════════════
 // POST /buy-wise/photo — Photo Mode: identify product from image
 // ════════════════════════════════════════════════════════════
-router.post('/buy-wise/photo', async (req, res) => {
+router.post('/buy-wise/photo', rateLimit(), async (req, res) => {
   try {
     const { image, currency, userLanguage } = req.body;
 
@@ -439,7 +440,7 @@ If you cannot identify the product, set identified to false and explain in recom
 // ════════════════════════════════════════════════════════════
 // POST /buy-wise/convince — Convince My Partner mode
 // ════════════════════════════════════════════════════════════
-router.post('/buy-wise/convince', async (req, res) => {
+router.post('/buy-wise/convince', rateLimit(), async (req, res) => {
   try {
     const { product, price, currency, direction, context, verdict, userLanguage } = req.body;
 
@@ -492,7 +493,7 @@ Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /buy-wise/haul — Haul Review: analyze multiple items
 // ════════════════════════════════════════════════════════════
-router.post('/buy-wise/haul', async (req, res) => {
+router.post('/buy-wise/haul', rateLimit(), async (req, res) => {
   try {
     const { items, totalBudget, currency, occasion, userLanguage } = req.body;
 
@@ -555,7 +556,7 @@ Review this haul as a whole. Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /buy-wise/quote — Service/Contractor Quote Check
 // ════════════════════════════════════════════════════════════
-router.post('/buy-wise/quote', async (req, res) => {
+router.post('/buy-wise/quote', rateLimit(), async (req, res) => {
   try {
     const { service, amount, details, location, urgency, currency, userLanguage } = req.body;
 

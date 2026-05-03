@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
 // POST /what-if — The Road Not Taken
 // ════════════════════════════════════════════════════════════
-router.post('/what-if', async (req, res) => {
+router.post('/what-if', rateLimit(), async (req, res) => {
   try {
     const { decision, optionNotChosen, context, timeframe, userLanguage } = req.body;
 

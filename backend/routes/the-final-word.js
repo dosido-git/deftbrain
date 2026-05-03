@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse } = require('../lib/claude');
 const crypto = require('crypto');
+const { rateLimit } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════════════
 // THE FINAL WORD — Settle arguments with authority
@@ -66,7 +67,7 @@ setInterval(() => {
 // ═══════════════════════════════════════════════════
 // MAIN AI ROUTE — All modes
 // ═══════════════════════════════════════════════════
-router.post('/the-final-word', async (req, res) => {
+router.post('/the-final-word', rateLimit(), async (req, res) => {
   try {
     const { mode } = req.body;
     if (!mode) return res.status(400).json({ error: 'Please select a mode' });
@@ -393,7 +394,7 @@ Return ONLY this JSON:
 // ═══════════════════════════════════════════════════
 
 // Save a verdict for sharing
-router.post('/the-final-word/share', (req, res) => {
+router.post('/the-final-word/share', rateLimit(), (req, res) => {
   try {
     const { verdict, inputSummary } = req.body;
     if (!verdict) return res.status(400).json({ error: 'No verdict to share' });
@@ -413,7 +414,7 @@ router.post('/the-final-word/share', (req, res) => {
 });
 
 // Retrieve a shared verdict
-router.get('/the-final-word/share/:id', (req, res) => {
+router.get('/the-final-word/share/:id', rateLimit(), (req, res) => {
   const entry = sharedVerdicts.get(req.params.id);
   if (!entry) return res.status(404).json({ error: 'Verdict not found or has expired' });
   res.json({ verdict: entry.verdict, inputSummary: entry.inputSummary });
@@ -424,7 +425,7 @@ router.get('/the-final-word/share/:id', (req, res) => {
 // ═══════════════════════════════════════════════════
 
 // Create a room
-router.post('/the-final-word/room/create', (req, res) => {
+router.post('/the-final-word/room/create', rateLimit(), (req, res) => {
   try {
     const { hostName, settings } = req.body;
     if (!hostName?.trim()) return res.status(400).json({ error: 'Host name required' });
@@ -479,7 +480,7 @@ router.post('/the-final-word/room/create', (req, res) => {
 });
 
 // Join a room
-router.post('/the-final-word/room/:code/join', (req, res) => {
+router.post('/the-final-word/room/:code/join', rateLimit(), (req, res) => {
   try {
     const { playerName } = req.body;
     const room = rooms.get(req.params.code.toUpperCase());
@@ -508,7 +509,7 @@ router.post('/the-final-word/room/:code/join', (req, res) => {
 });
 
 // Get room state (polling endpoint — NOT rate-limited since it's GET)
-router.get('/the-final-word/room/:code/state', (req, res) => {
+router.get('/the-final-word/room/:code/state', rateLimit(), (req, res) => {
   const room = rooms.get(req.params.code.toUpperCase());
   if (!room) return res.status(404).json({ error: 'Room not found' });
 
@@ -553,7 +554,7 @@ router.get('/the-final-word/room/:code/state', (req, res) => {
 });
 
 // Host: generate next question
-router.post('/the-final-word/room/:code/next', async (req, res) => {
+router.post('/the-final-word/room/:code/next', rateLimit(), async (req, res) => {
   try {
     const { playerId } = req.body;
     const room = rooms.get(req.params.code.toUpperCase());
@@ -615,7 +616,7 @@ Return ONLY this JSON — no other text:
 });
 
 // Player: submit answer
-router.post('/the-final-word/room/:code/answer', (req, res) => {
+router.post('/the-final-word/room/:code/answer', rateLimit(), (req, res) => {
   try {
     const { playerId, answerIndex } = req.body;
     const room = rooms.get(req.params.code.toUpperCase());
@@ -640,7 +641,7 @@ router.post('/the-final-word/room/:code/answer', (req, res) => {
 });
 
 // Host: reveal answer and score
-router.post('/the-final-word/room/:code/reveal', (req, res) => {
+router.post('/the-final-word/room/:code/reveal', rateLimit(), (req, res) => {
   try {
     const { playerId } = req.body;
     const room = rooms.get(req.params.code.toUpperCase());
@@ -689,7 +690,7 @@ router.post('/the-final-word/room/:code/reveal', (req, res) => {
 // Break a claim into its component parts,
 // each with its own verdict + reasoning
 // ════════════════════════════════════════
-router.post('/the-final-word/dissect', async (req, res) => {
+router.post('/the-final-word/dissect', rateLimit(), async (req, res) => {
   try {
     const { claim, userLanguage } = req.body;
     if (!claim?.trim()) return res.status(400).json({ error: 'Paste a claim to dissect.' });

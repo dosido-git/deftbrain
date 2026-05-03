@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
 // SHARED
@@ -19,7 +20,7 @@ YOUR APPROACH:
 // ════════════════════════════════════════════════════════════
 // POST /tip-of-tongue — Main identification
 // ════════════════════════════════════════════════════════════
-router.post('/tip-of-tongue', async (req, res) => {
+router.post('/tip-of-tongue', rateLimit(), async (req, res) => {
   try {
     const {
       category,       // 'food', 'music', 'film', 'product', 'scent', 'color', 'place', 'fabric', 'other'
@@ -136,7 +137,7 @@ Return 3-5 matches, ranked by confidence (highest first). If you're genuinely un
 // ════════════════════════════════════════════════════════════
 // POST /tip-of-tongue/refine — Narrow down after first attempt
 // ════════════════════════════════════════════════════════════
-router.post('/tip-of-tongue/refine', async (req, res) => {
+router.post('/tip-of-tongue/refine', rateLimit(), async (req, res) => {
   try {
     const {
       category,

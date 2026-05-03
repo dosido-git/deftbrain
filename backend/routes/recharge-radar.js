@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 // ── Robust JSON parser ──
 function safeParseJSON(text) {
@@ -19,7 +20,7 @@ function safeParseJSON(text) {
 // MAIN FORECAST ENDPOINT
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/recharge-radar', async (req, res) => {
+router.post('/recharge-radar', rateLimit(), async (req, res) => {
   try {
     const { description, currentBattery, socialStyle, userLanguage } = req.body;
 
@@ -150,7 +151,7 @@ CRITICAL: Return ONLY valid JSON. No markdown, no preamble.`, userLanguage);
 // TRIAGE — rank events by skip-ability
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/recharge-radar/triage', async (req, res) => {
+router.post('/recharge-radar/triage', rateLimit(), async (req, res) => {
   try {
     const { parsedEvents, forecast, socialStyle, userLanguage } = req.body;
 
@@ -218,7 +219,7 @@ CRITICAL: Return ONLY valid JSON.`, userLanguage);
 // ADD EVENT — "what if I add one more thing?"
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/recharge-radar/add-event', async (req, res) => {
+router.post('/recharge-radar/add-event', rateLimit(), async (req, res) => {
   try {
     const { newEventDescription, existingEvents, currentForecast, socialStyle, userLanguage } = req.body;
 
@@ -292,7 +293,7 @@ CRITICAL: Return ONLY valid JSON.`, userLanguage);
 // REFLECT — "How did the week actually go?"
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/recharge-radar/reflect', async (req, res) => {
+router.post('/recharge-radar/reflect', rateLimit(), async (req, res) => {
   try {
     const { events, reflections, pastReflections, socialStyle, userLanguage } = req.body;
 
@@ -374,7 +375,7 @@ CRITICAL: Return ONLY valid JSON.`, userLanguage);
 // DECLINE MESSAGE — draft a decline for a specific event
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/recharge-radar/decline-message', async (req, res) => {
+router.post('/recharge-radar/decline-message', rateLimit(), async (req, res) => {
   try {
     const { eventName, eventType, relationship, reason, userLanguage } = req.body;
 

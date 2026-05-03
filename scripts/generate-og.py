@@ -215,7 +215,7 @@ def draw_emoji_twemoji(canvas, emoji, x, y, size=109, verbose=False):
 
     # 3. Try CDN download
     if img is None:
-        url = f'https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/72x72/{filename}.png'
+        url = f'https://cdn.jsdelivr.net/gh/jdecked/twemoji@latest/assets/72x72/{filename}.png'
         try:
             with urllib.request.urlopen(url, timeout=8) as resp:
                 data = resp.read()
@@ -316,21 +316,26 @@ def extract_tools(tools_js_path):
     tools  = []
     skipped_unmapped = []
     for block in blocks[1:]:
-        id_m      = re.search(r'id:\s*[\"\'](.*?)[\"\']', block)
-        title_m   = re.search(r'title:\s*[\"\'](.*?)[\"\']', block)
-        tagline_m = re.search(r'tagline:\s*[\"\'](.*?)[\"\']', block)
-        icon_m    = re.search(r'icon:\s*[\"\'](.*?)[\"\']', block)
+        id_m       = re.search(r'id:\s*[\"\'](.*?)[\"\']', block)
+        title_m    = re.search(r'title:\s*[\"\'](.*?)[\"\']', block)
+        tagline_m  = re.search(r'tagline:\s*[\"\'](.*?)[\"\']', block)
+        icon_m     = re.search(r'icon:\s*[\"\'](.*?)[\"\']', block)
+        # ogIcon overrides icon for OG image generation only. Use when the
+        # tool page icon is a compound or unsupported emoji that the OG
+        # asset pipeline can't resolve (e.g. multi-emoji '👗👔' has no PNG).
+        ogIcon_m   = re.search(r'ogIcon:\s*[\"\'](.*?)[\"\']', block)
         if id_m and title_m and tagline_m and icon_m and id_m.group(1):
             tool_id = id_m.group(1)
             slug = TOOL_OG_SLUGS.get(tool_id)
             if slug is None:
                 skipped_unmapped.append(tool_id)
                 continue
+            og_icon = ogIcon_m.group(1) if ogIcon_m else icon_m.group(1)
             tools.append({
                 'id':      tool_id,
                 'title':   title_m.group(1),
                 'tagline': tagline_m.group(1),
-                'icon':    icon_m.group(1),
+                'icon':    og_icon,
                 'slug':    slug,
             })
     if skipped_unmapped:

@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
 // POST /the-gap — Trace back to the missing prerequisite
 // ════════════════════════════════════════════════════════════
-router.post('/the-gap', async (req, res) => {
+router.post('/the-gap', rateLimit(), async (req, res) => {
   try {
     const {
       concept,         // What they don't understand
@@ -118,7 +119,7 @@ The prerequisite_chain should have 3-6 items, ordered from most foundational (le
 // ════════════════════════════════════════════════════════════
 // POST /the-gap/dig — Dig deeper into a specific prerequisite
 // ════════════════════════════════════════════════════════════
-router.post('/the-gap/dig', async (req, res) => {
+router.post('/the-gap/dig', rateLimit(), async (req, res) => {
   try {
     const {
       originalConcept,

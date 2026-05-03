@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
-router.post('/doctor-visit-translator', async (req, res) => {
+router.post('/doctor-visit-translator', rateLimit(), async (req, res) => {
   try {
     const {
       doctorNotes, visitType, concerns, currentMedications,
@@ -266,7 +267,7 @@ Return ONLY the JSON object.`;
 });
 
 // ── Diagram generator ─────────────────────────────────────────────────────────
-router.post('/generate-diagram', async (req, res) => {
+router.post('/generate-diagram', rateLimit(), async (req, res) => {
   try {
     const { description, diagramType } = req.body;
     if (!description?.trim()) {

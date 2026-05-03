@@ -1,12 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════════════════════════
 // MAIN ANALYSIS — plain-English translation + structural X-ray
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/plaintalk', async (req, res) => {
+router.post('/plaintalk', rateLimit(), async (req, res) => {
   try {
     const { text, textType, focusQuestion, userLanguage } = req.body;
 
@@ -123,7 +124,7 @@ CRITICAL RULES:
 // FOLLOW-UP QUESTIONS — ask about specific sections/topics
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/plaintalk/followup', async (req, res) => {
+router.post('/plaintalk/followup', rateLimit(), async (req, res) => {
   try {
     const { originalText, question, previousAnalysis, userLanguage } = req.body;
 
@@ -184,7 +185,7 @@ Return ONLY valid JSON:
 // DOCUMENT COMPARISON — diff two versions of a document
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/plaintalk/compare', async (req, res) => {
+router.post('/plaintalk/compare', rateLimit(), async (req, res) => {
   try {
     const { textA, textB, labelA, labelB, textType, userLanguage } = req.body;
 
@@ -270,7 +271,7 @@ module.exports = router;
 // STREAMING ROUTE — main analysis
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/plaintalk/stream', async (req, res) => {
+router.post('/plaintalk/stream', rateLimit(), async (req, res) => {
   const { text, textType, focusQuestion, userLanguage } = req.body;
 
   if (!text?.trim()) return res.status(400).json({ error: 'Text is required' });

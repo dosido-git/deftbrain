@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
 // SHARED
@@ -17,7 +18,7 @@ YOUR SKILL:
 // ════════════════════════════════════════════════════════════
 // POST /the-debrief — Distill: transcript → key decisions & actions
 // ════════════════════════════════════════════════════════════
-router.post('/the-debrief', async (req, res) => {
+router.post('/the-debrief', rateLimit(), async (req, res) => {
   try {
     const { transcript, meetingType, attendees, context, userLanguage } = req.body;
 
@@ -127,7 +128,7 @@ Extract the meeting output. Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /the-debrief/followup — Draft follow-up messages
 // ════════════════════════════════════════════════════════════
-router.post('/the-debrief/followup', async (req, res) => {
+router.post('/the-debrief/followup', rateLimit(), async (req, res) => {
   try {
     const { transcript, meetingType, attendees, recipientRole, tone, userLanguage } = req.body;
 
@@ -205,7 +206,7 @@ Draft follow-up messages. Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /the-debrief/series — Analyze meeting series for patterns
 // ════════════════════════════════════════════════════════════
-router.post('/the-debrief/series', async (req, res) => {
+router.post('/the-debrief/series', rateLimit(), async (req, res) => {
   try {
     const { meetings, context, userLanguage } = req.body;
 

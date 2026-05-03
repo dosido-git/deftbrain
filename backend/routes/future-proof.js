@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 const PERSONALITY = `You are a futures analyst — trained in technology forecasting, labor economics, and pattern recognition across industries. You don't predict the future. You analyze trajectories.
 
@@ -17,7 +18,7 @@ AVOID:
 - Generic advice that ignores the person's actual situation`;
 
 // POST /future-proof — 5-year trajectory analysis
-router.post('/future-proof', async (req, res) => {
+router.post('/future-proof', rateLimit(), async (req, res) => {
   try {
     const { subject, subjectType, context, timeframe, userLanguage } = req.body;
     if (!subject?.trim()) return res.status(400).json({ error: 'What do you want to assess?' });

@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════════════
 // ROUTE 1: MAIN — Map skill gaps between Job A and Job B
 // ═══════════════════════════════════════════════════
-router.post('/skill-gap-map', async (req, res) => {
+router.post('/skill-gap-map', rateLimit(), async (req, res) => {
   try {
     const { currentRole, targetRole, currentSkills, hoursPerWeek, userLanguage } = req.body;
 
@@ -106,7 +107,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 2: TIMELINE — Week-by-week learning plan
 // ═══════════════════════════════════════════════════
-router.post('/skill-gap-timeline', async (req, res) => {
+router.post('/skill-gap-timeline', rateLimit(), async (req, res) => {
   try {
     const { transitionSummary, skillGaps, hoursPerWeek, userLanguage } = req.body;
 
@@ -178,7 +179,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 3: PROOF — Portfolio proof planner for each gap
 // ═══════════════════════════════════════════════════
-router.post('/skill-gap-proof', async (req, res) => {
+router.post('/skill-gap-proof', rateLimit(), async (req, res) => {
   try {
     const { transitionSummary, skillGaps, userLanguage } = req.body;
 
@@ -247,7 +248,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 4: NETWORK — Who you need to know
 // ═══════════════════════════════════════════════════
-router.post('/skill-gap-network', async (req, res) => {
+router.post('/skill-gap-network', rateLimit(), async (req, res) => {
   try {
     const { transitionSummary, targetRole, userLanguage } = req.body;
 
@@ -307,7 +308,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 5: DEEP DIVE — Expand one specific skill gap
 // ═══════════════════════════════════════════════════
-router.post('/skill-gap-deep', async (req, res) => {
+router.post('/skill-gap-deep', rateLimit(), async (req, res) => {
   try {
     const { gap, transitionSummary, userLanguage } = req.body;
 
@@ -374,7 +375,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 6: REFRAME — Translate current experience into target language
 // ═══════════════════════════════════════════════════
-router.post('/skill-gap-reframe', async (req, res) => {
+router.post('/skill-gap-reframe', rateLimit(), async (req, res) => {
   try {
     const { currentRole, targetRole, experience, userLanguage } = req.body;
 
@@ -436,7 +437,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 7: ECONOMICS — Transition financial analysis
 // ═══════════════════════════════════════════════════
-router.post('/skill-gap-economics', async (req, res) => {
+router.post('/skill-gap-economics', rateLimit(), async (req, res) => {
   try {
     const { currentRole, targetRole, transitionSummary, userLanguage } = req.body;
 
@@ -521,7 +522,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 8: RESUME AUDIT — Grade real resume against target
 // ═══════════════════════════════════════════════════
-router.post('/skill-gap-resume', async (req, res) => {
+router.post('/skill-gap-resume', rateLimit(), async (req, res) => {
   try {
     const { currentRole, targetRole, resumeText, skillGaps, userLanguage } = req.body;
 
@@ -596,7 +597,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 9: COMPANY FIT — What types of companies to target
 // ═══════════════════════════════════════════════════
-router.post('/skill-gap-companies', async (req, res) => {
+router.post('/skill-gap-companies', rateLimit(), async (req, res) => {
   try {
     const { currentRole, targetRole, transitionSummary, userLanguage } = req.body;
 
@@ -664,7 +665,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 10: INTERVIEW PREP — Full mock interview for target role
 // ═══════════════════════════════════════════════════
-router.post('/skill-gap-interview', async (req, res) => {
+router.post('/skill-gap-interview', rateLimit(), async (req, res) => {
   try {
     const { currentRole, targetRole, skillGaps, transferableSkills, userLanguage } = req.body;
 
@@ -747,7 +748,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 11: CALIBRATE — Adjust plan based on real constraints
 // ═══════════════════════════════════════════════════
-router.post('/skill-gap-calibrate', async (req, res) => {
+router.post('/skill-gap-calibrate', rateLimit(), async (req, res) => {
   try {
     const { currentRole, targetRole, skillGaps, constraints, userLanguage } = req.body;
 
@@ -818,7 +819,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 12: EXPLORE — Suggest target roles from current skills
 // ═══════════════════════════════════════════════════
-router.post('/skill-gap-explore', async (req, res) => {
+router.post('/skill-gap-explore', rateLimit(), async (req, res) => {
   try {
     const { currentRole, currentSkills, interests, userLanguage } = req.body;
 
@@ -881,7 +882,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 13: PROGRESS CHECK — Reassess readiness with updates
 // ═══════════════════════════════════════════════════
-router.post('/skill-gap-progress', async (req, res) => {
+router.post('/skill-gap-progress', rateLimit(), async (req, res) => {
   try {
     const { currentRole, targetRole, originalGaps, completedSkills, newExperience, userLanguage } = req.body;
 
@@ -953,7 +954,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 14: DAY IN THE LIFE — Simulate a typical day in target role
 // ═══════════════════════════════════════════════════
-router.post('/skill-gap-daylife', async (req, res) => {
+router.post('/skill-gap-daylife', rateLimit(), async (req, res) => {
   try {
     const { targetRole, transitionSummary, userLanguage } = req.body;
 
@@ -1028,7 +1029,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 15: OUTREACH DRAFTER — Personalized networking message
 // ═══════════════════════════════════════════════════
-router.post('/skill-gap-outreach', async (req, res) => {
+router.post('/skill-gap-outreach', rateLimit(), async (req, res) => {
   try {
     const { currentRole, targetRole, personDescription, goal, userLanguage } = req.body;
 
@@ -1076,7 +1077,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 16: JOB POSTING DECODER — Analyze specific posting vs gaps
 // ═══════════════════════════════════════════════════
-router.post('/skill-gap-decode', async (req, res) => {
+router.post('/skill-gap-decode', rateLimit(), async (req, res) => {
   try {
     const { jobPosting, currentRole, targetRole, skillGaps, userLanguage } = req.body;
 
@@ -1158,7 +1159,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 17: SKILL ADJACENCY — Learning sequence optimizer
 // ═══════════════════════════════════════════════════
-router.post('/skill-gap-adjacency', async (req, res) => {
+router.post('/skill-gap-adjacency', rateLimit(), async (req, res) => {
   try {
     const { skillGaps, userLanguage } = req.body;
 
@@ -1226,7 +1227,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 18: MOCK CONVERSATION — AI plays interviewer
 // ═══════════════════════════════════════════════════
-router.post('/skill-gap-mock', async (req, res) => {
+router.post('/skill-gap-mock', rateLimit(), async (req, res) => {
   try {
     const { currentRole, targetRole, userAnswer, question, interviewContext, userLanguage } = req.body;
 
@@ -1300,7 +1301,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 19: MARKET PULSE — Is this transition getting easier or harder?
 // ═══════════════════════════════════════════════════
-router.post('/skill-gap-market', async (req, res) => {
+router.post('/skill-gap-market', rateLimit(), async (req, res) => {
   try {
     const { currentRole, targetRole, userLanguage } = req.body;
 
@@ -1361,7 +1362,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 20: MILESTONE CELEBRATION — Personalized achievement moment
 // ═══════════════════════════════════════════════════
-router.post('/skill-gap-celebrate', async (req, res) => {
+router.post('/skill-gap-celebrate', rateLimit(), async (req, res) => {
   try {
     const { currentRole, targetRole, milestone, completedSkills, readinessScore, userLanguage } = req.body;
 
@@ -1402,7 +1403,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 21: WEEKLY NUDGE — This week's specific assignment
 // ═══════════════════════════════════════════════════
-router.post('/skill-gap-nudge', async (req, res) => {
+router.post('/skill-gap-nudge', rateLimit(), async (req, res) => {
   try {
     const { targetRole, skillGaps, completedSkills, timelinePhase, hoursPerWeek, userLanguage } = req.body;
 
@@ -1452,7 +1453,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 22: MENTOR MATCH — Describe the ideal mentor
 // ═══════════════════════════════════════════════════
-router.post('/skill-gap-mentor', async (req, res) => {
+router.post('/skill-gap-mentor', rateLimit(), async (req, res) => {
   try {
     const { currentRole, targetRole, skillGaps, userLanguage } = req.body;
 

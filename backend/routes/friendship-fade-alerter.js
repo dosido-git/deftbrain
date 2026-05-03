@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 function safeParseJSON(text) {
   let cleaned = cleanJsonResponse(text);
@@ -18,7 +19,7 @@ function safeParseJSON(text) {
 // MAIN — generate conversation starters for one person
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/friendship-fade-alerter', async (req, res) => {
+router.post('/friendship-fade-alerter', rateLimit(), async (req, res) => {
   try {
     const { name, relationshipType, daysSinceContact, contextNotes, contactLog, upcomingEvents, usedTopics, reciprocity, userLanguage } = req.body;
 
@@ -117,7 +118,7 @@ Return ONLY valid JSON.`;
 // BATCH — generate starters for multiple overdue people at once
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/friendship-fade-alerter/batch', async (req, res) => {
+router.post('/friendship-fade-alerter/batch', rateLimit(), async (req, res) => {
   try {
     const { people, userLanguage } = req.body;
 
@@ -176,7 +177,7 @@ Return ONLY valid JSON.`;
 // FOLLOWUP ADVICE — what to do when someone didn't respond
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/friendship-fade-alerter/followup-advice', async (req, res) => {
+router.post('/friendship-fade-alerter/followup-advice', rateLimit(), async (req, res) => {
   try {
     const { name, relationshipType, daysSinceOutreach, originalMessage, contextNotes, userLanguage } = req.body;
 
@@ -225,7 +226,7 @@ Return ONLY valid JSON.`;
 // DIGEST — weekly relationship summary
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/friendship-fade-alerter/digest', async (req, res) => {
+router.post('/friendship-fade-alerter/digest', rateLimit(), async (req, res) => {
   try {
     const { stats, userLanguage } = req.body;
 
@@ -285,7 +286,7 @@ Return ONLY valid JSON.`;
 // POST /friendship-fade-alerter/reengage — NetworkNurse
 // Craft natural re-engagement messages for awkward silences
 // ════════════════════════════════════════════════════════════
-router.post('/friendship-fade-alerter/reengage', async (req, res) => {
+router.post('/friendship-fade-alerter/reengage', rateLimit(), async (req, res) => {
   try {
     const { personName, relationship, howLong, lastContext, reason, userLanguage } = req.body;
     if (!personName?.trim()) return res.status(400).json({ error: 'Who are you reaching out to?' });
@@ -360,7 +361,7 @@ Return ONLY valid JSON:
 // POST /friendship-fade-alerter/health-insight
 // Qualitative AI read on a single relationship
 // ════════════════════════════════════════════════════════════
-router.post('/friendship-fade-alerter/health-insight', async (req, res) => {
+router.post('/friendship-fade-alerter/health-insight', rateLimit(), async (req, res) => {
   try {
     const { name, relationshipType, frequency, daysSinceContact, contactLog, contextNotes, reciprocity, drift, upcomingEvents, userLanguage } = req.body;
     if (!name?.trim()) return res.status(400).json({ error: 'Name is required' });
@@ -431,7 +432,7 @@ Return ONLY valid JSON:
 // POST /friendship-fade-alerter/say-it-coach
 // Scripts for addressing one-sided relationship dynamics
 // ════════════════════════════════════════════════════════════
-router.post('/friendship-fade-alerter/say-it-coach', async (req, res) => {
+router.post('/friendship-fade-alerter/say-it-coach', rateLimit(), async (req, res) => {
   try {
     const { name, relationshipType, contactLog, reciprocity, contextNotes, userLanguage } = req.body;
     if (!name?.trim()) return res.status(400).json({ error: 'Name is required' });
@@ -485,7 +486,7 @@ Return ONLY valid JSON:
 // POST /friendship-fade-alerter/frequency-suggest
 // AI-recommended contact frequency adjustment based on drift data
 // ════════════════════════════════════════════════════════════
-router.post('/friendship-fade-alerter/frequency-suggest', async (req, res) => {
+router.post('/friendship-fade-alerter/frequency-suggest', rateLimit(), async (req, res) => {
   try {
     const { name, relationshipType, currentFrequency, avgInterval, contactLog, userLanguage } = req.body;
     if (!name?.trim()) return res.status(400).json({ error: 'Name is required' });

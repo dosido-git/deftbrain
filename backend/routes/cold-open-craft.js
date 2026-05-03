@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
 // POST /cold-open-craft — Reach Out to Anyone
@@ -23,7 +24,7 @@ BOLDNESS CALIBRATION:
 - medium: More personal, slightly unexpected. Gets responses from 15-25%.
 - bold: Memorable, pattern-breaking, might raise eyebrows. Gets responses from 25-40% or gets ignored entirely.`;
 
-router.post('/cold-open-craft', async (req, res) => {
+router.post('/cold-open-craft', rateLimit(), async (req, res) => {
   try {
     const { who, why, channel, whatYouKnow, yourBackground, tone, userLanguage } = req.body;
 

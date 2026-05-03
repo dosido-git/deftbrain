@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 const LEVEL_GUIDE = {
   'eli5': 'Explain like I\'m 5. Simplest words. Short sentences. Child-friendly analogies.',
@@ -12,7 +13,7 @@ const LEVEL_GUIDE = {
 // ═══════════════════════════════════════════════════
 // ROUTE 1: TRANSLATE — Core document translation
 // ═══════════════════════════════════════════════════
-router.post('/jargon-assassin', async (req, res) => {
+router.post('/jargon-assassin', rateLimit(), async (req, res) => {
   try {
     const { documentText, documentType, readingLevel, userLanguage, imageBase64, mediaType } = req.body;
     if (!documentText?.trim() && !imageBase64) return res.status(400).json({ error: 'Paste a document or upload a file.' });
@@ -72,7 +73,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 2: ASK — Follow-up question
 // ═══════════════════════════════════════════════════
-router.post('/jargon-assassin-ask', async (req, res) => {
+router.post('/jargon-assassin-ask', rateLimit(), async (req, res) => {
   try {
     const { question, documentText, documentType, translationSummary, readingLevel, userLanguage } = req.body;
     if (!question?.trim()) return res.status(400).json({ error: 'What do you want to know?' });
@@ -113,7 +114,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 3: COMPARE — Two document versions
 // ═══════════════════════════════════════════════════
-router.post('/jargon-assassin-compare', async (req, res) => {
+router.post('/jargon-assassin-compare', rateLimit(), async (req, res) => {
   try {
     const { text1, text2, documentType, readingLevel, userLanguage } = req.body;
     if (!text1?.trim() || !text2?.trim()) return res.status(400).json({ error: 'Paste both versions.' });
@@ -151,7 +152,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 4: SECTION — Deep-dive one section
 // ═══════════════════════════════════════════════════
-router.post('/jargon-assassin-section', async (req, res) => {
+router.post('/jargon-assassin-section', rateLimit(), async (req, res) => {
   try {
     const { sectionText, documentType, readingLevel, fullDocumentContext, userLanguage } = req.body;
     if (!sectionText?.trim()) return res.status(400).json({ error: 'Paste the section to explain.' });
@@ -190,7 +191,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 5: SUGGEST — Questions you should ask
 // ═══════════════════════════════════════════════════
-router.post('/jargon-assassin-suggest', async (req, res) => {
+router.post('/jargon-assassin-suggest', rateLimit(), async (req, res) => {
   try {
     const { documentText, documentType, translationSummary, userSituation, userLanguage } = req.body;
     if (!documentText?.trim() && !translationSummary?.trim()) return res.status(400).json({ error: 'Need document context.' });
@@ -229,7 +230,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 6: EXPLAIN TO — Reframe for specific person
 // ═══════════════════════════════════════════════════
-router.post('/jargon-assassin-explain-to', async (req, res) => {
+router.post('/jargon-assassin-explain-to', rateLimit(), async (req, res) => {
   try {
     const { sectionText, audience, translationSummary, documentType, userLanguage } = req.body;
     if (!sectionText?.trim() && !translationSummary?.trim()) return res.status(400).json({ error: 'Need content to reframe.' });
@@ -278,7 +279,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 7: RED-LINE — Suggested changes/edits
 // ═══════════════════════════════════════════════════
-router.post('/jargon-assassin-redline', async (req, res) => {
+router.post('/jargon-assassin-redline', rateLimit(), async (req, res) => {
   try {
     const { documentText, documentType, userRole, userLanguage } = req.body;
     if (!documentText?.trim()) return res.status(400).json({ error: 'Paste the document to red-line.' });
@@ -332,7 +333,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 8: TEMPLATE COMPARE — vs. what's normal
 // ═══════════════════════════════════════════════════
-router.post('/jargon-assassin-template', async (req, res) => {
+router.post('/jargon-assassin-template', rateLimit(), async (req, res) => {
   try {
     const { documentText, documentType, context, userLanguage } = req.body;
     if (!documentText?.trim()) return res.status(400).json({ error: 'Paste the document to compare against standard.' });
@@ -384,7 +385,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 9: ACTION PLAN — What to do now
 // ═══════════════════════════════════════════════════
-router.post('/jargon-assassin-action-plan', async (req, res) => {
+router.post('/jargon-assassin-action-plan', rateLimit(), async (req, res) => {
   try {
     const { documentText, documentType, translationSummary, keySections, userSituation, userLanguage } = req.body;
     if (!documentText?.trim() && !translationSummary?.trim()) return res.status(400).json({ error: 'Need document context for action plan.' });
@@ -437,7 +438,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 10: DOSSIER — Cross-reference multiple docs
 // ═══════════════════════════════════════════════════
-router.post('/jargon-assassin-dossier', async (req, res) => {
+router.post('/jargon-assassin-dossier', rateLimit(), async (req, res) => {
   try {
     const { documents, userLanguage } = req.body;
     if (!documents?.length || documents.length < 2) return res.status(400).json({ error: 'Need at least 2 documents to cross-reference.' });
@@ -479,7 +480,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 11: LETTER — Generate response letter
 // ═══════════════════════════════════════════════════
-router.post('/jargon-assassin-letter', async (req, res) => {
+router.post('/jargon-assassin-letter', rateLimit(), async (req, res) => {
   try {
     const { documentText, documentType, intent, specificPoints, tone, userLanguage } = req.body;
     if (!intent?.trim()) return res.status(400).json({ error: 'What do you want to say? (dispute, accept, negotiate, etc.)' });

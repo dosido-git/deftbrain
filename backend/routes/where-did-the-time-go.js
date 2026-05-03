@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 const PERSONALITY = `You are a sharp, non-judgmental time analyst. You read someone's description of their day and spot the gaps between what they THINK happened and what ACTUALLY happened. You understand that nobody wastes time on purpose — time disappears into transitions, context switches, recovery periods, and invisible overhead that people genuinely can't see.
 
@@ -12,7 +13,7 @@ RULES:
 - One or two changes max. Not a productivity overhaul. The thing that would actually move the needle.
 - Real talk, warm delivery. Like a friend who's good with time telling you something useful.`;
 
-router.post('/where-did-the-time-go', async (req, res) => {
+router.post('/where-did-the-time-go', rateLimit(), async (req, res) => {
   try {
     const { dayDescription, perceivedBreakdown, timeframe, userLanguage } = req.body;
 

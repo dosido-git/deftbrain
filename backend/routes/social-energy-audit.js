@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
 // SHARED
@@ -16,7 +17,7 @@ YOUR PERSONALITY:
 // ════════════════════════════════════════════════════════════
 // POST /social-energy-audit — Main analysis
 // ════════════════════════════════════════════════════════════
-router.post('/social-energy-audit', async (req, res) => {
+router.post('/social-energy-audit', rateLimit(), async (req, res) => {
   try {
     const { interactions, weekLabel, userLanguage } = req.body;
 
@@ -116,7 +117,7 @@ Analyze these interactions and return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /social-energy-audit/plan — Week Planner
 // ════════════════════════════════════════════════════════════
-router.post('/social-energy-audit/plan', async (req, res) => {
+router.post('/social-energy-audit/plan', rateLimit(), async (req, res) => {
   try {
     const { upcoming, pastPatterns, userLanguage } = req.body;
 
@@ -180,7 +181,7 @@ Predict energy costs and suggest optimizations. Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /social-energy-audit/recharge — Recharge Plan
 // ════════════════════════════════════════════════════════════
-router.post('/social-energy-audit/recharge', async (req, res) => {
+router.post('/social-energy-audit/recharge', rateLimit(), async (req, res) => {
   try {
     const { currentEnergy, topDrains, preferences, userLanguage } = req.body;
 
@@ -240,7 +241,7 @@ Create a personalized recharge plan. Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /social-energy-audit/quick-check — "Should I Say Yes?"
 // ════════════════════════════════════════════════════════════
-router.post('/social-energy-audit/quick-check', async (req, res) => {
+router.post('/social-energy-audit/quick-check', rateLimit(), async (req, res) => {
   try {
     const { commitment, currentEnergy, weekSoFar, upcomingToday, userLanguage } = req.body;
 
@@ -293,7 +294,7 @@ Give a fast, decisive answer. Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /social-energy-audit/forecast — Energy Forecast
 // ════════════════════════════════════════════════════════════
-router.post('/social-energy-audit/forecast', async (req, res) => {
+router.post('/social-energy-audit/forecast', rateLimit(), async (req, res) => {
   try {
     const { template, dailyLogs, pastWeekSummaries, userLanguage } = req.body;
 
@@ -359,7 +360,7 @@ Generate an energy forecast. Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /social-energy-audit/ideal-week — Ideal Week Structure
 // ════════════════════════════════════════════════════════════
-router.post('/social-energy-audit/ideal-week', async (req, res) => {
+router.post('/social-energy-audit/ideal-week', rateLimit(), async (req, res) => {
   try {
     const { weekSummaries, recurringInteractions, userLanguage } = req.body;
 

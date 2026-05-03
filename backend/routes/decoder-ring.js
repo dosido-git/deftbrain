@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════
 // MAIN ENDPOINT: Decode a message
 // ════════════════════════════════════════════
-router.post('/decoder-ring', async (req, res) => {
+router.post('/decoder-ring', rateLimit(), async (req, res) => {
   try {
     const { message, source, relationship, additionalContext, userLanguage } = req.body;
 

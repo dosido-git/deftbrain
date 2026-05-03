@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════
 // MAIN ENDPOINT: Untangle a decision
 // ════════════════════════════════════════════
-router.post('/plot-twist', async (req, res) => {
+router.post('/plot-twist', rateLimit(), async (req, res) => {
   try {
     const { decision, options, context, values, deadline, stuckReason, userLanguage } = req.body;
 

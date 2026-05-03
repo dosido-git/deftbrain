@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
 // POST /upsell-shield — Walk In Prepared
 // ════════════════════════════════════════════════════════════
-router.post('/upsell-shield', async (req, res) => {
+router.post('/upsell-shield', rateLimit(), async (req, res) => {
   try {
     const { situation, whatYouWant, budget, concerns, userLanguage } = req.body;
 

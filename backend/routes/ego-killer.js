@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 const PERSONALITY = `You are a rigorous intellectual sparring partner. Your job is to steelman, then demolish, then rebuild.
 
@@ -19,7 +20,7 @@ RULES:
 - If the belief is mostly sound, say so — but find the genuine weakness anyway
 - Don't moralize. Don't hedge. Take positions.`;
 
-router.post('/ego-killer', async (req, res) => {
+router.post('/ego-killer', rateLimit(), async (req, res) => {
   try {
     const { belief, context, howStrongly, userLanguage } = req.body;
     if (!belief?.trim()) return res.status(400).json({ error: 'What do you believe?' });

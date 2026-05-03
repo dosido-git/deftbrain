@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const https = require('https');
+const { rateLimit } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════════════════════════
 // AUDIO — Generate spoken pronunciation via ElevenLabs
@@ -19,7 +20,7 @@ const https = require('https');
 // Sarah — clear, neutral, works well across languages
 const VOICE_ID = 'EXAVITQu4vr4xnSDxMaL';
 
-router.post('/pronounce-it-right-audio', async (req, res) => {
+router.post('/pronounce-it-right-audio', rateLimit(), async (req, res) => {
   const { word, languageOfOrigin } = req.body;
 
   if (!word?.trim()) {

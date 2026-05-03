@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 async function withRetry(fn, { retries = 3, baseDelayMs = 1500 } = {}) {
   for (let attempt = 0; attempt <= retries; attempt++) {
@@ -51,7 +52,7 @@ const PLATFORM_NAMES = {
 // MAIN ENDPOINT: Generate captions
 // (updated with hashtag intelligence #5)
 // ════════════════════════════════════════════
-router.post('/caption-magic', async (req, res) => {
+router.post('/caption-magic', rateLimit(), async (req, res) => {
   try {
     const { imageBase64, imageDescription, platform, tones, context, captionLength, brandVoice, userLanguage } = req.body;
 
@@ -162,7 +163,7 @@ CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
 // ════════════════════════════════════════════
 // REVISE ENDPOINT: Refine a caption
 // ════════════════════════════════════════════
-router.post('/caption-magic/revise', async (req, res) => {
+router.post('/caption-magic/revise', rateLimit(), async (req, res) => {
   try {
     const { captionText, direction, platform, userLanguage } = req.body;
     if (!captionText) return res.status(400).json({ error: 'Caption text is required' });
@@ -212,7 +213,7 @@ CRITICAL: Return ONLY valid JSON.`;
 // ADAPT ENDPOINT: Multi-platform export (#4)
 // Takes one caption and adapts it for all platforms
 // ════════════════════════════════════════════
-router.post('/caption-magic/adapt', async (req, res) => {
+router.post('/caption-magic/adapt', rateLimit(), async (req, res) => {
   try {
     const { captionText, hashtags, sourcePlatform, targetPlatforms, userLanguage } = req.body;
     if (!captionText) return res.status(400).json({ error: 'Caption text is required' });
@@ -281,7 +282,7 @@ CRITICAL: Return ONLY valid JSON.`;
 // ════════════════════════════════════════════
 // REMIX ENDPOINT: Blend parts of captions (#6)
 // ════════════════════════════════════════════
-router.post('/caption-magic/remix', async (req, res) => {
+router.post('/caption-magic/remix', rateLimit(), async (req, res) => {
   try {
     const { captions, remixInstructions, platform, userLanguage } = req.body;
 

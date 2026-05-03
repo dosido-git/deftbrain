@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 const PERSONALITY = `You are a time-traveling comedy historian — equally expert in historical accuracy and absurd humor. You create collisions between modern life and historical periods that are BOTH funny AND surprisingly educational. The humor comes from the specificity — you know exactly how a medieval peasant would react to a Roomba because you know exactly what medieval peasants' lives were like.
 
@@ -14,7 +15,7 @@ RULES:
 // ════════════════════════════════════════════════════════════
 // POST /time-warp — Generate historical collision
 // ════════════════════════════════════════════════════════════
-router.post('/time-warp', async (req, res) => {
+router.post('/time-warp', rateLimit(), async (req, res) => {
   try {
     const { modernThing, historicalPeriod, format, userLanguage } = req.body;
 

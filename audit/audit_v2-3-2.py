@@ -1,3 +1,22 @@
+# v1.8 · 2026-05-02 · session backlog burndown:
+#                     (1) added 'accentTxt' to S1.1k _CONVENTION_KEYS whitelist
+#                     — PF-2 canonical block includes accentTxt and 39 tools
+#                     use it, but the whitelist omitted it, causing false
+#                     positives on tools that copied PF-2 verbatim without
+#                     happening to reference accentTxt in JSX.
+#                     (2) PF-2 ordering: detect linkStyle-before-c-block and
+#                     report explicitly; jsx_area now sliced AFTER c-block end
+#                     instead of at linkStyle position, so reversed order
+#                     no longer cascades into spurious "hardcoded color in JSX"
+#                     flags.
+#                     (3) S1.1i / S1.1k: added \b word-boundary to c.X regex
+#                     to prevent false positives where identifiers like
+#                     `uc.explanation` were substring-matched as `c.explanation`.
+#                     (4) PF-16: broadened reset-button regex from `handleReset`
+#                     literal to alternation of all canonical reset names
+#                     (handleReset|handleClear|handleNew|resetForm|resetAll|
+#                     startOver|clearAll|reset). Applied consistently across
+#                     placement check, results-block check, and btnPrimary check.
 # v1.7 · 2026-05-01 · added backend-route detection (express.Router files)
 #                     with checks B0 (no console.log — Railway log retention
 #                     leaks user content) and B1 (no user-content interpolation
@@ -186,8 +205,24 @@ for name, fpath in tools:
         continue
 
     c_block = get_c_block(content)
-    c_end_pos = content.find('const linkStyle')
-    if c_end_pos == -1: c_end_pos = len(content) // 2
+    # PF-2 ordering: c block must come before linkStyle. If linkStyle precedes
+    # the c block, the legacy jsx_area slice (content[linkStyle_pos:]) would
+    # include the c block itself, causing spurious "hardcoded color in JSX"
+    # flags on legitimate c-block values. Detect and report explicitly.
+    _c_block_start = content.find('const c = {')
+    _linkstyle_pos = content.find('const linkStyle')
+    if c_block and _c_block_start != -1 and _linkstyle_pos != -1 and _linkstyle_pos < _c_block_start:
+        fails.append('PF-2: linkStyle declared before c block — must come after c block (canonical order: c block + aliases, then linkStyle)')
+    # Compute c_end_pos as the position AFTER the c block closes, regardless of
+    # linkStyle order. Aliases (c.textMuteded, c.label) and linkStyle itself sit
+    # between c-block-end and JSX, but contain no JSX-pattern content that any
+    # downstream check would mismatch.
+    if c_block:
+        c_end_pos = content.find(c_block) + len(c_block)
+    elif _linkstyle_pos != -1:
+        c_end_pos = _linkstyle_pos
+    else:
+        c_end_pos = len(content) // 2
     jsx_area = content[c_end_pos:]
 
     # S0: no ⏳
@@ -312,7 +347,7 @@ for name, fpath in tools:
     # S1.1i: used-but-undefined c keys (WrongAnswersOnly pattern — silent undefined classNames)
     # Collect all c.xxx references in the component body, then check each is defined either
     # as a literal key inside c block OR as an alias assignment (c.foo = c.bar).
-    c_used = set(re.findall(r'(?<=c\.)([a-zA-Z][a-zA-Z0-9]*)\b', content))
+    c_used = set(re.findall(r'\bc\.([a-zA-Z][a-zA-Z0-9]*)\b', content))
     # Keys defined via literal `key: value` inside c block
     c_literal_keys = set(re.findall(r'^\s+([a-zA-Z][a-zA-Z0-9]*)\s*:', c_block, re.MULTILINE))
     # Keys defined via alias assignment anywhere in file: `c.foo = c.bar;`
@@ -329,11 +364,11 @@ for name, fpath in tools:
     # 'labelText'). Computing c_used by stripping the c-block declarations means
     # a literal key whose only "reference" is its own definition isn't counted as
     # used — so dead literal keys get caught the same as dead aliases.
-    _CONVENTION_KEYS = set(REQUIRED_KEYS) | {'required', 'textMuteded', 'label', 'labelText'}
+    _CONVENTION_KEYS = set(REQUIRED_KEYS) | {'required', 'textMuteded', 'label', 'labelText', 'accentTxt'}
     # Recompute c_used from content with c_block declarations stripped
     # (so a literal key isn't "used" merely by existing in the c block).
     _content_no_cblock = content.replace(c_block, '') if c_block else content
-    _c_used_external = set(re.findall(r'(?<=c\.)([a-zA-Z][a-zA-Z0-9]*)\b', _content_no_cblock))
+    _c_used_external = set(re.findall(r'\bc\.([a-zA-Z][a-zA-Z0-9]*)\b', _content_no_cblock))
     unused_keys = (c_defined - _c_used_external) - _CONVENTION_KEYS
     for k in sorted(unused_keys):
         fails.append(f'S1.1k: c.{k} defined but never used in JSX (dead key — remove from c block)')
@@ -466,14 +501,16 @@ for name, fpath in tools:
             fails.append('S1.5: reset function defined but no onClick button renders it')
 
     # PF-16: Reset button placement — exactly 1, in header top-right, never in results block or submit row
-    # Signals of a reset button: onClick={handleReset} OR onClick containing setResults(null) reset-like pattern
+    # Signals of a reset button: onClick={handleReset|reset|handleClear|...} OR onClick containing setResults(null) reset-like pattern
     # We count distinct <button> elements that look like reset buttons.
+    # Reset function names recognized across the catalog (longer first — alternation is left-to-right):
+    _RESET_ALT = r'(?:handleReset|handleClear|handleNew|resetForm|resetAll|startOver|clearAll|reset)'
     reset_btn_matches = list(re.finditer(
         r'<button[^>]*onClick=\{(?:[^}]*handleReset|[^}]*setResults\(null\)[^}]*setBelief|[^}]*setResults\(null\)[^}]*setInput|\(\s*\)\s*=>\s*\{[^}]*setResults\(null\)[^}]*set)',
         content
     ))
-    # Simpler coverage: count handleReset onClick usages (most tools use dedicated fn)
-    reset_onclick_count = len(re.findall(r'onClick=\{handleReset\}|onClick=\{\s*handleReset\s*\}', content))
+    # Simpler coverage: count reset-named onClick usages (most tools use a dedicated fn)
+    reset_onclick_count = len(re.findall(rf'onClick=\{{\s*{_RESET_ALT}\s*\}}', content))
     # Also look for buttons whose label is "Start Over" / "New" / "Clear" / "Reset" + ↺ / ↩
     reset_label_count = len(re.findall(r'<button[^>]*>[^<]{0,50}(?:↺|↩)\s*(?:Start Over|New|Clear|Reset|Fresh)', content))
     # The best count is the max — captures both patterns
@@ -481,20 +518,16 @@ for name, fpath in tools:
     if reset_count > 1:
         fails.append(f'PF-16: {reset_count} reset buttons detected — must be exactly 1 (header top-right only)')
     # PF-16: reset button must NOT appear inside a {results && ( block.
-    # Strategy: find the first {results && ( split, then check handleReset appears only BEFORE it.
+    # Strategy: find the first {results && ( split, then check any reset-named button appears only BEFORE it.
     _results_split = re.search(r'\{\s*(?<![!])results\s*&&\s*[(<]', content)
-    if _results_split and 'handleReset' in content:
-        reset_pos = content.find('handleReset', _results_split.end())  # search AFTER the split
-        if reset_pos != -1:
-            # There's a handleReset AFTER the {results && ( — violation
-            # But allow: if handleReset is a function definition (const handleReset = ...) after the split
-            # We only flag <button onClick={handleReset}> AFTER the split
-            _btn_after = re.search(r'<button[^>]*onClick=\{handleReset\}', content[_results_split.end():])
-            if _btn_after:
-                line_n = content[:_results_split.end() + _btn_after.start()].count('\n') + 1
-                fails.append(f'PF-16: reset button at line {line_n} is inside {{results && (...)}} — must be in header top-right')
+    if _results_split:
+        _after = content[_results_split.end():]
+        _btn_after = re.search(rf'<button[^>]*onClick=\{{\s*{_RESET_ALT}\s*\}}', _after)
+        if _btn_after:
+            line_n = content[:_results_split.end() + _btn_after.start()].count('\n') + 1
+            fails.append(f'PF-16: reset button at line {line_n} is inside {{results && (...)}} — must be in header top-right')
     # PF-16: reset button must NOT use c.btnPrimary
-    if re.search(r'<button[^>]*onClick=\{handleReset\}[^>]*c\.btnPrimary\b', content):
+    if re.search(rf'<button[^>]*onClick=\{{\s*{_RESET_ALT}\s*\}}[^>]*c\.btnPrimary\b', content):
         fails.append('PF-16: reset button uses c.btnPrimary — must be c.btnSecondary')
 
     # PF-12: Python-replace script corruption typos (self-reference doubling pattern)

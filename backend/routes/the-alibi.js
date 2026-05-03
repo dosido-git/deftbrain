@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
 // POST /the-alibi — Frame Your Story Right
 // ════════════════════════════════════════════════════════════
-router.post('/the-alibi', async (req, res) => {
+router.post('/the-alibi', rateLimit(), async (req, res) => {
   try {
     const {
       situation,       // The real story — what actually happened

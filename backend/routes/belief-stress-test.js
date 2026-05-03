@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 const PERSONALITY = `You are a belief systems analyst. You stress-test the guiding beliefs people live by — the operating principles, mental models, and life rules they've accumulated.
 
@@ -15,7 +16,7 @@ APPROACH:
 - The psychological function the belief serves (which may be separate from its truth value)
 - The more nuanced version that actually holds up`;
 
-router.post('/belief-stress-test', async (req, res) => {
+router.post('/belief-stress-test', rateLimit(), async (req, res) => {
   try {
     const { belief, context, userLanguage } = req.body;
   if (!belief?.trim()) return res.status(400).json({ error: 'Name a belief to stress-test.' });

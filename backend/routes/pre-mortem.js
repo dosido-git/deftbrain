@@ -7,6 +7,7 @@
 
 const express = require('express');
 const { anthropic } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 const router = express.Router();
 
@@ -83,7 +84,7 @@ Rules:
 
 // ── Route ─────────────────────────────────────────────────────────────────────
 
-router.post('/pre-mortem', async (req, res) => {
+router.post('/pre-mortem', rateLimit(), async (req, res) => {
   const { plan, planType, stakes, assumptions } = req.body;
 
   // Validate required field

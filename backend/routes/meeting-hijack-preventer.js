@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
-router.post('/meeting-hijack-preventer', async (req, res) => {
+router.post('/meeting-hijack-preventer', rateLimit(), async (req, res) => {
   try {
     const { 
       meetingGoal, 

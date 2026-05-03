@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
 // SHARED: Log processing helper
@@ -102,7 +103,7 @@ Use all available data to increase prediction confidence. Correlate patterns acr
 // ════════════════════════════════════════════════════════════
 // POST /crash-predictor-analyze — Main risk assessment
 // ════════════════════════════════════════════════════════════
-router.post('/crash-predictor-analyze', async (req, res) => {
+router.post('/crash-predictor-analyze', rateLimit(), async (req, res) => {
   try {
     const { logs, userLanguage } = req.body;
 
@@ -312,7 +313,7 @@ Return ONLY the JSON object.`;
 // ════════════════════════════════════════════════════════════
 // POST /crash-predictor-patterns — Long-term pattern detection (14+ days)
 // ════════════════════════════════════════════════════════════
-router.post('/crash-predictor-patterns', async (req, res) => {
+router.post('/crash-predictor-patterns', rateLimit(), async (req, res) => {
   try {
     const { logs, userLanguage } = req.body;
 

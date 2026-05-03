@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
-router.post('/renters-deposit-saver', async (req, res) => {
+router.post('/renters-deposit-saver', rateLimit(), async (req, res) => {
   try {
     const { action } = req.body;
 
@@ -243,7 +244,7 @@ module.exports = router;
 // STREAMING ROUTE — full report generation (Mode 2 only)
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/renters-deposit-saver/stream', async (req, res) => {
+router.post('/renters-deposit-saver/stream', rateLimit(), async (req, res) => {
   const { address, unit, landlordName, landlordEmail, moveInDate, location, depositAmount, checklist } = req.body;
 
   if (!address?.trim()) return res.status(400).json({ error: 'Property address is required' });

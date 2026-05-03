@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 const PERSONALITY = `You are a truth processor. People come to you with something they know but aren't saying — to themselves or to someone else. Your job is to handle it with clarity, not judgment.
 
@@ -19,7 +20,7 @@ YOUR APPROACH:
 
 RULE: Don't turn this into therapy. Be direct. Be useful. Be honest.`;
 
-router.post('/truth-bomb', async (req, res) => {
+router.post('/truth-bomb', rateLimit(), async (req, res) => {
   try {
     const { theUnsaidThing, whoItsAbout, whyNotSaying, relationshipContext, userLanguage } = req.body;
   if (!theUnsaidThing?.trim()) {

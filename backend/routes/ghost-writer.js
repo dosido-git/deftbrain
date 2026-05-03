@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════
 // MAIN ENDPOINT: Generate recommendation letter
 // ════════════════════════════════════════════
-router.post('/ghost-writer', async (req, res) => {
+router.post('/ghost-writer', rateLimit(), async (req, res) => {
   try {
     const {
       recipientName,
@@ -147,7 +148,7 @@ Return ONLY the JSON object. No markdown fences, no preamble.`;
 // ════════════════════════════════════════════
 // REFINE ENDPOINT: Adjust a specific version
 // ════════════════════════════════════════════
-router.post('/ghost-writer/refine', async (req, res) => {
+router.post('/ghost-writer/refine', rateLimit(), async (req, res) => {
   try {
     const { letterText, refinementRequest, letterType, formalityLevel, userLanguage } = req.body;
 
@@ -199,7 +200,7 @@ module.exports = router;
 // STREAMING ROUTE — main letter generation
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/ghost-writer/stream', async (req, res) => {
+router.post('/ghost-writer/stream', rateLimit(), async (req, res) => {
   const { recipientName, yourRelationship, whatTheyreApplyingFor, letterType, qualities, anecdotes, duration, formalityLevel, additionalContext, userLanguage } = req.body;
 
   if (!recipientName || !yourRelationship) return res.status(400).json({ error: 'We need to know who this is for and your relationship' });

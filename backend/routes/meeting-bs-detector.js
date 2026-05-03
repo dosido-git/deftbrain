@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
 // SHARED
@@ -18,7 +19,7 @@ YOUR STYLE:
 // ════════════════════════════════════════════════════════════
 // POST /meeting-bs-detector — Single meeting analysis
 // ════════════════════════════════════════════════════════════
-router.post('/meeting-bs-detector', async (req, res) => {
+router.post('/meeting-bs-detector', rateLimit(), async (req, res) => {
   try {
     const { meetingText, duration, attendees, userLanguage } = req.body;
 
@@ -91,7 +92,7 @@ Analyze. Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /meeting-bs-detector/calendar — Weekly calendar audit
 // ════════════════════════════════════════════════════════════
-router.post('/meeting-bs-detector/calendar', async (req, res) => {
+router.post('/meeting-bs-detector/calendar', rateLimit(), async (req, res) => {
   try {
     const { meetings, userLanguage } = req.body;
 
@@ -159,7 +160,7 @@ Audit this entire week. Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /meeting-bs-detector/live — Live rescue (in-meeting)
 // ════════════════════════════════════════════════════════════
-router.post('/meeting-bs-detector/live', async (req, res) => {
+router.post('/meeting-bs-detector/live', rateLimit(), async (req, res) => {
   try {
     const { whatsHappening, minutesIn, yourRole, userLanguage } = req.body;
 
@@ -212,7 +213,7 @@ Give me something I can say RIGHT NOW. Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /meeting-bs-detector/recurring — Recurring meeting audit
 // ════════════════════════════════════════════════════════════
-router.post('/meeting-bs-detector/recurring', async (req, res) => {
+router.post('/meeting-bs-detector/recurring', rateLimit(), async (req, res) => {
   try {
     const { meetingName, originalPurpose, whatActuallyHappens, frequency, attendees, duration, userLanguage } = req.body;
 
@@ -281,7 +282,7 @@ Audit this recurring meeting. Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /meeting-bs-detector/messages — Message generator
 // ════════════════════════════════════════════════════════════
-router.post('/meeting-bs-detector/messages', async (req, res) => {
+router.post('/meeting-bs-detector/messages', rateLimit(), async (req, res) => {
   try {
     const { messageType, meetingName, context, relationship, userLanguage } = req.body;
 
@@ -350,7 +351,7 @@ Generate messages. Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /meeting-bs-detector/agenda — Agenda builder
 // ════════════════════════════════════════════════════════════
-router.post('/meeting-bs-detector/agenda', async (req, res) => {
+router.post('/meeting-bs-detector/agenda', rateLimit(), async (req, res) => {
   try {
     const { topic, duration, attendees, desiredOutcome, context, userLanguage } = req.body;
 
@@ -420,7 +421,7 @@ Build a tight agenda. Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /meeting-bs-detector/report — Meeting culture report
 // ════════════════════════════════════════════════════════════
-router.post('/meeting-bs-detector/report', async (req, res) => {
+router.post('/meeting-bs-detector/report', rateLimit(), async (req, res) => {
   try {
     const { scorecards, historySummary, totalHours, userLanguage } = req.body;
 
@@ -489,7 +490,7 @@ Generate a shareable report. Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /meeting-bs-detector/team — Manager/team meeting health
 // ════════════════════════════════════════════════════════════
-router.post('/meeting-bs-detector/team', async (req, res) => {
+router.post('/meeting-bs-detector/team', rateLimit(), async (req, res) => {
   try {
     const { teamSize, meetings, teamContext, userLanguage } = req.body;
 

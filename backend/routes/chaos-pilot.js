@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 async function withRetry(fn, { retries = 3, baseDelayMs = 1500 } = {}) {
   for (let attempt = 0; attempt <= retries; attempt++) {
@@ -38,7 +39,7 @@ CRITICAL RULES:
 - The disruption should feel slightly absurd but immediately doable
 - It should NOT require money, equipment, new skills, or major time investment`;
 
-router.post('/chaos-pilot', async (req, res) => {
+router.post('/chaos-pilot', rateLimit(), async (req, res) => {
   try {
     const { routine, context, goals, whatsFeelingStuck, userLanguage } = req.body;
     if (!routine?.trim()) return res.status(400).json({ error: 'Describe your typical week.' });

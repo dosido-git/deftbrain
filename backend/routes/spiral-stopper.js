@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════════════
 // SPIRAL STOPPER — v2 (5 routes, 3 modes)
@@ -9,7 +10,7 @@ const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 //     +reflect (post-spiral debrief), +patterns (history analysis)
 // ═══════════════════════════════════════════════════
 
-router.post('/spiral-stopper', async (req, res) => {
+router.post('/spiral-stopper', rateLimit(), async (req, res) => {
   const { action } = req.body;
 
   try {

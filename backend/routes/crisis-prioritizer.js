@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════
 // SYSTEM PROMPT
@@ -89,7 +90,7 @@ const ANXIETY_SCHEMA = `"anxiety_audit": {
 // ROUTES
 // ═══════════════════════════════════════════
 
-router.post('/crisis-prioritizer', async (req, res) => {
+router.post('/crisis-prioritizer', rateLimit(), async (req, res) => {
   try {
     const { action = 'generate' } = req.body;
 

@@ -9,7 +9,7 @@ router.use(rateLimit(CREATIVE_LIMITS, 'gratitude-debt-clearer:'));
 // ═══════════════════════════════════════════════════
 // ROUTE 1: MAIN GENERATION — Thank-you messages
 // ═══════════════════════════════════════════════════
-router.post('/gratitude-debt-clearer', async (req, res) => {
+router.post('/gratitude-debt-clearer', rateLimit(), async (req, res) => {
   try {
     const { 
       recipientName, 
@@ -200,7 +200,7 @@ Generate 2-3 message versions with different approaches. Return ONLY valid JSON.
 // ═══════════════════════════════════════════════════
 // ROUTE 2: SPECIFICITY EXTRACTION — Smart pre-pass
 // ═══════════════════════════════════════════════════
-router.post('/gratitude-debt-specificity', async (req, res) => {
+router.post('/gratitude-debt-specificity', rateLimit(), async (req, res) => {
   try {
     const { recipientName, gratitudePoints, context, relationship, userLanguage } = req.body;
 
@@ -258,7 +258,7 @@ RULES:
 // ═══════════════════════════════════════════════════
 // ROUTE 3: FOLLOW-UP MESSAGE — Outcome-based follow-up
 // ═══════════════════════════════════════════════════
-router.post('/gratitude-debt-followup', async (req, res) => {
+router.post('/gratitude-debt-followup', rateLimit(), async (req, res) => {
   try {
     const {
       recipientName, originalContext, originalMessage, originalDate,

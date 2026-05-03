@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
 // POST /toast-writer — Write a Toast, Speech, or Tribute
 // ════════════════════════════════════════════════════════════
-router.post('/toast-writer', async (req, res) => {
+router.post('/toast-writer', rateLimit(), async (req, res) => {
   try {
     const { person, occasion, relationship, stories, tone, duration, avoid, userLanguage } = req.body;
 

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 const PERSONALITY = `You are a world-class presentation coach who has prepped TED speakers, startup founders, and executives. You're brutally honest about what works and what doesn't. You know that great presentations are about clarity, rhythm, and emotional impact — not just information. You respect the speaker's voice and content, but you're fearless about cutting, restructuring, and sharpening.
 
@@ -12,7 +13,7 @@ RULES:
 - Consider pacing, energy arcs, and audience attention spans`;
 
 // ─── CUT: Trim content to fit a time limit ───
-router.post('/the-runthrough-cut', async (req, res) => {
+router.post('/the-runthrough-cut', rateLimit(), async (req, res) => {
   try {
     const { content, timeMinutes, context, userLanguage } = req.body;
 
@@ -73,7 +74,7 @@ Return ONLY valid JSON:
 });
 
 // ─── ANTICIPATE: Predict tough Q&A ───
-router.post('/the-runthrough-anticipate', async (req, res) => {
+router.post('/the-runthrough-anticipate', rateLimit(), async (req, res) => {
   try {
     const { content, audience, stakes, userLanguage } = req.body;
 
@@ -148,7 +149,7 @@ Generate 5-7 tough_questions, ordered from most to least likely.`;
 });
 
 // ─── HOOK: Rewrite opening, closing, transitions ───
-router.post('/the-runthrough-hook', async (req, res) => {
+router.post('/the-runthrough-hook', rateLimit(), async (req, res) => {
   try {
     const { content, tone, goal, userLanguage } = req.body;
 

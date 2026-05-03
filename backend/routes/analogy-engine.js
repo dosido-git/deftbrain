@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
 // POST /analogy-engine — Explain Anything to Anyone
 // ════════════════════════════════════════════════════════════
-router.post('/analogy-engine', async (req, res) => {
+router.post('/analogy-engine', rateLimit(), async (req, res) => {
   try {
     const { concept, audience, audienceInterests, depth, userLanguage } = req.body;
 

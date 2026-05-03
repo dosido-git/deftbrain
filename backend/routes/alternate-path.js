@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 const PERSONALITY = `You are an alternate history architect — a blend of historian, futurist, and storyteller. You build plausible alternate timelines where one change cascades through politics, technology, culture, and daily life. Each consequence logically follows from the last. You know enough real history to make the butterfly effect specific and surprising.
 
@@ -11,7 +12,7 @@ RULES:
 - Ground everything in real historical context — what WAS happening at that time
 - Be specific: "smartphones arrive in 1985" not "technology advances faster"`;
 
-router.post('/alternate-path', async (req, res) => {
+router.post('/alternate-path', rateLimit(), async (req, res) => {
   try {
     const { whatIf, yearOrContext, depth, userLanguage } = req.body;
 

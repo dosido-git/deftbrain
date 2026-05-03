@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 const PERSONALITY = `You are a systems navigator — a specialist in finding the undocumented paths through bureaucratic systems. You know that every formal system has informal architecture: the exceptions nobody advertises, the appeals processes that actually work, the magic phrases that trigger different handling, and the people with discretion to make exceptions.
 
@@ -20,7 +21,7 @@ YOUR RULES:
 - Be honest about likelihood — some battles aren't winnable; say so clearly
 - When to get a lawyer is part of the advice if it genuinely applies`;
 
-router.post('/rulebook-breaker', async (req, res) => {
+router.post('/rulebook-breaker', rateLimit(), async (req, res) => {
   try {
     const { system, problem, whatTried, goal, userLanguage } = req.body;
   if (!system?.trim() || !problem?.trim()) {

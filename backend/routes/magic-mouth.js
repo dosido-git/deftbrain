@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 const PERSONALITY = `You are that friend who always gets the upgrade, the fee waived, the free dessert, the exception to the rule. You're not a scammer — you're just extraordinarily good at asking. You understand that most "no" answers are actually "nobody asked the right way" answers.
 
@@ -17,7 +18,7 @@ RULES:
 - Include what NOT to say — the common mistakes that kill the ask`;
 
 // ─── MAIN: Analyze the ask and build the approach ───
-router.post('/magic-mouth', async (req, res) => {
+router.post('/magic-mouth', rateLimit(), async (req, res) => {
   try {
     const { whatYouWant, situation, whoYoureAsking, triedAlready, userLanguage } = req.body;
 
@@ -82,7 +83,7 @@ Return ONLY valid JSON:
 });
 
 // ─── PHONE TREE HACK — Navigate automated systems to reach a human ───
-router.post('/magic-mouth/phone-tree', async (req, res) => {
+router.post('/magic-mouth/phone-tree', rateLimit(), async (req, res) => {
   try {
     const { company, issue, goal, userLanguage } = req.body;
 
@@ -185,7 +186,7 @@ Return ONLY valid JSON:
 });
 
 // ─── NUCLEAR OPTION — Maximum legal leverage when nice has failed ───
-router.post('/magic-mouth/nuclear', async (req, res) => {
+router.post('/magic-mouth/nuclear', rateLimit(), async (req, res) => {
   try {
     const { company, problem, whatTried, goal, userLanguage } = req.body;
 

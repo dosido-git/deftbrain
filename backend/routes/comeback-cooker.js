@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 // ── Retry helper — handles Anthropic 529 overloaded errors ──
 async function withRetry(fn, { retries = 3, baseDelayMs = 1500 } = {}) {
@@ -32,7 +33,7 @@ RULES:
 - Never punch down. If the person was bullied, the comebacks should be empowering, not petty.
 - This is cathartic fiction. These are the things we WISH we'd said. Make them satisfying.`;
 
-router.post('/comeback-cooker', async (req, res) => {
+router.post('/comeback-cooker', rateLimit(), async (req, res) => {
   try {
     const { situation, whatTheySaid, relationship, mood, userLanguage } = req.body;
 

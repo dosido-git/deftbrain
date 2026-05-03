@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 const PERSONALITY = `You are a lexicographer of the human soul — someone who has spent a lifetime cataloging the precise words that different languages invented for feelings that defy easy description. You speak dozens of languages and you know the untranslatable words that capture emotions English never bothered to name.
 
@@ -12,7 +13,7 @@ RULES:
 - Be warm. Someone describing a nameless feeling is being vulnerable.
 - The "you are not alone" message should be genuine, not generic`;
 
-router.post('/name-that-feeling', async (req, res) => {
+router.post('/name-that-feeling', rateLimit(), async (req, res) => {
   try {
     const { description, context, userLanguage } = req.body;
 

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 const PERSONALITY = `You are an apology calibration expert — part therapist, part communication coach. You help people navigate the full spectrum: from "you're apologizing way too much" to "this needs a serious repair effort." You're warm but direct. You never shame people for getting it wrong — most people were never taught how to apologize well.
 
@@ -14,7 +15,7 @@ KEY PRINCIPLES:
 // ════════════════════════════════════════════════════════════
 // POST /apology-calibrator — Main calibration
 // ════════════════════════════════════════════════════════════
-router.post('/apology-calibrator', async (req, res) => {
+router.post('/apology-calibrator', rateLimit(), async (req, res) => {
   try {
     const { whatHappened, relationship, situation, userLanguage } = req.body;
     if (!whatHappened?.trim()) return res.status(400).json({ error: 'Please describe what happened.' });
@@ -97,7 +98,7 @@ Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /apology-calibrator/detect — Sorry-Not-Sorry Detector
 // ════════════════════════════════════════════════════════════
-router.post('/apology-calibrator/detect', async (req, res) => {
+router.post('/apology-calibrator/detect', rateLimit(), async (req, res) => {
   try {
     const { draft, context, userLanguage } = req.body;
     if (!draft?.trim()) return res.status(400).json({ error: 'Paste your apology draft.' });
@@ -155,7 +156,7 @@ Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /apology-calibrator/delivery — Delivery coach
 // ════════════════════════════════════════════════════════════
-router.post('/apology-calibrator/delivery', async (req, res) => {
+router.post('/apology-calibrator/delivery', rateLimit(), async (req, res) => {
   try {
     const { whatHappened, relationship, apologyText, userLanguage } = req.body;
     if (!whatHappened?.trim()) return res.status(400).json({ error: 'Describe the situation.' });
@@ -220,7 +221,7 @@ Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /apology-calibrator/audit — Over-apologizing pattern analysis
 // ════════════════════════════════════════════════════════════
-router.post('/apology-calibrator/audit', async (req, res) => {
+router.post('/apology-calibrator/audit', rateLimit(), async (req, res) => {
   try {
     const { situations, userLanguage } = req.body;
     if (!situations?.length) return res.status(400).json({ error: 'Add at least one situation.' });
@@ -285,7 +286,7 @@ Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /apology-calibrator/cultural — Cultural calibration
 // ════════════════════════════════════════════════════════════
-router.post('/apology-calibrator/cultural', async (req, res) => {
+router.post('/apology-calibrator/cultural', rateLimit(), async (req, res) => {
   try {
     const { whatHappened, culture, relationship, setting, userLanguage } = req.body;
     if (!whatHappened?.trim() || !culture?.trim()) {
@@ -347,7 +348,7 @@ Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /apology-calibrator/decode — "Was That Even an Apology?" Decoder
 // ════════════════════════════════════════════════════════════
-router.post('/apology-calibrator/decode', async (req, res) => {
+router.post('/apology-calibrator/decode', rateLimit(), async (req, res) => {
   try {
     const { theirWords, context, relationship, userLanguage } = req.body;
     if (!theirWords?.trim()) return res.status(400).json({ error: 'Paste what they said to you.' });
@@ -411,7 +412,7 @@ Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /apology-calibrator/practice — Apology Practice Mode
 // ════════════════════════════════════════════════════════════
-router.post('/apology-calibrator/practice', async (req, res) => {
+router.post('/apology-calibrator/practice', rateLimit(), async (req, res) => {
   try {
     const { situation, relationship, mode, history, userLanguage } = req.body;
     if (!situation?.trim()) return res.status(400).json({ error: 'Describe the situation to practice.' });
@@ -496,7 +497,7 @@ Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /apology-calibrator/forgive — Forgiveness Navigator
 // ════════════════════════════════════════════════════════════
-router.post('/apology-calibrator/forgive', async (req, res) => {
+router.post('/apology-calibrator/forgive', rateLimit(), async (req, res) => {
   try {
     const { whatTheyDid, theirApology, relationship, howYouFeel, userLanguage } = req.body;
     if (!whatTheyDid?.trim()) return res.status(400).json({ error: 'Describe what happened.' });
@@ -574,7 +575,7 @@ Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /apology-calibrator/roadmap — Relationship Repair Roadmap
 // ════════════════════════════════════════════════════════════
-router.post('/apology-calibrator/roadmap', async (req, res) => {
+router.post('/apology-calibrator/roadmap', rateLimit(), async (req, res) => {
   try {
     const { whatHappened, relationship, currentState, effortSoFar, userLanguage } = req.body;
     if (!whatHappened?.trim()) return res.status(400).json({ error: 'Describe what happened.' });
@@ -650,7 +651,7 @@ Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /apology-calibrator/letter — Apology Letter Builder
 // ════════════════════════════════════════════════════════════
-router.post('/apology-calibrator/letter', async (req, res) => {
+router.post('/apology-calibrator/letter', rateLimit(), async (req, res) => {
   try {
     const { whatHappened, relationship, tone, additionalContext, userLanguage } = req.body;
     if (!whatHappened?.trim()) return res.status(400).json({ error: 'Describe what happened.' });
@@ -723,7 +724,7 @@ Return ONLY valid JSON:
 // POST /apology-calibrator/fix — ApologyFixer
 // Diagnoses why an apology didn't land and rebuilds it
 // ════════════════════════════════════════════════════════════
-router.post('/apology-calibrator/fix', async (req, res) => {
+router.post('/apology-calibrator/fix', rateLimit(), async (req, res) => {
   try {
     const { whatYouSaid, theirReaction, relationship, context, userLanguage } = req.body;
     if (!whatYouSaid?.trim()) return res.status(400).json({ error: 'Paste what you said when you apologized.' });

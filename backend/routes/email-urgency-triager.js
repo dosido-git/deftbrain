@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
 // TRIAGE ACTION (default)
 // ════════════════════════════════════════════════════════════
-router.post('/email-urgency-triager', async (req, res) => {
+router.post('/email-urgency-triager', rateLimit(), async (req, res) => {
   try {
     const { action } = req.body;
 

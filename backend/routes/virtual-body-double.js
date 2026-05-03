@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════════════
 // SESSION MODE PERSONALITY DEFINITIONS
@@ -41,7 +42,7 @@ const MODE_PERSONALITIES = {
 // ═══════════════════════════════════════════════════
 // VIRTUAL BODY DOUBLE — v4 (10 routes)
 // ═══════════════════════════════════════════════════
-router.post('/virtual-body-double', async (req, res) => {
+router.post('/virtual-body-double', rateLimit(), async (req, res) => {
   const { action } = req.body;
 
   try {

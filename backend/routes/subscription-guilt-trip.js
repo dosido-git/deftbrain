@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
-router.post('/subscription-guilt-trip', async (req, res) => {
+router.post('/subscription-guilt-trip', rateLimit(), async (req, res) => {
   try {
     const { subscriptions, transactionText, inputType } = req.body;
 

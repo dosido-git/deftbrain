@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
 // POST /procedure-probe — Procedure Probe
 // ════════════════════════════════════════════════════════════
-router.post('/procedure-probe', async (req, res) => {
+router.post('/procedure-probe', rateLimit(), async (req, res) => {
   try {
     const { procedure, quote, provider, insurance, concerns, urgency, userLanguage } = req.body;
 

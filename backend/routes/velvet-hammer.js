@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
 // POST /velvet-hammer — Transform angry drafts into professional messages
 // ════════════════════════════════════════════════════════════
-router.post('/velvet-hammer', async (req, res) => {
+router.post('/velvet-hammer', rateLimit(), async (req, res) => {
   try {
     const { draft, relationship, goal, power } = req.body;
 

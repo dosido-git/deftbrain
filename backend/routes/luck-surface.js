@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 const PERSONALITY = `You are a luck architect — a specialist in the science of serendipity. You understand that luck isn't random: it's the product of surface area, signal strength, and diversity of exposure.
 
@@ -18,7 +19,7 @@ RULES:
 - The percentage is a device to make the concept concrete, not a real calculation
 - Five moves, each genuinely different in mechanism`;
 
-router.post('/luck-surface', async (req, res) => {
+router.post('/luck-surface', rateLimit(), async (req, res) => {
   try {
     const { description, goals, currentExposures, userLanguage } = req.body;
     if (!description?.trim()) return res.status(400).json({ error: 'Describe your life and current patterns.' });

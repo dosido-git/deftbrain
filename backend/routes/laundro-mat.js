@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 // Helper: parse base64 data URL
 function parseBase64Image(dataUrl) {
@@ -28,7 +29,7 @@ RULES:
 
 FORMAT: Always respond in valid JSON matching the schema requested. No markdown fences, no preamble. Pure JSON only.`;
 
-router.post('/laundro-mat', async (req, res) => {
+router.post('/laundro-mat', rateLimit(), async (req, res) => {
   try {
     const { action, loadDescription, machineType, stainType, stainCustom, fabric, stainAge, imageBase64 } = req.body;
 

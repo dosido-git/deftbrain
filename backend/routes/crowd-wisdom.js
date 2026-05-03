@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 const PERSONALITY = `You are a synthesis engine for human experience. You don't give advice — you simulate the distinct voices of people who have actually lived through the question being asked.
 
@@ -14,7 +15,7 @@ RULES:
 - Don't moralize or add a "right answer" — let the voices speak`;
 
 // POST /crowd-wisdom — Five life archetypes weigh in on any life question
-router.post('/crowd-wisdom', async (req, res) => {
+router.post('/crowd-wisdom', rateLimit(), async (req, res) => {
   try {
     const { question, context, userLanguage } = req.body;
     if (!question?.trim()) return res.status(400).json({ error: 'What\'s the question?' });

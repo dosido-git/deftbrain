@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
-router.post('/awkward-silence-filler', async (req, res) => {
+router.post('/awkward-silence-filler', rateLimit(), async (req, res) => {
   try {
     const { action, userLanguage } = req.body;
 

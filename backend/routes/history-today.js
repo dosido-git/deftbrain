@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════════════
 // ROUTE 1: MAIN — Find structural historical parallels
 // ═══════════════════════════════════════════════════
-router.post('/history-today', async (req, res) => {
+router.post('/history-today', rateLimit(), async (req, res) => {
   try {
     const { event, context, userLanguage } = req.body;
 
@@ -107,7 +108,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 2: DEEPER — Expand one parallel with full detail
 // ═══════════════════════════════════════════════════
-router.post('/history-today-deeper', async (req, res) => {
+router.post('/history-today-deeper', rateLimit(), async (req, res) => {
   try {
     const { event, parallel, userLanguage } = req.body;
 
@@ -195,7 +196,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 3: COUNTER — Find opposite-outcome parallel
 // ═══════════════════════════════════════════════════
-router.post('/history-today-counter', async (req, res) => {
+router.post('/history-today-counter', rateLimit(), async (req, res) => {
   try {
     const { event, parallels, userLanguage } = req.body;
 

@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════════════
 // ROUTE 1: MAIN REHEARSAL — Strategy & Scripts
 // ═══════════════════════════════════════════════════
-router.post('/difficult-talk-coach', async (req, res) => {
+router.post('/difficult-talk-coach', rateLimit(), async (req, res) => {
   try {
     const {
       topic,
@@ -281,7 +282,7 @@ CRITICAL RULES
 // ═══════════════════════════════════════════════════
 // ROUTE 2: PRACTICE SIMULATION — Interactive rehearsal
 // ═══════════════════════════════════════════════════
-router.post('/difficult-talk-simulate', async (req, res) => {
+router.post('/difficult-talk-simulate', rateLimit(), async (req, res) => {
   try {
     const {
       topic,
@@ -386,7 +387,7 @@ RULES:
 // ═══════════════════════════════════════════════════
 // ROUTE 3: POST-CONVERSATION DEBRIEF
 // ═══════════════════════════════════════════════════
-router.post('/difficult-talk-debrief', async (req, res) => {
+router.post('/difficult-talk-debrief', rateLimit(), async (req, res) => {
   try {
     const {
       originalTopic,
@@ -489,7 +490,7 @@ Return ONLY JSON. No markdown, no preamble.`, userLanguage);
 // ═══════════════════════════════════════════════════
 // ROUTE 4: PRACTICE SESSION SUMMARY — Readiness Score
 // ═══════════════════════════════════════════════════
-router.post('/difficult-talk-practice-summary', async (req, res) => {
+router.post('/difficult-talk-practice-summary', rateLimit(), async (req, res) => {
   try {
     const {
       topic,

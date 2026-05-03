@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { tools } from '../data/tools'; 
 import ToolPageWrapper from './ToolPageWrapper'; 
 import { useDocumentHead } from '../hooks/useDocumentHead';
+import TOOL_OG_SLUGS from '../data/tool-og-slugs.json';
 
 const ToolRenderer = ({ college }) => {
   const { toolId } = useParams();
@@ -14,7 +15,7 @@ const ToolRenderer = ({ college }) => {
     title: toolData?.title,
     description: toolData?.description,
     canonicalPath: toolId ? `/${toolId}` : undefined,
-    toolId: toolId,
+    ogImageSlug: TOOL_OG_SLUGS[toolId],
   });
 
   const ToolComponent = lazy(() => 
@@ -56,7 +57,7 @@ const ToolRenderer = ({ college }) => {
       <Suspense fallback={
         <div className="p-20 flex flex-col items-center justify-center space-y-4">
           <div className="h-8 w-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
-          <p className="text-blue-600 font-mono text-[10px] tracking-widest uppercase">Decrypting Asset...</p>
+          <p className="text-blue-600 font-mono text-[10px] tracking-widest uppercase">Loading…</p>
         </div>
       }>
 <ToolComponent college={college} tool={toolData} />

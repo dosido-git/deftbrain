@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 const PERSONALITY = `You are a behavioral systems analyst. You study daily routines the way engineers study systems — looking for the single highest-leverage intervention that produces the largest compound effect.
 
@@ -19,7 +20,7 @@ YOUR METHOD:
 
 ONE CHANGE ONLY. The discipline is in the single recommendation, not a menu.`;
 
-router.post('/one-percenter', async (req, res) => {
+router.post('/one-percenter', rateLimit(), async (req, res) => {
   try {
     const { routine, goals, painPoints, userLanguage } = req.body;
     if (!routine?.trim()) return res.status(400).json({ error: 'Describe your daily routine.' });

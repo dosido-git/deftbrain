@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 const PERSONALITY = `You are an epistemics expert — trained in research methodology, statistics, and the sociology of how bad information spreads. Your job is to separate what's actually known from what only feels known.
 
@@ -15,7 +16,7 @@ YOUR METHOD:
 
 CRITICAL: Do not moralize. Do not hedge everything into uselessness. Take positions where evidence supports them.`;
 
-router.post('/signal-vs-noise', async (req, res) => {
+router.post('/signal-vs-noise', rateLimit(), async (req, res) => {
   try {
     const { topic, conflictingAdvice, userContext, userLanguage } = req.body;
     if (!topic?.trim()) return res.status(400).json({ error: 'What topic are you trying to cut through?' });

@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
-router.post('/fake-review-detective', async (req, res) => {
+router.post('/fake-review-detective', rateLimit(), async (req, res) => {
   const { action } = req.body;
 
   try {

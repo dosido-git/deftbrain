@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
 // POST /heckler-prep — Anticipate the Hard Questions
 // ════════════════════════════════════════════════════════════
-router.post('/heckler-prep', async (req, res) => {
+router.post('/heckler-prep', rateLimit(), async (req, res) => {
   try {
     const { topic, audience, proposal, knownObjections, stakes, userLanguage } = req.body;
 

@@ -1,13 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
 // GENTLE PUSH GENERATOR
 // Dispatches to action handlers based on req.body.action
 // ════════════════════════════════════════════════════════════
 
-router.post('/gentle-push-generator', async (req, res) => {
+router.post('/gentle-push-generator', rateLimit(), async (req, res) => {
   try {
     const { action, userLanguage, ...payload } = req.body;
 

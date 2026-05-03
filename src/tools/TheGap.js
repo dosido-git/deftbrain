@@ -39,64 +39,77 @@ const TheGap = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { isDark } = useTheme();
 
+  const c = {
+    card:          isDark ? 'bg-zinc-800' : 'bg-white',
+    cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
+                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    text:          isDark ? 'text-zinc-50' : 'text-gray-900',
+    textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
+    textMuted:     isDark ? 'text-zinc-500' : 'text-gray-400',
+    labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
+    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
+                          : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200'
+                          : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
+    btnDis:        isDark ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed'
+                          : 'bg-gray-200 text-gray-400 cursor-not-allowed',
+    border:        isDark ? 'border-zinc-700' : 'border-gray-200',
+    success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200'
+                          : 'bg-emerald-50 border-emerald-300 text-emerald-800',
+    warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200'
+                          : 'bg-amber-50 border-amber-300 text-amber-800',
+    danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200'
+                          : 'bg-red-50 border-red-200 text-red-800',
+    infoBox:       isDark ? 'bg-sky-900/20 border-sky-700' : 'bg-sky-50 border-sky-200',
+    successBox:    isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-300',
+    successTxt:    isDark ? 'text-emerald-300' : 'text-emerald-800',
+    warningBox:    isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
+    warningTxt:    isDark ? 'text-amber-300' : 'text-amber-800',
+    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200'
+                          : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500'
+                          : 'border-gray-300 text-gray-500 hover:border-gray-400',
+    required:      isDark ? 'text-amber-400' : 'text-amber-500',
+    // Tool-specific extras
+    badge:         isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-100 text-cyan-800',
+    tipBg:         isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
+    tipText:       isDark ? 'text-amber-300' : 'text-amber-800',
+    histBg:        isDark ? 'bg-sky-900/20 border-sky-700/30' : 'bg-sky-50 border-sky-200',
+    gapHigh:       isDark ? 'bg-red-900/20 border-red-700/50' : 'bg-red-50 border-red-300',
+    gapHighText:   isDark ? 'text-red-300' : 'text-red-700',
+    gapMed:        isDark ? 'bg-amber-900/20 border-amber-700/40' : 'bg-amber-50 border-amber-300',
+    gapMedText:    isDark ? 'text-amber-300' : 'text-amber-700',
+    gapLow:        isDark ? 'bg-emerald-900/20 border-emerald-700/30' : 'bg-emerald-50 border-emerald-300',
+    gapLowText:    isDark ? 'text-emerald-300' : 'text-emerald-700',
+  };
+  c.textMuteded = c.textMuted;
+  c.label = c.labelText;
+
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
     : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
 
-  const c = {
-    card:         isDark ? 'bg-zinc-800' : 'bg-white',
-    cardAlt:      isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:        isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
-    text:         isDark ? 'text-zinc-50' : 'text-gray-900',
-    textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
-    textMuted:    isDark ? 'text-zinc-500' : 'text-gray-400',
-    btnPrimary:   isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
-    btnSecondary: isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
-    btnDis:       isDark ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed' : 'bg-gray-200 text-gray-400 cursor-not-allowed',
-    border:       isDark ? 'border-zinc-700' : 'border-gray-200',
-    success:      isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
-    warning:      isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
-    danger:       isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
-    pillActive:   isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
-    pillInactive: isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
-    badge:        isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-100 text-cyan-800',
-    tipBg:        isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
-    tipText:      isDark ? 'text-amber-300' : 'text-amber-800',
-    successBox:   isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-300',
-    successTxt:   isDark ? 'text-emerald-300' : 'text-emerald-800',
-    warningBox:   isDark ? 'bg-red-900/20 border-red-700' : 'bg-red-50 border-red-200',
-    warningTxt:   isDark ? 'text-red-300' : 'text-red-700',
-    infoBox:      isDark ? 'bg-sky-900/20 border-sky-700' : 'bg-sky-50 border-sky-200',
-    infoTxt:      isDark ? 'text-sky-300' : 'text-sky-800',
-    histBg:       isDark ? 'bg-sky-900/20 border-sky-700/30' : 'bg-sky-50 border-sky-200',
-    gapHigh:      isDark ? 'bg-red-900/20 border-red-700/50' : 'bg-red-50 border-red-300',
-    gapHighText:  isDark ? 'text-red-300' : 'text-red-700',
-    gapMed:       isDark ? 'bg-amber-900/20 border-amber-700/40' : 'bg-amber-50 border-amber-300',
-    gapMedText:   isDark ? 'text-amber-300' : 'text-amber-700',
-    gapLow:       isDark ? 'bg-emerald-900/20 border-emerald-700/30' : 'bg-emerald-50 border-emerald-300',
-    gapLowText:   isDark ? 'text-emerald-300' : 'text-emerald-700',
-  };
-  const resultsRef = useRef(null);
-
-  const [history, setHistory] = usePersistentState('the-gap-history', []);
-
+  // useState — all together first
   const [showHistory, setShowHistory] = useState(false);
-
-  // Input
-  const [concept, setConcept] = usePersistentState('the-gap-concept', '');
   const [subject, setSubject] = useState('');
   const [whatIKnow, setWhatIKnow] = useState('');
   const [whereItBroke, setWhereItBroke] = useState('');
   const [level, setLevel] = useState('undergrad');
-
-  // Results
-  const [results, setResults] = usePersistentState('the-gap-results', null);
   const [digResults, setDigResults] = useState(null);
   const [digTarget, setDigTarget] = useState(null);
   const [error, setError] = useState('');
   const [expandedNodes, setExpandedNodes] = useState({});
   const [showAlternatives, setShowAlternatives] = useState(false);
   const [showPlan, setShowPlan] = useState(true);
+
+  // useRef
+  const resultsRef = useRef(null);
+
+  // usePersistentState — all together after useRef
+  const [history, setHistory] = usePersistentState('the-gap-history', []);
+  const [concept, setConcept] = usePersistentState('the-gap-concept', '');
+  const [results, setResults] = usePersistentState('the-gap-results', null);
 
   useEffect(() => {
     if (!results) return;
@@ -110,7 +123,7 @@ const TheGap = ({ tool }) => {
     const handler = (e) => {
       if (e.key !== 'Enter' || !(e.metaKey || e.ctrlKey)) return;
       const tag = document.activeElement?.tagName;
-      if (tag === 'INPUT' || tag === 'SELECT') return;
+      if (tag === 'SELECT') return;
       if (!loading && concept.trim()) trace();
     };
     document.addEventListener('keydown', handler);
@@ -194,9 +207,16 @@ const TheGap = ({ tool }) => {
   // INPUT
   // ══════════════════════════════════════════
   const renderInput = () => (
-    <div className="space-y-4">
-      <div className={c.card + ' border rounded-xl p-5'}>
-        <label className={'text-base font-bold ' + c.text + ' mb-1 block'}>📝 What concept are you stuck on?</label>
+    <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
+      <div className="pb-3 border-b border-zinc-500">
+        <h2 className={'text-xl font-bold ' + c.text}>
+          <span className="mr-2">{tool?.icon ?? '🔍'}</span>{tool?.title ?? 'The Gap'}
+        </h2>
+        <p className={'text-sm ' + c.textSecondary}>{tool?.tagline ?? 'Stuck on a concept? We\'ll trace back to find where your understanding broke.'}</p>
+      </div>
+
+      <div>
+        <label className={'text-base font-bold ' + c.text + ' mb-1 block'}>📝 What concept are you stuck on? <span className={c.required}>*</span></label>
         <p className={'text-xs ' + c.textMuted + ' mb-3'}>We'll trace backwards through prerequisites to find where your understanding broke.</p>
         <input type="text" value={concept} onChange={e => setConcept(e.target.value)}
           placeholder="e.g., Integration by parts, Recursion, CRISPR, p-values..."
@@ -204,33 +224,31 @@ const TheGap = ({ tool }) => {
           onKeyDown={e => { if (e.key === 'Enter' && concept.trim()) trace(); }} />
       </div>
 
-      <div className={c.card + ' border rounded-xl p-5 space-y-3'}>
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className={'text-xs font-bold ' + c.textSecondary + ' uppercase tracking-wide mb-1 block'}>📚 Subject</label>
-            <input type="text" value={subject} onChange={e => setSubject(e.target.value)}
-              placeholder="e.g., Calculus, Biology, CS"
-              className={'w-full px-3 py-2 rounded-xl border text-sm ' + c.input + ' outline-none'} />
-          </div>
-          <div>
-            <label className={'text-xs font-bold ' + c.textSecondary + ' uppercase tracking-wide mb-2 block'}>🎓 Level</label>
-            <div className="flex flex-wrap gap-1">
-              {LEVELS.map(l => <Pill key={l.value} active={level === l.value} onClick={() => setLevel(l.value)}>{l.label}</Pill>)}
-            </div>
-          </div>
-        </div>
+      <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className={'text-xs font-bold ' + c.textSecondary + ' uppercase tracking-wide mb-1 block'}>✅ What DO you understand? (optional)</label>
-          <input type="text" value={whatIKnow} onChange={e => setWhatIKnow(e.target.value)}
-            placeholder="e.g., 'I get basic derivatives but not integrals', 'I understand variables but not functions'"
+          <label className={'text-xs font-bold ' + c.textSecondary + ' uppercase tracking-wide mb-1 block'}>📚 Subject</label>
+          <input type="text" value={subject} onChange={e => setSubject(e.target.value)}
+            placeholder="e.g., Calculus, Biology, CS"
             className={'w-full px-3 py-2 rounded-xl border text-sm ' + c.input + ' outline-none'} />
         </div>
         <div>
-          <label className={'text-xs font-bold ' + c.textSecondary + ' uppercase tracking-wide mb-1 block'}>🔍 Where did it break? (optional)</label>
-          <input type="text" value={whereItBroke} onChange={e => setWhereItBroke(e.target.value)}
-            placeholder="e.g., 'I was fine until the professor introduced u-substitution'"
-            className={'w-full px-3 py-2 rounded-xl border text-sm ' + c.input + ' outline-none'} />
+          <label className={'text-xs font-bold ' + c.textSecondary + ' uppercase tracking-wide mb-2 block'}>🎓 Level</label>
+          <div className="flex flex-wrap gap-1">
+            {LEVELS.map(l => <Pill key={l.value} active={level === l.value} onClick={() => setLevel(l.value)}>{l.label}</Pill>)}
+          </div>
         </div>
+      </div>
+      <div>
+        <label className={'text-xs font-bold ' + c.textSecondary + ' uppercase tracking-wide mb-1 block'}>✅ What DO you understand? (optional)</label>
+        <input type="text" value={whatIKnow} onChange={e => setWhatIKnow(e.target.value)}
+          placeholder="e.g., 'I get basic derivatives but not integrals', 'I understand variables but not functions'"
+          className={'w-full px-3 py-2 rounded-xl border text-sm ' + c.input + ' outline-none'} />
+      </div>
+      <div>
+        <label className={'text-xs font-bold ' + c.textSecondary + ' uppercase tracking-wide mb-1 block'}>🔍 Where did it break? (optional)</label>
+        <input type="text" value={whereItBroke} onChange={e => setWhereItBroke(e.target.value)}
+          placeholder="e.g., 'I was fine until the professor introduced u-substitution'"
+          className={'w-full px-3 py-2 rounded-xl border text-sm ' + c.input + ' outline-none'} />
       </div>
 
       {/* Examples */}
@@ -247,12 +265,12 @@ const TheGap = ({ tool }) => {
       </div>
 
       <button onClick={trace} disabled={loading || !concept.trim()}
-        className={'w-full py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all ' + (loading || !concept.trim() ? c.btnDis : c.btnPrimary)}>
-        {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> Tracing prerequisites...</> : <><span className="mr-1">{tool?.icon ?? '📝'}</span> Find the Gap</>}
+        className={'w-full py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all disabled:opacity-40 ' + (loading || !concept.trim() ? c.btnDis : c.btnPrimary)}>
+        {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '🔍'}</span> Tracing prerequisites...</> : <><span className="mr-1">{tool?.icon ?? '🔍'}</span> Find the Gap</>}
       </button>
       <p className={'text-xs text-center ' + c.textMuted}>AI-generated — verify with a textbook or instructor</p>
       <p className={'text-xs ' + c.textMuted}>
-        Concepts still feeling jumbled? <a href="BrainDumpStructurer" target="_blank" rel="noopener noreferrer" className={linkStyle}>Brain Dump Structurer</a> can help you organise your thinking before tracing the gap.
+        Concepts still feeling jumbled? <a href="/BrainDumpBuddy" className={linkStyle}>🧠 Brain Dump Buddy</a> can help you organise your thinking before tracing the gap.
       </p>
     </div>
   );
@@ -267,9 +285,6 @@ const TheGap = ({ tool }) => {
 
     return (
       <div ref={resultsRef} className="space-y-4 mt-4">
-        <div className="flex justify-end">
-          <button onClick={handleReset} className={'py-3 px-4 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 ' + c.btnSecondary}><span>📝</span> New Concept</button>
-        </div>
         {/* Analysis */}
         {results.concept_analysis && (
           <div className={'p-5 rounded-2xl border-2 ' + c.tipBg}>
@@ -563,27 +578,36 @@ const TheGap = ({ tool }) => {
   };
 
   return (
-    <div>
-      <div className="flex items-center gap-3 mb-5">
-        <div>
-          <h2 className={'text-2xl font-bold ' + c.text}>
-            <span className="mr-2">{tool?.icon ?? '📝'}</span>{tool?.title ?? 'The Gap'}
-          </h2>
-          <p className={'text-sm ' + c.textMuted}>{tool?.tagline ?? 'Stuck on a concept? We\'ll trace back to find where your understanding broke.'}</p>
-        </div>
-      </div>
+    <div className={`space-y-4 ${c.text}`}>
       {!results && renderInput()}
+      {results ? (
+        <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
+          <div className="pb-3 border-b border-zinc-500">
+            <div className="flex items-start justify-between">
+              <div>
+                <h2 className={'text-xl font-bold ' + c.text}>
+                  <span className="mr-2">{tool?.icon ?? '🔍'}</span>{tool?.title ?? 'The Gap'}
+                </h2>
+                <p className={'text-sm ' + c.textSecondary}>{tool?.tagline ?? 'Stuck on a concept? We\'ll trace back to find where your understanding broke.'}</p>
+              </div>
+              <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>
+                ↺ Start Over
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
       {results && renderResults()}
       {results && (
         <div className={'p-4 rounded-2xl border ' + c.card}>
           <p className={'text-xs font-bold ' + c.textMuted + ' uppercase tracking-wide mb-2'}>🔗 Related Tools</p>
-          <p className={'text-xs ' + c.textSecondary}>Ready to test yourself on what you found? <a href="Recall" target="_blank" rel="noopener noreferrer" className={linkStyle}>Recall</a> generates practice questions from your notes.</p>
+          <p className={'text-xs ' + c.textSecondary}>Ready to test yourself on what you found? <a href="/Recall" className={linkStyle}>🧠 Recall</a> generates practice questions from your notes.</p>
         </div>
       )}
       {error && (
-        <div className={'mt-4 p-4 ' + c.warningBox + ' border rounded-xl flex items-start gap-3'}>
-          <span className={'text-base ' + c.warningTxt}>⚠️</span>
-          <p className={'text-sm ' + c.warningTxt}>{error}</p>
+        <div className={'mt-4 p-4 ' + c.danger + ' border rounded-xl flex items-start gap-3'}>
+          <span className="text-base">⚠️</span>
+          <p className="text-sm">{error}</p>
         </div>
       )}
       {renderHistory()}

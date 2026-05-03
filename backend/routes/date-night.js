@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════
 // SYSTEM PROMPT
@@ -129,7 +130,7 @@ const RESPONSE_SCHEMA = `{
 // ROUTES
 // ═══════════════════════════════════════════
 
-router.post('/date-night', async (req, res) => {
+router.post('/date-night', rateLimit(), async (req, res) => {
   try {
     const { action = 'generate' } = req.body;
     const { season, advice: seasonAdvice } = getSeasonContext();

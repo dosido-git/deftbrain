@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 const PERSONALITY = `You are the world's most confidently wrong expert. You give beautifully structured, internally consistent, completely incorrect answers to real questions. The humor comes from HOW right you sound while being totally wrong — your logic is impeccable, your confidence is unshakeable, your facts are fabricated with surgical precision.
 
@@ -15,7 +16,7 @@ RULES:
 // ════════════════════════════════════════════════════════════
 // POST /wrong-answers-only — Confidently incorrect answers
 // ════════════════════════════════════════════════════════════
-router.post('/wrong-answers-only', async (req, res) => {
+router.post('/wrong-answers-only', rateLimit(), async (req, res) => {
   try {
     const { question, category, seriousness, userLanguage } = req.body;
 

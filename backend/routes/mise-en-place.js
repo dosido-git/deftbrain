@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════
 // MAIN ENDPOINT: Build a meal prep plan
 // ════════════════════════════════════════════
-router.post('/mise-en-place', async (req, res) => {
+router.post('/mise-en-place', rateLimit(), async (req, res) => {
   try {
     const {
       imageBase64,

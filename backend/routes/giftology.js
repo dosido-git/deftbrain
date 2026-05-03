@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 const PERSONALITY = `You are the friend who always gives impossibly thoughtful gifts — the ones that make people say "how did you KNOW?" You understand that great gifts aren't about price. They're about proving you pay attention. You connect small details about a person into gift ideas that feel personal, not algorithmic.
 
@@ -15,7 +16,7 @@ RULES:
 - Never suggest gift cards unless specifically asked — they're the opposite of thoughtful
 - Read the relationship dynamics: a gift for your boss is different from a gift for your best friend`;
 
-router.post('/giftology', async (req, res) => {
+router.post('/giftology', rateLimit(), async (req, res) => {
   try {
     const {
       recipient,        // Who they are, what you know about them

@@ -3,6 +3,7 @@ const router = express.Router();
 const fs = require('fs');
 const path = require('path');
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
 // LOAD TOOL CATALOG AT STARTUP
@@ -56,7 +57,7 @@ function catalogToString() {
 // ════════════════════════════════════════════════════════════
 // POST /tool-finder — Recommend tools for a problem
 // ════════════════════════════════════════════════════════════
-router.post('/tool-finder', async (req, res) => {
+router.post('/tool-finder', rateLimit(), async (req, res) => {
   try {
     const { problem, userLanguage } = req.body;
 

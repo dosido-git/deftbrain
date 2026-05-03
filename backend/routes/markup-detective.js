@@ -4,11 +4,12 @@ const express = require('express');
 const router = express.Router();
 // Server-side only — not bundled by webpack
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
 // POST /markup-detective — Price forensics for any product
 // ════════════════════════════════════════════════════════════
-router.post('/markup-detective', async (req, res) => {
+router.post('/markup-detective', rateLimit(), async (req, res) => {
   try {
     const { product } = req.body;
 

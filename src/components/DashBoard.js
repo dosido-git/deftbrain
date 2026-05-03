@@ -3,6 +3,8 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { Link } from 'react-router-dom';
 
 import BrandMark from './BrandMark';
+import HeroPitch from './HeroPitch';
+import DemoCards from './DemoCards';
 import ToolFinderWizard from './ToolFinderWizard';
 
 // ════════════════════════════════════════════════════════════
@@ -149,6 +151,16 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
   useEffect(() => { saveToStorage(STORAGE_KEYS.favorites, favorites); }, [favorites]);
   useEffect(() => { saveToStorage(STORAGE_KEYS.recents,   recents);   }, [recents]);
 
+  // Page background sync — the dashboard owns the body bg while it's mounted,
+  // so any dead space between the dashboard container and the footer (or
+  // beyond minHeight) inherits the sand tone instead of showing white through.
+  // Restored on unmount so tool pages keep their own theming.
+  useEffect(() => {
+    const previous = document.body.style.background;
+    document.body.style.background = CLR.sand50;
+    return () => { document.body.style.background = previous; };
+  }, []);
+
   // Usage frequency from recents
   const usageFrequency = useMemo(() => {
     const freq = {};
@@ -260,14 +272,39 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
   const activeMeta   = CATEGORY_META.find(c => c.name === activeCategory);
 
   return (
-    <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 pb-16"
+    <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 pb-6"
          style={{ background: CLR.sand50, minHeight: '100vh' }}>
       <style>{`.db-strip-scroll::-webkit-scrollbar{display:none}`}</style>
 
       {/* ═══════════ HEADER ═══════════ */}
       <header className="w-full py-3" style={{ borderBottom: `1px solid ${CLR.sand200}` }}>
         <BrandMark direction="left" size="lg" isDark={false} showTagline={true} />
+        {!isSearching && (
+          <HeroPitch
+            isDark={false}
+            className="mt-4"
+          />
+        )}
       </header>
+
+      {/* ═══════════ SEARCH + SORT — top-level affordance ═══════════ */}
+      {/* Always rendered so SearchBox stays mounted through isSearching transitions. */}
+      <div className="flex items-center justify-between mt-3 mb-1">
+        {isSearching ? (
+          <p className="text-[11px] font-semibold" style={{ color: CLR.warm500 }}>
+            {filteredTools.length === 0
+              ? 'No tools found — try different words'
+              : `${filteredTools.length} tool${filteredTools.length !== 1 ? 's' : ''} for "${searchTerm}"`}
+          </p>
+        ) : <div />}
+        <div className="flex items-center gap-2">
+          <SearchBox searchRef={searchRef} searchTerm={searchTerm} setSearchTerm={setSearchTerm} setActiveCategory={setActiveCategory} />
+          <SortBtn sortMode={sortMode} setSortMode={setSortMode} />
+        </div>
+      </div>
+
+      {/* ═══════════ DEMO CARDS — see what tools actually do ═══════════ */}
+      {!isSearching && <DemoCards isDark={false} className="mt-6" />}
 
       {/* ═══════════ TOOL FINDER WIZARD ═══════════ */}
       {!isSearching && <ToolFinderWizard />}
@@ -314,6 +351,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
                     label={cat.name}
                     emoji={cat.emoji}
                     count={count}
+                    title={cat.sub}
                     isActive={activeCategory === cat.name}
                     onClick={() => selectCategory(activeCategory === cat.name ? 'All' : cat.name)}
                   />
@@ -337,21 +375,6 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
 
       {/* ═══════════ RESULTS HEADER ═══════════ */}
       <div ref={resultsRef} style={{ scrollMarginTop: 16 }}>
-
-        {/* Always-rendered search + sort bar — keeps SearchBox mounted through isSearching transitions */}
-        <div className="flex items-center justify-between mb-3">
-          {isSearching ? (
-            <p className="text-[11px] font-semibold" style={{ color: CLR.warm500 }}>
-              {filteredTools.length === 0
-                ? 'No tools found — try different words'
-                : `${filteredTools.length} tool${filteredTools.length !== 1 ? 's' : ''} for "${searchTerm}"`}
-            </p>
-          ) : <div />}
-          <div className="flex items-center gap-2">
-            <SearchBox searchRef={searchRef} searchTerm={searchTerm} setSearchTerm={setSearchTerm} setActiveCategory={setActiveCategory} />
-            <SortBtn sortMode={sortMode} setSortMode={setSortMode} />
-          </div>
-        </div>
 
         {/* Category banner — only when a real category is active */}
         {!isSearching && activeCategory !== 'All' && (
@@ -422,15 +445,58 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
               <button
                 onClick={() => selectCategory(group.name)}
                 title={`Filter by ${group.name}`}
-                style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = CLR.gold500;
+                  e.currentTarget.style.background = '#ffffff';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = CLR.sand300;
+                  e.currentTarget.style.background = CLR.sand100;
+                }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  background: CLR.sand100,
+                  border: `1.5px solid ${CLR.sand300}`,
+                  borderRadius: 10,
+                  padding: '5px 10px',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s',
+                  flexShrink: 0,
+                }}
               >
-                <span className="text-sm">{group.emoji}</span>
-                <h3 className="text-[10px] font-extrabold uppercase tracking-wider"
-                    style={{ color: CLR.warm500 }}>{group.name}</h3>
-                <span className="text-[9px] font-bold px-1.5 py-0.5 rounded"
-                      style={{ color: CLR.warm500, background: CLR.sand100 }}>{group.tools.length}</span>
+                <span style={{ fontSize: 14, lineHeight: 1 }}>{group.emoji}</span>
+                <span style={{
+                  fontSize: 12, fontWeight: 700,
+                  color: CLR.navy700,
+                  letterSpacing: '-0.01em',
+                }}>
+                  {group.name}
+                </span>
+                <span style={{
+                  fontSize: 10, fontWeight: 800,
+                  color: '#fff',
+                  background: CLR.navy500,
+                  borderRadius: 4,
+                  padding: '1px 5px',
+                  lineHeight: 1.2,
+                }}>
+                  {group.tools.length}
+                </span>
               </button>
-              <div className="flex-1 h-px" style={{ background: CLR.sand200 }} />
+              {group.sub && (
+                <span style={{
+                  fontSize: 11,
+                  color: CLR.warm500,
+                  opacity: 0.7,
+                  flexShrink: 1,
+                  minWidth: 0,
+                }}>
+                  {group.sub}
+                </span>
+              )}
+              <div className="flex-1 h-px" style={{ background: CLR.sand200, minWidth: 20 }} />
             </div>
             <div className={`${group.tools.length > 3 ? 'md:columns-2' : ''} gap-x-4`}>
               {group.tools.map(tool => (
@@ -546,10 +612,11 @@ function SortBtn({ sortMode, setSortMode }) {
 // ════════════════════════════════════════════════════════════
 // TILE PILL (All / Favorites)
 // ════════════════════════════════════════════════════════════
-function TilePill({ label, emoji, count, isActive, onClick, hideCount = false, highlight = false }) {
+function TilePill({ label, emoji, count, isActive, onClick, hideCount = false, highlight = false, title }) {
   return (
     <button
       onClick={onClick}
+      title={title || label}
       className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all flex-shrink-0"
       style={{
         background: isActive ? CLR.gold300   : CLR.navy600,

@@ -1,3 +1,4 @@
+<!-- v1.4 · 2026-05-02 · session 2026-05-02 backlog burndown: added PF-15 EXEMPTION block for chat-style send and inline-quick-add inputs (Bucket 3 design call closure). Asterisk requirement now has two named carve-outs with strict shape conditions and reference cases (ApologyCalibrator practiceInput + note). -->
 <!-- v1.3 · 2026-04-24 · removed vestigial CopyBtn-import requirement from PF-1 and PF-5; tools now import CopyBtn only when they actually use it -->
 # DeftBrain Component Conventions
 > **Read this file before writing or editing any tool component.**
@@ -663,12 +664,30 @@ grep -n "<label" ComponentName.js | grep -v "\*" | head -20
 **Rules:**
 | Rule | Detail |
 |------|--------|
-| Asterisk is mandatory | Every required field must have one — no exceptions |
+| Asterisk is mandatory | Every required field must have one — no exceptions (see exemption below) |
 | Color | `c.required` only — `text-amber-400` dark / `text-amber-500` light |
 | Never `c.textMuted` | Muted asterisks are invisible and therefore useless |
 | Never `text-red-500` | Red belongs to the error/danger semantic — not form marking |
 | Placement | Inside the `<label>`, after the label text, in a `<span className={c.required}>*</span>` |
 | Optional fields | No asterisk — silence means optional |
+
+> ⚠️ **EXEMPTION — Chat-style send and inline quick-add inputs**
+>
+> Inputs that participate in a chat-shape interaction or inline quick-add list are exempt from the asterisk requirement, even when their submit/add button is disabled-on-empty. Real chat UIs (Slack, Messenger, Apple Messages) don't asterisk message inputs — the disabled send button alone communicates "needs text first," and an asterisk on a chat input feels like a form-validation artifact in the wrong context.
+>
+> **Two qualifying shapes:**
+>
+> 1. **Chat-style send.** A single text field paired with a send button (often arrow-glyph or paper-plane), where each submission becomes a message in a conversation thread above. The input clears on send and is reusable for the next message.
+> 2. **Inline quick-add list.** A small text field paired with an add button, where each submission appends to a visible list (notes, tags, items). The input clears on add and is reusable for the next item.
+>
+> **Both must satisfy:**
+> - The input is visually lightweight (no header label above it, or only an inline placeholder/icon)
+> - The submission is *additive* — it appends to a thread/list, not a primary form submit
+> - The button itself communicates state (disabled when empty, active when typed)
+>
+> **Anything that doesn't match these shapes is NOT exempt.** A primary form field with a "Submit" or "Analyze" button is always asterisked, no matter how short its label or how single it is on the page.
+>
+> *Reference cases: ApologyCalibrator `practiceInput` (Practice mode chat-style send) and `note` (Repairs mode inline follow-up quick-add). Both decided exempt during the Bucket 3 design call, Session 2026-05-02.*
 
 **⚠️ Audit false-negative — dot-nested required fields:** `audit_v2-3-2.py`'s PF-15 extractor matches `!variable.trim()` in the submit button's `disabled={...}` expression. It does **not** correctly handle dot-nested paths like `!form.whatHappened.trim()` or `!fixForm.theirReaction.trim()` — it captures only `form`/`fixForm` as the variable name, then fails to find an input with `value={form}` (because the actual binding is `value={form.whatHappened}`), and silently skips the check. Tools that collect all user input into a single form object (common pattern for multi-field tools) will pass the audit despite missing every asterisk.
 

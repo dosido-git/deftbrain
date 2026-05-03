@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 const PERSONALITY = `You are an expert travel advisor who specializes in airport layovers and transit logistics. You have deep knowledge of:
 - International airports: terminal layouts, immigration/customs processing times, transit options
@@ -15,7 +16,7 @@ You are practical, specific, and time-aware. Every recommendation accounts for t
 // ════════════════════════════════════════════════════════════
 // POST /layover-maximizer — Main analysis (Should I leave?)
 // ════════════════════════════════════════════════════════════
-router.post('/layover-maximizer', async (req, res) => {
+router.post('/layover-maximizer', rateLimit(), async (req, res) => {
   try {
     const {
       airport, layoverHours, nationality, hasCheckedBags,
@@ -157,7 +158,7 @@ Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /layover-maximizer/lounge — Lounge deep dive
 // ════════════════════════════════════════════════════════════
-router.post('/layover-maximizer/lounge', async (req, res) => {
+router.post('/layover-maximizer/lounge', rateLimit(), async (req, res) => {
   try {
     const { airport, terminal, cards, airline, status, userLanguage } = req.body;
 
@@ -230,7 +231,7 @@ Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /layover-maximizer/risk — Risk calculator
 // ════════════════════════════════════════════════════════════
-router.post('/layover-maximizer/risk', async (req, res) => {
+router.post('/layover-maximizer/risk', rateLimit(), async (req, res) => {
   try {
     const {
       airport, airline, layoverHours, scenario,
@@ -308,7 +309,7 @@ Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /layover-maximizer/gate-to-gate — Terminal transfer
 // ════════════════════════════════════════════════════════════
-router.post('/layover-maximizer/gate-to-gate', async (req, res) => {
+router.post('/layover-maximizer/gate-to-gate', rateLimit(), async (req, res) => {
   try {
     const { airport, arrivalGate, departureGate, hasPreCheck, minutesAvailable, userLanguage } = req.body;
 
@@ -377,7 +378,7 @@ Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /layover-maximizer/compare — Side-by-side layover comparison
 // ════════════════════════════════════════════════════════════
-router.post('/layover-maximizer/compare', async (req, res) => {
+router.post('/layover-maximizer/compare', rateLimit(), async (req, res) => {
   try {
     const { options, nationality, travelStyle, userLanguage } = req.body;
 
@@ -445,7 +446,7 @@ Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /layover-maximizer/packing — Layover-specific packing list
 // ════════════════════════════════════════════════════════════
-router.post('/layover-maximizer/packing', async (req, res) => {
+router.post('/layover-maximizer/packing', rateLimit(), async (req, res) => {
   try {
     const { airport, hours, leavingAirport, scenario, userLanguage } = req.body;
 
@@ -500,7 +501,7 @@ Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /layover-maximizer/survival-kit — Offline-ready one-pager
 // ════════════════════════════════════════════════════════════
-router.post('/layover-maximizer/survival-kit', async (req, res) => {
+router.post('/layover-maximizer/survival-kit', rateLimit(), async (req, res) => {
   try {
     const { airport, airline, hours, plan, userLanguage } = req.body;
 

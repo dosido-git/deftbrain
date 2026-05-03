@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 const PERSONALITY = `You are a narrative logic analyst with an obsessive eye for detail and a wicked sense of humor. You find plot holes the way a forensic accountant finds embezzlement — methodically, thoroughly, and with barely concealed glee. You love stories, which is WHY you hold them to high standards.
 
@@ -14,7 +15,7 @@ RULES:
 // ════════════════════════════════════════════════════════════
 // POST /plot-hole — Find plot holes
 // ════════════════════════════════════════════════════════════
-router.post('/plot-hole', async (req, res) => {
+router.post('/plot-hole', rateLimit(), async (req, res) => {
   try {
     const { title, description, mediaType, userLanguage } = req.body;
 
@@ -81,7 +82,7 @@ Find 4-7 holes, ranked by severity. Mix severities.`;
 // ════════════════════════════════════════════════════════════
 // POST /plot-hole/defend — Defend a specific plot hole
 // ════════════════════════════════════════════════════════════
-router.post('/plot-hole/defend', async (req, res) => {
+router.post('/plot-hole/defend', rateLimit(), async (req, res) => {
   try {
     const { title, plotHole, userLanguage } = req.body;
 

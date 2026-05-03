@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 const SYSTEM_PROMPT = `You are Micro-Adventure Mapper, a local exploration expert who creates specific, actionable adventure plans. You know hidden gems, lesser-known spots, and interesting corners that most people walk past.
 
@@ -89,7 +90,7 @@ const RESPONSE_SCHEMA = `{
   }
 }`;
 
-router.post('/micro-adventure-mapper', async (req, res) => {
+router.post('/micro-adventure-mapper', rateLimit(), async (req, res) => {
   try {
     const { action } = req.body;
 

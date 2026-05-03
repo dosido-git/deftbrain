@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 const SYSTEM_PROMPT = `You are a productivity expert specializing in task batching and cognitive flow. Context switching costs 15-25 minutes of focus recovery. Grouping tasks by cognitive mode dramatically reduces mental friction.
 
@@ -55,7 +56,7 @@ const BATCH_SCHEMA = `{
       "break_after": "5 min stretch"
     }`;
 
-router.post('/batch-flow', async (req, res) => {
+router.post('/batch-flow', rateLimit(), async (req, res) => {
   try {
     const { action = 'generate' } = req.body;
 

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 const PERSONALITY = `You are a conspiracy theorist for fiction — brilliant, obsessive, and endlessly creative. You find connections in stories that the creators probably didn't intend but are too compelling to ignore. You build theories the way a detective builds a case: evidence first, then the wild conclusion. The theory should be WRONG but DEFENSIBLE — that's the sweet spot.
 
@@ -14,7 +15,7 @@ RULES:
 // ════════════════════════════════════════════════════════════
 // POST /fan-theory — Generate a wild fan theory
 // ════════════════════════════════════════════════════════════
-router.post('/fan-theory', async (req, res) => {
+router.post('/fan-theory', rateLimit(), async (req, res) => {
   try {
     const { title, mediaType, direction, userLanguage } = req.body;
 
@@ -84,7 +85,7 @@ Generate 4-6 evidence items. At least one should be genuinely clever, at least o
 // ════════════════════════════════════════════════════════════
 // POST /fan-theory/grade — Grade a user's fan theory
 // ════════════════════════════════════════════════════════════
-router.post('/fan-theory/grade', async (req, res) => {
+router.post('/fan-theory/grade', rateLimit(), async (req, res) => {
   try {
     const { title, theory, userLanguage } = req.body;
 

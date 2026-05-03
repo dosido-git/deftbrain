@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════════════
 // ROUTE 1: TIP ADVISOR — Culturally calibrated tip recommendation
 // ═══════════════════════════════════════════════════
-router.post('/money-diplomat-tip', async (req, res) => {
+router.post('/money-diplomat-tip', rateLimit(), async (req, res) => {
   try {
     const { situation, country, serviceType, billAmount, partySize, userLanguage } = req.body;
 
@@ -64,7 +65,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 2: BILL SPLITTER — Fair split with social dynamics
 // ═══════════════════════════════════════════════════
-router.post('/money-diplomat-split', async (req, res) => {
+router.post('/money-diplomat-split', rateLimit(), async (req, res) => {
   try {
     const { situation, people, totalBill, userLanguage } = req.body;
 
@@ -120,7 +121,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 3: VENMO VERDICT — Should I request this?
 // ═══════════════════════════════════════════════════
-router.post('/money-diplomat-venmo', async (req, res) => {
+router.post('/money-diplomat-venmo', rateLimit(), async (req, res) => {
   try {
     const { situation, amount, relationship, timePassed, userLanguage } = req.body;
 
@@ -175,7 +176,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 4: GIFT CALCULATOR — How much to spend
 // ═══════════════════════════════════════════════════
-router.post('/money-diplomat-gift', async (req, res) => {
+router.post('/money-diplomat-gift', rateLimit(), async (req, res) => {
   try {
     const { occasion, relationship, theirSpend, yourBudget, region, userLanguage } = req.body;
 
@@ -236,7 +237,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 5: ROOMMATE RECKONER — Fair shared-living splits
 // ═══════════════════════════════════════════════════
-router.post('/money-diplomat-roommate', async (req, res) => {
+router.post('/money-diplomat-roommate', rateLimit(), async (req, res) => {
   try {
     const { situation, people, totalCost, userLanguage } = req.body;
 
@@ -294,7 +295,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 6: FAMILY MONEY DIPLOMAT — Family financial dynamics
 // ═══════════════════════════════════════════════════
-router.post('/money-diplomat-family', async (req, res) => {
+router.post('/money-diplomat-family', rateLimit(), async (req, res) => {
   try {
     const { situation, familyDynamic, culturalContext, userLanguage } = req.body;
 
@@ -357,7 +358,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 7: DINING DIPLOMAT — Pre-dinner strategy
 // ═══════════════════════════════════════════════════
-router.post('/money-diplomat-dining', async (req, res) => {
+router.post('/money-diplomat-dining', rateLimit(), async (req, res) => {
   try {
     const { situation, context, yourBudget, userLanguage } = req.body;
 
@@ -415,7 +416,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 8: GROUP EVENT SETTLER — Trips, events, shared costs
 // ═══════════════════════════════════════════════════
-router.post('/money-diplomat-group', async (req, res) => {
+router.post('/money-diplomat-group', rateLimit(), async (req, res) => {
   try {
     const { eventType, situation, people, expenses, userLanguage } = req.body;
 
@@ -479,7 +480,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 9: LENDING COMPASS — Should I lend money?
 // ═══════════════════════════════════════════════════
-router.post('/money-diplomat-lend', async (req, res) => {
+router.post('/money-diplomat-lend', rateLimit(), async (req, res) => {
   try {
     const { situation, amount, relationship, history, userLanguage } = req.body;
 
@@ -537,7 +538,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 10: WORK MONEY NAVIGATOR — Office money etiquette
 // ═══════════════════════════════════════════════════
-router.post('/money-diplomat-work', async (req, res) => {
+router.post('/money-diplomat-work', rateLimit(), async (req, res) => {
   try {
     const { situation, role, companySize, userLanguage } = req.body;
 
@@ -597,7 +598,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 11: TRAVEL MONEY GUIDE — Cultural money etiquette
 // ═══════════════════════════════════════════════════
-router.post('/money-diplomat-travel', async (req, res) => {
+router.post('/money-diplomat-travel', rateLimit(), async (req, res) => {
   try {
     const { destination, situation, userLanguage } = req.body;
 
@@ -666,7 +667,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 12: MONEY STYLE PROFILE — Pattern analysis
 // ═══════════════════════════════════════════════════
-router.post('/money-diplomat-profile', async (req, res) => {
+router.post('/money-diplomat-profile', rateLimit(), async (req, res) => {
   try {
     const { history, userLanguage } = req.body;
 
@@ -729,7 +730,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 13: DATE MONEY — Who pays on dates
 // ═══════════════════════════════════════════════════
-router.post('/money-diplomat-date', async (req, res) => {
+router.post('/money-diplomat-date', rateLimit(), async (req, res) => {
   try {
     const { situation, dateNumber, dynamic, culturalContext, userLanguage } = req.body;
 
@@ -794,7 +795,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 14: SUBSCRIPTION SPLITTER — Shared accounts & plans
 // ═══════════════════════════════════════════════════
-router.post('/money-diplomat-subs', async (req, res) => {
+router.post('/money-diplomat-subs', rateLimit(), async (req, res) => {
   try {
     const { situation, service, people, monthlyCost, userLanguage } = req.body;
 
@@ -854,7 +855,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 15: DEBT NUDGE — Generate reminder message for outstanding debt
 // ═══════════════════════════════════════════════════
-router.post('/money-diplomat-nudge', async (req, res) => {
+router.post('/money-diplomat-nudge', rateLimit(), async (req, res) => {
   try {
     const { personName, amount, context, daysSince, relationship, attempts, userLanguage } = req.body;
 
@@ -898,7 +899,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 16: SALARY NEGOTIATION — How much to ask for
 // ═══════════════════════════════════════════════════
-router.post('/money-diplomat-salary', async (req, res) => {
+router.post('/money-diplomat-salary', rateLimit(), async (req, res) => {
   try {
     const { situation, currentSalary, targetRole, location, experience, userLanguage } = req.body;
 
@@ -965,7 +966,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 17: AFFORD CHECK — Can I actually afford this?
 // ═══════════════════════════════════════════════════
-router.post('/money-diplomat-afford', async (req, res) => {
+router.post('/money-diplomat-afford', rateLimit(), async (req, res) => {
   try {
     const { situation, cost, income, context, userLanguage } = req.body;
 
@@ -1016,7 +1017,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 18: INHERITANCE — Navigating estate money
 // ═══════════════════════════════════════════════════
-router.post('/money-diplomat-inheritance', async (req, res) => {
+router.post('/money-diplomat-inheritance', rateLimit(), async (req, res) => {
   try {
     const { situation, familyDynamic, culturalContext, userLanguage } = req.body;
 
@@ -1080,7 +1081,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 19: CULTURAL TRANSLATOR — Cross-cultural money in your city
 // ═══════════════════════════════════════════════════
-router.post('/money-diplomat-cultural', async (req, res) => {
+router.post('/money-diplomat-cultural', rateLimit(), async (req, res) => {
   try {
     const { yourBackground, theirBackground, situation, userLanguage } = req.body;
 
@@ -1138,7 +1139,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 20: CHARITY CALIBRATOR — How much to donate/contribute
 // ═══════════════════════════════════════════════════
-router.post('/money-diplomat-charity', async (req, res) => {
+router.post('/money-diplomat-charity', rateLimit(), async (req, res) => {
   try {
     const { situation, askType, relationship, amount, userLanguage } = req.body;
 
@@ -1196,7 +1197,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 21: SCENARIO SIMULATOR — Practice money conversations
 // ═══════════════════════════════════════════════════
-router.post('/money-diplomat-simulate', async (req, res) => {
+router.post('/money-diplomat-simulate', rateLimit(), async (req, res) => {
   try {
     const { situation, otherPerson, userResponse, conversationHistory, userProfile, userLanguage } = req.body;
 
@@ -1276,7 +1277,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 22: MONTHLY RECAP — Summarize usage patterns
 // ═══════════════════════════════════════════════════
-router.post('/money-diplomat-recap', async (req, res) => {
+router.post('/money-diplomat-recap', rateLimit(), async (req, res) => {
   try {
     const { history, debts, userProfile, userLanguage } = req.body;
 

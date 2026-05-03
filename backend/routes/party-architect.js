@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
 // POST /party-architect — Design Events People Remember
 // ════════════════════════════════════════════════════════════
-router.post('/party-architect', async (req, res) => {
+router.post('/party-architect', rateLimit(), async (req, res) => {
   try {
     const { occasion, guestCount, guestMix, space, budget, vibe, duration, constraints, userLanguage } = req.body;
 

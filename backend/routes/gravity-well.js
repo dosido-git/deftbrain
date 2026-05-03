@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 const PERSONALITY = `You are a relationship orbit designer. You understand how the most valuable relationships form: not through cold outreach, but through gravitational pull — becoming the kind of person worth knowing, showing up in the right places, and making yourself visible before you ever introduce yourself.
 
@@ -17,7 +18,7 @@ YOUR PLANS ARE:
 - Asymmetric — actions that require little from the target but create pull
 - Realistic — no manufactured encounters or contrived situations`;
 
-router.post('/gravity-well', async (req, res) => {
+router.post('/gravity-well', rateLimit(), async (req, res) => {
   try {
     const { targetDescription, targetType, whyThemContext, yourBackground, userLanguage } = req.body;
   if (!targetDescription?.trim()) return res.status(400).json({ error: 'Describe the person you want in your life.' });

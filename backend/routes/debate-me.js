@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 const LEVEL_GUIDE = {
   curious: 'Warm, conversational pushback. Concede easily. Think: smart friend at dinner.',
@@ -19,7 +20,7 @@ const FORMAT_GUIDE = {
 // ═══════════════════════════════════════════════════
 // ROUTE 1: OPEN — Launch debate (supports formats)
 // ═══════════════════════════════════════════════════
-router.post('/debate-open', async (req, res) => {
+router.post('/debate-open', rateLimit(), async (req, res) => {
   try {
     const { position, topic, context, challengeLevel, category, format, userLanguage } = req.body;
     if (!position?.trim()) return res.status(400).json({ error: 'State your position — what do you believe?' });
@@ -67,7 +68,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 2: RESPOND — Continue debate
 // ═══════════════════════════════════════════════════
-router.post('/debate-respond', async (req, res) => {
+router.post('/debate-respond', rateLimit(), async (req, res) => {
   try {
     const { userResponse, debateHistory, challengeLevel, userSide, aiSide, coreTension, format, userLanguage } = req.body;
     if (!userResponse?.trim()) return res.status(400).json({ error: 'Make your argument!' });
@@ -111,7 +112,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 3: SWITCH — Switch sides
 // ═══════════════════════════════════════════════════
-router.post('/debate-switch', async (req, res) => {
+router.post('/debate-switch', rateLimit(), async (req, res) => {
   try {
     const { debateHistory, oldUserSide, oldAiSide, coreTension, challengeLevel, userLanguage } = req.body;
     if (!debateHistory?.length) return res.status(400).json({ error: 'Need debate history to switch.' });
@@ -142,7 +143,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 4: SCORECARD — Post-debate analysis
 // ═══════════════════════════════════════════════════
-router.post('/debate-scorecard', async (req, res) => {
+router.post('/debate-scorecard', rateLimit(), async (req, res) => {
   try {
     const { debateHistory, userSide, aiSide, coreTension, challengeLevel, didSwitch, format, userLanguage } = req.body;
     if (!debateHistory?.length || debateHistory.length < 2) return res.status(400).json({ error: 'Need at least one exchange.' });
@@ -179,7 +180,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 5: QUICK SPAR — Single round
 // ═══════════════════════════════════════════════════
-router.post('/debate-quick', async (req, res) => {
+router.post('/debate-quick', rateLimit(), async (req, res) => {
   try {
     const { position, challengeLevel, userLanguage } = req.body;
     if (!position?.trim()) return res.status(400).json({ error: 'State a position.' });
@@ -203,7 +204,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 6: COACH — Help me respond
 // ═══════════════════════════════════════════════════
-router.post('/debate-coach', async (req, res) => {
+router.post('/debate-coach', rateLimit(), async (req, res) => {
   try {
     const { debateHistory, userSide, aiSide, coreTension, lastAiPoint, userLanguage } = req.body;
     if (!debateHistory?.length) return res.status(400).json({ error: 'Need debate context.' });
@@ -236,7 +237,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 7: AUDIENCE JUDGE — Third-party verdict
 // ═══════════════════════════════════════════════════
-router.post('/debate-audience-judge', async (req, res) => {
+router.post('/debate-audience-judge', rateLimit(), async (req, res) => {
   try {
     const { debateHistory, userSide, aiSide, coreTension, userLanguage } = req.body;
     if (!debateHistory?.length || debateHistory.length < 4) return res.status(400).json({ error: 'Need at least 2 exchanges for audience judgment.' });
@@ -285,7 +286,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 8: ARGUMENT MAP — Visual debate structure
 // ═══════════════════════════════════════════════════
-router.post('/debate-argument-map', async (req, res) => {
+router.post('/debate-argument-map', rateLimit(), async (req, res) => {
   try {
     const { debateHistory, userSide, aiSide, userLanguage } = req.body;
     if (!debateHistory?.length || debateHistory.length < 2) return res.status(400).json({ error: 'Need debate history to map.' });
@@ -340,7 +341,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 9: DEVIL'S ADVOCATE PREP — Scenario drilling
 // ═══════════════════════════════════════════════════
-router.post('/debate-prep', async (req, res) => {
+router.post('/debate-prep', rateLimit(), async (req, res) => {
   try {
     const { position, audience, context, stakes, userLanguage } = req.body;
     if (!position?.trim()) return res.status(400).json({ error: 'What position do you need to defend?' });
@@ -388,7 +389,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 10: FALLACY TRAINING — Identify & avoid
 // ═══════════════════════════════════════════════════
-router.post('/debate-fallacy-train', async (req, res) => {
+router.post('/debate-fallacy-train', rateLimit(), async (req, res) => {
   try {
     const { difficulty, mode, topic, streak, userAnswer, exerciseType, userLanguage } = req.body;
 
@@ -437,7 +438,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 11: SOURCE CHECK — "Prove it"
 // ═══════════════════════════════════════════════════
-router.post('/debate-source-check', async (req, res) => {
+router.post('/debate-source-check', rateLimit(), async (req, res) => {
   try {
     const { claim, speaker, debateContext, userLanguage } = req.body;
     if (!claim?.trim()) return res.status(400).json({ error: 'What claim needs sourcing?' });
@@ -475,7 +476,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 12: REMATCH — Target previous blind spots
 // ═══════════════════════════════════════════════════
-router.post('/debate-rematch', async (req, res) => {
+router.post('/debate-rematch', rateLimit(), async (req, res) => {
   try {
     const { position, previousBlindSpots, previousFallacies, previousScore, previousSummary, challengeLevel, userLanguage } = req.body;
     if (!position?.trim()) return res.status(400).json({ error: 'Need the position for rematch.' });
@@ -514,7 +515,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 13: HIGHLIGHT REEL — Cross-debate patterns
 // ═══════════════════════════════════════════════════
-router.post('/debate-highlight-reel', async (req, res) => {
+router.post('/debate-highlight-reel', rateLimit(), async (req, res) => {
   try {
     const { debates, userLanguage } = req.body;
     if (!debates?.length || debates.length < 3) return res.status(400).json({ error: 'Need at least 3 scored debates for pattern analysis.' });

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 const PERSONALITY = `You are a brutally perceptive communication analyst with the observational skills of a linguist and the delivery of a sharp friend. You read between every line, notice every verbal tic, and can tell someone's entire personality from how they use punctuation.
 
@@ -12,7 +13,7 @@ RULES:
 - The secret tell should be genuinely insightful, not just restating the obvious
 - Adjust analysis based on source type (texts are casual, emails are more performed)`;
 
-router.post('/whats-my-vibe', async (req, res) => {
+router.post('/whats-my-vibe', rateLimit(), async (req, res) => {
   try {
     const { samples, sourceType, userLanguage } = req.body;
 

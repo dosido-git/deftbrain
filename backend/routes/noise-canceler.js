@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
 // POST /noise-canceler — What Actually Affects Me?
 // ════════════════════════════════════════════════════════════
-router.post('/noise-canceler', async (req, res) => {
+router.post('/noise-canceler', rateLimit(), async (req, res) => {
   try {
     const {
       document,        // The full text of the document

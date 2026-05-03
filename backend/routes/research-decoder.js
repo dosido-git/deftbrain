@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════════════
 // ROUTE 1: DIGEST — The core translation
 // ═══════════════════════════════════════════════════
-router.post('/research-decoder', async (req, res) => {
+router.post('/research-decoder', rateLimit(), async (req, res) => {
   try {
     const { text, title, field, userLanguage } = req.body;
     if (!text?.trim()) return res.status(400).json({ error: 'Paste an abstract, excerpt, or paper text.' });
@@ -62,7 +63,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 2: MEDIA CHECK — Paper vs. headlines
 // ═══════════════════════════════════════════════════
-router.post('/research-decoder-media', async (req, res) => {
+router.post('/research-decoder-media', rateLimit(), async (req, res) => {
   try {
     const { paperText, headline, articleExcerpt, userLanguage } = req.body;
     if (!paperText?.trim() && !headline?.trim()) return res.status(400).json({ error: 'Provide the paper text and the headline or article.' });
@@ -110,7 +111,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 3: JARGON DEEP DIVE — Explain specific terms
 // ═══════════════════════════════════════════════════
-router.post('/research-decoder-jargon', async (req, res) => {
+router.post('/research-decoder-jargon', rateLimit(), async (req, res) => {
   try {
     const { terms, field, paperContext, userLanguage } = req.body;
     if (!terms?.length && !terms?.trim?.()) return res.status(400).json({ error: 'What terms do you want explained?' });
@@ -149,7 +150,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 4: COMPARE — Two papers on the same topic
 // ═══════════════════════════════════════════════════
-router.post('/research-decoder-compare', async (req, res) => {
+router.post('/research-decoder-compare', rateLimit(), async (req, res) => {
   try {
     const { paper1, paper2, question, userLanguage } = req.body;
     if (!paper1?.trim() || !paper2?.trim()) return res.status(400).json({ error: 'Paste text from both papers.' });
@@ -195,7 +196,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 5: SHOULD I CARE — Personalized relevance
 // ═══════════════════════════════════════════════════
-router.post('/research-decoder-relevance', async (req, res) => {
+router.post('/research-decoder-relevance', rateLimit(), async (req, res) => {
   try {
     const { paperSummary, myContext, myQuestion, userLanguage } = req.body;
     if (!paperSummary?.trim() && !myQuestion?.trim()) return res.status(400).json({ error: 'Provide the paper summary and your situation.' });

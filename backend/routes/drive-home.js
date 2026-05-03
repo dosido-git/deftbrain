@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
 // SYSTEM PROMPT
@@ -27,7 +28,7 @@ FORMAT: Respond in valid JSON matching the schema exactly. No markdown fences, n
 // ROUTE
 // ════════════════════════════════════════════════════════════
 
-router.post('/drive-home', async (req, res) => {
+router.post('/drive-home', rateLimit(), async (req, res) => {
   try {
     const { action } = req.body;
 

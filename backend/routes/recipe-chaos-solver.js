@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
 // SHARED
@@ -20,7 +21,7 @@ function parseBase64Image(dataUrl) {
 // ════════════════════════════════════════════════════════════
 // POST /recipe-chaos-solver — Main rescue endpoint
 // ════════════════════════════════════════════════════════════
-router.post('/recipe-chaos-solver', async (req, res) => {
+router.post('/recipe-chaos-solver', rateLimit(), async (req, res) => {
   try {
     const {
       recipeContext,
@@ -182,7 +183,7 @@ Provide 1-3 solutions. Be HONEST if dish can't be saved. success_probability mus
 // ════════════════════════════════════════════════════════════
 // POST /recipe-chaos-solver/swap — Quick substitution lookup
 // ════════════════════════════════════════════════════════════
-router.post('/recipe-chaos-solver/swap', async (req, res) => {
+router.post('/recipe-chaos-solver/swap', rateLimit(), async (req, res) => {
   try {
     const { ingredient, recipeContext, dietaryRestrictions, userLanguage } = req.body;
 
@@ -244,7 +245,7 @@ List 3-5 swaps ranked from best to worst. Be specific about ratios.`;
 // ════════════════════════════════════════════════════════════
 // POST /recipe-chaos-solver/multi-swap — Multiple ingredient swap
 // ════════════════════════════════════════════════════════════
-router.post('/recipe-chaos-solver/multi-swap', async (req, res) => {
+router.post('/recipe-chaos-solver/multi-swap', rateLimit(), async (req, res) => {
   try {
     const { ingredients, recipeContext, dietaryRestrictions, userLanguage } = req.body;
 
@@ -311,7 +312,7 @@ Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /recipe-chaos-solver/scale — Recipe scaling with science
 // ════════════════════════════════════════════════════════════
-router.post('/recipe-chaos-solver/scale', async (req, res) => {
+router.post('/recipe-chaos-solver/scale', rateLimit(), async (req, res) => {
   try {
     const { recipeText, originalServings, targetServings, userLanguage } = req.body;
 
@@ -378,7 +379,7 @@ Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /recipe-chaos-solver/preflight — Pre-cook readiness check
 // ════════════════════════════════════════════════════════════
-router.post('/recipe-chaos-solver/preflight', async (req, res) => {
+router.post('/recipe-chaos-solver/preflight', rateLimit(), async (req, res) => {
   try {
     const { recipeText, availableIngredients, equipment, skillLevel, savedSwaps, userLanguage } = req.body;
 
@@ -448,7 +449,7 @@ Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /recipe-chaos-solver/flavor-fix — Upgrade bland food
 // ════════════════════════════════════════════════════════════
-router.post('/recipe-chaos-solver/flavor-fix', async (req, res) => {
+router.post('/recipe-chaos-solver/flavor-fix', rateLimit(), async (req, res) => {
   try {
     const { dish, whatsWrong, availableIngredients, dietaryRestrictions, userLanguage } = req.body;
 
@@ -510,7 +511,7 @@ Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /recipe-chaos-solver/teach — Turn a rescue into a lesson
 // ════════════════════════════════════════════════════════════
-router.post('/recipe-chaos-solver/teach', async (req, res) => {
+router.post('/recipe-chaos-solver/teach', rateLimit(), async (req, res) => {
   try {
     const { rescueContext, rescueType, userLanguage } = req.body;
 

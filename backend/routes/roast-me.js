@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 const PERSONALITY = `You are a professional comedy roast writer — sharp, observant, and genuinely funny. You find the SPECIFIC funny thing about someone's content, not generic insults. Your roasts land because they're true, not because they're mean. Think Comedy Central Roast meets a friend who knows you too well.
 
@@ -14,7 +15,7 @@ RULES:
 // ════════════════════════════════════════════════════════════
 // POST /roast-me — Generate personalized roast
 // ════════════════════════════════════════════════════════════
-router.post('/roast-me', async (req, res) => {
+router.post('/roast-me', rateLimit(), async (req, res) => {
   try {
     const { content, contentType, heatLevel, userLanguage } = req.body;
 

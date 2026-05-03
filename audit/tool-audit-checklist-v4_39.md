@@ -1,3 +1,4 @@
+<!-- v1.3 · 2026-05-02 · session 2026-05-02 backlog burndown: S7.4 now sanctions `callClaudeWithRetry` as an acceptable alternative to raw `anthropic.messages.create` (Bucket 3 design call closure). Both patterns equally compliant for production routes; choice based on retry-semantics needs. NameAudit's 6 routes now compliant under the new rule. -->
 <!-- v1.2 · 2026-04-27 · v4.39: PF-13 strictened (no ternary), PF-14 hook ordering audit-enforced, PF-17 Try Example audit-enforced, PF-18 hygiene checks added, TOOLS registration check added, CONV slider appearance-none check added, S1.1k dead-c-key check added, ESLint integration default-on. -->
 # Tool Audit Checklist v4.39
 ### DeftBrain — Pre-Ship Quality & Consistency Standard
@@ -1139,6 +1140,21 @@ Every route that uses `req.body` fields in a prompt template must guard against 
 ---
 
 ### S7.4 · API Call Pattern
+
+> ✅ **TWO ACCEPTABLE PATTERNS — `anthropic.messages.create` and `callClaudeWithRetry`**
+>
+> Both call shapes are sanctioned for production routes. They differ in retry semantics, not in correctness, and the choice is per-route based on whether transient-failure resilience matters.
+>
+> | Pattern | Use when | Trade-off |
+> |---------|----------|-----------|
+> | `await anthropic.messages.create({ ... })` | The route is a fast single-shot call where a transient API failure surfacing as a 500 is acceptable; or you need behavior the wrapper doesn't expose | Simpler call site; failures bubble up directly |
+> | `await callClaudeWithRetry({ ... })` | Production routes where transient API failures should be retried automatically before surfacing to the user — generally preferred for user-facing endpoints under load | Adds retry latency on transient failures; opaque to per-call telemetry unless the wrapper logs |
+>
+> **The wrapper signature mirrors `messages.create` and returns the same response shape**, so downstream code (`message.content.find(b => b.type === 'text')?.text`, `JSON.parse(cleanJsonResponse(text))`, etc.) is identical. Both patterns must satisfy every other S7.4 check below — model string, `cleanJsonResponse`, `withLanguage`, `max_tokens`.
+>
+> **Mixing within a single route file is allowed but discouraged.** A file that uses both patterns across different routes should have a comment explaining why (e.g., one route is intentionally fail-fast for a specific reason).
+>
+> *Sanctioned Session 2026-05-02 (Bucket 3 design call). NameAudit's 6 routes use `callClaudeWithRetry` and are now compliant under this rule. Reference case: `name-audit.js`.*
 
 - [ ] 🔍 **Model string is `claude-sonnet-4-20250514` on all routes**
   ```bash

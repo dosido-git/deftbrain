@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 // ── Robust JSON parser ──
 function safeParseJSON(text) {
@@ -19,7 +20,7 @@ function safeParseJSON(text) {
 // MAIN ANALYSIS ENDPOINT
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/lease-trap-detector', async (req, res) => {
+router.post('/lease-trap-detector', rateLimit(), async (req, res) => {
   try {
     const { leaseText, pdfBase64, location, leaseType, concerns } = req.body;
 
@@ -269,7 +270,7 @@ CRITICAL RULES:
 // FOLLOW-UP Q&A — ask about a specific clause or finding
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/lease-trap-detector/followup', async (req, res) => {
+router.post('/lease-trap-detector/followup', rateLimit(), async (req, res) => {
   try {
     const { question, analysisContext, location, leaseType, userLanguage } = req.body;
 
@@ -347,7 +348,7 @@ Return ONLY valid JSON.`, userLanguage);
 // COMPARE — side-by-side lease comparison
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/lease-trap-detector/compare', async (req, res) => {
+router.post('/lease-trap-detector/compare', rateLimit(), async (req, res) => {
   try {
     const { leaseA, leaseB, userLanguage } = req.body;
 
@@ -433,7 +434,7 @@ Return ONLY valid JSON.`, userLanguage);
 // DRAFT EMAIL — ready-to-send negotiation email
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/lease-trap-detector/draft-email', async (req, res) => {
+router.post('/lease-trap-detector/draft-email', rateLimit(), async (req, res) => {
   try {
     const { redFlags, yellowFlags, unenforceableClauses, location, landlordName, tenantName, userLanguage } = req.body;
 
@@ -519,7 +520,7 @@ Return ONLY valid JSON.`, userLanguage);
 // AMENDMENT — generate a formal lease addendum
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/lease-trap-detector/amendment', async (req, res) => {
+router.post('/lease-trap-detector/amendment', rateLimit(), async (req, res) => {
   try {
     const { clausesToAmend, location, landlordName, tenantName, propertyAddress, userLanguage } = req.body;
 
@@ -587,7 +588,7 @@ CRITICAL: Return ONLY valid JSON. Use \\n for line breaks in the addendum text.`
 // CHECKLIST — personalized move-in/move-out checklist
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/lease-trap-detector/checklist', async (req, res) => {
+router.post('/lease-trap-detector/checklist', rateLimit(), async (req, res) => {
   try {
     const { analysisContext, location, leaseType, checklistType, userLanguage } = req.body;
 
@@ -690,7 +691,7 @@ Return ONLY valid JSON.`, userLanguage);
 // RENEWAL TRAP DETECTOR — analyze renewal/termination clauses
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/lease-trap-detector/renewal-traps', async (req, res) => {
+router.post('/lease-trap-detector/renewal-traps', rateLimit(), async (req, res) => {
   try {
     const { analysisContext, location, leaseType, leaseText, userLanguage } = req.body;
 
@@ -797,7 +798,7 @@ Return ONLY valid JSON.`, userLanguage);
 // POST /lease-trap-detector/missing — FinePointFinder
 // Identifies protections ABSENT from a contract
 // ════════════════════════════════════════════════════════════
-router.post('/lease-trap-detector/missing', async (req, res) => {
+router.post('/lease-trap-detector/missing', rateLimit(), async (req, res) => {
   try {
     const { contractText, contractType, yourRole, concerns, location, userLanguage } = req.body;
     if (!contractText?.trim()) return res.status(400).json({ error: 'Paste the contract text to analyze.' });

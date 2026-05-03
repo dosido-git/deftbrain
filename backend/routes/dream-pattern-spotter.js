@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
-router.post('/dream-pattern-spotter-single', async (req, res) => {
+router.post('/dream-pattern-spotter-single', rateLimit(), async (req, res) => {
   try {
     const { 
       description, 
@@ -263,7 +264,7 @@ Return ONLY the JSON object.`;
   }
 });
 
-router.post('/dream-pattern-spotter-pattern', async (req, res) => {
+router.post('/dream-pattern-spotter-pattern', rateLimit(), async (req, res) => {
   try {
     const { dreams } = req.body;
 

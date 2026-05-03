@@ -1,13 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════════════
 // WAITING MODE LIBERATOR — v4 (6 routes)
 // v3: multi-event, energy-aware, one-thing, reframes
 // v4: +start-with-me (guided launch), +debrief
 // ═══════════════════════════════════════════════════
-router.post('/waiting-mode-liberator', async (req, res) => {
+router.post('/waiting-mode-liberator', rateLimit(), async (req, res) => {
   const { action } = req.body;
 
   try {

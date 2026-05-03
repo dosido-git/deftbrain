@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════════════
 // DOPAMINE MENU BUILDER — v6 (18 routes)
@@ -13,7 +14,7 @@ const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 //     +radar-analyze, +disruption (RoutineRuptureManager)
 // ═══════════════════════════════════════════════════
 
-router.post('/pep', async (req, res) => {
+router.post('/pep', rateLimit(), async (req, res) => {
   const { action } = req.body;
 
   try {

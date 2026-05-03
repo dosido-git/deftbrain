@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 const BODY_AREAS = {
   'stiff-neck': 'Stiff/tight neck and shoulders',
@@ -31,7 +32,7 @@ const CONTEXTS = {
 // ═══════════════════════════════════════════════════
 // ROUTE 1: RIGHT NOW — Energy + context-aware workout
 // ═══════════════════════════════════════════════════
-router.post('/lazy-workout-adapter', async (req, res) => {
+router.post('/lazy-workout-adapter', rateLimit(), async (req, res) => {
   try {
     const { energy, bodyAreas, timeMinutes, limitations, setting, completionCount, preferences, contexts, userLanguage } = req.body;
     if (!energy && energy !== 0) return res.status(400).json({ error: 'How\'s your energy right now?' });
@@ -91,7 +92,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 2: MICRO — 2-minute floor
 // ═══════════════════════════════════════════════════
-router.post('/lazy-workout-adapter-micro', async (req, res) => {
+router.post('/lazy-workout-adapter-micro', rateLimit(), async (req, res) => {
   try {
     const { bodyAreas, position, userLanguage } = req.body;
     const bodyContext = (bodyAreas || []).map(b => BODY_AREAS[b] || b).join(', ');
@@ -124,7 +125,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 3: WEEK — Weekly movement menu
 // ═══════════════════════════════════════════════════
-router.post('/lazy-workout-adapter-week', async (req, res) => {
+router.post('/lazy-workout-adapter-week', rateLimit(), async (req, res) => {
   try {
     const { typicalEnergy, limitations, preferences, completionCount, userLanguage } = req.body;
     const progressionLevel = Math.min(Math.floor((completionCount || 0) / 10), 5);
@@ -159,7 +160,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 4: ADAPT — Easier/harder mid-workout
 // ═══════════════════════════════════════════════════
-router.post('/lazy-workout-adapter-adapt', async (req, res) => {
+router.post('/lazy-workout-adapter-adapt', rateLimit(), async (req, res) => {
   try {
     const { exercise, direction, context, userLanguage } = req.body;
     if (!exercise?.trim()) return res.status(400).json({ error: 'Which exercise?' });
@@ -181,7 +182,7 @@ Return ONLY valid JSON: { "adapted": { "name": "n", "how": "instructions", "chan
 // ═══════════════════════════════════════════════════
 // ROUTE 5: SWAP — Replace exercise
 // ═══════════════════════════════════════════════════
-router.post('/lazy-workout-adapter-swap', async (req, res) => {
+router.post('/lazy-workout-adapter-swap', rateLimit(), async (req, res) => {
   try {
     const { exercise, reason, bodyArea, energy, userLanguage } = req.body;
     if (!exercise?.trim()) return res.status(400).json({ error: 'Which exercise?' });
@@ -203,7 +204,7 @@ Return ONLY valid JSON: { "replacement": { "name": "n", "duration": "t", "how": 
 // ═══════════════════════════════════════════════════
 // ROUTE 6: BODY — Targeted relief
 // ═══════════════════════════════════════════════════
-router.post('/lazy-workout-adapter-body', async (req, res) => {
+router.post('/lazy-workout-adapter-body', rateLimit(), async (req, res) => {
   try {
     const { bodyArea, intensity, timeMinutes, userLanguage } = req.body;
     if (!bodyArea?.trim()) return res.status(400).json({ error: 'What needs attention?' });
@@ -229,7 +230,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 7: COMPLETE — Log completion
 // ═══════════════════════════════════════════════════
-router.post('/lazy-workout-adapter-complete', async (req, res) => {
+router.post('/lazy-workout-adapter-complete', rateLimit(), async (req, res) => {
   try {
     const { completedExercises, totalExercises, energyBefore, energyAfter, duration, streak, totalSessions, sessionType, userLanguage } = req.body;
     const pct = totalExercises ? Math.round((completedExercises / totalExercises) * 100) : 100;
@@ -251,7 +252,7 @@ Return ONLY valid JSON: { "message": "celebration", "energy_note": "or null", "m
 // ═══════════════════════════════════════════════════
 // ROUTE 8: INSIGHTS — Pattern analysis
 // ═══════════════════════════════════════════════════
-router.post('/lazy-workout-adapter-insights', async (req, res) => {
+router.post('/lazy-workout-adapter-insights', rateLimit(), async (req, res) => {
   try {
     const { history, userLanguage } = req.body;
     if (!history?.length || history.length < 5) return res.status(400).json({ error: 'Need 5+ sessions.' });
@@ -280,7 +281,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 9: STACK — Environment stacking
 // ═══════════════════════════════════════════════════
-router.post('/lazy-workout-adapter-stack', async (req, res) => {
+router.post('/lazy-workout-adapter-stack', rateLimit(), async (req, res) => {
   try {
     const { activity, duration, bodyAreas, limitations, userLanguage } = req.body;
     if (!activity?.trim()) return res.status(400).json({ error: 'What are you about to do?' });
@@ -314,7 +315,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 10: SLEEP — Pre-bed wind-down
 // ═══════════════════════════════════════════════════
-router.post('/lazy-workout-adapter-sleep', async (req, res) => {
+router.post('/lazy-workout-adapter-sleep', rateLimit(), async (req, res) => {
   try {
     const { timeMinutes, bodyAreas, stress_level, userLanguage } = req.body;
     const bodyContext = (bodyAreas || []).map(b => BODY_AREAS[b] || b).join(', ');
@@ -347,7 +348,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 11: RECOVERY — Post-event recovery
 // ═══════════════════════════════════════════════════
-router.post('/lazy-workout-adapter-recovery', async (req, res) => {
+router.post('/lazy-workout-adapter-recovery', rateLimit(), async (req, res) => {
   try {
     const { event, intensity, timeMinutes, userLanguage } = req.body;
     if (!event?.trim()) return res.status(400).json({ error: 'What do you need to recover from?' });
@@ -381,7 +382,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 12: PROVE — Evidence dashboard
 // ═══════════════════════════════════════════════════
-router.post('/lazy-workout-adapter-prove', async (req, res) => {
+router.post('/lazy-workout-adapter-prove', rateLimit(), async (req, res) => {
   try {
     const { history, notTodayLog, userLanguage } = req.body;
     if (!history?.length || history.length < 7) return res.status(400).json({ error: 'Need 7+ sessions to prove it.' });
@@ -416,7 +417,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 13: NUDGE — Context-aware suggestion
 // ═══════════════════════════════════════════════════
-router.post('/lazy-workout-adapter-nudge', async (req, res) => {
+router.post('/lazy-workout-adapter-nudge', rateLimit(), async (req, res) => {
   try {
     const { history, streak, lastSessionDate, currentDay, currentHour, userLanguage } = req.body;
     const recent = (history || []).slice(-10).map(h => ({ day: h.day, date: h.date, type: h.sessionType, duration: h.duration, name: h.workoutName }));

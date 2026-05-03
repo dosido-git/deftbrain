@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
 // SHARED
@@ -17,7 +18,7 @@ YOUR SKILL:
 // ════════════════════════════════════════════════════════════
 // POST /recall — Distill: transcript → key bullet points
 // ════════════════════════════════════════════════════════════
-router.post('/recall', async (req, res) => {
+router.post('/recall', rateLimit(), async (req, res) => {
   try {
     const { transcript, subject, lectureTitle, bulletCount, priority, userLanguage } = req.body;
 
@@ -106,7 +107,7 @@ Extract exactly ${count} key points, ranked by importance. Return ONLY valid JSO
 // ════════════════════════════════════════════════════════════
 // POST /recall/study-guide — Structured study guide
 // ════════════════════════════════════════════════════════════
-router.post('/recall/study-guide', async (req, res) => {
+router.post('/recall/study-guide', rateLimit(), async (req, res) => {
   try {
     const { transcript, subject, lectureTitle, examFormat, userLanguage } = req.body;
 
@@ -198,7 +199,7 @@ Create a study guide. Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /recall/test-prep — Generate practice exam questions
 // ════════════════════════════════════════════════════════════
-router.post('/recall/test-prep', async (req, res) => {
+router.post('/recall/test-prep', rateLimit(), async (req, res) => {
   try {
     const { transcript, subject, lectureTitle, questionTypes, difficulty, questionCount, userLanguage } = req.body;
 
@@ -274,7 +275,7 @@ Generate ${count} practice questions. Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /recall/connect — Compare 2+ lectures, find themes
 // ════════════════════════════════════════════════════════════
-router.post('/recall/connect', async (req, res) => {
+router.post('/recall/connect', rateLimit(), async (req, res) => {
   try {
     const { lectures, subject, userLanguage } = req.body;
 

@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { rateLimit } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════════════
 // ROUTE 1: PRE-GAME — Comprehensive event prep
 // ═══════════════════════════════════════════════════
-router.post('/room-reader', async (req, res) => {
+router.post('/room-reader', rateLimit(), async (req, res) => {
   try {
     const { eventType, eventDetails, people, concerns, topicsToAvoid, comfort, playbook, userLanguage } = req.body;
     if (!eventType?.trim() && !eventDetails?.trim()) return res.status(400).json({ error: 'Describe the event or social situation you\'re prepping for.' });
@@ -90,7 +91,7 @@ Generate 6-8 conversation starters with a mix of energies. Generate 2-4 people i
 // ═══════════════════════════════════════════════════
 // ROUTE 2: QUICK READ — Instant, minimal input
 // ═══════════════════════════════════════════════════
-router.post('/room-reader-quick', async (req, res) => {
+router.post('/room-reader-quick', rateLimit(), async (req, res) => {
   try {
     const { scenario, relationship, playbook, exclude, userLanguage } = req.body;
     if (!scenario?.trim()) return res.status(400).json({ error: 'Pick a scenario.' });
@@ -131,7 +132,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 3: SIGNAL DECODER — What did they mean?
 // ═══════════════════════════════════════════════════
-router.post('/room-reader-decode', async (req, res) => {
+router.post('/room-reader-decode', rateLimit(), async (req, res) => {
   try {
     const { theyDid, context, relationship, yourConcern, userLanguage } = req.body;
     if (!theyDid?.trim()) return res.status(400).json({ error: 'Describe what they said or did.' });
@@ -177,7 +178,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 4: DEBRIEF — Post-event analysis
 // ═══════════════════════════════════════════════════
-router.post('/room-reader-debrief', async (req, res) => {
+router.post('/room-reader-debrief', rateLimit(), async (req, res) => {
   try {
     const { eventType, whatHappened, whatWentWell, whatFeltAwkward, overallFeeling, playbook, userLanguage } = req.body;
     if (!whatHappened?.trim() && !whatWentWell?.trim() && !whatFeltAwkward?.trim()) return res.status(400).json({ error: 'Tell us something about how it went.' });
@@ -232,7 +233,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 5: FOLLOW-UP — What to text after
 // ═══════════════════════════════════════════════════
-router.post('/room-reader-followup', async (req, res) => {
+router.post('/room-reader-followup', rateLimit(), async (req, res) => {
   try {
     const { context, who, whatHappened, goal, playbook, userLanguage } = req.body;
     if (!who?.trim() && !context?.trim()) return res.status(400).json({ error: 'Who are you following up with?' });
@@ -278,7 +279,7 @@ Generate 3 message options with different styles/risk levels.`, userLanguage);
 // ═══════════════════════════════════════════════════
 // ROUTE 6: PERSON PREP — Deep prep for one specific person
 // ═══════════════════════════════════════════════════
-router.post('/room-reader-person', async (req, res) => {
+router.post('/room-reader-person', rateLimit(), async (req, res) => {
   try {
     const { personName, relationship, whatYouKnow, context, yourConcern, playbook, userLanguage } = req.body;
     if (!whatYouKnow?.trim() && !relationship?.trim()) return res.status(400).json({ error: 'Tell us something about this person.' });
@@ -349,7 +350,7 @@ Generate 4-5 openers and 3-4 working topics.`, userLanguage);
 // ═══════════════════════════════════════════════════
 // ROUTE 7: GROUP DYNAMICS — Navigating group conversations
 // ═══════════════════════════════════════════════════
-router.post('/room-reader-group', async (req, res) => {
+router.post('/room-reader-group', rateLimit(), async (req, res) => {
   try {
     const { situation, groupSize, yourRole, challenge, playbook, userLanguage } = req.body;
     if (!situation?.trim() && !challenge?.trim()) return res.status(400).json({ error: 'Describe the group situation.' });
@@ -425,7 +426,7 @@ Generate 3-4 entry techniques, 3-4 contribution methods, 2-3 traps, and 2-3 powe
 // ═══════════════════════════════════════════════════
 // ROUTE 8: CONVERSATION RECOVERY — I just said something weird
 // ═══════════════════════════════════════════════════
-router.post('/room-reader-recover', async (req, res) => {
+router.post('/room-reader-recover', rateLimit(), async (req, res) => {
   try {
     const { whatYouSaid, context, relationship, howBad, userLanguage } = req.body;
     if (!whatYouSaid?.trim()) return res.status(400).json({ error: 'What did you say?' });
@@ -473,7 +474,7 @@ Generate 3 recovery options with different strategies.`, userLanguage);
 // ═══════════════════════════════════════════════════
 // ROUTE 9: CULTURE DECODER — Cross-cultural social norms
 // ═══════════════════════════════════════════════════
-router.post('/room-reader-culture', async (req, res) => {
+router.post('/room-reader-culture', rateLimit(), async (req, res) => {
   try {
     const { culture, situation, myBackground, specificConcern, userLanguage } = req.body;
     if (!culture?.trim() && !situation?.trim()) return res.status(400).json({ error: 'Describe the cultural context.' });
@@ -538,7 +539,7 @@ Generate 4-5 'do this' items and 3-4 'avoid this' items.`, userLanguage);
 // ═══════════════════════════════════════════════════
 // ROUTE 10: PERSON APPROACH — Generate strategy from tracked history
 // ═══════════════════════════════════════════════════
-router.post('/room-reader-person-refresh', async (req, res) => {
+router.post('/room-reader-person-refresh', rateLimit(), async (req, res) => {
   try {
     const { personName, relationship, notes, nextContext, playbook, userLanguage } = req.body;
     if (!notes?.length) return res.status(400).json({ error: 'Need at least one interaction note for this person.' });
@@ -590,7 +591,7 @@ Generate 3-4 fresh openers.`, userLanguage);
 // ═══════════════════════════════════════════════════
 // ROUTE 11: ENERGY MATCH — Bridge the energy gap
 // ═══════════════════════════════════════════════════
-router.post('/room-reader-energy', async (req, res) => {
+router.post('/room-reader-energy', rateLimit(), async (req, res) => {
   try {
     const { myEnergy, roomEnergy, context, userLanguage } = req.body;
     if (!myEnergy?.trim() || !roomEnergy?.trim()) return res.status(400).json({ error: 'Describe your energy and the room\'s energy.' });
@@ -631,7 +632,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 12: SMALL TALK LADDER — Escalate depth naturally
 // ═══════════════════════════════════════════════════
-router.post('/room-reader-ladder', async (req, res) => {
+router.post('/room-reader-ladder', rateLimit(), async (req, res) => {
   try {
     const { relationship, context, currentDepth, userLanguage } = req.body;
 
@@ -682,7 +683,7 @@ Generate a 5-level ladder from Surface to Genuine Connection.`, userLanguage);
 // ═══════════════════════════════════════════════════
 // ROUTE 13: SOCIAL AUTOPSY — Deep forensic analysis
 // ═══════════════════════════════════════════════════
-router.post('/room-reader-autopsy', async (req, res) => {
+router.post('/room-reader-autopsy', rateLimit(), async (req, res) => {
   try {
     const { whatHappened, timeline, howYouFelt, whatYouThinkWentWrong, playbook, userLanguage } = req.body;
     if (!whatHappened?.trim()) return res.status(400).json({ error: 'Describe what happened.' });
