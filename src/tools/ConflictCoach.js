@@ -27,15 +27,7 @@ const ConflictCoach = ({ tool }) => {
     success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
     warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
-    infoBox:       isDark ? 'bg-sky-900/20 border-sky-700 text-sky-200' : 'bg-sky-50 border-sky-200 text-sky-800',
-    successBox:    isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-300',
-    successTxt:    isDark ? 'text-emerald-300' : 'text-emerald-800',
-    warningBox:    isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
-    warningTxt:    isDark ? 'text-amber-300' : 'text-amber-800',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
-    pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
     required:      'text-red-500',
-    badgeNeutral:  isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-gray-100 text-gray-600',
     // ─── Tool-specific semantic colors ───
     toast:             isDark ? 'bg-zinc-700 text-zinc-100 border border-zinc-600' : 'bg-white text-gray-900 border border-gray-200',
     manipulation:      isDark ? 'bg-red-950/30 border-red-800' : 'bg-red-50 border-red-300',
@@ -58,7 +50,6 @@ const ConflictCoach = ({ tool }) => {
     escalationScript:  isDark ? 'bg-amber-900/10' : 'bg-amber-50',
     followupMe:        isDark ? 'bg-zinc-700/50' : 'bg-gray-100',
     confirmModal:      isDark ? 'bg-zinc-700/50' : 'bg-gray-100',
-    emotionRequired:   isDark ? 'border-amber-600' : 'border-amber-400',
     goalActive:        isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
     goalInactive:      isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
     threadContainer:   isDark ? 'bg-zinc-800/50 border-zinc-700' : 'bg-gray-50 border-gray-200',
@@ -549,7 +540,7 @@ const ConflictCoach = ({ tool }) => {
 
           <div className="flex gap-3">
             <button onClick={handleAnalyze} disabled={loading}
-              className={`flex-1 ${c.btnPrimary} disabled:opacity-50 font-medium py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+              className={`flex-1 ${c.btnPrimary} disabled:opacity-40 font-medium py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
               {loading
                 ? <><span className="animate-spin inline-block">{tool?.icon ?? '📱'}</span> Analyzing...</>
                 : <><span>{tool?.icon ?? '📱'}</span> Analyze</>}
@@ -672,7 +663,7 @@ const ConflictCoach = ({ tool }) => {
                         {s.tone && <span className={`text-xs px-2 py-0.5 rounded ${c.toneBadge}`}>Tone: {s.tone}</span>}
                       </div>
                       <button onClick={() => handleCopyResponse(s.response_text)} disabled={delayActive}
-                        className={`${c.btnSecondary} px-3 py-1.5 rounded text-sm disabled:opacity-50`}>
+                        className={`${c.btnSecondary} px-3 py-1.5 rounded text-sm disabled:opacity-40`}>
                         {delayActive ? '🔒' : '📋'} Copy
                       </button>
                     </div>
@@ -698,7 +689,7 @@ const ConflictCoach = ({ tool }) => {
                               <span className="text-xs">💪 Firm</span>
                             </div>
                             <button onClick={handleAdjustTone} disabled={toneLoading}
-                              className={`${c.btnPrimary} px-4 py-2 rounded text-sm w-full disabled:opacity-50`}>
+                              className={`${c.btnPrimary} px-4 py-2 rounded text-sm w-full disabled:opacity-40`}>
                               {toneLoading ? <span className="animate-spin inline-block">{tool?.icon ?? '📱'}</span> : `Regenerate at ${toneLevel}% firmness`}
                             </button>
                             {adjustedResponse && (
@@ -810,7 +801,7 @@ const ConflictCoach = ({ tool }) => {
                 className={`flex-1 p-3 border rounded-lg ${c.input}`}
                 onKeyDown={e => { if (e.key === 'Enter') handleFollowup(); }} />
               <button onClick={handleFollowup} disabled={followupLoading || !followupQuestion.trim()}
-                className={`${c.btnPrimary} px-4 py-2 rounded-lg disabled:opacity-50`}>
+                className={`${c.btnPrimary} px-4 py-2 rounded-lg disabled:opacity-40`}>
                 {followupLoading ? <span className="animate-spin inline-block">{tool?.icon ?? '📱'}</span> : '➤'}
               </button>
             </div>

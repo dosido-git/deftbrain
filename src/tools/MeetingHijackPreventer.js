@@ -151,7 +151,7 @@ function FacilitatorMode({ results, participants, c, isDark, onEnd, hourlyRate }
           <div className={`h-full rounded-full transition-all ${overTime ? 'bg-red-500' : progress > 0.8 ? 'bg-amber-400' : 'bg-emerald-400'}`} style={{ width: `${Math.min(progress * 100, 100)}%` }} />
         </div>
         <div className="flex items-center justify-center gap-3 mt-4">
-          <button onClick={prev} disabled={currentIdx === 0} className="text-white/60 hover:text-white disabled:opacity-30 text-lg">⏮️</button>
+          <button onClick={prev} disabled={currentIdx === 0} className="text-white/60 hover:text-white disabled:opacity-40 text-lg">⏮️</button>
           <button onClick={() => setPaused(!paused)} className="text-white text-2xl">{paused ? '▶️' : '⏸️'}</button>
           <button onClick={next} className="text-white text-lg">{currentIdx < items.length - 1 ? '⏭️' : '🏁'}</button>
         </div>
@@ -246,17 +246,10 @@ const MeetingHijackPreventer = ({ tool }) => {
                           : 'bg-red-50 border-red-200 text-red-800',
     infoBox:       isDark ? 'bg-sky-900/20 border-sky-700 text-sky-200'
                           : 'bg-sky-50 border-sky-200 text-sky-800',
-    successBox:    isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-300',
-    successTxt:    isDark ? 'text-emerald-300' : 'text-emerald-800',
-    warningBox:    isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
-    warningTxt:    isDark ? 'text-amber-300' : 'text-amber-800',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200'
                           : 'border-cyan-600 bg-cyan-100 text-cyan-900',
-    pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500'
                           : 'border-gray-300 text-gray-500 hover:border-gray-400',
     required:      isDark ? 'text-amber-400' : 'text-amber-500',
     // Tool-specific semantic keys
-    deleteHover:   isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-gray-400 hover:text-gray-600',
     badge:         isDark ? 'bg-sky-900/20 border-sky-700 text-sky-200' : 'bg-sky-50 border-sky-200 text-sky-800',
     pillGray:      isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-slate-100 text-slate-600',
     pillSky:       isDark ? 'bg-sky-900/30 text-sky-300' : 'bg-sky-100 text-sky-700',

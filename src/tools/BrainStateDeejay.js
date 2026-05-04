@@ -181,7 +181,6 @@ const BrainStateDeejay = ({ tool }) => {
     // ── Semantic tokens ──
     required:  isDark ? 'text-amber-400' : 'text-amber-500',
     labelText: isDark ? 'text-zinc-200' : 'text-gray-700',
-    youtube:   isDark ? 'text-red-400' : 'text-red-600',
     // ── Raw CSS values for inline styles ──
     breathRing:    isDark ? 'rgb(8,145,178)' : 'rgb(14,116,144)',
     breathGlow:    isDark ? 'rgb(8 145 178 / 0.3)' : 'rgb(14 116 144 / 0.2)',

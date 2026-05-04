@@ -119,17 +119,11 @@ const VirtualBodyDouble = ({ tool }) => {
     tag:            isDark ? 'bg-zinc-700 text-zinc-300 hover:bg-zinc-600 border-zinc-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200 border-gray-200',
     tagActive:      isDark ? 'bg-cyan-900/40 text-cyan-200 border-cyan-600' : 'bg-cyan-100 text-cyan-800 border-cyan-400',
     cardHover:      isDark ? 'hover:bg-zinc-700' : 'hover:bg-gray-50',
-    accentHover:    isDark ? 'hover:bg-cyan-700' : 'hover:bg-cyan-700',
     accentLight:    isDark ? 'bg-cyan-900/25 border-cyan-700' : 'bg-cyan-50 border-cyan-200',
     accentLightText: isDark ? 'text-cyan-300' : 'text-cyan-800',
     errorText:      isDark ? 'text-red-300' : 'text-red-700',
-    textGhostDel:   isDark ? 'text-zinc-500 hover:text-red-400' : 'text-gray-400 hover:text-red-500',
     bubbleBg:       isDark ? 'bg-zinc-700' : 'bg-gray-100',
     bubbleText:     isDark ? 'text-zinc-100' : 'text-gray-800',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
-    pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
-    badge:         isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-100 text-cyan-800',
-    infoBox:       isDark ? 'bg-cyan-900/20 border-cyan-700 text-cyan-200' : 'bg-cyan-50 border-cyan-200 text-cyan-800',
   };
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'

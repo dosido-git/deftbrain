@@ -428,7 +428,7 @@ const LeaseTrapDetector = ({ tool }) => {
               helps you get it back when you move out.
             </p>
 
-            <button onClick={analyzeLease} disabled={loading} className={`w-full py-4 sm:py-5 rounded-xl font-black text-lg shadow-lg disabled:opacity-50 transition-all hover:scale-[1.02] active:scale-[0.98] ${c.btnPrimary}`}>
+            <button onClick={analyzeLease} disabled={loading} className={`w-full py-4 sm:py-5 rounded-xl font-black text-lg shadow-lg disabled:opacity-40 transition-all hover:scale-[1.02] active:scale-[0.98] ${c.btnPrimary}`}>
               {loading ? <><span className="animate-spin inline-block mr-2">{tool?.icon ?? '🏡'}</span> Analyzing...</> : <><span className="mr-2">{tool?.icon ?? '🏡'}</span> Analyze My Lease</>}
             </button>
 
@@ -491,7 +491,7 @@ const LeaseTrapDetector = ({ tool }) => {
                 </div>
                 {error && <div className={`p-3 rounded-xl border ${c.danger}`}><span className="mr-1">⚠️</span> {error}</div>}
                 <button onClick={handleFindMissing} disabled={missingLoading || !missingContractText.trim()}
-                  className={`w-full py-4 rounded-xl font-black text-lg shadow-lg disabled:opacity-50 transition-all ${c.btnPrimary}`}>
+                  className={`w-full py-4 rounded-xl font-black text-lg shadow-lg disabled:opacity-40 transition-all ${c.btnPrimary}`}>
                   {missingLoading ? <><span className="animate-spin inline-block mr-2">{tool?.icon ?? '🏡'}</span>Scanning…</> : <><span className="mr-2">{tool?.icon ?? '🏡'}</span>Find What's Missing</>}
                 </button>
                 <p className={`text-center text-xs ${c.textMuted}`}>⚖️ General guidance, not legal advice. Consult an attorney for specifics.</p>
@@ -1065,7 +1065,7 @@ const LeaseTrapDetector = ({ tool }) => {
                 <div className="space-y-3">
                   <input type="text" value={landlordName} onChange={e => setLandlordName(e.target.value)} placeholder="Landlord name (optional)" className={`w-full px-3 py-2.5 rounded-xl border-2 text-sm ${c.input}`} />
                   <input type="text" value={tenantName} onChange={e => setTenantName(e.target.value)} placeholder="Your name (optional)" className={`w-full px-3 py-2.5 rounded-xl border-2 text-sm ${c.input}`} />
-                  <button onClick={generateEmail} disabled={emailLoading} className={`w-full py-3 rounded-xl font-bold disabled:opacity-50 ${c.btnPrimary}`}>
+                  <button onClick={generateEmail} disabled={emailLoading} className={`w-full py-3 rounded-xl font-bold disabled:opacity-40 ${c.btnPrimary}`}>
                     {emailLoading ? <><span className="animate-spin inline-block mr-2">{tool?.icon ?? '🏡'}</span> Drafting...</> : <><span className="mr-2">{tool?.icon ?? '🏡'}</span> Generate</>}
                   </button>
                 </div>

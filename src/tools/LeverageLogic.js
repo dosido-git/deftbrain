@@ -30,11 +30,42 @@ const RELATIONSHIP = [
   { value: 'critical', label: 'Must preserve', icon: '💎' },
 ];
 
+const EXAMPLE = {
+  situation: "Negotiating my freelance rate with a long-time client. They've been paying $85/hr for 18 months; I've taken on more strategic work and want to move to $120/hr. They mentioned budget tightening last quarter.",
+  leverage: "I know their codebase inside-out, their last contractor disappeared mid-project, and I have two other clients on a waitlist at $115/hr.",
+  desired: "$120/hr going forward, or $110/hr with a guaranteed 6-month retainer at 20 hrs/week minimum.",
+  negotiationType: 'freelance',
+  urgency: 'moderate',
+  relationship: 'moderate',
+};
+
 const LeverageLogic = ({ tool }) => {
   const { isDark } = useTheme();
   const { callToolEndpoint } = useClaudeAPI();
 
-  const [history, setHistory] = usePersistentState('ll-history', []);
+  // ── Theme (PF-2: c block before any useState; linkStyle after c block) ──
+  const c = {
+    card:          isDark ? 'bg-zinc-800' : 'bg-white',
+    cardAlt: isDark ? 'bg-zinc-700/40 border-zinc-600' : 'bg-amber-50/40 border-amber-100',
+    text: isDark ? 'text-zinc-50' : 'text-gray-900',
+    textMuted: isDark ? 'text-zinc-500' : 'text-gray-400',
+    input: isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder:text-zinc-500 focus:border-amber-500 focus:ring-amber-500/20' : 'bg-white border-zinc-300 text-gray-900 placeholder:text-zinc-400 focus:border-amber-500 focus:ring-amber-500/20',
+    btnPrimary: isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnSecondary: isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-zinc-100 hover:bg-zinc-200 text-gray-700',
+    btnSoft: isDark ? 'bg-zinc-700/50 hover:bg-zinc-600/50 text-zinc-300' : 'bg-zinc-50 hover:bg-zinc-100 text-gray-500',
+    border: isDark ? 'border-zinc-700' : 'border-zinc-200',
+    danger: isDark ? 'bg-red-900/20 border-red-800/50 text-red-300' : 'bg-red-50 border-red-200 text-red-700',
+    textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
+    success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
+    warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
+    deleteHover: isDark ? 'text-zinc-500 hover:text-red-400' : 'text-gray-400 hover:text-red-500',
+    required:    isDark ? 'text-amber-400' : 'text-amber-500',
+  };
+  c.textMuteded = c.textMuted;
+
+  const linkStyle = isDark
+    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
+    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
 
   // ── Views ──
   const [view, setView] = useState('form'); // form | results | counter | prep | simulate | email | debrief
@@ -49,7 +80,6 @@ const LeverageLogic = ({ tool }) => {
   const [error, setError] = useState('');
 
   // ── Results ──
-  const [results, setResults] = usePersistentState('leverage-results', null);
   const [loading, setLoading] = useState(false);
   const [expandedSections, setExpandedSections] = useState({});
   const toggle = (key) => setExpandedSections(prev => ({ ...prev, [key]: !prev[key] }));
@@ -92,28 +122,10 @@ const LeverageLogic = ({ tool }) => {
   const [anchorTheir, setAnchorTheir] = useState('');
   const [anchorWalkaway, setAnchorWalkaway] = useState('');
 
-  // ── Theme ──
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
+  // ── Persistent (after all useState — PF-11/PF-14) ──
+  const [history, setHistory] = usePersistentState('ll-history', []);
+  const [results, setResults] = usePersistentState('leverage-results', null);
 
-    const c = {
-    card:          isDark ? 'bg-zinc-800' : 'bg-white',
-    cardAlt: isDark ? 'bg-zinc-700/40 border-zinc-600' : 'bg-amber-50/40 border-amber-100',
-    text: isDark ? 'text-zinc-50' : 'text-gray-900',
-    textMuted: isDark ? 'text-zinc-500' : 'text-gray-400',
-    input: isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder:text-zinc-500 focus:border-amber-500 focus:ring-amber-500/20' : 'bg-white border-zinc-300 text-gray-900 placeholder:text-zinc-400 focus:border-amber-500 focus:ring-amber-500/20',
-    btnPrimary: isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
-    btnSecondary: isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-zinc-100 hover:bg-zinc-200 text-gray-700',
-    btnSoft: isDark ? 'bg-zinc-700/50 hover:bg-zinc-600/50 text-zinc-300' : 'bg-zinc-50 hover:bg-zinc-100 text-gray-500',
-    border: isDark ? 'border-zinc-700' : 'border-zinc-200',
-    danger: isDark ? 'bg-red-900/20 border-red-800/50 text-red-300' : 'bg-red-50 border-red-200 text-red-700',
-    textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
-    success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
-    warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
-    deleteHover: isDark ? 'text-zinc-500 hover:text-red-400' : 'text-gray-400 hover:text-red-500',
-    required:    isDark ? 'text-amber-400' : 'text-amber-500',
-  };
 
   const strengthColor = (s) => { const l = (s || '').toLowerCase(); if (l === 'strong') return isDark ? 'bg-emerald-900/40 text-emerald-300 border-emerald-700' : 'bg-emerald-100 text-emerald-700 border-emerald-300'; if (l === 'medium') return isDark ? 'bg-amber-900/40 text-amber-300 border-amber-700' : 'bg-amber-100 text-amber-700 border-amber-300'; return isDark ? 'bg-red-900/40 text-red-300 border-red-700' : 'bg-red-100 text-red-700 border-red-300'; };
   const dangerColor = (d) => { const l = (d || '').toLowerCase(); if (l === 'safe') return isDark ? 'bg-emerald-900/40 text-emerald-300' : 'bg-emerald-100 text-emerald-700'; if (l === 'caution') return isDark ? 'bg-amber-900/40 text-amber-300' : 'bg-amber-100 text-amber-700'; return isDark ? 'bg-red-900/40 text-red-300' : 'bg-red-100 text-red-700'; };
@@ -157,6 +169,16 @@ const LeverageLogic = ({ tool }) => {
     } catch (err) { setError(err.message || 'Failed to analyze'); }
     finally { setLoading(false); }
   };
+
+  const loadExample = useCallback(() => {
+    setSituation(EXAMPLE.situation);
+    setLeverage(EXAMPLE.leverage);
+    setDesired(EXAMPLE.desired);
+    setNegotiationType(EXAMPLE.negotiationType);
+    setUrgency(EXAMPLE.urgency);
+    setRelationship(EXAMPLE.relationship);
+    setView('form');
+  }, []);
 
   const fetchCounter = async () => {
     if (!theyJustSaid.trim()) return;
@@ -269,7 +291,7 @@ const LeverageLogic = ({ tool }) => {
     return lines.join('\n') + BRAND;
   }, [results, timeline]);
 
-  useRegisterActions(buildFullText(), tool?.title || 'LeverageLogic');
+  useRegisterActions(buildFullText(), tool?.title || 'Leverage Logic');
 
   // ═══════════════════════════════════
   // RENDER
@@ -286,7 +308,7 @@ const LeverageLogic = ({ tool }) => {
           <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-5`}>
             <div className="pb-3 border-b border-zinc-500">
               <h2 className={`text-xl font-bold ${c.text}`}>
-                <span className="mr-2">{tool?.icon ?? '⚖️'}</span>{tool?.title ?? 'LeverageLogic'}
+                <span className="mr-2">{tool?.icon ?? '⚖️'}</span>{tool?.title ?? 'Leverage Logic'}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Win any negotiation with the right strategy'}</p>
             </div>
@@ -332,10 +354,15 @@ const LeverageLogic = ({ tool }) => {
                   </div>
                 </div>
               </div>
-              <button onClick={analyze} disabled={loading} className={`w-full py-3.5 rounded-xl font-bold text-base ${c.btnPrimary} disabled:opacity-50`}>
-                {loading ? <span className="animate-spin inline-block mr-2">{tool?.icon ?? '⚙️'}</span> : <span className="mr-2">{tool?.icon ?? '⚖️'}</span>}
+              <div className="flex gap-2">
+              <button onClick={analyze} disabled={loading} className={`flex-1 py-3.5 rounded-xl font-bold text-base ${c.btnPrimary} disabled:opacity-40`}>
+                {loading ? <span className="animate-spin inline-block mr-2">{tool?.icon ?? '⚖️'}</span> : <span className="mr-2">{tool?.icon ?? '⚖️'}</span>}
                 {loading ? 'Building strategy...' : 'Build My Strategy'}
               </button>
+              <button onClick={loadExample} className={`px-4 py-3.5 rounded-xl text-xs font-bold ${c.btnSecondary}`}>
+                Try example
+              </button>
+              </div>
               {situation.trim() && (
                 <button onClick={() => { setView('prep'); fetchPrepCheck(); }} className={`w-full py-2.5 rounded-xl text-xs font-bold ${c.btnSoft}`}>📋 Not ready yet? Check my prep first</button>
               )}
@@ -619,7 +646,7 @@ const LeverageLogic = ({ tool }) => {
             )}
 
             {/* ── Timeline Tracker ── */}
-            <div className={`${c.card} border-2 rounded-2xl p-5 ${isDark ? 'border-purple-700/50' : 'border-purple-300'}`}>
+            <div className={`${c.card} border-2 rounded-2xl p-5 ${isDark ? 'border-cyan-700/50' : 'border-cyan-300'}`}>
               <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textSecondary}`}>📜 Negotiation Timeline</p>
               <p className={`text-xs ${c.textSecondary} mb-3`}>Log each round. This feeds into your counter-moves, simulations, and email drafts.</p>
               {timeline.length > 0 && (
@@ -641,7 +668,8 @@ const LeverageLogic = ({ tool }) => {
                   <button onClick={() => setTlWho('you')} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${tlWho === 'you' ? (isDark ? 'bg-emerald-900/30 text-emerald-300' : 'bg-emerald-100 text-emerald-700') : c.btnSoft}`}>You said</button>
                   <button onClick={() => setTlWho('them')} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${tlWho === 'them' ? (isDark ? 'bg-red-900/30 text-red-300' : 'bg-red-100 text-red-700') : c.btnSoft}`}>They said</button>
                 </div>
-                <textarea value={tlWhat} onChange={e => setTlWhat(e.target.value)} placeholder="What was said or offered..." rows={2} className={`w-full p-2.5 border-2 rounded-xl text-sm resize-y ${c.input}`} />
+                <label htmlFor="ll-tl-what" className="sr-only">What was said or offered</label>
+                <textarea id="ll-tl-what" value={tlWhat} onChange={e => setTlWhat(e.target.value)} placeholder="What was said or offered..." rows={2} className={`w-full p-2.5 border-2 rounded-xl text-sm resize-y ${c.input}`} />
                 <input type="text" value={tlResult} onChange={e => setTlResult(e.target.value)} placeholder="Result (optional — e.g., 'they countered with 8%')" className={`w-full p-2.5 border-2 rounded-xl text-sm ${c.input}`} />
                 <button onClick={addTimelineEntry} disabled={!tlWhat.trim()} className={`w-full py-2 rounded-xl text-xs font-bold ${c.btnSecondary} disabled:opacity-40`}>+ Log Round</button>
               </div>
@@ -677,9 +705,10 @@ const LeverageLogic = ({ tool }) => {
             <div className={`${c.card} border-2 rounded-2xl p-5 ${isDark ? 'border-amber-700/50' : 'border-amber-300'}`}>
               <p className={`text-lg font-black ${c.text} mb-1`}>💬 Real-Time Counter</p>
               <p className={`text-xs ${c.textSecondary} mb-4`}>What did they just say? I'll help you respond.</p>
-              <textarea value={theyJustSaid} onChange={e => setTheyJustSaid(e.target.value)} placeholder={`"We don't have budget for that" or "That's our final offer" or "We can only do 5%"`} rows={3} className={`w-full p-3 border-2 rounded-xl text-sm resize-y mb-3 focus:outline-none focus:ring-2 ${c.input}`} />
-              <button onClick={fetchCounter} disabled={counterLoading || !theyJustSaid.trim()} className={`w-full py-3 rounded-xl font-bold ${c.btnPrimary} disabled:opacity-50`}>
-                {counterLoading ? <span className="animate-spin inline-block mr-2">{tool?.icon ?? '⚙️'}</span> : <span className="mr-2">{tool?.icon ?? '⚡'}</span>}
+              <label htmlFor="ll-they-just-said" className={`block text-sm font-semibold ${c.textSecondary} mb-1`}>What did they just say? <span className={c.required}>*</span></label>
+              <textarea id="ll-they-just-said" value={theyJustSaid} onChange={e => setTheyJustSaid(e.target.value)} placeholder={`"We don't have budget for that" or "That's our final offer" or "We can only do 5%"`} rows={3} className={`w-full p-3 border-2 rounded-xl text-sm resize-y mb-3 focus:outline-none focus:ring-2 ${c.input}`} />
+              <button onClick={fetchCounter} disabled={counterLoading || !theyJustSaid.trim()} className={`w-full py-3 rounded-xl font-bold ${c.btnPrimary} disabled:opacity-40`}>
+                {counterLoading ? <span className="animate-spin inline-block mr-2">{tool?.icon ?? '⚖️'}</span> : <span className="mr-2">{tool?.icon ?? '⚖️'}</span>}
                 {counterLoading ? 'Thinking...' : 'What should I say?'}
               </button>
             </div>
@@ -742,8 +771,8 @@ const LeverageLogic = ({ tool }) => {
                 <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>Your next move (optional — defaults to your opening)</label>
                 <textarea value={simOpening} onChange={e => setSimOpening(e.target.value)} placeholder={`e.g., "I'm going to ask for 15% and mention the outside offer" or leave blank to use your planned opening`} rows={2} className={`w-full p-3 border-2 rounded-xl text-sm resize-y mb-3 focus:outline-none focus:ring-2 ${c.input}`} />
               </div>
-              <button onClick={fetchSimulation} disabled={simLoading} className={`w-full py-3 rounded-xl font-bold ${c.btnPrimary} disabled:opacity-50`}>
-                {simLoading ? <span className="animate-spin inline-block mr-2">{tool?.icon ?? '⚙️'}</span> : <span className="mr-2">{tool?.icon ?? '🎯'}</span>}
+              <button onClick={fetchSimulation} disabled={simLoading} className={`w-full py-3 rounded-xl font-bold ${c.btnPrimary} disabled:opacity-40`}>
+                {simLoading ? <span className="animate-spin inline-block mr-2">{tool?.icon ?? '⚖️'}</span> : <span className="mr-2">{tool?.icon ?? '⚖️'}</span>}
                 {simLoading ? 'Simulating...' : 'Run Simulation'}
               </button>
             </div>
@@ -771,7 +800,7 @@ const LeverageLogic = ({ tool }) => {
                   </div>
                 ))}
                 {simResults.wild_card && (
-                  <div className={`p-4 rounded-xl ${isDark ? 'bg-cyan-900/15 border border-purple-800/30' : 'bg-cyan-50 border border-purple-200'}`}>
+                  <div className={`p-4 rounded-xl ${isDark ? 'bg-cyan-900/15 border border-cyan-800/30' : 'bg-cyan-50 border border-cyan-200'}`}>
                     <p className={`text-xs font-bold ${isDark ? 'text-cyan-300' : 'text-cyan-700'} mb-1`}>🃏 Wild Card: {simResults.wild_card.scenario}</p>
                     <p className={`text-[10px] ${c.textSecondary}`}>Handle it: {simResults.wild_card.how_to_handle}</p>
                   </div>
@@ -815,8 +844,8 @@ const LeverageLogic = ({ tool }) => {
                   </div>
                 </div>
               </div>
-              <button onClick={fetchEmailDraft} disabled={emailLoading} className={`w-full py-3 rounded-xl font-bold mt-3 ${c.btnPrimary} disabled:opacity-50`}>
-                {emailLoading ? <span className="animate-spin inline-block mr-2">{tool?.icon ?? '⚙️'}</span> : <span className="mr-2">{tool?.icon ?? '📧'}</span>}
+              <button onClick={fetchEmailDraft} disabled={emailLoading} className={`w-full py-3 rounded-xl font-bold mt-3 ${c.btnPrimary} disabled:opacity-40`}>
+                {emailLoading ? <span className="animate-spin inline-block mr-2">{tool?.icon ?? '⚖️'}</span> : <span className="mr-2">{tool?.icon ?? '⚖️'}</span>}
                 {emailLoading ? 'Drafting...' : 'Draft Email'}
               </button>
             </div>
@@ -879,15 +908,15 @@ const LeverageLogic = ({ tool }) => {
                   <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>What are you unsure about?</label>
                   <textarea value={whatYouDontKnow} onChange={e => setWhatYouDontKnow(e.target.value)} placeholder={`e.g., "Don't know what others make, don't know budget cycle"`} rows={2} className={`w-full p-3 border-2 rounded-xl text-sm resize-y focus:outline-none focus:ring-2 ${c.input}`} />
                 </div>
-                <button onClick={fetchPrepCheck} disabled={prepLoading} className={`w-full py-3 rounded-xl font-bold ${c.btnPrimary} disabled:opacity-50`}>
-                  {prepLoading ? <span className="animate-spin inline-block mr-2">{tool?.icon ?? '⚙️'}</span> : <span className="mr-2">{tool?.icon ?? '📋'}</span>}
+                <button onClick={fetchPrepCheck} disabled={prepLoading} className={`w-full py-3 rounded-xl font-bold ${c.btnPrimary} disabled:opacity-40`}>
+                  {prepLoading ? <span className="animate-spin inline-block mr-2">{tool?.icon ?? '⚖️'}</span> : <span className="mr-2">{tool?.icon ?? '⚖️'}</span>}
                   {prepLoading ? 'Assessing...' : 'Check My Readiness'}
                 </button>
               </div>
             )}
             {prepLoading && (
               <div className={`${c.card} border rounded-2xl p-8 text-center`}>
-                <span className="animate-spin inline-block text-3xl">{tool?.icon ?? '⚙️'}</span>
+                <span className="animate-spin inline-block text-3xl">{tool?.icon ?? '⚖️'}</span>
                 <p className={`text-sm ${c.textSecondary} mt-2`}>Assessing your preparation...</p>
               </div>
             )}
@@ -948,8 +977,8 @@ const LeverageLogic = ({ tool }) => {
                 <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>What was the final outcome? <span className={c.required}>*</span></label>
                 <textarea value={finalOutcome} onChange={e => setFinalOutcome(e.target.value)} placeholder='e.g., "Got 10% raise, no remote Fridays. They said maybe next quarter for remote."' rows={3} className={`w-full p-3 border-2 rounded-xl text-sm resize-y mb-3 focus:outline-none focus:ring-2 ${c.input}`} />
               </div>
-              <button onClick={fetchDebrief} disabled={debriefLoading || !finalOutcome.trim()} className={`w-full py-3 rounded-xl font-bold ${c.btnPrimary} disabled:opacity-50`}>
-                {debriefLoading ? <span className="animate-spin inline-block mr-2">{tool?.icon ?? '⚙️'}</span> : <span className="mr-2">{tool?.icon ?? '📊'}</span>}
+              <button onClick={fetchDebrief} disabled={debriefLoading || !finalOutcome.trim()} className={`w-full py-3 rounded-xl font-bold ${c.btnPrimary} disabled:opacity-40`}>
+                {debriefLoading ? <span className="animate-spin inline-block mr-2">{tool?.icon ?? '⚖️'}</span> : <span className="mr-2">{tool?.icon ?? '⚖️'}</span>}
                 {debriefLoading ? 'Analyzing...' : 'Run Debrief'}
               </button>
             </div>

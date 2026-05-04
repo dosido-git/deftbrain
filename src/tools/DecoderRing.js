@@ -75,7 +75,6 @@ const DecoderRing = ({ tool }) => {
     required:      isDark ? 'text-amber-400' : 'text-amber-500',
     // Bespoke tool-specific keys
     btnDis:        isDark ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed' : 'bg-gray-200 text-gray-400 cursor-not-allowed',
-    btnGhost:      isDark ? 'text-zinc-500 hover:text-zinc-100' : 'text-gray-400 hover:text-gray-700',
     btnGhostDel:   isDark ? 'text-zinc-500 hover:text-red-400' : 'text-gray-400 hover:text-red-500',
     pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-300' : 'border-cyan-600 bg-cyan-50 text-cyan-800',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-200 text-gray-500 hover:border-gray-400',

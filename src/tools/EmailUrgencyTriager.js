@@ -38,6 +38,35 @@ const RULE_TYPES = [
   { id: 'cc_only', label: 'CC only (always)' },
 ];
 
+const EXAMPLE_EMAILS = `From: amanda.chen@bigclient.com
+Subject: Re: Q3 deliverables — timeline shift?
+
+Hi — circling back on the launch deadline. Our exec team is now asking for a Sept 12 hard date instead of Oct 1. Can your side accommodate? Need to know by Friday so we can reset internal expectations.
+
+Thanks,
+Amanda
+
+---
+
+From: noreply@linkedin.com
+Subject: You appeared in 3 searches this week
+
+See who's been checking out your profile...
+
+---
+
+From: stripe@stripe.com
+Subject: Your invoice for August is available
+
+Your monthly invoice (INV-2024-08-2847) is now available in your dashboard. Total: $249.00. No action needed — payment processed automatically.
+
+---
+
+From: jordan.r@team-internal.com
+Subject: quick question about the staging deploy
+
+hey — I noticed the staging build broke after this morning's merge. when you have a sec, can you check the auth middleware? not blocking but I'd like to push my branch by EOD.`;
+
 // ════════════════════════════════════════════════════════════
 // MAIN COMPONENT
 // ════════════════════════════════════════════════════════════
@@ -71,15 +100,7 @@ const EmailUrgencyTriager = ({ tool }) => {
     pillGray:  isDark ? 'bg-zinc-700 text-zinc-400 border-zinc-600' : 'bg-zinc-100 text-zinc-500 border-zinc-200',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
     accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    infoBox:       isDark ? 'bg-sky-900/20 border-sky-700 text-sky-200' : 'bg-sky-50 border-sky-200 text-sky-800',
-    successBox:    isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-300',
-    successTxt:    isDark ? 'text-emerald-300' : 'text-emerald-800',
-    warningBox:    isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
-    warningTxt:    isDark ? 'text-amber-300' : 'text-amber-800',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
-    pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
     required:      isDark ? 'text-amber-400' : 'text-amber-500',
-    deleteHover:   isDark ? 'hover:text-red-400' : 'hover:text-red-600',
   };
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
@@ -206,6 +227,11 @@ const EmailUrgencyTriager = ({ tool }) => {
       updateSenderHistory(data.urgency_analysis);
     } catch (err) { setError(err.message || 'Failed to analyze.'); }
   };
+
+  const loadExample = useCallback(() => {
+    setEmailContent(EXAMPLE_EMAILS);
+    setMode('triage');
+  }, []);
 
   // F1: COMPOSE
   const handleCompose = async () => {
@@ -460,7 +486,7 @@ const EmailUrgencyTriager = ({ tool }) => {
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
         <div className="pb-3 border-b border-zinc-500">
           <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-            <span>{tool?.icon ?? '📨'}</span>{tool?.title ?? 'Email Urgency Triager'}
+            <span className="mr-2">{tool?.icon ?? '📬'}</span>{tool?.title ?? 'Email Urgency Triager'}
           </h2>
           <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'AI triage with composer, sender learning, health tracking, and smart rules'}</p>
         </div>
@@ -518,18 +544,31 @@ const EmailUrgencyTriager = ({ tool }) => {
             </div>
           )}
           <div className={`${c.card} border rounded-xl p-6 space-y-5`}>
-            <div><label className={`text-sm font-semibold ${c.textSecondary} block mb-1.5`}>Paste Emails</label>
+            <div><label className={`text-sm font-semibold ${c.textSecondary} block mb-1.5`}>Paste Emails <span className={c.required}>*</span></label>
               <p className={`text-[10px] ${c.textMuted} mb-1`}>Include full threads for best analysis. Separate with '---'</p>
               <textarea value={emailContent} onChange={e => setEmailContent(e.target.value)}
                 placeholder={"From: client@company.com\nSubject: Re: Project timeline\n\nFollowing up on my earlier email...\n\n---\n\nFrom: newsletter@service.com\nSubject: Weekly Tips\n[content...]"}
                 onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && emailContent.trim()) handleAnalyze(); }}
                 className={`w-full h-44 p-4 border-2 rounded-lg ${c.input} outline-none focus:ring-2 resize-none text-sm font-mono`} />
             </div>
+            <div className="flex gap-2">
             <button onClick={handleAnalyze} disabled={loading || !emailContent.trim()}
-              className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2`}>
-              {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '📨'}</span> Analyzing...</> : <><span className="mr-1">{tool?.icon ?? '📨'}</span>Analyze Urgency</>}
+              className={`flex-1 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2`}>
+              {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '📬'}</span> Analyzing...</> : <><span className="mr-1">{tool?.icon ?? '📬'}</span>Analyze Urgency</>}
             </button>
+            <button onClick={loadExample} className={`px-4 py-3 rounded-lg text-xs font-bold ${c.btnSecondary}`}>
+              Try example
+            </button>
+            </div>
             {error && <div className={`${c.warning} border rounded-lg p-4 flex items-start gap-2`}><span>⚠️</span><p className="text-sm">{error}</p></div>}
+
+            {/* Pre-result cross-ref */}
+            <div className={`p-4 rounded-2xl border ${c.border} ${c.cardAlt}`}>
+              <p className={`text-xs ${c.textMuted}`}>
+                💡 Already know which reply needs work?{' '}<a href="/VelvetHammer" className={linkStyle}>Velvet Hammer</a>{' '}
+                drafts firm-but-tactful messages.
+              </p>
+            </div>
           </div>
         </div>
       )}
@@ -639,7 +678,7 @@ const EmailUrgencyTriager = ({ tool }) => {
                     className={`w-full p-2.5 border rounded-lg ${c.input} outline-none text-sm`} />
                 </div>
                 <button onClick={handleCompose} disabled={loading} className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2`}>
-                  {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '📨'}</span> Composing...</> : <><span className="mr-1">{tool?.icon ?? '📨'}</span>{composeDraft.trim() ? 'Refine Reply' : 'Compose Reply'}</>}
+                  {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '📬'}</span> Composing...</> : <><span className="mr-1">{tool?.icon ?? '📬'}</span>{composeDraft.trim() ? 'Refine Reply' : 'Compose Reply'}</>}
                 </button>
               </div>
             </div>
@@ -805,7 +844,7 @@ const EmailUrgencyTriager = ({ tool }) => {
             <div className={`${c.cardAlt} border rounded-lg p-3 mb-3 space-y-2`}>
               <div className="grid grid-cols-3 gap-2">
                 <select value={ruleForm.type} onChange={e => setRuleForm(p => ({ ...p, type: e.target.value }))} className={`p-2 border rounded-lg ${c.input} text-xs`}>{RULE_TYPES.map(r => <option key={r.id} value={r.id}>{r.label}</option>)}</select>
-                {ruleForm.type !== 'cc_only' && <input value={ruleForm.pattern} onChange={e => setRuleForm(p => ({ ...p, pattern: e.target.value }))} placeholder="Pattern..." className={`p-2 border rounded-lg ${c.input} text-xs`} />}
+                {ruleForm.type !== 'cc_only' && <><label htmlFor="eut-rule-pattern" className="sr-only">Pattern</label><input id="eut-rule-pattern" value={ruleForm.pattern} onChange={e => setRuleForm(p => ({ ...p, pattern: e.target.value }))} placeholder="Pattern..." className={`p-2 border rounded-lg ${c.input} text-xs`} /></>}
                 <select value={ruleForm.tier} onChange={e => setRuleForm(p => ({ ...p, tier: e.target.value }))} className={`p-2 border rounded-lg ${c.input} text-xs`}>{Object.entries(TIER_CFG).map(([k, v]) => <option key={k} value={k}>{v.icon} {v.label}</option>)}</select>
               </div>
               <button onClick={() => {

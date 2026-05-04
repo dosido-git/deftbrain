@@ -153,7 +153,6 @@ const RecipeChaosSolver = ({ tool }) => {
     warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
     infoBox:       isDark ? 'bg-sky-900/20 border-sky-700 text-sky-200' : 'bg-sky-50 border-sky-200 text-sky-800',
-    successBox:    isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-300',
     successTxt:    isDark ? 'text-emerald-300' : 'text-emerald-800',
     warningBox:    isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
     warningTxt:    isDark ? 'text-amber-300' : 'text-amber-800',
@@ -2497,7 +2496,7 @@ const RecipeChaosSolver = ({ tool }) => {
         <div className={`flex items-center gap-3 px-4 py-4 border-t ${c.border}`}>
           <button onClick={() => setCompanionStep(Math.max(0, companionStep - 1))}
             disabled={companionStep === 0}
-            className={`flex-1 ${c.btnSecondary} disabled:opacity-30 py-3 rounded-xl text-sm font-bold min-h-[48px]`}>
+            className={`flex-1 ${c.btnSecondary} disabled:opacity-40 py-3 rounded-xl text-sm font-bold min-h-[48px]`}>
             ← Back
           </button>
           {companionStep < steps.length - 1 ? (

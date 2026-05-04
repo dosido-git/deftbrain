@@ -100,7 +100,6 @@ const SubscriptionGuiltTrip = ({ tool }) => {
     retentionTag:    isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-slate-100 text-slate-600',
     scriptLabel:     isDark ? 'text-red-400' : 'text-red-700',
     guiltFreeText:   isDark ? 'text-emerald-300' : 'text-emerald-800',
-    keepHeading:     isDark ? 'text-emerald-300' : 'text-emerald-800',
     keepBorder:      isDark ? 'border-emerald-500 bg-emerald-900/20' : 'border-emerald-500 bg-emerald-50',
     permissionHeading: isDark ? 'text-sky-300' : 'text-sky-800',
     permissionText:  isDark ? 'text-sky-200' : 'text-sky-700',

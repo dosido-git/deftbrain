@@ -40,10 +40,10 @@ const SEVERITY_COLORS = {
 };
 
 const CHANGE_CATEGORY_LABELS = {
-  added: { emoji: '➕', label: 'Added', color: 'text-emerald-600 dark:text-emerald-400' },
-  removed: { emoji: '➖', label: 'Removed', color: 'text-red-600 dark:text-red-400' },
-  modified: { emoji: '✏️', label: 'Modified', color: 'text-amber-600 dark:text-amber-400' },
-  reworded: { emoji: '🔄', label: 'Reworded', color: 'text-cyan-600 dark:text-cyan-400' },
+  added: { emoji: '➕', label: 'Added', colorKey: 'changeAdded' },
+  removed: { emoji: '➖', label: 'Removed', colorKey: 'changeRemoved' },
+  modified: { emoji: '✏️', label: 'Modified', colorKey: 'changeModified' },
+  reworded: { emoji: '🔄', label: 'Reworded', colorKey: 'changeReworded' },
 };
 
 const IMPORTANCE_COLORS = {
@@ -105,20 +105,17 @@ const PlainTalk = ({ tool }) => {
     success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
     warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
-    infoBox:       isDark ? 'bg-sky-900/20 border-sky-700 text-sky-200' : 'bg-sky-50 border-sky-200 text-sky-800',
-    successBox:    isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-300',
-    successTxt:    isDark ? 'text-emerald-300' : 'text-emerald-800',
     warningBox:    isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
-    warningTxt:    isDark ? 'text-amber-300' : 'text-amber-800',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
-    pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500'
-                          : 'border-gray-300 text-gray-500 hover:border-gray-400',
+    highlight:     isDark ? 'bg-amber-900/30 text-amber-200' : 'bg-amber-100 text-amber-900',
+    tabActive:     isDark ? 'border-cyan-500 text-cyan-300 bg-zinc-700/30' : 'border-cyan-600 text-cyan-700 bg-cyan-50',
+    tabInactive:   isDark ? 'border-transparent text-zinc-400 hover:text-zinc-200' : 'border-transparent text-gray-500 hover:text-gray-700',
+    changeAdded:    isDark ? 'text-emerald-400' : 'text-emerald-600',
+    changeRemoved:  isDark ? 'text-red-400' : 'text-red-600',
+    changeModified: isDark ? 'text-amber-400' : 'text-amber-600',
+    changeReworded: isDark ? 'text-cyan-400' : 'text-cyan-600',
   };
   c.textMuteded = c.textMuted;
   c.label       = c.labelText;
-  // PlainTalk-specific extensions
-  c.tabActive   = isDark ? 'border-cyan-500 text-cyan-300 bg-zinc-700/30' : 'border-cyan-600 text-cyan-700 bg-cyan-50';
-  c.tabInactive = isDark ? 'border-transparent text-zinc-400 hover:text-zinc-200' : 'border-transparent text-gray-500 hover:text-gray-700';
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
@@ -259,6 +256,12 @@ const PlainTalk = ({ tool }) => {
     setCompareResult(null); setSectionFilter('all'); setChangeFilter('all');
     setEditingNote(null); setNoteText(''); setReviewedSections({});
     if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const loadExample = () => {
+    setInputText(SAMPLE_TEXTS[0].text);
+    setTextType('legal');
+    setError('');
   };
 
   const toggleSection = (id) => {
@@ -501,7 +504,7 @@ const PlainTalk = ({ tool }) => {
         <div className="px-5 pt-5">
           <div className="pb-3 border-b border-zinc-500">
             <h2 className={`text-xl font-bold ${c.text}`}>
-              <span className="mr-2">{tool?.icon ?? '📄'}</span>{tool?.title ?? 'Plain Talk'}
+              <span className="mr-2">{tool?.icon ?? '🔍'}</span>{tool?.title ?? 'PlainTalk — Document Analyst'}
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Translate complex text into plain language'}</p>
           </div>
@@ -511,7 +514,7 @@ const PlainTalk = ({ tool }) => {
         {!result && (
           <div className="px-5 pb-5 pt-3 space-y-3">
             <label className={`block text-sm font-bold ${c.text}`}>
-              📄 Paste your text
+              📄 Paste your text <span className={c.required}>*</span>
             </label>
             <textarea
               value={inputText}
@@ -534,6 +537,9 @@ const PlainTalk = ({ tool }) => {
                 {wordCount > 0 ? `${wordCount.toLocaleString()} words` : ''}
               </span>
             </div>
+            <p className={`text-[11px] ${c.textMuted}`}>
+              Got a contract clause? Try <a href="/JargonAssassin" className={linkStyle}>🗡️ JargonAssassin</a> for a sentence-level rewrite first.
+            </p>
           </div>
         )}
 
@@ -547,7 +553,6 @@ const PlainTalk = ({ tool }) => {
                 {result.confidence && <span className={`ml-1 ${c.textMuteded}`}>· {result.confidence} confidence</span>}
               </span>
               <div className="flex-1" />
-              <CopyBtn content={buildFullText()} label="Copy All" />
               <button onClick={handleReset}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors ${
                   isDark ? 'border-zinc-600 text-zinc-300 hover:border-cyan-500 hover:text-cyan-300' : 'border-zinc-300 text-zinc-600 hover:border-cyan-400 hover:text-cyan-600'
@@ -566,9 +571,13 @@ const PlainTalk = ({ tool }) => {
             {/* Sample texts */}
             <div className={`${c.card} border rounded-2xl shadow-lg p-5`}>
               <label className={`block text-xs font-bold ${c.textMuteded} mb-2`}>
-                ⚡ Try a sample
+                ✨ Try Example
               </label>
               <div className="flex flex-wrap gap-2">
+                <button onClick={loadExample}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${c.btnSecondary}`}>
+                  ✨ Try Example
+                </button>
                 {SAMPLE_TEXTS.map((s, i) => (
                   <button key={i} onClick={() => setInputText(s.text)}
                     className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${
@@ -624,14 +633,14 @@ const PlainTalk = ({ tool }) => {
             {/* Analyze button */}
             <button onClick={handleAnalyze}
               disabled={loading || !inputText.trim() || inputText.trim().length < 30}
-              className={`w-full flex items-center justify-center gap-3 px-6 py-4 rounded-2xl font-bold text-lg transition-all ${
+              className={`w-full flex items-center justify-center gap-3 px-6 py-4 rounded-2xl font-bold text-lg transition-all disabled:opacity-40 ${
                 inputText.trim().length >= 30
                   ? `${c.btnPrimary} shadow-indigo-200 dark:shadow-indigo-900/40`
                   : isDark ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed' : 'bg-zinc-200 text-zinc-400 cursor-not-allowed'
               }`}>
               {loading
-                ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> Analyzing your text…</>
-                : <><span className="mr-1">{tool?.icon ?? '📄'}</span> Analyze &amp; Translate</>}
+                ? <><span className="inline-block animate-spin">{tool?.icon ?? '🔍'}</span> Analyzing your text…</>
+                : <><span className="mr-1">{tool?.icon ?? '🔍'}</span> Analyze &amp; Translate</>}
             </button>
 
             {/* Pre-result cross-ref */}
@@ -1171,6 +1180,9 @@ const PlainTalk = ({ tool }) => {
                       </p>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
+                          <label className={`block text-xs font-bold ${c.labelText} mb-1.5`}>
+                            Document A <span className={c.required}>*</span>
+                          </label>
                           <div className="flex items-center gap-2 mb-2">
                             <input type="text" value={compareLabelA} onChange={e => setCompareLabelA(e.target.value)}
                               className={`px-2 py-1 text-xs border rounded-lg font-bold ${c.input}`}
@@ -1189,6 +1201,9 @@ const PlainTalk = ({ tool }) => {
                           )}
                         </div>
                         <div>
+                          <label className={`block text-xs font-bold ${c.labelText} mb-1.5`}>
+                            Document B <span className={c.required}>*</span>
+                          </label>
                           <div className="flex items-center gap-2 mb-2">
                             <input type="text" value={compareLabelB} onChange={e => setCompareLabelB(e.target.value)}
                               className={`px-2 py-1 text-xs border rounded-lg font-bold ${c.input}`}
@@ -1204,12 +1219,12 @@ const PlainTalk = ({ tool }) => {
                     </div>
                     <button onClick={handleCompare}
                       disabled={compareLoading || !compareTextA.trim() || !compareTextB.trim()}
-                      className={`w-full flex items-center justify-center gap-3 px-6 py-4 rounded-2xl font-bold text-lg transition-all ${
+                      className={`w-full flex items-center justify-center gap-3 px-6 py-4 rounded-2xl font-bold text-lg transition-all disabled:opacity-40 ${
                         compareTextA.trim() && compareTextB.trim()
                           ? `${c.btnPrimary} shadow-indigo-200 dark:shadow-indigo-900/40`
                           : isDark ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed' : 'bg-zinc-200 text-zinc-400 cursor-not-allowed'
                       }`}>
-                      {compareLoading ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> Comparing documents…</> : '🔀 Compare'}
+                      {compareLoading ? <><span className="inline-block animate-spin">{tool?.icon ?? '🔍'}</span> Comparing documents…</> : '🔀 Compare'}
                     </button>
                   </>
                 ) : (
@@ -1262,11 +1277,16 @@ const PlainTalk = ({ tool }) => {
                           .map(change => {
                             const cat = CHANGE_CATEGORY_LABELS[change.category] || CHANGE_CATEGORY_LABELS.modified;
                             const sev = SEVERITY_COLORS[change.severity] || SEVERITY_COLORS.minor;
+                            const catColor = change.category === 'added'    ? c.changeAdded
+                                           : change.category === 'removed'  ? c.changeRemoved
+                                           : change.category === 'modified' ? c.changeModified
+                                           : change.category === 'reworded' ? c.changeReworded
+                                           :                                  c.text;
                             return (
                               <div key={change.id} className={`rounded-xl border overflow-hidden ${isDark ? sev.dark : sev.light}`}>
                                 <div className="p-3">
                                   <div className="flex items-center gap-2 mb-2">
-                                    <span className={`text-xs font-bold ${cat.color}`}>{cat.emoji} {cat.label}</span>
+                                    <span className={`text-xs font-bold ${catColor}`}>{cat.emoji} {cat.label}</span>
                                     <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${isDark ? sev.badge.replace('dark:', '') : sev.badge}`}>
                                       {change.severity}
                                     </span>
@@ -1342,7 +1362,9 @@ const PlainTalk = ({ tool }) => {
             <div className={`${c.card} border rounded-2xl shadow-lg p-5`}>
               <h4 className={`text-sm font-bold ${c.text} mb-3`}>💬 Ask a Follow-Up Question</h4>
               <div className="flex items-center gap-2">
+                <label htmlFor="pt-followup" className="sr-only">Follow-up question</label>
                 <input
+                  id="pt-followup"
                   type="text"
                   value={followUpQuestion}
                   onChange={e => setFollowUpQuestion(e.target.value)}
@@ -1352,10 +1374,10 @@ const PlainTalk = ({ tool }) => {
                   disabled={followUpLoading}
                 />
                 <button onClick={handleFollowUp} disabled={followUpLoading || !followUpQuestion.trim()}
-                  className={`px-4 py-3 rounded-xl text-sm font-bold transition-all ${
+                  className={`px-4 py-3 rounded-xl text-sm font-bold transition-all disabled:opacity-40 ${
                     followUpQuestion.trim() ? c.btnPrimary : isDark ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed' : 'bg-zinc-200 text-zinc-400 cursor-not-allowed'
                   }`}>
-                  {followUpLoading ? (tool?.icon ?? '⚙️') : '→'}
+                  {followUpLoading ? (tool?.icon ?? '🔍') : '→'}
                 </button>
               </div>
 

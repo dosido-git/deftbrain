@@ -67,7 +67,6 @@ const CaptionMagic = ({ tool }) => {
     textMuted:      isDark ? 'text-zinc-500' : 'text-gray-400',
     labelText:      isDark ? 'text-zinc-200' : 'text-gray-700',
     required:       isDark ? 'text-amber-400' : 'text-amber-500',
-    badgeNeutral:   isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-gray-100 text-gray-600',
     accentTxt:      isDark ? 'text-cyan-400' : 'text-cyan-600',
     btnPrimary:     isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
     btnSecondary:   isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
@@ -75,11 +74,7 @@ const CaptionMagic = ({ tool }) => {
     success:        isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
     warning:        isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:         isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
-    infoBox:        isDark ? 'bg-sky-900/20 border-sky-700 text-sky-200' : 'bg-sky-50 border-sky-200 text-sky-800',
-    successBox:     isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-300',
     successTxt:     isDark ? 'text-emerald-300' : 'text-emerald-800',
-    warningBox:     isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
-    warningTxt:     isDark ? 'text-amber-300' : 'text-amber-800',
     pillActive:     isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
     pillInactive:   isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
     // Semantic colour tokens
@@ -87,7 +82,6 @@ const CaptionMagic = ({ tool }) => {
     textOk:         isDark ? 'text-emerald-400' : 'text-emerald-700',
     textCaution:    isDark ? 'text-amber-300' : 'text-amber-700',
     textCyan:       isDark ? 'text-cyan-400' : 'text-cyan-600',
-    textHighlight:  isDark ? 'text-zinc-100' : 'text-gray-800',
     textGhostDel:   isDark ? 'text-red-400 hover:text-red-300' : 'text-red-500 hover:text-red-600',
     // Upload / drag
     dropzone:       isDark ? 'border-zinc-600 bg-zinc-900/30' : 'border-gray-300 bg-slate-50',
@@ -97,7 +91,6 @@ const CaptionMagic = ({ tool }) => {
     stateDisabled:  isDark ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed' : 'bg-gray-100 text-gray-400 cursor-not-allowed',
     // Content surfaces
     captionBg:      isDark ? 'bg-zinc-900/60 border-zinc-700' : 'bg-slate-50 border-gray-200',
-    altSection:     isDark ? 'bg-sky-900/20 border-sky-700' : 'bg-sky-50 border-sky-200',
     tonePill:       isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-100 text-cyan-800',
     okBg:           isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-300',
     // Heat / schedule badges

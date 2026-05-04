@@ -52,14 +52,6 @@ const FriendshipFadeAlerter = ({ tool }) => {
                           : 'bg-red-50 border-red-200 text-red-800',
     infoBox:       isDark ? 'bg-sky-900/20 border-sky-700 text-sky-200'
                           : 'bg-sky-50 border-sky-200 text-sky-800',
-    successBox:    isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-300',
-    successTxt:    isDark ? 'text-emerald-300' : 'text-emerald-800',
-    warningBox:    isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
-    warningTxt:    isDark ? 'text-amber-300' : 'text-amber-800',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200'
-                          : 'border-cyan-600 bg-cyan-100 text-cyan-900',
-    pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500'
-                          : 'border-gray-300 text-gray-500 hover:border-gray-400',
     required:      isDark ? 'text-amber-400' : 'text-amber-500',
     // ── Bespoke ──
     btnSoft:       isDark ? 'bg-zinc-700/50 hover:bg-zinc-600/50 text-zinc-300' : 'bg-gray-50 hover:bg-gray-100 text-gray-500',
@@ -205,6 +197,21 @@ const FriendshipFadeAlerter = ({ tool }) => {
   // CRUD + ACTIONS
   // ════════════════════════════════════════
   const resetForm = () => { setForm({ id: null, name: '', relationshipType: '', frequency: '', lastContact: new Date().toISOString().split('T')[0], contextNotes: '', upcomingEvents: [], circleIds: [] }); setEventLabel(''); setEventDate(''); setError(''); };
+
+  const loadExample = () => {
+    setForm({
+      id: null,
+      name: 'Sarah Chen',
+      relationshipType: 'close_friend',
+      frequency: 'biweekly',
+      lastContact: new Date(Date.now() - 21 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+      contextNotes: 'College roommate. Just had a baby (Mia, 3 months). Loves hiking, struggles with sleep.',
+      upcomingEvents: [],
+      circleIds: [],
+    });
+    setView('add');
+    setError('');
+  };
 
   const saveRelationship = useCallback(() => {
     if (!form.name || !form.relationshipType || !form.frequency || !form.lastContact) { setError('Please fill in all required fields'); return; }
@@ -472,6 +479,9 @@ const FriendshipFadeAlerter = ({ tool }) => {
 
   useRegisterActions(buildFullText(), tool?.title || 'Friendship Fade Alerter');
 
+  // Aggregate results sentinel (used for unified post-result cross-refs)
+  const results = starters || digest || reengageResults || sayItData || followupAdvice || batchResults;
+
   // ── PF-7: Scroll to results ──
   useEffect(() => {
     if (!starters || !resultsRef.current) return;
@@ -536,7 +546,7 @@ const FriendshipFadeAlerter = ({ tool }) => {
                 <div className={`${c.card} ${c.border} border rounded-2xl p-5`}>
                   <div className="flex items-center justify-between mb-3">
                     <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>📊 Relationship Health</p>
-                    <button onClick={generateDigest} disabled={digestLoading} className={`text-xs font-bold px-3 py-1.5 rounded-lg ${c.btnSecondary}`}>
+                    <button onClick={generateDigest} disabled={digestLoading} className={`text-xs font-bold px-3 py-1.5 rounded-lg disabled:opacity-40 ${c.btnSecondary}`}>
                       {digestLoading ? <span className="animate-spin inline-block">{tool?.icon ?? '💔'}</span> : '📋 Weekly Digest'}
                     </button>
                   </div>
@@ -560,6 +570,20 @@ const FriendshipFadeAlerter = ({ tool }) => {
                   {healthStats.oneSided?.length > 0 && (
                     <p className={`text-xs ${isDark ? 'text-amber-400' : 'text-amber-600'}`}>↔️ One-sided: you always initiate with {healthStats.oneSided.slice(0, 3).join(', ')}{healthStats.oneSided.length > 3 ? ` +${healthStats.oneSided.length - 3} more` : ''}</p>
                   )}
+                </div>
+              )}
+
+              {/* Recent activity history */}
+              {history.length > 0 && (
+                <div className={`${c.card} ${c.border} border rounded-xl p-3`}>
+                  <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-1.5`}>🕘 Recent activity</p>
+                  <div className="space-y-1">
+                    {history.slice(0, 3).map(h => (
+                      <p key={h.id} className={`text-xs ${c.textSecondary}`}>
+                        <span className={c.textMuted}>{new Date(h.date).toLocaleDateString()}</span> · {h.preview}
+                      </p>
+                    ))}
+                  </div>
                 </div>
               )}
 
@@ -598,9 +622,14 @@ const FriendshipFadeAlerter = ({ tool }) => {
                   <p className={`text-lg font-bold ${c.text} mb-2`}>{activeCircleFilter ? 'No one in this circle yet' : 'No one tracked yet'}</p>
                   <p className={`${c.textSecondary} mb-4`}>{activeCircleFilter ? 'Add people and tag them into this circle' : 'Add the people you want to stay connected with'}</p>
                   {!activeCircleFilter && (
-                    <button onClick={() => { resetForm(); setView('add'); }} className={`${c.btnPrimary} px-6 py-3 rounded-xl font-bold`}>
-                      <span className="mr-2">➕</span> Add Your First Person
-                    </button>
+                    <div className="flex flex-wrap gap-2 justify-center">
+                      <button onClick={() => { resetForm(); setView('add'); }} className={`${c.btnPrimary} px-6 py-3 rounded-xl font-bold`}>
+                        <span className="mr-2">➕</span> Add Your First Person
+                      </button>
+                      <button onClick={loadExample} className={`${c.btnSecondary} px-4 py-3 rounded-xl text-sm font-bold`}>
+                        ✨ Try Example
+                      </button>
+                    </div>
                   )}
                 </div>
               ) : (
@@ -680,7 +709,7 @@ const FriendshipFadeAlerter = ({ tool }) => {
                                 {/* NEW: AI frequency suggestion */}
                                 <button onClick={() => generateFreqSuggest(person)}
                                   disabled={freqSuggestLoadingId === person.id}
-                                  className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-cyan-800/50 text-cyan-300 hover:bg-cyan-700/50' : 'bg-cyan-100 text-cyan-700 hover:bg-cyan-200'}`}>
+                                  className={`text-[10px] font-bold px-2 py-0.5 rounded-full disabled:opacity-40 ${isDark ? 'bg-cyan-800/50 text-cyan-300 hover:bg-cyan-700/50' : 'bg-cyan-100 text-cyan-700 hover:bg-cyan-200'}`}>
                                   {freqSuggestLoadingId === person.id ? '...' : freqOpen ? '▲ Hide' : '⚙️ AI Adjust'}
                                 </button>
                               </div>
@@ -722,7 +751,7 @@ const FriendshipFadeAlerter = ({ tool }) => {
                             {/* NEW: Health Insight button */}
                             <button onClick={() => generateInsight(person)}
                               disabled={insightLoadingId === person.id}
-                              className={`py-2 px-3 rounded-xl text-sm font-bold ${insightOpen ? c.btnPrimary : c.btnSecondary}`}>
+                              className={`py-2 px-3 rounded-xl text-sm font-bold disabled:opacity-40 ${insightOpen ? c.btnPrimary : c.btnSecondary}`}>
                               {insightLoadingId === person.id ? <span className="animate-spin inline-block">{tool?.icon ?? '💔'}</span> : '🔍'}
                             </button>
                             {person.pendingOutreach ? (
@@ -873,7 +902,8 @@ const FriendshipFadeAlerter = ({ tool }) => {
                     </div>
                   )}
                   <div className="flex gap-2">
-                    <input type="text" value={newCircleName} onChange={e => setNewCircleName(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && newCircleName.trim()) addCircle(); }} placeholder="New circle (e.g., College crew)" className={`flex-1 p-2.5 border-2 rounded-xl text-sm ${c.input}`} />
+                    <label htmlFor="ffa-new-circle" className="sr-only">New circle name</label>
+                    <input id="ffa-new-circle" type="text" value={newCircleName} onChange={e => setNewCircleName(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && newCircleName.trim()) addCircle(); }} placeholder="New circle (e.g., College crew)" className={`flex-1 p-2.5 border-2 rounded-xl text-sm ${c.input}`} />
                     <button onClick={addCircle} disabled={!newCircleName.trim()} className={`px-3 py-2.5 rounded-xl text-sm font-bold disabled:opacity-40 ${c.btnSecondary}`}>+</button>
                   </div>
                   {circles.length > 0 && (
@@ -889,8 +919,10 @@ const FriendshipFadeAlerter = ({ tool }) => {
                 <div>
                   <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.label}`}>📅 Key dates (birthdays, events)</label>
                   <div className="flex gap-2 mb-2">
-                    <input type="text" value={eventLabel} onChange={e => setEventLabel(e.target.value)} placeholder="e.g., Birthday" className={`flex-1 p-2.5 border-2 rounded-xl text-sm ${c.input}`} />
-                    <input type="date" value={eventDate} onChange={e => setEventDate(e.target.value)} className={`p-2.5 border-2 rounded-xl text-sm ${c.input}`} />
+                    <label htmlFor="ffa-event-label" className="sr-only">Event label</label>
+                    <input id="ffa-event-label" type="text" value={eventLabel} onChange={e => setEventLabel(e.target.value)} placeholder="e.g., Birthday" className={`flex-1 p-2.5 border-2 rounded-xl text-sm ${c.input}`} />
+                    <label htmlFor="ffa-event-date" className="sr-only">Event date</label>
+                    <input id="ffa-event-date" type="date" value={eventDate} onChange={e => setEventDate(e.target.value)} className={`p-2.5 border-2 rounded-xl text-sm ${c.input}`} />
                     <button onClick={addEvent} disabled={!eventLabel.trim() || !eventDate} className={`px-3 py-2.5 rounded-xl text-sm font-bold disabled:opacity-40 ${c.btnSecondary}`}>+</button>
                   </div>
                   {(form.upcomingEvents || []).map((e, i) => (
@@ -1152,9 +1184,8 @@ const FriendshipFadeAlerter = ({ tool }) => {
               {digest && (
                 <div className="space-y-5">
                   <div className={`${c.card} ${c.border} border-2 rounded-2xl p-5 ${isDark ? 'border-cyan-700/50' : 'border-cyan-300'}`}>
-                    <div className="flex items-center justify-between mb-3">
+                    <div className="mb-3">
                       <p className={`text-xs font-bold uppercase tracking-wider ${c.textSecondary}`}>📋 Weekly Digest</p>
-                      <CopyBtn content={buildFullText()} label="Copy" />
                     </div>
                     <p className={`text-lg font-black ${c.text} mb-4`}>{digest.headline}</p>
 
@@ -1391,7 +1422,7 @@ const FriendshipFadeAlerter = ({ tool }) => {
       </div>
 
       {/* Post-result cross-refs */}
-      {(starters || digest || reengageResults || sayItData) && (
+      {results && (
         <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
           <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 Related tools</p>
           <div className="flex flex-wrap gap-3">

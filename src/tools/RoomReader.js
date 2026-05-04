@@ -177,7 +177,7 @@ const InputCard = ({ title, subtitle, children, onSubmit, btnLabel, btnIcon, c, 
     )}
     {children}
     <button onClick={onSubmit} disabled={loading}
-      className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-50 flex items-center justify-center gap-2 min-h-[48px]`}>
+      className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40 flex items-center justify-center gap-2 min-h-[48px]`}>
       {loading
         ? <span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span>
         : <><span>{btnIcon || ''}</span> {btnLabel}</>}
@@ -219,13 +219,8 @@ const RoomReader = ({ tool }) => {
                           : 'bg-red-50 border-red-200 text-red-800',
     infoBox:       isDark ? 'bg-sky-900/20 border-sky-700 text-sky-200'
                           : 'bg-sky-50 border-sky-200 text-sky-800',
-    successBox:    isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-300',
-    successTxt:    isDark ? 'text-emerald-300' : 'text-emerald-800',
     warningBox:    isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
-    warningTxt:    isDark ? 'text-amber-300' : 'text-amber-800',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200'
                           : 'border-cyan-600 bg-cyan-100 text-cyan-900',
-    pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500'
                           : 'border-gray-300 text-gray-500 hover:border-gray-400',
   };
   c.textMuteded = c.textMuted;
@@ -855,7 +850,7 @@ const RoomReader = ({ tool }) => {
               </select>
             </div>
             <button onClick={handleRecovery} disabled={loading}
-              className="w-full py-3 rounded-xl font-bold text-sm bg-red-600 hover:bg-red-500 text-white disabled:opacity-50 flex items-center justify-center gap-2 min-h-[48px]">
+              className="w-full py-3 rounded-xl font-bold text-sm bg-red-600 hover:bg-red-500 text-white disabled:opacity-40 flex items-center justify-center gap-2 min-h-[48px]">
               {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> : '🆘 Get Recovery'}
             </button>
           </div>
@@ -944,7 +939,7 @@ const RoomReader = ({ tool }) => {
                         <button onClick={() => addPersonNote(tpIdx)} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnSecondary}`}>📝 Log</button>
                         {tp.notes.length > 0 && (
                           <button onClick={() => handlePersonRefresh(tp)} disabled={loading}
-                            className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnPrimary} disabled:opacity-50 flex items-center gap-1`}>
+                            className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnPrimary} disabled:opacity-40 flex items-center gap-1`}>
                             {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> : '🔄 Fresh Strategy'}
                           </button>
                         )}

@@ -44,15 +44,31 @@ const TIME_SLOTS = [
 
 const SensoryMinefieldMapper = ({ tool }) => {
   const { isDark } = useTheme();
-
-
   const { callToolEndpoint } = useClaudeAPI();
 
-  // ── Persistent ──
-  const [visitHistory, setVisitHistory] = usePersistentState('smm-history', []);
-  const [history, setHistory] = usePersistentState('sensoryminefieldmapper-history', []);
-  const [profiles, setProfiles] = usePersistentState('smm-profiles', []);
-  const [favorites, setFavorites] = usePersistentState('smm-favorites', []);
+  const c = {
+    card:          isDark ? 'bg-zinc-800' : 'bg-white',
+    cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    text:          isDark ? 'text-zinc-50' : 'text-gray-900',
+    textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
+    textMuted:     isDark ? 'text-zinc-500' : 'text-gray-400',
+    required:      isDark ? 'text-amber-400' : 'text-amber-500',
+    labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
+    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
+    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
+    border:        isDark ? 'border-zinc-700' : 'border-gray-200',
+    success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
+    warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
+    danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
+  };
+  c.textMuteded = c.textMuted;
+  c.label = c.labelText;
+
+  const linkStyle = isDark
+    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
+    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
 
   // ── View ──
   const [view, setView] = useState('home'); // home | form | results | route | checkin
@@ -70,8 +86,7 @@ const SensoryMinefieldMapper = ({ tool }) => {
   const [concerns, setConcerns] = useState({});
   const [specificNotes, setSpecificNotes] = useState('');
 
-  // ── Results ──
-  const [results, setResults] = usePersistentState('sensoryminefieldmapper-result', null);
+  // ── Results / loading ──
   const [analysisLoading, setAnalysisLoading] = useState(false);
 
   // ── Feature panels ──
@@ -91,7 +106,6 @@ const SensoryMinefieldMapper = ({ tool }) => {
   const [kitLoading, setKitLoading] = useState(false);
   const [kitChecked, setKitChecked] = useState({});
   const [expandedSections, setExpandedSections] = useState({});
-  const toggle = (key) => setExpandedSections(prev => ({ ...prev, [key]: !prev[key] }));
 
   // ── Route planner ──
   const [routeStops, setRouteStops] = useState([{ location: '', placeType: '', time: '' }]);
@@ -103,38 +117,14 @@ const SensoryMinefieldMapper = ({ tool }) => {
   const [profileName, setProfileName] = useState('');
   const [profileNotes, setProfileNotes] = useState('');
 
-  // ── Theme ──
+  // ── Persistent ──
+  const [visitHistory, setVisitHistory] = usePersistentState('smm-history', []);
+  const [history, setHistory] = usePersistentState('sensoryminefieldmapper-history', []);
+  const [profiles, setProfiles] = usePersistentState('smm-profiles', []);
+  const [favorites, setFavorites] = usePersistentState('smm-favorites', []);
+  const [results, setResults] = usePersistentState('sensoryminefieldmapper-result', null);
 
-  const c = {
-    card:          isDark ? 'bg-zinc-800' : 'bg-white',
-    cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
-    text:          isDark ? 'text-zinc-50' : 'text-gray-900',
-    textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
-    textMuted:     isDark ? 'text-zinc-500' : 'text-gray-400',
-    required:      isDark ? 'text-amber-400' : 'text-amber-500',
-    labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
-    btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
-    border:        isDark ? 'border-zinc-700' : 'border-gray-200',
-    success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
-    warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
-    danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
-    infoBox:       isDark ? 'bg-sky-900/20 border-sky-700 text-sky-200' : 'bg-sky-50 border-sky-200 text-sky-800',
-    successBox:    isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-300',
-    successTxt:    isDark ? 'text-emerald-300' : 'text-emerald-800',
-    warningBox:    isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
-    warningTxt:    isDark ? 'text-amber-300' : 'text-amber-800',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
-    pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
-  };
-  c.textMuteded = c.textMuted;
-  c.label = c.labelText;
-
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
+  const toggle = (key) => setExpandedSections(prev => ({ ...prev, [key]: !prev[key] }));
 
   const today = new Date().toISOString().split('T')[0];
   const selectedConcerns = Object.entries(concerns).filter(([_, v]) => v).map(([k]) => k);
@@ -267,6 +257,15 @@ const SensoryMinefieldMapper = ({ tool }) => {
       setHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: (location || '').slice(0, 40) }, ...prev].slice(0, 6)); setView('results');
     } catch (err) { setError(err.message || 'Failed to analyze location'); }
     finally { setAnalysisLoading(false); }
+  };
+
+  const loadExample = () => {
+    setLocation('Whole Foods on Main St');
+    setPlaceType('grocery');
+    setVisitTime('17:30');
+    setConcerns({ noise: true, crowds: true, lighting: true });
+    setSpecificNotes('Going after work — usually wiped by then');
+    setError('');
   };
 
   const fetchAlternatives = async () => {
@@ -479,13 +478,18 @@ const SensoryMinefieldMapper = ({ tool }) => {
         )}
 
         {/* ════════ FORM ════════ */}
+        {view === 'form' && !results && (
+          <p className={`text-[11px] ${c.textMuted} text-center px-4`}>
+            Already overwhelmed and need to recover first? <a href="/CrashPredictor" className={linkStyle}>📉 CrashPredictor</a> spots when you're about to crash.
+          </p>
+        )}
         {view === 'form' && (
           <div className="space-y-5">
             <button onClick={() => { setView('home'); setShowProfileForm(false); }} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnSecondary}`}>← Back</button>
             <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-5`}>
               <div className="pb-3 border-b border-zinc-500">
                 <h2 className={`text-xl font-bold ${c.text}`}>
-                  <span className="mr-2">{tool?.icon ?? '📍'}</span>{tool?.title ?? 'Sensory Minefield Mapper'}
+                  <span className="mr-2">{tool?.icon ?? '🗺️'}</span>{tool?.title ?? 'Sensory Minefield Mapper'}
                 </h2>
                 <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Preview any place before you go'}</p>
               </div>
@@ -549,10 +553,15 @@ const SensoryMinefieldMapper = ({ tool }) => {
                 <textarea value={specificNotes} onChange={e => setSpecificNotes(e.target.value)} placeholder="e.g., going with a toddler, have a migraine today, need wheelchair access" rows={2} className={`w-full p-3 border-2 rounded-xl text-sm resize-y focus:outline-none focus:ring-2 ${c.input}`} />
               </div>
 
-              <button onClick={analyzeLocation} disabled={analysisLoading} className={`w-full py-3.5 rounded-xl font-bold text-base ${c.btnPrimary} disabled:opacity-50`}>
-                {analysisLoading ? <span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> : <span className="mr-2">🔍</span>}
-                {analysisLoading ? 'Scouting...' : 'Scout This Location'}
-              </button>
+              <div className="flex gap-2">
+                <button onClick={analyzeLocation} disabled={analysisLoading} className={`flex-1 py-3.5 rounded-xl font-bold text-base ${c.btnPrimary} disabled:opacity-40`}>
+                  {analysisLoading ? <span className="inline-block animate-spin">{tool?.icon ?? '🗺️'}</span> : <span className="mr-2">🔍</span>}
+                  {analysisLoading ? 'Scouting...' : 'Scout This Location'}
+                </button>
+                <button onClick={loadExample} disabled={analysisLoading} className={`${c.btnSecondary} disabled:opacity-40 font-bold py-3 px-4 rounded-xl text-xs`}>
+                  ✨ Try Example
+                </button>
+              </div>
 
               {/* Save as profile */}
               {selectedConcerns.length > 0 && (
@@ -561,7 +570,8 @@ const SensoryMinefieldMapper = ({ tool }) => {
                     <button onClick={() => setShowProfileForm(true)} className={`text-xs font-bold ${c.accentTxt}`}>💾 Save these settings as a profile</button>
                   ) : (
                     <div className={`p-3 rounded-xl ${c.cardAlt} border space-y-2`}>
-                      <input type="text" value={profileName} onChange={e => setProfileName(e.target.value)} placeholder='Profile name (e.g., "Migraine day", "With kids")' className={`w-full p-2.5 border-2 rounded-xl text-sm ${c.input}`} />
+                      <label htmlFor="smm-profile-name" className="sr-only">Profile name</label>
+                      <input id="smm-profile-name" type="text" value={profileName} onChange={e => setProfileName(e.target.value)} placeholder='Profile name (e.g., "Migraine day", "With kids")' className={`w-full p-2.5 border-2 rounded-xl text-sm ${c.input}`} />
                       <input type="text" value={profileNotes} onChange={e => setProfileNotes(e.target.value)} placeholder="Default notes (optional)" className={`w-full p-2.5 border-2 rounded-xl text-sm ${c.input}`} />
                       <div className="flex gap-2">
                         <button onClick={saveProfile} disabled={!profileName.trim()} className={`flex-1 py-2 rounded-xl text-xs font-bold ${c.btnPrimary} disabled:opacity-40`}>✓ Save Profile</button>
@@ -791,10 +801,10 @@ const SensoryMinefieldMapper = ({ tool }) => {
             <div className={`${c.card} border rounded-2xl p-5 space-y-3`}>
               <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuteded}`}>🔧 More</p>
               <div className="grid grid-cols-2 gap-2">
-                <button onClick={fetchAlternatives} disabled={altLoading} className={`py-2.5 rounded-xl text-xs font-bold ${c.btnSecondary}`}>{altLoading ? (tool?.icon ?? '⚙️') : '🔄'} Find alternatives</button>
+                <button onClick={fetchAlternatives} disabled={altLoading} className={`py-2.5 rounded-xl text-xs font-bold disabled:opacity-40 ${c.btnSecondary}`}>{altLoading ? (tool?.icon ?? '🗺️') : '🔄'} Find alternatives</button>
                 <button onClick={() => setShowPanel(showPanel === 'companion' ? null : 'companion')} className={`py-2.5 rounded-xl text-xs font-bold ${c.btnSecondary}`}>👥 Share w/ companion</button>
                 <button onClick={() => setShowPanel(showPanel === 'rescan' ? null : 'rescan')} className={`py-2.5 rounded-xl text-xs font-bold ${c.btnSecondary}`}>📡 I'm here — rescan</button>
-                <button onClick={fetchComfortKit} disabled={kitLoading} className={`py-2.5 rounded-xl text-xs font-bold ${c.btnSecondary}`}>{kitLoading ? (tool?.icon ?? '⚙️') : '🎒'} Comfort kit</button>
+                <button onClick={fetchComfortKit} disabled={kitLoading} className={`py-2.5 rounded-xl text-xs font-bold disabled:opacity-40 ${c.btnSecondary}`}>{kitLoading ? (tool?.icon ?? '🗺️') : '🎒'} Comfort kit</button>
                 <button onClick={() => setShowPanel(showPanel === 'rating' ? null : 'rating')} className={`py-2.5 rounded-xl text-xs font-bold ${c.btnSecondary}`}>⭐ Rate this visit</button>
                 <button onClick={() => toggle('timeline')} className={`py-2.5 rounded-xl text-xs font-bold ${c.btnSecondary}`}>📊 Time preview</button>
               </div>
@@ -842,7 +852,7 @@ const SensoryMinefieldMapper = ({ tool }) => {
               <div className={`${c.card} border-2 rounded-2xl p-5 ${isDark ? 'border-cyan-700/50' : 'border-cyan-300'}`}>
                 <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.accentTxt}`}>👥 Share with Your Companion</p>
                 <input type="text" value={companionName} onChange={e => setCompanionName(e.target.value)} placeholder="Their name (optional)" className={`w-full p-2.5 border-2 rounded-xl text-sm mb-3 ${c.input}`} />
-                <button onClick={fetchCompanionSummary} disabled={companionLoading} className={`w-full py-2.5 rounded-xl text-sm font-bold mb-3 ${c.btnPrimary} disabled:opacity-50`}>{companionLoading ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> Generating...</> : '✨ Generate Message'}</button>
+                <button onClick={fetchCompanionSummary} disabled={companionLoading} className={`w-full py-2.5 rounded-xl text-sm font-bold mb-3 ${c.btnPrimary} disabled:opacity-40`}>{companionLoading ? <><span className="inline-block animate-spin">{tool?.icon ?? '🗺️'}</span> Generating...</> : '✨ Generate Message'}</button>
                 {companionSummary && (
                   <div className="space-y-3">
                     <div className={`p-3 rounded-xl ${c.cardAlt} border`}>
@@ -872,8 +882,9 @@ const SensoryMinefieldMapper = ({ tool }) => {
               <div className={`${c.card} border-2 rounded-2xl p-5 ${isDark ? 'border-amber-700/50' : 'border-amber-300'}`}>
                 <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.accentTxt}`}>📡 Live Rescan</p>
                 <p className={`text-xs ${c.textSecondary} mb-3`}>You're at {location} now. Describe what's happening:</p>
-                <textarea value={rescanConditions} onChange={e => setRescanConditions(e.target.value)} placeholder="e.g., way louder than expected, huge line, music blasting..." rows={2} className={`w-full p-3 border-2 rounded-xl text-sm resize-y mb-3 ${c.input}`} />
-                <button onClick={fetchRescan} disabled={rescanLoading || !rescanConditions.trim()} className={`w-full py-2.5 rounded-xl text-sm font-bold mb-3 ${c.btnPrimary} disabled:opacity-50`}>{rescanLoading ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> Rescanning...</> : '📡 Get Adjusted Strategy'}</button>
+                <label htmlFor="smm-rescan-conditions" className="sr-only">Current conditions</label>
+                <textarea id="smm-rescan-conditions" value={rescanConditions} onChange={e => setRescanConditions(e.target.value)} placeholder="e.g., way louder than expected, huge line, music blasting..." rows={2} className={`w-full p-3 border-2 rounded-xl text-sm resize-y mb-3 ${c.input}`} />
+                <button onClick={fetchRescan} disabled={rescanLoading || !rescanConditions.trim()} className={`w-full py-2.5 rounded-xl text-sm font-bold mb-3 ${c.btnPrimary} disabled:opacity-40`}>{rescanLoading ? <><span className="inline-block animate-spin">{tool?.icon ?? '🗺️'}</span> Rescanning...</> : '📡 Get Adjusted Strategy'}</button>
                 {rescan && (
                   <div className="space-y-3">
                     <div className={`p-3 rounded-xl ${c.cardAlt} border`}>
@@ -1014,8 +1025,8 @@ const SensoryMinefieldMapper = ({ tool }) => {
                 </button>
               )}
 
-              <button onClick={planRoute} disabled={routeLoading} className={`w-full py-3.5 rounded-xl font-bold ${c.btnPrimary} disabled:opacity-50`}>
-                {routeLoading ? <span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> : <span className="mr-2">🗺️</span>}
+              <button onClick={planRoute} disabled={routeLoading} className={`w-full py-3.5 rounded-xl font-bold ${c.btnPrimary} disabled:opacity-40`}>
+                {routeLoading ? <span className="inline-block animate-spin">{tool?.icon ?? '🗺️'}</span> : <span className="mr-2">🗺️</span>}
                 {routeLoading ? 'Planning...' : 'Plan Route'}
               </button>
             </div>

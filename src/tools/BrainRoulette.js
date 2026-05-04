@@ -878,7 +878,7 @@ const BrainRoulette = ({ tool }) => {
             <div className="space-y-2">
               {latestChainThreads.map((t, i) => (
                 <button key={i} onClick={() => handleChainDeeper(t)} disabled={!canSpin}
-                  className={`w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl border transition-all disabled:opacity-50 ${c.deeperCard}`}>
+                  className={`w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl border transition-all disabled:opacity-40 ${c.deeperCard}`}>
                   <span className={c.textCyan}>→</span><span className={`text-sm font-semibold ${c.textSecondary}`}>{t.label}</span>
                 </button>
               ))}
@@ -1260,7 +1260,7 @@ const BrainRoulette = ({ tool }) => {
                   <div className="space-y-2">
                     {result.deeper_threads.map((t, i) => (
                       <button key={i} onClick={() => handleGoDeeper(t)} disabled={!canSpin}
-                        className={`w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl border transition-all disabled:opacity-50 ${c.deeperCard}`}>
+                        className={`w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl border transition-all disabled:opacity-40 ${c.deeperCard}`}>
                         <span className={c.textCyan}>→</span><span className={`text-sm font-semibold ${c.textSecondary}`}>{t.label}</span>
                       </button>
                     ))}

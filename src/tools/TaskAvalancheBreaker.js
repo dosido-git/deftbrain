@@ -33,7 +33,6 @@ const TaskAvalancheBreaker = ({ tool }) => {
     // ── Bespoke keys ──
     toastBg:      isDark ? 'bg-zinc-700 text-zinc-50 border border-zinc-600' : 'bg-white text-gray-900 border border-gray-200',
     celebrationBg: isDark ? 'bg-emerald-900 border-emerald-600' : 'bg-emerald-100 border-emerald-500',
-    iconBg:       isDark ? 'bg-emerald-900/30' : 'bg-emerald-100',
     activeModeBtn: isDark ? 'border-emerald-500 bg-emerald-900/30' : 'border-emerald-600 bg-emerald-100',
     habitBg:      isDark ? 'bg-sky-900/20' : 'bg-sky-50',
     accountabilityBg: isDark ? 'bg-cyan-900/20' : 'bg-cyan-50',

@@ -1188,7 +1188,7 @@ const ApologyCalibrator = ({ tool }) => {
                 className={`px-3 py-1.5 rounded-lg text-sm ${!auditInput.didApologize ? c.tabActive : c.tabInactive}`}>No</button>
             </div>
             <button onClick={addAuditSituation} disabled={!auditInput.text.trim()}
-              className={`px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50 ${c.btnPrimary}`}>
+              className={`px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-40 ${c.btnPrimary}`}>
               <span className="mr-1">➕</span> Add
             </button>
           </div>
@@ -2238,7 +2238,7 @@ const ApologyCalibrator = ({ tool }) => {
           className={`flex-1 p-2 text-sm border rounded-lg outline-none ${c.input} ${c.input}`} />
         <button onClick={() => { if (note.trim()) { addFollowUp(repairId, note.trim()); setNote(''); } }}
           disabled={!note.trim()}
-          className={`px-3 py-2 rounded-lg text-sm font-medium disabled:opacity-50 ${c.btnPrimary}`}>
+          className={`px-3 py-2 rounded-lg text-sm font-medium disabled:opacity-40 ${c.btnPrimary}`}>
           <span>➕</span>
         </button>
       </div>
@@ -2449,7 +2449,7 @@ const ApologyCalibrator = ({ tool }) => {
                 className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input} ${c.input}`} />
             </div>
             <button onClick={addRepair} disabled={!repairForm.who.trim() || !repairForm.what.trim()}
-              className={`w-full py-2 rounded-lg text-sm font-medium disabled:opacity-50 ${c.btnPrimary}`}>
+              className={`w-full py-2 rounded-lg text-sm font-medium disabled:opacity-40 ${c.btnPrimary}`}>
               <span className="mr-1">✅</span> Log Repair
             </button>
           </div>

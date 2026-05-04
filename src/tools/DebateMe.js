@@ -69,15 +69,8 @@ const DebateMe = ({ tool }) => {
                           : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200'
                           : 'bg-red-50 border-red-200 text-red-800',
-    infoBox:       isDark ? 'bg-sky-900/20 border-sky-700 text-sky-200'
                           : 'bg-sky-50 border-sky-200 text-sky-800',
-    successBox:    isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-300',
-    successTxt:    isDark ? 'text-emerald-300' : 'text-emerald-800',
-    warningBox:    isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
-    warningTxt:    isDark ? 'text-amber-300' : 'text-amber-800',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200'
                           : 'border-cyan-600 bg-cyan-100 text-cyan-900',
-    pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500'
                           : 'border-gray-300 text-gray-500 hover:border-gray-400',
     required:      isDark ? 'text-amber-400' : 'text-amber-500',
     // Bespoke keys
@@ -419,8 +412,8 @@ const DebateMe = ({ tool }) => {
         {s.coaching_note && <div className={`${c.card} border-2 ${c.orangeBorder2} rounded-xl p-5`}><p className={`text-xs font-bold ${c.orangeText} mb-1`}>🎯 Coach's Note</p><p className={`text-sm ${c.text}`}>{s.coaching_note}</p></div>}
         {s.next_debate_suggestion && <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}><p className={`text-sm ${c.textSecondary}`}>💡 <strong>Next:</strong> {s.next_debate_suggestion}</p></div>}
         <div className="flex flex-wrap gap-2">
-          <button onClick={handleAudience} disabled={loading} className={`flex-1 py-2.5 rounded-xl font-bold text-xs ${c.btnSecondary} border ${c.border} disabled:opacity-50`}>{audienceData ? '✅ Audience Judged' : loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🥊'}</span></> : '👥 Audience Verdict'}</button>
-          <button onClick={handleArgMap} disabled={loading} className={`flex-1 py-2.5 rounded-xl font-bold text-xs ${c.btnSecondary} border ${c.border} disabled:opacity-50`}>{argMapData ? '✅ Map Built' : loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🥊'}</span></> : '🗺️ Argument Map'}</button>
+          <button onClick={handleAudience} disabled={loading} className={`flex-1 py-2.5 rounded-xl font-bold text-xs ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>{audienceData ? '✅ Audience Judged' : loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🥊'}</span></> : '👥 Audience Verdict'}</button>
+          <button onClick={handleArgMap} disabled={loading} className={`flex-1 py-2.5 rounded-xl font-bold text-xs ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>{argMapData ? '✅ Map Built' : loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🥊'}</span></> : '🗺️ Argument Map'}</button>
         </div>
         {audienceData && <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-3`}>
           <h3 className={`font-bold ${c.text}`}>👥 Audience Verdict</h3>
@@ -527,7 +520,7 @@ const DebateMe = ({ tool }) => {
         <div><p className={`text-xs font-bold ${c.formLabel} mb-2`}>Category</p><div className="flex flex-wrap gap-1.5">{CATEGORIES.map(cat => <button key={cat.id} onClick={() => setCategory(cat.id === category ? '' : cat.id)} className={`px-2.5 py-1.5 rounded-lg text-xs font-medium border ${category === cat.id ? c.on : `${c.off} ${c.border}`}`}>{cat.icon} {cat.label}</button>)}</div></div>
         <div><p className={`text-xs font-bold ${c.formLabel} mb-2`}>Format</p><div className="grid grid-cols-2 sm:grid-cols-5 gap-2">{FORMATS.map(f => <button key={f.id} onClick={() => setFormat(f.id)} className={`p-2 rounded-xl border text-center ${format === f.id ? `${c.accentCard} border-amber-500` : `${c.cardAlt} ${c.border}`}`}><span className="text-lg">{f.icon}</span><p className={`text-xs font-bold ${c.text} mt-0.5`}>{f.label}</p><p className={`text-xs ${c.textMuteded}`}>{f.desc}</p></button>)}</div></div>
         <div><p className={`text-xs font-bold ${c.formLabel} mb-2`}>Challenge</p><div className="grid grid-cols-3 gap-2">{LEVELS.map(lv => <button key={lv.id} onClick={() => setLevel(lv.id)} className={`p-2.5 rounded-xl border text-left ${level === lv.id ? `${c.accentCard} border-amber-500` : `${c.cardAlt} ${c.border}`}`}><span className="text-lg">{lv.icon}</span> <span className={`text-sm font-bold ${c.text}`}>{lv.label}</span><p className={`text-xs ${c.textMuteded}`}>{lv.desc}</p></button>)}</div></div>
-        <button onClick={handleOpen} disabled={loading} className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-50`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🥊'}</span> Preparing...</> : <><span>{tool?.icon ?? '🥊'}</span> Start Debate</>}</button>
+        <button onClick={handleOpen} disabled={loading} className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🥊'}</span> Preparing...</> : <><span>{tool?.icon ?? '🥊'}</span> Start Debate</>}</button>
         <p className={`text-xs ${c.textMuted}`}>
           Testing a belief?{' '}<a href="/BeliefStressTest" className={linkStyle}>🧪 Belief Stress Test</a>{' '}
           stress-tests your convictions from every angle.
@@ -569,7 +562,7 @@ const DebateMe = ({ tool }) => {
         {/* Source Check */}
         {showSource && <div className={`${c.card} border ${c.border} rounded-xl p-4 space-y-3`}>
           <div className="flex items-center justify-between"><span className={`text-xs font-bold ${c.text}`}>🔍 Source Check</span><button onClick={() => { setShowSource(false); setSourceData(null); }} className={`text-xs ${c.textMuteded}`}>✕</button></div>
-          <div className="flex gap-2"><input value={sourceText} onChange={e => setSourceText(e.target.value)} placeholder="Paste a claim to fact-check..." className={`flex-1 px-3 py-2 rounded-lg border text-sm ${c.input}`} /><button onClick={handleSourceCheck} disabled={loading} className={`px-3 py-2 rounded-lg text-xs font-bold ${c.btnPrimary} disabled:opacity-50`}>Check</button></div>
+          <div className="flex gap-2"><input value={sourceText} onChange={e => setSourceText(e.target.value)} placeholder="Paste a claim to fact-check..." className={`flex-1 px-3 py-2 rounded-lg border text-sm ${c.input}`} /><button onClick={handleSourceCheck} disabled={loading} className={`px-3 py-2 rounded-lg text-xs font-bold ${c.btnPrimary} disabled:opacity-40`}>Check</button></div>
           {sourceData && <div className="space-y-2">
             <div className={`${({ 'Well-supported': c.success, 'Partially supported': c.infoCard, 'Plausible but unproven': c.warning, 'Misleading': c.danger, 'Unsupported': c.danger })[sourceData.evidence_rating?.score] || c.warning} border rounded-lg p-3`}>
               <p className="text-sm font-bold">{sourceData.evidence_rating?.emoji} {sourceData.evidence_rating?.score}</p>
@@ -586,7 +579,7 @@ const DebateMe = ({ tool }) => {
         <div className={`${c.card} border ${c.border} rounded-xl p-4 space-y-3`}>
           <div className="relative"><textarea value={userInput} onChange={e => setUserInput(e.target.value)} placeholder="Your response..." rows={4} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) handleRespond(); }} />{userInput.trim() && <span className={`absolute bottom-2 right-2 text-xs ${c.textMuteded}`}>{wc}w</span>}</div>
           <div className="flex flex-wrap gap-1.5">
-            <button onClick={handleRespond} disabled={loading || !userInput.trim()} className={`flex-1 py-2.5 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-50`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🥊'}</span> Responding...</> : '💬 Respond'}</button>
+            <button onClick={handleRespond} disabled={loading || !userInput.trim()} className={`flex-1 py-2.5 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🥊'}</span> Responding...</> : '💬 Respond'}</button>
             <button onClick={handleConcede} disabled={loading} className={`px-3 py-2 rounded-lg text-xs font-bold ${c.btnSecondary} border ${c.border}`}>🤝 Concede</button>
             <button onClick={handleCoach} disabled={loading} className={`px-3 py-2 rounded-lg text-xs font-bold ${c.btnSecondary} border ${c.border}`}>🧑‍🏫 Coach</button>
             <button onClick={() => { setShowSource(!showSource); setSourceData(null); }} className={`px-3 py-2 rounded-lg text-xs font-bold ${c.btnSecondary} border ${c.border}`}>🔍 Fact-check</button>
@@ -621,7 +614,7 @@ const DebateMe = ({ tool }) => {
           <label className={`block text-sm font-medium ${c.labelText} mb-1`}>Your position <span className={c.required}>*</span></label>
           <textarea value={quickPosition} onChange={e => setQuickPosition(e.target.value)} placeholder="Your position..." rows={3} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
           <div className="flex flex-wrap gap-1.5">{STARTERS.slice(0, 6).map((s, i) => <button key={i} onClick={() => setQuickPosition(s.t)} className={`text-xs px-2 py-1 rounded-lg ${c.btnSecondary} border ${c.border}`}>{s.cat} {s.t.substring(0, 30)}...</button>)}</div>
-          <button onClick={handleQuick} disabled={loading} className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-50`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🥊'}</span> Challenging...</> : '⚡ Challenge Me'}</button>
+          <button onClick={handleQuick} disabled={loading} className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🥊'}</span> Challenging...</> : '⚡ Challenge Me'}</button>
         </div>
         {quickData && <div className="space-y-4">
           {quickData.strength_acknowledged && <div className={`${c.success} border rounded-xl p-4`}><p className="text-sm">✅ {quickData.strength_acknowledged}</p></div>}
@@ -640,7 +633,7 @@ const DebateMe = ({ tool }) => {
           <input value={prepAudience} onChange={e => setPrepAudience(e.target.value)} placeholder="Who you're presenting to (e.g., 'conservative CEO and board of directors')" className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
           <input value={prepContext} onChange={e => setPrepContext(e.target.value)} placeholder="Context (e.g., 'company lost revenue last quarter, they're risk-averse')" className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
           <div><p className={`text-xs font-bold ${c.formLabel} mb-2`}>Stakes</p><div className="flex gap-2">{['low', 'moderate', 'high', 'career-defining'].map(s => <button key={s} onClick={() => setPrepStakes(s)} className={`px-3 py-1.5 rounded-lg text-xs font-medium ${prepStakes === s ? c.on : c.off}`}>{s}</button>)}</div></div>
-          <button onClick={handlePrep} disabled={loading} className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-50`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🥊'}</span> Simulating...</> : '🎯 Prep Me'}</button>
+          <button onClick={handlePrep} disabled={loading} className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🥊'}</span> Simulating...</> : '🎯 Prep Me'}</button>
         </div>
         {prepData && <div className="space-y-4">
           {prepData.audience_profile && <div className={`${c.infoCard} border rounded-xl p-4`}><p className="text-xs font-bold">👥 Audience Profile</p><p className={`text-sm ${c.coachLabel} mt-1`}>{prepData.audience_profile}</p></div>}
@@ -668,7 +661,7 @@ const DebateMe = ({ tool }) => {
           <div className="flex items-center justify-between"><h3 className={`font-bold ${c.text}`}>🧩 Fallacy Gym</h3>{ftStreak > 0 && <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${c.success} border`}>🔥 {ftStreak} streak</span>}</div>
           <p className={`text-sm ${c.textMuteded}`}>Spot the logical fallacy. The better you get, the harder they get.</p>
           <div><p className={`text-xs font-bold ${c.formLabel} mb-2`}>Difficulty</p><div className="flex gap-2">{['easy', 'medium', 'hard'].map(d => <button key={d} onClick={() => setFtDifficulty(d)} className={`px-3 py-1.5 rounded-lg text-xs font-medium ${ftDifficulty === d ? c.on : c.off}`}>{d === 'easy' ? '🟢' : d === 'medium' ? '🟡' : '🔴'} {d}</button>)}</div></div>
-          <button onClick={handleFallacyNew} disabled={loading} className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-50`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🥊'}</span> Loading...</> : ftExercise ? '🔄 New Exercise' : '🧩 Start Training'}</button>
+          <button onClick={handleFallacyNew} disabled={loading} className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🥊'}</span> Loading...</> : ftExercise ? '🔄 New Exercise' : '🧩 Start Training'}</button>
         </div>
         {ftExercise && <div className="space-y-4">
           <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
@@ -678,7 +671,7 @@ const DebateMe = ({ tool }) => {
           {!ftFeedback && <div className="space-y-2">
             <input value={ftAnswer} onChange={e => setFtAnswer(e.target.value)} placeholder="What fallacy is this? (e.g., 'ad hominem', 'false dichotomy')" className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} onKeyDown={e => { if (e.key === 'Enter') handleFallacyCheck(); }} />
             <div className="flex gap-2">
-              <button onClick={handleFallacyCheck} disabled={loading || !ftAnswer.trim()} className={`flex-1 py-2.5 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-50`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🥊'}</span></> : '✅ Check'}</button>
+              <button onClick={handleFallacyCheck} disabled={loading || !ftAnswer.trim()} className={`flex-1 py-2.5 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🥊'}</span></> : '✅ Check'}</button>
               <button onClick={() => setFtShowAnswer(!ftShowAnswer)} className={`px-4 py-2.5 rounded-xl text-xs font-bold ${c.btnSecondary} border ${c.border}`}>{ftShowAnswer ? '🙈 Hide' : '💡 Hint'}</button>
             </div>
             {ftShowAnswer && ftExercise.hint && <p className={`text-xs ${c.textSecondary} italic`}>💡 {ftExercise.hint}</p>}
@@ -706,7 +699,7 @@ const DebateMe = ({ tool }) => {
               {s.tl && <div className={`${c.cardAlt} rounded-lg p-3`}><p className={`text-xs font-bold ${c.text}`}>⚙️ Preferred</p><p className={`text-sm ${c.textSecondary}`}>{LEVELS.find(l => l.id === s.tl[0])?.icon} {s.tl[0]} ({s.tl[1]}x)</p></div>}
               {s.tf && <div className={`${c.warning} border rounded-lg p-3`}><p className="text-xs font-bold">⚠️ Top fallacy</p><p className="text-sm">{s.tf[0]} ({s.tf[1]}x)</p></div>}
             </div>
-            <button onClick={handleHighlightReel} disabled={loading || history.length < 3} className={`w-full py-2.5 rounded-xl font-bold text-xs ${c.btnSecondary} border ${c.border} disabled:opacity-50`}>{highlightData ? '✅ Highlight Reel Ready' : loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🥊'}</span> Analyzing...</> : '🏆 Generate Highlight Reel (3+ debates)'}</button>
+            <button onClick={handleHighlightReel} disabled={loading || history.length < 3} className={`w-full py-2.5 rounded-xl font-bold text-xs ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>{highlightData ? '✅ Highlight Reel Ready' : loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🥊'}</span> Analyzing...</> : '🏆 Generate Highlight Reel (3+ debates)'}</button>
           </div>}
         </div>
 

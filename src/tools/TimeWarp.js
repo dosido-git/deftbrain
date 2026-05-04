@@ -36,10 +36,6 @@ const TimeWarp = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { isDark } = useTheme();
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
-
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
@@ -55,11 +51,17 @@ const TimeWarp = ({ tool }) => {
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
+    success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
+    warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
     pillActive:    isDark ? 'bg-cyan-600 border-cyan-600 text-white' : 'bg-cyan-600 border-cyan-600 text-white',
     pillInactive:  isDark ? 'bg-zinc-800 border-zinc-600 text-zinc-300 hover:border-zinc-500' : 'bg-white border-gray-200 text-gray-500 hover:border-gray-300',
     quoteBg:       isDark ? 'bg-zinc-900/60' : 'bg-slate-50',
     infoBox:       isDark ? 'bg-sky-900/20 border-sky-700 text-sky-200' : 'bg-sky-50 border-sky-200 text-sky-800',
   };
+
+  const linkStyle = isDark
+    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
+    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
 
   // ── State ──
   const [modernThing, setModernThing] = useState('');
@@ -142,7 +144,13 @@ const TimeWarp = ({ tool }) => {
 
         {/* Quick combos */}
         <div className="mb-4">
-          <label className={`text-[10px] font-bold ${c.labelText} uppercase block mb-2`}>Quick combos</label>
+          <div className="flex items-center justify-between mb-2">
+            <label className={`text-[10px] font-bold ${c.labelText} uppercase`}>Quick combos</label>
+            <button onClick={() => applyCombo(QUICK_COMBOS[Math.floor(Math.random() * QUICK_COMBOS.length)])}
+              className={`${c.btnSecondary} px-2.5 py-1 rounded-lg text-[10px] font-bold`}>
+              ✨ Try Example
+            </button>
+          </div>
           <div className="flex flex-wrap gap-1.5">
             {QUICK_COMBOS.map((combo, i) => (
               <button key={i} onClick={() => applyCombo(combo)}
@@ -154,15 +162,16 @@ const TimeWarp = ({ tool }) => {
         </div>
 
         {/* Inputs */}
+        <p className={`text-[10px] ${c.textMuted} mb-1.5`}>Fill at least one — combos work best with both.</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
           <div>
-            <label className={`text-xs font-bold ${c.labelText} block mb-1.5`}>Modern thing</label>
+            <label className={`text-xs font-bold ${c.labelText} block mb-1.5`}>Modern thing <span className={c.required}>*</span></label>
             <input type="text" value={modernThing} onChange={e => setModernThing(e.target.value)}
               placeholder="e.g., TikTok, DoorDash, cryptocurrency..."
               className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
           </div>
           <div>
-            <label className={`text-xs font-bold ${c.labelText} block mb-1.5`}>Historical period</label>
+            <label className={`text-xs font-bold ${c.labelText} block mb-1.5`}>Historical period <span className={c.required}>*</span></label>
             <input type="text" value={historicalPeriod} onChange={e => setHistoricalPeriod(e.target.value)}
               placeholder="e.g., Ancient Rome, 1920s Paris, Medieval Japan..."
               className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
@@ -185,10 +194,14 @@ const TimeWarp = ({ tool }) => {
           </div>
         </div>
 
+        <p className={`text-[11px] ${c.textMuted} mb-2 text-center`}>
+          Want a totally absurd take? <a href="/WrongAnswersOnly" className={linkStyle}>🎭 WrongAnswersOnly</a> answers any question with confident nonsense.
+        </p>
+
         <button onClick={runWarp} disabled={(!modernThing.trim() && !historicalPeriod.trim()) || loading}
           className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
           {loading
-            ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> Warping through time...</>
+            ? <><span className="inline-block animate-spin">{tool?.icon ?? '⏰'}</span> Warping through time...</>
             : <><span>{tool?.icon ?? '⏰'}</span> Warp It</>}
         </button>
       </div>
@@ -252,7 +265,7 @@ const TimeWarp = ({ tool }) => {
           {/* Warp again */}
           <div className="flex gap-2">
             <button onClick={runWarp} disabled={loading}
-              className={`flex-1 ${c.btnSecondary} font-bold py-3 rounded-lg min-h-[44px]`}>
+              className={`flex-1 ${c.btnSecondary} disabled:opacity-40 font-bold py-3 rounded-lg min-h-[44px]`}>
               🔄 Same Combo, Different Take
             </button>
             <button onClick={() => { setModernThing(''); setHistoricalPeriod(''); setResults(null); }}
@@ -281,15 +294,17 @@ const TimeWarp = ({ tool }) => {
         </div>
       )}
 
-      {/* Cross-tool links */}
-      <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
-        <p className={`text-xs font-bold ${c.textMuted} mb-2`}>🔗 Related tools</p>
-        <div className="flex flex-wrap gap-3">
-          <a href="wrong-answers-only" className={`text-xs ${linkStyle}`}>🎭 Wrong Answers Only</a>
-          <a href="what-if-machine" className={`text-xs ${linkStyle}`}>🤔 What-If Machine</a>
-          <a href="plot-twist" className={`text-xs ${linkStyle}`}>🌀 Plot Twist</a>
+      {/* Post-result cross-tool links */}
+      {results && (
+        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
+          <p className={`text-xs font-bold ${c.textMuted} mb-2`}>Next step</p>
+          <div className="flex flex-wrap gap-3">
+            <a href="/WrongAnswersOnly" className={`text-xs ${linkStyle}`}>🎭 Wrong Answers Only</a>
+            <a href="/WhatIf" className={`text-xs ${linkStyle}`}>🤔 What-If Machine</a>
+            <a href="/PlotTwist" className={`text-xs ${linkStyle}`}>🌀 Plot Twist</a>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

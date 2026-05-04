@@ -28,15 +28,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
     success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
     warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
-    infoBox:       isDark ? 'bg-sky-900/20 border-sky-700 text-sky-200' : 'bg-sky-50 border-sky-200 text-sky-800',
-    successBox:    isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-300',
-    successTxt:    isDark ? 'text-emerald-300' : 'text-emerald-800',
-    warningBox:    isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
-    warningTxt:    isDark ? 'text-amber-300' : 'text-amber-800',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
-    pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
     required:      'text-red-500',
-    badgeNeutral:  isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-gray-100 text-gray-600',
     // ─── Tool-specific semantic colors ───
     highlight:        isDark ? 'bg-cyan-900/20 border-cyan-700' : 'bg-cyan-50 border-cyan-300',
     hintStyle:        isDark ? 'bg-zinc-700/50 text-zinc-300' : 'bg-slate-100 text-slate-600',
@@ -46,7 +38,6 @@ const ComplaintEscalationWriter = ({ tool }) => {
     toneActive:       isDark ? 'border-cyan-500 bg-cyan-900/30' : 'border-cyan-600 bg-cyan-50',
     toneInactive:     isDark ? 'border-zinc-600 hover:border-zinc-500' : 'border-gray-200 hover:border-gray-300',
     issueTip:         isDark ? 'text-amber-400' : 'text-amber-600',
-    resetBtn:         isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     resolvedBtn:      isDark ? 'border-emerald-600 bg-emerald-900/30 text-emerald-300 hover:bg-emerald-900/50' : 'border-emerald-400 bg-emerald-50 text-emerald-700 hover:bg-emerald-100',
     resolvedText:     isDark ? 'text-emerald-300' : 'text-emerald-700',
     escalateBtn:      isDark ? 'border-red-700 bg-red-900/30 text-red-300 hover:bg-red-900/50' : 'border-red-300 bg-red-50 text-red-700 hover:bg-red-100',
@@ -67,8 +58,6 @@ const ComplaintEscalationWriter = ({ tool }) => {
     timelineLine:     isDark ? 'bg-zinc-600' : 'bg-gray-300',
     timelineDotRest:  isDark ? 'bg-zinc-600' : 'bg-gray-300',
     disclaimerBox:    isDark ? 'bg-zinc-700/50' : 'bg-gray-50',
-    why:              isDark ? 'text-zinc-400' : 'text-gray-500',
-    title:            isDark ? 'text-zinc-50' : 'text-gray-900',
     callOpenBox:      isDark ? 'bg-sky-900/20' : 'bg-sky-50',
     callOpenText:     isDark ? 'text-sky-400' : 'text-sky-700',
     callPhrasesBox:   isDark ? 'bg-emerald-900/20' : 'bg-emerald-50',
@@ -77,7 +66,6 @@ const ComplaintEscalationWriter = ({ tool }) => {
     callAvoidText:    isDark ? 'text-red-400' : 'text-red-600',
     callPressureBox:  isDark ? 'border-amber-700 bg-amber-900/20' : 'border-amber-300 bg-amber-50',
     callPressureText: isDark ? 'text-amber-400' : 'text-amber-700',
-    email_pattern:    isDark ? 'text-zinc-400' : 'text-gray-500',
   };
   c.textMuteded = c.textMuted;
   c.label = c.labelText;

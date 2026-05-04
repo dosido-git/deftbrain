@@ -86,7 +86,6 @@ const BrainDumpBuddy = ({ tool }) => {
     doFirstDoneLabel:     isDark ? 'text-emerald-400' : 'text-emerald-600',
     doFirstActiveLabel:   isDark ? 'text-cyan-300' : 'text-cyan-600',
     allDoneText:          isDark ? 'text-emerald-300' : 'text-emerald-600',
-    emergencyReleaseLabel:isDark ? 'text-sky-300' : 'text-sky-600',
   };
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
@@ -733,7 +732,7 @@ const BrainDumpBuddy = ({ tool }) => {
                   className={`flex-1 p-2.5 rounded-lg border ${c.input} focus:ring-2 focus:ring-cyan-400 outline-none text-sm`}
                   autoFocus />
                 <button onClick={addRapidThought} disabled={!currentRapid.trim()}
-                  className={`${c.btnPrimary} disabled:opacity-30 px-4 rounded-lg font-bold`}>➕</button>
+                  className={`${c.btnPrimary} disabled:opacity-40 px-4 rounded-lg font-bold`}>➕</button>
               </div>
               <div className="flex justify-between">
                 <div className="flex items-center gap-2">

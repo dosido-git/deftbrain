@@ -176,27 +176,16 @@ const FakeReviewDetective = ({ tool }) => {
     success:       isDark ? 'bg-emerald-900/20 border-emerald-700/50 text-emerald-200' : 'bg-emerald-50 border-emerald-200 text-emerald-800',
     warning:       isDark ? 'bg-amber-900/20 border-amber-700/50 text-amber-200' : 'bg-amber-50 border-amber-200 text-amber-800',
     highlight:     isDark ? 'bg-cyan-900/20 border-cyan-700/50 text-cyan-200' : 'bg-cyan-50 border-cyan-200 text-cyan-800',
-    pillRed:       isDark ? 'bg-red-900/40 text-red-300 border-red-700/40' : 'bg-red-100 text-red-700 border-red-200',
-    pillGreen:     isDark ? 'bg-emerald-900/40 text-emerald-300 border-emerald-700/40' : 'bg-emerald-100 text-emerald-700 border-emerald-200',
     pillGray:      isDark ? 'bg-zinc-700 text-zinc-400 border-zinc-600' : 'bg-gray-100 text-gray-500 border-gray-200',
-    pillAmber:     isDark ? 'bg-amber-900/40 text-amber-300 border-amber-700/40' : 'bg-amber-100 text-amber-700 border-amber-200',
     pillCyan:      isDark ? 'bg-cyan-900/40 text-cyan-300 border-cyan-700/40' : 'bg-cyan-100 text-cyan-700 border-cyan-200',
     statCard:      isDark ? 'bg-zinc-700/50 border-zinc-600' : 'bg-white border-gray-200',
     barBg:         isDark ? 'bg-zinc-700' : 'bg-gray-200',
-    skeleton:      isDark ? 'bg-zinc-700 animate-pulse' : 'bg-gray-200 animate-pulse',
     quoteBg:       isDark ? 'bg-zinc-900/60' : 'bg-slate-50',
     hlFake:        isDark ? 'bg-red-800/30' : 'bg-red-100',
     hlGeneric:     isDark ? 'bg-amber-800/30' : 'bg-amber-100',
     hlCompetitor:  isDark ? 'bg-zinc-700/60' : 'bg-gray-200',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
     accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    infoBox:       isDark ? 'bg-sky-900/20 border-sky-700 text-sky-200' : 'bg-sky-50 border-sky-200 text-sky-800',
-    successBox:    isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-300',
-    successTxt:    isDark ? 'text-emerald-300' : 'text-emerald-800',
-    warningBox:    isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
-    warningTxt:    isDark ? 'text-amber-300' : 'text-amber-800',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
-    pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
     required:      isDark ? 'text-amber-400' : 'text-amber-500',
     deleteHover:   isDark ? 'hover:text-red-400' : 'hover:text-red-600',
   };
@@ -597,7 +586,7 @@ const FakeReviewDetective = ({ tool }) => {
         <div className={`${c.card} border rounded-xl p-5`}>
           <button onClick={() => setShowFingerprint(!showFingerprint)} className="flex items-center gap-2 w-full text-left">
             <span>🔬</span><h3 className={`text-sm font-bold ${c.text} flex-1`}>Author Fingerprinting</h3>
-            {!fingerprint && <button onClick={(e) => { e.stopPropagation(); runFingerprint(); }} disabled={fingerprintLoading} className={`${c.btnSecondary} text-xs px-3 py-1 rounded-lg disabled:opacity-50`}>{fingerprintLoading ? <span className="animate-spin inline-block">{tool?.icon ?? '🔍'}</span> : <><span className="mr-1">{tool?.icon ?? '🔍'}</span>Analyze</>}</button>}
+            {!fingerprint && <button onClick={(e) => { e.stopPropagation(); runFingerprint(); }} disabled={fingerprintLoading} className={`${c.btnSecondary} text-xs px-3 py-1 rounded-lg disabled:opacity-40`}>{fingerprintLoading ? <span className="animate-spin inline-block">{tool?.icon ?? '🔍'}</span> : <><span className="mr-1">{tool?.icon ?? '🔍'}</span>Analyze</>}</button>}
             <span className={c.textMuteded}>{showFingerprint ? '▲' : '▼'}</span>
           </button>
           {showFingerprint && (fingerprint ? (
@@ -689,7 +678,7 @@ const FakeReviewDetective = ({ tool }) => {
         <div className={`${c.card} border rounded-xl p-5`}>
           <div className="flex items-center justify-between mb-3">
             <h3 className={`text-sm font-bold ${c.text} flex items-center gap-2`}><span>🌐</span> Cross-Platform Comparison ({sourceAnalyses.length} sources)</h3>
-            <button onClick={runSynthesis} disabled={synthesisLoading} className={`${c.btnPrimary} text-xs px-3 py-1.5 rounded-lg disabled:opacity-50`}>{synthesisLoading ? <span className="animate-spin inline-block">{tool?.icon ?? '🔍'}</span> : <><span className="mr-1">{tool?.icon ?? '🔍'}</span>{synthesis ? 'Refresh' : 'Synthesize'}</>}</button>
+            <button onClick={runSynthesis} disabled={synthesisLoading} className={`${c.btnPrimary} text-xs px-3 py-1.5 rounded-lg disabled:opacity-40`}>{synthesisLoading ? <span className="animate-spin inline-block">{tool?.icon ?? '🔍'}</span> : <><span className="mr-1">{tool?.icon ?? '🔍'}</span>{synthesis ? 'Refresh' : 'Synthesize'}</>}</button>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-3">
             {sourceAnalyses.slice(0, 6).map(sa => (

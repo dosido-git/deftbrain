@@ -136,12 +136,7 @@ const MoneyDiplomat = ({ tool }) => {
                           : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200'
                           : 'bg-red-50 border-red-200 text-red-800',
-    infoBox:       isDark ? 'bg-sky-900/20 border-sky-700 text-sky-200'
                           : 'bg-sky-50 border-sky-200 text-sky-800',
-    successBox:    isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-300',
-    successTxt:    isDark ? 'text-emerald-300' : 'text-emerald-800',
-    warningBox:    isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
-    warningTxt:    isDark ? 'text-amber-300' : 'text-amber-800',
     pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200'
                           : 'border-cyan-600 bg-cyan-100 text-cyan-900',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500'
@@ -492,7 +487,7 @@ const MoneyDiplomat = ({ tool }) => {
                   <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>Who are they? (optional)</label>
                   <input type="text" value={simOtherPerson} onChange={e => setSimOtherPerson(e.target.value)} placeholder="My older brother, tends to guilt-trip..." className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                 </div>
-                <button onClick={handleSimStart} disabled={simLoading || !simSituation.trim()} className={`${isDark ? 'bg-pink-600 hover:bg-pink-500 text-white' : 'bg-pink-600 hover:bg-pink-700 text-white'} px-4 py-2 rounded-xl text-sm font-bold transition-all disabled:opacity-50 flex items-center gap-2`}>
+                <button onClick={handleSimStart} disabled={simLoading || !simSituation.trim()} className={`${isDark ? 'bg-pink-600 hover:bg-pink-500 text-white' : 'bg-pink-600 hover:bg-pink-700 text-white'} px-4 py-2 rounded-xl text-sm font-bold transition-all disabled:opacity-40 flex items-center gap-2`}>
                   {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> : <span>🎭</span>}
                   Start Simulation
                 </button>
@@ -537,7 +532,7 @@ const MoneyDiplomat = ({ tool }) => {
                 <textarea id="md-sim-response" value={simResponse} onChange={e => setSimResponse(e.target.value)} rows={2}
                   placeholder="What do you say?" className={`w-full p-3 border rounded-xl outline-none text-sm resize-y mt-2 ${c.input}`} />
                 <div className="flex items-center gap-2 mt-2">
-                  <button onClick={handleSimRespond} disabled={simLoading || !simResponse.trim()} className={`${isDark ? 'bg-pink-600 hover:bg-pink-500 text-white' : 'bg-pink-600 hover:bg-pink-700 text-white'} px-4 py-2 rounded-xl text-sm font-bold transition-all disabled:opacity-50 flex items-center gap-2`}>
+                  <button onClick={handleSimRespond} disabled={simLoading || !simResponse.trim()} className={`${isDark ? 'bg-pink-600 hover:bg-pink-500 text-white' : 'bg-pink-600 hover:bg-pink-700 text-white'} px-4 py-2 rounded-xl text-sm font-bold transition-all disabled:opacity-40 flex items-center gap-2`}>
                     {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> : <span>💬</span>}
                     Respond
                   </button>
@@ -584,7 +579,7 @@ const MoneyDiplomat = ({ tool }) => {
           {/* Recap button */}
           <div className="text-center">
             {!recapData ? (
-              <button onClick={handleRecap} disabled={recapLoading} className={`${isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white'} px-4 py-2 rounded-xl text-sm font-bold transition-all disabled:opacity-50 flex items-center gap-2`}>
+              <button onClick={handleRecap} disabled={recapLoading} className={`${isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white'} px-4 py-2 rounded-xl text-sm font-bold transition-all disabled:opacity-40 flex items-center gap-2`}>
                 {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> : <span>📊</span>}
                 Generate Monthly Recap
               </button>
@@ -640,7 +635,7 @@ const MoneyDiplomat = ({ tool }) => {
                 <input type="text" value={newDebt.context} onChange={e => setNewDebt(p => ({ ...p, context: e.target.value }))} placeholder="Concert tickets" className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
               </div>
               <div className="flex items-end">
-                <button onClick={addDebt} disabled={!newDebt.person.trim() || !newDebt.amount} className={`${c.btnPrimary} px-3 py-2 rounded-lg text-xs font-bold w-full disabled:opacity-50`}>➕ Add</button>
+                <button onClick={addDebt} disabled={!newDebt.person.trim() || !newDebt.amount} className={`${c.btnPrimary} px-3 py-2 rounded-lg text-xs font-bold w-full disabled:opacity-40`}>➕ Add</button>
               </div>
             </div>
 
@@ -1073,7 +1068,7 @@ const MoneyDiplomat = ({ tool }) => {
               )}
 
               <div className="flex items-center gap-2 pt-2">
-                <button onClick={handleSubmit} disabled={loading || (!situation.trim() && !['travel', 'gift', 'cultural'].includes(activeType))} className={`${c.btnPrimary} px-4 py-2 rounded-xl text-sm font-bold transition-all disabled:opacity-50 flex items-center gap-2`}>
+                <button onClick={handleSubmit} disabled={loading || (!situation.trim() && !['travel', 'gift', 'cultural'].includes(activeType))} className={`${c.btnPrimary} px-4 py-2 rounded-xl text-sm font-bold transition-all disabled:opacity-40 flex items-center gap-2`}>
                   {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> : <span>💸</span>}
                   Get Advice
                 </button>

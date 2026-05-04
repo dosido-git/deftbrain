@@ -107,7 +107,6 @@ const CrisisPrioritizer = ({ tool }) => {
     btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
-    btnDisabled:   isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400',
     success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
     warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
@@ -139,7 +138,6 @@ const CrisisPrioritizer = ({ tool }) => {
     acctBg:     isDark ? 'bg-cyan-900/20 border-cyan-700 text-cyan-100' : 'bg-cyan-50 border-cyan-300 text-cyan-900',
     rolling:    isDark ? 'bg-cyan-900/20 border-cyan-700 text-cyan-200' : 'bg-cyan-50 border-cyan-300 text-cyan-800',
     // ─── Extracted raw isDark ternaries from JSX ───
-    successTxt:    isDark ? 'text-emerald-400' : 'text-emerald-600',
     // workTime/restText: replaces banned blue → sky
     workTime:       isDark ? 'text-sky-400' : 'text-sky-600',
     restText:       isDark ? 'text-sky-300' : 'text-sky-600',
@@ -149,7 +147,6 @@ const CrisisPrioritizer = ({ tool }) => {
     patternText:    isDark ? 'text-amber-300' : 'text-amber-600',
     navPatternBtn:  isDark ? 'text-amber-300 font-bold' : 'text-amber-700 font-bold',
     navDashBtn:     isDark ? 'text-cyan-300 font-bold' : 'text-cyan-600 font-bold',
-    resetBtn:       isDark ? 'bg-red-900/30 text-red-300' : 'bg-red-50 text-red-700',
     // Countdown badge colors (replaces raw cdColor ternaries)
     cdCrit:         isDark ? 'text-red-400 bg-red-900/30' : 'text-red-600 bg-red-100',
     cdImp:          isDark ? 'text-amber-300 bg-amber-900/30' : 'text-amber-700 bg-amber-100',
@@ -797,7 +794,7 @@ const CrisisPrioritizer = ({ tool }) => {
           {(w.must_dos || []).map((t, ti) => <label key={ti} className="flex items-center gap-2 text-xs"><input type="checkbox" checked={!!checked[`mw${wi}-${ti}`]} onChange={() => toggleCheck(`mw${wi}-${ti}`)} className="w-3.5 h-3.5 accent-cyan-600" /><span className={checked[`mw${wi}-${ti}`] ? 'line-through opacity-60' : ''}>{t}</span></label>)}
         </div>)}
         <textarea value={rollingNewTasks} onChange={e => setRollingNewTasks(e.target.value)} placeholder="New tasks? (one per line)" rows={3} className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input}`} />
-        <button onClick={handleRollingUpdate} disabled={rollingLoading} className={`w-full py-2.5 rounded-xl text-sm font-bold ${c.btnPrimary} disabled:opacity-50`}>{rollingLoading ? <><span className="animate-spin">{tool?.icon ?? '🚨'}</span> Updating...</> : '🔄 Re-triage My Plan'}</button>
+        <button onClick={handleRollingUpdate} disabled={rollingLoading} className={`w-full py-2.5 rounded-xl text-sm font-bold ${c.btnPrimary} disabled:opacity-40`}>{rollingLoading ? <><span className="animate-spin">{tool?.icon ?? '🚨'}</span> Updating...</> : '🔄 Re-triage My Plan'}</button>
         {rollingResult && <div className={`${c.success} border rounded-xl p-4 space-y-2`}>
           <p className="text-sm">{rollingResult.progress_acknowledgment}</p>
           <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${rollingResult.plan_status === 'on_track' || rollingResult.plan_status === 'ahead' ? c.success : rollingResult.plan_status === 'slightly_behind' ? c.warning : c.danger} border`}>{rollingResult.plan_status?.replace(/_/g, ' ')}</span>
@@ -815,7 +812,7 @@ const CrisisPrioritizer = ({ tool }) => {
         <input value={fuDone} onChange={e => setFuDone(e.target.value)} placeholder="What got done?" className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input}`} />
         <input value={fuDidnt} onChange={e => setFuDidnt(e.target.value)} placeholder="What didn't get done?" className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input}`} />
         <input value={fuSurprises} onChange={e => setFuSurprises(e.target.value)} placeholder="Any surprises? (optional)" className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input}`} />
-        <button onClick={handleFollowUp} disabled={fuLoading} className={`w-full py-2.5 rounded-xl text-sm font-bold ${c.btnPrimary} disabled:opacity-50`}>{fuLoading ? <span className="animate-spin">{tool?.icon ?? '🚨'}</span> : '📊 Analyze'}</button>
+        <button onClick={handleFollowUp} disabled={fuLoading} className={`w-full py-2.5 rounded-xl text-sm font-bold ${c.btnPrimary} disabled:opacity-40`}>{fuLoading ? <span className="animate-spin">{tool?.icon ?? '🚨'}</span> : '📊 Analyze'}</button>
         {fuResult && <div className={`${c.success} border rounded-xl p-4 space-y-2`}>
           <p className="text-sm">{fuResult.hindsight_summary}</p>
           <p className="text-xs">🎯 Calibration: {fuResult.calibration_insight}</p>
@@ -905,7 +902,7 @@ const CrisisPrioritizer = ({ tool }) => {
           <p className={`text-sm font-bold ${c.text}`}>🧠 Paste your panicked thoughts</p>
           <p className={`text-xs ${c.textMuted}`}>Can't organize? Just dump everything. We'll extract the tasks.</p>
           <textarea value={dumpText} onChange={e => setDumpText(e.target.value)} placeholder="Everything is falling apart. I have to call the dentist and my boss wants that report by Friday and I forgot to pay rent and..." rows={5} className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input}`} />
-          <button onClick={handleDump} disabled={dumpLoading || !dumpText.trim()} className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-50`}>{dumpLoading ? <><span className="animate-spin">{tool?.icon ?? '🚨'}</span> Extracting tasks...</> : '🧠 Extract My Tasks'}</button>
+          <button onClick={handleDump} disabled={dumpLoading || !dumpText.trim()} className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40`}>{dumpLoading ? <><span className="animate-spin">{tool?.icon ?? '🚨'}</span> Extracting tasks...</> : '🧠 Extract My Tasks'}</button>
         </div>}
 
         {/* Emotional + Energy + Hours + Voice */}
@@ -1008,7 +1005,7 @@ const CrisisPrioritizer = ({ tool }) => {
           <div className="flex justify-between"><h4 className="font-bold text-sm">🤝 Accountability Snapshot</h4><button onClick={() => { setShowAccountability(false); setAcctResult(null); }} className={`text-xs ${c.textMuted}`}>✕</button></div>
           <p className={`text-xs ${c.textSecondary}`}>Share your plan with someone for accountability</p>
           <Pill options={RECIPIENT_OPTS} value={acctRecipient} setter={setAcctRecipient} />
-          <button onClick={handleAccountability} disabled={acctLoading} className={`w-full py-2.5 rounded-xl text-sm font-bold ${c.btnPrimary} disabled:opacity-50`}>{acctLoading ? <span className="animate-spin">{tool?.icon ?? '🚨'}</span> : '📱 Generate Message'}</button>
+          <button onClick={handleAccountability} disabled={acctLoading} className={`w-full py-2.5 rounded-xl text-sm font-bold ${c.btnPrimary} disabled:opacity-40`}>{acctLoading ? <span className="animate-spin">{tool?.icon ?? '🚨'}</span> : '📱 Generate Message'}</button>
           {acctResult && <div className={`${c.success} border rounded-xl p-4 space-y-2`}>
             <p className="text-sm whitespace-pre-line">{acctResult.message}</p>
             {acctResult.check_in_time && <p className={`text-xs ${c.textSecondary}`}>📱 Good check-in time: {acctResult.check_in_time}</p>}
@@ -1135,7 +1132,7 @@ const CrisisPrioritizer = ({ tool }) => {
           <div className="flex justify-between"><h4 className="font-bold text-sm">📨 Delegate: "{delegateTask}"</h4><button onClick={() => { setDelegateTask(null); setDelegateResult(null); }} className={`text-xs ${c.textMuted}`}>✕</button></div>
           <input value={delegateTo} onChange={e => setDelegateTo(e.target.value)} placeholder="Who should do this? (colleague, partner, anyone...)" className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input}`} />
           <Pill options={DELEGATE_TONES} value={delegateTone} setter={setDelegateTone} />
-          <button onClick={handleDelegate} disabled={delegateLoading} className={`w-full py-2.5 rounded-xl text-sm font-bold ${c.btnPrimary} disabled:opacity-50`}>{delegateLoading ? <span className="animate-spin">{tool?.icon ?? '🚨'}</span> : '📨 Draft handoff'}</button>
+          <button onClick={handleDelegate} disabled={delegateLoading} className={`w-full py-2.5 rounded-xl text-sm font-bold ${c.btnPrimary} disabled:opacity-40`}>{delegateLoading ? <span className="animate-spin">{tool?.icon ?? '🚨'}</span> : '📨 Draft handoff'}</button>
           {delegateResult && <div className={`${c.success} border rounded-xl p-4 space-y-2`}>
             {delegateResult.subject_line && <p className="text-xs font-bold">Subject: {delegateResult.subject_line}</p>}
             <p className="text-sm whitespace-pre-line">{delegateResult.message}</p>

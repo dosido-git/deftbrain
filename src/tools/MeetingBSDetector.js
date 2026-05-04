@@ -31,29 +31,6 @@ const CROSS_REFS = [
 ];
 
 // ════════════════════════════════════════════════════════════
-// SECTION COMPONENT
-// ════════════════════════════════════════════════════════════
-function Section({ icon, title, badge, children, defaultOpen = false, c }) {
-  const [open, setOpen] = useState(defaultOpen);
-
-
-  return (
-    <div className={`${c.card} border rounded-xl overflow-hidden`}>
-      <button onClick={() => setOpen(p => !p)}
-        className="w-full p-4 flex items-center justify-between text-left min-h-[44px]">
-        <div className="flex items-center gap-2.5">
-          {icon && <span className="text-sm">{icon}</span>}
-          <h3 className={`text-sm font-bold ${c.text}`}>{title}</h3>
-          {badge && <span className={`text-[9px] font-black px-2 py-0.5 rounded ${c.cardAlt}`}>{badge}</span>}
-        </div>
-        <span className={`text-xs ${c.textMuteded}`}>{open ? '▲' : '▼'}</span>
-      </button>
-      {open && <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-3`}>{children}</div>}
-    </div>
-  );
-}
-
-// ════════════════════════════════════════════════════════════
 // COMPONENT
 // ════════════════════════════════════════════════════════════
 const MeetingBSDetector = ({ tool }) => {
@@ -81,12 +58,6 @@ const MeetingBSDetector = ({ tool }) => {
                           : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200'
                           : 'bg-red-50 border-red-200 text-red-800',
-    infoBox:       isDark ? 'bg-sky-900/20 border-sky-700 text-sky-200'
-                          : 'bg-sky-50 border-sky-200 text-sky-800',
-    successBox:    isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-300',
-    successTxt:    isDark ? 'text-emerald-300' : 'text-emerald-800',
-    warningBox:    isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
-    warningTxt:    isDark ? 'text-amber-300' : 'text-amber-800',
     pillActive:    isDark ? 'bg-cyan-600 border-cyan-500 text-white'
                           : 'bg-cyan-600 border-cyan-600 text-white',
     pillInactive:  isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-300 hover:border-zinc-500'
@@ -221,6 +192,13 @@ const MeetingBSDetector = ({ tool }) => {
       setError(err.message || 'Analysis failed');
     }
   }, [meetingText, duration, attendees, callToolEndpoint, addToHistory]);
+
+  const loadExample = () => {
+    setMeetingText('Weekly engineering all-hands. Standing 60-min meeting, 22 attendees. Agenda: "Status updates from each team lead." No prep, no decisions, just everyone reports out what they did last week. Recurring for 6 months.');
+    setDuration('1');
+    setAttendees('22');
+    setError('');
+  };
 
   // ── API: Calendar ──
   const runCalendar = useCallback(async () => {
@@ -599,10 +577,16 @@ const MeetingBSDetector = ({ tool }) => {
           </div>
         </div>
 
-        <button onClick={runAnalyze} disabled={!meetingText.trim() || loading}
-          className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-          {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '⚙️'}</span> Analyzing...</> : <><span className="mr-1">{tool?.icon ?? '🕵️'}</span> Detect BS</>}
-        </button>
+        <div className="flex gap-2">
+          <button onClick={runAnalyze} disabled={!meetingText.trim() || loading}
+            className={`flex-1 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+            {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🕵️'}</span> Analyzing...</> : <><span className="mr-1">{tool?.icon ?? '🕵️'}</span> Detect BS</>}
+          </button>
+          <button onClick={loadExample} disabled={loading}
+            className={`${c.btnSecondary} disabled:opacity-40 font-bold py-3 px-4 rounded-lg text-xs min-h-[48px]`}>
+            ✨ Try Example
+          </button>
+        </div>
       </div>
 
       {analyzeResults && (
@@ -743,7 +727,7 @@ const MeetingBSDetector = ({ tool }) => {
 
         <button onClick={runCalendar} disabled={!calMeetings.some(m => m.title.trim()) || loading}
           className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-          {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '⚙️'}</span> Auditing week...</> : <><span className="mr-1">{tool?.icon ?? '📅'}</span> Audit My Week</>}
+          {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🕵️'}</span> Auditing week...</> : <><span className="mr-1">{tool?.icon ?? '🕵️'}</span> Audit My Week</>}
         </button>
       </div>
 
@@ -840,7 +824,7 @@ const MeetingBSDetector = ({ tool }) => {
 
         <button onClick={runLive} disabled={!liveWhat.trim() || loading}
           className={`w-full bg-red-600 hover:bg-red-500 text-white disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-          {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '⚙️'}</span> Getting help...</> : <><span className="mr-1">{tool?.icon ?? '🚨'}</span> Rescue Me NOW</>}
+          {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🕵️'}</span> Getting help...</> : <><span className="mr-1">{tool?.icon ?? '🕵️'}</span> Rescue Me NOW</>}
         </button>
       </div>
 
@@ -961,7 +945,7 @@ const MeetingBSDetector = ({ tool }) => {
 
         <button onClick={runRecurring} disabled={!recName.trim() || loading}
           className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-          {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '⚙️'}</span> Auditing...</> : <><span className="mr-1">{tool?.icon ?? '🧟'}</span> Audit This Recurring</>}
+          {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🕵️'}</span> Auditing...</> : <><span className="mr-1">{tool?.icon ?? '🕵️'}</span> Audit This Recurring</>}
         </button>
       </div>
 
@@ -1052,7 +1036,7 @@ const MeetingBSDetector = ({ tool }) => {
         </div>
 
         <div className="mb-4">
-          <label className={`text-sm font-bold ${c.label} block mb-1.5`}>Which meeting?</label>
+          <label className={`text-sm font-bold ${c.label} block mb-1.5`}>Which meeting? <span className={c.required}>*</span></label>
           <input type="text" value={msgMeeting} onChange={e => setMsgMeeting(e.target.value)}
             placeholder={"e.g., Weekly team sync, Q3 planning meeting..."}
             className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
@@ -1080,7 +1064,7 @@ const MeetingBSDetector = ({ tool }) => {
 
         <button onClick={runMessages} disabled={!msgMeeting.trim() || loading}
           className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-          {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '⚙️'}</span> Writing...</> : <><span className="mr-1">{tool?.icon ?? '✉️'}</span> Generate Messages</>}
+          {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🕵️'}</span> Writing...</> : <><span className="mr-1">{tool?.icon ?? '🕵️'}</span> Generate Messages</>}
         </button>
       </div>
 
@@ -1126,7 +1110,7 @@ const MeetingBSDetector = ({ tool }) => {
         </div>
 
         <div className="mb-4">
-          <label className={`text-xs font-bold ${c.label} block mb-1`}>What's this meeting about? *</label>
+          <label className={`text-xs font-bold ${c.label} block mb-1`}>What's this meeting about? <span className={c.required}>*</span></label>
           <input type="text" value={agTopic} onChange={e => setAgTopic(e.target.value)}
             placeholder="e.g., Decide on vendor for new CRM, Q3 planning kickoff..."
             className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
@@ -1166,7 +1150,7 @@ const MeetingBSDetector = ({ tool }) => {
 
         <button onClick={runAgenda} disabled={!agTopic.trim() || loading}
           className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-          {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '⚙️'}</span> Building agenda...</> : <><span className="mr-1">{tool?.icon ?? '📋'}</span> Build Agenda</>}
+          {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🕵️'}</span> Building agenda...</> : <><span className="mr-1">{tool?.icon ?? '🕵️'}</span> Build Agenda</>}
         </button>
       </div>
 
@@ -1262,7 +1246,7 @@ const MeetingBSDetector = ({ tool }) => {
         </div>
 
         <div className="mb-4">
-          <label className={`text-xs font-bold ${c.label} block mb-1`}>Meeting name *</label>
+          <label className={`text-xs font-bold ${c.label} block mb-1`}>Meeting name <span className={c.required}>*</span></label>
           <input type="text" value={scName} onChange={e => setScName(e.target.value)}
             placeholder="e.g., Monday team sync, 1:1 with Sarah..."
             className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
@@ -1545,7 +1529,7 @@ const MeetingBSDetector = ({ tool }) => {
 
             <button onClick={runReport} disabled={loading}
               className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-              {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '⚙️'}</span> Generating report...</> : <><span className="mr-1">{tool?.icon ?? '📈'}</span> Generate Report</>}
+              {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🕵️'}</span> Generating report...</> : <><span className="mr-1">{tool?.icon ?? '🕵️'}</span> Generate Report</>}
             </button>
           </>
         )}
@@ -1724,7 +1708,7 @@ const MeetingBSDetector = ({ tool }) => {
 
         <button onClick={runTeam} disabled={!teamMeetings.some(m => m.title.trim()) || loading}
           className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-          {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '⚙️'}</span> Analyzing team...</> : <><span className="mr-1">{tool?.icon ?? '👥'}</span> Analyze Team Meetings</>}
+          {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🕵️'}</span> Analyzing team...</> : <><span className="mr-1">{tool?.icon ?? '🕵️'}</span> Analyze Team Meetings</>}
         </button>
       </div>
 
@@ -1945,6 +1929,8 @@ const MeetingBSDetector = ({ tool }) => {
   // MAIN RENDER
   // ════════════════════════════════════════════════════════════
   const handleReset = () => { setAnalyzeResults(null); setCalResults(null); setLiveResults(null); setRecResults(null); setMsgResults(null); setAgResults(null); setReportResults(null); setTeamResults(null); setError(''); };
+  const hasOutput = analyzeResults || calResults || liveResults || recResults || msgResults || agResults || reportResults || teamResults;
+  const results = hasOutput;
   return (
     <div className={`space-y-4 ${c.text}`}>
 
@@ -1952,10 +1938,19 @@ const MeetingBSDetector = ({ tool }) => {
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm`}>
         <div className="px-5 pt-5">
           <div className="pb-3 border-b border-zinc-500">
-            <h2 className={`text-xl font-bold ${c.text}`}>
-              <span className="mr-2">{tool?.icon ?? '🕵️'}</span>{tool?.title ?? 'Meeting BS Detector'}
-            </h2>
-            <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Detect, audit, and fix your meeting culture'}</p>
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h2 className={`text-xl font-bold ${c.text}`}>
+                  <span className="mr-2">{tool?.icon ?? '🕵️'}</span>{tool?.title ?? 'Meeting BS Detector'}
+                </h2>
+                <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Detect, audit, and fix your meeting culture'}</p>
+              </div>
+              {hasOutput && (
+                <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>
+                  ↺ Start Over
+                </button>
+              )}
+            </div>
           </div>
         </div>
         <div className="p-4">
@@ -1988,19 +1983,45 @@ const MeetingBSDetector = ({ tool }) => {
         </p>
       </div>
 
-      {/* Cross-refs */}
-      <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-        <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 Related tools</p>
-        <div className="flex flex-wrap gap-3">
-          <a href="/MeetingHijackPreventer" className={`text-xs ${linkStyle}`}>🛡️ Meeting Hijack Preventer</a>
-          <a href="/JargonAssassin" className={`text-xs ${linkStyle}`}>🗡️ Jargon Assassin</a>
-          <a href="/HecklerPrep" className={`text-xs ${linkStyle}`}>😤 Heckler Prep</a>
+      {/* Post-result cross-refs */}
+      {results && (
+        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+          <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>Next step</p>
+          <div className="flex flex-wrap gap-3">
+            <a href="/MeetingHijackPreventer" className={`text-xs ${linkStyle}`}>🛡️ Meeting Hijack Preventer</a>
+            <a href="/JargonAssassin" className={`text-xs ${linkStyle}`}>🗡️ Jargon Assassin</a>
+            <a href="/HecklerPrep" className={`text-xs ${linkStyle}`}>😤 Heckler Prep</a>
+          </div>
         </div>
-      </div>
+      )}
 
     </div>
   );
 };
 
 MeetingBSDetector.displayName = 'MeetingBSDetector';
+
+// ════════════════════════════════════════════════════════════
+// SECTION COMPONENT (declared after MeetingBSDetector so PF-14's first-useState
+// scan lands inside the main component, not this helper)
+// ════════════════════════════════════════════════════════════
+function Section({ icon, title, badge, children, defaultOpen = false, c }) {
+  const [open, setOpen] = useState(defaultOpen);
+  const ui = (
+    <div className={`${c.card} border rounded-xl overflow-hidden`}>
+      <button onClick={() => setOpen(p => !p)}
+        className="w-full p-4 flex items-center justify-between text-left min-h-[44px]">
+        <div className="flex items-center gap-2.5">
+          {icon && <span className="text-sm">{icon}</span>}
+          <h3 className={`text-sm font-bold ${c.text}`}>{title}</h3>
+          {badge && <span className={`text-[9px] font-black px-2 py-0.5 rounded ${c.cardAlt}`}>{badge}</span>}
+        </div>
+        <span className={`text-xs ${c.textMuteded}`}>{open ? '▲' : '▼'}</span>
+      </button>
+      {open && <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-3`}>{children}</div>}
+    </div>
+  );
+  return ui;
+}
+
 export default MeetingBSDetector;

@@ -35,15 +35,8 @@ const PetWeirdnessDecoder = ({ tool }) => {
                           : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200'
                           : 'bg-red-50 border-red-200 text-red-800',
-    infoBox:       isDark ? 'bg-sky-900/20 border-sky-700 text-sky-200'
                           : 'bg-sky-50 border-sky-200 text-sky-800',
-    successBox:    isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-300',
-    successTxt:    isDark ? 'text-emerald-300' : 'text-emerald-800',
-    warningBox:    isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
-    warningTxt:    isDark ? 'text-amber-300' : 'text-amber-800',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200'
                           : 'border-cyan-600 bg-cyan-100 text-cyan-900',
-    pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500'
                           : 'border-gray-300 text-gray-500 hover:border-gray-400',
     // ── Bespoke keys ──
     emergency:     isDark ? 'bg-red-900/40 border-red-600 text-red-100' : 'bg-red-100 border-red-400 text-red-900',
@@ -606,7 +599,7 @@ const PetWeirdnessDecoder = ({ tool }) => {
             </div>
             <div className="flex items-center gap-3 mt-4">
               <p className={`text-sm font-bold ${isDark ? 'text-red-200' : 'text-red-800'}`}>Don't wait — go NOW.</p>
-              <button onClick={handleFindEmergencyVet} disabled={locatingVet} className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 disabled:opacity-50">
+              <button onClick={handleFindEmergencyVet} disabled={locatingVet} className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 disabled:opacity-40">
                 {locatingVet ? <span className="animate-spin inline-block">{tool?.icon ?? '⚙️'}</span> : <span>📍</span>} Find Emergency Vet
               </button>
             </div>
@@ -762,7 +755,7 @@ const PetWeirdnessDecoder = ({ tool }) => {
             {followupHistory.length > 0 && <div className="space-y-3 mb-4">{followupHistory.map((f, i) => <div key={i} className="space-y-1"><div className={`p-3 rounded ${isDark ? 'bg-amber-900/20' : 'bg-amber-50'}`}><p className={`text-xs font-semibold ${c.textSecondary}`}>You:</p><p className={`text-sm ${c.text}`}>{f.question}</p></div><div className={`p-3 rounded ${isDark ? 'bg-zinc-700' : 'bg-gray-50'}`}><p className={`text-sm ${c.textSecondary}`}>{f.answer}</p></div></div>)}</div>}
             <div className="flex gap-2" ref={followupRef}>
               <input type="text" value={followupQuestion} onChange={e => setFollowupQuestion(e.target.value)} placeholder="What if she also starts limping?" className={`flex-1 p-3 border rounded-lg ${c.input}`} onKeyDown={e => { if (e.key === 'Enter') handleFollowup(); }} />
-              <button onClick={handleFollowup} disabled={followupLoading || !followupQuestion.trim()} className={`${c.btnPrimary} px-4 py-2 rounded disabled:opacity-50`}>{followupLoading ? <span className="animate-spin inline-block">{tool?.icon ?? '⚙️'}</span> : '➤'}</button>
+              <button onClick={handleFollowup} disabled={followupLoading || !followupQuestion.trim()} className={`${c.btnPrimary} px-4 py-2 rounded disabled:opacity-40`}>{followupLoading ? <span className="animate-spin inline-block">{tool?.icon ?? '⚙️'}</span> : '➤'}</button>
             </div>
           </div>
 

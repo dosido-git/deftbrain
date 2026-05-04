@@ -913,7 +913,6 @@ const BikeMedic = ({ tool }) => {
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
     // ── Tool-specific extras (all dark-mode aware) ──
     borderHover:   isDark ? 'hover:border-zinc-500'  : 'hover:border-zinc-400',
-    btnSuccess:    'bg-green-500 hover:bg-green-600 text-white',
     tag:           isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-zinc-100 text-zinc-600',
     tagAmber:      isDark ? 'bg-amber-900/40 text-amber-300 border-amber-700' : 'bg-amber-50 text-amber-800 border-amber-200',
     // Amber semantic states
@@ -940,7 +939,6 @@ const BikeMedic = ({ tool }) => {
     stepDivide:    isDark ? 'divide-zinc-700' : 'divide-stone-100',
     stepActive:    isDark ? 'bg-zinc-700/50' : 'bg-amber-50/60',
     // Nav icon badges (mode-independent)
-    navBadgeAmber: 'bg-amber-500 text-white',
     navBadgeZinc:  'bg-zinc-500 text-white',
     // Priority/severity functions
     priorityPill: (p) => p === 'high'

@@ -46,37 +46,6 @@ const CROSS_REFS = [
 ];
 
 // ════════════════════════════════════════════════════════════
-// SECTION COMPONENT
-// ════════════════════════════════════════════════════════════
-function Section({ icon, title, badge, badgeClass, children, defaultOpen = false, c }) {
-  const [open, setOpen] = useState(defaultOpen);
-  return (
-    <div className={`${c.card} border rounded-xl overflow-hidden`}>
-      <button
-        onClick={() => setOpen(p => !p)}
-        className="w-full p-4 flex items-center justify-between text-left min-h-[44px]"
-      >
-        <div className="flex items-center gap-2.5">
-          {icon && <span className="text-sm">{icon}</span>}
-          <h3 className={`text-sm font-bold ${c.text}`}>{title}</h3>
-          {badge && (
-            <span className={`text-[9px] font-black px-2 py-0.5 rounded ${badgeClass || c.warningBox}`}>
-              {badge}
-            </span>
-          )}
-        </div>
-        <span className={`text-xs ${c.textMuteded}`}>{open ? '▲' : '▼'}</span>
-      </button>
-      {open && (
-        <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-3`}>
-          {children}
-        </div>
-      )}
-    </div>
-  );
-}
-
-// ════════════════════════════════════════════════════════════
 // COMPONENT
 // ════════════════════════════════════════════════════════════
 const SocialEnergyAudit = ({ tool }) => {
@@ -105,7 +74,6 @@ const SocialEnergyAudit = ({ tool }) => {
     warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
     infoBox:       isDark ? 'bg-sky-900/20 border-sky-700 text-sky-200' : 'bg-sky-50 border-sky-200 text-sky-800',
-    successBox:    isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-300',
     successTxt:    isDark ? 'text-emerald-300' : 'text-emerald-800',
     warningBox:    isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
     warningTxt:    isDark ? 'text-amber-300' : 'text-amber-800',
@@ -225,6 +193,16 @@ const SocialEnergyAudit = ({ tool }) => {
     setView('log');
     setError('');
   }, [setResults]);
+
+  const loadExample = useCallback(() => {
+    setInteractions([
+      { situation: 'Team meeting', category: 'work', performance: 6, energyBefore: 7, energyAfter: 4, duration: '1 hour', custom: false },
+      { situation: 'Lunch with coworkers', category: 'work', performance: 5, energyBefore: 5, energyAfter: 3, duration: '1 hour', custom: false },
+      { situation: 'Networking event', category: 'social', performance: 8, energyBefore: 6, energyAfter: 2, duration: '2 hours', custom: false },
+      { situation: 'Solo time (recharge)', category: 'creative', performance: 1, energyBefore: 3, energyAfter: 7, duration: '1.5 hours', custom: false },
+    ]);
+    setError('');
+  }, []);
 
   // ── Interaction helpers ──
   const addInteraction = () => {
@@ -717,7 +695,7 @@ const SocialEnergyAudit = ({ tool }) => {
             <button
               onClick={saveCurrentAsTemplate}
               disabled={!interactions.some(i => i.situation.trim())}
-              className={`text-xs font-bold ${c.accentTxt} min-h-[32px] disabled:opacity-30`}
+              className={`text-xs font-bold ${c.accentTxt} min-h-[32px] disabled:opacity-40`}
             >
               💾 Save as "My Typical Week" template
             </button>
@@ -754,7 +732,9 @@ const SocialEnergyAudit = ({ tool }) => {
           </div>
           {showOther && (
             <div className="flex gap-2 mt-2">
+              <label htmlFor="sea-other-text" className="sr-only">Other situation description</label>
               <input
+                id="sea-other-text"
                 ref={otherInputRef}
                 type="text"
                 value={otherText}
@@ -872,16 +852,27 @@ const SocialEnergyAudit = ({ tool }) => {
 
 
         <button
-          onClick={runAudit}
-          disabled={!interactions.some(i => i.situation.trim()) || loading}
-          className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}
-        >
-          {loading
-            ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> Auditing your energy...</>
-            : editingEntryId
-              ? <><span>✏️</span> Update &amp; Re-Audit</>
-              : <><span className="mr-1">{tool?.icon ?? '⚡'}</span> Run Energy Audit</>}
-        </button>
+        <p className={`text-[11px] ${c.textMuted} text-center mb-2`}>
+          New to tracking your energy? Start with <a href="/CrashPredictor" className={linkStyle}>📉 CrashPredictor</a> to spot the pattern fast.
+        </p>
+
+        <div className="flex gap-2">
+          <button
+            onClick={runAudit}
+            disabled={!interactions.some(i => i.situation.trim()) || loading}
+            className={`flex-1 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}
+          >
+            {loading
+              ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚡'}</span> Auditing your energy...</>
+              : editingEntryId
+                ? <><span>✏️</span> Update &amp; Re-Audit</>
+                : <><span className="mr-1">{tool?.icon ?? '⚡'}</span> Run Energy Audit</>}
+          </button>
+          <button onClick={loadExample} disabled={loading}
+            className={`${c.btnSecondary} disabled:opacity-40 font-bold py-3 px-4 rounded-lg text-xs min-h-[48px]`}>
+            ✨ Try Example
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -1111,7 +1102,7 @@ const SocialEnergyAudit = ({ tool }) => {
 
         <button onClick={runPlan} disabled={!upcoming.some(u => u.situation.trim()) || loading}
           className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-          {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> Planning...</> : <><span className="mr-1">{tool?.icon ?? "📅"}</span> Predict My Week</>}
+          {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚡'}</span> Planning...</> : <><span className="mr-1">{tool?.icon ?? '⚡'}</span> Predict My Week</>}
         </button>
       </div>
 
@@ -1221,7 +1212,7 @@ const SocialEnergyAudit = ({ tool }) => {
 
         <button onClick={runRecharge} disabled={loading}
           className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-          {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> Building plan...</> : <><span className="mr-1">{tool?.icon ?? "🔋"}</span> Get Recharge Plan</>}
+          {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚡'}</span> Building plan...</> : <><span className="mr-1">{tool?.icon ?? '⚡'}</span> Get Recharge Plan</>}
         </button>
       </div>
 
@@ -1297,7 +1288,7 @@ const SocialEnergyAudit = ({ tool }) => {
         <p className={`text-sm ${c.textSecondary} mb-4`}>Instant energy check before you commit</p>
 
         <div className="mb-4">
-          <label className={`text-sm font-bold ${c.label} block mb-1.5`}>What's the commitment?</label>
+          <label className={`text-sm font-bold ${c.label} block mb-1.5`}>What's the commitment? <span className={c.required}>*</span></label>
           <input type="text" value={qcCommitment} onChange={e => setQcCommitment(e.target.value)}
             placeholder={"e.g., Happy hour with coworkers, friend's birthday dinner, weekend trip..."}
             className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`}
@@ -1328,7 +1319,7 @@ const SocialEnergyAudit = ({ tool }) => {
 
         <button onClick={runQuickCheck} disabled={!qcCommitment.trim() || loading}
           className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-          {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> Checking...</> : <><span>🤔</span> Should I Say Yes?</>}
+          {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚡'}</span> Checking...</> : <><span>🤔</span> Should I Say Yes?</>}
         </button>
       </div>
 
@@ -1529,7 +1520,7 @@ const SocialEnergyAudit = ({ tool }) => {
 
         <button onClick={runForecast} disabled={loading || (!savedTemplate && !dailyCheckins.length)}
           className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-          {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> Forecasting...</> : <><span className="mr-1">{tool?.icon ?? "🌤️"}</span> Generate Forecast</>}
+          {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚡'}</span> Forecasting...</> : <><span className="mr-1">{tool?.icon ?? '⚡'}</span> Generate Forecast</>}
         </button>
       </div>
 
@@ -1777,8 +1768,8 @@ const SocialEnergyAudit = ({ tool }) => {
               <p className={`text-[10px] ${c.textMuteded}`}>AI-designed schedule based on {journal.length} weeks of data</p>
             </div>
             <button onClick={runIdealWeek} disabled={loading}
-              className={`${c.btnPrimary} px-3 py-2 rounded-lg text-xs font-bold min-h-[36px]`}>
-              {loading ? (tool?.icon ?? '⚙️') : '🏗️'} Generate
+              className={`${c.btnPrimary} disabled:opacity-40 px-3 py-2 rounded-lg text-xs font-bold min-h-[36px]`}>
+              {loading ? (tool?.icon ?? '⚡') : '🏗️'} Generate
             </button>
           </div>
 
@@ -2030,6 +2021,12 @@ const SocialEnergyAudit = ({ tool }) => {
         </div>
       )}
 
+      {!results && view === 'log' && (
+        <p className={`text-[11px] ${c.textMuted} text-center`}>
+          New to tracking your energy? Start with <a href="/CrashPredictor" className={linkStyle}>📉 CrashPredictor</a> to spot the pattern fast.
+        </p>
+      )}
+
       {view === 'log' && renderLog()}
       {view === 'results' && renderResults()}
       {view === 'quickcheck' && renderQuickCheck()}
@@ -2046,4 +2043,38 @@ const SocialEnergyAudit = ({ tool }) => {
 };
 
 SocialEnergyAudit.displayName = 'SocialEnergyAudit';
+
+// ════════════════════════════════════════════════════════════
+// SECTION COMPONENT (declared after main component so PF-14's first-useState
+// scan lands inside the main component, not this helper)
+// ════════════════════════════════════════════════════════════
+function Section({ icon, title, badge, badgeClass, children, defaultOpen = false, c }) {
+  const [open, setOpen] = useState(defaultOpen);
+  const ui = (
+    <div className={`${c.card} border rounded-xl overflow-hidden`}>
+      <button
+        onClick={() => setOpen(p => !p)}
+        className="w-full p-4 flex items-center justify-between text-left min-h-[44px]"
+      >
+        <div className="flex items-center gap-2.5">
+          {icon && <span className="text-sm">{icon}</span>}
+          <h3 className={`text-sm font-bold ${c.text}`}>{title}</h3>
+          {badge && (
+            <span className={`text-[9px] font-black px-2 py-0.5 rounded ${badgeClass || c.cardAlt}`}>
+              {badge}
+            </span>
+          )}
+        </div>
+        <span className={`text-xs ${c.textMuteded}`}>{open ? '▲' : '▼'}</span>
+      </button>
+      {open && (
+        <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-3`}>
+          {children}
+        </div>
+      )}
+    </div>
+  );
+  return ui;
+}
+
 export default SocialEnergyAudit;

@@ -78,15 +78,8 @@ const CrashPredictor = ({ tool }) => {
                           : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200'
                           : 'bg-red-50 border-red-200 text-red-800',
-    infoBox:       isDark ? 'bg-sky-900/20 border-sky-700 text-sky-200'
                           : 'bg-sky-50 border-sky-200 text-sky-800',
-    successBox:    isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-300',
-    successTxt:    isDark ? 'text-emerald-300' : 'text-emerald-800',
-    warningBox:    isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
-    warningTxt:    isDark ? 'text-amber-300' : 'text-amber-800',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200'
                           : 'border-cyan-600 bg-cyan-100 text-cyan-900',
-    pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500'
                           : 'border-gray-300 text-gray-500 hover:border-gray-400',
     required:      isDark ? 'text-amber-400' : 'text-amber-500',
     // Tool-specific: chip selection states — 3 distinct symptom category types
@@ -845,7 +838,7 @@ const CrashPredictor = ({ tool }) => {
 
         {mode==='analysis'&&!analysis&&!loading&&(
           <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-8 text-center`}><p className={`text-lg ${c.textMuteded} mb-3`}>📊 No analysis yet</p>
-            <button onClick={handleAnalyze} disabled={loading||logs.length<3} className={`${c.btnPrimary} px-6 py-2 rounded-lg font-semibold disabled:opacity-50`}>{logs.length<3?`Need ${3-logs.length} more days`:'Run Analysis'}</button></div>
+            <button onClick={handleAnalyze} disabled={loading||logs.length<3} className={`${c.btnPrimary} px-6 py-2 rounded-lg font-semibold disabled:opacity-40`}>{logs.length<3?`Need ${3-logs.length} more days`:'Run Analysis'}</button></div>
         )}
 
         {/* ═══════════ HISTORY ═══════════ */}
@@ -859,7 +852,7 @@ const CrashPredictor = ({ tool }) => {
             <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
               <div className="flex items-center justify-between mb-3">
                 <h3 className={`text-sm font-bold ${c.text}`}>🔁 Recurring Patterns</h3>
-                <button onClick={handleDetectPatterns} disabled={patternsLoading||logs.length<14} className={`${c.btnSecondary} text-xs px-3 py-1.5 rounded-lg disabled:opacity-50`}>
+                <button onClick={handleDetectPatterns} disabled={patternsLoading||logs.length<14} className={`${c.btnSecondary} text-xs px-3 py-1.5 rounded-lg disabled:opacity-40`}>
                   {patternsLoading?<span className="animate-spin inline-block">{tool?.icon ?? '⚠️'}</span>:logs.length<14?`Need ${14-logs.length} more`:patterns?'🔄 Refresh':'🔍 Detect'}</button>
               </div>
               {patterns?(

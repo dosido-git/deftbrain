@@ -44,13 +44,7 @@ const WhatsMyVibe = ({ tool }) => {
     pillActive:        isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
     pillInactive:      isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
     // Category panel tints — Crimson family (Read the Room)
-    panelTint:         isDark ? 'bg-[#7a2e2e]/30' : 'bg-[#f5eaea]',
-    panelTintBorder:   isDark ? 'border-[#9a4040]' : 'border-[#d4a0a0]',
-    panelStrong:       isDark ? 'bg-[#7a2e2e]/60' : 'bg-[#e0b8b8]',
-    panelStrongBorder: isDark ? 'border-[#b87070]' : 'border-[#b87070]',
     // Gold AI insight — all tools
-    panelInsight:       isDark ? 'bg-[#93541f]/25' : 'bg-[#fdf4e8]',
-    panelInsightBorder: isDark ? 'border-[#c8872e]' : 'border-[#e8c98a]',
     // Tool-specific
     labelText:         isDark ? 'text-zinc-200' : 'text-gray-700',
     quoteBg:           isDark ? 'bg-zinc-700/40' : 'bg-[#f3efe8]',

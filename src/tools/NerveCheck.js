@@ -71,16 +71,6 @@ const NerveCheck = ({ tool }) => {
                           : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200'
                           : 'bg-red-50 border-red-200 text-red-800',
-    infoBox:       isDark ? 'bg-sky-900/20 border-sky-700 text-sky-200'
-                          : 'bg-sky-50 border-sky-200 text-sky-800',
-    successBox:    isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-300',
-    successTxt:    isDark ? 'text-emerald-300' : 'text-emerald-800',
-    warningBox:    isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
-    warningTxt:    isDark ? 'text-amber-300' : 'text-amber-800',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200'
-                          : 'border-cyan-600 bg-cyan-100 text-cyan-900',
-    pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500'
-                          : 'border-gray-300 text-gray-500 hover:border-gray-400',
     required:      isDark ? 'text-amber-400' : 'text-amber-500',
     // Tool-specific
     btnDanger:     isDark ? 'bg-red-700 hover:bg-red-600 text-white' : 'bg-red-600 hover:bg-red-700 text-white',
@@ -169,6 +159,14 @@ const NerveCheck = ({ tool }) => {
   // ── Template helpers ──
   const saveTemplate = () => { if (!templateName.trim()) return; setTemplates(prev => [{ id: Date.now(), name: templateName.trim(), situation, situationType, specificFears, timeUntil, confidenceLevel }, ...prev].slice(0, 6)); setTemplateName(''); setShowSaveTemplate(false); };
   const loadTemplate = (t) => { setSituation(t.situation); setSituationType(t.situationType); setSpecificFears(t.specificFears || ''); setTimeUntil(t.timeUntil || 'today'); setConfidenceLevel(t.confidenceLevel || 4); };
+  const loadExample = () => {
+    setSituation('Job interview at a tech company tomorrow morning');
+    setSituationType('interview');
+    setSpecificFears("They'll ask something I can't answer and I'll freeze");
+    setTimeUntil('tomorrow');
+    setConfidenceLevel(4);
+    setError('');
+  };
 
   // ── Pattern analytics (computed from journal) ──
   const patterns = useMemo(() => {
@@ -304,7 +302,7 @@ const NerveCheck = ({ tool }) => {
   runLadderRef.current = runLadder;
   canLadderRef.current = !!ladderFear.trim();
 
-  useRegisterActions(buildFullText(), tool?.title || 'NerveCheck');
+  useRegisterActions(buildFullText(), tool?.title || 'Nerve Check');
 
   // ── Scroll to results ──
   useEffect(() => {
@@ -378,14 +376,14 @@ const NerveCheck = ({ tool }) => {
   const renderWalkContent = (step) => {
     if (!results) return null;
     switch(step.key) {
-      case 'mantra': return (<div className={`p-6 rounded-2xl text-center ${isDark ? 'bg-cyan-900/20 border-2 border-cyan-700/50' : 'bg-cyan-50 border-2 border-cyan-300'}`}><p className={`text-xl font-black ${isDark ? 'text-cyan-300' : 'text-cyan-700'}`}>"{results.mantra}"</p><p className={`text-xs ${c.textMuteded} mt-3`}>Say it out loud. Repeat it three times.</p><div className="mt-3"><CopyBtn content={results.mantra} label="Copy" /></div></div>);
-      case 'fear': return (<div className="space-y-3"><div className={`p-4 rounded-xl ${isDark ? 'bg-red-900/15' : 'bg-red-50'}`}><p className={`text-[10px] font-bold ${isDark ? 'text-red-400' : 'text-red-700'}`}>YOU THINK YOU'RE SCARED OF</p><p className={`text-sm ${c.text}`}>{results.fear_breakdown.surface_fear}</p></div><div className={`p-4 rounded-xl ${isDark ? 'bg-amber-900/15' : 'bg-amber-50'}`}><p className={`text-[10px] font-bold ${isDark ? 'text-amber-400' : 'text-amber-700'}`}>BUT REALLY IT'S</p><p className={`text-sm font-bold ${c.text}`}>{results.fear_breakdown.real_fear}</p></div><div className={`p-4 rounded-xl ${isDark ? 'bg-emerald-900/15' : 'bg-emerald-50'}`}><p className={`text-[10px] font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>REALITY CHECK</p><p className={`text-sm ${c.text}`}>{results.fear_breakdown.reality_check}</p>{results.fear_breakdown.probability && <p className={`text-xs ${c.textMuteded} mt-1`}>Worst-case probability: {results.fear_breakdown.probability}</p>}</div></div>);
-      case 'ready': return (<div className="space-y-2.5">{results.why_youre_readier_than_you_think.map((r, i) => (<div key={i} className={`p-4 rounded-xl ${c.cardAlt} border`}><p className={`text-sm font-bold ${c.text}`}>{r.reason}</p><p className={`text-xs ${c.textSecondary} mt-1`}>Evidence: {r.evidence}</p></div>))}</div>);
-      case 'prep': return (<div className="space-y-2">{results.prep_plan.map((s, i) => (<div key={i} className="flex items-start gap-2"><span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full shrink-0 mt-0.5 ${s.priority === 'must_do' ? (isDark ? 'bg-red-900/30 text-red-300' : 'bg-red-100 text-red-700') : s.priority === 'should_do' ? (isDark ? 'bg-amber-900/30 text-amber-300' : 'bg-amber-100 text-amber-700') : (isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-zinc-100 text-gray-600')}`}>{s.priority?.replace(/_/g, ' ')}</span><div className="flex-1"><p className={`text-xs font-bold ${c.text}`}>{s.step}</p><p className={`text-[10px] ${c.textSecondary}`}>{s.why}</p></div><span className={`text-[10px] ${c.textMuteded} shrink-0`}>{s.time}</span></div>))}</div>);
-      case 'scripts': return (<div className="space-y-3">{[{ key: 'opening_line', label: 'Your opening line', icon: '🎯' }, { key: 'if_you_blank', label: 'If your mind goes blank', icon: '😶' }, { key: 'if_it_goes_wrong', label: 'If things go sideways', icon: '🔄' }, { key: 'exit_line', label: 'Graceful exit', icon: '🚪' }].map(s => results.scripts[s.key] && (<div key={s.key} className={`${c.cardAlt} border rounded-xl p-4`}><p className={`text-[10px] font-bold ${c.accentTxt} mb-1`}>{s.icon} {s.label}</p><p className={`text-sm font-bold ${c.text} mb-2`}>"{results.scripts[s.key]}"</p><CopyBtn content={results.scripts[s.key]} label="Copy" /></div>))}</div>);
-      case 'body': return (<div className="space-y-2.5">{results.body_hacks.map((h, i) => (<div key={i} className={`${c.cardAlt} border rounded-xl p-3`}><div className="flex items-center justify-between mb-1"><p className={`text-xs font-bold ${c.text}`}>{h.technique}</p><span className={`text-[10px] px-1.5 py-0.5 rounded-full ${isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-zinc-100 text-gray-600'}`}>{h.when} · {h.time}</span></div><p className={`text-xs ${c.textSecondary}`}>{h.how}</p></div>))}</div>);
-      case 'worst': return (<div className="space-y-2.5"><div className={`p-3.5 rounded-xl ${isDark ? 'bg-red-900/15' : 'bg-red-50'}`}><p className={`text-[10px] font-bold ${isDark ? 'text-red-400' : 'text-red-700'}`}>ACTUAL WORST CASE</p><p className={`text-xs ${c.text}`}>{results.worst_case_autopsy.actual_worst}</p></div><div className={`p-3.5 rounded-xl ${isDark ? 'bg-emerald-900/15' : 'bg-emerald-50'}`}><p className={`text-[10px] font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>YOU'D SURVIVE BECAUSE</p><p className={`text-xs ${c.text}`}>{results.worst_case_autopsy.would_you_survive}</p></div><p className={`text-xs ${c.textSecondary}`}>⏱️ {results.worst_case_autopsy.how_long_it_stings}</p><p className={`text-xs ${c.textSecondary}`}>🔄 {results.worst_case_autopsy.recovery}</p></div>);
-      case 'permission': return (<div className={`p-6 rounded-2xl text-center ${isDark ? 'bg-cyan-900/15 border border-cyan-800/40' : 'bg-cyan-50 border border-cyan-200'}`}><p className={`text-base font-bold ${isDark ? 'text-cyan-300' : 'text-cyan-700'}`}>💌 {results.permission_slip}</p></div>);
+      case 'mantra': return <div className={`p-6 rounded-2xl text-center ${isDark ? 'bg-cyan-900/20 border-2 border-cyan-700/50' : 'bg-cyan-50 border-2 border-cyan-300'}`}><p className={`text-xl font-black ${isDark ? 'text-cyan-300' : 'text-cyan-700'}`}>"{results.mantra}"</p><p className={`text-xs ${c.textMuteded} mt-3`}>Say it out loud. Repeat it three times.</p><div className="mt-3"><CopyBtn content={results.mantra} label="Copy" /></div></div>;
+      case 'fear': return <div className="space-y-3"><div className={`p-4 rounded-xl ${isDark ? 'bg-red-900/15' : 'bg-red-50'}`}><p className={`text-[10px] font-bold ${isDark ? 'text-red-400' : 'text-red-700'}`}>YOU THINK YOU'RE SCARED OF</p><p className={`text-sm ${c.text}`}>{results.fear_breakdown.surface_fear}</p></div><div className={`p-4 rounded-xl ${isDark ? 'bg-amber-900/15' : 'bg-amber-50'}`}><p className={`text-[10px] font-bold ${isDark ? 'text-amber-400' : 'text-amber-700'}`}>BUT REALLY IT'S</p><p className={`text-sm font-bold ${c.text}`}>{results.fear_breakdown.real_fear}</p></div><div className={`p-4 rounded-xl ${isDark ? 'bg-emerald-900/15' : 'bg-emerald-50'}`}><p className={`text-[10px] font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>REALITY CHECK</p><p className={`text-sm ${c.text}`}>{results.fear_breakdown.reality_check}</p>{results.fear_breakdown.probability && <p className={`text-xs ${c.textMuteded} mt-1`}>Worst-case probability: {results.fear_breakdown.probability}</p>}</div></div>;
+      case 'ready': return <div className="space-y-2.5">{results.why_youre_readier_than_you_think.map((r, i) => (<div key={i} className={`p-4 rounded-xl ${c.cardAlt} border`}><p className={`text-sm font-bold ${c.text}`}>{r.reason}</p><p className={`text-xs ${c.textSecondary} mt-1`}>Evidence: {r.evidence}</p></div>))}</div>;
+      case 'prep': return <div className="space-y-2">{results.prep_plan.map((s, i) => (<div key={i} className="flex items-start gap-2"><span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full shrink-0 mt-0.5 ${s.priority === 'must_do' ? (isDark ? 'bg-red-900/30 text-red-300' : 'bg-red-100 text-red-700') : s.priority === 'should_do' ? (isDark ? 'bg-amber-900/30 text-amber-300' : 'bg-amber-100 text-amber-700') : (isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-zinc-100 text-gray-600')}`}>{s.priority?.replace(/_/g, ' ')}</span><div className="flex-1"><p className={`text-xs font-bold ${c.text}`}>{s.step}</p><p className={`text-[10px] ${c.textSecondary}`}>{s.why}</p></div><span className={`text-[10px] ${c.textMuteded} shrink-0`}>{s.time}</span></div>))}</div>;
+      case 'scripts': return <div className="space-y-3">{[{ key: 'opening_line', label: 'Your opening line', icon: '🎯' }, { key: 'if_you_blank', label: 'If your mind goes blank', icon: '😶' }, { key: 'if_it_goes_wrong', label: 'If things go sideways', icon: '🔄' }, { key: 'exit_line', label: 'Graceful exit', icon: '🚪' }].map(s => results.scripts[s.key] && (<div key={s.key} className={`${c.cardAlt} border rounded-xl p-4`}><p className={`text-[10px] font-bold ${c.accentTxt} mb-1`}>{s.icon} {s.label}</p><p className={`text-sm font-bold ${c.text} mb-2`}>"{results.scripts[s.key]}"</p><CopyBtn content={results.scripts[s.key]} label="Copy" /></div>))}</div>;
+      case 'body': return <div className="space-y-2.5">{results.body_hacks.map((h, i) => (<div key={i} className={`${c.cardAlt} border rounded-xl p-3`}><div className="flex items-center justify-between mb-1"><p className={`text-xs font-bold ${c.text}`}>{h.technique}</p><span className={`text-[10px] px-1.5 py-0.5 rounded-full ${isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-zinc-100 text-gray-600'}`}>{h.when} · {h.time}</span></div><p className={`text-xs ${c.textSecondary}`}>{h.how}</p></div>))}</div>;
+      case 'worst': return <div className="space-y-2.5"><div className={`p-3.5 rounded-xl ${isDark ? 'bg-red-900/15' : 'bg-red-50'}`}><p className={`text-[10px] font-bold ${isDark ? 'text-red-400' : 'text-red-700'}`}>ACTUAL WORST CASE</p><p className={`text-xs ${c.text}`}>{results.worst_case_autopsy.actual_worst}</p></div><div className={`p-3.5 rounded-xl ${isDark ? 'bg-emerald-900/15' : 'bg-emerald-50'}`}><p className={`text-[10px] font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>YOU'D SURVIVE BECAUSE</p><p className={`text-xs ${c.text}`}>{results.worst_case_autopsy.would_you_survive}</p></div><p className={`text-xs ${c.textSecondary}`}>⏱️ {results.worst_case_autopsy.how_long_it_stings}</p><p className={`text-xs ${c.textSecondary}`}>🔄 {results.worst_case_autopsy.recovery}</p></div>;
+      case 'permission': return <div className={`p-6 rounded-2xl text-center ${isDark ? 'bg-cyan-900/15 border border-cyan-800/40' : 'bg-cyan-50 border border-cyan-200'}`}><p className={`text-base font-bold ${isDark ? 'text-cyan-300' : 'text-cyan-700'}`}>💌 {results.permission_slip}</p></div>;
       default: return null;
     }
   };
@@ -397,7 +395,7 @@ const NerveCheck = ({ tool }) => {
         <div className="px-5 pt-5">
           <div className="pb-3 border-b border-zinc-500">
             <h2 className={`text-xl font-bold ${c.text}`}>
-              <span className="mr-2">{tool?.icon ?? '🫁'}</span>{tool?.title ?? 'NerveCheck'}
+              <span className="mr-2">{tool?.icon ?? '💪'}</span>{tool?.title ?? 'Nerve Check'}
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Real confidence for scary moments'}</p>
           </div>
@@ -476,13 +474,18 @@ const NerveCheck = ({ tool }) => {
                 <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>When is it?</label>
                 <div className="flex gap-2 flex-wrap">{TIME_OPTIONS.map(t => (<button key={t.value} onClick={() => setTimeUntil(t.value)} className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all ${timeUntil === t.value ? (isDark ? 'border-cyan-500 bg-cyan-900/20' : 'border-cyan-500 bg-cyan-50') : (isDark ? 'border-zinc-600' : 'border-zinc-200')}`}>{t.icon} {t.label}</button>))}</div>
               </div>
-              <button onClick={analyze} disabled={loading || !situation.trim()} className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-                {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> Building your courage...</> : <><span className="mr-1">{tool?.icon ?? '🫁'}</span> Check My Nerves</>}
-              </button>
+              <div className="flex gap-2">
+                <button onClick={analyze} disabled={loading || !situation.trim()} className={`flex-1 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+                  {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '💪'}</span> Building your courage...</> : <><span className="mr-1">{tool?.icon ?? '💪'}</span> Check My Nerves</>}
+                </button>
+                <button onClick={loadExample} disabled={loading} className={`${c.btnSecondary} disabled:opacity-40 font-bold py-3 px-4 rounded-lg text-xs min-h-[48px]`}>
+                  ✨ Try Example
+                </button>
+              </div>
               <p className={`text-xs ${c.textMuted}`}>Need to rehearse what you'll say? <a href="/DifficultTalkCoach" className={linkStyle}>🗣️ Difficult Talk Coach</a> can help you prepare.</p>
               {situation.trim() && situationType && (
                 <div>{!showSaveTemplate ? (<button onClick={() => setShowSaveTemplate(true)} className={`w-full py-2 rounded-xl text-xs font-bold ${c.btnSoft}`}>💾 Save as template</button>) : (
-                  <div className="flex gap-2"><input type="text" value={templateName} onChange={e => setTemplateName(e.target.value)} placeholder='"Weekly standup anxiety"' className={`flex-1 p-2 border-2 rounded-xl text-xs ${c.input}`} /><button onClick={saveTemplate} disabled={!templateName.trim()} className={`px-4 py-2 rounded-xl text-xs font-bold ${c.btnPrimary} disabled:opacity-40`}>Save</button><button onClick={() => setShowSaveTemplate(false)} className={`px-3 py-2 rounded-xl text-xs ${c.btnSoft}`}>✕</button></div>
+                  <div className="flex gap-2"><label htmlFor="nc-template-name" className="sr-only">Template name</label><input id="nc-template-name" type="text" value={templateName} onChange={e => setTemplateName(e.target.value)} placeholder='"Weekly standup anxiety"' className={`flex-1 p-2 border-2 rounded-xl text-xs ${c.input}`} /><button onClick={saveTemplate} disabled={!templateName.trim()} className={`px-4 py-2 rounded-xl text-xs font-bold ${c.btnPrimary} disabled:opacity-40`}>Save</button><button onClick={() => setShowSaveTemplate(false)} className={`px-3 py-2 rounded-xl text-xs ${c.btnSoft}`}>✕</button></div>
                 )}</div>
               )}
             </div>
@@ -536,7 +539,7 @@ const NerveCheck = ({ tool }) => {
             <div className="flex justify-center gap-1.5">{walkSteps.map((_, i) => (<button key={i} onClick={() => setWalkStep(i)} className={`w-2.5 h-2.5 rounded-full transition-all ${i === walkStep ? (isDark ? 'bg-cyan-400 scale-125' : 'bg-cyan-600 scale-125') : i < walkStep ? (isDark ? 'bg-cyan-700' : 'bg-cyan-300') : (isDark ? 'bg-zinc-700' : 'bg-zinc-300')}`} />))}</div>
             <div className={`${c.card} border-2 rounded-2xl p-6 ${isDark ? 'border-cyan-700/50' : 'border-cyan-300'}`}><p className={`text-xs font-bold uppercase tracking-wider mb-4 ${c.accentTxt}`}>{walkSteps[walkStep].icon} {walkSteps[walkStep].title}</p>{renderWalkContent(walkSteps[walkStep])}</div>
             <div className="flex gap-3">
-              <button onClick={() => setWalkStep(Math.max(0, walkStep - 1))} disabled={walkStep === 0} className={`flex-1 py-3 rounded-xl font-bold text-sm ${c.btnSecondary} disabled:opacity-30`}>← Back</button>
+              <button onClick={() => setWalkStep(Math.max(0, walkStep - 1))} disabled={walkStep === 0} className={`flex-1 py-3 rounded-xl font-bold text-sm ${c.btnSecondary} disabled:opacity-40`}>← Back</button>
               {walkStep < walkSteps.length - 1 ? (<button onClick={() => setWalkStep(walkStep + 1)} className={`flex-1 py-3 rounded-xl font-bold text-sm ${c.btnPrimary}`}>Next →</button>) : (<button onClick={() => { setView('live'); goLive(); }} className={`flex-1 py-3 rounded-xl font-bold text-sm ${c.btnDanger}`}>🔴 Go Live</button>)}
             </div>
           </div>
@@ -557,11 +560,11 @@ const NerveCheck = ({ tool }) => {
                   <div><label className={`text-xs font-bold ${c.textMuteded}`}>Panic level: <span className={`font-black ${confColor(11 - panicLevel)}`}>{panicLevel}/10</span></label><input type="range" min="1" max="10" value={panicLevel} onChange={e => setPanicLevel(Number(e.target.value))} className="w-full accent-red-500" /></div>
                   <div><label className={`text-xs font-bold ${c.textMuteded}`}>Minutes:</label><div className="flex gap-2 mt-1">{[1, 2, 5, 10, 15].map(m => (<button key={m} onClick={() => setMinutesUntil(m)} className={`flex-1 py-2 rounded-xl text-xs font-bold border ${minutesUntil === m ? (isDark ? 'border-red-500 bg-red-900/20' : 'border-red-500 bg-red-50') : (isDark ? 'border-zinc-600' : 'border-zinc-200')}`}>{m}m</button>))}</div></div>
                   {!situation.trim() && <textarea value={situation} onChange={e => setSituation(e.target.value)} placeholder="What are you about to do?" rows={2} className={`w-full p-3 border-2 rounded-xl text-sm ${c.input}`} />}
-                  <button onClick={goLive} disabled={liveLoading} className={`w-full ${c.btnDanger} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>{liveLoading ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> Loading...</> : <><span className="mr-1">{tool?.icon ?? '🫁'}</span> Get Me Ready</>}</button>
+                  <button onClick={goLive} disabled={liveLoading} className={`w-full ${c.btnDanger} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>{liveLoading ? <><span className="inline-block animate-spin">{tool?.icon ?? '💪'}</span> Loading...</> : <><span className="mr-1">{tool?.icon ?? '💪'}</span> Get Me Ready</>}</button>
                 </div>
               </div>
             )}
-            {liveLoading && (<div className={`${c.card} border-2 rounded-2xl p-8 text-center ${isDark ? 'border-red-700/50' : 'border-red-300'}`}><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span><p className={`text-sm font-bold ${c.text} mt-2`}>Getting you ready...</p></div>)}
+            {liveLoading && (<div className={`${c.card} border-2 rounded-2xl p-8 text-center ${isDark ? 'border-red-700/50' : 'border-red-300'}`}><span className="inline-block animate-spin">{tool?.icon ?? '💪'}</span><p className={`text-sm font-bold ${c.text} mt-2`}>Getting you ready...</p></div>)}
             {liveResults && (
               <div className="space-y-4">
                 <div className={`${c.card} border-2 rounded-2xl p-5 text-center ${isDark ? 'border-cyan-700/50' : 'border-cyan-300'}`}>
@@ -606,7 +609,7 @@ const NerveCheck = ({ tool }) => {
               <p className={`text-2xl sm:text-3xl font-black leading-snug ${c.text}`}>{voiceCards[voiceStep].text}</p>
             </div>
             <div className="flex gap-3">
-              <button onClick={() => setVoiceStep(Math.max(0, voiceStep - 1))} disabled={voiceStep === 0} className={`flex-1 py-4 rounded-xl font-bold text-lg ${c.btnSecondary} disabled:opacity-30`}>←</button>
+              <button onClick={() => setVoiceStep(Math.max(0, voiceStep - 1))} disabled={voiceStep === 0} className={`flex-1 py-4 rounded-xl font-bold text-lg ${c.btnSecondary} disabled:opacity-40`}>←</button>
               {voiceStep < voiceCards.length - 1 ? (
                 <button onClick={() => setVoiceStep(voiceStep + 1)} className={`flex-1 py-4 rounded-xl font-bold text-lg ${c.btnPrimary}`}>→</button>
               ) : (
@@ -620,7 +623,7 @@ const NerveCheck = ({ tool }) => {
         {view === 'sos' && (
           <div className="space-y-5">
             <button onClick={() => liveResults ? setView('live') : results ? setView('results') : setView('form')} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnSecondary}`}>← Back</button>
-            {sosLoading && (<div className={`${c.card} border-2 rounded-2xl p-8 text-center ${isDark ? 'border-red-700/50' : 'border-red-300'}`}><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span><p className={`text-sm font-bold ${c.text} mt-2`}>Hold on...</p></div>)}
+            {sosLoading && (<div className={`${c.card} border-2 rounded-2xl p-8 text-center ${isDark ? 'border-red-700/50' : 'border-red-300'}`}><span className="inline-block animate-spin">{tool?.icon ?? '💪'}</span><p className={`text-sm font-bold ${c.text} mt-2`}>Hold on...</p></div>)}
             {sosResults && (
               <div className="space-y-3">
                 <div className={`p-5 rounded-2xl text-center ${isDark ? 'bg-red-900/20 border-2 border-red-700/50' : 'bg-red-50 border-2 border-red-300'}`}><p className={`text-[10px] font-bold ${isDark ? 'text-red-400' : 'text-red-700'} mb-2`}>DO THIS NOW</p><p className={`text-lg font-black ${c.text}`}>{sosResults.do_now}</p></div>
@@ -645,7 +648,7 @@ const NerveCheck = ({ tool }) => {
         {view === 'specific' && (
           <div className="space-y-5">
             <button onClick={() => results ? setView('results') : setView('form')} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnSecondary}`}>← Back</button>
-            {specLoading && (<div className={`${c.card} border rounded-2xl p-8 text-center`}><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span><p className={`text-sm ${c.textSecondary} mt-2`}>Building {situationType ? SIT_TYPES.find(s => s.value === situationType)?.label?.toLowerCase() : 'specific'} prep...</p></div>)}
+            {specLoading && (<div className={`${c.card} border rounded-2xl p-8 text-center`}><span className="inline-block animate-spin">{tool?.icon ?? '💪'}</span><p className={`text-sm ${c.textSecondary} mt-2`}>Building {situationType ? SIT_TYPES.find(s => s.value === situationType)?.label?.toLowerCase() : 'specific'} prep...</p></div>)}
             {specResults && (
               <div className="space-y-4">
                 {specResults.situation_intel && (
@@ -675,15 +678,19 @@ const NerveCheck = ({ tool }) => {
               <div className={`${c.card} border-2 rounded-2xl p-5 ${isDark ? 'border-cyan-700/50' : 'border-cyan-300'}`}>
                 <p className={`text-lg font-black ${c.text} mb-1`}>🤝 Coach Mode</p><p className={`text-xs ${c.textSecondary} mb-4`}>Help someone who's nervous.</p>
                 <div className="space-y-3">
-                  <input type="text" value={coachWho} onChange={e => setCoachWho(e.target.value)} placeholder='Who? (e.g., "my daughter")' className={`w-full p-2.5 border-2 rounded-xl text-sm ${c.input}`} />
-                  <textarea value={coachSituation} onChange={e => setCoachSituation(e.target.value)} placeholder="What are they nervous about?" rows={3} className={`w-full p-3 border-2 rounded-xl text-sm resize-y ${c.input}`} />
+                  <label htmlFor="nc-coach-who" className="sr-only">Who is nervous</label>
+                  <input id="nc-coach-who" type="text" value={coachWho} onChange={e => setCoachWho(e.target.value)} placeholder='Who? (e.g., "my daughter")' className={`w-full p-2.5 border-2 rounded-xl text-sm ${c.input}`} />
+                  <div>
+                    <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>What are they nervous about? <span className={c.required}>*</span></label>
+                    <textarea value={coachSituation} onChange={e => setCoachSituation(e.target.value)} placeholder="What are they nervous about?" rows={3} className={`w-full p-3 border-2 rounded-xl text-sm resize-y ${c.input}`} />
+                  </div>
                   <div><p className={`text-[10px] font-bold ${c.textMuteded} mb-1.5`}>RELATIONSHIP</p><div className="grid grid-cols-3 gap-2">{COACH_RELATIONS.map(r => (<button key={r.value} onClick={() => setCoachRelation(r.value)} className={`p-2 rounded-xl border text-center text-xs font-bold ${coachRelation === r.value ? (isDark ? 'border-cyan-500 bg-cyan-900/20' : 'border-cyan-500 bg-cyan-50') : (isDark ? 'border-zinc-600' : 'border-zinc-200')}`}>{r.icon} {r.label}</button>))}</div></div>
                   <div><p className={`text-[10px] font-bold ${c.textMuteded} mb-1.5`}>AGE</p><div className="flex gap-2">{['child', 'teen', 'adult'].map(a => (<button key={a} onClick={() => setCoachAge(a)} className={`flex-1 py-2 rounded-xl text-xs font-bold border ${coachAge === a ? (isDark ? 'border-cyan-500 bg-cyan-900/20' : 'border-cyan-500 bg-cyan-50') : (isDark ? 'border-zinc-600' : 'border-zinc-200')}`}>{a === 'child' ? '👶' : a === 'teen' ? '🧑' : '🧑‍💼'} {a}</button>))}</div></div>
-                  <button onClick={runCoach} disabled={coachLoading || !coachSituation.trim()} className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>{coachLoading ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> Thinking...</> : <><span className="mr-1">{tool?.icon ?? '🫁'}</span> How Do I Help?</>}</button>
+                  <button onClick={runCoach} disabled={coachLoading || !coachSituation.trim()} className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>{coachLoading ? <><span className="inline-block animate-spin">{tool?.icon ?? '💪'}</span> Thinking...</> : <><span className="mr-1">{tool?.icon ?? '💪'}</span> How Do I Help?</>}</button>
                 </div>
               </div>
             )}
-            {coachLoading && (<div className={`${c.card} border rounded-2xl p-8 text-center`}><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span></div>)}
+            {coachLoading && (<div className={`${c.card} border rounded-2xl p-8 text-center`}><span className="inline-block animate-spin">{tool?.icon ?? '💪'}</span></div>)}
             {coachResults && (
               <div className="space-y-4">
                 {coachResults.key_insight && (<div className={`p-5 rounded-2xl text-center ${isDark ? 'bg-cyan-900/20 border-2 border-cyan-700/50' : 'bg-cyan-50 border-2 border-cyan-300'}`}><p className={`text-sm font-black ${isDark ? 'text-cyan-300' : 'text-cyan-700'}`}>💡 {coachResults.key_insight}</p></div>)}
@@ -775,8 +782,11 @@ const NerveCheck = ({ tool }) => {
                 <p className={`text-lg font-black ${c.text} mb-1`}>🪜 Build a Fear Ladder</p>
                 <p className={`text-xs ${c.textSecondary} mb-4`}>Break a big fear into small, progressively braver steps.</p>
                 <div className="space-y-3">
-                  <textarea value={ladderFear} onChange={e => setLadderFear(e.target.value)} placeholder='e.g., "Speaking in front of large groups" or "Going on dates"' rows={2} className={`w-full p-3 border-2 rounded-xl text-sm ${c.input}`} />
-                  <button onClick={runLadder} disabled={ladderLoading || !ladderFear.trim()} className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>{ladderLoading ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> Building ladder...</> : <><span className="mr-1">{tool?.icon ?? '🫁'}</span> Build My Ladder</>}</button>
+                  <div>
+                    <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>What fear do you want to conquer? <span className={c.required}>*</span></label>
+                    <textarea value={ladderFear} onChange={e => setLadderFear(e.target.value)} placeholder='e.g., "Speaking in front of large groups" or "Going on dates"' rows={2} className={`w-full p-3 border-2 rounded-xl text-sm ${c.input}`} />
+                  </div>
+                  <button onClick={runLadder} disabled={ladderLoading || !ladderFear.trim()} className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>{ladderLoading ? <><span className="inline-block animate-spin">{tool?.icon ?? '💪'}</span> Building ladder...</> : <><span className="mr-1">{tool?.icon ?? '💪'}</span> Build My Ladder</>}</button>
                 </div>
                 {ladderResults && (
                   <div className={`mt-3 p-3 rounded-xl ${isDark ? 'bg-emerald-900/15' : 'bg-emerald-50'}`}>
@@ -883,11 +893,11 @@ const NerveCheck = ({ tool }) => {
                   <div><label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>How did it go? <span className={c.required}>*</span></label><textarea value={howItWent} onChange={e => setHowItWent(e.target.value)} placeholder='"It was actually fine. Got the second interview."' rows={3} className={`w-full p-3 border-2 rounded-xl text-sm resize-y focus:outline-none focus:ring-2 ${c.input}`} /></div>
                   <div><label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>Confidence now: <span className={`font-black ${confColor(confAfter)}`}>{confAfter}/10</span></label><input type="range" min="1" max="10" value={confAfter} onChange={e => setConfAfter(Number(e.target.value))} className="w-full accent-teal-500" /></div>
                   <div><label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>What surprised you? (optional)</label><input type="text" value={whatSurprised} onChange={e => setWhatSurprised(e.target.value)} placeholder={`"I didn't freeze up like I thought"`} className={`w-full p-2.5 border-2 rounded-xl text-sm ${c.input}`} /></div>
-                  <button onClick={runDebrief} disabled={debriefLoading || !howItWent.trim()} className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>{debriefLoading ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> Processing...</> : <><span className="mr-1">{tool?.icon ?? '🫁'}</span> Debrief Me</>}</button>
+                  <button onClick={runDebrief} disabled={debriefLoading || !howItWent.trim()} className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>{debriefLoading ? <><span className="inline-block animate-spin">{tool?.icon ?? '💪'}</span> Processing...</> : <><span className="mr-1">{tool?.icon ?? '💪'}</span> Debrief Me</>}</button>
                 </div>
               </div>
             )}
-            {debriefLoading && (<div className={`${c.card} border rounded-2xl p-8 text-center`}><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span><p className={`text-sm ${c.textSecondary} mt-2`}>Processing your experience...</p></div>)}
+            {debriefLoading && (<div className={`${c.card} border rounded-2xl p-8 text-center`}><span className="inline-block animate-spin">{tool?.icon ?? '💪'}</span><p className={`text-sm ${c.textSecondary} mt-2`}>Processing your experience...</p></div>)}
             {debriefResults && (
               <div className="space-y-4">
                 <div className={`${c.card} border-2 rounded-2xl p-5 text-center ${isDark ? 'border-emerald-700/50' : 'border-emerald-300'}`}>

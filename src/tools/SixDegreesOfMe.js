@@ -2,7 +2,7 @@ import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react'
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
-import { CopyBtn, ShareBtn } from '../components/ActionButtons';
+import { CopyBtn } from '../components/ActionButtons';
 import { useRegisterActions } from '../components/ActionBarContext';
 
 // ════════════════════════════════════════════════════════════
@@ -27,6 +27,7 @@ const CHALLENGES = [
   { id: 'emotions_only',  label: 'Feelings Only',        emoji: '💗', desc: 'Every link through an emotion' },
 ];
 
+// SVG color palette — values used inline at stroke= / fill= / style.color sites in the graph view
 const TAG_COLORS = {
   career: '#8b5cf6', education: '#3b82f6', relationship: '#ec4899', place: '#10b981',
   hobby: '#f59e0b', emotion: '#ef4444', skill: '#06b6d4', event: '#84cc16',
@@ -126,10 +127,9 @@ const SixDegreesOfMe = ({ tool }) => {
                           : 'bg-red-50 border-red-200 text-red-800',
     infoBox:       isDark ? 'bg-sky-900/20 border-sky-700 text-sky-200'
                           : 'bg-sky-50 border-sky-200 text-sky-800',
-    successBox:    isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-300',
     successTxt:    isDark ? 'text-emerald-300' : 'text-emerald-800',
-    warningBox:    isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
     warningTxt:    isDark ? 'text-amber-300' : 'text-amber-800',
+    dangerHover:   isDark ? 'hover:text-red-400' : 'hover:text-red-500',
     pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200'
                           : 'border-cyan-600 bg-cyan-100 text-cyan-900',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500'
@@ -153,23 +153,15 @@ const SixDegreesOfMe = ({ tool }) => {
     whatIfBg:      isDark ? 'bg-red-900/20 border-red-700' : 'bg-red-50 border-red-200',
     challengeBg:   isDark ? 'bg-zinc-800/80 border-zinc-700' : 'bg-slate-50 border-slate-200',
     storyBg:       isDark ? 'bg-zinc-800' : 'bg-white',
-    webNode:       isDark ? '#67e8f9' : '#0891b2',
-    webEdge:       isDark ? '#52525b' : '#d1d5db',
-    webText:       isDark ? '#e4e4e7' : '#111827',
   };
+  // SVG color (used as fill= / stroke=) — not a Tailwind class, so kept outside the c block
+  const webNodeColor = isDark ? '#67e8f9' : '#0891b2';
   
   c.label = c.labelText;
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
     : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
-
-  // ── Persistent ──
-  const [profile, setProfile] = usePersistentState('six-degrees-profile', {});
-  const [chainHistory, setChainHistory] = usePersistentState('six-degrees-history', []);
-  const [usedPairs, setUsedPairs] = usePersistentState('six-degrees-used-pairs', []);
-  const [nodeTags, setNodeTags] = usePersistentState('six-degrees-tags', {});
-  const [storyResult, setStoryResult] = usePersistentState('six-degrees-story', null);
 
   // ── Session: Core ──
   const [thingA, setThingA] = useState('');
@@ -205,6 +197,13 @@ const SixDegreesOfMe = ({ tool }) => {
   // ── Session: v2 Story + Web ──
   const [storyLoading, setStoryLoading] = useState(false);
   const [hoveredNode, setHoveredNode] = useState(null);
+
+  // ── Persistent ──
+  const [profile, setProfile] = usePersistentState('six-degrees-profile', {});
+  const [chainHistory, setChainHistory] = usePersistentState('six-degrees-history', []);
+  const [usedPairs, setUsedPairs] = usePersistentState('six-degrees-used-pairs', []);
+  const [nodeTags, setNodeTags] = usePersistentState('six-degrees-tags', {});
+  const [storyResult, setStoryResult] = usePersistentState('six-degrees-story', null);
 
   // ── Profile helpers ──
   const profileItemCount = useMemo(() => {
@@ -262,6 +261,22 @@ const SixDegreesOfMe = ({ tool }) => {
   // HANDLERS
   // ══════════════════════════════════════════
 
+  const handleReset = () => {
+    setThingA(''); setThingB('');
+    setResult(null); setFlipResult(null); setWhatIfResult(null); setWhatIfStep(null);
+    setSurprisePairs(null); setAiQuestions(null);
+    setError(''); setVisibleSteps(0); setAnimatingChain(false);
+    setBetweenNameA(''); setBetweenNameB(''); setBetweenProfileB({});
+    setBetweenSharedThing(''); setBetweenResult(null);
+    setChallengeMode(null);
+  };
+
+  const loadExample = () => {
+    setThingA('My philosophy degree');
+    setThingB('My career in software');
+    setError('');
+  };
+
   const handleFindChain = async () => {
     if (!thingA.trim() || !thingB.trim() || loading) return;
     setError(''); setResult(null); setFlipResult(null); setWhatIfResult(null); setWhatIfStep(null); setSurprisePairs(null);
@@ -275,6 +290,7 @@ const SixDegreesOfMe = ({ tool }) => {
       setChainHistory(prev => [{
         thingA: thingA.trim(), thingB: thingB.trim(), chain: parsed.chain,
         insight: parsed.insight, constraint: challengeMode || null,
+        preview: `${thingA.trim()} → ${thingB.trim()}`.slice(0, 80),
         createdAt: new Date().toISOString(),
       }, ...prev].slice(0, 50));
       setUsedPairs(prev => [...prev, `${thingA.trim()} → ${thingB.trim()}`].slice(0, 30));
@@ -504,7 +520,7 @@ const SixDegreesOfMe = ({ tool }) => {
                           {catItems.map((item, idx) => (
                             <span key={idx} className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs ${c.pillInactive}`}>
                               {item}
-                              <button onClick={() => removeProfileItem(cat.id, idx, target)} className="hover:text-red-500">✕</button>
+                              <button onClick={() => removeProfileItem(cat.id, idx, target)} className={c.dangerHover}>✕</button>
                             </span>
                           ))}
                         </div>
@@ -544,7 +560,7 @@ const SixDegreesOfMe = ({ tool }) => {
                   if (target === 'B') setBetweenProfileB({});
                   else setProfile({});
                 }
-              }} className={`w-full text-center text-xs ${c.btnSecondary} hover:text-red-500 py-1`}>Clear profile</button>
+              }} className={`w-full text-center text-xs ${c.btnSecondary} ${c.dangerHover} py-1`}>Clear profile</button>
             )}
           </div>
         )}
@@ -685,6 +701,9 @@ const SixDegreesOfMe = ({ tool }) => {
   const renderWhatIfResult = () => {
     if (!whatIfResult) return null;
     const lp = LINCHPIN_LABELS[whatIfResult.linchpin_assessment] || LINCHPIN_LABELS.partial;
+    const lpColor = whatIfResult.linchpin_assessment === 'load_bearing' ? c.danger
+                  : whatIfResult.linchpin_assessment === 'redundant'    ? c.successTxt
+                  : c.warningTxt;
     return (
       <div className={`rounded-2xl border overflow-hidden mb-4 ${c.whatIfBg}`}>
         <div className="px-5 py-3 border-b border-red-200/30">
@@ -698,7 +717,7 @@ const SixDegreesOfMe = ({ tool }) => {
           <div className="flex items-center gap-3 mb-2">
             <span className="text-xl">{lp.emoji}</span>
             <div>
-              <p className={`text-sm font-bold ${c[lp.colorKey]}`}>{lp.label}</p>
+              <p className={`text-sm font-bold ${lpColor}`}>{lp.label}</p>
               <p className={`text-xs ${c.textMuted}`}>{lp.desc}</p>
             </div>
           </div>
@@ -782,7 +801,7 @@ const SixDegreesOfMe = ({ tool }) => {
               const dimmed = hoveredNode && !isHovered && !graphData.edges.some(
                 e => (e.from === hoveredNode && e.to === node.id) || (e.to === hoveredNode && e.from === node.id)
               );
-              const color = node.tag ? (TAG_COLORS[node.tag] || c.webNode) : c.webNode;
+              const color = node.tag ? (TAG_COLORS[node.tag] || webNodeColor) : webNodeColor;
               return (
                 <g key={node.id}
                   onMouseEnter={() => setHoveredNode(node.id)}
@@ -855,7 +874,7 @@ const SixDegreesOfMe = ({ tool }) => {
           <div className="mb-4">
             <button onClick={handleStory} disabled={storyLoading}
               className={`px-6 py-2.5 rounded-xl text-sm font-bold ${c.btnPrimary} disabled:opacity-40`}>
-              {storyLoading ? <span><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> Writing your story...</span>
+              {storyLoading ? <span><span className="inline-block animate-spin">{tool?.icon ?? '🔗'}</span> Writing your story...</span>
                 : storyResult ? '🔄 Regenerate My Story' : '📖 Write My Story'}
             </button>
             <p className={`text-xs ${c.textMuted} mt-2`}>
@@ -935,7 +954,7 @@ const SixDegreesOfMe = ({ tool }) => {
               placeholder="Your name" className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input} outline-none`} />
           </div>
           <div>
-            <label className={`text-sm font-bold ${c.text} mb-1.5 block`}>👤 Person B</label>
+            <label className={`text-sm font-bold ${c.text} mb-1.5 block`}>👤 Person B <span className={c.required}>*</span></label>
             <input type="text" value={betweenNameB} onChange={e => setBetweenNameB(e.target.value)}
               placeholder="Friend's name" className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input} outline-none`} />
           </div>
@@ -967,7 +986,7 @@ const SixDegreesOfMe = ({ tool }) => {
 
         <button onClick={handleChainBetween} disabled={loading || !betweenNameB.trim()}
           className={`w-full py-3 rounded-xl text-sm font-bold ${c.btnPrimary} disabled:opacity-40 flex items-center justify-center gap-2 min-h-[48px]`}>
-          {loading ? <span><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> Finding...</span> : '🤝 Find the Connection'}
+          {loading ? <span><span className="inline-block animate-spin">{tool?.icon ?? '🔗'}</span> Finding...</span> : '🤝 Find the Connection'}
         </button>
       </div>
 
@@ -1104,7 +1123,7 @@ const SixDegreesOfMe = ({ tool }) => {
           })}
           {chainHistory.length > 1 && (
             <button onClick={() => { if (window.confirm('Clear chain history?')) { setChainHistory([]); setStoryResult(null); } }}
-              className={`w-full text-center text-xs ${c.btnSecondary} hover:text-red-500 py-2`}>Clear history</button>
+              className={`w-full text-center text-xs ${c.btnSecondary} ${c.dangerHover} py-2`}>Clear history</button>
           )}
         </div>
       )}
@@ -1130,10 +1149,19 @@ const SixDegreesOfMe = ({ tool }) => {
       {/* Header card */}
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
         <div className="pb-3 border-b border-zinc-500">
-          <h2 className={`text-2xl font-bold ${c.text}`}>
-            <span className="mr-2">{tool?.icon ?? '🔗'}</span>{tool?.title ?? 'Six Degrees of Me'}
-          </h2>
-          <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Find the hidden chains between any two parts of your life'}</p>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h2 className={`text-2xl font-bold ${c.text}`}>
+                <span className="mr-2">{tool?.icon ?? '🔗'}</span>{tool?.title ?? 'Six Degrees of Me'}
+              </h2>
+              <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Find the hidden chains between any two parts of your life'}</p>
+            </div>
+            {(result || thingA.trim() || thingB.trim() || betweenResult) && (
+              <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>
+                ↺ Start Over
+              </button>
+            )}
+          </div>
         </div>
 
       {/* Tabs */}
@@ -1169,7 +1197,7 @@ const SixDegreesOfMe = ({ tool }) => {
               <div>
                 <label className={`text-sm font-bold ${c.text} mb-1.5 block flex items-center gap-2`}>
                   <span className="w-5 h-5 rounded-full bg-amber-500/20 flex items-center justify-center text-[10px] font-bold text-amber-600">A</span>
-                  Thing A
+                  Thing A <span className={c.required}>*</span>
                 </label>
                 <input type="text" value={thingA} onChange={e => setThingA(e.target.value)}
                   placeholder='e.g. "My philosophy degree"'
@@ -1179,7 +1207,7 @@ const SixDegreesOfMe = ({ tool }) => {
               <div>
                 <label className={`text-sm font-bold ${c.text} mb-1.5 block flex items-center gap-2`}>
                   <span className="w-5 h-5 rounded-full bg-emerald-500/20 flex items-center justify-center text-[10px] font-bold text-emerald-600">B</span>
-                  Thing B
+                  Thing B <span className={c.required}>*</span>
                 </label>
                 <input type="text" value={thingB} onChange={e => setThingB(e.target.value)}
                   placeholder='e.g. "My career in software"'
@@ -1209,13 +1237,21 @@ const SixDegreesOfMe = ({ tool }) => {
               )}
             </div>
 
+            <p className={`text-[11px] ${c.textMuted} mb-3`}>
+              Stuck on what to put in Thing A? Try <a href="/BrainRoulette" className={linkStyle}>🎲 BrainRoulette</a> for an unexpected prompt.
+            </p>
+
             {/* Action buttons */}
             <div className="flex gap-2 flex-wrap">
               <button onClick={handleFindChain}
                 disabled={!thingA.trim() || !thingB.trim() || loading}
                 className={`flex-1 sm:flex-none px-6 py-2.5 rounded-xl text-sm font-bold disabled:opacity-40 ${c.btnPrimary}`}>
-                {loading && !result ? <span><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> Tracing...</span>
+                {loading && !result ? <span><span className="inline-block animate-spin">{tool?.icon ?? '🔗'}</span> Tracing...</span>
                   : challengeMode ? '🎯 Challenge Chain' : '🔗 Find the Chain'}
+              </button>
+              <button onClick={loadExample} disabled={loading}
+                className={`px-4 py-2.5 rounded-xl text-sm font-bold disabled:opacity-40 ${c.btnSecondary}`}>
+                ✨ Try Example
               </button>
               <button onClick={handleSurprise}
                 disabled={loading || profileItemCount < 3}
@@ -1260,7 +1296,7 @@ const SixDegreesOfMe = ({ tool }) => {
           {/* Loading */}
           {loading && !result && (
             <div className={`rounded-2xl p-8 mb-5 text-center border ${c.card}`}>
-              <span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span>
+              <span className="inline-block animate-spin">{tool?.icon ?? '🔗'}</span>
               <p className={`text-sm font-semibold ${c.textMuted}`}>Tracing the chain...</p>
             </div>
           )}
@@ -1276,7 +1312,7 @@ const SixDegreesOfMe = ({ tool }) => {
           {/* Flip loading */}
           {loading && result && !flipResult && (
             <div className={`rounded-2xl p-6 mb-5 text-center border ${c.card}`}>
-              <span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span>
+              <span className="inline-block animate-spin">{tool?.icon ?? '🔗'}</span>
               <p className={`text-sm ${c.textMuted}`}>Finding the reverse path...</p>
             </div>
           )}
@@ -1284,7 +1320,7 @@ const SixDegreesOfMe = ({ tool }) => {
           {/* What-If loading */}
           {loading && whatIfStep && !whatIfResult && (
             <div className={`rounded-2xl p-6 mb-5 text-center border ${c.whatIfBg}`}>
-              <span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span>
+              <span className="inline-block animate-spin">{tool?.icon ?? '🔗'}</span>
               <p className={`text-sm ${c.errorText}`}>Exploring what would change...</p>
             </div>
           )}

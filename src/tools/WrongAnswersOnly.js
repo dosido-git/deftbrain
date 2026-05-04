@@ -67,7 +67,6 @@ const WrongAnswersOnly = ({ tool }) => {
     danger:        isDark ? 'bg-[#2a5248]/30 border-[#3a6e60] text-[#e4f2f0]' : 'bg-[#fafefe] border-[#b8dcd8] text-[#1e3030]',
     pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
-    badge:         isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-100 text-cyan-800',
     infoBox:       isDark ? 'bg-[#1e3030]/60 border-[#3a6e60] text-[#e4f2f0]' : 'bg-[#f0f8f6] border-[#8cc8c0] text-[#1e3030]',
     quoteBg:       isDark ? 'bg-zinc-700/40' : 'bg-[#f3efe8]',
   };

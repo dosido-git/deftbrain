@@ -49,19 +49,9 @@ const MagicMouth = ({ tool }) => {
                           : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200'
                           : 'bg-red-50 border-red-200 text-red-800',
-    infoBox:       isDark ? 'bg-sky-900/20 border-sky-700 text-sky-200'
-                          : 'bg-sky-50 border-sky-200 text-sky-800',
-    successBox:    isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-300',
-    successTxt:    isDark ? 'text-emerald-300' : 'text-emerald-800',
     warningBox:    isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
-    warningTxt:    isDark ? 'text-amber-300' : 'text-amber-800',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200'
-                          : 'border-cyan-600 bg-cyan-100 text-cyan-900',
-    pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500'
-                          : 'border-gray-300 text-gray-500 hover:border-gray-400',
     required:      isDark ? 'text-amber-400' : 'text-amber-500',
     // Tool-specific semantic keys
-    badge:         isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-100 text-cyan-800',
     goldBg:        isDark ? 'bg-amber-900/20' : 'bg-amber-50',
     goldBorder:    isDark ? 'border-amber-700' : 'border-amber-300',
     goldText:      isDark ? 'text-amber-300' : 'text-amber-700',
@@ -83,7 +73,7 @@ const MagicMouth = ({ tool }) => {
   const [situation, setSituation] = useState('');
   const [whoYoureAsking, setWhoYoureAsking] = useState('');
   const [triedAlready, setTriedAlready] = useState('');
-  const [results, setResults] = useState(null);
+  const [results, setResults] = usePersistentState('magicmouth-results', null);
   const [error, setError] = useState('');
   const [expandedSections, setExpandedSections] = useState({});
   const [showBackup, setShowBackup] = useState(false);
@@ -254,7 +244,7 @@ const MagicMouth = ({ tool }) => {
     return t;
   }, [results, whatYouWant, situation]);
 
-  useRegisterActions(buildFullText(), tool?.title || 'Magic Mouth');
+  useRegisterActions(buildFullText(), tool?.title || 'Magic Mouth (M²)');
 
   // ── Keyboard shortcut ──
   const handleSubmitRef = useRef(null);
@@ -294,7 +284,7 @@ const MagicMouth = ({ tool }) => {
         <div className="px-5 pt-5">
           <div className="pb-3 border-b border-zinc-500">
             <h2 className={`text-xl font-bold ${c.text}`}>
-              <span className="mr-2">{tool?.icon ?? '🗣️'}</span>{tool?.title ?? 'Magic Mouth'}
+              <span className="mr-2">{tool?.icon ?? '🗣️'}</span>{tool?.title ?? 'Magic Mouth (M²)'}
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? "Tell me what you want. I'll find the angle and write the script."}</p>
           </div>
@@ -326,13 +316,13 @@ const MagicMouth = ({ tool }) => {
               <p className={`text-xs ${c.accentTxt}`}>📞 Navigate any automated phone system to reach the right human — menu sequences, magic phrases, escalation scripts.</p>
             </div>
             <div className="space-y-2">
-              <label className={`text-sm font-semibold ${c.text}`}><span className="mr-1.5">🏢</span> Which company?</label>
+              <label className={`text-sm font-semibold ${c.text}`}><span className="mr-1.5">🏢</span> Which company? <span className={c.required}>*</span></label>
               <input type="text" value={phoneCompany} onChange={e => setPhoneCompany(e.target.value)}
                 placeholder="e.g. Chase Bank, United Airlines, Blue Cross, AT&T, DMV…"
                 className={`w-full px-4 py-3 rounded-xl text-sm ${c.input} ${c.border} border ${c.text} outline-none transition-colors`} />
             </div>
             <div className="space-y-2">
-              <label className={`text-sm font-semibold ${c.text}`}><span className="mr-1.5">⚠️</span> What's the issue?</label>
+              <label className={`text-sm font-semibold ${c.text}`}><span className="mr-1.5">⚠️</span> What's the issue? <span className={c.required}>*</span></label>
               <textarea value={phoneIssue} onChange={e => setPhoneIssue(e.target.value)}
                 placeholder="e.g. Fraudulent charge on my account that wasn't me…"
                 rows={2} maxLength={400}
@@ -348,8 +338,8 @@ const MagicMouth = ({ tool }) => {
             <button onClick={handlePhoneTree} disabled={loading || !phoneCompany.trim() || !phoneIssue.trim()}
               className={`w-full py-3 rounded-xl font-semibold disabled:opacity-40 ${c.btnPrimary}`}>
               {loading
-              ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> Getting your script...</>
-              : <><span className="mr-1">{tool?.icon ?? '📞'}</span> Get My Script</>}
+              ? <><span className="inline-block animate-spin">{tool?.icon ?? '🗣️'}</span> Getting your script...</>
+              : <><span className="mr-1">{tool?.icon ?? '🗣️'}</span> Get My Script</>}
             </button>
           </div>
         )}
@@ -552,7 +542,7 @@ const MagicMouth = ({ tool }) => {
                 onClick={handleExample}
                 className={`text-xs ${c.btnSecondary} px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5`}
               >
-                <span>🎲</span> Example
+                <span>✨</span> Try Example
               </button>
             </div>
 
@@ -563,7 +553,7 @@ const MagicMouth = ({ tool }) => {
                 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-2`}
             >
               {loading
-                ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> Finding your angle...</>
+                ? <><span className="inline-block animate-spin">{tool?.icon ?? '🗣️'}</span> Finding your angle...</>
                 : <><span className="mr-1">{tool?.icon ?? '🗣️'}</span> Find My Angle</>}
             </button>
           </div>
@@ -573,6 +563,21 @@ const MagicMouth = ({ tool }) => {
         {error && (
           <div className={`${c.danger} border rounded-xl p-4 text-sm flex items-center gap-2`}>
             <span>⚠️</span> {error}
+          </div>
+        )}
+
+        {/* Pre-result cross-ref + Recent history */}
+        {mode === 'ask' && !results && (
+          <div className="space-y-2">
+            <p className={`text-[11px] ${c.textMuted}`}>
+              Wrote it but worried about how it lands? <a href="/ContextCollapse" className={linkStyle}>🪞 ContextCollapse</a> previews how each person on the receiving end will read it.
+            </p>
+            {history.length > 0 && (
+              <div className={`${c.cardAlt} ${c.border} border rounded-lg p-2.5`}>
+                <p className={`text-[10px] font-bold uppercase tracking-wider ${c.textMuteded} mb-1.5`}>Recent asks</p>
+                <p className={`text-[10px] ${c.textMuteded}`}>{history.length} saved · last on {new Date(history[0].date).toLocaleDateString()}</p>
+              </div>
+            )}
           </div>
         )}
 
@@ -739,7 +744,7 @@ const MagicMouth = ({ tool }) => {
               <p className={`text-xs ${isDark ? 'text-zinc-500' : 'text-red-900'}`}>💣 For when polite has failed. Regulatory complaints, executive escalation, demand letters, small claims — mapped out in full. Legal leverage only.</p>
             </div>
             <div className="space-y-2">
-              <label className={`text-sm font-semibold ${c.text}`}><span className="mr-1.5">🏢</span> Who are you up against?</label>
+              <label className={`text-sm font-semibold ${c.text}`}><span className="mr-1.5">🏢</span> Who are you up against? <span className={c.required}>*</span></label>
               <input type="text" value={nuclearCompany} onChange={e => setNuclearCompany(e.target.value)}
                 placeholder="e.g. Comcast, Blue Cross, my landlord, a contractor, Bank of America…"
                 className={`w-full px-4 py-3 rounded-xl text-sm ${c.input} ${c.border} border ${c.text} outline-none transition-colors`} />
@@ -770,8 +775,8 @@ const MagicMouth = ({ tool }) => {
               className={`w-full py-3 rounded-xl font-semibold disabled:opacity-40 text-white transition-all`}
               style={{ background: isDark ? 'linear-gradient(135deg, #8a3028, #b54a3f)' : 'linear-gradient(135deg, #b54a3f, #8a3028)' }}>
               {loading
-              ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> Mapping the leverage…</>
-              : <><span className="mr-1">{tool?.icon ?? '💣'}</span> Find My Nuclear Options</>}
+              ? <><span className="inline-block animate-spin">{tool?.icon ?? '🗣️'}</span> Mapping the leverage…</>
+              : <><span className="mr-1">{tool?.icon ?? '🗣️'}</span> Find My Nuclear Options</>}
             </button>
             <p className={`text-xs text-center ${c.textMuteded}`}>Legal leverage only. Not legal advice.</p>
           </div>

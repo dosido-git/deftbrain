@@ -35,13 +35,7 @@ const WhatIf = ({ tool }) => {
     pillInactive:      isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
     badge:             isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-100 text-cyan-800',
     // Category panel tints — Teal family (What If?)
-    panelTint:         isDark ? 'bg-[#2a5248]/30' : 'bg-[#e4f2f0]',
-    panelTintBorder:   isDark ? 'border-[#3a6e60]' : 'border-[#8cc8c0]',
-    panelStrong:       isDark ? 'bg-[#2a5248]/60' : 'bg-[#b8dcd8]',
-    panelStrongBorder: isDark ? 'border-[#5aaa9e]' : 'border-[#5aaa9e]',
     // Gold AI insight — all tools
-    panelInsight:       isDark ? 'bg-[#93541f]/25' : 'bg-[#fdf4e8]',
-    panelInsightBorder: isDark ? 'border-[#c8872e]' : 'border-[#e8c98a]',
     // Tool-specific
     infoBox:           isDark ? 'bg-[#2a5248]/30 border-[#3a6e60]' : 'bg-[#e4f2f0] border-[#8cc8c0]',
     sceneBg:           isDark ? 'bg-zinc-700/40' : 'bg-[#f3efe8]',

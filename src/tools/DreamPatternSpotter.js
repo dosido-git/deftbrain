@@ -413,7 +413,7 @@ const DreamPatternSpotter = ({ tool }) => {
               <button
                 onClick={handleSingleDreamAnalyze}
                 disabled={loading}
-                className={`w-full ${c.btnPrimary} disabled:opacity-50 py-3 px-6 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2`}
+                className={`w-full ${c.btnPrimary} disabled:opacity-40 py-3 px-6 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2`}
               >
                 {loading ? (
                   <>
@@ -483,7 +483,7 @@ const DreamPatternSpotter = ({ tool }) => {
             <button
               onClick={handlePatternAnalyze}
               disabled={loading}
-              className={`w-full ${c.btnPrimary} disabled:opacity-50 py-3 px-6 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 mt-6`}
+              className={`w-full ${c.btnPrimary} disabled:opacity-40 py-3 px-6 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 mt-6`}
             >
               {loading ? (
                 <>

@@ -86,15 +86,8 @@ const DateNight = ({ tool }) => {
                           : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200'
                           : 'bg-red-50 border-red-200 text-red-800',
-    infoBox:       isDark ? 'bg-sky-900/20 border-sky-700 text-sky-200'
                           : 'bg-sky-50 border-sky-200 text-sky-800',
-    successBox:    isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-300',
-    successTxt:    isDark ? 'text-emerald-300' : 'text-emerald-800',
-    warningBox:    isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
-    warningTxt:    isDark ? 'text-amber-300' : 'text-amber-800',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200'
                           : 'border-cyan-600 bg-cyan-100 text-cyan-900',
-    pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500'
                           : 'border-gray-300 text-gray-500 hover:border-gray-400',
     required:      isDark ? 'text-amber-400' : 'text-amber-500',
     // Bespoke keys
@@ -631,7 +624,7 @@ const DateNight = ({ tool }) => {
             <input value={actualSpend} onChange={e => setActualSpend(e.target.value)} placeholder={`e.g., ${fm(budget)}`} className={`w-40 px-3 py-2 border rounded-lg text-sm ${c.input}`} />
           </div>
           <textarea value={rateNotes} onChange={e => setRateNotes(e.target.value)} placeholder="Highlight? What to change?" rows={2} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
-          <button onClick={handleRate} disabled={loading || !overallRating} className={`w-full py-2.5 rounded-xl font-bold text-sm ${c.btnAction} disabled:opacity-50`}>
+          <button onClick={handleRate} disabled={loading || !overallRating} className={`w-full py-2.5 rounded-xl font-bold text-sm ${c.btnAction} disabled:opacity-40`}>
             {loading ? <><span className="animate-spin inline-block mr-2">{tool?.icon ?? '💘'}</span>Saving…</> : '⭐ Submit'}
           </button>
           {rateResult && (
@@ -923,7 +916,7 @@ const DateNight = ({ tool }) => {
           {error && <div className={`${c.danger} border rounded-xl p-4 text-sm`}>⚠️ {error}</div>}
 
           <button onClick={generate} disabled={loading || !location.trim() || !dateType}
-            className={`w-full py-3.5 rounded-xl font-bold text-sm ${c.btnAction} disabled:opacity-50`}>
+            className={`w-full py-3.5 rounded-xl font-bold text-sm ${c.btnAction} disabled:opacity-40`}>
             {loading
               ? <><span className="animate-spin inline-block mr-2">{tool?.icon ?? '💘'}</span>Planning…</>
               : isAnni
