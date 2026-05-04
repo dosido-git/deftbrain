@@ -49,9 +49,6 @@ const RulebookBreaker = ({ tool }) => {
                           : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200'
                           : 'bg-red-50 border-red-200 text-red-800',
-                          : 'bg-sky-50 border-sky-200 text-sky-800',
-                          : 'border-cyan-600 bg-cyan-100 text-cyan-900',
-                          : 'border-gray-300 text-gray-500 hover:border-gray-400',
   };
   c.textMuteded = c.textMuted;
   c.label = c.labelText;

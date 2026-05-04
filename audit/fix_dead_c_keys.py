@@ -94,40 +94,51 @@ def has_dynamic_access(content_no_cblock):
     return bool(re.search(r'\bc\[', strip_comments(content_no_cblock)))
 
 
-def find_dead_keys(content):
-    """Return (dead_set, c_start, c_end, c_block) or (None, ...) on bail.
-
-    dead_set is None when the file should be skipped (no c block or dynamic
-    access). Empty set means file is clean.
-    """
-    c_start, c_end, c_block = find_c_block(content)
-    if c_block is None:
-        return None, None, None, None
-
-    content_no_cblock = content[:c_start] + content[c_end:]
-
-    if has_dynamic_access(content_no_cblock):
-        return None, c_start, c_end, c_block
-
-    used = set(re.findall(
-        r'\bc\.([a-zA-Z][a-zA-Z0-9_]*)\b',
-        content_no_cblock,
-    ))
-    defined = extract_keys(c_block)
-    dead = defined - used - CONVENTION_KEYS
-    return dead, c_start, c_end, c_block
-
-
 def strip_keys(c_block, keys):
-    """Return c_block with each key's full line removed."""
+    """Return c_block with each key's full entry removed.
+
+    Handles both single-line and multi-line ternary entries. A multi-line
+    entry has the key on one line and one or more continuation lines
+    starting with `: '...'` (the false branch of a multi-line ternary).
+    """
     new_block = c_block
     for k in sorted(keys):
+        # Match line starting with `key:` plus zero-or-more continuation
+        # lines (continuation = whitespace + ':' + anything, no key prefix).
         new_block = re.sub(
-            rf'(?m)^\s+{re.escape(k)}\s*:[^\n]*\n',
+            rf'(?m)^\s+{re.escape(k)}\s*:[^\n]*\n(?:\s+:[^\n]*\n)*',
             '',
             new_block,
         )
     return new_block
+
+
+def repair_orphans(c_block):
+    """Remove orphan continuation lines left over from prior buggy runs.
+
+    An orphan is a line starting with whitespace + `:` whose previous
+    non-empty line already ended with a comma — meaning a complete entry
+    has terminated and the `:` line cannot be a valid ternary continuation.
+
+    Runs on every invocation so prior damage from the v1 single-line regex
+    gets cleaned up automatically. Idempotent.
+    """
+    lines = c_block.split('\n')
+    out = []
+    prev_terminates = False
+    for line in lines:
+        stripped = line.strip()
+        is_orphan = (
+            prev_terminates
+            and bool(re.match(r'^\s+:', line))
+            and bool(stripped)
+        )
+        if is_orphan:
+            continue
+        out.append(line)
+        if stripped:
+            prev_terminates = stripped.endswith(',')
+    return '\n'.join(out)
 
 
 def process_file(path, dry_run):
@@ -138,31 +149,57 @@ def process_file(path, dry_run):
         print(f'{path}: ERROR: {e}', file=sys.stderr)
         return 1
 
-    dead, c_start, c_end, c_block = find_dead_keys(content)
-
-    if dead is None and c_block is None:
+    # Step 1: locate c block
+    c_start, c_end, c_block = find_c_block(content)
+    if c_block is None:
         print(f'{path}: no c block — skipping', file=sys.stderr)
         return 1
 
-    if dead is None:
-        print(
-            f'{path}: SKIP — uses c[expr] dynamic access '
-            f'(S1.1j colorKey indirection); manual review required',
-            file=sys.stderr,
-        )
+    # Step 2: repair any orphan continuation lines from prior buggy runs.
+    # Idempotent — if there are no orphans, c_block is unchanged.
+    repaired_block = repair_orphans(c_block)
+    repair_changed = repaired_block != c_block
+    if repair_changed:
+        n_orphans = c_block.count('\n') - repaired_block.count('\n')
+        print(f'{path}: REPAIR — removed {n_orphans} orphan continuation line(s)')
+
+    # Step 3: dead-key analysis on the repaired block
+    content_for_analysis = content[:c_start] + repaired_block + content[c_end:]
+    new_c_start, new_c_end, _ = find_c_block(content_for_analysis)
+    content_no_cblock = content_for_analysis[:new_c_start] + content_for_analysis[new_c_end:]
+
+    if has_dynamic_access(content_no_cblock):
+        if repair_changed and not dry_run:
+            with open(path, 'w') as f:
+                f.write(content_for_analysis)
+            print(f'{path}: written (repair only — dynamic access prevents key removal)')
+        else:
+            print(
+                f'{path}: SKIP key removal — uses c[expr] dynamic access '
+                f'(S1.1j colorKey indirection); manual review required',
+                file=sys.stderr,
+            )
         return 0
 
-    if not dead:
-        print(f'{path}: clean (0 dead keys)')
+    used = set(re.findall(
+        r'\bc\.([a-zA-Z][a-zA-Z0-9_]*)\b',
+        content_no_cblock,
+    ))
+    defined = extract_keys(repaired_block)
+    dead = defined - used - CONVENTION_KEYS
+
+    if not dead and not repair_changed:
+        print(f'{path}: clean (0 dead keys, 0 orphans)')
         return 0
 
-    print(f'{path}: {len(dead)} dead key(s): {sorted(dead)}')
+    if dead:
+        print(f'{path}: {len(dead)} dead key(s): {sorted(dead)}')
 
     if dry_run:
         return 0
 
-    new_block = strip_keys(c_block, dead)
-    new_content = content[:c_start] + new_block + content[c_end:]
+    final_block = strip_keys(repaired_block, dead) if dead else repaired_block
+    new_content = content[:c_start] + final_block + content[c_end:]
 
     with open(path, 'w') as f:
         f.write(new_content)

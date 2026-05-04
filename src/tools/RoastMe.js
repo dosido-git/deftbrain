@@ -55,7 +55,6 @@ const RoastMe = ({ tool }) => {
                           : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200'
                           : 'bg-red-50 border-red-200 text-red-800',
-                          : 'bg-sky-50 border-sky-200 text-sky-800',
     warningBox:    isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
     pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200'
                           : 'border-cyan-600 bg-cyan-100 text-cyan-900',

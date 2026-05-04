@@ -35,9 +35,6 @@ const PetWeirdnessDecoder = ({ tool }) => {
                           : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200'
                           : 'bg-red-50 border-red-200 text-red-800',
-                          : 'bg-sky-50 border-sky-200 text-sky-800',
-                          : 'border-cyan-600 bg-cyan-100 text-cyan-900',
-                          : 'border-gray-300 text-gray-500 hover:border-gray-400',
     // ── Bespoke keys ──
     emergency:     isDark ? 'bg-red-900/40 border-red-600 text-red-100' : 'bg-red-100 border-red-400 text-red-900',
     required:      isDark ? 'text-amber-400' : 'text-amber-500',

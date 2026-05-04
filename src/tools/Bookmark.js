@@ -58,10 +58,8 @@ const Bookmark = ({ tool }) => {
                           : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200'
                           : 'bg-red-50 border-red-200 text-red-800',
-                          : 'bg-sky-50 border-sky-200 text-sky-800',
     pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200'
                           : 'border-cyan-600 bg-cyan-100 text-cyan-900',
-                          : 'border-gray-300 text-gray-500 hover:border-gray-400',
     required:      isDark ? 'text-amber-400' : 'text-amber-500',
     // Tool-specific
     modeActive:    isDark ? 'bg-cyan-700 border-cyan-500 text-white' : 'bg-cyan-600 border-cyan-600 text-white',

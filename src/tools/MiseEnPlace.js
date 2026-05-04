@@ -75,7 +75,6 @@ const MiseEnPlace = ({ tool }) => {
                           : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200'
                           : 'bg-red-50 border-red-200 text-red-800',
-                          : 'bg-sky-50 border-sky-200 text-sky-800',
     pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200'
                           : 'border-cyan-600 bg-cyan-100 text-cyan-900',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500'
@@ -99,7 +98,6 @@ const MiseEnPlace = ({ tool }) => {
     histAccent:    isDark ? 'text-amber-400' : 'text-amber-600',
     histCard:      isDark ? 'border-zinc-700' : 'border-gray-100',
     deleteHover:   isDark ? 'hover:bg-red-900/30 hover:text-red-300' : 'hover:bg-red-50 hover:text-red-600',
-                               : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2',
   };
   c.textMuteded = c.textMuted;
   c.label = c.labelText;

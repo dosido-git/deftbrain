@@ -146,7 +146,6 @@ const RentersDepositSaver = ({ tool }) => {
     success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
     warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
-                          : 'border-gray-300 text-gray-500 hover:border-gray-400',
   };
   c.textMuteded = c.textMuted;
   c.label       = c.labelText;

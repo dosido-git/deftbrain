@@ -851,7 +851,6 @@ const SocialEnergyAudit = ({ tool }) => {
         )}
 
 
-        <button
         <p className={`text-[11px] ${c.textMuted} text-center mb-2`}>
           New to tracking your energy? Start with <a href="/CrashPredictor" className={linkStyle}>📉 CrashPredictor</a> to spot the pattern fast.
         </p>
