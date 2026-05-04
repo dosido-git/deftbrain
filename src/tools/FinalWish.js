@@ -1137,9 +1137,9 @@ async function decrypt(){
       {loading && !currentInterviewQ && renderLoading('Thinking of the next question...')}
       {currentInterviewQ && (
         <div className={`p-5 rounded-2xl border-2 ${c.borderWarm} ${c.warmBg} mb-5`}>
-          <p className={`text-sm font-semibold ${c.textWarm} mb-1`}>{currentInterviewQ.question}</p>
+          <label htmlFor="fw-interview-answer" className={`block text-sm font-semibold ${c.textWarm} mb-1`}>{currentInterviewQ.question} <span className={c.required}>*</span></label>
           {currentInterviewQ.reasoning && <p className={`text-xs ${c.textMuteded} mb-3`}>{currentInterviewQ.reasoning}</p>}
-          <textarea value={interviewAnswer} onChange={e => setInterviewAnswer(e.target.value)}
+          <textarea id="fw-interview-answer" value={interviewAnswer} onChange={e => setInterviewAnswer(e.target.value)}
             placeholder="Your answer..." rows={3}
             className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none mb-3`} />
           <div className="flex gap-2">
@@ -1181,7 +1181,8 @@ async function decrypt(){
 
         <div className={`p-5 rounded-2xl border-2 ${c.borderWarm} ${c.warmBg} mb-5`}>
           <h3 className={`text-sm font-bold ${c.textWarm} mb-2`}>🔑 Top Critical Accounts</h3>
-          <textarea value={emergencyDump} onChange={e => setEmergencyDump(e.target.value)}
+          <label htmlFor="fw-emergency-dump" className={`block text-xs ${c.textWarm} mb-1.5`}>List each account {tp} would need first <span className={c.required}>*</span></label>
+          <textarea id="fw-emergency-dump" value={emergencyDump} onChange={e => setEmergencyDump(e.target.value)}
             placeholder="e.g. Chase bank — 800-935-9935. Gmail john@gmail.com — password manager on phone. Life insurance with MetLife..."
             rows={5} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none mb-3`} />
           <button onClick={async () => {
@@ -1256,8 +1257,8 @@ async function decrypt(){
         <p className={`text-sm ${c.textSecondary} mb-5`}>What accounts would {tp} need to know about?</p>
         {accounts.length === 0 && !showFollowUps && (
           <div className={`p-5 rounded-2xl border-2 ${c.borderWarm} ${c.warmBg} mb-5`}>
-            <p className={`text-sm ${c.textWarm} mb-3`}>What are the 3–5 accounts {tp} would need first?</p>
-            <textarea value={accountDump} onChange={e => setAccountDump(e.target.value)}
+            <label htmlFor="fw-account-dump" className={`block text-sm ${c.textWarm} mb-3`}>What are the 3–5 accounts {tp} would need first? <span className={c.required}>*</span></label>
+            <textarea id="fw-account-dump" value={accountDump} onChange={e => setAccountDump(e.target.value)}
               placeholder="e.g. My Gmail (john@gmail.com), Chase bank, Netflix, Instagram — password is in phone notes..."
               rows={4} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none mb-3`} />
             <button onClick={parseAccountDump} disabled={loading || !accountDump.trim()}
@@ -1378,8 +1379,8 @@ async function decrypt(){
         <p className={`text-xs ${c.textMuteded} mb-5`}>Just enough for {tp} to know what accounts exist.</p>
         {financialAccounts.length === 0 && (
           <div className={`p-5 rounded-2xl border-2 ${c.borderWarm} ${c.warmBg} mb-5`}>
-            <p className={`text-sm ${c.textWarm} mb-3`}>Describe your financial accounts in any format.</p>
-            <textarea value={financialDump} onChange={e => setFinancialDump(e.target.value)} placeholder="e.g. Chase checking, Fidelity 401k, mortgage with Wells Fargo, State Farm auto insurance..." rows={4} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none mb-3`} />
+            <label htmlFor="fw-financial-dump" className={`block text-sm ${c.textWarm} mb-3`}>Describe your financial accounts in any format. <span className={c.required}>*</span></label>
+            <textarea id="fw-financial-dump" value={financialDump} onChange={e => setFinancialDump(e.target.value)} placeholder="e.g. Chase checking, Fidelity 401k, mortgage with Wells Fargo, State Farm auto insurance..." rows={4} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none mb-3`} />
             <button onClick={parseFinancialDump} disabled={loading || !financialDump.trim()}
               className={`px-5 py-2.5 rounded-xl text-sm font-bold ${financialDump.trim() && !loading ? c.btnPrimary : `${c.btnSecondary} opacity-50 cursor-not-allowed`}`}>
               {loading ? <span><span className="animate-spin inline-block">{tool?.icon ?? '📋'}</span> Organizing...</span> : '✨ Extract Accounts'}
@@ -1461,8 +1462,9 @@ async function decrypt(){
           </div>
         )}
         <div className={`p-4 rounded-xl border-2 border-dashed ${c.border}`}>
+          <label htmlFor="fw-message-recipient" className={`block text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2`}>Add a message recipient <span className={c.required}>*</span></label>
           <div className="flex gap-2">
-            <input type="text" value={messageRecipient} onChange={e => setMessageRecipient(e.target.value)} placeholder="Recipient's name" onKeyDown={e => e.key === 'Enter' && startNewMessage()}
+            <input id="fw-message-recipient" type="text" value={messageRecipient} onChange={e => setMessageRecipient(e.target.value)} placeholder="Recipient's name" onKeyDown={e => e.key === 'Enter' && startNewMessage()}
               className={`flex-1 px-3 py-2 rounded-lg border text-sm ${c.input} outline-none`} />
             <button onClick={startNewMessage} disabled={!messageRecipient.trim()} className={`px-4 py-2 rounded-lg text-sm font-bold ${messageRecipient.trim() ? c.btnPrimary : `${c.btnSecondary} opacity-50 cursor-not-allowed`}`}>➕</button>
           </div>
@@ -1482,16 +1484,16 @@ async function decrypt(){
 
       if (messageStep === 1) return (
         <div className={`p-5 rounded-2xl border-2 ${c.borderWarm} ${c.warmBg}`}>
-          <p className={`text-sm font-semibold ${c.textWarm} mb-3`}>What's your relationship with {msg.recipientName}?</p>
-          <input type="text" value={msg.relationship} onChange={e => updateMessageField(idx, 'relationship', e.target.value)} placeholder='"my daughter", "best friend since college"' className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none mb-3`} />
+          <label htmlFor={`fw-msg-relationship-${idx}`} className={`block text-sm font-semibold ${c.textWarm} mb-3`}>What's your relationship with {msg.recipientName}? <span className={c.required}>*</span></label>
+          <input id={`fw-msg-relationship-${idx}`} type="text" value={msg.relationship} onChange={e => updateMessageField(idx, 'relationship', e.target.value)} placeholder='"my daughter", "best friend since college"' className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none mb-3`} />
           <button onClick={() => setMessageStep(2)} disabled={!msg.relationship.trim()} className={`px-5 py-2.5 rounded-xl text-sm font-bold ${msg.relationship.trim() ? c.btnPrimary : `${c.btnSecondary} opacity-50 cursor-not-allowed`}`}>Continue →</button>
         </div>
       );
 
       if (messageStep === 2) return (
         <div className={`p-5 rounded-2xl border-2 ${c.borderWarm} ${c.warmBg}`}>
-          <p className={`text-sm font-semibold ${c.textWarm} mb-3`}>What would you most want {msg.recipientName} to know?</p>
-          <textarea value={msg.whatToKnow} onChange={e => updateMessageField(idx, 'whatToKnow', e.target.value)} placeholder="Just say what comes to mind..." rows={4} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none mb-3`} />
+          <label htmlFor={`fw-msg-whatToKnow-${idx}`} className={`block text-sm font-semibold ${c.textWarm} mb-3`}>What would you most want {msg.recipientName} to know? <span className={c.required}>*</span></label>
+          <textarea id={`fw-msg-whatToKnow-${idx}`} value={msg.whatToKnow} onChange={e => updateMessageField(idx, 'whatToKnow', e.target.value)} placeholder="Just say what comes to mind..." rows={4} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none mb-3`} />
           <button onClick={() => setMessageStep(3)} disabled={!msg.whatToKnow.trim()} className={`px-5 py-2.5 rounded-xl text-sm font-bold ${msg.whatToKnow.trim() ? c.btnPrimary : `${c.btnSecondary} opacity-50 cursor-not-allowed`}`}>Continue →</button>
         </div>
       );
@@ -1742,7 +1744,8 @@ async function decrypt(){
           {encryptionEnabled && (
             <div className="mt-3 space-y-2">
               <div className="relative">
-                <input type={showPassphrase ? 'text' : 'password'} value={passphrase} onChange={e => setPassphrase(e.target.value)} placeholder="Choose a passphrase (4+ characters)"
+                <label htmlFor="fw-passphrase" className="sr-only">Passphrase (4 or more characters) <span className={c.required}>*</span></label>
+                <input id="fw-passphrase" type={showPassphrase ? 'text' : 'password'} value={passphrase} onChange={e => setPassphrase(e.target.value)} placeholder="Choose a passphrase (4+ characters)"
                   className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none pr-12`} />
                 <button onClick={() => setShowPassphrase(!showPassphrase)} className={`absolute right-3 top-1/2 -translate-y-1/2 text-xs ${c.textMuteded}`}>{showPassphrase ? '🙈' : '👁️'}</button>
               </div>

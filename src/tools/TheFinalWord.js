@@ -88,6 +88,7 @@ const TheFinalWord = ({ tool }) => {
     text: isDark ? 'text-zinc-50' : 'text-slate-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-slate-600',
     textMuted: isDark ? 'text-zinc-500' : 'text-slate-400',
+    required:      isDark ? 'text-amber-400' : 'text-amber-500',
     labelText: isDark ? 'text-zinc-200' : 'text-slate-700',
     btnPrimary: isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
     btnSecondary: isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-slate-100 hover:bg-slate-200 text-slate-700',
@@ -929,7 +930,7 @@ const TheFinalWord = ({ tool }) => {
             {/* ════ QUICK QUESTION ════ */}
             {mode === 'question' && (
               <div className="space-y-3">
-                <label className={`block text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>What do you want to know?</label>
+                <label className={`block text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>What do you want to know? <span className={c.required}>*</span></label>
                 <div className="flex gap-2">
                   <input value={question} onChange={(e) => setQuestion(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && !loading && handleSubmit()} placeholder="Who won the 1994 World Cup?" className={`flex-1 px-4 py-3 rounded-xl border-2 text-sm transition-all focus:outline-none focus:ring-2 ${c.input}`} />
                   <VoiceButton />
@@ -965,7 +966,7 @@ const TheFinalWord = ({ tool }) => {
                       <input value={daTopic} onChange={(e) => setDaTopic(e.target.value)} placeholder="e.g., Remote work, AI regulation, pineapple on pizza..." className={`w-full px-4 py-2.5 rounded-xl border-2 text-sm transition-all focus:outline-none focus:ring-2 ${c.input}`} />
                     </div>
                     <div>
-                      <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>Your position</label>
+                      <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>Your position <span className={c.required}>*</span></label>
                       <textarea value={daPosition} onChange={(e) => setDaPosition(e.target.value)} placeholder="State your position clearly... e.g., 'Remote work is strictly better than office work for knowledge workers'" rows={3} className={`w-full px-4 py-3 rounded-xl border-2 text-sm transition-all focus:outline-none focus:ring-2 resize-none ${c.input}`} />
                     </div>
                     <button onClick={handleDevilsAdvocate} disabled={loading || !daPosition.trim()} className={`w-full py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-40 ${c.btnPrimary}`}>
@@ -986,7 +987,7 @@ const TheFinalWord = ({ tool }) => {
                       </div>
                     </div>
                     <div>
-                      <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>{personA || 'Person A'} says...</label>
+                      <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>{personA || 'Person A'} says... <span className={c.required}>*</span></label>
                       <div className="flex gap-2">
                         <textarea value={claimA} onChange={(e) => setClaimA(e.target.value)} placeholder='"The Great Wall of China is visible from space"' rows={2} className={`flex-1 px-4 py-3 rounded-xl border-2 text-sm transition-all focus:outline-none focus:ring-2 resize-none ${c.input}`} />
                         <VoiceButton />
@@ -996,7 +997,7 @@ const TheFinalWord = ({ tool }) => {
                       <div className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest ${isDark ? 'bg-amber-900/30 text-amber-400' : 'bg-amber-100 text-amber-700'}`}>VS</div>
                     </div>
                     <div>
-                      <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>{personB || 'Person B'} says...</label>
+                      <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>{personB || 'Person B'} says... <span className={c.required}>*</span></label>
                       <div className="flex gap-2">
                         <textarea value={claimB} onChange={(e) => setClaimB(e.target.value)} placeholder="No way, that is totally a myth" rows={2} className={`flex-1 px-4 py-3 rounded-xl border-2 text-sm transition-all focus:outline-none focus:ring-2 resize-none ${c.input}`} />
                         <VoiceButton />
@@ -1017,7 +1018,7 @@ const TheFinalWord = ({ tool }) => {
             {/* ════ FACT CHECK ════ */}
             {mode === 'factcheck' && (
               <div className="space-y-3">
-                <label className={`block text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>What claim do you want to check?</label>
+                <label className={`block text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>What claim do you want to check? <span className={c.required}>*</span></label>
                 <div className="flex gap-2">
                   <textarea value={claim} onChange={(e) => setClaim(e.target.value)} placeholder="Humans only use 10% of their brains" rows={2} className={`flex-1 px-4 py-3 rounded-xl border-2 text-sm transition-all focus:outline-none focus:ring-2 resize-none ${c.input}`} />
                   <VoiceButton />
@@ -1630,7 +1631,8 @@ const TheFinalWord = ({ tool }) => {
         {showChallenge && (
           <div className={`rounded-2xl p-5 border space-y-3 ${c.card}`}>
             <h4 className={`text-sm font-bold flex items-center gap-2 ${c.text}`}><span className={c.accentTxt}>💬</span>Think we got it wrong?</h4>
-            <textarea value={challengeText} onChange={(e) => setChallengeText(e.target.value)} placeholder="Tell us why..." rows={2} className={`w-full px-4 py-3 rounded-xl border-2 text-sm resize-none transition-all focus:outline-none focus:ring-2 ${c.input}`} />
+            <label className="sr-only" htmlFor="tfw-challenge-text">Why do you think the verdict is wrong?</label>
+            <textarea id="tfw-challenge-text" value={challengeText} onChange={(e) => setChallengeText(e.target.value)} placeholder="Tell us why..." rows={2} className={`w-full px-4 py-3 rounded-xl border-2 text-sm resize-none transition-all focus:outline-none focus:ring-2 ${c.input}`} />
             <button onClick={handleChallenge} disabled={loading || !challengeText.trim()} className={`px-4 py-2 rounded-xl text-sm font-bold transition-all disabled:opacity-40 ${c.btnPrimary}`}>{loading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚙️'}</span> : 'Submit Challenge'}</button>
             {challengeResult && (
               <div className={`p-4 rounded-xl border ${challengeResult.challenge_valid === true ? isDark ? 'bg-emerald-900/10 border-green-800/50' : 'bg-green-50 border-green-200' : challengeResult.challenge_valid === 'partially' ? isDark ? 'bg-amber-900/10 border-amber-800/50' : 'bg-amber-50 border-amber-200' : isDark ? 'bg-red-900/10 border-red-800/50' : 'bg-red-50 border-red-200'}`}>
@@ -1647,7 +1649,8 @@ const TheFinalWord = ({ tool }) => {
           <div className={`rounded-2xl p-5 border space-y-3 ${c.card}`}>
             <h4 className={`text-sm font-bold flex items-center gap-2 ${c.text}`}><span>🏛️</span> Appeal Court</h4>
             <p className={`text-xs ${c.textSecondary}`}>Present new evidence or arguments to challenge the verdict. Appeals are judged more rigorously.</p>
-            <textarea value={appealEvidence} onChange={(e) => setAppealEvidence(e.target.value)} placeholder="New evidence or arguments for your appeal..." rows={3} className={`w-full px-4 py-3 rounded-xl border-2 text-sm resize-none transition-all focus:outline-none focus:ring-2 ${c.input}`} />
+            <label className="sr-only" htmlFor="tfw-appeal-evidence">New evidence or arguments for your appeal</label>
+            <textarea id="tfw-appeal-evidence" value={appealEvidence} onChange={(e) => setAppealEvidence(e.target.value)} placeholder="New evidence or arguments for your appeal..." rows={3} className={`w-full px-4 py-3 rounded-xl border-2 text-sm resize-none transition-all focus:outline-none focus:ring-2 ${c.input}`} />
             <button onClick={handleAppeal} disabled={appealLoading || !appealEvidence.trim()} className={`px-4 py-2 rounded-xl text-sm font-bold transition-all disabled:opacity-40 ${c.btnPrimary}`}>{appealLoading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚙️'}</span> : 'File Appeal'}</button>
 
             {appealResult && (
@@ -1685,7 +1688,8 @@ const TheFinalWord = ({ tool }) => {
           <div className={`rounded-2xl border p-5 space-y-3 ${c.card}`}>
             <h4 className={`text-sm font-bold flex items-center gap-2 ${c.text}`}><span>💬</span> Want to dig deeper?</h4>
             <div className="flex gap-2">
-              <input value={followUpText} onChange={(e) => setFollowUpText(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && !followUpLoading && handleFollowUp()} placeholder="But what about..." className={`flex-1 px-4 py-2.5 rounded-xl border-2 text-sm transition-all focus:outline-none focus:ring-2 ${c.input}`} />
+              <label className="sr-only" htmlFor="tfw-followup-text">Ask a follow-up question</label>
+              <input id="tfw-followup-text" value={followUpText} onChange={(e) => setFollowUpText(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && !followUpLoading && handleFollowUp()} placeholder="But what about..." className={`flex-1 px-4 py-2.5 rounded-xl border-2 text-sm transition-all focus:outline-none focus:ring-2 ${c.input}`} />
               <button onClick={handleFollowUp} disabled={followUpLoading || !followUpText.trim()} className={`px-4 py-2.5 rounded-xl text-sm font-bold transition-all disabled:opacity-40 ${c.btnPrimary}`}>{followUpLoading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚙️'}</span> : '→'}</button>
             </div>
             {followUpResults.map((fu, i) => (
