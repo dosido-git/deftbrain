@@ -58,6 +58,7 @@ const Recall = ({ tool }) => {
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-500' : 'text-gray-400',
+    required:      isDark ? 'text-amber-400' : 'text-amber-500',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
     accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
     btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
@@ -299,7 +300,7 @@ const Recall = ({ tool }) => {
       {/* Transcript — all modes except Connect */}
       {mode !== 'connect' ? (
         <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-          <label className={`text-base font-bold ${c.text} mb-1 block`}>📄 Paste lecture transcript or notes <span className="text-red-400">*</span></label>
+          <label className={`text-base font-bold ${c.text} mb-1 block`}>📄 Paste lecture transcript or notes <span className={c.required}>*</span></label>
           <p className={`text-xs ${c.textMuted} mb-3`}>From Zoom, Teams, Otter.ai, Google Meet — or your own typed notes.</p>
           <textarea value={transcript} onChange={e => setTranscript(e.target.value)}
             placeholder="Paste your transcript here... The more complete, the better the output."

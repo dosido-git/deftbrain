@@ -47,6 +47,7 @@ const TimeWarp = ({ tool }) => {
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-500' : 'text-gray-400',
+    required:      isDark ? 'text-amber-400' : 'text-amber-500',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
     accentTxt:     isDark ? 'text-amber-400' : 'text-amber-700',
     accentBox:     isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',

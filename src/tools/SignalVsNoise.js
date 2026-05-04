@@ -38,6 +38,7 @@ const SignalVsNoise = ({ tool }) => {
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-500' : 'text-gray-400',
+    required:      isDark ? 'text-amber-400' : 'text-amber-500',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
     accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
     btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
@@ -154,7 +155,7 @@ const SignalVsNoise = ({ tool }) => {
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Cut through the contradiction. Find what experts actually agree on.'}</p>
             </div>
             <div>
-              <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>Topic <span className="text-red-400">*</span></label>
+              <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>Topic <span className={c.required}>*</span></label>
               <input type="text" value={topic} onChange={e => setTopic(e.target.value)}
                 placeholder="e.g. sleep optimization, low-carb diets, passive investing, screen time for kids…"
                 className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} `} />

@@ -137,6 +137,7 @@ const RentersDepositSaver = ({ tool }) => {
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-500' : 'text-gray-400',
+    required:      isDark ? 'text-amber-400' : 'text-amber-500',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
     accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
     btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
@@ -913,7 +914,7 @@ pre{white-space:pre-wrap;word-wrap:break-word;font-family:inherit;margin:0}
             {/* Address */}
             <div>
               <label className={`block text-sm font-semibold ${c.text} mb-1.5`}>
-                Property Address <span className="text-red-500">*</span>
+                Property Address <span className={c.required}>*</span>
               </label>
               <input
                 type="text"
@@ -940,7 +941,7 @@ pre{white-space:pre-wrap;word-wrap:break-word;font-family:inherit;margin:0}
               {/* Move-in date (defaults to today) */}
               <div>
                 <label className={`block text-sm font-semibold ${c.text} mb-1.5`}>
-                  Move-In Date <span className="text-red-500">*</span>
+                  Move-In Date <span className={c.required}>*</span>
                 </label>
                 <input
                   type="date"
@@ -955,7 +956,7 @@ pre{white-space:pre-wrap;word-wrap:break-word;font-family:inherit;margin:0}
               {/* Location display (set in step 1) */}
               <div>
                 <label className={`block text-sm font-semibold ${c.text} mb-1.5`}>
-                  Location <span className="text-red-500">*</span>
+                  Location <span className={c.required}>*</span>
                 </label>
                 <div className={`flex items-center gap-2 p-3 border rounded-lg ${isDark ? 'bg-zinc-700/50 border-zinc-600' : 'bg-zinc-50 border-zinc-200'}`}>
                   <span className={`text-sm ${locationValid ? c.text : isDark ? 'text-red-400' : 'text-red-600'}`}>

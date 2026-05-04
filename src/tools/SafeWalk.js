@@ -178,6 +178,7 @@ const SafeWalk = ({ tool }) => {
     text:          isDark ? 'text-zinc-50' : 'text-stone-900',
     textSecondary: isDark ? 'text-zinc-400' : 'text-stone-600',
     textMuted:     isDark ? 'text-zinc-500' : 'text-stone-400',
+    required:      isDark ? 'text-amber-400' : 'text-amber-500',
     labelText:     isDark ? 'text-zinc-200' : 'text-stone-700',
     accentTxt:     isDark ? 'text-emerald-400' : 'text-emerald-600',
     btnPrimary:    isDark ? 'bg-emerald-500 hover:bg-emerald-400 text-zinc-900 font-bold' : 'bg-stone-800 hover:bg-stone-900 text-white font-bold',

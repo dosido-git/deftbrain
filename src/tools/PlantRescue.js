@@ -21,6 +21,7 @@ const PlantRescue = ({ tool }) => {
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-500' : 'text-gray-400',
+    required:      isDark ? 'text-amber-400' : 'text-amber-500',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
     accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
     btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
@@ -393,7 +394,7 @@ const PlantRescue = ({ tool }) => {
             <label className={`block text-sm font-medium ${c.label} mb-2`}>
               📸 {mode === 'rescue' ? 'Plant Photo — whole plant view' : 'Plant Photo'}
               {mode === 'identify'
-                ? <> <span className="text-red-400">*</span></>
+                ? <> <span className={c.required}>*</span></>
                 : <> <span className={`font-normal ${c.textMuted}`}>(or describe / select symptoms below)</span></>}
             </label>
             {!imagePreview ? (
@@ -442,7 +443,7 @@ const PlantRescue = ({ tool }) => {
           {/* Symptom wizard — rescue only */}
           {mode === 'rescue' && (
             <div>
-              <label className={`block text-sm font-medium ${c.label} mb-2`}>🩺 What do you see? <span className="text-red-400">*</span> <span className={`font-normal ${c.textMuted}`}>(click all that apply)</span></label>
+              <label className={`block text-sm font-medium ${c.label} mb-2`}>🩺 What do you see? <span className={c.required}>*</span> <span className={`font-normal ${c.textMuted}`}>(click all that apply)</span></label>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                 {symptomOptions.map(s => (
                   <label key={s.id}

@@ -69,6 +69,7 @@ const RoommateCourt = ({ tool }) => {
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-500' : 'text-gray-400',
+    required:      isDark ? 'text-amber-400' : 'text-amber-500',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
     accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
     btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
@@ -574,7 +575,7 @@ const RoommateCourt = ({ tool }) => {
       <div className={`p-5 rounded-2xl border ${c.border} ${c.cardAltCard} mb-4`}>
         <span className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-3 block`}>File a case</span>
 
-        <span className={`text-xs font-semibold ${c.textSecondary} mb-1.5 block`}>What's the dispute about? <span className="text-red-400">*</span></span>
+        <span className={`text-xs font-semibold ${c.textSecondary} mb-1.5 block`}>What's the dispute about? <span className={c.required}>*</span></span>
         <textarea value={dispute} onChange={e => setDispute(e.target.value)}
           placeholder="Describe the situation as fairly as you can..."
           rows={3}

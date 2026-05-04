@@ -26,6 +26,7 @@ const PlotHole = ({ tool }) => {
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-500' : 'text-gray-400',
+    required:      isDark ? 'text-amber-400' : 'text-amber-500',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
     accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
     btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
@@ -223,7 +224,7 @@ const PlotHole = ({ tool }) => {
             </div>
 
             <div>
-              <label className={`text-xs font-bold ${c.label} block mb-1.5`}>Title <span className="text-red-400">*</span></label>
+              <label className={`text-xs font-bold ${c.label} block mb-1.5`}>Title <span className={c.required}>*</span></label>
               <input type="text" value={title} onChange={e => setTitle(e.target.value)}
                 placeholder="e.g., The Dark Knight, Breaking Bad, Harry Potter..."
                 className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`}
@@ -345,7 +346,7 @@ const PlotHole = ({ tool }) => {
             </div>
 
             <div>
-              <label className={`text-xs font-bold ${c.label} block mb-1.5`}>The plot hole <span className="text-red-400">*</span></label>
+              <label className={`text-xs font-bold ${c.label} block mb-1.5`}>The plot hole <span className={c.required}>*</span></label>
               <textarea value={defendHole} onChange={e => setDefendHole(e.target.value)}
                 placeholder="Describe the plot hole... e.g., 'Why didn't the eagles just fly them to Mordor?'"
                 rows={3} className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2 resize-y`} />

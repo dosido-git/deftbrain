@@ -72,6 +72,7 @@ const TipOfTongue = ({ tool }) => {
     heading:       isDark ? 'text-[#f3efe8]'  : 'text-[#1e2a3a]',
     textSecondary: isDark ? 'text-[#c8c3b9]'  : 'text-[#5a544a]',
     textMuted:     isDark ? 'text-[#8a8275]'  : 'text-[#8a8275]',
+    required:      isDark ? 'text-amber-400' : 'text-amber-500',
     border:        isDark ? 'border-[#3d3630]' : 'border-[#e8e1d5]',
     btnPrimary:    'bg-cyan-600 hover:bg-cyan-700 text-white',
     btnSecondary:  isDark ? 'bg-[#332e2a] hover:bg-[#3d3630] text-[#c8c3b9] border border-[#3d3630]' : 'bg-[#f3efe8] hover:bg-[#e8e1d5] text-[#5e5042] border border-[#d5cab8]',

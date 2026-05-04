@@ -185,7 +185,7 @@ const InputCard = ({ title, subtitle, children, onSubmit, btnLabel, btnIcon, c, 
   </div>
 );
 
-const Req = () => <span className="text-red-400 ml-0.5">*</span>;
+const Req = () => <span className={c.required}>*</span>;
 
 // ════════════════════════════════════════════════════════════
 // MAIN COMPONENT
@@ -203,6 +203,7 @@ const RoomReader = ({ tool }) => {
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-500' : 'text-gray-400',
+    required:      isDark ? 'text-amber-400' : 'text-amber-500',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
     accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
     btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'

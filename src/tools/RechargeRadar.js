@@ -58,6 +58,7 @@ const RechargeRadar = ({ tool }) => {
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-500' : 'text-gray-400',
+    required:      isDark ? 'text-amber-400' : 'text-amber-500',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
     accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
     btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
@@ -443,7 +444,7 @@ const RechargeRadar = ({ tool }) => {
             <div>
               <div className="flex items-center justify-between mb-2">
                 <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>
-                  What's on your plate this week? <span className="text-red-400">*</span>
+                  What's on your plate this week? <span className={c.required}>*</span>
                 </p>
                 {templates.length > 0 && (
                   <button onClick={() => setShowTemplates(!showTemplates)}
