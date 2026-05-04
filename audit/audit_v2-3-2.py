@@ -1,3 +1,11 @@
+# v2.0 · 2026-05-03 · PF-15 sr-only exemption: labels with className `sr-only`
+#                     skip required-asterisk enforcement. Rationale: sr-only
+#                     labels are intentionally invisible (screen-reader-only),
+#                     so a visual `*` is incoherent. Used for optional secondary
+#                     actions (post-result Challenge / Appeal / Follow-up) where
+#                     the field is conditionally required of the action but the
+#                     action itself is optional — visual asterisks on those would
+#                     mislead users into thinking the secondary action is mandatory.
 # v1.9 · 2026-05-03 · PF-16 split regex broadened to recognize render-helper
 #                     pattern `{results && renderResults()}` (and renderOutput,
 #                     renderAnswer, etc.). Previously the split regex required
@@ -803,6 +811,15 @@ for name, fpath in tools:
         if '</label>' not in _label_snippet:
             continue  # malformed / multiline edge case — skip
         _label_text = _label_snippet[:_label_snippet.index('</label>') + 8]
+        # Skip enforcement on sr-only (screen-reader-only) labels: they're
+        # intentionally invisible, so a visual asterisk on them is incoherent.
+        # If the field is required AND optional in the form-flow sense (e.g. a
+        # post-result secondary action like Challenge / Appeal / Follow-up),
+        # the developer wraps it in an sr-only label for accessibility but
+        # omits the visual `*` since the field isn't required of the user —
+        # only of the action they may choose to take. v2.0 · 2026-05-03
+        if re.search(r'className=(?:"|\{`?)\s*sr-only\b', _label_text):
+            continue
         if 'c.required' not in _label_text:
             _abs_line = content[:c_end_pos + _label_start].count('\n') + 1
             fails.append(f'PF-15: required field "{_path}" — label at line {_abs_line} missing <span className={{c.required}}>*</span>')
