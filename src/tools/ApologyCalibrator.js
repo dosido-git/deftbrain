@@ -1175,7 +1175,8 @@ const ApologyCalibrator = ({ tool }) => {
 
         {/* Add situation */}
         <div className={`rounded-lg p-4 border ${c.cardInner}`}>
-          <textarea value={auditInput.text} onChange={e => setAuditInput(p => ({ ...p, text: e.target.value }))}
+          <label htmlFor="ac-audit-text" className={`block text-sm font-medium mb-1 ${c.textSecondary}`}>Describe the situation <span className={c.required}>*</span></label>
+          <textarea id="ac-audit-text" value={auditInput.text} onChange={e => setAuditInput(p => ({ ...p, text: e.target.value }))}
             placeholder="Describe a situation where you apologized or thought about it..."
             className={`w-full h-20 p-3 border rounded-lg outline-none resize-none ${c.input} ${c.input}`} />
           <div className="flex items-center justify-between mt-3 flex-wrap gap-3">
@@ -1733,7 +1734,8 @@ const ApologyCalibrator = ({ tool }) => {
 
             {/* Input */}
             <div className="flex gap-2">
-              <textarea value={practiceInput} onChange={e => setPracticeInput(e.target.value)}
+              <label htmlFor="ac-practice-input" className="sr-only">Type your response to practice</label>
+              <textarea id="ac-practice-input" value={practiceInput} onChange={e => setPracticeInput(e.target.value)}
                 placeholder="Type what you'd say..."
                 onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handlePracticeSend(); } }}
                 className={`flex-1 p-3 border rounded-lg outline-none resize-none h-16 ${c.input} ${c.input}`} />
@@ -2230,7 +2232,8 @@ const ApologyCalibrator = ({ tool }) => {
     const [note, setNote] = useState('');
     return (
       <div className="flex gap-2 mt-2">
-        <input type="text" value={note} onChange={e => setNote(e.target.value)}
+        <label htmlFor={`ac-followup-${repairId}`} className="sr-only">Add a follow-up note</label>
+        <input id={`ac-followup-${repairId}`} type="text" value={note} onChange={e => setNote(e.target.value)}
           placeholder="Add follow-up note..."
           className={`flex-1 p-2 text-sm border rounded-lg outline-none ${c.input} ${c.input}`} />
         <button onClick={() => { if (note.trim()) { addFollowUp(repairId, note.trim()); setNote(''); } }}
@@ -2416,7 +2419,7 @@ const ApologyCalibrator = ({ tool }) => {
           <div className={`rounded-lg p-4 border space-y-3 ${c.cardInner}`}>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className={`block text-sm font-medium mb-1 ${c.textSecondary}`}>Who</label>
+                <label className={`block text-sm font-medium mb-1 ${c.textSecondary}`}>Who <span className={c.required}>*</span></label>
                 <input type="text" value={repairForm.who} onChange={e => setRepairForm(p => ({ ...p, who: e.target.value }))}
                   placeholder="Person you apologized to"
                   className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input} ${c.input}`} />
@@ -2428,7 +2431,7 @@ const ApologyCalibrator = ({ tool }) => {
               </div>
             </div>
             <div>
-              <label className={`block text-sm font-medium mb-1 ${c.textSecondary}`}>What happened</label>
+              <label className={`block text-sm font-medium mb-1 ${c.textSecondary}`}>What happened <span className={c.required}>*</span></label>
               <textarea value={repairForm.what} onChange={e => setRepairForm(p => ({ ...p, what: e.target.value }))}
                 placeholder="Brief description"
                 className={`w-full h-16 p-2 border rounded-lg outline-none resize-none text-sm ${c.input} ${c.input}`} />

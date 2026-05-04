@@ -143,6 +143,7 @@ const RecipeChaosSolver = ({ tool }) => {
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-500' : 'text-gray-400',
+    required:      isDark ? 'text-amber-400' : 'text-amber-500',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
     accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
     btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
@@ -1523,7 +1524,8 @@ const RecipeChaosSolver = ({ tool }) => {
           <div className={`${c.card} border rounded-xl p-4`}>
             <p className={`text-xs font-bold ${c.text} mb-2`}>🏆 Did it work? Log a win!</p>
             <div className="flex items-center gap-2">
-              <input type="text" value={winText} onChange={e => setWinText(e.target.value)}
+              <label htmlFor="rcs-win-text" className="sr-only">Describe what worked</label>
+              <input id="rcs-win-text" type="text" value={winText} onChange={e => setWinText(e.target.value)}
                 placeholder="e.g. The applesauce-for-eggs trick worked perfectly!"
                 className={`flex-1 px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
               <button onClick={addWin} disabled={!winText.trim()}
@@ -1561,7 +1563,7 @@ const RecipeChaosSolver = ({ tool }) => {
         </div>
 
         <div className="mb-4">
-          <label className={`text-xs font-bold ${c.label} block mb-1`}>What do you need to swap? *</label>
+          <label className={`text-xs font-bold ${c.label} block mb-1`}>What do you need to swap? <span className={c.required}>*</span></label>
           <input type="text" value={swapIngredient} onChange={e => setSwapIngredient(e.target.value)}
             placeholder="e.g. eggs, buttermilk, heavy cream..."
             className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
@@ -1735,7 +1737,7 @@ const RecipeChaosSolver = ({ tool }) => {
         </div>
 
         <div className="mb-4">
-          <label className={`text-xs font-bold ${c.label} block mb-1`}>Paste your recipe *</label>
+          <label className={`text-xs font-bold ${c.label} block mb-1`}>Paste your recipe <span className={c.required}>*</span></label>
           <textarea value={scaleRecipe} onChange={e => setScaleRecipe(e.target.value)}
             placeholder="Paste ingredients list and instructions here..."
             rows={6} className={`w-full px-3 py-2.5 border rounded-lg text-sm resize-y ${c.input} outline-none focus:ring-2`} />
@@ -1748,7 +1750,7 @@ const RecipeChaosSolver = ({ tool }) => {
               min="1" max="100" className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
           </div>
           <div>
-            <label className={`text-xs font-bold ${c.label} block mb-1`}>I need it for *</label>
+            <label className={`text-xs font-bold ${c.label} block mb-1`}>I need it for <span className={c.required}>*</span></label>
             <input type="number" value={scaleTarget} onChange={e => setScaleTarget(e.target.value)}
               placeholder="e.g. 8" min="1" max="200"
               className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
@@ -2026,7 +2028,7 @@ const RecipeChaosSolver = ({ tool }) => {
         </div>
 
         <div className="mb-4">
-          <label className={`text-xs font-bold ${c.label} block mb-1`}>Paste your recipe *</label>
+          <label className={`text-xs font-bold ${c.label} block mb-1`}>Paste your recipe <span className={c.required}>*</span></label>
           <textarea value={pfRecipe} onChange={e => setPfRecipe(e.target.value)}
             placeholder="Paste the full recipe here (ingredients + instructions)..."
             rows={5} className={`w-full px-3 py-2.5 border rounded-lg text-sm resize-y ${c.input} outline-none focus:ring-2`} />
@@ -2199,7 +2201,7 @@ const RecipeChaosSolver = ({ tool }) => {
         </div>
 
         <div className="mb-4">
-          <label className={`text-xs font-bold ${c.label} block mb-1`}>What did you make? *</label>
+          <label className={`text-xs font-bold ${c.label} block mb-1`}>What did you make? <span className={c.required}>*</span></label>
           <input type="text" value={ffDish} onChange={e => setFfDish(e.target.value)}
             placeholder="e.g. chicken breast, pasta with tomato sauce, fried rice..."
             className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
