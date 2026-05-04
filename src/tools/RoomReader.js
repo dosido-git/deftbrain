@@ -185,7 +185,7 @@ const InputCard = ({ title, subtitle, children, onSubmit, btnLabel, btnIcon, c, 
   </div>
 );
 
-const Req = () => <span className={c.required}>*</span>;
+const Req = ({ c }) => <span className={c.required}>*</span>;
 
 // ════════════════════════════════════════════════════════════
 // MAIN COMPONENT
@@ -675,7 +675,7 @@ const RoomReader = ({ tool }) => {
           <InputCard title="🎯 Pre-Game Prep" subtitle="What's the event?" onSubmit={handlePreGame}
             btnLabel="Generate Game Plan" btnIcon="🎯" c={c} loading={loading} tool={tool} playbookLength={playbook.length}>
             <div>
-              <p className={`text-xs font-semibold ${c.labelText} mb-1.5`}>Event type<Req /></p>
+              <p className={`text-xs font-semibold ${c.labelText} mb-1.5`}>Event type<Req c={c} /></p>
               <TileGrid items={EVENTS} selected={eventType} onSelect={setEventType} c={c} />
               <button onClick={() => setEventType(eventType === 'other' ? '' : 'other')}
                 className={`mt-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors
@@ -788,7 +788,7 @@ const RoomReader = ({ tool }) => {
           <InputCard title="⚡ Quick Read" subtitle="Tap and go. No typing needed." onSubmit={() => handleQuickRead(false)}
             btnLabel="Read" btnIcon="⚡" c={c} loading={loading} tool={tool} playbookLength={playbook.length}>
             <div>
-              <p className={`text-xs font-semibold ${c.labelText} mb-1.5`}>Situation<Req /></p>
+              <p className={`text-xs font-semibold ${c.labelText} mb-1.5`}>Situation<Req c={c} /></p>
               <TileGrid items={QUICK_SCENARIOS} selected={quickScenario}
                 onSelect={(id) => { setQuickScenario(id === quickScenario ? '' : id); setQuickExclude([]); setQuickResults(null); }} c={c} />
               <button onClick={() => { setQuickScenario(quickScenario === 'other' ? '' : 'other'); setQuickOther(''); }}
@@ -839,7 +839,7 @@ const RoomReader = ({ tool }) => {
             <h3 className={`font-bold ${isDark ? 'text-red-200' : 'text-red-800'}`}>🆘 Conversation Recovery</h3>
             <p className={`text-sm ${isDark ? 'text-red-300' : 'text-red-600'}`}>Just said something weird? We'll assess the damage and give you a save.</p>
             <div>
-              <p className={`text-xs font-semibold ${c.labelText} mb-1.5`}>What did you say?<Req /></p>
+              <p className={`text-xs font-semibold ${c.labelText} mb-1.5`}>What did you say?<Req c={c} /></p>
               <textarea value={recoverySaid} onChange={e => setRecoverySaid(e.target.value)}
                 placeholder="Be specific…" rows={2} className={`w-full ${inp}`} />
             </div>
@@ -901,7 +901,7 @@ const RoomReader = ({ tool }) => {
             <input value={personName} onChange={e => setPersonName(e.target.value)}
               placeholder="Their name (optional)" className={`w-full ${inp}`} />
             <div>
-              <p className={`text-xs font-semibold ${c.labelText} mb-1.5`}>Relationship<Req /></p>
+              <p className={`text-xs font-semibold ${c.labelText} mb-1.5`}>Relationship<Req c={c} /></p>
               <select value={personRelationship} onChange={e => setPersonRelationship(e.target.value)} className={`w-full ${inp}`}>
                 <option value="">Select…</option>
                 {RELATIONSHIPS.map(r => <option key={r.id} value={r.label}>{r.label}</option>)}
@@ -913,7 +913,7 @@ const RoomReader = ({ tool }) => {
               )}
             </div>
             <div>
-              <p className={`text-xs font-semibold ${c.labelText} mb-1.5`}>What do you know about them?<Req /></p>
+              <p className={`text-xs font-semibold ${c.labelText} mb-1.5`}>What do you know about them?<Req c={c} /></p>
               <textarea value={personKnow} onChange={e => setPersonKnow(e.target.value)}
                 placeholder="Personality, interests, how you met…" rows={2} className={`w-full ${inp}`} />
             </div>
@@ -1022,7 +1022,7 @@ const RoomReader = ({ tool }) => {
           <InputCard title="👥 Group Dynamics" subtitle="Groups play by different rules." onSubmit={handleGroup}
             btnLabel="Analyze Group" btnIcon="👥" c={c} loading={loading} tool={tool} playbookLength={playbook.length}>
             <div>
-              <p className={`text-xs font-semibold ${c.labelText} mb-1.5`}>Describe the situation<Req /></p>
+              <p className={`text-xs font-semibold ${c.labelText} mb-1.5`}>Describe the situation<Req c={c} /></p>
               <textarea value={groupSituation} onChange={e => setGroupSituation(e.target.value)}
                 placeholder="Who's there, what's the dynamic…" rows={2} className={`w-full ${inp}`} />
             </div>
@@ -1082,14 +1082,14 @@ const RoomReader = ({ tool }) => {
             btnLabel="Bridge the Gap" btnIcon="🔋" c={c} loading={loading} tool={tool} playbookLength={playbook.length}>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <p className={`text-xs font-semibold ${c.labelText} mb-1`}>Your energy<Req /></p>
+                <p className={`text-xs font-semibold ${c.labelText} mb-1`}>Your energy<Req c={c} /></p>
                 <select value={myEnergy} onChange={e => setMyEnergy(e.target.value)} className={`w-full ${inp}`}>
                   <option value="">Select…</option>
                   {['Drained / low','Quiet / introspective','Calm / neutral','Upbeat','High energy / wired','Anxious / jittery'].map(v => <option key={v} value={v}>{v}</option>)}
                 </select>
               </div>
               <div>
-                <p className={`text-xs font-semibold ${c.labelText} mb-1`}>Room's energy<Req /></p>
+                <p className={`text-xs font-semibold ${c.labelText} mb-1`}>Room's energy<Req c={c} /></p>
                 <select value={roomEnergy} onChange={e => setRoomEnergy(e.target.value)} className={`w-full ${inp}`}>
                   <option value="">Select…</option>
                   {['Dead quiet','Calm / subdued','Normal conversation','Lively / laughing','Loud party mode','Intense / heated'].map(v => <option key={v} value={v}>{v}</option>)}
@@ -1198,7 +1198,7 @@ const RoomReader = ({ tool }) => {
           <InputCard title="🌍 Culture Decoder" subtitle="Navigate cross-cultural social situations." onSubmit={handleCulture}
             btnLabel="Decode Culture" btnIcon="🌍" c={c} loading={loading} tool={tool} playbookLength={playbook.length}>
             <div>
-              <p className={`text-xs font-semibold ${c.labelText} mb-1.5`}>Culture or background<Req /></p>
+              <p className={`text-xs font-semibold ${c.labelText} mb-1.5`}>Culture or background<Req c={c} /></p>
               <input value={cultureText} onChange={e => setCultureText(e.target.value)}
                 placeholder="'Japanese business culture', 'Indian wedding'…" className={`w-full ${inp}`} />
             </div>
@@ -1253,7 +1253,7 @@ const RoomReader = ({ tool }) => {
           <InputCard title="🔍 Signal Decoder" subtitle="Not sure what they meant?" onSubmit={handleDecode}
             btnLabel="Decode This" btnIcon="🔍" c={c} loading={loading} tool={tool} playbookLength={playbook.length}>
             <div>
-              <p className={`text-xs font-semibold ${c.labelText} mb-1.5`}>What did they say or do?<Req /></p>
+              <p className={`text-xs font-semibold ${c.labelText} mb-1.5`}>What did they say or do?<Req c={c} /></p>
               <textarea value={theyDid} onChange={e => setTheyDid(e.target.value)}
                 placeholder="Be specific…" rows={3} className={`w-full ${inp}`} />
             </div>
@@ -1298,11 +1298,11 @@ const RoomReader = ({ tool }) => {
             btnLabel="Draft Follow-Up" btnIcon="💬" c={c} loading={loading} tool={tool} playbookLength={playbook.length}>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <p className={`text-xs font-semibold ${c.labelText} mb-1`}>Who?<Req /></p>
+                <p className={`text-xs font-semibold ${c.labelText} mb-1`}>Who?<Req c={c} /></p>
                 <input value={followUpWho} onChange={e => setFollowUpWho(e.target.value)} placeholder="Their name or role" className={inp} />
               </div>
               <div>
-                <p className={`text-xs font-semibold ${c.labelText} mb-1`}>Context<Req /></p>
+                <p className={`text-xs font-semibold ${c.labelText} mb-1`}>Context<Req c={c} /></p>
                 <input value={followUpContext} onChange={e => setFollowUpContext(e.target.value)} placeholder="How you know them" className={inp} />
               </div>
             </div>
@@ -1337,7 +1337,7 @@ const RoomReader = ({ tool }) => {
             btnLabel="Debrief" btnIcon="📝" c={c} loading={loading} tool={tool} playbookLength={playbook.length}>
             <input value={debriefEvent} onChange={e => setDebriefEvent(e.target.value)} placeholder="What was the event? (optional)" className={`w-full ${inp}`} />
             <div>
-              <p className={`text-xs font-semibold ${c.labelText} mb-1.5`}>What happened?<Req /></p>
+              <p className={`text-xs font-semibold ${c.labelText} mb-1.5`}>What happened?<Req c={c} /></p>
               <textarea value={debriefWhat} onChange={e => setDebriefWhat(e.target.value)} rows={2} className={`w-full ${inp}`} />
             </div>
             <textarea value={debriefGood} onChange={e => setDebriefGood(e.target.value)} placeholder="What went well? (optional)" rows={2} className={`w-full ${inp}`} />
@@ -1380,7 +1380,7 @@ const RoomReader = ({ tool }) => {
           <InputCard title="🔬 Social Autopsy" subtitle="Deep forensic analysis. What went wrong and why." onSubmit={handleAutopsy}
             btnLabel="Analyze" btnIcon="🔬" c={c} loading={loading} tool={tool} playbookLength={playbook.length}>
             <div>
-              <p className={`text-xs font-semibold ${c.labelText} mb-1.5`}>What happened?<Req /></p>
+              <p className={`text-xs font-semibold ${c.labelText} mb-1.5`}>What happened?<Req c={c} /></p>
               <textarea value={autopsyWhat} onChange={e => setAutopsyWhat(e.target.value)}
                 placeholder="Tell the whole story…" rows={4} className={`w-full ${inp}`} />
             </div>
