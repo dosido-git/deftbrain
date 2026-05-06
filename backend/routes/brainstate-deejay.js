@@ -131,7 +131,7 @@ CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`, locale);
 
   try {
     const msg = await withRetry(() => anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 2000,
       messages: [{ role: 'user', content: prompt }],
     }));
@@ -171,7 +171,7 @@ Return the same JSON structure as the original playlist, adjusted for the feedba
 
   try {
     const msg = await withRetry(() => anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 2000,
       messages: [{ role: 'user', content: prompt }],
     }));

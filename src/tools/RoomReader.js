@@ -179,7 +179,7 @@ const InputCard = ({ title, subtitle, children, onSubmit, btnLabel, btnIcon, c, 
     <button onClick={onSubmit} disabled={loading}
       className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40 flex items-center justify-center gap-2 min-h-[48px]`}>
       {loading
-        ? <span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span>
+        ? <span className="inline-block animate-spin">{tool?.icon ?? '🎭'}</span>
         : <><span>{btnIcon || ''}</span> {btnLabel}</>}
     </button>
   </div>
@@ -210,6 +210,10 @@ const RoomReader = ({ tool }) => {
                           : 'bg-cyan-600 hover:bg-cyan-700 text-white',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200'
                           : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
+    btnActive:     isDark ? 'bg-cyan-600 text-white border-cyan-500'
+                          : 'bg-cyan-600 text-white border-cyan-600',
+    btnInactive:   isDark ? 'bg-zinc-800 text-zinc-400 hover:text-zinc-200 border-zinc-700'
+                          : 'bg-white text-gray-500 hover:text-gray-700 border-gray-200',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
     success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200'
                           : 'bg-emerald-50 border-emerald-300 text-emerald-800',
@@ -220,14 +224,12 @@ const RoomReader = ({ tool }) => {
     infoBox:       isDark ? 'bg-sky-900/20 border-sky-700 text-sky-200'
                           : 'bg-sky-50 border-sky-200 text-sky-800',
     warningBox:    isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
+    quoteBg:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
+    tipBox:        isDark ? 'bg-fuchsia-900/20 border-fuchsia-700' : 'bg-fuchsia-50 border-fuchsia-200',
+    emergencyBg:   isDark ? 'bg-red-900/20 border-red-700' : 'bg-red-50 border-red-200',
   };
   c.textMuteded = c.textMuted;
   c.label       = c.labelText;
-  c.btnActive   = isDark ? 'bg-cyan-600 text-white border-cyan-500' : 'bg-cyan-600 text-white border-cyan-600';
-  c.btnInactive = isDark ? 'bg-zinc-800 text-zinc-400 hover:text-zinc-200 border-zinc-700' : 'bg-white text-gray-500 hover:text-gray-700 border-gray-200';
-  c.quoteBg     = isDark ? 'bg-zinc-700/50' : 'bg-slate-50';
-  c.purpleBg    = isDark ? 'bg-purple-900/20 border-purple-700' : 'bg-purple-50 border-purple-200';
-  c.emergencyBg = isDark ? 'bg-red-900/20 border-red-700' : 'bg-red-50 border-red-200';
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
@@ -483,6 +485,76 @@ const RoomReader = ({ tool }) => {
     if (data) { setPersonRefreshResults(data); addToHistory('person-refresh', person.name); }
   }, [personContext, playbook, callToolEndpoint, addToHistory]);
 
+  // ── Reset (S1.5 / PF-16: header-only, single instance) ──
+  const handleReset = useCallback(() => {
+    setError('');
+    // Pre-Game
+    setEventType(''); setEventOther(''); setEventDetails(''); setPeople('');
+    setConcerns(''); setTopicsToAvoid(''); setComfort('nervous'); setPreGameResults(null);
+    // Quick
+    setQuickScenario(''); setQuickOther(''); setQuickRelationship(''); setQuickResults(null); setQuickExclude([]);
+    // Decoder
+    setTheyDid(''); setDecodeContext(''); setDecodeRelationship(''); setYourConcern(''); setDecodeResults(null);
+    // Follow-Up
+    setFollowUpWho(''); setFollowUpContext(''); setFollowUpWhat(''); setFollowUpGoal(''); setFollowUpResults(null);
+    // Debrief
+    setDebriefEvent(''); setDebriefWhat(''); setDebriefGood(''); setDebriefAwkward(''); setDebriefFeeling('mixed'); setDebriefResults(null);
+    // Person
+    setPersonName(''); setPersonRelationship(''); setPersonRelOther(''); setPersonKnow('');
+    setPersonContext(''); setPersonConcern(''); setPersonResults(null);
+    setPersonNoteTopics(''); setPersonNoteBombed(''); setPersonNoteText('');
+    setPersonRefreshResults(null); setSelectedTrackedPerson(null);
+    // Group
+    setGroupSituation(''); setGroupSize('4-6'); setGroupRole(''); setGroupChallenge(''); setGroupResults(null);
+    // Recovery
+    setRecoverySaid(''); setRecoveryContext(''); setRecoveryRelationship(''); setRecoveryHowBad('bad'); setRecoveryResults(null);
+    // Culture
+    setCultureText(''); setCultureSituation(''); setCultureMyBg(''); setCultureConcern(''); setCultureResults(null);
+    // Energy
+    setMyEnergy(''); setRoomEnergy(''); setEnergyContext(''); setEnergyResults(null);
+    // Ladder
+    setLadderRelationship(''); setLadderContext(''); setLadderDepth(''); setLadderResults(null);
+    // Autopsy
+    setAutopsyWhat(''); setAutopsyTimeline(''); setAutopsyFelt(''); setAutopsyThink(''); setAutopsyResults(null);
+  }, []);
+
+  // ── Try Example (PF-17: demo functionality on multi-field tools) ──
+  const loadExample = useCallback(() => {
+    handleReset();
+    setMode('pregame');
+    setEventType('work-event');
+    setEventDetails("Team offsite next Thursday — I'm new on the team and haven't met half the people yet.");
+    setPeople("My new manager (Priya), her boss, three senior engineers, and two product folks I've only emailed.");
+    setConcerns("I don't want to come across as too quiet or too eager. I freeze on small talk.");
+    setComfort('nervous');
+  }, [handleReset]);
+
+  // Visibility flag for header reset/example — only show when there's input or any result
+  const hasAnyContent = !!(
+    eventType || eventOther || eventDetails || people || concerns || topicsToAvoid ||
+    quickScenario || quickOther || quickRelationship ||
+    theyDid || decodeContext || yourConcern ||
+    followUpWho || followUpContext || followUpWhat || followUpGoal ||
+    debriefEvent || debriefWhat || debriefGood || debriefAwkward ||
+    personName || personRelationship || personKnow || personContext || personConcern ||
+    groupSituation || groupRole || groupChallenge ||
+    recoverySaid || recoveryContext ||
+    cultureText || cultureSituation || cultureMyBg || cultureConcern ||
+    myEnergy || roomEnergy || energyContext ||
+    ladderRelationship || ladderContext || ladderDepth ||
+    autopsyWhat || autopsyTimeline || autopsyFelt || autopsyThink ||
+    preGameResults || quickResults || decodeResults || followUpResults ||
+    debriefResults || personResults || groupResults || recoveryResults ||
+    cultureResults || energyResults || ladderResults || autopsyResults || personRefreshResults
+  );
+
+  // Aggregate flag to anchor S5.5 cross-ref split for the multi-mode tool
+  // (audit's regex only recognizes literal `results && (`, not `preGameResults && (`)
+  const results = preGameResults || quickResults || decodeResults || followUpResults
+    || debriefResults || personResults || groupResults || recoveryResults
+    || cultureResults || energyResults || ladderResults || autopsyResults
+    || personRefreshResults;
+
   // Submit map + can-submit
   const SUBMIT_MAP = {
     pregame: handlePreGame, quick: () => handleQuickRead(false), recovery: handleRecovery,
@@ -601,6 +673,17 @@ const RoomReader = ({ tool }) => {
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Read the room. Say the right thing.'}</p>
             </div>
+            {hasAnyContent ? (
+              <button onClick={handleReset}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>
+                ↻ Reset
+              </button>
+            ) : (
+              <button onClick={loadExample}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>
+                📝 Try an example
+              </button>
+            )}
           </div>
         </div>
         <div className="px-5 py-3 flex flex-wrap gap-1.5">
@@ -676,6 +759,9 @@ const RoomReader = ({ tool }) => {
       {/* ══════════════════════════════════════════ */}
       {mode === 'pregame' && (
         <>
+          <p className={`text-xs ${c.textMuted} px-1`}>
+            Hard conversation coming up at the event? <a href="/DifficultTalkCoach" className={linkStyle}>🗣️ Difficult Talk Coach</a> first.
+          </p>
           <InputCard title="🎯 Pre-Game Prep" subtitle="What's the event?" onSubmit={handlePreGame}
             btnLabel="Generate Game Plan" btnIcon="🎯" c={c} loading={loading} tool={tool} playbookLength={playbook.length}>
             <div>
@@ -713,7 +799,7 @@ const RoomReader = ({ tool }) => {
             </div>
           </InputCard>
 
-          {preGameResults && (
+          {results && (preGameResults && (
             <div className="space-y-4" ref={resultsRef}>
               <button onClick={() => saveGamePlan(effectiveEventType || eventDetails?.trim() || 'Event', preGameResults)}
                 className={`w-full py-2 rounded-lg text-xs font-bold ${c.btnSecondary} border ${c.border}`}>
@@ -779,8 +865,11 @@ const RoomReader = ({ tool }) => {
                   <p className={`text-sm font-medium ${isDark ? 'text-green-200' : 'text-green-800'}`}>💚 {preGameResults.pep_talk}</p>
                 </div>
               )}
+              <p className={`text-xs ${c.textMuted}`}>
+                Need to say something hard at the event? <a href="/DifficultTalkCoach" className={linkStyle}>🗣️ Difficult Talk Coach</a>.
+              </p>
             </div>
-          )}
+          ))}
         </>
       )}
 
@@ -822,8 +911,8 @@ const RoomReader = ({ tool }) => {
                 {quickResults.if_nothing && <div className={`${c.warning} border rounded-lg p-3`}><p className="text-xs">🛡️ {quickResults.if_nothing}</p></div>}
                 {quickResults.body_tip && <p className={`text-xs ${c.textSecondary}`}>🧍 {quickResults.body_tip}</p>}
                 <button onClick={() => handleQuickRead(true)} disabled={loading}
-                  className={`w-full py-2 rounded-lg text-xs font-bold ${c.btnSecondary} border ${c.border} flex items-center justify-center gap-2 min-h-[36px]`}>
-                  {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> : `🔀 Different one${quickExclude.length ? ` (${quickExclude.length} tried)` : ''}`}
+                  className={`w-full py-2 rounded-lg text-xs font-bold ${c.btnSecondary} border ${c.border} flex items-center justify-center gap-2 min-h-[36px] disabled:opacity-40`}>
+                  {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '🎭'}</span> : `🔀 Different one${quickExclude.length ? ` (${quickExclude.length} tried)` : ''}`}
                 </button>
               </div>
               <div className={`${c.infoBox} border rounded-xl p-4`}>
@@ -860,7 +949,7 @@ const RoomReader = ({ tool }) => {
             </div>
             <button onClick={handleRecovery} disabled={loading}
               className="w-full py-3 rounded-xl font-bold text-sm bg-red-600 hover:bg-red-500 text-white disabled:opacity-40 flex items-center justify-center gap-2 min-h-[48px]">
-              {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> : '🆘 Get Recovery'}
+              {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '🎭'}</span> : '🆘 Get Recovery'}
             </button>
           </div>
           {recoveryResults && (() => {
@@ -949,7 +1038,7 @@ const RoomReader = ({ tool }) => {
                         {tp.notes.length > 0 && (
                           <button onClick={() => handlePersonRefresh(tp)} disabled={loading}
                             className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnPrimary} disabled:opacity-40 flex items-center gap-1`}>
-                            {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> : '🔄 Fresh Strategy'}
+                            {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '🎭'}</span> : '🔄 Fresh Strategy'}
                           </button>
                         )}
                       </div>
@@ -986,7 +1075,7 @@ const RoomReader = ({ tool }) => {
                 </div>
               ))}
               {personRefreshResults.wildcard && (
-                <div className={`${c.purpleBg} border rounded-xl p-4`}>
+                <div className={`${c.tipBox} border rounded-xl p-4`}>
                   <p className="text-sm">🎲 <strong>Wildcard:</strong> {personRefreshResults.wildcard.move} ({personRefreshResults.wildcard.risk} risk)</p>
                 </div>
               )}
@@ -1012,7 +1101,7 @@ const RoomReader = ({ tool }) => {
                   <p className={`text-xs ${c.textSecondary}`}>📝 "{t.entry_point}"</p>
                 </div>
               ))}
-              {personResults.overall_strategy && <div className={`${c.purpleBg} border rounded-xl p-5`}><p className="text-sm">{personResults.overall_strategy}</p></div>}
+              {personResults.overall_strategy && <div className={`${c.tipBox} border rounded-xl p-5`}><p className="text-sm">{personResults.overall_strategy}</p></div>}
             </div>
           )}
         </>
@@ -1113,7 +1202,7 @@ const RoomReader = ({ tool }) => {
                 </div>
               )}
               {energyResults.stay_yourself && (
-                <div className={`${c.purpleBg} border rounded-xl p-5 space-y-2`}>
+                <div className={`${c.tipBox} border rounded-xl p-5 space-y-2`}>
                   <h3 className="font-bold">🧘 Stay Yourself</h3>
                   <p className="text-sm">{energyResults.stay_yourself.strategy}</p>
                   <p className="text-sm">{energyResults.stay_yourself.permission}</p>
@@ -1370,7 +1459,7 @@ const RoomReader = ({ tool }) => {
                   <p className={`text-sm ${c.textSecondary}`}>👁️ {a.reality_check}</p>
                 </div>
               ))}
-              {debriefResults.next_challenge && <div className={`${c.purpleBg} border rounded-xl p-4`}><p className="text-sm font-bold">🎯 Next: {debriefResults.next_challenge.suggestion}</p><p className="text-xs">{debriefResults.next_challenge.why}</p></div>}
+              {debriefResults.next_challenge && <div className={`${c.tipBox} border rounded-xl p-4`}><p className="text-sm font-bold">🎯 Next: {debriefResults.next_challenge.suggestion}</p><p className="text-xs">{debriefResults.next_challenge.why}</p></div>}
             </div>
           )}
         </>
@@ -1409,7 +1498,7 @@ const RoomReader = ({ tool }) => {
                 {r.signals_you_missed?.map((s, i) => <div key={i} className={`${c.warning} border rounded-lg p-3`}><p className="text-sm">👀 {s.signal}</p><p className="text-xs">{s.what_it_meant}</p><p className={`text-xs ${c.accentTxt}`}>Next time: {s.how_to_spot_it_next_time}</p></div>)}
                 {r.what_was_not_your_fault?.length > 0 && <div className={`${c.success} border rounded-xl p-5 space-y-1`}><h3 className="font-bold text-sm">🛡️ Not Your Fault</h3>{r.what_was_not_your_fault.map((n, i) => <p key={i} className="text-sm">• {n}</p>)}</div>}
                 {r.what_was_in_your_control?.length > 0 && <div className={`${c.infoBox} border rounded-xl p-5 space-y-1`}><h3 className="font-bold text-sm">🎮 In Your Control</h3>{r.what_was_in_your_control.map((n, i) => <p key={i} className="text-sm">• {n}</p>)}</div>}
-                {r.the_real_lesson && <div className={`${c.purpleBg} border rounded-xl p-4`}><p className="text-sm font-bold">📖 The Real Lesson</p><p className="text-sm mt-1">{r.the_real_lesson}</p></div>}
+                {r.the_real_lesson && <div className={`${c.tipBox} border rounded-xl p-4`}><p className="text-sm font-bold">📖 The Real Lesson</p><p className="text-sm mt-1">{r.the_real_lesson}</p></div>}
                 {r.next_time?.add_to_playbook && <p className={`text-xs ${c.accentTxt}`}>📚 Added to playbook: {r.next_time.add_to_playbook}</p>}
                 {r.compassion_note && <div className={`${c.success} border rounded-xl p-5`}><p className={`text-sm font-medium ${isDark ? 'text-green-200' : 'text-green-800'}`}>💚 {r.compassion_note}</p></div>}
               </div>

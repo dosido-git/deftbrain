@@ -243,7 +243,7 @@ KEY RULES:
 5. Write "the_story_so_far" in present tense, as if narrating where things stand right now at the stopping point.`;
 
     const msg = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 5000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: prompt }],

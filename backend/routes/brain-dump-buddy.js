@@ -77,6 +77,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
           const parsed = await callClaudeWithRetry(emergencyPrompt, {
+            model: 'claude-sonnet-4-6',
             label: 'BDS-Emergency',
             max_tokens: 500,
           });
@@ -145,7 +146,8 @@ Return ONLY valid JSON:
   "closing": "One warm, specific sentence."
 }`, userLanguage);
 
-        const parsed = await callClaudeWithRetry(prompt, { label: 'BDS-Structure', max_tokens: 4000 });
+        const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'BDS-Structure', max_tokens: 4000 });
         return res.json(parsed);
       }
 
@@ -180,7 +182,8 @@ Return ONLY valid JSON:
   "one_thing": "Single most helpful thing to do about this worry right now."
 }`, userLanguage);
 
-        const parsed = await callClaudeWithRetry(prompt, { label: 'BDS-Excavate', max_tokens: 800 });
+        const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'BDS-Excavate', max_tokens: 800 });
         return res.json(parsed);
       }
 

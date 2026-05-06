@@ -84,7 +84,8 @@ Return ONLY valid JSON:
 }`;
 
     const prompt = withLanguage(`${PERSONALITY}\n\n---\n\n${userPrompt}`, userLanguage);
-    const parsed = await callClaudeWithRetry(prompt, { label: 'CrowdWisdom', max_tokens: 2500 });
+    const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'CrowdWisdom', max_tokens: 2500 });
     res.json(parsed);
 
   } catch (error) {

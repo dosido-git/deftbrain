@@ -35,7 +35,9 @@ You are analyzing someone's social/professional interactions to calculate their 
 
 Performance level means: 1 = completely yourself, relaxed, no effort. 10 = full performance mode — smiling when you don't feel like it, being "on," managing impressions, filtering every word.
 
-This is NOT about neurodivergence or masking. This is about the universal human experience of social energy management. Everyone from introverts to extroverts, CEOs to students, has interactions that cost more energy than others.`;
+This is NOT about neurodivergence or masking. This is about the universal human experience of social energy management. Everyone from introverts to extroverts, CEOs to students, has interactions that cost more energy than others.
+
+Return ONLY valid JSON.`;
 
     const userPrompt = `ENERGY AUDIT for ${weekLabel || 'this week'}:
 
@@ -94,7 +96,9 @@ Analyze these interactions and return ONLY valid JSON:
     "remaining": "What's left (can be negative)",
     "verdict": "One sentence: are they living within their energy budget?"
   }
-}`;
+}
+
+Return ONLY valid JSON.`;
 
     const message = await anthropic.messages.create({
       model: 'claude-haiku-4-5-20251001',
@@ -131,7 +135,9 @@ router.post('/social-energy-audit/plan', rateLimit(), async (req, res) => {
 
     const systemPrompt = `${PERSONALITY}
 
-You are helping someone plan their upcoming week by predicting energy costs and suggesting schedule optimizations. ${pastPatterns ? `They have past energy data you can reference for accuracy.` : 'No past data available — use reasonable estimates based on the situation types.'}`;
+You are helping someone plan their upcoming week by predicting energy costs and suggesting schedule optimizations. ${pastPatterns ? `They have past energy data you can reference for accuracy.` : 'No past data available — use reasonable estimates based on the situation types.'}
+
+Return ONLY valid JSON.`;
 
     const userPrompt = `WEEK PLAN — Upcoming commitments:
 
@@ -191,7 +197,9 @@ router.post('/social-energy-audit/recharge', rateLimit(), async (req, res) => {
 
     const systemPrompt = `${PERSONALITY}
 
-You are creating a personalized recharge plan. The person is drained and needs specific, actionable recovery suggestions — not generic "take a bath" advice. Tailor everything to what specifically drained them and what they enjoy.`;
+You are creating a personalized recharge plan. The person is drained and needs specific, actionable recovery suggestions — not generic "take a bath" advice. Tailor everything to what specifically drained them and what they enjoy.
+
+Return ONLY valid JSON.`;
 
     const userPrompt = `RECHARGE PLAN:
 Current energy level: ${currentEnergy}/10
@@ -251,7 +259,9 @@ router.post('/social-energy-audit/quick-check', rateLimit(), async (req, res) =>
 
     const systemPrompt = `${PERSONALITY}
 
-You are giving a quick, decisive answer about whether someone should say yes to a social or professional commitment. They need an answer in 3 seconds, not a therapy session. Be direct. Consider their current energy level, what they've already done this week, and what's still ahead today.`;
+You are giving a quick, decisive answer about whether someone should say yes to a social or professional commitment. They need an answer in 3 seconds, not a therapy session. Be direct. Consider their current energy level, what they've already done this week, and what's still ahead today.
+
+Return ONLY valid JSON.`;
 
     const userPrompt = `QUICK CHECK — Should I say yes?
 
@@ -304,7 +314,9 @@ router.post('/social-energy-audit/forecast', rateLimit(), async (req, res) => {
 
     const systemPrompt = `${PERSONALITY}
 
-You are generating an energy forecast for someone's week. If they have a typical week template, predict the energy curve. If they have daily check-in logs, show reality vs. prediction and warn about upcoming danger zones.`;
+You are generating an energy forecast for someone's week. If they have a typical week template, predict the energy curve. If they have daily check-in logs, show reality vs. prediction and warn about upcoming danger zones.
+
+Return ONLY valid JSON.`;
 
     const templateStr = template ? template.map((t, i) =>
       `${i + 1}. "${t.situation}" [${t.category}] perf: ${t.performance}/10${t.duration ? `, ${t.duration}` : ''}`
@@ -370,7 +382,9 @@ router.post('/social-energy-audit/ideal-week', rateLimit(), async (req, res) => 
 
     const systemPrompt = `${PERSONALITY}
 
-You are designing someone's ideal week structure based on their actual energy data. Not a fantasy schedule — a realistic rearrangement of their real commitments that distributes energy costs more evenly and places rechargers strategically. Think of it as energy-aware scheduling.`;
+You are designing someone's ideal week structure based on their actual energy data. Not a fantasy schedule — a realistic rearrangement of their real commitments that distributes energy costs more evenly and places rechargers strategically. Think of it as energy-aware scheduling.
+
+Return ONLY valid JSON.`;
 
     const summaryStr = weekSummaries.map((w, i) =>
       `Week ${i + 1} (${w.label}): ${w.interactionCount} interactions, score ${w.energyScore}, verdict: ${w.verdict}\n  Interactions: ${w.interactions?.map(int => `${int.situation} [perf ${int.performance}, ${int.energyBefore}→${int.energyAfter}]`).join(', ') || 'no detail'}`

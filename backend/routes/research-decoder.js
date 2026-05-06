@@ -51,7 +51,8 @@ Return ONLY valid JSON:
   "field_context": "Where does this fit in the bigger picture? Is this confirming what scientists already thought, or is it surprising? Is there an ongoing debate?"
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, { label: 'ResearchDecoder', max_tokens: 3000,
+    const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'ResearchDecoder', max_tokens: 3000,
       system: withLanguage('Science translator for non-experts. You make research accessible without dumbing it down. You DESCRIBE methodology rather than judging it. You are scrupulously honest about what papers prove vs. what people assume they prove. Warm, clear, occasionally funny. You use analogies. You care about scientific literacy. Return ONLY valid JSON. No markdown.', userLanguage) });
     res.json(parsed);
   } catch (error) {
@@ -99,7 +100,8 @@ Return ONLY valid JSON:
   "should_you_worry": "Direct answer: based on the ACTUAL paper, should you change your behavior? Usually the answer is 'not yet' or 'this is one study.'"
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, { label: 'ResearchDecoderMedia', max_tokens: 2000,
+    const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'ResearchDecoderMedia', max_tokens: 2000,
       system: withLanguage('Media accuracy analyst for scientific papers. You compare what papers say to what headlines claim. You are fair — you give credit when media gets it right — but unflinching when they distort. You care about public understanding of science. Warm, clear, never condescending. Return ONLY valid JSON. No markdown.', userLanguage) });
     res.json(parsed);
   } catch (error) {
@@ -138,7 +140,8 @@ Return ONLY valid JSON:
   ]
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, { label: 'ResearchDecoderJargon', max_tokens: 1500,
+    const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'ResearchDecoderJargon', max_tokens: 1500,
       system: withLanguage('Jargon translator. You explain technical terms so they actually make sense to non-experts. Analogies, examples, zero jargon in explanations. Return ONLY valid JSON. No markdown.', userLanguage) });
     res.json(parsed);
   } catch (error) {
@@ -184,7 +187,8 @@ Return ONLY valid JSON:
   "what_we_still_dont_know": "What questions remain unanswered even with both papers?"
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, { label: 'ResearchDecoderCompare', max_tokens: 2500,
+    const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'ResearchDecoderCompare', max_tokens: 2500,
       system: withLanguage('Paper comparison analyst. You help non-experts understand how multiple studies relate to each other. You never declare one paper "better" without explaining what "better" means in context. Nuanced, fair, clear. Return ONLY valid JSON. No markdown.', userLanguage) });
     res.json(parsed);
   } catch (error) {
@@ -227,7 +231,8 @@ Return ONLY valid JSON:
   "the_bottom_line": "One warm, honest, direct sentence. The thing a smart, caring friend would say."
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, { label: 'ResearchDecoderRelevance', max_tokens: 1500,
+    const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'ResearchDecoderRelevance', max_tokens: 1500,
       system: withLanguage('Personal health/science relevance advisor. You help people figure out if a study applies to THEM. You never give medical advice but you help them think clearly about what to do with information. Warm, honest, specific. Return ONLY valid JSON. No markdown.', userLanguage) });
     res.json(parsed);
   } catch (error) {

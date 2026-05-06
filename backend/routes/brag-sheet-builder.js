@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { callClaudeWithRetry, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage} = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════════════
@@ -163,7 +163,7 @@ ${outputSpec}
 Generate one transformation per accomplishment. Generate 2-4 metrics questions (include accomplishment_index to track which accomplishment each question is about, 0-indexed). ${wantInterview ? 'Generate 1-2 STAR stories from the strongest accomplishments.' : ''} ${wantResume ? 'Generate resume bullets for ALL accomplishments.' : ''} ${wantRaise ? 'Generate value statements for ALL accomplishments.' : ''}`, userLanguage);
 
     const parsed = await callClaudeWithRetry(userPrompt, {
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
 
       label: 'BragSheetBuilder',
       max_tokens: 6000,
@@ -262,7 +262,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
 
       label: 'BragSheetRefine',
       max_tokens: 4000,
@@ -326,7 +326,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
 
       label: 'BragSheetTweak',
       max_tokens: 1000,
@@ -403,7 +403,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
 
       label: 'BragSheetAddSingle',
       max_tokens: 1500,
@@ -460,7 +460,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
 
       label: 'BragSheetStar',
       max_tokens: 1500,
@@ -548,7 +548,7 @@ Return ONLY valid JSON:
 Generate 3-4 questions per category. Make them SPECIFIC to this person's role, industry, and level. A nurse gets different questions than a software engineer. A student gets different questions than a VP.`, userLanguage);
 
     const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
 
       label: 'BragSheetExcavate',
       max_tokens: 4000,
@@ -649,7 +649,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
 
       label: 'BragSheetTailor',
       max_tokens: 5000,
@@ -726,7 +726,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
 
       label: 'BragSheetRadar',
       max_tokens: 3000,
@@ -811,7 +811,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
 
       label: 'BragSheetInterviewMatrix',
       max_tokens: 5000,
@@ -896,7 +896,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
 
       label: 'BragSheetVoiceMatch',
       max_tokens: 5000,

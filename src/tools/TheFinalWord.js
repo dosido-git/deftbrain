@@ -76,10 +76,6 @@ const TheFinalWord = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { isDark } = useTheme();
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
-
   // ─── Theme ───
   const c = {
     card: isDark ? 'bg-zinc-800' : 'bg-white',
@@ -100,6 +96,10 @@ const TheFinalWord = ({ tool }) => {
     deleteHover: isDark ? 'text-zinc-600 hover:text-zinc-300' : 'text-slate-300 hover:text-slate-500',
     deleteHover2: isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-slate-400 hover:text-slate-600',
   };
+
+  const linkStyle = isDark
+    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
+    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
 
   // ─── Core State ───
   const [mode, setMode] = useState(null);
@@ -155,7 +155,7 @@ const TheFinalWord = ({ tool }) => {
   useEffect(() => {
     const handler = (e) => {
       const tag = document.activeElement?.tagName;
-      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      if (tag === 'SELECT') return;
       if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !loading) handleSubmit();
     };
     document.addEventListener('keydown', handler);
@@ -392,7 +392,7 @@ const TheFinalWord = ({ tool }) => {
     try {
       const data = await callToolEndpoint('the-final-word', {
         mode: 'trivia',
-        category: TRIVIA_CATEGORIES.find(c => c.id === triviaCategory)?.label || 'General Knowledge',
+        category: TRIVIA_CATEGORIES.find(cat => cat.id === triviaCategory)?.label || 'General Knowledge',
         difficulty: triviaDifficulty,
         previousQuestions,
       });
@@ -516,7 +516,7 @@ const TheFinalWord = ({ tool }) => {
     setMpLoading(true);
     setMpError('');
     try {
-      const catLabel = TRIVIA_CATEGORIES.find(c => c.id === triviaCategory)?.label || 'General Knowledge';
+      const catLabel = TRIVIA_CATEGORIES.find(cat => cat.id === triviaCategory)?.label || 'General Knowledge';
       const resp = await fetch(`${BACKEND_URL}/api/the-final-word/room/create`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -623,7 +623,7 @@ const TheFinalWord = ({ tool }) => {
 
   const buildTriviaShareText = () => {
     const sorted = [...teams].sort((a, b) => b.score - a.score);
-    let text = `🏆 Trivia Night Results\n${questionCount} rounds · ${TRIVIA_CATEGORIES.find(c => c.id === triviaCategory)?.label || 'General'} · ${triviaDifficulty}\n\n`;
+    let text = `🏆 Trivia Night Results\n${questionCount} rounds · ${TRIVIA_CATEGORIES.find(cat => cat.id === triviaCategory)?.label || 'General'} · ${triviaDifficulty}\n\n`;
     sorted.forEach((team, i) => {
       const pct = questionCount > 0 ? Math.round((team.score / Math.ceil(questionCount / teams.length)) * 100) : 0;
       text += `${i === 0 ? '🥇' : i === 1 ? '🥈' : '🥉'} ${team.name}: ${team.score} correct (${pct}%)`;
@@ -640,6 +640,16 @@ const TheFinalWord = ({ tool }) => {
     setShowAppeal(false); setAppealResult(null); setAppealEvidence('');
     setDevilsAdvocate(false); setDaResult(null); setDaPosition(''); setDaTopic('');
     setShareId(null); setDissectResult(null);
+  };
+
+  const loadExample = () => {
+    resetAll();
+    setMode('dispute');
+    setPersonA('Alex');
+    setPersonB('Sam');
+    setClaimA('The Great Wall of China is visible from space with the naked eye.');
+    setClaimB('That is a myth — astronauts have repeatedly debunked it.');
+    setDisputeContext('Trivia night argument, neither will back down.');
   };
 
   const resetTrivia = () => {
@@ -718,8 +728,8 @@ const TheFinalWord = ({ tool }) => {
         <button onClick={() => setShowChallenge(!showChallenge)} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${c.btnSecondary}`}>
           <span>💬</span> Actually...
         </button>
-        <button onClick={handleCreateShareLink} disabled={shareLoading} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${c.btnSecondary}`}>
-          <span>{shareLoading ? (tool?.icon ?? '⚙️') : '🔗'}</span> {shareId ? 'Linked!' : 'Get Link'}
+        <button onClick={handleCreateShareLink} disabled={shareLoading} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${c.btnSecondary} disabled:opacity-40`}>
+          <span>{shareLoading ? (tool?.icon ?? '⚖️') : '🔗'}</span> {shareId ? 'Linked!' : 'Get Link'}
         </button>
         {showAppealBtn && (
           <button onClick={() => setShowAppeal(!showAppeal)} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${c.btnSecondary}`}>
@@ -926,6 +936,13 @@ const TheFinalWord = ({ tool }) => {
               })}
             </div>
 
+            {!mode && !question.trim() && !claimA.trim() && !claim.trim() && (
+              <button onClick={loadExample} disabled={loading}
+                className={`w-full py-2 rounded-lg text-xs font-medium ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>
+                📝 Try an example
+              </button>
+            )}
+
             {/* Voice transcript */}
             {isListening && (
               <div className={`p-3 rounded-lg border-2 border-red-500/30 ${isDark ? 'bg-red-900/10' : 'bg-red-50'}`}>
@@ -946,7 +963,7 @@ const TheFinalWord = ({ tool }) => {
                   <VoiceButton />
                 </div>
                 <button onClick={handleSubmit} disabled={loading || !question.trim()} className={`w-full py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-40 ${c.btnPrimary}`}>
-                  {loading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚙️'}</span> : <span>🔍</span>} {loading ? 'Deliberating...' : 'Get The Final Word'}
+                  {loading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚖️'}</span> : <span>🔍</span>} {loading ? 'Deliberating...' : 'Get The Final Word'}
                 </button>
               </div>
             )}
@@ -980,7 +997,7 @@ const TheFinalWord = ({ tool }) => {
                       <textarea value={daPosition} onChange={(e) => setDaPosition(e.target.value)} placeholder="State your position clearly... e.g., 'Remote work is strictly better than office work for knowledge workers'" rows={3} className={`w-full px-4 py-3 rounded-xl border-2 text-sm transition-all focus:outline-none focus:ring-2 resize-none ${c.input}`} />
                     </div>
                     <button onClick={handleDevilsAdvocate} disabled={loading || !daPosition.trim()} className={`w-full py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-40 ${c.btnPrimary}`}>
-                      {loading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚙️'}</span> : <span>😈</span>} {loading ? 'Building counter-argument...' : 'Challenge My Position'}
+                      {loading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚖️'}</span> : <span>😈</span>} {loading ? 'Building counter-argument...' : 'Challenge My Position'}
                     </button>
                   </div>
                 ) : (
@@ -1018,7 +1035,7 @@ const TheFinalWord = ({ tool }) => {
                       <input value={disputeContext} onChange={(e) => setDisputeContext(e.target.value)} placeholder="Any extra context..." className={`w-full px-4 py-2.5 rounded-xl border-2 text-sm transition-all focus:outline-none focus:ring-2 ${c.input}`} />
                     </div>
                     <button onClick={handleSubmit} disabled={loading || !claimA.trim() || !claimB.trim()} className={`w-full py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-40 ${c.btnPrimary}`}>
-                      {loading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚙️'}</span> : <span>⚖️</span>} {loading ? 'Reviewing evidence...' : 'Deliver the Verdict'}
+                      {loading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚖️'}</span> : <span>⚖️</span>} {loading ? 'Reviewing evidence...' : 'Deliver the Verdict'}
                     </button>
                   </>
                 )}
@@ -1048,7 +1065,7 @@ const TheFinalWord = ({ tool }) => {
                   <p className={`text-xs ${c.textMuted}`}>Breaks the claim into its components — each piece gets its own verdict and reasoning.</p>
                 )}
                 <button onClick={dissectMode ? handleDissect : handleSubmit} disabled={loading || !claim.trim()} className={`w-full py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-40 ${c.btnPrimary}`}>
-                  {loading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚙️'}</span> : <span>{dissectMode ? '🔬' : '🛡️'}</span>}
+                  {loading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚖️'}</span> : <span>{dissectMode ? '🔬' : '🛡️'}</span>}
                   {loading ? (dissectMode ? 'Dissecting...' : 'Fact-checking...') : (dissectMode ? 'Dissect This Claim' : 'Check This Claim')}
                 </button>
               </div>
@@ -1106,7 +1123,7 @@ const TheFinalWord = ({ tool }) => {
 
                 {/* Start buttons */}
                 <button onClick={() => { setTriviaSetup(false); handleTrivia(); }} disabled={loading || teams.every(t => !t.name.trim())} className={`w-full py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-40 ${isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white'}`}>
-                  {loading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚙️'}</span> : <span>⚡</span>} {loading ? 'Generating...' : 'Start Local Game'}
+                  {loading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚖️'}</span> : <span>⚡</span>} {loading ? 'Generating...' : 'Start Local Game'}
                 </button>
 
                 {/* Multiplayer buttons */}
@@ -1139,7 +1156,7 @@ const TheFinalWord = ({ tool }) => {
             {mpError && <p className={`text-xs ${c.danger}`}>{mpError}</p>}
             <div className="flex gap-2">
               <button onClick={handleCreateRoom} disabled={mpLoading} className={`flex-1 py-3 rounded-xl font-bold text-sm transition-all disabled:opacity-40 ${isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white'}`}>
-                {mpLoading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚙️'}</span> : 'Create Room'}
+                {mpLoading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚖️'}</span> : 'Create Room'}
               </button>
               <button onClick={() => setMpMode(null)} className={`px-4 py-3 rounded-xl text-sm font-semibold transition-all ${c.btnSecondary}`}>Cancel</button>
             </div>
@@ -1154,7 +1171,7 @@ const TheFinalWord = ({ tool }) => {
             {mpError && <p className={`text-xs ${c.danger}`}>{mpError}</p>}
             <div className="flex gap-2">
               <button onClick={handleJoinRoom} disabled={mpLoading} className={`flex-1 py-3 rounded-xl font-bold text-sm transition-all disabled:opacity-40 ${isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white'}`}>
-                {mpLoading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚙️'}</span> : 'Join Room'}
+                {mpLoading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚖️'}</span> : 'Join Room'}
               </button>
               <button onClick={() => setMpMode(null)} className={`px-4 py-3 rounded-xl text-sm font-semibold transition-all ${c.btnSecondary}`}>Cancel</button>
             </div>
@@ -1191,11 +1208,11 @@ const TheFinalWord = ({ tool }) => {
 
             {isHost ? (
               <button onClick={handleMpStartGame} disabled={mpLoading || (roomState.players?.length || 0) < 2} className={`w-full py-3 rounded-xl font-bold text-sm transition-all disabled:opacity-40 ${isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white'}`}>
-                {mpLoading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚙️'}</span> : `Start Game (${roomState.players?.length || 0} players)`}
+                {mpLoading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚖️'}</span> : `Start Game (${roomState.players?.length || 0} players)`}
               </button>
             ) : (
               <div className={`text-center py-4`}>
-                <span className="inline-block animate-spin mr-2">{tool?.icon ?? '⚙️'}</span>
+                <span className="inline-block animate-spin mr-2">{tool?.icon ?? '⚖️'}</span>
                 <span className={`text-sm ${c.textSecondary}`}>Waiting for host to start...</span>
               </div>
             )}
@@ -1268,8 +1285,8 @@ const TheFinalWord = ({ tool }) => {
                       {roomState.allAnswered ? 'Reveal Answer' : 'Reveal Early'}
                     </button>
                   ) : (
-                    <button onClick={handleMpNext} disabled={mpLoading} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white'}`}>
-                      {mpLoading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚙️'}</span> : '→'} {roomState.questionNumber >= (roomState.settings?.rounds || 10) ? 'See Results' : 'Next Question'}
+                    <button onClick={handleMpNext} disabled={mpLoading} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white'} disabled:opacity-40`}>
+                      {mpLoading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚖️'}</span> : '→'} {roomState.questionNumber >= (roomState.settings?.rounds || 10) ? 'See Results' : 'Next Question'}
                     </button>
                   )}
                 </div>
@@ -1281,7 +1298,7 @@ const TheFinalWord = ({ tool }) => {
         {/* ═══════ MULTIPLAYER FINISHED ═══════ */}
         {roomState?.finished && (mpMode === 'lobby' || mpMode === 'playing') && (
           <div className={`rounded-2xl overflow-hidden border-2 shadow-lg ${isDark ? 'border-cyan-700/50 bg-zinc-800' : 'border-cyan-300 bg-white'}`}>
-            <div className={`px-6 py-8 text-center ${isDark ? 'bg-cyan-900/20' : 'bg-gradient-to-b from-purple-50 to-white'}`}>
+            <div className={`px-6 py-8 text-center ${isDark ? 'bg-cyan-900/20' : 'bg-gradient-to-b from-fuchsia-50 to-white'}`}>
               <span className="text-5xl block mb-3">🏆</span>
               <p className={`text-xs font-black uppercase tracking-widest mb-2 ${isDark ? 'text-cyan-400' : 'text-cyan-600'}`}>Online Trivia · Room {roomCode}</p>
               {(() => {
@@ -1435,7 +1452,7 @@ const TheFinalWord = ({ tool }) => {
                       true:            isDark ? 'border-l-emerald-500 bg-emerald-900/10' : 'border-l-emerald-500 bg-emerald-50',
                       false:           isDark ? 'border-l-red-500 bg-red-900/10'         : 'border-l-red-500 bg-red-50',
                       misleading:      isDark ? 'border-l-amber-500 bg-amber-900/10'     : 'border-l-amber-500 bg-amber-50',
-                      missing_context: isDark ? 'border-l-blue-500 bg-sky-900/10'       : 'border-l-blue-500 bg-sky-50',
+                      missing_context: isDark ? 'border-l-sky-500 bg-sky-900/10'       : 'border-l-sky-500 bg-sky-50',
                       exaggerated:     isDark ? 'border-l-orange-500 bg-amber-900/10'   : 'border-l-orange-500 bg-orange-50',
                       unverifiable:    isDark ? 'border-l-zinc-500 bg-zinc-700/30'       : 'border-l-slate-400 bg-slate-50',
                       opinion:         isDark ? 'border-l-cyan-500 bg-cyan-900/10'   : 'border-l-cyan-500 bg-cyan-50',
@@ -1506,7 +1523,7 @@ const TheFinalWord = ({ tool }) => {
             {/* Footer */}
             <div className={`px-6 py-3 border-t flex items-center justify-between flex-wrap gap-2 ${c.border}`}>
               <div className="flex gap-1.5">
-                <CopyBtn content={`🔬 DEEP DISSECT\n\n"${dissectResult.claim_as_stated}"\n\nOverall: ${dissectResult.overall_verdict?.ruling_display}\n${dissectResult.overall_verdict?.one_line}\n\n${dissectResult.components?.map(c => `${c.verdict_label}\n${c.element}\n${c.reasoning}`).join('\n\n')}\n\nAccurate version:\n${dissectResult.the_accurate_version}${BRAND}`} label="Copy Report" />
+                <CopyBtn content={`🔬 DEEP DISSECT\n\n"${dissectResult.claim_as_stated}"\n\nOverall: ${dissectResult.overall_verdict?.ruling_display}\n${dissectResult.overall_verdict?.one_line}\n\n${dissectResult.components?.map(comp => `${comp.verdict_label}\n${comp.element}\n${comp.reasoning}`).join('\n\n')}\n\nAccurate version:\n${dissectResult.the_accurate_version}${BRAND}`} label="Copy Report" />
               </div>
               <button onClick={() => { setDissectResult(null); setClaim(''); }}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${c.btnSecondary}`}>
@@ -1592,8 +1609,8 @@ const TheFinalWord = ({ tool }) => {
                 <div className="flex items-center gap-3">{teams.length === 1 ? <span className={`text-sm font-bold ${c.text}`}>{teams[0].score}/{questionCount}</span> : <span className={`text-xs ${c.textMuted}`}>{teams.map(t => `${t.name}: ${t.score}`).join(' · ')}</span>}</div>
                 <div className="flex gap-2">
                   <button onClick={() => setShowChallenge(!showChallenge)} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${c.btnSecondary}`}><span>💬</span> Actually...</button>
-                  <button onClick={advanceTrivia} disabled={loading} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white'}`}>
-                    {loading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚙️'}</span> : <span>→</span>} {questionCount >= roundLimit ? 'See Results' : teams.length > 1 ? `${teams[(activeTeamIdx + 1) % teams.length]?.name}'s turn` : 'Next'}
+                  <button onClick={advanceTrivia} disabled={loading} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white'} disabled:opacity-40`}>
+                    {loading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚖️'}</span> : <span>→</span>} {questionCount >= roundLimit ? 'See Results' : teams.length > 1 ? `${teams[(activeTeamIdx + 1) % teams.length]?.name}'s turn` : 'Next'}
                   </button>
                 </div>
               </div>
@@ -1604,7 +1621,7 @@ const TheFinalWord = ({ tool }) => {
         {/* ═══════ LOCAL TRIVIA ENDGAME ═══════ */}
         {triviaFinished && !mpMode && (
           <div className={`rounded-2xl overflow-hidden border-2 shadow-lg ${isDark ? 'border-cyan-700/50 bg-zinc-800' : 'border-cyan-300 bg-white'}`}>
-            <div className={`px-6 py-8 text-center ${isDark ? 'bg-cyan-900/20' : 'bg-gradient-to-b from-purple-50 to-white'}`}>
+            <div className={`px-6 py-8 text-center ${isDark ? 'bg-cyan-900/20' : 'bg-gradient-to-b from-fuchsia-50 to-white'}`}>
               <span className="text-5xl block mb-3">🏆</span>
               <p className={`text-xs font-black uppercase tracking-widest mb-2 ${isDark ? 'text-cyan-400' : 'text-cyan-600'}`}>Trivia Night Champion</p>
               {(() => { const sorted = [...teams].sort((a, b) => b.score - a.score); const isTie = sorted.length > 1 && sorted[0].score === sorted[1].score; return <h2 className={`text-2xl font-black ${c.text}`}>{isTie ? "It's a Tie!" : `${sorted[0].name} Wins!`}</h2>; })()}
@@ -1643,7 +1660,7 @@ const TheFinalWord = ({ tool }) => {
             <h4 className={`text-sm font-bold flex items-center gap-2 ${c.text}`}><span className={c.accentTxt}>💬</span>Think we got it wrong?</h4>
             <label className="sr-only" htmlFor="tfw-challenge-text">Why do you think the verdict is wrong?</label>
             <textarea id="tfw-challenge-text" value={challengeText} onChange={(e) => setChallengeText(e.target.value)} placeholder="Tell us why..." rows={2} className={`w-full px-4 py-3 rounded-xl border-2 text-sm resize-none transition-all focus:outline-none focus:ring-2 ${c.input}`} />
-            <button onClick={handleChallenge} disabled={loading || !challengeText.trim()} className={`px-4 py-2 rounded-xl text-sm font-bold transition-all disabled:opacity-40 ${c.btnPrimary}`}>{loading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚙️'}</span> : 'Submit Challenge'}</button>
+            <button onClick={handleChallenge} disabled={loading || !challengeText.trim()} className={`px-4 py-2 rounded-xl text-sm font-bold transition-all disabled:opacity-40 ${c.btnPrimary}`}>{loading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚖️'}</span> : 'Submit Challenge'}</button>
             {challengeResult && (
               <div className={`p-4 rounded-xl border ${challengeResult.challenge_valid === true ? isDark ? 'bg-emerald-900/10 border-green-800/50' : 'bg-green-50 border-green-200' : challengeResult.challenge_valid === 'partially' ? isDark ? 'bg-amber-900/10 border-amber-800/50' : 'bg-amber-50 border-amber-200' : isDark ? 'bg-red-900/10 border-red-800/50' : 'bg-red-50 border-red-200'}`}>
                 <p className={`text-sm font-bold mb-1 ${c.text}`}>{challengeResult.ruling}</p>
@@ -1661,7 +1678,7 @@ const TheFinalWord = ({ tool }) => {
             <p className={`text-xs ${c.textSecondary}`}>Present new evidence or arguments to challenge the verdict. Appeals are judged more rigorously.</p>
             <label className="sr-only" htmlFor="tfw-appeal-evidence">New evidence or arguments for your appeal</label>
             <textarea id="tfw-appeal-evidence" value={appealEvidence} onChange={(e) => setAppealEvidence(e.target.value)} placeholder="New evidence or arguments for your appeal..." rows={3} className={`w-full px-4 py-3 rounded-xl border-2 text-sm resize-none transition-all focus:outline-none focus:ring-2 ${c.input}`} />
-            <button onClick={handleAppeal} disabled={appealLoading || !appealEvidence.trim()} className={`px-4 py-2 rounded-xl text-sm font-bold transition-all disabled:opacity-40 ${c.btnPrimary}`}>{appealLoading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚙️'}</span> : 'File Appeal'}</button>
+            <button onClick={handleAppeal} disabled={appealLoading || !appealEvidence.trim()} className={`px-4 py-2 rounded-xl text-sm font-bold transition-all disabled:opacity-40 ${c.btnPrimary}`}>{appealLoading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚖️'}</span> : 'File Appeal'}</button>
 
             {appealResult && (
               <div className={`p-4 rounded-xl border space-y-3 ${
@@ -1693,6 +1710,13 @@ const TheFinalWord = ({ tool }) => {
           </div>
         )}
 
+        {/* ═══════ POST-RESULT CROSS-REF ═══════ */}
+        {result && (
+          <p className={`text-xs ${c.textMuted} px-1`}>
+            Argument still simmering? <a href="/ConflictCoach" className={linkStyle}>📱 Conflict Coach</a> to keep it productive.
+          </p>
+        )}
+
         {/* ═══════ FOLLOW-UP SECTION ═══════ */}
         {result && !showChallenge && !showAppeal && result._mode !== 'trivia' && (
           <div className={`rounded-2xl border p-5 space-y-3 ${c.card}`}>
@@ -1700,7 +1724,7 @@ const TheFinalWord = ({ tool }) => {
             <div className="flex gap-2">
               <label className="sr-only" htmlFor="tfw-followup-text">Ask a follow-up question</label>
               <input id="tfw-followup-text" value={followUpText} onChange={(e) => setFollowUpText(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && !followUpLoading && handleFollowUp()} placeholder="But what about..." className={`flex-1 px-4 py-2.5 rounded-xl border-2 text-sm transition-all focus:outline-none focus:ring-2 ${c.input}`} />
-              <button onClick={handleFollowUp} disabled={followUpLoading || !followUpText.trim()} className={`px-4 py-2.5 rounded-xl text-sm font-bold transition-all disabled:opacity-40 ${c.btnPrimary}`}>{followUpLoading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚙️'}</span> : '→'}</button>
+              <button onClick={handleFollowUp} disabled={followUpLoading || !followUpText.trim()} className={`px-4 py-2.5 rounded-xl text-sm font-bold transition-all disabled:opacity-40 ${c.btnPrimary}`}>{followUpLoading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚖️'}</span> : '→'}</button>
             </div>
             {followUpResults.map((fu, i) => (
               <div key={i} className={`p-4 rounded-xl border space-y-2 ${c.cardAlt}`}>

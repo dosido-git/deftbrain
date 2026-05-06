@@ -88,6 +88,7 @@ Help me be an informed patient. Return ONLY valid JSON:
 Generate 6-8 questions to ask.`;
 
     const parsed = await callClaudeWithRetry(userPrompt, {
+      model: 'claude-sonnet-4-6',
       label: 'procedure-probe',
       max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage),

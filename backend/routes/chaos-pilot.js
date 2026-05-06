@@ -82,7 +82,7 @@ Return ONLY valid JSON:
     const lang = withLanguage(userLanguage);
 
     const msg = await withRetry(() => anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 1800,
       system: PERSONALITY + (lang ? `\n\n${lang}` : ''),
       messages: [{ role: 'user', content: userPrompt }],

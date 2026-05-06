@@ -132,7 +132,7 @@ Return ONLY valid JSON:
 CRITICAL: Return ONLY valid JSON. No markdown, no preamble.`, userLanguage);
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 3000,
       messages: [{ role: 'user', content: prompt }],
     });
@@ -200,7 +200,7 @@ Order triage array from easiest-to-skip first to hardest-to-skip last.
 CRITICAL: Return ONLY valid JSON.`, userLanguage);
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 2000,
       messages: [{ role: 'user', content: prompt }],
     });
@@ -274,7 +274,7 @@ Return ONLY valid JSON:
 CRITICAL: Return ONLY valid JSON.`, userLanguage);
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 800,
       messages: [{ role: 'user', content: prompt }],
     });
@@ -356,7 +356,7 @@ Return ONLY valid JSON:
 CRITICAL: Return ONLY valid JSON.`, userLanguage);
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 2000,
       messages: [{ role: 'user', content: prompt }],
     });
@@ -422,7 +422,7 @@ Return ONLY valid JSON:
 CRITICAL: Return ONLY valid JSON.`, userLanguage);
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 800,
       messages: [{ role: 'user', content: prompt }],
     });

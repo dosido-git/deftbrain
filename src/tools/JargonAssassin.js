@@ -222,7 +222,22 @@ const JargonAssassin = ({ tool }) => {
 
   const loadSaved = (s) => { setResults(s.results); setDocType(s.docType); setReadLevel(s.readLevel); setDocText(s.docText || ''); setMode('results'); setActiveTab('translation'); setQaHistory([]); setSugData(null); setRlData(null); setTplData(null); setApData(null); setShowSaved(false); };
 
-  const startNew = () => { setMode('input'); setDocText(''); setFileName(''); setResults(null); setQaHistory([]); setSugData(null); setRlData(null); setTplData(null); setApData(null); setCmpData(null); setSecData(null); setExpData(null); setLtrData(null); setDossData(null); setError(''); };
+  const handleReset = () => { setMode('input'); setDocText(''); setFileName(''); setResults(null); setQaHistory([]); setSugData(null); setRlData(null); setTplData(null); setApData(null); setCmpData(null); setSecData(null); setExpData(null); setLtrData(null); setDossData(null); setError(''); };
+
+  const loadExample = () => {
+    setMode('input');
+    setDocType('lease');
+    setReadLevel('5th-grade');
+    setFileName(''); setFileBase64(null); setFileMediaType(null);
+    setDocText(`LEASE AGREEMENT — RIDER A
+Tenant agrees to indemnify and hold harmless the Landlord from any and all claims, demands, losses, damages, costs, and expenses arising from or relating to Tenant's use or occupancy of the Premises, except to the extent caused by the gross negligence or willful misconduct of the Landlord.
+
+Tenant shall not assign this Lease nor sublet the Premises in whole or in part without the prior written consent of the Landlord, which consent may be withheld in Landlord's sole and absolute discretion.
+
+In the event of holdover tenancy, the monthly rent shall be increased to two times (2x) the monthly rent then in effect, payable on the first day of each month, and Tenant shall be liable for all consequential damages incurred by Landlord.`);
+    setResults(null); setQaHistory([]); setSugData(null); setRlData(null);
+    setTplData(null); setApData(null); setError('');
+  };
 
   const handleTranslateRef = useRef(null);
   const canSubmitRef = useRef(false);
@@ -265,19 +280,30 @@ const JargonAssassin = ({ tool }) => {
   const PRI_COLORS = { 'must-change': c.danger, 'should-change': c.warning, 'nice-to-have': c.highlight };
   const VER_COLORS = { red_flag: c.danger, worse_than_usual: c.warning, unusual: c.warning, standard: c.cardAlt, better_than_usual: c.success };
 
-  const Spinner = () => <span className='inline-block animate-spin'>{tool?.icon ?? '⚙️'}</span>;
+  const Spinner = () => <span className='inline-block animate-spin'>{tool?.icon ?? '🗡️'}</span>;
 
   return (
     <div className={`space-y-4 ${c.text}`}>
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm`}>
         <div className="px-5 pt-5">
-          <div className="pb-3 border-b border-zinc-500">
-            <h2 className={`text-xl font-bold ${c.text}`}>
-              <span className="mr-2">{tool?.icon ?? '🗡️'}</span>{tool?.title ?? 'Jargon Assassin'}
-            </h2>
-            <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Confusing documents → plain language → what to do about it'}</p>
+          <div className="flex items-start justify-between pb-3 border-b border-zinc-500">
+            <div>
+              <h2 className={`text-xl font-bold ${c.text}`}>
+                <span className="mr-2">{tool?.icon ?? '🗡️'}</span>{tool?.title ?? 'Jargon Assassin'}
+              </h2>
+              <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Confusing documents → plain language → what to do about it'}</p>
+            </div>
+            {(results || cmpData || dossData || docText.trim() || fileBase64) && (
+              <button onClick={handleReset}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>
+                ↻ Reset
+              </button>
+            )}
           </div>
         </div>
+        <p className={`text-xs ${c.textMuteded} px-5 pt-3`}>
+          Need a script to push back after you read it? <a href="/VelvetHammer" className={linkStyle}>🔨 Velvet Hammer</a>.
+        </p>
         <div className="px-5 py-4">
 
       {/* Nav */}
@@ -323,7 +349,12 @@ const JargonAssassin = ({ tool }) => {
         </div>
         <textarea value={docText} onChange={e => { setDocText(e.target.value); if (e.target.value) { setFileBase64(null); setFileMediaType(null); setFileName(''); } }} placeholder={fileBase64 ? 'File uploaded above — or paste text here to override' : 'Paste your document here...'} rows={fileBase64 ? 3 : 8} className={`w-full px-3 py-2 rounded-lg border text-sm font-mono ${c.input}`} />
         <div className="flex justify-between"><span className={`text-xs ${c.textMuteded}`}>{docText.length.toLocaleString()} chars</span>{docText.length > 12000 && <span className={`text-xs ${c.danger} border rounded px-2 py-0.5`}>⚠️ May truncate</span>}</div>
-        <button onClick={handleTranslate} disabled={loading || (!docText.trim() && !fileBase64)} className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '✂️'}</span> Working…</> : <><span className='mr-1'>{tool?.icon ?? '✂️'}</span> Translate</>}</button>
+        <div className="flex gap-2">
+          <button onClick={handleTranslate} disabled={loading || (!docText.trim() && !fileBase64)} className={`flex-1 py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '🗡️'}</span> Working…</> : <><span className='mr-1'>{tool?.icon ?? '🗡️'}</span> Translate</>}</button>
+          {!docText.trim() && !fileBase64 && (
+            <button onClick={loadExample} disabled={loading} className={`px-4 py-3 rounded-xl font-bold text-sm ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>📝 Try an example</button>
+          )}
+        </div>
       </div>}
 
       {/* ═══ RESULTS ═══ */}
@@ -337,10 +368,10 @@ const JargonAssassin = ({ tool }) => {
         {/* Actions */}
         <div className="flex flex-wrap gap-1.5">
           <button onClick={saveDoc} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnSecondary} border ${c.border}`}>💾 Save</button>
-          <button onClick={handleSuggest} disabled={loading} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnSecondary} border ${c.border}`}>{sugData ? '✅ Questions' : '🤔 Questions to Ask'}</button>
-          <button onClick={() => { setRlData(null); handleRedLine(); }} disabled={loading} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnSecondary} border ${c.border}`}>{rlData ? '✅ Red-Line' : '✏️ Red-Line'}</button>
-          <button onClick={() => { setTplData(null); handleTemplate(); }} disabled={loading} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnSecondary} border ${c.border}`}>{tplData ? '✅ vs Normal' : '📊 vs Normal'}</button>
-          <button onClick={() => { setApData(null); handleActionPlan(); }} disabled={loading} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnSecondary} border ${c.border}`}>{apData ? '✅ Plan' : '📋 Action Plan'}</button>
+          <button onClick={handleSuggest} disabled={loading} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>{sugData ? '✅ Questions' : '🤔 Questions to Ask'}</button>
+          <button onClick={() => { setRlData(null); handleRedLine(); }} disabled={loading} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>{rlData ? '✅ Red-Line' : '✏️ Red-Line'}</button>
+          <button onClick={() => { setTplData(null); handleTemplate(); }} disabled={loading} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>{tplData ? '✅ vs Normal' : '📊 vs Normal'}</button>
+          <button onClick={() => { setApData(null); handleActionPlan(); }} disabled={loading} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>{apData ? '✅ Plan' : '📋 Action Plan'}</button>
 
         </div>
 
@@ -372,7 +403,7 @@ const JargonAssassin = ({ tool }) => {
             <div className="flex items-center gap-2"><span>{FLAG[s.type]?.i}</span><span className="text-xs font-bold">{FLAG[s.type]?.l}</span><span className="font-bold text-sm">{s.title}</span></div>
             <p className="text-xs italic">"{s.original_text}"</p><p className="text-sm">{s.simplified}</p><p className="text-xs"><strong>Why:</strong> {s.why_it_matters}</p>
             {s.enforceability_note && <div className={`${c.highlight} border rounded-lg p-2`}><p className="text-xs">⚖️ {s.enforceability_note}</p></div>}
-            <button onClick={() => handleSection(s.original_text)} disabled={loading} className={`text-xs font-bold ${c.textSecondary}`}>🔍 Deep-dive →</button>
+            <button onClick={() => handleSection(s.original_text)} disabled={loading} className={`text-xs font-bold ${c.textSecondary} disabled:opacity-40`}>🔍 Deep-dive →</button>
           </div>;
         })}</div>}
 
@@ -392,7 +423,7 @@ const JargonAssassin = ({ tool }) => {
             <p className={`text-xs ${c.textMuteded}`}>Need to explain this document to your parent, roommate, partner, teenager? We'll reframe it for them.</p>
             <input value={expAudience} onChange={e => setExpAudience(e.target.value)} placeholder="Who? (e.g., 'my 70-year-old mother', 'my teenage son', 'my business partner')" className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
             <textarea value={expSection} onChange={e => setExpSection(e.target.value)} placeholder="Specific section to explain (optional — defaults to full translation)" rows={2} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
-            <button onClick={handleExplainTo} disabled={loading} className={`w-full py-2.5 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '✂️'}</span> Working…</> : <><span className='mr-1'>{tool?.icon ?? '✂️'}</span> Reframe for Them</>}</button>
+            <button onClick={handleExplainTo} disabled={loading} className={`w-full py-2.5 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '🗡️'}</span> Working…</> : <><span className='mr-1'>{tool?.icon ?? '🗡️'}</span> Reframe for Them</>}</button>
           </div>
           {expData && <div className="space-y-3">
             <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-5`}><p className={`text-sm ${c.textSecondary} whitespace-pre-line`}>{expData.explanation}</p></div>
@@ -473,7 +504,7 @@ const JargonAssassin = ({ tool }) => {
 
       {/* ═══ COMPARE ═══ */}
       {mode === 'compare' && <div className="space-y-4">
-        <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-5 space-y-4`}><h3 className={`font-bold ${c.text}`}>🔀 Compare Versions</h3><div className="flex flex-wrap gap-1.5 mb-2">{DOC_TYPES.slice(0, 5).map(dt => <button key={dt.id} onClick={() => setDocType(dt.id)} className={`px-2.5 py-1 rounded-lg text-xs ${docType === dt.id ? c.pillOn : c.pillOff}`}>{dt.icon} {dt.label}</button>)}</div><textarea value={cmpT1} onChange={e => setCmpT1(e.target.value)} placeholder="Version 1 (original)" rows={4} className={`w-full px-3 py-2 rounded-lg border text-sm font-mono ${c.input}`} /><textarea value={cmpT2} onChange={e => setCmpT2(e.target.value)} placeholder="Version 2 (revised)" rows={4} className={`w-full px-3 py-2 rounded-lg border text-sm font-mono ${c.input}`} /><button onClick={handleCompare} disabled={loading} className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '✂️'}</span> Working…</> : <><span className='mr-1'>{tool?.icon ?? '✂️'}</span> Compare</>}</button></div>
+        <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-5 space-y-4`}><h3 className={`font-bold ${c.text}`}>🔀 Compare Versions</h3><div className="flex flex-wrap gap-1.5 mb-2">{DOC_TYPES.slice(0, 5).map(dt => <button key={dt.id} onClick={() => setDocType(dt.id)} className={`px-2.5 py-1 rounded-lg text-xs ${docType === dt.id ? c.pillOn : c.pillOff}`}>{dt.icon} {dt.label}</button>)}</div><textarea value={cmpT1} onChange={e => setCmpT1(e.target.value)} placeholder="Version 1 (original)" rows={4} className={`w-full px-3 py-2 rounded-lg border text-sm font-mono ${c.input}`} /><textarea value={cmpT2} onChange={e => setCmpT2(e.target.value)} placeholder="Version 2 (revised)" rows={4} className={`w-full px-3 py-2 rounded-lg border text-sm font-mono ${c.input}`} /><button onClick={handleCompare} disabled={loading} className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '🗡️'}</span> Working…</> : <><span className='mr-1'>{tool?.icon ?? '🗡️'}</span> Compare</>}</button></div>
         {cmpData && <div className="space-y-3">
           <div className={`${cmpData.overall_assessment?.direction === 'better' ? c.success : cmpData.overall_assessment?.direction === 'worse' ? c.danger : c.warning} border rounded-xl p-4`}><p className="text-lg font-bold">{cmpData.overall_assessment?.direction === 'better' ? '✅ Better' : cmpData.overall_assessment?.direction === 'worse' ? '🔴 Worse' : '🟡 Mixed'}</p><p className="text-sm mt-1">{cmpData.summary}</p>{cmpData.overall_assessment?.recommendation && <p className="text-xs mt-1">{cmpData.overall_assessment.recommendation}</p>}</div>
           {cmpData.changes?.map((ch, i) => <div key={i} className={`${ch.impact === 'negative' ? c.danger : ch.impact === 'positive' ? c.success : `${c.cardAlt} border ${c.border}`} ${ch.impact !== 'neutral' ? 'border' : ''} rounded-xl p-3 space-y-1`}><span className={`text-xs font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-zinc-600 text-zinc-200' : 'bg-gray-200 text-gray-700'}`}>{ch.severity}</span><p className={`text-sm font-medium ${c.text}`}>{ch.what_changed}</p><p className="text-xs">Before: {ch.before}</p><p className="text-xs">After: {ch.after}</p></div>)}
@@ -487,7 +518,7 @@ const JargonAssassin = ({ tool }) => {
           <div><h3 className={`font-bold ${c.text}`}>📁 Multi-Document Dossier</h3><p className={`text-sm ${c.textMuteded}`}>Cross-reference related documents — find conflicts, gaps, and dependencies.</p></div>
           {dossDocs.map((d, i) => <div key={i} className={`${c.cardAlt} border ${c.border} rounded-lg p-3 space-y-2`}><div className="flex gap-2"><input ref={el => { dossDocsInputRefs.current[i] = el; }} value={d.title} onChange={e => setDossDocs(prev => prev.map((p, j) => j === i ? { ...p, title: e.target.value } : p))} placeholder={`Document ${i + 1} title`} className={`flex-1 px-2 py-1 rounded border text-xs ${c.input}`} /><select value={d.type} onChange={e => setDossDocs(prev => prev.map((p, j) => j === i ? { ...p, type: e.target.value } : p))} className={`px-2 py-1 rounded border text-xs ${c.input}`}>{DOC_TYPES.map(dt => <option key={dt.id} value={dt.id}>{dt.label}</option>)}</select></div><textarea value={d.text} onChange={e => setDossDocs(prev => prev.map((p, j) => j === i ? { ...p, text: e.target.value } : p))} placeholder="Paste document text..." rows={3} className={`w-full px-2 py-1 rounded border text-xs font-mono ${c.input}`} /></div>)}
           <button onClick={() => { shouldFocusNewDossDocsRef.current = true; setDossDocs(prev => [...prev, { title: '', text: '', type: 'general' }]); }} className={`text-xs ${c.textSecondary} font-bold`}>➕ Add document</button>
-          <button onClick={handleDossier} disabled={loading} className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '✂️'}</span> Working…</> : <><span className='mr-1'>{tool?.icon ?? '✂️'}</span> Cross-Reference</>}</button>
+          <button onClick={handleDossier} disabled={loading} className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '🗡️'}</span> Working…</> : <><span className='mr-1'>{tool?.icon ?? '🗡️'}</span> Cross-Reference</>}</button>
         </div>
         {dossData && <div className="space-y-3">
           {dossData.relationship && <div className={`${c.accentCard} border rounded-xl p-4`}><p className={`text-sm ${c.text}`}>{dossData.relationship}</p></div>}
@@ -504,7 +535,7 @@ const JargonAssassin = ({ tool }) => {
           <input value={ltrIntent} onChange={e => setLtrIntent(e.target.value)} placeholder="What do you want to do? (e.g., 'dispute the late fee', 'negotiate the notice period', 'accept with conditions')" className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
           <textarea value={ltrPoints} onChange={e => setLtrPoints(e.target.value)} placeholder="Specific points to address (optional)" rows={2} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
           <div><p className={`text-xs font-bold ${c.text} mb-1`}>Tone</p><div className="flex flex-wrap gap-1.5">{['professional but firm', 'friendly but clear', 'formal and assertive', 'conciliatory'].map(t => <button key={t} onClick={() => setLtrTone(t)} className={`px-3 py-1.5 rounded-lg text-xs ${ltrTone === t ? c.pillOn : c.pillOff}`}>{t}</button>)}</div></div>
-          <button onClick={handleLetter} disabled={loading} className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '✂️'}</span> Working…</> : <><span className='mr-1'>{tool?.icon ?? '✂️'}</span> Generate Letter</>}</button>
+          <button onClick={handleLetter} disabled={loading} className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '🗡️'}</span> Working…</> : <><span className='mr-1'>{tool?.icon ?? '🗡️'}</span> Generate Letter</>}</button>
         </div>
         {ltrData && <div className="space-y-3">
           {ltrData.subject_line && <div className={`${c.cardAlt} border ${c.border} rounded-lg p-3`}><p className={`text-xs font-bold ${c.text}`}>Subject: {ltrData.subject_line}</p></div>}
@@ -521,14 +552,6 @@ const JargonAssassin = ({ tool }) => {
 
       {/* Error */}
       {error && <div className={`${c.danger} border rounded-xl p-4 text-sm`}>⚠️ {error}</div>}
-
-      {/* New document button */}
-      {(results || cmpData || dossData) && (
-        <button onClick={startNew}
-          className={`w-full py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 border-2 ${isDark ? 'border-zinc-600 bg-zinc-800 hover:bg-zinc-700 text-zinc-200' : 'border-gray-300 bg-white hover:bg-gray-50 text-gray-700'}`}>
-          📄 Translate a new document
-        </button>
-      )}
 
       <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
         <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 Related tools</p>

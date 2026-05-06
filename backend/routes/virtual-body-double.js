@@ -116,6 +116,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
         const parsed = await callClaudeWithRetry(prompt, {
+          model: 'claude-sonnet-4-6',
           label: 'VBD-Start',
           max_tokens: 1800,
         });
@@ -164,6 +165,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
         const parsed = await callClaudeWithRetry(prompt, {
+          model: 'claude-sonnet-4-6',
           label: 'VBD-Breakdown',
           max_tokens: 800,
         });
@@ -211,6 +213,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
         const parsed = await callClaudeWithRetry(prompt, {
+          model: 'claude-sonnet-4-6',
           label: 'VBD-CheckIn',
           max_tokens: 500,
         });
@@ -255,6 +258,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
         const parsed = await callClaudeWithRetry(prompt, {
+          model: 'claude-sonnet-4-6',
           label: 'VBD-Complete',
           max_tokens: 900,
         });
@@ -291,6 +295,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
         const parsed = await callClaudeWithRetry(prompt, {
+          model: 'claude-sonnet-4-6',
           label: 'VBD-Stuck',
           max_tokens: 800,
         });
@@ -315,6 +320,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
         const parsed = await callClaudeWithRetry(prompt, {
+          model: 'claude-sonnet-4-6',
           label: 'VBD-Extend',
           max_tokens: 500,
         });
@@ -339,6 +345,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
         const parsed = await callClaudeWithRetry(prompt, {
+          model: 'claude-sonnet-4-6',
           label: 'VBD-Break',
           max_tokens: 400,
         });
@@ -365,6 +372,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
         const parsed = await callClaudeWithRetry(prompt, {
+          model: 'claude-sonnet-4-6',
           label: 'VBD-Invite',
           max_tokens: 600,
         });
@@ -403,6 +411,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
         const parsed = await callClaudeWithRetry(prompt, {
+          model: 'claude-sonnet-4-6',
           label: 'VBD-Review',
           max_tokens: 1200,
         });
@@ -435,6 +444,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
         const parsed = await callClaudeWithRetry(prompt, {
+          model: 'claude-sonnet-4-6',
           label: 'VBD-Card',
           max_tokens: 300,
         });

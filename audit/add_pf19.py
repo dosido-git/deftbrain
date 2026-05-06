@@ -1,6 +1,14 @@
 #!/usr/bin/env python3
 """add_pf19.py — Mechanical patcher for PF-19 violations.
 
+v1.5 · 2026-05-06 · refactored to use shared _helpers.py for the brace
+                    walker. Side benefit: walker now correctly handles
+                    nested template literals (was a latent bug: nested
+                    backticks would prematurely close the outer string,
+                    causing the scanner to miss patches in some files).
+v1.4 · 2026-05-05 · handles if-cond contexts, default-only React imports,
+                    value-binding exemption.
+
 Adds the 4-part focus pattern to growable input lists:
   1. Refs near other useRefs:
        const xInputRefs = useRef([]);
@@ -25,44 +33,9 @@ Exit 0 if no errors; 1 if any file errored. Idempotent.
 
 import os, re, sys, glob, shutil
 
-
-# ─── Brace/paren walkers (string- and comment-aware) ───────────────────────
-
-def _find_matching(s, open_pos, open_ch, close_ch):
-    """Walk forward from open_pos (must be open_ch) to matching close_ch.
-    Respects strings, line/block comments. Returns close index or None."""
-    if open_pos >= len(s) or s[open_pos] != open_ch:
-        return None
-    depth, i, in_string = 0, open_pos, None
-    while i < len(s):
-        ch = s[i]
-        if in_string:
-            if ch == '\\' and i + 1 < len(s):
-                i += 2; continue
-            if ch == in_string:
-                in_string = None
-            i += 1; continue
-        if ch == '/' and i + 1 < len(s):
-            if s[i+1] == '/':
-                end = s.find('\n', i)
-                i = end if end != -1 else len(s); continue
-            if s[i+1] == '*':
-                end = s.find('*/', i+2)
-                i = (end + 2) if end != -1 else len(s); continue
-        if ch in ('"', "'", '`'):
-            in_string = ch; i += 1; continue
-        if ch == open_ch:
-            depth += 1
-        elif ch == close_ch:
-            depth -= 1
-            if depth == 0:
-                return i
-        i += 1
-    return None
-
-
-def find_matching_paren(s, open_pos):
-    return _find_matching(s, open_pos, '(', ')')
+# Allow running from any directory by adjusting sys.path to find _helpers.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _helpers import find_matching_paren
 
 
 # ─── Naming helpers ──────────────────────────────────────────────────────

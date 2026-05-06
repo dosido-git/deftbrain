@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -114,13 +114,11 @@ const PEP = ({ tool }) => {
   const catInfo = (cat) => CATEGORIES[cat] || CATEGORIES.quick_hit;
 
   // ─── State ───
-  const [energy, setEnergy] = usePersistentState('pep-energy', 5);
   const [timeAvail, setTimeAvail] = useState('');
   const [recentActs, setRecentActs] = useState('');
   const [context, setContext] = useState('');
   const [mood, setMood] = useState('');
   const [environment, setEnvironment] = useState('');
-  const [results, setResults] = usePersistentState('pep-results', null);
   const [swapResult, setSwapResult] = useState(null);
   const [swapLoading, setSwapLoading] = useState(false);
   const [sessionSuggestions, setSessionSuggestions] = useState([]);
@@ -201,6 +199,8 @@ const PEP = ({ tool }) => {
   const [disruptResult, setDisruptResult] = useState(null);
 
   // ─── Persistent ───
+  const [energy, setEnergy] = usePersistentState('pep-energy', 5);
+  const [results, setResults] = usePersistentState('pep-results', null);
   const [myMenu, setMyMenu] = usePersistentState('pep-my-menu', []);
   const [partnerMenu, setPartnerMenu] = usePersistentState('pep-partner-menu', []);
   const [activityLog, setActivityLog] = usePersistentState('pep-log', []);
@@ -474,7 +474,7 @@ const PEP = ({ tool }) => {
           <div className="flex items-start justify-between gap-3">
             <div>
               <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-                <span>{tool?.icon ?? '✨'}</span>{tool?.title ?? 'PEP'}
+                <span className="mr-2">{tool?.icon ?? '✨'}</span>{tool?.title ?? 'PEP'}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Personal Energy Planner — understand your energy, plan around it'}</p>
             </div>
@@ -488,6 +488,9 @@ const PEP = ({ tool }) => {
       </div>
 
       {/* ═══ MODE TABS ═══ */}
+      <p className={`text-xs ${c.textMuted} px-1`}>
+        Mid-spiral and can't get to a plan? <a href="/SpiralStopper" className={linkStyle}>🌀 Spiral Stopper</a> first.
+      </p>
       <div className={`flex gap-1 p-1 rounded-xl ${c.cardAlt}`}>
         {MODES.map(m => <button key={m.id} onClick={() => setMode(m.id)} className={`flex-1 py-2.5 px-2 rounded-lg text-xs font-bold transition-all text-center ${mode === m.id ? (isDark ? 'bg-zinc-700 text-emerald-300 shadow' : 'bg-white text-emerald-700 shadow') : `${c.textMuted} hover:${isDark ? 'text-zinc-200' : 'text-gray-700'}`}`}><span className="block text-base mb-0.5">{m.icon}</span>{m.label}</button>)}
       </div>
@@ -498,12 +501,12 @@ const PEP = ({ tool }) => {
       <div className="flex flex-wrap gap-2">
         <button onClick={() => { setShowMyMenu(!showMyMenu); setShowPartnerMenu(false); setBuildMenuResult(null); }} className={`text-xs font-bold ${isDark ? 'text-emerald-300' : 'text-emerald-600'}`}>📋 My Menu ({myMenu.length})</button>
         <button onClick={() => { setShowPartnerMenu(!showPartnerMenu); setShowMyMenu(false); setBuildMenuResult(null); }} className={`text-xs font-bold ${isDark ? 'text-cyan-300' : 'text-cyan-600'}`}>👯 Partner ({partnerMenu.length})</button>
-        {myMenu.length > 0 && <button onClick={handleEnergyMatch} disabled={matchLoading} className={`text-xs font-bold ${isDark ? 'text-cyan-300' : 'text-cyan-600'}`}>{matchLoading ? (tool?.icon ?? '✨') : '🎯 Match'}</button>}
+        {myMenu.length > 0 && <button onClick={handleEnergyMatch} disabled={matchLoading} className={`text-xs font-bold ${isDark ? 'text-cyan-300' : 'text-cyan-600'} disabled:opacity-40`}>{matchLoading ? (tool?.icon ?? '✨') : '🎯 Match'}</button>}
         {myMenu.length >= 3 && <button onClick={handleSurprise} className={`text-xs font-bold ${isDark ? 'text-cyan-300' : 'text-cyan-600'}`}>🎰 Surprise Me</button>}
-        {activityLog.length >= 3 && <button onClick={handlePatterns} disabled={patternLoading} className={`text-xs font-bold ${isDark ? 'text-cyan-300' : 'text-cyan-600'}`}>{patternLoading ? (tool?.icon ?? '✨') : '🔍 Patterns'}</button>}
-        {activityLog.length >= 5 && <button onClick={handleInsights} disabled={insightsLoading} className={`text-xs font-bold ${isDark ? 'text-amber-300' : 'text-amber-600'}`}>{insightsLoading ? (tool?.icon ?? '✨') : '📊 Insights'}</button>}
+        {activityLog.length >= 3 && <button onClick={handlePatterns} disabled={patternLoading} className={`text-xs font-bold ${isDark ? 'text-cyan-300' : 'text-cyan-600'} disabled:opacity-40`}>{patternLoading ? (tool?.icon ?? '✨') : '🔍 Patterns'}</button>}
+        {activityLog.length >= 5 && <button onClick={handleInsights} disabled={insightsLoading} className={`text-xs font-bold ${isDark ? 'text-amber-300' : 'text-amber-600'} disabled:opacity-40`}>{insightsLoading ? (tool?.icon ?? '✨') : '📊 Insights'}</button>}
         {activityLog.length >= 2 && <button onClick={() => setShowEnergyChart(!showEnergyChart)} className={`text-xs font-bold ${isDark ? 'text-cyan-300' : 'text-cyan-600'}`}>📈 Chart</button>}
-        {activityLog.length >= 3 && <button onClick={handleDebtCheck} disabled={debtLoading} className={`text-xs font-bold ${isDark ? 'text-red-300' : 'text-red-600'}`}>{debtLoading ? (tool?.icon ?? '✨') : '🌡️ Debt check'}</button>}
+        {activityLog.length >= 3 && <button onClick={handleDebtCheck} disabled={debtLoading} className={`text-xs font-bold ${isDark ? 'text-red-300' : 'text-red-600'} disabled:opacity-40`}>{debtLoading ? (tool?.icon ?? '✨') : '🌡️ Debt check'}</button>}
         {savedSequences.length > 0 && <button onClick={() => setShowSavedSeqs(!showSavedSeqs)} className={`text-xs font-bold ${isDark ? 'text-cyan-300' : 'text-cyan-600'}`}>🌙 Routines ({savedSequences.length})</button>}
       </div>
 
@@ -585,7 +588,7 @@ const PEP = ({ tool }) => {
           <p className={`text-xs ${c.textMuted}`}>Based on your energy and time, PEP suggests restorative activities matched to your current capacity — from quick 5-minute resets to deeper recovery. The lower your energy, the lighter the suggestions.</p>
         </div>
 
-        <button onClick={handleJustDo} disabled={justDoLoading || loading} className={`w-full py-5 rounded-xl font-bold text-lg shadow-lg border-2 border-dashed transition-all ${justDoLoading ? (isDark ? 'border-zinc-600 text-zinc-500' : 'border-gray-300 text-gray-400') : (isDark ? 'border-emerald-600 text-emerald-300 hover:bg-emerald-900/20' : 'border-emerald-400 text-emerald-700 hover:bg-emerald-50')}`}>{justDoLoading ? <span className="animate-spin inline-block">{tool?.icon ?? '✨'}</span> : '🧊'} I can't even choose — just tell me what to do</button>
+        <button onClick={handleJustDo} disabled={justDoLoading || loading} className={`w-full py-5 rounded-xl font-bold text-lg shadow-lg border-2 border-dashed transition-all ${justDoLoading ? (isDark ? 'border-zinc-600 text-zinc-500' : 'border-gray-300 text-gray-400') : (isDark ? 'border-emerald-600 text-emerald-300 hover:bg-emerald-900/20' : 'border-emerald-400 text-emerald-700 hover:bg-emerald-50')} disabled:opacity-40`}>{justDoLoading ? <span className="animate-spin inline-block">{tool?.icon ?? '✨'}</span> : '🧊'} I can't even choose — just tell me what to do</button>
 
         <div className={`${c.card} rounded-xl shadow-lg p-5`}><label className={`block font-semibold text-sm ${c.text} mb-1`}>How are you right now?</label><p className={`text-xs ${c.textMuted} mb-3`}>Pick the closest match — PEP will suggest activities that fit where you actually are.</p><div className="grid grid-cols-2 sm:grid-cols-4 gap-2">{QUICK_STATES.map((s, i) => <button key={i} onClick={() => handleQuickState(s)} disabled={loading} className={`px-3 py-3 rounded-lg border text-sm font-semibold text-center ${chip(false)} disabled:opacity-40`}>{s.label}</button>)}</div></div>
 
@@ -601,8 +604,8 @@ const PEP = ({ tool }) => {
         </div>
 
         <div className="flex gap-3">
-          <button onClick={handleGenerate} disabled={loading} className={`flex-1 py-4 rounded-xl font-semibold text-lg flex items-center justify-center gap-2 shadow-lg ${loading ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : c.btnPrimary}`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '✨'}</span> Building...</> : <><span className="mr-1">{tool?.icon ?? '✨'}</span>Build Menu</>}</button>
-          <button onClick={handleSequence} disabled={seqLoading} className={`px-6 py-4 rounded-xl font-semibold text-sm shadow-lg ${seqLoading ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : (isDark ? 'bg-emerald-600 hover:bg-emerald-500 text-white' : 'bg-emerald-600 hover:bg-emerald-700 text-white')}`}>{seqLoading ? (tool?.icon ?? '✨') : '🎯 Sequence'}</button>
+          <button onClick={handleGenerate} disabled={loading} className={`flex-1 py-4 rounded-xl font-semibold text-lg flex items-center justify-center gap-2 shadow-lg ${loading ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '✨'}</span> Building...</> : <><span className="mr-1">{tool?.icon ?? '✨'}</span>Build Menu</>}</button>
+          <button onClick={handleSequence} disabled={seqLoading} className={`px-6 py-4 rounded-xl font-semibold text-sm shadow-lg ${seqLoading ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : (isDark ? 'bg-emerald-600 hover:bg-emerald-500 text-white' : 'bg-emerald-600 hover:bg-emerald-700 text-white')} disabled:opacity-40`}>{seqLoading ? (tool?.icon ?? '✨') : '🎯 Sequence'}</button>
         </div>
       </div>}
 
@@ -620,7 +623,7 @@ const PEP = ({ tool }) => {
           <div className="flex items-center gap-2 flex-wrap"><span className={`text-sm font-semibold ${c.text}`}>{ENERGY_EMOJIS[energy]} {energy}/10</span>{mood && <span className={`text-xs px-2 py-0.5 rounded-full ${c.warning} border`}>{MOOD_OPTS.find(m => m.v === mood)?.l}</span>}{environment && <span className={`text-xs px-2 py-0.5 rounded-full ${c.highlight} border`}>{ENV_OPTS.find(e => e.v === environment)?.l}</span>}<span className={`text-xs ${c.textMuted}`}>{getTimeOfDayLabel(getTimeOfDay())}</span></div>
           <div className="flex items-center gap-2 flex-wrap">
             <button onClick={() => setShowCheckin(!showCheckin)} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnSecondary}`}>🔔 Remind me</button>
-            <button onClick={handleSequence} disabled={seqLoading} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnSecondary}`}>{seqLoading ? (tool?.icon ?? '✨') : '🎯 Build a plan'}</button>
+            <button onClick={handleSequence} disabled={seqLoading} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnSecondary} disabled:opacity-40`}>{seqLoading ? (tool?.icon ?? '✨') : '🎯 Build a plan'}</button>
           </div>
         </div>
 
@@ -638,7 +641,7 @@ const PEP = ({ tool }) => {
         {results.menu?.avoid_right_now?.length > 0 && <div className={`${c.danger} border rounded-xl p-5`}><h3 className="font-bold text-sm mb-3">⚠️ Skip</h3>{results.menu.avoid_right_now.map((a, i) => <div key={i} className="mb-2"><p className={`text-sm font-bold ${c.text}`}>{a.activity}</p><p className={`text-xs ${c.textSecondary}`}>{a.why}</p></div>)}</div>}
         {results.pleasure_vs_numbing && <div className={`${c.highlight} border rounded-xl p-4`}><p className="text-sm">💡 {results.pleasure_vs_numbing}</p></div>}
 
-        {!swapResult && <button onClick={() => handleSwap((results.menu?.quick_hits || []).concat(results.menu?.medium_recharges || []).map(a => a.activity).slice(0, 6))} disabled={swapLoading} className={`w-full py-3 rounded-xl text-sm font-bold border-2 border-dashed ${isDark ? 'border-zinc-600 text-zinc-400' : 'border-gray-300 text-gray-500'}`}>{swapLoading ? (tool?.icon ?? '✨') : '🔄 Not feeling these — show me different ones'}</button>}
+        {!swapResult && <button onClick={() => handleSwap((results.menu?.quick_hits || []).concat(results.menu?.medium_recharges || []).map(a => a.activity).slice(0, 6))} disabled={swapLoading} className={`w-full py-3 rounded-xl text-sm font-bold border-2 border-dashed ${isDark ? 'border-zinc-600 text-zinc-400' : 'border-gray-300 text-gray-500'} disabled:opacity-40`}>{swapLoading ? (tool?.icon ?? '✨') : '🔄 Not feeling these — show me different ones'}</button>}
         {swapResult && <div className={`${c.card} rounded-xl shadow-lg p-5 space-y-3`}>
           <div>
             <h3 className={`font-bold text-sm ${c.text}`}>🔄 Fresh suggestions</h3>
@@ -690,7 +693,7 @@ const PEP = ({ tool }) => {
             ))}
           </div>
           <button onClick={addBudgetTask} className={`w-full py-2 rounded-lg border-2 border-dashed text-sm font-semibold ${isDark ? 'border-zinc-600 text-zinc-400' : 'border-gray-300 text-gray-500'}`}>➕ Add task</button>
-          <button onClick={handleBudget} disabled={loading} className={`w-full py-4 rounded-xl font-semibold text-lg ${loading ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : c.btnPrimary}`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '✨'}</span> Budgeting...</> : <><span className="mr-1">{tool?.icon ?? '✨'}</span>Budget my energy</>}</button>
+          <button onClick={handleBudget} disabled={loading} className={`w-full py-4 rounded-xl font-semibold text-lg ${loading ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '✨'}</span> Budgeting...</> : <><span className="mr-1">{tool?.icon ?? '✨'}</span>Budget my energy</>}</button>
         </div>
 
         {budgetResult && <div className="space-y-4">
@@ -768,7 +771,7 @@ const PEP = ({ tool }) => {
             <button onClick={addForecastEvent} className={`w-full py-2 rounded-lg border-2 border-dashed text-sm font-semibold ${isDark ? 'border-zinc-600 text-zinc-400' : 'border-gray-300 text-gray-500'}`}>➕ Add event</button>
           </div>
 
-          <button onClick={handleForecast} disabled={loading || !forecastEvents.length} className={`w-full py-4 rounded-xl font-semibold text-lg ${loading || !forecastEvents.length ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : c.btnPrimary}`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '✨'}</span> Forecasting...</> : <><span className="mr-1">{tool?.icon ?? '✨'}</span>Forecast my week</>}</button>
+          <button onClick={handleForecast} disabled={loading || !forecastEvents.length} className={`w-full py-4 rounded-xl font-semibold text-lg ${loading || !forecastEvents.length ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '✨'}</span> Forecasting...</> : <><span className="mr-1">{tool?.icon ?? '✨'}</span>Forecast my week</>}</button>
         </div>
 
         : <div className="space-y-4">
@@ -843,7 +846,7 @@ const PEP = ({ tool }) => {
 
           <input value={radarSymptoms} onChange={e => setRadarSymptoms(e.target.value)} placeholder="Physical symptoms? (headaches, tension, fatigue...)" className={`w-full p-2.5 border rounded-lg text-sm ${c.input}`} />
 
-          <button onClick={handleRadarCheckin} disabled={loading} className={`w-full py-4 rounded-xl font-semibold text-lg ${loading ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : c.btnPrimary}`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '✨'}</span> Checking in...</> : <>📡 Log today</>}</button>
+          <button onClick={handleRadarCheckin} disabled={loading} className={`w-full py-4 rounded-xl font-semibold text-lg ${loading ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '✨'}</span> Checking in...</> : <>📡 Log today</>}</button>
         </div>
 
         {/* Checkin result */}
@@ -858,7 +861,7 @@ const PEP = ({ tool }) => {
 
         {/* History sparklines */}
         {checkinLog.length >= 3 && <div className={`${c.card} rounded-xl shadow-lg p-5 space-y-3`}>
-          <div className="flex items-center justify-between"><h4 className={`font-bold text-sm ${c.text}`}>📊 Trend</h4>{checkinLog.length >= 5 && <button onClick={handleRadarAnalyze} disabled={loading} className={`text-xs font-bold px-3 py-1.5 rounded-lg ${c.btnPrimary}`}>{loading ? (tool?.icon ?? '✨') : '🔍 Full analysis'}</button>}</div>
+          <div className="flex items-center justify-between"><h4 className={`font-bold text-sm ${c.text}`}>📊 Trend</h4>{checkinLog.length >= 5 && <button onClick={handleRadarAnalyze} disabled={loading} className={`text-xs font-bold px-3 py-1.5 rounded-lg ${c.btnPrimary} disabled:opacity-40`}>{loading ? (tool?.icon ?? '✨') : '🔍 Full analysis'}</button>}</div>
           {['sleep', 'mood', 'productivity', 'social_energy'].map(metric => {
             const data = checkinLog.slice(0, 6).reverse();
             const label = { sleep: '😴', mood: '🌤️', productivity: '⚡', social_energy: '👥' }[metric];
@@ -918,7 +921,7 @@ const PEP = ({ tool }) => {
             <input value={constraints} onChange={e => setConstraints(e.target.value)} placeholder="Constraints? (can't leave house, very low energy...)" className={`w-full p-2.5 border rounded-lg text-sm ${c.input}`} />
             <input value={disruptDuration} onChange={e => setDisruptDuration(e.target.value)} placeholder="How long will this last? (a day, a week, unknown...)" className={`w-full p-2.5 border rounded-lg text-sm ${c.input}`} />
 
-            <button onClick={handleDisruption} disabled={loading || !disruptType} className={`w-full py-4 rounded-xl font-semibold text-lg ${loading || !disruptType ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : c.btnPrimary}`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '✨'}</span> Building adapted routine...</> : <>🔄 Build my temporary routine</>}</button>
+            <button onClick={handleDisruption} disabled={loading || !disruptType} className={`w-full py-4 rounded-xl font-semibold text-lg ${loading || !disruptType ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '✨'}</span> Building adapted routine...</> : <>🔄 Build my temporary routine</>}</button>
           </div>
         </div>
 

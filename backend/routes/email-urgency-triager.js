@@ -156,9 +156,9 @@ CRITICAL RULES:
 Return ONLY valid JSON.`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 4000,
-      messages: [{ role: 'user', content: prompt }]
+      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }]
     });
 
     const parsed = extractJSON(message);
@@ -234,9 +234,9 @@ RULES:
 Return ONLY valid JSON.`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 2000,
-      messages: [{ role: 'user', content: prompt }]
+      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }]
     });
 
     const parsed = extractJSON(message);
@@ -261,7 +261,7 @@ function extractJSON(message) {
   cleaned = cleaned.substring(firstBrace, lastBrace + 1);
   cleaned = cleaned.replace(/,(\s*[}\]])/g, '$1');
   try {
-    return JSON.parse(cleaned);
+    return JSON.parse(cleanJsonResponse(cleaned));
   } catch (e) {
     console.error('JSON parse error:', e.message);
     throw new Error('Failed to parse response: ' + e.message);

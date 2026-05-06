@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
-const { rateLimit, DEFAULT_LIMITS, DIVERSION_LIMITS } = require('../lib/rateLimiter');
+const { rateLimit} = require('../lib/rateLimiter');
 // ════════════════════════════════════════════════════════════
 // FINAL WISH v3 — Backend Route
 // Seven call types: parse-accounts, parse-financial,
@@ -25,7 +25,9 @@ WHEN PARSING ACCOUNTS/ITEMS:
 - Auto-categorize intelligently.
 - Don't ask for information the user shouldn't put in this document (actual passwords, SSNs, PINs).
 
-FORMAT: Always respond in valid JSON matching the schema requested. No markdown fences, no preamble. Pure JSON only.`;
+FORMAT: Always respond in valid JSON matching the schema requested. No markdown fences, no preamble. Pure JSON only.
+
+Return ONLY valid JSON.`;
 
 // Helper: parse arrays from Claude response (handles both [ and { first)
 function parseArrayResponse(raw) {
@@ -34,7 +36,7 @@ function parseArrayResponse(raw) {
   if (bracket !== -1 && (brace === -1 || bracket < brace)) {
     const arrStr = raw.substring(bracket);
     const lastBracket = arrStr.lastIndexOf(']');
-    return JSON.parse(arrStr.substring(0, lastBracket + 1));
+    return JSON.parse(cleanJsonResponse(arrStr.substring(0, lastBracket + 1)));
   }
   const cleaned = cleanJsonResponse(raw);
   const result = JSON.parse(cleaned);
@@ -69,12 +71,14 @@ Extract each account/service mentioned. For each, determine:
 
 Return JSON array: [{ "name": "...", "category": "...", "priority": "...", "accessNotes": "...", "isSocialMedia": false }]
 
-If no clear accounts found, return an empty array.${lang}`;
+If no clear accounts found, return an empty array.${lang}
+
+Return ONLY valid JSON.`;
 
       const msg = await anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 1500,
-        system: SYSTEM_PROMPT,
+        system: withLanguage(SYSTEM_PROMPT, locale),
         messages: [{ role: 'user', content: prompt }],
       });
 
@@ -96,12 +100,14 @@ If no clear accounts found, return an empty array.${lang}`;
 Extract each financial item. Categorize as: bank, investment, debt, income, insurance.
 Return JSON array: [{ "name": "...", "type": "...", "institution": "...", "notes": "..." }]
 
-If nothing found, return [].${lang}`;
+If nothing found, return [].${lang}
+
+Return ONLY valid JSON.`;
 
       const msg = await anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 1500,
-        system: SYSTEM_PROMPT,
+        system: withLanguage(SYSTEM_PROMPT, locale),
         messages: [{ role: 'user', content: prompt }],
       });
 
@@ -128,12 +134,14 @@ Context:
 
 Write the message in the user's voice based on what they shared. Be specific, not generic. Use their words and details. Keep it authentic — don't inflate emotions beyond what was expressed.
 
-Return JSON: { "draft": "the message text", "lengthWords": number }${lang}`;
+Return JSON: { "draft": "the message text", "lengthWords": number }${lang}
+
+Return ONLY valid JSON.`;
 
       const msg = await anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 1500,
-        system: SYSTEM_PROMPT,
+        system: withLanguage(SYSTEM_PROMPT, locale),
         messages: [{ role: 'user', content: prompt }],
       });
 
@@ -155,12 +163,14 @@ Original message:
 
 Context: Written to ${recipientName || 'someone'} (${relationship || 'relationship not specified'}). Tone: ${tone || 'warm'}.
 
-Return JSON: { "draft": "the adjusted message text" }${lang}`;
+Return JSON: { "draft": "the adjusted message text" }${lang}
+
+Return ONLY valid JSON.`;
 
       const msg = await anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 1500,
-        system: SYSTEM_PROMPT,
+        system: withLanguage(SYSTEM_PROMPT, locale),
         messages: [{ role: 'user', content: prompt }],
       });
 
@@ -210,12 +220,14 @@ Return JSON: {
   "category": "accounts|financial|messages|documents|wishes|general",
   "reasoning": "Why this question matters (1 sentence, shown as a subtle hint)",
   "followUpHint": "What to probe deeper on based on their answer"
-}${lang}`;
+}${lang}
+
+Return ONLY valid JSON.`;
 
       const msg = await anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 500,
-        system: SYSTEM_PROMPT,
+        system: withLanguage(SYSTEM_PROMPT, locale),
         messages: [{ role: 'user', content: prompt }],
       });
 
@@ -260,12 +272,14 @@ Return JSON: {
   "summary": "One sentence overall assessment"
 }
 
-Return 3-8 gaps, prioritized by severity. Be specific to THEIR data, not generic.${lang}`;
+Return 3-8 gaps, prioritized by severity. Be specific to THEIR data, not generic.${lang}
+
+Return ONLY valid JSON.`;
 
       const msg = await anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 1500,
-        system: SYSTEM_PROMPT,
+        system: withLanguage(SYSTEM_PROMPT, locale),
         messages: [{ role: 'user', content: prompt }],
       });
 
@@ -285,12 +299,14 @@ Return 3-8 gaps, prioritized by severity. Be specific to THEIR data, not generic
 Original message (written to ${recipientName || 'someone'}, ${relationship || 'relationship not specified'}):
 "${draft}"
 
-Return JSON: { "translatedDraft": "the translated message", "language": "${targetLanguage}" }`;
+Return JSON: { "translatedDraft": "the translated message", "language": "${targetLanguage}" }
+
+Return ONLY valid JSON.`;
 
       const msg = await anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 2000,
-        system: SYSTEM_PROMPT,
+        system: withLanguage(SYSTEM_PROMPT, locale),
         messages: [{ role: 'user', content: prompt }],
       });
 

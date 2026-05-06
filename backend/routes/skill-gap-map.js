@@ -91,6 +91,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6',
       label: 'SkillGapMap',
       max_tokens: 5000,
       system: withLanguage('You are a career transition strategist who gives brutally specific advice. No generic platitudes. Every recommendation is actionable and specific to this exact transition. You never fabricate URLs — you describe resources by name, author, or search term. Return ONLY valid JSON. No markdown.', userLanguage),
@@ -163,6 +164,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6',
       label: 'SkillGapTimeline',
       max_tokens: 4000,
       system: withLanguage('You are a learning plan designer who builds realistic, week-by-week roadmaps. You understand that people have jobs and lives, and plan accordingly. Return ONLY valid JSON. No markdown.', userLanguage),
@@ -232,6 +234,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6',
       label: 'SkillGapProof',
       max_tokens: 4000,
       system: withLanguage('You are a career portfolio strategist who helps people prove competence without credentials. You think like a hiring manager. Return ONLY valid JSON. No markdown.', userLanguage),
@@ -292,6 +295,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6',
       label: 'SkillGapNetwork',
       max_tokens: 3000,
       system: withLanguage('You are a strategic networking advisor for career transitioners. You give specific, actionable advice about who to connect with and what to say. Return ONLY valid JSON. No markdown.', userLanguage),
@@ -359,6 +363,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6',
       label: 'SkillGapDeep',
       max_tokens: 3500,
       system: withLanguage('You are a skill development coach who creates detailed, stage-by-stage learning plans. Be specific about resources (by name, not URL) and honest about what "good enough" looks like. Return ONLY valid JSON. No markdown.', userLanguage),
@@ -421,6 +426,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6',
       label: 'SkillGapReframe',
       max_tokens: 3500,
       system: withLanguage('You are a resume strategist and career translator who helps people reframe existing experience for new roles. You think like a hiring manager and know what language signals competence in different fields. Return ONLY valid JSON. No markdown.', userLanguage),
@@ -506,6 +512,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6',
       label: 'SkillGapEconomics',
       max_tokens: 3000,
       system: withLanguage('You are a career economics analyst who gives honest financial assessments of career transitions. Use realistic salary data. Never inflate numbers to make a transition look better. Return ONLY valid JSON. No markdown.', userLanguage),
@@ -581,6 +588,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6',
       label: 'SkillGapResume',
       max_tokens: 4000,
       system: withLanguage('You are a resume auditor who has reviewed thousands of career-transition resumes. You know exactly what hiring managers scan for and what triggers an instant rejection. Be direct and specific. Return ONLY valid JSON. No markdown.', userLanguage),
@@ -649,6 +657,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6',
       label: 'SkillGapCompanies',
       max_tokens: 3500,
       system: withLanguage('You are a job search strategist who knows which companies hire career transitioners and which screen them out. Be specific about company types and honest about the odds. Return ONLY valid JSON. No markdown.', userLanguage),
@@ -732,6 +741,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6',
       label: 'SkillGapInterview',
       max_tokens: 4500,
       system: withLanguage('You are an interview coach who specializes in career transitioners. You know the specific questions they face and the landmines they step on. Return ONLY valid JSON. No markdown.', userLanguage),
@@ -803,6 +813,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6',
       label: 'SkillGapCalibrate',
       max_tokens: 3000,
       system: withLanguage('You are a career transition realist who adjusts plans for real life. You are kind but honest — if constraints make a transition significantly harder, you say so while offering solutions. Return ONLY valid JSON. No markdown.', userLanguage),
@@ -866,6 +877,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6',
       label: 'SkillGapExplore',
       max_tokens: 3500,
       system: withLanguage('You are a career exploration advisor who helps people discover realistic career paths based on their current skills. Be creative but honest about difficulty. Return ONLY valid JSON. No markdown.', userLanguage),
@@ -938,6 +950,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6',
       label: 'SkillGapProgress',
       max_tokens: 3000,
       system: withLanguage('You are a career transition coach doing a progress check. Be encouraging but honest — if they are not ready, say so kindly. If they are, celebrate them. Return ONLY valid JSON. No markdown.', userLanguage),
@@ -1013,6 +1026,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6',
       label: 'SkillGapDayLife',
       max_tokens: 4000,
       system: withLanguage('You are a career realist who shows people what jobs actually feel like day-to-day. Not the recruiting pitch — the truth. Return ONLY valid JSON. No markdown.', userLanguage),
@@ -1061,6 +1075,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6',
       label: 'SkillGapOutreach',
       max_tokens: 1500,
       system: withLanguage('You write networking messages that actually get responses. You sound human, specific, and respectful of the recipient\'s time. Return ONLY valid JSON. No markdown.', userLanguage),
@@ -1143,6 +1158,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6',
       label: 'SkillGapDecode',
       max_tokens: 4000,
       system: withLanguage('You are a job posting analyst who decodes what companies actually want vs. what they write. You know the difference between must-haves and wishlist items. Return ONLY valid JSON. No markdown.', userLanguage),
@@ -1211,6 +1227,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6',
       label: 'SkillGapAdjacency',
       max_tokens: 3000,
       system: withLanguage('You are a learning sequence optimizer who maps dependencies between skills. You find the order that minimizes total learning time. Return ONLY valid JSON. No markdown.', userLanguage),
@@ -1250,6 +1267,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
       const parsed = await callClaudeWithRetry(prompt, {
+        model: 'claude-sonnet-4-6',
         label: 'SkillGapMockStart',
         max_tokens: 800,
         system: withLanguage('You are a realistic interviewer for the target role. Return ONLY valid JSON. No markdown.', userLanguage),
@@ -1285,6 +1303,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6',
       label: 'SkillGapMockEval',
       max_tokens: 1500,
       system: withLanguage('You are a supportive but honest interview coach. You evaluate answers realistically and give specific, actionable feedback. Return ONLY valid JSON. No markdown.', userLanguage),
@@ -1346,6 +1365,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6',
       label: 'SkillGapMarket',
       max_tokens: 2500,
       system: withLanguage('You are a labor market analyst who tracks hiring trends and career transition dynamics. Be specific and honest about market conditions. Return ONLY valid JSON. No markdown.', userLanguage),
@@ -1387,6 +1407,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6',
       label: 'SkillGapCelebrate',
       max_tokens: 1000,
       system: withLanguage('You are an encouraging career coach who celebrates milestones with specific, genuine acknowledgment — not empty cheerleading. Return ONLY valid JSON. No markdown.', userLanguage),
@@ -1437,6 +1458,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6',
       label: 'SkillGapNudge',
       max_tokens: 1200,
       system: withLanguage('You are a focused accountability partner who gives one clear assignment per week. Never overwhelming — just the next right step. Return ONLY valid JSON. No markdown.', userLanguage),
@@ -1500,6 +1522,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6',
       label: 'SkillGapMentor',
       max_tokens: 2500,
       system: withLanguage('You are a mentorship strategist who helps career transitioners find exactly the right person to guide them. Return ONLY valid JSON. No markdown.', userLanguage),

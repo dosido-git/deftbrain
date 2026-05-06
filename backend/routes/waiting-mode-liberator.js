@@ -83,7 +83,8 @@ Return ONLY valid JSON:
   "worst_case": "Safety net advice"
 }`, userLanguage);
 
-        const parsed = await callClaudeWithRetry(prompt, { label: 'WML-Liberate', max_tokens: 1800 });
+        const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'WML-Liberate', max_tokens: 1800 });
         return res.json(parsed);
       }
 
@@ -131,7 +132,8 @@ Return ONLY valid JSON:
   "next_nudge": "Gentle suggestion for what to do after this block (or permission to stop)"
 }`, userLanguage);
 
-        const parsed = await callClaudeWithRetry(prompt, { label: 'WML-StartWithMe', max_tokens: 600 });
+        const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'WML-StartWithMe', max_tokens: 600 });
         return res.json(parsed);
       }
 
@@ -163,7 +165,8 @@ Return ONLY valid JSON:
   "momentum_hook": "What they'll probably do next (no pressure)"
 }`, userLanguage);
 
-        const parsed = await callClaudeWithRetry(prompt, { label: 'WML-OneThing', max_tokens: 500 });
+        const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'WML-OneThing', max_tokens: 500 });
         return res.json(parsed);
       }
 
@@ -189,7 +192,8 @@ Return ONLY valid JSON:
   "truth_bomb": "One blunt honest sentence"
 }`, userLanguage);
 
-        const parsed = await callClaudeWithRetry(prompt, { label: 'WML-Reframe', max_tokens: 600 });
+        const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'WML-Reframe', max_tokens: 600 });
         return res.json(parsed);
       }
 
@@ -237,7 +241,8 @@ Return ONLY valid JSON:
   "encouragement": "Genuine specific praise"
 }`, userLanguage);
 
-        const parsed = await callClaudeWithRetry(prompt, { label: 'WML-Debrief', max_tokens: 700 });
+        const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'WML-Debrief', max_tokens: 700 });
         return res.json(parsed);
       }
 
@@ -293,7 +298,8 @@ Return ONLY valid JSON:
   "encouragement": "Genuine specific observation"
 }`, userLanguage);
 
-        const parsed = await callClaudeWithRetry(prompt, { label: 'WML-Review', max_tokens: 1200 });
+        const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'WML-Review', max_tokens: 1200 });
         return res.json(parsed);
       }
 

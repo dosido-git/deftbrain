@@ -6,7 +6,7 @@
 // failure modes, warning signs, and the single most critical prevention.
 
 const express = require('express');
-const { anthropic } = require('../lib/claude');
+const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 const router = express.Router();
@@ -17,7 +17,9 @@ const SYSTEM_PROMPT = `You are a ruthless pre-mortem analyst. Your job is to wri
 
 Your tone is clear-eyed, clinical, and specific. Not cynical for its own sake — genuinely useful. Your goal is to help the person avoid failure by making them feel the failure concretely before they commit.
 
-You must respond with valid JSON only. No markdown. No explanation outside the JSON object.`;
+You must respond with valid JSON only. No markdown. No explanation outside the JSON object.
+
+Return ONLY valid JSON.`;
 
 function buildUserPrompt(plan, planType, stakes, assumptions) {
   const lines = [
@@ -98,9 +100,9 @@ router.post('/pre-mortem', rateLimit(), async (req, res) => {
 
   try {
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 2000,
-      system: SYSTEM_PROMPT,
+      system: withLanguage(SYSTEM_PROMPT, req.body.userLanguage),
       messages: [
         {
           role: 'user',
@@ -122,7 +124,7 @@ router.post('/pre-mortem', rateLimit(), async (req, res) => {
       // regardless of any surrounding text or markdown fences.
       const match = raw.match(/\{[\s\S]*\}/);
       if (!match) throw new Error('No JSON object found in response');
-      data = JSON.parse(match[0]);
+      data = JSON.parse(cleanJsonResponse(match[0]));
     } catch {
       console.error('pre-mortem: JSON parse failed. Raw output:', raw.slice(0, 500));
       return res.status(500).json({ error: 'Failed to parse response. Please try again.' });

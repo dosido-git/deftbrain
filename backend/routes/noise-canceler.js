@@ -115,7 +115,7 @@ Filter this document for what actually matters to this person. Return ONLY valid
 If a section has no items, return an empty array []. Prioritize action_required and costs_you_money — those are what people miss and regret.`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 3500,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],

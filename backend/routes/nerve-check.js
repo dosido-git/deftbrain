@@ -117,9 +117,9 @@ Return ONLY valid JSON:
 Return ONLY valid JSON.`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 2000,
-      messages: [{ role: 'user', content: prompt }],
+      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
     });
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
@@ -169,9 +169,9 @@ Return ONLY valid JSON:
 Return ONLY valid JSON.`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 800,
-      messages: [{ role: 'user', content: prompt }],
+      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
     });
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
@@ -220,9 +220,9 @@ Return ONLY valid JSON:
 Return ONLY valid JSON.`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 800,
-      messages: [{ role: 'user', content: prompt }],
+      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
     });
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
@@ -304,9 +304,9 @@ Return ONLY valid JSON:
 Return ONLY valid JSON.`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 1800,
-      messages: [{ role: 'user', content: prompt }],
+      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
     });
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
@@ -343,9 +343,9 @@ Return ONLY valid JSON:
 Return ONLY valid JSON.`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 300,
-      messages: [{ role: 'user', content: prompt }],
+      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
     });
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
@@ -403,9 +403,9 @@ Return ONLY valid JSON:
 Return ONLY valid JSON.`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 1200,
-      messages: [{ role: 'user', content: prompt }],
+      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
     });
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
@@ -456,9 +456,9 @@ Generate exactly 6 rungs. Rung 1 should be almost trivially easy. Rung 6 should 
 Return ONLY valid JSON.`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 1200,
-      messages: [{ role: 'user', content: prompt }],
+      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
     });
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';

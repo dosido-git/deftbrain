@@ -114,7 +114,7 @@ RULES:
 ${lang}`;
 
     const msg = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 3500,
       system: systemPrompt,
       messages: [{ role: 'user', content: prompt }],
@@ -171,7 +171,7 @@ Answer the follow-up based on full context. Be specific, practical, warm but hon
 CRITICAL: Return ONLY valid JSON: {"answer": "Your full coaching response here"}`;
 
     const msg = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 800,
       system: systemPrompt,
       messages: [{ role: 'user', content: question.trim() + `\n\n${lang}` }],
@@ -222,7 +222,7 @@ CRITICAL: Return ONLY valid JSON:
 }`;
 
     const msg = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 500,
       system: systemPrompt,
       messages: [{ role: 'user', content: `Rewrite at tone level ${toneLevel}/100.\n\n${lang}` }],

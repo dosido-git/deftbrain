@@ -99,7 +99,7 @@ Return ONLY valid JSON:
 }`;
 
     const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 1200,
       messages: [{ role: 'user', content: userPrompt }],
       system: withLanguage(systemPrompt, req.body.userLanguage),

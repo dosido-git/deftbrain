@@ -98,7 +98,7 @@ Return ONLY valid JSON:
 Return ONLY valid JSON.`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 1200,
       system: withLanguage('You are a helpful assistant that responds in the same language as the user.', userLanguage),
       messages: [{ role: 'user', content: prompt }],
@@ -157,7 +157,7 @@ Return ONLY valid JSON:
 Return ONLY valid JSON.`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 1500,
       system: withLanguage('You are a helpful assistant that responds in the same language as the user.', userLanguage),
       messages: [{ role: 'user', content: prompt }],
@@ -206,7 +206,7 @@ Return ONLY valid JSON:
 Return ONLY valid JSON.`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 800,
       system: withLanguage('You are a helpful assistant that responds in the same language as the user.', userLanguage),
       messages: [{ role: 'user', content: prompt }],
@@ -266,7 +266,7 @@ Return ONLY valid JSON:
 Return ONLY valid JSON.`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 800,
       system: withLanguage('You are a helpful assistant that responds in the same language as the user.', userLanguage),
       messages: [{ role: 'user', content: prompt }],
@@ -341,7 +341,7 @@ Return ONLY valid JSON:
 }`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 2000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
@@ -412,7 +412,7 @@ Return ONLY valid JSON:
 }`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 900,
       system: withLanguage('You are a thoughtful relationship coach. Be honest, specific, and avoid generic advice.', userLanguage),
       messages: [{ role: 'user', content: prompt }],
@@ -466,7 +466,7 @@ Return ONLY valid JSON:
 }`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 1000,
       system: withLanguage('You are a direct, honest relationship coach. No fluff — give specific, actionable guidance.', userLanguage),
       messages: [{ role: 'user', content: prompt }],
@@ -523,7 +523,7 @@ Return ONLY valid JSON:
 Return ONLY valid JSON.`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 400,
       system: withLanguage('You are a direct, practical relationship coach. No fluff.', userLanguage),
       messages: [{ role: 'user', content: prompt }],

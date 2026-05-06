@@ -346,7 +346,7 @@ CRITICAL RULES
 6. Return ONLY the JSON object. No markdown, no preamble.`;
 
         return await callClaudeWithRetry({
-          model: 'claude-sonnet-4-20250514',
+          model: 'claude-sonnet-4-6',
           max_tokens: 6000,
           messages: [{ role: 'user', content: prompt }],
         }, { label: 'NameAudit' });
@@ -438,7 +438,7 @@ Be honest and decisive. The client needs clarity, not diplomacy. Return ONLY JSO
 ${langDirective ? `\n${langDirective}` : ''}`;
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 3000,
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'NameAudit/Compare' });
@@ -535,7 +535,7 @@ IMPORTANT:
 Return ONLY valid JSON.`;
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 3500,
       temperature: 0.9,
       messages: [{ role: 'user', content: prompt }],
@@ -603,7 +603,7 @@ Return ONLY this JSON:
 Return ONLY valid JSON.`;
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 2500,
       temperature: 0.95,
       messages: [{ role: 'user', content: prompt }],
@@ -702,7 +702,7 @@ Return ONLY this JSON:
 Return ONLY valid JSON.`;
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 3000,
       temperature: 0.85,
       messages: [{ role: 'user', content: prompt }],
@@ -774,7 +774,7 @@ Return ONLY this JSON:
 Return ONLY valid JSON.`;
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 2500,
       temperature: 1.0,
       messages: [{ role: 'user', content: prompt }],

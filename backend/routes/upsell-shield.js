@@ -75,7 +75,7 @@ Prepare me. Return ONLY valid JSON:
 Generate 5-7 tactics in their playbook and 4-5 power questions.`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],

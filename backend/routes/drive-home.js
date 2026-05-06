@@ -22,7 +22,9 @@ CRITICAL RULES:
 10. If web search results are available about the specific route or current conditions, reference them specifically. If not, work from stated conditions and general knowledge of driving safety.
 11. Do NOT mention psychological conditions or diagnoses. Use plain language: "tired" not "fatigued driver syndrome."
 
-FORMAT: Respond in valid JSON matching the schema exactly. No markdown fences, no preamble. Pure JSON only.`;
+FORMAT: Respond in valid JSON matching the schema exactly. No markdown fences, no preamble. Pure JSON only.
+
+Return ONLY valid JSON.`;
 
 // ════════════════════════════════════════════════════════════
 // ROUTE
@@ -77,11 +79,13 @@ Return this exact JSON structure:
   }
 }
 
-Generate 3-5 watch_for items, 4-6 checklist items, and 2-3 reminders. Tailor everything to this specific drive and conditions.`;
+Generate 3-5 watch_for items, 4-6 checklist items, and 2-3 reminders. Tailor everything to this specific drive and conditions.
+
+Return ONLY valid JSON.`;
 
       // Enable web search for route/condition awareness
       const message = await anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 2000,
         system: withLanguage(SYSTEM_PROMPT, req.body.userLanguage),
         tools: [{ type: 'web_search_20250305', name: 'web_search' }],

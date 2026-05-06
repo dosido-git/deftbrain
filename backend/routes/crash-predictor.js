@@ -292,7 +292,7 @@ Return ONLY the JSON object.`;
       userPrompt,
       {
         label: 'crash-predictor-analyze',
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 5000,
         system: withLanguage(PERSONALITY, userLanguage),
       }
@@ -396,7 +396,7 @@ Be SPECIFIC with numbers and dates. Don't speculate — only report patterns sup
       userPrompt,
       {
         label: 'crash-predictor-patterns',
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 3000,
         system: withLanguage('You are a data analyst specializing in personal health pattern recognition.', userLanguage),
       }

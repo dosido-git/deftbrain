@@ -130,7 +130,7 @@ IMPORTANT RULES:
 Return ONLY the JSON object. No markdown fences, no preamble.`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 4500,
       messages: [{ role: 'user', content: withLanguage(basePrompt, userLanguage) }],
     });
@@ -179,7 +179,7 @@ OUTPUT (JSON only):
 Return ONLY valid JSON.`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 2000,
       messages: [{ role: 'user', content: withLanguage(basePrompt, userLanguage) }],
     });
@@ -193,8 +193,6 @@ Return ONLY valid JSON.`;
     res.status(500).json({ error: error.message || 'Failed to refine letter' });
   }
 });
-
-module.exports = router;
 
 // ═══════════════════════════════════════════════════════════════
 // STREAMING ROUTE — main letter generation
@@ -237,7 +235,7 @@ ADDITIONAL CONTEXT: ${additionalContext || 'None'}
 Generate 3 letter versions (narrative, structured, concise) plus writing_tips, placeholders_to_fill, and power_phrases. Return ONLY valid JSON matching the full schema from the standard ghost-writer endpoint.`, userLanguage);
 
     const stream = await anthropic.messages.stream({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 4500,
       messages: [{ role: 'user', content: prompt }],
     });
@@ -253,3 +251,5 @@ Generate 3 letter versions (narrative, structured, concise) plus writing_tips, p
     res.end();
   }
 });
+
+module.exports = router;

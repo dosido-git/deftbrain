@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse } = require('../lib/claude');
+const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
 const crypto = require('crypto');
 const { rateLimit } = require('../lib/rateLimiter');
 
@@ -18,11 +18,11 @@ function safeParseJSON(text) {
   cleaned = cleaned.substring(firstBrace, lastBrace + 1);
   cleaned = cleaned.replace(/,(\s*[}\]])/g, '$1');
   try {
-    return JSON.parse(cleaned);
+    return JSON.parse(cleanJsonResponse(cleaned));
   } catch (e) {
     cleaned = cleaned.replace(/[\x00-\x1F\x7F]/g, ' ');
     cleaned = cleaned.replace(/([{,]\s*)(\w+)\s*:/g, '$1"$2":');
-    return JSON.parse(cleaned);
+    return JSON.parse(cleanJsonResponse(cleaned));
   }
 }
 
@@ -373,9 +373,9 @@ Return ONLY this JSON:
 
     // ── Call Claude ──
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: maxTokens,
-      messages: [{ role: 'user', content: prompt }]
+      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }]
     });
 
     const textContent = message.content.find(item => item.type === 'text')?.text || '';
@@ -415,9 +415,14 @@ router.post('/the-final-word/share', rateLimit(), (req, res) => {
 
 // Retrieve a shared verdict
 router.get('/the-final-word/share/:id', rateLimit(), (req, res) => {
-  const entry = sharedVerdicts.get(req.params.id);
-  if (!entry) return res.status(404).json({ error: 'Verdict not found or has expired' });
-  res.json({ verdict: entry.verdict, inputSummary: entry.inputSummary });
+  try {
+    const entry = sharedVerdicts.get(req.params.id);
+    if (!entry) return res.status(404).json({ error: 'Verdict not found or has expired' });
+    res.json({ verdict: entry.verdict, inputSummary: entry.inputSummary });
+  } catch (error) {
+    console.error('TheFinalWord share fetch error:', error);
+    res.status(500).json({ error: error.message });
+  }
 });
 
 // ═══════════════════════════════════════════════════
@@ -510,47 +515,52 @@ router.post('/the-final-word/room/:code/join', rateLimit(), (req, res) => {
 
 // Get room state (polling endpoint — NOT rate-limited since it's GET)
 router.get('/the-final-word/room/:code/state', rateLimit(), (req, res) => {
-  const room = rooms.get(req.params.code.toUpperCase());
-  if (!room) return res.status(404).json({ error: 'Room not found' });
+  try {
+    const room = rooms.get(req.params.code.toUpperCase());
+    if (!room) return res.status(404).json({ error: 'Room not found' });
 
-  const playerId = req.query.playerId;
+    const playerId = req.query.playerId;
 
-  // Return sanitized state (hide correct answer if not revealed)
-  const state = {
-    code: room.code,
-    players: room.players.map(p => ({
-      id: p.id,
-      name: p.name,
-      score: p.score,
-      streak: p.streak,
-      bestStreak: p.bestStreak,
-      isHost: p.isHost,
-      answered: p.answered,
-    })),
-    settings: room.settings,
-    questionNumber: room.questionNumber,
-    started: room.started,
-    finished: room.finished,
-    revealed: room.revealed,
-    currentQuestion: room.currentQuestion ? {
-      question: room.currentQuestion.question,
-      options: room.currentQuestion.options,
-      category_label: room.currentQuestion.category_label,
-      difficulty_actual: room.currentQuestion.difficulty_actual,
-      // Only include answer data if revealed
-      ...(room.revealed ? {
-        correct_index: room.currentQuestion.correct_index,
-        correct_answer: room.currentQuestion.correct_answer,
-        explanation: room.currentQuestion.explanation,
-      } : {}),
-    } : null,
-    myAnswer: room.answers[playerId] ?? null,
-    allAnswered: room.players.every(p => p.answered),
-    categoryBreakdown: room.categoryBreakdown,
-    updatedAt: room.updatedAt,
-  };
+    // Return sanitized state (hide correct answer if not revealed)
+    const state = {
+      code: room.code,
+      players: room.players.map(p => ({
+        id: p.id,
+        name: p.name,
+        score: p.score,
+        streak: p.streak,
+        bestStreak: p.bestStreak,
+        isHost: p.isHost,
+        answered: p.answered,
+      })),
+      settings: room.settings,
+      questionNumber: room.questionNumber,
+      started: room.started,
+      finished: room.finished,
+      revealed: room.revealed,
+      currentQuestion: room.currentQuestion ? {
+        question: room.currentQuestion.question,
+        options: room.currentQuestion.options,
+        category_label: room.currentQuestion.category_label,
+        difficulty_actual: room.currentQuestion.difficulty_actual,
+        // Only include answer data if revealed
+        ...(room.revealed ? {
+          correct_index: room.currentQuestion.correct_index,
+          correct_answer: room.currentQuestion.correct_answer,
+          explanation: room.currentQuestion.explanation,
+        } : {}),
+      } : null,
+      myAnswer: room.answers[playerId] ?? null,
+      allAnswered: room.players.every(p => p.answered),
+      categoryBreakdown: room.categoryBreakdown,
+      updatedAt: room.updatedAt,
+    };
 
-  res.json(state);
+    res.json(state);
+  } catch (error) {
+    console.error('TheFinalWord room state error:', error);
+    res.status(500).json({ error: error.message });
+  }
 });
 
 // Host: generate next question
@@ -595,9 +605,9 @@ Return ONLY this JSON — no other text:
 {"question":"...","options":["A","B","C","D"],"correct_index":0,"correct_answer":"...","explanation":"1 sentence why + 1 fun fact","difficulty_actual":"easy|medium|hard","category_label":"specific sub-category"}`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 500,
-      messages: [{ role: 'user', content: prompt }]
+      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }]
     });
 
     const textContent = message.content.find(item => item.type === 'text')?.text || '';
@@ -745,10 +755,10 @@ Return ONLY valid JSON:
 }`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage),
-      messages: [{ role: 'user', content: userPrompt }],
+      messages: [{ role: 'user', content: withLanguage(userPrompt, userLanguage) }],
     });
 
     const text = message.content.find(b => b.type === 'text')?.text || '';

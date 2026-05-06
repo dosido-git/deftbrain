@@ -76,11 +76,13 @@ Respond ONLY with valid JSON in this exact format:
     {"label": "Thread title", "prompt_hint": "What to explore"}
   ],
   "share_snippet": "A single punchy sentence version perfect for texting a friend"
-}`, locale);
+}
+
+Return ONLY valid JSON.`, locale);
 
   try {
     const msg = await withRetry(() => anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 2000,
       messages: [{ role: 'user', content: prompt }],
     }));
@@ -119,11 +121,13 @@ Respond ONLY with valid JSON:
     {"label": "Thread title", "prompt_hint": "What to explore"},
     {"label": "Thread title", "prompt_hint": "What to explore"}
   ]
-}`, locale);
+}
+
+Return ONLY valid JSON.`, locale);
 
   try {
     const msg = await withRetry(() => anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 1500,
       messages: [{ role: 'user', content: prompt }],
     }));
@@ -162,11 +166,13 @@ Respond ONLY with valid JSON:
       "spin_prompt": "The exact topic string to feed into a new spin (specific enough to get a focused result)"
     }
   ]
-}`, locale);
+}
+
+Return ONLY valid JSON.`, locale);
 
   try {
     const msg = await withRetry(() => anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 800,
       messages: [{ role: 'user', content: prompt }],
     }));
@@ -212,11 +218,13 @@ Respond ONLY with valid JSON:
     {"label": "Next thread title (question format)", "prompt_hint": "What to explore"},
     {"label": "Next thread title", "prompt_hint": "What to explore"}
   ]
-}`, locale);
+}
+
+Return ONLY valid JSON.`, locale);
 
   try {
     const msg = await withRetry(() => anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 1500,
       messages: [{ role: 'user', content: prompt }],
     }));
@@ -261,11 +269,13 @@ Respond ONLY with valid JSON:
   "mind_blown": "One final jaw-dropping implication or follow-on fact",
   "share_snippet": "A one-sentence teaser perfect for texting a friend",
   "topic_tag": "2-3 word tag for deduplication (e.g. 'gladiator vegetarian diet')"
-}`, locale);
+}
+
+Return ONLY valid JSON.`, locale);
 
   try {
     const msg = await withRetry(() => anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 1500,
       messages: [{ role: 'user', content: prompt }],
     }));
@@ -306,11 +316,13 @@ Respond ONLY with valid JSON:
     { "step_number": 5, "title": "...", "teaser": "...", "prompt_hint": "..." },
     { "step_number": 6, "title": "...", "teaser": "...", "prompt_hint": "..." }
   ]
-}`, locale);
+}
+
+Return ONLY valid JSON.`, locale);
 
   try {
     const msg = await withRetry(() => anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 1000,
       messages: [{ role: 'user', content: prompt }],
     }));
@@ -359,11 +371,13 @@ Respond ONLY with valid JSON:
     }
   ],
   "next_hook": "One teaser sentence hinting at what's coming in the next step (omit on final step)"
-}`, locale);
+}
+
+Return ONLY valid JSON.`, locale);
 
   try {
     const msg = await withRetry(() => anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 1200,
       messages: [{ role: 'user', content: prompt }],
     }));
@@ -431,11 +445,13 @@ Respond ONLY with valid JSON:
     }
   ],
   "signoff": "A short, warm closing line (vary daily)"
-}`, locale);
+}
+
+Return ONLY valid JSON.`, locale);
 
   try {
     const msg = await withRetry(() => anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 2000,
       messages: [{ role: 'user', content: prompt }],
     }));

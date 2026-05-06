@@ -214,9 +214,9 @@ Generate psychological insights that promote understanding and healing.
 Return ONLY the JSON object.`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 3500,
-      messages: [{role: 'user', content: prompt}]
+      messages: [{role: 'user', content: withLanguage(prompt, userLanguage)}]
     });
 
     let jsonText = message.content[0].text.trim();
@@ -234,7 +234,7 @@ Return ONLY the JSON object.`;
     
     let results;
     try {
-      results = JSON.parse(jsonText);
+      results = JSON.parse(cleanJsonResponse(jsonText));
     } catch (parseError) {
       console.error('JSON Parse Error:', parseError.message);
       // Try repair: remove control chars, fix trailing commas
@@ -243,7 +243,7 @@ Return ONLY the JSON object.`;
         .replace(/,\s*}/g, '}')
         .replace(/,\s*]/g, ']');
       try {
-        results = JSON.parse(repaired);
+        results = JSON.parse(cleanJsonResponse(repaired));
       } catch (retryError) {
         const pos = parseInt(parseError.message.match(/position (\d+)/)?.[1] || '0');
         if (pos > 0) {
@@ -506,9 +506,9 @@ Generate insights promoting healing and sleep health.
 Return ONLY the JSON object.`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 4000,
-      messages: [{role: 'user', content: prompt}]
+      messages: [{role: 'user', content: withLanguage(prompt, userLanguage)}]
     });
 
     let jsonText = message.content[0].text.trim();
@@ -526,7 +526,7 @@ Return ONLY the JSON object.`;
     
     let results;
     try {
-      results = JSON.parse(jsonText);
+      results = JSON.parse(cleanJsonResponse(jsonText));
     } catch (parseError) {
       console.error('JSON Parse Error:', parseError.message);
       let repaired = jsonText
@@ -534,7 +534,7 @@ Return ONLY the JSON object.`;
         .replace(/,\s*}/g, '}')
         .replace(/,\s*]/g, ']');
       try {
-        results = JSON.parse(repaired);
+        results = JSON.parse(cleanJsonResponse(repaired));
       } catch (retryError) {
         const pos = parseInt(parseError.message.match(/position (\d+)/)?.[1] || '0');
         if (pos > 0) {

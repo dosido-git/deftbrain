@@ -194,6 +194,7 @@ Return ONLY valid JSON:
 ${schema}`;
 
       const parsed = await callClaudeWithRetry(prompt, {
+        model: 'claude-sonnet-4-6',
         label: 'CrisisPrioritize', max_tokens: 4000,
         system: withLanguage(SYSTEM_PROMPT, userLanguage)
       });
@@ -229,6 +230,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
       const parsed = await callClaudeWithRetry(prompt, {
+        model: 'claude-sonnet-4-6',
         label: 'CrisisDump', max_tokens: 2000,
         system: withLanguage('Task extraction specialist. Pull actionable items from messy text. Warm tone. Return ONLY valid JSON.', userLanguage)
       });
@@ -273,6 +275,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
       const parsed = await callClaudeWithRetry(prompt, {
+        model: 'claude-sonnet-4-6',
         label: 'CrisisRetriage', max_tokens: 1500,
         system: withLanguage(SYSTEM_PROMPT, userLanguage)
       });
@@ -311,6 +314,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
       const parsed = await callClaudeWithRetry(prompt, {
+        model: 'claude-sonnet-4-6',
         label: 'CrisisFollowUp', max_tokens: 1000,
         system: withLanguage('Triage follow-up analyst. Warm, honest, pattern-aware. Return ONLY valid JSON.', userLanguage)
       });
@@ -345,6 +349,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
       const parsed = await callClaudeWithRetry(prompt, {
+        model: 'claude-sonnet-4-6',
         label: 'CrisisDelegate', max_tokens: 800,
         system: withLanguage('Delegation messaging expert. Clear, kind, efficient. Return ONLY valid JSON.', userLanguage)
       });
@@ -387,6 +392,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
       const parsed = await callClaudeWithRetry(prompt, {
+        model: 'claude-sonnet-4-6',
         label: 'CrisisPattern', max_tokens: 1500,
         system: withLanguage('Crisis pattern analyst. Insightful, warm, not judgmental. Find the patterns humans can\'t see in their own behavior. Return ONLY valid JSON.', userLanguage)
       });
@@ -453,6 +459,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
       const parsed = await callClaudeWithRetry(prompt, {
+        model: 'claude-sonnet-4-6',
         label: 'CrisisTimeBlock', max_tokens: 3000,
         system: withLanguage('Time management expert who builds realistic, humane schedules. You know people underestimate task duration by 50%, so you pad accordingly. Return ONLY valid JSON.', userLanguage)
       });
@@ -502,6 +509,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
       const parsed = await callClaudeWithRetry(prompt, {
+        model: 'claude-sonnet-4-6',
         label: 'CrisisOneAction', max_tokens: 800,
         system: withLanguage('Crisis de-escalation specialist. When someone is paralyzed, you cut through the noise and give them one clear action. Minimal words, maximum clarity. Return ONLY valid JSON.', userLanguage)
       });
@@ -548,6 +556,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
       const parsed = await callClaudeWithRetry(prompt, {
+        model: 'claude-sonnet-4-6',
         label: 'CrisisTaskSplit', max_tokens: 1500,
         system: withLanguage('Task decomposition expert. You see the hidden tasks inside vague to-dos. Specific, actionable, honest time estimates. Return ONLY valid JSON.', userLanguage)
       });
@@ -595,6 +604,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
       const parsed = await callClaudeWithRetry(prompt, {
+        model: 'claude-sonnet-4-6',
         label: 'CrisisAccountability', max_tokens: 800,
         system: withLanguage('Accountability messaging expert. You draft clear, confident plans that invite support without sounding needy. Return ONLY valid JSON.', userLanguage)
       });
@@ -660,6 +670,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
       const parsed = await callClaudeWithRetry(prompt, {
+        model: 'claude-sonnet-4-6',
         label: 'CrisisRollingUpdate', max_tokens: 2500,
         system: withLanguage(SYSTEM_PROMPT + '\nYou are updating an ongoing crisis management plan. Be honest about progress while maintaining hope.', userLanguage)
       });
@@ -705,6 +716,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
       const parsed = await callClaudeWithRetry(prompt, {
+        model: 'claude-sonnet-4-6',
         label: 'CrisisDashboard', max_tokens: 1000,
         system: withLanguage('Data analyst who turns crisis triage history into encouraging, actionable insights. Return ONLY valid JSON.', userLanguage)
       });

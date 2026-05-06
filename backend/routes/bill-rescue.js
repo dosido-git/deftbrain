@@ -235,7 +235,7 @@ Return ONLY valid JSON with ALL applicable sections:
     // the bill image path requires a multipart content array (image + text blocks).
     // callClaudeWithRetry accepts a string prompt only. Refactor when lib supports multipart.
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 4000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userContent }],
@@ -443,7 +443,7 @@ Return ONLY valid JSON.`
     // NOTE: Uses anthropic.messages.create directly (not callClaudeWithRetry) because
     // rehearsal requires a multi-turn conversation history array, not a single string prompt.
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 1000,
       system: withLanguage(systemPrompt, userLanguage),
       messages,

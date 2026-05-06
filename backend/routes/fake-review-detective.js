@@ -41,7 +41,9 @@ SCORING GUIDELINES:
 - 20-39: Probably fake. Multiple red flags — generic language, suspicious timing, no verification
 - 0-19: Almost certainly fake. Reads like marketing copy, part of a posting cluster, no genuine user signals
 
-Be calibrated. Not every 5-star review is fake. Not every short review is suspicious. Use the pre-computed signals AND your language analysis together. Be specific in your red_flags and green_flags — cite exact phrases or patterns you noticed.`;
+Be calibrated. Not every 5-star review is fake. Not every short review is suspicious. Use the pre-computed signals AND your language analysis together. Be specific in your red_flags and green_flags — cite exact phrases or patterns you noticed.
+
+Return ONLY valid JSON.`;
 
         const reviewList = reviews.map(r => {
           return `[Review #${r.index}]
@@ -85,7 +87,7 @@ Return ONLY valid JSON with this exact structure:
 Score EVERY review. Verdicts must be: "likely_fake" (score 0-39), "uncertain" (40-59), or "likely_genuine" (60-100).`;
 
         const message = await anthropic.messages.create({
-          model: 'claude-sonnet-4-20250514',
+          model: 'claude-sonnet-4-6',
           max_tokens: 2500,
           system: withLanguage(systemPrompt, userLanguage),
           messages: [{ role: 'user', content: userPrompt }],
@@ -124,7 +126,9 @@ IMPORTANT:
 - Don't fearmonger. Some products genuinely have lots of positive reviews.
 - The purchase recommendation should be based on what the GENUINE reviews say about the product.
 - The trust_score (0-100) represents overall trustworthiness of this review SET.
-- For the playbook: identify specific named tactics (review seeding, review bombing, incentivized reviews, competitive sabotage, template farming, etc.) and explain what to look for next time.`;
+- For the playbook: identify specific named tactics (review seeding, review bombing, incentivized reviews, competitive sabotage, template farming, etc.) and explain what to look for next time.
+
+Return ONLY valid JSON.`;
 
         const scoreSummary = scores.map(s =>
           `Review #${s.index}: score=${s.authenticity_score}, verdict=${s.verdict}, flags=[${(s.red_flags || []).join('; ')}]`
@@ -196,7 +200,7 @@ Return ONLY valid JSON:
 }`;
 
         const message = await anthropic.messages.create({
-          model: 'claude-sonnet-4-20250514',
+          model: 'claude-sonnet-4-6',
           max_tokens: 2500,
           system: withLanguage(systemPrompt, userLanguage),
           messages: [{ role: 'user', content: userPrompt }],
@@ -229,7 +233,9 @@ ANALYZE THESE DIMENSIONS:
 
 GROUP reviews that appear linked. A group means "likely same author or same template." Provide specific evidence for each group. Not every review needs to be in a group — solo reviews are fine.
 
-Be precise. Don't flag reviews as linked just because they're both positive or both short. The fingerprint needs to be in the LANGUAGE itself.`;
+Be precise. Don't flag reviews as linked just because they're both positive or both short. The fingerprint needs to be in the LANGUAGE itself.
+
+Return ONLY valid JSON.`;
 
         const reviewTexts = reviews.map(r => {
           const sc = scores?.find(s => s.index === r.index);
@@ -263,7 +269,7 @@ Return ONLY valid JSON:
 }`;
 
         const message = await anthropic.messages.create({
-          model: 'claude-sonnet-4-20250514',
+          model: 'claude-sonnet-4-6',
           max_tokens: 2000,
           system: withLanguage(systemPrompt, userLanguage),
           messages: [{ role: 'user', content: userPrompt }],
@@ -292,7 +298,9 @@ KEY PRINCIPLES:
 3. Identify platform-specific manipulation: Some platforms are easier to manipulate than others.
 4. Give a unified "real" recommendation that weighs all sources appropriately.
 5. Identify disagreements between sources and explain why they might differ.
-6. Be specific about which source you trust most and why.`;
+6. Be specific about which source you trust most and why.
+
+Return ONLY valid JSON.`;
 
         const sourceSummaries = sources.map((s, i) => `
 [SOURCE ${i + 1}: ${s.sourceName || 'Unknown'}]
@@ -338,7 +346,7 @@ Return ONLY valid JSON:
 }`;
 
         const message = await anthropic.messages.create({
-          model: 'claude-sonnet-4-20250514',
+          model: 'claude-sonnet-4-6',
           max_tokens: 2000,
           system: withLanguage(systemPrompt, userLanguage),
           messages: [{ role: 'user', content: userPrompt }],
@@ -449,10 +457,12 @@ OUTPUT FORMAT:
 First line: PRODUCT: [name or "Unknown"]
 Second line: CATEGORY: [Electronics, Home & Kitchen, Beauty, Fashion, Sports, Books, Health, Food, Toys, Automotive, or Other]
 Third line: REVIEWS_FOUND: [count]
-Then blank line, then the reviews.`;
+Then blank line, then the reviews.
+
+Return ONLY valid JSON.`;
 
         const message = await anthropic.messages.create({
-          model: 'claude-sonnet-4-20250514',
+          model: 'claude-sonnet-4-6',
           max_tokens: 8000,
           system: withLanguage(systemPrompt, userLanguage),
           messages: [{ role: 'user', content: `Extract all customer reviews from this page content:\n\n${contentForClaude}` }],

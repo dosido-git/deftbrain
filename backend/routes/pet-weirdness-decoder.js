@@ -73,7 +73,7 @@ Return ONLY this JSON:
     content.push({ type: 'text', text: prompt });
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 2500,
       system: systemPrompt,
       messages: [{ role: 'user', content }]
@@ -89,7 +89,7 @@ Return ONLY this JSON:
       const raw = textContent.trim().replace(/```json\n?/g, '').replace(/```\n?/g, '');
       const first = raw.indexOf('{'); const last = raw.lastIndexOf('}');
       if (first === -1 || last === -1) throw new Error('No JSON found');
-      parsed = JSON.parse(raw.substring(first, last + 1));
+      parsed = JSON.parse(cleanJsonResponse(raw.substring(first, last + 1)));
     }
 
     res.json(parsed);
@@ -151,7 +151,7 @@ Answer the follow-up based on context. Be specific, practical, warm.
     content.push({ type: 'text', text: question.trim() });
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 800,
       system: systemPrompt,
       messages: [{ role: 'user', content }]

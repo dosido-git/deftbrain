@@ -1,4 +1,38 @@
 # backend_audit_v1.py
+# v1.5 · 2026-05-06 · two scoping fixes:
+#                     (1) S7.1 withLanguage import requirement now gated on
+#                         actual Anthropic usage. Previously fired on every
+#                         route file — wrong for ElevenLabs/image/etc.
+#                         third-party API wrappers that don't need locale.
+#                     (2) S7.4 withLanguage call-count parity now compares
+#                         against Anthropic call count, not route count.
+#                         Multi-route tools where only some routes call
+#                         Anthropic (the-final-word: 10 routes, 3 API calls)
+#                         no longer false-positive on the 7 non-API routes.
+# v1.4 · 2026-05-06 · S7.4a JSON.parse peephole extended to recognize
+#                     transitively-clean variables. Catches sophisticated
+#                     retry-with-repair patterns (e.g. `const repaired =
+#                     repairJSON(cleaned); JSON.parse(repaired)`) and method
+#                     access on clean idents (`JSON.parse(cleaned.slice(...))`).
+#                     Builds a fixpoint set of clean vars in the lookback
+#                     window — direct cleanJsonResponse assignments seed it,
+#                     derived assignments iterate to convergence.
+# v1.3 · 2026-05-06 · S7.1 unused-import check now exempts the required-presence
+#                     imports (`withLanguage`, `cleanJsonResponse`). Pre-v1.3 the
+#                     audit was internally inconsistent: it recommended removing
+#                     these when unused, then flagged them as missing if removed.
+#                     Their actual usage is enforced separately by S7.4 call-count
+#                     parity (withLanguage) and S7.4a wrap check (cleanJsonResponse).
+# v1.2 · 2026-05-06 · S7.4a JSON.parse check now recognizes the two-step
+#                     idiom (`const cleaned = cleanJsonResponse(text);
+#                     JSON.parse(cleaned)`) as safe. v1.1 flagged these as
+#                     unwrapped because the captured arg `cleaned` doesn't
+#                     contain the text `cleanJsonResponse` — produced ~56
+#                     false positives across the catalog. New peephole
+#                     mirrors the logic in wrap_json_parse.py v1.1: bare
+#                     identifier args whose nearest prior assignment within
+#                     40 lines was `<name> = cleanJsonResponse(...)` are
+#                     exempt.
 # v1.1 · 2026-05-04 · two false-positive corrections after first catalog run:
 #                     (1) DROPPED the ${lang}/${langDirective} interpolation
 #                     check entirely. The codebase has TWO sanctioned conventions
@@ -213,16 +247,33 @@ def audit_file(filepath):
     # Whether the route uses JSON.parse — only then is cleanJsonResponse required
     uses_json_parse = re.search(r'\bJSON\.parse\b', no_comments) is not None
 
+    # Whether the file calls Anthropic at all — only then is withLanguage required.
+    # Routes that wrap third-party APIs (ElevenLabs, image generation, etc.) don't
+    # need locale plumbing.
+    uses_anthropic = bool(re.search(
+        r'\banthropic\.messages\.create\b|\bcallClaudeWithRetry\b',
+        no_comments,
+    ))
+
     if uses_json_parse and 'cleanJsonResponse' not in no_comments:
         fails.append('S7.1: cleanJsonResponse not imported — JSON.parse will crash on markdown-fenced responses')
 
-    if 'withLanguage' not in no_comments:
+    if uses_anthropic and 'withLanguage' not in no_comments:
         fails.append('S7.1: withLanguage not imported — required for locale support')
 
-    # Unused destructured imports — check the common packages
+    # Unused destructured imports — check the common packages.
+    # NOTE: required-presence imports (withLanguage, cleanJsonResponse) are
+    # exempt from this check because removing them creates an S7.1 "not
+    # imported" violation. Their actual usage is enforced separately by
+    # S7.4 call-count parity for withLanguage and S7.4a wrap check for
+    # cleanJsonResponse. Pre-v1.2 the audit recommended removing them when
+    # unused, then flagged them as missing — internally inconsistent.
+    REQUIRED_PRESENCE_IMPORTS = {'withLanguage', 'cleanJsonResponse'}
     for pkg in ['../lib/claude', '../lib/rateLimiter']:
         names = get_destructured_names(no_comments, pkg)
         for name in names:
+            if name in REQUIRED_PRESENCE_IMPORTS:
+                continue
             # Count occurrences of the bare identifier (word-boundary match)
             occurrences = len(re.findall(r'\b' + re.escape(name) + r'\b', no_comments))
             # Should appear at least twice: once in import, once in use
@@ -302,33 +353,110 @@ def audit_file(filepath):
 
         # cleanJsonResponse wrapping every JSON.parse
         if uses_json_parse:
-            # Count bare JSON.parse calls (not wrapped by cleanJsonResponse)
-            # A wrapped call looks like: JSON.parse(cleanJsonResponse(...))
-            # An unwrapped call looks like: JSON.parse(text) where text is anything else
-            parse_calls = re.findall(r'JSON\.parse\s*\(\s*([^)]{0,120})', no_comments)
-            unwrapped = [p for p in parse_calls if 'cleanJsonResponse' not in p]
+            # Count bare JSON.parse calls (not wrapped by cleanJsonResponse).
+            #
+            # A call is considered safe if EITHER:
+            #   (a) literal: JSON.parse(cleanJsonResponse(...))
+            #   (b) two-step idiom: a bare identifier whose nearest prior
+            #       assignment in the file was `<name> = cleanJsonResponse(...)`
+            #       — common pattern: `const cleaned = cleanJsonResponse(text);
+            #                          const parsed  = JSON.parse(cleaned);`
+            # The two-step is functionally equivalent — the cleaning happened
+            # before parse. v1.1 of wrap_json_parse.py preserves this idiom;
+            # the audit must recognize it too or it generates false positives.
+            BARE_IDENT = re.compile(r'^[A-Za-z_$][\w$]*$')
+            CLEAN_VAR_LOOKBACK_LINES = 40
+
+            def _arg_is_clean_var(arg, parse_pos_in_no_comments):
+                """Return True if `arg` is provably clean — i.e. derived
+                (possibly transitively) from a cleanJsonResponse call.
+
+                Recognizes:
+                  (a) bare ident assigned `<id> = cleanJsonResponse(...)`
+                  (b) bare ident transitively derived from a clean var,
+                      e.g. `const repaired = repairJSON(cleaned)` where
+                      `cleaned` is itself clean
+                  (c) method/property access on a clean ident, e.g.
+                      `cleaned.slice(...)`, `cleaned.trim()`, `cleaned[0]`
+                """
+                arg = arg.strip()
+                head = no_comments[:parse_pos_in_no_comments]
+                lines = head.split('\n')
+                window = (lines[-CLEAN_VAR_LOOKBACK_LINES:]
+                          if len(lines) > CLEAN_VAR_LOOKBACK_LINES else lines)
+
+                # Build set of clean vars in scope by sweeping the window.
+                # Seed with direct cleanJsonResponse assignments.
+                clean = set()
+                direct_re = re.compile(
+                    r'\b([A-Za-z_$][\w$]*)\s*=\s*cleanJsonResponse\s*\('
+                )
+                for line in window:
+                    for m in direct_re.finditer(line):
+                        clean.add(m.group(1))
+
+                # Then iterate adding derived vars: any `X = <expr>` where
+                # <expr> contains a clean var as a bare token. Iterate to
+                # fixpoint to handle chains like A→B→C.
+                deriv_re = re.compile(
+                    r'\b([A-Za-z_$][\w$]*)\s*=\s*([^;]+);?'
+                )
+                for _ in range(5):  # cap iterations
+                    changed = False
+                    for line in window:
+                        for m in deriv_re.finditer(line):
+                            lhs, rhs = m.group(1), m.group(2)
+                            if lhs in clean or 'cleanJsonResponse' in rhs:
+                                continue
+                            # Tokenize RHS and check if any token is a clean var
+                            tokens = re.findall(r'\b[A-Za-z_$][\w$]*\b', rhs)
+                            if any(t in clean for t in tokens):
+                                clean.add(lhs)
+                                changed = True
+                    if not changed:
+                        break
+
+                # Now check the arg
+                if BARE_IDENT.match(arg):
+                    return arg in clean
+                # Method/property access: leading ident before . or [
+                m = re.match(r'^([A-Za-z_$][\w$]*)[\.\[]', arg)
+                if m:
+                    return m.group(1) in clean
+                return False
+
+            unwrapped = 0
+            for m in re.finditer(r'JSON\.parse\s*\(\s*([^)]{0,120})', no_comments):
+                captured = m.group(1)
+                if 'cleanJsonResponse' in captured:
+                    continue
+                if _arg_is_clean_var(captured, m.start()):
+                    continue
+                unwrapped += 1
             if unwrapped:
                 fails.append(
-                    f'S7.4: {len(unwrapped)} JSON.parse call(s) not wrapped in cleanJsonResponse — '
+                    f'S7.4: {unwrapped} JSON.parse call(s) not wrapped in cleanJsonResponse — '
                     f'will crash on markdown-fenced responses'
                 )
 
-        # withLanguage call count vs route count
-        # NOTE (v1.1): this single check now subsumes both calling conventions:
+        # withLanguage call count vs API call count
+        # NOTE (v1.5): compare against api_call_count, not route_count.
+        # Some routes don't call Anthropic (e.g. /room/create dispatchers in
+        # multi-role tools, third-party-API wrappers) and don't need
+        # withLanguage. The semantic requirement is "every Anthropic call
+        # has locale plumbing."
+        # NOTE (v1.1): this single check subsumes both calling conventions:
         #   Pattern A (decision-coach):   const lang = withLanguage(locale)
         #   Pattern B (apology-calibrator): system: withLanguage(systemPrompt, userLanguage)
-        # Both shapes increment this count. The previous v1.0 check that also
-        # required ${lang}/${langDirective} interpolation was over-strict —
-        # Pattern B never interpolates. Removed in v1.1.
+        api_call_count = len(re.findall(r'(?:anthropic\.messages\.create|callClaudeWithRetry)\s*\(', no_comments))
         with_lang_calls = len(re.findall(r'\bwithLanguage\s*\(', no_comments))
-        if with_lang_calls < route_count:
+        if with_lang_calls < api_call_count:
             fails.append(
-                f'S7.4: {route_count} route(s) but only {with_lang_calls} withLanguage() call(s) — '
-                f'every route must call withLanguage'
+                f'S7.4: {api_call_count} Anthropic call(s) but only {with_lang_calls} withLanguage() call(s) — '
+                f'every API call must wrap its prompt with withLanguage'
             )
 
         # max_tokens presence on every API call
-        api_call_count = len(re.findall(r'(?:anthropic\.messages\.create|callClaudeWithRetry)\s*\(', no_comments))
         max_tokens_count = len(re.findall(r'max_tokens\s*:', no_comments))
         if max_tokens_count < api_call_count:
             fails.append(
@@ -353,14 +481,13 @@ def audit_file(filepath):
     # ───────────────────────────────────────────────────────────────────────
 
     if is_api_caller:
-        # "CRITICAL: Return ONLY valid JSON." count parity
-        # Match common phrasings: "Return ONLY valid JSON" / "Return ONLY a JSON" /
-        # "Return ONLY the JSON". The pattern allows reasonable variations while
-        # still requiring the literal "Return ONLY".
+        # "CRITICAL: Return ONLY valid JSON." count parity — compare against
+        # the number of API calls, not the route count. Non-API routes have
+        # no prompts and therefore no place for this directive (v1.5 scope fix).
         return_only_count = len(re.findall(r'Return ONLY[^\n]{0,40}JSON', no_comments))
-        if return_only_count < route_count:
+        if return_only_count < api_call_count:
             fails.append(
-                f'S7.6: {route_count} route(s) but only {return_only_count} prompt(s) include '
+                f'S7.6: {api_call_count} API call(s) but only {return_only_count} prompt(s) include '
                 f'"Return ONLY ... JSON" — model may wrap responses in markdown without this'
             )
 

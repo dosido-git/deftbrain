@@ -100,7 +100,7 @@ Trace back to find the gap. Return ONLY valid JSON:
 The prerequisite_chain should have 3-6 items, ordered from most foundational (level 1) to the target concept. Mark the most likely gap with high gap_likelihood.`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 3500,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
@@ -165,7 +165,7 @@ Provide a focused refresher. Return ONLY valid JSON:
 Include 2-3 practice problems, ordered easy → hard.`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 3000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],

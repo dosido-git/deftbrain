@@ -107,6 +107,7 @@ RULES:
 - Return ONLY the JSON object`, userLanguage);
 
   const parsed = await callClaudeWithRetry(prompt, {
+    model: 'claude-sonnet-4-6',
     label: 'gpg-generate',
     max_tokens: 2000,
   });
@@ -144,6 +145,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
   const parsed = await callClaudeWithRetry(prompt, {
+    model: 'claude-sonnet-4-6',
     label: 'gpg-regenerate',
     max_tokens: 800,
   });
@@ -183,6 +185,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
   const parsed = await callClaudeWithRetry(prompt, {
+    model: 'claude-sonnet-4-6',
     label: 'gpg-reflect',
     max_tokens: 800,
   });
@@ -256,6 +259,7 @@ Return ONLY valid JSON:
 Only include domains in domain_breakdown that appear in their history.`, userLanguage);
 
   const parsed = await callClaudeWithRetry(prompt, {
+    model: 'claude-sonnet-4-6',
     label: 'gpg-review',
     max_tokens: 1500,
   });
@@ -295,6 +299,7 @@ Return ONLY valid JSON:
 Steps should be 4-6 total. Keep each instruction to 1-2 sentences max. Practical, grounded, calm.`, userLanguage);
 
   const parsed = await callClaudeWithRetry(prompt, {
+    model: 'claude-sonnet-4-6',
     label: 'gpg-countdown',
     max_tokens: 800,
   });
@@ -351,6 +356,7 @@ Set current_position to the rung that matches their current capacity and comfort
 estimated_scariness should use scale 1-5 and increase progressively (not necessarily one per rung).`, userLanguage);
 
   const parsed = await callClaudeWithRetry(prompt, {
+    model: 'claude-sonnet-4-6',
     label: 'gpg-ladder',
     max_tokens: 1500,
   });
@@ -453,6 +459,7 @@ Return ONLY valid JSON:
 Patterns should be cross-domain insights (e.g., "Social-professional crossover: comfortable one-on-one but scared in groups"). 2-3 patterns max. Be specific and insightful, not generic.`, userLanguage);
 
   const parsed = await callClaudeWithRetry(prompt, {
+    model: 'claude-sonnet-4-6',
     label: 'gpg-inventory',
     max_tokens: 1200,
   });

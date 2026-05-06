@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
-const { rateLimit, DEFAULT_LIMITS, DIVERSION_LIMITS } = require('../lib/rateLimiter');
+const { rateLimit} = require('../lib/rateLimiter');
 // ════════════════════════════════════════════════════════════
 // SIX DEGREES OF ME v2 — Backend
 // v1: chain, flip, surprise, profile-prompt

@@ -82,9 +82,9 @@ Rules:
 - how_to_pay_less must be actionable for this specific item, not generic advice`;
 
     const response = await anthropic.messages.create({
-      model: 'claude-opus-4-5',
+      model: 'claude-opus-4-7',
       max_tokens: 1200,
-      messages: [{ role: 'user', content: userPrompt }],
+      messages: [{ role: 'user', content: withLanguage(userPrompt, userLanguage) }],
       system: systemPrompt,
     });
 

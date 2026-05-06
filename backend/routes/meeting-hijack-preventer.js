@@ -322,15 +322,17 @@ ${selectedTemplate === 'one-on-one' ? `One-on-One Template:
 - Buffer (5 min)` : ''}
 ` : ''}
 
-Focus especially on addressing these challenges: ${challengeList.join(', ') || 'general meeting effectiveness'}`;
+Focus especially on addressing these challenges: ${challengeList.join(', ') || 'general meeting effectiveness'}
+
+Return ONLY valid JSON.`;
 
     // Call Claude API
     const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 4000,
       messages: [{
         role: 'user',
-        content: prompt
+        content: withLanguage(prompt, userLanguage)
       }]
     });
 
@@ -344,14 +346,14 @@ Focus especially on addressing these challenges: ${challengeList.join(', ') || '
 
     let results;
     try {
-      results = JSON.parse(jsonMatch[0]);
+      results = JSON.parse(cleanJsonResponse(jsonMatch[0]));
     } catch (parseError) {
       // Try cleaning common issues
       let cleaned = jsonMatch[0]
         .replace(/,\s*}/g, '}')
         .replace(/,\s*]/g, ']')
         .replace(/[\x00-\x1F\x7F]/g, ' ');
-      results = JSON.parse(cleaned);
+      results = JSON.parse(cleanJsonResponse(cleaned));
     }
 
     // Validate required fields

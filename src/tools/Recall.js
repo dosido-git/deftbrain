@@ -77,22 +77,21 @@ const Recall = ({ tool }) => {
                           : 'border-cyan-600 bg-cyan-100 text-cyan-900',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500'
                           : 'border-gray-300 text-gray-500 hover:border-gray-400',
+    tipBg:         isDark ? 'bg-cyan-900/20 border-cyan-700' : 'bg-cyan-50 border-cyan-200',
+    tipText:       isDark ? 'text-cyan-300' : 'text-cyan-700',
+    inset:         isDark ? 'bg-zinc-700/60' : 'bg-slate-100',
+    badge:         isDark ? 'bg-zinc-600 text-zinc-200' : 'bg-zinc-100 text-zinc-600',
+    defBg:         isDark ? 'bg-fuchsia-900/30 text-fuchsia-300' : 'bg-fuchsia-50 text-fuchsia-700',
+    procBg:        isDark ? 'bg-sky-900/30 text-sky-300'         : 'bg-sky-50 text-sky-700',
+    factBg:        isDark ? 'bg-amber-900/30 text-amber-300'     : 'bg-amber-50 text-amber-700',
+    histBg:        isDark ? 'bg-zinc-700/30 border-zinc-600'     : 'bg-slate-50 border-slate-200',
+    histCard:      isDark ? 'bg-zinc-700/50 border-zinc-600'     : 'bg-white border-slate-200',
+    cardAltBg:     isDark ? 'bg-zinc-700/40 border-zinc-600'     : 'bg-slate-50 border-slate-200',
+    cardAltText:   isDark ? 'text-zinc-300' : 'text-gray-600',
+    warnText:      isDark ? 'text-amber-300' : 'text-amber-700',
   };
   c.textMuteded = c.textMuted;
   c.label       = c.labelText;
-  // Recall-specific extensions
-  c.tipBg        = isDark ? 'bg-cyan-900/20 border-cyan-700' : 'bg-cyan-50 border-cyan-200';
-  c.tipText      = isDark ? 'text-cyan-300' : 'text-cyan-700';
-  c.inset        = isDark ? 'bg-zinc-700/60' : 'bg-slate-100';
-  c.badge        = isDark ? 'bg-zinc-600 text-zinc-200' : 'bg-zinc-100 text-zinc-600';
-  c.defBg        = isDark ? 'bg-purple-900/30 text-purple-300' : 'bg-purple-50 text-purple-700';
-  c.procBg       = isDark ? 'bg-blue-900/30 text-blue-300'    : 'bg-blue-50 text-blue-700';
-  c.factBg       = isDark ? 'bg-amber-900/30 text-amber-300'  : 'bg-amber-50 text-amber-700';
-  c.histBg       = isDark ? 'bg-zinc-700/30 border-zinc-600'  : 'bg-slate-50 border-slate-200';
-  c.histCard     = isDark ? 'bg-zinc-700/50 border-zinc-600'  : 'bg-white border-slate-200';
-  c.cardAltBg    = isDark ? 'bg-zinc-700/40 border-zinc-600'  : 'bg-slate-50 border-slate-200';
-  c.cardAltText  = isDark ? 'text-zinc-300' : 'text-gray-600';
-  c.warnText     = isDark ? 'text-amber-300' : 'text-amber-700';
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
@@ -188,6 +187,14 @@ const Recall = ({ tool }) => {
     setTranscript(''); setSubject(''); setLectureTitle('');
     setResults(null); setError(''); setShowAnswers({});
     setLectures([{ title: '', transcript: '' }, { title: '', transcript: '' }]);
+  }, [setResults]);
+
+  const loadExample = useCallback(() => {
+    setMode('distill');
+    setSubject('Cognitive Psychology');
+    setLectureTitle('Memory Systems Overview');
+    setTranscript(`Today we covered the three-stage model of memory: sensory memory, short-term memory, and long-term memory. Sensory memory holds incoming sensory information for fractions of a second — iconic memory for visual stimuli lasts about 250 milliseconds, and echoic memory for auditory stimuli lasts about 3-4 seconds. Information that is attended to passes into short-term memory, also called working memory, which has a capacity of about 7 plus or minus 2 chunks and a duration of around 18-30 seconds without rehearsal. To move information into long-term memory, it must be encoded — typically through elaborative rehearsal, which links new information to existing knowledge. Long-term memory itself splits into declarative (explicit) memory, which includes semantic memory for facts and episodic memory for events, and non-declarative (implicit) memory, which includes procedural memory for skills and conditioned responses. The hippocampus plays a central role in consolidating new declarative memories, but does not store them long-term — that happens in the cortex. Damage to the hippocampus, as in patient H.M., produces anterograde amnesia: the inability to form new long-term memories, while leaving older memories and procedural learning intact. Forgetting is explained by several mechanisms: decay over time, retrieval failure (memory is there but inaccessible), and interference from similar information. The forgetting curve, first described by Ebbinghaus in 1885, shows that we forget about half of new information within an hour, but spaced repetition dramatically slows this curve.`);
+    setResults(null); setError(''); setShowAnswers({});
   }, [setResults]);
 
   // ── buildFullText ──
@@ -419,15 +426,23 @@ const Recall = ({ tool }) => {
         )}
       </div>
 
-      <button onClick={submit} disabled={loading || !canSubmit}
-        className={`w-full ${c.btnPrimary} disabled:opacity-40 py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all min-h-[48px]`}>
-        {loading
-          ? <><span className="animate-spin inline-block">{tool?.icon ?? '⚙️'}</span> Processing lecture…</>
-          : mode === 'distill'     ? <><span>{tool?.icon ?? '🎯'}</span> Distill Key Points</>
-          : mode === 'study_guide' ? <><span>{tool?.icon ?? '📝'}</span> Generate Study Guide</>
-          : mode === 'test_prep'   ? <><span>{tool?.icon ?? '🧪'}</span> Generate Practice Questions</>
-          : <><span>{tool?.icon ?? '🔗'}</span> Find Connections</>}
-      </button>
+      <div className="flex gap-2">
+        <button onClick={submit} disabled={loading || !canSubmit}
+          className={`flex-1 ${c.btnPrimary} disabled:opacity-40 py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all min-h-[48px]`}>
+          {loading
+            ? <><span className="animate-spin inline-block">{tool?.icon ?? '🧠'}</span> Processing lecture…</>
+            : mode === 'distill'     ? <><span>{tool?.icon ?? '🧠'}</span> Distill Key Points</>
+            : mode === 'study_guide' ? <><span>{tool?.icon ?? '🧠'}</span> Generate Study Guide</>
+            : mode === 'test_prep'   ? <><span>{tool?.icon ?? '🧠'}</span> Generate Practice Questions</>
+            : <><span>{tool?.icon ?? '🧠'}</span> Find Connections</>}
+        </button>
+        {!transcript.trim() && mode !== 'connect' && (
+          <button onClick={loadExample} disabled={loading}
+            className={`px-4 py-4 rounded-2xl text-sm font-bold ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>
+            📝 Try an example
+          </button>
+        )}
+      </div>
       <p className={`text-xs text-center ${c.textMuted}`}>
         Thoughts still jumbled?{' '}
         <a href="/BrainDumpBuddy" className={linkStyle}>🧠 Brain Dump Buddy</a>

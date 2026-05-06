@@ -56,7 +56,8 @@ Return ONLY valid JSON:
   "debate_context": { "user_side": "Brief label", "ai_side": "Brief label", "core_tension": "Fundamental disagreement in one sentence" }
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, { label: 'DebateOpen', max_tokens: 2500,
+    const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'DebateOpen', max_tokens: 2500,
       system: withLanguage(`Steelman debate partner. Intellectually honest, real evidence, genuine respect. Coach not adversary. ${challengeLevel === 'no-mercy' ? 'Intellectually relentless.' : ''} ${format === 'socratic' || format === 'cross-exam' ? 'QUESTIONS ONLY — never make statements or assertions.' : ''} Return ONLY valid JSON. No markdown.`, userLanguage) });
     res.json(parsed);
   } catch (error) {
@@ -100,7 +101,8 @@ Return ONLY valid JSON:
   "momentum": { "assessment": "user_stronger | ai_stronger | even | shifting", "note": "internal assessment" }
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, { label: 'DebateRespond', max_tokens: 2000,
+    const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'DebateRespond', max_tokens: 2000,
       system: withLanguage(`Steelman debate partner. Concede strong points. Flag fallacies. Press forward. ${format === 'socratic' || format === 'cross-exam' ? 'QUESTIONS ONLY.' : ''} Return ONLY valid JSON. No markdown.`, userLanguage) });
     res.json(parsed);
   } catch (error) {
@@ -131,7 +133,8 @@ Return ONLY valid JSON:
   "switch_context": { "user_now_argues": "${oldAiSide}", "ai_now_argues": "${oldUserSide}" }
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, { label: 'DebateSwitch', max_tokens: 2000,
+    const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'DebateSwitch', max_tokens: 2000,
       system: withLanguage('Side-switching debate partner. Argue their former position better than they did. Return ONLY valid JSON. No markdown.', userLanguage) });
     res.json(parsed);
   } catch (error) {
@@ -168,7 +171,8 @@ Return ONLY valid JSON:
   "coaching_note": "one specific actionable piece of advice"
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, { label: 'DebateScorecard', max_tokens: 2500,
+    const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'DebateScorecard', max_tokens: 2500,
       system: withLanguage('Debate coach. Honest, warm, specific. Coaching not grading. Return ONLY valid JSON. No markdown.', userLanguage) });
     res.json(parsed);
   } catch (error) {
@@ -192,7 +196,8 @@ POSITION: "${position.trim()}" | LEVEL: ${challengeLevel || 'rigorous'}
 Return ONLY valid JSON:
 { "counter": "2-3 paragraphs, the best single argument against", "the_question": "one question they must answer", "steelman_label": "opposing label", "strength_acknowledged": "what they get right", "go_deeper": "most interesting angle for full debate" }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, { label: 'DebateQuick', max_tokens: 1500,
+    const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'DebateQuick', max_tokens: 1500,
       system: withLanguage('Quick debate challenger. One punch. Steelman only. Return ONLY valid JSON. No markdown.', userLanguage) });
     res.json(parsed);
   } catch (error) {
@@ -225,7 +230,8 @@ Return ONLY valid JSON:
   "evidence_hint": "type of evidence that would be powerful"
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, { label: 'DebateCoach', max_tokens: 1500,
+    const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'DebateCoach', max_tokens: 1500,
       system: withLanguage('Debate coach. Suggest angles not arguments. Help them think, not think for them. Return ONLY valid JSON. No markdown.', userLanguage) });
     res.json(parsed);
   } catch (error) {
@@ -274,7 +280,8 @@ Return ONLY valid JSON:
   "emotional_vs_logical": "Which side used emotion more effectively? Which used logic? Which worked better for persuasion?"
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, { label: 'DebateAudienceJudge', max_tokens: 2000,
+    const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'DebateAudienceJudge', max_tokens: 2000,
       system: withLanguage('Undecided audience member judging a debate on persuasiveness, not correctness. Fair, specific, thoughtful. Return ONLY valid JSON. No markdown.', userLanguage) });
     res.json(parsed);
   } catch (error) {
@@ -329,7 +336,8 @@ Return ONLY valid JSON:
   "structural_note": "One observation about the overall shape of the debate — e.g., 'You built wide (many arguments) but not deep (little evidence for each)'"
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, { label: 'DebateArgumentMap', max_tokens: 2500,
+    const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'DebateArgumentMap', max_tokens: 2500,
       system: withLanguage('Argument structure analyst. Map the logical structure of debates into trees. Precise, analytical, visual. Return ONLY valid JSON. No markdown.', userLanguage) });
     res.json(parsed);
   } catch (error) {
@@ -377,7 +385,8 @@ Return ONLY valid JSON:
   }
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, { label: 'DebatePrep', max_tokens: 2500,
+    const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'DebatePrep', max_tokens: 2500,
       system: withLanguage('Devil\'s advocate prep coach. Simulate specific audiences and drill on their hardest objections. Practical, specific, actionable. Return ONLY valid JSON. No markdown.', userLanguage) });
     res.json(parsed);
   } catch (error) {
@@ -426,7 +435,8 @@ Return ONLY valid JSON:
   "topic": "what topic this covers"
 }`}`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, { label: 'DebateFallacyTrain', max_tokens: 1500,
+    const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'DebateFallacyTrain', max_tokens: 1500,
       system: withLanguage('Fallacy training instructor. Create clear, educational exercises. At easy difficulty, fallacies are obvious. At hard, they\'re sophisticated and subtle. Always educational. Return ONLY valid JSON. No markdown.', userLanguage) });
     res.json(parsed);
   } catch (error) {
@@ -464,7 +474,8 @@ Return ONLY valid JSON:
   "stronger_version": "How to make the same point with better support — or what to say instead if the claim doesn't hold up."
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, { label: 'DebateSourceCheck', max_tokens: 1500,
+    const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'DebateSourceCheck', max_tokens: 1500,
       system: withLanguage('Evidence evaluator. Assess claims for factual accuracy and evidence quality. Honest, specific, educational. Return ONLY valid JSON. No markdown.', userLanguage) });
     res.json(parsed);
   } catch (error) {
@@ -503,7 +514,8 @@ Return ONLY valid JSON:
   "debate_context": { "user_side": "their position", "ai_side": "opposing", "core_tension": "the fundamental tension" }
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, { label: 'DebateRematch', max_tokens: 2500,
+    const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'DebateRematch', max_tokens: 2500,
       system: withLanguage('Rematch debate partner. You have intelligence on their previous weaknesses. Target them specifically. Still fair, still steelman — but surgically aimed at their growth areas. Return ONLY valid JSON. No markdown.', userLanguage) });
     res.json(parsed);
   } catch (error) {
@@ -549,7 +561,8 @@ Return ONLY valid JSON:
   }
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, { label: 'DebateHighlightReel', max_tokens: 2500,
+    const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'DebateHighlightReel', max_tokens: 2500,
       system: withLanguage('Meta-analyst of debating patterns. You find patterns across multiple debates that no single scorecard reveals. Insightful, specific, growth-oriented. Return ONLY valid JSON. No markdown.', userLanguage) });
     res.json(parsed);
   } catch (error) {

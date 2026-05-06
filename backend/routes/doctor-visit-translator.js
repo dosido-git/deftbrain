@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic } = require('../lib/claude');
+const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 router.post('/doctor-visit-translator', rateLimit(), async (req, res) => {
@@ -221,9 +221,9 @@ Return ONLY the JSON object.`;
       : prompt;
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 5000,
-      messages: [{ role: 'user', content: userContent }]
+      messages: [{ role: 'user', content: withLanguage(userContent, userLanguage) }]
     });
 
     let jsonText = message.content[0].text.trim();
@@ -241,7 +241,7 @@ Return ONLY the JSON object.`;
     
     let results;
     try {
-      results = JSON.parse(jsonText);
+      results = JSON.parse(cleanJsonResponse(jsonText));
     } catch (parseError) {
       console.error('JSON Parse Error:', parseError.message);
       const pos = parseInt(parseError.message.match(/position (\d+)/)?.[1] || '0');
@@ -312,9 +312,9 @@ Requirements:
 - The illustration should look like something from a patient-education brochure, not a programmer's sketch`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 3500,
-      messages: [{ role: 'user', content: prompt }],
+      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
     });
 
     const text = message.content[0]?.text?.trim() || '';

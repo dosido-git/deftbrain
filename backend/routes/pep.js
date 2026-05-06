@@ -66,7 +66,8 @@ Return ONLY valid JSON:
   }
 }`, userLanguage);
 
-        const parsed = await callClaudeWithRetry(prompt, { label: 'DMB-Generate', max_tokens: 1200 });
+        const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'DMB-Generate', max_tokens: 1200 });
         return res.json(parsed);
       }
 
@@ -96,7 +97,8 @@ Return ONLY valid JSON:
   "category": "quick_hit|medium_recharge|deep_reset"
 }`, userLanguage);
 
-        const parsed = await callClaudeWithRetry(prompt, { label: 'DMB-JustDo', max_tokens: 400 });
+        const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'DMB-JustDo', max_tokens: 400 });
         return res.json(parsed);
       }
 
@@ -122,7 +124,8 @@ Return ONLY valid JSON:
   ]
 }`, userLanguage);
 
-        const parsed = await callClaudeWithRetry(prompt, { label: 'DMB-BuildMenu', max_tokens: 1000 });
+        const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'DMB-BuildMenu', max_tokens: 1000 });
         return res.json(parsed);
       }
 
@@ -144,7 +147,8 @@ Return ONLY valid JSON:
   "wildcard": { "activity": "Something unexpected.", "why": "..." }
 }`, userLanguage);
 
-        const parsed = await callClaudeWithRetry(prompt, { label: 'DMB-Swap', max_tokens: 600 });
+        const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'DMB-Swap', max_tokens: 600 });
         return res.json(parsed);
       }
 
@@ -170,7 +174,8 @@ Return ONLY valid JSON:
   "pattern_hint": "If history reveals a pattern, mention it. null otherwise."
 }`, userLanguage);
 
-        const parsed = await callClaudeWithRetry(prompt, { label: 'DMB-Rate', max_tokens: 300 });
+        const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'DMB-Rate', max_tokens: 300 });
         return res.json(parsed);
       }
 
@@ -193,7 +198,8 @@ Return ONLY valid JSON:
   "gap_note": "Is their menu missing something for this state? Brief note or null."
 }`, userLanguage);
 
-        const parsed = await callClaudeWithRetry(prompt, { label: 'DMB-Match', max_tokens: 600 });
+        const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'DMB-Match', max_tokens: 600 });
         return res.json(parsed);
       }
 
@@ -216,7 +222,8 @@ Return ONLY valid JSON:
   "best_insight": "The single most useful pattern observation."
 }`, userLanguage);
 
-        const parsed = await callClaudeWithRetry(prompt, { label: 'DMB-Patterns', max_tokens: 600 });
+        const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'DMB-Patterns', max_tokens: 600 });
         return res.json(parsed);
       }
 
@@ -231,7 +238,8 @@ Return ONLY valid JSON:
 Return ONLY valid JSON:
 { "message": "The invitation message." }`, userLanguage);
 
-        const parsed = await callClaudeWithRetry(prompt, { label: 'DMB-Nudge', max_tokens: 200 });
+        const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'DMB-Nudge', max_tokens: 200 });
         return res.json(parsed);
       }
 
@@ -257,7 +265,8 @@ Return ONLY valid JSON:
   "recommendation": "One specific actionable suggestion."
 }`, userLanguage);
 
-        const parsed = await callClaudeWithRetry(prompt, { label: 'DMB-Insights', max_tokens: 500 });
+        const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'DMB-Insights', max_tokens: 500 });
         return res.json(parsed);
       }
 
@@ -284,7 +293,8 @@ Return ONLY valid JSON:
   "completion_feeling": "How they'll feel when done."
 }`, userLanguage);
 
-        const parsed = await callClaudeWithRetry(prompt, { label: 'DMB-Sequence', max_tokens: 700 });
+        const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'DMB-Sequence', max_tokens: 700 });
         return res.json(parsed);
       }
 
@@ -303,7 +313,8 @@ Return ONLY valid JSON:
   "suggested_activity": { "activity": "...", "why": "...", "duration": "..." }
 }`, userLanguage);
 
-        const parsed = await callClaudeWithRetry(prompt, { label: 'DMB-Checkin', max_tokens: 300 });
+        const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'DMB-Checkin', max_tokens: 300 });
         return res.json(parsed);
       }
 
@@ -328,7 +339,8 @@ Return ONLY valid JSON:
   "first_step": "The literal next thing to do."
 }`, userLanguage);
 
-        const parsed = await callClaudeWithRetry(prompt, { label: 'DMB-Debt', max_tokens: 400 });
+        const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'DMB-Debt', max_tokens: 400 });
         return res.json(parsed);
       }
 
@@ -379,7 +391,8 @@ Return ONLY valid JSON:
   "tomorrow_note": "What deferred tasks mean for tomorrow. Brief."
 }`, userLanguage);
 
-        const parsed = await callClaudeWithRetry(prompt, { label: 'DMB-Budget', max_tokens: 800 });
+        const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'DMB-Budget', max_tokens: 800 });
         return res.json(parsed);
       }
 
@@ -442,7 +455,8 @@ Return ONLY valid JSON:
   "capacity_note": "If over-committed: what to cut. If fine: what's still available."
 }`, userLanguage);
 
-        const parsed = await callClaudeWithRetry(prompt, { label: 'DMB-Forecast', max_tokens: 1200 });
+        const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'DMB-Forecast', max_tokens: 1200 });
         return res.json(parsed);
       }
 
@@ -462,7 +476,8 @@ Return ONLY valid JSON:
   "alternative_offer": "A smaller alternative to suggest, or null."
 }`, userLanguage);
 
-        const parsed = await callClaudeWithRetry(prompt, { label: 'DMB-Decline', max_tokens: 300 });
+        const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'DMB-Decline', max_tokens: 300 });
         return res.json(parsed);
       }
 
@@ -506,7 +521,8 @@ Return ONLY valid JSON:
   "encouragement": "Brief, genuine encouragement. Not generic positivity — specific to what you see."
 }`, userLanguage);
 
-        const parsed = await callClaudeWithRetry(prompt, { label: 'DMB-RadarCheckin', max_tokens: 500 });
+        const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'DMB-RadarCheckin', max_tokens: 500 });
         return res.json(parsed);
       }
 
@@ -551,7 +567,8 @@ Return ONLY valid JSON:
   "reality_check": "The honest overall picture in 2-3 sentences."
 }`, userLanguage);
 
-        const parsed = await callClaudeWithRetry(prompt, { label: 'DMB-RadarAnalyze', max_tokens: 1000 });
+        const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'DMB-RadarAnalyze', max_tokens: 1000 });
         return res.json(parsed);
       }
 
@@ -597,7 +614,8 @@ Return ONLY valid JSON:
   "reality_check": "Honest, warm reassurance. 'You're not failing — your routine is disrupted and you're adapting. That's strength.'"
 }`, userLanguage);
 
-        const parsed = await callClaudeWithRetry(prompt, { label: 'DMB-Disruption', max_tokens: 800 });
+        const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'DMB-Disruption', max_tokens: 800 });
         return res.json(parsed);
       }
 

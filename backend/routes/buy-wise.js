@@ -193,7 +193,7 @@ Return ONLY valid JSON with ALL applicable sections. Set sections to null if the
 }`;
 
     const msg = await withRetry(() => anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 4000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
@@ -256,7 +256,7 @@ Recommend the best option(s) within this budget. Return ONLY valid JSON:
 }`;
 
     const msg = await withRetry(() => anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 2000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
@@ -301,7 +301,7 @@ Answer thoroughly. Return ONLY valid JSON:
 }`;
 
     const msg = await withRetry(() => anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 1500,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
@@ -357,7 +357,7 @@ When is the best time to buy ${category}? Map out the full year. Return ONLY val
 Include all 12 months in the calendar array.`;
 
     const msg = await withRetry(() => anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
@@ -420,7 +420,7 @@ If you cannot identify the product, set identified to false and explain in recom
     ];
 
     const message = await withRetry(() => anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 1500,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content }],
@@ -476,7 +476,7 @@ Return ONLY valid JSON:
 }`;
 
     const msg = await withRetry(() => anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 1500,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
@@ -539,7 +539,7 @@ Review this haul as a whole. Return ONLY valid JSON:
 }`;
 
     const msg = await withRetry(() => anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
@@ -646,7 +646,7 @@ Return ONLY valid JSON:
 }`;
 
     const msg = await withRetry(() => anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 3000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],

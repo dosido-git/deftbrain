@@ -141,7 +141,7 @@ Build a complete multi-stage escalation campaign. Return ONLY valid JSON (no mar
     const lang = withLanguage(userLanguage);
 
     const msg1 = await withRetry(() => anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 8000,
       messages: [{ role: 'user', content: `${prompt}\n\n${lang}` }],
     }));
@@ -212,7 +212,7 @@ Return ONLY valid JSON:
 
     const lang = withLanguage(userLanguage);
     const msg2 = await withRetry(() => anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 4000,
       messages: [{ role: 'user', content: `${prompt}\n\n${lang}` }],
     }));
@@ -275,7 +275,7 @@ ${stageFormats[targetStage] || stageFormats[3]}`;
 
     const lang = withLanguage(userLanguage);
     const msg3 = await withRetry(() => anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 4000,
       messages: [{ role: 'user', content: `${prompt}\n\n${lang}` }],
     }));
@@ -332,7 +332,7 @@ Return ONLY valid JSON with situation_assessment, legal_leverage, evidence_check
     for (let attempt = 0; attempt <= 3; attempt++) {
       try {
         stream = await anthropic.messages.stream({
-          model: 'claude-sonnet-4-20250514',
+          model: 'claude-sonnet-4-6',
           max_tokens: 8000,
           messages: [{ role: 'user', content: prompt }],
         });

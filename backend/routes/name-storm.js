@@ -412,9 +412,9 @@ CRITICAL RULES
 7. Return ONLY the JSON. No markdown, no preamble.`;
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: isDomainMode ? 6000 : 7000,
-      messages: [{ role: 'user', content: prompt }],
+      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
     }, { label: 'NameStorm' });
 
     // Normalize: ensure all problems fields are arrays (AI sometimes returns null or strings)
@@ -510,9 +510,9 @@ Return ONLY this JSON:
 Same rules: check every name for problems in major languages, phonetic issues, brand conflicts. Be creative — don't just add prefixes/suffixes to the original. Return ONLY JSON.`;
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 3000,
-      messages: [{ role: 'user', content: prompt }],
+      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
     }, { label: 'NameStorm/More' });
 
     // Normalize problems arrays
@@ -662,9 +662,9 @@ RULES:
 8. Return ONLY valid JSON.`;
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 6000,
-      messages: [{ role: 'user', content: prompt }],
+      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
     }, { label: 'NameStorm/Blend' });
 
     // Normalize problems arrays
@@ -757,10 +757,10 @@ For "problems", flag issues like the original tool does:
 Return ONLY valid JSON.`;
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 3000,
       temperature: 0.9,
-      messages: [{ role: 'user', content: prompt }],
+      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
     }, { label: 'NameStorm/Refine' });
 
     // Normalize problems arrays
@@ -829,10 +829,10 @@ The story should:
 Return ONLY valid JSON.`;
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 2000,
       temperature: 0.8,
-      messages: [{ role: 'user', content: prompt }],
+      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
     }, { label: 'NameStorm/Story' });
 
     res.json(parsed);
@@ -889,10 +889,10 @@ Return ONLY valid JSON:
 }`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 2000,
       system: withLanguage(systemPrompt, userLanguage),
-      messages: [{ role: 'user', content: userPrompt }],
+      messages: [{ role: 'user', content: withLanguage(userPrompt, userLanguage) }],
     });
 
     const text = message.content.find(b => b.type === 'text')?.text || '';

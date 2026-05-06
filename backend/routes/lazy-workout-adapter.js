@@ -74,7 +74,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
     const message = await anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 2000,
         system: withLanguage('Low-pressure movement coach. Any movement counts. Never guilt-trip. Warm, casual, zero-judgment. Return ONLY valid JSON. No markdown.', userLanguage),
         messages: [{ role: 'user', content: prompt }],
@@ -107,7 +107,7 @@ Return ONLY valid JSON:
   "after": "what to notice after" }`, userLanguage);
 
     const message = await anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 1000,
         system: withLanguage('Gentle movement guide. 2 minutes is a win. Return ONLY valid JSON. No markdown.', userLanguage),
         messages: [{ role: 'user', content: prompt }],
@@ -142,7 +142,7 @@ Return ONLY valid JSON:
   "weekly_note": "warm note (success != 7/7)" }`, userLanguage);
 
     const message = await anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 3000,
         system: withLanguage('Low-pressure weekly planner. Menu, not mandate. Return ONLY valid JSON. No markdown.', userLanguage),
         messages: [{ role: 'user', content: prompt }],
@@ -167,7 +167,7 @@ router.post('/lazy-workout-adapter-adapt', rateLimit(), async (req, res) => {
     const prompt = withLanguage(`Adapt "${exercise}" ${direction === 'easier' ? 'DOWN' : 'UP'}. ${context ? `Context: "${context}"` : ''}
 Return ONLY valid JSON: { "adapted": { "name": "n", "how": "instructions", "change": "what changed" }, "message": "brief note" }`, userLanguage);
     const message = await anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 600,
         system: withLanguage('Movement adapter. Return ONLY valid JSON. No markdown.', userLanguage),
         messages: [{ role: 'user', content: prompt }],
@@ -189,7 +189,7 @@ router.post('/lazy-workout-adapter-swap', rateLimit(), async (req, res) => {
     const prompt = withLanguage(`Replace "${exercise}" — same area, different feel. Area: ${bodyArea || 'general'} | Energy: ${energy || '5'}/10
 Return ONLY valid JSON: { "replacement": { "name": "n", "duration": "t", "how": "instructions", "why_instead": "reason", "do_while": "multitask" }, "message": "no guilt" }`, userLanguage);
     const message = await anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 600,
         system: withLanguage('Exercise swapper. No guilt. Return ONLY valid JSON. No markdown.', userLanguage),
         messages: [{ role: 'user', content: prompt }],
@@ -215,7 +215,7 @@ Return ONLY valid JSON:
   "movements": [{ "name": "n", "duration": "t", "how": "gentle instructions", "feels_like": "sensation", "caution": "or null" }],
   "after_note": "improvement", "prevention_tip": "daily tip" }`, userLanguage);
     const message = await anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 1500,
         system: withLanguage('Targeted relief guide. Physical therapist, not trainer. Return ONLY valid JSON. No markdown.', userLanguage),
         messages: [{ role: 'user', content: prompt }],
@@ -237,7 +237,7 @@ router.post('/lazy-workout-adapter-complete', rateLimit(), async (req, res) => {
     const prompt = withLanguage(`Movement done. Celebrate warmly, not over-the-top. ${completedExercises || '?'}/${totalExercises || '?'} (${pct}%). Energy: ${energyBefore || '?'}→${energyAfter || '?'}. Duration: ${duration || '?'} min. Streak: ${streak || 1}. Total: ${totalSessions || 1}. Type: ${sessionType || 'workout'}. Milestones at 7/14/30 streak, 10/25/50 total. 2-3 sentences.
 Return ONLY valid JSON: { "message": "celebration", "energy_note": "or null", "milestone": "or null", "streak_status": "${streak || 1} day streak", "suggestion": "or null" }`, userLanguage);
     const message = await anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 500,
         system: withLanguage('Movement celebration. Warm, brief, real. Return ONLY valid JSON. No markdown.', userLanguage),
         messages: [{ role: 'user', content: prompt }],
@@ -266,7 +266,7 @@ Return ONLY valid JSON:
   "consistency": { "sessions_per_week": "avg", "trend": "increasing|stable|decreasing", "wins": "positive" },
   "personal_tip": "one actionable tip from THEIR data" }`, userLanguage);
     const message = await anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 1500,
         system: withLanguage('Movement analyst. Useful self-knowledge. Warm. Return ONLY valid JSON. No markdown.', userLanguage),
         messages: [{ role: 'user', content: prompt }],
@@ -300,7 +300,7 @@ Return ONLY valid JSON:
   "total_active_time": "total seconds", "message": "warm note about how this adds up" }`, userLanguage);
 
     const message = await anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 1500,
         system: withLanguage('Environment stacking expert. Layer movement onto activities. Invisible, effortless. Return ONLY valid JSON. No markdown.', userLanguage),
         messages: [{ role: 'user', content: prompt }],
@@ -333,7 +333,7 @@ Return ONLY valid JSON:
   "sleep_tip": "one thing to remember" }`, userLanguage);
 
     const message = await anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 1500,
         system: withLanguage('Sleep preparation guide. Calm, gentle, progressive. Goal is sleep. Return ONLY valid JSON. No markdown.', userLanguage),
         messages: [{ role: 'user', content: prompt }],
@@ -367,7 +367,7 @@ Return ONLY valid JSON:
   "prevention": "if recurring, one thing to try. null if one-off" }`, userLanguage);
 
     const message = await anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 1500,
         system: withLanguage('Recovery designer. First aid for the body after life happens. Warm, holistic. Return ONLY valid JSON. No markdown.', userLanguage),
         messages: [{ role: 'user', content: prompt }],
@@ -402,7 +402,7 @@ Return ONLY valid JSON:
   "honest_note": "warm honest observation" }`, userLanguage);
 
     const message = await anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 1500,
         system: withLanguage('Evidence analyst. Real data, warm delivery. Not cheerleading. Return ONLY valid JSON. No markdown.', userLanguage),
         messages: [{ role: 'user', content: prompt }],
@@ -426,7 +426,7 @@ Recent: ${JSON.stringify(recent)}
 Rules: if pattern exists, suggest continuing. If 3+ days gap, suggest 2 min. If streak, acknowledge casually. 1-2 sentences. Not a pitch.
 Return ONLY valid JSON: { "nudge": "friendly suggestion", "suggested_mode": "right-now|micro|body|sleep|stack|recovery", "suggested_time": "minutes", "reason": "why, based on patterns" }`, userLanguage);
     const message = await anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 400,
         system: withLanguage('Friendly nudger. Pattern-aware. Not pushy. Return ONLY valid JSON. No markdown.', userLanguage),
         messages: [{ role: 'user', content: prompt }],

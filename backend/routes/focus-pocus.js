@@ -175,7 +175,9 @@ RULES:
 - Base EVERYTHING on the actual data. Reference specific numbers, activities, and patterns.
 - Don't make up data points. If something isn't clear from the data, say so.
 - Be honest about weaknesses — these people want to improve, not be coddled.
-- The share_snippet should be playful and specific, not generic.`, userLanguage);
+- The share_snippet should be playful and specific, not generic.
+
+Return ONLY valid JSON.`, userLanguage);
 
     const message = await anthropic.messages.create({
       model: 'claude-haiku-4-5-20251001',

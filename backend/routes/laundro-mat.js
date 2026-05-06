@@ -27,7 +27,9 @@ RULES:
 6. Time estimates should be realistic for the machine type specified.
 7. Flag high-risk items clearly — shrinkage, color bleeding, and heat damage are the big three.
 
-FORMAT: Always respond in valid JSON matching the schema requested. No markdown fences, no preamble. Pure JSON only.`;
+FORMAT: Always respond in valid JSON matching the schema requested. No markdown fences, no preamble. Pure JSON only.
+
+Return ONLY valid JSON.`;
 
 router.post('/laundro-mat', rateLimit(), async (req, res) => {
   try {
@@ -62,7 +64,7 @@ router.post('/laundro-mat', rateLimit(), async (req, res) => {
 LOAD DESCRIPTION: ${loadDescription || '(see care label photo above)'}
 MACHINE TYPE: ${machineType || 'home'}
 
-Return JSON:
+Return ONLY valid JSON. Format:
 {
   "load_assessment": "Brief overall assessment (1 sentence)",
   "separate_these": [
@@ -134,7 +136,7 @@ Only include care_symbols if a care label photo was provided. separate_these and
             { type: 'image', source: { type: 'base64', media_type: parsed.mediaType, data: parsed.base64Data } },
             { type: 'text', text: `Identify all laundry care symbols visible in this care label photo. Translate each to plain English.
 
-Return JSON:
+Return ONLY valid JSON. Format:
 {
   "load_assessment": "Summary of what this label is telling you (1-2 sentences)",
   "care_symbols": [
@@ -199,7 +201,7 @@ STAIN AGE: ${stainAge || 'unknown'}
 
 Use ONLY common household supplies (dish soap, white vinegar, baking soda, hydrogen peroxide, rubbing alcohol, cold/warm water, clean cloth). No specialty products.
 
-Return JSON:
+Return ONLY valid JSON. Format:
 {
   "urgency": "How urgent — one sentence (e.g. 'Act now — coffee stains set within hours')",
   "what_you_need": ["item 1", "item 2"],

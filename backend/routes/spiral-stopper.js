@@ -83,7 +83,8 @@ Return ONLY valid JSON:
   "after_spiral": "What to do next — one concrete action for when they feel calmer."
 }`, userLanguage);
 
-        const parsed = await callClaudeWithRetry(prompt, { label: 'SS-Spiral', max_tokens: 1000 });
+        const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'SS-Spiral', max_tokens: 1000 });
         return res.json(parsed);
       }
 
@@ -126,7 +127,8 @@ Return ONLY valid JSON:
   "is_task_step": ${(completed_steps?.length || 0) >= 3 && stuck_on ? 'true' : 'false'}
 }`, userLanguage);
 
-        const parsed = await callClaudeWithRetry(prompt, { label: 'SS-Unfreeze', max_tokens: 400 });
+        const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'SS-Unfreeze', max_tokens: 400 });
         return res.json(parsed);
       }
 
@@ -175,7 +177,8 @@ Return ONLY valid JSON:
   "gentle_reminder": "One sentence they can come back to. The anchor."
 }`, userLanguage);
 
-        const parsed = await callClaudeWithRetry(prompt, { label: 'SS-Recover', max_tokens: 1000 });
+        const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'SS-Recover', max_tokens: 1000 });
         return res.json(parsed);
       }
 
@@ -200,7 +203,8 @@ Return ONLY valid JSON:
   "strength_noted": "Something genuine about how they handled it. 'You recognized the spiral and sought help — most people just spin.'"
 }`, userLanguage);
 
-        const parsed = await callClaudeWithRetry(prompt, { label: 'SS-Reflect', max_tokens: 400 });
+        const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'SS-Reflect', max_tokens: 400 });
         return res.json(parsed);
       }
 
@@ -234,7 +238,8 @@ Return ONLY valid JSON:
   "encouragement": "Genuine, data-backed. 'Your average intensity dropped from 4.2 to 3.1 over the last month — your interventions are working.'"
 }`, userLanguage);
 
-        const parsed = await callClaudeWithRetry(prompt, { label: 'SS-Patterns', max_tokens: 700 });
+        const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'SS-Patterns', max_tokens: 700 });
         return res.json(parsed);
       }
 

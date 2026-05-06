@@ -62,7 +62,7 @@ Generate the hardest questions. Return ONLY valid JSON:
 Generate exactly 10 questions, escalating in difficulty. At least 2 should be 'brutal'.`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 4500,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],

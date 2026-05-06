@@ -102,7 +102,7 @@ CRITICAL RULES:
 - Be thorough but never pad — only include what's genuinely useful`, userLanguage);
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 8000,
       messages: [{ role: 'user', content: prompt }]
     });
@@ -164,7 +164,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 2000,
       messages: [{ role: 'user', content: prompt }]
     });
@@ -247,7 +247,7 @@ CRITICAL:
 - The recommendation should be actionable`, userLanguage);
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 6000,
       messages: [{ role: 'user', content: prompt }]
     });
@@ -264,8 +264,6 @@ CRITICAL:
     res.status(500).json({ error: error.message || 'Failed to compare documents' });
   }
 });
-
-module.exports = router;
 
 // ═══════════════════════════════════════════════════════════════
 // STREAMING ROUTE — main analysis
@@ -299,7 +297,7 @@ ${typeHint}${focusHint}
 Auto-detect the document type if not specified. Produce a complete analysis. Return ONLY valid JSON matching the full schema from the standard plaintalk endpoint, including: detected_type, detected_type_label, confidence, reading_level, overview, sections, structure, specialist_suggestion, type_insights, full_translation, and jargon_glossary.`, userLanguage);
 
     const stream = await anthropic.messages.stream({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 8000,
       messages: [{ role: 'user', content: prompt }],
     });
@@ -315,3 +313,5 @@ Auto-detect the document type if not specified. Produce a complete analysis. Ret
     res.end();
   }
 });
+
+module.exports = router;

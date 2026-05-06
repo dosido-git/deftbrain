@@ -251,9 +251,9 @@ CRITICAL RULES:
     contentBlocks.push({ type: 'text', text: prompt });
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 8000,
-      messages: [{ role: 'user', content: contentBlocks }]
+      messages: [{ role: 'user', content: withLanguage(contentBlocks, userLanguage) }]
     });
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
@@ -329,9 +329,9 @@ Return ONLY valid JSON:
 Return ONLY valid JSON.`, userLanguage);
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 1500,
-      messages: [{ role: 'user', content: prompt }],
+      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
     });
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
@@ -415,9 +415,9 @@ Return ONLY valid JSON:
 Return ONLY valid JSON.`, userLanguage);
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 2500,
-      messages: [{ role: 'user', content: prompt }],
+      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
     });
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
@@ -501,9 +501,9 @@ Return ONLY valid JSON:
 Return ONLY valid JSON.`, userLanguage);
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 2500,
-      messages: [{ role: 'user', content: prompt }],
+      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
     });
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
@@ -569,9 +569,9 @@ Return ONLY valid JSON:
 CRITICAL: Return ONLY valid JSON. Use \\n for line breaks in the addendum text.`, userLanguage);
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 3000,
-      messages: [{ role: 'user', content: prompt }],
+      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
     });
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
@@ -672,9 +672,9 @@ Return ONLY valid JSON:
 Return ONLY valid JSON.`, userLanguage);
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 3000,
-      messages: [{ role: 'user', content: prompt }],
+      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
     });
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
@@ -779,9 +779,9 @@ Return ONLY valid JSON:
 Return ONLY valid JSON.`, userLanguage);
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 2500,
-      messages: [{ role: 'user', content: prompt }],
+      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
     });
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
@@ -856,10 +856,10 @@ Return ONLY valid JSON:
 }`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 3000,
       system: withLanguage(systemPrompt, userLanguage),
-      messages: [{ role: 'user', content: userPrompt }],
+      messages: [{ role: 'user', content: withLanguage(userPrompt, userLanguage) }],
     });
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';

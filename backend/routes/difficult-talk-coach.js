@@ -266,6 +266,7 @@ CRITICAL RULES
     );
 
     const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6',
       label: 'DifficultTalkCoach',
       max_tokens: 10000,
       system: systemPrompt,
@@ -372,6 +373,7 @@ RULES:
 - Return ONLY JSON.`, userLanguage);
 
     const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6',
       label: 'DifficultTalkSimulate',
       max_tokens: 1000,
     });
@@ -474,6 +476,7 @@ Return ONLY this JSON:
 Return ONLY JSON. No markdown, no preamble.`, userLanguage);
 
     const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6',
       label: 'DifficultTalkDebrief',
       max_tokens: 3000,
       system: 'You are a compassionate communication coach. Return ONLY valid JSON matching the exact schema requested. No markdown, no preamble.',
@@ -613,6 +616,7 @@ Be honest — don't inflate scores. A score of 6-7 for a first practice is very 
 Return ONLY JSON.`, userLanguage);
 
     const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6',
       label: 'DifficultTalkPracticeSummary',
       max_tokens: 4000,
       system: withLanguage('You are an expert communication coach. Return ONLY valid JSON. No markdown, no preamble.', userLanguage),

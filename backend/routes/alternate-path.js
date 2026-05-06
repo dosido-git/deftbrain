@@ -54,6 +54,7 @@ Return ONLY valid JSON:
 }`;
 
     const parsed = await callClaudeWithRetry(userPrompt, {
+      model: 'claude-sonnet-4-6',
       label: 'AlternatePath',
       max_tokens: 2500,
       system: withLanguage(PERSONALITY, userLanguage),

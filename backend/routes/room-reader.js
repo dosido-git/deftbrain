@@ -79,7 +79,8 @@ Return ONLY valid JSON:
 
 Generate 6-8 conversation starters with a mix of energies. Generate 2-4 people in the people_map. Generate 3-4 exit strategies and 2-3 worst case saves.`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, { label: 'RoomReaderPreGame', max_tokens: 3000,
+    const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'RoomReaderPreGame', max_tokens: 3000,
       system: withLanguage('Social intelligence coach. Warm, witty, specific. You give advice that sounds like a clever friend, not a self-help book. Every line you suggest is something a real person would actually say. You read rooms like a superpower and teach others to do the same. Return ONLY valid JSON. No markdown.', userLanguage) });
     res.json(parsed);
   } catch (error) {
@@ -120,7 +121,8 @@ Return ONLY valid JSON:
   "body_tip": "One body language move for this exact scenario."
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, { label: 'RoomReaderQuick', max_tokens: 600,
+    const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'RoomReaderQuick', max_tokens: 600,
       system: withLanguage('Emergency social coach. Fast, warm, witty. One great line, not a list. Make it specific to the scenario. Return ONLY valid JSON. No markdown.', userLanguage) });
     res.json(parsed);
   } catch (error) {
@@ -166,7 +168,8 @@ Return ONLY valid JSON:
   "reframe": "A warm, grounding perspective. The thing a wise friend would say."
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, { label: 'RoomReaderDecode', max_tokens: 1500,
+    const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'RoomReaderDecode', max_tokens: 1500,
       system: withLanguage('Social signal analyst. Honest, warm, perceptive. You don\'t catastrophize or dismiss — you give the real read. You understand that social anxiety makes people over-interpret, but you also know sometimes their gut is right. Return ONLY valid JSON. No markdown.', userLanguage) });
     res.json(parsed);
   } catch (error) {
@@ -221,7 +224,8 @@ Return ONLY valid JSON:
   }
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, { label: 'RoomReaderDebrief', max_tokens: 2000,
+    const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'RoomReaderDebrief', max_tokens: 2000,
       system: withLanguage('Post-event social coach. Warm, honest, encouraging. You help people see social wins they missed and reframe awkward moments accurately. You track progress and build confidence gradually. Not therapy — friendship with good social instincts. Return ONLY valid JSON. No markdown.', userLanguage) });
     res.json(parsed);
   } catch (error) {
@@ -267,7 +271,8 @@ Return ONLY valid JSON:
 
 Generate 3 message options with different styles/risk levels.`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, { label: 'RoomReaderFollowUp', max_tokens: 1200,
+    const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'RoomReaderFollowUp', max_tokens: 1200,
       system: withLanguage('Follow-up message coach. You write messages that sound like the person actually wrote them, not a bot. You understand timing, tone, and the anxiety of the follow-up text. Warm, practical, a little witty. Return ONLY valid JSON. No markdown.', userLanguage) });
     res.json(parsed);
   } catch (error) {
@@ -338,7 +343,8 @@ Return ONLY valid JSON:
 
 Generate 4-5 openers and 3-4 working topics.`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, { label: 'RoomReaderPerson', max_tokens: 2500,
+    const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'RoomReaderPerson', max_tokens: 2500,
       system: withLanguage('One-on-one social strategist. You build approach plans for specific people based on available clues. Warm, perceptive, practical. You never make someone sound like a "problem to solve" — you help the user find genuine connection points. Return ONLY valid JSON. No markdown.', userLanguage) });
     res.json(parsed);
   } catch (error) {
@@ -414,7 +420,8 @@ Return ONLY valid JSON:
 
 Generate 3-4 entry techniques, 3-4 contribution methods, 2-3 traps, and 2-3 power moves.`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, { label: 'RoomReaderGroup', max_tokens: 2500,
+    const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'RoomReaderGroup', max_tokens: 2500,
       system: withLanguage('Group dynamics coach. You understand social hierarchies, conversation flow, and the specific challenge of being heard in groups without being obnoxious. Warm, practical, specific. You know that groups are harder than 1-on-1 and you take that seriously. Return ONLY valid JSON. No markdown.', userLanguage) });
     res.json(parsed);
   } catch (error) {
@@ -462,7 +469,8 @@ Return ONLY valid JSON:
 
 Generate 3 recovery options with different strategies.`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, { label: 'RoomReaderRecover', max_tokens: 1200,
+    const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'RoomReaderRecover', max_tokens: 1200,
       system: withLanguage('Emergency conversation recovery specialist. Fast, warm, honest. You know most social "disasters" are 3/10 at worst. Give immediate, actionable saves. Return ONLY valid JSON. No markdown.', userLanguage) });
     res.json(parsed);
   } catch (error) {
@@ -527,7 +535,8 @@ Return ONLY valid JSON:
 
 Generate 4-5 'do this' items and 3-4 'avoid this' items.`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, { label: 'RoomReaderCulture', max_tokens: 2500,
+    const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'RoomReaderCulture', max_tokens: 2500,
       system: withLanguage('Cross-cultural social intelligence expert. Specific, nuanced, respectful. You understand that cultural norms vary enormously and "just be yourself" is useless advice when yourself might accidentally offend. Practical, warm, never condescending about any culture. Return ONLY valid JSON. No markdown.', userLanguage) });
     res.json(parsed);
   } catch (error) {
@@ -579,7 +588,8 @@ Return ONLY valid JSON:
 
 Generate 3-4 fresh openers.`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, { label: 'RoomReaderPersonRefresh', max_tokens: 1800,
+    const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'RoomReaderPersonRefresh', max_tokens: 1800,
       system: withLanguage('Recurring relationship strategist. You track patterns across interactions and suggest fresh approaches. You never repeat old advice — you build on history. Warm, perceptive, practical. Return ONLY valid JSON. No markdown.', userLanguage) });
     res.json(parsed);
   } catch (error) {
@@ -620,7 +630,8 @@ Return ONLY valid JSON:
   "reframe": "The warm truth: energy mismatches feel bigger from inside than they look from outside."
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, { label: 'RoomReaderEnergy', max_tokens: 1200,
+    const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'RoomReaderEnergy', max_tokens: 1200,
       system: withLanguage('Energy dynamics coach. You understand that social energy mismatches cause most social discomfort. Warm, practical, and honest that sometimes the answer is "don\'t match, own your energy." Return ONLY valid JSON. No markdown.', userLanguage) });
     res.json(parsed);
   } catch (error) {
@@ -671,7 +682,8 @@ Return ONLY valid JSON:
 
 Generate a 5-level ladder from Surface to Genuine Connection.`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, { label: 'RoomReaderLadder', max_tokens: 2000,
+    const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'RoomReaderLadder', max_tokens: 2000,
       system: withLanguage('Conversation depth expert. You teach the skill of naturally deepening conversations without being intense or inappropriate. Every transition phrase sounds natural, never forced. Warm, wise, practical. Return ONLY valid JSON. No markdown.', userLanguage) });
     res.json(parsed);
   } catch (error) {
@@ -729,7 +741,8 @@ Return ONLY valid JSON:
   "compassion_note": "The thing they need to hear. Warm, honest, human. 'You're being too hard on yourself' or 'That was a tough room' or 'Actually, you handled it better than you think.'"
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, { label: 'RoomReaderAutopsy', max_tokens: 2500,
+    const parsed = await callClaudeWithRetry(prompt, {
+      model: 'claude-sonnet-4-6', label: 'RoomReaderAutopsy', max_tokens: 2500,
       system: withLanguage('Social forensic analyst. You do deep, honest, compassionate breakdowns of difficult social interactions. You separate what was in someone\'s control from what wasn\'t. You never pile on — you help them see clearly and learn. The goal is understanding, not self-blame. Return ONLY valid JSON. No markdown.', userLanguage) });
     res.json(parsed);
   } catch (error) {

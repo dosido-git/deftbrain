@@ -57,7 +57,7 @@ OUTPUT (JSON only):
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
-    const msg = await anthropic.messages.create({ model: 'claude-sonnet-4-20250514', max_tokens: 1200, messages: [{ role: 'user', content: prompt }] });
+    const msg = await anthropic.messages.create({ model: 'claude-sonnet-4-6', max_tokens: 1200, messages: [{ role: 'user', content: prompt }] });
     res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
   } catch (e) { console.error('DecisionCoach decide:', e); res.status(500).json({ error: e.message || 'Failed to decide' }); }
 });
@@ -111,7 +111,7 @@ OUTPUT (JSON only):
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
-    const msg = await anthropic.messages.create({ model: 'claude-sonnet-4-20250514', max_tokens: 1800, messages: [{ role: 'user', content: prompt }] });
+    const msg = await anthropic.messages.create({ model: 'claude-sonnet-4-6', max_tokens: 1800, messages: [{ role: 'user', content: prompt }] });
     res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
   } catch (e) { console.error('DecisionCoach pros-cons:', e); res.status(500).json({ error: 'Failed to compare' }); }
 });
@@ -148,7 +148,7 @@ OUTPUT (JSON only):
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
-    const msg = await anthropic.messages.create({ model: 'claude-sonnet-4-20250514', max_tokens: 600, messages: [{ role: 'user', content: prompt }] });
+    const msg = await anthropic.messages.create({ model: 'claude-sonnet-4-6', max_tokens: 600, messages: [{ role: 'user', content: prompt }] });
     res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
   } catch (e) { console.error('DecisionCoach quick:', e); res.status(500).json({ error: 'Quick decide failed' }); }
 });
@@ -206,7 +206,7 @@ OUTPUT (JSON only):
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
-    const msg = await anthropic.messages.create({ model: 'claude-sonnet-4-20250514', max_tokens: 1500, messages: [{ role: 'user', content: prompt }] });
+    const msg = await anthropic.messages.create({ model: 'claude-sonnet-4-6', max_tokens: 1500, messages: [{ role: 'user', content: prompt }] });
     res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
   } catch (e) { console.error('DecisionCoach patterns:', e); res.status(500).json({ error: 'Pattern analysis failed' }); }
 });
@@ -263,7 +263,7 @@ OUTPUT (JSON only):
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
-    const msg = await anthropic.messages.create({ model: 'claude-sonnet-4-20250514', max_tokens: 1800, messages: [{ role: 'user', content: prompt }] });
+    const msg = await anthropic.messages.create({ model: 'claude-sonnet-4-6', max_tokens: 1800, messages: [{ role: 'user', content: prompt }] });
     res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
   } catch (e) { console.error('DecisionCoach group:', e); res.status(500).json({ error: 'Group decide failed' }); }
 });
@@ -313,7 +313,7 @@ OUTPUT (JSON only):
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
-    const msg = await anthropic.messages.create({ model: 'claude-sonnet-4-20250514', max_tokens: 800, messages: [{ role: 'user', content: prompt }] });
+    const msg = await anthropic.messages.create({ model: 'claude-sonnet-4-6', max_tokens: 800, messages: [{ role: 'user', content: prompt }] });
     res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
   } catch (e) { console.error('DecisionCoach followup:', e); res.status(500).json({ error: 'Follow-up failed' }); }
 });
@@ -397,7 +397,7 @@ OUTPUT (JSON only):
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
-    const msg = await anthropic.messages.create({ model: 'claude-sonnet-4-20250514', max_tokens: 2000, messages: [{ role: 'user', content: prompt }] });
+    const msg = await anthropic.messages.create({ model: 'claude-sonnet-4-6', max_tokens: 2000, messages: [{ role: 'user', content: prompt }] });
     res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
   } catch (e) { console.error('DecisionCoach DNA:', e); res.status(500).json({ error: 'DNA analysis failed' }); }
 });
@@ -440,7 +440,7 @@ OUTPUT (JSON only):
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
-    const msg = await anthropic.messages.create({ model: 'claude-sonnet-4-20250514', max_tokens: 1200, messages: [{ role: 'user', content: prompt }] });
+    const msg = await anthropic.messages.create({ model: 'claude-sonnet-4-6', max_tokens: 1200, messages: [{ role: 'user', content: prompt }] });
     res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
   } catch (e) { console.error('DecisionCoach devils-advocate:', e); res.status(500).json({ error: "Devil's advocate failed" }); }
 });
@@ -483,7 +483,7 @@ OUTPUT (JSON only):
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
-    const msg = await anthropic.messages.create({ model: 'claude-sonnet-4-20250514', max_tokens: 1500, messages: [{ role: 'user', content: prompt }] });
+    const msg = await anthropic.messages.create({ model: 'claude-sonnet-4-6', max_tokens: 1500, messages: [{ role: 'user', content: prompt }] });
     res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
   } catch (e) { console.error('DecisionCoach batch:', e); res.status(500).json({ error: 'Batch decide failed' }); }
 });
@@ -532,7 +532,7 @@ OUTPUT (JSON only):
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
-    const msg = await anthropic.messages.create({ model: 'claude-sonnet-4-20250514', max_tokens: 1500, messages: [{ role: 'user', content: prompt }] });
+    const msg = await anthropic.messages.create({ model: 'claude-sonnet-4-6', max_tokens: 1500, messages: [{ role: 'user', content: prompt }] });
     res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
   } catch (e) { console.error('DecisionCoach chain:', e); res.status(500).json({ error: 'Decision chain failed' }); }
 });

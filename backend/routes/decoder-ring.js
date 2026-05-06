@@ -102,7 +102,7 @@ IMPORTANT RULES:
 Return ONLY the JSON object. No markdown fences, no preamble.`;
 
     const message_response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 3500,
       messages: [{ role: 'user', content: withLanguage(basePrompt, userLanguage) }],
     });

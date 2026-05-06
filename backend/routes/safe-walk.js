@@ -22,7 +22,9 @@ CRITICAL RULES:
 10. Watch-for items should be SPECIFIC to the named route and time — not generic "stay alert" platitudes.
 11. Risk level should be honest but not alarmist. Most walks are low-to-moderate risk. Reserve "high" for genuinely concerning combinations.
 
-FORMAT: Respond in valid JSON matching the schema exactly. No markdown fences, no preamble. Pure JSON only.`;
+FORMAT: Respond in valid JSON matching the schema exactly. No markdown fences, no preamble. Pure JSON only.
+
+Return ONLY valid JSON.`;
 
 // ════════════════════════════════════════════════════════════
 // ROUTE
@@ -89,10 +91,12 @@ Return this exact JSON structure:
   }
 }
 
-Generate 3-5 watch_for items, 4-6 checklist items, 1-3 route_suggestions, and 2-4 reminders. Reference specific location names throughout.`;
+Generate 3-5 watch_for items, 4-6 checklist items, 1-3 route_suggestions, and 2-4 reminders. Reference specific location names throughout.
+
+Return ONLY valid JSON.`;
 
       const message = await anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 2000,
         system: withLanguage(SYSTEM_PROMPT, req.body.userLanguage),
         tools: [{ type: 'web_search_20250305', name: 'web_search' }],
@@ -106,7 +110,7 @@ Generate 3-5 watch_for items, 4-6 checklist items, 1-3 route_suggestions, and 2-
 
       const cleaned = cleanJsonResponse(text);
       const parsed = JSON.parse(cleaned);
-      return res.json(parsed);
+      return res.json(stripCites(parsed));
     }
 
     return res.status(400).json({ error: `Unknown action: ${action}` });
@@ -116,5 +120,19 @@ Generate 3-5 watch_for items, 4-6 checklist items, 1-3 route_suggestions, and 2-
     res.status(500).json({ error: error.message });
   }
 });
+
+// Recursively strip <cite ...>...</cite> tags from string values in any
+// nested structure. Required because the web_search tool wraps phrases in
+// citation tags inside JSON string values.
+function stripCites(val) {
+  if (typeof val === 'string') return val.replace(/<cite[^>]*>|<\/cite>/g, '');
+  if (Array.isArray(val)) return val.map(stripCites);
+  if (val && typeof val === 'object') {
+    return Object.fromEntries(
+      Object.entries(val).map(([k, v]) => [k, stripCites(v)])
+    );
+  }
+  return val;
+}
 
 module.exports = router;

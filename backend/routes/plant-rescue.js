@@ -202,7 +202,7 @@ Return ONLY the JSON.`, userLanguage);
     content.push({ type: 'text', text: prompt });
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 4000,
       messages: [{ role: 'user', content }]
     });
@@ -215,7 +215,7 @@ Return ONLY the JSON.`, userLanguage);
       parsed = JSON.parse(cleaned);
     } catch {
       let repaired = cleaned.replace(/,\s*}/g, '}').replace(/,\s*]/g, ']');
-      try { parsed = JSON.parse(repaired); }
+      try { parsed = JSON.parse(cleanJsonResponse(repaired)); }
       catch { return res.status(500).json({ error: 'Parse failed. Try again.' }); }
     }
 
@@ -265,7 +265,7 @@ Be specific, practical, encouraging. 2-4 paragraphs.`,
     );
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 800,
       system: systemPrompt,
       messages: [{ role: 'user', content: question.trim() }]
@@ -323,7 +323,7 @@ RULES:
 - Be specific about WHERE to place groups (bathroom, windowsill, etc.)`, userLanguage);
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 1200,
       messages: [{ role: 'user', content: prompt }]
     });
@@ -335,7 +335,7 @@ RULES:
     try { parsed = JSON.parse(cleaned); }
     catch {
       let repaired = cleaned.replace(/,\s*}/g, '}').replace(/,\s*]/g, ']');
-      try { parsed = JSON.parse(repaired); }
+      try { parsed = JSON.parse(cleanJsonResponse(repaired)); }
       catch { return res.status(500).json({ error: 'Parse failed.' }); }
     }
 

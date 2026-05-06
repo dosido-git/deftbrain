@@ -81,6 +81,7 @@ Return ONLY valid JSON:
 Provide 3-4 perfect_picks. Each should feel genuinely different — not 4 variations of the same idea.`;
 
     const parsed = await callClaudeWithRetry(userPrompt, {
+      model: 'claude-sonnet-4-6',
       label: 'giftology',
       max_tokens: 3000,
       system: withLanguage(PERSONALITY, userLanguage),

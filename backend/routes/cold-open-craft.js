@@ -76,7 +76,7 @@ Generate 3 openers: one safe, one medium, one bold.`;
       {
         system: withLanguage(systemPrompt, userLanguage),
         label: 'cold-open-craft',
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 2000,
       }
     );

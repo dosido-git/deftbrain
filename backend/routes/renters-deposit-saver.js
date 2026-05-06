@@ -64,9 +64,9 @@ Return ONLY valid JSON (no markdown, no preamble, no code fences):
 }`;
 
       const message = await anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 4000,
-        messages: [{ role: 'user', content: rightsPrompt }]
+        messages: [{ role: 'user', content: withLanguage(rightsPrompt, userLanguage) }]
       });
 
       const textContent = message.content.find(item => item.type === 'text')?.text || '';
@@ -220,9 +220,9 @@ CRITICAL RULES:
 - Return ONLY valid JSON`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 8000,
-      messages: [{ role: 'user', content: prompt }]
+      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }]
     });
 
     const textContent = message.content.find(item => item.type === 'text')?.text || '';
@@ -237,8 +237,6 @@ CRITICAL RULES:
     res.status(500).json({ error: error.message || 'Failed to generate move-in documentation' });
   }
 });
-
-module.exports = router;
 
 // ═══════════════════════════════════════════════════════════════
 // STREAMING ROUTE — full report generation (Mode 2 only)
@@ -289,9 +287,9 @@ ${checklistFormatted}
 Generate a complete move-in documentation package. Return ONLY valid JSON with these keys: condition_report, landlord_letter, photo_shot_list, deposit_rights, move_out_tips — all as plain-text strings with newlines. Cite specific statutes for ${location}. No markdown formatting in the text values.`;
 
     const stream = await anthropic.messages.stream({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 8000,
-      messages: [{ role: 'user', content: prompt }],
+      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
     });
 
     stream.on('text', (text) => sendEvent({ chunk: text }));
@@ -305,3 +303,5 @@ Generate a complete move-in documentation package. Return ONLY valid JSON with t
     res.end();
   }
 });
+
+module.exports = router;

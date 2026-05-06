@@ -18,7 +18,9 @@ RULES:
 6. Boundaries must be SPECIFIC and actionable, not vague ("no guests after 11pm on weeknights" not "respect quiet hours").
 7. Consider how long the issue has been going on and whether they've tried talking — chronic ignored issues need stronger solutions.
 
-FORMAT: Respond in valid JSON matching the schema exactly. No markdown fences, no preamble. Pure JSON only.`;
+FORMAT: Respond in valid JSON matching the schema exactly. No markdown fences, no preamble. Pure JSON only.
+
+Return ONLY valid JSON.`;
 
 const ASSIGNER_SYSTEM = `You are a fair household chore assignment engine. You balance workload using effort weights and historical data.
 
@@ -31,7 +33,9 @@ RULES:
 6. Fairness score: 100 = perfectly equal effort, drops as imbalance increases. Below 70 = needs rebalancing.
 7. If there are more chores than can be evenly split, give the extra light chore to whoever had the easiest recent history.
 
-FORMAT: Respond in valid JSON matching the schema exactly. No markdown fences, no preamble. Pure JSON only.`;
+FORMAT: Respond in valid JSON matching the schema exactly. No markdown fences, no preamble. Pure JSON only.
+
+Return ONLY valid JSON.`;
 
 // ════════════════════════════════════════════════════════════
 // ROUTE
@@ -88,10 +92,12 @@ Return this exact JSON structure:
   },
   "prevention": "how to prevent this specific type of dispute in the future",
   "reality_check": "honest, direct assessment — what would a wise friend say?"
-}`;
+}
+
+Return ONLY valid JSON.`;
 
       const message = await anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 2500,
         system: withLanguage(MEDIATOR_SYSTEM, req.body.userLanguage),
         messages: [{ role: 'user', content: prompt }]
@@ -140,10 +146,12 @@ Return this exact JSON structure:
   "fairness_score": <50-100>,
   "reasoning": "2-3 sentences explaining why each person got what they got, citing history if available",
   "chore_weights": { "Chore1": 1-3, "Chore2": 1-3 }
-}`;
+}
+
+Return ONLY valid JSON.`;
 
       const message = await anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 1500,
         system: withLanguage(ASSIGNER_SYSTEM, req.body.userLanguage),
         messages: [{ role: 'user', content: prompt }]
@@ -185,10 +193,12 @@ Return this exact JSON structure:
   "revised_effort_totals": { "Name1": <total> } or null,
   "revised_fairness_score": <number> or null,
   "explanation": "plain language explanation for the complainer — empathetic but factual"
-}`;
+}
+
+Return ONLY valid JSON.`;
 
       const message = await anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 1500,
         system: withLanguage(ASSIGNER_SYSTEM, req.body.userLanguage),
         messages: [{ role: 'user', content: prompt }]

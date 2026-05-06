@@ -83,6 +83,7 @@ Return ONLY valid JSON:
 }`;
 
     const parsed = await callClaudeWithRetry(userPrompt, {
+      model: 'claude-sonnet-4-6',
       label: 'apology-calibrator',
       max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage),
@@ -141,6 +142,7 @@ Return ONLY valid JSON:
 }`;
 
     const parsed = await callClaudeWithRetry(userPrompt, {
+      model: 'claude-sonnet-4-6',
       label: 'apology-calibrator/detect',
       max_tokens: 2000,
       system: withLanguage(systemPrompt, userLanguage),
@@ -206,6 +208,7 @@ Return ONLY valid JSON:
 }`;
 
     const parsed = await callClaudeWithRetry(userPrompt, {
+      model: 'claude-sonnet-4-6',
       label: 'apology-calibrator/delivery',
       max_tokens: 2000,
       system: withLanguage(systemPrompt, userLanguage),
@@ -271,6 +274,7 @@ Return ONLY valid JSON:
 }`;
 
     const parsed = await callClaudeWithRetry(userPrompt, {
+      model: 'claude-sonnet-4-6',
       label: 'apology-calibrator/audit',
       max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage),
@@ -333,6 +337,7 @@ Return ONLY valid JSON:
 }`;
 
     const parsed = await callClaudeWithRetry(userPrompt, {
+      model: 'claude-sonnet-4-6',
       label: 'apology-calibrator/cultural',
       max_tokens: 2000,
       system: withLanguage(systemPrompt, userLanguage),
@@ -397,6 +402,7 @@ Return ONLY valid JSON:
 }`;
 
     const parsed = await callClaudeWithRetry(userPrompt, {
+      model: 'claude-sonnet-4-6',
       label: 'apology-calibrator/decode',
       max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage),
@@ -482,6 +488,7 @@ Return ONLY valid JSON:
 }`;
 
     const parsed = await callClaudeWithRetry(userPrompt, {
+      model: 'claude-sonnet-4-6',
       label: 'apology-calibrator/practice',
       max_tokens: 1500,
       system: withLanguage(systemPrompt, userLanguage),
@@ -560,6 +567,7 @@ Return ONLY valid JSON:
 }`;
 
     const parsed = await callClaudeWithRetry(userPrompt, {
+      model: 'claude-sonnet-4-6',
       label: 'apology-calibrator/forgive',
       max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage),
@@ -636,6 +644,7 @@ Return ONLY valid JSON:
 }`;
 
     const parsed = await callClaudeWithRetry(userPrompt, {
+      model: 'claude-sonnet-4-6',
       label: 'apology-calibrator/roadmap',
       max_tokens: 3000,
       system: withLanguage(systemPrompt, userLanguage),
@@ -708,6 +717,7 @@ Return ONLY valid JSON:
 }`;
 
     const parsed = await callClaudeWithRetry(userPrompt, {
+      model: 'claude-sonnet-4-6',
       label: 'apology-calibrator/letter',
       max_tokens: 3000,
       system: withLanguage(systemPrompt, userLanguage),
@@ -787,6 +797,7 @@ Return ONLY valid JSON:
 }`;
 
     const parsed = await callClaudeWithRetry(userPrompt, {
+      model: 'claude-sonnet-4-6',
       label: 'apology-calibrator/fix',
       max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage),
