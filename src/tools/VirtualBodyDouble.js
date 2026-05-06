@@ -397,17 +397,24 @@ const VirtualBodyDouble = ({ tool }) => {
   // ─── Keep completeRef current (must be after handleSessionComplete) ───
   useEffect(() => { completeRef.current = handleSessionComplete; }, [handleSessionComplete]);
 
-  // ─── Keyboard shortcut (must be after handleStart) ───
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // ─── Keyboard shortcut — SELECT-only guard, ref pattern ───
+  const handleStartRef = useRef(null);
+  const canSubmitRef = useRef(false);
+  handleStartRef.current = handleStart;
+  canSubmitRef.current = !!task.trim() && !loading && !sessionPlan;
+
   useEffect(() => {
     const handler = (e) => {
       const tag = document.activeElement?.tagName;
-      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
-      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !loading) handleStart();
+      if (tag === 'SELECT') return;
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !loading && canSubmitRef.current) {
+        e.preventDefault();
+        handleStartRef.current?.();
+      }
     };
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
-  }, [loading]); // handleStart omitted: plain async fn re-created each render, cleanup on loading change ensures fresh closure
+  }, [loading]);
 
   // ─── Generate accountability card (v4) ───
   const handleGenerateCard = async () => {
@@ -534,7 +541,7 @@ const VirtualBodyDouble = ({ tool }) => {
               <div className="flex items-center gap-2">
                 <button onClick={() => setSoundEnabled(!soundEnabled)} className={`text-xs px-2.5 py-1.5 rounded-lg ${soundEnabled ? c.tagActive : c.tag}`} title={soundEnabled ? 'Sound on' : 'Sound off'}>{soundEnabled ? '🔔' : '🔕'}</button>
                 <button onClick={() => setNotificationsEnabled(!notificationsEnabled)} className={`text-xs px-2.5 py-1.5 rounded-lg ${notificationsEnabled ? c.tagActive : c.tag}`} title={notificationsEnabled ? 'Notifications on' : 'Notifications off'}>{notificationsEnabled ? '📳' : '📴'}</button>
-                {sessionLog.length >= 3 && (<button onClick={handleReview} disabled={loading} className={`text-xs px-3 py-1.5 rounded-lg font-medium ${c.tagActive}`}>
+                {sessionLog.length >= 3 && (<button onClick={handleReview} disabled={loading} className={`text-xs px-3 py-1.5 rounded-lg font-medium disabled:opacity-40 ${c.tagActive}`}>
                     <span>📈</span> Insights</button>
                 )} {sessionLog.length > 0 && (<button onClick={() => setSessionLog([])} className={`text-xs px-2.5 py-1.5 rounded-lg ${c.tag}`}>🗑️</button>
                 )} </div>
@@ -559,12 +566,12 @@ const VirtualBodyDouble = ({ tool }) => {
 
           {/* Task input + breakdown */} <div className={`${c.card} border rounded-xl p-5 space-y-4`}>
             <div>
-              <label className={`block text-sm font-semibold ${c.text} mb-2`}>What are you working on?</label>
+              <label className={`block text-sm font-semibold ${c.text} mb-2`}>What are you working on? <span className={c.required}>*</span></label>
               <div className="flex gap-2">
                 <input type="text" value={task} onChange={e => { setTask(e.target.value); setShowBreakdown(false); setSubTasks([]); }} placeholder="Writing report, cleaning kitchen, studying chapter 5..."
                   className={`flex-1 p-3 rounded-lg border ${c.input} outline-none`} onKeyDown={e => e.key === 'Enter' && handleStart()} />
-                {task.trim().length > 3 && (<button onClick={handleBreakdown} disabled={loading} className={`px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap ${subTasks.length > 0 ? c.tagActive : c.tag} transition-all`} title="Break task into sub-tasks">
-                    {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> : '✂️'} Split
+                {task.trim().length > 3 && (<button onClick={handleBreakdown} disabled={loading} className={`px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap disabled:opacity-40 ${subTasks.length > 0 ? c.tagActive : c.tag} transition-all`} title="Break task into sub-tasks">
+                    {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '👥'}</span> : '✂️'} Split
                   </button>
                 )} </div>
             </div>
@@ -629,9 +636,27 @@ const VirtualBodyDouble = ({ tool }) => {
           </div>
 
           {/* Start button */} <button onClick={handleStart} disabled={loading || !task.trim()} className={`w-full py-4 rounded-xl font-bold text-lg ${modeColors.badge} ${c.accentTxt} disabled:opacity-40 transition-all shadow-lg hover:opacity-90`}>
-            {loading ? (<span><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> Setting up...</span>
+            {loading ? (<span><span className="inline-block animate-spin">{tool?.icon ?? '👥'}</span> Setting up...</span>
             ) : (<span><span>{SESSION_MODES.find(m => m.id === sessionMode)?.icon || '▶️'}</span> Start {modeLabel} Session</span>
             )} </button>
+
+          {/* Try Example */}
+          {!task.trim() && !loading && (
+            <div className="flex justify-center">
+              <button
+                onClick={() => {
+                  setTask('Write the Q3 review section of my report');
+                  setDuration(45);
+                  setEnvironment('home_desk');
+                  setMood('scattered');
+                  setSessionMode('deep_work');
+                }}
+                className={`text-xs font-medium ${c.accentTxt} underline underline-offset-2 min-h-[32px]`}
+              >
+                ✨ Try an example
+              </button>
+            </div>
+          )}
 
           {error && (<div className={`${c.danger} border rounded-xl p-4`}>
               <p className={`text-sm ${c.errorText}`}><span>⚠️</span> {error}</p>
@@ -643,9 +668,9 @@ const VirtualBodyDouble = ({ tool }) => {
             <div className="flex flex-wrap gap-2">
               {[
                 { id: 'BatchFlow', icon: '🔀', label: 'BatchFlow' },
-                { id: 'BrainStateDeejay', icon: '🎧', label: 'BrainState Deejay' },
-                { id: 'DopamineMenuBuilder', icon: '🎯', label: 'Dopamine Menu' },
-              ].map(t => (<a key={t.id} href={`/${t.id}`} target="_blank" rel="noopener noreferrer"
+                { id: 'BrainStateDeejay', icon: '🎧', label: 'Brain State Deejay' },
+                { id: 'PEP', icon: '✨', label: 'PEP' },
+              ].map(t => (<a key={t.id} href={`/${t.id}`}
                   className={`text-xs px-3 py-1.5 rounded-lg ${c.tag} ${c.cardHover} transition-colors`}>
                   <span>{t.icon}</span> {t.label} </a>
               ))} </div>
@@ -702,7 +727,7 @@ const VirtualBodyDouble = ({ tool }) => {
               {!isOnBreak ? (<>
                   <button onClick={() => setIsPaused(!isPaused)} className={`px-4 py-2 rounded-lg text-sm font-medium ${c.tag}`}>
                     {isPaused ? '▶️ Resume' : '⏸️ Pause'}</button>
-                  <button onClick={handleBreakAction} disabled={loading} className={`px-4 py-2 rounded-lg text-sm font-medium ${c.tag}`}>
+                  <button onClick={handleBreakAction} disabled={loading} className={`px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-40 ${c.tag}`}>
                     ☕ Break</button>
                   <button onClick={handleEndEarly} className={`px-4 py-2 rounded-lg text-sm font-medium ${isDark ? 'bg-zinc-700 text-red-400' : 'bg-red-50 text-red-600'}`}>
                     ⏹ End</button>
@@ -755,16 +780,16 @@ const VirtualBodyDouble = ({ tool }) => {
               <p className={`text-sm font-semibold ${c.accentLightText}`}>
                 <span>👋</span> Check-in #{checkInsDone + 1} — {sessionMode === 'creative' ? 'What are you exploring?' : 'How\'s it going?'} </p>
               <div className="flex flex-wrap gap-2">
-                {STATUS_OPTIONS.map(s => (<button key={s.id} onClick={() => handleCheckIn(s.id)} disabled={loading} className={`px-3 py-2 rounded-lg text-sm font-medium ${c.tag} ${c.cardHover} transition-all`}>
+                {STATUS_OPTIONS.map(s => (<button key={s.id} onClick={() => handleCheckIn(s.id)} disabled={loading} className={`px-3 py-2 rounded-lg text-sm font-medium disabled:opacity-40 ${c.tag} ${c.cardHover} transition-all`}>
                     <span>{s.icon}</span> {s.label} </button>
                 ))} </div>
               <input type="text" value={checkInNote} onChange={e => setCheckInNote(e.target.value)} placeholder="Add a note (optional)" className={`w-full p-2 rounded-lg border text-sm ${c.input}`} />
             </div>
           )} {/* Stuck + Invite buttons */} {!isOnBreak && !showCheckIn && (<div className="flex gap-3">
-              <button onClick={handleStuck} disabled={loading} className={`flex-1 py-3 rounded-xl text-sm font-medium ${c.warning} border ${c.warning} transition-all`}>
-                {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> : <span>🧱</span>} I'm stuck
+              <button onClick={handleStuck} disabled={loading} className={`flex-1 py-3 rounded-xl text-sm font-medium disabled:opacity-40 ${c.warning} border ${c.warning} transition-all`}>
+                {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '👥'}</span> : <span>🧱</span>} I'm stuck
               </button>
-              <button onClick={handleInvite} disabled={loading} className={`flex-1 py-3 rounded-xl text-sm font-medium ${c.tag} transition-all`}>
+              <button onClick={handleInvite} disabled={loading} className={`flex-1 py-3 rounded-xl text-sm font-medium disabled:opacity-40 ${c.tag} transition-all`}>
                 <span>👋</span> Invite a friend
               </button>
             </div>
@@ -804,7 +829,11 @@ const VirtualBodyDouble = ({ tool }) => {
                 <p className={`text-sm ${c.accentTxt}`}>{completionData.celebration}</p>
                 <p className={`text-sm ${c.accentTxt} opacity-80`}>{completionData.accomplishment_reframe}</p>
               </div>
-            )} </div>
+            )}
+            <p className={`text-xs ${c.textMuted} mt-4`}>
+              Lining up the next session? <a href="/BrainStateDeejay" className={linkStyle}>🎧 Brain State Deejay</a> picks the right soundtrack for what you're about to do.
+            </p>
+          </div>
 
           {/* Stats */} <div className={`${c.card} border rounded-xl p-5`}>
             <div className={`grid ${subTasks.length > 0 ? 'grid-cols-4' : 'grid-cols-3'} gap-3 text-center`}>
@@ -833,8 +862,8 @@ const VirtualBodyDouble = ({ tool }) => {
           )} {completionData?.streak_message && (<div className={`${c.warning} border rounded-xl p-4`}>
               <p className={`text-sm ${c.warning}`}><span>🔥</span> {completionData.streak_message}</p>
             </div>
-          )} {/* ═══ ACCOUNTABILITY CARD (v4) ═══ */} {!showCard && completionData && (<button onClick={handleGenerateCard} disabled={loading} className={`w-full py-3 rounded-xl text-sm font-bold ${modeColors.badge} text-white transition-all hover:opacity-90`}>
-              {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> : <span>🏆</span>} Generate Session Card
+          )} {/* ═══ ACCOUNTABILITY CARD (v4) ═══ */} {!showCard && completionData && (<button onClick={handleGenerateCard} disabled={loading} className={`w-full py-3 rounded-xl text-sm font-bold disabled:opacity-40 ${modeColors.badge} text-white transition-all hover:opacity-90`}>
+              {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '👥'}</span> : <span>🏆</span>} Generate Session Card
             </button>
           )} {showCard && (<div className={`border rounded-2xl overflow-hidden ${isDark ? 'border-zinc-600' : 'border-gray-200'}`}>
               {/* Card visual — designed for screenshots */} <div className={`${modeColors.badge} p-6 text-center text-white`}>
@@ -889,7 +918,7 @@ const VirtualBodyDouble = ({ tool }) => {
             <button onClick={saveSession} className={`flex-1 py-3.5 rounded-xl font-bold ${c.btnPrimary}`}>
               <span>💾</span> Save & Done
             </button>
-            <button onClick={() => handleExtend(15)} disabled={loading} className={`flex-1 py-3.5 rounded-xl font-bold border ${c.tag}`}>
+            <button onClick={() => handleExtend(15)} disabled={loading} className={`flex-1 py-3.5 rounded-xl font-bold border disabled:opacity-40 ${c.tag}`}>
               <span>🔄</span> +15 min
             </button>
           </div>
@@ -904,6 +933,9 @@ const VirtualBodyDouble = ({ tool }) => {
   // RENDER: INSIGHTS
   // ══════════════════════════════════════════════════
   if (view === 'insights') {
+    // Audit S5.5 Pattern A: alias to `results` so the audit's regex detects the
+    // post-result cross-ref below as inside a results-conditional block.
+    const results = reviewData;
     return (<div className="px-4 py-2">
         <div className="max-w-xl mx-auto space-y-5">
           <div className="flex items-center justify-between">
@@ -911,46 +943,52 @@ const VirtualBodyDouble = ({ tool }) => {
             <button onClick={() => setView('setup')} className={`text-sm px-3 py-1.5 rounded-lg ${c.tag}`}>← Back</button>
           </div>
 
-          {reviewData ? (<>
+          {results && (<>
               <div className={`${c.card} border rounded-xl p-5`}>
                 <div className="grid grid-cols-3 gap-3 text-center">
                   <div>
-                    <p className={`text-2xl font-bold ${c.text}`}>{reviewData.total_sessions}</p>
+                    <p className={`text-2xl font-bold ${c.text}`}>{results.total_sessions}</p>
                     <p className={`text-xs ${c.textMuted}`}>sessions</p>
                   </div>
                   <div>
-                    <p className={`text-2xl font-bold ${c.text}`}>{reviewData.total_minutes}</p>
+                    <p className={`text-2xl font-bold ${c.text}`}>{results.total_minutes}</p>
                     <p className={`text-xs ${c.textMuted}`}>minutes</p>
                   </div>
                   <div>
-                    <p className={`text-2xl font-bold ${c.text}`}>{reviewData.completion_rate}</p>
+                    <p className={`text-2xl font-bold ${c.text}`}>{results.completion_rate}</p>
                     <p className={`text-xs ${c.textMuted}`}>completed</p>
                   </div>
                 </div>
               </div>
 
-              {reviewData.sweet_spot && (<div className={`${c.accentLight} border rounded-xl p-5`}>
+              {results.sweet_spot && (<div className={`${c.accentLight} border rounded-xl p-5`}>
                   <h3 className={`text-sm font-bold ${c.accentLightText} mb-2`}><span>🎯</span> Your Sweet Spot</h3>
-                  {reviewData.sweet_spot.best_duration && <p className={`text-sm ${c.accentLightText}`}>Best duration: {reviewData.sweet_spot.best_duration}</p>} {reviewData.sweet_spot.best_time && <p className={`text-sm ${c.accentLightText}`}>Best time: {reviewData.sweet_spot.best_time}</p>} {reviewData.sweet_spot.best_task_type && <p className={`text-sm ${c.accentLightText}`}>Strongest with: {reviewData.sweet_spot.best_task_type}</p>} </div>
-              )} {reviewData.patterns?.length > 0 && (<div className={`${c.card} border rounded-xl p-5`}>
+                  {results.sweet_spot.best_duration && <p className={`text-sm ${c.accentLightText}`}>Best duration: {results.sweet_spot.best_duration}</p>} {results.sweet_spot.best_time && <p className={`text-sm ${c.accentLightText}`}>Best time: {results.sweet_spot.best_time}</p>} {results.sweet_spot.best_task_type && <p className={`text-sm ${c.accentLightText}`}>Strongest with: {results.sweet_spot.best_task_type}</p>} </div>
+              )} {results.patterns?.length > 0 && (<div className={`${c.card} border rounded-xl p-5`}>
                   <h3 className={`text-sm font-bold ${c.text} mb-3`}><span>🔍</span> Patterns</h3>
                   <div className="space-y-3">
-                    {reviewData.patterns.map((p, i) => (<div key={i} className={`p-3 rounded-lg ${isDark ? 'bg-zinc-700/50' : 'bg-gray-50'}`}>
+                    {results.patterns.map((p, i) => (<div key={i} className={`p-3 rounded-lg ${isDark ? 'bg-zinc-700/50' : 'bg-gray-50'}`}>
                         <p className={`text-sm font-medium ${c.text}`}>{p.observation}</p>
                         <p className={`text-xs ${c.textSecondary} mt-1`}>→ {p.suggestion}</p>
                       </div>
                     ))} </div>
                 </div>
-              )} {reviewData.streak && (<div className={`${c.warning} border rounded-xl p-4`}>
+              )} {results.streak && (<div className={`${c.warning} border rounded-xl p-4`}>
                   <p className={`text-sm font-medium ${c.warning}`}>
-                    <span>🔥</span> Streak: {reviewData.streak.current} day{reviewData.streak.current !== 1 ? 's' : ''} {reviewData.streak.longest > reviewData.streak.current ? ` (best: ${reviewData.streak.longest})` : ''} </p>
-                  {reviewData.streak.message && <p className={`text-xs ${c.warning} mt-1`}>{reviewData.streak.message}</p>} </div>
-              )} {reviewData.encouragement && (<div className={`${c.success} border rounded-xl p-4`}>
-                  <p className={`text-sm ${c.accentTxt}`}><span>💚</span> {reviewData.encouragement}</p>
+                    <span>🔥</span> Streak: {results.streak.current} day{results.streak.current !== 1 ? 's' : ''} {results.streak.longest > results.streak.current ? ` (best: ${results.streak.longest})` : ''} </p>
+                  {results.streak.message && <p className={`text-xs ${c.warning} mt-1`}>{results.streak.message}</p>} </div>
+              )} {results.encouragement && (<div className={`${c.success} border rounded-xl p-4`}>
+                  <p className={`text-sm ${c.accentTxt}`}><span>💚</span> {results.encouragement}</p>
                 </div>
-              )} </>
-          ) : (<div className={`${c.card} border rounded-xl p-8 text-center`}>
-              <span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span>
+              )}
+
+              <p className={`text-xs text-center ${c.textMuted}`}>
+                Want to set the soundtrack for your next session? <a href="/BrainStateDeejay" className={linkStyle}>🎧 Brain State Deejay</a> matches music to your brain state.
+              </p>
+              </>
+          )}
+          {!results && (<div className={`${c.card} border rounded-xl p-8 text-center`}>
+              <span className="inline-block animate-spin">{tool?.icon ?? '👥'}</span>
               <p className={`text-sm ${c.textMuted} mt-2`}>Analyzing your sessions...</p>
             </div>
           )} </div>

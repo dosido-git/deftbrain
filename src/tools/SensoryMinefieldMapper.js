@@ -362,6 +362,8 @@ const SensoryMinefieldMapper = ({ tool }) => {
   const viewRef = useRef(null);
   const canSubmitRef = useRef(false);
   const canRouteRef = useRef(false);
+  const routeStopsInputRefs = useRef([]);
+  const shouldFocusNewRouteStopsRef = useRef(false);
   analyzeLocationRef.current = analyzeLocation;
   planRouteRef.current = planRoute;
   viewRef.current = view;
@@ -383,6 +385,14 @@ const SensoryMinefieldMapper = ({ tool }) => {
     return () => document.removeEventListener('keydown', handler);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [analysisLoading, routeLoading]);
+
+  useEffect(() => {
+    if (shouldFocusNewRouteStopsRef.current) {
+      const last = routeStopsInputRefs.current[routeStops.length - 1];
+      if (last) last.focus();
+      shouldFocusNewRouteStopsRef.current = false;
+    }
+  }, [routeStops.length]);
 
   return (
     <div className={`space-y-4 ${c.text}`}>
@@ -986,7 +996,7 @@ const SensoryMinefieldMapper = ({ tool }) => {
                     {routeStops.length > 1 && <button onClick={() => setRouteStops(prev => prev.filter((_, idx) => idx !== i))} className={`text-xs ${c.textMuteded} hover:text-zinc-400`}>✕</button>}
                   </div>
                   <div className="grid grid-cols-3 gap-2">
-                    <input type="text" value={stop.location}
+                    <input ref={el => { routeStopsInputRefs.current[i] = el; }} type="text" value={stop.location}
                       onChange={e => setRouteStops(prev => prev.map((s, idx) => idx === i ? { ...s, location: e.target.value } : s))}
                       onKeyDown={e => {
                         if (e.key === 'Enter' && !e.metaKey && !e.ctrlKey) {
@@ -994,6 +1004,7 @@ const SensoryMinefieldMapper = ({ tool }) => {
                           if (i === routeStops.length - 1) {
                             // Last stop — only add a new one if this stop is complete
                             if (stop.placeType && routeStops.length < 5) {
+                              shouldFocusNewRouteStopsRef.current = true;
                               setRouteStops(prev => [...prev, { location: '', placeType: '', time: '' }]);
                             } else if (!stop.placeType) {
                               // Nudge to the select for this stop
@@ -1020,7 +1031,7 @@ const SensoryMinefieldMapper = ({ tool }) => {
               ))}
 
               {routeStops.length < 5 && (
-                <button onClick={() => setRouteStops(prev => [...prev, { location: '', placeType: '', time: '' }])} className={`w-full py-2 rounded-xl text-xs font-bold ${c.btnSecondary}`}>
+                <button onClick={() => { shouldFocusNewRouteStopsRef.current = true; setRouteStops(prev => [...prev, { location: '', placeType: '', time: '' }]); }} className={`w-full py-2 rounded-xl text-xs font-bold ${c.btnSecondary}`}>
                   + Add Stop
                 </button>
               )}

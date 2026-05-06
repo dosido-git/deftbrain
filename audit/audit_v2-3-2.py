@@ -1,3 +1,25 @@
+# v2.1 · 2026-05-04 · three audit-script patches from session backlog:
+#                     (1) S1.1k indirection awareness — count keys referenced
+#                     via `colorKey: 'cardAlt'` lookup-object pattern (where
+#                     JSX accesses `c[entry.colorKey]`, invisible to the
+#                     `c.X` regex). Also added blanket suppression when
+#                     dynamic `c[<expr>]` access is detected (any defined key
+#                     could be the target — false-positive risk too high).
+#                     Closes the BrainRoulette/DifficultTalkCoach workaround
+#                     where helper if-chains (verdictClass, resistanceClass)
+#                     were used solely to satisfy S1.1k.
+#                     (2) PF-13 template-literal traversal — replaced regex
+#                     className extraction (`[^`\"']+`, which stopped at the
+#                     first `${...}`) with brace-aware walking so the entire
+#                     className value is searched. Also lifted the per-file
+#                     `break` — all PF-13 violations now surface in a single
+#                     audit pass (was 5 reruns to clear BatchFlow).
+#                     (3) BANNED_COLORS regex broadened — replaced the static
+#                     prefix-substring list (bg-/text-/border-) with a
+#                     compiled regex matching ANY Tailwind utility prefix
+#                     against a color-family list. Now catches ring-, divide-,
+#                     from-/to-/via-, decoration-, accent-, etc., and modifier
+#                     variants like `focus:ring-pink-300`, `hover:from-violet-500`.
 # v2.0 · 2026-05-03 · PF-15 sr-only exemption: labels with className `sr-only`
 #                     skip required-asterisk enforcement. Rationale: sr-only
 #                     labels are intentionally invisible (screen-reader-only),
@@ -73,11 +95,15 @@ ABBREV_KEYS = ['  ts:', '  tm:', '  pri:', '  bdr:', '  ok:', '  bad:',
 REQUIRED_KEYS = ['card', 'cardAlt', 'text', 'textSecondary', 'textMuted',
                  'input', 'btnPrimary', 'btnSecondary', 'border', 'success',
                  'warning', 'danger']
-BANNED_COLORS = ['bg-blue', 'text-blue', 'border-blue', 'bg-purple', 'text-purple', 'border-purple',
-                 'bg-violet', 'text-violet', 'border-violet', 'bg-indigo', 'text-indigo', 'border-indigo',
-                 'bg-teal', 'text-teal', 'border-teal', 'bg-stone', 'text-stone', 'border-stone',
-                 'bg-yellow', 'text-yellow', 'border-yellow',
-                 'bg-rose', 'text-rose', 'border-rose', 'bg-pink', 'text-pink', 'border-pink']
+# BANNED_COLOR_FAMILIES: list of Tailwind color names off-palette for DeftBrain.
+# Matched against ANY Tailwind utility prefix, not just bg-/text-/border-, so
+# `focus:ring-pink-300`, `hover:from-violet-500`, `divide-purple-200`, etc. all
+# get caught. Built into _BANNED_COLOR_RE below; iteration in S1.1 uses that.
+BANNED_COLOR_FAMILIES = ['blue', 'purple', 'violet', 'indigo', 'teal', 'stone',
+                         'yellow', 'rose', 'pink']
+_BANNED_COLOR_RE = re.compile(
+    r'\b[a-z][a-z-]*-(?:' + '|'.join(BANNED_COLOR_FAMILIES) + r')(?:-\d{2,3})?\b'
+)
 SKIP = {'usePersistentState','tools','ActionButtons','printBranding','BrandMark','GlobalHeader','ToolPageWrapper','server','index','rateLimiter','useTheme','useDocumentHead','useSurvivalMath','usePersistentState','imageCompression', 'ToolFinderWizard'}
 
 def get_c_block(content):
@@ -348,12 +374,15 @@ for name, fpath in tools:
         fails.append('S1.1: card key contains border-')
 
     # S1.1: banned color families (non-comment lines only)
-    for color in BANNED_COLORS:
-        for m in re.finditer(re.escape(color), content):
-            if not is_comment_line(content, m.start()):
-                line_n = content[:m.start()].count('\n') + 1
-                fails.append(f'S1.1: banned color {color} at line {line_n}')
-                break
+    # Catches ANY Tailwind utility with a banned color: bg-, text-, border-,
+    # ring-, divide-, from-/to-/via-, decoration-, accent-, etc., including
+    # variants with modifier prefixes (focus:ring-pink-300, hover:bg-blue-100).
+    for m in _BANNED_COLOR_RE.finditer(content):
+        if is_comment_line(content, m.start()):
+            continue
+        line_n = content[:m.start()].count('\n') + 1
+        fails.append(f'S1.1: banned color "{m.group()}" at line {line_n}')
+        break
 
     # S1.1: btnPrimary must use cyan
     btn_m = re.search(r'^\s+btnPrimary\s*:.*', c_block, re.MULTILINE)
@@ -385,9 +414,24 @@ for name, fpath in tools:
     # (so a literal key isn't "used" merely by existing in the c block).
     _content_no_cblock = content.replace(c_block, '') if c_block else content
     _c_used_external = set(re.findall(r'\bc\.([a-zA-Z][a-zA-Z0-9]*)\b', _content_no_cblock))
-    unused_keys = (c_defined - _c_used_external) - _CONVENTION_KEYS
-    for k in sorted(unused_keys):
-        fails.append(f'S1.1k: c.{k} defined but never used in JSX (dead key — remove from c block)')
+    # Indirect references: lookup objects use `colorKey: 'cardAlt'`/`bgKey: 'card'`
+    # then JSX accesses `c[entry.colorKey]` (bracket form, invisible to c.X regex).
+    # Capture string values of any *Key: '...' property — these count as "used".
+    # Convention: indirection key names end in `Key` (colorKey, bgKey, textKey).
+    # Bracket-access pattern `c[<expr>]` also flagged so we suppress S1.1k entirely
+    # when present (any defined key could be the target — false-positive risk too high).
+    _c_used_indirect = set(re.findall(
+        r"\b\w+Key\s*:\s*['\"]([a-zA-Z][a-zA-Z0-9]*)['\"]", _content_no_cblock
+    ))
+    _has_dynamic_c = bool(re.search(r'\bc\[[^\]]+\]', _content_no_cblock))
+    if _has_dynamic_c:
+        # Dynamic c[...] access could land on any defined key — skip dead-key check
+        # rather than emit false positives. Manual review handles these (see backlog).
+        pass
+    else:
+        unused_keys = (c_defined - _c_used_external - _c_used_indirect) - _CONVENTION_KEYS
+        for k in sorted(unused_keys):
+            fails.append(f'S1.1k: c.{k} defined but never used in JSX (dead key — remove from c block)')
 
     # S1.1j: raw Tailwind in lookup-object color props (BrainRoulette pattern)
     # Catches both `color: 'text-...'` (direct string) and `color: (d) => d ? 'bg-...' : ...` (fn).
@@ -951,6 +995,158 @@ for name, fpath in tools:
         if not _has_example:
             fails.append(f'PF-17: multi-field tool ({_input_count} inputs) missing Try Example button — required to demo functionality')
 
+    # ── PF-19: Growable input lists must auto-focus the new field ─────────────
+    # Pattern: a state array X is appended to via `setX(p => [...p, {...}])` AND
+    # rendered as `X.map(...) <input>`. When the user clicks "+ Add Another"
+    # or hits Enter to add, focus must follow to the new field — otherwise the
+    # user has to click into the empty input themselves, which breaks the flow.
+    #
+    # The required pattern (per CONVENTIONS.md, focus pattern for growable lists):
+    #   1. A ref array: `const xInputRefs = useRef([])`
+    #   2. A focus flag: `const shouldFocusNewXRef = useRef(false)` (or similar)
+    #   3. The add handler sets the flag before setState: `shouldFocusNewXRef.current = true`
+    #   4. A useEffect on `[X.length]` that focuses last input when flag is set, then clears flag
+    #   5. The input element binds the ref: `ref={el => { xInputRefs.current[i] = el; }}`
+    #
+    # Without the flag-gated focus, removeX() also triggers focus, stealing it
+    # from wherever the user currently is. The flag is what makes the pattern safe.
+    #
+    # Detection is conservative: we fire ONLY when (a) a `setX(p => [...p, ` pattern
+    # exists AND (b) `X.map(` renders an `<input>` or `<textarea>`. This avoids
+    # false positives on growable lists that don't contain inputs (e.g. a list of
+    # rendered cards, accumulators, etc.).
+    _no_comments = re.sub(r'//[^\n]*|/\*[\s\S]*?\*/', '', content)
+    # Match either `setX(p => [...p, ` or `setX(prev => [...prev, ` etc.
+    _append_pattern = re.compile(
+        r'\bset([A-Z]\w*)\s*\(\s*\w+\s*=>\s*\[\s*\.\.\.\s*\w+\s*,\s*\{',
+        re.MULTILINE,
+    )
+    _append_setters = set(_append_pattern.findall(_no_comments))
+
+    def _extract_map_body(text, map_start_pos):
+        """Given the position right after `.map(`, return the substring that
+        is the .map() callback's body (everything inside the outer parens).
+        String-aware so a string literal containing an unmatched `(` or `)`
+        doesn't throw off the depth counter — that bug was producing false
+        positives where the walker thought the body extended past the actual
+        `.map()` close-paren and into surrounding JSX containing inputs.
+        Comments are already stripped from the text passed in."""
+        depth = 1  # we start just inside the opening paren
+        i = map_start_pos
+        in_string = None
+        while i < len(text):
+            ch = text[i]
+            if in_string:
+                if ch == '\\' and i + 1 < len(text):
+                    i += 2; continue
+                if ch == in_string:
+                    in_string = None
+                i += 1; continue
+            if ch in ('"', "'", '`'):
+                in_string = ch
+                i += 1; continue
+            if ch == '(':
+                depth += 1
+            elif ch == ')':
+                depth -= 1
+                if depth == 0:
+                    return text[map_start_pos:i]
+            i += 1
+        return text[map_start_pos:]
+
+    for _setter in _append_setters:
+        # Convert setter name to state name: setTasks -> tasks
+        _state_name = _setter[0].lower() + _setter[1:]
+        # Does this state get rendered with .map() that contains an input/textarea
+        # *whose value binds to the map item or index*? An input that's bound
+        # to a separate state (e.g. an inline edit/correction field) doesn't
+        # count — focusing it on append would target a hidden or wrong field.
+        # Walk parens to extract just the map body.
+        _map_pattern = re.compile(
+            r'\b' + re.escape(_state_name) + r'\.map\s*\(',
+        )
+        _has_input_in_map = False
+        for _map_m in _map_pattern.finditer(_no_comments):
+            _body = _extract_map_body(_no_comments, _map_m.end())
+            if not re.search(r'<(?:input|textarea)\b', _body):
+                continue
+            # Extract item + index var names from callback signature.
+            # Handles `(item, idx) =>`, `(item) =>`, and `item =>`.
+            _sig = re.match(
+                r'\s*(?:\(\s*(\w+)\s*(?:,\s*(\w+)\s*)?\)|(\w+))\s*=>',
+                _body
+            )
+            if not _sig:
+                continue
+            _item_var = _sig.group(1) or _sig.group(3)
+            _idx_var = _sig.group(2)
+            if not _item_var or _item_var == '_':
+                continue
+            _vars = [_item_var]
+            if _idx_var and _idx_var != '_':
+                _vars.append(_idx_var)
+            # Look for any value={...expr...} where expr references one of these.
+            _binding_pat = re.compile(
+                r'\bvalue\s*=\s*\{[^}]*?\b(?:'
+                + '|'.join(re.escape(v) for v in _vars)
+                + r')\b'
+            )
+            if _binding_pat.search(_body):
+                _has_input_in_map = True
+                break
+        if not _has_input_in_map:
+            continue  # not a growable INPUT list — not subject to PF-19
+
+        # Now check the focus pattern is in place:
+        _missing = []
+
+        # 1. Ref array (typically named *InputRefs or similar)
+        _has_ref_array = bool(re.search(
+            r'\b\w*[Ii]nput[Rr]efs\s*=\s*useRef\s*\(\s*\[\s*\]\s*\)'
+            r'|\bref\s*=\s*\{\s*(?:el|node|r)\s*=>\s*\{\s*\w+\.current\s*\[\s*\w+\s*\]\s*=',
+            _no_comments
+        ))
+        if not _has_ref_array:
+            _missing.append('input-ref array (e.g. `const xInputRefs = useRef([])` + `ref={el => { xInputRefs.current[i] = el; }}`)')
+
+        # 2. Focus-intent flag (named shouldFocus*Ref or similar)
+        _has_flag = bool(re.search(
+            r'\bshould[A-Z]\w*Ref\s*=\s*useRef\s*\(',
+            _no_comments
+        ))
+        if not _has_flag:
+            _missing.append('focus-intent flag (e.g. `const shouldFocusNewXRef = useRef(false)`)')
+
+        # 3. Setter must set the flag before/during the append
+        # Heuristic: search for `shouldFocus*Ref.current = true` in the file
+        _flag_set = bool(re.search(
+            r'\bshould[A-Z]\w*Ref\.current\s*=\s*true\b',
+            _no_comments
+        ))
+        if not _flag_set:
+            _missing.append('handler must set `shouldFocus*Ref.current = true` before appending')
+
+        # 4. useEffect on [X.length] that calls .focus()
+        # Conservative match: an effect whose deps include `<state>.length`
+        # AND whose body contains `.focus()`.
+        _effect_pattern = re.compile(
+            r'useEffect\s*\(\s*\(\s*\)\s*=>\s*\{([\s\S]{0,800}?)\}\s*,\s*\[\s*[^\]]*'
+            + re.escape(_state_name) + r'\.length[^\]]*\]\s*\)',
+        )
+        _effect_ok = False
+        for _em in _effect_pattern.finditer(_no_comments):
+            if '.focus()' in _em.group(1):
+                _effect_ok = True
+                break
+        if not _effect_ok:
+            _missing.append(f'useEffect watching `[{_state_name}.length]` that focuses the last input when flag is set')
+
+        if _missing:
+            fails.append(
+                f'PF-19: growable input list `{_state_name}` (appended via set{_setter}) '
+                f'must auto-focus the new field. Missing: ' + '; '.join(_missing)
+            )
+
     # ── TOOLS: tool must have an entry in tools.js ─────────────────────────────
     # Caught early: a tool component without a tools.js registration is unreachable.
     # Skipped if tools.js wasn't found at audit time (offline / wrong path).
@@ -964,6 +1160,7 @@ for name, fpath in tools:
     # of truth on this — one pattern only.
     # Brace-aware walker: JSX attrs commonly contain `=>`, so `[^>]` regexes
     # break on arrow functions. Track brace depth to find the real closing `>`.
+    _pf13_violations = []
     for _btn_m in re.finditer(r'<button\b', content):
         _depth = 0
         _btn_end = None
@@ -980,14 +1177,48 @@ for name, fpath in tools:
         # Only check buttons that disable on loading (skip others — not subject to PF-13)
         if not re.search(r'disabled=\{[^}]*[Ll]oading[^}]*\}', _btn_open):
             continue
-        # Extract className value (supports template literals via backticks)
-        _cn_m = re.search(r"className=\{?[`\"']([^`\"']+)", _btn_open)
-        if not _cn_m:
+        # Extract className value with brace-aware walking so template literals
+        # spanning ${...} interpolations are captured in full. The previous
+        # regex `[^`\"']+` stopped at the first interpolation, missing
+        # `disabled:opacity-40` placed AFTER a ${...}.
+        _cn_eq = re.search(r"className=", _btn_open)
+        if not _cn_eq:
             continue
-        if 'disabled:opacity-40' not in _cn_m.group(1):
+        _p = _cn_eq.end()
+        while _p < len(_btn_open) and _btn_open[_p] in ' \t':
+            _p += 1
+        if _p >= len(_btn_open):
+            continue
+        _cn_value = ''
+        if _btn_open[_p] == '{':
+            # Brace-walk to find matching close brace
+            _d = 1
+            _start = _p + 1
+            _p += 1
+            while _p < len(_btn_open) and _d > 0:
+                if _btn_open[_p] == '{': _d += 1
+                elif _btn_open[_p] == '}': _d -= 1
+                _p += 1
+            _cn_value = _btn_open[_start:_p - 1] if _d == 0 else _btn_open[_start:]
+        elif _btn_open[_p] in '"\'':
+            _q = _btn_open[_p]
+            _start = _p + 1
+            _p += 1
+            while _p < len(_btn_open) and _btn_open[_p] != _q:
+                _p += 1
+            _cn_value = _btn_open[_start:_p]
+        else:
+            continue
+        if 'disabled:opacity-40' not in _cn_value:
             _line_n = content[:_btn_m.start()].count('\n') + 1
-            fails.append(f'PF-13: button at line {_line_n} disables on loading but className missing "disabled:opacity-40"')
-            break
+            _pf13_violations.append(_line_n)
+    if _pf13_violations:
+        if len(_pf13_violations) == 1:
+            fails.append(f'PF-13: button at line {_pf13_violations[0]} disables on loading but className missing "disabled:opacity-40"')
+        else:
+            _shown = ', '.join(map(str, _pf13_violations[:8]))
+            _more = f' (+{len(_pf13_violations) - 8} more)' if len(_pf13_violations) > 8 else ''
+            fails.append(f'PF-13: {len(_pf13_violations)} buttons missing "disabled:opacity-40" — lines {_shown}{_more}')
 
     # ── CONV: appearance-none on range inputs (slider track regression) ────────
     # Strips browser track rendering; we use accent-cyan-600 instead. See

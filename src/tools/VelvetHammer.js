@@ -61,14 +61,18 @@ const VelvetHammer = ({ tool }) => {
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
     : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
 
-  const [draft, setDraft] = usePersistentState('velvethammer-draft', '');
+  // ─── State (useState before usePersistentState — PF-11/PF-14) ───
   const [relationship, setRelationship] = useState('colleague');
   const [goal, setGoal] = useState('behavior_change');
   const [power, setPower] = useState('neutral');
-  const [results, setResults] = usePersistentState('velvethammer-result', null);
   const [error, setError] = useState('');
-  const [history, setHistory] = usePersistentState('velvethammer-history', []);
   const [showHistory, setShowHistory] = useState(false);
+
+  // ─── Persistent state ───
+  const [draft, setDraft] = usePersistentState('velvethammer-draft', '');
+  const [results, setResults] = usePersistentState('velvethammer-result', null);
+  const [history, setHistory] = usePersistentState('velvethammer-history', []);
+
   const resultsRef = useRef(null);
 
   const handleTransform = async () => {
@@ -89,16 +93,24 @@ const VelvetHammer = ({ tool }) => {
       setError(err.message || 'Failed to transform. Try again.');
     } };
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // ─── Keyboard: SELECT-only guard with stale-closure-safe refs ───
+  const handleTransformRef = useRef(null);
+  const canSubmitRef = useRef(false);
+  handleTransformRef.current = handleTransform;
+  canSubmitRef.current = !!draft.trim() && !loading;
+
   useEffect(() => {
     const handler = (e) => {
       const tag = document.activeElement?.tagName;
-      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
-      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !loading && draft.trim()) handleTransform();
+      if (tag === 'SELECT') return;
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !loading && canSubmitRef.current) {
+        e.preventDefault();
+        handleTransformRef.current?.();
+      }
     };
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
-  }, [loading, draft]); // eslint-disable-line
+  }, [loading]);
 
   const handleReset = () => { setResults(null); setError(''); setDraft(''); };
 
@@ -164,7 +176,7 @@ const VelvetHammer = ({ tool }) => {
             ))} </div>
         )} {/* Rage box */} <div>
           <label className={`text-sm font-semibold ${c.text} block mb-2`}>
-            🤬 What you <em>want</em> to say
+            🤬 What you <em>want</em> to say <span className={c.required}>*</span>
           </label>
           <p className={`text-xs ${c.textMuted} mb-2`}>Don't hold back. Vent it out. This stays private.</p>
           <textarea
@@ -195,9 +207,27 @@ const VelvetHammer = ({ tool }) => {
           {loading
             ? <><span className="inline-block animate-spin">{tool?.icon ?? '🔨'}</span> Transforming…</>
             : <><span>{tool?.icon ?? '🔨'}</span> Transform Message</>} </button>
+
+        {/* Try Example */}
+        {!draft.trim() && !loading && (
+          <div className="flex justify-center">
+            <button
+              onClick={() => {
+                setDraft("This is the THIRD time this month you've sent me a 'final' contract that you then change two days later. Do you have any idea how much time I'm wasting reviewing the same document over and over because YOU can't get your act together? I'm not your assistant. Stop sending me half-baked drafts and wasting my morning.");
+                setRelationship('vendor');
+                setGoal('behavior_change');
+                setPower('i_have_leverage');
+              }}
+              className={`text-xs font-medium ${c.textSecondary} underline underline-offset-2 min-h-[32px]`}
+            >
+              ✨ Try an example
+            </button>
+          </div>
+        )}
+
         <p className={`text-xs text-center ${c.textMuted}`}>AI-generated — review before sending.</p>
         <p className={`text-xs text-center ${c.textMuted} mt-1`}>
-          Need to say it in person? <a href="/DifficultTalkCoach" className={linkStyle}>Difficult Talk Coach</a> helps you prepare.
+          Need to say it in person? <a href="/DifficultTalkCoach" className={linkStyle}>🗣️ Difficult Talk Coach</a> helps you prepare.
         </p>
 
         {error && <div className={`p-3 rounded-lg border text-sm ${c.danger}`}>⚠️ {error}</div>} </div>

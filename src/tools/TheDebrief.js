@@ -79,6 +79,8 @@ const TheDebrief = ({ tool }) => {
 
   const resultsRef = useRef(null);
 
+  const meetingsInputRefs = useRef([]);
+  const shouldFocusNewMeetingsRef = useRef(false);
   const [history, setHistory] = usePersistentState('the-debrief-history', []);
 
   const [showHistory, setShowHistory] = useState(false);
@@ -119,7 +121,7 @@ const TheDebrief = ({ tool }) => {
   }, [mode, transcript, meetings]);
 
   // Series helpers
-  const addMeeting = useCallback(() => { if (meetings.length < 5) setMeetings(p => [...p, { title: '', date: '', transcript: '' }]); }, [meetings.length]);
+  const addMeeting = useCallback(() => { if (meetings.length < 5) { shouldFocusNewMeetingsRef.current = true; setMeetings(p => [...p, { title: '', date: '', transcript: '' }]); }; }, [meetings.length]);
   const removeMeeting = useCallback((i) => { if (meetings.length > 2) setMeetings(p => p.filter((_, idx) => idx !== i)); }, [meetings.length]);
   const updateMeeting = useCallback((i, field, val) => setMeetings(p => p.map((m, idx) => idx === i ? { ...m, [field]: val } : m)), []);
 
@@ -141,6 +143,14 @@ const TheDebrief = ({ tool }) => {
     return () => document.removeEventListener('keydown', handler);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading, canSubmit]);
+
+  useEffect(() => {
+    if (shouldFocusNewMeetingsRef.current) {
+      const last = meetingsInputRefs.current[meetings.length - 1];
+      if (last) last.focus();
+      shouldFocusNewMeetingsRef.current = false;
+    }
+  }, [meetings.length]);
 
   // ── API ──
   const submit = useCallback(async () => {
@@ -296,7 +306,7 @@ const TheDebrief = ({ tool }) => {
             <div key={idx} className={c.card + ' border rounded-xl p-4'}>
               <div className="flex items-center gap-2 mb-2">
                 <span className={'text-xs font-bold ' + c.badge + ' px-2 py-0.5 rounded-full'}>Meeting {idx + 1}</span>
-                <input type="text" value={mtg.title} onChange={e => updateMeeting(idx, 'title', e.target.value)}
+                <input ref={el => { meetingsInputRefs.current[idx] = el; }} type="text" value={mtg.title} onChange={e => updateMeeting(idx, 'title', e.target.value)}
                   placeholder="Meeting title (optional)"
                   className={'flex-1 px-3 py-1.5 rounded-lg border text-xs ' + c.input + ' outline-none'} />
                 <input type="text" value={mtg.date} onChange={e => updateMeeting(idx, 'date', e.target.value)}

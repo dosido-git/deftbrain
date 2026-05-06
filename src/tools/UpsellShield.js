@@ -47,35 +47,41 @@ const UpsellShield = ({ tool }) => {
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
     : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
 
-  const [situation, setSituation] = usePersistentState('upsellshield-situation', '');
+  // ─── State (useState before usePersistentState — PF-11/PF-14) ───
   const [whatYouWant, setWhatYouWant] = useState('');
   const [budget, setBudget] = useState('');
   const [concerns, setConcerns] = useState('');
-  const [results, setResults] = usePersistentState('upsellshield-result', null);
   const [error, setError] = useState('');
+  const [expandedSections, setExpandedSections] = useState({ playbook: true });
+
+  // ─── Persistent state ───
+  const [situation, setSituation] = usePersistentState('upsellshield-situation', '');
+  const [results, setResults] = usePersistentState('upsellshield-result', null);
   const [history, setHistory] = usePersistentState('upsellshield-history', []);
 
   const resultsRef = useRef(null);
-  const [expandedSections, setExpandedSections] = useState({ playbook: true });
 
   const toggleSection = useCallback((key) => {
     setExpandedSections(p => ({ ...p, [key]: !p[key] }));
   }, []);
 
-  // Cmd/Ctrl+Enter submits from anywhere
+  // Cmd/Ctrl+Enter submits — SELECT-only guard, ref pattern to avoid stale closures
+  const generateRef = useRef(null);
+  const canSubmitRef = useRef(false);
+  canSubmitRef.current = !!situation.trim() && !loading;
+
   useEffect(() => {
     const handler = (e) => {
-      if (e.key !== 'Enter' || !(e.metaKey || e.ctrlKey)) return;
       const tag = document.activeElement?.tagName;
-      if (tag === 'TEXTAREA') return;
-      if (!situation.trim() || loading) return;
-      e.preventDefault();
-      generate();
+      if (tag === 'SELECT') return;
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !loading && canSubmitRef.current) {
+        e.preventDefault();
+        generateRef.current?.();
+      }
     };
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [situation, loading]);
+  }, [loading]);
 
   const generate = useCallback(async (quickSit) => {
     const sit = quickSit || situation;
@@ -97,6 +103,9 @@ const UpsellShield = ({ tool }) => {
       }, ...prev].slice(0, 6));
     } catch (err) { setError(err.message || 'Failed to generate defense plan.'); }
   }, [situation, whatYouWant, budget, concerns, callToolEndpoint, setError, setResults, setSituation, setWhatYouWant, setBudget, setConcerns, setHistory]);
+
+  // Keep generateRef fresh every render so the keyboard handler always invokes the latest closure
+  generateRef.current = generate;
 
   const handleReset = useCallback(() => {
     setSituation(''); setWhatYouWant(''); setBudget('');
@@ -142,7 +151,7 @@ const UpsellShield = ({ tool }) => {
       <div className={`${c.card} border ${c.border} rounded-xl p-6`}>
         <div className={`mb-5 pb-4 border-b ${c.border}`}>
           <h2 className={`text-2xl font-bold ${c.text}`}>
-            <span className="mr-2">{tool?.icon ?? '🧲'}</span>{tool?.title ?? 'UpsellShield'}
+            <span className="mr-2">{tool?.icon ?? '🛡️'}</span>{tool?.title ?? 'UpsellShield'}
           </h2>
           <p className={`text-sm ${c.textSecondary} mt-1`}>{tool?.tagline ?? 'Walk into high-pressure sales prepared'}</p>
         </div>
@@ -155,7 +164,7 @@ const UpsellShield = ({ tool }) => {
         </div>
 
         <div className="mb-4">
-          <label className={`text-sm font-bold ${c.text} block mb-1.5`}>What sales situation are you walking into?</label>
+          <label className={`text-sm font-bold ${c.text} block mb-1.5`}>What sales situation are you walking into? <span className={c.required}>*</span></label>
           <input type="text" value={situation} onChange={e => setSituation(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && situation.trim() && !loading && generate()}
             placeholder="e.g., buying a used car, getting a roofing quote, phone store upgrade"
@@ -197,17 +206,36 @@ const UpsellShield = ({ tool }) => {
             className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} ${c.border} ${c.text} outline-none focus:ring-2`} />
         </div>
 
+        <p className={`text-xs text-center ${c.textMuted} mb-2`}>
+          Spotted a dodgy review on the way in? <a href="/FakeReviewDetective" className={linkStyle}>🔍 Fake Review Detective</a> helps you filter the noise.
+        </p>
+
         <div className="flex gap-3">
           <button onClick={() => generate()} disabled={loading || !situation.trim()}
             className={`flex-1 ${c.btnPrimary} disabled:opacity-40 disabled:cursor-not-allowed font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-2 min-h-[48px] shadow-lg`}>
-            {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '🧲'}</span> Arming you...</> : <><span>{tool?.icon ?? '🧲'}</span> Prepare Me</>}
+            {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '🛡️'}</span> Arming you...</> : <><span>{tool?.icon ?? '🛡️'}</span> Prepare Me</>}
           </button>
           {results && <button onClick={handleReset} className={`px-5 py-3 ${c.btnSecondary} rounded-xl font-medium min-h-[48px]`}>New</button>}
         </div>
+
+        {/* Try Example */}
+        {!situation.trim() && !loading && (
+          <div className="flex justify-center mt-3">
+            <button
+              onClick={() => {
+                setSituation('Buying a used 2020 Honda CR-V from a dealership tomorrow afternoon');
+                setWhatYouWant('The base trim, no extended warranty, no add-ons, just the car at a fair price');
+                setBudget('Pre-approved for $24,000 max from credit union');
+                setConcerns("Last time I bought a car they wore me down for 4 hours and I added $3K of stuff I didn't want");
+              }}
+              className={`text-xs font-medium ${c.textSecondary} underline underline-offset-2 min-h-[32px]`}
+            >
+              ✨ Try an example
+            </button>
+          </div>
+        )}
+
         <p className={`text-xs text-center ${c.textMuted} mt-1`}>AI-generated — review before using in any negotiation.</p>
-        <p className={`text-xs text-center ${c.textMuted} mt-2`}>
-          Spotted a dodgy review on the way in? <a href="/FakeReviewDetective" className={linkStyle}>Fake Review Detective</a> helps you filter the noise.
-        </p>
       </div>
 
       {error && (

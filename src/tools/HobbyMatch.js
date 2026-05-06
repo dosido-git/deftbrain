@@ -394,7 +394,7 @@ const HobbyMatch = ({ tool }) => {
             <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 Related tools</p>
             <div className="flex flex-wrap gap-3">
               <a href="/MicroAdventureMapper" className={`text-xs ${linkStyle}`}>🗺️ Micro Adventure Mapper</a>
-              <a href="/DopamineMenuBuilder" className={`text-xs ${linkStyle}`}>🍽️ Dopamine Menu Builder</a>
+              <a href="/PEP" className={`text-xs ${linkStyle}`}>✨ PEP</a>
               <a href="/SixDegreesOfMe" className={`text-xs ${linkStyle}`}>🕸️ Six Degrees of Me</a>
             </div>
           </div>

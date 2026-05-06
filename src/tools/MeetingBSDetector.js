@@ -386,6 +386,7 @@ const MeetingBSDetector = ({ tool }) => {
 
   // ── Team helpers ──
   const addTeamMeeting = () => {
+    shouldFocusNewTeamMeetingsRef.current = true;
     setTeamMeetings(p => [...p, { title: '', duration: '1 hour', attendeesFromTeam: '', frequency: 'Weekly', notes: '' }]);
   };
   const removeTeamMeeting = (i) => setTeamMeetings(p => p.filter((_, idx) => idx !== i));
@@ -395,6 +396,7 @@ const MeetingBSDetector = ({ tool }) => {
 
   // ── Calendar helpers ──
   const addCalMeeting = () => {
+    shouldFocusNewCalMeetingsRef.current = true;
     setCalMeetings(p => [...p, { title: '', duration: '1 hour', attendees: '', recurring: false, notes: '' }]);
   };
   const removeCalMeeting = (i) => setCalMeetings(p => p.filter((_, idx) => idx !== i));
@@ -505,12 +507,32 @@ const MeetingBSDetector = ({ tool }) => {
 
   // ── Scroll to primary results ──
   const resultsRef = useRef(null);
+  const calMeetingsInputRefs = useRef([]);
+  const shouldFocusNewCalMeetingsRef = useRef(false);
+  const teamMeetingsInputRefs = useRef([]);
+  const shouldFocusNewTeamMeetingsRef = useRef(false);
   useEffect(() => {
     if (!analyzeResults || !resultsRef.current) return;
     const t = setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 200);
     return () => clearTimeout(t);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [analyzeResults]);
+
+  useEffect(() => {
+    if (shouldFocusNewCalMeetingsRef.current) {
+      const last = calMeetingsInputRefs.current[calMeetings.length - 1];
+      if (last) last.focus();
+      shouldFocusNewCalMeetingsRef.current = false;
+    }
+  }, [calMeetings.length]);
+
+  useEffect(() => {
+    if (shouldFocusNewTeamMeetingsRef.current) {
+      const last = teamMeetingsInputRefs.current[teamMeetings.length - 1];
+      if (last) last.focus();
+      shouldFocusNewTeamMeetingsRef.current = false;
+    }
+  }, [teamMeetings.length]);
 
   // ════════════════════════════════════════════════════════════
   // NAV
@@ -694,7 +716,7 @@ const MeetingBSDetector = ({ tool }) => {
               <div className="flex items-start gap-2">
                 <span className={`text-xs font-black ${c.textSecondary} mt-2`}>{i + 1}</span>
                 <div className="flex-1 space-y-2">
-                  <input type="text" value={m.title} onChange={e => updateCalMeeting(i, 'title', e.target.value)}
+                  <input ref={el => { calMeetingsInputRefs.current[i] = el; }} type="text" value={m.title} onChange={e => updateCalMeeting(i, 'title', e.target.value)}
                     placeholder="Meeting name"
                     className={`w-full px-2 py-1.5 border rounded text-sm ${c.input} outline-none focus:ring-2`} />
                   <div className="flex gap-2 flex-wrap">
@@ -1676,7 +1698,7 @@ const MeetingBSDetector = ({ tool }) => {
               )}
             </div>
             <div className="grid grid-cols-2 gap-2 mb-2">
-              <input type="text" value={m.title}
+              <input ref={el => { teamMeetingsInputRefs.current[i] = el; }} type="text" value={m.title}
                 onChange={e => updateTeamMeeting(i, 'title', e.target.value)}
                 placeholder="Meeting name" className={`px-2 py-1.5 border rounded text-xs ${c.input}`} />
               <select value={m.duration} onChange={e => updateTeamMeeting(i, 'duration', e.target.value)}

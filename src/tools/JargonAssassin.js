@@ -226,6 +226,8 @@ const JargonAssassin = ({ tool }) => {
 
   const handleTranslateRef = useRef(null);
   const canSubmitRef = useRef(false);
+  const dossDocsInputRefs = useRef([]);
+  const shouldFocusNewDossDocsRef = useRef(false);
   handleTranslateRef.current = handleTranslate;
   canSubmitRef.current = !!docText.trim() || !!fileBase64;
 
@@ -240,6 +242,14 @@ const JargonAssassin = ({ tool }) => {
     return () => document.removeEventListener('keydown', handler);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading]);
+
+  useEffect(() => {
+    if (shouldFocusNewDossDocsRef.current) {
+      const last = dossDocsInputRefs.current[dossDocs.length - 1];
+      if (last) last.focus();
+      shouldFocusNewDossDocsRef.current = false;
+    }
+  }, [dossDocs.length]);
 
   const buildFullText = useCallback(() => {
     if (!results) return '';
@@ -475,8 +485,8 @@ const JargonAssassin = ({ tool }) => {
       {mode === 'dossier' && <div className="space-y-4">
         <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-5 space-y-4`}>
           <div><h3 className={`font-bold ${c.text}`}>📁 Multi-Document Dossier</h3><p className={`text-sm ${c.textMuteded}`}>Cross-reference related documents — find conflicts, gaps, and dependencies.</p></div>
-          {dossDocs.map((d, i) => <div key={i} className={`${c.cardAlt} border ${c.border} rounded-lg p-3 space-y-2`}><div className="flex gap-2"><input value={d.title} onChange={e => setDossDocs(prev => prev.map((p, j) => j === i ? { ...p, title: e.target.value } : p))} placeholder={`Document ${i + 1} title`} className={`flex-1 px-2 py-1 rounded border text-xs ${c.input}`} /><select value={d.type} onChange={e => setDossDocs(prev => prev.map((p, j) => j === i ? { ...p, type: e.target.value } : p))} className={`px-2 py-1 rounded border text-xs ${c.input}`}>{DOC_TYPES.map(dt => <option key={dt.id} value={dt.id}>{dt.label}</option>)}</select></div><textarea value={d.text} onChange={e => setDossDocs(prev => prev.map((p, j) => j === i ? { ...p, text: e.target.value } : p))} placeholder="Paste document text..." rows={3} className={`w-full px-2 py-1 rounded border text-xs font-mono ${c.input}`} /></div>)}
-          <button onClick={() => setDossDocs(prev => [...prev, { title: '', text: '', type: 'general' }])} className={`text-xs ${c.textSecondary} font-bold`}>➕ Add document</button>
+          {dossDocs.map((d, i) => <div key={i} className={`${c.cardAlt} border ${c.border} rounded-lg p-3 space-y-2`}><div className="flex gap-2"><input ref={el => { dossDocsInputRefs.current[i] = el; }} value={d.title} onChange={e => setDossDocs(prev => prev.map((p, j) => j === i ? { ...p, title: e.target.value } : p))} placeholder={`Document ${i + 1} title`} className={`flex-1 px-2 py-1 rounded border text-xs ${c.input}`} /><select value={d.type} onChange={e => setDossDocs(prev => prev.map((p, j) => j === i ? { ...p, type: e.target.value } : p))} className={`px-2 py-1 rounded border text-xs ${c.input}`}>{DOC_TYPES.map(dt => <option key={dt.id} value={dt.id}>{dt.label}</option>)}</select></div><textarea value={d.text} onChange={e => setDossDocs(prev => prev.map((p, j) => j === i ? { ...p, text: e.target.value } : p))} placeholder="Paste document text..." rows={3} className={`w-full px-2 py-1 rounded border text-xs font-mono ${c.input}`} /></div>)}
+          <button onClick={() => { shouldFocusNewDossDocsRef.current = true; setDossDocs(prev => [...prev, { title: '', text: '', type: 'general' }]); }} className={`text-xs ${c.textSecondary} font-bold`}>➕ Add document</button>
           <button onClick={handleDossier} disabled={loading} className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '✂️'}</span> Working…</> : <><span className='mr-1'>{tool?.icon ?? '✂️'}</span> Cross-Reference</>}</button>
         </div>
         {dossData && <div className="space-y-3">
@@ -524,7 +534,7 @@ const JargonAssassin = ({ tool }) => {
         <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 Related tools</p>
         <div className="flex flex-wrap gap-3">
           <a href="/VelvetHammer" className={`text-xs ${linkStyle}`}>🔨 Velvet Hammer</a>
-          <a href="/BrainDumpStructurer" className={`text-xs ${linkStyle}`}>🧠 Brain Dump Structurer</a>
+          <a href="/BrainDumpBuddy" className={`text-xs ${linkStyle}`}>🧠 Brain Dump Buddy</a>
           <a href="/ResearchDecoder" className={`text-xs ${linkStyle}`}>📄 Research Decoder</a>
         </div>
       </div>

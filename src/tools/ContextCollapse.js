@@ -95,6 +95,8 @@ const ContextCollapse = ({ tool }) => {
   const analyzeRef  = useRef(null);
   const canAnalyzeRef = useRef(false);
 
+  const audiencesInputRefs = useRef([]);
+  const shouldFocusNewAudiencesRef = useRef(false);
   // ─── Persisted state ───
   const [history,   setHistory]   = usePersistentState('cc-collapse-history', []);
   const [message,   setMessage]   = usePersistentState('cc-collapse-message', '');
@@ -109,7 +111,7 @@ const ContextCollapse = ({ tool }) => {
 
   // ─── Audience helpers ───
   const addAudience    = useCallback(() => {
-    if (audiences.length < 6) setAudiences(prev => [...prev, { label: '', relationship: '', context: '' }]);
+    if (audiences.length < 6) { shouldFocusNewAudiencesRef.current = true; setAudiences(prev => [...prev, { label: '', relationship: '', context: '' }]); };
   }, [audiences.length, setAudiences]);
 
   const removeAudience = useCallback((idx) => {
@@ -194,6 +196,14 @@ const ContextCollapse = ({ tool }) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading]);
 
+  useEffect(() => {
+    if (shouldFocusNewAudiencesRef.current) {
+      const last = audiencesInputRefs.current[audiences.length - 1];
+      if (last) last.focus();
+      shouldFocusNewAudiencesRef.current = false;
+    }
+  }, [audiences.length]);
+
   // ─── Sub-components ───
   const Pill = ({ active, onClick, children }) => (
     <button
@@ -269,7 +279,7 @@ const ContextCollapse = ({ tool }) => {
                 <div key={idx} className={`p-3 rounded-xl border ${c.border} ${c.cardAlt} space-y-2`}>
                   <div className="flex items-center gap-2">
                     <span className={`text-xs font-bold ${c.textMuteded} w-20`}>Audience {idx + 1}</span>
-                    <input
+                    <input ref={el => { audiencesInputRefs.current[idx] = el; }}
                       type="text" value={a.label}
                       onChange={e => updateAudience(idx, 'label', e.target.value)}
                       placeholder="e.g., My boss, Mom, College friends…"

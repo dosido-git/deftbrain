@@ -207,6 +207,8 @@ const TheFinalWord = ({ tool }) => {
   const [mpError, setMpError] = useState('');
   const pollingRef = useRef(null);
 
+  const teamsInputRefs = useRef([]);
+  const shouldFocusNewTeamsRef = useRef(false);
   // ─── Voice Setup ───
   useEffect(() => {
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -261,6 +263,14 @@ const TheFinalWord = ({ tool }) => {
     }
     return () => { if (pollingRef.current) clearInterval(pollingRef.current); };
   }, [mpMode, roomCode, mpPlayerId]);
+
+  useEffect(() => {
+    if (shouldFocusNewTeamsRef.current) {
+      const last = teamsInputRefs.current[teams.length - 1];
+      if (last) last.focus();
+      shouldFocusNewTeamsRef.current = false;
+    }
+  }, [teams.length]);
 
   // ─── Stats Tracking ───
   const trackStat = (mode, result) => {
@@ -421,7 +431,7 @@ const TheFinalWord = ({ tool }) => {
   };
 
   const updateTeamName = (idx, name) => setTeams(prev => prev.map((t, i) => i === idx ? { ...t, name } : t));
-  const addTeam = () => { if (teams.length < 6) setTeams(prev => [...prev, { name: `Team ${prev.length + 1}`, score: 0, streak: 0, bestStreak: 0 }]); };
+  const addTeam = () => { if (teams.length < 6) { shouldFocusNewTeamsRef.current = true; setTeams(prev => [...prev, { name: `Team ${prev.length + 1}`, score: 0, streak: 0, bestStreak: 0 }]); }; };
   const removeTeam = (idx) => {
     if (teams.length <= 1) return;
     setTeams(prev => prev.filter((_, i) => i !== idx));
@@ -1054,7 +1064,7 @@ const TheFinalWord = ({ tool }) => {
                     {teams.map((team, idx) => (
                       <div key={idx} className="flex items-center gap-2">
                         <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-black flex-shrink-0 ${isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-100 text-cyan-700'}`}>{idx + 1}</div>
-                        <input value={team.name} onChange={(e) => updateTeamName(idx, e.target.value)} placeholder={`Player/Team ${idx + 1}`} className={`flex-1 px-3 py-2 rounded-lg border-2 text-sm transition-all focus:outline-none focus:ring-2 ${c.input}`} />
+                        <input ref={el => { teamsInputRefs.current[idx] = el; }} value={team.name} onChange={(e) => updateTeamName(idx, e.target.value)} placeholder={`Player/Team ${idx + 1}`} className={`flex-1 px-3 py-2 rounded-lg border-2 text-sm transition-all focus:outline-none focus:ring-2 ${c.input}`} />
                         {teams.length > 1 && <button onClick={() => removeTeam(idx)} className={`p-1.5 rounded-lg transition-all ${c.deleteHover2}`}><span className="text-sm">✕</span></button>}
                       </div>
                     ))}
@@ -1116,7 +1126,7 @@ const TheFinalWord = ({ tool }) => {
 
             {/* Pre-result cross-ref + disclaimer */}
             <p className={`text-xs ${c.textMuted}`}>
-              Drafting an argument? <a href="JargonAssassin" target="_blank" rel="noopener noreferrer" className={linkStyle}>Jargon Assassin</a> can sharpen it. AI-generated — verify claims before citing.
+              Drafting an argument? <a href="/JargonAssassin" className={linkStyle}>Jargon Assassin</a> can sharpen it. AI-generated — verify claims before citing.
             </p>
           </div>
         )}
@@ -1724,7 +1734,7 @@ const TheFinalWord = ({ tool }) => {
         {(result || daResult) && (
           <div className={`py-3 space-y-1.5`}>
             <p className={`text-xs ${c.textSecondary}`}>
-              Need a fresh debate topic? <a href="BrainRoulette" target="_blank" rel="noopener noreferrer" className={linkStyle}>Brain Roulette</a> generates creative arguments to explore next.
+              Need a fresh debate topic? <a href="/BrainRoulette" className={linkStyle}>Brain Roulette</a> generates creative arguments to explore next.
             </p>
             <p className={`text-xs ${c.textMuted}`}>AI-generated — verify claims with primary sources before citing.</p>
           </div>

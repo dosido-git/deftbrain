@@ -39,7 +39,20 @@ const MODE_COLORS = {
   break: { bg: 'bg-gray-', border: 'border-gray-', text: 'text-gray-', emoji: '☕', label: 'Break' },
 };
 const RECIPIENT_OPTS = [{ v: 'partner', l: '❤️ Partner' }, { v: 'friend', l: '🤝 Friend' }, { v: 'coworker', l: '💼 Coworker' }];
-const HEATMAP_INTENSITY = { high: 0.9, medium: 0.5, low: 0.2 };
+
+const EXAMPLE = {
+  tasks: [
+    { text: 'Reply to Sarah about the contract terms', duration: '15min', location: 'desk' },
+    { text: 'Draft Q3 status update for the team', duration: '45min', location: 'desk' },
+    { text: 'Pick up dry cleaning', duration: '20min', location: 'errand' },
+    { text: 'Review pull requests', duration: '30min', location: 'desk' },
+    { text: 'Call dentist to reschedule', duration: '5min', location: 'phone' },
+    { text: "Outline next week's pitch deck", duration: '60min', location: 'desk' },
+  ],
+  energyCurve: 'morning_person',
+  dayType: 'mixed',
+  timeAvail: '4',
+};
 
 // ═══════════════════════════════════════════
 // COMPONENT
@@ -95,7 +108,6 @@ const BatchFlow = ({ tool }) => {
   };
 
   // ─── Input ───
-  const [tasks, setTasks] = usePersistentState('batchflow-tasks', [{ text: '', duration: '', location: '' }]);
   const [showDetails, setShowDetails] = useState({});
   const [energyCurve, setEnergyCurve] = useState('');
   const [dayType, setDayType] = useState('mixed');
@@ -114,7 +126,6 @@ const BatchFlow = ({ tool }) => {
   const [dumpLoading, setDumpLoading] = useState(false);
 
   // ─── Results ───
-  const [results, setResults] = usePersistentState('batchflow-last', null);
   const [expanded, setExpanded] = useState({});
   const [checked, setChecked] = useState({});
   const [completedBatches, setCompletedBatches] = useState({});
@@ -166,7 +177,9 @@ const BatchFlow = ({ tool }) => {
   const [showJournal, setShowJournal] = useState(false);
   const [showTemplates, setShowTemplates] = useState(false);
 
-  // ─── Persistent ───
+  // ─── Persistent (after all useState — PF-11/PF-14) ───
+  const [tasks, setTasks] = usePersistentState('batchflow-tasks', [{ text: '', duration: '', location: '' }]);
+  const [results, setResults] = usePersistentState('batchflow-last', null);
   const [history, setHistory] = usePersistentState('batchflow-history', []);
   const [journal, setJournal] = usePersistentState('batchflow-journal', []);
   const [templates, setTemplates] = usePersistentState('batchflow-templates', []);
@@ -179,6 +192,18 @@ const BatchFlow = ({ tool }) => {
   const canSubmitRef = useRef(false);
   // Results-controls panels — scroll into view when opened so clicks feel responsive
   const sharePanelRef = useRef(null);
+
+  // Refs for task input fields. Used to focus the new field after addTask().
+  // Convention (apply to all tools with growable input lists):
+  //   1. Hold a ref array via `xxxInputRefs.current[i] = el` in the input's ref attr
+  //   2. Set a `shouldFocusNew` flag in the add handler before setState
+  //   3. useEffect on length focuses last input when flag is set, then clears flag
+  // This pattern works for both Enter-to-add and click-to-add without focusing
+  // the wrong input on remove or other length changes.
+  const taskInputRefs = useRef([]);
+  const shouldFocusNewTaskRef = useRef(false);
+  const weeklyTaskInputRefs = useRef([]);
+  const shouldFocusNewWeeklyRef = useRef(false);
   const progressPanelRef = useRef(null);
   const savePanelRef = useRef(null);
   const weeklyPanelRef = useRef(null);
@@ -198,7 +223,14 @@ const BatchFlow = ({ tool }) => {
 
   // ═══ HANDLERS ═══
 
-  const addTask = () => setTasks(p => [...p, { text: '', duration: '', location: '' }]);
+  const addTask = () => {
+    shouldFocusNewTaskRef.current = true;
+    setTasks(p => [...p, { text: '', duration: '', location: '' }]);
+  };
+  const addWeeklyTask = () => {
+    shouldFocusNewWeeklyRef.current = true;
+    setWeeklyTasks(p => [...p, { task: '', frequency: 'weekly', preferred_day: '', duration: '' }]);
+  };
   const removeTask = (i) => setTasks(p => p.filter((_, idx) => idx !== i));
   const updateTask = (i, f, v) => setTasks(p => { const u = [...p]; u[i] = { ...u[i], [f]: v }; return u; });
   const toggleDetail = (i) => setShowDetails(p => ({ ...p, [i]: !p[i] }));
@@ -261,6 +293,14 @@ const BatchFlow = ({ tool }) => {
       setHistory(prev => [newEntry, ...prev].slice(0, 6));
     }
   };
+
+  const loadExample = useCallback(() => {
+    setTasks(EXAMPLE.tasks);
+    setEnergyCurve(EXAMPLE.energyCurve);
+    setDayType(EXAMPLE.dayType);
+    setTimeAvail(EXAMPLE.timeAvail);
+    setDumpMode(false);
+  }, [setTasks]);
 
   // ─── Quick dump ───
   const handleDump = async () => {
@@ -406,20 +446,42 @@ const BatchFlow = ({ tool }) => {
 
   const Pill = ({ options, value, setter }) => <div className="flex flex-wrap gap-1.5">{options.map(o => <button key={o.v} onClick={() => setter(o.v === value ? '' : o.v)} className={`px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all ${c.chip(value === o.v)}`}>{o.l}{o.d && <span className={`block text-xs font-normal ${c.textMuteded}`}>{o.d}</span>}</button>)}</div>;
 
-  // ─── Heatmap Component ───
-  const Heatmap = ({ data }) => {
+  // Focus the newly-added task input. Only fires when shouldFocusNewTaskRef
+  // is set (i.e. user explicitly added via Enter or "+ Add Another Task"),
+  // so removing tasks doesn't accidentally focus an unrelated input.
+  useEffect(() => {
+    if (shouldFocusNewTaskRef.current) {
+      const lastInput = taskInputRefs.current[tasks.length - 1];
+      if (lastInput) lastInput.focus();
+      shouldFocusNewTaskRef.current = false;
+    }
+  }, [tasks.length]);
+
+  // Same pattern for the weekly-rhythm growable list.
+  useEffect(() => {
+    if (shouldFocusNewWeeklyRef.current) {
+      const lastInput = weeklyTaskInputRefs.current[weeklyTasks.length - 1];
+      if (lastInput) lastInput.focus();
+      shouldFocusNewWeeklyRef.current = false;
+    }
+  }, [weeklyTasks.length]);
+
+  // ─── Hour-by-Hour Plan Component ───
+  const HourByHourPlan = ({ data }) => {
     if (!data?.length) return null;
     const hours = []; for (let h = 8; h <= 20; h++) hours.push(h);
     const hourMap = {}; data.forEach(d => { hourMap[d.hour] = d; });
+    const intensityOpacity = { high: 1.0, medium: 0.65, low: 0.3 };
     return <div className={`${c.card} rounded-xl shadow-lg p-5`}>
-      <h3 className={`font-bold text-sm ${c.text} mb-3`}>📊 Cognitive Load Heatmap</h3>
-      <div className="flex gap-0.5 items-end h-20">{hours.map(h => {
-        const d = hourMap[h]; const intensity = d ? (HEATMAP_INTENSITY[d.intensity] || 0.3) : 0.05;
+      <h3 className={`font-bold text-sm ${c.text}`}>🗓️ Hour-by-Hour Plan</h3>
+      <p className={`text-xs ${c.textMuteded} mb-3`}>Each block is one hour. Color = which cognitive mode is scheduled. Stronger color = more demanding hour. Hover any block for details.</p>
+      <div className="flex gap-0.5 items-end">{hours.map(h => {
+        const d = hourMap[h]; const opacity = d ? (intensityOpacity[d.intensity] || 0.5) : 0.12;
         const color = d ? modeBarColor(d.mode) : (isDark ? 'rgb(63,63,70)' : 'rgb(229,231,235)');
         return <div key={h} className="flex-1 flex flex-col items-center group relative">
-          <div className="w-full rounded-t" style={{ height: `${Math.max(intensity * 100, 8)}%`, backgroundColor: color, opacity: d ? 1 : 0.3, minHeight: 4, transition: 'all 0.3s' }} />
+          <div className="w-full h-8 rounded" style={{ backgroundColor: color, opacity, transition: 'all 0.3s' }} />
           <span className={`text-xs ${c.textMuteded} mt-1`}>{h > 12 ? h - 12 + 'p' : h + 'a'}</span>
-          {d && <div className={`absolute bottom-full mb-2 px-2 py-1 rounded text-xs font-bold ${c.card} ${c.border} border shadow-lg hidden group-hover:block whitespace-nowrap z-10`}>{modeInfo(d.mode).emoji} {d.label} ({d.intensity})</div>}
+          {d && <div className={`absolute bottom-full mb-2 px-2 py-1 rounded text-xs font-bold ${c.card} ${c.border} border shadow-lg hidden group-hover:block whitespace-nowrap z-10`}>{modeInfo(d.mode).emoji} {d.label} · {d.intensity}</div>}
         </div>;
       })}</div>
       <div className="flex flex-wrap gap-3 mt-3">{Object.entries(MODE_COLORS).filter(([k]) => k !== 'break').map(([k, v]) => <span key={k} className={`text-xs flex items-center gap-1 ${c.textMuteded}`}><span className="w-3 h-3 rounded" style={{ backgroundColor: modeBarColor(k) }} />{v.label}</span>)}</div>
@@ -449,11 +511,11 @@ const BatchFlow = ({ tool }) => {
       {/* Nav */}
       <div className="flex flex-wrap gap-2">
         {journal.length > 0 && <button onClick={() => setShowJournal(!showJournal)} className={`text-xs font-bold ${c.jt}`}>📔 History ({journal.length})</button>}
-        {journal.length >= 3 && <button onClick={handleInsights} disabled={insightsLoading} className={`text-xs font-bold ${isDark ? 'text-cyan-300' : 'text-cyan-600'}`}><Spin on={insightsLoading} icon="📊">Insights</Spin></button>}
+        {journal.length >= 3 && <button onClick={handleInsights} disabled={insightsLoading} className={`disabled:opacity-40 text-xs font-bold ${isDark ? 'text-cyan-300' : 'text-cyan-600'}`}><Spin on={insightsLoading} icon="📊">Insights</Spin></button>}
         {templates.length > 0 && <button onClick={() => setShowTemplates(!showTemplates)} className={`text-xs font-bold ${isDark ? 'text-cyan-300' : 'text-cyan-600'}`}>📋 Templates ({templates.length})</button>}
         <button onClick={() => setShowWeekly(!showWeekly)} className={`text-xs font-bold ${isDark ? 'text-sky-300' : 'text-sky-600'}`}>📅 Weekly Rhythm</button>
-        {deferredList.length >= 1 && <button onClick={handleResistanceCheck} disabled={resistLoading} className={`text-xs font-bold ${isDark ? 'text-red-300' : 'text-red-600'}`}><Spin on={resistLoading} icon="⚠️">{deferredList.length} stuck tasks</Spin></button>}
-        {timeHistory.length >= 3 && <button onClick={handleCalibrate} disabled={calibLoading} className={`text-xs font-bold ${isDark ? 'text-amber-300' : 'text-amber-600'}`}><Spin on={calibLoading} icon="⏱️">Time Calibration</Spin></button>}
+        {deferredList.length >= 1 && <button onClick={handleResistanceCheck} disabled={resistLoading} className={`disabled:opacity-40 text-xs font-bold ${isDark ? 'text-red-300' : 'text-red-600'}`}><Spin on={resistLoading} icon="⚠️">{deferredList.length} stuck tasks</Spin></button>}
+        {timeHistory.length >= 3 && <button onClick={handleCalibrate} disabled={calibLoading} className={`disabled:opacity-40 text-xs font-bold ${isDark ? 'text-amber-300' : 'text-amber-600'}`}><Spin on={calibLoading} icon="⏱️">Time Calibration</Spin></button>}
       </div>
 
       {/* Insights / Resistance / Calibration panels */}
@@ -465,8 +527,8 @@ const BatchFlow = ({ tool }) => {
 
       {/* Weekly Rhythm */}
       {showWeekly && <div ref={weeklyPanelRef} className={`${c.cardAlt} border rounded-xl p-5 space-y-3`}><div className="flex justify-between"><h4 className="font-bold text-sm">📅 Weekly Rhythm</h4><button onClick={() => setShowWeekly(false)} className={`text-xs ${c.textMuteded}`}>✕</button></div><p className={`text-xs ${c.textSecondary}`}>Define your recurring tasks and get a weekly batching rhythm</p>
-        {weeklyTasks.map((wt, i) => <div key={i} className="flex gap-2"><input value={wt.task} onChange={e => { const u = [...weeklyTasks]; u[i] = { ...u[i], task: e.target.value }; setWeeklyTasks(u); }} placeholder="Recurring task..." className={`flex-1 p-2 border rounded-lg text-sm ${c.input}`} /><input value={wt.duration} onChange={e => { const u = [...weeklyTasks]; u[i] = { ...u[i], duration: e.target.value }; setWeeklyTasks(u); }} placeholder="~30 min" className={`w-20 p-2 border rounded-lg text-xs ${c.input}`} />{weeklyTasks.length > 1 && <button onClick={() => setWeeklyTasks(p => p.filter((_,idx) => idx !== i))} className={`px-2 rounded ${c.btnSecondary}`}>✕</button>}</div>)}
-        <button onClick={() => setWeeklyTasks(p => [...p, { task: '', frequency: 'weekly', preferred_day: '', duration: '' }])} className={`text-xs ${c.textMuteded}`}>+ Add task</button>
+        {weeklyTasks.map((wt, i) => <div key={i} className="flex gap-2"><input ref={el => { weeklyTaskInputRefs.current[i] = el; }} value={wt.task} onChange={e => { const u = [...weeklyTasks]; u[i] = { ...u[i], task: e.target.value }; setWeeklyTasks(u); }} placeholder="Recurring task..." className={`flex-1 p-2 border rounded-lg text-sm ${c.input}`} /><input value={wt.duration} onChange={e => { const u = [...weeklyTasks]; u[i] = { ...u[i], duration: e.target.value }; setWeeklyTasks(u); }} placeholder="~30 min" className={`w-20 p-2 border rounded-lg text-xs ${c.input}`} />{weeklyTasks.length > 1 && <button onClick={() => setWeeklyTasks(p => p.filter((_,idx) => idx !== i))} className={`px-2 rounded ${c.btnSecondary}`}>✕</button>}</div>)}
+        <button onClick={addWeeklyTask} className={`text-xs ${c.textMuteded}`}>+ Add task</button>
         <button onClick={handleWeeklyRhythm} disabled={weeklyLoading} className={`w-full py-2.5 rounded-xl text-sm font-bold ${c.btnPrimary} disabled:opacity-40`}><Spin on={weeklyLoading} icon="📅">Build Weekly Rhythm</Spin></button>
         {weeklyResult && <div className="space-y-3"><p className={`text-sm font-bold ${c.text}`}>{weeklyResult.rhythm_name}</p><p className={`text-xs ${c.textSecondary}`}>{weeklyResult.overview}</p>
           {(weeklyResult.days || []).map((d, di) => <div key={di} className={`${c.card} border ${c.border} rounded-lg p-3`}><div className="flex justify-between mb-1"><span className={`text-sm font-bold ${c.text}`}>{d.day}</span><span className={`text-xs px-2 py-0.5 rounded-full ${c.success} border`}>{d.theme}</span></div>
@@ -525,20 +587,21 @@ const BatchFlow = ({ tool }) => {
         </div>}
 
         {/* Quick dump */}
-        {dumpMode && <div className={`${c.card} rounded-xl shadow-lg p-5 space-y-3`}><p className={`text-sm font-bold ${c.text}`}>📋 Paste your task list</p><textarea value={dumpText} onChange={e => setDumpText(e.target.value)} placeholder="- email sarah&#10;- write report&#10;- call dentist&#10;- grocery shopping" rows={6} className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input}`} /><button onClick={handleDump} disabled={dumpLoading || !dumpText.trim()} className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40`}><Spin on={dumpLoading} icon="⚡">{dumpLoading ? 'Extracting...' : 'Extract & Batch'}</Spin></button></div>}
+        {dumpMode && <div className={`${c.card} rounded-xl shadow-lg p-5 space-y-3`}><label htmlFor="bf-dump-text" className={`block text-sm font-bold ${c.text}`}>📋 Paste your task list <span className={c.required}>*</span></label><textarea id="bf-dump-text" value={dumpText} onChange={e => setDumpText(e.target.value)} placeholder="- email sarah&#10;- write report&#10;- call dentist&#10;- grocery shopping" rows={6} className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input}`} /><button onClick={handleDump} disabled={dumpLoading || !dumpText.trim()} className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40`}><Spin on={dumpLoading} icon="⚡">{dumpLoading ? 'Extracting...' : 'Extract & Batch'}</Spin></button></div>}
 
         {/* Tasks */}
         {!dumpMode && <>
           <div className={`${c.card} rounded-xl shadow-lg p-5 ${validFail ? 'ring-2 ring-emerald-500' : ''}`}>
             <label className={`block font-semibold text-sm ${c.text} mb-1`}>What's on your plate? <span className={c.required}>*</span></label>
             <p className={`text-xs ${validFail ? 'text-red-500' : c.textMuteded} mb-4`}>{validFail ? 'Add at least one task' : "List everything — we'll batch by cognitive mode"}</p>
-            <div className="space-y-3 mb-4">{tasks.map((task, i) => <div key={i}><div className="flex gap-2"><input type="text" value={task.text} onChange={e => { updateTask(i, 'text', e.target.value); if (validFail) setValidFail(false); }} onKeyDown={e => { if (e.key === 'Enter' && !e.metaKey && !e.ctrlKey) { e.preventDefault(); if (i === tasks.length - 1 && task.text.trim()) addTask(); } }} placeholder={`Task ${i + 1}...`} className={`flex-1 p-3 border rounded-lg outline-none text-sm focus:ring-2 focus:ring-cyan-500 ${c.input}`} /><button onClick={() => toggleDetail(i)} className={`px-3 rounded-lg border text-sm ${showDetails[i] ? c.chip(true) : c.chip(false)}`}>{showDetails[i] ? '– details' : '+ details'}</button>{tasks.length > 1 && <button onClick={() => removeTask(i)} className={`px-3 rounded-lg ${c.btnSecondary}`}>✕</button>}</div>{showDetails[i] && <div className="flex gap-2 mt-2"><input type="text" value={task.duration} onChange={e => updateTask(i, 'duration', e.target.value)} placeholder="Duration?" className={`flex-1 p-2 border rounded-lg text-xs ${c.input}`} /><input type="text" value={task.location} onChange={e => updateTask(i, 'location', e.target.value)} placeholder="Location?" className={`flex-1 p-2 border rounded-lg text-xs ${c.input}`} /></div>}</div>)}</div>
+            <div className="space-y-3 mb-4">{tasks.map((task, i) => <div key={i}><div className="flex gap-2"><input ref={el => { taskInputRefs.current[i] = el; }} type="text" value={task.text} onChange={e => { updateTask(i, 'text', e.target.value); if (validFail) setValidFail(false); }} onKeyDown={e => { if (e.key === 'Enter' && !e.metaKey && !e.ctrlKey) { e.preventDefault(); if (i === tasks.length - 1 && task.text.trim()) addTask(); } }} placeholder={`Task ${i + 1}...`} className={`flex-1 p-3 border rounded-lg outline-none text-sm focus:ring-2 focus:ring-cyan-500 ${c.input}`} /><button onClick={() => toggleDetail(i)} className={`px-3 rounded-lg border text-sm ${showDetails[i] ? c.chip(true) : c.chip(false)}`}>{showDetails[i] ? '– details' : '+ details'}</button>{tasks.length > 1 && <button onClick={() => removeTask(i)} className={`px-3 rounded-lg ${c.btnSecondary}`}>✕</button>}</div>{showDetails[i] && <div className="flex gap-2 mt-2"><input type="text" value={task.duration} onChange={e => updateTask(i, 'duration', e.target.value)} placeholder="Duration?" className={`flex-1 p-2 border rounded-lg text-xs ${c.input}`} /><input type="text" value={task.location} onChange={e => updateTask(i, 'location', e.target.value)} placeholder="Location?" className={`flex-1 p-2 border rounded-lg text-xs ${c.input}`} /></div>}</div>)}</div>
             <button onClick={addTask} className={`w-full py-2 rounded-lg border text-sm font-medium ${c.chip(false)}`}>+ Add Another Task</button>
           </div>
 
           <div className="flex gap-3">
-            <button onClick={handleGenerate} disabled={loading} className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '⚡'}</span> Batching...</> : <><span>{tool?.icon ?? '⚡'}</span> Batch My Tasks</>}</button>
-            {filledTasks.length >= 2 && <button onClick={handleABCompare} disabled={abLoading} className={`px-6 py-3 rounded-lg font-bold text-sm min-h-[48px] ${abLoading ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : c.btnSecondary}`}><Spin on={abLoading} icon="⚖️">Compare</Spin></button>}
+            <button onClick={handleGenerate} disabled={loading} className={`flex-1 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '⚡'}</span> Batching...</> : <><span>{tool?.icon ?? '⚡'}</span> Batch My Tasks</>}</button>
+            <button onClick={loadExample} className={`px-4 py-3 rounded-lg text-xs font-bold ${c.btnSecondary} min-h-[48px]`}>Try example</button>
+            {filledTasks.length >= 2 && <button onClick={handleABCompare} disabled={abLoading} className={`disabled:opacity-40 px-6 py-3 rounded-lg font-bold text-sm min-h-[48px] ${c.btnSecondary}`}><Spin on={abLoading} icon="⚖️">Compare</Spin></button>}
           </div>
           <p className={`text-xs text-center ${c.textMuteded}`}>Enter adds · Ctrl+Enter batches · Compare shows Sprint vs Marathon</p>
           <p className={`text-xs text-center ${c.textMuteded} mt-1`}>
@@ -578,7 +641,7 @@ const BatchFlow = ({ tool }) => {
         <div className={`${c.card} rounded-xl shadow-lg p-4 flex items-center justify-between flex-wrap gap-3`}>
           <div className="flex items-center gap-3"><span className={`text-sm font-semibold ${c.text}`}>{(results.batches || []).length} batches</span>{batchProgress.total > 0 && <div className="flex items-center gap-2"><div className={`w-24 h-2 rounded-full ${isDark ? 'bg-zinc-700' : 'bg-gray-200'} overflow-hidden`}><div className="h-full rounded-full bg-emerald-500 transition-all" style={{ width: `${batchProgress.pct}%` }} /></div><span className={`text-xs font-bold ${batchProgress.pct === 100 ? (isDark ? 'text-emerald-400' : 'text-emerald-600') : c.textMuteded}`}>{batchProgress.done}/{batchProgress.total}</span></div>}</div>
           <div className="flex items-center gap-2 flex-wrap">
-            <button onClick={handleProgress} disabled={progressLoading} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnSecondary}`}><Spin on={progressLoading} icon="🔄">What's next?</Spin></button>
+            <button onClick={handleProgress} disabled={progressLoading} className={`disabled:opacity-40 px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnSecondary}`}><Spin on={progressLoading} icon="🔄">What's next?</Spin></button>
             <button onClick={() => setShowShare(!showShare)} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnSecondary}`}>🤝 Share</button>
             <button onClick={() => setShowSaveTemplate(!showSaveTemplate)} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnSecondary}`}>💾 Template</button>
           </div>
@@ -601,8 +664,8 @@ const BatchFlow = ({ tool }) => {
           )}
         </div>}
 
-        {/* Heatmap */}
-        <Heatmap data={results.heatmap} />
+        {/* Hour-by-Hour Plan */}
+        <HourByHourPlan data={results.heatmap} />
 
         {/* Efficiency */}
         <div className={`${c.card} rounded-xl shadow-lg p-5 border-l-4 ${isDark ? 'border-emerald-500' : 'border-emerald-400'}`}>
@@ -629,7 +692,7 @@ const BatchFlow = ({ tool }) => {
               <div className="flex items-center gap-2 flex-wrap">
                 <span className={`text-xs font-bold px-2 py-0.5 rounded-full border ${modeStyle(batch.cognitive_mode)}`}>{mi.label}</span>
                 {batch.focus_preset && <button onClick={() => setShowFocusPreset(p => ({ ...p, [bi]: !p[bi] }))} className={`text-xs font-bold ${c.textMuteded}`}>{showFocusPreset[bi] ? '🎯 Hide setup' : '🎯 Focus setup'}</button>}
-                {!done && <button onClick={() => handleExpandBatch(batch)} disabled={expandLoading && expandedBatch === batch.batch_id} className={`text-xs font-bold ${c.textMuteded}`}><Spin on={expandLoading && expandedBatch === batch.batch_id} icon="🔍">Expand</Spin></button>}
+                {!done && <button onClick={() => handleExpandBatch(batch)} disabled={expandLoading && expandedBatch === batch.batch_id} className={`disabled:opacity-40 text-xs font-bold ${c.textMuteded}`}><Spin on={expandLoading && expandedBatch === batch.batch_id} icon="🔍">Expand</Spin></button>}
                 {!done && <button onClick={() => markBatchComplete(bi)} className={`text-xs font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>✓ All done</button>}
                 {done && <button onClick={() => setShowTimeInput(showTimeInput === bi ? null : bi)} className={`text-xs font-bold ${isDark ? 'text-amber-300' : 'text-amber-600'}`}>⏱️ Log time</button>}
               </div>
@@ -649,7 +712,7 @@ const BatchFlow = ({ tool }) => {
             {showTimeInput === bi && <div className={`mb-3 p-3 rounded-lg ${c.warning} border space-y-2`}>
               <p className="text-xs font-bold">⏱️ How long did each task actually take?</p>
               {(batch.tasks || []).map((t, ti) => <div key={ti} className="flex items-center gap-2"><span className={`text-xs ${c.textSecondary} flex-1`}>{t.task} (est: {t.time_estimate})</span><input value={actualTimes[`${bi}-${ti}`] || ''} onChange={e => setActualTimes(p => ({ ...p, [`${bi}-${ti}`]: e.target.value }))} placeholder="~25 min" className={`w-24 p-1.5 border rounded text-xs ${c.input}`} /></div>)}
-              <button onClick={handleCalibrate} disabled={calibLoading} className={`text-xs font-bold ${c.btnPrimary} px-3 py-1.5 rounded-lg`}><Spin on={calibLoading} icon="📊">Calibrate</Spin></button>
+              <button onClick={handleCalibrate} disabled={calibLoading} className={`disabled:opacity-40 text-xs font-bold ${c.btnPrimary} px-3 py-1.5 rounded-lg`}><Spin on={calibLoading} icon="📊">Calibrate</Spin></button>
             </div>}
 
             {batch.why_batched && <p className={`text-xs italic ${c.textSecondary} mb-3`}>{batch.why_batched}</p>}

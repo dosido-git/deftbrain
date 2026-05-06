@@ -176,6 +176,8 @@ const DecisionCoach = ({ tool }) => {
   const handleRef = useRef(null);
   const canSubmitRef = useRef(false);
 
+  const groupPeopleInputRefs = useRef([]);
+  const shouldFocusNewGroupPeopleRef = useRef(false);
   // ── Persistent ──
   const [history, setHistory] = usePersistentState('decision-coach-history', []);
   const [savedPreferences, setSavedPreferences] = usePersistentState('decision-coach-prefs', '');
@@ -401,6 +403,14 @@ const DecisionCoach = ({ tool }) => {
     return () => document.removeEventListener('keydown', handler);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (shouldFocusNewGroupPeopleRef.current) {
+      const last = groupPeopleInputRefs.current[groupPeople.length - 1];
+      if (last) last.focus();
+      shouldFocusNewGroupPeopleRef.current = false;
+    }
+  }, [groupPeople.length]);
 
   // ══════════════════════════════════════════
   // RENDER HELPERS
@@ -736,11 +746,11 @@ const DecisionCoach = ({ tool }) => {
         <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-3 block`}>👥 People</label>
         {groupPeople.map((p, i) => (
           <div key={i} className={`p-3 rounded-xl border ${c.groupPerson} mb-2`}>
-            <div className="flex gap-2 mb-2"><input type="text" value={p.name} onChange={e => { const n=[...groupPeople]; n[i]={...n[i],name:e.target.value}; setGroupPeople(n); }} placeholder={`Person ${i+1}`} className={`flex-1 px-3 py-1.5 rounded-lg border text-sm ${c.input} outline-none`} />{groupPeople.length > 2 && <button onClick={() => setGroupPeople(prev => prev.filter((_,j)=>j!==i))} className={`px-2 text-xs ${c.btnSecondary}`}>✕</button>}</div>
+            <div className="flex gap-2 mb-2"><input ref={el => { groupPeopleInputRefs.current[i] = el; }} type="text" value={p.name} onChange={e => { const n=[...groupPeople]; n[i]={...n[i],name:e.target.value}; setGroupPeople(n); }} placeholder={`Person ${i+1}`} className={`flex-1 px-3 py-1.5 rounded-lg border text-sm ${c.input} outline-none`} />{groupPeople.length > 2 && <button onClick={() => setGroupPeople(prev => prev.filter((_,j)=>j!==i))} className={`px-2 text-xs ${c.btnSecondary}`}>✕</button>}</div>
             <input type="text" value={p.constraints} onChange={e => { const n=[...groupPeople]; n[i]={...n[i],constraints:e.target.value}; setGroupPeople(n); }} placeholder="Constraints" className={`w-full px-3 py-1.5 rounded-lg border text-xs ${c.input} outline-none`} />
           </div>
         ))}
-        {groupPeople.length < 6 && <button onClick={() => setGroupPeople(p => [...p, {name:'',constraints:''}])} className={`text-xs font-semibold ${c.histAccent}`}>➕ Add</button>}
+        {groupPeople.length < 6 && <button onClick={() => { shouldFocusNewGroupPeopleRef.current = true; setGroupPeople(p => [...p, {name:'',constraints:''}]); }} className={`text-xs font-semibold ${c.histAccent}`}>➕ Add</button>}
       </div>
       <button onClick={handleGroupDecide} disabled={loading || !groupDecision.trim() || groupPeople.filter(p => p.name.trim()).length < 2} className={`w-full py-4 rounded-2xl text-sm font-bold ${c.btnDecide} disabled:opacity-40`}>
         {loading ? <><span className="animate-spin">{tool?.icon ?? '🎯'}</span> Working...</> : <><span>👥</span> Decide for Group</>}

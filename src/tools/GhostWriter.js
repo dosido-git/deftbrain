@@ -93,8 +93,7 @@ const GhostWriter = ({ tool }) => {
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
     : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
 
-  // ─── State ───
-  const [history, setHistory] = usePersistentState('ghost-writer-history', []);
+  // ─── State (all useState before usePersistentState — PF-11/PF-14) ───
   const [showHistory, setShowHistory] = useState(false);
   const [recipientName, setRecipientName] = useState('');
   const [yourRelationship, setYourRelationship] = useState('');
@@ -105,7 +104,6 @@ const GhostWriter = ({ tool }) => {
   const [anecdotes, setAnecdotes] = useState(['']);
   const [duration, setDuration] = useState('');
   const [additionalContext, setAdditionalContext] = useState('');
-  const [results, setResults] = usePersistentState('ghostwriter-result', null);
   const [previousResults, setPreviousResults] = useState(null);
   const [error, setError] = useState('');
   const [activeVersion, setActiveVersion] = useState('narrative');
@@ -116,6 +114,10 @@ const GhostWriter = ({ tool }) => {
   const [showPlaceholders, setShowPlaceholders] = useState(true);
   const [showPowerPhrases, setShowPowerPhrases] = useState(false);
   const [showWritingTips, setShowWritingTips] = useState(false);
+
+  // ─── Persistent state ───
+  const [history, setHistory] = usePersistentState('ghost-writer-history', []);
+  const [results, setResults] = usePersistentState('ghostwriter-result', null);
 
   // ─── Refs ───
   const resultsRef = useRef(null);
@@ -338,13 +340,38 @@ const GhostWriter = ({ tool }) => {
       {/* Submit */}
       <button onClick={generate}
         disabled={loading || !recipientName.trim() || !yourRelationship.trim()}
-        className={`w-full py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all ${
+        className={`w-full py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all disabled:opacity-40 ${
           loading || !recipientName.trim() || !yourRelationship.trim() ? c.btnDisabled : c.btnPrimary
         }`}>
         {loading
           ? <><span className="animate-spin inline-block">{tool?.icon ?? '✍️'}</span> Writing your letter...</>
           : <><span>{tool?.icon ?? '✍️'}</span> Generate Letter</>}
       </button>
+
+      {/* Try Example */}
+      {!recipientName.trim() && !yourRelationship.trim() && !loading && (
+        <div className="flex justify-center">
+          <button
+            onClick={() => {
+              setRecipientName('Maya Chen');
+              setYourRelationship('I managed Maya for 3 years on the platform team — she reported directly to me.');
+              setWhatFor('Senior engineering role at a Series B startup');
+              setLetterType('job');
+              setFormalityLevel('professional');
+              setQualities(['Leadership', 'Technical skills', 'Initiative', 'Communication']);
+              setAnecdotes([
+                'Led the migration off our legacy auth system — designed the rollback plan that ran zero incidents over a 6-week cutover.',
+                'Mentored two junior engineers who both got promoted; one now runs her own pod.',
+              ]);
+              setDuration('3 years');
+              setAdditionalContext('She is moving for family reasons; this is not a performance issue.');
+            }}
+            className={`text-xs font-medium ${c.accentTxt} underline underline-offset-2 min-h-[32px]`}
+          >
+            ✨ Try an example
+          </button>
+        </div>
+      )}
     </>
   );
 
@@ -420,14 +447,14 @@ const GhostWriter = ({ tool }) => {
 
                 {refiningVersion === v.style && (
                   <div className={`${c.cardAlt} ${c.border} border rounded-xl p-4 space-y-3`}>
-                    <label className={`text-sm font-semibold ${c.textSecondary}`}>How should I adjust this?</label>
+                    <label className={`text-sm font-semibold ${c.textSecondary}`}>How should I adjust this? <span className={c.required}>*</span></label>
                     <textarea value={refinementText} onChange={e => setRefinementText(e.target.value)}
                       placeholder='e.g., "Make it shorter", "Add the client presentation story", "Sound warmer"'
                       className={`w-full p-3 border rounded-lg ${c.input} outline-none focus:ring-2 resize-none text-sm`} rows={2} />
                     <div className="flex gap-2">
                       <button onClick={() => handleRefine(v)}
                         disabled={refineLoading || !refinementText.trim()}
-                        className={`${refineLoading || !refinementText.trim() ? c.btnDisabled : c.btnPrimary} px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2`}>
+                        className={`${refineLoading || !refinementText.trim() ? c.btnDisabled : c.btnPrimary} px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 disabled:opacity-40`}>
                         {refineLoading ? <span className="animate-spin inline-block">{tool?.icon ?? '✍️'}</span> : <span>✨</span>} Refine
                       </button>
                       <button onClick={() => { setRefiningVersion(null); setRefinementText(''); }}
@@ -540,7 +567,7 @@ const GhostWriter = ({ tool }) => {
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
         <div className="pb-3 border-b border-zinc-500">
           <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-            <span>{tool?.icon ?? '✍️'}</span>{tool?.title ?? 'Ghost Writer'}
+            <span className="mr-2">{tool?.icon ?? '✍️'}</span>{tool?.title ?? 'Ghost Writer'}
           </h2>
           <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Turn rough notes into polished recommendation letters in seconds'}</p>
         </div>

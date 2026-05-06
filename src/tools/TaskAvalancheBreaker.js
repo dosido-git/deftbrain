@@ -682,7 +682,7 @@ const TaskAvalancheBreaker = ({ tool }) => {
           {/* Pre-result cross-reference */}
           <p className={`text-xs text-center ${c.textMuted}`}>
             Tasks still jumbled in your head? Dump them into{' '}
-            <a href="/BrainDumpStructurer" className={linkStyle}>🧠 Brain Dump Structurer</a>{' '}
+            <a href="/BrainDumpBuddy" className={linkStyle}>🧠 Brain Dump Buddy</a>{' '}
             first, then bring the list here.
           </p>
 

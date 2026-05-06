@@ -210,6 +210,10 @@ const PEP = ({ tool }) => {
   // ─── Timer refs (must precede the useEffects that use them) ───
   const timerRef = useRef(null);
 
+  const budgetTasksInputRefs = useRef([]);
+  const shouldFocusNewBudgetTasksRef = useRef(false);
+  const forecastEventsInputRefs = useRef([]);
+  const shouldFocusNewForecastEventsRef = useRef(false);
   // ─── Timers ───
   useEffect(() => {
     if (checkinTimer) {
@@ -305,7 +309,7 @@ const PEP = ({ tool }) => {
     const d = await callToolEndpoint('pep', { action: 'budget', tasks: filled, available_energy: energy, mood: mood || null });
     if (d) setBudgetResult(d);
   };
-  const addBudgetTask = () => setBudgetTasks(p => [...p, { task: '', cost: 3, priority: 'optional' }]);
+  const addBudgetTask = () => { shouldFocusNewBudgetTasksRef.current = true; setBudgetTasks(p => [...p, { task: '', cost: 3, priority: 'optional' }]); };
   const updateBudgetTask = (i, field, val) => setBudgetTasks(p => p.map((t, j) => j === i ? { ...t, [field]: val } : t));
   const removeBudgetTask = (i) => setBudgetTasks(p => p.filter((_, j) => j !== i));
 
@@ -316,7 +320,7 @@ const PEP = ({ tool }) => {
     const d = await callToolEndpoint('pep', { action: 'forecast', events: forecastEvents, energy_type: energyType, current_battery: currentBattery, recharge_hours: rechargeHours, activity_log: activityLog.slice(0, 6) });
     if (d) setForecastResult(d);
   };
-  const addForecastEvent = () => setForecastEvents(p => [...p, { name: '', day: '', time: '', duration: '1 hour', people: '5', role: 'attending', canLeave: true, type: 'social' }]);
+  const addForecastEvent = () => { shouldFocusNewForecastEventsRef.current = true; setForecastEvents(p => [...p, { name: '', day: '', time: '', duration: '1 hour', people: '5', role: 'attending', canLeave: true, type: 'social' }]); };
   const updateForecastEvent = (i, field, val) => setForecastEvents(p => p.map((e, j) => j === i ? { ...e, [field]: val } : e));
   const removeForecastEvent = (i) => setForecastEvents(p => p.filter((_, j) => j !== i));
   const handleDecline = async (eventName) => {
@@ -395,6 +399,22 @@ const PEP = ({ tool }) => {
     return () => document.removeEventListener('keydown', handler);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (shouldFocusNewBudgetTasksRef.current) {
+      const last = budgetTasksInputRefs.current[budgetTasks.length - 1];
+      if (last) last.focus();
+      shouldFocusNewBudgetTasksRef.current = false;
+    }
+  }, [budgetTasks.length]);
+
+  useEffect(() => {
+    if (shouldFocusNewForecastEventsRef.current) {
+      const last = forecastEventsInputRefs.current[forecastEvents.length - 1];
+      if (last) last.focus();
+      shouldFocusNewForecastEventsRef.current = false;
+    }
+  }, [forecastEvents.length]);
 
   // ─── Shared UI ───
   const Pill = ({ options, value, setter }) => <div className="flex flex-wrap gap-1.5">{options.map(o => <button key={o.v} onClick={() => setter(value === o.v ? '' : o.v)} className={`px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all ${chip(value === o.v)}`}>{o.l}</button>)}</div>;
@@ -659,7 +679,7 @@ const PEP = ({ tool }) => {
             {budgetTasks.map((t, i) => (
               <div key={i} className={`${c.cardAlt} border ${c.border} rounded-lg p-3 space-y-2`}>
                 <div className="flex gap-2">
-                  <input value={t.task} onChange={e => updateBudgetTask(i, 'task', e.target.value)} placeholder={`Task ${i + 1}...`} className={`flex-1 p-2 border rounded-lg text-sm ${c.input}`} />
+                  <input ref={el => { budgetTasksInputRefs.current[i] = el; }} value={t.task} onChange={e => updateBudgetTask(i, 'task', e.target.value)} placeholder={`Task ${i + 1}...`} className={`flex-1 p-2 border rounded-lg text-sm ${c.input}`} />
                   {budgetTasks.length > 1 && <button onClick={() => removeBudgetTask(i)} className={`text-xs ${c.textMuted}`}>🗑️</button>}
                 </div>
                 <div className="flex items-center gap-3">
@@ -726,7 +746,7 @@ const PEP = ({ tool }) => {
             {forecastEvents.map((ev, i) => (
               <div key={i} className={`${c.cardAlt} border ${c.border} rounded-lg p-3 space-y-2`}>
                 <div className="flex gap-2">
-                  <input value={ev.name} onChange={e => updateForecastEvent(i, 'name', e.target.value)} placeholder="Event name..." className={`flex-1 p-2 border rounded-lg text-sm ${c.input}`} />
+                  <input ref={el => { forecastEventsInputRefs.current[i] = el; }} value={ev.name} onChange={e => updateForecastEvent(i, 'name', e.target.value)} placeholder="Event name..." className={`flex-1 p-2 border rounded-lg text-sm ${c.input}`} />
                   <button onClick={() => removeForecastEvent(i)} className={`text-xs ${c.textMuted}`}>🗑️</button>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">

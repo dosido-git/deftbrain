@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { CopyBtn } from '../components/ActionButtons';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
@@ -92,34 +91,15 @@ const ConflictCoach = ({ tool }) => {
     return isDark ? 'bg-emerald-900/40 text-emerald-300' : 'bg-emerald-100 text-emerald-700';
   };
 
-  // ─── Persisted state ───
-  const [receivedMessage, setReceivedMessage] = usePersistentState('cc-message', '');
-  const [relationship,    setRelationship]    = usePersistentState('cc-relationship', 'Friend');
-  const [personLabel,     setPersonLabel]     = usePersistentState('cc-person', '');
-  const [actualGoal,      setActualGoal]      = usePersistentState('cc-goal', '');
-  const [results,         setResults]         = usePersistentState('cc-results', null);
-  const [conflictHistory, setConflictHistory] = usePersistentState('cc-history', []);
-
-  // ─── Session state ───
+  // ─── Session state (all useState before usePersistentState — PF-11/PF-14) ───
   const [emotionalState, setEmotionalState] = useState({ angry: false, hurt: false, defensive: false, frustrated: false, calm: false, confused: false });
   const [goals,          setGoals]          = useState({ resolve: false, boundary: false, disengage: false, validate: false, schedule_talk: false });
   const [userDraft,      setUserDraft]      = useState('');
   const [error,          setError]          = useState('');
   const [toast,          setToast]          = useState(null);
-  const toastTimerRef = useRef(null);
-  const mountedRef   = useRef(true);
-  const showToast = (msg, dur = 4000) => {
-    if (!mountedRef.current) return;
-    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
-    setToast(msg);
-    toastTimerRef.current = setTimeout(() => { if (mountedRef.current) setToast(null); }, dur);
-  };
-
   const [mandatoryDelay,        setMandatoryDelay]        = useState(false);
   const [delayEndTime,          setDelayEndTime]          = useState(null);
   const [now,                   setNow]                   = useState(Date.now);
-  const delayActive  = delayEndTime !== null && now < delayEndTime;
-  const delaySeconds = delayEndTime !== null ? Math.max(0, Math.round((delayEndTime - now) / 1000)) : 0;
   const [selectedResponse,      setSelectedResponse]      = useState(null);
   const [showConfirmSend,       setShowConfirmSend]       = useState(false);
   const [threadMessages,        setThreadMessages]        = useState([]);
@@ -135,10 +115,32 @@ const ConflictCoach = ({ tool }) => {
   const [toneLoading,           setToneLoading]           = useState(false);
   const [showHistory,           setShowHistory]           = useState(false);
 
+  // ─── Refs ───
+  const toastTimerRef  = useRef(null);
+  const mountedRef     = useRef(true);
   const followupRef    = useRef(null);
   const resultsRef     = useRef(null);
   const submitRef      = useRef(null);
   const canSubmitRef   = useRef(false);
+
+  // ─── Persisted state ───
+  const [receivedMessage, setReceivedMessage] = usePersistentState('cc-message', '');
+  const [relationship,    setRelationship]    = usePersistentState('cc-relationship', 'Friend');
+  const [personLabel,     setPersonLabel]     = usePersistentState('cc-person', '');
+  const [actualGoal,      setActualGoal]      = usePersistentState('cc-goal', '');
+  const [results,         setResults]         = usePersistentState('cc-results', null);
+  const [conflictHistory, setConflictHistory] = usePersistentState('cc-history', []);
+
+  // ─── Helpers ───
+  const showToast = (msg, dur = 4000) => {
+    if (!mountedRef.current) return;
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    setToast(msg);
+    toastTimerRef.current = setTimeout(() => { if (mountedRef.current) setToast(null); }, dur);
+  };
+
+  const delayActive  = delayEndTime !== null && now < delayEndTime;
+  const delaySeconds = delayEndTime !== null ? Math.max(0, Math.round((delayEndTime - now) / 1000)) : 0;
 
   const relationshipOptions = ['Partner', 'Family', 'Friend', 'Coworker', 'Ex', 'Customer', 'Other'];
 
@@ -359,7 +361,7 @@ const ConflictCoach = ({ tool }) => {
           <div className="flex items-center justify-between">
             <div>
               <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-                <span className="mr-2">{tool?.icon ?? '💬'}</span>{tool?.title ?? 'Conflict Coach'}
+                <span className="mr-2">{tool?.icon ?? '📱'}</span>{tool?.title ?? 'Conflict Coach'}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Stop, breathe, and craft the right response'}</p>
             </div>
@@ -546,6 +548,26 @@ const ConflictCoach = ({ tool }) => {
                 : <><span>{tool?.icon ?? '📱'}</span> Analyze</>}
             </button>
           </div>
+
+          {/* Try Example */}
+          {!receivedMessage.trim() && !loading && (
+            <div className="flex justify-center">
+              <button
+                onClick={() => {
+                  setReceivedMessage("Fine. Whatever. I guess I'll just handle it myself like I always do. Don't worry about it.");
+                  setRelationship('Partner');
+                  setPersonLabel('Alex');
+                  setActualGoal('Reconnect without escalating');
+                  setEmotionalState({ angry: false, hurt: true, defensive: true, frustrated: false, calm: false, confused: false });
+                  setGoals({ resolve: true, boundary: false, disengage: false, validate: true, schedule_talk: false });
+                }}
+                className={`text-xs font-medium ${c.accentTxt} underline underline-offset-2 min-h-[32px]`}
+              >
+                ✨ Try an example
+              </button>
+            </div>
+          )}
+
           {error && (
             <div className={`p-4 ${c.danger} border rounded-lg flex items-start gap-3`}>
               <span>⚠️</span><p className="text-sm">{error}</p>
@@ -796,7 +818,8 @@ const ConflictCoach = ({ tool }) => {
               </div>
             )}
             <div className="flex gap-2" ref={followupRef}>
-              <input type="text" value={followupQuestion} onChange={e => setFollowupQuestion(e.target.value)}
+              <label htmlFor="cc-followup-q" className="sr-only">Their reply to your message</label>
+              <input id="cc-followup-q" type="text" value={followupQuestion} onChange={e => setFollowupQuestion(e.target.value)}
                 placeholder="They said this back…"
                 className={`flex-1 p-3 border rounded-lg ${c.input}`}
                 onKeyDown={e => { if (e.key === 'Enter') handleFollowup(); }} />

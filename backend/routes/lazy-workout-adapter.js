@@ -81,7 +81,7 @@ Return ONLY valid JSON:
       });
       const text = message.content.find(b => b.type === 'text')?.text || '';
       const cleaned = cleanJsonResponse(text);
-      const parsed = JSON.parse(cleaned);
+      const parsed = JSON.parse(cleanJsonResponse(cleaned));
     res.json(parsed);
   } catch (error) {
     console.error('[LazyWorkout]', error);
@@ -114,7 +114,7 @@ Return ONLY valid JSON:
       });
       const text = message.content.find(b => b.type === 'text')?.text || '';
       const cleaned = cleanJsonResponse(text);
-      const parsed = JSON.parse(cleaned);
+      const parsed = JSON.parse(cleanJsonResponse(cleaned));
     res.json(parsed);
   } catch (error) {
     console.error('[LazyWorkoutMicro]', error);
@@ -149,7 +149,7 @@ Return ONLY valid JSON:
       });
       const text = message.content.find(b => b.type === 'text')?.text || '';
       const cleaned = cleanJsonResponse(text);
-      const parsed = JSON.parse(cleaned);
+      const parsed = JSON.parse(cleanJsonResponse(cleaned));
     res.json(parsed);
   } catch (error) {
     console.error('[LazyWorkoutWeek]', error);
@@ -174,7 +174,7 @@ Return ONLY valid JSON: { "adapted": { "name": "n", "how": "instructions", "chan
       });
       const text = message.content.find(b => b.type === 'text')?.text || '';
       const cleaned = cleanJsonResponse(text);
-      const parsed = JSON.parse(cleaned);
+      const parsed = JSON.parse(cleanJsonResponse(cleaned));
     res.json(parsed);
   } catch (error) { console.error('[LazyWorkoutAdapt]', error); res.status(500).json({ error: error.message || 'Failed.' }); }
 });
@@ -196,7 +196,7 @@ Return ONLY valid JSON: { "replacement": { "name": "n", "duration": "t", "how": 
       });
       const text = message.content.find(b => b.type === 'text')?.text || '';
       const cleaned = cleanJsonResponse(text);
-      const parsed = JSON.parse(cleaned);
+      const parsed = JSON.parse(cleanJsonResponse(cleaned));
     res.json(parsed);
   } catch (error) { console.error('[LazyWorkoutSwap]', error); res.status(500).json({ error: error.message || 'Failed.' }); }
 });
@@ -222,7 +222,7 @@ Return ONLY valid JSON:
       });
       const text = message.content.find(b => b.type === 'text')?.text || '';
       const cleaned = cleanJsonResponse(text);
-      const parsed = JSON.parse(cleaned);
+      const parsed = JSON.parse(cleanJsonResponse(cleaned));
     res.json(parsed);
   } catch (error) { console.error('[LazyWorkoutBody]', error); res.status(500).json({ error: error.message || 'Failed.' }); }
 });
@@ -244,7 +244,7 @@ Return ONLY valid JSON: { "message": "celebration", "energy_note": "or null", "m
       });
       const text = message.content.find(b => b.type === 'text')?.text || '';
       const cleaned = cleanJsonResponse(text);
-      const parsed = JSON.parse(cleaned);
+      const parsed = JSON.parse(cleanJsonResponse(cleaned));
     res.json(parsed);
   } catch (error) { console.error('[LazyWorkoutComplete]', error); res.status(500).json({ error: error.message || 'Failed.' }); }
 });
@@ -273,7 +273,7 @@ Return ONLY valid JSON:
       });
       const text = message.content.find(b => b.type === 'text')?.text || '';
       const cleaned = cleanJsonResponse(text);
-      const parsed = JSON.parse(cleaned);
+      const parsed = JSON.parse(cleanJsonResponse(cleaned));
     res.json(parsed);
   } catch (error) { console.error('[LazyWorkoutInsights]', error); res.status(500).json({ error: error.message || 'Failed.' }); }
 });
@@ -307,7 +307,7 @@ Return ONLY valid JSON:
       });
       const text = message.content.find(b => b.type === 'text')?.text || '';
       const cleaned = cleanJsonResponse(text);
-      const parsed = JSON.parse(cleaned);
+      const parsed = JSON.parse(cleanJsonResponse(cleaned));
     res.json(parsed);
   } catch (error) { console.error('[LazyWorkoutStack]', error); res.status(500).json({ error: error.message || 'Failed.' }); }
 });
@@ -340,7 +340,7 @@ Return ONLY valid JSON:
       });
       const text = message.content.find(b => b.type === 'text')?.text || '';
       const cleaned = cleanJsonResponse(text);
-      const parsed = JSON.parse(cleaned);
+      const parsed = JSON.parse(cleanJsonResponse(cleaned));
     res.json(parsed);
   } catch (error) { console.error('[LazyWorkoutSleep]', error); res.status(500).json({ error: error.message || 'Failed.' }); }
 });
@@ -374,7 +374,7 @@ Return ONLY valid JSON:
       });
       const text = message.content.find(b => b.type === 'text')?.text || '';
       const cleaned = cleanJsonResponse(text);
-      const parsed = JSON.parse(cleaned);
+      const parsed = JSON.parse(cleanJsonResponse(cleaned));
     res.json(parsed);
   } catch (error) { console.error('[LazyWorkoutRecovery]', error); res.status(500).json({ error: error.message || 'Failed.' }); }
 });
@@ -409,7 +409,7 @@ Return ONLY valid JSON:
       });
       const text = message.content.find(b => b.type === 'text')?.text || '';
       const cleaned = cleanJsonResponse(text);
-      const parsed = JSON.parse(cleaned);
+      const parsed = JSON.parse(cleanJsonResponse(cleaned));
     res.json(parsed);
   } catch (error) { console.error('[LazyWorkoutProve]', error); res.status(500).json({ error: error.message || 'Failed.' }); }
 });
@@ -433,7 +433,7 @@ Return ONLY valid JSON: { "nudge": "friendly suggestion", "suggested_mode": "rig
       });
       const text = message.content.find(b => b.type === 'text')?.text || '';
       const cleaned = cleanJsonResponse(text);
-      const parsed = JSON.parse(cleaned);
+      const parsed = JSON.parse(cleanJsonResponse(cleaned));
     res.json(parsed);
   } catch (error) { console.error('[LazyWorkoutNudge]', error); res.status(500).json({ error: error.message || 'Failed.' }); }
 });

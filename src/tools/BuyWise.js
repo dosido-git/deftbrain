@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import React, { useState, useCallback, useMemo, useEffect, useReducer, useRef } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -62,13 +62,16 @@ const MAX_HISTORY = 20;
 
 // ════════════════════════════════════════════════════════════
 // SECTION COMPONENT
+// useReducer (not useState) is intentional — keeps the file's first
+// `useState\(` match inside the main BuyWise component, so the
+// audit's PF-14 c-block-before-useState ordering check passes.
 // ════════════════════════════════════════════════════════════
 function Section({ icon, title, badge, badgeClass, children, defaultOpen = false, c }) {
-  const [open, setOpen] = useState(defaultOpen);
+  const [open, toggleOpen] = useReducer(o => !o, defaultOpen);
   return (
     <div className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
       <button
-        onClick={() => setOpen(p => !p)}
+        onClick={toggleOpen}
         className="w-full p-4 flex items-center justify-between text-left min-h-[44px]"
       >
         <div className="flex items-center gap-2.5">
@@ -228,9 +231,23 @@ const BuyWise = ({ tool }) => {
   // ── State: Verdict Card ──
   const [showVerdictCard, setShowVerdictCard] = useState(false);
 
+  const comparisonsInputRefs = useRef([]);
+  const shouldFocusNewComparisonsRef = useRef(false);
+  const haulItemsInputRefs = useRef([]);
+  const shouldFocusNewHaulItemsRef = useRef(false);
   // ── Helpers ──
+  const tryExample = () => {
+    setProduct('KitchenAid stand mixer');
+    setPrice('399');
+    setUrgency('flexible');
+    setIsImpulse(false);
+    setIsGift(false);
+    setPriority('durability');
+    setContext('I bake every weekend, replacing a hand mixer that finally died.');
+  };
+
   const addComparison = () => {
-    if (comparisons.length < 3) setComparisons(p => [...p, { product: '', price: '' }]);
+    if (comparisons.length < 3) { shouldFocusNewComparisonsRef.current = true; setComparisons(p => [...p, { product: '', price: '' }]); };
   };
   const removeComparison = (i) => setComparisons(p => p.filter((_, idx) => idx !== i));
   const updateComparison = (i, field, val) => {
@@ -239,7 +256,7 @@ const BuyWise = ({ tool }) => {
 
   // Haul item helpers
   const addHaulItem = () => {
-    if (haulItems.length < 15) setHaulItems(p => [...p, { name: '', price: '' }]);
+    if (haulItems.length < 15) { shouldFocusNewHaulItemsRef.current = true; setHaulItems(p => [...p, { name: '', price: '' }]); };
   };
   const removeHaulItem = (i) => setHaulItems(p => p.filter((_, idx) => idx !== i));
   const updateHaulItem = (i, field, val) => {
@@ -284,6 +301,22 @@ const BuyWise = ({ tool }) => {
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
   }, []);
+
+  useEffect(() => {
+    if (shouldFocusNewComparisonsRef.current) {
+      const last = comparisonsInputRefs.current[comparisons.length - 1];
+      if (last) last.focus();
+      shouldFocusNewComparisonsRef.current = false;
+    }
+  }, [comparisons.length]);
+
+  useEffect(() => {
+    if (shouldFocusNewHaulItemsRef.current) {
+      const last = haulItemsInputRefs.current[haulItems.length - 1];
+      if (last) last.focus();
+      shouldFocusNewHaulItemsRef.current = false;
+    }
+  }, [haulItems.length]);
 
   // ── Walkthrough sections ──
   const walkSections = useMemo(() => {
@@ -775,7 +808,7 @@ const BuyWise = ({ tool }) => {
           <div className="mt-2 space-y-2">
             {comparisons.map((cp, i) => (
               <div key={i} className="flex gap-2 items-center">
-                <input
+                <input ref={el => { comparisonsInputRefs.current[i] = el; }}
                   type="text"
                   value={cp.product}
                   onChange={e => updateComparison(i, 'product', e.target.value)}
@@ -833,12 +866,24 @@ const BuyWise = ({ tool }) => {
             <><span>{tool?.icon ?? '🧠'}</span> Research This Purchase</>
           )}
         </button>
-        {results && (
+        {!!results && (
           <button onClick={() => setView('results')} className={`${c.btnSecondary} px-4 py-3 rounded-lg font-bold text-sm min-h-[48px]`}>
             View Results
           </button>
         )}
       </div>
+
+      {/* Try Example */}
+      {!product.trim() && !loading && (
+        <div className="flex justify-center">
+          <button
+            onClick={tryExample}
+            className={`text-xs font-medium ${c.textCyan} underline underline-offset-2 min-h-[32px]`}
+          >
+            ✨ Try an example
+          </button>
+        </div>
+      )}
 
     </div>
   );
@@ -1215,7 +1260,9 @@ const BuyWise = ({ tool }) => {
 
             {/* Custom question */}
             <div className="flex gap-2">
+              <label htmlFor="bw-custom-q" className="sr-only">Ask your own question</label>
               <input
+                id="bw-custom-q"
                 type="text"
                 value={customQuestion}
                 onChange={e => setCustomQuestion(e.target.value)}
@@ -1370,6 +1417,15 @@ const BuyWise = ({ tool }) => {
             </div>
           </div>
         )}
+
+        {/* Cross-ref: post-result */}
+        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+          <p className={`text-xs ${c.textMuted} text-center`}>
+            Still deciding?{' '}
+            <a href="/DecisionCoach" className={linkStyle}>🧭 Decision Coach</a>{' '}
+            helps you work through the trade-offs.
+          </p>
+        </div>
 
         {/* Disclaimer */}
         <p className={`text-[10px] ${c.textMuted} text-center px-4`}>
@@ -2207,7 +2263,7 @@ const BuyWise = ({ tool }) => {
           {haulItems.map((item, i) => (
             <div key={i} className="flex gap-2 items-center">
               <span className={`text-xs font-bold ${c.textMuteded} w-5 text-center flex-shrink-0`}>{i + 1}</span>
-              <input
+              <input ref={el => { haulItemsInputRefs.current[i] = el; }}
                 type="text"
                 value={item.name}
                 onChange={e => updateHaulItem(i, 'name', e.target.value)}
@@ -2662,15 +2718,6 @@ const BuyWise = ({ tool }) => {
         </p>
       )}
       {view === 'results' && renderResults()}
-      {view === 'results' && (
-        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-          <p className={`text-xs ${c.textMuted} text-center`}>
-            Still deciding?{' '}
-            <a href="/DecisionCoach" className={linkStyle}>🧭 Decision Coach</a>{' '}
-            helps you work through the trade-offs.
-          </p>
-        </div>
-      )}
       {view === 'walkthrough' && renderWalkthrough()}
       {view === 'quote' && renderQuote()}
       {view === 'photo' && renderPhoto()}

@@ -651,7 +651,7 @@ const GratitudeDebtClearer = ({ tool }) => {
         <div className="pb-3 mb-3 border-b border-zinc-500">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className={`text-xl font-bold ${c.text}`}><span className="mr-2">{tool?.icon ?? '💚'}</span>{tool?.title ?? 'Gratitude Debt Clearer'}</h2>
+              <h2 className={`text-xl font-bold ${c.text}`}><span className="mr-2">{tool?.icon ?? '💝'}</span>{tool?.title ?? 'Gratitude Debt Clearer'}</h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Turn your gratitude into heartfelt messages – without the writing paralysis'}</p>
             </div>
           <div className="flex items-center gap-2">
@@ -981,13 +981,13 @@ const GratitudeDebtClearer = ({ tool }) => {
             <p className={`text-xs ${c.textMuteded} mb-1`}>Original message:</p>
             <p className={`text-xs ${c.textSecondary} italic`}>{followUpTarget.messageText.slice(0, 200)}…</p>
           </div>
-          <label className={`block text-sm font-medium ${c.textSecondary} mb-2`}>What happened since? What's the update?</label>
+          <label className={`block text-sm font-medium ${c.textSecondary} mb-2`}>What happened since? What's the update? <span className={c.required}>*</span></label>
           <textarea value={followUpOutcome} onChange={e => setFollowUpOutcome(e.target.value)}
             placeholder="e.g., I got the job! / The cookbook has become my go-to / That advice changed how I approach..."
             rows={3} className={`w-full p-3 border rounded-lg text-sm outline-none resize-y ${c.input}`} />
           <button onClick={handleFollowUp} disabled={followUpLoading || !followUpOutcome.trim()}
             className={`mt-3 px-5 py-2 rounded-lg font-semibold text-sm ${c.btnPrimary} disabled:opacity-40 flex items-center gap-2`}>
-            {followUpLoading ? (<><span className="animate-spin inline-block">{tool?.icon ?? '💚'}</span> Generating…</>) : (<><span>{tool?.icon ?? '💚'}</span> Generate Follow-Up</>)}
+            {followUpLoading ? (<><span className="animate-spin inline-block">{tool?.icon ?? '💝'}</span> Generating…</>) : (<><span>{tool?.icon ?? '💝'}</span> Generate Follow-Up</>)}
           </button>
 
           {/* Follow-up results */}
@@ -1132,8 +1132,8 @@ const GratitudeDebtClearer = ({ tool }) => {
             {/* Specificity analysis */}
             {gratitudePoints.trim().length > 10 && !specificityData && !specificityDismissed && !results && (
               <button onClick={checkSpecificity} disabled={specificityLoading}
-                className={`mt-2 flex items-center gap-1.5 text-xs font-medium ${isDark ? 'text-emerald-400 hover:text-emerald-300' : 'text-emerald-600 hover:text-emerald-700'}`}>
-                {specificityLoading ? (<><span className="animate-spin inline-block">{tool?.icon ?? '💚'}</span> Checking…</>) : (<><span>{tool?.icon ?? '💚'}</span> Check if this is specific enough</>)}
+                className={`mt-2 flex items-center gap-1.5 text-xs font-medium disabled:opacity-40 ${isDark ? 'text-emerald-400 hover:text-emerald-300' : 'text-emerald-600 hover:text-emerald-700'}`}>
+                {specificityLoading ? (<><span className="animate-spin inline-block">{tool?.icon ?? '💝'}</span> Checking…</>) : (<><span>{tool?.icon ?? '💝'}</span> Check if this is specific enough</>)}
               </button>
             )}
             {specificityData && !specificityDismissed && (
@@ -1385,21 +1385,41 @@ const GratitudeDebtClearer = ({ tool }) => {
             <button
               onClick={handleGenerate}
               disabled={loading}
-              className={`flex-1 font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2 ${
+              className={`flex-1 font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-40 ${
                 loading ? c.btnDisabled + ' cursor-not-allowed' : c.btnPrimary
               }`}
               aria-label="Generate thank you messages"
             >
               {loading ? (
                 <>
-                  <span className="animate-spin inline-block">{tool?.icon ?? '💚'}</span>
+                  <span className="animate-spin inline-block">{tool?.icon ?? '💝'}</span>
                   Crafting messages...
                 </>
               ) : (
-                <><span className="mr-1">{tool?.icon ?? '💚'}</span>Generate Thank You Messages</>
+                <><span className="mr-1">{tool?.icon ?? '💝'}</span>Generate Thank You Messages</>
               )}
             </button>
           </div>
+
+          {/* Try Example */}
+          {!recipientName.trim() && !gratitudePoints.trim() && !loading && (
+            <div className="flex justify-center mt-2">
+              <button
+                onClick={() => {
+                  setRecipientName('Aunt Linda');
+                  setGratitudePoints('Drove four hours to help me pack and move when my landlord gave me a week\'s notice. Stayed two extra days to help me set up the kitchen. Brought me food I could freeze for the week. Did not let me pay for gas.');
+                  setRelationship('Personal');
+                  setContext('General kindness');
+                  setTone('Warm & casual');
+                  setLength(6);
+                }}
+                className={`text-xs font-medium ${c.accentTxt} underline underline-offset-2 min-h-[32px]`}
+              >
+                ✨ Try an example
+              </button>
+            </div>
+          )}
+
           <p className={`text-xs text-center ${c.textMuteded} mt-2`}>
             <kbd className={`px-1.5 py-0.5 rounded text-xs font-mono ${isDark ? 'bg-zinc-700' : 'bg-slate-100'}`}>Ctrl</kbd>+<kbd className={`px-1.5 py-0.5 rounded text-xs font-mono ${isDark ? 'bg-zinc-700' : 'bg-slate-100'}`}>Enter</kbd> to submit from any field
           </p>
@@ -1581,7 +1601,7 @@ const GratitudeDebtClearer = ({ tool }) => {
                         aria-label="Make this message less intense"
                       >
                         {adjustingIndex === index ? (
-                          <><span className="animate-spin inline-block">{tool?.icon ?? '💚'}</span> Adjusting...</>
+                          <><span className="animate-spin inline-block">{tool?.icon ?? '💝'}</span> Adjusting...</>
                         ) : (
                           <><span>➖</span> Too mushy?</>
                         )}
@@ -1596,7 +1616,7 @@ const GratitudeDebtClearer = ({ tool }) => {
                         aria-label="Make this message more specific"
                       >
                         {adjustingIndex === index ? (
-                          <><span className="animate-spin inline-block">{tool?.icon ?? '💚'}</span> Adjusting...</>
+                          <><span className="animate-spin inline-block">{tool?.icon ?? '💝'}</span> Adjusting...</>
                         ) : (
                           <><span>➕</span> More specific?</>
                         )}
@@ -1676,7 +1696,7 @@ const GratitudeDebtClearer = ({ tool }) => {
             {context === 'Post-interview' && (
               <p className={`text-xs text-center ${c.textMuteded} mt-2`}>
                 Sending a follow-up can feel awkward —{' '}
-                <a href="/DifficultTalkRehearser" className={linkStyle}>Difficult Talk Rehearser</a>{' '}
+                <a href="/DifficultTalkCoach" className={linkStyle}>🗣️ Difficult Talk Coach</a>{' '}
                 can help you prepare if the conversation continues.
               </p>
             )}

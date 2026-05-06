@@ -154,6 +154,7 @@ const SocialEnergyAudit = ({ tool }) => {
   const addFromOther = () => {
     const val = otherText.trim();
     if (!val) return;
+    shouldFocusNewInteractionsRef.current = true;
     setInteractions(p => [...p, { situation: val, category: 'work', performance: 5, energyBefore: 7, energyAfter: 5, duration: '', custom: true }]);
     setOtherText('');
     setShowOther(false);
@@ -176,6 +177,10 @@ const SocialEnergyAudit = ({ tool }) => {
 
   const runAuditRef = useRef(null);
 
+  const interactionsInputRefs = useRef([]);
+  const shouldFocusNewInteractionsRef = useRef(false);
+  const upcomingInputRefs = useRef([]);
+  const shouldFocusNewUpcomingRef = useRef(false);
   useEffect(() => {
     const handler = (e) => {
       if (e.key !== 'Enter' || !(e.metaKey || e.ctrlKey)) return;
@@ -187,6 +192,22 @@ const SocialEnergyAudit = ({ tool }) => {
     return () => document.removeEventListener('keydown', handler);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading]);
+
+  useEffect(() => {
+    if (shouldFocusNewInteractionsRef.current) {
+      const last = interactionsInputRefs.current[interactions.length - 1];
+      if (last) last.focus();
+      shouldFocusNewInteractionsRef.current = false;
+    }
+  }, [interactions.length]);
+
+  useEffect(() => {
+    if (shouldFocusNewUpcomingRef.current) {
+      const last = upcomingInputRefs.current[upcoming.length - 1];
+      if (last) last.focus();
+      shouldFocusNewUpcomingRef.current = false;
+    }
+  }, [upcoming.length]);
 
   const handleReset = useCallback(() => {
     setResults(null);
@@ -206,6 +227,7 @@ const SocialEnergyAudit = ({ tool }) => {
 
   // ── Interaction helpers ──
   const addInteraction = () => {
+    shouldFocusNewInteractionsRef.current = true;
     setInteractions(p => [...p, { situation: '', category: 'work', performance: 5, energyBefore: 7, energyAfter: 5, duration: '' }]);
   };
   const removeInteraction = (i) => setInteractions(p => p.filter((_, idx) => idx !== i));
@@ -213,6 +235,7 @@ const SocialEnergyAudit = ({ tool }) => {
     setInteractions(p => p.map((item, idx) => idx === i ? { ...item, [field]: val } : item));
   };
   const addFromPreset = (preset) => {
+    shouldFocusNewInteractionsRef.current = true;
     setInteractions(p => [...p, {
       situation: preset.situation,
       category: preset.category,
@@ -422,6 +445,7 @@ const SocialEnergyAudit = ({ tool }) => {
 
   // ── Upcoming helpers ──
   const addUpcoming = () => {
+    shouldFocusNewUpcomingRef.current = true;
     setUpcoming(p => [...p, { situation: '', category: 'work', day: 'Monday', duration: '', performance: 5 }]);
   };
   const removeUpcoming = (i) => setUpcoming(p => p.filter((_, idx) => idx !== i));
@@ -772,7 +796,7 @@ const SocialEnergyAudit = ({ tool }) => {
                     <div className={`flex items-center gap-1.5 text-sm font-medium ${c.text}`}>
                       <span>{QUICK_PRESETS.find(p => p.situation === int.situation)?.icon ?? '📌'}</span>
                       {int.custom ? (
-                        <input
+                        <input ref={el => { interactionsInputRefs.current[i] = el; }}
                           type="text"
                           value={int.situation}
                           onChange={e => updateInteraction(i, 'situation', e.target.value)}
@@ -1064,7 +1088,7 @@ const SocialEnergyAudit = ({ tool }) => {
           {upcoming.map((u, i) => (
             <div key={i} className="flex gap-2 items-start">
               <div className="flex-1 grid grid-cols-2 sm:grid-cols-4 gap-2">
-                <input
+                <input ref={el => { upcomingInputRefs.current[i] = el; }}
                   type="text"
                   value={u.situation}
                   onChange={e => updateUpcoming(i, 'situation', e.target.value)}

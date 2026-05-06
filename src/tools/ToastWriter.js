@@ -55,24 +55,31 @@ const ToastWriter = ({ tool }) => {
     pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
     badge:         isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-100 text-cyan-800',
+    labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
+    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
   };
+  c.textMuteded = c.textMuted;
+  c.label       = c.labelText;
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
     : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
 
-  // ─── State ───
-  const [person, setPerson] = usePersistentState('toastwriter-person', '');
+  // ─── State (useState before usePersistentState — PF-11/PF-14) ───
   const [occasion, setOccasion] = useState('');
   const [relationship, setRelationship] = useState('');
   const [stories, setStories] = useState('');
   const [tone, setTone] = useState('warm_and_funny');
   const [duration, setDuration] = useState('2_minutes');
   const [avoid, setAvoid] = useState('');
-  const [results, setResults] = usePersistentState('toastwriter-result', null);
   const [error, setError] = useState('');
-  const [history, setHistory] = usePersistentState('toastwriter-history', []);
   const [activeVersion, setActiveVersion] = useState(0);
+
+  // ─── Persistent state ───
+  const [person, setPerson] = usePersistentState('toastwriter-person', '');
+  const [results, setResults] = usePersistentState('toastwriter-result', null);
+  const [history, setHistory] = usePersistentState('toastwriter-history', []);
+
   const resultsRef = useRef(null);
 
   // ─── Actions ───
@@ -137,19 +144,23 @@ const ToastWriter = ({ tool }) => {
   }, [results]);
 
   // Global Cmd/Ctrl+Enter listener
+  const generateRef = useRef(null);
+  const canSubmitRef = useRef(false);
+  generateRef.current = generate;
+  canSubmitRef.current = !!person.trim() && !!occasion && !loading;
+
   useEffect(() => {
     const handler = (e) => {
-      if (e.key !== 'Enter' || !(e.metaKey || e.ctrlKey)) return;
       const tag = document.activeElement?.tagName;
-      if (tag === 'TEXTAREA' || tag === 'SELECT') return;
-      if (!person.trim() || !occasion || loading) return;
-      e.preventDefault();
-      generate();
+      if (tag === 'SELECT') return;
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !loading && canSubmitRef.current) {
+        e.preventDefault();
+        generateRef.current?.();
+      }
     };
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [person, occasion, loading]);
+  }, [loading]);
 
   const r = results;
   const activeV = r?.versions?.[activeVersion];
@@ -164,7 +175,7 @@ const ToastWriter = ({ tool }) => {
           <div className="flex items-start justify-between gap-3">
             <div>
               <h2 className={`text-2xl font-bold ${c.text}`}>
-                <span className="mr-2">{tool?.icon ?? '🎙️'}</span>{tool?.title ?? 'ToastWriter'}
+                <span className="mr-2">{tool?.icon ?? '🥂'}</span>{tool?.title ?? 'ToastWriter'}
               </h2>
               <p className={`text-sm ${c.textSecondary} mt-1`}>{tool?.tagline ?? 'Toasts, speeches, and tributes that land'}</p>
             </div>
@@ -177,7 +188,7 @@ const ToastWriter = ({ tool }) => {
         </div>
 
         {/* Person */} <div className="mb-4">
-          <label className={`text-sm font-bold ${c.text} block mb-1.5`}>Who is this for?</label>
+          <label className={`text-sm font-bold ${c.text} block mb-1.5`}>Who is this for? <span className={c.required}>*</span></label>
           <input
             type="text"
             value={person} onChange={e => setPerson(e.target.value)} placeholder="e.g., my best friend Sarah, my dad, my coworker Mike"
@@ -185,7 +196,7 @@ const ToastWriter = ({ tool }) => {
         </div>
 
         {/* Occasion */} <div className="mb-4">
-          <label className={`text-sm font-bold ${c.text} block mb-2`}>The occasion</label>
+          <label className={`text-sm font-bold ${c.text} block mb-2`}>The occasion <span className={c.required}>*</span></label>
           <div className="flex flex-wrap gap-1.5">
             {OCCASIONS.map(o => (<button
                 key={o.value} onClick={() => setOccasion(occasion === o.value ? '' : o.value)} className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors min-h-[32px] ${
@@ -249,22 +260,42 @@ const ToastWriter = ({ tool }) => {
 
         {/* Actions */} <p className={`text-xs ${c.textMuted} mb-2`}>AI-generated — review and personalise before delivery.</p>
         <p className={`text-xs ${c.textMuted} mb-3`}>
-          Nervous about delivering it? <a href="/MagicMouth" className={linkStyle}>MagicMouth</a> helps you rehearse.
+          Nervous about delivering it? <a href="/MagicMouth" className={linkStyle}>🎤 MagicMouth</a> helps you rehearse.
         </p>
         <div className="flex gap-3">
           <button
             onClick={generate} disabled={loading || !person.trim() || !occasion} className={`flex-1 ${c.btnPrimary} disabled:opacity-40 disabled:cursor-not-allowed font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-2 min-h-[48px] shadow-lg`} >
             {loading
-              ? <><span className="inline-block animate-spin">{tool?.icon ?? '🎙️'}</span> Writing your toast…</>
-              : <><span>{tool?.icon ?? '🎙️'}</span> Write My Toast</>} </button>
+              ? <><span className="inline-block animate-spin">{tool?.icon ?? '🥂'}</span> Writing your toast…</>
+              : <><span>{tool?.icon ?? '🥂'}</span> Write My Toast</>} </button>
         </div>
+
+        {/* Try Example */}
+        {!person.trim() && !occasion && !loading && (
+          <div className="flex justify-center mt-3">
+            <button
+              onClick={() => {
+                setPerson('my best friend Sarah');
+                setOccasion('wedding');
+                setRelationship('Maid of Honor — known her since freshman year of college, 12 years');
+                setStories('She drove from Chicago to Denver in a blizzard to be at my dad\'s funeral. She\'s the friend who tells you the truth even when it stings. She and Marcus met because she spilled coffee on his laptop at a coffee shop and refused to leave until she fixed it.');
+                setTone('warm_and_funny');
+                setDuration('3_minutes');
+                setAvoid('Anything about exes, the bachelorette weekend, or her parents\' divorce');
+              }}
+              className={`text-xs font-medium ${c.accentTxt} underline underline-offset-2 min-h-[32px]`}
+            >
+              ✨ Try an example
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Error */} {error && (<div className={`${c.danger} border rounded-xl p-4 flex items-start gap-3`}>
           <span className="flex-shrink-0 mt-0.5">⚠️</span>
           <p className="text-sm">{error}</p>
         </div>
-      )} {/* ══════════════════════════════════════════════════════════ */} {/* RESULTS                                                  */} {/* ══════════════════════════════════════════════════════════ */} {r && (<div className="space-y-4">
+      )} {/* ══════════════════════════════════════════════════════════ */} {/* RESULTS                                                  */} {/* ══════════════════════════════════════════════════════════ */} {results && (<div className="space-y-4">
           <div ref={resultsRef} data-results-anchor />
           {/* ── OCCASION READ ── */} {r.occasion_read && (<div className={`${c.card} border ${c.border} rounded-xl p-5`}>
               <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{r.occasion_read}</p>

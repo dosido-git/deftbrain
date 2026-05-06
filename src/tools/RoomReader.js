@@ -341,6 +341,8 @@ const RoomReader = ({ tool }) => {
   const canSubmitRef = useRef(false);
   const resultsRef   = useRef(null);
 
+  const trackedPeopleInputRefs = useRef([]);
+  const shouldFocusNewTrackedPeopleRef = useRef(false);
   // ── Persistent state ──
   const [playbook, setPlaybook]           = usePersistentState('room-reader-playbook', []);
   const [history, setHistory]             = usePersistentState('room-reader-history', []);
@@ -358,6 +360,7 @@ const RoomReader = ({ tool }) => {
 
   const addTrackedPerson = useCallback((name, rel) => {
     if (trackedPeople.find(p => p.name === name)) return;
+    shouldFocusNewTrackedPeopleRef.current = true;
     setTrackedPeople(prev => [...prev, { name, relationship: rel, notes: [], created: new Date().toISOString() }]);
   }, [trackedPeople, setTrackedPeople]);
 
@@ -570,6 +573,14 @@ const RoomReader = ({ tool }) => {
     return () => document.removeEventListener('keydown', handler);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading]);
+
+  useEffect(() => {
+    if (shouldFocusNewTrackedPeopleRef.current) {
+      const last = trackedPeopleInputRefs.current[trackedPeople.length - 1];
+      if (last) last.focus();
+      shouldFocusNewTrackedPeopleRef.current = false;
+    }
+  }, [trackedPeople.length]);
 
   // Convenience prop bundles for sub-components
   const sp = { c, isDark, expandedSections, toggleSection, saveLine, isSaved };
@@ -929,7 +940,7 @@ const RoomReader = ({ tool }) => {
                   {selectedTrackedPerson === tpIdx && (
                     <div className="space-y-2">
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                        <input value={personNoteTopics} onChange={e => setPersonNoteTopics(e.target.value)} placeholder="Topics that worked" className={`px-2 py-1.5 rounded-lg border text-xs ${c.input}`} />
+                        <input ref={el => { trackedPeopleInputRefs.current[tpIdx] = el; }} value={personNoteTopics} onChange={e => setPersonNoteTopics(e.target.value)} placeholder="Topics that worked" className={`px-2 py-1.5 rounded-lg border text-xs ${c.input}`} />
                         <input value={personNoteBombed} onChange={e => setPersonNoteBombed(e.target.value)} placeholder="Topics that bombed" className={`px-2 py-1.5 rounded-lg border text-xs ${c.input}`} />
                         <input value={personNoteText} onChange={e => setPersonNoteText(e.target.value)} placeholder="Notes" className={`px-2 py-1.5 rounded-lg border text-xs ${c.input}`} />
                       </div>

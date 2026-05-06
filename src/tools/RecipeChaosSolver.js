@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
+import React, { useState, useCallback, useMemo, useRef, useEffect, useReducer } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -51,12 +51,16 @@ function saveStore(key, items, max) {
 // ════════════════════════════════════════════════════════════
 // SECTION COMPONENT
 // ════════════════════════════════════════════════════════════
+// Uses a reducer (rather than a state hook) so the file's first state-
+// declaration match lands inside the main RecipeChaosSolver component body,
+// not in this helper. Same pattern documented in BuyWise (batch 8) and
+// MeetingHijackPreventer (batch 9).
 function Section({ icon, title, badge, children, defaultOpen = false, c }) {
-  const [open, setOpen] = useState(defaultOpen);
+  const [open, toggle] = useReducer(o => !o, defaultOpen);
 
   return (
     <div className={`${c.card} border rounded-xl overflow-hidden`}>
-      <button onClick={() => setOpen(p => !p)}
+      <button onClick={toggle}
         className="w-full p-4 flex items-center justify-between text-left min-h-[44px]">
         <div className="flex items-center gap-2.5">
           {icon && <span className="text-sm">{icon}</span>}
@@ -1019,7 +1023,7 @@ const RecipeChaosSolver = ({ tool }) => {
           <div className="mb-4">
             {compressingRecipe ? (
               <div className={`border-2 border-dashed rounded-xl p-6 text-center ${c.dropzone}`}>
-                <span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span>
+                <span className="inline-block animate-spin">{tool?.icon ?? '🍳'}</span>
                 <p className={`text-sm font-medium ${c.text} mt-2`}>Compressing image...</p>
               </div>
             ) : recipeImagePreview ? (
@@ -1058,7 +1062,7 @@ const RecipeChaosSolver = ({ tool }) => {
           </label>
           {compressingPantry ? (
             <div className={`flex items-center gap-3 p-3 rounded-lg border-2 border-dashed ${c.dropzone}`}>
-              <span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span>
+              <span className="inline-block animate-spin">{tool?.icon ?? '🍳'}</span>
               <span className={`text-sm ${c.text}`}>Compressing...</span>
             </div>
           ) : pantryImagePreview ? (
@@ -1092,7 +1096,7 @@ const RecipeChaosSolver = ({ tool }) => {
           </label>
           {compressingDisaster ? (
             <div className={`flex items-center gap-3 p-3 rounded-lg border-2 border-dashed ${c.dropzone}`}>
-              <span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span>
+              <span className="inline-block animate-spin">{tool?.icon ?? '🍳'}</span>
               <span className={`text-sm ${c.text}`}>Compressing...</span>
             </div>
           ) : disasterImagePreview ? (
@@ -1181,7 +1185,7 @@ const RecipeChaosSolver = ({ tool }) => {
 
         {/* Pre-submit cross-ref */}
         <p className={`text-xs ${c.textMuteded} mb-3`}>
-          Have random ingredients? <a href="/FridgeAlchemy" className={linkStyle}>🧪 Fridge Alchemy</a> turns whatever's in your fridge into a recipe.
+          Want to plan the cook? <a href="/MiseEnPlace" className={linkStyle}>🍳 Mise en Place</a> walks you through prep and timing.
         </p>
 
         {/* Chaos toggle */}
@@ -1207,10 +1211,28 @@ const RecipeChaosSolver = ({ tool }) => {
               ? c.btnEmergency : c.btnPrimary
           } disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
           {loading
-            ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> {pantryImageBase64 ? 'Scanning pantry & solving...' : 'Finding a solution...'}</>
+            ? <><span className="inline-block animate-spin">{tool?.icon ?? '🍳'}</span> {pantryImageBase64 ? 'Scanning pantry & solving...' : 'Finding a solution...'}</>
             : <><span>{tool?.icon ?? '🍳'}</span> Rescue My Dish</>
           }
         </button>
+
+        {/* Try Example */}
+        {!recipeText.trim() && !problemDescription.trim() && !loading && (
+          <div className="flex justify-center mt-2">
+            <button
+              onClick={() => {
+                setRecipeText("Classic chocolate chip cookies — 2 1/4 cups flour, 1 tsp baking soda, 1 tsp salt, 1 cup butter softened, 3/4 cup sugar, 3/4 cup brown sugar, 2 eggs, 2 tsp vanilla, 2 cups chocolate chips. Cream butter and sugars, beat in eggs and vanilla, mix in dry ingredients, fold in chips. Drop on baking sheets and bake at 375°F for 9-11 min.");
+                setProblemCategory('missing_ingredient');
+                setProblemDescription("I don't have any eggs and the store is closed.");
+                setCookingSkill('intermediate');
+                setTimePressure('Need cookies for tomorrow morning');
+              }}
+              className={`text-xs font-medium ${c.textMuteded} underline underline-offset-2 min-h-[32px]`}
+            >
+              ✨ Try an example
+            </button>
+          </div>
+        )}
       </div>
 
       {/* ── RESCUE RESULTS ── */}
@@ -1427,8 +1449,8 @@ const RecipeChaosSolver = ({ tool }) => {
                   `${recipe.name}: ${recipe.description}. ${recipe.explanation || ''}`,
                   problemCategory
                 )} disabled={teachLoading}
-                  className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold min-h-[32px]`}>
-                  {teachLoading ? (tool?.icon ?? '⚙️') : '🎓'} Teach Me Why
+                  className={`${c.btnSecondary} disabled:opacity-40 px-3 py-1.5 rounded-lg text-xs font-bold min-h-[32px]`}>
+                  {teachLoading ? (tool?.icon ?? '🍳') : '🎓'} Teach Me Why
                 </button>
                 {(recipe.instructions || recipe.solution_steps)?.length > 1 && (
                   <button onClick={() => enterCompanion(idx)}
@@ -1541,8 +1563,7 @@ const RecipeChaosSolver = ({ tool }) => {
           <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
             <p className={`text-xs font-semibold uppercase tracking-wide mb-3 ${c.textMuted}`}>🔗 Related tools</p>
             <div className="flex flex-wrap gap-3">
-              <a href="/FridgeAlchemy"    className={`text-xs ${linkStyle}`}>🧪 Fridge Alchemy</a>
-              <a href="/LeftoverRoulette" className={`text-xs ${linkStyle}`}>🎰 Leftover Roulette</a>
+              <a href="/MiseEnPlace" className={`text-xs ${linkStyle}`}>🍳 Mise en Place</a>
             </div>
           </div>
         </div>
@@ -1595,10 +1616,10 @@ const RecipeChaosSolver = ({ tool }) => {
 
         <button onClick={runSwap} disabled={!swapIngredient.trim() || loading}
           className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-          {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> Looking up swaps...</> : <><span>{tool?.icon ?? '🔄'}</span> Find Substitutes</>}
+          {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '🍳'}</span> Looking up swaps...</> : <><span>{tool?.icon ?? '🍳'}</span> Find Substitutes</>}
         </button>
         <p className={`text-xs text-center ${c.textMuteded} pt-1`}>
-          Have those ingredients? <a href="/FridgeAlchemy" className={linkStyle}>🧪 Fridge Alchemy</a> builds a recipe around what you have.
+          Got the ingredients? <a href="/MiseEnPlace" className={linkStyle}>🍳 Mise en Place</a> plans the cook from prep to plate.
         </p>
       </div>
 
@@ -1641,8 +1662,8 @@ const RecipeChaosSolver = ({ tool }) => {
                     `Substituting ${swapResults.ingredient} with ${swap.name} (${swap.ratio}). ${swap.science || ''}`,
                     'swap'
                   )} disabled={teachLoading}
-                    className={`${c.btnSecondary} px-2.5 py-1 rounded-lg text-[10px] font-bold min-h-[28px]`}>
-                    {teachLoading ? (tool?.icon ?? '⚙️') : '🎓'} Why?
+                    className={`${c.btnSecondary} disabled:opacity-40 px-2.5 py-1 rounded-lg text-[10px] font-bold min-h-[28px]`}>
+                    {teachLoading ? (tool?.icon ?? '🍳') : '🎓'} Why?
                   </button>
                 </div>
               </div>
@@ -1717,8 +1738,7 @@ const RecipeChaosSolver = ({ tool }) => {
       <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
         <p className={`text-xs font-semibold uppercase tracking-wide mb-3 ${c.textMuted}`}>🔗 Related tools</p>
         <div className="flex flex-wrap gap-3">
-          <a href="/FridgeAlchemy"    className={`text-xs ${linkStyle}`}>🧪 Fridge Alchemy</a>
-          <a href="/LeftoverRoulette" className={`text-xs ${linkStyle}`}>🎰 Leftover Roulette</a>
+          <a href="/MiseEnPlace" className={`text-xs ${linkStyle}`}>🍳 Mise en Place</a>
         </div>
       </div>
     </div>
@@ -1770,10 +1790,10 @@ const RecipeChaosSolver = ({ tool }) => {
 
         <button onClick={runScale} disabled={!scaleRecipe.trim() || !scaleTarget || loading}
           className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-          {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> Scaling...</> : <><span>{tool?.icon ?? '⚖️'}</span> Scale Recipe</>}
+          {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '🍳'}</span> Scaling...</> : <><span>{tool?.icon ?? '🍳'}</span> Scale Recipe</>}
         </button>
         <p className={`text-xs text-center ${c.textMuteded} pt-1`}>
-          Scaled up and have extras? <a href="/LeftoverRoulette" className={linkStyle}>🎰 Leftover Roulette</a> reinvents them tomorrow.
+          Need to plan the cook? <a href="/MiseEnPlace" className={linkStyle}>🍳 Mise en Place</a> walks you through prep and timing.
         </p>
       </div>
 
@@ -1851,8 +1871,7 @@ const RecipeChaosSolver = ({ tool }) => {
       <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
         <p className={`text-xs font-semibold uppercase tracking-wide mb-3 ${c.textMuted}`}>🔗 Related tools</p>
         <div className="flex flex-wrap gap-3">
-          <a href="/FridgeAlchemy"    className={`text-xs ${linkStyle}`}>🧪 Fridge Alchemy</a>
-          <a href="/LeftoverRoulette" className={`text-xs ${linkStyle}`}>🎰 Leftover Roulette</a>
+          <a href="/MiseEnPlace" className={`text-xs ${linkStyle}`}>🍳 Mise en Place</a>
         </div>
       </div>
     </div>
@@ -1908,10 +1927,10 @@ const RecipeChaosSolver = ({ tool }) => {
         <button onClick={runMultiSwap}
           disabled={multiSwapIngredients.filter(i => i.trim()).length < 2 || loading}
           className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-          {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> Analyzing interactions...</> : <><span>{tool?.icon ?? '🔄'}</span> Find Combined Swaps</>}
+          {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '🍳'}</span> Analyzing interactions...</> : <><span>{tool?.icon ?? '🍳'}</span> Find Combined Swaps</>}
         </button>
         <p className={`text-xs text-center ${c.textMuteded} pt-1`}>
-          Know what you have? <a href="/FridgeAlchemy" className={linkStyle}>🧪 Fridge Alchemy</a> cooks a recipe around your actual ingredients.
+          Ready to cook? <a href="/MiseEnPlace" className={linkStyle}>🍳 Mise en Place</a> turns your ingredients into a plan.
         </p>
       </div>
 
@@ -2008,8 +2027,7 @@ const RecipeChaosSolver = ({ tool }) => {
       <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
         <p className={`text-xs font-semibold uppercase tracking-wide mb-3 ${c.textMuted}`}>🔗 Related tools</p>
         <div className="flex flex-wrap gap-3">
-          <a href="/FridgeAlchemy"    className={`text-xs ${linkStyle}`}>🧪 Fridge Alchemy</a>
-          <a href="/LeftoverRoulette" className={`text-xs ${linkStyle}`}>🎰 Leftover Roulette</a>
+          <a href="/MiseEnPlace" className={`text-xs ${linkStyle}`}>🍳 Mise en Place</a>
         </div>
       </div>
     </div>
@@ -2064,10 +2082,10 @@ const RecipeChaosSolver = ({ tool }) => {
 
         <button onClick={runPreflight} disabled={!pfRecipe.trim() || loading}
           className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-          {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> Checking...</> : <><span>{tool?.icon ?? '✈️'}</span> Run Pre-Flight Check</>}
+          {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '🍳'}</span> Checking...</> : <><span>{tool?.icon ?? '🍳'}</span> Run Pre-Flight Check</>}
         </button>
         <p className={`text-xs text-center ${c.textMuteded} pt-1`}>
-          No recipe yet? <a href="/FridgeAlchemy" className={linkStyle}>🧪 Fridge Alchemy</a> builds one from whatever's in your kitchen.
+          Ready to cook? <a href="/MiseEnPlace" className={linkStyle}>🍳 Mise en Place</a> walks you through the prep.
         </p>
       </div>
 
@@ -2181,8 +2199,7 @@ const RecipeChaosSolver = ({ tool }) => {
       <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
         <p className={`text-xs font-semibold uppercase tracking-wide mb-3 ${c.textMuted}`}>🔗 Related tools</p>
         <div className="flex flex-wrap gap-3">
-          <a href="/FridgeAlchemy"    className={`text-xs ${linkStyle}`}>🧪 Fridge Alchemy</a>
-          <a href="/LeftoverRoulette" className={`text-xs ${linkStyle}`}>🎰 Leftover Roulette</a>
+          <a href="/MiseEnPlace" className={`text-xs ${linkStyle}`}>🍳 Mise en Place</a>
         </div>
       </div>
     </div>
@@ -2240,10 +2257,10 @@ const RecipeChaosSolver = ({ tool }) => {
 
         <button onClick={runFlavorFix} disabled={!ffDish.trim() || loading}
           className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-          {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> Diagnosing flavor...</> : <><span>{tool?.icon ?? '✨'}</span> Fix the Flavor</>}
+          {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '🍳'}</span> Diagnosing flavor...</> : <><span>{tool?.icon ?? '🍳'}</span> Fix the Flavor</>}
         </button>
         <p className={`text-xs text-center ${c.textMuteded} pt-1`}>
-          Got leftovers you're trying to save? <a href="/LeftoverRoulette" className={linkStyle}>🎰 Leftover Roulette</a> reinvents them.
+          Need to plan the cook? <a href="/MiseEnPlace" className={linkStyle}>🍳 Mise en Place</a> walks you through prep and timing.
         </p>
       </div>
 
@@ -2315,8 +2332,7 @@ const RecipeChaosSolver = ({ tool }) => {
       <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
         <p className={`text-xs font-semibold uppercase tracking-wide mb-3 ${c.textMuted}`}>🔗 Related tools</p>
         <div className="flex flex-wrap gap-3">
-          <a href="/FridgeAlchemy"    className={`text-xs ${linkStyle}`}>🧪 Fridge Alchemy</a>
-          <a href="/LeftoverRoulette" className={`text-xs ${linkStyle}`}>🎰 Leftover Roulette</a>
+          <a href="/MiseEnPlace" className={`text-xs ${linkStyle}`}>🍳 Mise en Place</a>
         </div>
       </div>
     </div>
@@ -2358,7 +2374,7 @@ const RecipeChaosSolver = ({ tool }) => {
           <span>🏆</span> Log Win
         </button>
         <p className={`text-xs text-center ${c.textMuteded} pt-1`}>
-          Ready to experiment more? <a href="/FridgeAlchemy" className={linkStyle}>🧪 Fridge Alchemy</a> gives you a new recipe challenge.
+          Ready to cook this? <a href="/MiseEnPlace" className={linkStyle}>🍳 Mise en Place</a> walks you through the prep and timing.
         </p>
       </div>
 
@@ -2413,8 +2429,7 @@ const RecipeChaosSolver = ({ tool }) => {
       <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
         <p className={`text-xs font-semibold uppercase tracking-wide mb-3 ${c.textMuted}`}>🔗 Related tools</p>
         <div className="flex flex-wrap gap-3">
-          <a href="/FridgeAlchemy"    className={`text-xs ${linkStyle}`}>🧪 Fridge Alchemy</a>
-          <a href="/LeftoverRoulette" className={`text-xs ${linkStyle}`}>🎰 Leftover Roulette</a>
+          <a href="/MiseEnPlace" className={`text-xs ${linkStyle}`}>🍳 Mise en Place</a>
         </div>
       </div>
     </div>
@@ -2739,8 +2754,7 @@ const RecipeChaosSolver = ({ tool }) => {
       <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
         <p className={`text-xs font-semibold uppercase tracking-wide mb-3 ${c.textMuted}`}>🔗 Related tools</p>
         <div className="flex flex-wrap gap-3">
-          <a href="/FridgeAlchemy"    className={`text-xs ${linkStyle}`}>🧪 Fridge Alchemy</a>
-          <a href="/LeftoverRoulette" className={`text-xs ${linkStyle}`}>🎰 Leftover Roulette</a>
+          <a href="/MiseEnPlace" className={`text-xs ${linkStyle}`}>🍳 Mise en Place</a>
         </div>
       </div>
 
@@ -2750,17 +2764,44 @@ const RecipeChaosSolver = ({ tool }) => {
   // ════════════════════════════════════════════════════════════
   // MAIN RENDER
   // ════════════════════════════════════════════════════════════
+
+  // Unified `results` sentinel for audit S5.5 Pattern A detection AND for the
+  // header reset button's visibility guard. Any result type from any view
+  // counts as "we have output to clear."
+  const results = rescueResults || swapResults || scaleResults || multiSwapResults;
+
+  const handleReset = () => {
+    setRescueResults(null);
+    setSwapResults(null);
+    setScaleResults(null);
+    setMultiSwapResults(null);
+    setRecipeText('');
+    setProblemDescription('');
+    setRecipeImagePreview(null);
+    setRecipeImageBase64(null);
+    setPantryImagePreview(null);
+    setPantryImageBase64(null);
+    setDisasterImagePreview(null);
+    setDisasterImageBase64(null);
+    setError('');
+  };
+
   return (
     <div className={`space-y-4 ${c.text}`}>
 
       {/* ── Persistent header ── */}
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm overflow-hidden`}>
         <div className="px-5 pt-5">
-          <div className="pb-3 border-b border-zinc-500">
-            <h2 className={`text-xl font-bold ${c.text}`}>
-              <span className="mr-2">{tool?.icon ?? '🍳'}</span>{tool?.title ?? 'Recipe Chaos Solver'}
-            </h2>
-            <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Fix any kitchen crisis in seconds'}</p>
+          <div className="pb-3 border-b border-zinc-500 flex items-center justify-between gap-3">
+            <div>
+              <h2 className={`text-xl font-bold ${c.text}`}>
+                <span className="mr-2">{tool?.icon ?? '🍳'}</span>{tool?.title ?? 'Recipe Chaos Solver'}
+              </h2>
+              <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Fix any kitchen crisis in seconds'}</p>
+            </div>
+            {(results || recipeText.trim() || problemDescription.trim()) && (
+              <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>↺ Start Over</button>
+            )}
           </div>
         </div>
         <div className="px-5 py-3">
@@ -2784,6 +2825,13 @@ const RecipeChaosSolver = ({ tool }) => {
       {view === 'wins' && renderWins()}
       {view === 'saved' && renderSaved()}
       {view === 'history' && renderHistory()}
+
+      {/* Post-result cross-ref */}
+      {results && (
+        <p className={`text-xs text-center ${c.textMuteded}`}>
+          Ready to actually cook this? <a href="/MiseEnPlace" className={linkStyle}>🍳 Mise en Place</a> walks you through prep and timing.
+        </p>
+      )}
 
       {/* Kitchen Companion overlay */}
       {renderCompanion()}

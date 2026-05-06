@@ -41,26 +41,6 @@ const TipOfTongue = ({ tool }) => {
   const { isDark } = useTheme();
   const resultsRef = useRef(null);
 
-  const [history, setHistory] = usePersistentState('tip-of-tongue-history', []);
-  const [showHistory, setShowHistory] = useState(false);
-
-  // Input
-  const [category, setCategory] = useState('food');
-  const [description, setDescription] = useState('');
-  const [notThis, setNotThis] = useState('');
-  const [whenWhere, setWhenWhere] = useState('');
-  const [extraClues, setExtraClues] = useState('');
-
-  // Results
-  const [results, setResults] = useState(null);
-  const [error, setError] = useState('');
-  const [expandedMatch, setExpandedMatch] = useState(0);
-
-  // Refinement
-  const [refineMode, setRefineMode] = useState(false);
-  const [matchFeedback, setMatchFeedback] = useState({}); // { idx: 'yes' | 'close' | 'no' }
-  const [refinement, setRefinement] = useState('');
-
   // ── Theme ────────────────────────────────────────────────
   const c = {
     card:          isDark ? 'bg-[#2a2623]'  : 'bg-white',
@@ -69,9 +49,10 @@ const TipOfTongue = ({ tool }) => {
     input:         isDark ? 'bg-[#1a1816] border-[#3d3630] text-[#f0eeea] placeholder-[#8a8275] focus:border-[#4a6a8a] focus:ring-[#4a6a8a]/20'
                           : 'bg-[#faf8f5] border-[#d5cab8] text-[#3d3935] placeholder-[#8a8275] focus:border-[#4a6a8a] focus:ring-[#4a6a8a]/20',
     text:          isDark ? 'text-[#f0eeea]'  : 'text-[#3d3935]',
-    heading:       isDark ? 'text-[#f3efe8]'  : 'text-[#1e2a3a]',
+    headingTxt:    isDark ? 'text-[#f3efe8]'  : 'text-[#1e2a3a]',
     textSecondary: isDark ? 'text-[#c8c3b9]'  : 'text-[#5a544a]',
     textMuted:     isDark ? 'text-[#8a8275]'  : 'text-[#8a8275]',
+    labelText:     isDark ? 'text-[#c8c3b9]'  : 'text-[#5a544a]',
     required:      isDark ? 'text-amber-400' : 'text-amber-500',
     border:        isDark ? 'border-[#3d3630]' : 'border-[#e8e1d5]',
     btnPrimary:    'bg-cyan-600 hover:bg-cyan-700 text-white',
@@ -93,9 +74,35 @@ const TipOfTongue = ({ tool }) => {
     lowBg:         isDark ? 'bg-[#2c4a6e]/15 border-[#4a6a8a]/30' : 'bg-[#d4dde8]/30 border-[#2c4a6e]/15',
     lowText:       isDark ? 'text-[#a8b9ce]' : 'text-[#1e3a58]',
     histBg:        isDark ? 'bg-[#2c4a6e]/10 border-[#4a6a8a]/30' : 'bg-[#d4dde8]/30 border-[#2c4a6e]/15',
+    accentTxt:     isDark ? 'text-[#a8b9ce]' : 'text-[#2c4a6e]',
   };
+  c.textMuteded = c.textMuted;
+  c.label       = c.labelText;
 
   const linkStyle = isDark ? 'text-[#6e8aaa] hover:text-[#a8b9ce] underline' : 'text-[#2c4a6e] hover:text-[#1e3a58] underline';
+
+  // ── State (useState before usePersistentState — PF-11/PF-14) ─────
+  const [showHistory, setShowHistory] = useState(false);
+
+  // Input
+  const [category, setCategory] = useState('food');
+  const [description, setDescription] = useState('');
+  const [notThis, setNotThis] = useState('');
+  const [whenWhere, setWhenWhere] = useState('');
+  const [extraClues, setExtraClues] = useState('');
+
+  // Results / UI
+  const [error, setError] = useState('');
+  const [expandedMatch, setExpandedMatch] = useState(0);
+
+  // Refinement
+  const [refineMode, setRefineMode] = useState(false);
+  const [matchFeedback, setMatchFeedback] = useState({}); // { idx: 'yes' | 'close' | 'no' }
+  const [refinement, setRefinement] = useState('');
+
+  // ── Persistent state ────
+  const [history, setHistory] = usePersistentState('tip-of-tongue-history', []);
+  const [results, setResults] = usePersistentState('tip-of-tongue-results', null);
 
   const currentCat = CATEGORIES.find(cat => cat.value === category) || CATEGORIES[0];
 
@@ -130,7 +137,7 @@ const TipOfTongue = ({ tool }) => {
         id: 'tot_' + Date.now(),
         date: new Date().toISOString(),
         emoji: catEmoji,
-        descriptionPreview: description.trim().substring(0, 60),
+        preview: description.trim().substring(0, 40),
         topMatch: data.matches?.[0]?.name,
         // Full inputs — used to restore this search
         inputs: { category, description: description.trim(), notThis: notThis.trim() || null, whenWhere: whenWhere.trim() || null, extraClues: extraClues.trim() || null },
@@ -220,7 +227,7 @@ const TipOfTongue = ({ tool }) => {
       {/* Description */}
       <div className={'border rounded-xl p-5 ' + c.card + ' ' + c.border}>
         <label className={'text-base font-bold ' + c.text + ' mb-1 block'}>
-          {currentCat.emoji} Describe it from memory
+          {currentCat.emoji} Describe it from memory <span className={c.required}>*</span>
         </label>
         <p className={'text-xs ' + c.textMuted + ' mb-3'}>{currentCat.hints}</p>
         <textarea value={description} onChange={e => setDescription(e.target.value)}
@@ -264,9 +271,9 @@ const TipOfTongue = ({ tool }) => {
       </div>
 
       <button onClick={identify} disabled={loading || !description.trim()}
-        className={'w-full py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all ' + (loading || !description.trim() ? c.btnDis : c.btnPrimary)}>
+        className={'w-full py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all disabled:opacity-40 ' + (loading || !description.trim() ? c.btnDis : c.btnPrimary)}>
         {loading
-          ? <><span className="animate-spin inline-block">⏳</span> Searching memory banks...</>
+          ? <><span className="animate-spin inline-block">{tool?.icon ?? "💭"}</span> Searching memory banks...</>
           : <><span>{tool?.icon ?? '💭'}</span> Identify This</>}
       </button>
     </div>
@@ -412,8 +419,8 @@ const TipOfTongue = ({ tool }) => {
               className={'w-full h-16 p-3 border-2 rounded-xl ' + c.input + ' outline-none focus:ring-2 resize-none text-sm mb-3'} />
             <div className="flex gap-2">
               <button onClick={refine} disabled={loading}
-                className={'flex-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 ' + (loading ? c.btnDis : c.btnPrimary)}>
-                {loading ? <><span className="animate-spin inline-block">⏳</span> Refining...</> : <><span>🔍</span> Try Again</>}
+                className={'flex-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 disabled:opacity-40 ' + (loading ? c.btnDis : c.btnPrimary)}>
+                {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? "💭"}</span> Refining...</> : <><span>🔍</span> Try Again</>}
               </button>
               <button onClick={() => { setRefineMode(false); setMatchFeedback({}); }}
                 className={'px-4 py-3 rounded-xl text-xs font-bold ' + c.btnSecondary}>Cancel</button>
@@ -431,20 +438,12 @@ const TipOfTongue = ({ tool }) => {
           </div>
         )}
 
-        {/* Actions */}
-        <div className="flex gap-2">
-          <div className="flex-1"><CopyBtn content={buildCopy()} label="Copy All Matches" /></div>
-          <button onClick={handleReset} className={'flex-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 ' + c.btnSecondary}>
-            <span>🔍</span> New Search
-          </button>
-        </div>
-
         {/* Cross-refs */}
         <div className={'p-4 rounded-2xl border ' + c.card + ' ' + c.border}>
           <p className={'text-xs font-bold ' + c.textMuted + ' uppercase tracking-wide mb-2'}>🔗 Related Tools</p>
           <div className={'space-y-1.5 text-xs ' + c.textSecondary}>
-            <p>Found a recipe to recreate? <a href="/MiseEnPlace" target="_blank" rel="noopener noreferrer" className={linkStyle}>Mise en Place</a> plans the cook.</p>
-            <p>Trying to place a show or movie? <a href="/Bookmark" target="_blank" rel="noopener noreferrer" className={linkStyle}>Bookmark</a> catches you up spoiler-free.</p>
+            <p>Found a recipe to recreate? <a href="/MiseEnPlace" className={linkStyle}>🍳 Mise en Place</a> plans the cook.</p>
+            <p>Trying to place a show or movie? <a href="/Bookmark" className={linkStyle}>🔖 Bookmark</a> catches you up spoiler-free.</p>
           </div>
         </div>
       </div>
@@ -499,7 +498,7 @@ const TipOfTongue = ({ tool }) => {
                 className={'w-full rounded-xl border p-3 flex items-start gap-3 text-left transition-all hover:border-[#4a6a8a] ' + c.card + ' ' + c.border}>
                 <span className="text-lg mt-0.5 flex-shrink-0">{entry.emoji}</span>
                 <div className="flex-1 min-w-0">
-                  <div className={'text-sm font-semibold ' + c.text + ' truncate'}>{entry.descriptionPreview}</div>
+                  <div className={'text-sm font-semibold ' + c.text + ' truncate'}>{entry.preview}</div>
                   <div className={'text-xs ' + c.textMuted + ' mt-0.5'}>
                     {formatDate(entry.date)}{entry.topMatch ? ` · ${entry.topMatch}` : ''}
                   </div>
@@ -515,7 +514,7 @@ const TipOfTongue = ({ tool }) => {
               <div key={entry.id} className={'rounded-xl border p-3 flex items-start gap-3 opacity-50 ' + c.card + ' ' + c.border}>
                 <span className="text-lg mt-0.5 flex-shrink-0">{entry.emoji}</span>
                 <div className="flex-1 min-w-0">
-                  <div className={'text-sm font-semibold ' + c.text + ' truncate'}>{entry.description || entry.descriptionPreview}</div>
+                  <div className={'text-sm font-semibold ' + c.text + ' truncate'}>{entry.description || entry.preview}</div>
                   <div className={'text-xs ' + c.textMuted + ' mt-0.5'}>
                     {formatDate(entry.date)}{entry.topMatch ? ` · ${entry.topMatch}` : ''}
                   </div>
@@ -534,16 +533,29 @@ const TipOfTongue = ({ tool }) => {
   // MAIN RENDER
   // ══════════════════════════════════════════
   return (
-    <div>
-      <div className="flex items-center gap-3 mb-5">
-        <div>
-          <h2 className={'text-2xl font-bold ' + c.heading}>
-            <span className="mr-2">{tool?.icon ?? '💭'}</span>{tool?.title ?? 'Tip of Tongue'}
-          </h2>
-          <p className={'text-sm ' + c.textMuted}>{tool?.tagline ?? 'Describe it from memory — we\'ll figure out what it was'}</p>
+    <div className={`space-y-4 ${c.text}`}>
+
+      {/* Persistent header card */}
+      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
+        <div className="pb-3 border-b border-zinc-500 flex items-center justify-between gap-3">
+          <div>
+            <h2 className={`text-xl font-bold ${c.headingTxt}`}>
+              <span className="mr-2">{tool?.icon ?? '💭'}</span>{tool?.title ?? 'Tip of Tongue'}
+            </h2>
+            <p className={`text-sm ${c.textMuted}`}>{tool?.tagline ?? 'Describe it from memory — we\'ll figure out what it was'}</p>
+          </div>
+          {(results || description.trim()) && (
+            <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>↺ Start Over</button>
+          )}
         </div>
       </div>
+
       {!results && renderInput()}
+      {!results && (
+        <p className={`text-xs text-center ${c.textMuted}`}>
+          Trying to remember a TV show or book instead? <a href="/Bookmark" className={linkStyle}>🔖 Bookmark</a> picks up where you left off without spoilers.
+        </p>
+      )}
       {renderResults()}
       {error && (
         <div className={'mt-4 p-4 border rounded-xl flex items-start gap-3 ' + c.danger}>

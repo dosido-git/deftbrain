@@ -1,5 +1,4 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
-import { CopyBtn } from '../components/ActionButtons';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
@@ -1237,7 +1236,7 @@ const LaundroMat = ({ tool }) => {
           <div className="mb-3">
             {compressing ? (
               <div className={`flex items-center gap-2 p-3 rounded-xl border-2 border-dashed ${c.dropzone}`}>
-                <span className="animate-spin inline-block">{tool?.icon ?? '🌊'}</span>
+                <span className="animate-spin inline-block">{tool?.icon ?? '🧺'}</span>
                 <span className={`text-xs ${c.textSecondary}`}>Compressing...</span>
               </div>
             ) : labelPreview ? (
@@ -1269,11 +1268,29 @@ const LaundroMat = ({ tool }) => {
             ))}
           </div>
 
+          <p className={`text-xs text-center ${c.textMuted} mb-2`}>
+            Got the laundry sorted but feeling drained? <a href="/PEP" className={linkStyle}>✨ PEP</a> helps you plan around your energy.
+          </p>
+
           <button onClick={getLoadAdvice} disabled={loading || (!loadDesc.trim() && !labelImage)}
             className={`w-full py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2
-              ${(loadDesc.trim() || labelImage) && !loading ? c.btnPrimary : c.btnDisabled}`}>
-            {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🌊'}</span> Analyzing...</> : <><span className="mr-1">{tool?.icon ?? '🌊'}</span> Advise Me</>}
+              ${(loadDesc.trim() || labelImage) && !loading ? c.btnPrimary : c.btnDisabled} disabled:opacity-40`}>
+            {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🧺'}</span> Analyzing...</> : <><span className="mr-1">{tool?.icon ?? '🧺'}</span> Advise Me</>}
           </button>
+
+          {/* Try Example */}
+          {!loadDesc.trim() && !labelImage && !loading && (
+            <div className="flex justify-center mt-2">
+              <button
+                onClick={() => {
+                  setLoadDesc("Mixed pile: 3 white cotton t-shirts (one with a small mustard stain), 2 pairs of dark jeans, a red wool sweater that says 'hand wash only' on the label, kid's pajamas with a 'wash similar colors' tag, and a beige linen shirt I'm not sure about.");
+                }}
+                className={`text-xs font-medium ${c.textMuted} underline underline-offset-2 min-h-[32px]`}
+              >
+                ✨ Try an example
+              </button>
+            </div>
+          )}
         </div>
 
         {renderAdviceResults()}
@@ -1418,7 +1435,7 @@ const LaundroMat = ({ tool }) => {
           <div className="mb-4">
             {compressingStain ? (
               <div className={`flex items-center gap-2 p-3 rounded-xl border-2 border-dashed ${c.dropzone}`}>
-                <span className="animate-spin inline-block">{tool?.icon ?? '🌊'}</span>
+                <span className="animate-spin inline-block">{tool?.icon ?? '🧺'}</span>
                 <span className={`text-xs ${c.textSecondary}`}>Compressing...</span>
               </div>
             ) : stainPreview ? (
@@ -1440,8 +1457,8 @@ const LaundroMat = ({ tool }) => {
           <button onClick={getStainHelp}
             disabled={loading || (!stainType && !stainCustom.trim() && !stainImage)}
             className={`w-full py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2
-              ${(stainType || stainCustom.trim() || stainImage) && !loading ? c.btnPrimary : c.btnDisabled}`}>
-            {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🌊'}</span> Analyzing...</> : <><span className="mr-1">{tool?.icon ?? '🌊'}</span> Help!</>}
+              ${(stainType || stainCustom.trim() || stainImage) && !loading ? c.btnPrimary : c.btnDisabled} disabled:opacity-40`}>
+            {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🧺'}</span> Analyzing...</> : <><span className="mr-1">{tool?.icon ?? '🧺'}</span> Help!</>}
           </button>
         </div>
 
@@ -1499,11 +1516,16 @@ const LaundroMat = ({ tool }) => {
     <div className={`space-y-4 ${c.text}`}>
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm`}>
         <div className="px-5 pt-5">
-          <div className="pb-3 border-b border-zinc-500">
-            <h2 className={`text-xl font-bold ${c.text}`}>
-              <span className="mr-2">{tool?.icon ?? '🧺'}</span>{tool?.title ?? 'LaundroMat'}
-            </h2>
-            <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Never lose track of your laundry again'}</p>
+          <div className="pb-3 border-b border-zinc-500 flex items-center justify-between gap-3">
+            <div>
+              <h2 className={`text-xl font-bold ${c.text}`}>
+                <span className="mr-2">{tool?.icon ?? '🧺'}</span>{tool?.title ?? 'LaundroMat'}
+              </h2>
+              <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Never lose track of your laundry again'}</p>
+            </div>
+            {(adviceResults || stainResults) && (
+              <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>↺ Start Over</button>
+            )}
           </div>
         </div>
         <div className="px-5 py-4">
@@ -1515,12 +1537,19 @@ const LaundroMat = ({ tool }) => {
       {activeTab === 'stain' && renderStainTab()}
       {activeTab === 'symbols' && renderSymbolsTab()}
       {renderError()}
-        <p className={`text-xs text-center mt-4 ${c.textMuted}`}>AI-generated advice — for reference only. Always check garment care labels.</p>
+
+      {/* Post-result cross-ref (visible after any result lands) */}
+      {(() => { const results = adviceResults || stainResults; return results && (
+        <p className={`text-xs text-center mt-2 ${c.textMuted}`}>
+          Energy running low? <a href="/PEP" className={linkStyle}>✨ PEP</a> helps you plan around it.
+        </p>
+      ); })()}
+
+      <p className={`text-xs text-center mt-4 ${c.textMuted}`}>AI-generated advice — for reference only. Always check garment care labels.</p>
       <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
         <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 Related tools</p>
         <div className="flex flex-wrap gap-3">
-          <a href="/HabitChain" className={`text-xs ${linkStyle}`}>🔗 Habit Chain</a>
-          <a href="/RoutineRuptureManager" className={`text-xs ${linkStyle}`}>🔄 Routine Rupture Manager</a>
+          <a href="/PEP" className={`text-xs ${linkStyle}`}>✨ PEP</a>
         </div>
       </div>
     </div>

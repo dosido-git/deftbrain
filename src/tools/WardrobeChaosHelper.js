@@ -41,63 +41,6 @@ const WardrobeChaosHelper = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { isDark } = useTheme();
 
-  const [step, setStep] = useState('wardrobe');
-  const [wardrobe, setWardrobe] = useState(() => {
-    try {
-      const stored = localStorage.getItem('wardrobe-chaos-wardrobe');
-      if (stored) {
-        const w = JSON.parse(stored);
-        if (!w.accessories) w.accessories = [];
-        return w;
-      } } catch { /* ignore */ } return { tops: [], bottoms: [], dresses: [], outerwear: [], shoes: [], accessories: [] };
-  });
-  const [selectedCategory, setSelectedCategory] = useState('tops');
-  const [showAddItem, setShowAddItem] = useState(false);
-  const [newItem, setNewItem] = useState({ name: '', color: '', style: '', comfortLevel: 5, imagePreview: null, sensoryNotes: '', laundryStatus: 'clean', hexColor: '', lastWorn: null, wearCount: 0 });
-
-  const [weather, setWeather] = useState('');
-  const [activities, setActivities] = useState({ work: false, meeting: false, exercise: false, casual: false, event: false, home: false, date: false });
-  const [mood, setMood] = useState('');
-  const [comfortPriority, setComfortPriority] = useState(5);
-  const [sensoryNeeds, setSensoryNeeds] = useState({ softFabrics: false, looseFit: false, noTags: false, avoidTextures: '' });
-
-  const [results, setResults] = usePersistentState('wardrobechaoshelper-result', null);
-  const [error, setError] = useState('');
-  const [history, setHistory] = usePersistentState('wardrobechaoshelper-history', []);
-
-  const [favorites, setFavorites] = useState([]);
-  const [showPrivacyPanel, setShowPrivacyPanel] = useState(false);
-  const [showAnalytics, setShowAnalytics] = useState(false);
-  const [onlyCleanItems, setOnlyCleanItems] = useState(true);
-  const [showLaundryAlerts, setShowLaundryAlerts] = useState(false);
-  const [outfitHistory, setOutfitHistory] = useState([]);
-  const [historyMonth, setHistoryMonth] = useState(() => { const n = new Date(); return { year: n.getFullYear(), month: n.getMonth() }; });
-  const [outfitFeedback, setOutfitFeedback] = useState({});
-  const [presets, setPresets] = useState([]);
-  const [showPresetSave, setShowPresetSave] = useState(false);
-  const [presetName, setPresetName] = useState('');
-  const [packingTrip, setPackingTrip] = useState({ destination: '', days: 3, tripType: 'casual' });
-  const [packingResult, setPackingResult] = useState(null);
-  const [toast, setToast] = useState(null);
-  const toastTimer = useRef(null);
-  const fileInputRef = useRef(null);
-
-  // ─── Keyboard: Ctrl/Cmd+Enter submits ───
-  useEffect(() => {
-    const handler = (e) => {
-      if (e.key !== 'Enter') return;
-      if (e.metaKey || e.ctrlKey) {
-        // Step-aware: advance or generate depending on current step
-        if (step === 'wardrobe' && getTotalItems() >= 3) { setStep('needs'); return; } if (step === 'needs' && !loading) { handleGenerateOutfits(); return; } return;
-      } const tag = document.activeElement?.tagName;
-      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
-      if (step === 'needs' && !loading) handleGenerateOutfits();
-    };
-    document.addEventListener('keydown', handler);
-    return () => document.removeEventListener('keydown', handler);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loading, step]);
-
   const c = {
     card:              isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:           isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
@@ -105,7 +48,7 @@ const WardrobeChaosHelper = ({ tool }) => {
     text:              isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary:     isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:         isDark ? 'text-zinc-500' : 'text-gray-400',
-    required:      isDark ? 'text-amber-400' : 'text-amber-500',
+    required:          isDark ? 'text-amber-400' : 'text-amber-500',
     labelText:         isDark ? 'text-zinc-200' : 'text-gray-700',
     accentTxt:         isDark ? 'text-cyan-400' : 'text-cyan-600',
     btnPrimary:        isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
@@ -114,8 +57,6 @@ const WardrobeChaosHelper = ({ tool }) => {
     success:           isDark ? 'bg-emerald-900/20 border-emerald-600 text-emerald-300' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
     warning:           isDark ? 'bg-amber-900/20 border-amber-500 text-amber-300' : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:            isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-100 border-red-200 text-red-800',
-    // Category panel tints — Navy family (The Grind)
-    // Gold AI insight — all tools
     // Tool-specific keys
     btnDanger:         isDark ? 'bg-red-700 hover:bg-red-600 text-white' : 'bg-red-600 hover:bg-red-700 text-white',
     toastSuccess:      isDark ? 'bg-emerald-700 text-white' : 'bg-emerald-600 text-white',
@@ -144,10 +85,75 @@ const WardrobeChaosHelper = ({ tool }) => {
     colorCoord:        isDark ? 'bg-[#2c4a6e]/30 border-[#4a6a8a] text-zinc-200' : 'bg-[#eef2f7] border-[#c0cfe0] text-[#1e2a3a]',
     favoriteStar:      isDark ? 'text-zinc-400 hover:text-amber-500' : 'text-emerald-400 hover:text-amber-500',
   };
+  c.textMuteded = c.textMuted;
+  c.label       = c.labelText;
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
     : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
+
+  const [step, setStep] = useState('wardrobe');
+  const [wardrobe, setWardrobe] = useState(() => {
+    try {
+      const stored = localStorage.getItem('wardrobe-chaos-wardrobe');
+      if (stored) {
+        const w = JSON.parse(stored);
+        if (!w.accessories) w.accessories = [];
+        return w;
+      } } catch { /* ignore */ } return { tops: [], bottoms: [], dresses: [], outerwear: [], shoes: [], accessories: [] };
+  });
+  const [selectedCategory, setSelectedCategory] = useState('tops');
+  const [showAddItem, setShowAddItem] = useState(false);
+  const [newItem, setNewItem] = useState({ name: '', color: '', style: '', comfortLevel: 5, imagePreview: null, sensoryNotes: '', laundryStatus: 'clean', hexColor: '', lastWorn: null, wearCount: 0 });
+
+  const [weather, setWeather] = useState('');
+  const [activities, setActivities] = useState({ work: false, meeting: false, exercise: false, casual: false, event: false, home: false, date: false });
+  const [mood, setMood] = useState('');
+  const [comfortPriority, setComfortPriority] = useState(5);
+  const [sensoryNeeds, setSensoryNeeds] = useState({ softFabrics: false, looseFit: false, noTags: false, avoidTextures: '' });
+
+  const [error, setError] = useState('');
+
+  const [favorites, setFavorites] = useState([]);
+  const [showPrivacyPanel, setShowPrivacyPanel] = useState(false);
+  const [showAnalytics, setShowAnalytics] = useState(false);
+  const [onlyCleanItems, setOnlyCleanItems] = useState(true);
+  const [showLaundryAlerts, setShowLaundryAlerts] = useState(false);
+  const [outfitHistory, setOutfitHistory] = useState([]);
+  const [historyMonth, setHistoryMonth] = useState(() => { const n = new Date(); return { year: n.getFullYear(), month: n.getMonth() }; });
+  const [outfitFeedback, setOutfitFeedback] = useState({});
+  const [presets, setPresets] = useState([]);
+  const [showPresetSave, setShowPresetSave] = useState(false);
+  const [presetName, setPresetName] = useState('');
+  const [packingTrip, setPackingTrip] = useState({ destination: '', days: 3, tripType: 'casual' });
+  const [packingResult, setPackingResult] = useState(null);
+  const [toast, setToast] = useState(null);
+
+  // Persistent state
+  const [results, setResults] = usePersistentState('wardrobechaoshelper-result', null);
+  const [history, setHistory] = usePersistentState('wardrobechaoshelper-history', []);
+
+  const toastTimer = useRef(null);
+  const fileInputRef = useRef(null);
+
+  // ─── Keyboard: SELECT-only guard, ref pattern ───
+  const handleGenerateOutfitsRef = useRef(null);
+  const stepRef = useRef('wardrobe');
+  stepRef.current = step;
+
+  useEffect(() => {
+    const handler = (e) => {
+      if (e.key !== 'Enter' || !(e.metaKey || e.ctrlKey)) return;
+      const tag = document.activeElement?.tagName;
+      if (tag === 'SELECT') return;
+      if (stepRef.current === 'needs' && !loading) {
+        e.preventDefault();
+        handleGenerateOutfitsRef.current?.();
+      }
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [loading]);
 
   const showToast = useCallback((message, type = 'success') => {
     if (toastTimer.current) clearTimeout(toastTimer.current);
@@ -269,6 +275,9 @@ const WardrobeChaosHelper = ({ tool }) => {
       if(data.outfit_combinations){const sg=new Set();data.outfit_combinations.forEach(o=>Object.values(o.items).forEach(n=>{if(n)sg.add(n.toLowerCase());}));setWardrobe(prev=>{const u={...prev};Object.keys(u).forEach(cat=>{u[cat]=u[cat].map(item=>sg.has(item.name.toLowerCase())?{...item,wearCount:(item.wearCount||0)+1,lastWorn:new Date().toISOString()}:item);});return u;});} setResults(data);setStep('results');
     }catch(err){setError(err.message||'Failed.');} };
 
+  // Keep ref fresh for keyboard handler stale-closure prevention
+  handleGenerateOutfitsRef.current = handleGenerateOutfits;
+
   // ── REGENERATE ──
   const handleRegenerate = async (idx, swapPiece) => {
     setError('');
@@ -304,7 +313,7 @@ const WardrobeChaosHelper = ({ tool }) => {
             <p className={`text-sm ${c.textMuted}`}>{tool?.tagline}</p>
           </div>
           {getTotalItems()>=3 && step!=='results' && (<button onClick={handleJustDressMe} disabled={loading} className={`${c.btnPrimary} px-4 py-3 rounded-lg font-bold text-sm flex items-center gap-2 disabled:opacity-40 shadow-lg`}>
-              {loading?<span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span>:<span>{tool?.icon ?? '⚡'}</span>} Just Dress Me
+              {loading?<span className="inline-block animate-spin">{tool?.icon ?? '👗👔'}</span>:<span>{tool?.icon ?? '👗👔'}</span>} Just Dress Me
             </button>
           )} </div>
 
@@ -329,26 +338,61 @@ const WardrobeChaosHelper = ({ tool }) => {
             {!showAddItem?(<button onClick={()=>setShowAddItem(true)} className={`w-full ${c.btnSecondary} py-3 rounded-lg font-medium flex items-center justify-center gap-2`}><span>➕</span> Add to {selectedCategory.charAt(0).toUpperCase()+selectedCategory.slice(1)}</button>):(<div className={`${c.addItemBg} border-2 rounded-lg p-5`}><h4 className={`font-bold ${c.text} mb-3`}>Add New Item</h4><div className="space-y-3"><div><label className={`block text-sm font-medium ${c.labelText} mb-1`}>Name *</label><input type="text" value={newItem.name} onChange={e=>setNewItem(p=>({...p,name:e.target.value}))} onKeyDown={e=>e.key==='Enter'&&handleAddItem()} placeholder={selectedCategory==='accessories'?'Gold hoop earrings':'Navy blue t-shirt'} className={`w-full p-3 border rounded-lg ${c.input} outline-none focus:ring-2`}/></div><div className="grid grid-cols-2 gap-3"><div><label className={`block text-sm font-medium ${c.labelText} mb-1`}>Color</label><input type="text" value={newItem.color} onChange={e=>setNewItem(p=>({...p,color:e.target.value}))} placeholder="Navy blue" className={`w-full p-3 border rounded-lg ${c.input} outline-none focus:ring-2`}/></div><div><label className={`block text-sm font-medium ${c.labelText} mb-1`}>Style</label><input type="text" value={newItem.style} onChange={e=>setNewItem(p=>({...p,style:e.target.value}))} placeholder="Casual" className={`w-full p-3 border rounded-lg ${c.input} outline-none focus:ring-2`}/></div></div><div><label className={`block text-sm font-medium ${c.labelText} mb-1`}>Comfort: {newItem.comfortLevel}/10</label><input type="range" min="1" max="10" value={newItem.comfortLevel} onChange={e=>setNewItem(p=>({...p,comfortLevel:parseInt(e.target.value)}))} className="w-full"/></div><div><label className={`block text-sm font-medium ${c.labelText} mb-1`}>Sensory Notes</label><input type="text" value={newItem.sensoryNotes} onChange={e=>setNewItem(p=>({...p,sensoryNotes:e.target.value}))} placeholder="Soft, no tags" className={`w-full p-3 border rounded-lg ${c.input} outline-none focus:ring-2`}/></div><div><input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageUpload} className="hidden"/><button onClick={()=>fileInputRef.current?.click()} className={`${c.btnSecondary} px-4 py-2 rounded flex items-center gap-2 text-sm`}><span>📸</span> Photo</button>{newItem.imagePreview&&<div className="mt-2 relative inline-block"><img src={newItem.imagePreview} alt="Preview" className="w-28 h-28 object-cover rounded"/><button onClick={()=>setNewItem(p=>({...p,imagePreview:null}))} className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">✕</button></div>}</div><div className="flex gap-3"><button onClick={handleAddItem} className={`flex-1 ${c.btnPrimary} py-3 rounded font-semibold`}><span>✅</span> Add</button><button onClick={()=>{setShowAddItem(false);setNewItem({name:'',color:'',style:'',comfortLevel:5,imagePreview:null,sensoryNotes:'',laundryStatus:'clean',hexColor:'',lastWorn:null,wearCount:0});}} className={`${c.btnSecondary} px-6 py-3 rounded font-semibold`}>Cancel</button></div></div></div>
             )} </div>
           <button onClick={()=>setStep('needs')} disabled={getTotalItems()<3} className={`w-full ${c.btnPrimary} py-4 rounded-lg font-bold text-lg disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2`}>Continue to Today's Needs <span>→</span></button>
+
+          {/* Try Example */}
+          {getTotalItems() === 0 && (
+            <div className="flex justify-center">
+              <button
+                onClick={() => {
+                  const example = {
+                    tops: [
+                      { id: Date.now()+1, name: 'White button-down', color: 'white', style: 'classic', comfortLevel: 7, imagePreview: null, sensoryNotes: '', laundryStatus: 'clean', hexColor: '', lastWorn: null, wearCount: 0 },
+                      { id: Date.now()+2, name: 'Navy crewneck sweater', color: 'navy', style: 'casual', comfortLevel: 9, imagePreview: null, sensoryNotes: 'Soft merino', laundryStatus: 'clean', hexColor: '', lastWorn: null, wearCount: 0 },
+                      { id: Date.now()+3, name: 'Grey tee', color: 'grey', style: 'casual', comfortLevel: 9, imagePreview: null, sensoryNotes: '', laundryStatus: 'clean', hexColor: '', lastWorn: null, wearCount: 0 },
+                    ],
+                    bottoms: [
+                      { id: Date.now()+4, name: 'Dark wash jeans', color: 'dark blue', style: 'casual', comfortLevel: 8, imagePreview: null, sensoryNotes: '', laundryStatus: 'clean', hexColor: '', lastWorn: null, wearCount: 0 },
+                      { id: Date.now()+5, name: 'Black trousers', color: 'black', style: 'professional', comfortLevel: 7, imagePreview: null, sensoryNotes: '', laundryStatus: 'clean', hexColor: '', lastWorn: null, wearCount: 0 },
+                    ],
+                    dresses: [],
+                    outerwear: [
+                      { id: Date.now()+6, name: 'Wool blazer', color: 'charcoal', style: 'professional', comfortLevel: 6, imagePreview: null, sensoryNotes: '', laundryStatus: 'clean', hexColor: '', lastWorn: null, wearCount: 0 },
+                    ],
+                    shoes: [
+                      { id: Date.now()+7, name: 'White sneakers', color: 'white', style: 'casual', comfortLevel: 9, imagePreview: null, sensoryNotes: '', laundryStatus: 'clean', hexColor: '', lastWorn: null, wearCount: 0 },
+                      { id: Date.now()+8, name: 'Black loafers', color: 'black', style: 'professional', comfortLevel: 7, imagePreview: null, sensoryNotes: '', laundryStatus: 'clean', hexColor: '', lastWorn: null, wearCount: 0 },
+                    ],
+                    accessories: [],
+                  };
+                  setWardrobe(example);
+                  showToast(`Loaded 8 example items`);
+                }}
+                className={`text-xs font-medium ${c.accentTxt} underline underline-offset-2 min-h-[32px]`}
+              >
+                ✨ Try an example
+              </button>
+            </div>
+          )}
         </div>
       )} {/* STEP 2: NEEDS */} {step==='needs'&&(<div className={`${c.card} border rounded-xl shadow-lg p-6 space-y-6`}>
           <div className="flex items-center justify-between">
             <button onClick={()=>setStep('wardrobe')} className={`${c.btnSecondary} px-4 py-2 rounded text-sm`}>← Wardrobe</button>
             <div className="flex gap-2">{presets.length>0&&<select onChange={e=>{const p=presets.find(p=>p.id===parseInt(e.target.value));if(p)loadPreset(p);e.target.value='';}} className={`text-sm px-3 py-2 rounded border ${c.input}`} defaultValue=""><option value="" disabled>💾 Preset...</option>{presets.map(p=><option key={p.id} value={p.id}>{p.name}</option>)}</select>}<button onClick={()=>setShowPresetSave(!showPresetSave)} className={`${c.btnSecondary} px-3 py-2 rounded text-sm`}><span>💾</span> Save</button></div>
           </div>
-          {showPresetSave&&(<div className={`${c.cardAlt} border rounded-lg p-4`}><div className="flex gap-2"><input type="text" value={presetName} onChange={e=>setPresetName(e.target.value)} onKeyDown={e=>e.key==='Enter'&&savePreset()} placeholder="e.g., Work Monday" className={`flex-1 p-2 border rounded ${c.input} text-sm`}/><button onClick={savePreset} disabled={!presetName.trim()} className={`${c.btnPrimary} px-4 py-2 rounded text-sm disabled:opacity-40`}>Save</button></div>{presets.length>0&&<div className="flex flex-wrap gap-2 mt-2">{presets.map(p=>(<div key={p.id} className={`${c.cardAlt} border rounded px-3 py-1.5 flex items-center gap-2 text-sm`}><button onClick={()=>loadPreset(p)} className={`${c.text} font-medium`}>{p.name}</button><button onClick={()=>deletePreset(p.id)} className="text-red-400 hover:text-zinc-200">✕</button></div>))}</div>}</div>)} <h3 className={`text-xl font-bold ${c.text}`}>What's Your Day Like?</h3>
+          {showPresetSave&&(<div className={`${c.cardAlt} border rounded-lg p-4`}><div className="flex gap-2"><label htmlFor="wch-preset-name" className="sr-only">Preset name</label><input id="wch-preset-name" type="text" value={presetName} onChange={e=>setPresetName(e.target.value)} onKeyDown={e=>e.key==='Enter'&&savePreset()} placeholder="e.g., Work Monday" className={`flex-1 p-2 border rounded ${c.input} text-sm`}/><button onClick={savePreset} disabled={!presetName.trim()} className={`${c.btnPrimary} px-4 py-2 rounded text-sm disabled:opacity-40`}>Save</button></div>{presets.length>0&&<div className="flex flex-wrap gap-2 mt-2">{presets.map(p=>(<div key={p.id} className={`${c.cardAlt} border rounded px-3 py-1.5 flex items-center gap-2 text-sm`}><button onClick={()=>loadPreset(p)} className={`${c.text} font-medium`}>{p.name}</button><button onClick={()=>deletePreset(p.id)} className="text-red-400 hover:text-zinc-200">✕</button></div>))}</div>}</div>)} <h3 className={`text-xl font-bold ${c.text}`}>What's Your Day Like?</h3>
           <div><label className={`block text-sm font-medium ${c.labelText} mb-2`}>🌤️ Weather *</label><div className="grid grid-cols-2 md:grid-cols-4 gap-2">{WEATHER_OPTIONS.map(w=>(<button key={w.value} onClick={()=>setWeather(w.value)} className={`p-2.5 rounded-lg border-2 font-medium transition-colors flex items-center justify-center gap-2 text-sm ${weather===w.value?'bg-emerald-600 border-emerald-500 text-white':c.selectorInactive}`}><span>{w.icon}</span> {w.value}</button>))}</div></div>
           <div><label className={`block text-sm font-medium ${c.labelText} mb-2`}>📅 Activities *</label><div className="grid grid-cols-2 md:grid-cols-4 gap-2">{Object.keys(activities).map(act=>(<label key={act} className={`p-2.5 rounded-lg border-2 font-medium cursor-pointer transition-colors text-center text-sm ${activities[act]?'bg-emerald-600 border-emerald-500 text-white':c.selectorInactive}`}><input type="checkbox" checked={activities[act]} onChange={e=>setActivities(p=>({...p,[act]:e.target.checked}))} className="sr-only"/>{act.charAt(0).toUpperCase()+act.slice(1)}</label>))}</div></div>
           <div><label className={`block text-sm font-medium ${c.labelText} mb-2`}>💭 Mood *</label><div className="grid grid-cols-2 md:grid-cols-4 gap-2">{MOOD_OPTIONS.map(m=>(<button key={m.value} onClick={()=>setMood(m.value)} className={`p-2.5 rounded-lg border-2 font-medium transition-colors flex items-center justify-center gap-1.5 text-sm ${mood===m.value?'bg-emerald-600 border-emerald-500 text-white':c.selectorInactive}`}><span>{m.icon}</span> {m.label}</button>))}</div></div>
           <div><label className={`block text-sm font-medium ${c.labelText} mb-2`}>⚖️ {comfortPriority<=3?'Style First':comfortPriority<=7?'Balanced':'Comfort First'}</label><input type="range" min="1" max="10" value={comfortPriority} onChange={e=>setComfortPriority(parseInt(e.target.value))} className="w-full"/><div className="flex justify-between text-xs mt-1"><span className={c.textMuted}>👗 Style</span><span className={c.textMuted}>😌 Comfort</span></div></div>
           <div><label className={`block text-sm font-medium ${c.labelText} mb-2`}>🧠 Sensory</label><div className="space-y-1">{[['softFabrics','Soft fabrics'],['looseFit','Loose fit'],['noTags','No tags']].map(([k,l])=>(<label key={k} className="flex items-center gap-2 cursor-pointer"><input type="checkbox" checked={sensoryNeeds[k]} onChange={e=>setSensoryNeeds(p=>({...p,[k]:e.target.checked}))} className="w-4 h-4 rounded"/><span className={`${c.text} text-sm`}>{l}</span></label>))}<input type="text" value={sensoryNeeds.avoidTextures} onChange={e=>setSensoryNeeds(p=>({...p,avoidTextures:e.target.value}))} placeholder="Avoid: wool, denim" className={`w-full p-2.5 border rounded-lg ${c.input} text-sm mt-1`}/></div></div>
           <div className={`${c.cardAlt} border-l-4 ${c.privacyBorder} rounded-r-lg p-3`}><label className="flex items-center gap-3 cursor-pointer"><input type="checkbox" checked={onlyCleanItems} onChange={e=>setOnlyCleanItems(e.target.checked)} className="w-5 h-5 rounded"/><div><span className={`font-semibold ${c.text} text-sm`}>Clean only ✨</span><p className={`text-xs ${c.textMuted}`}>{getLaundryStats().clean} available</p></div></label></div>
-          {error&&<div className={`${c.errorInline} border rounded-lg p-3 flex items-start gap-2`}><span>⚠️</span><p className="text-sm">{error}</p></div>} <button onClick={handleGenerateOutfits} disabled={loading} className={`w-full ${c.btnPrimary} py-4 rounded-lg font-bold text-lg disabled:opacity-40 flex items-center justify-center gap-2`}>{loading?<><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> Creating...</>:<><span>{tool?.icon ?? '✨'}</span> Generate Outfits</>}</button>
+          {error&&<div className={`${c.errorInline} border rounded-lg p-3 flex items-start gap-2`}><span>⚠️</span><p className="text-sm">{error}</p></div>} <button onClick={handleGenerateOutfits} disabled={loading} className={`w-full ${c.btnPrimary} py-4 rounded-lg font-bold text-lg disabled:opacity-40 flex items-center justify-center gap-2`}>{loading?<><span className="inline-block animate-spin">{tool?.icon ?? '👗👔'}</span> Creating...</>:<><span>{tool?.icon ?? '👗👔'}</span> Generate Outfits</>}</button>
         <p className={`text-xs ${c.textMuted} mt-2`}>Adding new items? <a href="/BuyWise" className={linkStyle}>BuyWise</a> helps you decide what's worth buying before it joins your wardrobe.</p>
         </div>
       )} {/* STEP 3: RESULTS */} {step==='results'&&results&&(<div className="space-y-6">
           <div className="flex items-center justify-between flex-wrap gap-2"><button onClick={()=>setStep('needs')} className={`${c.btnSecondary} px-4 py-2 rounded text-sm`}>← Adjust</button><button onClick={()=>{setStep('wardrobe');setResults(null);}} className={`${c.btnSecondary} px-4 py-2 rounded text-sm`}>Start Over</button></div>
           {results.outfit_combinations?.length>0&&(<div className="space-y-4"><h3 className={`text-xl font-bold ${c.text}`}>Your Outfits</h3>
-            {results.outfit_combinations.map((outfit,idx)=>(<div key={outfit.outfit_id||idx} className={`${c.card} border-2 rounded-xl p-5 ${favorites.includes(outfit.outfit_id)?'border-yellow-500':''}`}>
+            {results.outfit_combinations.map((outfit,idx)=>(<div key={outfit.outfit_id||idx} className={`${c.card} border-2 rounded-xl p-5 ${favorites.includes(outfit.outfit_id)?'border-amber-500':''}`}>
               <div className="flex items-start justify-between mb-3"><h4 className={`text-lg font-bold ${c.text}`}>Outfit #{idx+1}</h4><div className="flex items-center gap-2"><button onClick={()=>logOutfit(outfit,idx)} className={`${c.btnSecondary} px-3 py-1.5 rounded text-xs flex items-center gap-1`}><span>📅</span> Log</button><button onClick={()=>handleToggleFavorite(outfit.outfit_id)} className={`p-2 rounded text-xl ${favorites.includes(outfit.outfit_id)?'text-amber-500':c.favoriteStar}`}>{favorites.includes(outfit.outfit_id)?'⭐':'☆'}</button></div></div>
               <div className={`${c.cardAlt} border rounded-lg p-3 mb-3`}><div className="grid grid-cols-2 md:grid-cols-3 gap-2">{Object.entries(outfit.items).map(([piece,itemName])=>{if(!itemName)return null;const wi=findItemByName(itemName);return(<div key={piece} className={`${c.card} border rounded-lg p-2`}>{wi?.imagePreview&&<img src={wi.imagePreview} alt={itemName} className="w-full h-20 object-cover rounded mb-1.5"/>}<p className={`text-xs font-semibold ${c.accentTxt} uppercase`}>{piece}</p><p className={`text-sm ${c.text} leading-snug`}>{itemName}</p>{wi?.lastWorn&&<p className={`text-xs ${c.textMuted}`}>{getRecencyLabel(wi.lastWorn)}</p>}<button onClick={()=>handleRegenerate(idx,piece)} disabled={loading} className={`mt-1.5 text-xs ${c.btnSecondary} px-2 py-1 rounded w-full flex items-center justify-center gap-1 disabled:opacity-40`}><span>🔄</span> Swap</button></div>);})}</div></div>
               {outfit.why_this_works&&<p className={`text-sm ${c.text} mb-3`}><strong>Why:</strong> {outfit.why_this_works}</p>} <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-3"><div className={`${c.cardAlt} border rounded p-2`}><div className="flex items-center gap-1 mb-0.5"><span>❤️</span><span className="text-xs font-semibold">Comfort</span></div><div className={`text-xl font-bold ${c.text}`}>{outfit.comfort_rating}/10</div></div><div className={`${c.cardAlt} border rounded p-2`}><div className="flex items-center gap-1 mb-0.5"><span>📈</span><span className="text-xs font-semibold">Style</span></div><div className={`text-xl font-bold ${c.text}`}>{outfit.style_rating}/10</div></div>{outfit.sensory_friendly&&<div className={`${c.success} border rounded p-2`}><span>✅</span> <span className="text-xs font-semibold">Sensory OK</span></div>}{outfit.weather_appropriate&&<div className={`${c.success} border rounded p-2`}><span>{WEATHER_OPTIONS.find(w=>w.value===weather)?.icon||'🌤️'}</span> <span className="text-xs font-semibold">Weather OK</span></div>}</div>
@@ -372,7 +416,7 @@ const WardrobeChaosHelper = ({ tool }) => {
             <div className="space-y-4">
               <div><label className={`block text-sm font-medium ${c.labelText} mb-1`}>Destination *</label><input type="text" value={packingTrip.destination} onChange={e=>setPackingTrip(p=>({...p,destination:e.target.value}))} placeholder="Austin, TX" className={`w-full p-3 border rounded-lg ${c.input}`}/></div>
               <div className="grid grid-cols-2 gap-4"><div><label className={`block text-sm font-medium ${c.labelText} mb-1`}>Days</label><input type="number" min="1" max="14" value={packingTrip.days} onChange={e=>setPackingTrip(p=>({...p,days:Math.max(1,Math.min(14,parseInt(e.target.value)||1))}))} className={`w-full p-3 border rounded-lg ${c.input}`}/></div><div><label className={`block text-sm font-medium ${c.labelText} mb-1`}>Type</label><select value={packingTrip.tripType} onChange={e=>setPackingTrip(p=>({...p,tripType:e.target.value}))} className={`w-full p-3 border rounded-lg ${c.input}`}><option value="casual">Casual</option><option value="business">Business</option><option value="mixed">Mixed</option><option value="adventure">Adventure</option><option value="formal">Formal</option></select></div></div>
-              {error&&<div className={`${c.errorInline} border rounded-lg p-3 flex items-start gap-2`}><span>⚠️</span><p className="text-sm">{error}</p></div>} <button onClick={handleGeneratePackingList} disabled={loading} className={`w-full ${c.btnPrimary} py-3 rounded-lg font-bold disabled:opacity-40 flex items-center justify-center gap-2`}>{loading?<><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> Generating...</>:<><span>🧳</span> Generate Packing List</>}</button>
+              {error&&<div className={`${c.errorInline} border rounded-lg p-3 flex items-start gap-2`}><span>⚠️</span><p className="text-sm">{error}</p></div>} <button onClick={handleGeneratePackingList} disabled={loading} className={`w-full ${c.btnPrimary} py-3 rounded-lg font-bold disabled:opacity-40 flex items-center justify-center gap-2`}>{loading?<><span className="inline-block animate-spin">{tool?.icon ?? '👗👔'}</span> Generating...</>:<><span>🧳</span> Generate Packing List</>}</button>
             </div>
           </div>
           {packingResult&&(<div className="space-y-4">

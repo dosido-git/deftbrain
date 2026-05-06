@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
+import React, { useState, useCallback, useMemo, useEffect, useRef, useReducer } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -67,20 +67,75 @@ function Section({ icon, title, badge, open, onToggle, children, c, actions }) {
 // ════════════════════════════════════════════════════════════
 // FACILITATOR MODE (with F1: Speaking Tracker + F3: Cost)
 // ════════════════════════════════════════════════════════════
+// Internal state combined under a single useReducer (rather than 7
+// separate useState calls) — the slices are tightly coupled (timer,
+// speaking tracker, current-item index all advance together) and
+// keeping them in one reducer keeps the state machine explicit.
+const FACILITATOR_INITIAL = {
+  currentIdx: 0,
+  elapsed: 0,
+  totalElapsed: 0,
+  paused: false,
+  extendedTime: 0,
+  speakingLog: {},
+  activeSpeaker: null,
+};
+function facilitatorReducer(state, action) {
+  switch (action.type) {
+    case 'init':
+      return { ...state, speakingLog: action.speakingLog };
+    case 'tick':
+      return { ...state, elapsed: state.elapsed + 1, totalElapsed: state.totalElapsed + 1 };
+    case 'next':
+      return { ...state, currentIdx: state.currentIdx + 1, elapsed: 0, extendedTime: 0 };
+    case 'prev':
+      return { ...state, currentIdx: state.currentIdx - 1, elapsed: 0, extendedTime: 0 };
+    case 'extend':
+      return { ...state, extendedTime: state.extendedTime + action.secs };
+    case 'togglePaused':
+      return { ...state, paused: !state.paused };
+    case 'startSpeaker':
+      return {
+        ...state,
+        activeSpeaker: action.name,
+        speakingLog: {
+          ...state.speakingLog,
+          [action.name]: {
+            ...state.speakingLog[action.name],
+            turns: (state.speakingLog[action.name]?.turns || 0) + 1,
+          },
+        },
+      };
+    case 'stopSpeaker':
+      return { ...state, activeSpeaker: null };
+    case 'tickSpeaker':
+      if (!state.activeSpeaker) return state;
+      return {
+        ...state,
+        speakingLog: {
+          ...state.speakingLog,
+          [state.activeSpeaker]: {
+            ...state.speakingLog[state.activeSpeaker],
+            totalSec: (state.speakingLog[state.activeSpeaker]?.totalSec || 0) + 1,
+          },
+        },
+      };
+    default:
+      return state;
+  }
+}
+
 function FacilitatorMode({ results, participants, c, isDark, onEnd, hourlyRate }) {
-  const [currentIdx, setCurrentIdx] = useState(0);
-  const [elapsed, setElapsed] = useState(0);
-  const [totalElapsed, setTotalElapsed] = useState(0);
-  const [paused, setPaused] = useState(false);
-  const [extendedTime, setExtendedTime] = useState(0);
+  const [fState, dispatch] = useReducer(facilitatorReducer, FACILITATOR_INITIAL);
+  const { currentIdx, elapsed, totalElapsed, paused, extendedTime, speakingLog, activeSpeaker } = fState;
   const timerRef = useRef(null);
-  // F1: Speaking tracker
-  const [speakingLog, setSpeakingLog] = useState(() => {
+
+  // Initialize speakingLog once participants are known
+  useEffect(() => {
     const log = {};
     participants.forEach(p => { log[p.name] = { turns: 0, lastStart: null, totalSec: 0 }; });
-    return log;
-  });
-  const [activeSpeaker, setActiveSpeaker] = useState(null);
+    dispatch({ type: 'init', speakingLog: log });
+  }, [participants]);
 
   const items = results?.meeting_structure?.agenda_items || [];
   const current = items[currentIdx];
@@ -94,7 +149,7 @@ function FacilitatorMode({ results, participants, c, isDark, onEnd, hourlyRate }
 
   useEffect(() => {
     if (!paused) {
-      timerRef.current = setInterval(() => { setElapsed(p => p + 1); setTotalElapsed(p => p + 1); }, 1000);
+      timerRef.current = setInterval(() => { dispatch({ type: 'tick' }); }, 1000);
     }
     return () => clearInterval(timerRef.current);
   }, [paused]);
@@ -102,25 +157,22 @@ function FacilitatorMode({ results, participants, c, isDark, onEnd, hourlyRate }
   // F1: Track active speaker duration
   useEffect(() => {
     if (!activeSpeaker) return;
-    const iv = setInterval(() => {
-      setSpeakingLog(prev => ({ ...prev, [activeSpeaker]: { ...prev[activeSpeaker], totalSec: prev[activeSpeaker].totalSec + 1 } }));
-    }, 1000);
+    const iv = setInterval(() => { dispatch({ type: 'tickSpeaker' }); }, 1000);
     return () => clearInterval(iv);
   }, [activeSpeaker]);
 
-  const next = () => { if (currentIdx < items.length - 1) { setCurrentIdx(p => p + 1); setElapsed(0); setExtendedTime(0); } else endMeeting(); };
-  const prev = () => { if (currentIdx > 0) { setCurrentIdx(p => p - 1); setElapsed(0); setExtendedTime(0); } };
-  const extend = (secs) => setExtendedTime(p => p + secs);
+  const next = () => { if (currentIdx < items.length - 1) { dispatch({ type: 'next' }); } else endMeeting(); };
+  const prev = () => { if (currentIdx > 0) { dispatch({ type: 'prev' }); } };
+  const extend = (secs) => dispatch({ type: 'extend', secs });
   const fmt = (s) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 
   const toggleSpeaker = (name) => {
-    if (activeSpeaker === name) { setActiveSpeaker(null); return; }
-    setActiveSpeaker(name);
-    setSpeakingLog(prev => ({ ...prev, [name]: { ...prev[name], turns: prev[name].turns + 1 } }));
+    if (activeSpeaker === name) { dispatch({ type: 'stopSpeaker' }); return; }
+    dispatch({ type: 'startSpeaker', name });
   };
 
   const endMeeting = () => {
-    setActiveSpeaker(null);
+    dispatch({ type: 'stopSpeaker' });
     onEnd({ speakingLog, totalElapsed, totalCost: liveCost });
   };
 
@@ -152,7 +204,7 @@ function FacilitatorMode({ results, participants, c, isDark, onEnd, hourlyRate }
         </div>
         <div className="flex items-center justify-center gap-3 mt-4">
           <button onClick={prev} disabled={currentIdx === 0} className="text-white/60 hover:text-white disabled:opacity-40 text-lg">⏮️</button>
-          <button onClick={() => setPaused(!paused)} className="text-white text-2xl">{paused ? '▶️' : '⏸️'}</button>
+          <button onClick={() => dispatch({ type: 'togglePaused' })} className="text-white text-2xl">{paused ? '▶️' : '⏸️'}</button>
           <button onClick={next} className="text-white text-lg">{currentIdx < items.length - 1 ? '⏭️' : '🏁'}</button>
         </div>
         <div className="flex items-center justify-center gap-2 mt-3">
@@ -650,7 +702,7 @@ const MeetingHijackPreventer = ({ tool }) => {
 
           {/* Participants */}
           <div><label className={`text-sm font-semibold ${c.labelText} block mb-1.5`}>👥 Participants <span className={`text-[10px] ${c.textMuted}`}>(optional)</span></label>
-            <div className="flex gap-2 mb-2"><input value={newParticipant} onChange={e => setNewParticipant(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addParticipant(); } }} placeholder="Name..." className={`flex-1 p-2 border rounded-lg ${c.input} outline-none text-sm`} />
+            <div className="flex gap-2 mb-2"><label htmlFor="mhp-new-participant" className="sr-only">Add participant by name</label><input id="mhp-new-participant" value={newParticipant} onChange={e => setNewParticipant(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addParticipant(); } }} placeholder="Name..." className={`flex-1 p-2 border rounded-lg ${c.input} outline-none text-sm`} />
               <button onClick={addParticipant} disabled={!newParticipant.trim()} className={`${c.btnSecondary} px-3 py-2 rounded-lg text-sm disabled:opacity-40`}>➕</button></div>
             {participants.length > 0 && <div className="space-y-1.5">{participants.map((p, i) => (
               <div key={i} className="flex items-center gap-2">
@@ -672,8 +724,31 @@ const MeetingHijackPreventer = ({ tool }) => {
 
           <button onClick={handleGenerate} disabled={loading || (!meetingGoal.trim() && !useTemplate)} className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2`}>
             {loading
-            ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> Generating...</>
+            ? <><span className="inline-block animate-spin">{tool?.icon ?? '🛡️'}</span> Generating...</>
             : <><span className="mr-1">{tool?.icon ?? '🛡️'}</span> Generate Structure</>}</button>
+
+          {/* Try Example */}
+          {!meetingGoal.trim() && !useTemplate && !loading && (
+            <div className="flex justify-center">
+              <button
+                onClick={() => {
+                  setMeetingGoal('Decide which two of the four feature proposals make the Q3 roadmap, and assign owners to each.');
+                  setMeetingType('Decision-making');
+                  setDuration(60);
+                  setParticipantCount(6);
+                  setIsVirtual(true);
+                  setVirtualPlatform('Zoom');
+                  setDecisionFramework('Disagree & Commit (commit even if you objected)');
+                  setChallenges({ dominates: true, offTopic: true, talkOver: false, schedule: true, quietVoices: true });
+                  setHourlyRate(95);
+                }}
+                className={`text-xs font-medium ${c.accentTxt} underline underline-offset-2 min-h-[32px]`}
+              >
+                ✨ Try an example
+              </button>
+            </div>
+          )}
+
           <p className={`text-xs text-center ${c.textMuted}`}>
             Want to decode what was said? <a href="/MeetingBSDetector" className={`text-xs ${linkStyle}`}>🔍 Meeting BS Detector</a> analyzes meeting notes.
           </p>

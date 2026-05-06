@@ -79,19 +79,20 @@ const AwkwardSilenceFiller = ({ tool }) => {
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
     : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
 
-  // ─── State ───
-  const [scenario, setScenario] = usePersistentState('awkwardsilencefiller-scenario', '');
-  const [customContext, setCustomContext] = usePersistentState('awkwardsilencefiller-context', '');
+  // ─── State (useState before usePersistentState — PF-11/PF-14) ───
   const [relationship, setRelationship] = useState('');
   const [comfort, setComfort] = useState('nervous');
   const [landmines, setLandmines] = useState('');
-
-  const [results, setResults] = usePersistentState('awkwardsilencefiller-last', null);
-  const [panicResult, setPanicResult] = usePersistentState('awkwardsilencefiller-panic', null);
-  const [history, setHistory] = usePersistentState('awkwardsilencefiller-history', []);
   const [error, setError] = useState('');
   const [expandedSections, setExpandedSections] = useState({});
   const [panicLoading, setPanicLoading] = useState(false);
+
+  // ─── Persistent state ───
+  const [scenario, setScenario] = usePersistentState('awkwardsilencefiller-scenario', '');
+  const [customContext, setCustomContext] = usePersistentState('awkwardsilencefiller-context', '');
+  const [results, setResults] = usePersistentState('awkwardsilencefiller-last', null);
+  const [panicResult, setPanicResult] = usePersistentState('awkwardsilencefiller-panic', null);
+  const [history, setHistory] = usePersistentState('awkwardsilencefiller-history', []);
 
   // ─── Refs for keyboard handler ───
   const generateRef = useRef(null);
@@ -420,6 +421,23 @@ const AwkwardSilenceFiller = ({ tool }) => {
             </button>
           )}
         </div>
+
+        {/* Try Example */}
+        {!scenario && !customContext.trim() && !loading && (
+          <div className="flex justify-center mt-2">
+            <button
+              onClick={() => {
+                setScenario('networking');
+                setRelationship('Stranger I might want to follow up with later');
+                setComfort('nervous');
+                setLandmines('Politics, my recent layoff');
+              }}
+              className={`text-xs font-medium ${c.textSecondary} underline underline-offset-2 min-h-[32px]`}
+            >
+              ✨ Try an example
+            </button>
+          </div>
+        )}
       </div>
 
       {/* ── ERROR ── */}
@@ -639,7 +657,7 @@ const AwkwardSilenceFiller = ({ tool }) => {
             <p className={`text-xs font-semibold ${c.textMuteded} uppercase tracking-wider`}>You might also like</p>
             <div className="flex flex-wrap gap-x-4 gap-y-1">
               <a href="/DateNight" className={`text-xs ${linkStyle}`}>💘 Date Night Planner</a>
-              <a href="/SayItRight" className={`text-xs ${linkStyle}`}>🗣️ Say It Right</a>
+              <a href="/PronounceItRight" className={`text-xs ${linkStyle}`}>🗣️ Pronounce It Right</a>
               <a href="/RoomReader" className={`text-xs ${linkStyle}`}>👀 Room Reader</a>
             </div>
           </div>

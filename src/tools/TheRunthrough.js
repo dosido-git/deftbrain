@@ -40,10 +40,6 @@ const TheRunthrough = ({ tool }) => {
   const { isDark } = useTheme();
   const resultsRef = useRef(null);
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
-
   // ─── Colors ───
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
@@ -52,6 +48,7 @@ const TheRunthrough = ({ tool }) => {
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-500' : 'text-gray-400',
+    labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
     required:      isDark ? 'text-amber-400' : 'text-amber-500',
     btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
@@ -68,6 +65,13 @@ const TheRunthrough = ({ tool }) => {
     goldBox:       isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
     goldTxt:       isDark ? 'text-amber-300' : 'text-amber-700',
   };
+  c.textMuteded = c.textMuted;
+  c.label       = c.labelText;
+
+  const linkStyle = isDark
+    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
+    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
+
 
   // ─── State ───
   const [mode, setMode] = useState('cut');
@@ -130,19 +134,24 @@ const TheRunthrough = ({ tool }) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [content, mode, timeMinutes, context, audience, stakes, tone, goal, loading]);
 
+  // ─── Keyboard: SELECT-only guard, ref pattern to avoid stale closures ───
+  const handleSubmitRef = useRef(null);
+  const canSubmitRef = useRef(false);
+  handleSubmitRef.current = handleSubmit;
+  canSubmitRef.current = !!content.trim() && !loading;
+
   useEffect(() => {
     const handler = (e) => {
-      if (e.key !== 'Enter') return;
       const tag = document.activeElement?.tagName;
-      if (tag === 'TEXTAREA' && !e.metaKey && !e.ctrlKey) return;
-      if ((e.metaKey || e.ctrlKey) && !loading) {
+      if (tag === 'SELECT') return;
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !loading && canSubmitRef.current) {
         e.preventDefault();
-        handleSubmit();
+        handleSubmitRef.current?.();
       }
     };
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
-  }, [loading, handleSubmit]);
+  }, [loading]);
 
   const handleReset = () => {
     setResults(null);
@@ -165,7 +174,7 @@ const TheRunthrough = ({ tool }) => {
     t += `━━ TRIMMED CONTENT ━━\n${d.trimmed_content}\n\n`;
     if (d.what_was_cut?.length) {
       t += `━━ WHAT WAS CUT ━━\n`;
-      d.what_was_cut.forEach(c => { t += `• ${c.section}: ${c.reason}\n`; });
+      d.what_was_cut.forEach(cut => { t += `• ${cut.section}: ${cut.reason}\n`; });
       t += '\n';
     }
     if (d.what_was_kept) t += `━━ CORE THREAD ━━\n${d.what_was_kept}\n\n`;
@@ -237,9 +246,9 @@ const TheRunthrough = ({ tool }) => {
 
   // ─── Submit button labels ───
   const submitLabels = {
-    cut: <><span className="mr-1">{tool?.icon ?? '✂️'}</span> Cut It Down</>,
-    anticipate: <><span className="mr-1">{tool?.icon ?? '🎯'}</span> Predict the Q&amp;A</>,
-    hook: <><span className="mr-1">{tool?.icon ?? '🪝'}</span> Rewrite My Hooks</>,
+    cut: <><span className="mr-1">{tool?.icon ?? '🎙️'}</span> Cut It Down</>,
+    anticipate: <><span className="mr-1">{tool?.icon ?? '🎙️'}</span> Predict the Q&amp;A</>,
+    hook: <><span className="mr-1">{tool?.icon ?? '🎙️'}</span> Rewrite My Hooks</>,
   };
 
   // ─── Render: Cut Results ───
@@ -513,8 +522,8 @@ const TheRunthrough = ({ tool }) => {
 
   // ─── Main Render ───
   return (
-    <div className={`min-h-screen ${c.cardAlt} transition-colors duration-200`}>
-      <div className="max-w-2xl mx-auto px-4 py-8 space-y-6">
+    <div className={`space-y-4 ${c.text}`}>
+      <div className="space-y-6">
 
         {/* Header */}
         <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
@@ -560,7 +569,7 @@ const TheRunthrough = ({ tool }) => {
 
         {/* Pre-result cross-ref */}
         <p className={`text-xs ${c.textMuted}`}>
-          Need to prep for tough questions specifically? <a href="HecklerPrep" target="_blank" rel="noopener noreferrer" className={linkStyle}>HecklerPrep</a> drills you on the hardest objections your audience will raise.
+          Need to prep for tough questions specifically? <a href="/HecklerPrep" className={linkStyle}>🎤 HecklerPrep</a> drills you on the hardest objections your audience will raise.
         </p>
 
         {/* Input card */}
@@ -569,7 +578,7 @@ const TheRunthrough = ({ tool }) => {
           {/* Content textarea (all modes) */}
           <div className="space-y-2">
             <label className={`text-sm font-semibold ${c.text}`}>
-              <span className="mr-1.5">📝</span> Presentation content
+              <span className="mr-1.5">📝</span> Presentation content <span className={c.required}>*</span>
             </label>
             <textarea
               value={content}
@@ -697,7 +706,7 @@ const TheRunthrough = ({ tool }) => {
           >
             {loading ? (
               <>
-                <span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span>
+                <span className="inline-block animate-spin">{tool?.icon ?? '🎙️'}</span>
                 {loadingMessages[mode]}
               </>
             ) : (
@@ -705,6 +714,26 @@ const TheRunthrough = ({ tool }) => {
             )}
           </button>
           <p className={`text-xs text-center ${c.textMuted}`}>AI-generated — review before delivering</p>
+
+          {/* Try Example */}
+          {!content.trim() && !loading && (
+            <div className="flex justify-center">
+              <button
+                onClick={() => {
+                  setContent("Today I want to walk you through Q3 results and where we're heading. Revenue is up 32% year-over-year, driven mainly by enterprise expansion in EMEA. Three of our top-five accounts grew by more than 50%. Margin expanded 4 points to 71% as we leaned into the higher-tier SKU. We added 47 net new logos, up from 31 in Q2, and pipeline coverage for Q4 sits at 4.2x. The big strategic question for next quarter is whether to invest deeper in EMEA or open up the APAC region — we're proposing EMEA depth based on conversion economics. I'll walk through the numbers in detail, then we'll open it up for questions.");
+                  setMode('cut');
+                  setTimeMinutes(5);
+                  setAudience('executives');
+                  setTone('authoritative');
+                  setStakes('Quarterly board update — three new directors in the room, first time hearing from me');
+                  setGoal('Get sign-off on the EMEA-deepening strategy and budget approval for two new EMEA AEs');
+                }}
+                className={`text-xs font-medium ${c.accentTxt} underline underline-offset-2 min-h-[32px]`}
+              >
+                ✨ Try an example
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Error */}
@@ -727,8 +756,8 @@ const TheRunthrough = ({ tool }) => {
                 Related tools
               </p>
               <div className="space-y-1.5 text-xs">
-                <p className={c.textSecondary}>Go deeper on any objection with <a href="HecklerPrep" target="_blank" rel="noopener noreferrer" className={linkStyle}>HecklerPrep</a> — coaches you through the toughest questions one by one.</p>
-                <p className={c.textSecondary}>Writing a speech instead of a presentation? <a href="ToastWriter" target="_blank" rel="noopener noreferrer" className={linkStyle}>ToastWriter</a> builds it from your details.</p>
+                <p className={c.textSecondary}>Go deeper on any objection with <a href="/HecklerPrep" className={linkStyle}>🎤 HecklerPrep</a> — coaches you through the toughest questions one by one.</p>
+                <p className={c.textSecondary}>Writing a speech instead of a presentation? <a href="/ToastWriter" className={linkStyle}>🥂 ToastWriter</a> builds it from your details.</p>
               </div>
             </div>
           </div>

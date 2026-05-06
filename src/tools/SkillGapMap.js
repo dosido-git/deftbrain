@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -35,8 +35,8 @@ const SkillGapMap = ({ tool }) => {
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
     infoBox:       isDark ? 'bg-sky-900/20 border-sky-700 text-sky-200' : 'bg-sky-50 border-sky-200 text-sky-800',
     warningBox:    isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
-    proofBg:       isDark ? 'bg-violet-900/20' : 'bg-violet-50',
-    proofText:     isDark ? 'text-violet-300' : 'text-violet-700',
+    proofBg:       isDark ? 'bg-zinc-900/20' : 'bg-zinc-50',
+    proofText:     isDark ? 'text-zinc-300' : 'text-zinc-700',
     networkBg:     isDark ? 'bg-cyan-900/15' : 'bg-cyan-50',
   };
   // Aliases
@@ -336,7 +336,7 @@ const SkillGapMap = ({ tool }) => {
 
   const Btn = ({ onClick, disabled, icon, label, color }) => (
     <button onClick={onClick} disabled={disabled} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all disabled:opacity-40 ${color || c.btnSecondary}`}>
-      {disabled && typeof icon === 'string' ? <span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> : <span>{icon}</span>} {label}
+      {disabled && typeof icon === 'string' ? <span className="inline-block animate-spin">{tool?.icon ?? '🗺️'}</span> : <span>{icon}</span>} {label}
     </button>
   );
   const ScoreBar = ({ score, color }) => (<div className={`w-full ${isDark ? 'bg-zinc-700' : 'bg-gray-200'} rounded-full h-1.5 overflow-hidden`}><div className={`${color || (score >= 70 ? 'bg-emerald-500' : score >= 40 ? 'bg-amber-500' : 'bg-red-500')} h-1.5 rounded-full transition-all`} style={{ width: `${Math.min(100, Math.max(0, score))}%` }} /></div>);
@@ -405,7 +405,7 @@ const SkillGapMap = ({ tool }) => {
               <div>
                 <label className={`block text-sm font-semibold ${c.label} mb-1.5`}>Interests <span className={`font-normal ${c.textMuteded}`}>(optional)</span></label>
                 <input type="text" value={interests} onChange={e => setInterests(e.target.value)}
-                  placeholder="What energizes you? What kind of work do you enjoy?" className={`w-full p-3 border rounded-xl outline-none text-sm focus:ring-2 focus:ring-purple-300 ${c.input}`} />
+                  placeholder="What energizes you? What kind of work do you enjoy?" className={`w-full p-3 border rounded-xl outline-none text-sm focus:ring-2 focus:ring-cyan-300 ${c.input}`} />
               </div>
             )}
             {mode === 'map' && (
@@ -435,11 +435,34 @@ const SkillGapMap = ({ tool }) => {
             </div>
           )}
 
+          <p className={`text-xs text-center ${c.textMuteded} mb-2`}>
+            Already nailed the gaps? <a href="/BragSheetBuilder" className={linkStyle}>📄 Brag Sheet Builder</a> turns wins into review-ready bullets.
+          </p>
+
           <button onClick={mode === 'map' ? handleAnalyze : handleExplore}
             disabled={loading || !currentRole.trim() || (mode === 'map' && !targetRole.trim())}
-            className={`w-full py-4 px-6 rounded-xl font-semibold text-lg transition-all flex items-center justify-center gap-2 shadow-lg ${loading ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : mode === 'explore' ? `${isDark ? 'bg-cyan-600 hover:bg-cyan-500' : 'bg-cyan-600 hover:bg-cyan-700'} text-white` : c.btnPrimary}`}>
-            {loading ? (<><span className="inline-block animate-spin text-lg">{tool?.icon ?? '⚙️'}</span> {mode === 'explore' ? 'Exploring paths...' : 'Mapping gaps...'}</>) : mode === 'explore' ? (<><span className="text-lg">🧭</span> Explore Career Paths</>) : (<><span className="text-lg">🗺️</span> Map My Skill Gaps</>)}
+            className={`w-full py-4 px-6 rounded-xl font-semibold text-lg transition-all flex items-center justify-center gap-2 shadow-lg disabled:opacity-40 ${loading ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : mode === 'explore' ? `${isDark ? 'bg-cyan-600 hover:bg-cyan-500' : 'bg-cyan-600 hover:bg-cyan-700'} text-white` : c.btnPrimary}`}>
+            {loading ? (<><span className="inline-block animate-spin text-lg">{tool?.icon ?? '🗺️'}</span> {mode === 'explore' ? 'Exploring paths...' : 'Mapping gaps...'}</>) : mode === 'explore' ? (<><span className="text-lg">🧭</span> Explore Career Paths</>) : (<><span className="text-lg">🗺️</span> Map My Skill Gaps</>)}
           </button>
+
+          {/* Try Example */}
+          {!currentRole.trim() && !targetRole.trim() && !loading && (
+            <div className="flex justify-center mt-2">
+              <button
+                onClick={() => {
+                  setCurrentRole('Senior Software Engineer at a 200-person SaaS company. Mostly backend, leading a team of 4.');
+                  setTargetRole('Engineering Manager — running a platform org with 15+ engineers reporting through team leads.');
+                  setCurrentSkills('Strong: distributed systems, code review, mentoring 1:1s. Some: hiring, performance reviews. Gap: cross-functional planning, headcount budgeting, executive presentations.');
+                  setInterests('Building systems that scale teams. Less interested in pure people management — want to keep technical credibility.');
+                  setHoursPerWeek(5);
+                  setMode('map');
+                }}
+                className={`text-xs font-medium ${c.textMuteded} underline underline-offset-2 min-h-[32px]`}
+              >
+                ✨ Try an example
+              </button>
+            </div>
+          )}
 
           {savedMaps.length > 0 && (
             <div className={`${c.card} rounded-xl shadow-lg p-4`}>
@@ -1373,7 +1396,7 @@ const SkillGapMap = ({ tool }) => {
                     </div>
                   </div>
                 )}
-                {mockLoading && <p className={`text-xs ${c.textMuteded} flex items-center gap-2`}><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> Evaluating...</p>}
+                {mockLoading && <p className={`text-xs ${c.textMuteded} flex items-center gap-2`}><span className="inline-block animate-spin">{tool?.icon ?? '🗺️'}</span> Evaluating...</p>}
               </div>
             </div>
           )}
@@ -1401,7 +1424,6 @@ const SkillGapMap = ({ tool }) => {
             <div className="flex flex-wrap gap-3">
               <a href="/BragSheetBuilder" className={`text-xs ${linkStyle}`}>📄 Brag Sheet Builder</a>
               <a href="/DifficultTalkCoach" className={`text-xs ${linkStyle}`}>🗣️ Difficult Talk Coach</a>
-              <a href="/BookScout" className={`text-xs ${linkStyle}`}>📚 Book Scout</a>
             </div>
           </div>
         </div>

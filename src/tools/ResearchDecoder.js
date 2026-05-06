@@ -372,7 +372,7 @@ const ResearchDecoder = ({ tool }) => {
               ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> Comparing...</>
               : <><span className="mr-1">{tool?.icon ?? '📄'}</span> Compare Papers</>}
           </button>
-          <p className={`text-xs ${c.textMuted}`}>Thoughts jumbled before you start? <a href="/BrainDumpStructurer" className={linkStyle}>🧠 Brain Dump Structurer</a> can help you organize them.</p>
+          <p className={`text-xs ${c.textMuted}`}>Thoughts jumbled before you start? <a href="/BrainDumpBuddy" className={linkStyle}>🧠 Brain Dump Buddy</a> can help you organize them.</p>
         </div>
 
         {compareResults && (() => { const r = compareResults; return (
@@ -434,7 +434,7 @@ const ResearchDecoder = ({ tool }) => {
               ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> Decoding...</>
               : <><span className="mr-1">{tool?.icon ?? '📄'}</span> Decode Terms</>}
           </button>
-          <p className={`text-xs ${c.textMuted}`}>Need to simplify a whole text? <a href="/BrainDumpStructurer" className={linkStyle}>🧠 Brain Dump Structurer</a> can organize complex ideas.</p>
+          <p className={`text-xs ${c.textMuted}`}>Need to simplify a whole text? <a href="/BrainDumpBuddy" className={linkStyle}>🧠 Brain Dump Buddy</a> can organize complex ideas.</p>
         </div>
 
         {jargonResults?.terms?.map((t, i) => (
@@ -458,7 +458,7 @@ const ResearchDecoder = ({ tool }) => {
           <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 Related tools</p>
           <div className="flex flex-wrap gap-3">
             <a href="/DecisionCoach" className={`text-xs ${linkStyle}`}>🎯 Decision Coach</a>
-            <a href="/BrainDumpStructurer" className={`text-xs ${linkStyle}`}>🧠 Brain Dump Structurer</a>
+            <a href="/BrainDumpBuddy" className={`text-xs ${linkStyle}`}>🧠 Brain Dump Buddy</a>
             <a href="/SpiralStopper" className={`text-xs ${linkStyle}`}>🌀 Spiral Stopper</a>
           </div>
         </div>

@@ -1082,7 +1082,7 @@ const WaitingModeLiberator = ({ tool }) => {
         <p className={`text-xs font-bold ${c.textMuted} mb-2`}>🔗 Related tools</p>
         <div className="flex flex-wrap gap-3">
           <a href="/TaskAvalancheBreaker" className={`text-xs ${linkStyle}`}>⚡ Task Avalanche Breaker</a>
-          <a href="/DopamineMenuBuilder" className={`text-xs ${linkStyle}`}>🎯 Dopamine Menu Builder</a>
+          <a href="/PEP" className={`text-xs ${linkStyle}`}>✨ PEP</a>
         </div>
       </div>
       </div>

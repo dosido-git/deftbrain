@@ -57,25 +57,25 @@ const PlotTwist = ({ tool }) => {
     pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500'
                           : 'border-gray-300 text-gray-500 hover:border-gray-400',
+    stuckBg:       isDark ? 'bg-zinc-800 border-zinc-600'           : 'bg-slate-50 border-slate-300',
+    stuckText:     isDark ? 'text-zinc-200'                         : 'text-gray-900',
+    insightBg:     isDark ? 'bg-cyan-900/20 border-cyan-700'        : 'bg-cyan-50 border-cyan-200',
+    insightText:   isDark ? 'text-cyan-300'                         : 'text-cyan-700',
+    matrixHead:    isDark ? 'bg-zinc-700/60 text-zinc-300'          : 'bg-slate-100 text-gray-700',
+    matrixHigh:    isDark ? 'text-emerald-300'                      : 'text-emerald-700',
+    matrixMid:     isDark ? 'text-amber-300'                        : 'text-amber-700',
+    matrixLow:     isDark ? 'text-red-300'                          : 'text-red-700',
+    gutBg:         isDark ? 'bg-zinc-800 border-zinc-600'           : 'bg-slate-50 border-slate-300',
+    gutText:       isDark ? 'text-zinc-200'                         : 'text-gray-900',
+    histBg:        isDark ? 'bg-zinc-700/30 border-zinc-600'        : 'bg-slate-50 border-slate-200',
+    histAccent:    isDark ? 'text-cyan-400'                         : 'text-cyan-600',
+    histCard:      isDark ? 'bg-zinc-700/50 border-zinc-600'        : 'bg-white border-slate-200',
+    badge:         isDark ? 'bg-zinc-600 text-zinc-200'             : 'bg-zinc-100 text-zinc-600',
+    inset:         isDark ? 'bg-zinc-700/60'                        : 'bg-slate-100',
+    btnGhost:      isDark ? 'text-zinc-500 hover:text-zinc-300'     : 'text-gray-400 hover:text-gray-600',
   };
   c.textMuteded = c.textMuted;
   c.label       = c.labelText;
-  c.stuckBg    = isDark ? 'bg-purple-900/20 border-purple-700'   : 'bg-purple-50 border-purple-200';
-  c.stuckText  = isDark ? 'text-purple-200'                       : 'text-purple-900';
-  c.insightBg  = isDark ? 'bg-cyan-900/20 border-cyan-700'        : 'bg-cyan-50 border-cyan-200';
-  c.insightText= isDark ? 'text-cyan-300'                         : 'text-cyan-700';
-  c.matrixHead = isDark ? 'bg-zinc-700/60 text-zinc-300'          : 'bg-slate-100 text-gray-700';
-  c.matrixHigh = isDark ? 'text-emerald-300'                      : 'text-emerald-700';
-  c.matrixMid  = isDark ? 'text-amber-300'                        : 'text-amber-700';
-  c.matrixLow  = isDark ? 'text-red-300'                          : 'text-red-700';
-  c.gutBg      = isDark ? 'bg-rose-900/20 border-rose-700'        : 'bg-rose-50 border-rose-200';
-  c.gutText    = isDark ? 'text-rose-200'                         : 'text-rose-900';
-  c.histBg     = isDark ? 'bg-zinc-700/30 border-zinc-600'        : 'bg-slate-50 border-slate-200';
-  c.histAccent = isDark ? 'text-cyan-400'                         : 'text-cyan-600';
-  c.histCard   = isDark ? 'bg-zinc-700/50 border-zinc-600'        : 'bg-white border-slate-200';
-  c.badge      = isDark ? 'bg-zinc-600 text-zinc-200'             : 'bg-zinc-100 text-zinc-600';
-  c.inset      = isDark ? 'bg-zinc-700/60'                        : 'bg-slate-100';
-  c.btnGhost   = isDark ? 'text-zinc-500 hover:text-zinc-300'     : 'text-gray-400 hover:text-gray-600';
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
@@ -241,7 +241,7 @@ const PlotTwist = ({ tool }) => {
     <div className="space-y-4">
       <div className={`${c.card} border rounded-xl p-5`}>
         <div className="flex items-center justify-between mb-1">
-          <label className={`text-base font-bold ${c.text}`}>What's the decision?</label>
+          <label className={`text-base font-bold ${c.text}`}>What's the decision? <span className={c.required}>*</span></label>
           <button onClick={loadExample} className={`text-xs ${linkStyle}`}>Try example</button>
         </div>
         <p className={`text-sm ${c.textMuteded} mb-4`}>Describe the situation and what you're choosing between. The more context, the sharper the analysis.</p>
@@ -316,13 +316,9 @@ const PlotTwist = ({ tool }) => {
         disabled={loading || !decision.trim()}
         className={`w-full ${c.btnPrimary} disabled:opacity-40 py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all min-h-[48px]`}>
         {loading
-          ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> Analyzing from every angle…</>
+          ? <><span className="inline-block animate-spin">{tool?.icon ?? '🔀'}</span> Analyzing from every angle…</>
           : <><span>{tool?.icon ?? '🔀'}</span> Untangle This Decision</>}
       </button>
-
-      <p className={`text-xs text-center ${c.textMuted}`}>
-        Still going back and forth? <a href="/DecisionCoach" className={linkStyle}>🧭 Decision Coach</a> walks you through it step by step.
-      </p>
     </div>
   );
 
@@ -594,6 +590,11 @@ const PlotTwist = ({ tool }) => {
         </div>
       </div>
       {!results && renderInput()}
+      {!results && (
+        <p className={`text-xs text-center ${c.textMuted}`}>
+          Still going back and forth? <a href="/DecisionCoach" className={linkStyle}>🧭 Decision Coach</a> walks you through it step by step.
+        </p>
+      )}
       {results && renderResults()}
       {error && (
         <div className={`mt-4 p-4 ${c.warningBox} border rounded-xl flex items-start gap-3`}>

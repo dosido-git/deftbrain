@@ -120,12 +120,14 @@ const Recall = ({ tool }) => {
   const submitRef    = useRef(null);
   const canSubmitRef = useRef(false);
 
+  const lecturesInputRefs = useRef([]);
+  const shouldFocusNewLecturesRef = useRef(false);
   // ── Persistent state ──
   const [results, setResults] = usePersistentState('recall-results', null);
   const [history, setHistory] = usePersistentState('recall-history', []);
 
   // ── Helpers ──
-  const addLecture    = useCallback(() => { if (lectures.length < 5) setLectures(p => [...p, { title: '', transcript: '' }]); }, [lectures.length]);
+  const addLecture    = useCallback(() => { if (lectures.length < 5) { shouldFocusNewLecturesRef.current = true; setLectures(p => [...p, { title: '', transcript: '' }]); }; }, [lectures.length]);
   const removeLecture = useCallback((i) => { if (lectures.length > 2) setLectures(p => p.filter((_, idx) => idx !== i)); }, [lectures.length]);
   const updateLecture = useCallback((i, field, val) => setLectures(p => p.map((l, idx) => idx === i ? { ...l, [field]: val } : l)), []);
   const toggleQType   = useCallback((val) => setQuestionTypes(prev => prev.includes(val) ? prev.filter(v => v !== val) : [...prev, val]), []);
@@ -247,6 +249,14 @@ const Recall = ({ tool }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading]);
 
+  useEffect(() => {
+    if (shouldFocusNewLecturesRef.current) {
+      const last = lecturesInputRefs.current[lectures.length - 1];
+      if (last) last.focus();
+      shouldFocusNewLecturesRef.current = false;
+    }
+  }, [lectures.length]);
+
   // ── Shared sub-components ──
   const Pill = ({ active, onClick, children }) => (
     <button onClick={onClick}
@@ -312,7 +322,7 @@ const Recall = ({ tool }) => {
             <div key={idx} className={`${c.card} border ${c.border} rounded-xl p-4`}>
               <div className="flex items-center gap-2 mb-2">
                 <span className={`text-xs font-bold ${c.badge} px-2 py-0.5 rounded-full`}>Lecture {idx + 1}</span>
-                <input type="text" value={lec.title} onChange={e => updateLecture(idx, 'title', e.target.value)}
+                <input ref={el => { lecturesInputRefs.current[idx] = el; }} type="text" value={lec.title} onChange={e => updateLecture(idx, 'title', e.target.value)}
                   placeholder="Lecture title (optional)"
                   className={`flex-1 px-3 py-1.5 rounded-lg border text-xs ${c.input} outline-none`} />
                 {lectures.length > 2 && (

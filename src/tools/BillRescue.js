@@ -392,7 +392,7 @@ const BillRescue = ({ tool }) => {
   const updateTriageBill = (idx, field, val) => {
     setTriageBills(p => p.map((b, i) => i === idx ? { ...b, [field]: val } : b));
   };
-  const addTriageBill = () => setTriageBills(p => [...p, { type: '', amount: '', overdue: '', note: '' }]);
+  const addTriageBill = () => { shouldFocusNewTriageBillsRef.current = true; setTriageBills(p => [...p, { type: '', amount: '', overdue: '', note: '' }]); };
   const removeTriageBill = (idx) => setTriageBills(p => p.filter((_, i) => i !== idx));
 
   // ── Quick Check ──
@@ -678,6 +678,8 @@ const BillRescue = ({ tool }) => {
   // ── Ref assignments ────────────────────────────────────────
   const handleSubmitRef = useRef(null);
   const canSubmitRef = useRef(false);
+  const triageBillsInputRefs = useRef([]);
+  const shouldFocusNewTriageBillsRef = useRef(false);
   handleSubmitRef.current = analyze;
   canSubmitRef.current = !!billType && view === 'rescue';
 
@@ -704,6 +706,14 @@ const BillRescue = ({ tool }) => {
     return () => document.removeEventListener('keydown', handler);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading]);
+
+  useEffect(() => {
+    if (shouldFocusNewTriageBillsRef.current) {
+      const last = triageBillsInputRefs.current[triageBills.length - 1];
+      if (last) last.focus();
+      shouldFocusNewTriageBillsRef.current = false;
+    }
+  }, [triageBills.length]);
 
 
 
@@ -1213,7 +1223,7 @@ const BillRescue = ({ tool }) => {
               </select>
               <div className="flex items-center gap-0.5">
                 <span className={`text-[10px] ${c.textMuteded}`}>{currency}</span>
-                <input type="number" value={bill.amount} onChange={e => updateTriageBill(idx, 'amount', e.target.value)}
+                <input ref={el => { triageBillsInputRefs.current[idx] = el; }} type="number" value={bill.amount} onChange={e => updateTriageBill(idx, 'amount', e.target.value)}
                   placeholder="Amount" className={`flex-1 px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none w-full`} />
               </div>
               <select value={bill.overdue} onChange={e => updateTriageBill(idx, 'overdue', e.target.value)}

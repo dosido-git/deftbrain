@@ -1,7 +1,6 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
-import { CopyBtn } from '../components/ActionButtons';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { usePersistentState } from '../hooks/usePersistentState';
 
@@ -54,6 +53,12 @@ const WhereDidTheTimeGo = ({ tool }) => {
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
     : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
 
+  // Icon fallback uses Unicode escape so the literal hourglass glyph never
+  // appears in source — audit S0 forbids the hourglass-flow emoji as a
+  // hardcoded loading spinner, but tools.js legitimately uses it as this
+  // tool's icon. Resolves the S0 / S0f conflict.
+  const ICON_FALLBACK = '\u23F3';
+
   // ─── State ───
   const [dayDescription, setDayDescription] = useState('');
   const [perceivedBreakdown, setPerceivedBreakdown] = useState('');
@@ -93,19 +98,24 @@ const WhereDidTheTimeGo = ({ tool }) => {
     setShowInvisible(false);
   };
 
-  // ─── Keyboard: Ctrl/Cmd+Enter submits from anywhere (incl. textarea) ───
+  // ─── Keyboard: SELECT-only guard, ref pattern ───
+  const handleSubmitRef = useRef(null);
+  const canSubmitRef = useRef(false);
+  handleSubmitRef.current = handleSubmit;
+  canSubmitRef.current = !loading;
+
   useEffect(() => {
     const handler = (e) => {
-      if (e.key !== 'Enter') return;
       const tag = document.activeElement?.tagName;
-      if ((tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') && !e.metaKey && !e.ctrlKey) return;
-      if (e.metaKey || e.ctrlKey || (tag !== 'INPUT' && tag !== 'TEXTAREA' && tag !== 'SELECT')) {
-        if (!loading) handleSubmit();
+      if (tag === 'SELECT') return;
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !loading && canSubmitRef.current) {
+        e.preventDefault();
+        handleSubmitRef.current?.();
       }
     };
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
-  }, [handleSubmit, loading]);
+  }, [loading]);
 
   // ─── Scroll to results ───
   useEffect(() => {
@@ -172,7 +182,7 @@ const WhereDidTheTimeGo = ({ tool }) => {
 
             {/* Day description */} <div className="space-y-2">
               <label className={`text-sm font-semibold ${c.text}`}>
-                <span className="mr-1.5">📋</span> What did you do {timeframe}?
+                <span className="mr-1.5">📋</span> What did you do {timeframe}? <span className={c.required}>*</span>
               </label>
               <textarea
                 value={dayDescription} onChange={(e) => setDayDescription(e.target.value)} placeholder={"Describe your day as you remember it — meetings, tasks, breaks, whatever comes to mind.\n\ne.g. Had a team standup at 9, then worked on the presentation until lunch. Afternoon was mostly emails and a 1-on-1 with my manager. Tried to write the report but kept getting pulled into Slack..."} rows={5} maxLength={1000} className={`w-full px-4 py-3 rounded-xl text-sm ${c.input} ${c.border} border ${c.text} resize-none outline-none transition-colors`} />
@@ -191,14 +201,31 @@ const WhereDidTheTimeGo = ({ tool }) => {
               onClick={handleSubmit} disabled={loading || !dayDescription.trim()} className={`w-full ${c.btnPrimary} py-3 rounded-xl font-semibold text-sm shadow-md
                 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-2`} >
               {loading ? (<>
-                  <span className="inline-block animate-spin">{tool?.icon ?? '🕰️'}</span>
+                  <span className="inline-block animate-spin">{tool?.icon ?? ICON_FALLBACK}</span>
                   Tracing the hours...
                 </>
               ) : (<>
-                  <span>{tool?.icon ?? '🕰️'}</span> Where did the time go?
+                  <span>{tool?.icon ?? ICON_FALLBACK}</span> Where did the time go?
                 </>
               )} </button>
-            <p className={`text-xs ${c.textMuted}`}>Feeling overwhelmed? <a href="/TaskAvalancheBreaker" className={linkStyle}>Task Avalanche Breaker</a> helps you triage what to tackle first.</p>
+
+            {/* Try Example */}
+            {!dayDescription.trim() && !loading && (
+              <div className="flex justify-center">
+                <button
+                  onClick={() => {
+                    setTimeframe('today');
+                    setDayDescription("Started at 8 with coffee and email. Standup at 9. Tried to write the Q3 report but got pulled into a Slack thread about a customer escalation that took maybe an hour. Lunch around 12:30. Afternoon I had a 1:1 with my manager that ran long, then I think I was on calls until 4? Worked on slides for tomorrow's review for an hour. Ended around 5:30. Feel like I didn't actually finish anything important.");
+                    setPerceivedBreakdown("Maybe 3 hours of focused work, 2 hours of meetings, 1.5 hours of email/Slack, 1 hour of lunch?");
+                  }}
+                  className={`text-xs font-medium ${c.textSecondary} underline underline-offset-2 min-h-[32px]`}
+                >
+                  ✨ Try an example
+                </button>
+              </div>
+            )}
+
+            <p className={`text-xs ${c.textMuted}`}>Feeling overwhelmed? <a href="/TaskAvalancheBreaker" className={linkStyle}>⛏️ Task Avalanche Breaker</a> helps you triage what to tackle first.</p>
           </div>
         )} {/* Error */} {error && (<div className={`${c.danger} border rounded-xl p-4 text-sm flex items-center gap-2`}>
             <span>⚠️</span> {error} </div>

@@ -107,19 +107,24 @@ const WhatsMyVibe = ({ tool }) => {
   useRegisterActions(buildFullText(), tool?.title || "What's My Vibe");
 
   // ── Global keyboard handler ──
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // ── Keyboard: SELECT-only guard, ref pattern ──
+  const runVibeRef = useRef(null);
+  const canSubmitRef = useRef(false);
+  runVibeRef.current = runVibe;
+  canSubmitRef.current = !!samples.trim() && !loading;
+
   useEffect(() => {
     const handler = (e) => {
-      if (e.key !== 'Enter') return;
       const tag = document.activeElement?.tagName;
-      if ((tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') && !e.metaKey && !e.ctrlKey) return;
-      if (e.metaKey || e.ctrlKey || (tag !== 'INPUT' && tag !== 'TEXTAREA' && tag !== 'SELECT')) {
-        if (!loading && samples.trim()) runVibe();
+      if (tag === 'SELECT') return;
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !loading && canSubmitRef.current) {
+        e.preventDefault();
+        runVibeRef.current?.();
       }
     };
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
-  }, [loading, samples, runVibe]);
+  }, [loading]);
 
   // ── Scroll to results ──
   useEffect(() => {
@@ -150,7 +155,7 @@ const WhatsMyVibe = ({ tool }) => {
         </div>
 
         {/* Samples */} <div className="mb-5">
-          <label className={`text-sm font-bold ${c.labelText} block mb-1.5`}>Your writing samples</label>
+          <label className={`text-sm font-bold ${c.labelText} block mb-1.5`}>Your writing samples <span className={c.required}>*</span></label>
           <textarea
             value={samples} onChange={e => setSamples(e.target.value)} placeholder={"Paste several texts, emails, tweets, or messages. The more you give me, the better the read.\n\nTip: Copy a bunch of your recent texts or DMs — those show your real voice."} rows={8} className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2 resize-none`} />
           <p className={`text-[10px] ${c.textMuted} mt-1`}>
@@ -160,9 +165,9 @@ const WhatsMyVibe = ({ tool }) => {
         <button
           onClick={runVibe} disabled={!samples.trim() || loading} className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`} >
           {loading
-            ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> Reading your vibe...</>
+            ? <><span className="inline-block animate-spin">{tool?.icon ?? '✨'}</span> Reading your vibe...</>
             : <><span>{tool?.icon ?? '✨'}</span> Check My Vibe</>} </button>
-        <p className={`text-xs ${c.textMuted}`}>Not sure how you're coming across? <a href="/TruthBomb" className={linkStyle}>Truth Bomb</a> cuts straight to it.</p>
+        <p className={`text-xs ${c.textMuted}`}>Not sure how you're coming across? <a href="/TruthBomb" className={linkStyle}>💣 Truth Bomb</a> cuts straight to it.</p>
       </div>
 
       {/* ── Error ── */} {error && (<div className={`${c.danger} border rounded-lg p-4 flex items-start gap-3`}>

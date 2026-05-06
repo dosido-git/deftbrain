@@ -1,7 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
-import { CopyBtn } from '../components/ActionButtons';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { usePersistentState } from '../hooks/usePersistentState';
 
@@ -45,10 +44,6 @@ const WrongAnswersOnly = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { isDark } = useTheme();
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
-
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
@@ -70,6 +65,12 @@ const WrongAnswersOnly = ({ tool }) => {
     infoBox:       isDark ? 'bg-[#1e3030]/60 border-[#3a6e60] text-[#e4f2f0]' : 'bg-[#f0f8f6] border-[#8cc8c0] text-[#1e3030]',
     quoteBg:       isDark ? 'bg-zinc-700/40' : 'bg-[#f3efe8]',
   };
+  c.textMuteded = c.textMuted;
+  c.label       = c.labelText;
+
+  const linkStyle = isDark
+    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
+    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
 
   // ── State ──
   const [question, setQuestion] = useState('');
@@ -181,7 +182,7 @@ const WrongAnswersOnly = ({ tool }) => {
         </div>
 
         {/* Question */} <div className="mb-4">
-          <label className={`text-xs font-bold ${c.labelText} block mb-1.5`}>Your question</label>
+          <label className={`text-xs font-bold ${c.labelText} block mb-1.5`}>Your question <span className={c.required}>*</span></label>
           <input type="text" value={question} onChange={e => setQuestion(e.target.value)} placeholder="Ask me anything — I'll get it spectacularly wrong..."
             className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} onKeyDown={e => e.key === 'Enter' && question.trim() && runWrong()} />
         </div>
@@ -209,12 +210,13 @@ const WrongAnswersOnly = ({ tool }) => {
           </div>
         </div>
 
+        <p className={`text-xs ${c.textMuted} mb-2`}>Want more chaos? <a href="/PlotTwist" className={linkStyle}>🔀 Plot Twist</a> flips any story on its head.</p>
+
         <button onClick={runWrong} disabled={!question.trim() || loading} className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
           {loading
-            ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> Making things up...</>
+            ? <><span className="inline-block animate-spin">{tool?.icon ?? '🙃'}</span> Making things up...</>
             : <><span>{tool?.icon ?? '🙃'}</span> Wrong Answers Only</>} </button>
         <p className={`text-xs text-center ${c.textMuted}`}>For entertainment only — all answers are intentionally wrong.</p>
-        <p className={`text-xs ${c.textMuted}`}>Want more chaos? <a href="PlotTwist" target="_blank" rel="noopener noreferrer" className={linkStyle}>Plot Twist</a> flips any story on its head.</p>
       </div>
 
       {/* Error */} {error && (<div className={`${c.danger} border rounded-lg p-4 flex items-start gap-3`}>
@@ -278,8 +280,8 @@ const WrongAnswersOnly = ({ tool }) => {
           <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
             <p className={`text-xs font-bold ${c.textMuted} mb-2`}>🔗 More like this</p>
             <div className="flex flex-wrap gap-3">
-              <a href="/TimeWarp" target="_blank" rel="noopener noreferrer" className={`text-xs ${linkStyle}`}>⏰ Time Warp</a>
-              <a href="/WhatIf" target="_blank" rel="noopener noreferrer" className={`text-xs ${linkStyle}`}>🤔 What-If Machine</a>
+              <a href="/TimeWarp" className={`text-xs ${linkStyle}`}>⏰ Time Warp</a>
+              <a href="/WhatIf" className={`text-xs ${linkStyle}`}>🤔 What-If Machine</a>
             </div>
           </div>
         </div>

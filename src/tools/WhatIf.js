@@ -46,15 +46,18 @@ const WhatIf = ({ tool }) => {
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
     : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
 
-  // ─── State ───
-  const [decision, setDecision] = usePersistentState('whatif-decision', '');
+  // ─── State (useState before usePersistentState — PF-11/PF-14) ───
   const [optionNotChosen, setOptionNotChosen] = useState('');
   const [context, setContext] = useState('');
   const [timeframe, setTimeframe] = useState('one_year');
-  const [results, setResults] = usePersistentState('whatif-result', null);
-  const resultsRef = useRef(null);
   const [error, setError] = useState('');
+
+  // ─── Persistent state ───
+  const [decision, setDecision] = usePersistentState('whatif-decision', '');
+  const [results, setResults] = usePersistentState('whatif-result', null);
   const [history, setHistory] = usePersistentState('whatif-history', []);
+
+  const resultsRef = useRef(null);
 
   // ─── Actions ───
   const generate = useCallback(async () => {
@@ -116,22 +119,24 @@ const WhatIf = ({ tool }) => {
     return () => clearTimeout(t);
   }, [results]);
 
-  // ─── Global Cmd/Ctrl+Enter ───
+  // ─── Global Cmd/Ctrl+Enter — SELECT-only guard, ref pattern ───
+  const generateRef = useRef(null);
+  const canSubmitRef = useRef(false);
+  generateRef.current = generate;
+  canSubmitRef.current = !!decision.trim() && !loading;
+
   useEffect(() => {
     const handler = (e) => {
-      if (e.key !== 'Enter' || !(e.metaKey || e.ctrlKey)) return;
       const tag = document.activeElement?.tagName;
-      if (tag === 'TEXTAREA') return;
-      if (!decision.trim() || loading) return;
-      e.preventDefault();
-      generate();
+      if (tag === 'SELECT') return;
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !loading && canSubmitRef.current) {
+        e.preventDefault();
+        generateRef.current?.();
+      }
     };
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loading, decision, generate]);
-
-  const r = results;
+  }, [loading]);
 
   // ════════════════════════════════════════════════════════════
   // RENDER
@@ -157,7 +162,7 @@ const WhatIf = ({ tool }) => {
 
         {/* Decision */}
         <div className="mb-4">
-          <label className={`text-sm font-bold ${c.text} block mb-1.5`}>What decision are you facing?</label>
+          <label className={`text-sm font-bold ${c.text} block mb-1.5`}>What decision are you facing? <span className={c.required}>*</span></label>
           <textarea
             value={decision}
             onChange={e => setDecision(e.target.value)}
@@ -218,15 +223,32 @@ const WhatIf = ({ tool }) => {
             disabled={loading || !decision.trim()}
             className={`flex-1 ${c.btnPrimary} disabled:opacity-40 disabled:cursor-not-allowed font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-2 min-h-[48px] shadow-lg`}>
             {loading
-              ? (<><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> Simulating...</>)
+              ? (<><span className="inline-block animate-spin">{tool?.icon ?? '🎲'}</span> Simulating...</>)
               : (<><span>{tool?.icon ?? '🎲'}</span> Show Me That Future</>)
             }
           </button>
         </div>
 
+        {/* Try Example */}
+        {!decision.trim() && !loading && (
+          <div className="flex justify-center mt-3">
+            <button
+              onClick={() => {
+                setDecision('Should I leave my stable software engineering job to join my friend\'s 4-person startup as their first technical hire?');
+                setOptionNotChosen('Stayed at the current job');
+                setContext('I have a comfortable salary, a good team, and clear promotion path to senior. The startup pays 30% less but offers 1.5% equity. I have $40K saved and no kids yet.');
+                setTimeframe('one_year');
+              }}
+              className={`text-xs font-medium ${c.textSecondary} underline underline-offset-2 min-h-[32px]`}
+            >
+              ✨ Try an example
+            </button>
+          </div>
+        )}
+
         {/* Pre-result cross-ref */}
         <p className={`text-xs ${c.textMuted} mt-3`}>
-          Want to stress-test your thinking first? <a href="/WrongAnswersOnly" className={linkStyle}>Wrong Answers Only</a> uses reverse logic to reveal hidden assumptions.
+          Want to stress-test your thinking first? <a href="/WrongAnswersOnly" className={linkStyle}>🙃 Wrong Answers Only</a> uses reverse logic to reveal hidden assumptions.
         </p>
       </div>
 
@@ -241,33 +263,33 @@ const WhatIf = ({ tool }) => {
       {/* ══════════════════════════════════════════════════════════ */}
       {/* RESULTS                                                    */}
       {/* ══════════════════════════════════════════════════════════ */}
-      {r && (
+      {results && (
         <div className="space-y-4">
 
           <div ref={resultsRef} data-results-anchor />
 
           {/* ── DECISION READ ── */}
-          {r.decision_read && (
+          {results.decision_read && (
             <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-              <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{r.decision_read}</p>
+              <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{results.decision_read}</p>
             </div>
           )}
 
           {/* ── PATH LABEL ── */}
-          {r.the_path_not_taken && (
+          {results.the_path_not_taken && (
             <div className={`${c.infoBox} border rounded-xl p-4 text-center`}>
               <p className="text-xs font-bold mb-0.5">Simulating the path where you chose:</p>
-              <p className="text-sm font-bold">{r.the_path_not_taken}</p>
+              <p className="text-sm font-bold">{results.the_path_not_taken}</p>
             </div>
           )}
 
           {/* ── SCENARIOS / TIMELINE ── */}
-          {r.scenarios?.length > 0 && (
+          {results.scenarios?.length > 0 && (
             <div className="space-y-0">
-              {r.scenarios.map((scene, idx) => (
+              {results.scenarios.map((scene, idx) => (
                 <div key={idx} className="relative">
                   {/* Timeline connector */}
-                  {idx < r.scenarios.length - 1 && (
+                  {idx < results.scenarios.length - 1 && (
                     <div className={`absolute left-5 top-full w-0.5 h-4 ${c.timelineBar}`} />
                   )}
                   <div className={`${c.card} border ${c.border} rounded-xl overflow-hidden ${idx > 0 ? 'mt-4' : ''}`}>
@@ -306,47 +328,47 @@ const WhatIf = ({ tool }) => {
           )}
 
           {/* ── THE SURPRISE ── */}
-          {r.the_surprise && (
+          {results.the_surprise && (
             <div className={`${c.warning} border rounded-xl p-4 flex items-start gap-3`}>
               <span className="flex-shrink-0 mt-0.5">⚡</span>
               <div>
                 <p className="text-xs font-bold mb-1">The surprise you wouldn't expect</p>
-                <p className="text-sm leading-relaxed">{r.the_surprise}</p>
+                <p className="text-sm leading-relaxed">{results.the_surprise}</p>
               </div>
             </div>
           )}
 
           {/* ── KEEP / LOSE ── */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {r.what_you_keep && (
+            {results.what_you_keep && (
               <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
                 <p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>🔒 What stays the same</p>
-                <p className={`text-xs ${c.textSecondary} leading-relaxed`}>{r.what_you_keep}</p>
+                <p className={`text-xs ${c.textSecondary} leading-relaxed`}>{results.what_you_keep}</p>
               </div>
             )}
-            {r.what_you_lose && (
+            {results.what_you_lose && (
               <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
                 <p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>💔 What you'd miss most</p>
-                <p className={`text-xs ${c.textSecondary} leading-relaxed`}>{r.what_you_lose}</p>
+                <p className={`text-xs ${c.textSecondary} leading-relaxed`}>{results.what_you_lose}</p>
               </div>
             )}
           </div>
 
           {/* ── CLARITY QUESTION ── */}
-          {r.clarity_question && (
+          {results.clarity_question && (
             <div className={`${c.card} border ${c.border} rounded-xl p-5 text-center`}>
               <p className={`text-xs font-bold ${c.textMuted} mb-2`}>❓ The question to ask yourself</p>
-              <p className={`text-base font-bold ${c.text} leading-relaxed`}>{r.clarity_question}</p>
+              <p className={`text-base font-bold ${c.text} leading-relaxed`}>{results.clarity_question}</p>
             </div>
           )}
 
           {/* ── HONEST TAKE ── */}
-          {r.honest_take && (
+          {results.honest_take && (
             <div className={`${c.success} border rounded-xl p-4 flex items-start gap-3`}>
               <span className="flex-shrink-0 mt-0.5">🎯</span>
               <div>
                 <p className="text-xs font-bold mb-1">Honest take</p>
-                <p className="text-sm leading-relaxed">{r.honest_take}</p>
+                <p className="text-sm leading-relaxed">{results.honest_take}</p>
               </div>
             </div>
           )}

@@ -1,4 +1,4 @@
-<!-- v1.0 · 2026-04-20 · ground-zero baseline -->
+<!-- v2.0 · 2026-05-04 · post-rename rewrite (batch 14 close-out) -->
 # DeftBrain Cross-Reference Map
 ### Internal Marketing: Which Tools Should Link to Which
 
@@ -31,58 +31,59 @@ Tools are grouped by natural relationship clusters, not categories.
 ---
 
 ## CLUSTER 2: FOOD & KITCHEN
-> FridgeAlchemy ↔ RecipeChaosSolver ↔ LeftoverRoulette — Three tools, one fridge
+> MiseEnPlace ↔ RecipeChaosSolver — Cooking flow + crisis recovery
+
+*Note: FridgeAlchemy and LeftoverRoulette were folded into MiseEnPlace; refs to those names should now go to `/MiseEnPlace`.*
 
 | Tool | Cross-Ref | Placement | Copy |
 |------|-----------|-----------|------|
-| **FridgeAlchemy** | ← RecipeChaosSolver | Post-result | "Recipe too complex? Simplify it with [Recipe Chaos Solver](/RecipeChaosSolver)." |
-| **FridgeAlchemy** | ← LeftoverRoulette | Post-result | "Got leftovers from this meal? [Leftover Roulette](/LeftoverRoulette) will reinvent them." |
-| **RecipeChaosSolver** | → FridgeAlchemy | Pre-result | "Don't have a recipe yet? [Fridge Alchemy](/FridgeAlchemy) builds one from what you have." |
-| **LeftoverRoulette** | → FridgeAlchemy | Pre-result | "Starting from scratch? [Fridge Alchemy](/FridgeAlchemy) makes meals from your ingredients." |
+| **MiseEnPlace** | ← RecipeChaosSolver | Conditional | If recipe step goes sideways: "Hit a wall? [Recipe Chaos Solver](/RecipeChaosSolver) rescues kitchen disasters in seconds." |
+| **RecipeChaosSolver** | ← MiseEnPlace | Post-result | "Ready to actually cook this? [Mise en Place](/MiseEnPlace) walks you through prep and timing." |
 
 ---
 
 ## CLUSTER 3: MONEY & SPENDING
-> SubSweep ↔ BillGuiltEraser ↔ MoneyShameRemover ↔ RamenRatio ↔ BuyWise
+> SubSweep ↔ BillRescue ↔ BuyWise ↔ FakeReviewDetective ↔ MoneyDiplomat
+
+*Note: BillGuiltEraser was renamed to BillRescue. MoneyShameRemover and RamenRatio no longer exist.*
 
 | Tool | Cross-Ref | Placement | Copy |
 |------|-----------|-----------|------|
-| **SubSweep** | ← BillGuiltEraser | Post-result | "Found subscriptions to cancel but feeling guilty? [Bill Guilt Eraser](/BillGuiltEraser) helps you let go." |
-| **SubSweep** | ← RamenRatio | Post-result | "See what those savings mean for your budget with [Ramen Ratio](/RamenRatio)." |
-| **BillGuiltEraser** | → SubSweep | Pre-result | "Not sure which bills to cut? Run [SubSweep](/SubSweep) first to find hidden subscriptions." |
-| **BillGuiltEraser** | ← MoneyShameRemover | Post-result | "Still feeling bad about money? [Money Shame Remover](/MoneyShameRemover) goes deeper." |
-| **MoneyShameRemover** | ← BillGuiltEraser | Post-result | "Have a specific bill stressing you out? [Bill Guilt Eraser](/BillGuiltEraser) can help with that." |
-| **RamenRatio** | ← BuyWise | Post-result | "Considering a purchase? [BuyWise](/BuyWise) breaks down whether it's worth it." |
-| **BuyWise** | ← RamenRatio | Post-result | "Want to see this in terms of meals and hours? [Ramen Ratio](/RamenRatio) puts it in perspective." |
+| **SubSweep** | ← BillRescue | Post-result | "Found subscriptions to cancel but worried about ones you actually need? [Bill Rescue](/BillRescue) helps you negotiate the rest." |
+| **BillRescue** | → SubSweep | Pre-result | "Not sure which bills to tackle? Run [SubSweep](/SubSweep) first to find hidden subscriptions." |
 | **BuyWise** | ← FakeReviewDetective | Post-result | "Before you buy, check the reviews with [Fake Review Detective](/FakeReviewDetective)." |
 | **FakeReviewDetective** | ← BuyWise | Post-result | "Reviews check out? Run the purchase through [BuyWise](/BuyWise) to see if it's worth your money." |
+| **MoneyDiplomat** | ← BillRescue | Conditional | If user mentions struggling to pay: "Need to negotiate the bill itself? [Bill Rescue](/BillRescue) helps draft the conversation." |
 
 ---
 
 ## CLUSTER 4: CONFRONTATION & COMMUNICATION
-> DifficultTalkRehearser ↔ ConfrontationCoach ↔ ApologyCalibrator ↔ VelvetHammer ↔ ConflictTextCoach
+> DifficultTalkCoach ↔ ConflictCoach ↔ ApologyCalibrator ↔ VelvetHammer
+
+*Note: ConfrontationCoach + ConflictTextCoach consolidated into ConflictCoach. DifficultTalkRehearser renamed to DifficultTalkCoach.*
 
 | Tool | Cross-Ref | Placement | Copy |
 |------|-----------|-----------|------|
-| **DifficultTalkRehearser** | ← VelvetHammer | Post-result | "Need to say it firmly but diplomatically? [Velvet Hammer](/VelvetHammer) crafts the words." |
-| **DifficultTalkRehearser** | ← ApologyCalibrator | Post-result | "If the conversation calls for an apology, [Apology Calibrator](/ApologyCalibrator) helps you get the tone right." |
-| **ConfrontationCoach** | → DifficultTalkRehearser | Pre-result | "Need to practice what you'll say? [Difficult Talk Rehearser](/DifficultTalkRehearser) lets you run through it first." |
-| **ConfrontationCoach** | ← VelvetHammer | Post-result | "Want it in writing instead? [Velvet Hammer](/VelvetHammer) writes tough messages with tact." |
-| **ApologyCalibrator** | ← DifficultTalkRehearser | Post-result | "Need to rehearse delivering this apology? Try [Difficult Talk Rehearser](/DifficultTalkRehearser)." |
-| **VelvetHammer** | → ConflictTextCoach | Pre-result | "Dealing with an existing text conflict? [Conflict Text Coach](/ConflictTextCoach) analyzes the thread." |
-| **ConflictTextCoach** | ← VelvetHammer | Post-result | "Need to write a firm response? [Velvet Hammer](/VelvetHammer) crafts it for you." |
-| **ConflictTextCoach** | ← ApologyCalibrator | Conditional | If conflict analysis suggests user is in the wrong: "Might be time for [Apology Calibrator](/ApologyCalibrator)." |
+| **DifficultTalkCoach** | ← VelvetHammer | Post-result | "Need to say it firmly but diplomatically? [Velvet Hammer](/VelvetHammer) crafts the words." |
+| **DifficultTalkCoach** | ← ApologyCalibrator | Conditional | If conversation calls for an apology: "[Apology Calibrator](/ApologyCalibrator) helps you get the tone right." |
+| **ConflictCoach** | → DifficultTalkCoach | Pre-result | "Need to practice what you'll say? [Difficult Talk Coach](/DifficultTalkCoach) lets you run through it first." |
+| **ConflictCoach** | ← VelvetHammer | Post-result | "Want it in writing instead? [Velvet Hammer](/VelvetHammer) writes tough messages with tact." |
+| **ConflictCoach** | ⚡ ApologyCalibrator | Conditional | If conflict analysis suggests user is in the wrong: "Might be time for [Apology Calibrator](/ApologyCalibrator)." |
+| **ApologyCalibrator** | ← DifficultTalkCoach | Post-result | "Need to rehearse delivering this apology? Try [Difficult Talk Coach](/DifficultTalkCoach)." |
+| **VelvetHammer** | → ConflictCoach | Pre-result | "Dealing with an existing text conflict? [Conflict Coach](/ConflictCoach) analyzes the thread." |
 
 ---
 
 ## CLUSTER 5: WORK & PRODUCTIVITY
-> TaskAvalancheBreaker ↔ BrainDumpStructurer ↔ CrisisPrioritizer ↔ EmailUrgencyTriager ↔ BragSheetBuilder
+> TaskAvalancheBreaker ↔ BrainDumpBuddy ↔ CrisisPrioritizer ↔ EmailUrgencyTriager ↔ BragSheetBuilder ↔ LeverageLogic
+
+*Note: BrainDumpStructurer renamed to BrainDumpBuddy.*
 
 | Tool | Cross-Ref | Placement | Copy |
 |------|-----------|-----------|------|
-| **TaskAvalancheBreaker** | → BrainDumpStructurer | Pre-result | "Tasks still jumbled in your head? Dump them into [Brain Dump Structurer](/BrainDumpStructurer) first, then bring the list here." |
-| **TaskAvalancheBreaker** | ← CrisisPrioritizer | Conditional | If overwhelm level is critical: "Feeling like everything is on fire? [Crisis Prioritizer](/CrisisPrioritizer) helps when it's truly urgent." |
-| **BrainDumpStructurer** | ← TaskAvalancheBreaker | Post-result | "Now that it's organized, feeling overwhelmed? [Task Avalanche Breaker](/TaskAvalancheBreaker) breaks it into tiny steps." |
+| **TaskAvalancheBreaker** | → BrainDumpBuddy | Pre-result | "Tasks still jumbled in your head? Dump them into [Brain Dump Buddy](/BrainDumpBuddy) first, then bring the list here." |
+| **TaskAvalancheBreaker** | ⚡ CrisisPrioritizer | Conditional | If overwhelm level is critical: "Feeling like everything is on fire? [Crisis Prioritizer](/CrisisPrioritizer) helps when it's truly urgent." |
+| **BrainDumpBuddy** | ← TaskAvalancheBreaker | Post-result | "Now that it's organized, feeling overwhelmed? [Task Avalanche Breaker](/TaskAvalancheBreaker) breaks it into tiny steps." |
 | **CrisisPrioritizer** | ← TaskAvalancheBreaker | Post-result | "Crisis handled? Move the remaining tasks to [Task Avalanche Breaker](/TaskAvalancheBreaker) to keep momentum." |
 | **EmailUrgencyTriager** | ← VelvetHammer | Post-result | "Need to write a tough reply? [Velvet Hammer](/VelvetHammer) helps with diplomatic responses." |
 | **BragSheetBuilder** | → LeverageLogic | Post-result | "Ready to use these wins? [Leverage Logic](/LeverageLogic) helps you negotiate with evidence." |
@@ -92,32 +93,34 @@ Tools are grouped by natural relationship clusters, not categories.
 
 ---
 
-## CLUSTER 6: MENTAL HEALTH & ENERGY
-> SpiralStopper ↔ FreezeStateUnblocker ↔ CriticismBuffer ↔ BurnoutBreadcrumbTracker ↔ SpoonBudgeter ↔ DopamineMenuBuilder
+## CLUSTER 6: ENERGY & WELLNESS
+> PEP ↔ SpiralStopper ↔ BrainStateDeejay ↔ SocialEnergyAudit
+
+*Note: PEP absorbed DopamineMenuBuilder, BurnoutBreadcrumbTracker, SpoonBudgeter, and RoutineRuptureManager. FreezeStateUnblocker and CriticismBuffer no longer exist. SocialBatteryForecaster renamed to SocialEnergyAudit.*
 
 | Tool | Cross-Ref | Placement | Copy |
 |------|-----------|-----------|------|
-| **SpiralStopper** | ← FreezeStateUnblocker | Post-result | "Spiral stopped but still frozen? [Freeze State Unblocker](/FreezeStateUnblocker) helps you move again." |
-| **FreezeStateUnblocker** | ← SpiralStopper | Pre-result | "Thoughts spiraling first? [Spiral Stopper](/SpiralStopper) breaks the loop so you can think clearly." |
-| **FreezeStateUnblocker** | ← DopamineMenuBuilder | Post-result | "Need a gentle activity to get started? Check your [Dopamine Menu](/DopamineMenuBuilder)." |
-| **BurnoutBreadcrumbTracker** | ← SpoonBudgeter | Post-result | "Tracking energy? [Spoon Budgeter](/SpoonBudgeter) helps you allocate what you have left." |
-| **SpoonBudgeter** | ← BurnoutBreadcrumbTracker | Pre-result | "Noticing burnout patterns? [Burnout Breadcrumb Tracker](/BurnoutBreadcrumbTracker) catches them early." |
-| **CriticismBuffer** | ← SpiralStopper | Conditional | If result shows high emotional impact: "Thoughts spiraling from this? [Spiral Stopper](/SpiralStopper) can help." |
-| **DopamineMenuBuilder** | ← BrainStateDeejay | Post-result | "Want music to match your energy state? Try [Brain State Deejay](/BrainStateDeejay)." |
-| **BrainStateDeejay** | ← DopamineMenuBuilder | Post-result | "Need more than music? Build a full [Dopamine Menu](/DopamineMenuBuilder) of feel-good activities." |
-| **SocialBatteryForecaster** | ← SpoonBudgeter | Post-result | "Factor this into your energy plan with [Spoon Budgeter](/SpoonBudgeter)." |
+| **PEP** | ← BrainStateDeejay | Post-result | "Want music to match your energy state? [Brain State Deejay](/BrainStateDeejay) builds a soundtrack for what you're about to do." |
+| **PEP** | ⚡ SpiralStopper | Conditional | If energy plan reveals high overwhelm: "Thoughts spiraling? [Spiral Stopper](/SpiralStopper) breaks the loop first." |
+| **SpiralStopper** | ← PEP | Post-result | "Spiral stopped? [PEP](/PEP) helps you map your energy and plan the rest of the day." |
+| **BrainStateDeejay** | ← PEP | Post-result | "Need to plan the actual block? [PEP](/PEP) maps your energy across the day." |
+| **SocialEnergyAudit** | ← PEP | Post-result | "Factor this into your full energy plan with [PEP](/PEP)." |
+| **SocialEnergyAudit** | → AwkwardSilenceFiller | Pre-result | "Heading into a specific event? [Awkward Silence Filler](/AwkwardSilenceFiller) preps the conversation moves." |
 
 ---
 
-## CLUSTER 7: FOCUS & NEURODIVERGENT SUPPORT
-> FocusPocus ↔ FocusSoundArchitect ↔ TaskSwitchingMinimizer ↔ WaitingModeLiberator ↔ VirtualBodyDouble
+## CLUSTER 7: FOCUS & CONCENTRATION
+> FocusPocus ↔ FocusSoundArchitect ↔ WaitingModeLiberator ↔ VirtualBodyDouble
+
+*Note: TaskSwitchingMinimizer no longer exists. Cluster heading deliberately neutral — no maladies references per the codebase rule.*
 
 | Tool | Cross-Ref | Placement | Copy |
 |------|-----------|-----------|------|
 | **FocusPocus** | ← FocusSoundArchitect | Post-result | "Need focus sounds? [Focus Sound Architect](/FocusSoundArchitect) builds a custom soundscape." |
+| **FocusPocus** | ← VirtualBodyDouble | Post-result | "Need accountability for the session? [Virtual Body Double](/VirtualBodyDouble) sits with you." |
 | **FocusSoundArchitect** | ← FocusPocus | Pre-result | "Need a focus strategy first? [Focus Pocus](/FocusPocus) builds your session plan." |
-| **TaskSwitchingMinimizer** | ← FocusPocus | Post-result | "Ready to focus? Set up a session with [Focus Pocus](/FocusPocus)." |
 | **WaitingModeLiberator** | ← TaskAvalancheBreaker | Post-result | "Got things to do while waiting? [Task Avalanche Breaker](/TaskAvalancheBreaker) finds micro-tasks that fit." |
+| **VirtualBodyDouble** | ← BrainStateDeejay | Post-result | "Lining up the next session? [Brain State Deejay](/BrainStateDeejay) picks the right soundtrack." |
 | **VirtualBodyDouble** | ← FocusSoundArchitect | Post-result | "Need background sound too? [Focus Sound Architect](/FocusSoundArchitect) builds your soundscape." |
 
 ---
@@ -135,47 +138,30 @@ Tools are grouped by natural relationship clusters, not categories.
 ---
 
 ## CLUSTER 9: SOCIAL & DATING
-> DateNight ↔ AwkwardSilenceFiller ↔ CaptionMagic ↔ SixDegreesOfMe
+> DateNight ↔ AwkwardSilenceFiller ↔ CaptionMagic ↔ SixDegreesOfMe ↔ PronounceItRight
+
+*Note: SayItRight renamed to PronounceItRight.*
 
 | Tool | Cross-Ref | Placement | Copy |
 |------|-----------|-----------|------|
 | **DateNight** | ← AwkwardSilenceFiller | Post-result | "Nervous about conversation? [Awkward Silence Filler](/AwkwardSilenceFiller) has you covered." |
 | **AwkwardSilenceFiller** | ← DateNight | Pre-result | "Planning a date? [DateNight](/DateNight) finds the perfect spot first." |
+| **AwkwardSilenceFiller** | ← PronounceItRight | Post-result | "About to say a name you're unsure of? [Pronounce It Right](/PronounceItRight) handles tricky names." |
 | **CaptionMagic** | ← SixDegreesOfMe | Post-result | "Want to explore more connections? [Six Degrees of Me](/SixDegreesOfMe) maps how you connect to anything." |
 
 ---
 
 ## CLUSTER 10: HEALTH & BODY
-> SleepDebt ↔ LazyWorkoutAdapter ↔ DoctorVisitTranslator ↔ CrashPredictor
+> LazyWorkoutAdapter ↔ DoctorVisitTranslator ↔ CrashPredictor ↔ PEP
+
+*Note: SleepDebt, SpoonBudgeter, and SymptomSolver no longer exist. SpoonBudgeter folded into PEP.*
 
 | Tool | Cross-Ref | Placement | Copy |
 |------|-----------|-----------|------|
-| **SleepDebt** | ← CrashPredictor | Post-result | "Want to predict when you'll hit a wall? [Crash Predictor](/CrashPredictor) forecasts your energy." |
-| **CrashPredictor** | ← SleepDebt | Pre-result | "Sleep affecting your energy? Check [Sleep Debt](/SleepDebt) to see where you stand." |
-| **LazyWorkoutAdapter** | ← SpoonBudgeter | Pre-result | "Low on energy? [Spoon Budgeter](/SpoonBudgeter) helps you decide if a workout fits today." |
-| **DoctorVisitTranslator** | ← SymptomSolver | Pre-result | "Not sure what to tell the doctor? [Symptom Solver](/SymptomSolver) helps you describe what's going on." |
-
----
-
-## CLUSTER 11: ACADEMIC
-> GradeGraveyard ↔ TheCurve ↔ ProfVibe ↔ BragSheetBuilder
-
-| Tool | Cross-Ref | Placement | Copy |
-|------|-----------|-----------|------|
-| **GradeGraveyard** | ← TheCurve | Post-result | "Want to see where you'd fall on the curve? Try [The Curve](/TheCurve)." |
-| **ProfVibe** | ← AwkwardSilenceFiller | Post-result | "Nervous about office hours? [Awkward Silence Filler](/AwkwardSilenceFiller) helps with conversation starters." |
-| **GradeGraveyard** | ← BragSheetBuilder | Conditional | If GPA recovery plan includes accomplishments: "Document your wins with [Brag Sheet Builder](/BragSheetBuilder) for grad school apps." |
-
----
-
-## CLUSTER 12: DAILY ROUTINES
-> HabitChain ↔ RoutineRuptureManager ↔ TimeVanishingExplainer
-
-| Tool | Cross-Ref | Placement | Copy |
-|------|-----------|-----------|------|
-| **HabitChain** | ← RoutineRuptureManager | Conditional | If chain breaks: "Routine disrupted? [Routine Rupture Manager](/RoutineRuptureManager) helps you adapt." |
-| **RoutineRuptureManager** | ← HabitChain | Post-result | "Ready to rebuild? [Habit Chain](/HabitChain) helps you stack new habits sustainably." |
-| **TimeVanishingExplainer** | ← HabitChain | Post-result | "Know where the time goes? Build better habits with [Habit Chain](/HabitChain)." |
+| **LazyWorkoutAdapter** | ← PEP | Pre-result | "Low on energy? [PEP](/PEP) helps you decide if a workout fits today." |
+| **LazyWorkoutAdapter** | ← CrashPredictor | Post-result | "Wondering if today's workout will tank you tomorrow? [Crash Predictor](/CrashPredictor) forecasts your energy." |
+| **CrashPredictor** | ← PEP | Post-result | "Build the rest of the day around this with [PEP](/PEP)." |
+| **DoctorVisitTranslator** | ← PEP | Post-result | "Recovering from a heavy appointment? [PEP](/PEP) helps you plan what's left of the day." |
 
 ---
 
@@ -186,36 +172,72 @@ Tools are grouped by natural relationship clusters, not categories.
 |------|-------------------|----------------|
 | **DecisionCoach** | Any tool where user faces a choice in results | "Stuck between options? [Decision Coach](/DecisionCoach) helps you think it through." |
 | **SpiralStopper** | Any tool dealing with stress/anxiety output | "Thoughts racing? [Spiral Stopper](/SpiralStopper) can help." |
-| **BrainDumpStructurer** | Any tool where input is messy/unstructured | "Thoughts jumbled? Organize them with [Brain Dump Structurer](/BrainDumpStructurer) first." |
+| **BrainDumpBuddy** | Any tool where input is messy/unstructured | "Thoughts jumbled? Organize them with [Brain Dump Buddy](/BrainDumpBuddy) first." |
+| **PEP** | Any tool where user mentions feeling drained, low energy, or burnt out | "Energy running low? [PEP](/PEP) helps you plan around it." |
+| **WhereDidTheTimeGo** | Any tool dealing with calendars, schedules, time tracking | "Lost track of where time went? [Where Did The Time Go](/WhereDidTheTimeGo) maps it out." |
 
 ---
 
-## CURRENT STATE: ALMOST NO CROSS-REFS EXIST
+## CURRENT STATE: CROSS-REFS ARE NOW IMPLEMENTED ACROSS THE CATALOG
 
-Scanned all 83 built components. Only **1 bidirectional link** exists today:
-- NameAudit → NameStorm (✅ but uses `<strong>` not `<a href>`)
-- NameStorm → NameAudit (❌ missing — not bidirectional yet)
+As of the batch 14 close-out (May 2026), the audit checklist enforces both pre-result and post-result cross-refs (rule **S5.5**) on every tool. The compliance audit campaign has added cross-refs to ~28 tools across batches 7-14. The bidirectional NameAudit ↔ NameStorm pair is live, the BragSheetBuilder ↔ LeverageLogic pair is live, and most clusters above have at least partial coverage.
 
-**Every other tool has zero cross-references.** This is the single biggest internal marketing opportunity on the site.
+**Remaining gaps** are the tools that haven't yet been through the audit (mostly in the early-letter alphabet — see audit-backlog.md). Adding cross-refs is now part of the standard audit pass; this map exists to ensure they're consistent, not to track which tools have any at all.
 
 ---
 
 ## IMPLEMENTATION PRIORITY
 
-### Phase 1: Fix existing + add to tools being audited
-As each tool goes through the audit checklist, add its cross-refs from this map. This happens naturally as part of the audit.
+### Phase 1 (LIVE): Audit-driven cross-ref insertion
+As each tool goes through the audit checklist, add its cross-refs from this map. Happens naturally as part of S5.5 enforcement. Closed for batches 7–14; ongoing.
 
-### Phase 2: Batch the tightest clusters
-These clusters have the strongest natural connections and should be linked first:
-1. NameAudit ↔ NameStorm (already partially done)
-2. SubSweep ↔ BillGuiltEraser ↔ RamenRatio ↔ BuyWise
-3. TaskAvalancheBreaker ↔ BrainDumpStructurer ↔ CrisisPrioritizer
-4. SpiralStopper ↔ FreezeStateUnblocker ↔ DopamineMenuBuilder
-5. FridgeAlchemy ↔ RecipeChaosSolver ↔ LeftoverRoulette
+### Phase 2 (NEXT): Backfill universal cross-refs
+For tools already audit-clean but predating heavy universal-ref usage:
+1. Add `/PEP` references to any tool whose results mention energy/burnout/overwhelm
+2. Add `/BrainDumpBuddy` references to any tool whose input is messy/unstructured
+3. Add `/WhereDidTheTimeGo` references to any tool dealing with calendars/schedules
+4. Add `/DecisionCoach` references to any tool whose results present multiple options
 
-### Phase 3: Universal connectors
-Add DecisionCoach, SpiralStopper, and BrainDumpStructurer references where contextually appropriate across the broader tool set.
+### Phase 3 (FUTURE): Conditional cross-refs
+The ⚡ Conditional rows above are aspirational — most aren't implemented yet. These require result-aware logic (showing the cross-ref only when a specific result condition is met). Worth adding once base cross-refs are stable across the catalog.
 
 ---
 
-*Last updated: Feb 21, 2026 — Update as new tools are added or clusters evolve*
+## KNOWN ORPHANS (do not cross-ref to these)
+
+These names appear in old code, marketing copy, or past plans. They no longer exist in `tools.js`:
+
+- **HabitChain**, **SleepDebt**, **BookScout** — never shipped
+- **MoneyShameRemover**, **RamenRatio**, **ProfVibe**, **FreezeStateUnblocker**, **CriticismBuffer**, **GradeGraveyard**, **TheCurve**, **TaskSwitchingMinimizer**, **SymptomSolver** — removed from catalog (no replacement)
+
+These names are renamed/folded — use the new target instead:
+
+| Old | New |
+|-----|-----|
+| MoneyMoves | MoneyDiplomat |
+| DopamineMenuBuilder | PEP |
+| BurnoutBreadcrumbTracker | PEP |
+| SpoonBudgeter | PEP |
+| RoutineRuptureManager | PEP |
+| BrainDumpStructurer | BrainDumpBuddy |
+| DifficultTalkRehearser | DifficultTalkCoach |
+| ConfrontationCoach | ConflictCoach |
+| ConflictTextCoach | ConflictCoach |
+| TimeVanishingExplainer | WhereDidTheTimeGo |
+| WhereDidItGo | WhereDidTheTimeGo |
+| SayItRight | PronounceItRight |
+| FridgeAlchemy | MiseEnPlace |
+| LeftoverRoulette | MiseEnPlace |
+| FoodSwap | MiseEnPlace |
+| WhatIfMachine | WhatIf |
+| PlotHole | PlotTwist |
+| RoommateCourtroom | RoommateCourt |
+| PaperDigest | ResearchDecoder |
+| SocialBatteryForecaster | SocialEnergyAudit |
+| BillGuiltEraser | BillRescue |
+
+`server.js` redirects exist for most of these. RENAMES.md is the source of truth for ones with localStorage migration notes.
+
+---
+
+*Last updated: May 4, 2026 — Update as new tools are added, renamed, or clusters evolve. When you rename a tool, update RENAMES.md and re-run `bash audit/crossref_sweep.sh` before committing.*

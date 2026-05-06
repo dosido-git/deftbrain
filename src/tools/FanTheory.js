@@ -74,6 +74,7 @@ const FanTheory = ({ tool }) => {
                           : 'border-gray-300 text-gray-500 hover:border-gray-400',
     required:      isDark ? 'text-amber-400' : 'text-amber-500',
     quoteBg:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
+    delHover:      isDark ? 'hover:text-red-400' : 'hover:text-red-500',
   };
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
@@ -82,16 +83,18 @@ const FanTheory = ({ tool }) => {
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
     : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
 
-  // ── State ──
-  const [title, setTitle] = usePersistentState('fantheory-title', '');
-  const [savedTheories, setSavedTheories] = usePersistentState('fantheory-saved', []);
+  // ── State (all useState first — PF-11/PF-14) ──
   const [expandedSaved, setExpandedSaved] = useState(null); // id of expanded saved card
   const [mediaType, setMediaType] = useState('movie');
   const [direction, setDirection] = useState('wild');
-  const [results, setResults] = usePersistentState('fantheory-results', null);
   const [myTheory, setMyTheory] = useState('');
   const [gradeResults, setGradeResults] = useState(null);
   const [error, setError] = useState('');
+
+  // ── Persistent state ──
+  const [title, setTitle] = usePersistentState('fantheory-title', '');
+  const [theoryHistory, setTheoryHistory] = usePersistentState('fantheory-saved', []);
+  const [results, setResults] = usePersistentState('fantheory-results', null);
 
   // ── Refs ──
   const resultsRef = React.useRef(null);
@@ -102,7 +105,12 @@ const FanTheory = ({ tool }) => {
     if (!title.trim()) return;
     // "Different Theory" — archive current before overwriting
     if (saveFirst && results) {
-      setSavedTheories(prev => [{ id: Date.now(), title: title.trim(), data: results }, ...prev].slice(0, 5));
+      setTheoryHistory(prev => [{
+        id: Date.now(),
+        title: title.trim(),
+        preview: (results?.theory_premise || results?.theory || results?.evidence?.[0]?.point || title.trim()).slice(0, 40),
+        data: results,
+      }, ...prev].slice(0, 5));
     }
     setError('');
     // Don't blank results yet — keep showing previous while loading
@@ -113,7 +121,7 @@ const FanTheory = ({ tool }) => {
       if (scrollTimerRef.current) clearTimeout(scrollTimerRef.current);
       scrollTimerRef.current = setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth' }), 200);
     } catch (err) { setError(err.message || 'Theory failed'); }
-  }, [title, mediaType, direction, callToolEndpoint, results, setSavedTheories]);
+  }, [title, mediaType, direction, callToolEndpoint, results, setTheoryHistory]);
 
   // ── API: Grade theory ──
   const runGrade = useCallback(async () => {
@@ -167,7 +175,7 @@ const FanTheory = ({ tool }) => {
     return lines.join('\n');
   }, [results, gradeResults]);
 
-  useRegisterActions(buildFullText(), tool?.title || 'Fan Theory Generator');
+  useRegisterActions(buildFullText(), tool?.title || 'Fan Theory');
 
   // ── PF-6: Keyboard handler ──
   const runGenerateRef = React.useRef(null);
@@ -211,7 +219,7 @@ const FanTheory = ({ tool }) => {
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
         <div className="pb-3 border-b border-zinc-500">
           <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-            <span>{tool?.icon ?? '🧵'}</span>{tool?.title ?? 'Fan Theory Generator'}
+            <span className="mr-2">{tool?.icon ?? '🧵'}</span>{tool?.title ?? 'Fan Theory'}
           </h2>
           <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? "Name anything — I'll generate a wild but defensible fan theory"}</p>
         </div>
@@ -255,14 +263,35 @@ const FanTheory = ({ tool }) => {
               ? <><span className="animate-spin inline-block">{tool?.icon ?? '🧵'}</span> Theorizing...</>
               : <><span className="mr-1">{tool?.icon ?? '🧵'}</span>Generate Theory</>}
           </button>
+
+          {/* Try Example */}
+          {!title.trim() && !loading && (
+            <div className="flex justify-center">
+              <button
+                onClick={() => {
+                  setTitle('Inception');
+                  setMediaType('movie');
+                  setDirection('alive');
+                }}
+                className={`text-xs font-medium ${c.accentTxt} underline underline-offset-2 min-h-[32px]`}
+              >
+                ✨ Try an example
+              </button>
+            </div>
+          )}
+
+          {/* Pre-result cross-ref */}
+          <p className={`text-xs text-center ${c.textMuted}`}>
+            Want a different angle? <a href="/WhatIf" className={linkStyle}>🤔 What If</a> reframes setups instead of theorizing about endings.
+          </p>
         </div>
       </div>
 
       {/* Saved theories stack — pinned when "Different Theory" is clicked */}
-      {savedTheories.length > 0 && (
+      {theoryHistory.length > 0 && (
         <div className="space-y-2">
           <p className={`text-[10px] font-bold ${c.textMuted} uppercase px-1`}>📌 Saved Theories</p>
-          {savedTheories.map(saved => (
+          {theoryHistory.map(saved => (
             <div key={saved.id} className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
               <button onClick={() => setExpandedSaved(expandedSaved === saved.id ? null : saved.id)}
                 className={`w-full flex items-center justify-between gap-3 p-3 text-left hover:${c.cardAlt} transition-colors`}>
@@ -282,8 +311,8 @@ const FanTheory = ({ tool }) => {
                       <p className={`text-xs ${c.text}`}>{saved.data.the_smoking_gun}</p>
                     </div>
                   )}
-                  <button onClick={() => setSavedTheories(prev => prev.filter(s => s.id !== saved.id))}
-                    className={`text-xs ${c.textMuted} hover:text-red-500 transition-colors`}>
+                  <button onClick={() => setTheoryHistory(prev => prev.filter(s => s.id !== saved.id))}
+                    className={`text-xs ${c.textMuted} ${c.delHover} transition-colors`}>
                     ✕ Remove
                   </button>
                 </div>
@@ -362,10 +391,10 @@ const FanTheory = ({ tool }) => {
           {/* Actions */}
           <div className="flex gap-2">
             <button onClick={() => runGenerate(true)} disabled={loading}
-              className={`flex-1 ${c.btnSecondary} font-bold py-3 rounded-lg min-h-[44px]`}>
+              className={`flex-1 ${c.btnSecondary} disabled:opacity-40 font-bold py-3 rounded-lg min-h-[44px]`}>
               <span className="mr-1">{tool?.icon ?? '🧵'}</span>Different Theory
             </button>
-            <button onClick={() => { setResults(null); setGradeResults(null); setMyTheory(''); setError(''); setTitle(''); setMediaType('movie'); setDirection('wild'); setSavedTheories([]); }}
+            <button onClick={() => { setResults(null); setGradeResults(null); setMyTheory(''); setError(''); setTitle(''); setMediaType('movie'); setDirection('wild'); setTheoryHistory([]); }}
               className={`px-5 py-3 rounded-lg font-bold text-sm min-h-[44px] ${c.btnSecondary}`}>
               🔄 Reset
             </button>
@@ -387,7 +416,8 @@ const FanTheory = ({ tool }) => {
             <p className={`text-xs ${c.textSecondary}`}>Have your own theory about {title || 'this'}? Write it below and the professor will grade it for plausibility, creativity, and evidence quality.</p>
           </div>
           <div className="space-y-3">
-            <textarea ref={gradeTextareaRef} value={myTheory} onChange={e => setMyTheory(e.target.value)}
+            <label htmlFor="ft-my-theory" className="sr-only">Your theory</label>
+            <textarea id="ft-my-theory" ref={gradeTextareaRef} value={myTheory} onChange={e => setMyTheory(e.target.value)}
               placeholder="My theory is that..."
               rows={4} className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2 resize-y`} />
             <button onClick={runGrade} disabled={!myTheory.trim() || loading}
