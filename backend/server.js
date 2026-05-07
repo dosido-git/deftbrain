@@ -98,7 +98,12 @@ console.log(`Tool ID map: ${Object.keys(toolIdMap).length} tools`);
 // ── Retired tools → 410 Gone ──
 // Tells Google these pages no longer exist (avoids soft-404 from homepage redirect).
 // Add slug exactly as Google knows it (case-sensitive).
-const RETIRED_SLUGS = ['/Impartial', '/Presenter', '/TheNetwork'];
+// Orphan tools (per RENAMES.md "Known orphans") that Google has crawled get
+// added here so they're explicitly de-indexed instead of soft-404'd.
+const RETIRED_SLUGS = [
+  '/Impartial', '/Presenter', '/TheNetwork',
+  '/GradeGraveyard',
+];
 RETIRED_SLUGS.forEach(slug => {
   app.get(slug, (req, res) => res.status(410).send('This tool has been retired.'));
 });
@@ -108,7 +113,8 @@ const LEGACY_REDIRECTS = {
   // Legacy /tool/ routes
  '/tool/renters-deposit-saver': '/RentersDepositSaver',
  '/tool/bill-rescue':           '/BillRescue',
-  // Renamed tools
+
+  // Renamed tools (existing)
   '/SayItRight':                 '/PronounceItRight',
   '/WhatIfMachine':              '/WhatIf',
   '/PlotHole':                   '/PlotTwist',
@@ -121,6 +127,24 @@ const LEGACY_REDIRECTS = {
   '/DopamineMenuBuilder':               '/PEP',
   '/MoneyMoves':                 '/MoneyDiplomat',
 
+  // Renamed tools (new — were "no server.js redirect (added pre-launch)" in RENAMES.md)
+  '/BillGuiltEraser':            '/BillRescue',
+  '/BrainDumpStructurer':        '/BrainDumpBuddy',
+  '/BurnoutBreadcrumbTracker':   '/PEP',
+  '/ConfrontationCoach':         '/ConflictCoach',
+  '/ConflictTextCoach':          '/ConflictCoach',
+  '/DifficultTalkRehearser':     '/DifficultTalkCoach',
+  '/LeftoverRoulette':           '/MiseEnPlace',
+  '/RoutineRuptureManager':      '/PEP',
+  '/SocialBatteryForecaster':    '/SocialEnergyAudit',
+  '/SpoonBudgeter':              '/PEP',
+
+  // Kebab-case variants Google has crawled. The case-insensitive middleware
+  // below normalizes /Ego-Killer → /EgoKiller, but only for slugs whose
+  // dash-stripped form is in TOOL_IDS. For renamed tools (whose old name
+  // is no longer a current tool ID), kebab variants need explicit entries.
+  '/say-it-right':               '/PronounceItRight',
+  '/where-did-it-go':            '/WhereDidTheTimeGo',
 };
 Object.entries(LEGACY_REDIRECTS).forEach(([from, to]) => {
   app.get(from, (req, res) => res.redirect(301, to));
@@ -132,11 +156,21 @@ Object.entries(LEGACY_REDIRECTS).forEach(([from, to]) => {
 // express.static with extensions:['html'] handles individual guide pages
 // (/guides/{category}/{slug}) but does NOT auto-serve directory index files,
 // so /guides, /guides/by-tool, and /guides/{category} need explicit routes.
+//
+// Each handler checks for the prerendered file and falls through to the
+// React app's NotFound (404) when it's missing. This way, partial discovery
+// rollouts don't return 5xx — categories without authored guides cleanly
+// 404 until their index page is built.
+function sendGuideIndexOr404(res, filePath) {
+  if (fs.existsSync(filePath)) return res.sendFile(filePath);
+  return res.status(404).sendFile(path.join(__dirname, '..', 'build', 'index.html'));
+}
+
 app.get('/guides', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'build', 'guides', 'index.html'));
+  sendGuideIndexOr404(res, path.join(__dirname, '..', 'build', 'guides', 'index.html'));
 });
 app.get('/guides/by-tool', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'build', 'guides', 'by-tool.html'));
+  sendGuideIndexOr404(res, path.join(__dirname, '..', 'build', 'guides', 'by-tool.html'));
 });
 
 // Per-category guide index pages
@@ -150,7 +184,7 @@ const GUIDE_CATEGORIES = [
 ];
 GUIDE_CATEGORIES.forEach(cat => {
   app.get(`/guides/${cat}`, (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'build', 'guides', cat, 'index.html'));
+    sendGuideIndexOr404(res, path.join(__dirname, '..', 'build', 'guides', cat, 'index.html'));
   });
 });
 
@@ -161,7 +195,10 @@ app.use((req, res, next) => {
   if (req.path === '/guides' || req.path.startsWith('/guides/')) return next();
   const slug = req.path.replace(/^\//, '').replace(/\/$/, '');
   if (!slug) return next();       // skip homepage
-  const canonical = toolIdMap[slug.toLowerCase()];
+  // Normalize: lowercase + strip dashes for kebab-case matching.
+  // /ego-killer → 'egokiller' lookup → matches 'EgoKiller'.
+  // /Plant-Rescue (typo) → 'plantrescue' lookup → matches 'PlantRescue'.
+  const canonical = toolIdMap[slug.toLowerCase().replace(/-/g, '')];
   if (canonical && canonical !== slug) {
     res.set('Cache-Control', 'no-store');
     return res.redirect(301, `/${canonical}`);
