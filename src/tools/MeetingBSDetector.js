@@ -1049,7 +1049,7 @@ const MeetingBSDetector = ({ tool }) => {
             {MESSAGE_TYPES.map(mt => (
               <button key={mt.value} onClick={() => setMsgType(mt.value)}
                 className={`${c.btnSecondary} px-2.5 py-1.5 rounded-lg text-[11px] font-medium min-h-[32px] flex items-center gap-1 ${
-                  msgType === mt.value ? 'ring-2 ring-indigo-500' : ''
+                  msgType === mt.value ? 'ring-2 ring-cyan-500' : ''
                 }`}>
                 <span>{mt.icon}</span> {mt.label}
               </button>
@@ -1284,7 +1284,7 @@ const MeetingBSDetector = ({ tool }) => {
           </label>
           <input type="range" min="1" max="5" value={scScore}
             onChange={e => setScScore(parseInt(e.target.value))}
-            className="w-full accent-indigo-600" />
+            className="w-full accent-cyan-600" />
           <div className="flex justify-between text-[9px] mt-0.5">
             <span className={c.textMuteded}>Total waste</span>
             <span className={c.textMuteded}>Highly productive</span>

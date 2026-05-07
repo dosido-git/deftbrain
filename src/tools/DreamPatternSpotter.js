@@ -1,8 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useTheme } from '../hooks/useTheme';
+
+const EXAMPLE = {
+  mode: 'single',
+  description: "I was running late to a flight but the airport kept rearranging itself. Every time I found my gate it had moved. My old college roommate was there, but she didn't recognize me. Eventually I realized I'd forgotten my passport — and also forgotten where I was supposed to be flying to.",
+};
 
 const DreamPatternSpotter = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
@@ -29,6 +34,7 @@ const DreamPatternSpotter = ({ tool }) => {
     dreamInsight:  isDark ? 'bg-green-900/20 border-green-700 text-green-200' : 'bg-green-50 border-green-300 text-green-800',
     deleteHover: isDark ? 'hover:text-red-400' : 'hover:text-red-600',
   };
+  c.textMuteded = c.textMuted;
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
@@ -194,6 +200,15 @@ const DreamPatternSpotter = ({ tool }) => {
     }));
   };
 
+  const loadExample = useCallback(() => {
+    setMode(EXAMPLE.mode);
+    setSingleDream({
+      description: EXAMPLE.description,
+      date: new Date().toISOString().slice(0, 10),
+    });
+    setResults(null);
+  }, [setSingleDream, setResults]);
+
   const handleReset = () => {
     setSingleDream({
       description: '',
@@ -331,6 +346,9 @@ const DreamPatternSpotter = ({ tool }) => {
             <div className="space-y-6">
               {/* Dream Description */}
               <div>
+                <p className={`text-xs ${c.textMuted} mb-3`}>
+                  Need to put words on what dreams stir up? <a href="/NameThatFeeling" className={linkStyle}>🎭 Name That Feeling</a> decodes the emotion first.
+                </p>
                 <label htmlFor="dream" className={`block text-sm font-medium ${c.textSecondary} mb-2`}>
                   Dream description *
                 </label>
@@ -410,10 +428,11 @@ const DreamPatternSpotter = ({ tool }) => {
               </div>
 
               {/* Action Button */}
-              <button
+              <div className="flex gap-2">
+          <button
                 onClick={handleSingleDreamAnalyze}
                 disabled={loading}
-                className={`w-full ${c.btnPrimary} disabled:opacity-40 py-3 px-6 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2`}
+                className={`flex-1 ${c.btnPrimary} disabled:opacity-40 py-3 px-6 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2`}
               >
                 {loading ? (
                   <>
@@ -427,6 +446,13 @@ const DreamPatternSpotter = ({ tool }) => {
                   </>
                 )}
               </button>
+          <button
+            onClick={loadExample}
+            className={`px-4 py-3 rounded-lg text-xs font-bold ${c.btnSecondary}`}
+          >
+            Try example
+          </button>
+        </div>
             </div>
           </div>
         )}
@@ -480,10 +506,11 @@ const DreamPatternSpotter = ({ tool }) => {
             </div>
 
             {/* Action Button */}
-            <button
+            <div className="flex gap-2">
+          <button
               onClick={handlePatternAnalyze}
               disabled={loading}
-              className={`w-full ${c.btnPrimary} disabled:opacity-40 py-3 px-6 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 mt-6`}
+              className={`flex-1 ${c.btnPrimary} disabled:opacity-40 py-3 px-6 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 mt-6`}
             >
               {loading ? (
                 <>
@@ -497,6 +524,13 @@ const DreamPatternSpotter = ({ tool }) => {
                 </>
               )}
             </button>
+          <button
+            onClick={loadExample}
+            className={`px-4 py-3 rounded-lg text-xs font-bold ${c.btnSecondary}`}
+          >
+            Try example
+          </button>
+        </div>
           </div>
         )}
 

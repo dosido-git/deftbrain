@@ -463,7 +463,7 @@ const NerveCheck = ({ tool }) => {
               )}
               <div>
                 <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>Confidence right now: <span className={`text-base font-black ${confColor(confidenceLevel)}`}>{confidenceLevel}/10</span></label>
-                <input type="range" min="1" max="10" value={confidenceLevel} onChange={e => setConfidenceLevel(Number(e.target.value))} className="w-full accent-teal-500" />
+                <input type="range" min="1" max="10" value={confidenceLevel} onChange={e => setConfidenceLevel(Number(e.target.value))} className="w-full accent-emerald-500" />
                 <div className="flex justify-between"><span className={`text-[10px] ${c.textMuteded}`}>Terrified</span><span className={`text-[10px] ${c.textMuteded}`}>Feeling good</span></div>
               </div>
               <div>
@@ -891,7 +891,7 @@ const NerveCheck = ({ tool }) => {
                 <p className={`text-xs ${c.textSecondary} mb-4`}>No matter how it went, you showed up. That counts.</p>
                 <div className="space-y-3">
                   <div><label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>How did it go? <span className={c.required}>*</span></label><textarea value={howItWent} onChange={e => setHowItWent(e.target.value)} placeholder='"It was actually fine. Got the second interview."' rows={3} className={`w-full p-3 border-2 rounded-xl text-sm resize-y focus:outline-none focus:ring-2 ${c.input}`} /></div>
-                  <div><label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>Confidence now: <span className={`font-black ${confColor(confAfter)}`}>{confAfter}/10</span></label><input type="range" min="1" max="10" value={confAfter} onChange={e => setConfAfter(Number(e.target.value))} className="w-full accent-teal-500" /></div>
+                  <div><label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>Confidence now: <span className={`font-black ${confColor(confAfter)}`}>{confAfter}/10</span></label><input type="range" min="1" max="10" value={confAfter} onChange={e => setConfAfter(Number(e.target.value))} className="w-full accent-emerald-500" /></div>
                   <div><label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>What surprised you? (optional)</label><input type="text" value={whatSurprised} onChange={e => setWhatSurprised(e.target.value)} placeholder={`"I didn't freeze up like I thought"`} className={`w-full p-2.5 border-2 rounded-xl text-sm ${c.input}`} /></div>
                   <button onClick={runDebrief} disabled={debriefLoading || !howItWent.trim()} className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>{debriefLoading ? <><span className="inline-block animate-spin">{tool?.icon ?? '💪'}</span> Processing...</> : <><span className="mr-1">{tool?.icon ?? '💪'}</span> Debrief Me</>}</button>
                 </div>

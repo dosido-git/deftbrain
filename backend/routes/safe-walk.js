@@ -125,8 +125,7 @@ Return ONLY valid JSON.`;
 // nested structure. Required because the web_search tool wraps phrases in
 // citation tags inside JSON string values.
 function stripCites(val) {
-  if (typeof val === 'string') return val.replace(/<cite[^>]*>|<\/cite>/g, '');
-  if (Array.isArray(val)) return val.map(stripCites);
+if (typeof val === 'string') return val.replace(/<\/?(antml:)?cite\b[^>]*>/g, '');  if (Array.isArray(val)) return val.map(stripCites);
   if (val && typeof val === 'object') {
     return Object.fromEntries(
       Object.entries(val).map(([k, v]) => [k, stripCites(v)])

@@ -162,24 +162,24 @@ const RecipeChaosSolver = ({ tool }) => {
     warningTxt:    isDark ? 'text-amber-300' : 'text-amber-800',
     pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
+    quoteBg:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
+    dropzone:      isDark ? 'border-zinc-600 text-zinc-400 hover:border-cyan-600 hover:text-cyan-400 bg-zinc-800/50'
+                          : 'border-zinc-300 text-zinc-400 hover:border-cyan-400 hover:text-cyan-600 bg-white',
+    btnEmergency:  isDark ? 'bg-red-700 hover:bg-red-600 text-white'
+                          : 'bg-red-600 hover:bg-red-700 text-white',
+    chaos:         isDark ? 'bg-fuchsia-900/20 border-fuchsia-700 text-fuchsia-200'
+                          : 'bg-fuchsia-50 border-fuchsia-300 text-fuchsia-800',
+    pantry:        isDark ? 'bg-sky-900/20 border-sky-700 text-sky-200'
+                          : 'bg-sky-50 border-sky-200 text-sky-800',
+    science:       isDark ? 'bg-zinc-700/40 border-zinc-600 text-zinc-300'
+                          : 'bg-slate-50 border-slate-200 text-slate-700',
+    stepDone:      isDark ? 'border-emerald-700 bg-emerald-900/10'
+                          : 'border-emerald-200 bg-emerald-50',
+    stepPending:   isDark ? 'border-zinc-700 bg-zinc-800/50'
+                          : 'border-zinc-200 bg-white',
   };
   c.textMuteded  = c.textMuted;
   c.label        = c.labelText;
-  c.quoteBg      = isDark ? 'bg-zinc-700/50' : 'bg-slate-50';
-  c.dropzone     = isDark ? 'border-zinc-600 text-zinc-400 hover:border-cyan-600 hover:text-cyan-400 bg-zinc-800/50'
-                          : 'border-zinc-300 text-zinc-400 hover:border-cyan-400 hover:text-cyan-600 bg-white';
-  c.btnEmergency = isDark ? 'bg-red-700 hover:bg-red-600 text-white'
-                          : 'bg-red-600 hover:bg-red-700 text-white';
-  c.chaos        = isDark ? 'bg-fuchsia-900/20 border-fuchsia-700 text-fuchsia-200'
-                          : 'bg-fuchsia-50 border-fuchsia-300 text-fuchsia-800';
-  c.pantry       = isDark ? 'bg-sky-900/20 border-sky-700 text-sky-200'
-                          : 'bg-sky-50 border-sky-200 text-sky-800';
-  c.science      = isDark ? 'bg-zinc-700/40 border-zinc-600 text-zinc-300'
-                          : 'bg-slate-50 border-slate-200 text-slate-700';
-  c.stepDone     = isDark ? 'border-emerald-700 bg-emerald-900/10'
-                          : 'border-emerald-200 bg-emerald-50';
-  c.stepPending  = isDark ? 'border-zinc-700 bg-zinc-800/50'
-                          : 'border-zinc-200 bg-white';
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'

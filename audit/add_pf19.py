@@ -1,6 +1,16 @@
 #!/usr/bin/env python3
 """add_pf19.py — Mechanical patcher for PF-19 violations.
 
+v1.6 · 2026-05-06 · added looks_compliant() fallback. When all 4 inject
+                    attempts fail (state unchanged), the strict
+                    already_patched() check is supplemented with a
+                    looser pattern-detection check that accepts
+                    non-canonical naming. If the looser check passes,
+                    the state is reported as "already compliant"
+                    (silent in main output) instead of "skipped —
+                    manual fix needed". Closes the BatchFlow + FinalWish
+                    misleading-skip messages from Session 2026-05-06
+                    (audit-backlog v1.9).
 v1.5 · 2026-05-06 · refactored to use shared _helpers.py for the brace
                     walker. Side benefit: walker now correctly handles
                     nested template literals (was a latent bug: nested
@@ -138,6 +148,39 @@ def already_patched(content, state):
     ):
         return False
     return True
+
+
+def looks_compliant(content, state):
+    """Looser check than already_patched — looks for evidence that the
+    PF-19 focus pattern is wired in some form, even with non-canonical
+    naming. Used as a fallback when the strict patcher couldn't inject
+    (state unchanged after all 4 attempts) — in that case, reporting
+    'skipped — manual fix needed' is misleading; the file may already be
+    compliant under a different naming scheme.
+
+    v1.6: closes the BatchFlow + FinalWish report-misleadingly bug
+    surfaced Session 2026-05-06 (audit-backlog v1.9). Strictly looser
+    than already_patched(): all four signals must be present, but their
+    exact var names don't have to match the canonical patcher form.
+    """
+    # Some array-bound input refs: useRef([])
+    has_refs_array = bool(re.search(r'\buseRef\s*\(\s*\[\s*\]\s*\)', content))
+    # Some boolean focus flag: useRef(false) or useRef(true)
+    has_flag = bool(re.search(
+        r'\buseRef\s*\(\s*(?:true|false)\s*\)', content
+    ))
+    # A useEffect that focuses something AND watches state.length
+    has_focus_effect = bool(re.search(
+        r'useEffect[\s\S]{0,800}\.focus\s*\(\s*\)[\s\S]{0,400}\[[^\]]*'
+        + re.escape(state) + r'\.length',
+        content
+    ))
+    # A ref={el => ...} pattern in JSX (any naming)
+    has_ref_attr = bool(re.search(
+        r'\bref\s*=\s*\{\s*\w+\s*=>',
+        content
+    ))
+    return has_refs_array and has_flag and has_focus_effect and has_ref_attr
 
 
 # ─── React import maintenance ─────────────────────────────────────────────
@@ -548,7 +591,16 @@ def process_file(filepath, dry_run=False, make_backup=True):
                     f'{state}: ' + '; '.join(real_warnings)
                 )
         else:
-            stats['skipped'].append(f"{state} — {'; '.join(msg_log)}")
+            # v1.6: before reporting as needing-manual-fix, check if the
+            # pattern is already wired under non-canonical naming. The
+            # strict already_patched() check requires our exact var names;
+            # this looser check accepts any functioning equivalent.
+            if looks_compliant(content, state):
+                stats['skipped'].append(
+                    f'{state} (already compliant — non-canonical naming)'
+                )
+            else:
+                stats['skipped'].append(f"{state} — {'; '.join(msg_log)}")
 
     # Ensure React imports include any hooks the patcher injected. This runs
     # unconditionally (even when no states needed patching) so files patched
@@ -650,7 +702,7 @@ def main(argv):
             )
 
         for sk in s['skipped']:
-            if 'already patched' in sk:
+            if 'already patched' in sk or 'already compliant' in sk:
                 continue  # silent
             print(f"  ⚠️  {name} — skipped {sk}")
             total_skipped_real += 1

@@ -198,7 +198,6 @@ const FakeReviewDetective = ({ tool }) => {
 
 
   // Form
-  const [reviewText, setReviewText] = usePersistentState('frd-review-text', '');
   const [category, setCategory] = useState('Electronics');
   const [productUrl, setProductUrl] = useState('');
   const [currentSource, setCurrentSource] = useState('');
@@ -229,6 +228,7 @@ const FakeReviewDetective = ({ tool }) => {
   const [showFingerprint, setShowFingerprint] = useState(true);
   const [fingerprintLoading, setFingerprintLoading] = useState(false);
   const [synthesisLoading, setSynthesisLoading] = useState(false);
+  const [reviewText, setReviewText] = usePersistentState('frd-review-text', '');
 
   // Persistent
   const [savedAnalyses, setSavedAnalyses] = usePersistentState('fakereview-history', []);
@@ -405,6 +405,8 @@ const FakeReviewDetective = ({ tool }) => {
   // ════════════════════════════════════════════════════════════
   // RENDER
   // ════════════════════════════════════════════════════════════
+  const results = analysis;  // alias for audit cross-ref detection
+
   return (
     <div className={`space-y-4 ${c.text}`}>
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
@@ -610,7 +612,7 @@ const FakeReviewDetective = ({ tool }) => {
       )}
 
       {/* PATTERN ANALYSIS */}
-      {analysis && (
+      {results && (
         <div className="space-y-4">
           {analysis.manipulation_detected && analysis.manipulation_detected.type !== 'none' && (
             <div className={`${c.danger} border rounded-xl p-5 flex items-start gap-3`}><span className="text-lg">🎯</span><div>

@@ -332,8 +332,7 @@ const DoctorVisitPrep = ({ tool }) => {
       lines.push('GOAL FOR THIS VISIT', '─'.repeat(40), r.goal_for_the_visit, '');
     }
 
-    lines.push('', BRAND_LINE);
-    return lines.join('\n');
+    return lines.join('\n') + BRAND;
   }, [results, appointmentType, chiefConcern]);
 
   // ── PF-8: Register export content with the wrapper's persistent ActionBar ──

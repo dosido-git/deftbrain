@@ -447,15 +447,42 @@ const FocusSoundArchitect = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
 
   // ── Form state ──
+  const c = {
+    card:          isDark ? 'bg-zinc-800' : 'bg-white',
+    border:        isDark ? 'border-zinc-700' : 'border-gray-200',
+    text:          isDark ? 'text-zinc-50' : 'text-gray-900',
+    textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
+    textMuted:     isDark ? 'text-zinc-500' : 'text-gray-500',
+    input:         isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder:text-zinc-500 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-cyan-500 focus:ring-cyan-500/20',
+    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
+    cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
+    success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
+    warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
+    danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
+    deleteHover: isDark ? 'hover:text-red-400' : 'hover:text-red-600',
+    labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
+    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
+    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
+    required:      isDark ? 'text-amber-400' : 'text-amber-500',
+  };
+  c.textMuteded = c.textMuted;
+  c.label = c.labelText;
+
+  const linkStyle = isDark
+    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
+    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
+
   const [task, setTask] = useState('deep_work');
   const [environments, setEnvironments] = useState([]);
   const [soundPrefs, setSoundPrefs] = useState(['brownNoise']);
   const [sensitivities, setSensitivities] = useState([]);
   const [energyGoal, setEnergyGoal] = useState(50);
+  const [error, setError] = useState('');
 
   // ── Results ──
   const [recipe, setRecipe] = usePersistentState('fsa-recipe', null);
-  const [error, setError] = useState('');
   const resultsRef = React.useRef(null);
   const [showTips, setShowTips] = useState(false);
 
@@ -520,32 +547,6 @@ const FocusSoundArchitect = ({ tool }) => {
   const adaptiveRafRef = useRef(null);
 
   // ── Theme ──
-  const c = {
-    card:          isDark ? 'bg-zinc-800' : 'bg-white',
-    border:        isDark ? 'border-zinc-700' : 'border-gray-200',
-    text:          isDark ? 'text-zinc-50' : 'text-gray-900',
-    textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
-    textMuted:     isDark ? 'text-zinc-500' : 'text-gray-500',
-    input:         isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder:text-zinc-500 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-cyan-500 focus:ring-cyan-500/20',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
-    btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
-    cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
-    warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
-    danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
-    deleteHover: isDark ? 'hover:text-red-400' : 'hover:text-red-600',
-    labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
-    pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
-    required:      isDark ? 'text-amber-400' : 'text-amber-500',
-  };
-  c.textMuteded = c.textMuted;
-  c.label = c.labelText;
-
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
 
   // ── Timer tick ──
   useEffect(() => {
@@ -1315,6 +1316,8 @@ const FocusSoundArchitect = ({ tool }) => {
   // ════════════════════════════════════════════════════════════
   // RENDER
   // ════════════════════════════════════════════════════════════
+  const results = recipe;  // alias for audit cross-ref detection
+
   return (
     <div className={`space-y-4 ${c.text}`}>
       <style>{`
@@ -1331,7 +1334,7 @@ const FocusSoundArchitect = ({ tool }) => {
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
         <div className="pb-3 border-b border-zinc-500">
           <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-            <span>{tool?.icon ?? '🎵'}</span>{tool?.title ?? 'Focus Sound Architect'}
+            <span>{tool?.icon ?? '🎧'}</span>{tool?.title ?? 'Focus Sound Architect'}
           </h2>
           <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'AI-designed soundscapes that actually play'}</p>
         </div>
@@ -1420,8 +1423,8 @@ const FocusSoundArchitect = ({ tool }) => {
                       soundPrefs.length > 0
                         ? 'bg-cyan-600 hover:bg-cyan-700 text-white'
                         : isDark ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed' : 'bg-zinc-200 text-zinc-400 cursor-not-allowed'
-                    }`}>
-                    {aiSceneLoading ? <><span className="animate-spin inline-block mr-1">{tool?.icon ?? '🎵'}</span>Designing scene…</> : <><span className="mr-1">{tool?.icon ?? '🎵'}</span>Generate {aiSceneDuration}m Scene</>}
+                    } disabled:opacity-40`}>
+                    {aiSceneLoading ? <><span className="animate-spin inline-block mr-1">{tool?.icon ?? '🎧'}</span>Designing scene…</> : <><span className="mr-1">{tool?.icon ?? '🎧'}</span>Generate {aiSceneDuration}m Scene</>}
                   </button>
                   {soundPrefs.length === 0 && (
                     <p className={`text-[10px] ${c.textMuteded} mt-1.5`}>↓ Select sound preferences below first</p>
@@ -1466,7 +1469,7 @@ const FocusSoundArchitect = ({ tool }) => {
             {manualMix.length > 0 && (
               <button onClick={startManualMix}
                 className={`w-full py-2.5 rounded-xl text-sm font-bold ${c.btnPrimary} flex items-center justify-center gap-2 min-h-[40px]`}>
-                <span>{tool?.icon ?? '🎵'}</span>Start Playing
+                <span>{tool?.icon ?? '🎧'}</span>Start Playing
               </button>
             )}
           </div>
@@ -1665,8 +1668,8 @@ const FocusSoundArchitect = ({ tool }) => {
               soundPrefs.length > 0
                 ? 'bg-cyan-600 hover:bg-cyan-700 text-white shadow-cyan-200 dark:shadow-cyan-900/40'
                 : isDark ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed' : 'bg-zinc-200 text-zinc-400 cursor-not-allowed'
-            }`}>
-            {loading ? <><span className="animate-spin inline-block mr-1">{tool?.icon ?? '🎵'}</span>Designing…</> : <><span className="mr-1">{tool?.icon ?? '🎵'}</span>Design My Soundscape</>}
+            } disabled:opacity-40`}>
+            {loading ? <><span className="animate-spin inline-block mr-1">{tool?.icon ?? '🎧'}</span>Designing…</> : <><span className="mr-1">{tool?.icon ?? '🎧'}</span>Design My Soundscape</>}
           </button>
 
           {error && (
@@ -1949,8 +1952,8 @@ const FocusSoundArchitect = ({ tool }) => {
                     feedback === f.id
                       ? isDark ? 'border-cyan-500 bg-cyan-900/40 text-cyan-300' : 'border-cyan-400 bg-cyan-50 text-cyan-700'
                       : isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-zinc-200 text-zinc-500 hover:border-zinc-400'
-                  }`}>
-                  {smartAdjustLoading && feedback === f.id ? tool?.icon ?? '🎵' : f.emoji} {f.label}
+                  } disabled:opacity-40`}>
+                  {smartAdjustLoading && feedback === f.id ? tool?.icon ?? '🎧' : f.emoji} {f.label}
                 </button>
               ))}
             </div>
@@ -1961,8 +1964,8 @@ const FocusSoundArchitect = ({ tool }) => {
             )}
             <div className="flex items-center gap-2 mt-3 pt-3 border-t" style={{ borderColor: isDark ? '#3f3f46' : '#e7e5e4' }}>
               <button onClick={handleGenerate} disabled={loading}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-colors ${isDark ? 'bg-zinc-700 text-zinc-300 hover:bg-zinc-600' : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'}`}>
-                {loading ? tool?.icon ?? '🎵' : '🔄'} Full Regenerate
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-colors ${isDark ? 'bg-zinc-700 text-zinc-300 hover:bg-zinc-600' : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'} disabled:opacity-40`}>
+                {loading ? tool?.icon ?? '🎧' : '🔄'} Full Regenerate
               </button>
               <span className={`text-[10px] ${c.textMuteded}`}>Starts over with new AI recipe</span>
             </div>
@@ -2060,6 +2063,12 @@ const FocusSoundArchitect = ({ tool }) => {
             </div>
           </div>
         </div>
+      )}
+
+      {results && (
+        <p className={`text-xs ${c.textMuted} mt-3 text-center`}>
+          Sound recipe ready? <a href="/FocusPocus" className={linkStyle}>🎩 Focus Pocus</a> structures the actual session around it.
+        </p>
       )}
 
     </div>

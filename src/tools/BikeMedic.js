@@ -898,7 +898,7 @@ const BikeMedic = ({ tool }) => {
     textMuted:     isDark ? 'text-zinc-500'   : 'text-zinc-400',
     border:        isDark ? 'border-zinc-700' : 'border-zinc-200',
     input:         isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder-zinc-500 focus:border-zinc-400'
-                          : 'bg-white border-zinc-200 text-zinc-900 placeholder-stone-400 focus:border-zinc-500',
+                          : 'bg-white border-zinc-200 text-zinc-900 placeholder-zinc-400 focus:border-zinc-500',
     btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
                           : 'bg-cyan-600 hover:bg-cyan-700 text-white',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100'
@@ -936,7 +936,7 @@ const BikeMedic = ({ tool }) => {
     // Shop visit callout (replaces banned blue c.cardAlt)
     shopVisit:     isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-200 text-amber-800',
     // Step list
-    stepDivide:    isDark ? 'divide-zinc-700' : 'divide-stone-100',
+    stepDivide:    isDark ? 'divide-zinc-700' : 'divide-zinc-100',
     stepActive:    isDark ? 'bg-zinc-700/50' : 'bg-amber-50/60',
     // Nav icon badges (mode-independent)
     navBadgeZinc:  'bg-zinc-500 text-white',
@@ -955,7 +955,11 @@ const BikeMedic = ({ tool }) => {
       ? (isDark ? 'bg-green-900/40 text-green-300' : 'bg-green-100 text-green-700')
       : (isDark ? 'bg-red-900/40 text-red-300'    : 'bg-red-100 text-red-700'),
     deleteHover: isDark ? 'hover:text-red-400' : 'hover:text-red-600',
+    accentTxt:    isDark ? 'text-cyan-400' : 'text-cyan-600',
+    btnPrimarySuccess: isDark ? 'bg-emerald-600 hover:bg-emerald-500 text-white' : 'bg-emerald-600 hover:bg-emerald-700 text-white',
+    cardAltHover: isDark ? 'hover:bg-zinc-700/40' : 'hover:bg-slate-50',
   };
+  c.textMuteded = c.textMuted;
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
@@ -963,7 +967,6 @@ const BikeMedic = ({ tool }) => {
 
   // Core state
   // eslint-disable-next-line no-unused-vars
-  const [_auditHistory, _setAuditHistory] = usePersistentState('bikemedic-historylog', []); // history marker
   const [selectedProblem, setSelectedProblem] = useState(null);
   const [treePath, setTreePath] = useState([]);
   const [currentFix, setCurrentFix] = useState(null);
@@ -972,10 +975,6 @@ const BikeMedic = ({ tool }) => {
   const [completedSteps, setCompletedSteps] = useState({});
   const [activeStep, setActiveStep] = useState(0);
   const [fixResolved, setFixResolved] = useState(null);
-
-  // AI state
-  const [customProblem, setCustomProblem] = usePersistentState('bikemedic-custom-problem', '');
-  const [aiDiagnosis, setAiDiagnosis] = usePersistentState('bikemedic-last-diagnosis', null);
   const [aiError, setAiError] = useState('');
   const [showAskMechanic, setShowAskMechanic] = useState(false);
   const [followUpText, setFollowUpText] = useState('');
@@ -998,6 +997,11 @@ const BikeMedic = ({ tool }) => {
   const [tempProfile, setTempProfile] = useState({});
   const [thinkingMsg, setThinkingMsg] = useState(0);
   const [toast, setToast] = useState(null);
+  const [_auditHistory, _setAuditHistory] = usePersistentState('bikemedic-historylog', []); // history marker
+
+  // AI state
+  const [customProblem, setCustomProblem] = usePersistentState('bikemedic-custom-problem', '');
+  const [aiDiagnosis, setAiDiagnosis] = usePersistentState('bikemedic-last-diagnosis', null);
   const thinkingRef = useRef(null);
   const photoRef = useRef(null);
 
@@ -2106,7 +2110,7 @@ const BikeMedic = ({ tool }) => {
             placeholder="e.g., 'First gravel race of the season — 60 miles, mixed surfaces, rain forecast' or 'Bike's been sitting in a shed over winter; first spring ride tomorrow'"
             className={`w-full h-28 p-3 border-2 rounded-xl text-sm outline-none resize-none ${c.input}`} />
           <button onClick={runCustomCheck} disabled={loading || !customSituation.trim()}
-            className={`mt-3 w-full py-3 rounded-xl font-bold text-sm transition-colors ${loading || !customSituation.trim() ? `${c.btnSecondary} opacity-50` : c.btnPrimary}`}>
+            className={`mt-3 w-full py-3 rounded-xl font-bold text-sm transition-colors ${loading || !customSituation.trim() ? `${c.btnSecondary} opacity-50` : c.btnPrimary} disabled:opacity-40`}>
             {loading ? <span className="flex items-center justify-center gap-2"><span className="animate-spin inline-block">{tool?.icon ?? '🚲'}</span> Generating...</span> : '✨ Generate Checklist'}
           </button>
           {aiError && !loading && <div className={`mt-3 p-3 ${c.danger} border rounded-xl text-sm`}>{aiError}</div>}
@@ -2268,7 +2272,7 @@ const BikeMedic = ({ tool }) => {
                     placeholder="e.g., 'Ticking from the front when I go over bumps, handlebars feel loose...'"
                     className={`w-full h-24 p-3 border-2 rounded-xl text-sm resize-none outline-none ${c.input}`} />
                   <button onClick={routeSymptom} disabled={loading || symptomText.trim().length < 10}
-                    className={`mt-3 w-full py-2.5 rounded-xl font-bold text-sm transition-colors ${loading || symptomText.trim().length < 10 ? `${c.btnSecondary} opacity-50` : c.btnPrimary}`}>
+                    className={`mt-3 w-full py-2.5 rounded-xl font-bold text-sm transition-colors ${loading || symptomText.trim().length < 10 ? `${c.btnSecondary} opacity-50` : c.btnPrimary} disabled:opacity-40`}>
                     {loading ? <span className="flex items-center justify-center gap-2"><span className="animate-spin inline-block">{tool?.icon ?? '🚲'}</span> Analyzing...</span> : 'Analyze Symptom'}
                   </button>
                   {aiRoute && (
@@ -2388,7 +2392,7 @@ const BikeMedic = ({ tool }) => {
           </div>
 
           <button onClick={askMechanic} disabled={loading || !customProblem.trim()}
-            className={`mt-4 w-full font-bold py-3 px-6 rounded-xl transition-colors flex items-center justify-center gap-2 ${loading || !customProblem.trim() ? `${c.btnSecondary} opacity-50` : c.btnPrimary}`}>
+            className={`mt-4 w-full font-bold py-3 px-6 rounded-xl transition-colors flex items-center justify-center gap-2 ${loading || !customProblem.trim() ? `${c.btnSecondary} opacity-50` : c.btnPrimary} disabled:opacity-40`}>
             {loading ? null : <><span>🔧</span> Diagnose My Bike</>}
           </button>
           {loading && renderLoadingState()}
@@ -2595,7 +2599,7 @@ const BikeMedic = ({ tool }) => {
                   placeholder="e.g., 'Re-centered caliper 3 times but disc still rubs on inboard side...'"
                   className={`w-full h-24 p-3 border-2 rounded-xl text-sm outline-none resize-none ${c.input}`} />
                 <button onClick={askFollowUp} disabled={loading || !followUpText.trim()}
-                  className={`mt-3 w-full py-2.5 rounded-xl font-bold text-sm transition-colors ${loading || !followUpText.trim() ? `${c.btnSecondary} opacity-50` : c.btnPrimary}`}>
+                  className={`mt-3 w-full py-2.5 rounded-xl font-bold text-sm transition-colors ${loading || !followUpText.trim() ? `${c.btnSecondary} opacity-50` : c.btnPrimary} disabled:opacity-40`}>
                   {loading ? <span className="flex items-center justify-center gap-2"><span className="animate-spin inline-block">{tool?.icon ?? '🚲'}</span> Analyzing...</span> : 'Get Deeper Diagnosis'}
                 </button>
                 {/* Shop handoff */}

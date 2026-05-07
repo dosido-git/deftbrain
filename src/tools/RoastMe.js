@@ -60,15 +60,15 @@ const RoastMe = ({ tool }) => {
                           : 'border-cyan-600 bg-cyan-100 text-cyan-900',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500'
                           : 'border-gray-300 text-gray-500 hover:border-gray-400',
+    // RoastMe extensions
+    heatGentle:    isDark ? 'bg-emerald-900/20 border-emerald-600 text-emerald-200' : 'bg-emerald-50 border-emerald-400 text-emerald-900',
+    heatMedium:    isDark ? 'bg-amber-900/20 border-amber-500 text-amber-200'       : 'bg-amber-50 border-amber-400 text-amber-900',
+    heatScorched:  isDark ? 'bg-red-900/30 border-red-500 text-red-200'             : 'bg-red-50 border-red-400 text-red-900',
+    quoteBg:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
+    niceBg:        isDark ? 'bg-zinc-700/40 border-zinc-600' : 'bg-slate-50 border-slate-200',
   };
   c.textMuteded   = c.textMuted;
   c.label         = c.labelText;
-  // RoastMe extensions
-  c.heatGentle    = isDark ? 'bg-emerald-900/20 border-emerald-600 text-emerald-200' : 'bg-emerald-50 border-emerald-400 text-emerald-900';
-  c.heatMedium    = isDark ? 'bg-amber-900/20 border-amber-500 text-amber-200'       : 'bg-amber-50 border-amber-400 text-amber-900';
-  c.heatScorched  = isDark ? 'bg-red-900/30 border-red-500 text-red-200'             : 'bg-red-50 border-red-400 text-red-900';
-  c.quoteBg       = isDark ? 'bg-zinc-700/50' : 'bg-slate-50';
-  c.niceBg        = isDark ? 'bg-zinc-700/40 border-zinc-600' : 'bg-slate-50 border-slate-200';
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
@@ -302,7 +302,7 @@ const RoastMe = ({ tool }) => {
 
           {/* Actions */}
           <button onClick={runRoast} disabled={loading}
-            className={`w-full ${c.btnSecondary} font-bold py-3 rounded-lg min-h-[44px]`}>
+            className={`w-full ${c.btnSecondary} font-bold py-3 rounded-lg min-h-[44px] disabled:opacity-40`}>
             🔥 Roast Again (Different Lines)
           </button>
 

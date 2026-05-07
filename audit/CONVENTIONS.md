@@ -1,3 +1,4 @@
+<!-- v1.6 · 2026-05-06 · added Clarification 9 (Emergency Tools sanctioned exceptions — 5 tools, 4 carve-out rules, ≥50-emergency-signal entry bar) and Clarification 10 (web_search tools require frontend stripCitesDeep + corrected regex covering antml: namespace). Reference cases: SafeWalk (clarification 9 across all four rules, clarification 10 citation leak). -->
 <!-- v1.5 · 2026-05-02 · added PF-16 EXCEPTION block for multi-view tools (5 strict conditions, GentlePushGenerator reference case). Codifies Bruce-stated reset-button principle: one reset, horizontally aligned with title, aligned right, always present. -->
 <!-- v1.4 · 2026-05-02 · session 2026-05-02 backlog burndown: added PF-15 EXEMPTION block for chat-style send and inline-quick-add inputs (Bucket 3 design call closure). Asterisk requirement now has two named carve-outs with strict shape conditions and reference cases (ApologyCalibrator practiceInput + note). -->
 <!-- v1.3 · 2026-04-24 · removed vestigial CopyBtn-import requirement from PF-1 and PF-5; tools now import CopyBtn only when they actually use it -->
@@ -1294,6 +1295,83 @@ When a historical find/replace script ran twice by accident, it produced self-do
 These break tool styling silently. BeliefStressTest pre-audit had 5 instances across 3 typo classes.
 
 **Enforcement:** `audit_v2-3-2.py` (v4.41+) PF-12 — flags any of the known typo patterns.
+
+---
+
+## Clarification 9 · Emergency Tools — sanctioned exceptions to UI conventions
+
+**Status:** New sanctioned-exception category.
+
+Tools designed for high-stress, urgent, or panic-mode UX may break specific UI-semantic conventions when the design intent demands it. The exception is bounded — it covers visual semantic choices, not code quality (correctness rules around hooks, imports, structure still apply).
+
+**Tools currently in the category** (5):
+
+- `SafeWalk` — fullscreen panic UI, fakeCall, emergency contact alerts
+- `DriveHome` — in-car safety, emergency contacts
+- `SpiralStopper` — anxiety-spiral interruption
+- `CrisisPrioritizer` — name says it
+- `FinalWish` — end-of-life document prep
+
+**Conventions they may break:**
+
+| Rule | Normal expectation | Emergency-tool freedom |
+|------|--------------------|------------------------|
+| `S1.1: btnPrimary not cyan` | `btnPrimary` must be cyan | Emerald (= "go / safe") and red (= "panic") permitted when semantics demand |
+| `S1.1: banned c key dangerBg/dangerText` | Use combined `c.danger` key | Split keys permitted for fine-grained mix-and-match (panic UI red-on-different-bg pairings) |
+| `S1.2: root div sets background color` | `ToolPageWrapper` provides the frame | Full-screen takeover backgrounds permitted (panic mode) |
+| `S1.4e: custom window.open print bypass` | Use `ActionBar`/`PrintBtn` only | Bespoke print designs permitted for emergency contact cards, etc. |
+
+**Bar for adding a new tool to the category:** ≥50 emergency-language signals (panic, crisis, fakeCall, emergency, distress, anxiety, spiral) in the file. Tools that are anxiety-*prevention* rather than crisis-*response* — e.g. NerveCheck (8 signals), BillRescue (5 signals) — do not qualify and follow the standard convention.
+
+**Audit-script todo:** Read `tools.js` for an `emergencyTool: true` flag and exempt the listed rules. Until then, the listed violations are tracked as known FPs in `audit-backlog.md`.
+
+**Reference case:** SafeWalk uses emerald `btnPrimary` (semantic = "go / safe" for emergency-prevention assessment), split `dangerBg`/`dangerText` (red text on neutral bg in some contexts), fullscreen panic background, and a custom print template for emergency contact cards. All four trigger audit flags; all four are intentional.
+
+---
+
+## Clarification 10 · Tools using `web_search` require frontend `stripCitesDeep`
+
+**Status:** New rule, forward-applicable.
+
+When a tool's backend route uses Anthropic's `web_search` tool, response strings can contain citation markup — `...` (with the `antml:` namespace prefix per Anthropic's spec) and sometimes `<cite index="...">...</cite>` (without the prefix). Both forms must be stripped, both layers (backend AND frontend) must strip — defense-in-depth so a regression in either layer doesn't surface to the user.
+
+**Backend regex** (in the route file's `stripCites` helper):
+
+```js
+val.replace(/<\/?(antml:)?cite\b[^>]*>/g, '')
+```
+
+This catches all four forms in one pass:
+
+| Form | Caught |
+|------|--------|
+| `<cite index="...">` (no namespace, open) | ✓ |
+| `</cite>` (no namespace, close) | ✓ |
+| `` (namespaced, open) | ✓ |
+| `` (namespaced, close) | ✓ |
+
+**Frontend pattern** (apply recursively to the API response before storing in state):
+
+```js
+const CITE_TAG_RE = /<\/?(antml:)?cite\b[^>]*>/g;
+const stripCitesDeep = (v) => {
+  if (typeof v === 'string') return v.replace(CITE_TAG_RE, '');
+  if (Array.isArray(v)) return v.map(stripCitesDeep);
+  if (v && typeof v === 'object') {
+    const out = {};
+    for (const k of Object.keys(v)) out[k] = stripCitesDeep(v[k]);
+    return out;
+  }
+  return v;
+};
+
+// In the API call handler:
+setResults(stripCitesDeep(res));
+```
+
+**Reference case:** SafeWalk — Session 2026-05-06 surfaced a leak (`<cite index="25-7,20-17">` reaching the user) when the backend regex caught only the non-namespaced form. Both layers patched in the same session; backend regex broadened to the form above, frontend `stripCitesDeep` added at module top.
+
+**Audit-script todo:** S7 backend audit should detect routes that use `web_search_20250305` and verify a `stripCites` helper exists with a regex that accepts both namespace forms. Frontend audit should detect tools whose response field is rendered without going through a `stripCitesDeep` (or equivalent) call when the backend uses `web_search`.
 
 ---
 

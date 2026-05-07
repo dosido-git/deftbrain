@@ -65,7 +65,7 @@ const CrowdWisdom = ({ tool }) => {
     // Bespoke — five distinct archetype voice colors (documented exception to color family limit)
     archetypePragmatist: isDark ? 'bg-zinc-800 border-zinc-600' : 'bg-slate-50 border-slate-300',
     archetypeRisk:       isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
-    archetypeRegret:     isDark ? 'bg-rose-900/20 border-rose-700' : 'bg-rose-50 border-rose-200',
+    archetypeRegret:     isDark ? 'bg-red-900/20 border-red-700' : 'bg-red-50 border-red-200',
     archetypeWait:       isDark ? 'bg-sky-900/20 border-sky-700' : 'bg-sky-50 border-sky-200',
     archetypeContrarian: isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-200',
     quoteInner:          isDark ? 'bg-zinc-700/60' : 'bg-slate-100',
@@ -134,7 +134,7 @@ const CrowdWisdom = ({ tool }) => {
     }
   };
 
-  const handleExample = () => {
+  const loadExample = () => {
     const ex = EXAMPLE_QUESTIONS[Math.floor(Math.random() * EXAMPLE_QUESTIONS.length)];
     setQuestion(ex.q); setContext(ex.ctx); setResults(null); setError('');
   };
@@ -249,12 +249,10 @@ const CrowdWisdom = ({ tool }) => {
               : <><span className="mr-1">{tool?.icon ?? '👥'}</span>Ask the Crowd</>}
           </button>
           <button
-            onClick={handleExample}
+            onClick={loadExample}
             disabled={loading}
-            className={`px-4 py-3 rounded-xl text-sm font-medium flex-shrink-0 ${c.btnSecondary}`}
-          >
-            Example
-          </button>
+            className={`px-4 py-3 rounded-xl text-sm font-medium flex-shrink-0 ${c.btnSecondary} disabled:opacity-40`}
+          >Try example</button>
         </div>
         <p className={`text-xs text-center ${c.textMuted}`}>Cmd+Enter to submit</p>
       </div>

@@ -29,6 +29,14 @@ Usage:
 
 Idempotent. Exit 0 if no errors; 1 if any file errored.
 
+v1.1 · 2026-05-06 · added Form 1b (quote-concat): patches className=
+                    {'static prefix ' + (cond ? c.btnDis : c.btnPrimary)}
+                    by inserting `disabled:opacity-40` into the static
+                    literal prefix. Surfaced Session 2026-05-06 — 3
+                    manual fixes were needed (Bookmark, TheAlibi,
+                    TheDebrief) where the patcher previously rejected
+                    these as "too risky, skip" along with all other
+                    non-template-literal forms.
 v1.0 · 2026-05-06 · promoted from inline patcher used during high-violation
                     file cleanup (RoomReader/PEP/TheFinalWord session).
 """
@@ -79,35 +87,64 @@ def _find_classname_value_bounds(btn_open):
     if p >= len(btn_open):
         return (None, None, None)
 
-    # Form 1: className={`...`} — the only form we patch by template literal
+    # Form 1: className={...} — template literal OR quoted-string-concat
     if btn_open[p] == '{':
         p += 1
         while p < len(btn_open) and btn_open[p] in ' \t':
             p += 1
-        if p >= len(btn_open) or btn_open[p] != '`':
-            # className={someVariable} or {`...` + foo} — too risky, skip
+        if p >= len(btn_open):
             return (None, None, None)
-        sp = p + 1
-        p += 1
-        # Walk to matching backtick, skipping ${...} interpolations
-        while p < len(btn_open):
-            if btn_open[p] == '\\':
-                p += 2
-                continue
-            if btn_open[p] == '`':
-                return ('tmpl', sp, p)
-            if btn_open[p] == '$' and p + 1 < len(btn_open) and btn_open[p+1] == '{':
-                d = 1
-                p += 2
-                while p < len(btn_open) and d > 0:
-                    if btn_open[p] == '{':
-                        d += 1
-                    elif btn_open[p] == '}':
-                        d -= 1
-                    p += 1
-                continue
+
+        # Form 1a: className={`...`} — template literal in braces
+        if btn_open[p] == '`':
+            sp = p + 1
             p += 1
-        return (None, None, None)  # unterminated
+            # Walk to matching backtick, skipping ${...} interpolations
+            while p < len(btn_open):
+                if btn_open[p] == '\\':
+                    p += 2
+                    continue
+                if btn_open[p] == '`':
+                    return ('tmpl', sp, p)
+                if btn_open[p] == '$' and p + 1 < len(btn_open) and btn_open[p+1] == '{':
+                    d = 1
+                    p += 2
+                    while p < len(btn_open) and d > 0:
+                        if btn_open[p] == '{':
+                            d += 1
+                        elif btn_open[p] == '}':
+                            d -= 1
+                        p += 1
+                    continue
+                p += 1
+            return (None, None, None)  # unterminated
+
+        # Form 1b (v1.1): className={'static prefix ' + (cond ? c.btnDis : c.btnPrimary)}
+        # Quote-concat form — patch the static literal prefix. Surfaced
+        # Session 2026-05-06: 3 manual fixes were needed (Bookmark, TheAlibi,
+        # TheDebrief) where the className had a quoted literal followed by `+`.
+        if btn_open[p] in '"\'':
+            q = btn_open[p]
+            sp = p + 1
+            p += 1
+            while p < len(btn_open) and btn_open[p] != q:
+                if btn_open[p] == '\\':
+                    p += 2
+                    continue
+                p += 1
+            if p >= len(btn_open):
+                return (None, None, None)
+            # Confirm this is the concat form (string followed by `+`).
+            # Plain `{'literal'}` without concat is unusual — skip those.
+            after = p + 1
+            while after < len(btn_open) and btn_open[after] in ' \t':
+                after += 1
+            if after < len(btn_open) and btn_open[after] == '+':
+                return ('quot_concat', sp, p)
+            return (None, None, None)
+
+        # className={someVariable} or other expression — too risky, skip
+        return (None, None, None)
 
     # Form 2: className="..." or className='...'
     if btn_open[p] in '"\'':

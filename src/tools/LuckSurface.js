@@ -64,7 +64,7 @@ const LuckSurface = ({ tool }) => {
   const [description, setDescription] = useState('');
   const [goals, setGoals] = useState('');
   const [currentExposures, setCurrentExposures] = useState('');
-  const [results, setResults] = useState(null);
+  const [results, setResults] = usePersistentState('lucksurface-results', null);
   const [error, setError] = useState('');
   const [expanded, setExpanded] = useState({});
 
@@ -86,7 +86,7 @@ const LuckSurface = ({ tool }) => {
     } catch (e) { setError(e.message || 'Failed to calculate luck surface.'); }
   };
 
-  const handleExample = () => {
+  const loadExample = () => {
     const ex = EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)];
     setDescription(ex.desc); setGoals(ex.goals); setResults(null);
   };
@@ -151,6 +151,9 @@ const LuckSurface = ({ tool }) => {
 
       {!results && (
           <div className={`rounded-2xl border p-6 shadow-sm space-y-4 ${c.card} ${c.border}`}>
+            <p className={`text-xs ${c.textMuted}`}>
+              Want to map who can introduce you? <a href="/SixDegreesOfMe" className={linkStyle}>🔗 Six Degrees of Me</a> traces your real network first.
+            </p>
             <div>
               <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>
                 Describe your life — what you do, where you go, who you know <span className={c.required}>*</span>
@@ -179,13 +182,11 @@ const LuckSurface = ({ tool }) => {
               <button onClick={handleSubmit} disabled={loading || !description.trim()}
                 className={`flex-1 py-3 rounded-xl font-bold disabled:opacity-40 ${c.btnPrimary}`}>
                 {loading
-                ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> Calculating…</>
+                ? <><span className="inline-block animate-spin">{tool?.icon ?? '🧲'}</span> Calculating…</>
                 : <><span className="mr-1">{tool?.icon ?? '🧲'}</span> Calculate My Luck Surface</>}
               </button>
-              <button onClick={handleExample} disabled={loading}
-                className={`px-4 py-3 rounded-xl text-sm font-medium ${c.btnSecondary}`}>
-                Example
-              </button>
+              <button onClick={loadExample} disabled={loading}
+                className={`px-4 py-3 rounded-xl text-sm font-medium ${c.btnSecondary} disabled:opacity-40`}>Try example</button>
             </div>
           </div>
         )}

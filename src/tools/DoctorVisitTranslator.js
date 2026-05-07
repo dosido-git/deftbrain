@@ -335,8 +335,7 @@ const DoctorVisitTranslator = ({ tool }) => {
     if (symptomTrends?.length) { lines.push('TRENDS:'); symptomTrends.forEach(t => lines.push(`• ${t.name}: ${t.count} entries, avg ${t.avg}/10, ${t.trend}`)); lines.push(''); }
     lines.push('RECENT:');
     journal.slice(0, 6).forEach(e => lines.push(`${e.date} ${e.time || ''} — ${e.symptom} (${e.severity}/10)${e.triggers ? ` [${e.triggers}]` : ''}${e.notes ? ` ${e.notes}` : ''}`));
-    lines.push('', BRAND_LINE);
-    return lines.join('\n');
+    return lines.join('\n') + BRAND;
   }, [journal, symptomTrends]);
 
   // ─── EXPORTS ───
@@ -349,8 +348,7 @@ const DoctorVisitTranslator = ({ tool }) => {
     if (r.medications?.length) { lines.push('MEDS', '─'.repeat(40)); r.medications.forEach(m => { lines.push(`${m.name}`, `  Purpose: ${m.purpose}`, `  How: ${m.how_to_take}`); if (m.side_effects_to_watch?.length) lines.push(`  Watch: ${m.side_effects_to_watch.join(', ')}`); lines.push(''); }); }
     if (r.follow_up_requirements) { lines.push('FOLLOW-UP', '─'.repeat(40)); if (r.follow_up_requirements.next_appointment) lines.push(`Next: ${r.follow_up_requirements.next_appointment}`); if (r.follow_up_requirements.when_to_call_doctor?.length) { lines.push('Call if:'); r.follow_up_requirements.when_to_call_doctor.forEach(w => lines.push(`  • ${w}`)); } lines.push(''); }
     if (r.questions_for_next_visit?.length) { lines.push('QUESTIONS', '─'.repeat(40)); r.questions_for_next_visit.forEach(q => lines.push(`? ${q}`)); lines.push(''); }
-    lines.push('', BRAND_LINE);
-    return lines.join('\n');
+    return lines.join('\n') + BRAND;
   }, [results, visitType, doctorName, language]);
 
   const buildCaregiverSummary = useCallback(() => {
@@ -362,8 +360,7 @@ const DoctorVisitTranslator = ({ tool }) => {
     if (r.medications?.length) { lines.push('MEDS:'); r.medications.forEach(m => lines.push(`• ${m.name}: ${m.purpose}`, `  Take: ${m.how_to_take}`)); lines.push(''); }
     if (r.follow_up_requirements?.when_to_call_doctor?.length) { lines.push('🚨 CALL IF:'); r.follow_up_requirements.when_to_call_doctor.forEach(w => lines.push(`• ${w}`)); lines.push(''); }
     if (r.follow_up_requirements?.next_appointment) lines.push(`NEXT: ${r.follow_up_requirements.next_appointment}`, '');
-    lines.push('', BRAND_LINE);
-    return lines.join('\n');
+    return lines.join('\n') + BRAND;
   }, [results, visitType, doctorName]);
 
   const buildPrepExport = useCallback(() => {
@@ -378,8 +375,7 @@ const DoctorVisitTranslator = ({ tool }) => {
     if (pastQs.length) { lines.push('FROM PAST VISITS:'); pastQs.forEach(q => lines.push(`? ${q}`)); lines.push(''); }
     lines.push('BRING:', '• Insurance card & ID', '• Medication list', '• This sheet', '• Notebook', '');
     if (activeMeds.length) { lines.push('CURRENT MEDS:'); activeMeds.forEach(m => lines.push(`• ${m.name} — ${m.howToTake || ''}`)); lines.push(''); }
-    lines.push('', BRAND_LINE);
-    return lines.join('\n');
+    return lines.join('\n') + BRAND;
   }, [visitType, doctorName, prepData, history, activeMeds, symptomTrends]);
 
   const medStats = useMemo(() => ({ active: activeMeds.length, total: medList.length }), [activeMeds, medList]);

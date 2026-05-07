@@ -76,8 +76,8 @@ const Giftology = ({ tool }) => {
     giftCard:      isDark ? 'bg-zinc-800' : 'bg-white',
     warmBg:        isDark ? 'bg-amber-900/20' : 'bg-amber-50',
     warmText:      isDark ? 'text-amber-300' : 'text-amber-700',
-    wildcardBg:    isDark ? 'bg-violet-900/20' : 'bg-violet-50',
-    wildcardText:  isDark ? 'text-violet-300' : 'text-violet-700',
+    wildcardBg:    isDark ? 'bg-cyan-900/20' : 'bg-cyan-50',
+    wildcardText:  isDark ? 'text-cyan-300' : 'text-cyan-700',
   };
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
@@ -87,17 +87,17 @@ const Giftology = ({ tool }) => {
     : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
 
   // ─── State ───
-  const [recipient, setRecipient] = usePersistentState('giftology-recipient', '');
   const [occasion, setOccasion] = useState('');
   const [budget, setBudget] = useState('');
   const [deadline, setDeadline] = useState('');
   const [alreadyGiven, setAlreadyGiven] = useState('');
   const [avoid, setAvoid] = useState('');
-  const [results, setResults] = usePersistentState('giftology-last', null);
-  const [history, setHistory] = usePersistentState('giftology-history', []);
   const [error, setError] = useState('');
   const [expandedPick, setExpandedPick] = useState(0);
   const [showWildcard, setShowWildcard] = useState(false);
+  const [recipient, setRecipient] = usePersistentState('giftology-recipient', '');
+  const [results, setResults] = usePersistentState('giftology-last', null);
+  const [history, setHistory] = usePersistentState('giftology-history', []);
 
   // ─── Refs ───
   const resultsRef = useRef(null);

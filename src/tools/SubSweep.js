@@ -125,8 +125,8 @@ const SubSweep = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     input: isDark
-      ? 'bg-zinc-900 border-zinc-600 text-zinc-50 placeholder:text-zinc-500 focus:border-cyan-500 focus:ring-indigo-500/20'
-      : 'bg-white border-slate-300 text-slate-900 placeholder:text-slate-400 focus:border-cyan-500 focus:ring-indigo-100',
+      ? 'bg-zinc-900 border-zinc-600 text-zinc-50 placeholder:text-zinc-500 focus:border-cyan-500 focus:ring-cyan-500/20'
+      : 'bg-white border-slate-300 text-slate-900 placeholder:text-slate-400 focus:border-cyan-500 focus:ring-cyan-100',
     text: isDark ? 'text-zinc-50' : 'text-slate-900',
     labelText: isDark ? 'text-zinc-300' : 'text-slate-700',
     btnPrimary: isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
@@ -1565,7 +1565,7 @@ const SubSweep = ({ tool }) => {
                 <div className="flex items-center gap-2">
                   <input type="checkbox" checked={!!sub.shared}
                     onChange={() => updateSub(sub.id, 'shared', !sub.shared)}
-                    className="accent-indigo-500" />
+                    className="accent-cyan-500" />
                   <span className={`text-xs font-bold flex-1 ${c.text}`}>{sub.name}</span>
                   <span className={`text-xs ${c.textMuted}`}>{fm(monthlyEquiv(sub.cost, sub.cycle).toFixed(2), currency)}/mo</span>
                 </div>

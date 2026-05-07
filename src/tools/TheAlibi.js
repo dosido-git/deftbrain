@@ -77,7 +77,6 @@ const TheAlibi = ({ tool }) => {
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
     : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
 
-  const [history, setHistory] = usePersistentState('the-alibi-history', []);
   const [showHistory, setShowHistory] = useState(false);
 
   // Input
@@ -87,13 +86,14 @@ const TheAlibi = ({ tool }) => {
   const [tone, setTone] = useState('professional');
   const [concerns, setConcerns] = useState('');
   const [context, setContext] = useState('');
-
-  // Results
-  const [results, setResults] = usePersistentState('the-alibi-results', null);
   const [error, setError] = useState('');
   const [expandedVersion, setExpandedVersion] = useState(0);
   const [showFollowups, setShowFollowups] = useState(true);
   const [showMistakes, setShowMistakes] = useState(false);
+  const [history, setHistory] = usePersistentState('the-alibi-history', []);
+
+  // Results
+  const [results, setResults] = usePersistentState('the-alibi-results', null);
 
   useEffect(() => {
     if (!results) return;
@@ -194,7 +194,7 @@ const TheAlibi = ({ tool }) => {
   const renderInput = () => (
     <div className="space-y-4">
       <div className={c.card + ' border rounded-xl p-5'}>
-        <label className={'text-base font-bold ' + c.text + ' mb-1 block'}>🎭 What's the real story?</label>
+        <label className={'text-base font-bold ' + c.text + ' mb-1 block'}>🎭 What's the real story? <span className={c.required}>*</span></label>
         <p className={'text-sm ' + c.textMuted + ' mb-4'}>Be honest — the messier the truth, the better we can frame it. This stays between us.</p>
         <textarea value={situation} onChange={e => setSituation(e.target.value)}
           placeholder="e.g., I have a 2-year gap on my resume because I burned out and needed time off. I did some freelance stuff but nothing consistent..."
@@ -243,7 +243,7 @@ const TheAlibi = ({ tool }) => {
       </div>
 
       <button onClick={frame} disabled={loading || !situation.trim()}
-        className={'w-full py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all ' + (loading || !situation.trim() ? c.btnDis : c.btnPrimary)}>
+        className={'w-full py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all disabled:opacity-40 ' + (loading || !situation.trim() ? c.btnDis : c.btnPrimary)}>
         {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '🎭'}</span> Framing your story...</> : <><span className="mr-1">{tool?.icon ?? '🎭'}</span> Frame My Story</>}
       </button>
     </div>
@@ -422,6 +422,11 @@ const TheAlibi = ({ tool }) => {
           <p className={'text-sm ' + c.textMuted}>{tool?.tagline ?? 'Frame your story right — honest but strategic'}</p>
         </div>
       </div>
+      {!results && (
+        <p className={'text-xs ' + c.textMuted + ' mb-3'}>
+          Not sure what reading the room calls for? <a href="/RoomReader" className={linkStyle}>🎭 Room Reader</a> decodes the situation first, then come back here.
+        </p>
+      )}
       {!results && renderInput()}
       {renderResults()}
       {error && (

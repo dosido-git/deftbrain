@@ -61,7 +61,7 @@ const MarkupDetective = ({ tool }) => {
   const [showHistory, setShowHistory] = useState(false);
 
   // ── Persistent state ──
-  const [results, setResults] = useState(null);
+  const [results, setResults] = usePersistentState('markup-detective-results', null);
   const [history, setHistory] = usePersistentState('markup-detective-history', []);
 
   // ── Refs ──

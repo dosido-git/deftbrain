@@ -52,9 +52,9 @@ const ToolFinder = ({ tool }) => {
     : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
 
   // ─── State ───
+  const [error, setError] = useState('');
   const [problem, setProblem] = usePersistentState('toolfinder-problem', '');
   const [results, setResults] = usePersistentState('toolfinder-result', null);
-  const [error, setError] = useState('');
   const [history, setHistory] = usePersistentState('toolfinder-history', []);
   const resultsRef = useRef(null);
 
@@ -115,7 +115,7 @@ const ToolFinder = ({ tool }) => {
   useEffect(() => {
     const handler = (e) => {
       const tag = document.activeElement?.tagName;
-      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      if (tag === 'SELECT') return;
       if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !loading) findTools(problem);
     };
     document.addEventListener('keydown', handler);
@@ -148,7 +148,7 @@ const ToolFinder = ({ tool }) => {
 
         {/* ── PROBLEM INPUT ── */} <div className="mb-4">
           <label className={`text-sm font-bold ${c.text} block mb-1.5`}>
-            What do you need help with?
+            What do you need help with? <span className={c.required}>*</span>
           </label>
           <textarea
             value={problem} onChange={e => setProblem(e.target.value)} placeholder="e.g., My landlord is trying to keep my security deposit and I think it's unfair..."
@@ -179,7 +179,7 @@ const ToolFinder = ({ tool }) => {
           <span className="flex-shrink-0 mt-0.5">⚠️</span>
           <p className="text-sm">{error}</p>
         </div>
-      )} {/* ══════════════════════════════════════════════════════════ */} {/* RESULTS                                                  */} {/* ══════════════════════════════════════════════════════════ */} {r && (<div className="space-y-4">
+      )} {/* ══════════════════════════════════════════════════════════ */} {/* RESULTS                                                  */} {/* ══════════════════════════════════════════════════════════ */} {results && (<div className="space-y-4">
           <div ref={resultsRef} data-results-anchor />
           {/* ── UNDERSTANDING ── */} {r.understanding && (<div className={`${c.card} border ${c.border} rounded-xl p-5`}>
               <p className={`text-sm ${c.textSecondary} leading-relaxed`}>
