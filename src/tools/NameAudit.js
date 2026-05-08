@@ -92,18 +92,15 @@ const NameAudit = ({ tool }) => {
   const [auditHistory, setAuditHistory] = usePersistentState('nameaudit-history', []);
   const [evolutionTimeline, setEvolutionTimeline] = usePersistentState('nameaudit-evolution', []);
   const [journalEntries, setJournalEntries] = usePersistentState('nameaudit-journal', {});
-  // ─── Name Psychology Profile (#6): computed from results frontend-side ───
 
-  // ─── URL param handoff (from NameStorm) ───
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const nameParam = params.get('name');
-    if (nameParam) {
-      setName(nameParam);
-      // Clean up URL without reload
-      window.history.replaceState({}, '', window.location.pathname);
-    }
-  }, []);
+  // ─── Refs ───
+  const handleAnalyzeRef = useRef(null);
+  const handleCompareRef = useRef(null);
+  const canSubmitRef = useRef(false);
+  const modeRef = useRef(mode);
+  const resultsAnchorRef = useRef(null);
+
+  // ─── Name Psychology Profile (#6): computed from results frontend-side ───
 
   // ─── Options ───
   const contexts = [
@@ -653,7 +650,7 @@ const NameAudit = ({ tool }) => {
   const EvolutionTimeline = () => {
     if (evolutionTimeline.length < 2) return null;
     return (
-      <div className={`${c.card} rounded-xl shadow-lg p-6`}>
+      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6`}>
         <h3 className={`font-bold ${c.text} mb-3 flex items-center gap-2`}>
           <span>📈</span> Name Evolution Timeline
         </h3>
@@ -922,7 +919,7 @@ const NameAudit = ({ tool }) => {
     const explainer = sectionExplainers[id];
     const explainerVisible = showExplainer[id];
     return (
-      <div className={`${c.card} rounded-xl shadow-lg p-6`}>
+      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6`}>
         <button onClick={() => toggleSection(id)} className={`w-full flex items-center justify-between ${c.text}`}>
           <h3 className="font-bold flex items-center gap-2">
             <span>{icon}</span> {title}
@@ -949,11 +946,6 @@ const NameAudit = ({ tool }) => {
 
 
   // ─── Keyboard shortcut ───
-  const handleAnalyzeRef = useRef(null);
-  const handleCompareRef = useRef(null);
-  const canSubmitRef = useRef(false);
-  const modeRef = useRef(mode);
-  const resultsAnchorRef = useRef(null);
   handleAnalyzeRef.current = handleAnalyze;
   handleCompareRef.current = handleCompare;
   modeRef.current = mode;
@@ -986,6 +978,17 @@ const NameAudit = ({ tool }) => {
       return () => clearTimeout(timeout);
     }
   }, [loading, compareLoading, results, compareResults]);
+
+  // ─── URL param handoff (from NameStorm) ───
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const nameParam = params.get('name');
+    if (nameParam) {
+      setName(nameParam);
+      // Clean up URL without reload
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  }, []);
 
   // ─── RENDER ───
   return (
@@ -1030,7 +1033,7 @@ const NameAudit = ({ tool }) => {
 
           {/* Analyze Mode */}
           {mode === 'analyze' && (
-            <div className={`${c.card} rounded-xl shadow-lg p-6`}>
+            <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6`}>
               <label className={`block text-sm font-medium ${c.labelText} mb-1`}>The name <span className={c.required}>*</span></label>
               <input type="text" value={name} onChange={(e) => setName(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter' && name.trim() && context) handleAnalyze(); }}
@@ -1041,7 +1044,7 @@ const NameAudit = ({ tool }) => {
 
           {/* Compare Mode */}
           {mode === 'compare' && (
-            <div className={`${c.card} rounded-xl shadow-lg p-6 space-y-3`}>
+            <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6 space-y-3`}>
               <label className={`block text-sm font-medium ${c.labelText} mb-1`}>Names to compare <span className={c.required}>*</span></label>
               {compareNames.map((n, idx) => (
                 <div key={idx} className="flex gap-2">
@@ -1075,7 +1078,7 @@ const NameAudit = ({ tool }) => {
           )}
 
           {/* Context */}
-          <div className={`${c.card} rounded-xl shadow-lg p-6`}>
+          <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6`}>
             <label className={`block text-sm font-medium ${c.labelText} mb-1`}>What is this name for? <span className={c.required}>*</span></label>
             <div className="flex flex-wrap gap-2">
               {contexts.map(ct => (
@@ -1088,7 +1091,7 @@ const NameAudit = ({ tool }) => {
           </div>
 
           {/* Optional */}
-          <div className={`${c.card} rounded-xl shadow-lg p-6 space-y-4`}>
+          <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6 space-y-4`}>
             <p className={`text-xs font-bold uppercase tracking-wide ${c.textMuteded}`}>Optional — improves analysis accuracy</p>
             <div>
               <label className={`block text-sm font-semibold ${c.text} mb-1`}>Industry / Context</label>
@@ -1110,7 +1113,7 @@ const NameAudit = ({ tool }) => {
 
           {/* Audit History */}
           {auditHistory.length > 0 && (
-            <div className={`${c.card} rounded-xl shadow-lg p-5`}>
+            <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
               <button onClick={() => setShowHistory(!showHistory)}
                 className={`w-full flex items-center justify-between ${c.text}`}>
                 <span className="flex items-center gap-2 font-semibold text-sm">
@@ -1228,7 +1231,7 @@ const NameAudit = ({ tool }) => {
       {/* ═══ COMPARE RESULTS ═══ */}
       {compareResults && (
         <div className="space-y-5">
-          <div className={`${c.card} rounded-xl shadow-lg p-4 flex items-center justify-between flex-wrap gap-3`}>
+          <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-4 flex items-center justify-between flex-wrap gap-3`}>
             <span className={`text-sm font-semibold ${c.text}`}>Comparison: {compareNames.filter(n => n.trim()).join(' vs ')}</span>
             <div className="flex items-center gap-2 flex-wrap">
               <BookmarkButton toolId="NameAudit" isDark={isDark} size="sm" />
@@ -1237,7 +1240,7 @@ const NameAudit = ({ tool }) => {
 
           {/* Winner */}
           {compareResults.winner && (
-            <div className={`${c.card} rounded-xl shadow-lg p-6 border-l-4 ${isDark ? 'border-amber-500' : 'border-amber-400'}`}>
+            <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6 border-l-4 ${isDark ? 'border-amber-500' : 'border-amber-400'}`}>
               <div className="flex items-center gap-3 mb-3">
                 <span className="text-2xl">🏆</span>
                 <h3 className={`text-xl font-bold ${c.text}`}>{compareResults.winner.name}</h3>
@@ -1253,7 +1256,7 @@ const NameAudit = ({ tool }) => {
             {compareResults.candidates?.map((cand, idx) => {
               const isWinner = cand.name === compareResults.winner?.name;
               return (
-                <div key={idx} className={`${c.card} rounded-xl shadow-lg p-5 border-2 ${isWinner ? (isDark ? 'border-amber-600' : 'border-amber-400') : c.border}`}>
+                <div key={idx} className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 border-2 ${isWinner ? (isDark ? 'border-amber-600' : 'border-amber-400') : c.border}`}>
                   <div className="flex items-start gap-3 mb-3">
                     {cand.score != null && (
                       <div className="flex-shrink-0">
@@ -1298,7 +1301,7 @@ const NameAudit = ({ tool }) => {
         <div className="space-y-5">
 
           {/* Controls */}
-          <div className={`${c.card} rounded-xl shadow-lg p-4 space-y-3`}>
+          <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-4 space-y-3`}>
             <div className="flex items-center justify-between flex-wrap gap-3">
               <div className="flex items-center gap-2">
                 <span className={`text-sm font-semibold ${c.text}`}>"{results.name_analyzed}"</span>
@@ -1358,7 +1361,7 @@ const NameAudit = ({ tool }) => {
           </div>
 
           {/* Overall Verdict */}
-          <div className={`${c.card} rounded-xl shadow-lg p-6 border-l-4 ${
+          <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6 border-l-4 ${
             results.overall_grade === 'STRONG' || results.overall_grade === 'GOOD' ? (isDark ? 'border-green-500' : 'border-green-400')
             : results.overall_grade === 'FAIR' ? (isDark ? 'border-amber-500' : 'border-amber-400')
             : (isDark ? 'border-red-500' : 'border-red-400')
@@ -1406,7 +1409,7 @@ const NameAudit = ({ tool }) => {
 
           {/* Score Radar Chart */}
           {results.section_scores && Object.keys(results.section_scores).length >= 3 && (
-            <div className={`${c.card} rounded-xl shadow-lg p-6`}>
+            <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6`}>
               <h3 className={`font-bold ${c.text} mb-3 flex items-center gap-2`}>
                 <span>📊</span> Score Profile
               </h3>
@@ -1470,7 +1473,7 @@ const NameAudit = ({ tool }) => {
 
           {/* ─── #9: Context Mockups Toggle (in controls area) ─── */}
           {results && showMockups && (
-            <div className={`${c.card} rounded-xl shadow-lg p-6`}>
+            <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6`}>
               <h3 className={`font-bold ${c.text} mb-3 flex items-center gap-2`}>
                 <span>🎨</span> Real-World Mockups
               </h3>
@@ -1760,7 +1763,7 @@ const NameAudit = ({ tool }) => {
           {/* ═══ NEW AI FEATURES ═══ */}
 
           {/* ─── #1: Audience Reaction Simulator ─── */}
-          <div className={`${c.card} rounded-xl shadow-lg p-6`}>
+          <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6`}>
             <h3 className={`font-bold ${c.text} mb-2 flex items-center gap-2`}>
               <span>👥</span> Audience Reaction Simulator
             </h3>
@@ -1811,7 +1814,7 @@ const NameAudit = ({ tool }) => {
           </div>
 
           {/* ─── #3: Context-Specific Deep Dive ─── */}
-          <div className={`${c.card} rounded-xl shadow-lg p-6`}>
+          <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6`}>
             <h3 className={`font-bold ${c.text} mb-2 flex items-center gap-2`}>
               <span>🔬</span> {context === 'Baby' ? 'Baby Name Deep Dive' : context === 'Band / Music Project' ? 'Music Industry Deep Dive' : context === 'Pet' ? 'Pet Name Deep Dive' : 'Industry-Specific Deep Dive'}
             </h3>
@@ -1850,7 +1853,7 @@ const NameAudit = ({ tool }) => {
           </div>
 
           {/* ─── #10: Second Opinion ─── */}
-          <div className={`${c.card} rounded-xl shadow-lg p-6`}>
+          <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6`}>
             <h3 className={`font-bold ${c.text} mb-2 flex items-center gap-2`}>
               <span>🔄</span> Second Opinion
             </h3>
@@ -1911,7 +1914,7 @@ const NameAudit = ({ tool }) => {
 
           {/* Suggestions */}
           {results.suggestions && (
-            <div className={`${c.card} rounded-xl shadow-lg p-6`}>
+            <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6`}>
               <h3 className={`font-bold ${c.text} mb-3 flex items-center gap-2`}>
                 <span>→</span> Next Steps
               </h3>
@@ -1947,7 +1950,7 @@ const NameAudit = ({ tool }) => {
 
           {/* ─── Fix This Name Results ─── */}
           {fixResults && (
-            <div className={`${c.card} rounded-xl shadow-lg p-6`}>
+            <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6`}>
               <h3 className={`font-bold ${c.text} mb-2 flex items-center gap-2`}>
                 <span>✨</span> Improved Variations of "{results?.name_analyzed}"
               </h3>
@@ -2030,7 +2033,7 @@ const NameAudit = ({ tool }) => {
 
           {/* ─── #11: Naming Journal ─── */}
           {results && (
-            <div className={`${c.card} rounded-xl shadow-lg p-6`}>
+            <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6`}>
               <h3 className={`font-bold ${c.text} mb-3 flex items-center gap-2`}>
                 <span>📝</span> Naming Journal
               </h3>

@@ -396,6 +396,26 @@ const SensoryMinefieldMapper = ({ tool }) => {
 
   return (
     <div className={`space-y-4 ${c.text}`}>
+
+      {/* ── Persistent header ── */}
+      <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+        <div className="pb-3 border-b border-zinc-500">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
+                <span className="mr-2">{tool?.icon ?? '🗺️'}</span>{tool?.title ?? 'Sensory Minefield Mapper'}
+              </h2>
+              <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Preview any place before you go'}</p>
+            </div>
+            {(results || routeResults || view !== 'home') && (
+              <button onClick={resetAll} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold`}>
+                ↺ Start Over
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+
       <div className="max-w-3xl mx-auto">
         {error && <div className={`p-3 rounded-xl border ${c.danger}`}><span className="mr-1">⚠️</span> {error}</div>}
 
@@ -497,12 +517,6 @@ const SensoryMinefieldMapper = ({ tool }) => {
           <div className="space-y-5">
             <button onClick={() => { setView('home'); setShowProfileForm(false); }} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnSecondary}`}>← Back</button>
             <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-5`}>
-              <div className="pb-3 border-b border-zinc-500">
-                <h2 className={`text-xl font-bold ${c.text}`}>
-                  <span className="mr-2">{tool?.icon ?? '🗺️'}</span>{tool?.title ?? 'Sensory Minefield Mapper'}
-                </h2>
-                <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Preview any place before you go'}</p>
-              </div>
               {/* Profile quick-load */}
               {profiles.length > 0 && (
                 <div>
@@ -598,9 +612,6 @@ const SensoryMinefieldMapper = ({ tool }) => {
         {/* ════════ RESULTS ════════ */}
         {view === 'results' && results && (
           <div ref={resultsRef} className="space-y-5">
-            <div className="flex gap-2 flex-wrap">
-              <button onClick={resetAll} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnSecondary}`}>← New Search</button>
-            </div>
 
             {/* Summary */}
             {results.location_summary && (

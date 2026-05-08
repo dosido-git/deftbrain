@@ -673,7 +673,7 @@ const MoneyDiplomat = ({ tool }) => {
                 </div>
                 <div className="flex items-center gap-1">
                   <button onClick={() => handleNudge(debt)} disabled={nudgeLoading} className={`text-[10px] px-2 py-1 rounded ${isDark ? 'bg-amber-800/50 text-amber-200 hover:bg-amber-700' : 'bg-amber-100 text-amber-800 hover:bg-amber-200'} transition-colors disabled:opacity-40`}>
-                    {nudgeLoading ? '🕐' : '📨'} Nudge
+                    {nudgeLoading ? <><span className="animate-spin inline-block">{tool?.icon ?? '💵'}</span></> : '📨'} Nudge
                   </button>
                   <button onClick={() => settleDebt(debt.id)} className={`text-[10px] px-2 py-1 rounded ${isDark ? 'bg-green-800/50 text-green-200' : 'bg-green-100 text-green-800'}`}>✅ Paid</button>
                   <button onClick={() => removeDebt(debt.id)} className={`text-[10px] px-2 py-1 rounded ${isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-100 text-gray-500'}`}>🗑️</button>

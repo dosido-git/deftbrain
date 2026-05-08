@@ -135,7 +135,7 @@ const TimeWarp = ({ tool }) => {
     <div className={`space-y-4 ${c.text}`}>
       {/* Input */}
       <div className={`${c.card} border rounded-xl p-5`}>
-        <div className={`mb-4 pb-3 border-b ${c.border}`}>
+        <div className={`mb-4 pb-3 border-b border-zinc-500`}>
           <h2 className={`text-xl font-bold ${c.text}`}>
             <span className="mr-2">{tool?.icon ?? '⏰'}</span>{tool?.title ?? 'Time Warp'}
           </h2>

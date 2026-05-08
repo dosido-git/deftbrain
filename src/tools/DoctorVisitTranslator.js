@@ -981,18 +981,6 @@ const DoctorVisitTranslator = ({ tool }) => {
 
         </div>
       )}
-        <div className={`mt-6 pt-4 border-t text-sm ${c.border} ${c.textMuted}`}>
-          <p className="mb-2 font-medium">You might also like:</p>
-          <div className="flex flex-wrap gap-2">
-            {[
-              { href: '/ProcedureProbe', label: '🔬 Procedure Probe' },
-              { href: '/PlainTalk', label: '💬 Plain Talk' },
-              { href: '/JargonAssassin', label: '🗡️ Jargon Assassin' },
-            ].map(({ href, label }) => (
-              <a key={href} href={href} className={linkStyle}>{label}</a>
-            ))}
-          </div>
-        </div>
     </div>
   );
 };

@@ -285,7 +285,7 @@ const DreamPatternSpotter = ({ tool }) => {
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-                  <span>{tool?.icon ?? '🌙'}</span>{tool?.title ?? 'Dream Pattern Spotter'}
+                  <span className="mr-2">{tool?.icon ?? '🌙'}</span>{tool?.title ?? 'Dream Pattern Spotter'}
                 </h2>
                 <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Find recurring themes and emotional patterns in your dreams'}</p>
               </div>
@@ -911,20 +911,12 @@ const DreamPatternSpotter = ({ tool }) => {
             {/* Cross-references */}
             <p className={`text-xs ${c.textMuteded} text-center`}>
               AI-generated patterns — trust what resonates.{' '}
-              Recurring anxiety in dreams?{' '}<a href="/EgoKiller" target="_blank" rel="noopener noreferrer" className={linkStyle}>Ego Killer</a>{' '}
+              Recurring anxiety in dreams?{' '}<a href="/EgoKiller" className={linkStyle}>Ego Killer</a>{' '}
               surfaces the beliefs worth examining.
             </p>
           </div>
         )}
       </div>
-        <div className={`mt-6 pt-4 border-t text-sm ${c.border} ${c.textMuteded}`}>
-          <p className="mb-2 font-medium">You might also like:</p>
-          <div className="flex flex-wrap gap-2">
-            {[{slug:'recall',label:'🧠 Recall'},{slug:'brain-dump-buddy',label:'📤 Brain Dump Buddy'},{slug:'spiral-stopper',label:'🌀 Spiral Stopper'}].map(({slug,label})=>(
-              <a key={slug} href={`${slug}`} className={linkStyle}>{label}</a>
-            ))}
-          </div>
-        </div>
         {history.length > 0 && (
           <div className={`mt-6 border-t pt-4 ${c.border}`}>
             <div className="flex items-center justify-between mb-3">

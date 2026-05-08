@@ -287,27 +287,11 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
         )}
       </header>
 
-      {/* ═══════════ SEARCH + SORT — top-level affordance ═══════════ */}
-      {/* Always rendered so SearchBox stays mounted through isSearching transitions. */}
-      <div className="flex items-center justify-between mt-3 mb-1">
-        {isSearching ? (
-          <p className="text-[11px] font-semibold" style={{ color: CLR.warm500 }}>
-            {filteredTools.length === 0
-              ? 'No tools found — try different words'
-              : `${filteredTools.length} tool${filteredTools.length !== 1 ? 's' : ''} for "${searchTerm}"`}
-          </p>
-        ) : <div />}
-        <div className="flex items-center gap-2">
-          <SearchBox searchRef={searchRef} searchTerm={searchTerm} setSearchTerm={setSearchTerm} setActiveCategory={setActiveCategory} />
-          <SortBtn sortMode={sortMode} setSortMode={setSortMode} />
-        </div>
-      </div>
+      {/* ═══════════ TOOL FINDER WIZARD ═══════════ */}
+      {!isSearching && <ToolFinderWizard />}
 
       {/* ═══════════ DEMO CARDS — see what tools actually do ═══════════ */}
       {!isSearching && <DemoCards isDark={false} className="mt-6" />}
-
-      {/* ═══════════ TOOL FINDER WIZARD ═══════════ */}
-      {!isSearching && <ToolFinderWizard />}
 
       {/* ═══════════ CATEGORY STRIP ═══════════ */}
       <div className="flex items-center mb-1" style={{ paddingLeft: 12 }}>
@@ -371,6 +355,22 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
           </div>
         </div>
       </div>
+      </div>
+
+      {/* ═══════════ SEARCH + SORT ═══════════ */}
+      {/* Always rendered so SearchBox stays mounted through isSearching transitions. */}
+      <div className="flex items-center justify-between mt-3 mb-1">
+        {isSearching ? (
+          <p className="text-[11px] font-semibold" style={{ color: CLR.warm500 }}>
+            {filteredTools.length === 0
+              ? 'No tools found — try different words'
+              : `${filteredTools.length} tool${filteredTools.length !== 1 ? 's' : ''} for "${searchTerm}"`}
+          </p>
+        ) : <div />}
+        <div className="flex items-center gap-2">
+          <SearchBox searchRef={searchRef} searchTerm={searchTerm} setSearchTerm={setSearchTerm} setActiveCategory={setActiveCategory} />
+          <SortBtn sortMode={sortMode} setSortMode={setSortMode} />
+        </div>
       </div>
 
       {/* ═══════════ RESULTS HEADER ═══════════ */}

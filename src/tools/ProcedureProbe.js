@@ -202,10 +202,19 @@ const ProcedureProbe = ({ tool }) => {
 
         {/* Header — inset border-b */}
         <div className="pb-3 border-b border-zinc-500">
-          <h2 className={`text-xl font-bold ${c.text}`}>
-            <span className="mr-2">{tool?.icon ?? '🔬'}</span>{tool?.title ?? 'Procedure Probe'}
-          </h2>
-          <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Be an informed patient before you say yes'}</p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className={`text-xl font-bold ${c.text}`}>
+                <span className="mr-2">{tool?.icon ?? '🔬'}</span>{tool?.title ?? 'Procedure Probe'}
+              </h2>
+              <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Be an informed patient before you say yes'}</p>
+            </div>
+            {(results || procedure.trim()) && (
+              <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs`}>
+                ↺ Start Over
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Procedure */}
@@ -470,14 +479,6 @@ const ProcedureProbe = ({ tool }) => {
               <p className="text-sm font-medium leading-relaxed">{r.empowerment_note}</p>
             </div>
           )}
-
-          {/* Actions */}
-          <div className="flex items-center gap-3 flex-wrap">
-            <button onClick={handleReset}
-              className={`px-5 py-3 ${c.btnSecondary} rounded-xl font-bold min-h-[48px]`}>
-              ↩ Start Over
-            </button>
-          </div>
 
           {/* Disclaimer */}
           <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 flex items-start gap-3`}>

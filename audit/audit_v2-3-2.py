@@ -1,62 +1,45 @@
-# v2.2 · 2026-05-06 · audit-script patch session — eight patches from v1.10 backlog:
-#                     (1) S5.5 URI-scheme exemption — relative-href check now
-#                     skips `tel:`, `mailto:`, `sms:`, and any `^[a-z]+:` prefix
-#                     (URI schemes are absolute, not relative). Closes 4 FPs
-#                     across DriveHome + SafeWalk emergency-call buttons.
-#                     (2) S1.1 hover:text-red — exempt lines matching the
-#                     c-block alias form `c.X = isDark ? '...' : '...'`. The
-#                     check is meant to catch in-JSX hardcoded hover-red, but
-#                     post-block alias assignments (used by RoommateCourt,
-#                     SafeWalk, DriveHome for deleteHover-style keys) are
-#                     legitimate c-block extensions and shouldn't be flagged.
-#                     (3) S1.4h whole-helpers narrowed — _whole_helpers regex
-#                     restricted to canonical names (buildFullText, buildSummary,
-#                     buildSummaryText). Tools using differently-named helpers
-#                     for partial outputs (SubscriptionGuiltTrip's
-#                     buildAllScriptsContent for cancellation scripts) no
-#                     longer trip the inline-CopyBtn check. The PF-5 dual-output
-#                     exception covers per-output copy buttons whose payloads
-#                     are distinct from what useRegisterActions registers.
-#                     (4) S0f — fail loud on tools.js lookup miss instead of
-#                     silently using GentlePushGenerator's metadata. Surfaced
-#                     Session 2026-05-06: 4 files (ChaosPilot, CrisisPrioritizer,
-#                     VirtualBodyDouble, WaitingModeLiberator) all reported
-#                     "🫸 / Gentle Push Generator" as expected fallback even
-#                     though their tools.js entries exist with correct icon and
-#                     title. The lookup miss is now reported explicitly so the
-#                     real cause (likely a parser/match-id issue) can be
-#                     diagnosed.
-#                     (5) S1.1i callback-param `c` exemption — track lexical
-#                     scope of each `c =>`, `(c) =>`, `(...c...) =>` arrow via
-#                     paren/brace depth walk; exclude `c.X` references inside
-#                     any shadow range from the undefined-key set. Closes 5
-#                     confirmed FPs (FinalWish c.charCodeAt, RentersDepositSaver
-#                     c.code, SubscriptionGuiltTrip c.name, LaundroMat c.id,
-#                     DriveHome c.id) where `c` is an iteration callback param,
-#                     not the config-block reference.
-#                     (6) S2.1 derived canSubmit — when literal-loading check
-#                     misses, look for `const X = ... !loading` (or `loading
-#                     === false`) and accept `disabled={!X}` as compliant.
-#                     Closes 2 FPs (SafeWalk, DriveHome) where canSubmit
-#                     transitively encodes the loading check.
-#                     (7) PF-19 verified compliant — existing v2.1 logic at
-#                     lines 1041-1056 already gates on `<input>`/`<textarea>`
-#                     in the .map() body via brace-aware paren walker.
-#                     Synthetic chat-log test (<p>-only body) does not fire.
-#                     If DifficultTalkCoach FP reproduces against current
-#                     script, root cause is likely a stray <input> elsewhere
-#                     in simMessages.map() body.
-#                     (8) PF-14 per-function-body scope — multi-component
-#                     files (LayoverMaximizer's Section, DoctorVisitTranslator's
-#                     BiText/DiagramBtn) have subcomponents whose useState/etc.
-#                     are independent scopes. Hook-ordering check now operates
-#                     on the main component's body only — identified by
-#                     function name matching the file basename. Lex-aware
-#                     brace walker skips strings/comments/templates so depth
-#                     tracking reflects actual code structure. Falls back to
-#                     whole-file scope if main component can't be located.
-#                     Closes 2 FPs and prevents PF-14 patcher build-breaks
-#                     from cross-function-boundary moves.
+# v2.2 · 2026-05-07 · six audit-script patches from backlog:
+#                     (1) S0f TOOL_META population: EOL-anchored `id:` regex
+#                         excludes cross-ref inline entries like
+#                         `{ id: 'ChaosPilot', reason: '...' }` from the
+#                         TOOL_META table. Pre-v2.2 these caused secondary
+#                         matches whose 600-char window leaked adjacent tool
+#                         icon/title into TOOL_META, producing wrong S0f
+#                         fallback reports on 4 tools (ChaosPilot,
+#                         CrisisPrioritizer, VirtualBodyDouble,
+#                         WaitingModeLiberator).
+#                     (2) S1.1i callback-param false positives: strip
+#                         c-as-lambda-parameter expressions before scanning
+#                         for c.X references. Patterns like
+#                         `COUNTRIES.find(c => c.code === ...)` and
+#                         `arr.filter(c => c.name)` are now excluded.
+#                         Closes FPs on FinalWish, RentersDepositSaver,
+#                         SubscriptionGuiltTrip, LaundroMat, DriveHome.
+#                     (3) S1.1 hover-text-red: exempt c-block alias extension
+#                         lines (`c.deleteHover = isDark ? '...hover:text-red-...'`)
+#                         from the "hardcoded in JSX" check. Closes FPs on
+#                         RoommateCourt, SafeWalk, DriveHome.
+#                     (4) S1.4h dual-output exception: cross-reference the
+#                         inline CopyBtn helper name against what's registered
+#                         in useRegisterActions. If they differ, the inline
+#                         copy is a distinct partial-output artifact and the
+#                         check is skipped (ContextCollapse / SubscriptionGuiltTrip
+#                         PF-5 precedent). Same-name inline copy is still flagged.
+#                     (5) S2.1 canSubmit trace: `disabled={!canSubmit}` is now
+#                         accepted as compliant when canSubmit's definition
+#                         contains `!loading` (equivalent to the direct
+#                         `disabled={loading || ...}` pattern). Closes FPs on
+#                         SafeWalk and DriveHome.
+#                     (6) PF-14 multi-component scope: hook-order checks now
+#                         operate on content starting from the main component
+#                         definition (`const {name} = `) rather than the whole
+#                         file. Subcomponent useState calls before the main
+#                         component's c block no longer produce false positives.
+#                         Closes FPs on LayoverMaximizer and DoctorVisitTranslator.
+#                     NOTE: PF-19 editable-input check (backlog item) was
+#                         already implemented in prior versions — the
+#                         `_has_input_in_map` guard was already present.
+#                         Backlog item closed as stale.
 # v2.1 · 2026-05-04 · three audit-script patches from session backlog:
 #                     (1) S1.1k indirection awareness — count keys referenced
 #                     via `colorKey: 'cardAlt'` lookup-object pattern (where
@@ -247,9 +230,11 @@ if tools_js_path:
     import re as _re2
     with open(tools_js_path) as f:
         _tools_js = f.read()
-    VALID_TOOL_IDS = set(_re2.findall(r'id:\s*["\']([A-Za-z][A-Za-z0-9]+)["\']', _tools_js))
-    # Capture id + following icon/title within the same tool entry (next ~400 chars after id)
-    for _m in _re2.finditer(r'id:\s*["\']([A-Za-z][A-Za-z0-9]+)["\']', _tools_js):
+    VALID_TOOL_IDS = set(_re2.findall(r'^\s*id:\s*["\']([A-Za-z][A-Za-z0-9]+)["\']\s*,?\s*$', _tools_js, _re2.MULTILINE))
+    # Capture id + following icon/title within the same tool entry (next ~600 chars after id).
+    # EOL-anchored so cross-ref inline entries like `{ id: 'ChaosPilot', reason: '...' }` are
+    # excluded — those have additional content on the same line and don't match the anchor.
+    for _m in _re2.finditer(r'^\s*id:\s*["\']([A-Za-z][A-Za-z0-9]+)["\']\s*,?\s*$', _tools_js, _re2.MULTILINE):
         _id = _m.group(1)
         _window = _tools_js[_m.end():_m.end() + 600]
         _icon_m = _re2.search(r'icon:\s*["\']([^"\']+)["\']', _window)
@@ -355,13 +340,6 @@ for name, fpath in tools:
 
     # S0f: icon/title fallback values must match tools.js metadata
     # Pattern: tool?.icon ?? 'X' and tool?.title ?? 'Y' fallbacks should equal what tools.js has
-    # v2.2: fail loud when tools.js entry is not found (was silently using GentlePushGenerator's
-    # metadata as fallback). 4 FPs surfaced Session 2026-05-06: ChaosPilot, CrisisPrioritizer,
-    # VirtualBodyDouble, WaitingModeLiberator all reported "🫸 / Gentle Push Generator" expected
-    # values even though their own tools.js entries exist. The lookup miss is now reported
-    # explicitly so the real cause (parser/match-id) can be diagnosed.
-    if VALID_TOOL_IDS and name not in TOOL_META:
-        fails.append(f'S0f: tools.js entry not found for "{name}" — match-id lookup failed (check tools.js parser / file naming)')
     if name in TOOL_META and TOOL_META[name].get('icon'):
         expected_icon = TOOL_META[name]['icon']
         # Collect all tool?.icon ?? 'X' fallbacks
@@ -458,75 +436,11 @@ for name, fpath in tools:
     # S1.1i: used-but-undefined c keys (WrongAnswersOnly pattern — silent undefined classNames)
     # Collect all c.xxx references in the component body, then check each is defined either
     # as a literal key inside c block OR as an alias assignment (c.foo = c.bar).
-    # v2.2: exempt c.X references inside arrow callbacks where `c` is a param shadow.
-    # Iteration callbacks routinely use `c` as a short param name —
-    #   Uint8Array.from(atob(s), c => c.charCodeAt(0))
-    #   COUNTRIES.find(c => c.code === country)
-    #   results.recommended_cancellations.filter(c => selectedForCancel[c.name])
-    #   conditions.map(id => CONDITION_OPTIONS.find(c => c.id === id))
-    # — these `c.X` refs are not config-block lookups and shouldn't be flagged.
-    # Build a list of (start, end) ranges where c is shadowed by an arrow param.
-    _c_shadow_ranges = []
-    # Match arrow-callback param forms where `c` is a param:
-    #   `c =>`                            (single-arg, no parens)
-    #   `(c) =>`                          (single-arg, parens)
-    #   `(c, a) =>`                       (multi-arg, c first)
-    #   `(a, c) =>`                       (multi-arg, c last)
-    #   `(a, c, b) =>`                    (multi-arg, c middle)
-    # Multi-arg alternatives require a comma so they can't accidentally
-    # span an outer `(` and capture nested `(c)` patterns.
-    _shadow_arrow_re = re.compile(
-        r'(?:(?<![A-Za-z0-9_$.])c\s*=>'                       # bare `c =>` not preceded by ident/dot
-        r'|\(\s*c\s*\)\s*=>'                                  # `(c) =>`
-        r'|\(\s*c\s*,[^)]*\)\s*=>'                            # `(c, ...) =>`
-        r'|\([^)]*,\s*c\s*\)\s*=>'                            # `(..., c) =>`
-        r'|\([^)]*,\s*c\s*,[^)]*\)\s*=>)'                     # `(..., c, ...) =>`
-    )
-    for _sm in _shadow_arrow_re.finditer(content):
-        # Confirm `c` is actually a param (not just inside a longer ident in the multi-arg case).
-        _params_match = re.match(r'\(([^)]*)\)', content[_sm.start():_sm.end()])
-        if _params_match:
-            _params = [p.strip() for p in _params_match.group(1).split(',')]
-            if 'c' not in _params:
-                continue
-        # Walk forward from end of arrow to find body extent.
-        _i = _sm.end()
-        while _i < len(content) and content[_i].isspace():
-            _i += 1
-        if _i >= len(content):
-            continue
-        if content[_i] == '{':
-            # Block body — walk braces.
-            _depth = 1
-            _i += 1
-            while _i < len(content) and _depth > 0:
-                _ch = content[_i]
-                if _ch == '{': _depth += 1
-                elif _ch == '}': _depth -= 1
-                _i += 1
-        else:
-            # Expression body — until `,` `)` `]` `}` at depth 0.
-            _depth = 0
-            while _i < len(content):
-                _ch = content[_i]
-                if _ch in '([{':
-                    _depth += 1
-                elif _ch in ')]}':
-                    if _depth == 0: break
-                    _depth -= 1
-                elif _ch == ',' and _depth == 0:
-                    break
-                _i += 1
-        _c_shadow_ranges.append((_sm.end(), _i))
-
-    def _in_c_shadow(pos):
-        return any(s <= pos < e for s, e in _c_shadow_ranges)
-
-    c_used = set()
-    for _cm in re.finditer(r'\bc\.([a-zA-Z][a-zA-Z0-9]*)\b', content):
-        if _in_c_shadow(_cm.start()):
-            continue
-        c_used.add(_cm.group(1))
+    # Strip c-as-callback-parameter references first to avoid false positives where `c` is
+    # a lambda param (e.g. COUNTRIES.find(c => c.code === ...), arr.filter(c => c.name)).
+    _content_for_c_check = re.sub(r'(?<![a-zA-Z0-9_])\bc\s*=>\s*\{[^}]*\}', '', content)
+    _content_for_c_check = re.sub(r'(?<![a-zA-Z0-9_])\bc\s*=>[^,;)\n]+', '', _content_for_c_check)
+    c_used = set(re.findall(r'\bc\.([a-zA-Z][a-zA-Z0-9]*)\b', _content_for_c_check))
     # Keys defined via literal `key: value` inside c block
     c_literal_keys = set(re.findall(r'^\s+([a-zA-Z][a-zA-Z0-9]*)\s*:', c_block, re.MULTILINE))
     # Keys defined via alias assignment anywhere in file: `c.foo = c.bar;`
@@ -596,22 +510,19 @@ for name, fpath in tools:
 
     # S1.1: hover:text-red- in JSX area (outside c block)
     # Exclude matches that are inside a c-block string value (part of a textGhostDel-style key)
-    # v2.2: also exempt c-block alias-assignment form (`c.deleteHover = isDark ? '...' : '...'`)
-    # Used by RoommateCourt, SafeWalk, DriveHome — legitimate post-block c-block extensions.
+    # Also exempt c-block alias extension lines: `c.deleteHover = isDark ? '...hover:text-red-...' : '...'`
     import re as _re3
     for _m in _re3.finditer(r'hover:text-red-', jsx_area):
         _window = jsx_area[max(0,_m.start()-80):_m.start()]
-        # Skip if it's inside a c-block value (key: isDark ? '...' pattern)
-        if _re3.search(r"(?:isDark\s*\?|:\s*')[^']*$", _window):
-            continue
-        # Skip if it's on a c-block alias-assignment line (c.X = isDark ? '...' : '...')
-        # Check the start of the current line for this pattern.
+        # Exempt c-block alias extension lines
         _line_start = jsx_area.rfind('\n', 0, _m.start()) + 1
-        _line_prefix = jsx_area[_line_start:_m.start()]
-        if _re3.match(r'\s*c\.\w+\s*=\s*', _line_prefix):
-            continue
-        fails.append('S1.1: hover:text-red- hardcoded in JSX (outside c block)')
-        break
+        _line = jsx_area[_line_start:_m.start() + 30]
+        if _re3.match(r'\s*c\.\w+\s*=\s*', _line):
+            continue  # c-block alias extension — not hardcoded in JSX
+        # Skip if it's inside a c-block value (key: isDark ? '...' pattern)
+        if not _re3.search(r"(?:isDark\s*\?|:\s*')[^']*$", _window):
+            fails.append('S1.1: hover:text-red- hardcoded in JSX (outside c block)')
+            break
 
     # S1.1: helper functions returning raw class strings without isDark
     for m in re.finditer(r"=>\s*['\"](?:bg-|text-|border-)", content):
@@ -652,14 +563,17 @@ for name, fpath in tools:
     if re.search(r'<PrintBtn\b', content):
         fails.append('S1.4g: inline <PrintBtn> found — print actions go through useRegisterActions, never inline')
     # S1.4h: whole-output CopyBtn helpers (called with empty parens) must go through useRegisterActions
-    # Per-item helpers that take a parameter — buildChainText(chain), buildCopyText(variant) — are allowed
-    # v2.2: narrowed to canonical whole-output names only (buildFullText/buildSummary/buildSummaryText).
-    # Tools using differently-named helpers for partial outputs (e.g. SubscriptionGuiltTrip's
-    # buildAllScriptsContent for cancellation-scripts payload) are covered by the PF-5 dual-output
-    # exception. The earlier broader list caught those as FPs.
-    _whole_helpers = r'(buildFullText|buildSummary|buildSummaryText)'
+    # Per-item helpers that take a parameter — buildChainText(chain), buildCopyText(variant) — are allowed.
+    # Exception: if a tool registers ONE whole-output helper through useRegisterActions AND uses a
+    # DIFFERENT helper in an inline <CopyBtn>, that inline copy is a distinct partial-output artifact
+    # (ContextCollapse / SubscriptionGuiltTrip precedent — PF-5 dual-output exception).
+    _registered_helper_m = re.search(r'useRegisterActions\s*\(\s*(\w+)\s*\(', content)
+    _registered_helper_name = _registered_helper_m.group(1) if _registered_helper_m else None
+    _whole_helpers = r'(buildFullText|buildAllScripts|buildAllScriptsContent|buildReport|buildReportText|buildCopy|buildReminderText|buildCompareText|buildResults|buildPlanText|buildBreakPlan)'
     _whole_hits = re.findall(r'<CopyBtn[^>]*content=\{\s*' + _whole_helpers + r'\s*\(\s*\)', content)
     for _fname in _whole_hits:
+        if _registered_helper_name and _fname != _registered_helper_name:
+            continue  # different helper = partial-output inline copy, valid dual-output exception
         fails.append(f'S1.4h: inline <CopyBtn content={{{_fname}()}}> — whole-output copy must go through useRegisterActions')
     # S1.4e: no custom print bypass (must use ActionBar/PrintBtn, not manual window.open)
     if re.search(r"window\.open\s*\(", content):
@@ -831,24 +745,20 @@ for name, fpath in tools:
                 break
 
     # S2.1: submit disabled while loading
-    # v2.2: trace through derived `canSubmit`-style variables. SafeWalk/DriveHome use
-    #   const canSubmit = !!(fromOk && toOk && !loading);  // loading is in deps transitively
-    #   <button disabled={!canSubmit}>
-    # which is equivalent to disabled={loading || ...} but the literal-loading check missed it.
     if not re.search(r'disabled=\{[^}]*[Ll]oading', content):
-        # Look for derived names whose definition contains !loading or loading === false.
-        _derived_with_loading = set()
-        for _dm in re.finditer(
-            r'const\s+(\w+)\s*=\s*(?:useMemo\s*\([^)]*?=>\s*)?[^;]*?(?:!\s*loading\b|loading\s*===\s*false)',
-            content, re.DOTALL
-        ):
-            _derived_with_loading.add(_dm.group(1))
-        _derived_used = False
-        for _name in _derived_with_loading:
-            if re.search(r'disabled=\{[^}]*!\s*' + re.escape(_name) + r'\b', content):
-                _derived_used = True
-                break
-        if not _derived_used:
+        # Also accept disabled={!canSubmit} where canSubmit is derived from a !loading expression.
+        # Pattern: const canSubmit = !!(...&& !loading) or useMemo(() => ... !loading ...)
+        _can_submit_m = re.search(r'disabled=\{!\s*(\w+)\}', content)
+        if _can_submit_m:
+            _var = re.escape(_can_submit_m.group(1))
+            _has_loading = re.search(
+                r'(?:const|let)\s+' + _var + r'\s*=\s*[^;\n]+!loading'
+                r'|useMemo\s*\([^)]{0,400}!loading',
+                content
+            )
+            if not _has_loading:
+                fails.append('S2.1: submit not disabled while loading')
+        else:
             fails.append('S2.1: submit not disabled while loading')
 
     # S2.3: spinner
@@ -961,15 +871,12 @@ for name, fpath in tools:
 
     # S5.5: relative href check — catches href="tool-name" or href={`tool-name`} missing leading slash
     # These resolve as child URLs (e.g. /CurrentTool/tool-name) and create ghost pages in Google
-    # v2.2: exempt URI schemes (tel:, mailto:, sms:, etc.) — they're absolute, not relative
-    _URI_SCHEME_RE = re.compile(r'^[a-z]+:')
     for bad in re.findall(r'href=["\'][^"\'/#{][^"\'>]*["\']', content):
         m = re.search(r'href=["\']([^"\'/#{][^"\'>]*)["\']', bad)
-        if m and not _URI_SCHEME_RE.match(m.group(1)):
+        if m:
             fails.append(f'S5.5: relative href "{m.group(1)}" missing leading slash — will create ghost URLs in Google')
     for bad_m in re.finditer(r'href=\{`(?!/|\$\{)([^`]+)`\}', content):
-        if not _URI_SCHEME_RE.match(bad_m.group(1)):
-            fails.append(f'S5.5: relative template href "{bad_m.group(1)}" missing leading slash — will create ghost URLs in Google')
+        fails.append(f'S5.5: relative template href "{bad_m.group(1)}" missing leading slash — will create ghost URLs in Google')
 
     # PF-15: Required field asterisks
     # 1. c.required must be defined in the c block
@@ -1117,122 +1024,15 @@ for name, fpath in tools:
     # → useRegisterActions (after buildFullText). Out-of-order placement causes
     # silent TDZ bugs (c referenced before declaration, etc.).
     #
-    # v2.2 (2026-05-06): per-function-body scope. Multi-component files
-    # (LayoverMaximizer's Section, DoctorVisitTranslator's BiText / DiagramBtn)
-    # have subcomponents whose own useState/etc. are independent scopes. The
-    # hook-ordering check now applies to the MAIN component only — identified
-    # by the function whose name matches the file basename. Falls back to
-    # whole-file scope if the main component can't be located. Closes 2 FPs
-    # (LayoverMaximizer.js, DoctorVisitTranslator.js) and prevents future
-    # build-breaks from PF-14 patchers that trust the audit's line numbers
-    # and physically relocate declarations across function boundaries.
+    # Scoped to the main component body (identified by the component name matching
+    # the filename) to avoid false positives in multi-component files where a
+    # subcomponent's useState appears before the main component's c block.
+    _pf14_start_m = re.search(r'^\s*const\s+' + re.escape(name) + r'\s*=', content, re.MULTILINE)
+    _pf14_content = content[_pf14_start_m.start():] if _pf14_start_m else content
 
-    def _scan_block(_text, _open_brace_pos):
-        """Lex-aware brace walker from `{` to matching `}`. Skips comments,
-        string literals, and template literals so brace-counted nesting
-        reflects actual code structure. Returns (start, end) inclusive of
-        both braces, or None if unterminated."""
-        _depth = 1
-        _i = _open_brace_pos + 1
-        _n = len(_text)
-        while _i < _n:
-            _ch = _text[_i]
-            _nxt = _text[_i+1] if _i+1 < _n else ''
-            if _ch == '/' and _nxt == '/':
-                _nl = _text.find('\n', _i)
-                if _nl == -1: return None
-                _i = _nl + 1
-                continue
-            if _ch == '/' and _nxt == '*':
-                _end = _text.find('*/', _i + 2)
-                if _end == -1: return None
-                _i = _end + 2
-                continue
-            if _ch in ('"', "'"):
-                _quote = _ch
-                _i += 1
-                while _i < _n:
-                    if _text[_i] == '\\':
-                        _i += 2; continue
-                    if _text[_i] == _quote:
-                        _i += 1; break
-                    _i += 1
-                continue
-            if _ch == '`':
-                _i += 1
-                while _i < _n:
-                    if _text[_i] == '\\':
-                        _i += 2; continue
-                    if _text[_i] == '`':
-                        _i += 1; break
-                    if _text[_i] == '$' and _i+1 < _n and _text[_i+1] == '{':
-                        _i += 2
-                        _td = 1
-                        while _i < _n and _td > 0:
-                            if _text[_i] == '{': _td += 1
-                            elif _text[_i] == '}': _td -= 1
-                            _i += 1
-                        continue
-                    _i += 1
-                continue
-            if _ch == '{':
-                _depth += 1
-            elif _ch == '}':
-                _depth -= 1
-                if _depth == 0:
-                    return (_open_brace_pos, _i)
-            _i += 1
-        return None
-
-    def _find_main_component_body(_content, _name):
-        """Locate body of main component function. Recognized shapes:
-          function NAME(...) { ... }
-          const NAME = (...) => { ... }
-          const NAME = function(...) { ... }
-          export default function NAME(...) { ... }
-        Returns (start, end) file-offset positions of the outer `{...}`,
-        or None if no recognized declaration found."""
-        _decl_pat = re.compile(
-            r'(?:export\s+default\s+)?function\s+' + re.escape(_name) + r'\s*\([^)]*\)\s*\{'
-        )
-        _m = _decl_pat.search(_content)
-        if _m:
-            return _scan_block(_content, _m.end() - 1)
-        _arrow_pat = re.compile(
-            r'\bconst\s+' + re.escape(_name) + r'\s*=\s*(?:\([^)]*\)|\w+)\s*=>\s*\{'
-        )
-        _m = _arrow_pat.search(_content)
-        if _m:
-            return _scan_block(_content, _m.end() - 1)
-        _func_pat = re.compile(
-            r'\bconst\s+' + re.escape(_name) + r'\s*=\s*function\s*\([^)]*\)\s*\{'
-        )
-        _m = _func_pat.search(_content)
-        if _m:
-            return _scan_block(_content, _m.end() - 1)
-        return None
-
-    _main_body_range = _find_main_component_body(content, name)
-    if _main_body_range:
-        _scope_start, _scope_end = _main_body_range
-        _scope_text = content[_scope_start:_scope_end + 1]
-        _scope_offset = _scope_start
-    else:
-        _scope_text = content
-        _scope_offset = 0
-
-    def _first_line(pattern, source=None, flags=0):
-        """Find first line in the main-component scope matching pattern.
-        Returns absolute file line number (1-based), or None.
-        v2.2: scope defaults to main component body; pass `source=content`
-        to get the legacy file-wide behavior."""
-        _src = source if source is not None else _scope_text
-        _m = re.search(pattern, _src, flags)
-        if not _m:
-            return None
-        if source is None:
-            return content[:_scope_offset + _m.start()].count('\n') + 1
-        return _src[:_m.start()].count('\n') + 1
+    def _first_line(pattern, source=_pf14_content, flags=0):
+        m = re.search(pattern, source, flags)
+        return source[:m.start()].count('\n') + 1 if m else None
 
     _ln_useTheme    = _first_line(r'\buseTheme\s*\(')
     _ln_c_block     = _first_line(r'\bconst\s+c\s*=\s*\{')

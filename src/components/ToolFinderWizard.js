@@ -2,8 +2,13 @@
 // Dashboard sub-component — NOT a tool page.
 // Uses CLR palette (Navy/Gold/Sand) to match the Dashboard.
 // No tool conventions (no useTheme, no BRAND, no useRegisterActions).
+//
+// v2 — Single-step free-text intake with scenario pill shortcuts.
+// Replaces the 3-question wizard with a direct "what's going on?"
+// text field. Pills pre-populate the field with concrete example
+// situations; the user can edit before submitting.
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 
 // ════════════════════════════════════════════════════════════
 // PALETTE — mirrors DashBoard.js CLR
@@ -15,132 +20,134 @@ const CLR = {
   sand300: '#d5cab8',
   navy400: '#4a6a8a',
   navy500: '#2c4a6e',
+  navy600: '#1e3550',
   gold100: '#f9edd8',
   gold300: '#e8be7a',
   gold500: '#c8872e',
+  warm400: '#a09688',
   warm500: '#8a8275',
   warm700: '#5a544a',
   warm800: '#3d3935',
 };
 
 // ════════════════════════════════════════════════════════════
-// QUESTIONS
+// EXAMPLE SCENARIOS — click to populate the textarea
+// Concrete and relatable, not abstract category labels.
 // ════════════════════════════════════════════════════════════
-const QUESTIONS = [
-  {
-    question: "What's on your mind?",
-    options: [
-      { label: 'Work & productivity',   emoji: '🏢' },
-      { label: 'Money & spending',      emoji: '💸' },
-      { label: 'Relationships',         emoji: '🗣️' },
-      { label: 'Food & home',           emoji: '🍳' },
-      { label: 'Wellbeing & clarity',   emoji: '🧘' },
-      { label: 'Travel',                emoji: '✈️' },
-      { label: "I'm bored",             emoji: '🥱' },
-      { label: 'Something else',        emoji: '❓' },
-    ],
-  },
-  {
-    question: 'What are you trying to do?',
-    options: [
-      { label: 'Make a decision',                emoji: '🤔' },
-      { label: 'Handle a conflict or tough talk', emoji: '⚔️' },
-      { label: 'Get organized',                  emoji: '🗂️' },
-      { label: 'Understand something',           emoji: '🔍' },
-      { label: 'Take action on a task',          emoji: '⚡' },
-    ],
-  },
-  {
-    question: 'Where are you in this situation?',
-    options: [
-      { label: 'Planning ahead',            emoji: '📅' },
-      { label: 'Right in the middle of it', emoji: '🔥' },
-      { label: 'Recovering / figuring out next steps', emoji: '🩹' },
-      { label: 'Just exploring',            emoji: '😌' },
-    ],
-  },
+const SCENARIOS = [
+  { emoji: '😬', text: "I need to apologize for something I said" },
+  { emoji: '🤔', text: "I can't decide between two options" },
+  { emoji: '⚡', text: "I'm overwhelmed and don't know where to start" },
+  { emoji: '🗣️', text: "I need to have a difficult conversation" },
+  { emoji: '💸', text: "I got an unexpected bill I can't afford" },
+  { emoji: '🩺', text: "I'm preparing for a medical appointment" },
+  { emoji: '🧠', text: "I need to understand something complex" },
+  { emoji: '✈️', text: "I'm planning a trip" },
 ];
 
 // ════════════════════════════════════════════════════════════
-// PILL WITH HOVER STATE
+// SCENARIO PILL
 // ════════════════════════════════════════════════════════════
-function HoverPill({ option, onPick }) {
+function ScenarioPill({ scenario, active, onPick }) {
   const [hovered, setHovered] = useState(false);
   return (
     <button
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      onClick={() => onPick(option)}
+      onClick={() => onPick(scenario.text)}
       style={{
-        display: 'flex',
+        display: 'inline-flex',
         alignItems: 'center',
-        gap: 6,
-        border: `1.5px solid ${hovered ? CLR.gold500 : CLR.sand300}`,
-        background: hovered ? CLR.gold100 : CLR.sand50,
-        color: CLR.warm800,
-        borderRadius: 10,
-        padding: '6px 11px',
-        fontSize: 12,
+        gap: 5,
+        border: `1.5px solid ${active ? CLR.gold500 : hovered ? CLR.gold300 : CLR.sand300}`,
+        background: active ? CLR.gold100 : hovered ? '#fdf5e8' : CLR.sand50,
+        color: active ? CLR.warm700 : CLR.warm700,
+        borderRadius: 20,
+        padding: '5px 11px 5px 9px',
+        fontSize: 11.5,
         fontWeight: 600,
         cursor: 'pointer',
-        transition: 'all 0.15s',
-        whiteSpace: 'nowrap',
+        transition: 'all 0.14s',
+        lineHeight: 1.3,
+        textAlign: 'left',
       }}
     >
-      <span>{option.emoji}</span>
-      {option.label}
+      <span style={{ fontSize: 13 }}>{scenario.emoji}</span>
+      {scenario.text}
     </button>
   );
 }
 
 // ════════════════════════════════════════════════════════════
-// STEP INDICATOR — three dots + "Step X of 3" caption
+// TOOL CARD — result recommendation
 // ════════════════════════════════════════════════════════════
-function StepIndicator({ step }) {
+function ToolCard({ rec, rank }) {
+  const [hovered, setHovered] = useState(false);
   return (
-    <div style={{
-      display: 'flex', alignItems: 'center', gap: 5,
-      marginBottom: 8,
-    }}>
-      {[1, 2, 3].map(n => (
-        <span key={n} style={{
-          width: 6, height: 6, borderRadius: '50%',
-          background: n <= step ? CLR.gold500 : CLR.sand300,
-          transition: 'background 0.15s',
-        }} />
-      ))}
-      <span style={{
-        fontSize: 10, fontWeight: 600,
-        color: CLR.warm500, marginLeft: 4,
-        letterSpacing: 0.3,
-      }}>
-        Step {step} of 3
-      </span>
-    </div>
-  );
-}
-
-// ════════════════════════════════════════════════════════════
-// ANSWER RECAP — shows prior answers as pills
-// ════════════════════════════════════════════════════════════
-function AnswerRecap({ answers }) {
-  if (!answers.length) return null;
-  return (
-    <div style={{
-      display: 'flex', gap: 6, flexWrap: 'wrap',
-      marginBottom: 9,
-    }}>
-      {answers.map((a, i) => (
-        <span key={i} style={{
-          fontSize: 11, fontWeight: 600,
-          background: CLR.gold100, color: CLR.warm700,
-          border: `1px solid ${CLR.gold300}`,
-          borderRadius: 6, padding: '3px 8px',
+    <a
+      href={`/${rec.id}`}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        display: 'flex',
+        alignItems: 'flex-start',
+        gap: 12,
+        background: hovered ? CLR.sand100 : CLR.sand50,
+        border: `1.5px solid ${hovered ? CLR.gold300 : CLR.sand200}`,
+        borderRadius: 12,
+        padding: '11px 14px',
+        textDecoration: 'none',
+        transition: 'all 0.14s',
+        position: 'relative',
+      }}
+    >
+      {/* Rank badge */}
+      {rank === 1 && (
+        <span style={{
+          position: 'absolute',
+          top: -6, left: 12,
+          background: CLR.gold500,
+          color: '#fff',
+          fontSize: 9,
+          fontWeight: 800,
+          letterSpacing: 0.5,
+          padding: '2px 7px',
+          borderRadius: 4,
+          textTransform: 'uppercase',
+        }}>Best match</span>
+      )}
+      <span style={{ fontSize: 22, flexShrink: 0, marginTop: 1 }}>{rec.icon || '🔧'}</span>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <p style={{
+          fontWeight: 700, fontSize: 13,
+          color: CLR.navy500, margin: 0, marginBottom: 2,
         }}>
-          {a.emoji} {a.label}
-        </span>
-      ))}
-    </div>
+          {rec.title}
+        </p>
+        <p style={{
+          fontSize: 11.5, color: CLR.warm500,
+          margin: 0, lineHeight: 1.5,
+        }}>
+          {rec.why?.length > 110 ? rec.why.slice(0, 110) + '…' : rec.why}
+        </p>
+        {rec.what_to_do && (
+          <p style={{
+            fontSize: 10.5, color: CLR.navy400,
+            margin: '4px 0 0',
+            fontStyle: 'italic',
+          }}>
+            → {rec.what_to_do}
+          </p>
+        )}
+      </div>
+      <span style={{
+        color: hovered ? CLR.gold500 : CLR.sand300,
+        flexShrink: 0,
+        fontSize: 16,
+        alignSelf: 'center',
+        transition: 'color 0.14s',
+      }}>→</span>
+    </a>
   );
 }
 
@@ -148,37 +155,39 @@ function AnswerRecap({ answers }) {
 // MAIN COMPONENT
 // ════════════════════════════════════════════════════════════
 export default function ToolFinderWizard() {
-  const [step,      setStep]      = useState(1); // 1-3=questions 4=results
-  const [answers,   setAnswers]   = useState([]);
+  const [query,     setQuery]     = useState('');
   const [loading,   setLoading]   = useState(false);
   const [results,   setResults]   = useState(null);
   const [error,     setError]     = useState('');
   const [dismissed, setDismissed] = useState(false);
+  const [focused,   setFocused]   = useState(false);
 
-  // Build a natural-language query from the 3 answers
-  const buildQuery = (ans) =>
-    `I have a ${ans[0].label.toLowerCase()} situation. ` +
-    `I need help to ${ans[1].label.toLowerCase()}. ` +
-    `I am ${ans[2].label.toLowerCase()}.`;
+  const textareaRef = useRef(null);
 
-  const handlePick = useCallback(async (option) => {
-    const newAnswers = [...answers, option];
-    setAnswers(newAnswers);
+  // Auto-resize textarea
+  useEffect(() => {
+    const el = textareaRef.current;
+    if (!el) return;
+    el.style.height = 'auto';
+    el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+  }, [query]);
 
-    if (newAnswers.length < 3) {
-      setStep(prev => prev + 1);
-      return;
-    }
+  const handlePill = useCallback((text) => {
+    setQuery(text);
+    textareaRef.current?.focus();
+  }, []);
 
-    // All 3 answered — call the tool-finder API
-    setStep(4);
+  const handleSubmit = useCallback(async () => {
+    const trimmed = query.trim();
+    if (!trimmed || loading) return;
     setLoading(true);
     setError('');
+    setResults(null);
     try {
       const res = await fetch('/api/tool-finder', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ problem: buildQuery(newAnswers) }),
+        body: JSON.stringify({ problem: trimmed }),
       });
       if (!res.ok) throw new Error('Request failed');
       const data = await res.json();
@@ -188,28 +197,67 @@ export default function ToolFinderWizard() {
     } finally {
       setLoading(false);
     }
-  }, [answers]);
+  }, [query, loading]);
+
+  const handleKeyDown = useCallback((e) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+      e.preventDefault();
+      handleSubmit();
+    }
+  }, [handleSubmit]);
 
   const reset = useCallback(() => {
-    setStep(1);
-    setAnswers([]);
     setResults(null);
     setError('');
+    setTimeout(() => textareaRef.current?.focus(), 50);
   }, []);
 
-  if (dismissed) return null;
+  if (dismissed) return (
+    <button
+      onClick={() => setDismissed(false)}
+      style={{
+        display: 'block',
+        width: '100%',
+        background: 'none',
+        border: `1px dashed ${CLR.sand300}`,
+        borderRadius: 12,
+        padding: '9px 16px',
+        marginBottom: 16,
+        fontSize: 12,
+        fontWeight: 600,
+        color: CLR.warm400,
+        cursor: 'pointer',
+        textAlign: 'left',
+        transition: 'all 0.15s',
+      }}
+      onMouseEnter={e => {
+        e.currentTarget.style.borderColor = CLR.gold300;
+        e.currentTarget.style.color = CLR.warm700;
+      }}
+      onMouseLeave={e => {
+        e.currentTarget.style.borderColor = CLR.sand300;
+        e.currentTarget.style.color = CLR.warm400;
+      }}
+    >
+      🔍 Not sure where to start? Find the right tool →
+    </button>
+  );
 
-  const currentQ = step >= 1 && step <= 3 ? QUESTIONS[step - 1] : null;
+  const canSubmit = query.trim().length > 0 && !loading;
+  const activeScenario = SCENARIOS.find(s => s.text === query.trim());
 
   return (
     <div style={{
       background: '#ffffff',
-      border: `1.5px solid ${CLR.sand300}`,
+      border: `1.5px solid ${focused && !results ? CLR.gold300 : CLR.sand300}`,
       borderRadius: 16,
       padding: '18px 20px 16px',
       marginBottom: 16,
       position: 'relative',
-      boxShadow: `0 1px 3px ${CLR.warm500}10`,
+      boxShadow: focused && !results
+        ? `0 2px 8px ${CLR.gold300}30`
+        : `0 1px 3px ${CLR.warm500}10`,
+      transition: 'border-color 0.2s, box-shadow 0.2s',
     }}>
 
       {/* ── Dismiss ── */}
@@ -219,162 +267,308 @@ export default function ToolFinderWizard() {
         style={{
           position: 'absolute', top: 12, right: 14,
           background: 'none', border: 'none', cursor: 'pointer',
-          color: CLR.warm500, fontSize: 16, lineHeight: 1, padding: 2,
+          color: CLR.warm400, fontSize: 15, lineHeight: 1, padding: 2,
         }}
       >✕</button>
 
       {/* ══════════════════════════════════════════
-          STEPS 1–3 — QUESTIONS
-          Heading is the question itself; subhead on step 1
-          explains the structure, recap takes its place on 2–3.
+          INPUT VIEW
       ══════════════════════════════════════════ */}
-      {currentQ && (
+      {!results && (
         <div>
-          <h2 style={{
-            fontSize: 18, fontWeight: 800,
-            color: CLR.warm800, lineHeight: 1.2,
-            marginBottom: 6, paddingRight: 24,
+          <p style={{
+            fontSize: 11,
+            fontWeight: 700,
+            color: CLR.gold500,
+            letterSpacing: 0.8,
+            textTransform: 'uppercase',
+            margin: '0 0 4px',
           }}>
-            {currentQ.question}
+            Not sure where to start?
+          </p>
+          <h2 style={{
+            fontSize: 17,
+            fontWeight: 800,
+            color: CLR.warm800,
+            lineHeight: 1.25,
+            margin: '0 0 12px',
+            paddingRight: 20,
+          }}>
+            What's going on?
           </h2>
 
-          {step === 1 ? (
-            <p style={{
-              fontSize: 12, color: CLR.warm500,
-              marginBottom: 12, lineHeight: 1.4,
-            }}>
-              3 quick questions — we'll match you to the right tool.
-            </p>
-          ) : (
-            <AnswerRecap answers={answers} />
-          )}
+          {/* Textarea */}
+          <div style={{
+            background: CLR.sand50,
+            border: `1.5px solid ${focused ? CLR.gold300 : CLR.sand200}`,
+            borderRadius: 10,
+            transition: 'border-color 0.15s',
+            marginBottom: 10,
+          }}>
+            <textarea
+              ref={textareaRef}
+              value={query}
+              onChange={e => setQuery(e.target.value)}
+              onFocus={() => setFocused(true)}
+              onBlur={() => setFocused(false)}
+              onKeyDown={handleKeyDown}
+              placeholder={'Describe your situation in plain language — e.g. "I need to tell my boss I can\'t take on more work"'}
+              rows={1}
+              style={{
+                width: '100%',
+                background: 'transparent',
+                border: 'none',
+                outline: 'none',
+                resize: 'none',
+                padding: '7px 12px',
+                fontSize: 13,
+                color: CLR.warm800,
+                lineHeight: 1.5,
+                fontFamily: 'inherit',
+                boxSizing: 'border-box',
+                minHeight: 34,
+              }}
+            />
+          </div>
 
-          <StepIndicator step={step} />
-
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7 }}>
-            {currentQ.options.map(opt => (
-              <HoverPill key={opt.label} option={opt} onPick={handlePick} />
+          {/* Example pills */}
+          <p style={{
+            fontSize: 10.5,
+            fontWeight: 700,
+            color: CLR.warm400,
+            margin: '0 0 7px',
+            letterSpacing: 0.3,
+          }}>
+            Or try an example:
+          </p>
+          <div style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: 6,
+            marginBottom: 12,
+          }}>
+            {SCENARIOS.map(s => (
+              <ScenarioPill
+                key={s.text}
+                scenario={s}
+                active={activeScenario?.text === s.text}
+                onPick={handlePill}
+              />
             ))}
           </div>
-          {step > 1 && (
+
+          {/* Submit */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}>
+            <span style={{
+              fontSize: 10.5, color: CLR.warm400,
+            }}>
+              {query.trim() ? '⌘↵ to submit' : '120+ tools across 18 categories'}
+            </span>
             <button
-              onClick={() => { setStep(step - 1); setAnswers(answers.slice(0, -1)); }}
+              onClick={handleSubmit}
+              disabled={!canSubmit}
               style={{
-                background: 'none', border: 'none', cursor: 'pointer',
-                color: CLR.warm500, fontSize: 11, marginTop: 10, padding: 0,
+                background: canSubmit ? CLR.navy500 : CLR.sand200,
+                color: canSubmit ? '#fff' : CLR.warm400,
+                border: 'none',
+                borderRadius: 9,
+                padding: '8px 18px',
+                fontSize: 12.5,
+                fontWeight: 700,
+                cursor: canSubmit ? 'pointer' : 'not-allowed',
+                transition: 'all 0.15s',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 5,
               }}
             >
-              ← Back
+              {loading ? '🔍 Finding…' : 'Find my tools →'}
             </button>
-          )}
+          </div>
         </div>
       )}
 
       {/* ══════════════════════════════════════════
-          STEP 4 — RESULTS
+          RESULTS VIEW
       ══════════════════════════════════════════ */}
-      {step === 4 && (
+      {results && !loading && (
         <div>
-          {/* Prior answers summary */}
-          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 12 }}>
-            {answers.map((a, i) => (
-              <span key={i} style={{
-                fontSize: 11, fontWeight: 600,
-                background: CLR.gold100, color: CLR.warm700,
-                border: `1px solid ${CLR.gold300}`,
-                borderRadius: 6, padding: '3px 8px',
-              }}>
-                {a.emoji} {a.label}
-              </span>
-            ))}
+          {/* Query recap */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'flex-start',
+            gap: 8,
+            marginBottom: 12,
+          }}>
+            <span style={{
+              fontSize: 10.5,
+              fontWeight: 700,
+              color: CLR.warm400,
+              flexShrink: 0,
+              paddingTop: 2,
+            }}>Your situation:</span>
+            <span style={{
+              fontSize: 11.5,
+              color: CLR.warm700,
+              fontStyle: 'italic',
+              lineHeight: 1.4,
+            }}>"{query.trim()}"</span>
           </div>
 
-          {/* Loading */}
-          {loading && (
-            <p style={{ fontSize: 13, color: CLR.warm500, margin: '8px 0' }}>
-              🔍 Finding your best tools…
+          {/* Understanding */}
+          {results.understanding && (
+            <p style={{
+              fontSize: 13,
+              color: CLR.warm700,
+              lineHeight: 1.55,
+              margin: '0 0 12px',
+              paddingBottom: 12,
+              borderBottom: `1px solid ${CLR.sand200}`,
+            }}>
+              {results.understanding}
             </p>
           )}
 
-          {/* Error */}
-          {error && (
-            <p style={{ fontSize: 13, color: '#c0392b', margin: '8px 0' }}>{error}</p>
-          )}
-
           {/* Tool cards */}
-          {results && !loading && (
-            <div>
-              {results.understanding && (
-                <p style={{
-                  fontSize: 13, color: CLR.warm700, lineHeight: 1.5,
-                  marginBottom: 12,
-                }}>
-                  {results.understanding}
-                </p>
-              )}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {(results.recommendations || []).slice(0, 3).map((rec, i) => (
+              <ToolCard key={rec.id} rec={rec} rank={i + 1} />
+            ))}
+          </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {(results.recommendations || []).slice(0, 3).map((rec) => (
-                  <a
-                    key={rec.id}
-                    href={`/${rec.id}`}
-                    style={{
-                      display: 'flex', alignItems: 'center', gap: 10,
-                      background: CLR.sand50,
-                      border: `1.5px solid ${CLR.sand200}`,
-                      borderRadius: 10, padding: '10px 14px',
-                      textDecoration: 'none', color: CLR.warm800,
-                      transition: 'border-color 0.15s',
-                    }}
-                    onMouseEnter={e => e.currentTarget.style.borderColor = CLR.gold500}
-                    onMouseLeave={e => e.currentTarget.style.borderColor = CLR.sand200}
-                  >
-                    <span style={{ fontSize: 22, flexShrink: 0 }}>{rec.icon || '🔧'}</span>
-                    <div style={{ flex: 1, minWidth: 0, overflow: 'hidden' }}>
-                      <p style={{ fontWeight: 700, fontSize: 13, color: CLR.navy500, margin: 0 }}>
-                        {rec.title}
-                      </p>
-                      <p style={{
-                        fontSize: 11, color: CLR.warm500, margin: '2px 0 0',
-                        whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-                      }}>
-                        {rec.why?.length > 90 ? rec.why.slice(0, 90) + '…' : rec.why}
-                      </p>
-                    </div>
-                    <span style={{ color: CLR.gold500, flexShrink: 0, fontSize: 16 }}>→</span>
-                  </a>
-                ))}
-              </div>
-
-              {/* Footer actions */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 12 }}>
-                <button
-                  onClick={reset}
-                  style={{
-                    background: 'none',
-                    border: `1px solid ${CLR.sand300}`,
-                    borderRadius: 8, padding: '6px 14px',
-                    fontSize: 12, fontWeight: 600,
-                    color: CLR.warm500, cursor: 'pointer',
-                  }}
-                >
-                  Try again
-                </button>
-                <a
-                  href="/ToolFinder"
-                  style={{
-                    fontSize: 12, fontWeight: 600,
-                    color: CLR.navy400,
-                    textDecoration: 'underline',
-                  }}
-                >
-                  Open full ToolFinder →
-                </a>
-              </div>
+          {/* Workflow note */}
+          {results.workflow && (
+            <div style={{
+              background: CLR.navy500 + '08',
+              border: `1px solid ${CLR.navy400}20`,
+              borderRadius: 8,
+              padding: '9px 12px',
+              marginTop: 10,
+              display: 'flex',
+              gap: 8,
+            }}>
+              <span style={{ fontSize: 14, flexShrink: 0 }}>🔗</span>
+              <p style={{
+                fontSize: 11.5,
+                color: CLR.navy500,
+                margin: 0,
+                lineHeight: 1.5,
+              }}>
+                <strong>Use these together:</strong> {results.workflow}
+              </p>
             </div>
           )}
+
+          {/* No perfect fit note */}
+          {results.no_perfect_fit && (
+            <p style={{
+              fontSize: 11.5,
+              color: CLR.warm500,
+              fontStyle: 'italic',
+              margin: '10px 0 0',
+              lineHeight: 1.5,
+            }}>
+              {results.no_perfect_fit}
+            </p>
+          )}
+
+          {/* Footer */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 12,
+            marginTop: 14,
+            paddingTop: 12,
+            borderTop: `1px solid ${CLR.sand200}`,
+          }}>
+            <button
+              onClick={reset}
+              style={{
+                background: 'none',
+                border: `1.5px solid ${CLR.sand300}`,
+                borderRadius: 8,
+                padding: '6px 14px',
+                fontSize: 12,
+                fontWeight: 600,
+                color: CLR.warm500,
+                cursor: 'pointer',
+              }}
+            >
+              ↩ Try a different situation
+            </button>
+            <a
+              href="/ToolFinder"
+              style={{
+                fontSize: 12,
+                fontWeight: 600,
+                color: CLR.navy400,
+                textDecoration: 'underline',
+                marginLeft: 'auto',
+              }}
+            >
+              Open full ToolFinder →
+            </a>
+          </div>
         </div>
       )}
+
+      {/* Loading state */}
+      {loading && (
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 10,
+          padding: '8px 0',
+        }}>
+          <span style={{
+            fontSize: 18,
+            display: 'inline-block',
+            animation: 'spin 1s linear infinite',
+          }}>🔍</span>
+          <div>
+            <p style={{
+              fontSize: 13, fontWeight: 600,
+              color: CLR.warm700, margin: 0,
+            }}>
+              Finding your best tools…
+            </p>
+            <p style={{
+              fontSize: 11, color: CLR.warm400,
+              margin: '2px 0 0',
+            }}>
+              Reading your situation
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Error state */}
+      {error && !loading && (
+        <div style={{
+          display: 'flex', alignItems: 'center',
+          gap: 8, padding: '8px 0',
+        }}>
+          <p style={{ fontSize: 13, color: '#c0392b', margin: 0 }}>{error}</p>
+          <button
+            onClick={reset}
+            style={{
+              background: 'none', border: 'none',
+              color: CLR.navy400, fontSize: 12,
+              fontWeight: 600, cursor: 'pointer',
+              textDecoration: 'underline',
+            }}
+          >
+            Try again
+          </button>
+        </div>
+      )}
+
+      {/* Spin keyframe — injected once */}
+      <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 }

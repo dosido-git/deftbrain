@@ -25,10 +25,9 @@ const Footer = () => {
 
   // Right-side links (extensible — append future links here)
   const links = [
-    { label: 'Guides',  href: '/guides' },
-    { label: 'Privacy', href: '/privacy' },
-    // Future: { label: 'Terms',   href: '/terms' },
-    // Future: { label: 'Contact', href: '/contact' },
+    { label: 'Find a Tool', href: '/ToolFinder' },
+    { label: 'Guides',      href: '/guides' },
+    { label: 'Privacy',     href: '/privacy' },
   ];
 
   return (

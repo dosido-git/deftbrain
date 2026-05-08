@@ -783,19 +783,26 @@ const TheFinalWord = ({ tool }) => {
   // RENDER
   // ════════════════════════════════════════════════════════
   return (
-    <div className={`min-h-screen py-8 px-4`}>
-      <div className="max-w-2xl mx-auto space-y-6">
-
-        {/* ── Header ── */}
-        <div className="space-y-2 mb-8">
-          <h2 className={`text-3xl font-black tracking-tight ${c.text}`}>
-            <span className="mr-2">{tool?.icon ?? '⚖️'}</span>{tool?.title ?? 'The Final Word'}
-          </h2>
-          <p className={`text-sm ${c.textMuted}`}>{tool?.tagline ?? 'Arguments settled. Facts checked. No appeals.*'}</p>
-
-          {/* Header actions */}
-          {!result && !triviaQuestion && !triviaFinished && !mpMode && (
-            <div className="flex items-center justify-center gap-2 mt-3">
+    <div className={`space-y-4 ${c.text}`}>
+      {/* ── Persistent header ── */}
+        <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+          <div className="pb-3 border-b border-zinc-500">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
+                  <span className="mr-2">{tool?.icon ?? '⚖️'}</span>{tool?.title ?? 'The Final Word'}
+                </h2>
+                <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Arguments settled. Facts checked. No appeals.*'}</p>
+              </div>
+              {(result || triviaQuestion || triviaFinished || mpMode) && (
+                <button onClick={() => { resetAll(); setMode(null); }} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold`}>
+                  ↺ Start Over
+                </button>
+              )}
+            </div>
+          </div>
+          {!result && !triviaQuestion && !triviaFinished && !mpMode && (history.length > 0 || stats.totalVerdicts > 0) && (
+            <div className="flex items-center gap-2 pt-3">
               {history.length > 0 && (
                 <button onClick={() => { setShowHistory(!showHistory); setShowStats(false); }} className={`text-xs font-semibold px-3 py-1.5 rounded-lg transition-all ${c.btnSecondary}`}>
                   📜 {showHistory ? 'Hide' : `History (${history.length})`}
@@ -1764,7 +1771,6 @@ const TheFinalWord = ({ tool }) => {
           </div>
         )}
         </div>{/* end resultsRef wrapper */}
-      </div>
     </div>
   );
 };

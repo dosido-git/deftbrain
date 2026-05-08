@@ -412,7 +412,7 @@ const FakeReviewDetective = ({ tool }) => {
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
         <div className="pb-3 border-b border-zinc-500">
           <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-            <span>{tool?.icon ?? '🔍'}</span>{tool?.title ?? 'Fake Review Detective'}
+            <span className="mr-2">{tool?.icon ?? '🔍'}</span>{tool?.title ?? 'Fake Review Detective'}
           </h2>
           <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Spot fake reviews before you get burned'}</p>
         </div>
@@ -740,13 +740,6 @@ const FakeReviewDetective = ({ tool }) => {
           </div>)}</div>
         </div>
       )}
-        <div className={`mt-6 pt-4 border-t text-sm ${c.border} ${c.textMuted}`}>
-          <p className="mb-2 font-medium">You might also like:</p>
-          <div className="flex flex-wrap gap-2">
-            <a href="/MarkupDetective" className={linkStyle}>🏷️ Markup Detective</a>
-            <a href="/BuyWise" className={linkStyle}>🛒 BuyWise</a>
-          </div>
-        </div>
     </div>
   );
 };

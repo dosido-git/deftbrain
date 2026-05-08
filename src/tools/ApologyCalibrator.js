@@ -91,8 +91,7 @@ const ApologyCalibrator = ({ tool }) => {
     flagBg: isDark ? 'bg-red-900/30 border-red-600' : 'bg-red-50 border-red-200',
     goodBg: isDark ? 'bg-emerald-900/30 border-emerald-600' : 'bg-emerald-50 border-emerald-200',
     rewriteBg: isDark ? 'bg-emerald-900/30 border-emerald-600' : 'bg-emerald-50 border-emerald-200',
-    purpleBg: isDark ? 'bg-cyan-900/30 border-cyan-600' : 'bg-cyan-50 border-cyan-200',
-    indigoBg: isDark ? 'bg-cyan-900/30 border-cyan-600' : 'bg-cyan-50 border-cyan-200',
+    cyanBg:    isDark ? 'bg-cyan-900/30 border-cyan-600' : 'bg-cyan-50 border-cyan-200',
     amberBg: isDark ? 'bg-amber-900/30 border-amber-600' : 'bg-amber-50 border-amber-200',
     border: isDark ? 'border-zinc-700' : 'border-gray-200',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
@@ -640,6 +639,7 @@ const ApologyCalibrator = ({ tool }) => {
   // ── Ref assignments ────────────────────────────────────────
   const handleSubmitRef = useRef(null);
   const canSubmitRef = useRef(false);
+  const resultsRef = useRef(null);
   handleSubmitRef.current = handleCalibrate;
   canSubmitRef.current = !!(calForm.whatHappened?.trim()) && view === 'calibrate';
 
@@ -657,6 +657,13 @@ const ApologyCalibrator = ({ tool }) => {
     return () => document.removeEventListener('keydown', handler);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading]);
+
+  // ── Scroll to results ──────────────────────────────────────
+  useEffect(() => {
+    if (!results) return;
+    const t = setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+    return () => clearTimeout(t);
+  }, [results]);
 
 
   const renderCalibrate = () => (
@@ -1683,7 +1690,7 @@ const ApologyCalibrator = ({ tool }) => {
           <>
             {/* Scene setting (first response) */}
             {practiceResults?.scene_setting && practiceHistory.length === 0 && (
-              <div className={`rounded-lg p-4 border-2 ${c.indigoBg} mb-4`}>
+              <div className={`rounded-lg p-4 border-2 ${c.cyanBg} mb-4`}>
                 <p className={`text-sm italic ${isDark ? 'text-cyan-300' : 'text-cyan-700'}`}>{practiceResults.scene_setting}</p>
               </div>
             )}
@@ -1917,7 +1924,7 @@ const ApologyCalibrator = ({ tool }) => {
 
           {/* Reflection */}
           {forgiveResults.one_thing_to_sit_with && (
-            <div className={`rounded-xl p-5 border-2 ${c.indigoBg}`}>
+            <div className={`rounded-xl p-5 border-2 ${c.cyanBg}`}>
               <h3 className={`font-bold mb-2 ${isDark ? 'text-cyan-200' : 'text-cyan-900'}`}><span className="mr-2">🪷</span>Something to Sit With</h3>
               <p className={`italic ${isDark ? 'text-cyan-300' : 'text-cyan-800'}`}>{forgiveResults.one_thing_to_sit_with}</p>
             </div>
@@ -2158,7 +2165,7 @@ const ApologyCalibrator = ({ tool }) => {
         <div className="space-y-4">
           {/* Approach */}
           {letterResults.letter_approach && (
-            <div className={`rounded-xl p-5 border-2 ${c.indigoBg}`}>
+            <div className={`rounded-xl p-5 border-2 ${c.cyanBg}`}>
               <p className={isDark ? 'text-cyan-200' : 'text-cyan-800'}>{letterResults.letter_approach}</p>
             </div>
           )}
@@ -2344,7 +2351,7 @@ const ApologyCalibrator = ({ tool }) => {
               ))}
             </div>
 
-            <div className={`rounded-lg p-3 border ${c.indigoBg}`}>
+            <div className={`rounded-lg p-3 border ${c.cyanBg}`}>
               <p className={`text-xs font-semibold uppercase tracking-wide mb-1 ${isDark ? 'text-cyan-400' : 'text-cyan-600'}`}>What you were trying to do</p>
               <p className={`text-sm ${c.textSecondary}`}>{fixResults.diagnosis?.what_they_were_trying_to_do}</p>
             </div>
@@ -2588,6 +2595,7 @@ const ApologyCalibrator = ({ tool }) => {
       </div>
 
         {/* Active view */}
+        <div ref={resultsRef}>
         {view === 'calibrate' && renderCalibrate()}
         {view === 'fix' && renderFix()}
         {view === 'detect' && renderDetect()}
@@ -2600,6 +2608,7 @@ const ApologyCalibrator = ({ tool }) => {
         {view === 'audit' && renderAudit()}
         {view === 'cultural' && renderCultural()}
         {view === 'repairs' && renderRepairs()}
+        </div>
 
       {!results && (
         <p className={`text-xs text-center ${c.textMuted}`}>

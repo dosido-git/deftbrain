@@ -364,6 +364,11 @@ const SpiralStopper = ({ tool }) => {
             <div className="flex gap-1 mt-1">{[1, 2, 3, 4, 5].map(n => <button key={n} onClick={() => setIntensity(n)} className={`flex-1 py-3 rounded-lg text-sm font-bold border-2 transition-all ${n <= intensity ? c.intensityActive : `${c.cardAlt} ${c.border} ${c.textMuted}`}`}>{n}</button>)}</div>
           </div>
           <button onClick={handleSpiral} disabled={loading || !thoughts.trim()} className={`w-full py-4 rounded-xl font-semibold text-lg ${loading || !thoughts.trim() ? c.btnLoading : c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🌀'}</span> Analyzing...</> : <><span className="mr-1">{tool?.icon ?? '🌀'}</span> Stop the spiral</>}</button>
+          <p className={`text-xs text-center ${c.textMuted}`}>
+            Need to clear your head first?{' '}
+            <a href="/BrainDumpBuddy" className={linkStyle}>🧠 Brain Dump Buddy</a>{' '}
+            gets the noise out before you work through it.
+          </p>
         </div>
       )}
 
@@ -539,7 +544,7 @@ const SpiralStopper = ({ tool }) => {
         <div className="space-y-4">
           <div className={`${c.card} rounded-xl shadow-lg p-5`}>
             <div className="flex items-center justify-between mb-4"><h3 className={`font-bold text-lg ${c.text}`}>📊 Episode history</h3>
-              {episodeLog.length >= 3 && <button onClick={handlePatterns} disabled={loading} className={`text-xs font-bold px-3 py-1.5 rounded-lg ${c.btnPrimary} disabled:opacity-40`}>{loading ? '🕐' : '🔍 Analyze patterns'}</button>}
+              {episodeLog.length >= 3 && <button onClick={handlePatterns} disabled={loading} className={`text-xs font-bold px-3 py-1.5 rounded-lg ${c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🌀'}</span> Analyzing…</> : '🔍 Analyze patterns'}</button>}
             </div>
 
             {/* Status bar */}
@@ -575,14 +580,6 @@ const SpiralStopper = ({ tool }) => {
           </div>}
         </div>
       )}
-        <div className={`mt-6 pt-4 border-t text-sm ${c.border} ${c.textMuted}`}>
-          <p className="mb-2 font-medium">You might also like:</p>
-          <div className="flex flex-wrap gap-2">
-            {[{slug:'BrainDumpBuddy',label:'🧠 Brain Dump Buddy'},{slug:'FocusPocus',label:'🎯 Focus Pocus'},{slug:'RechargeRadar',label:'🔋 Recharge Radar'}].map(({slug,label})=>(
-              <a key={slug} href={`/${slug}`} className={linkStyle}>{label}</a>
-            ))}
-          </div>
-        </div>
 
       {results && (
         <p className={`text-xs ${c.textMuted} text-center`}>

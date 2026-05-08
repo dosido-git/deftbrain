@@ -102,7 +102,7 @@ console.log(`Tool ID map: ${Object.keys(toolIdMap).length} tools`);
 // added here so they're explicitly de-indexed instead of soft-404'd.
 const RETIRED_SLUGS = [
   '/Impartial', '/Presenter', '/TheNetwork',
-  '/GradeGraveyard',
+  '/GradeGraveyard', '/PDF-Fixer',
 ];
 RETIRED_SLUGS.forEach(slug => {
   app.get(slug, (req, res) => res.status(410).send('This tool has been retired.'));

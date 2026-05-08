@@ -58,6 +58,7 @@ const ColdOpenCraft = ({ tool }) => {
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
   };
   c.textMuteded = c.textMuted;
+  c.label       = c.labelText;
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
@@ -170,11 +171,20 @@ const ColdOpenCraft = ({ tool }) => {
       {/* ── INPUT CARD ── */}
       <div className={`${c.card} border ${c.border} rounded-xl shadow-lg p-5`}>
         {/* Standard header */}
-        <div className={`mb-4 pb-3 border-b ${c.border}`}>
-          <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-            <span>{tool?.icon ?? '📬'}</span>{tool?.title ?? 'Cold Open Craft'}
-          </h2>
-          <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'First messages that actually get responses.'}</p>
+        <div className="mb-4 pb-3 border-b border-zinc-500">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
+                <span className="mr-2">{tool?.icon ?? '📬'}</span>{tool?.title ?? 'Cold Open Craft'}
+              </h2>
+              <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'First messages that actually get responses.'}</p>
+            </div>
+            {(results || who.trim() || why.trim()) && (
+              <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs`}>
+                ↺ Start Over
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Pre-result cross-ref */}
@@ -334,16 +344,6 @@ const ColdOpenCraft = ({ tool }) => {
           ════════════════════════════════════════════════════════ */}
       {results && (
         <div ref={resultsRef} className="space-y-4">
-
-          {/* Reset — top of results */}
-          <div className="flex items-center justify-between gap-3 flex-wrap">
-            <button
-              onClick={handleReset}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${c.btnSecondary}`}
-            >
-              ↺ Start Over
-            </button>
-          </div>
 
           {/* Situation read */}
           {r.situation_read && (

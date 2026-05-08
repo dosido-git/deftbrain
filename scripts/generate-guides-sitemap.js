@@ -98,6 +98,16 @@ function urlEntry(e) {
 }
 
 function main() {
+  // Fail fast if build-guides-indexes.js didn't run. Without this, walk()
+  // returns [] silently and we ship a stub sitemap with only hub entries.
+  if (!fs.existsSync(GUIDES_DIR)) {
+    throw new Error(
+      `generate-guides-sitemap: ${GUIDES_DIR} does not exist.\n` +
+      `  build-guides-indexes.js must run before this script in the postbuild chain.\n` +
+      `  Check: package.json postbuild order.`
+    );
+  }
+
   const files = walk(GUIDES_DIR);
   const articleEntries = [];
   const problems = [];
@@ -119,6 +129,17 @@ function main() {
   }
 
   const hubEntries = buildHubEntries();
+
+  // Guard: if no articles were collected, build-guides-indexes.js either
+  // didn't run or produced nothing. A sitemap with only hub pages looks
+  // valid but advertises no spec pages — worse than a loud failure.
+  if (articleEntries.length === 0) {
+    throw new Error(
+      `generate-guides-sitemap: walked ${GUIDES_DIR} but found 0 article pages.\n` +
+      `  build-guides-indexes.js may not have run, or produced no output.\n` +
+      `  problems: ${problems.length ? problems.map(p => `\n    ${p}`).join('') : 'none'}`
+    );
+  }
 
   // Hubs first (higher priority), then articles. Within each group, sort by URL
   // for deterministic output that produces clean git diffs.

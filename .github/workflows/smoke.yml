@@ -1,0 +1,72 @@
+name: Production smoke test
+
+# Hits critical production URLs on a schedule. Fails the workflow if any
+# return non-200. GitHub emails the repo owner on failure (configurable
+# at github.com/settings/notifications).
+#
+# This is the runtime safety net. The build-time net is verify-build.js;
+# this catches drift that survives the build (Fastly cache stuck on a
+# stale 404, server.js routing regression, DNS issue, etc.).
+
+on:
+  schedule:
+    # Every 6 hours. Adjust to taste — '0 * * * *' for hourly,
+    # '0 12 * * *' for daily noon UTC.
+    - cron: '0 */6 * * *'
+  workflow_dispatch:  # manual trigger button in Actions tab
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Hit critical URLs
+        run: |
+          set +e  # don't exit on first failure — collect all
+          FAIL=0
+
+          URLS=(
+            # Hubs
+            "https://deftbrain.com/"
+            "https://deftbrain.com/guides"
+            "https://deftbrain.com/guides/by-tool"
+
+            # All 18 category indexes
+            "https://deftbrain.com/guides/wellness"
+            "https://deftbrain.com/guides/decisions"
+            "https://deftbrain.com/guides/cooking"
+            "https://deftbrain.com/guides/safety"
+            "https://deftbrain.com/guides/learning"
+            "https://deftbrain.com/guides/travel"
+            "https://deftbrain.com/guides/presentations"
+            # TODO: add the other 11 categories from your guides/ directory
+
+            # Sample tool pages (rotate these periodically)
+            "https://deftbrain.com/DebateMe"
+            "https://deftbrain.com/DecisionCoach"
+            "https://deftbrain.com/NameAudit"
+
+            # Sitemaps
+            "https://deftbrain.com/sitemap.xml"
+            "https://deftbrain.com/sitemap-index.xml"
+            "https://deftbrain.com/guides-sitemap.xml"
+          )
+
+          for url in "${URLS[@]}"; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" -L --max-time 10 "$url")
+            if [ "$code" != "200" ]; then
+              echo "❌ $url → $code"
+              FAIL=$((FAIL+1))
+            else
+              echo "✅ $url → $code"
+            fi
+          done
+
+          if [ $FAIL -gt 0 ]; then
+            echo ""
+            echo "$FAIL URL(s) failed."
+            exit 1
+          fi
+          echo ""
+          echo "All URLs healthy."

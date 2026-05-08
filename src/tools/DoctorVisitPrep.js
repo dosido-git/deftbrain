@@ -385,7 +385,7 @@ const DoctorVisitPrep = ({ tool }) => {
             <h2 className={`text-xl font-bold ${c.text} flex items-center`}>
               <span className="mr-2">{tool?.icon ?? '📝'}</span>{tool?.title ?? 'Doctor Visit Prep'}
             </h2>
-            <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Walk in prepared — so you don\u2019t waste the visit'}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? "Walk in prepared — so you don't waste the visit"}</p>
           </div>
           {hasResetableState && (
             <button
@@ -406,7 +406,7 @@ const DoctorVisitPrep = ({ tool }) => {
           <span>⚠️</span>
           <div>
             <h4 className="font-bold text-sm mb-0.5">Medical Disclaimer</h4>
-            <p className="text-xs">This tool helps you prepare to talk to a clinician. It does not diagnose, recommend treatment, or replace medical advice. For severe or urgent symptoms (chest pain, sudden severe headache, signs of stroke, heavy bleeding), seek urgent care or call 911 — don\u2019t wait for a scheduled visit.</p>
+            <p className="text-xs">This tool helps you prepare to talk to a clinician. It does not diagnose, recommend treatment, or replace medical advice. For severe or urgent symptoms (chest pain, sudden severe headache, signs of stroke, heavy bleeding), seek urgent care or call 911 — don't wait for a scheduled visit.</p>
           </div>
         </div>
 
@@ -607,7 +607,7 @@ const DoctorVisitPrep = ({ tool }) => {
                 onClick={saveCurrentPrep}
                 className={`${c.btnSecondary} py-2 px-4 rounded-lg text-sm font-semibold border transition-colors`}
               >
-                💾 💾 Save to History
+                💾 Save to History
               </button>
             </div>
           </div>
@@ -835,19 +835,7 @@ const DoctorVisitPrep = ({ tool }) => {
         </div>
       )}
 
-      {/* Footer cross-refs */}
-      <div className={`mt-6 pt-4 border-t text-sm ${c.border} ${c.textMuted}`}>
-        <p className="mb-2 font-medium">You might also like:</p>
-        <div className="flex flex-wrap gap-2">
-          {[
-            { href: '/DoctorVisitTranslator', label: '🩺 Doctor Visit Translator' },
-            { href: '/PlainTalk', label: '💬 Plain Talk' },
-            { href: '/JargonAssassin', label: '🗡️ Jargon Assassin' },
-          ].map(({ href, label }) => (
-            <a key={href} href={href} className={linkStyle}>{label}</a>
-          ))}
-        </div>
-      </div>
+
     </div>
   );
 };

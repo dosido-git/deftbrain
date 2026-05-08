@@ -353,7 +353,7 @@ const SkillGapMap = ({ tool }) => {
 
       {/* Persistent header — single reset always in same position */}
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
-        <div className={`pb-3 border-b ${c.border}`}>
+        <div className={`pb-3 border-b border-zinc-500`}>
           <div className="flex items-start justify-between gap-3">
             <div>
               <h2 className={`text-2xl font-bold ${c.text}`}>
