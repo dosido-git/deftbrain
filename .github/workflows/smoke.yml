@@ -32,15 +32,25 @@ jobs:
             "https://deftbrain.com/guides"
             "https://deftbrain.com/guides/by-tool"
 
-            # All 18 category indexes
-            "https://deftbrain.com/guides/wellness"
-            "https://deftbrain.com/guides/decisions"
+            # All 18 guide category indexes
+            "https://deftbrain.com/guides/apologies"
+            "https://deftbrain.com/guides/career"
+            "https://deftbrain.com/guides/conversations"
             "https://deftbrain.com/guides/cooking"
-            "https://deftbrain.com/guides/safety"
+            "https://deftbrain.com/guides/decisions"
+            "https://deftbrain.com/guides/health"
+            "https://deftbrain.com/guides/home"
             "https://deftbrain.com/guides/learning"
-            "https://deftbrain.com/guides/travel"
+            "https://deftbrain.com/guides/meetings"
+            "https://deftbrain.com/guides/money"
+            "https://deftbrain.com/guides/pets"
+            "https://deftbrain.com/guides/planning"
+            "https://deftbrain.com/guides/practical"
             "https://deftbrain.com/guides/presentations"
-            # TODO: add the other 11 categories from your guides/ directory
+            "https://deftbrain.com/guides/speeches"
+            "https://deftbrain.com/guides/travel"
+            "https://deftbrain.com/guides/wellness"
+            "https://deftbrain.com/guides/workplace"
 
             # Sample tool pages (rotate these periodically)
             "https://deftbrain.com/DebateMe"
