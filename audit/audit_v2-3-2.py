@@ -1,3 +1,16 @@
+# v2.3 · 2026-05-10 · two frontend resilience checks for the F1–F4 pass:
+#                     F1/PF-20 — error state set but never rendered in JSX.
+#                       Fires when setError() is present but {error is absent
+#                       from the JSX area (user sees nothing on failure).
+#                       Also catches {error.message} rendered directly (leaks
+#                       internal strings to users).
+#                     F3/PF-21 — chained results field access without optional
+#                       chaining. Fires when results.X.Y (two-level) or
+#                       results.X.map/length/filter patterns appear in JSX
+#                       with zero results?. usage anywhere in JSX — these
+#                       crash silently when Claude omits a field.
+#                     F2 (loading spinner) already covered by S2.3 (animate-spin).
+#                     F4 (audit passes) is the audit itself.
 # v2.2 · 2026-05-07 · six audit-script patches from backlog:
 #                     (1) S0f TOOL_META population: EOL-anchored `id:` regex
 #                         excludes cross-ref inline entries like
@@ -1185,6 +1198,69 @@ for name, fpath in tools:
                 f'PF-19: growable input list `{_state_name}` (appended via set{_setter}) '
                 f'must auto-focus the new field. Missing: ' + '; '.join(_missing)
             )
+
+    # ── F1 / PF-20: Error state must be rendered in JSX ───────────────────────
+    # If a tool calls setError() to record a failure, that error must also
+    # surface to the user in the JSX. A tool that sets error silently shows
+    # the user nothing on failure — worse than a crash because there is no
+    # signal that something went wrong.
+    #
+    # Also catches {error.message} rendered directly, which exposes raw
+    # internal error strings (often technical) to the user.
+    #
+    # Note: S2.3 (animate-spin) covers F2 (loading spinner).
+    # F4 is the audit itself passing.
+
+    _has_set_error = bool(re.search(r'\bsetError\s*\(', content))
+    if _has_set_error:
+        _error_rendered_in_jsx = bool(re.search(r'\{\s*error\b', jsx_area))
+        if not _error_rendered_in_jsx:
+            fails.append(
+                'F1/PF-20: setError() called but {error never rendered in JSX — '
+                'users see nothing on failure; add {error && <p className={c.error}>{error}</p>} '
+                'or equivalent inside the form card'
+            )
+        elif re.search(r'\{\s*error\.message\b', jsx_area):
+            fails.append(
+                'F1/PF-20: {error.message} rendered directly — exposes internal error '
+                'strings to users; render the error state string itself, not .message'
+            )
+
+    # ── F3 / PF-21: Chained results access without optional chaining ──────────
+    # Claude occasionally omits fields from its JSON response (low max_tokens,
+    # prompt drift, unexpected input). Any two-level access like results.X.Y
+    # or results.X.map(...) in JSX crashes with "Cannot read properties of
+    # undefined" when X is missing.
+    #
+    # Detection: fire when JSX contains chained results access (results.X.Y,
+    # results.X.map, results.X.length, results.X.filter, results.X.forEach)
+    # AND there is no optional chaining on results (results?.) anywhere in
+    # the JSX area. Files with mixed usage (some ?. , some direct) have
+    # already addressed the issue intentionally — don't flag those.
+    #
+    # The {results && guard only prevents crashes when results itself is null —
+    # it does NOT protect against results.field being undefined.
+
+    _chained_access = bool(re.search(
+        r'\bresults?\.[A-Za-z_][A-Za-z0-9_]*\.'        # results.X.Y
+        r'|\bresults?\.[A-Za-z_][A-Za-z0-9_]*\s*\('    # results.X(
+        r'|\bresults?\.[A-Za-z_][A-Za-z0-9_]*\s*\[',   # results.X[
+        jsx_area,
+    ))
+    _has_optional_chain = bool(re.search(r'\bresults?\?\.', jsx_area))
+
+    if _chained_access and not _has_optional_chain:
+        # Find a representative example for the message
+        _eg = re.search(
+            r'\bresults?\.[A-Za-z_][A-Za-z0-9_]*[\.\(\[]',
+            jsx_area,
+        )
+        _eg_str = _eg.group(0).rstrip('.(') if _eg else 'results.X.Y'
+        fails.append(
+            f'F3/PF-21: chained results access ({_eg_str}...) in JSX with no optional '
+            f'chaining (results?.) — crashes when Claude omits a field; '
+            f'add ?. (e.g. results?.X?.map(...)) or validate shape before render'
+        )
 
     # ── TOOLS: tool must have an entry in tools.js ─────────────────────────────
     # Caught early: a tool component without a tools.js registration is unreachable.

@@ -52,10 +52,40 @@ jobs:
             "https://deftbrain.com/guides/wellness"
             "https://deftbrain.com/guides/workplace"
 
-            # Sample tool pages (rotate these periodically)
-            "https://deftbrain.com/DebateMe"
+            # Sample tool pages — cross-category coverage
+            # Rotate or expand periodically to widen regression surface
+            # Money / Loot
+            "https://deftbrain.com/BuyWise"
+            "https://deftbrain.com/BillRescue"
+            "https://deftbrain.com/SubSweep"
+            "https://deftbrain.com/RentersDepositSaver"
+            "https://deftbrain.com/MoneyDiplomat"
+            # Career / Grind
+            "https://deftbrain.com/SkillGapMap"
+            "https://deftbrain.com/LeverageLogic"
+            "https://deftbrain.com/BragSheetBuilder"
+            # Decisions / Mind
             "https://deftbrain.com/DecisionCoach"
+            "https://deftbrain.com/PreMortem"
+            "https://deftbrain.com/DebateMe"
+            # Social / Humans
+            "https://deftbrain.com/ConflictCoach"
+            "https://deftbrain.com/MagicMouth"
+            "https://deftbrain.com/DifficultTalkCoach"
+            # Out & About
+            "https://deftbrain.com/DateNight"
+            "https://deftbrain.com/PartyArchitect"
+            "https://deftbrain.com/MicroAdventureMapper"
+            # Health / Body
+            "https://deftbrain.com/ProcedureProbe"
+            "https://deftbrain.com/DoctorVisitPrep"
+            # Focus / Energy
+            "https://deftbrain.com/FocusPocus"
+            "https://deftbrain.com/FocusSoundArchitect"
+            # Miscellaneous
             "https://deftbrain.com/NameAudit"
+            "https://deftbrain.com/GhostWriter"
+            "https://deftbrain.com/RecipeChaosSolver"
 
             # Sitemaps
             "https://deftbrain.com/sitemap.xml"
