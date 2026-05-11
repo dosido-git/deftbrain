@@ -54,10 +54,13 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry(prompt, {
       model: 'claude-sonnet-4-6', label: 'ResearchDecoder', max_tokens: 3000,
       system: withLanguage('Science translator for non-experts. You make research accessible without dumbing it down. You DESCRIBE methodology rather than judging it. You are scrupulously honest about what papers prove vs. what people assume they prove. Warm, clear, occasionally funny. You use analogies. You care about scientific literacy. Return ONLY valid JSON. No markdown.', userLanguage) });
+    if (!parsed.plain_english && !parsed.what_it_means) {
+      return res.status(500).json({ error: 'Could not decode this research. Please try again.' });
+    }
     res.json(parsed);
   } catch (error) {
     console.error('[ResearchDecoder]', error);
-    res.status(500).json({ error: error.message || 'Failed to digest paper.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -103,10 +106,13 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry(prompt, {
       model: 'claude-sonnet-4-6', label: 'ResearchDecoderMedia', max_tokens: 2000,
       system: withLanguage('Media accuracy analyst for scientific papers. You compare what papers say to what headlines claim. You are fair — you give credit when media gets it right — but unflinching when they distort. You care about public understanding of science. Warm, clear, never condescending. Return ONLY valid JSON. No markdown.', userLanguage) });
+    if (!parsed.plain_english && !parsed.what_it_means) {
+      return res.status(500).json({ error: 'Could not decode this research. Please try again.' });
+    }
     res.json(parsed);
   } catch (error) {
     console.error('[ResearchDecoderMedia]', error);
-    res.status(500).json({ error: error.message || 'Failed to check media accuracy.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -143,10 +149,13 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry(prompt, {
       model: 'claude-sonnet-4-6', label: 'ResearchDecoderJargon', max_tokens: 1500,
       system: withLanguage('Jargon translator. You explain technical terms so they actually make sense to non-experts. Analogies, examples, zero jargon in explanations. Return ONLY valid JSON. No markdown.', userLanguage) });
+    if (!parsed.plain_english && !parsed.what_it_means) {
+      return res.status(500).json({ error: 'Could not decode this research. Please try again.' });
+    }
     res.json(parsed);
   } catch (error) {
     console.error('[ResearchDecoderJargon]', error);
-    res.status(500).json({ error: error.message || 'Failed to decode jargon.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -190,10 +199,13 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry(prompt, {
       model: 'claude-sonnet-4-6', label: 'ResearchDecoderCompare', max_tokens: 2500,
       system: withLanguage('Paper comparison analyst. You help non-experts understand how multiple studies relate to each other. You never declare one paper "better" without explaining what "better" means in context. Nuanced, fair, clear. Return ONLY valid JSON. No markdown.', userLanguage) });
+    if (!parsed.plain_english && !parsed.what_it_means) {
+      return res.status(500).json({ error: 'Could not decode this research. Please try again.' });
+    }
     res.json(parsed);
   } catch (error) {
     console.error('[ResearchDecoderCompare]', error);
-    res.status(500).json({ error: error.message || 'Failed to compare papers.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -234,10 +246,13 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry(prompt, {
       model: 'claude-sonnet-4-6', label: 'ResearchDecoderRelevance', max_tokens: 1500,
       system: withLanguage('Personal health/science relevance advisor. You help people figure out if a study applies to THEM. You never give medical advice but you help them think clearly about what to do with information. Warm, honest, specific. Return ONLY valid JSON. No markdown.', userLanguage) });
+    if (!parsed.plain_english && !parsed.what_it_means) {
+      return res.status(500).json({ error: 'Could not decode this research. Please try again.' });
+    }
     res.json(parsed);
   } catch (error) {
     console.error('[ResearchDecoderRelevance]', error);
-    res.status(500).json({ error: error.message || 'Failed to assess relevance.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

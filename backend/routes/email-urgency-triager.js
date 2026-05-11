@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
@@ -8,7 +8,7 @@ const { rateLimit } = require('../lib/rateLimiter');
 // ════════════════════════════════════════════════════════════
 router.post('/email-urgency-triager', rateLimit(), async (req, res) => {
   try {
-    const { action } = req.body;
+    const { action, userLanguage } = req.body;
 
     // Route to compose handler
     if (action === 'compose') return handleCompose(req, res);
@@ -155,18 +155,20 @@ CRITICAL RULES:
 
 Return ONLY valid JSON.`;
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 4000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }]
-    });
+    }, { label: 'email-urgency-triage' });
 
-    const parsed = extractJSON(message);
+    if (!Array.isArray(parsed.urgency_analysis)) {
+      return res.status(500).json({ error: 'Could not analyze your emails. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('Email Urgency Triager error:', error);
-    res.status(500).json({ error: error.message || 'Failed to analyze emails' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -233,18 +235,20 @@ RULES:
 
 Return ONLY valid JSON.`;
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }]
-    });
+    }, { label: 'email-urgency-compose' });
 
-    const parsed = extractJSON(message);
+    if (!parsed.subject && !parsed.body) {
+      return res.status(500).json({ error: 'Could not compose the reply. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('Email compose error:', error);
-    res.status(500).json({ error: error.message || 'Failed to compose reply' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 }
 

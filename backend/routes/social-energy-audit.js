@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, cleanJsonResponse, withLanguage } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
@@ -100,21 +100,20 @@ Analyze these interactions and return ONLY valid JSON:
 
 Return ONLY valid JSON.`;
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 3000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'social-energy-audit' });
+    if (!parsed.audit && !parsed.profile && !parsed.energy_profile) {
+      return res.status(500).json({ error: 'Could not audit your social energy. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('SocialEnergyAudit error:', error);
-    res.status(500).json({ error: error.message || 'Energy audit failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -166,21 +165,20 @@ Predict energy costs and suggest optimizations. Return ONLY valid JSON:
   "protection_plan": "What recovery time should they absolutely protect this week? Be specific about when."
 }`;
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 2000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'social-energy-audit-2' });
+    if (!parsed.audit && !parsed.profile && !parsed.energy_profile) {
+      return res.status(500).json({ error: 'Could not audit your social energy. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('SocialEnergyAudit plan error:', error);
-    res.status(500).json({ error: error.message || 'Week planning failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -228,21 +226,20 @@ Create a personalized recharge plan. Return ONLY valid JSON:
   "recharge_ratio": "For every X hours of [their top drain], they need Y hours of recovery. Be specific."
 }`;
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 1500,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'social-energy-audit-3' });
+    if (!parsed.audit && !parsed.profile && !parsed.energy_profile) {
+      return res.status(500).json({ error: 'Could not audit your social energy. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('SocialEnergyAudit recharge error:', error);
-    res.status(500).json({ error: error.message || 'Recharge plan failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -283,21 +280,20 @@ Give a fast, decisive answer. Return ONLY valid JSON:
   "recovery_note": "What you'll need after this to bounce back. null if low-cost commitment."
 }`;
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 1000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'social-energy-audit-4' });
+    if (!parsed.audit && !parsed.profile && !parsed.energy_profile) {
+      return res.status(500).json({ error: 'Could not audit your social energy. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('SocialEnergyAudit quick-check error:', error);
-    res.status(500).json({ error: error.message || 'Quick check failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -351,21 +347,20 @@ Generate an energy forecast. Return ONLY valid JSON:
   "protect_this": "One specific time slot they should guard for recovery"
 }`;
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 2000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'social-energy-audit-5' });
+    if (!parsed.audit && !parsed.profile && !parsed.energy_profile) {
+      return res.status(500).json({ error: 'Could not audit your social energy. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('SocialEnergyAudit forecast error:', error);
-    res.status(500).json({ error: error.message || 'Forecast failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -417,21 +412,20 @@ Design their ideal week. Return ONLY valid JSON:
   "warning_pattern": "A recurring pattern in their data that leads to burnout. Name it so they can recognize it."
 }`;
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'social-energy-audit-6' });
+    if (!parsed.audit && !parsed.profile && !parsed.energy_profile) {
+      return res.status(500).json({ error: 'Could not audit your social energy. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('SocialEnergyAudit ideal-week error:', error);
-    res.status(500).json({ error: error.message || 'Ideal week generation failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

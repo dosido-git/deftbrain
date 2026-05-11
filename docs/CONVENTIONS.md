@@ -1,3 +1,4 @@
+<!-- v1.7 · 2026-05-10 · added Clarification 11: Localization Context Object — four-field spec (userLanguage, userLocale, userCurrency, userRegion). Locks architecture for full localization across 13 supported languages. Defines frontend/backend/formatting responsibilities, withLocaleContext helper contract, and scope boundaries (RTL, PPP data injection, input parsing, plural rules all deferred). -->
 <!-- v1.6 · 2026-05-06 · added Clarification 9 (Emergency Tools sanctioned exceptions — 5 tools, 4 carve-out rules, ≥50-emergency-signal entry bar) and Clarification 10 (web_search tools require frontend stripCitesDeep + corrected regex covering antml: namespace). Reference cases: SafeWalk (clarification 9 across all four rules, clarification 10 citation leak). -->
 <!-- v1.5 · 2026-05-02 · added PF-16 EXCEPTION block for multi-view tools (5 strict conditions, GentlePushGenerator reference case). Codifies Bruce-stated reset-button principle: one reset, horizontally aligned with title, aligned right, always present. -->
 <!-- v1.4 · 2026-05-02 · session 2026-05-02 backlog burndown: added PF-15 EXEMPTION block for chat-style send and inline-quick-add inputs (Bucket 3 design call closure). Asterisk requirement now has two named carve-outs with strict shape conditions and reference cases (ApologyCalibrator practiceInput + note). -->
@@ -1372,6 +1373,114 @@ setResults(stripCitesDeep(res));
 **Reference case:** SafeWalk — Session 2026-05-06 surfaced a leak (`<cite index="25-7,20-17">` reaching the user) when the backend regex caught only the non-namespaced form. Both layers patched in the same session; backend regex broadened to the form above, frontend `stripCitesDeep` added at module top.
 
 **Audit-script todo:** S7 backend audit should detect routes that use `web_search_20250305` and verify a `stripCites` helper exists with a regex that accepts both namespace forms. Frontend audit should detect tools whose response field is rendered without going through a `stripCitesDeep` (or equivalent) call when the backend uses `web_search`.
+
+---
+
+## Clarification 11 · Localization Context Object — four-field spec (locked)
+
+**Status:** Architecture locked. Implementation in progress across sessions.
+
+True localization means Claude reasons *within* the user's economic and cultural environment — not just translating output. A user in Indonesia reasoning about 5,000,000 IDR/month and one in Switzerland reasoning about 8,000 CHF/month are in completely different economic realities. Formatting a USD answer in local symbols is not localization.
+
+---
+
+### The four fields
+
+Every request from frontend to backend must carry all four fields. They travel together, always.
+
+```js
+{
+  userLanguage: 'id',       // BCP 47 language tag — drives translation (already implemented)
+  userLocale:   'id-ID',    // BCP 47 locale — drives Intl formatting (numbers, dates, currency display)
+  userCurrency: 'IDR',      // ISO 4217 currency code — drives currency identity and prompt context
+  userRegion:   'ID',       // ISO 3166-1 alpha-2 country — drives economic/cultural/legal context
+}
+```
+
+**Relationship between fields:**
+- `userLanguage` ≠ `userLocale` — a French speaker in Canada (`fr-CA`) formats numbers differently than one in France (`fr-FR`), and both differ from `fr-CH`
+- `userLocale` ⊃ `userRegion` — locale encodes region, but region is extracted separately for prompt clarity
+- `userCurrency` is derived from `userRegion` by default but can be overridden (e.g. a German user who tracks expenses in USD)
+
+---
+
+### Frontend responsibility
+
+`useClaudeAPI` sends all four fields on every POST. If a field is unknown, send a sensible default rather than omitting it — absence causes backend handlers to fall back incorrectly.
+
+```js
+// In useClaudeAPI (or the shared locale hook that feeds it):
+const localeContext = {
+  userLanguage: userLanguage || 'en',
+  userLocale:   userLocale   || 'en-US',
+  userCurrency: userCurrency || 'USD',
+  userRegion:   userRegion   || 'US',
+};
+// Merged into every API call body alongside tool-specific data
+```
+
+User preference for locale/currency is persisted in the same store as other user preferences. Default is derived from `navigator.language` + a region→currency mapping table on first visit.
+
+---
+
+### Backend responsibility
+
+Every route destructures all four fields from `req.body`. The `withLanguage` helper already handles `userLanguage`. A new `withLocaleContext` helper handles the other three.
+
+```js
+// In route handler:
+const { ..., userLanguage, userLocale, userCurrency, userRegion } = req.body;
+
+// Existing (unchanged):
+const langDirective = withLanguage('', userLanguage);
+
+// New — inject into system prompt for tools that reason about money, quantities, or regional norms:
+const localeDirective = withLocaleContext(userLocale, userCurrency, userRegion);
+```
+
+**`withLocaleContext` output** (injected into system prompt):
+```
+The user is in [region full name]. Format all currency amounts in [currency name] ([ISO code]).
+Reason about amounts relative to [region] economic norms, not USD equivalents.
+Use [locale] conventions for numbers and dates in your response.
+```
+
+PPP/economic context is conveyed by naming the region and trusting Claude's trained knowledge. Explicit PPP data injection is deferred (see deferred-decisions.md).
+
+---
+
+### Formatting responsibility (frontend)
+
+All numeric output from Claude that reaches the UI must be formatted using `Intl.NumberFormat` and `Intl.DateTimeFormat` with the user's locale. A shared utility handles this:
+
+```js
+// src/utils/formatLocale.js
+export const formatCurrency = (amount, userLocale, userCurrency) =>
+  new Intl.NumberFormat(userLocale, { style: 'currency', currency: userCurrency }).format(amount);
+
+export const formatNumber = (n, userLocale) =>
+  new Intl.NumberFormat(userLocale).format(n);
+
+export const formatDate = (d, userLocale) =>
+  new Intl.DateTimeFormat(userLocale).format(d);
+```
+
+These are used in JSX wherever Claude returns a structured numeric or date value rendered directly. They do **not** retroactively reformat Claude's prose — only structured fields extracted from the response.
+
+---
+
+### Scope: 12 supported locales
+
+The localization context applies to all 13 supported languages (English + 12 non-English). The `userRegion` → `userCurrency` default mapping covers all 13. Tools that are currency-aware inject `withLocaleContext`; tools that are purely text-based inject only `withLanguage` (as today).
+
+---
+
+### What this is NOT
+
+- Not a currency conversion system — Claude reasons in the user's currency natively; no exchange rate API involved at this layer (deferred)
+- Not RTL layout — separate pass; tracked in deferred-decisions.md
+- Not locale-aware input parsing — `1.234,56` vs `1,234.56` is deferred; tracked in deferred-decisions.md
+- Not per-locale plural rules — tracked separately in audit-backlog.md
 
 ---
 

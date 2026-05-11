@@ -198,7 +198,10 @@ ${schema}`;
         label: 'CrisisPrioritize', max_tokens: 4000,
         system: withLanguage(SYSTEM_PROMPT, userLanguage)
       });
-      return res.json(parsed);
+      if (!parsed.objective_priorities && !parsed.triage) {
+      return res.status(500).json({ error: 'Could not prioritize your tasks. Please try again.' });
+    }
+    return res.json(parsed);
     }
 
     // ─── QUICK DUMP (paste paragraph → extract tasks) ───
@@ -234,7 +237,10 @@ Return ONLY valid JSON:
         label: 'CrisisDump', max_tokens: 2000,
         system: withLanguage('Task extraction specialist. Pull actionable items from messy text. Warm tone. Return ONLY valid JSON.', userLanguage)
       });
-      return res.json(parsed);
+      if (!parsed.objective_priorities && !parsed.triage) {
+      return res.status(500).json({ error: 'Could not prioritize your tasks. Please try again.' });
+    }
+    return res.json(parsed);
     }
 
     // ─── RE-TRIAGE (after completing must-dos, what's next?) ───
@@ -279,7 +285,10 @@ Return ONLY valid JSON:
         label: 'CrisisRetriage', max_tokens: 1500,
         system: withLanguage(SYSTEM_PROMPT, userLanguage)
       });
-      return res.json(parsed);
+      if (!parsed.objective_priorities && !parsed.triage) {
+      return res.status(500).json({ error: 'Could not prioritize your tasks. Please try again.' });
+    }
+    return res.json(parsed);
     }
 
     // ─── FOLLOW-UP (how did last time go?) ───
@@ -318,7 +327,10 @@ Return ONLY valid JSON:
         label: 'CrisisFollowUp', max_tokens: 1000,
         system: withLanguage('Triage follow-up analyst. Warm, honest, pattern-aware. Return ONLY valid JSON.', userLanguage)
       });
-      return res.json(parsed);
+      if (!parsed.objective_priorities && !parsed.triage) {
+      return res.status(500).json({ error: 'Could not prioritize your tasks. Please try again.' });
+    }
+    return res.json(parsed);
     }
 
     // ─── DELEGATE (draft a handoff message) ───
@@ -353,7 +365,10 @@ Return ONLY valid JSON:
         label: 'CrisisDelegate', max_tokens: 800,
         system: withLanguage('Delegation messaging expert. Clear, kind, efficient. Return ONLY valid JSON.', userLanguage)
       });
-      return res.json(parsed);
+      if (!parsed.objective_priorities && !parsed.triage) {
+      return res.status(500).json({ error: 'Could not prioritize your tasks. Please try again.' });
+    }
+    return res.json(parsed);
     }
 
     // ─── PATTERN (analyze 3+ sessions for recurring themes) ───
@@ -396,7 +411,10 @@ Return ONLY valid JSON:
         label: 'CrisisPattern', max_tokens: 1500,
         system: withLanguage('Crisis pattern analyst. Insightful, warm, not judgmental. Find the patterns humans can\'t see in their own behavior. Return ONLY valid JSON.', userLanguage)
       });
-      return res.json(parsed);
+      if (!parsed.objective_priorities && !parsed.triage) {
+      return res.status(500).json({ error: 'Could not prioritize your tasks. Please try again.' });
+    }
+    return res.json(parsed);
     }
 
     // ═══════════════════════════════════════════
@@ -463,7 +481,10 @@ Return ONLY valid JSON:
         label: 'CrisisTimeBlock', max_tokens: 3000,
         system: withLanguage('Time management expert who builds realistic, humane schedules. You know people underestimate task duration by 50%, so you pad accordingly. Return ONLY valid JSON.', userLanguage)
       });
-      return res.json(parsed);
+      if (!parsed.objective_priorities && !parsed.triage) {
+      return res.status(500).json({ error: 'Could not prioritize your tasks. Please try again.' });
+    }
+    return res.json(parsed);
     }
 
     // ─── JUST ONE THING (panic mode — the single most important action) ───
@@ -513,7 +534,10 @@ Return ONLY valid JSON:
         label: 'CrisisOneAction', max_tokens: 800,
         system: withLanguage('Crisis de-escalation specialist. When someone is paralyzed, you cut through the noise and give them one clear action. Minimal words, maximum clarity. Return ONLY valid JSON.', userLanguage)
       });
-      return res.json(parsed);
+      if (!parsed.objective_priorities && !parsed.triage) {
+      return res.status(500).json({ error: 'Could not prioritize your tasks. Please try again.' });
+    }
+    return res.json(parsed);
     }
 
     // ─── SPLIT TASK (break compound tasks into sub-tasks) ───
@@ -560,7 +584,10 @@ Return ONLY valid JSON:
         label: 'CrisisTaskSplit', max_tokens: 1500,
         system: withLanguage('Task decomposition expert. You see the hidden tasks inside vague to-dos. Specific, actionable, honest time estimates. Return ONLY valid JSON.', userLanguage)
       });
-      return res.json(parsed);
+      if (!parsed.objective_priorities && !parsed.triage) {
+      return res.status(500).json({ error: 'Could not prioritize your tasks. Please try again.' });
+    }
+    return res.json(parsed);
     }
 
     // ─── ACCOUNTABILITY SNAPSHOT (shareable plan summary) ───
@@ -608,7 +635,10 @@ Return ONLY valid JSON:
         label: 'CrisisAccountability', max_tokens: 800,
         system: withLanguage('Accountability messaging expert. You draft clear, confident plans that invite support without sounding needy. Return ONLY valid JSON.', userLanguage)
       });
-      return res.json(parsed);
+      if (!parsed.objective_priorities && !parsed.triage) {
+      return res.status(500).json({ error: 'Could not prioritize your tasks. Please try again.' });
+    }
+    return res.json(parsed);
     }
 
     // ─── ROLLING CRISIS UPDATE (re-triage within persistent multi-week plan) ───
@@ -674,7 +704,10 @@ Return ONLY valid JSON:
         label: 'CrisisRollingUpdate', max_tokens: 2500,
         system: withLanguage(SYSTEM_PROMPT + '\nYou are updating an ongoing crisis management plan. Be honest about progress while maintaining hope.', userLanguage)
       });
-      return res.json(parsed);
+      if (!parsed.objective_priorities && !parsed.triage) {
+      return res.status(500).json({ error: 'Could not prioritize your tasks. Please try again.' });
+    }
+    return res.json(parsed);
     }
 
     // ─── DASHBOARD INSIGHTS (AI-powered stats summary from journal) ───
@@ -720,13 +753,16 @@ Return ONLY valid JSON:
         label: 'CrisisDashboard', max_tokens: 1000,
         system: withLanguage('Data analyst who turns crisis triage history into encouraging, actionable insights. Return ONLY valid JSON.', userLanguage)
       });
-      return res.json(parsed);
+      if (!parsed.objective_priorities && !parsed.triage) {
+      return res.status(500).json({ error: 'Could not prioritize your tasks. Please try again.' });
+    }
+    return res.json(parsed);
     }
 
     return res.status(400).json({ error: 'Invalid action. Use: generate, quick-dump, re-triage, follow-up, delegate, pattern, time-block, just-one-thing, split-task, accountability-snapshot, rolling-crisis-update, dashboard-insights' });
   } catch (error) {
     console.error('[CrisisPrioritizer]', error.message);
-    res.status(500).json({ error: error.message || 'Failed to analyze tasks.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

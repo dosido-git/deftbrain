@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit, CREATIVE_LIMITS } = require('../lib/rateLimiter');
 
 // Apply creative-tier rate limit
@@ -182,18 +182,20 @@ Generate 2-3 message versions with different approaches. Return ONLY valid JSON.
     }
 
     const wrappedPrompt = withLanguage(prompt, userLanguage);
-    const msg1 = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 2500,
       messages: [{ role: 'user', content: wrappedPrompt }],
-    });
-    const parsed = JSON.parse(cleanJsonResponse(msg1.content.find(b => b.type === 'text')?.text || ''));
+    }, { label: 'gratitude-debt-clearer' });
 
+    if (!parsed.version && !parsed.message_text) {
+      return res.status(500).json({ error: 'Could not generate your message. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('Gratitude Debt Clearer error:', error);
-    res.status(500).json({ error: error.message || 'Failed to generate thank you messages' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -240,18 +242,20 @@ RULES:
 - Focus on: what specifically happened, how it made them feel, what would have happened without this person.
 - Return ONLY JSON.`, userLanguage);
 
-    const msg2 = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 800,
       messages: [{ role: 'user', content: prompt }],
-    });
-    const parsed = JSON.parse(cleanJsonResponse(msg2.content.find(b => b.type === 'text')?.text || ''));
+    }, { label: 'gratitude-debt-clearer-2' });
 
+    if (!parsed.version && !parsed.message_text) {
+      return res.status(500).json({ error: 'Could not generate your message. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('Gratitude Specificity error:', error);
-    res.status(500).json({ error: error.message || 'Failed to analyze specificity' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -308,18 +312,20 @@ OUTPUT (JSON only):
 
 Return ONLY valid JSON.`, userLanguage);
 
-    const msg3 = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 1500,
       messages: [{ role: 'user', content: prompt }],
-    });
-    const parsed = JSON.parse(cleanJsonResponse(msg3.content.find(b => b.type === 'text')?.text || ''));
+    }, { label: 'gratitude-debt-clearer-3' });
 
+    if (!parsed.version && !parsed.message_text) {
+      return res.status(500).json({ error: 'Could not generate your message. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('Gratitude Follow-Up error:', error);
-    res.status(500).json({ error: error.message || 'Failed to generate follow-up' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

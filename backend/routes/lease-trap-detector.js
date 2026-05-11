@@ -250,19 +250,31 @@ CRITICAL RULES:
 
     contentBlocks.push({ type: 'text', text: prompt });
 
-    const message = await anthropic.messages.create({
+    let message;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 8000,
       messages: [{ role: 'user', content: withLanguage(contentBlocks, userLanguage) }]
     });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
+    if (!parsed.overall_assessment && !parsed.traps && !parsed.clauses) {
+      return res.status(500).json({ error: 'Could not analyze your lease. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[LeaseTrapDetector] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to analyze lease' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -272,7 +284,7 @@ CRITICAL RULES:
 
 router.post('/lease-trap-detector/followup', rateLimit(), async (req, res) => {
   try {
-    const { question, analysisContext, location, leaseType, userLanguage } = req.body;
+    const { question, analysisContext, location, leaseType, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!question?.trim()) {
       return res.status(400).json({ error: 'Please ask a question' });
@@ -328,19 +340,31 @@ Return ONLY valid JSON:
 
 Return ONLY valid JSON.`, userLanguage);
 
-    const message = await anthropic.messages.create({
+    let message;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 1500,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
     });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
+    if (!parsed.overall_assessment && !parsed.traps && !parsed.clauses) {
+      return res.status(500).json({ error: 'Could not analyze your lease. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[LeaseTrapDetector/followup] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to answer question' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -350,7 +374,7 @@ Return ONLY valid JSON.`, userLanguage);
 
 router.post('/lease-trap-detector/compare', rateLimit(), async (req, res) => {
   try {
-    const { leaseA, leaseB, userLanguage } = req.body;
+    const { leaseA, leaseB, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!leaseA || !leaseB) {
       return res.status(400).json({ error: 'Need two lease analyses to compare' });
@@ -414,19 +438,31 @@ Return ONLY valid JSON:
 
 Return ONLY valid JSON.`, userLanguage);
 
-    const message = await anthropic.messages.create({
+    let message;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 2500,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
     });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
+    if (!parsed.overall_assessment && !parsed.traps && !parsed.clauses) {
+      return res.status(500).json({ error: 'Could not analyze your lease. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[LeaseTrapDetector/compare] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to compare leases' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -436,7 +472,7 @@ Return ONLY valid JSON.`, userLanguage);
 
 router.post('/lease-trap-detector/draft-email', rateLimit(), async (req, res) => {
   try {
-    const { redFlags, yellowFlags, unenforceableClauses, location, landlordName, tenantName, userLanguage } = req.body;
+    const { redFlags, yellowFlags, unenforceableClauses, location, landlordName, tenantName, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!redFlags?.length && !yellowFlags?.length && !unenforceableClauses?.length) {
       return res.status(400).json({ error: 'No issues to negotiate' });
@@ -500,19 +536,31 @@ Return ONLY valid JSON:
 
 Return ONLY valid JSON.`, userLanguage);
 
-    const message = await anthropic.messages.create({
+    let message;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 2500,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
     });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
+    if (!parsed.overall_assessment && !parsed.traps && !parsed.clauses) {
+      return res.status(500).json({ error: 'Could not analyze your lease. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[LeaseTrapDetector/draft-email] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to draft email' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -522,7 +570,7 @@ Return ONLY valid JSON.`, userLanguage);
 
 router.post('/lease-trap-detector/amendment', rateLimit(), async (req, res) => {
   try {
-    const { clausesToAmend, location, landlordName, tenantName, propertyAddress, userLanguage } = req.body;
+    const { clausesToAmend, location, landlordName, tenantName, propertyAddress, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!clausesToAmend?.length) {
       return res.status(400).json({ error: 'No clauses selected for amendment' });
@@ -568,19 +616,31 @@ Return ONLY valid JSON:
 
 CRITICAL: Return ONLY valid JSON. Use \\n for line breaks in the addendum text.`, userLanguage);
 
-    const message = await anthropic.messages.create({
+    let message;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 3000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
     });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
+    if (!parsed.overall_assessment && !parsed.traps && !parsed.clauses) {
+      return res.status(500).json({ error: 'Could not analyze your lease. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[LeaseTrapDetector/amendment] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to generate amendment' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -590,7 +650,7 @@ CRITICAL: Return ONLY valid JSON. Use \\n for line breaks in the addendum text.`
 
 router.post('/lease-trap-detector/checklist', rateLimit(), async (req, res) => {
   try {
-    const { analysisContext, location, leaseType, checklistType, userLanguage } = req.body;
+    const { analysisContext, location, leaseType, checklistType, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!checklistType) {
       return res.status(400).json({ error: 'Specify checklist type: move_in or move_out' });
@@ -671,19 +731,31 @@ Return ONLY valid JSON:
 
 Return ONLY valid JSON.`, userLanguage);
 
-    const message = await anthropic.messages.create({
+    let message;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 3000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
     });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
+    if (!parsed.overall_assessment && !parsed.traps && !parsed.clauses) {
+      return res.status(500).json({ error: 'Could not analyze your lease. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[LeaseTrapDetector/checklist] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to generate checklist' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -693,7 +765,7 @@ Return ONLY valid JSON.`, userLanguage);
 
 router.post('/lease-trap-detector/renewal-traps', rateLimit(), async (req, res) => {
   try {
-    const { analysisContext, location, leaseType, leaseText, userLanguage } = req.body;
+    const { analysisContext, location, leaseType, leaseText, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     const contextLines = [];
     if (analysisContext?.red_flags?.length) {
@@ -778,19 +850,31 @@ Return ONLY valid JSON:
 
 Return ONLY valid JSON.`, userLanguage);
 
-    const message = await anthropic.messages.create({
+    let message;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 2500,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
     });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
+    if (!parsed.overall_assessment && !parsed.traps && !parsed.clauses) {
+      return res.status(500).json({ error: 'Could not analyze your lease. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[LeaseTrapDetector/renewal-traps] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to analyze renewal terms' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -800,7 +884,7 @@ Return ONLY valid JSON.`, userLanguage);
 // ════════════════════════════════════════════════════════════
 router.post('/lease-trap-detector/missing', rateLimit(), async (req, res) => {
   try {
-    const { contractText, contractType, yourRole, concerns, location, userLanguage } = req.body;
+    const { contractText, contractType, yourRole, concerns, location, userLanguage, userLocale, userCurrency, userRegion } = req.body;
     if (!contractText?.trim()) return res.status(400).json({ error: 'Paste the contract text to analyze.' });
 
     const systemPrompt = `You are a contract protection expert — specifically focused on what SHOULD be in agreements but usually isn't. Most contract review focuses on bad clauses. You focus on absent protections — the things tenants, employees, clients, and buyers don't know to ask for because they don't know they're supposed to be there.
@@ -855,20 +939,32 @@ Return ONLY valid JSON:
   "overall_assessment": "One honest paragraph — how protected is this person given what's present vs. absent? What's the biggest exposure?"
 }`;
 
-    const message = await anthropic.messages.create({
+    let message;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 3000,
-      system: withLanguage(systemPrompt, userLanguage),
+      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: withLanguage(userPrompt, userLanguage) }],
     });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
+    if (!parsed.overall_assessment && !parsed.traps && !parsed.clauses) {
+      return res.status(500).json({ error: 'Could not analyze your lease. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[LeaseTrapDetector/missing] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to find missing protections' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

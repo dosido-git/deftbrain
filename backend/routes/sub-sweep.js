@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, cleanJsonResponse, withLanguage, withLocaleContext } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 router.post('/sub-sweep', rateLimit(), async (req, res) => {
@@ -13,15 +13,15 @@ router.post('/sub-sweep', rateLimit(), async (req, res) => {
       // ACTION: PARSE — scan statement text for subscriptions
       // ════════════════════════════════════════════════════════
       case 'parse': {
-        const { statement, currency, userLanguage } = req.body;
+        const { statement, currency, userLanguage, userLocale, userCurrency, userRegion } = req.body;
         if (!statement || !statement.trim()) {
           return res.status(400).json({ error: 'No statement text provided' });
         }
 
-        const message = await anthropic.messages.create({
+        const parsed = await callClaudeWithRetry({
           model: 'claude-sonnet-4-6',
           max_tokens: 1500,
-          system: withLanguage(`You are a financial data parser. Extract recurring subscription charges from bank/credit card statement text. Identify subscriptions even when merchant names are cryptic (e.g., "AMZN*Prime" = Amazon Prime, "GOOGLE *YouTubePrem" = YouTube Premium, "MSFT*Store" = Microsoft 365).`, userLanguage),
+          system: withLanguage(`You are a financial data parser. Extract recurring subscription charges from bank/credit card statement text. Identify subscriptions even when merchant names are cryptic (e.g., "AMZN*Prime" = Amazon Prime, "GOOGLE *YouTubePrem" = YouTube Premium, "MSFT*Store" = Microsoft 365).`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
           messages: [{
             role: 'user',
             content: `Parse this statement and identify RECURRING SUBSCRIPTION charges. Ignore one-time purchases, groceries, gas, etc. Currency: ${currency || '$'}
@@ -42,19 +42,18 @@ Return ONLY valid JSON:
   ]
 }`
           }],
-        });
-
-        const text = message.content.find(b => b.type === 'text')?.text || '';
-        const cleaned = cleanJsonResponse(text);
-        const parsed = JSON.parse(cleaned);
-        return res.json(parsed);
+        }, { label: 'sub-sweep' });
+        if (!parsed.verdict && !parsed.subscriptions && !parsed.analysis) {
+        return res.status(500).json({ error: 'Could not analyze subscriptions. Please try again.' });
+      }
+      return res.json(parsed);
       }
 
       // ════════════════════════════════════════════════════════
       // ACTION: ANALYZE — full subscription audit
       // ════════════════════════════════════════════════════════
       case 'analyze': {
-        const { subscriptions, currency, userLanguage } = req.body;
+        const { subscriptions, currency, userLanguage, userLocale, userCurrency, userRegion } = req.body;
         if (!subscriptions || !subscriptions.length) {
           return res.status(400).json({ error: 'No subscriptions provided' });
         }
@@ -128,24 +127,23 @@ Analyze every subscription. Return ONLY valid JSON:
   ]
 }`;
 
-        const message = await anthropic.messages.create({
+        const parsed = await callClaudeWithRetry({
           model: 'claude-sonnet-4-6',
           max_tokens: 3000,
-          system: withLanguage(systemPrompt, userLanguage),
+          system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
           messages: [{ role: 'user', content: userPrompt }],
-        });
-
-        const text = message.content.find(b => b.type === 'text')?.text || '';
-        const cleaned = cleanJsonResponse(text);
-        const parsed = JSON.parse(cleaned);
-        return res.json(parsed);
+        }, { label: 'sub-sweep-2' });
+        if (!parsed.verdict && !parsed.subscriptions && !parsed.analysis) {
+        return res.status(500).json({ error: 'Could not analyze subscriptions. Please try again.' });
+      }
+      return res.json(parsed);
       }
 
       // ════════════════════════════════════════════════════════
       // ACTION: OPTIMIZE — find plan upgrades/downgrades/bundles
       // ════════════════════════════════════════════════════════
       case 'optimize': {
-        const { subscriptions, currency, userLanguage } = req.body;
+        const { subscriptions, currency, userLanguage, userLocale, userCurrency, userRegion } = req.body;
         if (!subscriptions || !subscriptions.length) {
           return res.status(400).json({ error: 'No subscriptions provided' });
         }
@@ -155,10 +153,10 @@ Analyze every subscription. Return ONLY valid JSON:
           `${i + 1}. ${s.name} — ${sym}${s.cost}/${s.cycle} — Plan: ${s.planTier || 'unknown'}`
         ).join('\n');
 
-        const message = await anthropic.messages.create({
+        const parsed = await callClaudeWithRetry({
           model: 'claude-sonnet-4-6',
           max_tokens: 2000,
-          system: withLanguage(`You are a subscription optimization expert. You know current pricing tiers, family/duo plans, student discounts, annual vs monthly pricing, and bundle deals for popular services. Be specific with real numbers. All amounts in ${sym}.`, userLanguage),
+          system: withLanguage(`You are a subscription optimization expert. You know current pricing tiers, family/duo plans, student discounts, annual vs monthly pricing, and bundle deals for popular services. Be specific with real numbers. All amounts in ${sym}.`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
           messages: [{
             role: 'user',
             content: `OPTIMIZE THESE SUBSCRIPTIONS:
@@ -199,29 +197,28 @@ For each subscription, check for savings opportunities. Return ONLY valid JSON:
   "top_move": "Your single biggest savings: switch X to annual billing — saves ${sym}Y/year"
 }`
           }],
-        });
-
-        const text = message.content.find(b => b.type === 'text')?.text || '';
-        const cleaned = cleanJsonResponse(text);
-        const parsed = JSON.parse(cleaned);
-        return res.json(parsed);
+        }, { label: 'sub-sweep-3' });
+        if (!parsed.verdict && !parsed.subscriptions && !parsed.analysis) {
+        return res.status(500).json({ error: 'Could not analyze subscriptions. Please try again.' });
+      }
+      return res.json(parsed);
       }
 
       // ════════════════════════════════════════════════════════
       // ACTION: NEGOTIATE — retention scripts for a specific service
       // ════════════════════════════════════════════════════════
       case 'negotiate': {
-        const { serviceName, cost, cycle, currency, userLanguage } = req.body;
+        const { serviceName, cost, cycle, currency, userLanguage, userLocale, userCurrency, userRegion } = req.body;
         if (!serviceName?.trim()) {
           return res.status(400).json({ error: 'Service name required' });
         }
 
         const sym = currency || '$';
 
-        const message = await anthropic.messages.create({
+        const parsed = await callClaudeWithRetry({
           model: 'claude-sonnet-4-6',
           max_tokens: 1500,
-          system: withLanguage(`You are an expert in subscription retention negotiations. You know exactly what tactics each company uses to keep customers, what discounts they can offer, and the magic phrases that trigger better deals. Be specific — use real department names, real discount amounts, and real processes. All amounts in ${sym}.`, userLanguage),
+          system: withLanguage(`You are an expert in subscription retention negotiations. You know exactly what tactics each company uses to keep customers, what discounts they can offer, and the magic phrases that trigger better deals. Be specific — use real department names, real discount amounts, and real processes. All amounts in ${sym}.`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
           messages: [{
             role: 'user',
             content: `RETENTION NEGOTIATION SCRIPT for: ${serviceName}
@@ -255,12 +252,11 @@ Generate a complete retention negotiation script. Return ONLY valid JSON:
   "nuclear_option": "What to do if they refuse everything (social media, FCC complaint, chargeback, etc.)"
 }`
           }],
-        });
-
-        const text = message.content.find(b => b.type === 'text')?.text || '';
-        const cleaned = cleanJsonResponse(text);
-        const parsed = JSON.parse(cleaned);
-        return res.json(parsed);
+        }, { label: 'sub-sweep-4' });
+        if (!parsed.verdict && !parsed.subscriptions && !parsed.analysis) {
+        return res.status(500).json({ error: 'Could not analyze subscriptions. Please try again.' });
+      }
+      return res.json(parsed);
       }
 
       default:
@@ -269,7 +265,7 @@ Generate a complete retention negotiation script. Return ONLY valid JSON:
 
   } catch (error) {
     console.error('SubSweep error:', error);
-    res.status(500).json({ error: error.message || 'Analysis failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

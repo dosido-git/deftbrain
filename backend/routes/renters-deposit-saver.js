@@ -1,11 +1,43 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { anthropic, cleanJsonResponse, withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
+
+/**
+ * Repair literal control characters inside JSON string values.
+ * Claude occasionally emits bare newlines/tabs in long document strings,
+ * which JSON.parse rejects. This walker fixes them before parsing.
+ */
+function repairJsonStrings(text) {
+  let out = '', inStr = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (!inStr) {
+      out += ch;
+      if (ch === '"') inStr = true;
+    } else if (ch === '\\') {
+      out += ch + (text[i + 1] || '');
+      i++;
+    } else if (ch === '"') {
+      out += ch; inStr = false;
+    } else if (ch === '\n') {
+      out += '\\n';
+    } else if (ch === '\r') {
+      if (text[i + 1] !== '\n') out += '\\r';
+    } else if (ch === '\t') {
+      out += '\\t';
+    } else if (ch.charCodeAt(0) < 0x20) {
+      out += '\\u' + ch.charCodeAt(0).toString(16).padStart(4, '0');
+    } else {
+      out += ch;
+    }
+  }
+  return out;
+}
 
 router.post('/renters-deposit-saver', rateLimit(), async (req, res) => {
   try {
-    const { action } = req.body;
+    const { action, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     // ═══════════════════════════════════════
     // MODE 1: Rights-only quick lookup
@@ -60,19 +92,18 @@ CRITICAL RULES:
 Return ONLY valid JSON (no markdown, no preamble, no code fences):
 
 {
-  "deposit_rights": "full plain-text deposit rights guide as a single string with newlines"
+  "deposit_rights": "full plain-text deposit rights guide as a single string with \\n for line breaks (JSON-escaped, not literal newlines)"
 }`;
 
-      const message = await anthropic.messages.create({
+      const parsed = await callClaudeWithRetry({
         model: 'claude-sonnet-4-6',
         max_tokens: 4000,
+        system: 'You are a JSON API. Respond with ONLY valid JSON.' + withLocaleContext(userLocale, userCurrency, userRegion),
         messages: [{ role: 'user', content: withLanguage(rightsPrompt, userLanguage) }]
-      });
-
-      const textContent = message.content.find(item => item.type === 'text')?.text || '';
-
-      const cleaned = cleanJsonResponse(textContent);
-      const parsed = JSON.parse(cleaned);
+      }, { label: 'renters-deposit-saver' });
+      if (!parsed.deposit_rights) {
+        return res.status(500).json({ error: 'Could not generate your deposit recovery plan. Please try again.' });
+      }
       return res.json(parsed);
     }
 
@@ -202,11 +233,11 @@ OUTPUT FORMAT
 Return ONLY valid JSON (no markdown, no preamble, no code fences):
 
 {
-  "condition_report": "full plain-text condition report as a single string with newlines",
-  "landlord_letter": "full plain-text cover letter as a single string with newlines",
-  "photo_shot_list": "full plain-text prioritized shot list as a single string with newlines",
-  "deposit_rights": "full plain-text deposit rights breakdown as a single string with newlines",
-  "move_out_tips": "plain-text move-out advice as a single string with newlines"
+  "condition_report": "full plain-text condition report as a single string with \\n for line breaks (JSON-escaped, not literal newlines)",
+  "landlord_letter": "full plain-text cover letter as a single string with \\n for line breaks (JSON-escaped, not literal newlines)",
+  "photo_shot_list": "full plain-text prioritized shot list as a single string with \\n for line breaks (JSON-escaped, not literal newlines)",
+  "deposit_rights": "full plain-text deposit rights breakdown as a single string with \\n for line breaks (JSON-escaped, not literal newlines)",
+  "move_out_tips": "plain-text move-out advice as a single string with \\n for line breaks (JSON-escaped, not literal newlines)"
 }
 
 CRITICAL RULES:
@@ -219,17 +250,79 @@ CRITICAL RULES:
 - Deposit rights MUST reference actual law with statute numbers
 - Return ONLY valid JSON`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 8000,
-      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }]
-    });
+    // Parallel generation: 3 concurrent calls (~6K tokens each) instead of
+    // one 16K-token sequential call. ~3x faster overall.
+    const sys = 'You are a JSON API. Respond with ONLY valid JSON.'
+              + withLocaleContext(userLocale, userCurrency, userRegion);
 
-    const textContent = message.content.find(item => item.type === 'text')?.text || '';
+    async function callGroup(groupPrompt) {
+      let lastErr;
+      for (let _att = 1; _att <= 3; _att++) {
+        try {
+          const msg = await anthropic.messages.create({
+            model: 'claude-sonnet-4-6', max_tokens: 6000, system: sys,
+            messages: [{ role: 'user', content: withLanguage(groupPrompt, userLanguage) }],
+          });
+          const raw = msg.content.find(b => b.type === 'text')?.text || '';
+          return JSON.parse(repairJsonStrings(cleanJsonResponse(raw)));
+        } catch (err) {
+          lastErr = err;
+          if (_att < 3) await new Promise(r => setTimeout(r, 500 * _att));
+        }
+      }
+      throw lastErr;
+    }
 
-    const cleaned = cleanJsonResponse(textContent);
-    const parsed = JSON.parse(cleaned);
+    const ctx = `Address: ${fullAddress}\nMove-In Date: ${moveInDate}\nLocation/Jurisdiction: ${location}\nSecurity Deposit: ${depositDisplay}\nLandlord: ${landlordDisplay} (${landlordEmailDisplay})`;
 
+    const [g1, g2, g3] = await Promise.all([
+      // Group 1 — condition report + landlord letter
+      callGroup(`You are an expert tenant rights advocate generating move-in documentation.
+
+${ctx}
+
+MOVE-IN CONDITION CHECKLIST:
+${checklistFormatted}
+
+${prompt.split('1. MOVE-IN CONDITION REPORT')[1]?.split('3. PHOTO SHOT LIST')[0]
+    ? `Generate ONLY: condition_report and landlord_letter.\n\n1. MOVE-IN CONDITION REPORT${prompt.split('1. MOVE-IN CONDITION REPORT')[1].split('3. PHOTO SHOT LIST')[0]}2. LANDLORD COVER LETTER${prompt.split('2. LANDLORD COVER LETTER')[1]?.split('3. PHOTO SHOT LIST')[0] || ''}`
+    : 'Generate a formal move-in condition report (condition_report) and a professional landlord cover letter (landlord_letter).'}
+
+Return JSON: { "condition_report": "...", "landlord_letter": "..." }
+Plain text only, use \\n for line breaks, no markdown.`),
+
+      // Group 2 — photo shot list + deposit rights
+      callGroup(`You are an expert tenant rights advocate generating move-in documentation.
+
+${ctx}
+
+MOVE-IN CONDITION CHECKLIST:
+${checklistFormatted}
+
+Generate ONLY: photo_shot_list and deposit_rights.
+
+PHOTO SHOT LIST: Prioritized room-by-room list. PRIORITY 1: DAMAGED items (wide+close+detail shots). PRIORITY 2: POOR items. PRIORITY 3: FAIR items. PRIORITY 4: GOOD items (wide shot). Include photography tips and total photo count. Plain text, no markdown.
+
+DEPOSIT RIGHTS: Security deposit law specific to ${location}. Include: max deposit allowed (with statute), separate account requirements, interest requirements, return timeline (with statute), allowable vs prohibited deductions, itemized statement requirements, penalties for late return, dispute process, small claims limits. Cite specific statutes. Plain text, no markdown.
+
+Return JSON: { "photo_shot_list": "...", "deposit_rights": "..." }
+Use \\n for line breaks.`),
+
+      // Group 3 — move-out tips (lightest)
+      callGroup(`You are an expert tenant rights advocate.
+
+${ctx}
+
+Generate practical move-out tips to help the tenant get their full deposit back. Cover: pre-move-out walkthrough with landlord, matching photos to move-in documentation, cleaning standards, forwarding address, deposit return deadline for ${location}, dispute process if deductions seem unfair, record retention.
+
+Return JSON: { "move_out_tips": "..." }
+Plain text only, use \\n for line breaks, no markdown.`),
+    ]);
+
+    const parsed = { ...g1, ...g2, ...g3 };
+    if (!parsed.condition_report && !parsed.deposit_rights) {
+      return res.status(500).json({ error: 'Could not generate your deposit recovery plan. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
@@ -239,11 +332,15 @@ CRITICAL RULES:
 });
 
 // ═══════════════════════════════════════════════════════════════
-// STREAMING ROUTE — full report generation (Mode 2 only)
+// STREAMING ROUTE — parallel section generation
+// Runs 3 concurrent API calls (~6K tokens each) instead of one
+// 16K-token call. Each group sends { section, content } SSE events
+// as it completes, so the frontend can render sections progressively.
+// Total time: ~40-60 s instead of ~3 min.
 // ═══════════════════════════════════════════════════════════════
 
 router.post('/renters-deposit-saver/stream', rateLimit(), async (req, res) => {
-  const { address, unit, landlordName, landlordEmail, moveInDate, location, depositAmount, checklist } = req.body;
+  const { address, unit, landlordName, landlordEmail, moveInDate, location, depositAmount, checklist, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
   if (!address?.trim()) return res.status(400).json({ error: 'Property address is required' });
   if (!moveInDate) return res.status(400).json({ error: 'Move-in date is required' });
@@ -258,6 +355,10 @@ router.post('/renters-deposit-saver/stream', rateLimit(), async (req, res) => {
   const sendEvent = (data) => res.write(`data: ${JSON.stringify(data)}\n\n`);
 
   try {
+    const fullAddress   = unit ? `${address}, Unit ${unit}` : address;
+    const landlordLine  = `${landlordName?.trim() || '[LANDLORD / PROPERTY MANAGER]'} (${landlordEmail?.trim() || '[LANDLORD EMAIL]'})`;
+    const depositLine   = depositAmount?.trim() || '[DEPOSIT AMOUNT]';
+
     const checklistFormatted = checklist.map(room => {
       const items = room.items.map(item => {
         let line = `  - ${item.item}: ${item.condition.toUpperCase()}`;
@@ -267,33 +368,72 @@ router.post('/renters-deposit-saver/stream', rateLimit(), async (req, res) => {
       return `${room.room}:\n${items}`;
     }).join('\n\n');
 
-    const fullAddress = unit ? `${address}, Unit ${unit}` : address;
-    const landlordDisplay = landlordName?.trim() || '[LANDLORD / PROPERTY MANAGER]';
-    const landlordEmailDisplay = landlordEmail?.trim() || '[LANDLORD EMAIL]';
-    const depositDisplay = depositAmount?.trim() || '[DEPOSIT AMOUNT]';
+    const ctx = `Address: ${fullAddress}\nMove-In Date: ${moveInDate}\nLocation/Jurisdiction: ${location}\nSecurity Deposit: ${depositLine}\nLandlord: ${landlordLine}`;
+    const system = withLanguage('You are a JSON API. Respond with ONLY valid JSON.', userLanguage)
+                 + withLocaleContext(userLocale, userCurrency, userRegion);
 
-    const prompt = `You are an expert tenant rights advocate and move-in documentation specialist. You are generating a complete move-in documentation package for a renter.
+    // Single-section-group helper: call Claude, repair, return parsed object
+    async function callGroup(prompt, label) {
+      let lastErr;
+      for (let _att = 1; _att <= 3; _att++) {
+        try {
+          const msg = await anthropic.messages.create({
+            model: 'claude-sonnet-4-6', max_tokens: 6000, system,
+            messages: [{ role: 'user', content: prompt }],
+          });
+          const raw = msg.content.find(b => b.type === 'text')?.text || '';
+          return JSON.parse(repairJsonStrings(cleanJsonResponse(raw)));
+        } catch (err) {
+          lastErr = err;
+          if (_att < 3) await new Promise(r => setTimeout(r, 500 * _att));
+        }
+      }
+      throw lastErr;
+    }
 
-Address: ${fullAddress}
-Move-In Date: ${moveInDate}
-Location / Jurisdiction: ${location}
-Security Deposit: ${depositDisplay}
-Landlord/Manager: ${landlordDisplay}
-Landlord Email: ${landlordEmailDisplay}
+    // ── Group 1: Condition Report + Landlord Letter ────────────
+    const p1 = callGroup(`You are an expert tenant rights advocate generating move-in documentation.
+
+${ctx}
 
 MOVE-IN CONDITION CHECKLIST:
 ${checklistFormatted}
 
-Generate a complete move-in documentation package. Return ONLY valid JSON with these keys: condition_report, landlord_letter, photo_shot_list, deposit_rights, move_out_tips — all as plain-text strings with newlines. Cite specific statutes for ${location}. No markdown formatting in the text values.`;
+Generate ONLY these two documents. Return JSON with exactly these keys (use \\n for line breaks, no markdown):
+{ "condition_report": "...", "landlord_letter": "..." }`, 'group1')
+      .then(r => {
+        if (r.condition_report) sendEvent({ section: 'condition_report', content: r.condition_report });
+        if (r.landlord_letter)  sendEvent({ section: 'landlord_letter',  content: r.landlord_letter });
+      });
 
-    const stream = await anthropic.messages.stream({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 8000,
-      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
-    });
+    // ── Group 2: Photo Shot List + Deposit Rights ──────────────
+    const p2 = callGroup(`You are an expert tenant rights advocate generating move-in documentation.
 
-    stream.on('text', (text) => sendEvent({ chunk: text }));
-    await stream.finalMessage();
+${ctx}
+
+MOVE-IN CONDITION CHECKLIST:
+${checklistFormatted}
+
+Generate ONLY these two sections. Return JSON with exactly these keys (use \\n for line breaks, no markdown):
+{ "photo_shot_list": "...", "deposit_rights": "... (cite specific ${location} statutes)" }`, 'group2')
+      .then(r => {
+        if (r.photo_shot_list) sendEvent({ section: 'photo_shot_list', content: r.photo_shot_list });
+        if (r.deposit_rights)  sendEvent({ section: 'deposit_rights',  content: r.deposit_rights });
+      });
+
+    // ── Group 3: Move-Out Tips (lightest call) ─────────────────
+    const p3 = callGroup(`You are an expert tenant rights advocate.
+
+${ctx}
+
+Generate practical move-out advice to help the tenant get their full deposit back when they eventually leave.
+Return JSON with exactly this key (use \\n for line breaks, no markdown):
+{ "move_out_tips": "..." }`, 'group3')
+      .then(r => {
+        if (r.move_out_tips) sendEvent({ section: 'move_out_tips', content: r.move_out_tips });
+      });
+
+    await Promise.all([p1, p2, p3]);
     sendEvent({ done: true });
     res.end();
 

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 const PERSONALITY = `You are a systems navigator — a specialist in finding the undocumented paths through bureaucratic systems. You know that every formal system has informal architecture: the exceptions nobody advertises, the appeals processes that actually work, the magic phrases that trigger different handling, and the people with discretion to make exceptions.
@@ -99,21 +99,20 @@ Return ONLY valid JSON:
   "the_first_move": "The single most important action to take in the next 24 hours — specific and actionable"
 }`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+    const parsed = await callClaudeWithRetry({
+model: 'claude-sonnet-4-6',
       max_tokens: 2800,
       system: withLanguage(PERSONALITY, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'rulebook-breaker' });
+    if (!Array.isArray(parsed.the_ladder) || !parsed.the_ladder.length) {
+      return res.status(500).json({ error: 'Could not build your strategy. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('RulebookBreaker error:', error);
-    res.status(500).json({ error: error.message || 'Failed to find the cheat codes' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.'});
   }
 });
 

@@ -120,10 +120,13 @@ Generate 1-2 rewrites that meaningfully improve the message for the most at-risk
       }
     );
 
+    if (!parsed.message_analysis && !parsed.rewrites) {
+      return res.status(500).json({ error: 'Could not analyze the message. Please try again.' });
+    }
     res.json(parsed);
   } catch (error) {
     console.error('Context Collapse error:', error);
-    res.status(500).json({ error: error.message || 'Failed to analyze message' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

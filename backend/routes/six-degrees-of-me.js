@@ -25,8 +25,8 @@ const buildProfileContext = (profile) => {
 // ── Main chain (v1) ──
 router.post('/six-degrees', rateLimit(), async (req, res) => {
   try {
-    const { thingA, thingB, profile, locale } = req.body;
-    const lang = withLanguage(locale);
+    const { thingA, thingB, profile, userLanguage } = req.body;
+    const lang = withLanguage('', userLanguage);
     if (!thingA?.trim() || !thingB?.trim()) return res.status(400).json({ error: 'Need both Thing A and Thing B.' });
     const profileCtx = buildProfileContext(profile);
 
@@ -52,16 +52,25 @@ Respond ONLY with valid JSON:
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
-    const msg = await anthropic.messages.create({ model: 'claude-haiku-4-5-20251001', max_tokens: 2000, messages: [{ role: 'user', content: prompt }] });
+    let msg;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        msg = await anthropic.messages.create({ model: 'claude-haiku-4-5-20251001', max_tokens: 2000, messages: [{ role: 'user', content: prompt }] });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
     res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
-  } catch (e) { console.error('SixDegrees chain:', e); res.status(500).json({ error: e.message || 'Chain broke!' }); }
+  } catch (e) { console.error('SixDegrees chain:', e); res.status(500).json({ error: 'Something went wrong. Please try again.' }); }
 });
 
 // ── Flip (v1) ──
 router.post('/six-degrees/flip', rateLimit(), async (req, res) => {
   try {
-    const { thingA, thingB, profile, originalChain, locale } = req.body;
-    const lang = withLanguage(locale);
+    const { thingA, thingB, profile, originalChain, userLanguage } = req.body;
+    const lang = withLanguage('', userLanguage);
     const origSummary = (originalChain || []).map(s => `${s.from}→${s.to}: ${s.connection}`).join('\n');
 
     const prompt = `Find a completely DIFFERENT chain from "${thingB}" back to "${thingA}". Different connections, different intermediate steps.
@@ -74,7 +83,16 @@ Respond ONLY with valid JSON:
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
-    const msg = await anthropic.messages.create({ model: 'claude-haiku-4-5-20251001', max_tokens: 2000, messages: [{ role: 'user', content: prompt }] });
+    let msg;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        msg = await anthropic.messages.create({ model: 'claude-haiku-4-5-20251001', max_tokens: 2000, messages: [{ role: 'user', content: prompt }] });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
     res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
   } catch (e) { console.error('Flip:', e); res.status(500).json({ error: "Couldn't flip." }); }
 });
@@ -82,8 +100,8 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
 // ── Surprise (v1) ──
 router.post('/six-degrees/surprise', rateLimit(), async (req, res) => {
   try {
-    const { profile, usedPairs, locale } = req.body;
-    const lang = withLanguage(locale);
+    const { profile, usedPairs, userLanguage } = req.body;
+    const lang = withLanguage('', userLanguage);
 
     const prompt = `Suggest 4 pairs of seemingly unrelated things from this person's life that would make fascinating chains.
 
@@ -97,7 +115,16 @@ Respond ONLY with valid JSON:
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
-    const msg = await anthropic.messages.create({ model: 'claude-haiku-4-5-20251001', max_tokens: 800, messages: [{ role: 'user', content: prompt }] });
+    let msg;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        msg = await anthropic.messages.create({ model: 'claude-haiku-4-5-20251001', max_tokens: 800, messages: [{ role: 'user', content: prompt }] });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
     res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
   } catch (e) { console.error('Surprise:', e); res.status(500).json({ error: "Couldn't suggest." }); }
 });
@@ -105,8 +132,8 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
 // ── Profile prompts (v1) ──
 router.post('/six-degrees/profile-prompt', rateLimit(), async (req, res) => {
   try {
-    const { profile, category, locale } = req.body;
-    const lang = withLanguage(locale);
+    const { profile, category, userLanguage } = req.body;
+    const lang = withLanguage('', userLanguage);
 
     const prompt = `Generate 3 follow-up questions for someone building their profile, category "${category}".
 
@@ -118,7 +145,16 @@ Respond ONLY with valid JSON:
 {"questions":["Q1?","Q2?","Q3?"]}
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
-    const msg = await anthropic.messages.create({ model: 'claude-haiku-4-5-20251001', max_tokens: 400, messages: [{ role: 'user', content: prompt }] });
+    let msg;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        msg = await anthropic.messages.create({ model: 'claude-haiku-4-5-20251001', max_tokens: 400, messages: [{ role: 'user', content: prompt }] });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
     res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
   } catch (e) { console.error('Profile-prompt:', e); res.status(500).json({ error: "Couldn't generate." }); }
 });
@@ -128,8 +164,8 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
 // ════════════════════════════════════════════════════════════
 router.post('/six-degrees/challenge', rateLimit(), async (req, res) => {
   try {
-    const { thingA, thingB, profile, constraint, locale } = req.body;
-    const lang = withLanguage(locale);
+    const { thingA, thingB, profile, constraint, userLanguage } = req.body;
+    const lang = withLanguage('', userLanguage);
     if (!thingA?.trim() || !thingB?.trim()) return res.status(400).json({ error: 'Need both things.' });
 
     const constraintInstr = {
@@ -161,7 +197,16 @@ Respond ONLY with valid JSON:
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
-    const msg = await anthropic.messages.create({ model: 'claude-haiku-4-5-20251001', max_tokens: 2000, messages: [{ role: 'user', content: prompt }] });
+    let msg;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        msg = await anthropic.messages.create({ model: 'claude-haiku-4-5-20251001', max_tokens: 2000, messages: [{ role: 'user', content: prompt }] });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
     res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
   } catch (e) { console.error('Challenge:', e); res.status(500).json({ error: 'Challenge failed.' }); }
 });
@@ -171,8 +216,8 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
 // ════════════════════════════════════════════════════════════
 router.post('/six-degrees/what-if', rateLimit(), async (req, res) => {
   try {
-    const { thingA, thingB, profile, originalChain, removedStep, locale } = req.body;
-    const lang = withLanguage(locale);
+    const { thingA, thingB, profile, originalChain, removedStep, userLanguage } = req.body;
+    const lang = withLanguage('', userLanguage);
 
     const chainSummary = (originalChain || []).map(s => `${s.step}. ${s.from}→${s.to}: ${s.connection}`).join('\n');
 
@@ -200,7 +245,16 @@ Respond ONLY with valid JSON:
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
-    const msg = await anthropic.messages.create({ model: 'claude-haiku-4-5-20251001', max_tokens: 2000, messages: [{ role: 'user', content: prompt }] });
+    let msg;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        msg = await anthropic.messages.create({ model: 'claude-haiku-4-5-20251001', max_tokens: 2000, messages: [{ role: 'user', content: prompt }] });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
     res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
   } catch (e) { console.error('WhatIf:', e); res.status(500).json({ error: "Couldn't explore what-if." }); }
 });
@@ -210,8 +264,8 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
 // ════════════════════════════════════════════════════════════
 router.post('/six-degrees/story', rateLimit(), async (req, res) => {
   try {
-    const { profile, chainHistory, locale } = req.body;
-    const lang = withLanguage(locale);
+    const { profile, chainHistory, userLanguage } = req.body;
+    const lang = withLanguage('', userLanguage);
 
     const chainSummaries = (chainHistory || []).slice(0, 20).map((h, i) =>
       `Chain ${i + 1}: "${h.thingA}" → "${h.thingB}" | Through-line: ${h.insight?.through_line || 'unknown'} | Insight: ${h.insight?.title || 'none'}`
@@ -249,7 +303,16 @@ Respond ONLY with valid JSON:
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
-    const msg = await anthropic.messages.create({ model: 'claude-haiku-4-5-20251001', max_tokens: 2500, messages: [{ role: 'user', content: prompt }] });
+    let msg;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        msg = await anthropic.messages.create({ model: 'claude-haiku-4-5-20251001', max_tokens: 2500, messages: [{ role: 'user', content: prompt }] });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
     res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
   } catch (e) { console.error('Story:', e); res.status(500).json({ error: "Couldn't write your story." }); }
 });
@@ -259,8 +322,8 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
 // ════════════════════════════════════════════════════════════
 router.post('/six-degrees/tag-nodes', rateLimit(), async (req, res) => {
   try {
-    const { nodes, locale } = req.body;
-    const lang = withLanguage(locale);
+    const { nodes, userLanguage } = req.body;
+    const lang = withLanguage('', userLanguage);
 
     const prompt = `Categorize these life-concept nodes into semantic tags. Also identify nodes that refer to the SAME concept (should be merged).
 
@@ -276,7 +339,16 @@ Respond ONLY with valid JSON:
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
-    const msg = await anthropic.messages.create({ model: 'claude-haiku-4-5-20251001', max_tokens: 1200, messages: [{ role: 'user', content: prompt }] });
+    let msg;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        msg = await anthropic.messages.create({ model: 'claude-haiku-4-5-20251001', max_tokens: 1200, messages: [{ role: 'user', content: prompt }] });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
     res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
   } catch (e) { console.error('Tag:', e); res.status(500).json({ error: "Couldn't tag." }); }
 });
@@ -286,8 +358,8 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
 // ════════════════════════════════════════════════════════════
 router.post('/six-degrees/chain-between', rateLimit(), async (req, res) => {
   try {
-    const { profileA, profileB, nameA, nameB, mode, sharedThing, locale } = req.body;
-    const lang = withLanguage(locale);
+    const { profileA, profileB, nameA, nameB, mode, sharedThing, userLanguage } = req.body;
+    const lang = withLanguage('', userLanguage);
 
     const modeInstr = mode === 'shared'
       ? `Both people connect to "${sharedThing}". Show how it connects to completely DIFFERENT parts of each person's life. Side-by-side chains.`
@@ -326,7 +398,16 @@ Respond with valid JSON:
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
-    const msg = await anthropic.messages.create({ model: 'claude-haiku-4-5-20251001', max_tokens: 2500, messages: [{ role: 'user', content: prompt }] });
+    let msg;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        msg = await anthropic.messages.create({ model: 'claude-haiku-4-5-20251001', max_tokens: 2500, messages: [{ role: 'user', content: prompt }] });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
     res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
   } catch (e) { console.error('ChainBetween:', e); res.status(500).json({ error: "Couldn't find the connection." }); }
 });

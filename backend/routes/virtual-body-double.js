@@ -121,6 +121,9 @@ Return ONLY valid JSON:
           max_tokens: 1800,
         });
 
+        if (!parsed.kickoff && !parsed.check_in) {
+          return res.status(500).json({ error: 'Could not start the session. Please try again.' });
+        }
         return res.json(parsed);
       }
 
@@ -170,6 +173,9 @@ Return ONLY valid JSON:
           max_tokens: 800,
         });
 
+        if (!parsed.kickoff && !parsed.check_in) {
+          return res.status(500).json({ error: 'Could not start the session. Please try again.' });
+        }
         return res.json(parsed);
       }
 
@@ -218,6 +224,9 @@ Return ONLY valid JSON:
           max_tokens: 500,
         });
 
+        if (!parsed.kickoff && !parsed.check_in) {
+          return res.status(500).json({ error: 'Could not start the session. Please try again.' });
+        }
         return res.json(parsed);
       }
 
@@ -263,6 +272,9 @@ Return ONLY valid JSON:
           max_tokens: 900,
         });
 
+        if (!parsed.kickoff && !parsed.check_in) {
+          return res.status(500).json({ error: 'Could not start the session. Please try again.' });
+        }
         return res.json(parsed);
       }
 
@@ -300,6 +312,9 @@ Return ONLY valid JSON:
           max_tokens: 800,
         });
 
+        if (!parsed.kickoff && !parsed.check_in) {
+          return res.status(500).json({ error: 'Could not start the session. Please try again.' });
+        }
         return res.json(parsed);
       }
 
@@ -325,6 +340,9 @@ Return ONLY valid JSON:
           max_tokens: 500,
         });
 
+        if (!parsed.kickoff && !parsed.check_in) {
+          return res.status(500).json({ error: 'Could not start the session. Please try again.' });
+        }
         return res.json(parsed);
       }
 
@@ -350,6 +368,9 @@ Return ONLY valid JSON:
           max_tokens: 400,
         });
 
+        if (!parsed.kickoff && !parsed.check_in) {
+          return res.status(500).json({ error: 'Could not start the session. Please try again.' });
+        }
         return res.json(parsed);
       }
 
@@ -377,6 +398,9 @@ Return ONLY valid JSON:
           max_tokens: 600,
         });
 
+        if (!parsed.kickoff && !parsed.check_in) {
+          return res.status(500).json({ error: 'Could not start the session. Please try again.' });
+        }
         return res.json(parsed);
       }
 
@@ -416,6 +440,9 @@ Return ONLY valid JSON:
           max_tokens: 1200,
         });
 
+        if (!parsed.kickoff && !parsed.check_in) {
+          return res.status(500).json({ error: 'Could not start the session. Please try again.' });
+        }
         return res.json(parsed);
       }
 
@@ -449,6 +476,9 @@ Return ONLY valid JSON:
           max_tokens: 300,
         });
 
+        if (!parsed.kickoff && !parsed.check_in) {
+          return res.status(500).json({ error: 'Could not start the session. Please try again.' });
+        }
         return res.json(parsed);
       }
 
@@ -458,7 +488,7 @@ Return ONLY valid JSON:
 
   } catch (err) {
     console.error('VirtualBodyDouble error:', err);
-    res.status(500).json({ error: err.message || 'Something went wrong.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

@@ -75,11 +75,14 @@ Return ONLY valid JSON:
       max_tokens: 2500,
       system: withLanguage(PERSONALITY, userLanguage),
     });
+    if (!parsed.belief_as_understood) {
+      return res.status(500).json({ error: 'Could not stress-test this belief. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('BeliefStressTest error:', error);
-    res.status(500).json({ error: error.message || 'Failed to stress-test the belief' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

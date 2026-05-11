@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════
@@ -101,19 +101,16 @@ IMPORTANT RULES:
 
 Return ONLY the JSON object. No markdown fences, no preamble.`;
 
-    const message_response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+    const parsed = await callClaudeWithRetry({
+model: 'claude-sonnet-4-6',
       max_tokens: 3500,
       messages: [{ role: 'user', content: withLanguage(basePrompt, userLanguage) }],
-    });
-
-    const textContent = message_response.content.find(item => item.type === 'text')?.text || '';
-    const parsed = JSON.parse(cleanJsonResponse(textContent));
+    }, { label: 'decoder-ring' });
     res.json(parsed);
 
   } catch (error) {
     console.error('Decoder Ring error:', error);
-    res.status(500).json({ error: error.message || 'Failed to decode message' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.'});
   }
 });
 

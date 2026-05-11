@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
@@ -114,20 +114,17 @@ Filter this document for what actually matters to this person. Return ONLY valid
 
 If a section has no items, return an empty array []. Prioritize action_required and costs_you_money — those are what people miss and regret.`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+    const parsed = await callClaudeWithRetry({
+model: 'claude-sonnet-4-6',
       max_tokens: 3500,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const parsed = JSON.parse(cleanJsonResponse(text));
+    }, { label: 'noise-canceler' });
     res.json(parsed);
 
   } catch (error) {
     console.error('Noise Canceler error:', error);
-    res.status(500).json({ error: error.message || 'Failed to filter document' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.'});
   }
 });
 

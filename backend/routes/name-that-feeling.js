@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 const PERSONALITY = `You are a lexicographer of the human soul — someone who has spent a lifetime cataloging the precise words that different languages invented for feelings that defy easy description. You speak dozens of languages and you know the untranslatable words that capture emotions English never bothered to name.
@@ -64,21 +64,17 @@ Return ONLY valid JSON:
 
 Provide 2-3 close_matches and 2-3 from_other_languages.`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-haiku-4-5-20251001',
+    const parsed = await callClaudeWithRetry({
+model: 'claude-haiku-4-5-20251001',
       max_tokens: 2000,
       system: withLanguage(PERSONALITY, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'name-that-feeling' });
     res.json(parsed);
 
   } catch (error) {
     console.error('NameThatFeeling error:', error);
-    res.status(500).json({ error: error.message || 'Failed to name the feeling' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.'});
   }
 });
 

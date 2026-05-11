@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 const PERSONALITY = `You are a brutally perceptive communication analyst with the observational skills of a linguist and the delivery of a sharp friend. You read between every line, notice every verbal tic, and can tell someone's entire personality from how they use punctuation.
@@ -65,21 +65,20 @@ Return ONLY valid JSON:
   "share_line": "A single punchy sentence that captures their entire vibe — something they'd screenshot and send to friends"
 }`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-haiku-4-5-20251001',
+    const parsed = await callClaudeWithRetry({
+model: 'claude-haiku-4-5-20251001',
       max_tokens: 2000,
       system: withLanguage(PERSONALITY, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'whats-my-vibe' });
+    if (!parsed.vibe_description) {
+      return res.status(500).json({ error: 'Could not read your vibe. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('WhatsMyVibe error:', error);
-    res.status(500).json({ error: error.message || 'Vibe check failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.'});
   }
 });
 

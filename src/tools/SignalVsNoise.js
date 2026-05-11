@@ -15,14 +15,14 @@ const EXAMPLE_TOPICS = [
 ];
 
 const NOISE_TYPE_CONFIG = {
-  marketing:            { label: '💰 Marketing',           color: (d) => d ? 'bg-amber-900/30 border-amber-600/50 text-amber-300'   : 'bg-amber-50 border-amber-300 text-amber-800' },
-  methodology_problem:  { label: '🔬 Bad Methodology',     color: (d) => d ? 'bg-red-900/30 border-red-700/50 text-red-300'         : 'bg-red-50 border-red-300 text-red-800' },
-  cherry_picked:        { label: '🍒 Cherry-Picked',       color: (d) => d ? 'bg-red-900/30 border-red-700/50 text-red-300'       : 'bg-red-50 border-red-300 text-red-800' },
-  outdated:             { label: '📅 Outdated',             color: (d) => d ? 'bg-zinc-700/60 border-zinc-600 text-zinc-300'          : 'bg-gray-100 border-gray-300 text-gray-600' },
-  oversimplified:       { label: '✂️ Oversimplified',      color: (d) => d ? 'bg-amber-900/30 border-amber-600/50 text-amber-300'   : 'bg-amber-50 border-amber-300 text-amber-800' },
-  ideology:             { label: '🏴 Ideology',            color: (d) => d ? 'bg-cyan-900/30 border-cyan-700/50 text-cyan-300' : 'bg-cyan-50 border-cyan-300 text-cyan-800' },
-  individual_variation: { label: '🧬 Individual Variation', color: (d) => d ? 'bg-cyan-900/30 border-cyan-700/50 text-cyan-300'      : 'bg-cyan-50 border-cyan-300 text-cyan-800' },
-  media_distortion:     { label: '📺 Media Distortion',    color: (d) => d ? 'bg-sky-900/30 border-sky-700/50 text-sky-300'         : 'bg-sky-50 border-sky-300 text-sky-800' },
+  marketing:            { label: '💰 Marketing',           cls: 'amber' },
+  methodology_problem:  { label: '🔬 Bad Methodology',     cls: 'red' },
+  cherry_picked:        { label: '🍒 Cherry-Picked',       cls: 'red' },
+  outdated:             { label: '📅 Outdated',             cls: 'zinc' },
+  oversimplified:       { label: '✂️ Oversimplified',      cls: 'amber' },
+  ideology:             { label: '🏴 Ideology',            cls: 'cyan' },
+  individual_variation: { label: '🧬 Individual Variation', cls: 'cyan' },
+  media_distortion:     { label: '📺 Media Distortion',    cls: 'sky' },
 };
 
 const SignalVsNoise = ({ tool }) => {
@@ -53,6 +53,15 @@ const SignalVsNoise = ({ tool }) => {
   };
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
+
+  // Noise-type badge classes — resolved here so isDark is in scope
+  const noiseClsMap = {
+    amber: isDark ? 'bg-amber-900/30 border-amber-600/50 text-amber-300' : 'bg-amber-50 border-amber-300 text-amber-800',
+    red:   isDark ? 'bg-red-900/30 border-red-700/50 text-red-300'       : 'bg-red-50 border-red-300 text-red-800',
+    zinc:  isDark ? 'bg-zinc-700/60 border-zinc-600 text-zinc-300'       : 'bg-gray-100 border-gray-300 text-gray-600',
+    cyan:  isDark ? 'bg-cyan-900/30 border-cyan-700/50 text-cyan-300'    : 'bg-cyan-50 border-cyan-300 text-cyan-800',
+    sky:   isDark ? 'bg-sky-900/30 border-sky-700/50 text-sky-300'       : 'bg-sky-50 border-sky-300 text-sky-800',
+  };
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
@@ -228,7 +237,7 @@ const SignalVsNoise = ({ tool }) => {
                       return (
                         <div key={i} className={`px-5 py-4 ${i > 0 ? `border-t ${c.border}` : ''}`}>
                           <div className="flex items-start gap-2 mb-2 flex-wrap">
-                            <span className={`text-xs font-bold px-2 py-0.5 rounded-full border ${cfg.color(isDark)}`}>{cfg.label}</span>
+                            <span className={`text-xs font-bold px-2 py-0.5 rounded-full border ${noiseClsMap[cfg.cls] || noiseClsMap.zinc}`}>{cfg.label}</span>
                           </div>
                           <p className={`text-sm font-semibold mb-1 ${c.text}`}>"{item.claim}"</p>
                           <p className={`text-sm ${c.textSecondary}`}>{item.the_problem}</p>

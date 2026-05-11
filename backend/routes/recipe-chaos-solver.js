@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, cleanJsonResponse, withLanguage } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
@@ -162,21 +162,20 @@ Provide 1-3 solutions. Be HONEST if dish can't be saved. success_probability mus
 
     contentBlocks.push({ type: 'text', text: userPrompt });
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 4000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: contentBlocks }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'recipe-chaos-solver' });
+    if (!parsed.solution && !parsed.fixes && !parsed.rescue) {
+      return res.status(500).json({ error: 'Could not rescue your recipe. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('RecipeChaosSolver error:', error);
-    res.status(500).json({ error: error.message || 'Rescue failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -224,21 +223,20 @@ Return ONLY valid JSON:
 
 List 3-5 swaps ranked from best to worst. Be specific about ratios.`;
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'recipe-chaos-solver-2' });
+    if (!parsed.solution && !parsed.fixes && !parsed.rescue) {
+      return res.status(500).json({ error: 'Could not rescue your recipe. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('RecipeChaosSolver swap error:', error);
-    res.status(500).json({ error: error.message || 'Swap lookup failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -291,21 +289,20 @@ Return ONLY valid JSON:
   "pro_tip": "Expert insight for managing multi-substitution cooking"
 }`;
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'recipe-chaos-solver-3' });
+    if (!parsed.solution && !parsed.fixes && !parsed.rescue) {
+      return res.status(500).json({ error: 'Could not rescue your recipe. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('RecipeChaosSolver multi-swap error:', error);
-    res.status(500).json({ error: error.message || 'Multi-swap failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -358,21 +355,20 @@ Return ONLY valid JSON:
   "pro_tip": "One expert tip for scaling this type of recipe"
 }`;
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'recipe-chaos-solver-4' });
+    if (!parsed.solution && !parsed.fixes && !parsed.rescue) {
+      return res.status(500).json({ error: 'Could not rescue your recipe. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('RecipeChaosSolver scale error:', error);
-    res.status(500).json({ error: error.message || 'Scaling failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -428,21 +424,20 @@ Return ONLY valid JSON:
   "go_no_go": "Final honest assessment — should they proceed?"
 }`;
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'recipe-chaos-solver-5' });
+    if (!parsed.solution && !parsed.fixes && !parsed.rescue) {
+      return res.status(500).json({ error: 'Could not rescue your recipe. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('RecipeChaosSolver preflight error:', error);
-    res.status(500).json({ error: error.message || 'Pre-flight check failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -490,21 +485,20 @@ Return ONLY valid JSON:
   "do_not": "The one thing people do that makes this WORSE"
 }`;
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 1500,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'recipe-chaos-solver-6' });
+    if (!parsed.solution && !parsed.fixes && !parsed.rescue) {
+      return res.status(500).json({ error: 'Could not rescue your recipe. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('RecipeChaosSolver flavor-fix error:', error);
-    res.status(500).json({ error: error.message || 'Flavor fix failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -541,21 +535,20 @@ Return ONLY valid JSON:
   "next_experiment": "One thing they can try next time to deepen this understanding"
 }`;
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 1500,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'recipe-chaos-solver-7' });
+    if (!parsed.solution && !parsed.fixes && !parsed.rescue) {
+      return res.status(500).json({ error: 'Could not rescue your recipe. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('RecipeChaosSolver teach error:', error);
-    res.status(500).json({ error: error.message || 'Lesson generation failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

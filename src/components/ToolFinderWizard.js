@@ -9,6 +9,7 @@
 // situations; the user can edit before submitting.
 
 import React, { useState, useCallback, useRef, useEffect } from 'react';
+import { useTranslation } from '../i18n/useTranslation';
 
 // ════════════════════════════════════════════════════════════
 // PALETTE — mirrors DashBoard.js CLR
@@ -32,17 +33,17 @@ const CLR = {
 
 // ════════════════════════════════════════════════════════════
 // EXAMPLE SCENARIOS — click to populate the textarea
-// Concrete and relatable, not abstract category labels.
+// Texts pull from i18n keys so non-English users see translated pills.
 // ════════════════════════════════════════════════════════════
 const SCENARIOS = [
-  { emoji: '😬', text: "I need to apologize for something I said" },
-  { emoji: '🤔', text: "I can't decide between two options" },
-  { emoji: '⚡', text: "I'm overwhelmed and don't know where to start" },
-  { emoji: '🗣️', text: "I need to have a difficult conversation" },
-  { emoji: '💸', text: "I got an unexpected bill I can't afford" },
-  { emoji: '🩺', text: "I'm preparing for a medical appointment" },
-  { emoji: '🧠', text: "I need to understand something complex" },
-  { emoji: '✈️', text: "I'm planning a trip" },
+  { emoji: '😬', key: 'scenario_apologize' },
+  { emoji: '🤔', key: 'scenario_decide' },
+  { emoji: '⚡', key: 'scenario_overwhelmed' },
+  { emoji: '🗣️', key: 'scenario_difficult_convo' },
+  { emoji: '💸', key: 'scenario_unexpected_bill' },
+  { emoji: '🩺', key: 'scenario_medical_appt' },
+  { emoji: '🧠', key: 'scenario_understand_complex' },
+  { emoji: '✈️', key: 'scenario_planning_trip' },
 ];
 
 // ════════════════════════════════════════════════════════════
@@ -82,6 +83,7 @@ function ScenarioPill({ scenario, active, onPick }) {
 // TOOL CARD — result recommendation
 // ════════════════════════════════════════════════════════════
 function ToolCard({ rec, rank }) {
+  const { t } = useTranslation();
   const [hovered, setHovered] = useState(false);
   return (
     <a
@@ -114,7 +116,7 @@ function ToolCard({ rec, rank }) {
           padding: '2px 7px',
           borderRadius: 4,
           textTransform: 'uppercase',
-        }}>Best match</span>
+        }}>{t('best_match')}</span>
       )}
       <span style={{ fontSize: 22, flexShrink: 0, marginTop: 1 }}>{rec.icon || '🔧'}</span>
       <div style={{ flex: 1, minWidth: 0 }}>
@@ -155,6 +157,7 @@ function ToolCard({ rec, rank }) {
 // MAIN COMPONENT
 // ════════════════════════════════════════════════════════════
 export default function ToolFinderWizard() {
+  const { t, i18n } = useTranslation();
   const [query,     setQuery]     = useState('');
   const [loading,   setLoading]   = useState(false);
   const [results,   setResults]   = useState(null);
@@ -193,7 +196,7 @@ export default function ToolFinderWizard() {
       const data = await res.json();
       setResults(data);
     } catch {
-      setError('Something went wrong — please try again.');
+      setError(t('something_wrong'));
     } finally {
       setLoading(false);
     }
@@ -239,12 +242,12 @@ export default function ToolFinderWizard() {
         e.currentTarget.style.color = CLR.warm400;
       }}
     >
-      🔍 Not sure where to start? Find the right tool →
+      🔍 {t('wizard_intro')} {t('find_my_tools')}
     </button>
   );
 
   const canSubmit = query.trim().length > 0 && !loading;
-  const activeScenario = SCENARIOS.find(s => s.text === query.trim());
+  const activeScenario = SCENARIOS.find(s => t(s.key) === query.trim());
 
   return (
     <div style={{
@@ -284,7 +287,7 @@ export default function ToolFinderWizard() {
             textTransform: 'uppercase',
             margin: '0 0 4px',
           }}>
-            Not sure where to start?
+            {t('wizard_intro')}
           </p>
           <h2 style={{
             fontSize: 17,
@@ -294,7 +297,7 @@ export default function ToolFinderWizard() {
             margin: '0 0 12px',
             paddingRight: 20,
           }}>
-            What's going on?
+            {t('whats_going_on')}
           </h2>
 
           {/* Textarea */}
@@ -312,7 +315,9 @@ export default function ToolFinderWizard() {
               onFocus={() => setFocused(true)}
               onBlur={() => setFocused(false)}
               onKeyDown={handleKeyDown}
-              placeholder={'Describe your situation in plain language — e.g. "I need to tell my boss I can\'t take on more work"'}
+              placeholder={t('wizard_placeholder')}
+              lang={i18n.language}
+              dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}
               rows={1}
               style={{
                 width: '100%',
@@ -339,7 +344,7 @@ export default function ToolFinderWizard() {
             margin: '0 0 7px',
             letterSpacing: 0.3,
           }}>
-            Or try an example:
+            {t('try_example')}
           </p>
           <div style={{
             display: 'flex',
@@ -349,9 +354,9 @@ export default function ToolFinderWizard() {
           }}>
             {SCENARIOS.map(s => (
               <ScenarioPill
-                key={s.text}
-                scenario={s}
-                active={activeScenario?.text === s.text}
+                key={s.key}
+                scenario={{ emoji: s.emoji, text: t(s.key) }}
+                active={activeScenario?.key === s.key}
                 onPick={handlePill}
               />
             ))}
@@ -366,7 +371,7 @@ export default function ToolFinderWizard() {
             <span style={{
               fontSize: 10.5, color: CLR.warm400,
             }}>
-              {query.trim() ? '⌘↵ to submit' : '120+ tools across 18 categories'}
+              {query.trim() ? t('submit_shortcut_hint') : t('tools_count_subtext')}
             </span>
             <button
               onClick={handleSubmit}
@@ -386,7 +391,7 @@ export default function ToolFinderWizard() {
                 gap: 5,
               }}
             >
-              {loading ? '🔍 Finding…' : 'Find my tools →'}
+              {loading ? `🔍 ${t('thinking')}` : t('find_my_tools')}
             </button>
           </div>
         </div>
@@ -410,7 +415,7 @@ export default function ToolFinderWizard() {
               color: CLR.warm400,
               flexShrink: 0,
               paddingTop: 2,
-            }}>Your situation:</span>
+            }}>{t('wizard_your_situation')}</span>
             <span style={{
               fontSize: 11.5,
               color: CLR.warm700,
@@ -458,7 +463,7 @@ export default function ToolFinderWizard() {
                 margin: 0,
                 lineHeight: 1.5,
               }}>
-                <strong>Use these together:</strong> {results.workflow}
+                <strong>{t('wizard_use_together')}</strong> {results.workflow}
               </p>
             </div>
           )}
@@ -498,7 +503,7 @@ export default function ToolFinderWizard() {
                 cursor: 'pointer',
               }}
             >
-              ↩ Try a different situation
+              {t('try_different')}
             </button>
             <a
               href="/ToolFinder"
@@ -510,7 +515,7 @@ export default function ToolFinderWizard() {
                 marginLeft: 'auto',
               }}
             >
-              Open full ToolFinder →
+              {t('open_full_toolfinder')}
             </a>
           </div>
         </div>
@@ -534,13 +539,13 @@ export default function ToolFinderWizard() {
               fontSize: 13, fontWeight: 600,
               color: CLR.warm700, margin: 0,
             }}>
-              Finding your best tools…
+              {t('wizard_finding_tools')}
             </p>
             <p style={{
               fontSize: 11, color: CLR.warm400,
               margin: '2px 0 0',
             }}>
-              Reading your situation
+              {t('wizard_reading')}
             </p>
           </div>
         </div>
@@ -562,7 +567,7 @@ export default function ToolFinderWizard() {
               textDecoration: 'underline',
             }}
           >
-            Try again
+            {t('try_again')}
           </button>
         </div>
       )}

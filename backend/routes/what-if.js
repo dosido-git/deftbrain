@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
@@ -59,21 +59,20 @@ Write the alternate-path simulation. Return ONLY valid JSON:
 
 Generate ${timeframe === 'five_years' ? '4-5' : timeframe === 'one_month' ? '2-3' : '3-4'} scenarios across the timeframe.`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-haiku-4-5-20251001',
+    const parsed = await callClaudeWithRetry({
+model: 'claude-haiku-4-5-20251001',
       max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'what-if' });
+    if (!parsed.decision_read) {
+      return res.status(500).json({ error: 'Could not explore this decision. Please try again.' });
+    }
     return res.json(parsed);
 
   } catch (error) {
     console.error('WhatIf error:', error);
-    res.status(500).json({ error: error.message || 'Failed to generate simulation' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.'});
   }
 });
 

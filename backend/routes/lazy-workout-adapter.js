@@ -73,19 +73,31 @@ Return ONLY valid JSON:
   "if_you_want_more": "optional extra"
 }`, userLanguage);
 
-    const message = await anthropic.messages.create({
+    let message;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        message = await anthropic.messages.create({
         model: 'claude-sonnet-4-6',
         max_tokens: 2000,
         system: withLanguage('Low-pressure movement coach. Any movement counts. Never guilt-trip. Warm, casual, zero-judgment. Return ONLY valid JSON. No markdown.', userLanguage),
         messages: [{ role: 'user', content: prompt }],
       });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
       const text = message.content.find(b => b.type === 'text')?.text || '';
       const cleaned = cleanJsonResponse(text);
       const parsed = JSON.parse(cleanJsonResponse(cleaned));
+    if (!parsed.vibe && !parsed.exercises && !parsed.workout) {
+      return res.status(500).json({ error: 'Could not adapt your workout. Please try again.' });
+    }
     res.json(parsed);
   } catch (error) {
     console.error('[LazyWorkout]', error);
-    res.status(500).json({ error: error.message || 'Failed to create workout.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -106,19 +118,31 @@ Return ONLY valid JSON:
   "movements": [{ "name": "name", "seconds": 40, "how": "one sentence", "feels_like": "sensation" }],
   "after": "what to notice after" }`, userLanguage);
 
-    const message = await anthropic.messages.create({
+    let message;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        message = await anthropic.messages.create({
         model: 'claude-sonnet-4-6',
         max_tokens: 1000,
         system: withLanguage('Gentle movement guide. 2 minutes is a win. Return ONLY valid JSON. No markdown.', userLanguage),
         messages: [{ role: 'user', content: prompt }],
       });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
       const text = message.content.find(b => b.type === 'text')?.text || '';
       const cleaned = cleanJsonResponse(text);
       const parsed = JSON.parse(cleanJsonResponse(cleaned));
+    if (!parsed.vibe && !parsed.exercises && !parsed.workout) {
+      return res.status(500).json({ error: 'Could not adapt your workout. Please try again.' });
+    }
     res.json(parsed);
   } catch (error) {
     console.error('[LazyWorkoutMicro]', error);
-    res.status(500).json({ error: error.message || 'Failed to create micro session.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -141,19 +165,31 @@ Return ONLY valid JSON:
   "days": [{ "day": "Monday", "theme": "theme", "minimum": { "name": "n", "time": "t", "description": "d" }, "feeling_it": { "name": "n", "time": "t", "description": "d" }, "skip_day_note": "alt" }],
   "weekly_note": "warm note (success != 7/7)" }`, userLanguage);
 
-    const message = await anthropic.messages.create({
+    let message;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        message = await anthropic.messages.create({
         model: 'claude-sonnet-4-6',
         max_tokens: 3000,
         system: withLanguage('Low-pressure weekly planner. Menu, not mandate. Return ONLY valid JSON. No markdown.', userLanguage),
         messages: [{ role: 'user', content: prompt }],
       });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
       const text = message.content.find(b => b.type === 'text')?.text || '';
       const cleaned = cleanJsonResponse(text);
       const parsed = JSON.parse(cleanJsonResponse(cleaned));
+    if (!parsed.vibe && !parsed.exercises && !parsed.workout) {
+      return res.status(500).json({ error: 'Could not adapt your workout. Please try again.' });
+    }
     res.json(parsed);
   } catch (error) {
     console.error('[LazyWorkoutWeek]', error);
-    res.status(500).json({ error: error.message || 'Failed to plan week.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -166,17 +202,29 @@ router.post('/lazy-workout-adapter-adapt', rateLimit(), async (req, res) => {
     if (!exercise?.trim()) return res.status(400).json({ error: 'Which exercise?' });
     const prompt = withLanguage(`Adapt "${exercise}" ${direction === 'easier' ? 'DOWN' : 'UP'}. ${context ? `Context: "${context}"` : ''}
 Return ONLY valid JSON: { "adapted": { "name": "n", "how": "instructions", "change": "what changed" }, "message": "brief note" }`, userLanguage);
-    const message = await anthropic.messages.create({
+    let message;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        message = await anthropic.messages.create({
         model: 'claude-sonnet-4-6',
         max_tokens: 600,
         system: withLanguage('Movement adapter. Return ONLY valid JSON. No markdown.', userLanguage),
         messages: [{ role: 'user', content: prompt }],
       });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
       const text = message.content.find(b => b.type === 'text')?.text || '';
       const cleaned = cleanJsonResponse(text);
       const parsed = JSON.parse(cleanJsonResponse(cleaned));
+    if (!parsed.vibe && !parsed.exercises && !parsed.workout) {
+      return res.status(500).json({ error: 'Could not adapt your workout. Please try again.' });
+    }
     res.json(parsed);
-  } catch (error) { console.error('[LazyWorkoutAdapt]', error); res.status(500).json({ error: error.message || 'Failed.' }); }
+  } catch (error) { console.error('[LazyWorkoutAdapt]', error); res.status(500).json({ error: 'Something went wrong. Please try again.' }); }
 });
 
 // ═══════════════════════════════════════════════════
@@ -188,17 +236,29 @@ router.post('/lazy-workout-adapter-swap', rateLimit(), async (req, res) => {
     if (!exercise?.trim()) return res.status(400).json({ error: 'Which exercise?' });
     const prompt = withLanguage(`Replace "${exercise}" — same area, different feel. Area: ${bodyArea || 'general'} | Energy: ${energy || '5'}/10
 Return ONLY valid JSON: { "replacement": { "name": "n", "duration": "t", "how": "instructions", "why_instead": "reason", "do_while": "multitask" }, "message": "no guilt" }`, userLanguage);
-    const message = await anthropic.messages.create({
+    let message;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        message = await anthropic.messages.create({
         model: 'claude-sonnet-4-6',
         max_tokens: 600,
         system: withLanguage('Exercise swapper. No guilt. Return ONLY valid JSON. No markdown.', userLanguage),
         messages: [{ role: 'user', content: prompt }],
       });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
       const text = message.content.find(b => b.type === 'text')?.text || '';
       const cleaned = cleanJsonResponse(text);
       const parsed = JSON.parse(cleanJsonResponse(cleaned));
+    if (!parsed.vibe && !parsed.exercises && !parsed.workout) {
+      return res.status(500).json({ error: 'Could not adapt your workout. Please try again.' });
+    }
     res.json(parsed);
-  } catch (error) { console.error('[LazyWorkoutSwap]', error); res.status(500).json({ error: error.message || 'Failed.' }); }
+  } catch (error) { console.error('[LazyWorkoutSwap]', error); res.status(500).json({ error: 'Something went wrong. Please try again.' }); }
 });
 
 // ═══════════════════════════════════════════════════
@@ -214,17 +274,29 @@ Return ONLY valid JSON:
 { "session_name": "n", "for": "what this addresses", "time": "${timeMinutes || '5'} minutes",
   "movements": [{ "name": "n", "duration": "t", "how": "gentle instructions", "feels_like": "sensation", "caution": "or null" }],
   "after_note": "improvement", "prevention_tip": "daily tip" }`, userLanguage);
-    const message = await anthropic.messages.create({
+    let message;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        message = await anthropic.messages.create({
         model: 'claude-sonnet-4-6',
         max_tokens: 1500,
         system: withLanguage('Targeted relief guide. Physical therapist, not trainer. Return ONLY valid JSON. No markdown.', userLanguage),
         messages: [{ role: 'user', content: prompt }],
       });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
       const text = message.content.find(b => b.type === 'text')?.text || '';
       const cleaned = cleanJsonResponse(text);
       const parsed = JSON.parse(cleanJsonResponse(cleaned));
+    if (!parsed.vibe && !parsed.exercises && !parsed.workout) {
+      return res.status(500).json({ error: 'Could not adapt your workout. Please try again.' });
+    }
     res.json(parsed);
-  } catch (error) { console.error('[LazyWorkoutBody]', error); res.status(500).json({ error: error.message || 'Failed.' }); }
+  } catch (error) { console.error('[LazyWorkoutBody]', error); res.status(500).json({ error: 'Something went wrong. Please try again.' }); }
 });
 
 // ═══════════════════════════════════════════════════
@@ -236,17 +308,29 @@ router.post('/lazy-workout-adapter-complete', rateLimit(), async (req, res) => {
     const pct = totalExercises ? Math.round((completedExercises / totalExercises) * 100) : 100;
     const prompt = withLanguage(`Movement done. Celebrate warmly, not over-the-top. ${completedExercises || '?'}/${totalExercises || '?'} (${pct}%). Energy: ${energyBefore || '?'}→${energyAfter || '?'}. Duration: ${duration || '?'} min. Streak: ${streak || 1}. Total: ${totalSessions || 1}. Type: ${sessionType || 'workout'}. Milestones at 7/14/30 streak, 10/25/50 total. 2-3 sentences.
 Return ONLY valid JSON: { "message": "celebration", "energy_note": "or null", "milestone": "or null", "streak_status": "${streak || 1} day streak", "suggestion": "or null" }`, userLanguage);
-    const message = await anthropic.messages.create({
+    let message;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        message = await anthropic.messages.create({
         model: 'claude-sonnet-4-6',
         max_tokens: 500,
         system: withLanguage('Movement celebration. Warm, brief, real. Return ONLY valid JSON. No markdown.', userLanguage),
         messages: [{ role: 'user', content: prompt }],
       });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
       const text = message.content.find(b => b.type === 'text')?.text || '';
       const cleaned = cleanJsonResponse(text);
       const parsed = JSON.parse(cleanJsonResponse(cleaned));
+    if (!parsed.vibe && !parsed.exercises && !parsed.workout) {
+      return res.status(500).json({ error: 'Could not adapt your workout. Please try again.' });
+    }
     res.json(parsed);
-  } catch (error) { console.error('[LazyWorkoutComplete]', error); res.status(500).json({ error: error.message || 'Failed.' }); }
+  } catch (error) { console.error('[LazyWorkoutComplete]', error); res.status(500).json({ error: 'Something went wrong. Please try again.' }); }
 });
 
 // ═══════════════════════════════════════════════════
@@ -265,17 +349,29 @@ Return ONLY valid JSON:
   "context_patterns": { "common_triggers": [], "insight": "what drives them to move" },
   "consistency": { "sessions_per_week": "avg", "trend": "increasing|stable|decreasing", "wins": "positive" },
   "personal_tip": "one actionable tip from THEIR data" }`, userLanguage);
-    const message = await anthropic.messages.create({
+    let message;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        message = await anthropic.messages.create({
         model: 'claude-sonnet-4-6',
         max_tokens: 1500,
         system: withLanguage('Movement analyst. Useful self-knowledge. Warm. Return ONLY valid JSON. No markdown.', userLanguage),
         messages: [{ role: 'user', content: prompt }],
       });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
       const text = message.content.find(b => b.type === 'text')?.text || '';
       const cleaned = cleanJsonResponse(text);
       const parsed = JSON.parse(cleanJsonResponse(cleaned));
+    if (!parsed.vibe && !parsed.exercises && !parsed.workout) {
+      return res.status(500).json({ error: 'Could not adapt your workout. Please try again.' });
+    }
     res.json(parsed);
-  } catch (error) { console.error('[LazyWorkoutInsights]', error); res.status(500).json({ error: error.message || 'Failed.' }); }
+  } catch (error) { console.error('[LazyWorkoutInsights]', error); res.status(500).json({ error: 'Something went wrong. Please try again.' }); }
 });
 
 // ═══════════════════════════════════════════════════
@@ -299,17 +395,29 @@ Return ONLY valid JSON:
   "movements": [{ "name": "n", "seconds": 30, "how": "one sentence", "cue": "when to do it", "invisible": true }],
   "total_active_time": "total seconds", "message": "warm note about how this adds up" }`, userLanguage);
 
-    const message = await anthropic.messages.create({
+    let message;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        message = await anthropic.messages.create({
         model: 'claude-sonnet-4-6',
         max_tokens: 1500,
         system: withLanguage('Environment stacking expert. Layer movement onto activities. Invisible, effortless. Return ONLY valid JSON. No markdown.', userLanguage),
         messages: [{ role: 'user', content: prompt }],
       });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
       const text = message.content.find(b => b.type === 'text')?.text || '';
       const cleaned = cleanJsonResponse(text);
       const parsed = JSON.parse(cleanJsonResponse(cleaned));
+    if (!parsed.vibe && !parsed.exercises && !parsed.workout) {
+      return res.status(500).json({ error: 'Could not adapt your workout. Please try again.' });
+    }
     res.json(parsed);
-  } catch (error) { console.error('[LazyWorkoutStack]', error); res.status(500).json({ error: error.message || 'Failed.' }); }
+  } catch (error) { console.error('[LazyWorkoutStack]', error); res.status(500).json({ error: 'Something went wrong. Please try again.' }); }
 });
 
 // ═══════════════════════════════════════════════════
@@ -332,17 +440,29 @@ Return ONLY valid JSON:
   "final_breathing": { "name": "pattern name", "inhale": 4, "hold": 7, "exhale": 8, "cycles": 4, "instruction": "gentle guide" },
   "sleep_tip": "one thing to remember" }`, userLanguage);
 
-    const message = await anthropic.messages.create({
+    let message;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        message = await anthropic.messages.create({
         model: 'claude-sonnet-4-6',
         max_tokens: 1500,
         system: withLanguage('Sleep preparation guide. Calm, gentle, progressive. Goal is sleep. Return ONLY valid JSON. No markdown.', userLanguage),
         messages: [{ role: 'user', content: prompt }],
       });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
       const text = message.content.find(b => b.type === 'text')?.text || '';
       const cleaned = cleanJsonResponse(text);
       const parsed = JSON.parse(cleanJsonResponse(cleaned));
+    if (!parsed.vibe && !parsed.exercises && !parsed.workout) {
+      return res.status(500).json({ error: 'Could not adapt your workout. Please try again.' });
+    }
     res.json(parsed);
-  } catch (error) { console.error('[LazyWorkoutSleep]', error); res.status(500).json({ error: error.message || 'Failed.' }); }
+  } catch (error) { console.error('[LazyWorkoutSleep]', error); res.status(500).json({ error: 'Something went wrong. Please try again.' }); }
 });
 
 // ═══════════════════════════════════════════════════
@@ -366,17 +486,29 @@ Return ONLY valid JSON:
   "next_hour": "what to do in the next hour",
   "prevention": "if recurring, one thing to try. null if one-off" }`, userLanguage);
 
-    const message = await anthropic.messages.create({
+    let message;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        message = await anthropic.messages.create({
         model: 'claude-sonnet-4-6',
         max_tokens: 1500,
         system: withLanguage('Recovery designer. First aid for the body after life happens. Warm, holistic. Return ONLY valid JSON. No markdown.', userLanguage),
         messages: [{ role: 'user', content: prompt }],
       });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
       const text = message.content.find(b => b.type === 'text')?.text || '';
       const cleaned = cleanJsonResponse(text);
       const parsed = JSON.parse(cleanJsonResponse(cleaned));
+    if (!parsed.vibe && !parsed.exercises && !parsed.workout) {
+      return res.status(500).json({ error: 'Could not adapt your workout. Please try again.' });
+    }
     res.json(parsed);
-  } catch (error) { console.error('[LazyWorkoutRecovery]', error); res.status(500).json({ error: error.message || 'Failed.' }); }
+  } catch (error) { console.error('[LazyWorkoutRecovery]', error); res.status(500).json({ error: 'Something went wrong. Please try again.' }); }
 });
 
 // ═══════════════════════════════════════════════════
@@ -401,17 +533,29 @@ Return ONLY valid JSON:
   "consistency_story": { "total_sessions": "${recent.length}", "sessions_per_week": "avg", "total_minutes": "n", "trend": "trend", "reframe": "put minutes in perspective" },
   "honest_note": "warm honest observation" }`, userLanguage);
 
-    const message = await anthropic.messages.create({
+    let message;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        message = await anthropic.messages.create({
         model: 'claude-sonnet-4-6',
         max_tokens: 1500,
         system: withLanguage('Evidence analyst. Real data, warm delivery. Not cheerleading. Return ONLY valid JSON. No markdown.', userLanguage),
         messages: [{ role: 'user', content: prompt }],
       });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
       const text = message.content.find(b => b.type === 'text')?.text || '';
       const cleaned = cleanJsonResponse(text);
       const parsed = JSON.parse(cleanJsonResponse(cleaned));
+    if (!parsed.vibe && !parsed.exercises && !parsed.workout) {
+      return res.status(500).json({ error: 'Could not adapt your workout. Please try again.' });
+    }
     res.json(parsed);
-  } catch (error) { console.error('[LazyWorkoutProve]', error); res.status(500).json({ error: error.message || 'Failed.' }); }
+  } catch (error) { console.error('[LazyWorkoutProve]', error); res.status(500).json({ error: 'Something went wrong. Please try again.' }); }
 });
 
 // ═══════════════════════════════════════════════════
@@ -425,17 +569,29 @@ router.post('/lazy-workout-adapter-nudge', rateLimit(), async (req, res) => {
 Recent: ${JSON.stringify(recent)}
 Rules: if pattern exists, suggest continuing. If 3+ days gap, suggest 2 min. If streak, acknowledge casually. 1-2 sentences. Not a pitch.
 Return ONLY valid JSON: { "nudge": "friendly suggestion", "suggested_mode": "right-now|micro|body|sleep|stack|recovery", "suggested_time": "minutes", "reason": "why, based on patterns" }`, userLanguage);
-    const message = await anthropic.messages.create({
+    let message;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        message = await anthropic.messages.create({
         model: 'claude-sonnet-4-6',
         max_tokens: 400,
         system: withLanguage('Friendly nudger. Pattern-aware. Not pushy. Return ONLY valid JSON. No markdown.', userLanguage),
         messages: [{ role: 'user', content: prompt }],
       });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
       const text = message.content.find(b => b.type === 'text')?.text || '';
       const cleaned = cleanJsonResponse(text);
       const parsed = JSON.parse(cleanJsonResponse(cleaned));
+    if (!parsed.vibe && !parsed.exercises && !parsed.workout) {
+      return res.status(500).json({ error: 'Could not adapt your workout. Please try again.' });
+    }
     res.json(parsed);
-  } catch (error) { console.error('[LazyWorkoutNudge]', error); res.status(500).json({ error: error.message || 'Failed.' }); }
+  } catch (error) { console.error('[LazyWorkoutNudge]', error); res.status(500).json({ error: 'Something went wrong. Please try again.' }); }
 });
 
 module.exports = router;

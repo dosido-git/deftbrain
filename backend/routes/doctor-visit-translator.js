@@ -1,14 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { anthropic, cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 router.post('/doctor-visit-translator', rateLimit(), async (req, res) => {
   try {
-    const {
-      doctorNotes, visitType, concerns, currentMedications,
-      language, documentType, knownMedications, pdfData
-    } = req.body;
+    const { doctorNotes, visitType, concerns, currentMedications,
+      language, documentType, knownMedications, pdfData, userLanguage } = req.body;
 
     // Validation — require either notes or a PDF
     if ((!doctorNotes || !doctorNotes.trim()) && !pdfData) {
@@ -220,56 +218,27 @@ Return ONLY the JSON object.`;
         ]
       : prompt;
 
-    const message = await anthropic.messages.create({
+    const results = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 5000,
       messages: [{ role: 'user', content: withLanguage(userContent, userLanguage) }]
-    });
-
-    let jsonText = message.content[0].text.trim();
-    jsonText = jsonText.replace(/```json\s*/g, '').replace(/```\s*/g, '');
-    
-    const firstBrace = jsonText.indexOf('{');
-    const lastBrace = jsonText.lastIndexOf('}');
-    
-    if (firstBrace === -1 || lastBrace === -1) {
-      throw new Error('No JSON found in AI response');
-    }
-    
-    jsonText = jsonText.substring(firstBrace, lastBrace + 1);
-    jsonText = jsonText.replace(/,(\s*[}\]])/g, '$1');
-    
-    let results;
-    try {
-      results = JSON.parse(cleanJsonResponse(jsonText));
-    } catch (parseError) {
-      console.error('JSON Parse Error:', parseError.message);
-      const pos = parseInt(parseError.message.match(/position (\d+)/)?.[1] || '0');
-      if (pos > 0) {
-        console.error('Context:', jsonText.substring(Math.max(0, pos - 100), Math.min(jsonText.length, pos + 100)));
-      }
-      throw new Error(`JSON parse failed: ${parseError.message}`);
-    }
+    }, { label: 'doctor-visit-translator' });
 
     if (!results.plain_english_summary) {
-      throw new Error('Invalid response structure');
+      return res.status(500).json({ error: 'Could not translate your medical information. Please try again.' });
     }
-
     res.json(results);
 
   } catch (error) {
     console.error('Doctor Visit Translator error:', error);
-    res.status(500).json({
-      error: 'Failed to translate medical information',
-      details: error.message
-    });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
 // ── Diagram generator ─────────────────────────────────────────────────────────
 router.post('/generate-diagram', rateLimit(), async (req, res) => {
   try {
-    const { description, diagramType } = req.body;
+    const { description, diagramType, userLanguage } = req.body;
     if (!description?.trim()) {
       return res.status(400).json({ error: 'Description is required' });
     }
@@ -311,13 +280,21 @@ Requirements:
 - Every structure named in the description must be drawn and labeled
 - The illustration should look like something from a patient-education brochure, not a programmer's sketch`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 3500,
-      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
-    });
-
-    const text = message.content[0]?.text?.trim() || '';
+    let text = '';
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        const msg = await anthropic.messages.create({
+          model: 'claude-sonnet-4-6',
+          max_tokens: 3500,
+          messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
+        });
+        text = msg.content[0]?.text?.trim() || '';
+        break;
+      } catch (retryErr) {
+        if (attempt === 3) throw retryErr;
+        await new Promise(r => setTimeout(r, 1000 * attempt));
+      }
+    }
 
     if (isDataViz) {
       const match = text.match(/<div[\s\S]*<\/div>/i);
@@ -331,7 +308,7 @@ Requirements:
 
   } catch (error) {
     console.error('Diagram generation error:', error);
-    res.status(500).json({ error: 'Failed to generate diagram', details: error.message });
+    res.status(500).json({ error: 'Could not generate diagram. Please try again.' });
   }
 });
 

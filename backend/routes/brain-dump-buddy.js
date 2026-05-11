@@ -81,7 +81,10 @@ Return ONLY valid JSON:
             label: 'BDS-Emergency',
             max_tokens: 500,
           });
-          return res.json(parsed);
+          if (!parsed.breathe && !parsed.tasks) {
+          return res.status(500).json({ error: 'Could not process your brain dump. Please try again.' });
+        }
+        return res.json(parsed);
         }
 
         // ── STANDARD MODE ──
@@ -148,6 +151,9 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry(prompt, {
       model: 'claude-sonnet-4-6', label: 'BDS-Structure', max_tokens: 4000 });
+        if (!parsed.breathe && !parsed.tasks) {
+          return res.status(500).json({ error: 'Could not process your brain dump. Please try again.' });
+        }
         return res.json(parsed);
       }
 
@@ -184,6 +190,9 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry(prompt, {
       model: 'claude-sonnet-4-6', label: 'BDS-Excavate', max_tokens: 800 });
+        if (!parsed.breathe && !parsed.tasks) {
+          return res.status(500).json({ error: 'Could not process your brain dump. Please try again.' });
+        }
         return res.json(parsed);
       }
 
@@ -194,7 +203,7 @@ Return ONLY valid JSON:
 
   } catch (err) {
     console.error('BrainDumpStructurer error:', err);
-    res.status(500).json({ error: err.message || 'Failed to structure thoughts.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

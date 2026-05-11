@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, cleanJsonResponse, withLanguage } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
@@ -71,21 +71,20 @@ Analyze. Return ONLY valid JSON:
   "optimal_format": "What this SHOULD be: 15-min standup | async Slack thread | shared doc | 30-min focused session | keep as-is"
 }`;
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'meeting-bs-detector' });
+    if (!parsed.bs_score && !parsed.verdict && !parsed.analysis) {
+      return res.status(500).json({ error: 'Could not analyze the meeting. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('MeetingBSDetector analyze error:', error);
-    res.status(500).json({ error: error.message || 'Analysis failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -139,21 +138,20 @@ Audit this entire week. Return ONLY valid JSON:
   "meeting_free_blocks": "When to protect focus time based on this schedule"
 }`;
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 3000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'meeting-bs-detector-2' });
+    if (!parsed.bs_score && !parsed.verdict && !parsed.analysis) {
+      return res.status(500).json({ error: 'Could not analyze the meeting. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('MeetingBSDetector calendar error:', error);
-    res.status(500).json({ error: error.message || 'Calendar audit failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -192,21 +190,20 @@ Give me something I can say RIGHT NOW. Return ONLY valid JSON:
   "post_meeting_move": "What to do/send after this meeting ends to prevent it from happening again"
 }`;
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 1500,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'meeting-bs-detector-3' });
+    if (!parsed.bs_score && !parsed.verdict && !parsed.analysis) {
+      return res.status(500).json({ error: 'Could not analyze the meeting. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('MeetingBSDetector live error:', error);
-    res.status(500).json({ error: error.message || 'Live rescue failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -261,21 +258,20 @@ Audit this recurring meeting. Return ONLY valid JSON:
   "keep_if": "Under what conditions should this meeting continue? Be specific."
 }`;
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'meeting-bs-detector-4' });
+    if (!parsed.bs_score && !parsed.verdict && !parsed.analysis) {
+      return res.status(500).json({ error: 'Could not analyze the meeting. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('MeetingBSDetector recurring error:', error);
-    res.status(500).json({ error: error.message || 'Recurring audit failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -330,21 +326,20 @@ Generate messages. Return ONLY valid JSON:
   "pro_tip": "One tactical tip about sending this type of message"
 }`;
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'meeting-bs-detector-5' });
+    if (!parsed.bs_score && !parsed.verdict && !parsed.analysis) {
+      return res.status(500).json({ error: 'Could not analyze the meeting. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('MeetingBSDetector messages error:', error);
-    res.status(500).json({ error: error.message || 'Message generation failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -400,21 +395,20 @@ Build a tight agenda. Return ONLY valid JSON:
   "calendar_description": "Ready-to-paste calendar invite description with agenda embedded"
 }`;
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'meeting-bs-detector-6' });
+    if (!parsed.bs_score && !parsed.verdict && !parsed.analysis) {
+      return res.status(500).json({ error: 'Could not analyze the meeting. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('MeetingBSDetector agenda error:', error);
-    res.status(500).json({ error: error.message || 'Agenda generation failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -469,21 +463,20 @@ Generate a shareable report. Return ONLY valid JSON:
   "share_summary": "A 2-sentence summary formatted for sharing — punchy, memorable, shareable"
 }`;
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'meeting-bs-detector-7' });
+    if (!parsed.bs_score && !parsed.verdict && !parsed.analysis) {
+      return res.status(500).json({ error: 'Could not analyze the meeting. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('MeetingBSDetector report error:', error);
-    res.status(500).json({ error: error.message || 'Report generation failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -544,21 +537,20 @@ Analyze team meeting health. Return ONLY valid JSON:
   "team_maker_time": "How much uninterrupted focus time does each person actually have?"
 }`;
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'meeting-bs-detector-8' });
+    if (!parsed.bs_score && !parsed.verdict && !parsed.analysis) {
+      return res.status(500).json({ error: 'Could not analyze the meeting. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('MeetingBSDetector team error:', error);
-    res.status(500).json({ error: error.message || 'Team analysis failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

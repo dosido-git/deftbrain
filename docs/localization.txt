@@ -1,0 +1,47 @@
+Beyond language translation, a complete localization suite covers:
+
+**Formatting**
+- Numbers (`1,234.56` vs `1.234,56`)
+- Currency (symbol position, decimal places, local currency vs display currency)
+- Dates (`MM/DD/YYYY` vs `DD/MM/YYYY` vs `YYYY-MM-DD`)
+- Time (12hr vs 24hr, timezone display)
+- Percentages and units of measure (imperial vs metric)
+
+**Text & Typography**
+- Plural rules (many languages have 3–6 plural forms, not just singular/plural)
+- Gender agreement (Spanish, French, German adjective agreement)
+- Text directionality — RTL layout for Arabic, Hebrew, Farsi (flips entire UI)
+- Font support for non-Latin scripts (Cyrillic, Arabic, CJK, Devanagari)
+- Text expansion — German and Finnish can run 30–40% longer than English
+
+**Regional Conventions**
+- Address formats (field order varies dramatically by country)
+- Phone number formats (country codes, spacing, length)
+- Name order (given/family reversal in East Asian cultures)
+- Legal disclaimers (jurisdiction-specific)
+
+**Content**
+- Images and icons that may carry cultural meaning (thumbs up is offensive in some regions)
+- Color associations (white = mourning in some cultures; red = luck vs danger)
+- Examples and reference content (tool examples should feel locally relevant)
+
+**Technical**
+- Character encoding (already handled by UTF-8, but worth confirming throughout)
+- Sorting/collation (alphabetical order differs by locale)
+- Input method support (IME for CJK)
+
+**For DeftBrain specifically**, the highest-leverage gaps after language are likely: **plural rules**, **RTL layout**, and **number/date formatting** — in that priority order, based on where tools are most likely to render garbled output for non-English users.
+
+Language	Code	Currency
+Spanish	es	MXN / EUR / etc.
+Chinese (Simplified)	zh	CNY
+Hindi	hi	INR
+Arabic	ar	SAR / AED / etc.
+Portuguese	pt	BRL / EUR
+French	fr	EUR
+German	de	EUR
+Japanese	ja	JPY
+Korean	ko	KRW
+Russian	ru	RUB
+Thai	th	THB
+Vietnamese	vi	VND

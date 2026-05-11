@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════════════
@@ -87,21 +87,21 @@ Return ONLY valid JSON:
   ]
 }`, userLanguage);
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 8000,
       system: systemPrompt,
       messages: [{ role: 'user', content: prompt }],
-    });
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'history-today' });
 
+    if (!parsed.parallels) {
+      return res.status(500).json({ error: 'Could not find historical parallels. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[HistoryToday] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to find parallels.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -176,20 +176,21 @@ Return ONLY valid JSON:
   }
 }`, userLanguage);
 
-    const message2 = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 5000,
       system: withLanguage('You are a narrative historian who brings the past to life with specificity and honesty. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }],
-    });
-    const text2 = message2.content.find(b => b.type === 'text')?.text || '';
-    const parsed = JSON.parse(cleanJsonResponse(text2));
+    }, { label: 'history-today-deeper' });
 
+    if (!parsed.parallels) {
+      return res.status(500).json({ error: 'Could not find historical parallels. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[HistoryTodayDeeper] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to expand parallel.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -237,20 +238,21 @@ Return ONLY valid JSON:
   "key_takeaway": "One sentence the user should remember"
 }`, userLanguage);
 
-    const message3 = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 2500,
       system: withLanguage('You are a structural historian focused on why similar conditions sometimes produce different outcomes. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }],
-    });
-    const text3 = message3.content.find(b => b.type === 'text')?.text || '';
-    const parsed = JSON.parse(cleanJsonResponse(text3));
+    }, { label: 'history-today-counter' });
 
+    if (!parsed.parallels) {
+      return res.status(500).json({ error: 'Could not find historical parallels. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[HistoryTodayCounter] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to find counter-example.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

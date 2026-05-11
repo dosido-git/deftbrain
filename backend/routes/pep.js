@@ -68,6 +68,9 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry(prompt, {
       model: 'claude-sonnet-4-6', label: 'DMB-Generate', max_tokens: 1200 });
+        if (!parsed.energy_read) {
+          return res.status(500).json({ error: 'Could not generate your pep talk. Please try again.' });
+        }
         return res.json(parsed);
       }
 
@@ -99,6 +102,9 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry(prompt, {
       model: 'claude-sonnet-4-6', label: 'DMB-JustDo', max_tokens: 400 });
+        if (!parsed.energy_read) {
+          return res.status(500).json({ error: 'Could not generate your pep talk. Please try again.' });
+        }
         return res.json(parsed);
       }
 
@@ -126,6 +132,9 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry(prompt, {
       model: 'claude-sonnet-4-6', label: 'DMB-BuildMenu', max_tokens: 1000 });
+        if (!parsed.energy_read) {
+          return res.status(500).json({ error: 'Could not generate your pep talk. Please try again.' });
+        }
         return res.json(parsed);
       }
 
@@ -149,6 +158,9 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry(prompt, {
       model: 'claude-sonnet-4-6', label: 'DMB-Swap', max_tokens: 600 });
+        if (!parsed.energy_read) {
+          return res.status(500).json({ error: 'Could not generate your pep talk. Please try again.' });
+        }
         return res.json(parsed);
       }
 
@@ -176,6 +188,9 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry(prompt, {
       model: 'claude-sonnet-4-6', label: 'DMB-Rate', max_tokens: 300 });
+        if (!parsed.energy_read) {
+          return res.status(500).json({ error: 'Could not generate your pep talk. Please try again.' });
+        }
         return res.json(parsed);
       }
 
@@ -200,6 +215,9 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry(prompt, {
       model: 'claude-sonnet-4-6', label: 'DMB-Match', max_tokens: 600 });
+        if (!parsed.energy_read) {
+          return res.status(500).json({ error: 'Could not generate your pep talk. Please try again.' });
+        }
         return res.json(parsed);
       }
 
@@ -224,6 +242,9 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry(prompt, {
       model: 'claude-sonnet-4-6', label: 'DMB-Patterns', max_tokens: 600 });
+        if (!parsed.energy_read) {
+          return res.status(500).json({ error: 'Could not generate your pep talk. Please try again.' });
+        }
         return res.json(parsed);
       }
 
@@ -240,6 +261,9 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry(prompt, {
       model: 'claude-sonnet-4-6', label: 'DMB-Nudge', max_tokens: 200 });
+        if (!parsed.energy_read) {
+          return res.status(500).json({ error: 'Could not generate your pep talk. Please try again.' });
+        }
         return res.json(parsed);
       }
 
@@ -267,6 +291,9 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry(prompt, {
       model: 'claude-sonnet-4-6', label: 'DMB-Insights', max_tokens: 500 });
+        if (!parsed.energy_read) {
+          return res.status(500).json({ error: 'Could not generate your pep talk. Please try again.' });
+        }
         return res.json(parsed);
       }
 
@@ -295,6 +322,9 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry(prompt, {
       model: 'claude-sonnet-4-6', label: 'DMB-Sequence', max_tokens: 700 });
+        if (!parsed.energy_read) {
+          return res.status(500).json({ error: 'Could not generate your pep talk. Please try again.' });
+        }
         return res.json(parsed);
       }
 
@@ -315,6 +345,9 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry(prompt, {
       model: 'claude-sonnet-4-6', label: 'DMB-Checkin', max_tokens: 300 });
+        if (!parsed.energy_read) {
+          return res.status(500).json({ error: 'Could not generate your pep talk. Please try again.' });
+        }
         return res.json(parsed);
       }
 
@@ -341,6 +374,9 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry(prompt, {
       model: 'claude-sonnet-4-6', label: 'DMB-Debt', max_tokens: 400 });
+        if (!parsed.energy_read) {
+          return res.status(500).json({ error: 'Could not generate your pep talk. Please try again.' });
+        }
         return res.json(parsed);
       }
 
@@ -393,6 +429,9 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry(prompt, {
       model: 'claude-sonnet-4-6', label: 'DMB-Budget', max_tokens: 800 });
+        if (!parsed.energy_read) {
+          return res.status(500).json({ error: 'Could not generate your pep talk. Please try again.' });
+        }
         return res.json(parsed);
       }
 
@@ -457,6 +496,9 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry(prompt, {
       model: 'claude-sonnet-4-6', label: 'DMB-Forecast', max_tokens: 1200 });
+        if (!parsed.energy_read) {
+          return res.status(500).json({ error: 'Could not generate your pep talk. Please try again.' });
+        }
         return res.json(parsed);
       }
 
@@ -478,6 +520,9 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry(prompt, {
       model: 'claude-sonnet-4-6', label: 'DMB-Decline', max_tokens: 300 });
+        if (!parsed.energy_read) {
+          return res.status(500).json({ error: 'Could not generate your pep talk. Please try again.' });
+        }
         return res.json(parsed);
       }
 
@@ -523,6 +568,9 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry(prompt, {
       model: 'claude-sonnet-4-6', label: 'DMB-RadarCheckin', max_tokens: 500 });
+        if (!parsed.energy_read) {
+          return res.status(500).json({ error: 'Could not generate your pep talk. Please try again.' });
+        }
         return res.json(parsed);
       }
 
@@ -569,6 +617,9 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry(prompt, {
       model: 'claude-sonnet-4-6', label: 'DMB-RadarAnalyze', max_tokens: 1000 });
+        if (!parsed.energy_read) {
+          return res.status(500).json({ error: 'Could not generate your pep talk. Please try again.' });
+        }
         return res.json(parsed);
       }
 
@@ -616,6 +667,9 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry(prompt, {
       model: 'claude-sonnet-4-6', label: 'DMB-Disruption', max_tokens: 800 });
+        if (!parsed.energy_read) {
+          return res.status(500).json({ error: 'Could not generate your pep talk. Please try again.' });
+        }
         return res.json(parsed);
       }
 
@@ -625,7 +679,7 @@ Return ONLY valid JSON:
 
   } catch (err) {
     console.error('DopamineMenuBuilder error:', err);
-    res.status(500).json({ error: err.message || 'Something went wrong.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 const PERSONALITY = `You are a time-traveling comedy historian — equally expert in historical accuracy and absurd humor. You create collisions between modern life and historical periods that are BOTH funny AND surprisingly educational. The humor comes from the specificity — you know exactly how a medieval peasant would react to a Roomba because you know exactly what medieval peasants' lives were like.
@@ -53,21 +53,20 @@ Return ONLY valid JSON:
   "flip_it": "A one-sentence teaser for the REVERSE collision — what if someone from that era encountered our world? (e.g., 'Next: A Roman senator discovers LinkedIn influencer culture')"
 }`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-haiku-4-5-20251001',
+    const parsed = await callClaudeWithRetry({
+model: 'claude-haiku-4-5-20251001',
       max_tokens: 2000,
       system: withLanguage(PERSONALITY, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'time-warp' });
+    if (!parsed.title || !parsed.main_content) {
+      return res.status(500).json({ error: 'Could not generate the time collision. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('TimeWarp error:', error);
-    res.status(500).json({ error: error.message || 'Time warp failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.'});
   }
 });
 

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 const PERSONALITY = `You are a sharp, non-judgmental time analyst. You read someone's description of their day and spot the gaps between what they THINK happened and what ACTUALLY happened. You understand that nobody wastes time on purpose — time disappears into transitions, context switches, recovery periods, and invisible overhead that people genuinely can't see.
@@ -73,21 +73,20 @@ Return ONLY valid JSON:
 
 Provide 3-5 activities and 2-4 invisible hour categories.`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-haiku-4-5-20251001',
+    const parsed = await callClaudeWithRetry({
+model: 'claude-haiku-4-5-20251001',
       max_tokens: 2500,
       system: withLanguage(PERSONALITY, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'where-did-the-time-go' });
+    if (!parsed.what_you_actually_did) {
+      return res.status(500).json({ error: 'Could not analyze your day. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('WhereDidTheTimeGo error:', error);
-    res.status(500).json({ error: error.message || 'Failed to analyze time.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.'});
   }
 });
 

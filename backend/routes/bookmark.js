@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════
@@ -242,18 +242,17 @@ KEY RULES:
 4. For the "worth continuing" field, be honest. Don't oversell. A genuine "it's uneven but has great moments" is more trustworthy than "you HAVE to keep going!"
 5. Write "the_story_so_far" in present tense, as if narrating where things stand right now at the stopping point.`;
 
-    const msg = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+    const data = await callClaudeWithRetry({
+model: 'claude-sonnet-4-6',
       max_tokens: 5000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: prompt }],
-    });
-    const data = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
+    }, { label: 'bookmark' });
     res.json(data);
 
   } catch (error) {
     console.error('Bookmark error:', error);
-    res.status(500).json({ error: error.message || 'Failed to generate recap' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.'});
   }
 });
 

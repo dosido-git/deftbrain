@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 const PERSONALITY = `You are a truth processor. People come to you with something they know but aren't saying — to themselves or to someone else. Your job is to handle it with clarity, not judgment.
@@ -89,21 +89,20 @@ Return ONLY valid JSON:
   }
 }`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+    const parsed = await callClaudeWithRetry({
+model: 'claude-sonnet-4-6',
       max_tokens: 2200,
       system: withLanguage(PERSONALITY, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'truth-bomb' });
+    if (!parsed.the_thing_examined) {
+      return res.status(500).json({ error: 'Could not analyze this. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('TruthBomb error:', error);
-    res.status(500).json({ error: error.message || 'Failed to process the truth' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.'});
   }
 });
 

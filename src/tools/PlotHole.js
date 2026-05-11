@@ -150,7 +150,7 @@ const PlotHole = ({ tool }) => {
   submitRef.current    = view === 'find' ? runAnalysis : runDefend;
   canSubmitRef.current = view === 'find' ? !!title.trim() : !!defendHole.trim();
 
-  useRegisterActions(activeText, tool?.title || 'Plot Hole Finder');
+  useRegisterActions(activeText, tool?.title || 'Plot Hole');
 
   // ── Scroll to results ──
   useEffect(() => {
@@ -191,7 +191,7 @@ const PlotHole = ({ tool }) => {
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h2 className={`text-xl font-bold ${c.text}`}>
-                  <span className="mr-2">{tool?.icon ?? '🕳️'}</span>{tool?.title ?? 'Plot Hole Finder'}
+                  <span className="mr-2">{tool?.icon ?? '🕳️'}</span>{tool?.title ?? 'Plot Hole'}
                 </h2>
                 <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? "Name a movie, show, book, or game — I'll find where the logic breaks"}</p>
               </div>

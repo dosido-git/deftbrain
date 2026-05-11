@@ -59,10 +59,13 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry(prompt, {
       model: 'claude-sonnet-4-6', label: 'DebateOpen', max_tokens: 2500,
       system: withLanguage(`Steelman debate partner. Intellectually honest, real evidence, genuine respect. Coach not adversary. ${challengeLevel === 'no-mercy' ? 'Intellectually relentless.' : ''} ${format === 'socratic' || format === 'cross-exam' ? 'QUESTIONS ONLY — never make statements or assertions.' : ''} Return ONLY valid JSON. No markdown.`, userLanguage) });
+    if (!parsed.opening && !parsed.response) {
+      return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
+    }
     res.json(parsed);
   } catch (error) {
     console.error('[DebateOpen]', error);
-    res.status(500).json({ error: error.message || 'Failed to open debate.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -104,10 +107,13 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry(prompt, {
       model: 'claude-sonnet-4-6', label: 'DebateRespond', max_tokens: 2000,
       system: withLanguage(`Steelman debate partner. Concede strong points. Flag fallacies. Press forward. ${format === 'socratic' || format === 'cross-exam' ? 'QUESTIONS ONLY.' : ''} Return ONLY valid JSON. No markdown.`, userLanguage) });
+    if (!parsed.opening && !parsed.response) {
+      return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
+    }
     res.json(parsed);
   } catch (error) {
     console.error('[DebateRespond]', error);
-    res.status(500).json({ error: error.message || 'Failed to respond.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -136,10 +142,13 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry(prompt, {
       model: 'claude-sonnet-4-6', label: 'DebateSwitch', max_tokens: 2000,
       system: withLanguage('Side-switching debate partner. Argue their former position better than they did. Return ONLY valid JSON. No markdown.', userLanguage) });
+    if (!parsed.opening && !parsed.response) {
+      return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
+    }
     res.json(parsed);
   } catch (error) {
     console.error('[DebateSwitch]', error);
-    res.status(500).json({ error: error.message || 'Failed to switch.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -174,10 +183,13 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry(prompt, {
       model: 'claude-sonnet-4-6', label: 'DebateScorecard', max_tokens: 2500,
       system: withLanguage('Debate coach. Honest, warm, specific. Coaching not grading. Return ONLY valid JSON. No markdown.', userLanguage) });
+    if (!parsed.opening && !parsed.response) {
+      return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
+    }
     res.json(parsed);
   } catch (error) {
     console.error('[DebateScorecard]', error);
-    res.status(500).json({ error: error.message || 'Failed to score.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -199,10 +211,13 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry(prompt, {
       model: 'claude-sonnet-4-6', label: 'DebateQuick', max_tokens: 1500,
       system: withLanguage('Quick debate challenger. One punch. Steelman only. Return ONLY valid JSON. No markdown.', userLanguage) });
+    if (!parsed.opening && !parsed.response) {
+      return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
+    }
     res.json(parsed);
   } catch (error) {
     console.error('[DebateQuick]', error);
-    res.status(500).json({ error: error.message || 'Failed to spar.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -233,10 +248,13 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry(prompt, {
       model: 'claude-sonnet-4-6', label: 'DebateCoach', max_tokens: 1500,
       system: withLanguage('Debate coach. Suggest angles not arguments. Help them think, not think for them. Return ONLY valid JSON. No markdown.', userLanguage) });
+    if (!parsed.opening && !parsed.response) {
+      return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
+    }
     res.json(parsed);
   } catch (error) {
     console.error('[DebateCoach]', error);
-    res.status(500).json({ error: error.message || 'Failed to coach.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -283,10 +301,13 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry(prompt, {
       model: 'claude-sonnet-4-6', label: 'DebateAudienceJudge', max_tokens: 2000,
       system: withLanguage('Undecided audience member judging a debate on persuasiveness, not correctness. Fair, specific, thoughtful. Return ONLY valid JSON. No markdown.', userLanguage) });
+    if (!parsed.opening && !parsed.response) {
+      return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
+    }
     res.json(parsed);
   } catch (error) {
     console.error('[DebateAudienceJudge]', error);
-    res.status(500).json({ error: error.message || 'Failed to judge.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -339,10 +360,13 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry(prompt, {
       model: 'claude-sonnet-4-6', label: 'DebateArgumentMap', max_tokens: 2500,
       system: withLanguage('Argument structure analyst. Map the logical structure of debates into trees. Precise, analytical, visual. Return ONLY valid JSON. No markdown.', userLanguage) });
+    if (!parsed.opening && !parsed.response) {
+      return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
+    }
     res.json(parsed);
   } catch (error) {
     console.error('[DebateArgumentMap]', error);
-    res.status(500).json({ error: error.message || 'Failed to map arguments.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -388,10 +412,13 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry(prompt, {
       model: 'claude-sonnet-4-6', label: 'DebatePrep', max_tokens: 2500,
       system: withLanguage('Devil\'s advocate prep coach. Simulate specific audiences and drill on their hardest objections. Practical, specific, actionable. Return ONLY valid JSON. No markdown.', userLanguage) });
+    if (!parsed.opening && !parsed.response) {
+      return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
+    }
     res.json(parsed);
   } catch (error) {
     console.error('[DebatePrep]', error);
-    res.status(500).json({ error: error.message || 'Failed to prep.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -438,10 +465,13 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry(prompt, {
       model: 'claude-sonnet-4-6', label: 'DebateFallacyTrain', max_tokens: 1500,
       system: withLanguage('Fallacy training instructor. Create clear, educational exercises. At easy difficulty, fallacies are obvious. At hard, they\'re sophisticated and subtle. Always educational. Return ONLY valid JSON. No markdown.', userLanguage) });
+    if (!parsed.opening && !parsed.response) {
+      return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
+    }
     res.json(parsed);
   } catch (error) {
     console.error('[DebateFallacyTrain]', error);
-    res.status(500).json({ error: error.message || 'Failed to generate exercise.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -477,10 +507,13 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry(prompt, {
       model: 'claude-sonnet-4-6', label: 'DebateSourceCheck', max_tokens: 1500,
       system: withLanguage('Evidence evaluator. Assess claims for factual accuracy and evidence quality. Honest, specific, educational. Return ONLY valid JSON. No markdown.', userLanguage) });
+    if (!parsed.opening && !parsed.response) {
+      return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
+    }
     res.json(parsed);
   } catch (error) {
     console.error('[DebateSourceCheck]', error);
-    res.status(500).json({ error: error.message || 'Failed to check source.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -517,10 +550,13 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry(prompt, {
       model: 'claude-sonnet-4-6', label: 'DebateRematch', max_tokens: 2500,
       system: withLanguage('Rematch debate partner. You have intelligence on their previous weaknesses. Target them specifically. Still fair, still steelman — but surgically aimed at their growth areas. Return ONLY valid JSON. No markdown.', userLanguage) });
+    if (!parsed.opening && !parsed.response) {
+      return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
+    }
     res.json(parsed);
   } catch (error) {
     console.error('[DebateRematch]', error);
-    res.status(500).json({ error: error.message || 'Failed to open rematch.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -564,10 +600,13 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry(prompt, {
       model: 'claude-sonnet-4-6', label: 'DebateHighlightReel', max_tokens: 2500,
       system: withLanguage('Meta-analyst of debating patterns. You find patterns across multiple debates that no single scorecard reveals. Insightful, specific, growth-oriented. Return ONLY valid JSON. No markdown.', userLanguage) });
+    if (!parsed.opening && !parsed.response) {
+      return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
+    }
     res.json(parsed);
   } catch (error) {
     console.error('[DebateHighlightReel]', error);
-    res.status(500).json({ error: error.message || 'Failed to generate highlight reel.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

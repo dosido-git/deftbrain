@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
@@ -108,20 +108,20 @@ Extract the meeting output. Return ONLY valid JSON:
   "follow_up_email": "A concise, ready-to-send follow-up email summarizing decisions and action items. Professional tone, bullet points for actions."
 }`;
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 4000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const parsed = JSON.parse(cleanJsonResponse(text));
+    }, { label: 'the-debrief' });
+    if (!parsed.meeting_summary && !parsed.answer) {
+      return res.status(500).json({ error: 'Could not analyze the meeting. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('The Debrief error:', error);
-    res.status(500).json({ error: error.message || 'Meeting distillation failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -186,20 +186,20 @@ Draft follow-up messages. Return ONLY valid JSON:
   ] or []
 }`;
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 3000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const parsed = JSON.parse(cleanJsonResponse(text));
+    }, { label: 'the-debrief-2' });
+    if (!parsed.meeting_summary && !parsed.answer) {
+      return res.status(500).json({ error: 'Could not analyze the meeting. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('The Debrief followup error:', error);
-    res.status(500).json({ error: error.message || 'Follow-up drafting failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -283,20 +283,20 @@ Analyze the series. Return ONLY valid JSON:
   ]
 }`;
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 3500,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const parsed = JSON.parse(cleanJsonResponse(text));
+    }, { label: 'the-debrief-3' });
+    if (!parsed.meeting_summary && !parsed.answer) {
+      return res.status(500).json({ error: 'Could not analyze the meeting. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('The Debrief series error:', error);
-    res.status(500).json({ error: error.message || 'Series analysis failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

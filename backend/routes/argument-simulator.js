@@ -62,11 +62,14 @@ Return ONLY valid JSON:
       max_tokens: 2000,
       system: withLanguage(PERSONALITY, userLanguage),
     });
+    if (!parsed.topic_framed || !parsed.side_a) {
+      return res.status(500).json({ error: 'Could not simulate the argument. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('ArgumentSimulator error:', error);
-    res.status(500).json({ error: error.message || 'Debate failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

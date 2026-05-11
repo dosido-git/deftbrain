@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, cleanJsonResponse, withLanguage } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
@@ -96,16 +96,15 @@ Return this exact JSON structure:
 
 Return ONLY valid JSON.`;
 
-      const message = await anthropic.messages.create({
+      const parsed = await callClaudeWithRetry({
         model: 'claude-sonnet-4-6',
         max_tokens: 2500,
         system: withLanguage(MEDIATOR_SYSTEM, req.body.userLanguage),
         messages: [{ role: 'user', content: prompt }]
-      });
-
-      const text = message.content.find(c => c.type === 'text')?.text || '';
-      const cleaned = cleanJsonResponse(text);
-      const parsed = JSON.parse(cleaned);
+      }, { label: 'roommate-court' });
+      if (!parsed.verdict && !parsed.ruling && !parsed.judgment) {
+        return res.status(500).json({ error: 'Could not deliver the verdict. Please try again.' });
+      }
       return res.json(parsed);
     }
 
@@ -150,16 +149,15 @@ Return this exact JSON structure:
 
 Return ONLY valid JSON.`;
 
-      const message = await anthropic.messages.create({
+      const parsed = await callClaudeWithRetry({
         model: 'claude-sonnet-4-6',
         max_tokens: 1500,
         system: withLanguage(ASSIGNER_SYSTEM, req.body.userLanguage),
         messages: [{ role: 'user', content: prompt }]
-      });
-
-      const text = message.content.find(c => c.type === 'text')?.text || '';
-      const cleaned = cleanJsonResponse(text);
-      const parsed = JSON.parse(cleaned);
+      }, { label: 'roommate-court-2' });
+      if (!parsed.verdict && !parsed.ruling && !parsed.judgment) {
+        return res.status(500).json({ error: 'Could not deliver the verdict. Please try again.' });
+      }
       return res.json(parsed);
     }
 
@@ -197,16 +195,15 @@ Return this exact JSON structure:
 
 Return ONLY valid JSON.`;
 
-      const message = await anthropic.messages.create({
+      const parsed = await callClaudeWithRetry({
         model: 'claude-sonnet-4-6',
         max_tokens: 1500,
         system: withLanguage(ASSIGNER_SYSTEM, req.body.userLanguage),
         messages: [{ role: 'user', content: prompt }]
-      });
-
-      const text = message.content.find(c => c.type === 'text')?.text || '';
-      const cleaned = cleanJsonResponse(text);
-      const parsed = JSON.parse(cleaned);
+      }, { label: 'roommate-court-3' });
+      if (!parsed.verdict && !parsed.ruling && !parsed.judgment) {
+        return res.status(500).json({ error: 'Could not deliver the verdict. Please try again.' });
+      }
       return res.json(parsed);
     }
 
@@ -214,7 +211,7 @@ Return ONLY valid JSON.`;
 
   } catch (error) {
     console.error('RoommateCourt error:', error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

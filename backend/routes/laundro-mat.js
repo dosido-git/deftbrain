@@ -96,18 +96,30 @@ Return ONLY valid JSON. Format:
 Only include care_symbols if a care label photo was provided. separate_these and pre_treatment can be empty arrays if nothing needs flagging.`
       });
 
-      const message = await anthropic.messages.create({
+      let message;
+      for (let _att = 1; _att <= 3; _att++) {
+        try {
+          message = await anthropic.messages.create({
         model: 'claude-haiku-4-5-20251001',
         max_tokens: 2500,
         system: withLanguage(SYSTEM_PROMPT, req.body.userLanguage),
         messages: [{ role: 'user', content: contentBlocks }]
       });
+          break;
+        } catch (_e) {
+          if (_att === 3) throw _e;
+          await new Promise(r => setTimeout(r, 1000 * _att));
+        }
+      }
 
       const responseText = message.content.filter(b => b.type === 'text').map(b => b.text).join('\n');
       const cleaned = cleanJsonResponse(responseText);
 
       try {
         const data = JSON.parse(cleaned);
+        if (!data.load_assessment && !data.advice) {
+          return res.status(500).json({ error: 'Could not analyze your laundry. Please try again.' });
+        }
         return res.json(data);
       } catch (e) {
         console.error('🧺 LaundroMat: Parse error:', e.message);
@@ -126,7 +138,10 @@ Only include care_symbols if a care label photo was provided. separate_these and
         return res.status(400).json({ error: 'Invalid image data' });
       }
 
-      const message = await anthropic.messages.create({
+      let message;
+      for (let _att = 1; _att <= 3; _att++) {
+        try {
+          message = await anthropic.messages.create({
         model: 'claude-haiku-4-5-20251001',
         max_tokens: 1500,
         system: withLanguage(SYSTEM_PROMPT, req.body.userLanguage),
@@ -156,12 +171,21 @@ Return ONLY valid JSON. Format:
           ]
         }]
       });
+          break;
+        } catch (_e) {
+          if (_att === 3) throw _e;
+          await new Promise(r => setTimeout(r, 1000 * _att));
+        }
+      }
 
       const responseText = message.content.filter(b => b.type === 'text').map(b => b.text).join('\n');
       const cleaned = cleanJsonResponse(responseText);
 
       try {
         const data = JSON.parse(cleaned);
+        if (!data.load_assessment && !data.advice) {
+          return res.status(500).json({ error: 'Could not analyze your laundry. Please try again.' });
+        }
         return res.json(data);
       } catch (e) {
         console.error('🧺 LaundroMat: Label parse error:', e.message);
@@ -216,18 +240,30 @@ Return ONLY valid JSON. Format:
 }`
       });
 
-      const message = await anthropic.messages.create({
+      let message;
+      for (let _att = 1; _att <= 3; _att++) {
+        try {
+          message = await anthropic.messages.create({
         model: 'claude-haiku-4-5-20251001',
         max_tokens: 2000,
         system: withLanguage(SYSTEM_PROMPT, req.body.userLanguage),
         messages: [{ role: 'user', content: contentBlocks }]
       });
+          break;
+        } catch (_e) {
+          if (_att === 3) throw _e;
+          await new Promise(r => setTimeout(r, 1000 * _att));
+        }
+      }
 
       const responseText = message.content.filter(b => b.type === 'text').map(b => b.text).join('\n');
       const cleaned = cleanJsonResponse(responseText);
 
       try {
         const data = JSON.parse(cleaned);
+        if (!data.load_assessment && !data.advice) {
+          return res.status(500).json({ error: 'Could not analyze your laundry. Please try again.' });
+        }
         return res.json(data);
       } catch (e) {
         console.error('🧺 LaundroMat: Stain parse error:', e.message);
@@ -239,7 +275,7 @@ Return ONLY valid JSON. Format:
 
   } catch (error) {
     console.error('❌ LaundroMat error:', error.message);
-    res.status(500).json({ error: error.message || 'Failed to process request' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

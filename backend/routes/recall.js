@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { cleanJsonResponse, withLanguage } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
@@ -87,20 +87,20 @@ Extract exactly ${count} key points, ranked by importance. Return ONLY valid JSO
   ]
 }`;
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 4000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const parsed = JSON.parse(cleanJsonResponse(text));
+    }, { label: 'recall' });
+    if (!parsed.answer && !parsed.facts && !parsed.response) {
+      return res.status(500).json({ error: 'Could not recall this. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('Recall distill error:', error);
-    res.status(500).json({ error: error.message || 'Distillation failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -179,20 +179,20 @@ Create a study guide. Return ONLY valid JSON:
   }
 }`;
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 4000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const parsed = JSON.parse(cleanJsonResponse(text));
+    }, { label: 'recall-2' });
+    if (!parsed.answer && !parsed.facts && !parsed.response) {
+      return res.status(500).json({ error: 'Could not recall this. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('Recall study guide error:', error);
-    res.status(500).json({ error: error.message || 'Study guide generation failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -255,20 +255,20 @@ Generate ${count} practice questions. Return ONLY valid JSON:
   ]
 }`;
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 4000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const parsed = JSON.parse(cleanJsonResponse(text));
+    }, { label: 'recall-3' });
+    if (!parsed.answer && !parsed.facts && !parsed.response) {
+      return res.status(500).json({ error: 'Could not recall this. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('Recall test prep error:', error);
-    res.status(500).json({ error: error.message || 'Test prep generation failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -344,20 +344,20 @@ Analyze the connections. Return ONLY valid JSON:
   ]
 }`;
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 3500,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const parsed = JSON.parse(cleanJsonResponse(text));
+    }, { label: 'recall-4' });
+    if (!parsed.answer && !parsed.facts && !parsed.response) {
+      return res.status(500).json({ error: 'Could not recall this. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('Recall connect error:', error);
-    res.status(500).json({ error: error.message || 'Connection analysis failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

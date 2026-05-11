@@ -372,11 +372,20 @@ Return ONLY this JSON:
     }
 
     // ── Call Claude ──
-    const message = await anthropic.messages.create({
+    let message;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: maxTokens,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }]
     });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
 
     const textContent = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(textContent);
@@ -421,7 +430,7 @@ router.get('/the-final-word/share/:id', rateLimit(), (req, res) => {
     res.json({ verdict: entry.verdict, inputSummary: entry.inputSummary });
   } catch (error) {
     console.error('TheFinalWord share fetch error:', error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -559,7 +568,7 @@ router.get('/the-final-word/room/:code/state', rateLimit(), (req, res) => {
     res.json(state);
   } catch (error) {
     console.error('TheFinalWord room state error:', error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -604,11 +613,20 @@ RULES:
 Return ONLY this JSON — no other text:
 {"question":"...","options":["A","B","C","D"],"correct_index":0,"correct_answer":"...","explanation":"1 sentence why + 1 fun fact","difficulty_actual":"easy|medium|hard","category_label":"specific sub-category"}`;
 
-    const message = await anthropic.messages.create({
+    let message;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 500,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }]
     });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
 
     const textContent = message.content.find(item => item.type === 'text')?.text || '';
     const questionData = safeParseJSON(textContent);
@@ -754,21 +772,17 @@ Return ONLY valid JSON:
   }
 }`;
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: withLanguage(userPrompt, userLanguage) }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'the-final-word' });
     res.json(parsed);
 
   } catch (error) {
     console.error('TheFinalWord dissect error:', error);
-    res.status(500).json({ error: error.message || 'Failed to dissect claim' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

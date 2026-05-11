@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 const PERSONALITY = `You are a relationship orbit designer. You understand how the most valuable relationships form: not through cold outreach, but through gravitational pull — becoming the kind of person worth knowing, showing up in the right places, and making yourself visible before you ever introduce yourself.
@@ -100,21 +100,17 @@ Return ONLY valid JSON:
   "the_one_thing_today": "The single action to take in the next 24 hours to start building gravity"
 }`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+    const parsed = await callClaudeWithRetry({
+model: 'claude-sonnet-4-6',
       max_tokens: 2500,
       system: withLanguage(PERSONALITY, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'gravity-well' });
     res.json(parsed);
 
   } catch (error) {
     console.error('GravityWell error:', error);
-    res.status(500).json({ error: error.message || 'Failed to design gravity strategy' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.'});
   }
 });
 

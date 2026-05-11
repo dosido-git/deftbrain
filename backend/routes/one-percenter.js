@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 const PERSONALITY = `You are a behavioral systems analyst. You study daily routines the way engineers study systems — looking for the single highest-leverage intervention that produces the largest compound effect.
@@ -60,21 +60,20 @@ Return ONLY valid JSON:
   "the_resistance": "The specific reason they haven't already done this — and why that reason is wrong"
 }`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+    const parsed = await callClaudeWithRetry({
+model: 'claude-sonnet-4-6',
       max_tokens: 1800,
       system: withLanguage(PERSONALITY, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'one-percenter' });
+    if (!parsed.routine_diagnosis || !parsed.the_one_change) {
+      return res.status(500).json({ error: 'Could not analyze your routine. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('OnePercenter error:', error);
-    res.status(500).json({ error: error.message || 'Failed to find your 1% change' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.'});
   }
 });
 

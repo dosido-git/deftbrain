@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, cleanJsonResponse, withLanguage } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 const LEVEL_GUIDE = {
@@ -46,7 +46,7 @@ Return ONLY valid JSON:
   "jargon_highlights": [{ "original": "jargon phrase from document", "replaced_with": "plain version", "location": "approximate location in doc" }]
 }`, userLanguage);
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 6000,
       system: withLanguage('Plain language expert. Translate complex docs so anyone understands. Never omit details. Flag concerns. Note potentially unenforceable clauses. Warm, clear, protective. Return ONLY valid JSON. No markdown.', userLanguage),
@@ -59,14 +59,14 @@ Return ONLY valid JSON:
         blocks.push({ type: 'text', text: prompt });
         return blocks;
       })() }],
-    });
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'jargon-assassin' });
+    if (!parsed.translation && !parsed.plain_version && !parsed.score) {
+      return res.status(500).json({ error: 'Could not eliminate jargon. Please try again.' });
+    }
     res.json(parsed);
   } catch (error) {
     console.error('[JargonAssassin]', error);
-    res.status(500).json({ error: error.message || 'Failed to translate.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -95,19 +95,19 @@ Return ONLY valid JSON:
   "who_to_ask": "Professional to consult, or null"
 }`, userLanguage);
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 1500,
       system: withLanguage('Plain language Q&A expert. Direct, warm, protective. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }],
-    });
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'jargon-assassin-2' });
+    if (!parsed.translation && !parsed.plain_version && !parsed.score) {
+      return res.status(500).json({ error: 'Could not eliminate jargon. Please try again.' });
+    }
     res.json(parsed);
   } catch (error) {
     console.error('[JargonAssassinAsk]', error);
-    res.status(500).json({ error: error.message || 'Failed to answer.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -133,19 +133,19 @@ Return ONLY valid JSON:
   "overall_assessment": { "direction": "better | worse | mixed | similar", "recommendation": "what to do" }
 }`, userLanguage);
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 3000,
       system: withLanguage('Document comparison expert. Find meaningful changes, explain in plain language. Protective of reader. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }],
-    });
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'jargon-assassin-3' });
+    if (!parsed.translation && !parsed.plain_version && !parsed.score) {
+      return res.status(500).json({ error: 'Could not eliminate jargon. Please try again.' });
+    }
     res.json(parsed);
   } catch (error) {
     console.error('[JargonAssassinCompare]', error);
-    res.status(500).json({ error: error.message || 'Failed to compare.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -172,19 +172,19 @@ Return ONLY valid JSON:
   "related_to": "How this connects to other parts, if relevant"
 }`, userLanguage);
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2500,
       system: withLanguage('Section analyst. Every clause, every hidden implication. Protective. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }],
-    });
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'jargon-assassin-4' });
+    if (!parsed.translation && !parsed.plain_version && !parsed.score) {
+      return res.status(500).json({ error: 'Could not eliminate jargon. Please try again.' });
+    }
     res.json(parsed);
   } catch (error) {
     console.error('[JargonAssassinSection]', error);
-    res.status(500).json({ error: error.message || 'Failed to analyze section.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -211,19 +211,19 @@ Return ONLY valid JSON:
   "overall_advice": "One sentence of warm direct advice."
 }`, userLanguage);
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2500,
       system: withLanguage('Protective document advisor. Generate questions readers should ask. Like a knowledgeable friend. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }],
-    });
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'jargon-assassin-5' });
+    if (!parsed.translation && !parsed.plain_version && !parsed.score) {
+      return res.status(500).json({ error: 'Could not eliminate jargon. Please try again.' });
+    }
     res.json(parsed);
   } catch (error) {
     console.error('[JargonAssassinSuggest]', error);
-    res.status(500).json({ error: error.message || 'Failed to suggest.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -260,19 +260,19 @@ Return ONLY valid JSON:
   "how_to_deliver": "Advice on how to actually have this conversation — tone, setting, what to emphasize."
 }`, userLanguage);
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2000,
       system: withLanguage('Communication reframer. Tailor complex information for specific audiences. Empathetic, practical, warm. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }],
-    });
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'jargon-assassin-6' });
+    if (!parsed.translation && !parsed.plain_version && !parsed.score) {
+      return res.status(500).json({ error: 'Could not eliminate jargon. Please try again.' });
+    }
     res.json(parsed);
   } catch (error) {
     console.error('[JargonAssassinExplainTo]', error);
-    res.status(500).json({ error: error.message || 'Failed to reframe.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -314,19 +314,19 @@ Return ONLY valid JSON:
   "overall_strategy": "How to approach the negotiation. What to lead with, what to save, what to concede."
 }`, userLanguage);
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 3500,
       system: withLanguage('Protective document advocate generating red-line edits. Specific, actionable, strategic. Not legal advice — educational guidance. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }],
-    });
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'jargon-assassin-7' });
+    if (!parsed.translation && !parsed.plain_version && !parsed.score) {
+      return res.status(500).json({ error: 'Could not eliminate jargon. Please try again.' });
+    }
     res.json(parsed);
   } catch (error) {
     console.error('[JargonAssassinRedline]', error);
-    res.status(500).json({ error: error.message || 'Failed to generate red-line.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -366,19 +366,19 @@ Return ONLY valid JSON:
   "bottom_line": "Warm, direct assessment. Is this a fair document? Should they sign? What should they push on?"
 }`, userLanguage);
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 3000,
       system: withLanguage('Document standards expert. Compare against typical documents of this type. Give readers a baseline. Fair, specific, protective. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }],
-    });
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'jargon-assassin-8' });
+    if (!parsed.translation && !parsed.plain_version && !parsed.score) {
+      return res.status(500).json({ error: 'Could not eliminate jargon. Please try again.' });
+    }
     res.json(parsed);
   } catch (error) {
     console.error('[JargonAssassinTemplate]', error);
-    res.status(500).json({ error: error.message || 'Failed to compare against template.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -419,19 +419,19 @@ Return ONLY valid JSON:
   "cost_estimate": "If there are costs involved (lawyer fees, deposits, etc.), estimate them. null if no costs."
 }`, userLanguage);
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2500,
       system: withLanguage('Action plan generator. Turn document understanding into specific ordered steps. Practical, clear, deadline-aware. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }],
-    });
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'jargon-assassin-9' });
+    if (!parsed.translation && !parsed.plain_version && !parsed.score) {
+      return res.status(500).json({ error: 'Could not eliminate jargon. Please try again.' });
+    }
     res.json(parsed);
   } catch (error) {
     console.error('[JargonAssassinActionPlan]', error);
-    res.status(500).json({ error: error.message || 'Failed to generate action plan.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -461,19 +461,19 @@ Return ONLY valid JSON:
   "overall": "Overall assessment of this document package. Is the reader well-protected?"
 }`, userLanguage);
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 3000,
       system: withLanguage('Multi-document cross-reference analyst. Find conflicts, gaps, dependencies. Protective. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }],
-    });
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'jargon-assassin-10' });
+    if (!parsed.translation && !parsed.plain_version && !parsed.score) {
+      return res.status(500).json({ error: 'Could not eliminate jargon. Please try again.' });
+    }
     res.json(parsed);
   } catch (error) {
     console.error('[JargonAssassinDossier]', error);
-    res.status(500).json({ error: error.message || 'Failed to cross-reference.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -508,19 +508,19 @@ Return ONLY valid JSON:
   "warnings": ["Things to be careful about when sending this — potential consequences or considerations"]
 }`, userLanguage);
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2500,
       system: withLanguage('Professional letter writer. Draft responses to documents that are clear, firm, and reference specifics. Protective of the reader. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }],
-    });
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'jargon-assassin-11' });
+    if (!parsed.translation && !parsed.plain_version && !parsed.score) {
+      return res.status(500).json({ error: 'Could not eliminate jargon. Please try again.' });
+    }
     res.json(parsed);
   } catch (error) {
     console.error('[JargonAssassinLetter]', error);
-    res.status(500).json({ error: error.message || 'Failed to generate letter.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

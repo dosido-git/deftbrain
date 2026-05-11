@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, cleanJsonResponse, withLanguage } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════════════════════════
@@ -83,22 +83,19 @@ Return ONLY valid JSON (no markdown, no preamble, no code fences):
 
 CRITICAL: Be specific to their activity. Do NOT give generic advice. Reference what they were actually doing.`, userLanguage);
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 2000,
       messages: [{ role: 'user', content: prompt }]
-    });
-
-    const textContent = message.content.find(item => item.type === 'text')?.text || '';
-
-    const cleaned = cleanJsonResponse(textContent);
-    const parsed = JSON.parse(cleaned);
-
+    }, { label: 'focus-pocus' });
+    if (!parsed.playlist && !parsed.tasks && !parsed.suggestions) {
+      return res.status(500).json({ error: 'Could not generate your focus plan. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[FocusPocus] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to generate break plan' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -179,22 +176,19 @@ RULES:
 
 Return ONLY valid JSON.`, userLanguage);
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 2000,
       messages: [{ role: 'user', content: prompt }]
-    });
-
-    const textContent = message.content.find(item => item.type === 'text')?.text || '';
-
-    const cleaned = cleanJsonResponse(textContent);
-    const parsed = JSON.parse(cleaned);
-
+    }, { label: 'focus-pocus-2' });
+    if (!parsed.playlist && !parsed.tasks && !parsed.suggestions) {
+      return res.status(500).json({ error: 'Could not generate your focus plan. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[FocusPocus/patterns] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to analyze focus patterns' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -238,22 +232,19 @@ Return ONLY valid JSON (no markdown, no preamble, no code fences):
 
 CRITICAL: Be specific to their activity and session. Generic advice is useless. Reference what they were actually doing.`, userLanguage);
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 1000,
       messages: [{ role: 'user', content: prompt }]
-    });
-
-    const textContent = message.content.find(item => item.type === 'text')?.text || '';
-
-    const cleaned = cleanJsonResponse(textContent);
-    const parsed = JSON.parse(cleaned);
-
+    }, { label: 'focus-pocus-3' });
+    if (!parsed.playlist && !parsed.tasks && !parsed.suggestions) {
+      return res.status(500).json({ error: 'Could not generate your focus plan. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[FocusPocus/break-coach] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to generate break coaching' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

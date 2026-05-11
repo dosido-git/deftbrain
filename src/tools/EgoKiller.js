@@ -64,6 +64,7 @@ const EgoKiller = ({ tool }) => {
   const [howStrongly, setHowStrongly] = useState(7);
   const [results, setResults] = usePersistentState('egokiller-results', null);
   const [belief, setBelief] = usePersistentState('egokiller-belief', '');
+  const [history, setHistory] = usePersistentState('egokiller-history', []);
   const [error, setError] = useState('');
 
   // ── Refs (after all useState per PF-10) ──
@@ -79,7 +80,14 @@ const EgoKiller = ({ tool }) => {
         belief: belief.trim(),
         context: context.trim() || undefined,
         howStrongly,});
-      setResults(data);} catch (e) { setError(e.message || 'Failed to demolish the belief.');}};
+      setResults(data);
+      setHistory(prev => [{
+        id: Date.now(),
+        timestamp: new Date().toISOString(),
+        preview: belief.trim().slice(0, 40),
+        result: data,
+      }, ...(prev || [])].slice(0, 6));
+    } catch (e) { setError(e.message || 'Failed to demolish the belief.');}};
 
   const loadExample = useCallback(() => {
     setBelief(EXAMPLE.belief);
@@ -300,7 +308,26 @@ const EgoKiller = ({ tool }) => {
             </div>
           </div>
         )}
-      </div>
+
+      {/* ── History ── */}
+      {history?.length > 0 && (
+        <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+          <h3 className={`text-sm font-bold ${c.text} mb-3`}>🕐 Recent Beliefs</h3>
+          <div className="space-y-1.5">
+            {history.map(entry => (
+              <button key={entry.id}
+                onClick={() => setResults(entry.result)}
+                className={`w-full text-left px-3 py-2 rounded-lg ${c.btnSecondary} text-xs flex items-center gap-2`}>
+                <span className={c.textMuted}>
+                  {new Date(entry.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
+                </span>
+                <span className={`${c.text} truncate`}>{entry.preview}{entry.preview?.length >= 40 ? '…' : ''}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
   );}
 
 EgoKiller.displayName = 'EgoKiller';

@@ -131,19 +131,31 @@ Return ONLY valid JSON:
 
 CRITICAL: Return ONLY valid JSON. No markdown, no preamble.`, userLanguage);
 
-    const message = await anthropic.messages.create({
+    let message;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 3000,
       messages: [{ role: 'user', content: prompt }],
     });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
+    if (!parsed.parsed_events && !parsed.schedule && !parsed.plan) {
+      return res.status(500).json({ error: 'Could not analyze your schedule. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[RechargeRadar] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to generate forecast' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -199,19 +211,31 @@ Return ONLY valid JSON:
 Order triage array from easiest-to-skip first to hardest-to-skip last.
 CRITICAL: Return ONLY valid JSON.`, userLanguage);
 
-    const message = await anthropic.messages.create({
+    let message;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 2000,
       messages: [{ role: 'user', content: prompt }],
     });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
+    if (!parsed.parsed_events && !parsed.schedule && !parsed.plan) {
+      return res.status(500).json({ error: 'Could not analyze your schedule. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[RechargeRadar/triage] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to triage events' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -273,19 +297,31 @@ Return ONLY valid JSON:
 
 CRITICAL: Return ONLY valid JSON.`, userLanguage);
 
-    const message = await anthropic.messages.create({
+    let message;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 800,
       messages: [{ role: 'user', content: prompt }],
     });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
+    if (!parsed.parsed_events && !parsed.schedule && !parsed.plan) {
+      return res.status(500).json({ error: 'Could not analyze your schedule. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[RechargeRadar/add-event] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to assess new event' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -355,19 +391,31 @@ Return ONLY valid JSON:
 
 CRITICAL: Return ONLY valid JSON.`, userLanguage);
 
-    const message = await anthropic.messages.create({
+    let message;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 2000,
       messages: [{ role: 'user', content: prompt }],
     });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
+    if (!parsed.parsed_events && !parsed.schedule && !parsed.plan) {
+      return res.status(500).json({ error: 'Could not analyze your schedule. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[RechargeRadar/reflect] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to process reflection' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -421,19 +469,31 @@ Return ONLY valid JSON:
 
 CRITICAL: Return ONLY valid JSON.`, userLanguage);
 
-    const message = await anthropic.messages.create({
+    let message;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 800,
       messages: [{ role: 'user', content: prompt }],
     });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
+    if (!parsed.parsed_events && !parsed.schedule && !parsed.plan) {
+      return res.status(500).json({ error: 'Could not analyze your schedule. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[RechargeRadar/decline] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to generate decline message' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

@@ -1,12 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 router.post('/meeting-hijack-preventer', rateLimit(), async (req, res) => {
   try {
-    const { 
-      meetingGoal, 
+    const { meetingGoal, 
       duration, 
       participantCount, 
       meetingType, 
@@ -15,8 +14,7 @@ router.post('/meeting-hijack-preventer', rateLimit(), async (req, res) => {
       virtualPlatform,
       decisionFramework,
       useTemplate,
-      selectedTemplate
-    } = req.body;
+      selectedTemplate, userLanguage } = req.body;
 
     // Validation
     if (!meetingGoal && !meetingGoal?.trim() && !useTemplate) {
@@ -326,49 +324,23 @@ Focus especially on addressing these challenges: ${challengeList.join(', ') || '
 
 Return ONLY valid JSON.`;
 
-    // Call Claude API
-    const response = await anthropic.messages.create({
+    const results = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 4000,
       messages: [{
         role: 'user',
         content: withLanguage(prompt, userLanguage)
       }]
-    });
+    }, { label: 'meeting-hijack-preventer' });
 
-    const rawContent = response.content[0]?.text || '';
-    
-    // Extract JSON from response
-    let jsonMatch = rawContent.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) {
-      throw new Error('Failed to extract JSON from response');
-    }
-
-    let results;
-    try {
-      results = JSON.parse(cleanJsonResponse(jsonMatch[0]));
-    } catch (parseError) {
-      // Try cleaning common issues
-      let cleaned = jsonMatch[0]
-        .replace(/,\s*}/g, '}')
-        .replace(/,\s*]/g, ']')
-        .replace(/[\x00-\x1F\x7F]/g, ' ');
-      results = JSON.parse(cleanJsonResponse(cleaned));
-    }
-
-    // Validate required fields
     if (!results.meeting_structure || !results.facilitator_scripts) {
-      throw new Error('Invalid response structure from AI');
+      return res.status(500).json({ error: 'Could not generate meeting structure. Please try again.' });
     }
-
     res.json(results);
 
   } catch (error) {
     console.error('Meeting Hijack Preventer error:', error);
-    res.status(500).json({
-      error: 'Failed to generate meeting structure',
-      details: error.message
-    });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

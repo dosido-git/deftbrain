@@ -51,7 +51,7 @@ function safeParseJSON(text) {
 
 router.post('/nerve-check', rateLimit(), async (req, res) => {
   try {
-    const { situation, situationType, confidenceLevel, specificFears, timeUntil, pastWins } = req.body;
+    const { situation, situationType, confidenceLevel, specificFears, timeUntil, pastWins, userLanguage } = req.body;
 
     if (!situation?.trim()) return res.status(400).json({ error: 'Describe what you\'re nervous about' });
 
@@ -116,19 +116,31 @@ Return ONLY valid JSON:
 
 Return ONLY valid JSON.`;
 
-    const message = await anthropic.messages.create({
+    let message;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 2000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
     });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
+    if (!parsed.fear_breakdown && !parsed.reframe) {
+      return res.status(500).json({ error: 'Could not analyze your nerves. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[NerveCheck] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to analyze' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -138,7 +150,7 @@ Return ONLY valid JSON.`;
 
 router.post('/nerve-check/live', rateLimit(), async (req, res) => {
   try {
-    const { situation, panicLevel, minutesUntil } = req.body;
+    const { situation, panicLevel, minutesUntil, userLanguage } = req.body;
 
     if (!situation?.trim()) return res.status(400).json({ error: 'What are you about to do?' });
 
@@ -168,19 +180,31 @@ Return ONLY valid JSON:
 
 Return ONLY valid JSON.`;
 
-    const message = await anthropic.messages.create({
+    let message;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 800,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
     });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
+    if (!parsed.fear_breakdown && !parsed.reframe) {
+      return res.status(500).json({ error: 'Could not analyze your nerves. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[NerveCheck/live] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to generate live support' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -190,7 +214,7 @@ Return ONLY valid JSON.`;
 
 router.post('/nerve-check/debrief', rateLimit(), async (req, res) => {
   try {
-    const { situation, howItWent, confidenceBefore, confidenceAfter, whatSurprised } = req.body;
+    const { situation, howItWent, confidenceBefore, confidenceAfter, whatSurprised, userLanguage } = req.body;
 
     if (!howItWent?.trim()) return res.status(400).json({ error: 'Tell me how it went' });
 
@@ -219,19 +243,31 @@ Return ONLY valid JSON:
 
 Return ONLY valid JSON.`;
 
-    const message = await anthropic.messages.create({
+    let message;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 800,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
     });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
+    if (!parsed.fear_breakdown && !parsed.reframe) {
+      return res.status(500).json({ error: 'Could not analyze your nerves. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[NerveCheck/debrief] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to debrief' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -241,7 +277,7 @@ Return ONLY valid JSON.`;
 
 router.post('/nerve-check/specific-prep', rateLimit(), async (req, res) => {
   try {
-    const { situation, situationType, specificFears, details } = req.body;
+    const { situation, situationType, specificFears, details, userLanguage } = req.body;
 
     if (!situation?.trim()) return res.status(400).json({ error: 'Describe the situation' });
 
@@ -303,19 +339,31 @@ Return ONLY valid JSON:
 
 Return ONLY valid JSON.`;
 
-    const message = await anthropic.messages.create({
+    let message;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 1800,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
     });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
+    if (!parsed.fear_breakdown && !parsed.reframe) {
+      return res.status(500).json({ error: 'Could not analyze your nerves. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[NerveCheck/specific-prep] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to generate specific prep' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -325,7 +373,7 @@ Return ONLY valid JSON.`;
 
 router.post('/nerve-check/sos', rateLimit(), async (req, res) => {
   try {
-    const { situation, whatsHappening } = req.body;
+    const { situation, whatsHappening, userLanguage } = req.body;
 
     const prompt = `EMERGENCY. Someone is IN the middle of a scary situation and spiraling. They have 10 seconds to glance at their phone. Give them the absolute minimum to recover. No fluff. No explanation. Just what to do RIGHT NOW.
 
@@ -342,19 +390,31 @@ Return ONLY valid JSON:
 
 Return ONLY valid JSON.`;
 
-    const message = await anthropic.messages.create({
+    let message;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 300,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
     });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
+    if (!parsed.fear_breakdown && !parsed.reframe) {
+      return res.status(500).json({ error: 'Could not analyze your nerves. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[NerveCheck/sos] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to generate SOS' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -364,7 +424,7 @@ Return ONLY valid JSON.`;
 
 router.post('/nerve-check/coach', rateLimit(), async (req, res) => {
   try {
-    const { whoIsNervous, theirSituation, relationship, theirAge } = req.body;
+    const { whoIsNervous, theirSituation, relationship, theirAge, userLanguage } = req.body;
 
     if (!theirSituation?.trim()) return res.status(400).json({ error: 'What are they nervous about?' });
 
@@ -402,19 +462,31 @@ Return ONLY valid JSON:
 
 Return ONLY valid JSON.`;
 
-    const message = await anthropic.messages.create({
+    let message;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 1200,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
     });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
+    if (!parsed.fear_breakdown && !parsed.reframe) {
+      return res.status(500).json({ error: 'Could not analyze your nerves. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[NerveCheck/coach] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to generate coaching advice' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -424,7 +496,7 @@ Return ONLY valid JSON.`;
 
 router.post('/nerve-check/fear-ladder', rateLimit(), async (req, res) => {
   try {
-    const { bigFear, currentComfort, situationType } = req.body;
+    const { bigFear, currentComfort, situationType, userLanguage } = req.body;
 
     if (!bigFear?.trim()) return res.status(400).json({ error: 'What\'s the big fear?' });
 
@@ -455,19 +527,31 @@ Generate exactly 6 rungs. Rung 1 should be almost trivially easy. Rung 6 should 
 
 Return ONLY valid JSON.`;
 
-    const message = await anthropic.messages.create({
+    let message;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 1200,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
     });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
+    if (!parsed.fear_breakdown && !parsed.reframe) {
+      return res.status(500).json({ error: 'Could not analyze your nerves. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[NerveCheck/fear-ladder] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to build fear ladder' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

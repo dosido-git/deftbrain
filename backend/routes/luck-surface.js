@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 const PERSONALITY = `You are a luck architect — a specialist in the science of serendipity. You understand that luck isn't random: it's the product of surface area, signal strength, and diversity of exposure.
@@ -64,21 +64,17 @@ Return ONLY valid JSON:
   "the_one_to_start": "Of the five moves, the one to do first — and the exact first step to take today"
 }`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+    const parsed = await callClaudeWithRetry({
+model: 'claude-sonnet-4-6',
       max_tokens: 2200,
       system: withLanguage(PERSONALITY, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'luck-surface' });
     res.json(parsed);
 
   } catch (error) {
     console.error('LuckSurface error:', error);
-    res.status(500).json({ error: error.message || 'Failed to calculate luck surface' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.'});
   }
 });
 

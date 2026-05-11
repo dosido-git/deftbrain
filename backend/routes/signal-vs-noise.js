@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 const PERSONALITY = `You are an epistemics expert — trained in research methodology, statistics, and the sociology of how bad information spreads. Your job is to separate what's actually known from what only feels known.
@@ -81,21 +81,20 @@ Return ONLY valid JSON:
   ]
 }`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+    const parsed = await callClaudeWithRetry({
+model: 'claude-sonnet-4-6',
       max_tokens: 3000,
       system: withLanguage(PERSONALITY, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'signal-vs-noise' });
+    if (!parsed.the_signal || !parsed.why_this_field_is_noisy) {
+      return res.status(500).json({ error: 'Could not analyze this topic. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('SignalVsNoise error:', error);
-    res.status(500).json({ error: error.message || 'Failed to separate signal from noise' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.'});
   }
 });
 

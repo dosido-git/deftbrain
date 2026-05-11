@@ -256,6 +256,7 @@ const SafeWalk = ({ tool }) => {
   // ── Persistent state ──
   const [contacts, setContacts] = usePersistentState('safewalk-contacts', []);
   const [walkTimer, setWalkTimer] = usePersistentState('safewalk-active-timer', null);
+  const [history, setHistory] = usePersistentState('safewalk-history', []);
 
   // ── Plan tab ──
   const [fromLocation, setFromLocation] = useState('');
@@ -648,12 +649,15 @@ const SafeWalk = ({ tool }) => {
       });
       setAssessResult(stripCitesDeep(res));
       setExpandedSections({ overview: true, watch: true, checklist: true, routes: false, before: false });
+      setHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: `${fromLocation.trim()} → ${toLocation.trim()}`.slice(0, 40), result: stripCitesDeep(res) }, ...(prev || [])].slice(0, 6));
     } catch (err) { setError(err.message || 'Failed to assess route'); }
   }, [fromLocation, toLocation, viaDetails, routeFeatures, timeOfDay, areaDesc, walkDuration, concerns, callToolEndpoint]);
 
   // ══════════════════════════════════════════
   // COPY / REGISTER ACTIONS
   // ══════════════════════════════════════════
+  const handleReset = useCallback(() => { setAssessResult(null); setCheckedItems({}); setError(''); }, []);
+
   const loadExample = useCallback(() => {
     setActiveTab(EXAMPLE.activeTab);
     setFromLocation(EXAMPLE.fromLocation);
@@ -1103,7 +1107,7 @@ const SafeWalk = ({ tool }) => {
             </p>
           </div>
 
-          <button onClick={() => { setAssessResult(null); setCheckedItems({}); }}
+          <button onClick={handleReset}
             className={`w-full py-2.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 ${c.btnSecondary}`}>
             Assess a different walk
           </button>
@@ -1472,6 +1476,24 @@ const SafeWalk = ({ tool }) => {
         <p className={`text-xs ${c.textMuted} mt-3 text-center`}>
           Driving instead? <a href="/DriveHome" className={linkStyle}>🚗 DriveHome</a> does the same for road trips.
         </p>
+      )}
+      {/* ── History ── */}
+      {history?.length > 0 && (
+        <div className={`${c.card} border ${c.border} rounded-xl p-4 mt-4`}>
+          <h3 className={`text-sm font-bold ${c.text} mb-3`}>🕐 Recent Routes</h3>
+          <div className="space-y-1.5">
+            {history.map(entry => (
+              <button key={entry.id}
+                onClick={() => setAssessResult(entry.result)}
+                className={`w-full text-left px-3 py-2 rounded-lg ${c.btnSecondary} text-xs flex items-center gap-2`}>
+                <span className={c.textMuted}>
+                  {new Date(entry.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
+                </span>
+                <span className={`${c.text} truncate`}>{entry.preview}{entry.preview?.length >= 40 ? '…' : ''}</span>
+              </button>
+            ))}
+          </div>
+        </div>
       )}
     </div>
   );

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { anthropic, cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════
@@ -129,14 +129,14 @@ IMPORTANT RULES:
 
 Return ONLY the JSON object. No markdown fences, no preamble.`;
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 4500,
       messages: [{ role: 'user', content: withLanguage(basePrompt, userLanguage) }],
-    });
-
-    const textContent = message.content.find(item => item.type === 'text')?.text || '';
-    const parsed = JSON.parse(cleanJsonResponse(textContent));
+    }, { label: 'ghost-writer' });
+    if (!parsed.enhanced_version && !parsed.drafts && !parsed.sections) {
+      return res.status(500).json({ error: 'Could not generate content. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
@@ -178,14 +178,14 @@ OUTPUT (JSON only):
 
 Return ONLY valid JSON.`;
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2000,
       messages: [{ role: 'user', content: withLanguage(basePrompt, userLanguage) }],
-    });
-
-    const textContent = message.content.find(item => item.type === 'text')?.text || '';
-    const parsed = JSON.parse(cleanJsonResponse(textContent));
+    }, { label: 'ghost-writer-2' });
+    if (!parsed.enhanced_version && !parsed.drafts && !parsed.sections) {
+      return res.status(500).json({ error: 'Could not generate content. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {

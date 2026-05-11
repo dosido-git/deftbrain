@@ -1,20 +1,18 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 router.post('/dream-pattern-spotter-single', rateLimit(), async (req, res) => {
   try {
-    const { 
-      description, 
+    const { description, 
       date, 
       emotions, 
       lifeContext,
       isNightmare,
       sleepQuality,
       timeAsleep,
-      wakeUps
-    } = req.body;
+      wakeUps, userLanguage } = req.body;
 
     if (!description || !description.trim()) {
       return res.status(400).json({ error: 'Dream description is required' });
@@ -213,60 +211,27 @@ Generate psychological insights that promote understanding and healing.
 
 Return ONLY the JSON object.`;
 
-    const message = await anthropic.messages.create({
+    const results = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 3500,
       messages: [{role: 'user', content: withLanguage(prompt, userLanguage)}]
-    });
+    }, { label: 'dream-pattern-spotter' });
 
-    let jsonText = message.content[0].text.trim();
-    jsonText = jsonText.replace(/```json\s*/g, '').replace(/```\s*/g, '');
-    
-    const firstBrace = jsonText.indexOf('{');
-    const lastBrace = jsonText.lastIndexOf('}');
-    
-    if (firstBrace === -1 || lastBrace === -1) {
-      throw new Error('No JSON found in AI response');
+    if (!results.themes || !results.symbolic_elements) {
+      return res.status(500).json({ error: 'Could not analyze your dream. Please try again.' });
     }
-    
-    jsonText = jsonText.substring(firstBrace, lastBrace + 1);
-    jsonText = jsonText.replace(/,(\s*[}\]])/g, '$1');
-    
-    let results;
-    try {
-      results = JSON.parse(cleanJsonResponse(jsonText));
-    } catch (parseError) {
-      console.error('JSON Parse Error:', parseError.message);
-      // Try repair: remove control chars, fix trailing commas
-      let repaired = jsonText
-        .replace(/[\x00-\x1F\x7F]/g, (ch) => (ch === '\n' || ch === '\r' || ch === '\t') ? ch : ' ')
-        .replace(/,\s*}/g, '}')
-        .replace(/,\s*]/g, ']');
-      try {
-        results = JSON.parse(cleanJsonResponse(repaired));
-      } catch (retryError) {
-        const pos = parseInt(parseError.message.match(/position (\d+)/)?.[1] || '0');
-        if (pos > 0) {
-          console.error('Context:', jsonText.substring(Math.max(0, pos - 100), Math.min(jsonText.length, pos + 100)));
-        }
-        throw new Error(`JSON parse failed: ${parseError.message}`);
-      }
-    }
-
     res.json(results);
 
   } catch (error) {
     console.error('Dream analysis error:', error);
     res.status(500).json({
-      error: 'Failed to analyze dream',
-      details: error.message
-    });
+      error: 'Something went wrong. Please try again.' });
   }
 });
 
 router.post('/dream-pattern-spotter-pattern', rateLimit(), async (req, res) => {
   try {
-    const { dreams } = req.body;
+    const { dreams, userLanguage } = req.body;
 
     if (!dreams || dreams.length < 2) {
       return res.status(400).json({ error: 'At least 2 dreams required for pattern analysis' });
@@ -505,45 +470,15 @@ Generate insights promoting healing and sleep health.
 
 Return ONLY the JSON object.`;
 
-    const message = await anthropic.messages.create({
+    const results = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 4000,
       messages: [{role: 'user', content: withLanguage(prompt, userLanguage)}]
-    });
+    }, { label: 'dream-pattern-timeline' });
 
-    let jsonText = message.content[0].text.trim();
-    jsonText = jsonText.replace(/```json\s*/g, '').replace(/```\s*/g, '');
-    
-    const firstBrace = jsonText.indexOf('{');
-    const lastBrace = jsonText.lastIndexOf('}');
-    
-    if (firstBrace === -1 || lastBrace === -1) {
-      throw new Error('No JSON found in AI response');
+    if (!results.evolution_summary && !results.timeline_patterns) {
+      return res.status(500).json({ error: 'Could not analyze dream patterns. Please try again.' });
     }
-    
-    jsonText = jsonText.substring(firstBrace, lastBrace + 1);
-    jsonText = jsonText.replace(/,(\s*[}\]])/g, '$1');
-    
-    let results;
-    try {
-      results = JSON.parse(cleanJsonResponse(jsonText));
-    } catch (parseError) {
-      console.error('JSON Parse Error:', parseError.message);
-      let repaired = jsonText
-        .replace(/[\x00-\x1F\x7F]/g, (ch) => (ch === '\n' || ch === '\r' || ch === '\t') ? ch : ' ')
-        .replace(/,\s*}/g, '}')
-        .replace(/,\s*]/g, ']');
-      try {
-        results = JSON.parse(cleanJsonResponse(repaired));
-      } catch (retryError) {
-        const pos = parseInt(parseError.message.match(/position (\d+)/)?.[1] || '0');
-        if (pos > 0) {
-          console.error('Context:', jsonText.substring(Math.max(0, pos - 100), Math.min(jsonText.length, pos + 100)));
-        }
-        throw new Error(`JSON parse failed: ${parseError.message}`);
-      }
-    }
-
     res.json(results);
 
   } catch (error) {

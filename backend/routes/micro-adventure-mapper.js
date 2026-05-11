@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { anthropic, cleanJsonResponse, withLanguage, withLocaleContext } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 const SYSTEM_PROMPT = `You are Micro-Adventure Mapper, a local exploration expert who creates specific, actionable adventure plans. You know hidden gems, lesser-known spots, and interesting corners that most people walk past.
@@ -119,18 +119,30 @@ ${dedupBlock}
 Return ONLY valid JSON matching this schema:
 ${RESPONSE_SCHEMA}`;
 
-      const message = await anthropic.messages.create({
+      let message;
+      for (let attempt = 1; attempt <= 3; attempt++) {
+        try {
+          message = await anthropic.messages.create({
         model: 'claude-haiku-4-5-20251001',
         max_tokens: 3000,
-        system: withLanguage(SYSTEM_PROMPT, req.body.userLanguage),
+        system: withLanguage(SYSTEM_PROMPT, req.body.userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }]
       });
+          break;
+        } catch (retryErr) {
+          if (attempt === 3) throw retryErr;
+          await new Promise(r => setTimeout(r, 1000 * attempt));
+        }
+      }
 
       const responseText = message.content.filter(b => b.type === 'text').map(b => b.text).join('\n');
       const cleaned = cleanJsonResponse(responseText);
 
       try {
         const data = JSON.parse(cleaned);
+        if (!data.adventure) {
+          return res.status(500).json({ error: 'Could not generate your adventure. Please try again.' });
+        }
         return res.json(data);
       } catch (e) {
         console.error('🗺️ MicroAdventureMapper: Parse error:', e.message);
@@ -163,18 +175,30 @@ ${dedupBlock}
 Return ONLY valid JSON matching this schema:
 ${RESPONSE_SCHEMA}`;
 
-      const message = await anthropic.messages.create({
+      let message;
+      for (let attempt = 1; attempt <= 3; attempt++) {
+        try {
+          message = await anthropic.messages.create({
         model: 'claude-haiku-4-5-20251001',
         max_tokens: 3000,
-        system: withLanguage(SYSTEM_PROMPT, req.body.userLanguage),
+        system: withLanguage(SYSTEM_PROMPT, req.body.userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }]
       });
+          break;
+        } catch (retryErr) {
+          if (attempt === 3) throw retryErr;
+          await new Promise(r => setTimeout(r, 1000 * attempt));
+        }
+      }
 
       const responseText = message.content.filter(b => b.type === 'text').map(b => b.text).join('\n');
       const cleaned = cleanJsonResponse(responseText);
 
       try {
         const data = JSON.parse(cleaned);
+        if (!data.adventure) {
+          return res.status(500).json({ error: 'Could not generate your adventure. Please try again.' });
+        }
         return res.json(data);
       } catch (e) {
         console.error('🗺️ MicroAdventureMapper: Regenerate parse error:', e.message);
@@ -236,18 +260,30 @@ Return ONLY valid JSON with the replacement stop and updated transit:
   ]
 }`;
 
-      const message = await anthropic.messages.create({
+      let message;
+      for (let attempt = 1; attempt <= 3; attempt++) {
+        try {
+          message = await anthropic.messages.create({
         model: 'claude-haiku-4-5-20251001',
         max_tokens: 1500,
-        system: withLanguage(SYSTEM_PROMPT, req.body.userLanguage),
+        system: withLanguage(SYSTEM_PROMPT, req.body.userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }]
       });
+          break;
+        } catch (retryErr) {
+          if (attempt === 3) throw retryErr;
+          await new Promise(r => setTimeout(r, 1000 * attempt));
+        }
+      }
 
       const responseText = message.content.filter(b => b.type === 'text').map(b => b.text).join('\n');
       const cleaned = cleanJsonResponse(responseText);
 
       try {
         const data = JSON.parse(cleaned);
+        if (!data.adventure) {
+          return res.status(500).json({ error: 'Could not generate your adventure. Please try again.' });
+        }
         return res.json(data);
       } catch (e) {
         console.error('🗺️ MicroAdventureMapper: Swap parse error:', e.message);
@@ -259,7 +295,7 @@ Return ONLY valid JSON with the replacement stop and updated transit:
 
   } catch (error) {
     console.error('❌ MicroAdventureMapper error:', error.message);
-    res.status(500).json({ error: error.message || 'Failed to process request' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

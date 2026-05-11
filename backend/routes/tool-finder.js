@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const fs = require('fs');
 const path = require('path');
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
@@ -86,8 +86,8 @@ IMPORTANT:
 - Some problems genuinely benefit from multiple tools used in sequence. Flag these as a "workflow."
 - If the problem is vague, still give your best recommendations but note what clarification would help.`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-haiku-4-5-20251001',
+    const parsed = await callClaudeWithRetry({
+model: 'claude-haiku-4-5-20251001',
       max_tokens: 1500,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{
@@ -113,11 +113,7 @@ Return ONLY valid JSON:
   "clarification": "If the problem was vague, what would help you recommend better? Otherwise null."
 }`
       }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'tool-finder' });
 
     // Validate that recommended IDs actually exist
     if (parsed.recommendations) {
@@ -132,7 +128,7 @@ Return ONLY valid JSON:
 
   } catch (error) {
     console.error('ToolFinder error:', error);
-    res.status(500).json({ error: error.message || 'Failed to find tools' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.'});
   }
 });
 

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════
@@ -147,21 +147,18 @@ Return ONLY the JSON object. No markdown fences, no preamble.`;
 
     contentBlocks.push({ type: 'text', text: withLanguage(basePrompt, userLanguage) });
 
-    const message = await anthropic.messages.create({
-      model: 'claude-haiku-4-5-20251001',
+    const parsed = await callClaudeWithRetry({
+model: 'claude-haiku-4-5-20251001',
 //    model: 'claude-sonnet-4-6',
 
       max_tokens: 4500,
       messages: [{ role: 'user', content: contentBlocks }],
-    });
-
-    const textContent = message.content.find(item => item.type === 'text')?.text || '';
-    const parsed = JSON.parse(cleanJsonResponse(textContent));
+    }, { label: 'mise-en-place' });
     res.json(parsed);
 
   } catch (error) {
     console.error('Mise en Place error:', error);
-    res.status(500).json({ error: error.message || 'Failed to build meal plan' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.'});
   }
 });
 

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 const PERSONALITY = `You are a narrative logic analyst with an obsessive eye for detail and a wicked sense of humor. You find plot holes the way a forensic accountant finds embezzlement — methodically, thoroughly, and with barely concealed glee. You love stories, which is WHY you hold them to high standards.
@@ -61,21 +61,21 @@ Return ONLY valid JSON:
 
 Find 4-7 holes, ranked by severity. Mix severities.`;
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 2500,
       system: withLanguage(PERSONALITY, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
+    }, { label: 'plot-hole-analyze' });
 
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    if (!parsed.holes || !Array.isArray(parsed.holes)) {
+      return res.status(500).json({ error: 'Could not find plot holes. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('PlotHole error:', error);
-    res.status(500).json({ error: error.message || 'Plot hole analysis failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -117,21 +117,21 @@ Return ONLY valid JSON:
 
 Generate 3-5 defense arguments. At least one should be a genuine stretch played for laughs.`;
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 2000,
       system: withLanguage(PERSONALITY, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
+    }, { label: 'plot-hole-patch' });
 
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    if (!parsed.patch_summary) {
+      return res.status(500).json({ error: 'Could not generate patch. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('PlotHole defend error:', error);
-    res.status(500).json({ error: error.message || 'Defense failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

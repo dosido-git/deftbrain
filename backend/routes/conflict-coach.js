@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, cleanJsonResponse, withLanguage } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════════════════════════
@@ -113,15 +113,12 @@ RULES:
 
 ${lang}`;
 
-    const msg = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 3500,
       system: systemPrompt,
       messages: [{ role: 'user', content: prompt }],
-    });
-
-    const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
-
+    }, { label: 'conflict-coach' });
     res.json(parsed);
   } catch (error) {
     console.error('❌ Conflict Coach V3 error:', error.message);
@@ -170,14 +167,12 @@ Answer the follow-up based on full context. Be specific, practical, warm but hon
 
 CRITICAL: Return ONLY valid JSON: {"answer": "Your full coaching response here"}`;
 
-    const msg = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 800,
       system: systemPrompt,
       messages: [{ role: 'user', content: question.trim() + `\n\n${lang}` }],
-    });
-
-    const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
+    }, { label: 'conflict-coach' });
 
     res.json({ answer: parsed.answer || 'No answer available.' });
   } catch (error) {
@@ -221,15 +216,12 @@ CRITICAL: Return ONLY valid JSON:
   "tone_note": "Brief note on what changed and why this tone level works/risks for this situation"
 }`;
 
-    const msg = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 500,
       system: systemPrompt,
       messages: [{ role: 'user', content: `Rewrite at tone level ${toneLevel}/100.\n\n${lang}` }],
-    });
-
-    const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
-
+    }, { label: 'conflict-coach-2' });
     res.json(parsed);
   } catch (error) {
     console.error('❌ Tone adjust error:', error.message);

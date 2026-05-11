@@ -156,7 +156,7 @@ CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
 
   } catch (error) {
     console.error('CaptionMagic error:', error);
-    res.status(500).json({ error: error.message || 'Failed to generate captions' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.'});
   }
 });
 
@@ -205,7 +205,7 @@ CRITICAL: Return ONLY valid JSON.`;
 
   } catch (error) {
     console.error('CaptionMagic revise error:', error);
-    res.status(500).json({ error: error.message || 'Failed to revise caption' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.'});
   }
 });
 
@@ -275,7 +275,7 @@ CRITICAL: Return ONLY valid JSON.`;
 
   } catch (error) {
     console.error('CaptionMagic adapt error:', error);
-    res.status(500).json({ error: error.message || 'Failed to adapt captions' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.'});
   }
 });
 
@@ -336,7 +336,7 @@ CRITICAL: Return ONLY valid JSON.`;
 
   } catch (error) {
     console.error('CaptionMagic remix error:', error);
-    res.status(500).json({ error: error.message || 'Failed to remix captions' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.'});
   }
 });
 

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════
@@ -139,7 +139,7 @@ router.post('/date-night', rateLimit(), async (req, res) => {
     if (action === 'generate') {
       const { budget, currency = '$', dateType, location, restrictions, lastTime, startTime,
               dietary, duration, weather, pastDates, preferences, partnerPrefs,
-              favorites, plannedDate, isFuturePlan, userLanguage } = req.body;
+              favorites, plannedDate, isFuturePlan, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
       if (!location?.trim()) return res.status(400).json({ error: 'Please enter a city or neighborhood.' });
       if (!dateType) return res.status(400).json({ error: 'Please select a date type.' });
@@ -168,20 +168,23 @@ ${isFuturePlan ? '\nAlso include: "advance_booking": ["Tip 1 about reservations/
 
 All costs in ${sym}. dress_vibe per stop + overall_dress_code. plan_b per stop AND overall.`;
 
-      const parsed = await callClaudeWithRetry(prompt, {
+      const parsed = await callClaudeWithRetry({
         model: 'claude-haiku-4-5-20251001',
-
-        label: 'DateNightGenerate', max_tokens: 3000,
-        system: withLanguage(`${SYSTEM_PROMPT}\n\nAll costs in ${sym}.`, userLanguage)
-      });
-      return res.json(parsed);
+        max_tokens: 3000,
+        system: withLanguage(`${SYSTEM_PROMPT}\n\nAll costs in ${sym}.`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+        messages: [{ role: 'user', content: prompt }],
+      }, { label: 'DateNightGenerate' });
+      if (!parsed.itinerary && !parsed.plan) {
+      return res.status(500).json({ error: 'Could not plan your date night. Please try again.' });
+    }
+    return res.json(parsed);
     }
 
     // ─── REGENERATE ───
     if (action === 'regenerate') {
       const { budget, currency = '$', dateType, location, restrictions, lastTime, startTime,
               dietary, duration, weather, previousTitle, pastDates, preferences,
-              partnerPrefs, favorites, userLanguage } = req.body;
+              partnerPrefs, favorites, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
       if (!location?.trim()) return res.status(400).json({ error: 'Location required.' });
       const sym = currency;
@@ -197,19 +200,22 @@ ${buildDietaryBlock(dietary)}${buildPreferenceBlock(preferences)}${buildPartnerB
 
 Return ONLY valid JSON: ${RESPONSE_SCHEMA}`;
 
-      const parsed = await callClaudeWithRetry(prompt, {
+      const parsed = await callClaudeWithRetry({
         model: 'claude-haiku-4-5-20251001',
-
-        label: 'DateNightRegenerate', max_tokens: 3000,
-        system: withLanguage(`${SYSTEM_PROMPT}\n\nAll costs in ${sym}.`, userLanguage)
-      });
-      return res.json(parsed);
+        max_tokens: 3000,
+        system: withLanguage(`${SYSTEM_PROMPT}\n\nAll costs in ${sym}.`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+        messages: [{ role: 'user', content: prompt }],
+      }, { label: 'DateNightRegenerate' });
+      if (!parsed.itinerary && !parsed.plan) {
+      return res.status(500).json({ error: 'Could not plan your date night. Please try again.' });
+    }
+    return res.json(parsed);
     }
 
     // ─── SWAP ───
     if (action === 'swap') {
       const { budget, currency = '$', dateType, location, dietary, currentItinerary,
-              swapStopNumber, preferences, partnerPrefs, userLanguage } = req.body;
+              swapStopNumber, preferences, partnerPrefs, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
       if (!currentItinerary || !swapStopNumber) return res.status(400).json({ error: 'Itinerary and stop number required.' });
       const sym = currency;
@@ -232,19 +238,22 @@ Return ONLY valid JSON:
   }
 }`;
 
-      const parsed = await callClaudeWithRetry(prompt, {
+      const parsed = await callClaudeWithRetry({
         model: 'claude-haiku-4-5-20251001',
-
-        label: 'DateNightSwap', max_tokens: 1000,
-        system: withLanguage(`${SYSTEM_PROMPT}\n\nAll costs in ${sym}.`, userLanguage)
-      });
-      return res.json(parsed);
+        max_tokens: 1000,
+        system: withLanguage(`${SYSTEM_PROMPT}\n\nAll costs in ${sym}.`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+        messages: [{ role: 'user', content: prompt }],
+      }, { label: 'DateNightSwap' });
+      if (!parsed.itinerary && !parsed.plan) {
+      return res.status(500).json({ error: 'Could not plan your date night. Please try again.' });
+    }
+    return res.json(parsed);
     }
 
     // ─── RATE ───
     if (action === 'rate') {
       const { vibeTitle, location, dateType, overallRating, stopRatings, notes,
-              actualSpend, userLanguage } = req.body;
+              actualSpend, userLanguage, userLocale, userCurrency, userRegion } = req.body;
       if (!overallRating) return res.status(400).json({ error: 'Please rate your date.' });
 
       const spendNote = actualSpend ? `\nACTUAL SPEND: ${actualSpend} (compare to estimates for accuracy insight)` : '';
@@ -267,19 +276,22 @@ Return ONLY valid JSON:
   "encouragement": "Warm one-sentence note"${actualSpend ? ',\n  "budget_accuracy": "How accurate were the estimates vs actual spend (1 sentence)"' : ''}
 }`, userLanguage);
 
-      const parsed = await callClaudeWithRetry(prompt, {
-        model: 'claude-haiku-4-5-20251001',
-
-        label: 'DateNightRate', max_tokens: 800,
-        system: withLanguage('Date feedback analyst. Warm, encouraging. Return ONLY valid JSON.', userLanguage)
-      });
-      return res.json(parsed);
+      const parsed = await callClaudeWithRetry({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 800,
+      system: withLanguage('Date feedback analyst. Warm, encouraging. Return ONLY valid JSON.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+      messages: [{ role: 'user', content: prompt }],
+    }, { label: 'DateNightRate' });
+      if (!parsed.itinerary && !parsed.plan) {
+      return res.status(500).json({ error: 'Could not plan your date night. Please try again.' });
+    }
+    return res.json(parsed);
     }
 
     // ─── SHARE ───
     if (action === 'share') {
       const { vibeTitle, dateType, location, itinerary, startTime, budget, currency,
-              surprise, userLanguage } = req.body;
+              surprise, userLanguage, userLocale, userCurrency, userRegion } = req.body;
       if (!vibeTitle) return res.status(400).json({ error: 'Need date details.' });
 
       const sym = currency || '$';
@@ -310,12 +322,12 @@ Return ONLY valid JSON:
   "tone": "The tone used"
 }`, userLanguage);
 
-        const parsed = await callClaudeWithRetry(prompt, {
-          model: 'claude-haiku-4-5-20251001',
-
-          label: 'DateNightSurprise', max_tokens: 500,
-          system: withLanguage('Charming friend who creates excitement about mystery dates. Return ONLY valid JSON.', userLanguage)
-        });
+        const parsed = await callClaudeWithRetry({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 500,
+      system: withLanguage('Charming friend who creates excitement about mystery dates. Return ONLY valid JSON.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+      messages: [{ role: 'user', content: prompt }],
+    }, { label: 'DateNightSurprise' });
         return res.json({ ...parsed, isSurprise: true });
       }
 
@@ -330,18 +342,21 @@ PLAN: ${stopsList} | START: ${startTime || '7:00 PM'} | BUDGET: ${sym}${budget |
 Return ONLY valid JSON:
 { "message": "The text", "tone": "Tone used" }`, userLanguage);
 
-      const parsed = await callClaudeWithRetry(prompt, {
-        model: 'claude-haiku-4-5-20251001',
-
-        label: 'DateNightShare', max_tokens: 500,
-        system: withLanguage('Charming invite writer. Match tone to date type. Return ONLY valid JSON.', userLanguage)
-      });
-      return res.json(parsed);
+      const parsed = await callClaudeWithRetry({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 500,
+      system: withLanguage('Charming invite writer. Match tone to date type. Return ONLY valid JSON.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+      messages: [{ role: 'user', content: prompt }],
+    }, { label: 'DateNightShare' });
+      if (!parsed.itinerary && !parsed.plan) {
+      return res.status(500).json({ error: 'Could not plan your date night. Please try again.' });
+    }
+    return res.json(parsed);
     }
 
     // ─── SIMILAR ───
     if (action === 'similar') {
-      const { venueName, stopType, location, dateType, budget, currency, userLanguage } = req.body;
+      const { venueName, stopType, location, dateType, budget, currency, userLanguage, userLocale, userCurrency, userRegion } = req.body;
       if (!venueName) return res.status(400).json({ error: 'Which venue?' });
       const sym = currency || '$';
 
@@ -357,19 +372,22 @@ Return ONLY valid JSON:
   ]
 }`, userLanguage);
 
-      const parsed = await callClaudeWithRetry(prompt, {
+      const parsed = await callClaudeWithRetry({
         model: 'claude-haiku-4-5-20251001',
-
-        label: 'DateNightSimilar', max_tokens: 1000,
-        system: withLanguage(`${SYSTEM_PROMPT}\n\nAll costs in ${sym}.`, userLanguage)
-      });
-      return res.json(parsed);
+        max_tokens: 1000,
+        system: withLanguage(`${SYSTEM_PROMPT}\n\nAll costs in ${sym}.`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+        messages: [{ role: 'user', content: prompt }],
+      }, { label: 'DateNightSimilar' });
+      if (!parsed.itinerary && !parsed.plan) {
+      return res.status(500).json({ error: 'Could not plan your date night. Please try again.' });
+    }
+    return res.json(parsed);
     }
 
     // ─── ANNIVERSARY DEEP ───
     if (action === 'anniversary-deep') {
       const { location, budget, currency, yearsTogether, startTime, dietary,
-              preferences, partnerPrefs, userLanguage } = req.body;
+              preferences, partnerPrefs, userLanguage, userLocale, userCurrency, userRegion } = req.body;
       if (!yearsTogether) return res.status(400).json({ error: 'How many years?' });
       const sym = currency || '$';
 
@@ -400,19 +418,22 @@ Return ONLY valid JSON:
   "tips": ["2-3 anniversary-specific tips"]
 }`, userLanguage);
 
-      const parsed = await callClaudeWithRetry(prompt, {
+      const parsed = await callClaudeWithRetry({
         model: 'claude-haiku-4-5-20251001',
-
-        label: 'DateNightAnniversary', max_tokens: 3500,
-        system: withLanguage(`${SYSTEM_PROMPT}\n\nAll costs in ${sym}. Special anniversary — bring warmth.`, userLanguage)
-      });
-      return res.json(parsed);
+        max_tokens: 3500,
+        system: withLanguage(`${SYSTEM_PROMPT}\n\nAll costs in ${sym}. Special anniversary — bring warmth.`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+        messages: [{ role: 'user', content: prompt }],
+      }, { label: 'DateNightAnniversary' });
+      if (!parsed.itinerary && !parsed.plan) {
+      return res.status(500).json({ error: 'Could not plan your date night. Please try again.' });
+    }
+    return res.json(parsed);
     }
 
     // ─── DATE JAR (generate 10-12 date concepts) ───
     if (action === 'date-jar') {
       const { location, budget, currency = '$', dietary, preferences, partnerPrefs,
-              pastDates, userLanguage } = req.body;
+              pastDates, userLanguage, userLocale, userCurrency, userRegion } = req.body;
       if (!location?.trim()) return res.status(400).json({ error: 'Location required.' });
       const sym = currency;
 
@@ -442,18 +463,21 @@ Return ONLY valid JSON:
   ]
 }`, userLanguage);
 
-      const parsed = await callClaudeWithRetry(prompt, {
+      const parsed = await callClaudeWithRetry({
         model: 'claude-haiku-4-5-20251001',
-
-        label: 'DateNightJar', max_tokens: 3000,
-        system: withLanguage(`${SYSTEM_PROMPT}\n\nAll budgets in ${sym}. Be creative — surprise them.`, userLanguage)
-      });
-      return res.json(parsed);
+        max_tokens: 3000,
+        system: withLanguage(`${SYSTEM_PROMPT}\n\nAll budgets in ${sym}. Be creative — surprise them.`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+        messages: [{ role: 'user', content: prompt }],
+      }, { label: 'DateNightJar' });
+      if (!parsed.itinerary && !parsed.plan) {
+      return res.status(500).json({ error: 'Could not plan your date night. Please try again.' });
+    }
+    return res.json(parsed);
     }
 
     // ─── RUT DETECT (analyze patterns, suggest variety) ───
     if (action === 'rut-detect') {
-      const { pastDates, location, preferences, userLanguage } = req.body;
+      const { pastDates, location, preferences, userLanguage, userLocale, userCurrency, userRegion } = req.body;
       if (!pastDates?.length || pastDates.length < 3) return res.status(400).json({ error: 'Need at least 3 past dates to detect patterns.' });
 
       const dateList = pastDates.slice(0, 15).map((d, i) =>
@@ -486,18 +510,21 @@ Return ONLY valid JSON:
   "encouragement": "Warm note about their dating life"
 }`, userLanguage);
 
-      const parsed = await callClaudeWithRetry(prompt, {
-        model: 'claude-haiku-4-5-20251001',
-
-        label: 'DateNightRutDetect', max_tokens: 1000,
-        system: withLanguage('Relationship pattern analyst. Encouraging, not judgmental. Return ONLY valid JSON.', userLanguage)
-      });
-      return res.json(parsed);
+      const parsed = await callClaudeWithRetry({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 1000,
+      system: withLanguage('Relationship pattern analyst. Encouraging, not judgmental. Return ONLY valid JSON.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+      messages: [{ role: 'user', content: prompt }],
+    }, { label: 'DateNightRutDetect' });
+      if (!parsed.itinerary && !parsed.plan) {
+      return res.status(500).json({ error: 'Could not plan your date night. Please try again.' });
+    }
+    return res.json(parsed);
     }
 
     // ─── CHECKLIST (pre-date preparation) ───
     if (action === 'checklist') {
-      const { dateType, startTime, weather, dietary, hasReservation, userLanguage } = req.body;
+      const { dateType, startTime, weather, dietary, hasReservation, userLanguage, userLocale, userCurrency, userRegion } = req.body;
       if (!dateType) return res.status(400).json({ error: 'Date type needed.' });
 
       const prompt = withLanguage(`Generate a pre-date checklist for a ${DATE_TYPE_LABELS[dateType] || dateType} date.
@@ -527,19 +554,22 @@ Return ONLY valid JSON:
   "last_minute_reminder": "One thing to remember walking out the door"
 }`, userLanguage);
 
-      const parsed = await callClaudeWithRetry(prompt, {
-        model: 'claude-haiku-4-5-20251001',
-
-        label: 'DateNightChecklist', max_tokens: 1000,
-        system: withLanguage('Pre-date preparation expert. Practical + thoughtful. Return ONLY valid JSON.', userLanguage)
-      });
-      return res.json(parsed);
+      const parsed = await callClaudeWithRetry({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 1000,
+      system: withLanguage('Pre-date preparation expert. Practical + thoughtful. Return ONLY valid JSON.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+      messages: [{ role: 'user', content: prompt }],
+    }, { label: 'DateNightChecklist' });
+      if (!parsed.itinerary && !parsed.plan) {
+      return res.status(500).json({ error: 'Could not plan your date night. Please try again.' });
+    }
+    return res.json(parsed);
     }
 
     return res.status(400).json({ error: 'Invalid action. Use: generate, regenerate, swap, rate, share, similar, anniversary-deep, date-jar, rut-detect, checklist' });
   } catch (error) {
     console.error('[DateNight]', error.message);
-    res.status(500).json({ error: error.message || 'Failed to plan date night.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

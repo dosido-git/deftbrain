@@ -59,8 +59,8 @@ jobs:
 
             # Sitemaps
             "https://deftbrain.com/sitemap.xml"
-            "https://deftbrain.com/sitemap-index.xml"
             "https://deftbrain.com/guides-sitemap.xml"
+            "https://deftbrain.com/sitemap-app.xml"
           )
 
           for url in "${URLS[@]}"; do

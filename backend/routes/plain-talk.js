@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { anthropic, cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════════════════════════
@@ -101,17 +101,14 @@ CRITICAL RULES:
 - "jargon_glossary" should include 5-15 domain-specific terms used in the text
 - Be thorough but never pad — only include what's genuinely useful`, userLanguage);
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 8000,
       messages: [{ role: 'user', content: prompt }]
-    });
-
-    const textContent = message.content.find(item => item.type === 'text')?.text || '';
-
-    const cleaned = cleanJsonResponse(textContent);
-    const parsed = JSON.parse(cleaned);
-
+    }, { label: 'plain-talk' });
+    if (!parsed.plain_version && !parsed.simplified && !parsed.plain_english) {
+      return res.status(500).json({ error: 'Could not simplify this. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
@@ -163,16 +160,14 @@ Return ONLY valid JSON:
   "follow_up_suggestions": ["Another question they might want to ask", "Another angle to explore"]
 }`, userLanguage);
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2000,
       messages: [{ role: 'user', content: prompt }]
-    });
-
-    const textContent = message.content.find(item => item.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(textContent);
-    const parsed = JSON.parse(cleaned);
-
+    }, { label: 'plain-talk-2' });
+    if (!parsed.plain_version && !parsed.simplified && !parsed.plain_english) {
+      return res.status(500).json({ error: 'Could not simplify this. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
@@ -246,17 +241,14 @@ CRITICAL:
 - Be specific about who benefits from each change
 - The recommendation should be actionable`, userLanguage);
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 6000,
       messages: [{ role: 'user', content: prompt }]
-    });
-
-    const textContent = message.content.find(item => item.type === 'text')?.text || '';
-
-    const cleaned = cleanJsonResponse(textContent);
-    const parsed = JSON.parse(cleaned);
-
+    }, { label: 'plain-talk-3' });
+    if (!parsed.plain_version && !parsed.simplified && !parsed.plain_english) {
+      return res.status(500).json({ error: 'Could not simplify this. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {

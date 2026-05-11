@@ -85,6 +85,9 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry(prompt, {
       model: 'claude-sonnet-4-6', label: 'SS-Spiral', max_tokens: 1000 });
+        if (parsed.spiral_detected === undefined) {
+          return res.status(500).json({ error: 'Could not analyze this. Please try again.' });
+        }
         return res.json(parsed);
       }
 
@@ -129,6 +132,9 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry(prompt, {
       model: 'claude-sonnet-4-6', label: 'SS-Unfreeze', max_tokens: 400 });
+        if (parsed.spiral_detected === undefined) {
+          return res.status(500).json({ error: 'Could not analyze this. Please try again.' });
+        }
         return res.json(parsed);
       }
 
@@ -179,6 +185,9 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry(prompt, {
       model: 'claude-sonnet-4-6', label: 'SS-Recover', max_tokens: 1000 });
+        if (parsed.spiral_detected === undefined) {
+          return res.status(500).json({ error: 'Could not analyze this. Please try again.' });
+        }
         return res.json(parsed);
       }
 
@@ -205,6 +214,9 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry(prompt, {
       model: 'claude-sonnet-4-6', label: 'SS-Reflect', max_tokens: 400 });
+        if (parsed.spiral_detected === undefined) {
+          return res.status(500).json({ error: 'Could not analyze this. Please try again.' });
+        }
         return res.json(parsed);
       }
 
@@ -240,6 +252,9 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry(prompt, {
       model: 'claude-sonnet-4-6', label: 'SS-Patterns', max_tokens: 700 });
+        if (parsed.spiral_detected === undefined) {
+          return res.status(500).json({ error: 'Could not analyze this. Please try again.' });
+        }
         return res.json(parsed);
       }
 
@@ -249,7 +264,7 @@ Return ONLY valid JSON:
 
   } catch (err) {
     console.error('SpiralStopper error:', err);
-    res.status(500).json({ error: err.message || 'Something went wrong.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

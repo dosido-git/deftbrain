@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { cleanJsonResponse, withLanguage } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
@@ -164,20 +164,20 @@ Return ONLY valid JSON:
 
 Keep common_mistakes to 2-3 entries. Keep dont_confuse_with to 0-2 entries. Keep regional_variants to 0-3 entries.`;
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const parsed = JSON.parse(cleanJsonResponse(text));
+    }, { label: 'pronounce-it-right' });
+    if (!parsed.pronunciation && !parsed.phonetic) {
+      return res.status(500).json({ error: 'Could not analyze pronunciation. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('PronounceItRight error:', error);
-    res.status(500).json({ error: error.message || 'Pronunciation guide failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -223,20 +223,20 @@ For each word, return a concise pronunciation guide. Return ONLY valid JSON:
   ]
 }`;
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 3000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const parsed = JSON.parse(cleanJsonResponse(text));
+    }, { label: 'pronounce-it-right-2' });
+    if (!parsed.pronunciation && !parsed.phonetic) {
+      return res.status(500).json({ error: 'Could not analyze pronunciation. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('PronounceItRight batch error:', error);
-    res.status(500).json({ error: error.message || 'Batch pronunciation failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 const PERSONALITY = `You are the friend who always gives impossibly thoughtful gifts — the ones that make people say "how did you KNOW?" You understand that great gifts aren't about price. They're about proving you pay attention. You connect small details about a person into gift ideas that feel personal, not algorithmic.
@@ -26,6 +26,7 @@ router.post('/giftology', rateLimit(), async (req, res) => {
       alreadyGiven,     // Past gifts or things already considered
       avoid,            // Things to NOT get
       userLanguage,
+      userLocale, userCurrency, userRegion,
     } = req.body;
 
     if (!recipient?.trim()) {
@@ -80,17 +81,20 @@ Return ONLY valid JSON:
 
 Provide 3-4 perfect_picks. Each should feel genuinely different — not 4 variations of the same idea.`;
 
-    const parsed = await callClaudeWithRetry(userPrompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'giftology',
       max_tokens: 3000,
-      system: withLanguage(PERSONALITY, userLanguage),
-    });
+      system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+      messages: [{ role: 'user', content: userPrompt }],
+    }, { label: 'giftology' });
+    if (!parsed.perfect_picks && !parsed.gifts) {
+      return res.status(500).json({ error: 'Could not generate gift ideas. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('Giftology error:', error);
-    res.status(500).json({ error: error.message || 'Gift search failed.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

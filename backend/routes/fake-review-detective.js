@@ -86,15 +86,15 @@ Return ONLY valid JSON with this exact structure:
 
 Score EVERY review. Verdicts must be: "likely_fake" (score 0-39), "uncertain" (40-59), or "likely_genuine" (60-100).`;
 
-        const message = await anthropic.messages.create({
+        const parsed = await callClaudeWithRetry({
           model: 'claude-sonnet-4-6',
           max_tokens: 2500,
           system: withLanguage(systemPrompt, userLanguage),
           messages: [{ role: 'user', content: userPrompt }],
-        });
-
-        const text = message.content.find(b => b.type === 'text')?.text || '';
-        const parsed = JSON.parse(cleanJsonResponse(text));
+        }, { label: 'fake-review-detective' });
+        if (!parsed.scores && !parsed.verdict && !parsed.analysis) {
+          return res.status(500).json({ error: 'Could not analyze reviews. Please try again.' });
+        }
         return res.json(parsed);
       }
 
@@ -199,15 +199,15 @@ Return ONLY valid JSON:
   }
 }`;
 
-        const message = await anthropic.messages.create({
+        const parsed = await callClaudeWithRetry({
           model: 'claude-sonnet-4-6',
           max_tokens: 2500,
           system: withLanguage(systemPrompt, userLanguage),
           messages: [{ role: 'user', content: userPrompt }],
-        });
-
-        const text = message.content.find(b => b.type === 'text')?.text || '';
-        const parsed = JSON.parse(cleanJsonResponse(text));
+        }, { label: 'fake-review-detective-2' });
+        if (!parsed.scores && !parsed.verdict && !parsed.analysis) {
+          return res.status(500).json({ error: 'Could not analyze reviews. Please try again.' });
+        }
         return res.json(parsed);
       }
 
@@ -268,15 +268,15 @@ Return ONLY valid JSON:
   "template_structure": "Description of the template structure if found, or null"
 }`;
 
-        const message = await anthropic.messages.create({
+        const parsed = await callClaudeWithRetry({
           model: 'claude-sonnet-4-6',
           max_tokens: 2000,
           system: withLanguage(systemPrompt, userLanguage),
           messages: [{ role: 'user', content: userPrompt }],
-        });
-
-        const text = message.content.find(b => b.type === 'text')?.text || '';
-        const parsed = JSON.parse(cleanJsonResponse(text));
+        }, { label: 'fake-review-detective-3' });
+        if (!parsed.scores && !parsed.verdict && !parsed.analysis) {
+          return res.status(500).json({ error: 'Could not analyze reviews. Please try again.' });
+        }
         return res.json(parsed);
       }
 
@@ -345,15 +345,15 @@ Return ONLY valid JSON:
   "final_recommendation": "Clear, actionable recommendation based on all sources"
 }`;
 
-        const message = await anthropic.messages.create({
+        const parsed = await callClaudeWithRetry({
           model: 'claude-sonnet-4-6',
           max_tokens: 2000,
           system: withLanguage(systemPrompt, userLanguage),
           messages: [{ role: 'user', content: userPrompt }],
-        });
-
-        const text = message.content.find(b => b.type === 'text')?.text || '';
-        const parsed = JSON.parse(cleanJsonResponse(text));
+        }, { label: 'fake-review-detective-4' });
+        if (!parsed.scores && !parsed.verdict && !parsed.analysis) {
+          return res.status(500).json({ error: 'Could not analyze reviews. Please try again.' });
+        }
         return res.json(parsed);
       }
 
@@ -461,12 +461,21 @@ Then blank line, then the reviews.
 
 Return ONLY valid JSON.`;
 
-        const message = await anthropic.messages.create({
+        let message;
+        for (let _att = 1; _att <= 3; _att++) {
+          try {
+            message = await anthropic.messages.create({
           model: 'claude-sonnet-4-6',
           max_tokens: 8000,
           system: withLanguage(systemPrompt, userLanguage),
           messages: [{ role: 'user', content: `Extract all customer reviews from this page content:\n\n${contentForClaude}` }],
         });
+            break;
+          } catch (_e) {
+            if (_att === 3) throw _e;
+            await new Promise(r => setTimeout(r, 1000 * _att));
+          }
+        }
 
         const text = message.content.find(b => b.type === 'text')?.text || '';
 
@@ -498,7 +507,7 @@ Return ONLY valid JSON.`;
 
   } catch (error) {
     console.error('Fake Review Detective error:', error);
-    res.status(500).json({ error: error.message || 'Analysis failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

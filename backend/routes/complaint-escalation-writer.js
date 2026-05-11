@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { anthropic, cleanJsonResponse, withLanguage, withLocaleContext } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════════════════════════
@@ -31,7 +31,7 @@ async function withRetry(fn, { retries = 3, baseDelayMs = 1500 } = {}) {
 
 router.post('/complaint-escalation-writer', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
-    const { company, issue, industry, previousAttempts, desiredOutcome, amountAtStake, hasDocumentation, tone, userLanguage } = req.body;
+    const { company, issue, industry, previousAttempts, desiredOutcome, amountAtStake, hasDocumentation, tone, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!company?.trim()) return res.status(400).json({ error: 'Company name is required' });
     if (!issue?.trim())   return res.status(400).json({ error: 'Issue description is required' });
@@ -138,7 +138,7 @@ Build a complete multi-stage escalation campaign. Return ONLY valid JSON (no mar
   }
 }`;
 
-    const lang = withLanguage(userLanguage);
+    const lang = withLanguage(userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion);
 
     const msg1 = await withRetry(() => anthropic.messages.create({
       model: 'claude-sonnet-4-6',
@@ -147,11 +147,14 @@ Build a complete multi-stage escalation campaign. Return ONLY valid JSON (no mar
     }));
     const parsed = JSON.parse(cleanJsonResponse(msg1.content.find(i => i.type === 'text')?.text || ''));
 
+    if (!parsed.situation_assessment) {
+      return res.status(500).json({ error: 'Could not draft the escalation. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[ComplaintEscalationWriter] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to generate escalation campaign' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -161,7 +164,7 @@ Build a complete multi-stage escalation campaign. Return ONLY valid JSON (no mar
 
 router.post('/complaint-escalation-writer/analyze-response', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
-    const { company, originalIssue, stage, companyResponse, desiredOutcome, userLanguage } = req.body;
+    const { company, originalIssue, stage, companyResponse, desiredOutcome, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!companyResponse?.trim()) {
       return res.status(400).json({ error: 'Company response text is required' });
@@ -210,7 +213,7 @@ Return ONLY valid JSON:
   "things_to_get_in_writing": ["Anything from their response that should be confirmed in writing"]
 }`;
 
-    const lang = withLanguage(userLanguage);
+    const lang = withLanguage(userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion);
     const msg2 = await withRetry(() => anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 4000,
@@ -218,11 +221,14 @@ Return ONLY valid JSON:
     }));
     const parsed = JSON.parse(cleanJsonResponse(msg2.content.find(i => i.type === 'text')?.text || ''));
 
+    if (!parsed.situation_assessment) {
+      return res.status(500).json({ error: 'Could not draft the escalation. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[CEW/analyze-response] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to analyze response' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -232,7 +238,7 @@ Return ONLY valid JSON:
 
 router.post('/complaint-escalation-writer/regenerate-stage', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
-    const { company, issue, industry, desiredOutcome, amountAtStake, tone, targetStage, campaignHistory, userLanguage } = req.body;
+    const { company, issue, industry, desiredOutcome, amountAtStake, tone, targetStage, campaignHistory, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!targetStage || !company) {
       return res.status(400).json({ error: 'Company and target stage are required' });
@@ -273,7 +279,7 @@ ${historyNarrative || 'No previous stage history available.'}
 Generate ONLY Stage ${targetStage} content. Reference SPECIFIC things that happened during the campaign — dates, responses, offers made, tactics used. Return ONLY valid JSON matching this format:
 ${stageFormats[targetStage] || stageFormats[3]}`;
 
-    const lang = withLanguage(userLanguage);
+    const lang = withLanguage(userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion);
     const msg3 = await withRetry(() => anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 4000,
@@ -281,11 +287,14 @@ ${stageFormats[targetStage] || stageFormats[3]}`;
     }));
     const parsed = JSON.parse(cleanJsonResponse(msg3.content.find(i => i.type === 'text')?.text || ''));
 
+    if (!parsed.situation_assessment) {
+      return res.status(500).json({ error: 'Could not draft the escalation. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[CEW/regenerate] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to regenerate stage' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -295,7 +304,7 @@ ${stageFormats[targetStage] || stageFormats[3]}`;
 // ═══════════════════════════════════════════════════════════════
 
 router.post('/complaint-escalation-writer/stream', rateLimit(DEFAULT_LIMITS), async (req, res) => {
-  const { company, issue, industry, previousAttempts, desiredOutcome, amountAtStake, hasDocumentation, tone, userLanguage } = req.body;
+  const { company, issue, industry, previousAttempts, desiredOutcome, amountAtStake, hasDocumentation, tone, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
   if (!company?.trim()) return res.status(400).json({ error: 'Company name is required' });
   if (!issue?.trim())   return res.status(400).json({ error: 'Issue description is required' });
@@ -314,7 +323,7 @@ router.post('/complaint-escalation-writer/stream', rateLimit(DEFAULT_LIMITS), as
       empathetic: 'Empathetic and resolution-focused. Acknowledge front-line staff are not at fault.',
     };
 
-    const lang = withLanguage(userLanguage);
+    const lang = withLanguage(userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion);
     const prompt = `You are an elite consumer advocacy strategist. Build a complete consumer escalation campaign for the following:
 
 COMPANY: ${company}

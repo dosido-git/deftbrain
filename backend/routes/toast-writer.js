@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
@@ -63,21 +63,20 @@ Write the toast. Return ONLY valid JSON:
 
 Generate 3 versions with different styles. At least one should be warm/heartfelt and one should have humor.`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-haiku-4-5-20251001',
+    const parsed = await callClaudeWithRetry({
+model: 'claude-haiku-4-5-20251001',
       max_tokens: 3000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'toast-writer' });
+    if (!Array.isArray(parsed.versions) || !parsed.versions.length) {
+      return res.status(500).json({ error: 'Could not write your toast. Please try again.' });
+    }
     return res.json(parsed);
 
   } catch (error) {
     console.error('ToastWriter error:', error);
-    res.status(500).json({ error: error.message || 'Failed to write toast' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.'});
   }
 });
 

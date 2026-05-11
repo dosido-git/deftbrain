@@ -25,9 +25,9 @@ const PLAN_TYPES = [
 ];
 
 const PROB_CONFIG = {
-  high:   { label: 'HIGH RISK',   color: (d) => d ? 'bg-red-600/20 text-red-300 border-red-600/40'   : 'bg-red-50 text-red-700 border-red-300' },
-  medium: { label: 'MEDIUM RISK', color: (d) => d ? 'bg-amber-900/20 text-amber-300 border-amber-700' : 'bg-amber-50 text-amber-700 border-amber-300' },
-  low:    { label: 'LOW RISK',    color: (d) => d ? 'bg-emerald-900/20 text-emerald-300 border-emerald-700' : 'bg-emerald-50 text-emerald-700 border-emerald-300' },
+  high:   { label: 'HIGH RISK',   cls: 'red' },
+  medium: { label: 'MEDIUM RISK', cls: 'amber' },
+  low:    { label: 'LOW RISK',    cls: 'emerald' },
 };
 
 const PreMortem = ({ tool }) => {
@@ -62,6 +62,11 @@ const PreMortem = ({ tool }) => {
                           : 'border-gray-300 text-gray-500 hover:border-gray-400',
   };
   c.textMuteded = c.textMuted;
+  const probClsMap = {
+    red:     isDark ? 'bg-red-600/20 text-red-300 border-red-600/40'       : 'bg-red-50 text-red-700 border-red-300',
+    amber:   isDark ? 'bg-amber-900/20 text-amber-300 border-amber-700'    : 'bg-amber-50 text-amber-700 border-amber-300',
+    emerald: isDark ? 'bg-emerald-900/20 text-emerald-300 border-emerald-700' : 'bg-emerald-50 text-emerald-700 border-emerald-300',
+  };
   c.label       = c.labelText;
 
   const linkStyle = isDark
@@ -335,7 +340,7 @@ const PreMortem = ({ tool }) => {
                     return (
                       <div key={i} className={`px-5 py-4 ${i > 0 ? `border-t ${c.border}` : ''}`}>
                         <div className="flex items-start gap-2 mb-2 flex-wrap">
-                          <span className={`text-xs font-bold px-2 py-0.5 rounded-full border ${pcfg.color(isDark)}`}>{pcfg.label}</span>
+                          <span className={`text-xs font-bold px-2 py-0.5 rounded-full border ${probClsMap[pcfg.cls] || probClsMap.amber}`}>{pcfg.label}</span>
                           <span className={`text-sm font-bold ${c.text}`}>{fm.mode}</span>
                         </div>
                         <p className={`text-sm mb-1 ${c.textSecondary}`}>{fm.description}</p>

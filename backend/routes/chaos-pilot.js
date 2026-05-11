@@ -89,11 +89,14 @@ Return ONLY valid JSON:
     }));
     const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
 
+    if (!parsed.pattern_diagnosis || !parsed.the_disruption) {
+      return res.status(500).json({ error: 'Could not analyze this situation. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('ChaosPilot error:', error);
-    res.status(500).json({ error: error.message || 'Failed to design your disruption' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.'});
   }
 });
 

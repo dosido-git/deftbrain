@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════
@@ -124,19 +124,19 @@ IMPORTANT RULES:
 
 Return ONLY the JSON object. No markdown fences, no preamble.`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+    const parsed = await callClaudeWithRetry({
+model: 'claude-sonnet-4-6',
       max_tokens: 4500,
       messages: [{ role: 'user', content: withLanguage(basePrompt, userLanguage) }],
-    });
-
-    const textContent = message.content.find(item => item.type === 'text')?.text || '';
-    const parsed = JSON.parse(cleanJsonResponse(textContent));
+    }, { label: 'plot-twist' });
+    if (!parsed.decision_summary || !parsed.stuck_pattern) {
+      return res.status(500).json({ error: 'Could not analyze this decision. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('Plot Twist error:', error);
-    res.status(500).json({ error: error.message || 'Failed to analyze decision' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.'});
   }
 });
 

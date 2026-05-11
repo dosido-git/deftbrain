@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { anthropic, cleanJsonResponse, withLanguage, withLocaleContext } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 async function withRetry(fn, { retries = 3, baseDelayMs = 1500 } = {}) {
@@ -38,7 +38,7 @@ YOUR PERSONALITY:
 // ════════════════════════════════════════════════════════════
 router.post('/buy-wise', rateLimit(), async (req, res) => {
   try {
-    const { product, price, currency, urgency, isImpulse, isGift, giftRecipient, priority, context, comparison, userLanguage } = req.body;
+    const { product, price, currency, urgency, isImpulse, isGift, giftRecipient, priority, context, comparison, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!product || !product.trim()) {
       return res.status(400).json({ error: 'Please enter what you want to buy' });
@@ -195,15 +195,18 @@ Return ONLY valid JSON with ALL applicable sections. Set sections to null if the
     const msg = await withRetry(() => anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 4000,
-      system: withLanguage(systemPrompt, userLanguage),
+      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }));
     const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
+    if (!parsed.verdict) {
+      return res.status(500).json({ error: 'Could not analyze this purchase. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('BuyWise error:', error);
-    res.status(500).json({ error: error.message || 'Research failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.'});
   }
 });
 
@@ -212,7 +215,7 @@ Return ONLY valid JSON with ALL applicable sections. Set sections to null if the
 // ════════════════════════════════════════════════════════════
 router.post('/buy-wise/budget', rateLimit(), async (req, res) => {
   try {
-    const { budget, category, needs, currency, userLanguage } = req.body;
+    const { budget, category, needs, currency, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!budget || !category) {
       return res.status(400).json({ error: 'Please provide a budget and category' });
@@ -258,15 +261,18 @@ Recommend the best option(s) within this budget. Return ONLY valid JSON:
     const msg = await withRetry(() => anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 2000,
-      system: withLanguage(systemPrompt, userLanguage),
+      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }));
     const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
+    if (!parsed.verdict) {
+      return res.status(500).json({ error: 'Could not analyze the budget. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('BuyWise budget error:', error);
-    res.status(500).json({ error: error.message || 'Budget analysis failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.'});
   }
 });
 
@@ -275,7 +281,7 @@ Recommend the best option(s) within this budget. Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 router.post('/buy-wise/followup', rateLimit(), async (req, res) => {
   try {
-    const { product, question, originalVerdict, currency, userLanguage } = req.body;
+    const { product, question, originalVerdict, currency, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!product || !question) {
       return res.status(400).json({ error: 'Missing product or question' });
@@ -303,15 +309,18 @@ Answer thoroughly. Return ONLY valid JSON:
     const msg = await withRetry(() => anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 1500,
-      system: withLanguage(systemPrompt, userLanguage),
+      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }));
     const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
+    if (!parsed.answer) {
+      return res.status(500).json({ error: 'Could not answer your question. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('BuyWise followup error:', error);
-    res.status(500).json({ error: error.message || 'Follow-up failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.'});
   }
 });
 
@@ -320,7 +329,7 @@ Answer thoroughly. Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 router.post('/buy-wise/calendar', rateLimit(), async (req, res) => {
   try {
-    const { category, currency, userLanguage } = req.body;
+    const { category, currency, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!category) {
       return res.status(400).json({ error: 'Please specify a product category' });
@@ -359,15 +368,18 @@ Include all 12 months in the calendar array.`;
     const msg = await withRetry(() => anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 2500,
-      system: withLanguage(systemPrompt, userLanguage),
+      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }));
     const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
+    if (!parsed.recommendation) {
+      return res.status(500).json({ error: 'Could not check the timing. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('BuyWise calendar error:', error);
-    res.status(500).json({ error: error.message || 'Calendar generation failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.'});
   }
 });
 
@@ -376,7 +388,7 @@ Include all 12 months in the calendar array.`;
 // ════════════════════════════════════════════════════════════
 router.post('/buy-wise/photo', rateLimit(), async (req, res) => {
   try {
-    const { image, currency, userLanguage } = req.body;
+    const { image, currency, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!image) {
       return res.status(400).json({ error: 'Please provide an image' });
@@ -422,18 +434,21 @@ If you cannot identify the product, set identified to false and explain in recom
     const message = await withRetry(() => anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 1500,
-      system: withLanguage(systemPrompt, userLanguage),
+      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content }],
     }));
 
     const text = message.content.find(b => b.type === 'text')?.text || '';
     const cleaned = cleanJsonResponse(text);
     const parsed = JSON.parse(cleaned);
+    if (!parsed.verdict) {
+      return res.status(500).json({ error: 'Could not analyze this item. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('BuyWise photo error:', error);
-    res.status(500).json({ error: error.message || 'Photo identification failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.'});
   }
 });
 
@@ -442,7 +457,7 @@ If you cannot identify the product, set identified to false and explain in recom
 // ════════════════════════════════════════════════════════════
 router.post('/buy-wise/convince', rateLimit(), async (req, res) => {
   try {
-    const { product, price, currency, direction, context, verdict, userLanguage } = req.body;
+    const { product, price, currency, direction, context, verdict, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!product) {
       return res.status(400).json({ error: 'Please specify the product' });
@@ -478,15 +493,18 @@ Return ONLY valid JSON:
     const msg = await withRetry(() => anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 1500,
-      system: withLanguage(systemPrompt, userLanguage),
+      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }));
     const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
+    if (!parsed.verdict) {
+      return res.status(500).json({ error: 'Could not generate the case. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('BuyWise convince error:', error);
-    res.status(500).json({ error: error.message || 'Convince mode failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.'});
   }
 });
 
@@ -495,7 +513,7 @@ Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 router.post('/buy-wise/haul', rateLimit(), async (req, res) => {
   try {
-    const { items, totalBudget, currency, occasion, userLanguage } = req.body;
+    const { items, totalBudget, currency, occasion, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!items || !items.length) {
       return res.status(400).json({ error: 'Please add at least one item' });
@@ -541,15 +559,18 @@ Review this haul as a whole. Return ONLY valid JSON:
     const msg = await withRetry(() => anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 2500,
-      system: withLanguage(systemPrompt, userLanguage),
+      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }));
     const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
+    if (!parsed.verdict || !Array.isArray(parsed.items)) {
+      return res.status(500).json({ error: 'Could not analyze the haul. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('BuyWise haul error:', error);
-    res.status(500).json({ error: error.message || 'Haul review failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.'});
   }
 });
 
@@ -558,7 +579,7 @@ Review this haul as a whole. Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 router.post('/buy-wise/quote', rateLimit(), async (req, res) => {
   try {
-    const { service, amount, details, location, urgency, currency, userLanguage } = req.body;
+    const { service, amount, details, location, urgency, currency, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!service || !service.trim()) {
       return res.status(400).json({ error: 'Please describe the service you were quoted for' });
@@ -648,15 +669,18 @@ Return ONLY valid JSON:
     const msg = await withRetry(() => anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 3000,
-      system: withLanguage(systemPrompt, userLanguage),
+      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }));
     const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
+    if (!parsed.verdict) {
+      return res.status(500).json({ error: 'Could not analyze the quote. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('BuyWise quote error:', error);
-    res.status(500).json({ error: error.message || 'Quote analysis failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.'});
   }
 });
 

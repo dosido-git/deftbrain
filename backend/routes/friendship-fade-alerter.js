@@ -97,12 +97,21 @@ Return ONLY valid JSON:
 
 Return ONLY valid JSON.`;
 
-    const message = await anthropic.messages.create({
+    let message;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 1200,
       system: withLanguage('You are a helpful assistant that responds in the same language as the user.', userLanguage),
       messages: [{ role: 'user', content: prompt }],
     });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
@@ -110,7 +119,7 @@ Return ONLY valid JSON.`;
 
   } catch (error) {
     console.error('[FriendshipFade] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to generate starters' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -156,12 +165,21 @@ Return ONLY valid JSON:
 
 Return ONLY valid JSON.`;
 
-    const message = await anthropic.messages.create({
+    let message;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 1500,
       system: withLanguage('You are a helpful assistant that responds in the same language as the user.', userLanguage),
       messages: [{ role: 'user', content: prompt }],
     });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
@@ -169,7 +187,7 @@ Return ONLY valid JSON.`;
 
   } catch (error) {
     console.error('[FriendshipFade/batch] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to generate batch' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -205,12 +223,21 @@ Return ONLY valid JSON:
 
 Return ONLY valid JSON.`;
 
-    const message = await anthropic.messages.create({
+    let message;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 800,
       system: withLanguage('You are a helpful assistant that responds in the same language as the user.', userLanguage),
       messages: [{ role: 'user', content: prompt }],
     });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
@@ -218,7 +245,7 @@ Return ONLY valid JSON.`;
 
   } catch (error) {
     console.error('[FriendshipFade/followup] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to generate advice' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -265,12 +292,21 @@ Return ONLY valid JSON:
 
 Return ONLY valid JSON.`;
 
-    const message = await anthropic.messages.create({
+    let message;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 800,
       system: withLanguage('You are a helpful assistant that responds in the same language as the user.', userLanguage),
       messages: [{ role: 'user', content: prompt }],
     });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
@@ -278,7 +314,7 @@ Return ONLY valid JSON.`;
 
   } catch (error) {
     console.error('[FriendshipFade/digest] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to generate digest' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -340,12 +376,21 @@ Return ONLY valid JSON:
   "timing_tip": "Best time/channel to send this (text vs. DM vs. email, time of day, day of week)"
 }`;
 
-    const message = await anthropic.messages.create({
+    let message;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 2000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
@@ -353,7 +398,7 @@ Return ONLY valid JSON:
 
   } catch (error) {
     console.error('[FriendshipFade/reengage] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to generate re-engagement messages' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -411,12 +456,21 @@ Return ONLY valid JSON:
   "worth_a_deeper_check": true/false
 }`;
 
-    const message = await anthropic.messages.create({
+    let message;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 900,
       system: withLanguage('You are a thoughtful relationship coach. Be honest, specific, and avoid generic advice.', userLanguage),
       messages: [{ role: 'user', content: prompt }],
     });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
 
     const raw = message.content.find(b => b.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
@@ -424,7 +478,7 @@ Return ONLY valid JSON:
 
   } catch (error) {
     console.error('[FriendshipFade/health-insight] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to generate insight' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -465,12 +519,21 @@ Return ONLY valid JSON:
   "alternative": "If they don't want to say it directly: a behavioural shift that might naturally change the dynamic without the conversation"
 }`;
 
-    const message = await anthropic.messages.create({
+    let message;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 1000,
       system: withLanguage('You are a direct, honest relationship coach. No fluff — give specific, actionable guidance.', userLanguage),
       messages: [{ role: 'user', content: prompt }],
     });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
 
     const raw = message.content.find(b => b.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
@@ -478,7 +541,7 @@ Return ONLY valid JSON:
 
   } catch (error) {
     console.error('[FriendshipFade/say-it-coach] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to generate coaching' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -522,12 +585,21 @@ Return ONLY valid JSON:
 
 Return ONLY valid JSON.`;
 
-    const message = await anthropic.messages.create({
+    let message;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 400,
       system: withLanguage('You are a direct, practical relationship coach. No fluff.', userLanguage),
       messages: [{ role: 'user', content: prompt }],
     });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
 
     const raw = message.content.find(b => b.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
@@ -542,7 +614,7 @@ Return ONLY valid JSON.`;
 
   } catch (error) {
     console.error('[FriendshipFade/freq-suggest] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to suggest frequency' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

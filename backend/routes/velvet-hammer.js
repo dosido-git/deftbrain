@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
@@ -98,15 +98,12 @@ Return ONLY valid JSON:
   ]
 }`;
 
-    const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+    const data = await callClaudeWithRetry({
+model: 'claude-sonnet-4-6',
       max_tokens: 1200,
       messages: [{ role: 'user', content: userPrompt }],
       system: withLanguage(systemPrompt, req.body.userLanguage),
-    });
-
-    const raw = response.content[0]?.text || '';
-    const data = JSON.parse(cleanJsonResponse(raw));
+    }, { label: 'velvet-hammer' });
 
     if (!data.variants?.length) {
       return res.status(500).json({ error: 'Failed to generate message variants. Please try again.' });
@@ -119,7 +116,7 @@ Return ONLY valid JSON:
     if (err instanceof SyntaxError) {
       return res.status(500).json({ error: 'Failed to parse response. Please try again.' });
     }
-    return res.status(500).json({ error: err.message || 'Something went wrong. Please try again.' });
+    return res.status(500).json({ error: 'Something went wrong. Please try again.'});
   }
 });
 

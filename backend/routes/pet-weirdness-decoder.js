@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 router.post('/pet-weirdness-decoder', rateLimit(DEFAULT_LIMITS), async (req, res) => {
@@ -72,31 +72,21 @@ Return ONLY this JSON:
     }
     content.push({ type: 'text', text: prompt });
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2500,
       system: systemPrompt,
       messages: [{ role: 'user', content }]
-    });
+    }, { label: 'pet-weirdness-decode' });
 
-    const textContent = message.content.find(item => item.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(textContent);
-
-    let parsed;
-    try {
-      parsed = JSON.parse(cleaned);
-    } catch {
-      const raw = textContent.trim().replace(/```json\n?/g, '').replace(/```\n?/g, '');
-      const first = raw.indexOf('{'); const last = raw.lastIndexOf('}');
-      if (first === -1 || last === -1) throw new Error('No JSON found');
-      parsed = JSON.parse(cleanJsonResponse(raw.substring(first, last + 1)));
+    if (!parsed.most_likely_explanation || !parsed.behavior_analysis) {
+      return res.status(500).json({ error: 'Could not decode the behavior. Please try again.' });
     }
-
     res.json(parsed);
 
   } catch (error) {
     console.error('❌ Pet Weirdness Decoder error:', error.message);
-    res.status(500).json({ error: 'Failed to analyze pet behavior. Please try again.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -150,19 +140,27 @@ Answer the follow-up based on context. Be specific, practical, warm.
     }
     content.push({ type: 'text', text: question.trim() });
 
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 800,
-      system: systemPrompt,
-      messages: [{ role: 'user', content }]
-    });
-
-    const answer = message.content.find(item => item.type === 'text')?.text || 'No answer available.';
+    let answer = 'No answer available.';
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        const msg = await anthropic.messages.create({
+          model: 'claude-sonnet-4-6',
+          max_tokens: 800,
+          system: systemPrompt,
+          messages: [{ role: 'user', content }]
+        });
+        answer = msg.content.find(item => item.type === 'text')?.text || 'No answer available.';
+        break;
+      } catch (retryErr) {
+        if (attempt === 3) throw retryErr;
+        await new Promise(r => setTimeout(r, 1000 * attempt));
+      }
+    }
     res.json({ answer: answer.trim() });
 
   } catch (error) {
     console.error('❌ Follow-up error:', error.message);
-    res.status(500).json({ error: 'Failed to answer follow-up question.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { anthropic, cleanJsonResponse, withLanguage, withLocaleContext } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 function safeParseJSON(text) {
@@ -21,7 +21,7 @@ function safeParseJSON(text) {
 
 router.post('/leverage-logic', rateLimit(), async (req, res) => {
   try {
-    const { situation, leverage, desired, urgency, relationship, negotiationType, pastAttempts } = req.body;
+    const { situation, leverage, desired, urgency, relationship, negotiationType, pastAttempts, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!situation?.trim()) return res.status(400).json({ error: 'Describe your negotiation situation' });
 
@@ -131,19 +131,31 @@ Return ONLY valid JSON:
 
 Return ONLY valid JSON.`;
 
-    const message = await anthropic.messages.create({
+    let message;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 2500,
-      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
+      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion) }],
     });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
+    if (!parsed.situation_read && !parsed.leverage_points) {
+      return res.status(500).json({ error: 'Could not analyze your leverage. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[LeverageLogic] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to analyze negotiation' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -153,7 +165,7 @@ Return ONLY valid JSON.`;
 
 router.post('/leverage-logic/counter', rateLimit(), async (req, res) => {
   try {
-    const { situation, theyJustSaid, yourGoal, tonePreference } = req.body;
+    const { situation, theyJustSaid, yourGoal, tonePreference, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!theyJustSaid?.trim()) return res.status(400).json({ error: 'What did they say?' });
 
@@ -184,19 +196,31 @@ Return ONLY valid JSON:
 
 Return ONLY valid JSON.`;
 
-    const message = await anthropic.messages.create({
+    let message;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 1200,
-      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
+      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion) }],
     });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
+    if (!parsed.situation_read && !parsed.leverage_points) {
+      return res.status(500).json({ error: 'Could not analyze your leverage. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[LeverageLogic/counter] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to generate counter' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -206,7 +230,7 @@ Return ONLY valid JSON.`;
 
 router.post('/leverage-logic/prep-check', rateLimit(), async (req, res) => {
   try {
-    const { situation, whatYouKnow, whatYouDontKnow, negotiationType } = req.body;
+    const { situation, whatYouKnow, whatYouDontKnow, negotiationType, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!situation?.trim()) return res.status(400).json({ error: 'Describe the situation' });
 
@@ -243,19 +267,31 @@ Return ONLY valid JSON:
 
 Return ONLY valid JSON.`;
 
-    const message = await anthropic.messages.create({
+    let message;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 1000,
-      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
+      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion) }],
     });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
+    if (!parsed.situation_read && !parsed.leverage_points) {
+      return res.status(500).json({ error: 'Could not analyze your leverage. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[LeverageLogic/prep-check] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to assess readiness' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -265,7 +301,7 @@ Return ONLY valid JSON.`;
 
 router.post('/leverage-logic/simulate', rateLimit(), async (req, res) => {
   try {
-    const { situation, strategy, negotiationType, yourOpening, timeline } = req.body;
+    const { situation, strategy, negotiationType, yourOpening, timeline, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!situation?.trim()) return res.status(400).json({ error: 'Situation is required' });
 
@@ -303,19 +339,31 @@ Return ONLY valid JSON:
 
 Return ONLY valid JSON.`;
 
-    const message = await anthropic.messages.create({
+    let message;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 1500,
-      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
+      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion) }],
     });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
+    if (!parsed.situation_read && !parsed.leverage_points) {
+      return res.status(500).json({ error: 'Could not analyze your leverage. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[LeverageLogic/simulate] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to simulate' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -325,7 +373,7 @@ Return ONLY valid JSON.`;
 
 router.post('/leverage-logic/draft-email', rateLimit(), async (req, res) => {
   try {
-    const { situation, strategy, scripts, negotiationType, recipientName, tone, timeline } = req.body;
+    const { situation, strategy, scripts, negotiationType, recipientName, tone, timeline, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!situation?.trim()) return res.status(400).json({ error: 'Situation is required' });
 
@@ -373,19 +421,31 @@ Return ONLY valid JSON:
 
 Return ONLY valid JSON.`;
 
-    const message = await anthropic.messages.create({
+    let message;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 2000,
-      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
+      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion) }],
     });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
+    if (!parsed.situation_read && !parsed.leverage_points) {
+      return res.status(500).json({ error: 'Could not analyze your leverage. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[LeverageLogic/draft-email] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to draft email' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -395,7 +455,7 @@ Return ONLY valid JSON.`;
 
 router.post('/leverage-logic/debrief', rateLimit(), async (req, res) => {
   try {
-    const { situation, strategy, timeline, finalOutcome, desiredOutcome } = req.body;
+    const { situation, strategy, timeline, finalOutcome, desiredOutcome, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!finalOutcome?.trim()) return res.status(400).json({ error: 'Describe the final outcome' });
 
@@ -439,19 +499,31 @@ Return ONLY valid JSON:
 
 Return ONLY valid JSON.`;
 
-    const message = await anthropic.messages.create({
+    let message;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 1200,
-      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
+      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion) }],
     });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
+    if (!parsed.situation_read && !parsed.leverage_points) {
+      return res.status(500).json({ error: 'Could not analyze your leverage. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[LeverageLogic/debrief] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to debrief' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

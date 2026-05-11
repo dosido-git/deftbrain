@@ -20,7 +20,7 @@ const EXAMPLE = {
   ],
 };
 const SubscriptionGuiltTrip = ({ tool }) => {
-  const { callToolEndpoint, loading } = useClaudeAPI();
+  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const fileInputRef = useRef(null);
   const resultsRef = useRef(null);
@@ -291,27 +291,8 @@ const SubscriptionGuiltTrip = ({ tool }) => {
       .join('\n\n') + BRAND;
   };
 
-  // ── Build full summary for ActionBar ──
-  const buildSummaryText = () => {
-    if (!results) return '';
-    const lines = ['SUBSCRIPTION AUDIT', ''];
-    if (results.total_monthly_cost) lines.push(`Total monthly: ${results.total_monthly_cost}`);
-    if (results.total_savings_if_cancel_recommended?.monthly)
-      lines.push(`Potential savings: ${results.total_savings_if_cancel_recommended.monthly}/mo`);
-    if (results.recommended_cancellations?.length) {
-      lines.push('', 'Recommended cancellations:');
-      results.recommended_cancellations.forEach(c => lines.push(`  • ${c.name} — ${c.monthly_savings}/mo`));
-    }
-    if (results.keep_these?.length) {
-      lines.push('', 'Worth keeping:');
-      results.keep_these.forEach(k => lines.push(`  ✓ ${k.name}`));
-    }
-    lines.push(BRAND);
-    return lines.join('\n');
-  };
-
-  // ─── Register export content (after buildSummaryText — TDZ-safe) ───
-  useRegisterActions(results ? buildSummaryText() : '', tool?.title);
+  // ─── Register export content ───
+  useRegisterActions(results ? buildAllScriptsContent() : '', tool?.title);
 
   // ─── Keep handleAnalyze ref fresh so keyboard handler never stales ───
   const handleAnalyzeRef = useRef(null);
@@ -795,7 +776,6 @@ const SubscriptionGuiltTrip = ({ tool }) => {
               <div className={`${c.card} border ${c.border} rounded-2xl shadow-sm p-6`}>
                 <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
                   <h3 className={`text-lg font-bold ${c.text}`}>🚫 Recommended Cancellations</h3>
-                  <CopyBtn content={buildAllScriptsContent()} label="Copy All Scripts" />
                 </div>
 
                 {/* Selected savings tally */}
@@ -935,7 +915,6 @@ const SubscriptionGuiltTrip = ({ tool }) => {
               <button onClick={exportCSV} className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition-colors ${c.btnSecondary}`}>
                 ⬇️ Export as CSV
               </button>
-              <CopyBtn content={buildAllScriptsContent()} label="Copy All Cancellation Scripts" />
               <button
                 onClick={() => {
                   setResults(null);

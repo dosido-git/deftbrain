@@ -40,7 +40,10 @@ Return ONLY valid JSON:
           model: 'claude-haiku-4-5-20251001',
           system: withLanguage(`You are an emergency conversation rescue bot. Give ONE natural conversation line for an awkward silence, then show exactly how the next 2 exchanges will flow. Not cheesy, not forced — something a real person would actually say.`, userLanguage),
         });
-        return res.json(parsed);
+        if (!parsed.line) {
+      return res.status(500).json({ error: 'Could not fill the silence. Please try again.' });
+    }
+    return res.json(parsed);
       }
 
       // ════════════════════════════════════════════════════════
@@ -115,13 +118,16 @@ Generate 5-6 conversation chains with a mix of risk levels. At least 2 should be
           model: 'claude-haiku-4-5-20251001',
           system: withLanguage(systemPrompt, userLanguage),
         });
-        return res.json(parsed);
+        if (!parsed.line) {
+      return res.status(500).json({ error: 'Could not fill the silence. Please try again.' });
+    }
+    return res.json(parsed);
       }
     }
 
   } catch (error) {
     console.error('Awkward Silence Filler error:', error);
-    res.status(500).json({ error: error.message || 'Failed to generate conversation lines' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

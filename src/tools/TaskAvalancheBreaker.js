@@ -642,7 +642,7 @@ const TaskAvalancheBreaker = ({ tool }) => {
               <div className="flex items-center gap-3">
                 <span className="text-xs">😴</span>
                 <input id="energy" type="range" min="1" max="10" value={energy} onChange={(e) => setEnergy(parseInt(e.target.value))}
-                  className="flex-1 h-2 rounded-lg appearance-none cursor-pointer"
+                  className="flex-1 h-2 rounded-lg cursor-pointer accent-cyan-600"
                   style={{ background: isDark
                     ? `linear-gradient(to right, #10b981 0%, #10b981 ${energy * 10}%, #3f3f46 ${energy * 10}%, #3f3f46 100%)`
                     : `linear-gradient(to right, #10b981 0%, #10b981 ${energy * 10}%, #d1d5db ${energy * 10}%, #d1d5db 100%)`

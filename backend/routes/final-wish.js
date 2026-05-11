@@ -46,8 +46,8 @@ function parseArrayResponse(raw) {
 router.post('/final-wish', rateLimit(), async (req, res) => {
 
   try {
-    const { mode, payload, locale } = req.body;
-    const lang = withLanguage(locale);
+    const { mode, payload, userLanguage } = req.body;
+    const lang = withLanguage('', userLanguage);
 
     // ── MODE 1: Parse accounts from free text ──
     if (mode === 'parse-accounts') {
@@ -75,12 +75,21 @@ If no clear accounts found, return an empty array.${lang}
 
 Return ONLY valid JSON.`;
 
-      const msg = await anthropic.messages.create({
+      let msg;
+      for (let _att = 1; _att <= 3; _att++) {
+        try {
+          msg = await anthropic.messages.create({
         model: 'claude-sonnet-4-6',
         max_tokens: 1500,
-        system: withLanguage(SYSTEM_PROMPT, locale),
+        system: withLanguage(SYSTEM_PROMPT, userLanguage),
         messages: [{ role: 'user', content: prompt }],
       });
+          break;
+        } catch (_e) {
+          if (_att === 3) throw _e;
+          await new Promise(r => setTimeout(r, 1000 * _att));
+        }
+      }
 
       const raw = msg.content[0]?.text || '[]';
       return res.json({ accounts: parseArrayResponse(raw) });
@@ -104,12 +113,21 @@ If nothing found, return [].${lang}
 
 Return ONLY valid JSON.`;
 
-      const msg = await anthropic.messages.create({
+      let msg;
+      for (let _att = 1; _att <= 3; _att++) {
+        try {
+          msg = await anthropic.messages.create({
         model: 'claude-sonnet-4-6',
         max_tokens: 1500,
-        system: withLanguage(SYSTEM_PROMPT, locale),
+        system: withLanguage(SYSTEM_PROMPT, userLanguage),
         messages: [{ role: 'user', content: prompt }],
       });
+          break;
+        } catch (_e) {
+          if (_att === 3) throw _e;
+          await new Promise(r => setTimeout(r, 1000 * _att));
+        }
+      }
 
       const raw = msg.content[0]?.text || '[]';
       return res.json({ financials: parseArrayResponse(raw) });
@@ -138,12 +156,21 @@ Return JSON: { "draft": "the message text", "lengthWords": number }${lang}
 
 Return ONLY valid JSON.`;
 
-      const msg = await anthropic.messages.create({
+      let msg;
+      for (let _att = 1; _att <= 3; _att++) {
+        try {
+          msg = await anthropic.messages.create({
         model: 'claude-sonnet-4-6',
         max_tokens: 1500,
-        system: withLanguage(SYSTEM_PROMPT, locale),
+        system: withLanguage(SYSTEM_PROMPT, userLanguage),
         messages: [{ role: 'user', content: prompt }],
       });
+          break;
+        } catch (_e) {
+          if (_att === 3) throw _e;
+          await new Promise(r => setTimeout(r, 1000 * _att));
+        }
+      }
 
       const raw = msg.content[0]?.text || '{}';
       return res.json({ message: JSON.parse(cleanJsonResponse(raw)) });
@@ -167,12 +194,21 @@ Return JSON: { "draft": "the adjusted message text" }${lang}
 
 Return ONLY valid JSON.`;
 
-      const msg = await anthropic.messages.create({
+      let msg;
+      for (let _att = 1; _att <= 3; _att++) {
+        try {
+          msg = await anthropic.messages.create({
         model: 'claude-sonnet-4-6',
         max_tokens: 1500,
-        system: withLanguage(SYSTEM_PROMPT, locale),
+        system: withLanguage(SYSTEM_PROMPT, userLanguage),
         messages: [{ role: 'user', content: prompt }],
       });
+          break;
+        } catch (_e) {
+          if (_att === 3) throw _e;
+          await new Promise(r => setTimeout(r, 1000 * _att));
+        }
+      }
 
       const raw = msg.content[0]?.text || '{}';
       return res.json({ message: JSON.parse(cleanJsonResponse(raw)) });
@@ -224,12 +260,21 @@ Return JSON: {
 
 Return ONLY valid JSON.`;
 
-      const msg = await anthropic.messages.create({
+      let msg;
+      for (let _att = 1; _att <= 3; _att++) {
+        try {
+          msg = await anthropic.messages.create({
         model: 'claude-sonnet-4-6',
         max_tokens: 500,
-        system: withLanguage(SYSTEM_PROMPT, locale),
+        system: withLanguage(SYSTEM_PROMPT, userLanguage),
         messages: [{ role: 'user', content: prompt }],
       });
+          break;
+        } catch (_e) {
+          if (_att === 3) throw _e;
+          await new Promise(r => setTimeout(r, 1000 * _att));
+        }
+      }
 
       const raw = msg.content[0]?.text || '{}';
       return res.json({ interview: JSON.parse(cleanJsonResponse(raw)) });
@@ -276,12 +321,21 @@ Return 3-8 gaps, prioritized by severity. Be specific to THEIR data, not generic
 
 Return ONLY valid JSON.`;
 
-      const msg = await anthropic.messages.create({
+      let msg;
+      for (let _att = 1; _att <= 3; _att++) {
+        try {
+          msg = await anthropic.messages.create({
         model: 'claude-sonnet-4-6',
         max_tokens: 1500,
-        system: withLanguage(SYSTEM_PROMPT, locale),
+        system: withLanguage(SYSTEM_PROMPT, userLanguage),
         messages: [{ role: 'user', content: prompt }],
       });
+          break;
+        } catch (_e) {
+          if (_att === 3) throw _e;
+          await new Promise(r => setTimeout(r, 1000 * _att));
+        }
+      }
 
       const raw = msg.content[0]?.text || '{}';
       return res.json({ analysis: JSON.parse(cleanJsonResponse(raw)) });
@@ -303,12 +357,21 @@ Return JSON: { "translatedDraft": "the translated message", "language": "${targe
 
 Return ONLY valid JSON.`;
 
-      const msg = await anthropic.messages.create({
+      let msg;
+      for (let _att = 1; _att <= 3; _att++) {
+        try {
+          msg = await anthropic.messages.create({
         model: 'claude-sonnet-4-6',
         max_tokens: 2000,
-        system: withLanguage(SYSTEM_PROMPT, locale),
+        system: withLanguage(SYSTEM_PROMPT, userLanguage),
         messages: [{ role: 'user', content: prompt }],
       });
+          break;
+        } catch (_e) {
+          if (_att === 3) throw _e;
+          await new Promise(r => setTimeout(r, 1000 * _att));
+        }
+      }
 
       const raw = msg.content[0]?.text || '{}';
       return res.json({ translation: JSON.parse(cleanJsonResponse(raw)) });

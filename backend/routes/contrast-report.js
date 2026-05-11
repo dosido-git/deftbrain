@@ -83,11 +83,14 @@ router.post('/contrast-report', rateLimit(DEFAULT_LIMITS), async (req, res) => {
       }
     );
 
+    if (!parsed.path_a || !parsed.path_b) {
+      return res.status(500).json({ error: 'Could not generate the contrast report. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('ContrastReport error:', error);
-    res.status(500).json({ error: error.message || 'Failed to generate contrast report' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

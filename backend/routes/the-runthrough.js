@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 const PERSONALITY = `You are a world-class presentation coach who has prepped TED speakers, startup founders, and executives. You're brutally honest about what works and what doesn't. You know that great presentations are about clarity, rhythm, and emotional impact — not just information. You respect the speaker's voice and content, but you're fearless about cutting, restructuring, and sharpening.
@@ -55,21 +55,20 @@ Return ONLY valid JSON:
   "pacing_notes": "2-3 specific notes on where to slow down, pause, or speed up for maximum impact"
 }`;
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 4000,
       system: withLanguage(PERSONALITY, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'the-runthrough' });
+    if (!parsed.original_word_count && !parsed.hooks) {
+      return res.status(500).json({ error: 'Could not analyze your presentation. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('TheRunthrough Cut error:', error);
-    res.status(500).json({ error: error.message || 'Cut failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -130,21 +129,20 @@ Return ONLY valid JSON:
 
 Generate 5-7 tough_questions, ordered from most to least likely.`;
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 3000,
       system: withLanguage(PERSONALITY, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'the-runthrough-2' });
+    if (!parsed.original_word_count && !parsed.hooks) {
+      return res.status(500).json({ error: 'Could not analyze your presentation. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('TheRunthrough Anticipate error:', error);
-    res.status(500).json({ error: error.message || 'Anticipation failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -208,21 +206,20 @@ Return ONLY valid JSON:
 
 Generate 2-4 transitions for the most important section breaks.`;
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 3000,
       system: withLanguage(PERSONALITY, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'the-runthrough-3' });
+    if (!parsed.original_word_count && !parsed.hooks) {
+      return res.status(500).json({ error: 'Could not analyze your presentation. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('TheRunthrough Hook error:', error);
-    res.status(500).json({ error: error.message || 'Hook rewrite failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

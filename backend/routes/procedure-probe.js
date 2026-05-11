@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
@@ -8,7 +8,7 @@ const { rateLimit } = require('../lib/rateLimiter');
 // ════════════════════════════════════════════════════════════
 router.post('/procedure-probe', rateLimit(), async (req, res) => {
   try {
-    const { procedure, quote, provider, insurance, concerns, urgency, userLanguage } = req.body;
+    const { procedure, quote, provider, insurance, concerns, urgency, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!procedure?.trim()) {
       return res.status(400).json({ error: 'Tell us what procedure or treatment was recommended.' });
@@ -87,17 +87,20 @@ Help me be an informed patient. Return ONLY valid JSON:
 
 Generate 6-8 questions to ask.`;
 
-    const parsed = await callClaudeWithRetry(userPrompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'procedure-probe',
       max_tokens: 2500,
-      system: withLanguage(systemPrompt, userLanguage),
-    });
+      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+      messages: [{ role: 'user', content: userPrompt }],
+    }, { label: 'procedure-probe' });
+    if (!parsed.plain_english) {
+      return res.status(500).json({ error: 'Could not analyze this procedure. Please try again.' });
+    }
     return res.json(parsed);
 
   } catch (error) {
     console.error('ProcedureProbe error:', error);
-    res.status(500).json({ error: error.message || 'Failed to generate procedure briefing' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

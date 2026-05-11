@@ -160,14 +160,22 @@ Return ONLY valid JSON.`;
       userLanguage
     );
 
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 2500,
-      system: systemPrompt,
-      messages: [{ role: 'user', content: prompt }]
-    });
-
-    const textContent = message.content.find(item => item.type === 'text')?.text || '';
+    let textContent = '';
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        const message = await anthropic.messages.create({
+          model: 'claude-sonnet-4-6',
+          max_tokens: 2500,
+          system: systemPrompt,
+          messages: [{ role: 'user', content: prompt }]
+        });
+        textContent = message.content.find(item => item.type === 'text')?.text || '';
+        break;
+      } catch (retryErr) {
+        if (attempt === 3) throw retryErr;
+        await new Promise(r => setTimeout(r, 1000 * attempt));
+      }
+    }
     const cleaned = cleanJsonResponse(textContent);
 
     let parsed;

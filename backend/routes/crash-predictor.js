@@ -306,7 +306,7 @@ Return ONLY the JSON object.`;
 
   } catch (error) {
     console.error('Crash predictor analyze error:', error);
-    res.status(500).json({ error: error.message || 'Failed to analyze crash patterns' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.'});
   }
 });
 
@@ -405,7 +405,7 @@ Be SPECIFIC with numbers and dates. Don't speculate — only report patterns sup
 
   } catch (error) {
     console.error('Crash predictor patterns error:', error);
-    res.status(500).json({ error: error.message || 'Failed to detect patterns' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.'});
   }
 });
 

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { cleanJsonResponse, withLanguage } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ── Main diagnosis / care / identify endpoint ──
@@ -201,11 +201,20 @@ Return ONLY the JSON.`, userLanguage);
 
     content.push({ type: 'text', text: prompt });
 
-    const message = await anthropic.messages.create({
+    let message;
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 4000,
       messages: [{ role: 'user', content }]
     });
+        break;
+      } catch (retryErr) {
+        if (attempt === 3) throw retryErr;
+        await new Promise(r => setTimeout(r, 1000 * attempt));
+      }
+    }
 
     const textContent = message.content.find(item => item.type === 'text')?.text || '';
     const cleaned = cleanJsonResponse(textContent);
@@ -227,7 +236,7 @@ Return ONLY the JSON.`, userLanguage);
 
   } catch (error) {
     console.error('❌ Plant Rescue V3 error:', error);
-    res.status(500).json({ error: error.message || 'Analysis failed.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -264,19 +273,28 @@ Be specific, practical, encouraging. 2-4 paragraphs.`,
       userLanguage
     );
 
-    const message = await anthropic.messages.create({
+    let message;
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 800,
       system: systemPrompt,
       messages: [{ role: 'user', content: question.trim() }]
     });
+        break;
+      } catch (retryErr) {
+        if (attempt === 3) throw retryErr;
+        await new Promise(r => setTimeout(r, 1000 * attempt));
+      }
+    }
 
     const answer = message.content.find(item => item.type === 'text')?.text || 'No answer.';
     res.json({ answer: answer.trim() });
 
   } catch (error) {
     console.error('❌ Follow-up error:', error);
-    res.status(500).json({ error: error.message || 'Follow-up failed.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -343,7 +361,7 @@ RULES:
 
   } catch (error) {
     console.error('❌ Companion error:', error);
-    res.status(500).json({ error: error.message || 'Companion analysis failed.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

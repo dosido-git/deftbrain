@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 const PERSONALITY = `You are a professional comedy roast writer — sharp, observant, and genuinely funny. You find the SPECIFIC funny thing about someone's content, not generic insults. Your roasts land because they're true, not because they're mean. Think Comedy Central Roast meets a friend who knows you too well.
@@ -68,21 +68,20 @@ Return ONLY valid JSON:
 
 Generate 5-8 roast lines (gentle=5, medium=6, scorched=8). Every line must reference SPECIFIC content — zero generic insults.`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-haiku-4-5-20251001',
+    const parsed = await callClaudeWithRetry({
+model: 'claude-haiku-4-5-20251001',
       max_tokens: 2000,
       system: withLanguage(PERSONALITY, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'roast-me' });
+    if (!Array.isArray(parsed.roasts) || !parsed.roasts.length) {
+      return res.status(500).json({ error: 'Could not generate the roast. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('RoastMe error:', error);
-    res.status(500).json({ error: error.message || 'Roast failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.'});
   }
 });
 

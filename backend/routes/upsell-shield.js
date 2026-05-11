@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { cleanJsonResponse, withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
@@ -8,7 +8,7 @@ const { rateLimit } = require('../lib/rateLimiter');
 // ════════════════════════════════════════════════════════════
 router.post('/upsell-shield', rateLimit(), async (req, res) => {
   try {
-    const { situation, whatYouWant, budget, concerns, userLanguage } = req.body;
+    const { situation, whatYouWant, budget, concerns, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!situation?.trim()) {
       return res.status(400).json({ error: 'Tell us the sales situation you\'re walking into.' });
@@ -74,21 +74,20 @@ Prepare me. Return ONLY valid JSON:
 
 Generate 5-7 tactics in their playbook and 4-5 power questions.`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+    const parsed = await callClaudeWithRetry({
+model: 'claude-sonnet-4-6',
       max_tokens: 2500,
-      system: withLanguage(systemPrompt, userLanguage),
+      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'upsell-shield' });
+    if (!parsed.situation_read || !Array.isArray(parsed.their_playbook)) {
+      return res.status(500).json({ error: 'Could not build your shield. Please try again.' });
+    }
     return res.json(parsed);
 
   } catch (error) {
     console.error('UpsellShield error:', error);
-    res.status(500).json({ error: error.message || 'Failed to generate defense plan' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.'});
   }
 });
 

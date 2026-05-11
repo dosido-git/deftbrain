@@ -88,11 +88,14 @@ Return ONLY valid JSON:
       max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage),
     });
+    if (parsed.appropriate_apology_level === undefined) {
+      return res.status(500).json({ error: 'Could not calibrate the apology. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('ApologyCalibrator error:', error);
-    res.status(500).json({ error: error.message || 'Calibration failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -147,11 +150,14 @@ Return ONLY valid JSON:
       max_tokens: 2000,
       system: withLanguage(systemPrompt, userLanguage),
     });
+    if (parsed.appropriate_apology_level === undefined) {
+      return res.status(500).json({ error: 'Could not calibrate the apology. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('ApologyCalibrator detect error:', error);
-    res.status(500).json({ error: error.message || 'Detection failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -213,11 +219,14 @@ Return ONLY valid JSON:
       max_tokens: 2000,
       system: withLanguage(systemPrompt, userLanguage),
     });
+    if (parsed.appropriate_apology_level === undefined) {
+      return res.status(500).json({ error: 'Could not calibrate the apology. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('ApologyCalibrator delivery error:', error);
-    res.status(500).json({ error: error.message || 'Delivery plan failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -279,11 +288,14 @@ Return ONLY valid JSON:
       max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage),
     });
+    if (parsed.appropriate_apology_level === undefined) {
+      return res.status(500).json({ error: 'Could not calibrate the apology. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('ApologyCalibrator audit error:', error);
-    res.status(500).json({ error: error.message || 'Audit failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -342,11 +354,14 @@ Return ONLY valid JSON:
       max_tokens: 2000,
       system: withLanguage(systemPrompt, userLanguage),
     });
+    if (parsed.appropriate_apology_level === undefined) {
+      return res.status(500).json({ error: 'Could not calibrate the apology. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('ApologyCalibrator cultural error:', error);
-    res.status(500).json({ error: error.message || 'Cultural calibration failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -407,11 +422,14 @@ Return ONLY valid JSON:
       max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage),
     });
+    if (parsed.appropriate_apology_level === undefined) {
+      return res.status(500).json({ error: 'Could not calibrate the apology. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('ApologyCalibrator decode error:', error);
-    res.status(500).json({ error: error.message || 'Decode failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -493,11 +511,14 @@ Return ONLY valid JSON:
       max_tokens: 1500,
       system: withLanguage(systemPrompt, userLanguage),
     });
+    if (parsed.appropriate_apology_level === undefined) {
+      return res.status(500).json({ error: 'Could not calibrate the apology. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('ApologyCalibrator practice error:', error);
-    res.status(500).json({ error: error.message || 'Practice session failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -572,11 +593,14 @@ Return ONLY valid JSON:
       max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage),
     });
+    if (parsed.appropriate_apology_level === undefined) {
+      return res.status(500).json({ error: 'Could not calibrate the apology. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('ApologyCalibrator forgive error:', error);
-    res.status(500).json({ error: error.message || 'Forgiveness navigation failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -649,11 +673,14 @@ Return ONLY valid JSON:
       max_tokens: 3000,
       system: withLanguage(systemPrompt, userLanguage),
     });
+    if (parsed.appropriate_apology_level === undefined) {
+      return res.status(500).json({ error: 'Could not calibrate the apology. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('ApologyCalibrator roadmap error:', error);
-    res.status(500).json({ error: error.message || 'Roadmap generation failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -722,11 +749,14 @@ Return ONLY valid JSON:
       max_tokens: 3000,
       system: withLanguage(systemPrompt, userLanguage),
     });
+    if (parsed.appropriate_apology_level === undefined) {
+      return res.status(500).json({ error: 'Could not calibrate the apology. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('ApologyCalibrator letter error:', error);
-    res.status(500).json({ error: error.message || 'Letter generation failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -802,11 +832,14 @@ Return ONLY valid JSON:
       max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage),
     });
+    if (parsed.appropriate_apology_level === undefined) {
+      return res.status(500).json({ error: 'Could not calibrate the apology. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('ApologyCalibrator fix error:', error);
-    res.status(500).json({ error: error.message || 'Fix generation failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

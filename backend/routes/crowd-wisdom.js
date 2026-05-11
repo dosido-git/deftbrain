@@ -86,11 +86,14 @@ Return ONLY valid JSON:
     const prompt = withLanguage(`${PERSONALITY}\n\n---\n\n${userPrompt}`, userLanguage);
     const parsed = await callClaudeWithRetry(prompt, {
       model: 'claude-sonnet-4-6', label: 'CrowdWisdom', max_tokens: 2500 });
+    if (!parsed.voices && !parsed.perspectives) {
+      return res.status(500).json({ error: 'Could not gather perspectives. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('CrowdWisdom error:', error);
-    res.status(500).json({ error: error.message || 'Failed to gather perspectives' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

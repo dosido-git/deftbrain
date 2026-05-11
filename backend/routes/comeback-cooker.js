@@ -90,11 +90,14 @@ Return ONLY valid JSON:
     }));
     const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
 
+    if (!Array.isArray(parsed.comebacks) || !parsed.comebacks.length) {
+      return res.status(500).json({ error: 'Could not cook up comebacks. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('ComebackCooker error:', error);
-    res.status(500).json({ error: error.message || 'Comeback generation failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.'});
   }
 });
 

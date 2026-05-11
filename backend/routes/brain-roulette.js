@@ -24,7 +24,7 @@ async function withRetry(fn, { retries = 3, baseDelayMs = 1500 } = {}) {
 
 // ── Main spin ──
 router.post('/brain-roulette', rateLimit(), async (req, res) => {
-  const { interests, depth, seenTopics, isSurprise, customTopic, audienceLevel, locale } = req.body;
+  const { interests, depth, seenTopics, isSurprise, customTopic, audienceLevel, userLanguage } = req.body;
 
   if (!depth) {
     return res.status(400).json({ error: 'depth is required' });
@@ -78,7 +78,7 @@ Respond ONLY with valid JSON in this exact format:
   "share_snippet": "A single punchy sentence version perfect for texting a friend"
 }
 
-Return ONLY valid JSON.`, locale);
+Return ONLY valid JSON.`, userLanguage);
 
   try {
     const msg = await withRetry(() => anthropic.messages.create({
@@ -87,16 +87,19 @@ Return ONLY valid JSON.`, locale);
       messages: [{ role: 'user', content: prompt }],
     }));
     const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
+    if (!parsed.title || !parsed.hook) {
+      return res.status(500).json({ error: 'Could not generate a topic. Please try again.' });
+    }
     res.json(parsed);
   } catch (error) {
     console.error('Brain Roulette spin error:', error);
-    res.status(500).json({ error: error.message || 'The roulette wheel got stuck. Give it another spin!' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.'});
   }
 });
 
 // ── Go Deeper ──
 router.post('/brain-roulette/deeper', rateLimit(), async (req, res) => {
-  const { originalTitle, originalHook, threadLabel, promptHint, audienceLevel, locale } = req.body;
+  const { originalTitle, originalHook, threadLabel, promptHint, audienceLevel, userLanguage } = req.body;
 
   if (!originalTitle || !threadLabel) {
     return res.status(400).json({ error: 'originalTitle and threadLabel are required' });
@@ -123,7 +126,7 @@ Respond ONLY with valid JSON:
   ]
 }
 
-Return ONLY valid JSON.`, locale);
+Return ONLY valid JSON.`, userLanguage);
 
   try {
     const msg = await withRetry(() => anthropic.messages.create({
@@ -132,16 +135,19 @@ Return ONLY valid JSON.`, locale);
       messages: [{ role: 'user', content: prompt }],
     }));
     const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
+    if (!parsed.title || !parsed.content) {
+      return res.status(500).json({ error: 'Could not go deeper. Please try again.' });
+    }
     res.json(parsed);
   } catch (error) {
     console.error('Brain Roulette deeper error:', error);
-    res.status(500).json({ error: error.message || "Couldn't dig deeper. Try again!" });
+    res.status(500).json({ error: "Can't dig deeper. Try again!" });
   }
 });
 
 // ── Extract Concepts (Spin From This) ──
 router.post('/brain-roulette/extract-concepts', rateLimit(), async (req, res) => {
-  const { title, content, locale } = req.body;
+  const { title, content, userLanguage } = req.body;
 
   if (!title || !content) {
     return res.status(400).json({ error: 'title and content are required' });
@@ -168,7 +174,7 @@ Respond ONLY with valid JSON:
   ]
 }
 
-Return ONLY valid JSON.`, locale);
+Return ONLY valid JSON.`, userLanguage);
 
   try {
     const msg = await withRetry(() => anthropic.messages.create({
@@ -177,16 +183,19 @@ Return ONLY valid JSON.`, locale);
       messages: [{ role: 'user', content: prompt }],
     }));
     const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
+    if (!Array.isArray(parsed.topics)) {
+      return res.status(500).json({ error: 'Could not extract concepts. Please try again.' });
+    }
     res.json(parsed);
   } catch (error) {
     console.error('Brain Roulette extract-concepts error:', error);
-    res.status(500).json({ error: error.message || "Couldn't extract concepts. Try again!" });
+    res.status(500).json({ error: "Can't extract concepts. Try again!" });
   }
 });
 
 // ── Chain Deeper ──
 router.post('/brain-roulette/chain-deeper', rateLimit(), async (req, res) => {
-  const { originalTitle, chainHistory, threadLabel, promptHint, audienceLevel, locale } = req.body;
+  const { originalTitle, chainHistory, threadLabel, promptHint, audienceLevel, userLanguage } = req.body;
 
   if (!originalTitle || !threadLabel) {
     return res.status(400).json({ error: 'originalTitle and threadLabel are required' });
@@ -220,7 +229,7 @@ Respond ONLY with valid JSON:
   ]
 }
 
-Return ONLY valid JSON.`, locale);
+Return ONLY valid JSON.`, userLanguage);
 
   try {
     const msg = await withRetry(() => anthropic.messages.create({
@@ -229,16 +238,19 @@ Return ONLY valid JSON.`, locale);
       messages: [{ role: 'user', content: prompt }],
     }));
     const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
+    if (!parsed.title || !parsed.content) {
+      return res.status(500).json({ error: 'Could not chain deeper. Please try again.' });
+    }
     res.json(parsed);
   } catch (error) {
     console.error('Brain Roulette chain-deeper error:', error);
-    res.status(500).json({ error: error.message || "Couldn't continue chain. Try again!" });
+    res.status(500).json({ error: "Can't continue chain. Try again!" });
   }
 });
 
 // ── Debate Mode ("Actually…") ──
 router.post('/brain-roulette/debate', rateLimit(), async (req, res) => {
-  const { interests, seenTopics, audienceLevel, locale } = req.body;
+  const { interests, seenTopics, audienceLevel, userLanguage } = req.body;
 
   const today = new Date();
   const dateStr = today.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
@@ -271,7 +283,7 @@ Respond ONLY with valid JSON:
   "topic_tag": "2-3 word tag for deduplication (e.g. 'gladiator vegetarian diet')"
 }
 
-Return ONLY valid JSON.`, locale);
+Return ONLY valid JSON.`, userLanguage);
 
   try {
     const msg = await withRetry(() => anthropic.messages.create({
@@ -280,16 +292,19 @@ Return ONLY valid JSON.`, locale);
       messages: [{ role: 'user', content: prompt }],
     }));
     const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
+    if (!parsed.position_a || !parsed.position_b) {
+      return res.status(500).json({ error: 'Could not generate debate. Please try again.' });
+    }
     res.json(parsed);
   } catch (error) {
     console.error('Brain Roulette debate error:', error);
-    res.status(500).json({ error: error.message || 'Debate mode stumbled. Try again!' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.'});
   }
 });
 
 // ── Guided Journey (create 6-step plan) ──
 router.post('/brain-roulette/journey', rateLimit(), async (req, res) => {
-  const { interests, customTheme, audienceLevel, locale } = req.body;
+  const { interests, customTheme, audienceLevel, userLanguage } = req.body;
 
   const prompt = withLanguage(`You are Brain Roulette's Guided Journey creator. Your job is to design a 6-step curated path where each discovery builds meaningfully on the last.
 
@@ -318,7 +333,7 @@ Respond ONLY with valid JSON:
   ]
 }
 
-Return ONLY valid JSON.`, locale);
+Return ONLY valid JSON.`, userLanguage);
 
   try {
     const msg = await withRetry(() => anthropic.messages.create({
@@ -327,16 +342,19 @@ Return ONLY valid JSON.`, locale);
       messages: [{ role: 'user', content: prompt }],
     }));
     const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
+    if (!parsed.title || !Array.isArray(parsed.steps)) {
+      return res.status(500).json({ error: 'Could not generate journey. Please try again.' });
+    }
     res.json(parsed);
   } catch (error) {
     console.error('Brain Roulette journey error:', error);
-    res.status(500).json({ error: error.message || "Couldn't create journey. Try again!" });
+    res.status(500).json({ error: "Can't create journey. Try again!" });
   }
 });
 
 // ── Journey Step (generate content for one step) ──
 router.post('/brain-roulette/journey-step', rateLimit(), async (req, res) => {
-  const { journeyTitle, stepNumber, stepTitle, promptHint, previousSteps, audienceLevel, locale } = req.body;
+  const { journeyTitle, stepNumber, stepTitle, promptHint, previousSteps, audienceLevel, userLanguage } = req.body;
 
   if (!journeyTitle || !stepTitle) {
     return res.status(400).json({ error: 'journeyTitle and stepTitle are required' });
@@ -373,7 +391,7 @@ Respond ONLY with valid JSON:
   "next_hook": "One teaser sentence hinting at what's coming in the next step (omit on final step)"
 }
 
-Return ONLY valid JSON.`, locale);
+Return ONLY valid JSON.`, userLanguage);
 
   try {
     const msg = await withRetry(() => anthropic.messages.create({
@@ -382,16 +400,19 @@ Return ONLY valid JSON.`, locale);
       messages: [{ role: 'user', content: prompt }],
     }));
     const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
+    if (!parsed.title || !parsed.content) {
+      return res.status(500).json({ error: 'Could not generate step. Please try again.' });
+    }
     res.json(parsed);
   } catch (error) {
     console.error('Brain Roulette journey-step error:', error);
-    res.status(500).json({ error: error.message || "Couldn't load step. Try again!" });
+    res.status(500).json({ error: "Can't load step. Try again!" });
   }
 });
 
 // ── Daily Digest ──
 router.post('/brain-roulette/digest', rateLimit(), async (req, res) => {
-  const { interests, seenTopics, audienceLevel, locale } = req.body;
+  const { interests, seenTopics, audienceLevel, userLanguage } = req.body;
 
   const today = new Date();
   const dateStr = today.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
@@ -447,7 +468,7 @@ Respond ONLY with valid JSON:
   "signoff": "A short, warm closing line (vary daily)"
 }
 
-Return ONLY valid JSON.`, locale);
+Return ONLY valid JSON.`, userLanguage);
 
   try {
     const msg = await withRetry(() => anthropic.messages.create({
@@ -456,10 +477,13 @@ Return ONLY valid JSON.`, locale);
       messages: [{ role: 'user', content: prompt }],
     }));
     const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
+    if (!Array.isArray(parsed.topics)) {
+      return res.status(500).json({ error: 'Could not generate digest. Please try again.' });
+    }
     res.json(parsed);
   } catch (error) {
     console.error('Brain Roulette digest error:', error);
-    res.status(500).json({ error: error.message || "Couldn't generate digest. Try again!" });
+    res.status(500).json({ error: "Can't generate digest. Try again!" });
   }
 });
 

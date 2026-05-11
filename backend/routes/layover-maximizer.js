@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, cleanJsonResponse, withLanguage } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 const PERSONALITY = `You are an expert travel advisor who specializes in airport layovers and transit logistics. You have deep knowledge of:
@@ -137,21 +137,20 @@ Return ONLY valid JSON:
   "pro_tips": ["3-5 airport-specific pro tips that frequent travelers would know"]
 }`;
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 4000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'layover-maximizer' });
+    if (!parsed.plan && !parsed.itinerary && !parsed.options) {
+      return res.status(500).json({ error: 'Could not plan your layover. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('LayoverMaximizer error:', error);
-    res.status(500).json({ error: error.message || 'Analysis failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -210,21 +209,20 @@ Return ONLY valid JSON:
   "no_lounge_alternative": "If no lounges are accessible, what's the next best option (quiet gate area, restaurant with outlets, etc.)"
 }`;
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 3000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'layover-maximizer-2' });
+    if (!parsed.plan && !parsed.itinerary && !parsed.options) {
+      return res.status(500).json({ error: 'Could not plan your layover. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('LayoverMaximizer lounge error:', error);
-    res.status(500).json({ error: error.message || 'Lounge search failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -288,21 +286,20 @@ Return ONLY valid JSON:
   "gamble_verdict": "Should they push it? Honest assessment with the risk/reward tradeoff clearly stated."
 }`;
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'layover-maximizer-3' });
+    if (!parsed.plan && !parsed.itinerary && !parsed.options) {
+      return res.status(500).json({ error: 'Could not plan your layover. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('LayoverMaximizer risk error:', error);
-    res.status(500).json({ error: error.message || 'Risk analysis failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -357,21 +354,20 @@ Return ONLY valid JSON:
   "feasibility": "Given available time, is this doable? What's the verdict?"
 }`;
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'layover-maximizer-4' });
+    if (!parsed.plan && !parsed.itinerary && !parsed.options) {
+      return res.status(500).json({ error: 'Could not plan your layover. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('LayoverMaximizer gate-to-gate error:', error);
-    res.status(500).json({ error: error.message || 'Gate transfer failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -425,21 +421,20 @@ Return ONLY valid JSON:
   "travel_hack": "Any booking tip — e.g., 'The 6h layover at IST is actually better than the 4h at FRA because you can visit the city visa-free'"
 }`;
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'layover-maximizer-5' });
+    if (!parsed.plan && !parsed.itinerary && !parsed.options) {
+      return res.status(500).json({ error: 'Could not plan your layover. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('LayoverMaximizer compare error:', error);
-    res.status(500).json({ error: error.message || 'Comparison failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -480,21 +475,20 @@ Return ONLY valid JSON:
   "pro_tip": "One specific packing tip for this layover"
 }`;
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 1500,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'layover-maximizer-6' });
+    if (!parsed.plan && !parsed.itinerary && !parsed.options) {
+      return res.status(500).json({ error: 'Could not plan your layover. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('LayoverMaximizer packing error:', error);
-    res.status(500).json({ error: error.message || 'Packing list failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -535,21 +529,20 @@ Return ONLY valid JSON:
   "one_thing_to_know": "The single most important thing about this airport that every traveler should know"
 }`;
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'layover-maximizer-7' });
+    if (!parsed.plan && !parsed.itinerary && !parsed.options) {
+      return res.status(500).json({ error: 'Could not plan your layover. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('LayoverMaximizer survival-kit error:', error);
-    res.status(500).json({ error: error.message || 'Survival kit failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

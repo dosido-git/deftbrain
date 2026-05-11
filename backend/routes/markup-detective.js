@@ -3,7 +3,7 @@
 const express = require('express');
 const router = express.Router();
 // Server-side only — not bundled by webpack
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { cleanJsonResponse, withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
@@ -11,7 +11,7 @@ const { rateLimit } = require('../lib/rateLimiter');
 // ════════════════════════════════════════════════════════════
 router.post('/markup-detective', rateLimit(), async (req, res) => {
   try {
-    const { product } = req.body;
+    const { product, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!product?.trim()) {
       return res.status(400).json({ error: 'Describe a product or service to investigate' });
@@ -81,15 +81,12 @@ Rules:
 - Be specific with dollar amounts, not ranges
 - how_to_pay_less must be actionable for this specific item, not generic advice`;
 
-    const response = await anthropic.messages.create({
+    const data = await callClaudeWithRetry({
       model: 'claude-opus-4-7',
-      max_tokens: 1200,
+      max_tokens: 2500,
+      system: systemPrompt + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: withLanguage(userPrompt, userLanguage) }],
-      system: systemPrompt,
-    });
-
-    const raw = response.content[0]?.text || '';
-    const data = JSON.parse(cleanJsonResponse(raw));
+    }, { label: 'markup-detective' });
 
     // Validate required fields
     if (!data.cost_breakdown?.length || !data.markup_multiplier) {
@@ -103,7 +100,7 @@ Rules:
     if (err instanceof SyntaxError) {
       return res.status(500).json({ error: 'Failed to parse pricing analysis. Please try again.' });
     }
-    return res.status(500).json({ error: err.message || 'Something went wrong. Please try again.' });
+    return res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

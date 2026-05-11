@@ -29,7 +29,7 @@ router.post('/gentle-push-generator', rateLimit(), async (req, res) => {
     }
   } catch (error) {
     console.error('GentlePushGenerator error:', error);
-    res.status(500).json({ error: error.message || 'Something went wrong.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.'});
   }
 });
 

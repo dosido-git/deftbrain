@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 const PERSONALITY = `You are a conspiracy theorist for fiction — brilliant, obsessive, and endlessly creative. You find connections in stories that the creators probably didn't intend but are too compelling to ignore. You build theories the way a detective builds a case: evidence first, then the wild conclusion. The theory should be WRONG but DEFENSIBLE — that's the sweet spot.
@@ -64,21 +64,21 @@ Return ONLY valid JSON:
 
 Generate 4-6 evidence items. At least one should be genuinely clever, at least one should be a hilarious stretch.`;
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 2500,
       system: withLanguage(PERSONALITY, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
+    }, { label: 'fan-theory' });
 
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    if (!parsed.theory_name || !Array.isArray(parsed.evidence)) {
+      return res.status(500).json({ error: 'Could not generate a fan theory. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('FanTheory error:', error);
-    res.status(500).json({ error: error.message || 'Theory generation failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -120,21 +120,21 @@ Return ONLY valid JSON:
   "would_reddit_upvote": "How would this perform on Reddit? One sentence prediction."
 }`;
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 2000,
       system: withLanguage(PERSONALITY, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
+    }, { label: 'fan-theory-grade' });
 
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    if (!parsed.grade || !parsed.professor_notes) {
+      return res.status(500).json({ error: 'Could not grade your theory. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('FanTheory grade error:', error);
-    res.status(500).json({ error: error.message || 'Grading failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

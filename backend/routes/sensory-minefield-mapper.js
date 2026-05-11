@@ -21,7 +21,7 @@ function safeParseJSON(text) {
 
 router.post('/sensory-minefield-mapper', rateLimit(), async (req, res) => {
   try {
-    const { location, visitDateTime, placeType, concerns, specificNotes, pastVisits } = req.body;
+    const { location, visitDateTime, placeType, concerns, specificNotes, pastVisits, userLanguage } = req.body;
 
     if (!location?.trim()) return res.status(400).json({ error: 'Location is required' });
     if (!visitDateTime) return res.status(400).json({ error: 'Visit date and time are required' });
@@ -105,19 +105,31 @@ Return ONLY valid JSON:
 
 Return ONLY valid JSON.`;
 
-    const message = await anthropic.messages.create({
+    let message;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 2000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
     });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
+    if (!parsed.location_summary && !parsed.risks) {
+      return res.status(500).json({ error: 'Could not map sensory risks. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[SceneScout] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to analyze location' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -127,7 +139,7 @@ Return ONLY valid JSON.`;
 
 router.post('/sensory-minefield-mapper/alternatives', rateLimit(), async (req, res) => {
   try {
-    const { location, placeType, visitDateTime, concerns, analysisContext } = req.body;
+    const { location, placeType, visitDateTime, concerns, analysisContext, userLanguage } = req.body;
 
     if (!location?.trim()) return res.status(400).json({ error: 'Location is required' });
 
@@ -166,19 +178,31 @@ Return ONLY valid JSON:
 
 Return ONLY valid JSON.`;
 
-    const message = await anthropic.messages.create({
+    let message;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 1000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
     });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
+    if (!parsed.location_summary && !parsed.risks) {
+      return res.status(500).json({ error: 'Could not map sensory risks. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[SceneScout/alternatives] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to generate alternatives' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -188,7 +212,7 @@ Return ONLY valid JSON.`;
 
 router.post('/sensory-minefield-mapper/companion-summary', rateLimit(), async (req, res) => {
   try {
-    const { name, location, concerns, gamePlan, companionName } = req.body;
+    const { name, location, concerns, gamePlan, companionName, userLanguage } = req.body;
 
     if (!location?.trim()) return res.status(400).json({ error: 'Location is required' });
 
@@ -215,19 +239,31 @@ Return ONLY valid JSON:
 
 Return ONLY valid JSON.`;
 
-    const message = await anthropic.messages.create({
+    let message;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 800,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
     });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
+    if (!parsed.location_summary && !parsed.risks) {
+      return res.status(500).json({ error: 'Could not map sensory risks. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[SceneScout/companion] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to generate summary' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -237,7 +273,7 @@ Return ONLY valid JSON.`;
 
 router.post('/sensory-minefield-mapper/rescan', rateLimit(), async (req, res) => {
   try {
-    const { location, placeType, originalPrediction, currentConditions, concerns } = req.body;
+    const { location, placeType, originalPrediction, currentConditions, concerns, userLanguage } = req.body;
 
     if (!location?.trim()) return res.status(400).json({ error: 'Location is required' });
     if (!currentConditions?.trim()) return res.status(400).json({ error: 'Describe current conditions' });
@@ -262,19 +298,31 @@ Return ONLY valid JSON:
 
 Return ONLY valid JSON.`;
 
-    const message = await anthropic.messages.create({
+    let message;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 600,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
     });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
+    if (!parsed.location_summary && !parsed.risks) {
+      return res.status(500).json({ error: 'Could not map sensory risks. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[SceneScout/rescan] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to rescan' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -284,7 +332,7 @@ Return ONLY valid JSON.`;
 
 router.post('/sensory-minefield-mapper/route', rateLimit(), async (req, res) => {
   try {
-    const { stops, concerns, specificNotes } = req.body;
+    const { stops, concerns, specificNotes, userLanguage } = req.body;
 
     if (!stops?.length || stops.length < 2) return res.status(400).json({ error: 'Need at least 2 stops' });
     if (stops.length > 5) return res.status(400).json({ error: 'Max 5 stops per route' });
@@ -341,19 +389,31 @@ Return ONLY valid JSON:
 
 Return ONLY valid JSON.`;
 
-    const message = await anthropic.messages.create({
+    let message;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 1500,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
     });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
+    if (!parsed.location_summary && !parsed.risks) {
+      return res.status(500).json({ error: 'Could not map sensory risks. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[SceneScout/route] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to plan route' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -363,7 +423,7 @@ Return ONLY valid JSON.`;
 
 router.post('/sensory-minefield-mapper/comfort-kit', rateLimit(), async (req, res) => {
   try {
-    const { concerns, placeType, visitTime, specificNotes, duration } = req.body;
+    const { concerns, placeType, visitTime, specificNotes, duration, userLanguage } = req.body;
 
     if (!concerns?.length) return res.status(400).json({ error: 'Concerns are required' });
 
@@ -394,19 +454,31 @@ Return ONLY valid JSON:
 
 Return ONLY valid JSON.`;
 
-    const message = await anthropic.messages.create({
+    let message;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 800,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
     });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
+    if (!parsed.location_summary && !parsed.risks) {
+      return res.status(500).json({ error: 'Could not map sensory risks. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[SceneScout/comfort-kit] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to generate kit' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

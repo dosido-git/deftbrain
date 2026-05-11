@@ -15,10 +15,10 @@ const SYSTEM_EXAMPLES = [
 ];
 
 const WIN_LIKELIHOOD_CONFIG = {
-  high:      { label: 'HIGH',      icon: '🟢', color: (d) => d ? 'text-emerald-400' : 'text-emerald-700' },
-  medium:    { label: 'MEDIUM',    icon: '🟡', color: (d) => d ? 'text-amber-400' : 'text-amber-600' },
-  low:       { label: 'LOW',       icon: '🟠', color: (d) => d ? 'text-orange-400' : 'text-orange-600' },
-  very_low:  { label: 'VERY LOW', icon: '🔴', color: (d) => d ? 'text-red-400' : 'text-red-600' },
+  high:      { label: 'HIGH',     icon: '🟢' },
+  medium:    { label: 'MEDIUM',   icon: '🟡' },
+  low:       { label: 'LOW',      icon: '🟠' },
+  very_low:  { label: 'VERY LOW', icon: '🔴' },
 };
 
 const RulebookBreaker = ({ tool }) => {
@@ -50,6 +50,14 @@ const RulebookBreaker = ({ tool }) => {
                           : 'bg-red-50 border-red-200 text-red-800',
   };
   c.textMuteded = c.textMuted;
+
+  // Win-likelihood text colors — resolved here (inside component) so isDark is in scope
+  const wlColors = {
+    high:     isDark ? 'text-emerald-400' : 'text-emerald-700',
+    medium:   isDark ? 'text-amber-400'   : 'text-amber-600',
+    low:      isDark ? 'text-orange-400'  : 'text-orange-600',
+    very_low: isDark ? 'text-red-400'     : 'text-red-600',
+  };
   c.label = c.labelText;
 
   const linkStyle = isDark
@@ -297,7 +305,7 @@ const RulebookBreaker = ({ tool }) => {
             <div className={`rounded-2xl border p-4 flex items-center gap-4 ${c.card} ${c.border}`}>
               <div className="text-center flex-shrink-0">
                 <p className="text-2xl">{wlcfg?.icon}</p>
-                <p className={`text-xs font-black mt-1 ${wlcfg?.color(isDark)}`}>{wlcfg?.label}</p>
+                <p className={`text-xs font-black mt-1 ${wlColors[results.honest_assessment?.win_likelihood] || wlColors.medium}`}>{wlcfg?.label}</p>
                 <p className={`text-xs ${c.textMuted}`}>win odds</p>
               </div>
               <div>

@@ -155,7 +155,7 @@ const PartyArchitect = ({ tool }) => {
     return text + BRAND;
   }, [results, occasion]);
 
-  useRegisterActions(buildFullText(), tool?.title || 'Party Architect');
+  useRegisterActions(buildFullText(), tool?.title || 'PartyArchitect');
 
   useEffect(() => {
     if (!results) return;
@@ -180,7 +180,7 @@ const PartyArchitect = ({ tool }) => {
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
         <div className="pb-3 border-b border-zinc-500">
           <h2 className={`text-xl font-bold ${c.text}`}>
-            <span className="mr-2">{tool?.icon ?? '🎪'}</span>{tool?.title ?? 'Party Architect'}
+            <span className="mr-2">{tool?.icon ?? '🎪'}</span>{tool?.title ?? 'PartyArchitect'}
           </h2>
           <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Host events people actually remember'}</p>
         </div>

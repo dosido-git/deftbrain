@@ -1,12 +1,49 @@
 import { useState, useMemo } from 'react';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || '';// Detect user's preferred language from browser
-function detectLanguage() {
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || '';
+
+// region (ISO 3166-1 alpha-2) → currency (ISO 4217)
+const REGION_CURRENCY = {
+  US: 'USD', CA: 'CAD', AU: 'AUD', NZ: 'NZD', GB: 'GBP',
+  DE: 'EUR', FR: 'EUR', IT: 'EUR', ES: 'EUR', NL: 'EUR', PT: 'EUR',
+  BE: 'EUR', AT: 'EUR', FI: 'EUR', IE: 'EUR', GR: 'EUR', LU: 'EUR',
+  CH: 'CHF', SE: 'SEK', NO: 'NOK', DK: 'DKK', PL: 'PLN',
+  CZ: 'CZK', HU: 'HUF', RO: 'RON', BG: 'BGN', HR: 'EUR',
+  JP: 'JPY', KR: 'KRW', CN: 'CNY', TW: 'TWD', HK: 'HKD',
+  SG: 'SGD', MY: 'MYR', ID: 'IDR', TH: 'THB', VN: 'VND',
+  PH: 'PHP', IN: 'INR', PK: 'PKR', BD: 'BDT', LK: 'LKR',
+  BR: 'BRL', MX: 'MXN', AR: 'ARS', CL: 'CLP', CO: 'COP', PE: 'PEN',
+  ZA: 'ZAR', NG: 'NGN', KE: 'KES', GH: 'GHS', EG: 'EGP',
+  RU: 'RUB', UA: 'UAH', TR: 'TRY', IL: 'ILS',
+  SA: 'SAR', AE: 'AED', QA: 'QAR', KW: 'KWD',
+};
+
+// language-only code → most likely region (fallback when navigator.language has no region tag)
+const LANGUAGE_REGION_FALLBACK = {
+  ja: 'JP', ko: 'KR', zh: 'CN', ar: 'SA', hi: 'IN', id: 'ID',
+  ms: 'MY', th: 'TH', vi: 'VN', tl: 'PH', fil: 'PH',
+  tr: 'TR', pl: 'PL', ru: 'RU', uk: 'UA', he: 'IL',
+  sv: 'SE', no: 'NO', da: 'DK', fi: 'FI', el: 'GR',
+};
+
+// Detect user's locale, region, and currency from browser
+function detectLocaleContext() {
   try {
-    const lang = navigator.language || navigator.userLanguage || 'en-US';
-    return lang; // e.g., 'ja-JP', 'pt-BR', 'fr-FR', 'en-US'
+    const locale = navigator.language || navigator.userLanguage || 'en-US';
+    const parts = locale.split('-');
+    const langCode = parts[0].toLowerCase();
+    const rawRegion = parts[1] ? parts[1].toUpperCase()
+                                : (LANGUAGE_REGION_FALLBACK[langCode] || 'US');
+    const userRegion   = rawRegion;
+    const userCurrency = REGION_CURRENCY[userRegion] || 'USD';
+    return {
+      userLanguage: locale,   // full locale string — backward-compat with withLanguage on all 122 routes
+      userLocale:   locale,   // same value; used by Intl.NumberFormat / Intl.DateTimeFormat
+      userRegion,             // ISO 3166-1 alpha-2
+      userCurrency,           // ISO 4217
+    };
   } catch {
-    return 'en-US';
+    return { userLanguage: 'en-US', userLocale: 'en-US', userRegion: 'US', userCurrency: 'USD' };
   }
 }
 
@@ -14,8 +51,8 @@ export const useClaudeAPI = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Detect once per mount
-  const userLanguage = useMemo(() => detectLanguage(), []);
+  // Detect once per mount — all four localization fields
+  const { userLanguage, userLocale, userRegion, userCurrency } = useMemo(() => detectLocaleContext(), []);
 
   // Generic Claude call
   const callClaude = async (prompt, options = {}) => {
@@ -34,6 +71,9 @@ export const useClaudeAPI = () => {
           maxTokens: options.maxTokens || 2000,
           systemPrompt: options.systemPrompt || null,
           userLanguage,
+          userLocale,
+          userRegion,
+          userCurrency,
         })
       });
 
@@ -64,7 +104,7 @@ export const useClaudeAPI = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ ...data, userLanguage })
+        body: JSON.stringify({ ...data, userLanguage, userLocale, userRegion, userCurrency })
       });
 
       if (!response.ok) {
@@ -93,7 +133,7 @@ export const useClaudeAPI = () => {
       const response = await fetch(`${BACKEND_URL}/api/${endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...data, userLanguage }),
+        body: JSON.stringify({ ...data, userLanguage, userLocale, userRegion, userCurrency }),
       });
 
       if (!response.ok) {
@@ -149,5 +189,5 @@ export const useClaudeAPI = () => {
     }
   };
 
-  return { callClaude, callToolEndpoint, callToolEndpointStreaming, loading, error, userLanguage };
+  return { callClaude, callToolEndpoint, callToolEndpointStreaming, loading, error, userLanguage, userLocale, userRegion, userCurrency };
 };

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { cleanJsonResponse, withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
@@ -8,7 +8,7 @@ const { rateLimit } = require('../lib/rateLimiter');
 // ════════════════════════════════════════════════════════════
 router.post('/hobby-match', rateLimit(), async (req, res) => {
   try {
-    const { personality, schedule, budget, physical, triedBefore, lookingFor, userLanguage } = req.body;
+    const { personality, schedule, budget, physical, triedBefore, lookingFor, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!personality?.trim() && !lookingFor?.trim()) {
       return res.status(400).json({ error: 'Tell us about yourself or what you\'re looking for.' });
@@ -64,21 +64,17 @@ Find me hobbies I've never considered. Return ONLY valid JSON:
 
 Generate 5-6 hobby recommendations. At least 2 should be things most people have never heard of.`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-haiku-4-5-20251001',
+    const parsed = await callClaudeWithRetry({
+model: 'claude-haiku-4-5-20251001',
       max_tokens: 4500,
-      system: withLanguage(systemPrompt, userLanguage),
+      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'hobby-match' });
     return res.json(parsed);
 
   } catch (error) {
     console.error('HobbyMatch error:', error);
-    res.status(500).json({ error: error.message || 'Failed to find hobbies' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.'});
   }
 });
 

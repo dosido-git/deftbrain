@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { cleanJsonResponse, withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
@@ -8,7 +8,7 @@ const { rateLimit } = require('../lib/rateLimiter');
 // ════════════════════════════════════════════════════════════
 router.post('/party-architect', rateLimit(), async (req, res) => {
   try {
-    const { occasion, guestCount, guestMix, space, budget, vibe, duration, constraints, userLanguage } = req.body;
+    const { occasion, guestCount, guestMix, space, budget, vibe, duration, constraints, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!occasion?.trim()) {
       return res.status(400).json({ error: 'Tell us what kind of event you\'re hosting.' });
@@ -101,24 +101,12 @@ Design the event. Return ONLY valid JSON:
 
 Generate 6-8 timeline entries, 2 mixing strategies, 4 conversation starters, 2 free_upgrades, and 3 disaster_prevention items. Return ONLY the JSON object — no markdown, no backticks, no explanation. All array fields must be arrays, not strings.`;
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 5000,
-      system: withLanguage(systemPrompt, userLanguage),
+      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-
-    let parsed;
-    try {
-      parsed = JSON.parse(cleaned);
-    } catch (jsonErr) {
-      console.error('PartyArchitect JSON parse error:', jsonErr.message);
-      console.error('Raw response:', cleaned.slice(0, 500));
-      return res.status(500).json({ error: 'The AI returned an unexpected format. Please try again.' });
-    }
+    }, { label: 'party-architect' });
 
     // Sanitize: coerce any array fields that came back as strings
     const toArray = (val) => {
@@ -138,7 +126,7 @@ Generate 6-8 timeline entries, 2 mixing strategies, 4 conversation starters, 2 f
 
   } catch (error) {
     console.error('PartyArchitect error:', error);
-    res.status(500).json({ error: error.message || 'Failed to design event' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

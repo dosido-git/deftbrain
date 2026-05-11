@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { cleanJsonResponse, withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 router.post('/subscription-guilt-trip', rateLimit(), async (req, res) => {
   try {
-    const { subscriptions, transactionText, inputType } = req.body;
+    const { subscriptions, transactionText, inputType, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (inputType === 'manual') {
       if (!subscriptions || subscriptions.length === 0) {
@@ -110,19 +110,19 @@ IMPORTANT:
 - waste_likelihood must be an integer 0-100
 Return ONLY valid JSON.`;
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 4000,
-      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }]
-    });
-
-    const textContent = message.content.find(item => item.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(textContent);
-    const parsed = JSON.parse(cleaned);
+      system: withLanguage('You are a JSON API. Respond with ONLY valid JSON.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'subscription-guilt-trip' });
+    if (!parsed.total_monthly_cost || !Array.isArray(parsed.subscriptions_analyzed)) {
+      return res.status(500).json({ error: 'Could not analyze your subscriptions. Please try again.' });
+    }
     res.json(parsed);
   } catch (error) {
     console.error('Subscription Guilt Trip error:', error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 const PERSONALITY = `You are that friend who always gets the upgrade, the fee waived, the free dessert, the exception to the rule. You're not a scammer — you're just extraordinarily good at asking. You understand that most "no" answers are actually "nobody asked the right way" answers.
@@ -64,21 +64,20 @@ Return ONLY valid JSON:
   "pro_tip": "One insider insight that most people don't know about this type of ask — a hack, a policy loophole, or a human nature shortcut"
 }`;
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2500,
       system: withLanguage(PERSONALITY, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'magic-mouth' });
+    if (!parsed.situation_read && !parsed.scripts) {
+      return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('MagicMouth error:', error);
-    res.status(500).json({ error: error.message || 'Failed to find your angle' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -167,21 +166,20 @@ Return ONLY valid JSON:
   "script_opener": "The exact first sentence to say to the human once you reach them — clear, calm, and positions you for a yes"
 }`;
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'magic-mouth-2' });
+    if (!parsed.situation_read && !parsed.scripts) {
+      return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('MagicMouth phone-tree error:', error);
-    res.status(500).json({ error: error.message || 'Failed to hack the phone tree' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -285,21 +283,20 @@ Return ONLY valid JSON:
   }
 }`;
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2800,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'magic-mouth-3' });
+    if (!parsed.situation_read && !parsed.scripts) {
+      return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('MagicMouth nuclear error:', error);
-    res.status(500).json({ error: error.message || 'Failed to map the nuclear options' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

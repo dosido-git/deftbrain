@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════════════
@@ -8,7 +8,7 @@ const { rateLimit } = require('../lib/rateLimiter');
 // ═══════════════════════════════════════════════════
 router.post('/money-diplomat-tip', rateLimit(), async (req, res) => {
   try {
-    const { situation, country, serviceType, billAmount, partySize, userLanguage } = req.body;
+    const { situation, country, serviceType, billAmount, partySize, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!situation?.trim()) {
       return res.status(400).json({ error: 'Describe the service situation.' });
@@ -55,11 +55,14 @@ Return ONLY valid JSON:
       system: withLanguage('You are a tipping etiquette expert who gives specific, culturally aware recommendations. You know the difference between what\'s expected, what\'s generous, and what\'s insulting in every context. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
+    if (!parsed.recommendation) {
+      return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[MoneyDiplomatTip] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to calculate tip.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -68,7 +71,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 router.post('/money-diplomat-split', rateLimit(), async (req, res) => {
   try {
-    const { situation, people, totalBill, userLanguage } = req.body;
+    const { situation, people, totalBill, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!situation?.trim()) {
       return res.status(400).json({ error: 'Describe the bill situation.' });
@@ -109,14 +112,17 @@ Return ONLY valid JSON:
       model: 'claude-sonnet-4-6',
       label: 'MoneyDiplomatSplit',
       max_tokens: 2500,
-      system: withLanguage('You are a social dynamics expert who splits bills fairly while preserving friendships. You understand that "fair" and "equal" aren\'t always the same thing. Return ONLY valid JSON. No markdown.', userLanguage),
+      system: withLanguage('You are a social dynamics expert who splits bills fairly while preserving friendships. You understand that "fair" and "equal" aren\'t always the same thing. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
     });
 
+    if (!parsed.recommendation) {
+      return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[MoneyDiplomatSplit] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to split bill.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -125,7 +131,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 router.post('/money-diplomat-venmo', rateLimit(), async (req, res) => {
   try {
-    const { situation, amount, relationship, timePassed, userLanguage } = req.body;
+    const { situation, amount, relationship, timePassed, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!situation?.trim()) {
       return res.status(400).json({ error: 'Describe the money situation.' });
@@ -168,11 +174,14 @@ Return ONLY valid JSON:
       system: withLanguage('You are a social money advisor who helps people navigate the awkward territory of requesting money from friends and family. You\'re practical, not preachy. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
+    if (!parsed.recommendation) {
+      return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[MoneyDiplomatVenmo] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to assess.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -181,7 +190,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 router.post('/money-diplomat-gift', rateLimit(), async (req, res) => {
   try {
-    const { occasion, relationship, theirSpend, yourBudget, region, userLanguage } = req.body;
+    const { occasion, relationship, theirSpend, yourBudget, region, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!occasion?.trim() || !relationship?.trim()) {
       return res.status(400).json({ error: 'Describe the occasion and relationship.' });
@@ -230,11 +239,14 @@ Return ONLY valid JSON:
       system: withLanguage('You are a gift-giving advisor who knows the unspoken rules about how much to spend. You calibrate to relationship dynamics, cultural norms, and social expectations. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
+    if (!parsed.recommendation) {
+      return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[MoneyDiplomatGift] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to calculate gift amount.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -243,7 +255,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 router.post('/money-diplomat-roommate', rateLimit(), async (req, res) => {
   try {
-    const { situation, people, totalCost, userLanguage } = req.body;
+    const { situation, people, totalCost, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!situation?.trim()) {
       return res.status(400).json({ error: 'Describe the roommate situation.' });
@@ -286,14 +298,17 @@ Return ONLY valid JSON:
       model: 'claude-sonnet-4-6',
       label: 'MoneyDiplomatRoommate',
       max_tokens: 2500,
-      system: withLanguage('You are a shared-living fairness expert. You know that equal isn\'t always fair and can explain adjustments in a way both sides accept. Return ONLY valid JSON. No markdown.', userLanguage),
+      system: withLanguage('You are a shared-living fairness expert. You know that equal isn\'t always fair and can explain adjustments in a way both sides accept. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
     });
 
+    if (!parsed.recommendation) {
+      return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[MoneyDiplomatRoommate] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to calculate split.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -302,7 +317,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 router.post('/money-diplomat-family', rateLimit(), async (req, res) => {
   try {
-    const { situation, familyDynamic, culturalContext, userLanguage } = req.body;
+    const { situation, familyDynamic, culturalContext, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!situation?.trim()) {
       return res.status(400).json({ error: 'Describe the family money situation.' });
@@ -353,11 +368,14 @@ Return ONLY valid JSON:
       system: withLanguage('You are a family dynamics advisor specializing in money conversations. You understand that family money is never just about money — it\'s about love, control, guilt, obligation, and belonging. Be wise, warm, and culturally sensitive. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
+    if (!parsed.recommendation) {
+      return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[MoneyDiplomatFamily] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to advise.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -366,7 +384,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 router.post('/money-diplomat-dining', rateLimit(), async (req, res) => {
   try {
-    const { situation, context, yourBudget, userLanguage } = req.body;
+    const { situation, context, yourBudget, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!situation?.trim()) {
       return res.status(400).json({ error: 'Describe the dining situation.' });
@@ -412,11 +430,14 @@ Return ONLY valid JSON:
       system: withLanguage('You are a social dining strategist who helps people navigate group meals without money stress. You give specific words to say, not vague advice. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
+    if (!parsed.recommendation) {
+      return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[MoneyDiplomatDining] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to strategize.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -425,7 +446,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 router.post('/money-diplomat-group', rateLimit(), async (req, res) => {
   try {
-    const { eventType, situation, people, expenses, userLanguage } = req.body;
+    const { eventType, situation, people, expenses, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!situation?.trim()) {
       return res.status(400).json({ error: 'Describe the group event.' });
@@ -477,11 +498,14 @@ Return ONLY valid JSON:
       system: withLanguage('You are a group expense settler who makes complex shared costs simple and fair. You minimize transactions, handle dropouts gracefully, and keep friendships intact. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
+    if (!parsed.recommendation) {
+      return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[MoneyDiplomatGroup] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to settle.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -490,7 +514,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 router.post('/money-diplomat-lend', rateLimit(), async (req, res) => {
   try {
-    const { situation, amount, relationship, history, userLanguage } = req.body;
+    const { situation, amount, relationship, history, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!situation?.trim()) {
       return res.status(400).json({ error: 'Describe the lending situation.' });
@@ -533,14 +557,17 @@ Return ONLY valid JSON:
       model: 'claude-sonnet-4-6',
       label: 'MoneyDiplomatLend',
       max_tokens: 2500,
-      system: withLanguage('You are a personal lending advisor who protects both the money and the relationship. You\'re honest about whether people will get their money back. Return ONLY valid JSON. No markdown.', userLanguage),
+      system: withLanguage('You are a personal lending advisor who protects both the money and the relationship. You\'re honest about whether people will get their money back. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
     });
 
+    if (!parsed.recommendation) {
+      return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[MoneyDiplomatLend] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to assess.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -549,7 +576,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 router.post('/money-diplomat-work', rateLimit(), async (req, res) => {
   try {
-    const { situation, role, companySize, userLanguage } = req.body;
+    const { situation, role, companySize, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!situation?.trim()) {
       return res.status(400).json({ error: 'Describe the work money situation.' });
@@ -597,11 +624,14 @@ Return ONLY valid JSON:
       system: withLanguage('You are a workplace culture expert who understands the unwritten rules of office money dynamics. You help people navigate collections, splits, and expenses without hurting their reputation. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
+    if (!parsed.recommendation) {
+      return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[MoneyDiplomatWork] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to navigate.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -610,7 +640,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 router.post('/money-diplomat-travel', rateLimit(), async (req, res) => {
   try {
-    const { destination, situation, userLanguage } = req.body;
+    const { destination, situation, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!destination?.trim()) {
       return res.status(400).json({ error: 'Where are you going?' });
@@ -667,11 +697,14 @@ Return ONLY valid JSON:
       system: withLanguage('You are a cultural money etiquette expert for global travel. You know the specific norms, traps, and social rules for money in every destination. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
+    if (!parsed.recommendation) {
+      return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[MoneyDiplomatTravel] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to generate guide.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -680,7 +713,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 router.post('/money-diplomat-profile', rateLimit(), async (req, res) => {
   try {
-    const { history, userLanguage } = req.body;
+    const { history, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!history?.length || history.length < 3) {
       return res.status(400).json({ error: 'Need at least 3 past situations to build a profile.' });
@@ -731,11 +764,14 @@ Return ONLY valid JSON:
       system: withLanguage('You are a behavioral money analyst who reveals social spending patterns people can\'t see themselves. Be insightful and kind — this is about self-awareness, not judgment. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
+    if (!parsed.recommendation) {
+      return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[MoneyDiplomatProfile] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to build profile.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -744,7 +780,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 router.post('/money-diplomat-date', rateLimit(), async (req, res) => {
   try {
-    const { situation, dateNumber, dynamic, culturalContext, userLanguage } = req.body;
+    const { situation, dateNumber, dynamic, culturalContext, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!situation?.trim()) {
       return res.status(400).json({ error: 'Describe the dating situation.' });
@@ -797,11 +833,14 @@ Return ONLY valid JSON:
       system: withLanguage('You are a dating etiquette advisor who handles money dynamics with emotional intelligence. You know that who pays communicates something — help people send the right signal. Be modern, inclusive, and culturally aware. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
+    if (!parsed.recommendation) {
+      return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[MoneyDiplomatDate] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to advise.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -810,7 +849,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 router.post('/money-diplomat-subs', rateLimit(), async (req, res) => {
   try {
-    const { situation, service, people, monthlyCost, userLanguage } = req.body;
+    const { situation, service, people, monthlyCost, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!situation?.trim()) {
       return res.status(400).json({ error: 'Describe the shared subscription situation.' });
@@ -855,14 +894,17 @@ Return ONLY valid JSON:
       model: 'claude-sonnet-4-6',
       label: 'MoneyDiplomatSubs',
       max_tokens: 2000,
-      system: withLanguage('You are a shared subscription expert who balances fairness with the reality that someone always manages the account and someone always barely uses it. Return ONLY valid JSON. No markdown.', userLanguage),
+      system: withLanguage('You are a shared subscription expert who balances fairness with the reality that someone always manages the account and someone always barely uses it. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
     });
 
+    if (!parsed.recommendation) {
+      return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[MoneyDiplomatSubs] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to split.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -871,7 +913,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 router.post('/money-diplomat-nudge', rateLimit(), async (req, res) => {
   try {
-    const { personName, amount, context, daysSince, relationship, attempts, userLanguage } = req.body;
+    const { personName, amount, context, daysSince, relationship, attempts, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!personName?.trim() || !amount) {
       return res.status(400).json({ error: 'Who owes you and how much?' });
@@ -903,11 +945,14 @@ Return ONLY valid JSON:
       system: withLanguage('You write money reminder messages that actually work — casual enough to preserve the friendship, clear enough to get paid. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
+    if (!parsed.recommendation) {
+      return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[MoneyDiplomatNudge] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to generate nudge.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -916,7 +961,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 router.post('/money-diplomat-salary', rateLimit(), async (req, res) => {
   try {
-    const { situation, currentSalary, targetRole, location, experience, userLanguage } = req.body;
+    const { situation, currentSalary, targetRole, location, experience, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!situation?.trim()) {
       return res.status(400).json({ error: 'Describe the negotiation situation.' });
@@ -971,11 +1016,14 @@ Return ONLY valid JSON:
       system: withLanguage('You are a salary negotiation coach who gives specific numbers, not vague advice. You understand leverage, anchoring, and the psychology of hiring managers. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
+    if (!parsed.recommendation) {
+      return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[MoneyDiplomatSalary] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to advise.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -984,7 +1032,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 router.post('/money-diplomat-afford', rateLimit(), async (req, res) => {
   try {
-    const { situation, cost, income, context, userLanguage } = req.body;
+    const { situation, cost, income, context, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!situation?.trim()) {
       return res.status(400).json({ error: 'Describe what you\'re considering.' });
@@ -1023,11 +1071,14 @@ Return ONLY valid JSON:
       system: withLanguage('You are a financial reality-checker who gives honest, judgment-free gut checks. Not a budget planner — a friend who tells the truth about whether you can swing it. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
+    if (!parsed.recommendation) {
+      return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[MoneyDiplomatAfford] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to assess.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -1036,7 +1087,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 router.post('/money-diplomat-inheritance', rateLimit(), async (req, res) => {
   try {
-    const { situation, familyDynamic, culturalContext, userLanguage } = req.body;
+    const { situation, familyDynamic, culturalContext, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!situation?.trim()) {
       return res.status(400).json({ error: 'Describe the inheritance situation.' });
@@ -1088,11 +1139,14 @@ Return ONLY valid JSON:
       system: withLanguage('You are a compassionate inheritance advisor who understands that estate money is grief money. You navigate family dynamics, legal complexity, and emotional minefields with wisdom and kindness. Always recommend professional help for legal/tax matters. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
+    if (!parsed.recommendation) {
+      return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[MoneyDiplomatInheritance] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to advise.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -1101,7 +1155,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 router.post('/money-diplomat-cultural', rateLimit(), async (req, res) => {
   try {
-    const { yourBackground, theirBackground, situation, userLanguage } = req.body;
+    const { yourBackground, theirBackground, situation, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!yourBackground?.trim() || !theirBackground?.trim()) {
       return res.status(400).json({ error: 'Describe both cultural backgrounds.' });
@@ -1147,11 +1201,14 @@ Return ONLY valid JSON:
       system: withLanguage('You are a cross-cultural money etiquette translator. You know the unspoken rules of money in every culture and help people from different backgrounds navigate shared money moments without offense. Be specific, not generic. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
+    if (!parsed.recommendation) {
+      return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[MoneyDiplomatCultural] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to translate.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -1160,7 +1217,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 router.post('/money-diplomat-charity', rateLimit(), async (req, res) => {
   try {
-    const { situation, askType, relationship, amount, userLanguage } = req.body;
+    const { situation, askType, relationship, amount, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!situation?.trim()) {
       return res.status(400).json({ error: 'Describe the donation/contribution ask.' });
@@ -1203,14 +1260,17 @@ Return ONLY valid JSON:
       model: 'claude-sonnet-4-6',
       label: 'MoneyDiplomatCharity',
       max_tokens: 2000,
-      system: withLanguage('You are a charitable giving advisor who helps people be generous without being exploited. You understand the difference between genuine giving and guilt compliance. Return ONLY valid JSON. No markdown.', userLanguage),
+      system: withLanguage('You are a charitable giving advisor who helps people be generous without being exploited. You understand the difference between genuine giving and guilt compliance. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
     });
 
+    if (!parsed.recommendation) {
+      return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[MoneyDiplomatCharity] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to calibrate.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -1219,7 +1279,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 router.post('/money-diplomat-simulate', rateLimit(), async (req, res) => {
   try {
-    const { situation, otherPerson, userResponse, conversationHistory, userProfile, userLanguage } = req.body;
+    const { situation, otherPerson, userResponse, conversationHistory, userProfile, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!situation?.trim()) {
       return res.status(400).json({ error: 'Describe the money situation to practice.' });
@@ -1292,7 +1352,7 @@ Return ONLY valid JSON:
 
   } catch (error) {
     console.error('[MoneyDiplomatSim] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed in simulation.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -1301,7 +1361,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 router.post('/money-diplomat-recap', rateLimit(), async (req, res) => {
   try {
-    const { history, debts, userProfile, userLanguage } = req.body;
+    const { history, debts, userProfile, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!history?.length || history.length < 3) {
       return res.status(400).json({ error: 'Need at least 3 situations for a recap.' });
@@ -1347,11 +1407,14 @@ Return ONLY valid JSON:
       system: withLanguage('You are a witty, insightful personal money analyst who makes people feel good about taking control of their social money life. Think Spotify Wrapped energy. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
+    if (!parsed.recommendation) {
+      return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[MoneyDiplomatRecap] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to generate recap.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

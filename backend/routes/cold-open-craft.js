@@ -81,11 +81,14 @@ Generate 3 openers: one safe, one medium, one bold.`;
       }
     );
 
+    if (!parsed.openers && !parsed.situation_read) {
+      return res.status(500).json({ error: 'Could not craft your opener. Please try again.' });
+    }
     return res.json(parsed);
 
   } catch (error) {
     console.error('ColdOpenCraft error:', error);
-    res.status(500).json({ error: error.message || 'Failed to generate openers' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

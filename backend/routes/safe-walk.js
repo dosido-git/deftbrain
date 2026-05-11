@@ -95,21 +95,30 @@ Generate 3-5 watch_for items, 4-6 checklist items, 1-3 route_suggestions, and 2-
 
 Return ONLY valid JSON.`;
 
-      const message = await anthropic.messages.create({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 2000,
-        system: withLanguage(SYSTEM_PROMPT, req.body.userLanguage),
-        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-        messages: [{ role: 'user', content: prompt }]
-      });
-
-      const text = message.content
-        .filter(c => c.type === 'text')
-        .map(c => c.text)
-        .join('');
-
-      const cleaned = cleanJsonResponse(text);
-      const parsed = JSON.parse(cleaned);
+      let parsed;
+      for (let attempt = 1; attempt <= 3; attempt++) {
+        try {
+          const message = await anthropic.messages.create({
+            model: 'claude-sonnet-4-6',
+            max_tokens: 2000,
+            system: withLanguage(SYSTEM_PROMPT, req.body.userLanguage),
+            tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+            messages: [{ role: 'user', content: prompt }]
+          });
+          const text = message.content
+            .filter(c => c.type === 'text')
+            .map(c => c.text)
+            .join('');
+          parsed = JSON.parse(cleanJsonResponse(text));
+          break;
+        } catch (retryErr) {
+          if (attempt === 3) throw retryErr;
+          await new Promise(r => setTimeout(r, 1000 * attempt));
+        }
+      }
+      if (!parsed.checklist || !parsed.watch_for) {
+        return res.status(500).json({ error: 'Could not generate safety plan. Please try again.' });
+      }
       return res.json(stripCites(parsed));
     }
 
@@ -117,7 +126,7 @@ Return ONLY valid JSON.`;
 
   } catch (error) {
     console.error('SafeWalk error:', error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

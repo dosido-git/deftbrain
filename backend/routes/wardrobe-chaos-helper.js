@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ─── Helper: build wardrobe description for prompt ───
@@ -205,23 +205,23 @@ RULES:
 9. Learn from user feedback — favor combinations similar to loved outfits, avoid disliked patterns
 10. Capsule suggestions should fill genuine gaps`, userLanguage || 'en');
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 2000,
       messages: [{ role: 'user', content: prompt }]
-    });
-
-    const text = message.content.find(c => c.type === 'text')?.text || '';
-    const parsed = JSON.parse(cleanJsonResponse(text));
+    }, { label: 'wardrobe-chaos-helper' });
 
     if (!parsed.outfit_combinations || !Array.isArray(parsed.outfit_combinations)) {
       throw new Error('Invalid response — missing outfit_combinations');
     }
 
+    if (!parsed.outfit_combinations && !parsed.outfits && !parsed.items) {
+      return res.status(500).json({ error: 'Could not analyze your wardrobe. Please try again.' });
+    }
     res.json(parsed);
   } catch (error) {
     console.error('Wardrobe Chaos Helper error:', error);
-    res.status(500).json({ error: error.message || 'Failed to generate outfits. Please try again.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -281,20 +281,20 @@ Return ONLY valid JSON:
 
 ONLY use items from the wardrobe.`, userLanguage || 'en');
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 800,
       messages: [{ role: 'user', content: prompt }]
-    });
-
-    const text = message.content.find(c => c.type === 'text')?.text || '';
-    const parsed = JSON.parse(cleanJsonResponse(text));
+    }, { label: 'wardrobe-chaos-helper-regen' });
 
     if (!parsed.outfit) throw new Error('Invalid response — missing outfit');
+    if (!parsed.outfit_combinations && !parsed.outfits && !parsed.items) {
+      return res.status(500).json({ error: 'Could not analyze your wardrobe. Please try again.' });
+    }
     res.json(parsed);
   } catch (error) {
     console.error('Wardrobe regenerate error:', error);
-    res.status(500).json({ error: error.message || 'Failed to regenerate outfit.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -382,23 +382,23 @@ RULES:
 5. Consider destination ${destination} climate
 6. Create one outfit plan entry per day`, userLanguage || 'en');
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 2000,
       messages: [{ role: 'user', content: prompt }]
-    });
-
-    const text = message.content.find(c => c.type === 'text')?.text || '';
-    const parsed = JSON.parse(cleanJsonResponse(text));
+    }, { label: 'wardrobe-chaos-helper-pack' });
 
     if (!parsed.packing_list || !Array.isArray(parsed.packing_list)) {
       throw new Error('Invalid response — missing packing_list');
     }
 
+    if (!parsed.outfit_combinations && !parsed.outfits && !parsed.items) {
+      return res.status(500).json({ error: 'Could not analyze your wardrobe. Please try again.' });
+    }
     res.json(parsed);
   } catch (error) {
     console.error('Wardrobe packing error:', error);
-    res.status(500).json({ error: error.message || 'Failed to generate packing list.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

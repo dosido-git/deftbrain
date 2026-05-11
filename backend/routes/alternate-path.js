@@ -59,11 +59,14 @@ Return ONLY valid JSON:
       max_tokens: 2500,
       system: withLanguage(PERSONALITY, userLanguage),
     });
+    if (!parsed.divergence_point) {
+      return res.status(500).json({ error: 'Could not generate the alternate path. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('AlternatePath error:', error);
-    res.status(500).json({ error: error.message || 'Alternate timeline failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

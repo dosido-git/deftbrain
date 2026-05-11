@@ -902,7 +902,7 @@ Return ONLY valid JSON:
 
   } catch (error) {
     console.error('NameStorm quick error:', error);
-    res.status(500).json({ error: error.message || 'Failed to generate names' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.'});
   }
 });
 

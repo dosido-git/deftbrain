@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -50,10 +50,10 @@ router.post('/doctor-visit-prep', rateLimit(), async (req, res) => {
       specificWorry,
       knownMedications,
       language,
-      locale,
+      userLanguage,
     } = req.body;
 
-    const lang = withLanguage(locale);
+    const lang = withLanguage('', userLanguage);
 
     // ── S7.3: validate every required field BEFORE building the prompt ──
     if (!chiefConcern?.trim()) {
@@ -91,7 +91,7 @@ router.post('/doctor-visit-prep', rateLimit(), async (req, res) => {
     const apptBlock = APPT_CONTEXT[appointmentType] || '';
 
     // Bilingual side-by-side instructions for specific fields.
-    // `language` is the user's *bilingual output* preference (separate from `locale`,
+    // `language` is the user's *bilingual output* preference (separate from `userLanguage`,
     // the site UI language handled by withLanguage above).
     const bilingualInstructions = language && language !== 'en' && LANG_NAME[language]
       ? `\n\nBILINGUAL OUTPUT: For the following fields, provide BOTH English AND ${LANG_NAME[language]} translations. Format each as "English text ||| ${LANG_NAME[language]} translation":\n- opener\n- symptom_description_clinical\n- Each item in prioritized_questions (question field only)\n- Each item in things_to_mention_even_if_not_asked\n- Each item in red_flag_symptoms_to_report\n\nKeep all other fields in English only. Use the ||| separator so the app can split and display both languages.`
@@ -155,34 +155,21 @@ TONE GUIDELINES:
 
 Return ONLY the JSON object.${lang}`;
 
-    const message = await anthropic.messages.create({
+    const results = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 3500,
       messages: [{ role: 'user', content: prompt }],
-    });
+    }, { label: 'doctor-visit-prep' });
 
-    const text = message.content.find(i => i.type === 'text')?.text || '';
-
-    let results;
-    try {
-      results = JSON.parse(cleanJsonResponse(text));
-    } catch (parseError) {
-      console.error('Doctor Visit Prep JSON parse error:', parseError.message);
-      throw new Error(`JSON parse failed: ${parseError.message}`);
-    }
-
-    // Minimal validation — opener + prioritized_questions are the core outputs
     if (!results.opener || !Array.isArray(results.prioritized_questions)) {
-      throw new Error('Invalid response structure');
+      return res.status(500).json({ error: 'Could not prepare your visit. Please try again.' });
     }
-
     res.json(results);
 
   } catch (error) {
     console.error('Doctor Visit Prep error:', error);
     res.status(500).json({
-      error: 'Failed to prepare your visit',
-      details: error.message,
+      error: 'Something went wrong. Please try again.',
     });
   }
 });

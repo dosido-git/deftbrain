@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, callClaudeWithRetry, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { anthropic, callClaudeWithRetry, cleanJsonResponse, withLanguage, withLocaleContext } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
@@ -96,7 +96,7 @@ router.post('/bill-rescue', rateLimit(DEFAULT_LIMITS), async (req, res) => {
     const {
       billType, amount, currency, overdueStatus, reason,
       details, canAffordMonthly, pastedBill, billImageBase64,
-      userLanguage
+      userLanguage, userLocale, userCurrency, userRegion
     } = req.body;
 
     if (!billType) return res.status(400).json({ error: 'Please select a bill type.' });
@@ -237,18 +237,21 @@ Return ONLY valid JSON with ALL applicable sections:
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 4000,
-      system: withLanguage(systemPrompt, userLanguage),
+      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: userContent }],
     });
 
     const text = message.content.find(b => b.type === 'text')?.text || '';
     const cleaned = cleanJsonResponse(text);
     const parsed = JSON.parse(cleaned);
+    if (!parsed.shame_to_action && !parsed.scripts) {
+      return res.status(500).json({ error: 'Could not generate your bill rescue. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('BillRescue error:', error);
-    res.status(500).json({ error: error.message || 'Analysis failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -257,7 +260,7 @@ Return ONLY valid JSON with ALL applicable sections:
 // ════════════════════════════════════════════════════════════
 router.post('/bill-rescue/triage', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
-    const { bills, totalMonthlyBudget, currency, userLanguage } = req.body;
+    const { bills, totalMonthlyBudget, currency, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!bills || !Array.isArray(bills) || bills.length < 2) {
       return res.status(400).json({ error: 'Add at least 2 bills for triage.' });
@@ -309,16 +312,20 @@ You are triaging multiple bills. Your job is to create a clear priority order th
 
 All amounts in ${sym}.`;
 
-    const result = await callClaudeWithRetry(userPrompt, {
-      label: 'bill-rescue/triage',
+    const result = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
       max_tokens: 2500,
-      system: withLanguage(triageSystem, userLanguage),
-    });
+      system: withLanguage(triageSystem, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+      messages: [{ role: 'user', content: userPrompt }],
+    }, { label: 'bill-rescue/triage' });
+    if (!result.priority_order) {
+      return res.status(500).json({ error: 'Could not generate your bill triage. Please try again.' });
+    }
     return res.json(result);
 
   } catch (error) {
     console.error('BillRescue triage error:', error);
-    res.status(500).json({ error: error.message || 'Triage failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -327,7 +334,7 @@ All amounts in ${sym}.`;
 // ════════════════════════════════════════════════════════════
 router.post('/bill-rescue/quick-check', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
-    const { billType, charge, amount, currency, userLanguage } = req.body;
+    const { billType, charge, amount, currency, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!charge?.trim()) {
       return res.status(400).json({ error: 'Describe the charge to check.' });
@@ -361,16 +368,20 @@ Return ONLY valid JSON:
   "potential_savings": "Estimated ${sym} savings if they fight it. null if normal."
 }`;
 
-    const result = await callClaudeWithRetry(userPrompt, {
-      label: 'bill-rescue/quick-check',
+    const result = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
       max_tokens: 800,
-      system: withLanguage(systemPrompt, userLanguage),
-    });
+      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+      messages: [{ role: 'user', content: userPrompt }],
+    }, { label: 'bill-rescue/quick-check' });
+    if (!result.verdict) {
+      return res.status(500).json({ error: 'Could not analyze this charge. Please try again.' });
+    }
     return res.json(result);
 
   } catch (error) {
     console.error('BillRescue quick-check error:', error);
-    res.status(500).json({ error: error.message || 'Quick check failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -452,11 +463,14 @@ Return ONLY valid JSON.`
     const text = message.content.find(b => b.type === 'text')?.text || '';
     const cleaned = cleanJsonResponse(text);
     const parsed = JSON.parse(cleaned);
+    if (!parsed.rep_response) {
+      return res.status(500).json({ error: 'Could not generate the rehearsal response. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('BillRescue rehearse error:', error);
-    res.status(500).json({ error: error.message || 'Rehearsal failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -465,7 +479,7 @@ Return ONLY valid JSON.`
 // ════════════════════════════════════════════════════════════
 router.post('/bill-rescue/letter', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
-    const { letterType, billType, amount, currency, situation, additionalContext, userLanguage } = req.body;
+    const { letterType, billType, amount, currency, situation, additionalContext, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!letterType) return res.status(400).json({ error: 'Select a letter type.' });
 
@@ -511,16 +525,20 @@ Return ONLY valid JSON:
   "follow_up": "What to do after sending — timeline for response, what to do if no response"
 }`;
 
-    const result = await callClaudeWithRetry(userPrompt, {
-      label: 'bill-rescue/letter',
+    const result = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
       max_tokens: 2000,
-      system: withLanguage(systemPrompt, userLanguage),
-    });
+      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+      messages: [{ role: 'user', content: userPrompt }],
+    }, { label: 'bill-rescue/letter' });
+    if (!result.letter_body) {
+      return res.status(500).json({ error: 'Could not generate the letter. Please try again.' });
+    }
     return res.json(result);
 
   } catch (error) {
     console.error('BillRescue letter error:', error);
-    res.status(500).json({ error: error.message || 'Letter generation failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

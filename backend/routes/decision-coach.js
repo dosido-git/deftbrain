@@ -18,8 +18,8 @@ const CAPACITY = {
 // ── v1: Main decide ──
 router.post('/decision-coach', rateLimit(), async (req, res) => {
   try {
-    const { decisionNeeded, category, preferences, capacityLevel, recentDecisions, rejectedChoices, rejectionReason, locale } = req.body;
-    const lang = withLanguage(locale);
+    const { decisionNeeded, category, preferences, capacityLevel, recentDecisions, rejectedChoices, rejectionReason, userLanguage } = req.body;
+    const lang = withLanguage('', userLanguage);
     if (!decisionNeeded) return res.status(400).json({ error: 'Describe the decision you need made' });
 
     const prompt = `You are Decision Coach — decisive, confident, warm. You MAKE the decision. ONE answer, not options.
@@ -57,9 +57,18 @@ OUTPUT (JSON only):
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
-    const msg = await anthropic.messages.create({ model: 'claude-sonnet-4-6', max_tokens: 1200, messages: [{ role: 'user', content: prompt }] });
+    let msg;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        msg = await anthropic.messages.create({ model: 'claude-sonnet-4-6', max_tokens: 1200, messages: [{ role: 'user', content: prompt }] });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
     res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
-  } catch (e) { console.error('DecisionCoach decide:', e); res.status(500).json({ error: e.message || 'Failed to decide' }); }
+  } catch (e) { console.error('DecisionCoach decide:', e); res.status(500).json({ error: 'Something went wrong. Please try again.' }); }
 });
 
 // ════════════════════════════════════════════════════════════
@@ -67,8 +76,8 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
 // ════════════════════════════════════════════════════════════
 router.post('/decision-coach/pros-cons', rateLimit(), async (req, res) => {
   try {
-    const { options, context, preferences, capacityLevel, locale } = req.body;
-    const lang = withLanguage(locale);
+    const { options, context, preferences, capacityLevel, userLanguage } = req.body;
+    const lang = withLanguage('', userLanguage);
     if (!options?.length || options.length < 2) return res.status(400).json({ error: 'Need at least 2 options' });
 
     const prompt = `You are Decision Coach — Pros & Cons mode. The user is stuck between specific options. Evaluate each, then PICK A WINNER. Be decisive.
@@ -111,7 +120,16 @@ OUTPUT (JSON only):
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
-    const msg = await anthropic.messages.create({ model: 'claude-sonnet-4-6', max_tokens: 1800, messages: [{ role: 'user', content: prompt }] });
+    let msg;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        msg = await anthropic.messages.create({ model: 'claude-sonnet-4-6', max_tokens: 1800, messages: [{ role: 'user', content: prompt }] });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
     res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
   } catch (e) { console.error('DecisionCoach pros-cons:', e); res.status(500).json({ error: 'Failed to compare' }); }
 });
@@ -121,8 +139,8 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
 // ════════════════════════════════════════════════════════════
 router.post('/decision-coach/quick', rateLimit(), async (req, res) => {
   try {
-    const { category, savedPreferences, recentDecisions, locale } = req.body;
-    const lang = withLanguage(locale);
+    const { category, savedPreferences, recentDecisions, userLanguage } = req.body;
+    const lang = withLanguage('', userLanguage);
 
     const prompt = `You are Decision Coach — QUICK MODE. The user tapped ONE button. Give them an instant, specific decision.
 
@@ -148,7 +166,16 @@ OUTPUT (JSON only):
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
-    const msg = await anthropic.messages.create({ model: 'claude-sonnet-4-6', max_tokens: 600, messages: [{ role: 'user', content: prompt }] });
+    let msg;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        msg = await anthropic.messages.create({ model: 'claude-sonnet-4-6', max_tokens: 600, messages: [{ role: 'user', content: prompt }] });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
     res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
   } catch (e) { console.error('DecisionCoach quick:', e); res.status(500).json({ error: 'Quick decide failed' }); }
 });
@@ -158,8 +185,8 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
 // ════════════════════════════════════════════════════════════
 router.post('/decision-coach/patterns', rateLimit(), async (req, res) => {
   try {
-    const { history, locale } = req.body;
-    const lang = withLanguage(locale);
+    const { history, userLanguage } = req.body;
+    const lang = withLanguage('', userLanguage);
     if (!history?.length || history.length < 5) return res.status(400).json({ error: 'Need at least 5 past decisions' });
 
     const histSummary = history.slice(0, 30).map((h, i) => {
@@ -206,7 +233,16 @@ OUTPUT (JSON only):
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
-    const msg = await anthropic.messages.create({ model: 'claude-sonnet-4-6', max_tokens: 1500, messages: [{ role: 'user', content: prompt }] });
+    let msg;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        msg = await anthropic.messages.create({ model: 'claude-sonnet-4-6', max_tokens: 1500, messages: [{ role: 'user', content: prompt }] });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
     res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
   } catch (e) { console.error('DecisionCoach patterns:', e); res.status(500).json({ error: 'Pattern analysis failed' }); }
 });
@@ -216,8 +252,8 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
 // ════════════════════════════════════════════════════════════
 router.post('/decision-coach/group', rateLimit(), async (req, res) => {
   try {
-    const { decisionNeeded, people, extraContext, locale } = req.body;
-    const lang = withLanguage(locale);
+    const { decisionNeeded, people, extraContext, userLanguage } = req.body;
+    const lang = withLanguage('', userLanguage);
     if (!decisionNeeded?.trim()) return res.status(400).json({ error: 'Describe the decision' });
     if (!people?.length || people.length < 2) return res.status(400).json({ error: 'Need at least 2 people' });
 
@@ -263,7 +299,16 @@ OUTPUT (JSON only):
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
-    const msg = await anthropic.messages.create({ model: 'claude-sonnet-4-6', max_tokens: 1800, messages: [{ role: 'user', content: prompt }] });
+    let msg;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        msg = await anthropic.messages.create({ model: 'claude-sonnet-4-6', max_tokens: 1800, messages: [{ role: 'user', content: prompt }] });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
     res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
   } catch (e) { console.error('DecisionCoach group:', e); res.status(500).json({ error: 'Group decide failed' }); }
 });
@@ -273,8 +318,8 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
 // ════════════════════════════════════════════════════════════
 router.post('/decision-coach/followup', rateLimit(), async (req, res) => {
   try {
-    const { originalDecision, outcome, actualChoice, satisfaction, locale } = req.body;
-    const lang = withLanguage(locale);
+    const { originalDecision, outcome, actualChoice, satisfaction, userLanguage } = req.body;
+    const lang = withLanguage('', userLanguage);
     if (!originalDecision || !outcome) return res.status(400).json({ error: 'Missing decision or outcome' });
 
     // outcome values: did_it | didnt_do_it | changed
@@ -313,7 +358,16 @@ OUTPUT (JSON only):
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
-    const msg = await anthropic.messages.create({ model: 'claude-sonnet-4-6', max_tokens: 800, messages: [{ role: 'user', content: prompt }] });
+    let msg;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        msg = await anthropic.messages.create({ model: 'claude-sonnet-4-6', max_tokens: 800, messages: [{ role: 'user', content: prompt }] });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
     res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
   } catch (e) { console.error('DecisionCoach followup:', e); res.status(500).json({ error: 'Follow-up failed' }); }
 });
@@ -323,8 +377,8 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
 // ════════════════════════════════════════════════════════════
 router.post('/decision-coach/dna', rateLimit(), async (req, res) => {
   try {
-    const { history, learnedPreferences, locale } = req.body;
-    const lang = withLanguage(locale);
+    const { history, learnedPreferences, userLanguage } = req.body;
+    const lang = withLanguage('', userLanguage);
     if (!history?.length || history.length < 5) return res.status(400).json({ error: 'Need at least 5 decisions for DNA analysis' });
 
     const histSummary = history.slice(0, 40).map((h, i) => {
@@ -397,7 +451,16 @@ OUTPUT (JSON only):
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
-    const msg = await anthropic.messages.create({ model: 'claude-sonnet-4-6', max_tokens: 2000, messages: [{ role: 'user', content: prompt }] });
+    let msg;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        msg = await anthropic.messages.create({ model: 'claude-sonnet-4-6', max_tokens: 2000, messages: [{ role: 'user', content: prompt }] });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
     res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
   } catch (e) { console.error('DecisionCoach DNA:', e); res.status(500).json({ error: 'DNA analysis failed' }); }
 });
@@ -407,8 +470,8 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
 // ════════════════════════════════════════════════════════════
 router.post('/decision-coach/devils-advocate', rateLimit(), async (req, res) => {
   try {
-    const { decisionNeeded, gutInstinct, preferences, locale } = req.body;
-    const lang = withLanguage(locale);
+    const { decisionNeeded, gutInstinct, preferences, userLanguage } = req.body;
+    const lang = withLanguage('', userLanguage);
     if (!decisionNeeded?.trim()) return res.status(400).json({ error: 'Describe the decision' });
     if (!gutInstinct?.trim()) return res.status(400).json({ error: 'Share your gut instinct first' });
 
@@ -440,7 +503,16 @@ OUTPUT (JSON only):
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
-    const msg = await anthropic.messages.create({ model: 'claude-sonnet-4-6', max_tokens: 1200, messages: [{ role: 'user', content: prompt }] });
+    let msg;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        msg = await anthropic.messages.create({ model: 'claude-sonnet-4-6', max_tokens: 1200, messages: [{ role: 'user', content: prompt }] });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
     res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
   } catch (e) { console.error('DecisionCoach devils-advocate:', e); res.status(500).json({ error: "Devil's advocate failed" }); }
 });
@@ -450,8 +522,8 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
 // ════════════════════════════════════════════════════════════
 router.post('/decision-coach/batch', rateLimit(), async (req, res) => {
   try {
-    const { category, count, preferences, recentDecisions, locale } = req.body;
-    const lang = withLanguage(locale);
+    const { category, count, preferences, recentDecisions, userLanguage } = req.body;
+    const lang = withLanguage('', userLanguage);
     const n = Math.min(count || 5, 7);
 
     const prompt = `You are Decision Coach — BATCH MODE. Pre-decide ${n} separate answers for the same category so the user doesn't have to think about it all week.
@@ -483,7 +555,16 @@ OUTPUT (JSON only):
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
-    const msg = await anthropic.messages.create({ model: 'claude-sonnet-4-6', max_tokens: 1500, messages: [{ role: 'user', content: prompt }] });
+    let msg;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        msg = await anthropic.messages.create({ model: 'claude-sonnet-4-6', max_tokens: 1500, messages: [{ role: 'user', content: prompt }] });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
     res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
   } catch (e) { console.error('DecisionCoach batch:', e); res.status(500).json({ error: 'Batch decide failed' }); }
 });
@@ -493,8 +574,8 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
 // ════════════════════════════════════════════════════════════
 router.post('/decision-coach/chain', rateLimit(), async (req, res) => {
   try {
-    const { primaryDecision, preferences, capacityLevel, locale } = req.body;
-    const lang = withLanguage(locale);
+    const { primaryDecision, preferences, capacityLevel, userLanguage } = req.body;
+    const lang = withLanguage('', userLanguage);
     if (!primaryDecision?.trim()) return res.status(400).json({ error: 'Describe the primary decision' });
 
     const prompt = `You are Decision Coach — CHAIN MODE. One decision triggers others. Solve the WHOLE chain.
@@ -532,7 +613,16 @@ OUTPUT (JSON only):
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
-    const msg = await anthropic.messages.create({ model: 'claude-sonnet-4-6', max_tokens: 1500, messages: [{ role: 'user', content: prompt }] });
+    let msg;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        msg = await anthropic.messages.create({ model: 'claude-sonnet-4-6', max_tokens: 1500, messages: [{ role: 'user', content: prompt }] });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
     res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
   } catch (e) { console.error('DecisionCoach chain:', e); res.status(500).json({ error: 'Decision chain failed' }); }
 });

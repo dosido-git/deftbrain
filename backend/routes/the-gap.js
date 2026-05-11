@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
@@ -99,20 +99,21 @@ Trace back to find the gap. Return ONLY valid JSON:
 
 The prerequisite_chain should have 3-6 items, ordered from most foundational (level 1) to the target concept. Mark the most likely gap with high gap_likelihood.`;
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 3500,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
+    }, { label: 'the-gap-trace' });
 
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const parsed = JSON.parse(cleanJsonResponse(text));
+    if (!parsed.the_gap || !parsed.repair_plan) {
+      return res.status(500).json({ error: 'Could not trace the gap. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('The Gap error:', error);
-    res.status(500).json({ error: error.message || 'Failed to trace the gap' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -164,20 +165,21 @@ Provide a focused refresher. Return ONLY valid JSON:
 
 Include 2-3 practice problems, ordered easy → hard.`;
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 3000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
+    }, { label: 'the-gap-deeper' });
 
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const parsed = JSON.parse(cleanJsonResponse(text));
+    if (!parsed.deeper_gap || !parsed.next_step) {
+      return res.status(500).json({ error: 'Could not dig deeper. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('The Gap dig error:', error);
-    res.status(500).json({ error: error.message || 'Dig deeper failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

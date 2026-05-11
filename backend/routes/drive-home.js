@@ -84,13 +84,22 @@ Generate 3-5 watch_for items, 4-6 checklist items, and 2-3 reminders. Tailor eve
 Return ONLY valid JSON.`;
 
       // Enable web search for route/condition awareness
-      const message = await anthropic.messages.create({
+      let message;
+      for (let _att = 1; _att <= 3; _att++) {
+        try {
+          message = await anthropic.messages.create({
         model: 'claude-sonnet-4-6',
         max_tokens: 2000,
         system: withLanguage(SYSTEM_PROMPT, req.body.userLanguage),
         tools: [{ type: 'web_search_20250305', name: 'web_search' }],
         messages: [{ role: 'user', content: prompt }]
       });
+          break;
+        } catch (_e) {
+          if (_att === 3) throw _e;
+          await new Promise(r => setTimeout(r, 1000 * _att));
+        }
+      }
 
       // Extract the final text response (may follow tool use blocks)
       const text = message.content

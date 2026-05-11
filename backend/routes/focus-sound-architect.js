@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, cleanJsonResponse, withLanguage } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 router.post('/focus-sound-architect', rateLimit(), async (req, res) => {
@@ -89,16 +89,11 @@ CRITICAL:
 - Be specific in "why" — reference the user's actual task and preferences
 - Keep it practical — this will be synthesized and played immediately`, userLanguage);
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 2000,
       messages: [{ role: 'user', content: prompt }]
-    });
-
-    const textContent = message.content.find(item => item.type === 'text')?.text || '';
-
-    const cleaned = cleanJsonResponse(textContent);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'focus-sound-architect' });
 
     // Validate layer types
     const validTypes = ['white_noise', 'pink_noise', 'brown_noise', 'rain', 'ocean', 'wind', 'forest', 'fire', 'cafe', 'binaural'];
@@ -110,7 +105,7 @@ CRITICAL:
 
   } catch (error) {
     console.error('[FocusSoundArchitect] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to generate soundscape' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -184,16 +179,11 @@ CRITICAL:
 - 2-4 phases, each with 2-5 layers
 - Be specific in "why" — reference the user's actual task and preferences`, userLanguage);
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 3000,
       messages: [{ role: 'user', content: prompt }]
-    });
-
-    const textContent = message.content.find(item => item.type === 'text')?.text || '';
-
-    const cleaned = cleanJsonResponse(textContent);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'focus-sound-architect-2' });
 
     // Validate layer types in all phases
     const validTypes = ['white_noise', 'pink_noise', 'brown_noise', 'rain', 'ocean', 'wind', 'forest', 'fire', 'cafe', 'binaural'];
@@ -209,7 +199,7 @@ CRITICAL:
 
   } catch (error) {
     console.error('[FocusSoundArchitect/scene] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to generate scene' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -266,15 +256,11 @@ CRITICAL:
 - If "too harsh", reduce white_noise/high-frequency layers, boost brown_noise
 - Keep the total soundscape balanced`, userLanguage);
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 1000,
       messages: [{ role: 'user', content: prompt }]
-    });
-
-    const textContent = message.content.find(item => item.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(textContent);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'focus-sound-architect-3' });
 
     // Validate add_layer type
     const validTypes = ['white_noise', 'pink_noise', 'brown_noise', 'rain', 'ocean', 'wind', 'forest', 'fire', 'cafe', 'binaural'];
@@ -286,7 +272,7 @@ CRITICAL:
 
   } catch (error) {
     console.error('[FocusSoundArchitect/adjust] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to generate adjustments' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

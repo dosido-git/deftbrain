@@ -84,7 +84,10 @@ Generate 6-10 tasks, ordered by priority. Be specific to the bike and season. Th
         max_tokens: 1500,
         system: withLanguage(MECHANIC_PERSONA, req.body.userLanguage),
       });
-      return res.json(parsed);
+      if (!parsed.title && !parsed.tasks && !parsed.inspection_items) {
+      return res.status(500).json({ error: 'Could not generate bike advice. Please try again.' });
+    }
+    return res.json(parsed);
     }
 
     // ── TYPE 4b: Custom Situation Checklist ──
@@ -133,7 +136,10 @@ Generate 5-10 tasks, ordered by priority. Be specific to the situation and the b
         max_tokens: 1500,
         system: withLanguage(MECHANIC_PERSONA, req.body.userLanguage),
       });
-      return res.json(parsed);
+      if (!parsed.title && !parsed.tasks && !parsed.inspection_items) {
+      return res.status(500).json({ error: 'Could not generate bike advice. Please try again.' });
+    }
+    return res.json(parsed);
     }
 
     // ── TYPE 3: Symptom Routing ──
@@ -163,7 +169,10 @@ Return ONLY valid JSON:
         max_tokens: 500,
         system: withLanguage(MECHANIC_PERSONA, req.body.userLanguage),
       });
-      return res.json(parsed);
+      if (!parsed.title && !parsed.tasks && !parsed.inspection_items) {
+      return res.status(500).json({ error: 'Could not generate bike advice. Please try again.' });
+    }
+    return res.json(parsed);
     }
 
     // ── Validation for Types 1 & 2 ──
@@ -265,12 +274,15 @@ Return ONLY valid JSON. No markdown, no explanation outside the JSON.`, req.body
     const textContent = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = JSON.parse(cleanJsonResponse(textContent));
 
+    if (!parsed.title && !parsed.tasks && !parsed.inspection_items) {
+      return res.status(500).json({ error: 'Could not generate bike advice. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('Bike Medic error:', error);
     res.status(500).json({
-      error: error.message || 'Failed to diagnose bike problem'
+      error: 'Something went wrong. Please try again.'
     });
   }
 });

@@ -272,6 +272,9 @@ CRITICAL RULES
       system: systemPrompt,
     });
 
+    if (!parsed.situation_reading && !parsed.scripts) {
+      return res.status(500).json({ error: 'Could not coach this conversation. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
@@ -378,6 +381,9 @@ RULES:
       max_tokens: 1000,
     });
 
+    if (!parsed.situation_reading && !parsed.scripts) {
+      return res.status(500).json({ error: 'Could not coach this conversation. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
@@ -482,6 +488,9 @@ Return ONLY JSON. No markdown, no preamble.`, userLanguage);
       system: 'You are a compassionate communication coach. Return ONLY valid JSON matching the exact schema requested. No markdown, no preamble.',
     });
 
+    if (!parsed.situation_reading && !parsed.scripts) {
+      return res.status(500).json({ error: 'Could not coach this conversation. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
@@ -622,6 +631,9 @@ Return ONLY JSON.`, userLanguage);
       system: withLanguage('You are an expert communication coach. Return ONLY valid JSON. No markdown, no preamble.', userLanguage),
     });
 
+    if (!parsed.situation_reading && !parsed.scripts) {
+      return res.status(500).json({ error: 'Could not coach this conversation. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {

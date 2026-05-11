@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
@@ -81,20 +81,20 @@ Help them frame this story. Return ONLY valid JSON:
 
 Generate 2-3 versions in the "versions" array, each with a genuinely different strategic approach (not just different tones). One should be the safest/most conservative, one should be the boldest, and one should be somewhere in between.`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-haiku-4-5-20251001',
+    const parsed = await callClaudeWithRetry({
+model: 'claude-haiku-4-5-20251001',
       max_tokens: 3000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const parsed = JSON.parse(cleanJsonResponse(text));
+    }, { label: 'the-alibi' });
+    if (!parsed.reframe || !Array.isArray(parsed.versions)) {
+      return res.status(500).json({ error: 'Could not craft your alibi. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('The Alibi error:', error);
-    res.status(500).json({ error: error.message || 'Failed to frame your story' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.'});
   }
 });
 

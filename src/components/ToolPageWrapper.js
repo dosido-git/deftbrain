@@ -4,12 +4,14 @@ import { ActionBar } from './ActionButtons';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { getToolById, tools } from '../data/tools';
 import { useTheme } from '../hooks/useTheme';
+import { useTranslation } from '../i18n/useTranslation';
 
 // Inner component — has access to ActionBarContext
 const ToolPageWrapperInner = ({ children, tool, toolId }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { theme, toggleTheme } = useTheme();
+  const { t, i18n } = useTranslation();
   const { actions } = useActionBar();
 
   // Scroll to top when a new tool page opens
@@ -216,6 +218,18 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
             <p className={`${colors.textSecondary} max-w-2xl leading-relaxed`}>
               {detectedTool?.description || 'Strategic intelligence tool'}
             </p>
+            {/* ── Localized "Any language works" signal — only renders for non-English browsers ── */}
+            {i18n.language !== 'en' && (
+              <p
+                data-print-hide
+                lang={i18n.language}
+                dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}
+                className={`text-xs ${colors.textMuted} italic flex items-center gap-1.5 pt-2`}
+              >
+                <span aria-hidden="true">🌐</span>
+                <span>{t('any_language')}</span>
+              </p>
+            )}
           </header>
 
           {/* Bookmark hint + Theme Toggle (above card, right-aligned) */}

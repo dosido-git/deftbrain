@@ -6,7 +6,7 @@
 // failure modes, warning signs, and the single most critical prevention.
 
 const express = require('express');
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 const router = express.Router();
@@ -99,7 +99,7 @@ router.post('/pre-mortem', rateLimit(), async (req, res) => {
   }
 
   try {
-    const message = await anthropic.messages.create({
+    const data = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2000,
       system: withLanguage(SYSTEM_PROMPT, req.body.userLanguage),
@@ -114,27 +114,16 @@ router.post('/pre-mortem', rateLimit(), async (req, res) => {
           ),
         },
       ],
-    });
+    }, { label: 'pre-mortem' });
 
-    const raw = message.content[0]?.text || '';
-
-    let data;
-    try {
-      // Extract the first complete JSON object from the response,
-      // regardless of any surrounding text or markdown fences.
-      const match = raw.match(/\{[\s\S]*\}/);
-      if (!match) throw new Error('No JSON object found in response');
-      data = JSON.parse(cleanJsonResponse(match[0]));
-    } catch {
-      console.error('pre-mortem: JSON parse failed. Raw output:', raw.slice(0, 500));
-      return res.status(500).json({ error: 'Failed to parse response. Please try again.' });
+    if (!data.failure_modes || !Array.isArray(data.failure_modes)) {
+      return res.status(500).json({ error: 'Could not generate pre-mortem. Please try again.' });
     }
-
     return res.json(data);
 
   } catch (err) {
     console.error('pre-mortem error:', err);
-    return res.status(500).json({ error: err.message || 'Failed to write pre-mortem.' });
+    return res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

@@ -1,4 +1,25 @@
 # backend_audit_v1.py
+# v1.7 · 2026-05-10 · S7.4g — currency-signal routes missing withLocaleContext.
+#                     Scans API-calling routes for high-specificity currency
+#                     keywords (salary, budget, userCurrency, afford, income,
+#                     wage, expense, depositAmount, billAmount, startup_cost,
+#                     price_range, cost_per_use). If any found and
+#                     withLocaleContext is not imported, flags the file.
+#                     Known non-currency files (fake-review-detective,
+#                     magic-mouth, rulebook-breaker) exempted via SKIP set.
+#                     Ref: localization Phase 2 arc, Session 2026-05-10.
+#                     S7.4d — userLanguage destructure / locale absence
+#                              (folded from audit_userlang.py P1/P2;
+#                               flags bare userLanguage ref without
+#                               destructure and legacy `locale` param use)
+#                     S7.4e — bare anthropic.messages.create (non-streaming)
+#                              without callClaudeWithRetry anywhere in file
+#                              → flag (retry missing)
+#                     S7.4f — route calls Claude then calls res.json() with a
+#                              bare variable (no property access on it before
+#                              res.json) → flag (shape validation gap)
+#                     S7.7b — res.status(...).json({ error: err.message })
+#                              literal pattern → flag (raw error propagation)
 # v1.5 · 2026-05-06 · two scoping fixes:
 #                     (1) S7.1 withLanguage import requirement now gated on
 #                         actual Anthropic usage. Previously fired on every
@@ -93,8 +114,12 @@
 #   • withLanguage called once per route (covers both Pattern A and Pattern B
 #     calling conventions — see v1.1 changelog)
 #   • max_tokens specified on every API call
-#   (Both anthropic.messages.create and callClaudeWithRetry sanctioned —
-#    see S7.4 wrapper-sanction note in checklist v1.3.)
+#   S7.4d: userLanguage destructured from req.body (not bare ref); no legacy locale param
+#   S7.4e: no bare anthropic.messages.create without callClaudeWithRetry (non-streaming)
+#   S7.4f: res.json not called with bare unvalidated Claude-response variable
+#   S7.4g: currency-signal routes must import and call withLocaleContext
+#   (Both anthropic.messages.create and callClaudeWithRetry historically sanctioned;
+#    S7.4e tightens to wrapper-only for non-streaming during bulletproofing sweep.)
 #
 # S7.5 — Cite Tag Stripping
 #   • If web_search tool is used, stripCites function must be defined and
@@ -108,6 +133,7 @@
 #   • Every router.post/get is wrapped in try/catch (} catch count parity)
 #   • Every catch block calls res.status(5xx).json
 #   • res.status(400) exists if any validation logic is present
+#   S7.7b: no res.status(NNN).json({ error: err.message }) — raw error propagation forbidden
 #
 # ────────────────────────────────────────────────────────────────────────────
 # Out of scope (judgment-required, manual checklist only)
@@ -143,6 +169,41 @@ ALLOWED_MODELS = {
 DEPRECATED_MODELS = {
     'claude-sonnet-4-20250514',       # superseded by claude-sonnet-4-6
     'claude-opus-4-5',                # superseded by claude-opus-4-6/4-7
+}
+
+# ────────────────────────────────────────────────────────────────────────────
+# S7.4g — currency-signal detection
+# ────────────────────────────────────────────────────────────────────────────
+#
+# High-specificity signal words that indicate a route reasons about monetary
+# amounts and therefore needs withLocaleContext for correct localization.
+# Deliberately conservative — excludes "cost", "rate", "fee" (too broad;
+# appear in error strings, rate-limiter references, etc.) in favour of words
+# that are near-unambiguously financial in a prompt context.
+#
+# Known exemptions: files whose currency-word hits are documented as
+# non-financial (e.g. "magic-mouth" mentions "afford" in a social context,
+# "rulebook-breaker" mentions "income" in a legal context). Add to this set
+# to suppress false positives without modifying the signal word list.
+
+CURRENCY_SIGNAL_RE = re.compile(
+    r'\b(salary|budget|userCurrency|afford|income|wage|expense|'
+    r'depositAmount|billAmount|startup[_\s]cost|price[_\s]range|'
+    r'cost[_\s]per[_\s]use|negotiat\w*\s+(?:salary|rate|price|fee))\b',
+    re.IGNORECASE,
+)
+
+# Files known to trigger currency signals for non-financial reasons.
+# These have been manually reviewed and confirmed to not need withLocaleContext.
+CURRENCY_SIGNAL_EXEMPT = {
+    'fake-review-detective',   # no monetary reasoning in prompts
+    'magic-mouth',             # "afford" in social persuasion context
+    'rulebook-breaker',        # "income" in legal/bureaucratic context
+    'apology-calibrator',      # "afford" in emotional context
+    'conflict-coach',          # "afford" / "budget" in relationship advice
+    'difficult-talk-coach',    # "salary" may appear as conversation topic
+    'spiral-stopper',          # emergency tool, no financial output
+    'final-wish',              # emergency tool exception class
 }
 
 # ────────────────────────────────────────────────────────────────────────────
@@ -520,6 +581,159 @@ def audit_file(filepath):
         )
 
     # Validation 400 already checked in S7.3 — skip duplicate check here
+
+    # ───────────────────────────────────────────────────────────────────────
+    # S7.4d · userLanguage / locale hygiene (folded from audit_userlang.py)
+    # ───────────────────────────────────────────────────────────────────────
+    #
+    # P1: file uses `userLanguage` (bare reference) but does NOT destructure
+    #     it from req.body → ReferenceError at runtime.
+    # P2: file uses legacy `locale` parameter in a withLanguage() or prompt
+    #     interpolation context → silently sends English to Claude.
+    #
+    # Only applies to Anthropic-calling routes (non-API routes don't i18n).
+
+    if is_api_caller:
+        has_userlang_ref = bool(re.search(r'\buserLanguage\b', no_comments))
+        has_userlang_destructure = bool(re.search(
+            r'(?:const|let|var)\s*\{[^}]*\buserLanguage\b[^}]*\}\s*=\s*req\.body',
+            no_comments,
+        ))
+        # req.body.userLanguage (property access) is also safe — not a bare ref
+        has_userlang_prop_access = bool(re.search(r'req\.body\.userLanguage\b', no_comments))
+        if has_userlang_ref and not has_userlang_destructure and not has_userlang_prop_access:
+            fails.append(
+                'S7.4d: `userLanguage` referenced but not destructured from req.body — '
+                'will throw ReferenceError at runtime'
+            )
+
+        # P2: legacy `locale` used where `userLanguage` is expected.
+        # Flag if `locale` appears as a req.body destructure or is passed to withLanguage.
+        legacy_locale_destructure = bool(re.search(
+            r'(?:const|let|var)\s*\{[^}]*\blocale\b[^}]*\}\s*=\s*req\.body',
+            no_comments,
+        ))
+        locale_in_with_language = bool(re.search(
+            r'\bwithLanguage\s*\([^)]*\blocale\b', no_comments,
+        ))
+        if legacy_locale_destructure or locale_in_with_language:
+            fails.append(
+                'S7.4d: legacy `locale` parameter in use — replace with `userLanguage` '
+                '(locale is a silent English fallback; userLanguage carries actual locale)'
+            )
+
+    # ───────────────────────────────────────────────────────────────────────
+    # S7.4e · bare anthropic.messages.create without callClaudeWithRetry
+    # ───────────────────────────────────────────────────────────────────────
+    #
+    # During the bulletproofing sweep, non-streaming .create calls must be
+    # converted to callClaudeWithRetry. A file that uses .create but never
+    # calls the wrapper has no retry logic → transient API errors surface as
+    # 500s to users.
+    #
+    # EXCEPTION: streaming calls (anthropic.messages.stream) stay as-is.
+    # We detect "non-streaming .create" as .create without .stream on the
+    # same line. If a file ONLY has streaming calls, no flag is raised.
+
+    non_streaming_create = bool(re.search(
+        r'anthropic\.messages\.create\s*\(',
+        no_comments,
+    ))
+    # A file with a local retry loop (for attempt / withRetry fn) around .create
+    # is acceptable — it has retry semantics even without callClaudeWithRetry.
+    # Applies to tool-use routes (web_search etc.) and complex repair chains
+    # where the wrapper's internal JSON.parse would interfere.
+    has_local_retry = bool(re.search(
+        r'for\s*\(\s*let\s+(?:attempt|_att)\b|async\s+function\s+withRetry\b',
+        no_comments,
+    ))
+    if non_streaming_create and not has_wrapper and not has_local_retry:
+        fails.append(
+            'S7.4e: anthropic.messages.create used without callClaudeWithRetry — '
+            'transient API errors will surface as 500s; convert to callClaudeWithRetry'
+        )
+
+    # ───────────────────────────────────────────────────────────────────────
+    # S7.4f · res.json called with bare variable (no shape validation)
+    # ───────────────────────────────────────────────────────────────────────
+    #
+    # Pattern: route does res.json(data) with no prior property access or
+    # conditional check on `data`. If Claude returns an unexpected shape,
+    # the frontend gets bad data silently.
+    #
+    # A variable is considered validated (exempt) if ANY of these appear
+    # anywhere in the file for that variable name:
+    #   - `varname.`  or  `varname?.`  (property access / optional chain)
+    #   - `if (!varname` or `if (varname`  (conditional guard)
+    # These patterns indicate the code inspects the shape before downstream use.
+
+    if is_api_caller:
+        bare_resjson = re.findall(
+            r'res\.json\s*\(\s*([A-Za-z_$][\w$]*)\s*\)',
+            no_comments,
+        )
+        CLAUDE_RESP_NAMES = {
+            'data', 'result', 'response', 'parsed', 'output', 'json',
+            'analysisResult', 'generatedContent', 'claudeResult',
+        }
+        unvalidated = []
+        for v in bare_resjson:
+            if v not in CLAUDE_RESP_NAMES:
+                continue
+            has_prop_access = bool(re.search(r'\b' + re.escape(v) + r'[\.\?]', no_comments))
+            has_conditional = bool(re.search(r'if\s*\(\s*!?\s*' + re.escape(v) + r'\b', no_comments))
+            if not has_prop_access and not has_conditional:
+                unvalidated.append(v)
+        if unvalidated:
+            fails.append(
+                f'S7.4f: res.json called with bare unvalidated variable(s) {sorted(set(unvalidated))} — '
+                'validate required fields before sending to client (check shape, use friendly error on mismatch)'
+            )
+
+    # ───────────────────────────────────────────────────────────────────────
+    # S7.4g · currency-signal routes missing withLocaleContext
+    # ───────────────────────────────────────────────────────────────────────
+    #
+    # If a route file is an API caller AND contains high-specificity currency
+    # signal words AND does not import/use withLocaleContext, it is missing
+    # the locale context injection needed for correct international behavior.
+    #
+    # Only fires when ALL three conditions hold:
+    #   1. File calls Anthropic (is_api_caller)
+    #   2. Currency signal words present in file content
+    #   3. withLocaleContext not present in file
+    #
+    # Exempt files listed in CURRENCY_SIGNAL_EXEMPT — see constant definition.
+
+    if is_api_caller and 'withLocaleContext' not in no_comments:
+        tool_name = os.path.basename(filepath).replace('.js', '')
+        if tool_name not in CURRENCY_SIGNAL_EXEMPT:
+            signals_found = CURRENCY_SIGNAL_RE.findall(no_comments)
+            if signals_found:
+                unique_signals = sorted(set(s.lower() for s in signals_found))[:4]
+                fails.append(
+                    f'S7.4g: currency signals detected ({", ".join(unique_signals)}) '
+                    f'but withLocaleContext not wired — import and inject via system prompt '
+                    f'so Claude reasons in the user\'s economic context, not USD defaults'
+                )
+
+    # ───────────────────────────────────────────────────────────────────────
+    # S7.7b · raw err.message propagation
+    # ───────────────────────────────────────────────────────────────────────
+    #
+    # Pattern: res.status(NNN).json({ error: err.message })
+    # This leaks internal error text to the client. Friendly messages must
+    # be hardcoded; err.message is for console.error only.
+
+    raw_err_message = re.findall(
+        r'res\.status\s*\(\s*\d+\s*\)\.json\s*\(\s*\{\s*error\s*:\s*err\.message',
+        no_comments,
+    )
+    if raw_err_message:
+        fails.append(
+            f'S7.7b: {len(raw_err_message)} raw err.message propagation(s) — '
+            'use a hardcoded friendly string; log err.message to console.error only'
+        )
 
     return fails
 

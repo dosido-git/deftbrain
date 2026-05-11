@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════════════
@@ -8,7 +8,7 @@ const { rateLimit } = require('../lib/rateLimiter');
 // ═══════════════════════════════════════════════════
 router.post('/skill-gap-map', rateLimit(), async (req, res) => {
   try {
-    const { currentRole, targetRole, currentSkills, hoursPerWeek, userLanguage } = req.body;
+    const { currentRole, targetRole, currentSkills, hoursPerWeek, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!currentRole?.trim() || !targetRole?.trim()) {
       return res.status(400).json({ error: 'Describe both your current role and target role.' });
@@ -97,11 +97,14 @@ Return ONLY valid JSON:
       system: withLanguage('You are a career transition strategist who gives brutally specific advice. No generic platitudes. Every recommendation is actionable and specific to this exact transition. You never fabricate URLs — you describe resources by name, author, or search term. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
+    if (!parsed.gaps && !parsed.skill_gaps) {
+      return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[SkillGapMap] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to map skill gaps.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -110,7 +113,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 router.post('/skill-gap-timeline', rateLimit(), async (req, res) => {
   try {
-    const { transitionSummary, skillGaps, hoursPerWeek, userLanguage } = req.body;
+    const { transitionSummary, skillGaps, hoursPerWeek, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!skillGaps?.length) {
       return res.status(400).json({ error: 'Run the gap analysis first.' });
@@ -170,11 +173,14 @@ Return ONLY valid JSON:
       system: withLanguage('You are a learning plan designer who builds realistic, week-by-week roadmaps. You understand that people have jobs and lives, and plan accordingly. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
+    if (!parsed.gaps && !parsed.skill_gaps) {
+      return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[SkillGapTimeline] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to build timeline.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -183,7 +189,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 router.post('/skill-gap-proof', rateLimit(), async (req, res) => {
   try {
-    const { transitionSummary, skillGaps, userLanguage } = req.body;
+    const { transitionSummary, skillGaps, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!skillGaps?.length) {
       return res.status(400).json({ error: 'Run the gap analysis first.' });
@@ -237,14 +243,17 @@ Return ONLY valid JSON:
       model: 'claude-sonnet-4-6',
       label: 'SkillGapProof',
       max_tokens: 4000,
-      system: withLanguage('You are a career portfolio strategist who helps people prove competence without credentials. You think like a hiring manager. Return ONLY valid JSON. No markdown.', userLanguage),
+      system: withLanguage('You are a career portfolio strategist who helps people prove competence without credentials. You think like a hiring manager. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
     });
 
+    if (!parsed.gaps && !parsed.skill_gaps) {
+      return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[SkillGapProof] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to generate proof plans.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -253,7 +262,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 router.post('/skill-gap-network', rateLimit(), async (req, res) => {
   try {
-    const { transitionSummary, targetRole, userLanguage } = req.body;
+    const { transitionSummary, targetRole, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!targetRole?.trim()) {
       return res.status(400).json({ error: 'Target role is required.' });
@@ -301,11 +310,14 @@ Return ONLY valid JSON:
       system: withLanguage('You are a strategic networking advisor for career transitioners. You give specific, actionable advice about who to connect with and what to say. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
+    if (!parsed.gaps && !parsed.skill_gaps) {
+      return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[SkillGapNetwork] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to map network gaps.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -314,7 +326,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 router.post('/skill-gap-deep', rateLimit(), async (req, res) => {
   try {
-    const { gap, transitionSummary, userLanguage } = req.body;
+    const { gap, transitionSummary, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!gap?.skill) {
       return res.status(400).json({ error: 'Select a skill gap to explore.' });
@@ -369,11 +381,14 @@ Return ONLY valid JSON:
       system: withLanguage('You are a skill development coach who creates detailed, stage-by-stage learning plans. Be specific about resources (by name, not URL) and honest about what "good enough" looks like. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
+    if (!parsed.gaps && !parsed.skill_gaps) {
+      return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[SkillGapDeep] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to create deep dive.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -382,7 +397,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 router.post('/skill-gap-reframe', rateLimit(), async (req, res) => {
   try {
-    const { currentRole, targetRole, experience, userLanguage } = req.body;
+    const { currentRole, targetRole, experience, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!currentRole?.trim() || !targetRole?.trim() || !experience?.trim()) {
       return res.status(400).json({ error: 'Current role, target role, and experience description are required.' });
@@ -429,14 +444,17 @@ Return ONLY valid JSON:
       model: 'claude-sonnet-4-6',
       label: 'SkillGapReframe',
       max_tokens: 3500,
-      system: withLanguage('You are a resume strategist and career translator who helps people reframe existing experience for new roles. You think like a hiring manager and know what language signals competence in different fields. Return ONLY valid JSON. No markdown.', userLanguage),
+      system: withLanguage('You are a resume strategist and career translator who helps people reframe existing experience for new roles. You think like a hiring manager and know what language signals competence in different fields. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
     });
 
+    if (!parsed.gaps && !parsed.skill_gaps) {
+      return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[SkillGapReframe] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to reframe experience.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -445,7 +463,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 router.post('/skill-gap-economics', rateLimit(), async (req, res) => {
   try {
-    const { currentRole, targetRole, transitionSummary, userLanguage } = req.body;
+    const { currentRole, targetRole, transitionSummary, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!currentRole?.trim() || !targetRole?.trim()) {
       return res.status(400).json({ error: 'Both roles are required.' });
@@ -515,14 +533,17 @@ Return ONLY valid JSON:
       model: 'claude-sonnet-4-6',
       label: 'SkillGapEconomics',
       max_tokens: 3000,
-      system: withLanguage('You are a career economics analyst who gives honest financial assessments of career transitions. Use realistic salary data. Never inflate numbers to make a transition look better. Return ONLY valid JSON. No markdown.', userLanguage),
+      system: withLanguage('You are a career economics analyst who gives honest financial assessments of career transitions. Use realistic salary data. Never inflate numbers to make a transition look better. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
     });
 
+    if (!parsed.gaps && !parsed.skill_gaps) {
+      return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[SkillGapEconomics] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to analyze economics.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -531,7 +552,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 router.post('/skill-gap-resume', rateLimit(), async (req, res) => {
   try {
-    const { currentRole, targetRole, resumeText, skillGaps, userLanguage } = req.body;
+    const { currentRole, targetRole, resumeText, skillGaps, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!resumeText?.trim() || !targetRole?.trim()) {
       return res.status(400).json({ error: 'Paste your resume and specify the target role.' });
@@ -591,14 +612,17 @@ Return ONLY valid JSON:
       model: 'claude-sonnet-4-6',
       label: 'SkillGapResume',
       max_tokens: 4000,
-      system: withLanguage('You are a resume auditor who has reviewed thousands of career-transition resumes. You know exactly what hiring managers scan for and what triggers an instant rejection. Be direct and specific. Return ONLY valid JSON. No markdown.', userLanguage),
+      system: withLanguage('You are a resume auditor who has reviewed thousands of career-transition resumes. You know exactly what hiring managers scan for and what triggers an instant rejection. Be direct and specific. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
     });
 
+    if (!parsed.gaps && !parsed.skill_gaps) {
+      return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[SkillGapResume] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to audit resume.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -607,7 +631,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 router.post('/skill-gap-companies', rateLimit(), async (req, res) => {
   try {
-    const { currentRole, targetRole, transitionSummary, userLanguage } = req.body;
+    const { currentRole, targetRole, transitionSummary, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!targetRole?.trim()) {
       return res.status(400).json({ error: 'Target role is required.' });
@@ -660,14 +684,17 @@ Return ONLY valid JSON:
       model: 'claude-sonnet-4-6',
       label: 'SkillGapCompanies',
       max_tokens: 3500,
-      system: withLanguage('You are a job search strategist who knows which companies hire career transitioners and which screen them out. Be specific about company types and honest about the odds. Return ONLY valid JSON. No markdown.', userLanguage),
+      system: withLanguage('You are a job search strategist who knows which companies hire career transitioners and which screen them out. Be specific about company types and honest about the odds. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
     });
 
+    if (!parsed.gaps && !parsed.skill_gaps) {
+      return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[SkillGapCompanies] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to analyze company fit.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -676,7 +703,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 router.post('/skill-gap-interview', rateLimit(), async (req, res) => {
   try {
-    const { currentRole, targetRole, skillGaps, transferableSkills, userLanguage } = req.body;
+    const { currentRole, targetRole, skillGaps, transferableSkills, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!currentRole?.trim() || !targetRole?.trim()) {
       return res.status(400).json({ error: 'Both roles required.' });
@@ -744,14 +771,17 @@ Return ONLY valid JSON:
       model: 'claude-sonnet-4-6',
       label: 'SkillGapInterview',
       max_tokens: 4500,
-      system: withLanguage('You are an interview coach who specializes in career transitioners. You know the specific questions they face and the landmines they step on. Return ONLY valid JSON. No markdown.', userLanguage),
+      system: withLanguage('You are an interview coach who specializes in career transitioners. You know the specific questions they face and the landmines they step on. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
     });
 
+    if (!parsed.gaps && !parsed.skill_gaps) {
+      return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[SkillGapInterview] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to build interview prep.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -760,7 +790,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 router.post('/skill-gap-calibrate', rateLimit(), async (req, res) => {
   try {
-    const { currentRole, targetRole, skillGaps, constraints, userLanguage } = req.body;
+    const { currentRole, targetRole, skillGaps, constraints, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!constraints) {
       return res.status(400).json({ error: 'Constraints are required.' });
@@ -819,11 +849,14 @@ Return ONLY valid JSON:
       system: withLanguage('You are a career transition realist who adjusts plans for real life. You are kind but honest — if constraints make a transition significantly harder, you say so while offering solutions. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
+    if (!parsed.gaps && !parsed.skill_gaps) {
+      return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[SkillGapCalibrate] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to calibrate.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -832,7 +865,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 router.post('/skill-gap-explore', rateLimit(), async (req, res) => {
   try {
-    const { currentRole, currentSkills, interests, userLanguage } = req.body;
+    const { currentRole, currentSkills, interests, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!currentRole?.trim()) {
       return res.status(400).json({ error: 'Describe your current role.' });
@@ -880,14 +913,17 @@ Return ONLY valid JSON:
       model: 'claude-sonnet-4-6',
       label: 'SkillGapExplore',
       max_tokens: 3500,
-      system: withLanguage('You are a career exploration advisor who helps people discover realistic career paths based on their current skills. Be creative but honest about difficulty. Return ONLY valid JSON. No markdown.', userLanguage),
+      system: withLanguage('You are a career exploration advisor who helps people discover realistic career paths based on their current skills. Be creative but honest about difficulty. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
     });
 
+    if (!parsed.gaps && !parsed.skill_gaps) {
+      return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[SkillGapExplore] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to explore paths.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -896,7 +932,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 router.post('/skill-gap-progress', rateLimit(), async (req, res) => {
   try {
-    const { currentRole, targetRole, originalGaps, completedSkills, newExperience, userLanguage } = req.body;
+    const { currentRole, targetRole, originalGaps, completedSkills, newExperience, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!originalGaps?.length || !completedSkills?.length) {
       return res.status(400).json({ error: 'Original gaps and completed skills are required.' });
@@ -956,11 +992,14 @@ Return ONLY valid JSON:
       system: withLanguage('You are a career transition coach doing a progress check. Be encouraging but honest — if they are not ready, say so kindly. If they are, celebrate them. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
+    if (!parsed.gaps && !parsed.skill_gaps) {
+      return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[SkillGapProgress] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to check progress.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -969,7 +1008,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 router.post('/skill-gap-daylife', rateLimit(), async (req, res) => {
   try {
-    const { targetRole, transitionSummary, userLanguage } = req.body;
+    const { targetRole, transitionSummary, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!targetRole?.trim()) {
       return res.status(400).json({ error: 'Target role is required.' });
@@ -1029,14 +1068,17 @@ Return ONLY valid JSON:
       model: 'claude-sonnet-4-6',
       label: 'SkillGapDayLife',
       max_tokens: 4000,
-      system: withLanguage('You are a career realist who shows people what jobs actually feel like day-to-day. Not the recruiting pitch — the truth. Return ONLY valid JSON. No markdown.', userLanguage),
+      system: withLanguage('You are a career realist who shows people what jobs actually feel like day-to-day. Not the recruiting pitch — the truth. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
     });
 
+    if (!parsed.gaps && !parsed.skill_gaps) {
+      return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[SkillGapDayLife] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to simulate day.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -1045,7 +1087,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 router.post('/skill-gap-outreach', rateLimit(), async (req, res) => {
   try {
-    const { currentRole, targetRole, personDescription, goal, userLanguage } = req.body;
+    const { currentRole, targetRole, personDescription, goal, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!personDescription?.trim() || !targetRole?.trim()) {
       return res.status(400).json({ error: 'Describe the person and your target role.' });
@@ -1081,11 +1123,14 @@ Return ONLY valid JSON:
       system: withLanguage('You write networking messages that actually get responses. You sound human, specific, and respectful of the recipient\'s time. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
+    if (!parsed.gaps && !parsed.skill_gaps) {
+      return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[SkillGapOutreach] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to draft outreach.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -1094,7 +1139,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 router.post('/skill-gap-decode', rateLimit(), async (req, res) => {
   try {
-    const { jobPosting, currentRole, targetRole, skillGaps, userLanguage } = req.body;
+    const { jobPosting, currentRole, targetRole, skillGaps, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!jobPosting?.trim()) {
       return res.status(400).json({ error: 'Paste a job posting.' });
@@ -1161,14 +1206,17 @@ Return ONLY valid JSON:
       model: 'claude-sonnet-4-6',
       label: 'SkillGapDecode',
       max_tokens: 4000,
-      system: withLanguage('You are a job posting analyst who decodes what companies actually want vs. what they write. You know the difference between must-haves and wishlist items. Return ONLY valid JSON. No markdown.', userLanguage),
+      system: withLanguage('You are a job posting analyst who decodes what companies actually want vs. what they write. You know the difference between must-haves and wishlist items. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
     });
 
+    if (!parsed.gaps && !parsed.skill_gaps) {
+      return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[SkillGapDecode] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to decode posting.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -1177,7 +1225,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 router.post('/skill-gap-adjacency', rateLimit(), async (req, res) => {
   try {
-    const { skillGaps, userLanguage } = req.body;
+    const { skillGaps, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!skillGaps?.length) {
       return res.status(400).json({ error: 'Run the gap analysis first.' });
@@ -1230,14 +1278,17 @@ Return ONLY valid JSON:
       model: 'claude-sonnet-4-6',
       label: 'SkillGapAdjacency',
       max_tokens: 3000,
-      system: withLanguage('You are a learning sequence optimizer who maps dependencies between skills. You find the order that minimizes total learning time. Return ONLY valid JSON. No markdown.', userLanguage),
+      system: withLanguage('You are a learning sequence optimizer who maps dependencies between skills. You find the order that minimizes total learning time. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
     });
 
+    if (!parsed.gaps && !parsed.skill_gaps) {
+      return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[SkillGapAdjacency] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to map adjacency.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -1246,7 +1297,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 router.post('/skill-gap-mock', rateLimit(), async (req, res) => {
   try {
-    const { currentRole, targetRole, userAnswer, question, interviewContext, userLanguage } = req.body;
+    const { currentRole, targetRole, userAnswer, question, interviewContext, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!targetRole?.trim()) {
       return res.status(400).json({ error: 'Target role is required.' });
@@ -1270,7 +1321,7 @@ Return ONLY valid JSON:
         model: 'claude-sonnet-4-6',
         label: 'SkillGapMockStart',
         max_tokens: 800,
-        system: withLanguage('You are a realistic interviewer for the target role. Return ONLY valid JSON. No markdown.', userLanguage),
+        system: withLanguage('You are a realistic interviewer for the target role. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       });
       return res.json({ type: 'question', ...parsed });
     }
@@ -1313,7 +1364,7 @@ Return ONLY valid JSON:
 
   } catch (error) {
     console.error('[SkillGapMock] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed in mock interview.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -1322,7 +1373,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 router.post('/skill-gap-market', rateLimit(), async (req, res) => {
   try {
-    const { currentRole, targetRole, userLanguage } = req.body;
+    const { currentRole, targetRole, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!targetRole?.trim()) {
       return res.status(400).json({ error: 'Target role is required.' });
@@ -1368,14 +1419,17 @@ Return ONLY valid JSON:
       model: 'claude-sonnet-4-6',
       label: 'SkillGapMarket',
       max_tokens: 2500,
-      system: withLanguage('You are a labor market analyst who tracks hiring trends and career transition dynamics. Be specific and honest about market conditions. Return ONLY valid JSON. No markdown.', userLanguage),
+      system: withLanguage('You are a labor market analyst who tracks hiring trends and career transition dynamics. Be specific and honest about market conditions. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
     });
 
+    if (!parsed.gaps && !parsed.skill_gaps) {
+      return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[SkillGapMarket] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to assess market.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -1384,7 +1438,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 router.post('/skill-gap-celebrate', rateLimit(), async (req, res) => {
   try {
-    const { currentRole, targetRole, milestone, completedSkills, readinessScore, userLanguage } = req.body;
+    const { currentRole, targetRole, milestone, completedSkills, readinessScore, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!milestone?.trim()) {
       return res.status(400).json({ error: 'Milestone description required.' });
@@ -1413,11 +1467,14 @@ Return ONLY valid JSON:
       system: withLanguage('You are an encouraging career coach who celebrates milestones with specific, genuine acknowledgment — not empty cheerleading. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
+    if (!parsed.gaps && !parsed.skill_gaps) {
+      return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[SkillGapCelebrate] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to celebrate.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -1426,7 +1483,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 router.post('/skill-gap-nudge', rateLimit(), async (req, res) => {
   try {
-    const { targetRole, skillGaps, completedSkills, timelinePhase, hoursPerWeek, userLanguage } = req.body;
+    const { targetRole, skillGaps, completedSkills, timelinePhase, hoursPerWeek, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!skillGaps?.length) {
       return res.status(400).json({ error: 'Run the gap analysis first.' });
@@ -1461,14 +1518,17 @@ Return ONLY valid JSON:
       model: 'claude-sonnet-4-6',
       label: 'SkillGapNudge',
       max_tokens: 1200,
-      system: withLanguage('You are a focused accountability partner who gives one clear assignment per week. Never overwhelming — just the next right step. Return ONLY valid JSON. No markdown.', userLanguage),
+      system: withLanguage('You are a focused accountability partner who gives one clear assignment per week. Never overwhelming — just the next right step. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
     });
 
+    if (!parsed.gaps && !parsed.skill_gaps) {
+      return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[SkillGapNudge] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to generate nudge.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -1477,7 +1537,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 router.post('/skill-gap-mentor', rateLimit(), async (req, res) => {
   try {
-    const { currentRole, targetRole, skillGaps, userLanguage } = req.body;
+    const { currentRole, targetRole, skillGaps, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!currentRole?.trim() || !targetRole?.trim()) {
       return res.status(400).json({ error: 'Both roles required.' });
@@ -1525,14 +1585,17 @@ Return ONLY valid JSON:
       model: 'claude-sonnet-4-6',
       label: 'SkillGapMentor',
       max_tokens: 2500,
-      system: withLanguage('You are a mentorship strategist who helps career transitioners find exactly the right person to guide them. Return ONLY valid JSON. No markdown.', userLanguage),
+      system: withLanguage('You are a mentorship strategist who helps career transitioners find exactly the right person to guide them. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
     });
 
+    if (!parsed.gaps && !parsed.skill_gaps) {
+      return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[SkillGapMentor] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to build mentor profile.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

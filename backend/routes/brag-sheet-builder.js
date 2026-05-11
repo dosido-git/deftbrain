@@ -170,11 +170,14 @@ Generate one transformation per accomplishment. Generate 2-4 metrics questions (
       system: withLanguage(systemPrompt, userLanguage),
     });
 
+    if (!parsed.transformations && !parsed.transformed) {
+      return res.status(500).json({ error: 'Could not build your brag sheet. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[BragSheetBuilder] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to build brag sheet' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -269,11 +272,14 @@ Return ONLY valid JSON:
       system: withLanguage('You are an expert career coach upgrading accomplishment statements with real metrics. Return ONLY valid JSON. No markdown, no preamble.', userLanguage),
     });
 
+    if (!parsed.transformations && !parsed.transformed) {
+      return res.status(500).json({ error: 'Could not build your brag sheet. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[BragSheetRefine] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to refine bullets' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -333,11 +339,14 @@ Return ONLY valid JSON:
       system: withLanguage('You are a professional accomplishment translator. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
+    if (!parsed.transformations && !parsed.transformed) {
+      return res.status(500).json({ error: 'Could not build your brag sheet. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[BragSheetTweak] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to tweak.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -410,11 +419,14 @@ Return ONLY valid JSON:
       system: withLanguage('You are an expert accomplishment translator. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
+    if (!parsed.transformations && !parsed.transformed) {
+      return res.status(500).json({ error: 'Could not build your brag sheet. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[BragSheetAddSingle] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to add accomplishment.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -467,11 +479,14 @@ Return ONLY valid JSON:
       system: withLanguage('You are an expert interview coach. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
+    if (!parsed.transformations && !parsed.transformed) {
+      return res.status(500).json({ error: 'Could not build your brag sheet. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[BragSheetStar] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to generate STAR story.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -555,11 +570,14 @@ Generate 3-4 questions per category. Make them SPECIFIC to this person's role, i
       system: withLanguage('You are a career coach who specializes in helping people uncover hidden accomplishments. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
+    if (!parsed.transformations && !parsed.transformed) {
+      return res.status(500).json({ error: 'Could not build your brag sheet. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[BragSheetExcavate] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to generate questions.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -656,11 +674,14 @@ Return ONLY valid JSON:
       system: withLanguage('You are an expert resume strategist and ATS optimization specialist. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
+    if (!parsed.transformations && !parsed.transformed) {
+      return res.status(500).json({ error: 'Could not build your brag sheet. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[BragSheetTailor] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to tailor.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -733,11 +754,14 @@ Return ONLY valid JSON:
       system: withLanguage('You are a career assessment expert. Be honest — a 60 is not a bad score, it means there is room to improve. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
+    if (!parsed.transformations && !parsed.transformed) {
+      return res.status(500).json({ error: 'Could not build your brag sheet. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[BragSheetRadar] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to assess.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -818,11 +842,14 @@ Return ONLY valid JSON:
       system: withLanguage('You are a senior interview coach at a top career consulting firm. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
+    if (!parsed.transformations && !parsed.transformed) {
+      return res.status(500).json({ error: 'Could not build your brag sheet. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[BragSheetInterviewMatrix] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to build interview matrix.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -903,11 +930,14 @@ Return ONLY valid JSON:
       system: withLanguage('You are a ghostwriter who specializes in matching someone\'s natural voice while keeping professional accomplishment statements powerful. Return ONLY valid JSON. No markdown.', userLanguage),
     });
 
+    if (!parsed.transformations && !parsed.transformed) {
+      return res.status(500).json({ error: 'Could not build your brag sheet. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('[BragSheetVoiceMatch] Error:', error);
-    res.status(500).json({ error: error.message || 'Failed to voice-match.' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

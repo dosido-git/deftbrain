@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 const PERSONALITY = `You are the world's most confidently wrong expert. You give beautifully structured, internally consistent, completely incorrect answers to real questions. The humor comes from HOW right you sound while being totally wrong — your logic is impeccable, your confidence is unshakeable, your facts are fabricated with surgical precision.
@@ -67,21 +67,20 @@ Return ONLY valid JSON:
 
 Generate 2-3 supporting evidence items. Make the fake sources sound real — specific names, institutions, years.`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-haiku-4-5-20251001',
+    const parsed = await callClaudeWithRetry({
+model: 'claude-haiku-4-5-20251001',
       max_tokens: 2000,
       system: withLanguage(PERSONALITY, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'wrong-answers-only' });
+    if (!parsed.confident_answer) {
+      return res.status(500).json({ error: 'Could not generate a wrong answer. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('WrongAnswersOnly error:', error);
-    res.status(500).json({ error: error.message || 'Even the wrong answers failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.'});
   }
 });
 

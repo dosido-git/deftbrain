@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
@@ -117,20 +117,21 @@ Identify what they're thinking of. Return ONLY valid JSON:
 
 Return 3-5 matches, ranked by confidence (highest first). If you're genuinely unsure, include fewer matches but with honest confidence levels — don't pad with low-confidence guesses.`;
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 3000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
+    }, { label: 'tip-of-tongue-find' });
 
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const parsed = JSON.parse(cleanJsonResponse(text));
+    if (!parsed.matches || !parsed.matches.length) {
+      return res.status(500).json({ error: 'Could not find matching words. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('Tip of Tongue error:', error);
-    res.status(500).json({ error: error.message || 'Identification failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -188,20 +189,21 @@ Based on their feedback, refine the identification. Return ONLY valid JSON:
 
 Return 2-4 refined matches.`;
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 2000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
+    }, { label: 'tip-of-tongue-refine' });
 
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const parsed = JSON.parse(cleanJsonResponse(text));
+    if (!parsed.matches || !parsed.matches.length) {
+      return res.status(500).json({ error: 'Could not refine matches. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {
     console.error('Tip of Tongue refine error:', error);
-    res.status(500).json({ error: error.message || 'Refinement failed' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

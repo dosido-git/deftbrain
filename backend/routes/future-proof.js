@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 const PERSONALITY = `You are a futures analyst — trained in technology forecasting, labor economics, and pattern recognition across industries. You don't predict the future. You analyze trajectories.
@@ -87,21 +87,17 @@ Return ONLY valid JSON:
   "one_action": "The single most valuable thing they can do in the next 90 days given this analysis"
 }`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+    const parsed = await callClaudeWithRetry({
+model: 'claude-sonnet-4-6',
       max_tokens: 2500,
       system: withLanguage(PERSONALITY, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'future-proof' });
     res.json(parsed);
 
   } catch (error) {
     console.error('FutureProof error:', error);
-    res.status(500).json({ error: error.message || 'Failed to analyze trajectory' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.'});
   }
 });
 

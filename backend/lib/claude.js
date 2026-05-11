@@ -8,8 +8,54 @@ const anthropic = new Anthropic({
 });
 
 /**
+ * Repair literal control characters inside JSON string values.
+ *
+ * Claude occasionally emits literal newlines, carriage returns, or tabs
+ * inside JSON string values instead of the required escape sequences
+ * (\n, \r, \t). JSON.parse treats a bare newline inside a string as an
+ * unterminated-string error. This walk fixes them before parsing.
+ *
+ * Safe to run on any JSON text: escape sequences already present (\n, \\, \")
+ * are preserved unchanged; structural whitespace between fields is untouched.
+ */
+function repairJsonStrings(text) {
+  let result = '';
+  let inString = false;
+  let i = 0;
+  while (i < text.length) {
+    const ch = text[i];
+    if (!inString) {
+      result += ch;
+      if (ch === '"') inString = true;
+    } else if (ch === '\\') {
+      // Escape sequence — pass both characters through unchanged
+      result += ch;
+      if (i + 1 < text.length) { result += text[i + 1]; i++; }
+    } else if (ch === '"') {
+      result += ch;
+      inString = false;
+    } else if (ch === '\n') {
+      result += '\\n';
+    } else if (ch === '\r') {
+      // Skip CR before LF (CRLF pair); lone CR becomes \r
+      if (i + 1 < text.length && text[i + 1] === '\n') { /* LF handles it */ }
+      else result += '\\r';
+    } else if (ch === '\t') {
+      result += '\\t';
+    } else if (ch.charCodeAt(0) < 0x20) {
+      result += '\\u' + ch.charCodeAt(0).toString(16).padStart(4, '0');
+    } else {
+      result += ch;
+    }
+    i++;
+  }
+  return result;
+}
+
+/**
  * Strip markdown fences and extract the JSON object from Claude's response.
  * Handles cases where Claude wraps JSON in ```json ... ``` or adds preamble text.
+ * Also repairs literal control characters inside string values (see repairJsonStrings).
  */
 function cleanJsonResponse(text) {
   let cleaned = text.trim();
@@ -20,6 +66,7 @@ function cleanJsonResponse(text) {
   if (lastBrace !== -1 && lastBrace < cleaned.length - 1) {
     cleaned = cleaned.substring(0, lastBrace + 1);
   }
+  cleaned = repairJsonStrings(cleaned);
   return cleaned;
 }
 
@@ -141,4 +188,74 @@ async function callClaudeWithRetry(promptOrRequest, options = {}) {
   throw new Error(`[${label}] All ${maxRetries + 1} attempts failed. Last error: ${lastError?.message}`);
 }
 
-module.exports = { anthropic, cleanJsonResponse, callClaudeWithRetry, withLanguage };
+/**
+ * Human-readable region names for prompt injection.
+ */
+const REGION_NAMES = {
+  US: 'the United States', CA: 'Canada', AU: 'Australia', NZ: 'New Zealand',
+  GB: 'the United Kingdom', IE: 'Ireland',
+  DE: 'Germany', FR: 'France', IT: 'Italy', ES: 'Spain', NL: 'the Netherlands',
+  PT: 'Portugal', BE: 'Belgium', AT: 'Austria', FI: 'Finland', GR: 'Greece',
+  CH: 'Switzerland', SE: 'Sweden', NO: 'Norway', DK: 'Denmark', PL: 'Poland',
+  CZ: 'the Czech Republic', HU: 'Hungary', RO: 'Romania', HR: 'Croatia',
+  JP: 'Japan', KR: 'South Korea', CN: 'China', TW: 'Taiwan', HK: 'Hong Kong',
+  SG: 'Singapore', MY: 'Malaysia', ID: 'Indonesia', TH: 'Thailand',
+  VN: 'Vietnam', PH: 'the Philippines', IN: 'India', PK: 'Pakistan',
+  BD: 'Bangladesh', LK: 'Sri Lanka',
+  BR: 'Brazil', MX: 'Mexico', AR: 'Argentina', CL: 'Chile', CO: 'Colombia',
+  ZA: 'South Africa', NG: 'Nigeria', KE: 'Kenya', GH: 'Ghana', EG: 'Egypt',
+  RU: 'Russia', UA: 'Ukraine', TR: 'Turkey', IL: 'Israel',
+  SA: 'Saudi Arabia', AE: 'the United Arab Emirates', QA: 'Qatar', KW: 'Kuwait',
+};
+
+/**
+ * Human-readable currency names for prompt injection.
+ */
+const CURRENCY_NAMES = {
+  USD: 'US dollars', CAD: 'Canadian dollars', AUD: 'Australian dollars',
+  NZD: 'New Zealand dollars', GBP: 'British pounds', EUR: 'euros',
+  CHF: 'Swiss francs', SEK: 'Swedish kronor', NOK: 'Norwegian kroner',
+  DKK: 'Danish kroner', PLN: 'Polish zloty', CZK: 'Czech koruna',
+  HUF: 'Hungarian forints', RON: 'Romanian lei',
+  JPY: 'Japanese yen', KRW: 'South Korean won', CNY: 'Chinese yuan',
+  TWD: 'New Taiwan dollars', HKD: 'Hong Kong dollars', SGD: 'Singapore dollars',
+  MYR: 'Malaysian ringgit', IDR: 'Indonesian rupiah', THB: 'Thai baht',
+  VND: 'Vietnamese dong', PHP: 'Philippine pesos', INR: 'Indian rupees',
+  PKR: 'Pakistani rupees', BDT: 'Bangladeshi taka', LKR: 'Sri Lankan rupees',
+  BRL: 'Brazilian reais', MXN: 'Mexican pesos', ARS: 'Argentine pesos',
+  CLP: 'Chilean pesos', COP: 'Colombian pesos',
+  ZAR: 'South African rand', NGN: 'Nigerian naira', KES: 'Kenyan shillings',
+  GHS: 'Ghanaian cedis', EGP: 'Egyptian pounds',
+  RUB: 'Russian rubles', UAH: 'Ukrainian hryvnias', TRY: 'Turkish lira',
+  ILS: 'Israeli shekels', SAR: 'Saudi riyals', AED: 'UAE dirhams',
+  QAR: 'Qatari riyals', KWD: 'Kuwaiti dinars',
+};
+
+/**
+ * Inject regional economic context into a system prompt.
+ * Use in tools that reason about money, costs, budgets, or quantities
+ * that carry different meaning across economic environments.
+ *
+ * Returns an empty string for US/USD (the default training environment)
+ * to avoid adding tokens with no benefit for the majority case.
+ *
+ * Usage in routes:
+ *   const { userLocale, userCurrency, userRegion } = req.body;
+ *   const localeDirective = withLocaleContext(userLocale, userCurrency, userRegion);
+ *   const system = `${basePrompt}${langDirective}${localeDirective}`;
+ *
+ * @param {string} userLocale   - BCP 47 locale, e.g. 'id-ID'
+ * @param {string} userCurrency - ISO 4217 code, e.g. 'IDR'
+ * @param {string} userRegion   - ISO 3166-1 alpha-2, e.g. 'ID'
+ * @returns {string}
+ */
+function withLocaleContext(userLocale, userCurrency, userRegion) {
+  if (!userRegion || (userRegion === 'US' && userCurrency === 'USD')) return '';
+  const regionName   = REGION_NAMES[userRegion]   || userRegion;
+  const currencyName = CURRENCY_NAMES[userCurrency] || userCurrency;
+  return `
+
+LOCALE CONTEXT: The user is in ${regionName}. Format all currency amounts in ${currencyName} (${userCurrency}). Reason about amounts relative to ${regionName}'s economic norms and purchasing power — do not convert from USD or apply US economic intuitions. Use number and date conventions appropriate for ${userLocale}.`;
+}
+
+module.exports = { anthropic, cleanJsonResponse, callClaudeWithRetry, withLanguage, withLocaleContext };

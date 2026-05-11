@@ -23,7 +23,7 @@ async function withRetry(fn, { retries = 3, baseDelayMs = 1500 } = {}) {
 
 // ── Main playlist generation ──
 router.post('/brainstate-deejay', rateLimit(DEFAULT_LIMITS), async (req, res) => {
-  const { currentState, desiredState, taskContext, musicPreferences, sensitivities, locale } = req.body;
+  const { currentState, desiredState, taskContext, musicPreferences, sensitivities, userLanguage } = req.body;
 
   if (!currentState || !desiredState) {
     return res.status(400).json({ error: 'Current state and desired state are required' });
@@ -127,7 +127,7 @@ OUTPUT (JSON only):
   "science_note": "Brief explanation of why this works"
 }
 
-CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`, locale);
+CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`, userLanguage);
 
   try {
     const msg = await withRetry(() => anthropic.messages.create({
@@ -136,16 +136,19 @@ CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`, locale);
       messages: [{ role: 'user', content: prompt }],
     }));
     const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
+    if (!parsed.playlist || !Array.isArray(parsed.playlist.segments)) {
+      return res.status(500).json({ error: 'Could not create playlist. Please try again.' });
+    }
     res.json(parsed);
   } catch (error) {
     console.error('Brainstate Deejay error:', error);
-    res.status(500).json({ error: error.message || 'Failed to generate playlist' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.'});
   }
 });
 
 // ── Playlist adjustment ──
 router.post('/brainstate-deejay/adjust', rateLimit(DEFAULT_LIMITS), async (req, res) => {
-  const { currentState, desiredState, taskContext, musicPreferences, sensitivities, feedback, locale } = req.body;
+  const { currentState, desiredState, taskContext, musicPreferences, sensitivities, feedback, userLanguage } = req.body;
 
   if (!feedback) {
     return res.status(400).json({ error: 'Feedback is required for adjustment' });
@@ -167,7 +170,7 @@ USER FEEDBACK ON PREVIOUS PLAYLIST: "${feedback}"
 
 Based on this feedback, generate an adjusted playlist that addresses the issue. Keep what was working; fix what wasn't.
 
-Return the same JSON structure as the original playlist, adjusted for the feedback. CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`, locale);
+Return the same JSON structure as the original playlist, adjusted for the feedback. CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`, userLanguage);
 
   try {
     const msg = await withRetry(() => anthropic.messages.create({
@@ -176,10 +179,13 @@ Return the same JSON structure as the original playlist, adjusted for the feedba
       messages: [{ role: 'user', content: prompt }],
     }));
     const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
+    if (!parsed.playlist) {
+      return res.status(500).json({ error: 'Could not adjust playlist. Please try again.' });
+    }
     res.json(parsed);
   } catch (error) {
     console.error('Brainstate Deejay adjust error:', error);
-    res.status(500).json({ error: error.message || 'Failed to adjust playlist' });
+    res.status(500).json({ error: 'Something went wrong. Please try again.'});
   }
 });
 
