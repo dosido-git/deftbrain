@@ -44,6 +44,77 @@ template:
 ]}},**/
 export const tools = [
 {
+  id: "MentalHealthNavigator",
+  title: "MentalHealthNavigator",
+  tagline: "Find the right support for what you're going through",
+  tags: ['mental health', 'therapy', 'therapist', 'counseling', 'psychiatrist', 'anxiety', 'depression', 'stress', 'support', 'help', 'burnout', 'grief', 'trauma', 'wellbeing', 'professional help', 'finding a therapist', 'mental health resources'],
+  icon: "🧭",
+  categories: ['Mind'],
+  headerColor: "#c0d8e8",
+  description: "Describe what you're going through and get clear guidance on what type of support fits your situation, how to find it, what it costs, what to say when you reach out, and what you can do in the next 48 hours.",
+  guide: {
+    overview: "Knowing you need help is the first step — but figuring out what kind of help, and how to actually get it, is its own challenge. Therapist? Psychiatrist? Coach? GP? Support group? The difference matters, and most people don't know where to start. MentalHealthNavigator cuts through the confusion: you describe what's been going on, and it recommends the right type of support for your situation, tells you how to find it (country-specific where possible), gives you the exact words to say when you reach out, and identifies what you can do today — not someday.",
+
+    howToUse: [
+      "Select what's been on your mind — you can pick multiple areas",
+      "Describe your situation in your own words — the more context you share, the more tailored the guidance",
+      "Indicate what you've tried before — this prevents generic advice about things you've already done",
+      "Note any barriers — cost, waitlists, location, language — so the guidance can address them directly",
+      "Add your country for country-specific resources, directories, and cost information",
+      "Click 'Find My Support Path' — get a prioritized recommendation, practical how-to, and immediate next steps",
+    ],
+
+    tips: [
+      "You don't need to have it figured out before using this — 'general / not sure' is a valid starting point",
+      "The 'What to say' section removes the most common blocker: not knowing how to start the conversation when calling a professional",
+      "If cost is a barrier, always mention it — sliding scale fees, community mental health centers, and low-cost options exist in most countries",
+      "This tool is for navigation, not diagnosis — it helps you find the right door, not tell you what's on the other side",
+      "If you're in crisis right now, please reach out to a crisis line directly rather than using this tool",
+      "Works across all 12 DeftBrain languages",
+    ],
+
+    example: {
+      scenario: "Someone selects anxiety, work, and sleep as areas, describes 6 months of work anxiety, avoidance, and sleep disruption, and notes their GP just told them to exercise more. They select cost as a barrier and 'United States' as country.",
+      result: "What we heard: You've been managing significant work-related anxiety for 6 months that's affecting your sleep and daily life — and you haven't yet found support that actually helps. Recommended: (1) Licensed therapist specializing in CBT — directly targets the worry patterns and avoidance you described; Psychology Today directory lets you filter by specialty, insurance, and sliding scale. (2) Psychiatrist — if anxiety is severe enough to consider medication, a referral from your GP (or a new GP) is the path. What to say: 'I've been dealing with anxiety around work for about 6 months — it's affecting my sleep and I've started avoiding things. I'm looking for a therapist who works with anxiety.' Immediate steps: Search Psychology Today's therapist finder filtered to anxiety + your zip code + sliding scale today."
+    },
+  },
+},
+{
+  id: "GriefGuide",
+  title: "GriefGuide",
+  tagline: "Compassionate guidance for navigating loss — yours or someone else's",
+  tags: ['grief', 'loss', 'death', 'bereavement', 'mourning', 'grieving', 'coping', 'support', 'death of loved one', 'pet loss', 'breakup', 'job loss', 'how to help someone grieve', 'what to say', 'sadness'],
+  icon: "💙",
+  categories: ['Mind'],
+  headerColor: "#c0cce0",
+  description: "Guidance for navigating grief — whether you're grieving yourself, supporting someone who is, or both. Covers what's normal, how to be with the pain, what to say (and not say), and when to seek more support.",
+  guide: {
+    overview: "Grief is one of the most universal human experiences and one of the least understood. People often don't know what they're feeling is normal, or feel pressure to grieve 'correctly.' Those trying to help often don't know what to say and end up saying things that hurt. GriefGuide offers warm, non-prescriptive guidance tailored to your specific situation — the type of loss, when it happened, and what you're experiencing. It works for the grieving person, for someone trying to support a grieving friend or family member, or for both.",
+
+    howToUse: [
+      "Select who this is for — yourself, someone you're trying to help, or both",
+      "Choose the type of loss if relevant — grief over a job is different from grief over a death",
+      "Select when it happened — guidance shifts depending on timeline",
+      "Share as much or as little as you're comfortable with in the text field — the more context, the more personal the guidance",
+      "Add your country for locally-relevant support resources",
+      "Click 'Get Guidance' — the response is tailored to what you shared",
+    ],
+
+    tips: [
+      "You don't have to share everything — even minimal input gets useful guidance",
+      "The 'Helping someone grieve' mode includes specific phrases to use and common phrases to avoid — these are more useful than general advice",
+      "Grief over non-death losses (relationships, jobs, health, identity) is just as real and often less validated — this tool treats all loss seriously",
+      "The 'When to seek more support' section normalizes professional help — it's not a flag that something is wrong",
+      "If you're in crisis right now, please reach out to a crisis line in your area directly",
+    ],
+
+    example: {
+      scenario: "Someone shares that their father died suddenly three weeks ago. They're functional at work but cry at home. They keep thinking they need to call him. Family is telling them to be strong for their mom.",
+      result: "Opening: Three weeks after a sudden loss like this, what you're describing — staying functional in public while the grief surfaces when you're alone — is one of the most common patterns, and one of the loneliest. That moment of reaching for the phone is something many people describe after losing a parent... Guidance: 'On sudden loss' — sudden deaths don't give us time to prepare, and the shock can delay grief in ways that feel disorienting; 'On being strong for others' — being there for your mom and grieving your own father are not mutually exclusive, but you can't do either well if you're suppressing everything; practical suggestions: let yourself have the cry when it comes, consider finding one person who you don't have to be strong for."
+    },
+  },
+},
+{
   id: "IdeaAutopsy",
   title: "IdeaAutopsy",
   tagline: "Stress-test your business idea before you invest time or money",

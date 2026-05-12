@@ -35,13 +35,5 @@ Beyond language translation, a complete localization suite covers:
 Language	Code	Currency
 Spanish	es	MXN / EUR / etc.
 Chinese (Simplified)	zh	CNY
-Hindi	hi	INR
-Arabic	ar	SAR / AED / etc.
-Portuguese	pt	BRL / EUR
-French	fr	EUR
-German	de	EUR
-Japanese	ja	JPY
-Korean	ko	KRW
-Russian	ru	RUB
-Thai	th	THB
-Vietnamese	vi	VND
+
+en, es, zh, hi, ar, pt, fr, de, ja, ko, ru, th, vi

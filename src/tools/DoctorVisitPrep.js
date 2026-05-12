@@ -21,19 +21,6 @@ const APPT_TYPES = [
   { id: 'urgent-care',       label: '🚨 Urgent / acute',      hint: 'Something acute that came up' },
 ];
 
-const LANGUAGES = [
-  { code: 'en', label: 'English only' },
-  { code: 'es', label: '🇪🇸 + Spanish' },
-  { code: 'zh', label: '🇨🇳 + Mandarin' },
-  { code: 'vi', label: '🇻🇳 + Vietnamese' },
-  { code: 'tl', label: '🇵🇭 + Tagalog' },
-  { code: 'ko', label: '🇰🇷 + Korean' },
-  { code: 'fr', label: '🇫🇷 + French' },
-  { code: 'ar', label: '🇸🇦 + Arabic' },
-  { code: 'pt', label: '🇧🇷 + Portuguese' },
-  { code: 'ru', label: '🇷🇺 + Russian' },
-  { code: 'ht', label: '🇭🇹 + Haitian Creole' },
-];
 
 const PRIORITY_COLOR = (p, d) => {
   if (p === 'high')   return d ? 'text-red-400 bg-red-900/20'   : 'text-red-700 bg-red-100';
@@ -119,9 +106,8 @@ const DoctorVisitPrep = ({ tool }) => {
   const [relevantHistory, setRelevantHistory] = useState('');
   const [appointmentType, setAppointmentType] = useState('new-problem');
   const [specificWorry, setSpecificWorry] = useState('');
-  const [language, setLanguage] = useState('en');
-  // RESULTS (useState per PF-11 — never usePersistentState)
-  const [results, setResults] = useState(null);
+  // RESULTS
+  const [results, setResults] = usePersistentState('dvp-results', null);
   const [error, setError] = useState('');
   // UI TOGGLES
   const [secs, setSecs] = useState({
@@ -137,15 +123,8 @@ const DoctorVisitPrep = ({ tool }) => {
   // ── usePersistentState (after all useRef per PF-14) ──
   const [prepHistory, setPrepHistory] = usePersistentState('dvp-prep-history', []);
   const [knownMeds] = usePersistentState('doctor-meds-list', []); // shared with DVT — read only here
-  const [defaultLanguage, setDefaultLanguage] = usePersistentState('dvp-default-language', 'en');
 
   const tog = (k) => setSecs(p => ({ ...p, [k]: !p[k] }));
-
-  // First-render hook: pull saved language preference
-  useEffect(() => {
-    if (defaultLanguage && defaultLanguage !== 'en') setLanguage(defaultLanguage);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   // ────────────────────────────────────────────────────────────
   // HANDLERS
@@ -155,8 +134,6 @@ const DoctorVisitPrep = ({ tool }) => {
   const handleGenerate = async () => {
     if (!chiefConcern.trim()) { setError('Please enter your chief concern — the main reason for the visit.'); return; }
     setError(''); setResults(null);
-    // Persist the language pick so subsequent visits remember it
-    if (language !== defaultLanguage) setDefaultLanguage(language);
     const allMeds = currentMedications.trim()
       ? currentMedications.trim() + (activeMeds.length ? `\n\nAlso taking (from tracked list): ${activeMeds.map(m => m.name).join(', ')}` : '')
       : activeMeds.length ? activeMeds.map(m => m.name).join(', ') : null;
@@ -175,7 +152,6 @@ const DoctorVisitPrep = ({ tool }) => {
         knownMedications: activeMeds.length
           ? activeMeds.map(m => ({ name: m.name, purpose: m.purpose, prescribedDate: m.prescribedDate }))
           : null,
-        language: language !== 'en' ? language : null,
       });
       setResults(data);
       // Open the most-actionable sections by default; collapse the rest
@@ -227,7 +203,6 @@ const DoctorVisitPrep = ({ tool }) => {
     setRelevantHistory(p.relevantHistory || '');
     setAppointmentType(p.appointmentType || 'new-problem');
     setSpecificWorry(p.specificWorry || '');
-    setLanguage(p.language || 'en');
     setResults(p.results || null);
     setError('');
   };
@@ -249,7 +224,6 @@ const DoctorVisitPrep = ({ tool }) => {
       relevantHistory: relevantHistory.trim(),
       appointmentType,
       specificWorry: specificWorry.trim(),
-      language,
       results,
     };
     setPrepHistory(prev => [entry, ...prev.filter(e => e.id !== entry.id)].slice(0, 6));
@@ -257,7 +231,7 @@ const DoctorVisitPrep = ({ tool }) => {
   }, [
     results, chiefConcern, symptomDetails, durationText, severity,
     whatMakesItBetterWorse, currentMedications, allergies, relevantHistory,
-    appointmentType, specificWorry, language, setPrepHistory,
+    appointmentType, specificWorry, setPrepHistory,
   ]);
 
   // ────────────────────────────────────────────────────────────
@@ -559,17 +533,6 @@ const DoctorVisitPrep = ({ tool }) => {
         </div>
 
         {/* Language */}
-        <div>
-          <label className={`text-sm font-semibold ${c.textSecondary} block mb-1.5`}>🌐 Bilingual output</label>
-          <select
-            value={language}
-            onChange={e => setLanguage(e.target.value)}
-            className={`w-full p-2.5 border rounded-lg ${c.input} outline-none text-sm`}
-          >
-            {LANGUAGES.map(l => <option key={l.code} value={l.code}>{l.label}</option>)}
-          </select>
-        </div>
-
         {/* Submit */}
         <div className="flex gap-3">
           <button
