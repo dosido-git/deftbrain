@@ -278,6 +278,9 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
 
       {/* ═══════════ HEADER ═══════════ */}
       <header className="w-full py-3" style={{ borderBottom: `1px solid ${CLR.sand200}` }}>
+        <h1 style={{ position: 'absolute', width: 1, height: 1, padding: 0, margin: -1, overflow: 'hidden', clip: 'rect(0,0,0,0)', whiteSpace: 'nowrap', border: 0 }}>
+          DeftBrain — AI-Powered Tools for Everyday Life
+        </h1>
         <div className="flex items-center justify-between">
           <BrandMark direction="left" size="lg" isDark={false} showTagline={true} />
         <div className="flex items-center gap-2">
